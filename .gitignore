@@ -16,6 +16,8 @@
 # Visual Studio Files
 Debug
 Release
+x64
+x86
 .vs
 *.user
 *.filters
