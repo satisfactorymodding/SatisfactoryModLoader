@@ -19,7 +19,6 @@ Release
 .vs
 *.user
 *.filters
-*vcxproj
 *.suo
 *.csproj.user
 *.vbproj.user
