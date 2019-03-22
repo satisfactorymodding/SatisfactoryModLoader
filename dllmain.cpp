@@ -64,6 +64,20 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 					continue;
 				}
 
+				bool isDuplicate = false;
+				for (Mod existingMod : ModList) {
+					if (existingMod.name == std::get<1>(modName)) {
+						std::cout << "Skipping duplicate mod " << existingMod.name << std::endl;
+						FreeLibrary(dll);
+						isDuplicate = true;
+						break;
+					}
+				}
+
+				if (isDuplicate) {
+					continue;
+				}
+
 				// if valid, initalize a mod struct and add it to the modlist
 				Mod mod = {
 					sw,
@@ -73,14 +87,6 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 					std::get<1>(modDescription),
 					std::get<1>(modAuthors),
 				};
-
-				for (Mod existingMod : ModList) {
-					if (existingMod.name == mod.name) {
-						std::cout << "Skipping duplicate mod " << existingMod.name << std::endl;
-						FreeLibrary(dll);
-						continue;
-					}
-				}
 
 				ModList.push_back(mod);
 
