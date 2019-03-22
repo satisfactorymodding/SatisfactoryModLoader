@@ -7,10 +7,22 @@
 #include <filesystem>
 #include <Windows.h>
 #include <tuple>
+#include "stdio.h"
 
 // Main DLL for loading mod DLLs
 BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
+
+		// Allocate console
+		// TODO Make it controlled by a flag
+		AllocConsole();
+		FILE* fp;
+		freopen_s(&fp, "CONOIN$", "r", stdin);
+		freopen_s(&fp, "CONOUT$", "w", stdout);
+		freopen_s(&fp, "CONOUT$", "w", stderr);
+
+		std::cout << "ModLoader Attached" << std::endl;
+
 		MessageBoxA(NULL, "Attempting to load mod DLLs!", "Satisfactory Mod Loader", NULL);
 
 		// get application path
@@ -23,9 +35,12 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 		std::string path = appPath.substr(0, pos) + "\\mods";
 		std::string pathExact = path + "\\";
 
+		std::cout << "Looking for mods in: " << path << std::endl;
+
 		// iterate through the directory to find mods
 		for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 			if (entry.path().extension().string() == ".dll") { // check if the file has a .dll extension
+				std::cout << "Attempting to load: " << entry.path() << std::endl;
 				std::string file = pathExact + entry.path().filename().string();
 				std::wstring stemp = std::wstring(file.begin(), file.end());
 				LPCWSTR sw = stemp.c_str();
