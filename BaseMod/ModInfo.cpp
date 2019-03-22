@@ -1,10 +1,10 @@
 #include "stdafx.h"
+#include "ModInfo.h"
 #include <string>
 
-//File providing info about the mod.
-#define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
 EXTERN_DLL_EXPORT void isMod() {}
 
+// File providing info about the mod.
 // Do not change the function names or the return values
 EXTERN_DLL_EXPORT std::string ModName() {
 	return "TestMod";
