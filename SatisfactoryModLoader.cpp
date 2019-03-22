@@ -3,4 +3,4 @@
 
 #include "stdafx.h"
 
-//Hooks and other stuff go here
+// Hooks and other stuff go here
