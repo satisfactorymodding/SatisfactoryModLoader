@@ -10,96 +10,94 @@
 #include "stdio.h"
 
 // Main DLL for loading mod DLLs
-BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
-	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
+void ModLoaderEntry() {
 
-		// Allocate console
-		// TODO Make it controlled by a flag
-		AllocConsole();
-		FILE* fp;
-		freopen_s(&fp, "CONOIN$", "r", stdin);
-		freopen_s(&fp, "CONOUT$", "w", stdout);
-		freopen_s(&fp, "CONOUT$", "w", stderr);
+	// Allocate console
+	// TODO Make it controlled by a flag
+	AllocConsole();
+	FILE* fp;
+	freopen_s(&fp, "CONOIN$", "r", stdin);
+	freopen_s(&fp, "CONOUT$", "w", stdout);
+	freopen_s(&fp, "CONOUT$", "w", stderr);
 
-		std::cout << "ModLoader Attached" << std::endl;
+	std::cout << "ModLoader Attached" << std::endl;
 
-		MessageBoxA(NULL, "Attempting to load mod DLLs!", "Satisfactory Mod Loader", NULL);
+	MessageBoxA(NULL, "Attempting to load mod DLLs!", "Satisfactory Mod Loader", NULL);
 
-		// get application path
-		char p[MAX_PATH];
-		GetModuleFileNameA(NULL, p, MAX_PATH);
+	// get application path
+	char p[MAX_PATH];
+	GetModuleFileNameA(NULL, p, MAX_PATH);
 
-		// split the path
-		std::string appPath(p);
-		size_t pos = appPath.find_last_of('\\');
-		std::string path = appPath.substr(0, pos) + "\\mods";
-		std::string pathExact = path + "\\";
+	// split the path
+	std::string appPath(p);
+	size_t pos = appPath.find_last_of('\\');
+	std::string path = appPath.substr(0, pos) + "\\mods";
+	std::string pathExact = path + "\\";
 
-		std::cout << "Looking for mods in: " << path << std::endl;
+	std::cout << "Looking for mods in: " << path << std::endl;
 
-		// iterate through the directory to find mods
-		for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
-			if (entry.path().extension().string() == ".dll") { // check if the file has a .dll extension
-				std::cout << "Attempting to load: " << entry.path() << std::endl;
-				std::string file = pathExact + entry.path().filename().string();
-				std::wstring stemp = std::wstring(file.begin(), file.end());
-				LPCWSTR sw = stemp.c_str();
+	// iterate through the directory to find mods
+	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
+		if (entry.path().extension().string() == ".dll") { // check if the file has a .dll extension
+			std::cout << "Attempting to load: " << entry.path() << std::endl;
+			std::string file = pathExact + entry.path().filename().string();
+			std::wstring stemp = std::wstring(file.begin(), file.end());
+			LPCWSTR sw = stemp.c_str();
 
-				HMODULE dll = LoadLibrary(sw); // load the dll
+			HMODULE dll = LoadLibrary(sw); // load the dll
 
-				FARPROC valid = GetProcAddress(dll, "isMod");
-				if (!valid) { //check validity of the mod dll
-					FreeLibrary(dll);
-					continue;
-				}
-
-				std::tuple<bool, std::string> modName = get_field_value<std::string>(dll, "ModName");
-				std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
-				std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
-				std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
-
-				if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
-					FreeLibrary(dll);
-					continue;
-				}
-
-				bool isDuplicate = false;
-				for (Mod existingMod : ModList) {
-					if (existingMod.name == std::get<1>(modName)) {
-						std::cout << "Skipping duplicate mod " << existingMod.name << std::endl;
-						FreeLibrary(dll);
-						isDuplicate = true;
-						break;
-					}
-				}
-
-				if (isDuplicate) {
-					continue;
-				}
-
-				// if valid, initalize a mod struct and add it to the modlist
-				Mod mod = {
-					sw,
-					dll,
-					std::get<1>(modName),
-					std::get<1>(modVersion),
-					std::get<1>(modDescription),
-					std::get<1>(modAuthors),
-				};
-
-				ModList.push_back(mod);
-
-				std::cout << "[Name] " << mod.name;
-				std::cout << " [Version] " << mod.version;
-				std::cout << " [Description] " << mod.description;
-				std::cout << " [Authors] " << mod.authors << std::endl;
+			FARPROC valid = GetProcAddress(dll, "isMod");
+			if (!valid) { //check validity of the mod dll
+				FreeLibrary(dll);
+				continue;
 			}
-		}
 
-		// run test event
-		run_event(Event::Test);
+			std::tuple<bool, std::string> modName = get_field_value<std::string>(dll, "ModName");
+			std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
+			std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
+			std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
+
+			if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
+				FreeLibrary(dll);
+				continue;
+			}
+
+			bool isDuplicate = false;
+			for (Mod existingMod : ModList) {
+				if (existingMod.name == std::get<1>(modName)) {
+					std::cout << "Skipping duplicate mod " << existingMod.name << std::endl;
+					FreeLibrary(dll);
+					isDuplicate = true;
+					break;
+				}
+			}
+
+			if (isDuplicate) {
+				continue;
+			}
+
+			// if valid, initalize a mod struct and add it to the modlist
+			Mod mod = {
+				sw,
+				dll,
+				std::get<1>(modName),
+				std::get<1>(modVersion),
+				std::get<1>(modDescription),
+				std::get<1>(modAuthors),
+			};
+
+			ModList.push_back(mod);
+
+			std::cout << "[Name] " << mod.name;
+			std::cout << " [Version] " << mod.version;
+			std::cout << " [Description] " << mod.description;
+			std::cout << " [Authors] " << mod.authors << std::endl;
+		}
 	}
-    return TRUE;
+
+	// run test event
+	run_event(Event::Test);
+
 }
 
 template <typename O>

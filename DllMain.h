@@ -1,7 +1,9 @@
 #pragma once
+#include <tuple>
 enum Event {
 	None, Test
 };
+void ModLoaderEntry();
 
 typedef void(*FUNC)();
 
