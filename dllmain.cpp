@@ -49,9 +49,6 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 					continue;
 				}
 
-				// run test event
-				run_tick_event(dll, TickEvent::Test);
-
 				// if valid, initalize a mod struct and add it to the modlist
 				Mod mod = {
 					sw,
@@ -70,6 +67,9 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 				std::cout << " [Authors] " << mod.authors << std::endl;
 			}
 		}
+
+		// run test event
+		run_event(Event::Test);
 	}
     return TRUE;
 }
@@ -108,13 +108,15 @@ std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
 	return std::make_tuple(true, *n1);
 }
 
-void run_tick_event(HMODULE module, TickEvent event) {
-	FARPROC func = get_function(module, "GetTickEvent");
+void run_event(Event event) {
+	for (Mod mod : ModList) {
+		FARPROC func = get_function(mod.fileModule, "GetTickEvent");
 
-	typedef FUNC GETFUNC(TickEvent);
-	GETFUNC* f = (GETFUNC*)func;
-	FUNC returnFunc = (*f)(event);
-	if (returnFunc != NULL) {
-		returnFunc();
+		typedef FUNC GETFUNC(Event);
+		GETFUNC* f = (GETFUNC*)func;
+		FUNC returnFunc = (*f)(event);
+		if (returnFunc != NULL) {
+			returnFunc();
+		}
 	}
 }

@@ -1,5 +1,5 @@
 #pragma once
-enum TickEvent {
+enum Event {
 	None, Test
 };
 
@@ -13,4 +13,4 @@ std::tuple<bool, O> get_field_value(HMODULE module, const char* procName);
 
 FARPROC get_function(HMODULE module, const char* procName);
 
-void run_tick_event(HMODULE module, TickEvent event);
+void run_event(Event event);
