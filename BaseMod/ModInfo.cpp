@@ -2,6 +2,8 @@
 #include <string>
 
 //File providing info about the mod.
+#define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
+EXTERN_DLL_EXPORT void isMod() {}
 
 // Change the return values but do not change the function names!
 
