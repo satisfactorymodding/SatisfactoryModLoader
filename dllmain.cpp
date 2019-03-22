@@ -53,7 +53,6 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 					continue;
 				}
 
-				//std::tuple<bool, std::string> modName = get_value<std::string>(dll, "ModName");
 				std::tuple<bool, std::string> modName = get_field_value<std::string>(dll, "ModName");
 				std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
 				std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
