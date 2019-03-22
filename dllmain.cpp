@@ -59,6 +59,14 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 					std::get<1>(modAuthors),
 				};
 
+				for (Mod existingMod : ModList) {
+					if (existingMod.name == mod.name) {
+						std::cout << "Skipping duplicate mod " << existingMod.name << std::endl;
+						FreeLibrary(dll);
+						continue;
+					}
+				}
+
 				ModList.push_back(mod);
 
 				std::cout << "[Name] " << mod.name;

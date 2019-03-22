@@ -3,4 +3,4 @@
 
 #include "stdafx.h"
 
-// Add user defined functions and hook functions here
+// Add user defined functions here
