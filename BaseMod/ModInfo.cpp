@@ -5,20 +5,19 @@
 #define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
 EXTERN_DLL_EXPORT void isMod() {}
 
-// Change the return values but do not change the function names!
-
-std::string ModName() {
+// Do not change the function names or the return values
+EXTERN_DLL_EXPORT std::string ModName() {
 	return "TestMod";
 }
 
-std::string ModVersion() {
+EXTERN_DLL_EXPORT std::string ModVersion() {
 	return "1.0.0";
 }
 
-std::string ModDescription() {
+EXTERN_DLL_EXPORT std::string ModDescription() {
 	return "A mod made for testing the mod loader.";
 }
 
-std::string ModAuthor() {
-	return "SuperCoder79";
+EXTERN_DLL_EXPORT std::string ModAuthors() {
+	return "SuperCoder79, Nomnom";
 }

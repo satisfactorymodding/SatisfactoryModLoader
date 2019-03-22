@@ -1,13 +1,17 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
-#include "import.h"
 #include "Mod.h"
 #include <string>
 #include <iostream>
 #include <filesystem>
 #include <Windows.h>
+#include <tuple>
 
 // Main DLL for loading mod DLLs
+typedef std::string STRINGFUNC();
+
+std::tuple<bool, std::string> get_string(HMODULE module, const char* procName);
+
 BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved) {
 	if (ul_reason_for_call == DLL_PROCESS_ATTACH) {
 		MessageBoxA(NULL, "Attempting to load mod DLLs!", "Satisfactory Mod Loader", NULL);
@@ -35,12 +39,46 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 				if (!valid) { //check validity of the mod dll
 					FreeLibrary(dll);
 					continue;
-				} 
+				}
+
+				std::tuple<bool, std::string> modName = get_string(dll, "ModName");
+				std::tuple<bool, std::string> modVersion = get_string(dll, "ModVersion");
+				std::tuple<bool, std::string> modDescription = get_string(dll, "ModDescription");
+				std::tuple<bool, std::string> modAuthors = get_string(dll, "ModAuthors");
+
+				if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
+					FreeLibrary(dll);
+					continue;
+				}
+
 				// if valid, initalize a mod struct and add it to the modlist
-				Mod mod = { sw, dll };
+				Mod mod = {
+					sw,
+					dll,
+					std::get<1>(modName),
+					std::get<1>(modVersion),
+					std::get<1>(modDescription),
+					std::get<1>(modAuthors),
+				};
+
 				ModList.push_back(mod);
+
+				std::cout << "[Name] " << mod.name;
+				std::cout << " [Version] " << mod.version;
+				std::cout << " [Description] " << mod.description;
+				std::cout << " [Authors] " << mod.authors << std::endl;
 			}
 		}
 	}
     return TRUE;
+}
+
+std::tuple<bool, std::string> get_string(HMODULE module, const char* procName) {
+	FARPROC proc = GetProcAddress(module, procName);
+	if (!proc) {
+		return std::make_tuple(false, "");
+	}
+
+	STRINGFUNC* f = (STRINGFUNC*)proc;
+	return std::make_tuple(true, f());
 }
