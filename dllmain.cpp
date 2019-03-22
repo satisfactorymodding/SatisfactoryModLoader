@@ -38,10 +38,11 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 					continue;
 				}
 
-				std::tuple<bool, std::string> modName = get_value<std::string>(dll, "ModName");
-				std::tuple<bool, std::string> modVersion = get_value<std::string>(dll, "ModVersion");
-				std::tuple<bool, std::string> modDescription = get_value<std::string>(dll, "ModDescription");
-				std::tuple<bool, std::string> modAuthors = get_value<std::string>(dll, "ModAuthors");
+				//std::tuple<bool, std::string> modName = get_value<std::string>(dll, "ModName");
+				std::tuple<bool, std::string> modName = get_field_value<std::string>(dll, "ModName");
+				std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
+				std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
+				std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
 
 				if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
 					FreeLibrary(dll);
@@ -74,7 +75,7 @@ BOOL APIENTRY DllMain( HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpRese
 }
 
 template <typename O>
-std::tuple<bool, O> get_value(HMODULE module, const char* procName) {
+std::tuple<bool, O> get_function_value(HMODULE module, const char* procName) {
 	FARPROC proc = GetProcAddress(module, procName);
 	if (!proc) {
 		return std::make_tuple(false, "");
@@ -93,6 +94,18 @@ FARPROC get_function(HMODULE module, const char* procName) {
 	}
 
 	return proc;
+}
+
+template <typename O>
+std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
+	FARPROC proc = get_function(module, procName);
+	if (!proc) {
+		return std::make_tuple(false, "");
+	}
+
+	typedef O (funcN);
+	funcN* n1 = (funcN*)proc;
+	return std::make_tuple(true, *n1);
 }
 
 void run_tick_event(HMODULE module, TickEvent event) {

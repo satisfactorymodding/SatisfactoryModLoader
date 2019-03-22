@@ -4,18 +4,18 @@
 #include <map>
 
 // Events
-// - Put events you want to hook into the game here
-
+// - Create events you want to hook into the game here
 void TestTick() {
 	printf("TestTick\n");
 }
 
 // Utility
-
+// - Register events you want to hook into the game here
 EXTERN_DLL_EXPORT extern std::map<TickEvent, FUNC> functions = {
 	{ TickEvent::Test, TestTick }
 };
 
+// Don't edit
 EXTERN_DLL_EXPORT FUNC GetTickEvent(TickEvent event) {
 	auto iterator = functions.find(event);
 	if (iterator != functions.end()) {
