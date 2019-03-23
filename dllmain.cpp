@@ -25,7 +25,6 @@ void ModLoaderEntry() {
 	readConfig(); // read the config file
 
 	if (!LOADCONSOLE) { // destroy the console if stated by the config file
-		FreeConsole();
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
 	}
 

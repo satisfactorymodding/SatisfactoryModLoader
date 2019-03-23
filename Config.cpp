@@ -12,7 +12,7 @@ void readConfig() {
 	std::string line;
 	if (config.good()) { // see if a config file exists
 		if (config.is_open()) {
-			std::cout << "[SML] Reading config file!" << std::endl;
+			std::cout << "[SML] Reading found config file!" << std::endl;
 			while (getline(config, line)) { // read the config file line by linee
 				size_t seperator = line.find(":"); // separate string into a id/value pair
 				std::string id = line.substr(0, seperator); 
