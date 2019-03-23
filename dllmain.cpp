@@ -20,9 +20,9 @@ void ModLoaderEntry() {
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 
-	std::cout << "ModLoader Attached" << std::endl;
+	std::cout << "[SML] Attached SatisfactoryModLoader to Satisfactory" << std::endl;
 
-	MessageBoxA(NULL, "Attempting to load mod DLLs!", "Satisfactory Mod Loader", NULL);
+	MessageBoxA(NULL, "Attempting to load mods!\n\n\nPress OK to start the game.", "Satisfactory Mod Loader", NULL);
 
 	// get application path
 	char p[MAX_PATH];
@@ -34,12 +34,12 @@ void ModLoaderEntry() {
 	std::string path = appPath.substr(0, pos) + "\\mods";
 	std::string pathExact = path + "\\";
 
-	std::cout << "Looking for mods in: " << path << std::endl;
+	std::cout << "[SML] Looking for mods in: " << path << std::endl;
 
 	// iterate through the directory to find mods
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 		if (entry.path().extension().string() == ".dll") { // check if the file has a .dll extension
-			std::cout << "Attempting to load: " << entry.path() << std::endl;
+			std::cout << "[SML] Attempting to load mod: " << entry.path() << std::endl;
 			std::string file = pathExact + entry.path().filename().string();
 			std::wstring stemp = std::wstring(file.begin(), file.end());
 			LPCWSTR sw = stemp.c_str();
@@ -62,10 +62,11 @@ void ModLoaderEntry() {
 				continue;
 			}
 
+			//check if the mod has already been loaded
 			bool isDuplicate = false;
 			for (Mod existingMod : ModList) {
 				if (existingMod.name == std::get<1>(modName)) {
-					std::cout << "Skipping duplicate mod " << existingMod.name << std::endl;
+					std::cout << "[SML] Skipping duplicate mod " << existingMod.name << std::endl;
 					FreeLibrary(dll);
 					isDuplicate = true;
 					break;
@@ -94,10 +95,10 @@ void ModLoaderEntry() {
 			std::cout << " [Authors] " << mod.authors << std::endl;
 		}
 	}
-
+	std::cout << "[SML] Loaded " << ModList.size() << " mods!" << std::endl;
 	// run test event
 	run_event(Event::Test);
-
+	std::cout << "[SML] SatisfactoryModLoader Initialization complete. Launching Satisfactory..." << std::endl;
 }
 
 template <typename O>
