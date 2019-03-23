@@ -1,6 +1,7 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 #include "Mod.h"
+#include "Config.h"
 #include "DllMain.h"
 #include <string>
 #include <iostream>
@@ -13,7 +14,6 @@
 void ModLoaderEntry() {
 
 	// Allocate console
-	// TODO Make it controlled by a flag
 	AllocConsole();
 	FILE* fp;
 	freopen_s(&fp, "CONOIN$", "r", stdin);
@@ -21,6 +21,13 @@ void ModLoaderEntry() {
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 
 	std::cout << "[SML] Attached SatisfactoryModLoader to Satisfactory" << std::endl;
+
+	readConfig(); // read the config file
+
+	if (!LOADCONSOLE) { // destroy the console if stated by the config file
+		FreeConsole();
+		ShowWindow(GetConsoleWindow(), SW_HIDE);
+	}
 
 	MessageBoxA(NULL, "Attempting to load mods!\n\n\nPress OK to start the game.", "Satisfactory Mod Loader", NULL);
 
@@ -56,7 +63,7 @@ void ModLoaderEntry() {
 			std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
 			std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
 			std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
-
+			
 			if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
 				FreeLibrary(dll);
 				continue;

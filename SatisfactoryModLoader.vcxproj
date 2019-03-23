@@ -149,12 +149,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="DllMain.h" />
     <ClInclude Include="Mod.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="Mod.cpp" />
     <ClCompile Include="SatisfactoryModLoader.cpp" />
     <ClCompile Include="dllmain.cpp" />
