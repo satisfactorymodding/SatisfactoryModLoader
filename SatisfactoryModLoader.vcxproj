@@ -163,7 +163,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Configcpp.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="DetoredEvents.cpp" />
     <ClCompile Include="Mod.cpp" />
     <ClCompile Include="SatisfactoryModLoader.cpp" />
