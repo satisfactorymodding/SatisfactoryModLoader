@@ -14,7 +14,6 @@
 void ModLoaderEntry() {
 
 	// Allocate console
-	// TODO Make it controlled by a flag
 	AllocConsole();
 	FILE* fp;
 	freopen_s(&fp, "CONOIN$", "r", stdin);
@@ -63,7 +62,7 @@ void ModLoaderEntry() {
 			std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
 			std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
 			std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
-
+			
 			if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
 				FreeLibrary(dll);
 				continue;
