@@ -1,13 +1,14 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
 #include "Mod.h"
-#include "DllMain.h"
+#include "DLLMain.h"
+#include "stdio.h"
+#include "DetoredEvents.h"
 #include <string>
 #include <iostream>
 #include <filesystem>
 #include <Windows.h>
 #include <tuple>
-#include "stdio.h"
 
 // Main DLL for loading mod DLLs
 void ModLoaderEntry() {
@@ -20,9 +21,9 @@ void ModLoaderEntry() {
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 
-	std::cout << "[SML] Attached SatisfactoryModLoader to Satisfactory" << std::endl;
+	log("Attached SatisfactoryModLoader to Satisfactory");
 
-	MessageBoxA(NULL, "Attempting to load mods!\n\n\nPress OK to start the game.", "Satisfactory Mod Loader", NULL);
+	//MessageBoxA(NULL, "Attempting to load mods!\n\n\nPress OK to start the game.", "Satisfactory Mod Loader", NULL);
 
 	// get application path
 	char p[MAX_PATH];
@@ -34,14 +35,16 @@ void ModLoaderEntry() {
 	std::string path = appPath.substr(0, pos) + "\\mods";
 	std::string pathExact = path + "\\";
 
-	std::cout << "[SML] Looking for mods in: " << path << std::endl;
+	log("Looking for mods in: " + path);
 
 	// iterate through the directory to find mods
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 		if (entry.path().extension().string() == ".dll") { // check if the file has a .dll extension
-			std::cout << "[SML] Attempting to load mod: " << entry.path() << std::endl;
 			std::string file = pathExact + entry.path().filename().string();
 			std::wstring stemp = std::wstring(file.begin(), file.end());
+
+			log("Attempting to load mod: " + file);
+
 			LPCWSTR sw = stemp.c_str();
 
 			HMODULE dll = LoadLibrary(sw); // load the dll
@@ -66,7 +69,7 @@ void ModLoaderEntry() {
 			bool isDuplicate = false;
 			for (Mod existingMod : ModList) {
 				if (existingMod.name == std::get<1>(modName)) {
-					std::cout << "[SML] Skipping duplicate mod " << existingMod.name << std::endl;
+					log("Skipping duplicate mod " + existingMod.name);
 					FreeLibrary(dll);
 					isDuplicate = true;
 					break;
@@ -89,16 +92,40 @@ void ModLoaderEntry() {
 
 			ModList.push_back(mod);
 
-			std::cout << "[Name] " << mod.name;
-			std::cout << " [Version] " << mod.version;
-			std::cout << " [Description] " << mod.description;
-			std::cout << " [Authors] " << mod.authors << std::endl;
+			log("[Name] " + mod.name, false);
+			log(" [Version] " + mod.version, false, false);
+			log(" [Description] " + mod.description, false, false);
+			log(" [Authors] " + mod.authors, true, false);
 		}
 	}
-	std::cout << "[SML] Loaded " << ModList.size() << " mods!" << std::endl;
+
+	size_t listSize = ModList.size();
+	log("Loaded " + std::to_string(listSize), false);
+	if (listSize > 1) {
+		log(" mods", true, false);
+	}
+	else {
+		log(" mod", true, false);
+	}
+
 	// run test event
 	run_event(Event::Test);
-	std::cout << "[SML] SatisfactoryModLoader Initialization complete. Launching Satisfactory..." << std::endl;
+
+	// assign test event
+	hook_event(HookEvent::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
+
+	log("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
+}
+
+template<typename T>
+void log(T msg, bool endLine, bool showHeader) {
+	if (showHeader) {
+		std::cout << "[SML] ";
+	}
+	std::cout << msg;
+	if (endLine) {
+		std::cout << std::endl;
+	}
 }
 
 template <typename O>

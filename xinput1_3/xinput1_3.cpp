@@ -6,16 +6,26 @@ extern "C" UINT_PTR mProcs[12] = {0};
 
 void LoadOriginalDll();
 
+static bool hooked = false;
+
 LPCSTR mImportNames[] = {"DllMain", "XInputEnable", "XInputGetBatteryInformation", "XInputGetCapabilities", "XInputGetDSoundAudioDeviceGuids", "XInputGetKeystroke", "XInputGetState", "XInputSetState", (LPCSTR)100, (LPCSTR)101, (LPCSTR)102, (LPCSTR)103};
 BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 	mHinst = hinstDLL;
-	if ( fdwReason == DLL_PROCESS_ATTACH ) {
+	if (fdwReason == DLL_PROCESS_ATTACH) {
 		LoadOriginalDll();
-		for ( int i = 0; i < 12; i++ )
-			mProcs[ i ] = (UINT_PTR)GetProcAddress( mHinstDLL, mImportNames[ i ] );
+		for (int i = 0; i < 12; i++)
+			mProcs[i] = (UINT_PTR)GetProcAddress(mHinstDLL, mImportNames[i]);
+	}
+	else if (fdwReason == DLL_PROCESS_DETACH) {
+		FreeLibrary(mHinstDLL);
+	} 
+	
+	if (hooked) {
+		return ( TRUE );
+	}
+	if ( fdwReason == DLL_THREAD_ATTACH) {
+		hooked = true;
 		ModLoaderEntry();
-	} else if ( fdwReason == DLL_PROCESS_DETACH ) {
-		FreeLibrary( mHinstDLL );
 	}
 	return ( TRUE );
 }
