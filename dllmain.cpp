@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "Mod.h"
 #include "DLLMain.h"
-#include "stdio.h"
+#include "Config.h"
 #include "DetoredEvents.h"
 #include <string>
 #include <iostream>
@@ -23,7 +23,11 @@ void ModLoaderEntry() {
 
 	log("Attached SatisfactoryModLoader to Satisfactory");
 
-	//MessageBoxA(NULL, "Attempting to load mods!\n\n\nPress OK to start the game.", "Satisfactory Mod Loader", NULL);
+	readConfig(); // read the config file
+
+	if (!LOADCONSOLE) { // destroy the console if stated by the config file
+		ShowWindow(GetConsoleWindow(), SW_HIDE);
+	}
 
 	// get application path
 	char p[MAX_PATH];

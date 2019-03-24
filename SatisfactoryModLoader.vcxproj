@@ -155,6 +155,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Config.h" />
     <ClInclude Include="DetoredEvents.h" />
     <ClInclude Include="DLLMain.h" />
     <ClInclude Include="Mod.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Configcpp.cpp" />
     <ClCompile Include="DetoredEvents.cpp" />
     <ClCompile Include="Mod.cpp" />
     <ClCompile Include="SatisfactoryModLoader.cpp" />

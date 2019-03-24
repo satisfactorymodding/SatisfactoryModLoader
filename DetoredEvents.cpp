@@ -1,12 +1,11 @@
 #include "stdafx.h"
-#include <detours.h>
 #include "DetoredEvents.h"
 #include "DLLMain.h"
 #include <iostream>
 #include <Windows.h>
 #include <map>
 #include <vector>
-#include <DbgHelp.h>
+#include <detours.h>
 
 const char* Module = "FactoryGame-Win64-Shipping.exe";
 
