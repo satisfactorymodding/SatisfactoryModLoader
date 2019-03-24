@@ -58,10 +58,10 @@ void ModLoaderEntry() {
 				continue;
 			}
 
-			std::tuple<bool, std::string> modName = get_field_value<std::string>(dll, "ModName");
-			std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
-			std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
-			std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
+			std::tuple<bool, std::string> modName = getFieldValue<std::string>(dll, "ModName");
+			std::tuple<bool, std::string> modVersion = getFieldValue<std::string>(dll, "ModVersion");
+			std::tuple<bool, std::string> modDescription = getFieldValue<std::string>(dll, "ModDescription");
+			std::tuple<bool, std::string> modAuthors = getFieldValue<std::string>(dll, "ModAuthors");
 			
 			if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
 				FreeLibrary(dll);
@@ -103,12 +103,13 @@ void ModLoaderEntry() {
 	}
 	std::cout << "[SML] Loaded " << ModList.size() << " mods!" << std::endl;
 	// run test event
-	run_event(Event::Test);
+	runEvent(Event::Test);
 	std::cout << "[SML] SatisfactoryModLoader Initialization complete. Launching Satisfactory..." << std::endl;
+	runPreInit();
 }
 
 template <typename O>
-std::tuple<bool, O> get_function_value(HMODULE module, const char* procName) {
+std::tuple<bool, O> getFunctionValue(HMODULE module, const char* procName) {
 	FARPROC proc = GetProcAddress(module, procName);
 	if (!proc) {
 		return std::make_tuple(false, "");
@@ -120,7 +121,7 @@ std::tuple<bool, O> get_function_value(HMODULE module, const char* procName) {
 	return std::make_tuple(true, f());
 }
 
-FARPROC get_function(HMODULE module, const char* procName) {
+FARPROC getFunction(HMODULE module, const char* procName) {
 	FARPROC proc = GetProcAddress(module, procName);
 	if (!proc) {
 		return NULL;
@@ -130,8 +131,8 @@ FARPROC get_function(HMODULE module, const char* procName) {
 }
 
 template <typename O>
-std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
-	FARPROC proc = get_function(module, procName);
+std::tuple<bool, O> getFieldValue(HMODULE module, const char* procName) {
+	FARPROC proc = getFunction(module, procName);
 	if (!proc) {
 		return std::make_tuple(false, "");
 	}
@@ -141,9 +142,9 @@ std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
 	return std::make_tuple(true, *n1);
 }
 
-void run_event(Event event) {
+void runEvent(Event event) {
 	for (Mod mod : ModList) {
-		FARPROC func = get_function(mod.fileModule, "GetTickEvent");
+		FARPROC func = getFunction(mod.fileModule, "GetTickEvent");
 
 		typedef FUNC GETFUNC(Event);
 		GETFUNC* f = (GETFUNC*)func;
@@ -152,4 +153,14 @@ void run_event(Event event) {
 			returnFunc();
 		}
 	}
+}
+
+void runPreInit() {
+	std::cout << "[SML|Event] Pre Initializing!" << std::endl;
+	return;
+}
+
+void runPostInit() {
+	std::cout << "[SML|Event] Pre Initializing!" << std::endl;
+	return;
 }

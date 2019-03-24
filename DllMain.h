@@ -8,11 +8,15 @@ void ModLoaderEntry();
 typedef void(*FUNC)();
 
 template <typename O>
-std::tuple<bool, O> get_function_value(HMODULE module, const char* procName);
+std::tuple<bool, O> getFunctionValue(HMODULE module, const char* procName);
 
 template <typename O>
-std::tuple<bool, O> get_field_value(HMODULE module, const char* procName);
+std::tuple<bool, O> getFieldValue(HMODULE module, const char* procName);
 
-FARPROC get_function(HMODULE module, const char* procName);
+FARPROC getFunction(HMODULE module, const char* procName);
 
-void run_event(Event event);
+void runEvent(Event event);
+
+void runPreInit();
+
+void runPostInit();
