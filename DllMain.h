@@ -15,15 +15,15 @@ template<typename T>
 void log(T msg, bool endLine = true, bool showHeader = true);
 
 template <typename O>
-std::tuple<bool, O> getFunctionValue(HMODULE module, const char* procName);
+std::tuple<bool, O> get_function_value(HMODULE module, const char* procName);
 
 template <typename O>
-std::tuple<bool, O> getFieldValue(HMODULE module, const char* procName);
+std::tuple<bool, O> get_field_value(HMODULE module, const char* procName);
 
 FARPROC getFunction(HMODULE module, const char* procName);
 
 void runEvent(Event event);
 
-void runPreInit();
+void run_pre_init();
 
-void runPostInit();
+void run_post_init();

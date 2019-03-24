@@ -58,10 +58,10 @@ void ModLoaderEntry() {
 				continue;
 			}
 
-			std::tuple<bool, std::string> modName = getFieldValue<std::string>(dll, "ModName");
-			std::tuple<bool, std::string> modVersion = getFieldValue<std::string>(dll, "ModVersion");
-			std::tuple<bool, std::string> modDescription = getFieldValue<std::string>(dll, "ModDescription");
-			std::tuple<bool, std::string> modAuthors = getFieldValue<std::string>(dll, "ModAuthors");
+			std::tuple<bool, std::string> modName = get_field_value<std::string>(dll, "ModName");
+			std::tuple<bool, std::string> modVersion = get_field_value<std::string>(dll, "ModVersion");
+			std::tuple<bool, std::string> modDescription = get_field_value<std::string>(dll, "ModDescription");
+			std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
 			
 			if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
 				FreeLibrary(dll);
@@ -121,7 +121,7 @@ void ModLoaderEntry() {
 }
 
 template<typename T>
-void log(T msg, bool endLine, bool showHeader) {
+void log(T msg, bool endLine = true, bool showHeader = true) {
 	if (showHeader) {
 		std::cout << "[SML] ";
 	}
@@ -132,7 +132,7 @@ void log(T msg, bool endLine, bool showHeader) {
 }
 
 template <typename O>
-std::tuple<bool, O> getFunctionValue(HMODULE module, const char* procName) {
+std::tuple<bool, O> get_function_value(HMODULE module, const char* procName) {
 	FARPROC proc = GetProcAddress(module, procName);
 	if (!proc) {
 		return std::make_tuple(false, "");
@@ -154,7 +154,7 @@ FARPROC getFunction(HMODULE module, const char* procName) {
 }
 
 template <typename O>
-std::tuple<bool, O> getFieldValue(HMODULE module, const char* procName) {
+std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
 	FARPROC proc = getFunction(module, procName);
 	if (!proc) {
 		return std::make_tuple(false, "");
@@ -178,12 +178,12 @@ void runEvent(Event event) {
 	}
 }
 
-void runPreInit() {
-	std::cout << "[SML|Event] Pre Initializing!" << std::endl;
+void run_pre_init() {
+	log("Pre Initializing!");
 	return;
 }
 
-void runPostInit() {
-	std::cout << "[SML|Event] Pre Initializing!" << std::endl;
+void run_post_init() {
+	log("Post Initializing!");
 	return;
 }
