@@ -1,71 +1,91 @@
 #include "stdafx.h"
 #include "DetoredEvents.h"
 #include "DLLMain.h"
+#include "timer.h"
 #include <iostream>
 #include <Windows.h>
 #include <map>
 #include <vector>
 #include <detours.h>
 
-const char* module = "FactoryGame-Win64-Shipping.exe";
+void hook_player_begin_play(Event event, PVOID hook);
 
-std::map<Event, Hook> hookList = {};
+const char* module = "FactoryGame-Win64-Shipping.exe";
 
 static std::map<Event, OriginalFunction> functionList = {
 	//{ HookEvent::UpdateMainMenu, "UpdateMainMenu" }
-	{Event::OnPickupFoliage, OriginalFunction{ NULL, "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks" }}
+	{Event::OnPickupFoliage, OriginalFunction { NULL, "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks" }},
+	{Event::OnPlayerBeginPlay, OriginalFunction { NULL, "APlayerController::BeginPlay" }}
 };
 
-void UFGFoliageLibrary_CheckInventorySpaceAndGetStacks() {
+
+int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* meshComponent, void* out_validStacks) {
 	log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
 
 	// run mod functions
 	run_event(Event::OnPickupFoliage);
 
 	// TODO: run original function
+	auto pointer = (int8_t(WINAPI*)(VOID*, VOID*, VOID*))functionList[Event::OnPickupFoliage].Func;
+	return pointer(character, meshComponent, out_validStacks);
 }
 
-// so far confirmed to work with function names
-//void add_event(Event event, PVOID hook) {
-//	auto iterator = hookList.find(event);
-//	if (iterator != hookList.end()) {
-//		Hook h = (*iterator).second;
-//		h.HookFunctions.push_back(hook);
-//		log("Added new hook to " + std::to_string(event));
-//		return;
-//	}
-//
-//	hookList.insert(std::pair<Event, Hook>(
-//		event, 
-//		Hook {
-//			event,
-//			functionList[event].Name,
-//			std::vector<PVOID>{ hook }
-//	}));
-//
-//	log("(New Event Created) Added new hook to " + std::to_string(event));
-//}
+void APlayerController_BeginPlay() {
+	/*if (!functionList[Event::OnPlayerBeginPlay].Usable) {
+		return;
+	}*/
 
-PVOID hook_event (Event event, PVOID hook) {
-	DetourRestoreAfterWith(); // might not need
+	log("APlayerController::BeginPlay");
+
+	// run mod functions
+	run_event(Event::OnPlayerBeginPlay);
+
+	// run original function
+	auto pointer = (void(WINAPI*)())functionList[Event::OnPlayerBeginPlay].Func;
+	pointer();
+
+	/*Timer timer = Timer();
+	timer.setTimeout([&]() {
+		functionList[Event::OnPlayerBeginPlay].Usable = true;
+	}, 1000);*/
+}
+
+void hook_event (Event event, PVOID hook) {
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
-	// hooks
 	PVOID onHook = DetourFindFunction(module, functionList[event].Name);
 	if (!onHook) {
 		log("Invalid function");
-		return NULL;
+		return;
 	}
-	DetourAttach(&(PVOID&)onHook, hook);
 
-	if (functionList[event].Func == NULL) {
-		functionList[event].Func = onHook;
-	}
+	DetourAttach(&(PVOID&)onHook, hook);
 
 	DetourTransactionCommit();
 
-	//add_event(event, hook);
+	if (functionList[event].Func == NULL) {
+		functionList[event].Func = onHook;
+		log("Assigned FUNC for event: ", false);
+		log(functionList[event].Name, true, false);
+	}
 
-	return onHook;
+	//DetourRestoreAfterWith(); // might not need
+	//DetourTransactionBegin();
+	//DetourUpdateThread(GetCurrentThread());
+
+	//// hooks
+	//PVOID onHook = DetourFindFunction(module, functionList[event].Name);
+	//if (!onHook) {
+	//	log("Invalid function");
+	//	return;
+	//}
+	//DetourAttach(&(PVOID&)onHook, hook);
+
+	//if (functionList[event].Func == NULL) {
+	//	functionList[event].Func = onHook;
+	//	log("Assigned FUNC for event: " + std::to_string(event));
+	//}
+
+	//DetourTransactionCommit();
 }

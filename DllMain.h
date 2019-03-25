@@ -2,12 +2,11 @@
 #include <tuple>
 #include <string>
 enum Event {
-	OnPickupFoliage
+	OnPickupFoliage,
+	OnPlayerBeginPlay
 };
 
 void mod_loader_entry();
-
-typedef void(*FUNC)();
 
 template<typename T>
 void log(T msg, bool endLine = true, bool showHeader = true, const char* event = "");
