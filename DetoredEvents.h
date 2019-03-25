@@ -4,8 +4,6 @@
 #include <map>
 #include <detours.h>
 
-typedef void(*registerFunc)(Event event, PVOID hook);
-
 class OriginalFunction {
 public:
 	//registerFunc RegisterFunc;

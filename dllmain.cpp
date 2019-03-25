@@ -97,10 +97,7 @@ void mod_loader_entry() {
 
 			modList.push_back(mod);
 
-			log("[Name] " + mod.name, false);
-			log(" [Version] " + mod.version, false, false);
-			log(" [Description] " + mod.description, false, false);
-			log(" [Authors] " + mod.authors, true, false);
+			log("Loaded " + mod.name);
 		}
 	}
 
@@ -115,8 +112,6 @@ void mod_loader_entry() {
 
 	// assign test event
 	hook_event(Event::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
-	// does not work currently
-	// hook_event(Event::OnPlayerBeginPlay, APlayerController_BeginPlay);
 
 	log("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
