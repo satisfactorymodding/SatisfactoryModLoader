@@ -81,8 +81,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\Documents\GitHub\SatisfactoryModLoader\detours;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\Documents\GitHub\SatisfactoryModLoader\detours;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(MSBuildProjectDirectory)\xinput1_3\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MSBuildProjectDirectory)\xinput1_3\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>D:\Documents\GitHub\SatisfactoryModLoader\detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -151,23 +151,22 @@
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
     <Lib>
-      <AdditionalLibraryDirectories>D:\Documents\GitHub\SatisfactoryModLoader\detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="DetoredEvents.h" />
-    <ClInclude Include="DLLMain.h" />
-    <ClInclude Include="Mod.h" />
+    <ClInclude Include="config.h" />
+    <ClInclude Include="detoredevents.h" />
+    <ClInclude Include="dllmain.h" />
+    <ClInclude Include="mod.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="DetoredEvents.cpp" />
-    <ClCompile Include="Mod.cpp" />
-    <ClCompile Include="SatisfactoryModLoader.cpp" />
-    <ClCompile Include="DLLMain.cpp" />
+    <ClCompile Include="config.cpp" />
+    <ClCompile Include="detoredevents.cpp" />
+    <ClCompile Include="mod.cpp" />
+    <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

@@ -5,14 +5,12 @@ enum Event {
 	None, Test
 };
 
-void ModLoaderEntry();
+void mod_loader_entry();
 
 typedef void(*FUNC)();
 
-void FGlobalTabmanager_UpdateMainMenu();
-
 template<typename T>
-void log(T msg, bool endLine = true, bool showHeader = true);
+void log(T msg, bool endLine = true, bool showHeader = true, const char* event = "");
 
 template <typename O>
 std::tuple<bool, O> get_function_value(HMODULE module, const char* procName);
@@ -20,9 +18,9 @@ std::tuple<bool, O> get_function_value(HMODULE module, const char* procName);
 template <typename O>
 std::tuple<bool, O> get_field_value(HMODULE module, const char* procName);
 
-FARPROC getFunction(HMODULE module, const char* procName);
+FARPROC get_function(HMODULE module, const char* procName);
 
-void runEvent(Event event);
+void run_event(Event event);
 
 void run_pre_init();
 

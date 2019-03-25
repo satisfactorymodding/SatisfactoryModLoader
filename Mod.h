@@ -13,4 +13,4 @@ struct Mod {
 	std::string authors;
 };
 
-extern std::vector<Mod> ModList;
+extern std::vector<Mod> modList;

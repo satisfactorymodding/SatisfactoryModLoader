@@ -2,4 +2,4 @@
 
 void readConfig();
 
-extern bool LOADCONSOLE;
+extern bool loadConsole;

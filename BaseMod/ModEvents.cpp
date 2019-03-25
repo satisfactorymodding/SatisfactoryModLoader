@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "ModInfo.h"
+#include "modinfo.h"
 #include <iostream>
 #include <map>
 

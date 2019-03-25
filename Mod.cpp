@@ -1,4 +1,4 @@
 #include "stdafx.h"
-#include "Mod.h"
+#include "mod.h"
 
-std::vector<Mod> ModList(0);
+std::vector<Mod> modList(0);

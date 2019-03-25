@@ -1,9 +1,9 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "stdafx.h"
-#include "Mod.h"
-#include "DLLMain.h"
-#include "Config.h"
-#include "DetoredEvents.h"
+#include "mod.h"
+#include "dllmain.h"
+#include "config.h"
+#include "detoredevents.h"
 #include <string>
 #include <iostream>
 #include <filesystem>
@@ -11,7 +11,7 @@
 #include <tuple>
 
 // Main DLL for loading mod DLLs
-void ModLoaderEntry() {
+void mod_loader_entry() {
 
 	// Allocate console
 	AllocConsole();
@@ -24,7 +24,7 @@ void ModLoaderEntry() {
 
 	readConfig(); // read the config file
 
-	if (!LOADCONSOLE) { // destroy the console if stated by the config file
+	if (!loadConsole) { // destroy the console if stated by the config file
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
 	}
 
@@ -70,7 +70,7 @@ void ModLoaderEntry() {
 
 			//check if the mod has already been loaded
 			bool isDuplicate = false;
-			for (Mod existingMod : ModList) {
+			for (Mod existingMod : modList) {
 				if (existingMod.name == std::get<1>(modName)) {
 					log("Skipping duplicate mod " + existingMod.name);
 					FreeLibrary(dll);
@@ -93,7 +93,7 @@ void ModLoaderEntry() {
 				std::get<1>(modAuthors),
 			};
 
-			ModList.push_back(mod);
+			modList.push_back(mod);
 
 			log("[Name] " + mod.name, false);
 			log(" [Version] " + mod.version, false, false);
@@ -102,7 +102,7 @@ void ModLoaderEntry() {
 		}
 	}
 
-	size_t listSize = ModList.size();
+	size_t listSize = modList.size();
 	log("Loaded " + std::to_string(listSize), false);
 	if (listSize > 1) {
 		log(" mods", true, false);
@@ -121,10 +121,17 @@ void ModLoaderEntry() {
 }
 
 template<typename T>
-void log(T msg, bool endLine = true, bool showHeader = true) {
+void log(T msg, bool endLine, bool showHeader, const char* event) {
 	if (showHeader) {
-		std::cout << "[SML] ";
+		std::cout << "[SML";
+	
+		if (std::strlen(event) > 0) {
+			std::cout << " | " << event;
+		}
+
+		std::cout << "] ";
 	}
+
 	std::cout << msg;
 	if (endLine) {
 		std::cout << std::endl;
@@ -144,7 +151,7 @@ std::tuple<bool, O> get_function_value(HMODULE module, const char* procName) {
 	return std::make_tuple(true, f());
 }
 
-FARPROC getFunction(HMODULE module, const char* procName) {
+FARPROC get_function(HMODULE module, const char* procName) {
 	FARPROC proc = GetProcAddress(module, procName);
 	if (!proc) {
 		return NULL;
@@ -155,7 +162,7 @@ FARPROC getFunction(HMODULE module, const char* procName) {
 
 template <typename O>
 std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
-	FARPROC proc = getFunction(module, procName);
+	FARPROC proc = get_function(module, procName);
 	if (!proc) {
 		return std::make_tuple(false, "");
 	}
@@ -165,9 +172,9 @@ std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
 	return std::make_tuple(true, *n1);
 }
 
-void runEvent(Event event) {
-	for (Mod mod : ModList) {
-		FARPROC func = getFunction(mod.fileModule, "GetTickEvent");
+void run_event(Event event) {
+	for (Mod mod : modList) {
+		FARPROC func = get_function(mod.fileModule, "GetTickEvent");
 
 		typedef FUNC GETFUNC(Event);
 		GETFUNC* f = (GETFUNC*)func;
@@ -179,11 +186,11 @@ void runEvent(Event event) {
 }
 
 void run_pre_init() {
-	log("Pre Initializing!");
+	log("Pre Initializing!", true, true, "PREINIT");
 	return;
 }
 
 void run_post_init() {
-	log("Post Initializing!");
+	log("Post Initializing!", true, true, "POSTINIT");
 	return;
 }

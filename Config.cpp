@@ -5,7 +5,7 @@
 #include <iostream>
 #include <fstream>
 
-bool LOADCONSOLE = true;
+bool loadConsole = true;
 
 void readConfig() {
 	log("Finding config file...");
@@ -20,11 +20,11 @@ void readConfig() {
 				std::string value = line.substr(seperator + 1, std::string::npos);
 				if (id == "Console") {
 					if (value == "false") { //see if console is false
-						LOADCONSOLE = false;
+						loadConsole = false;
 						log("You are free to close this window now.");
 					}
 					else {
-						LOADCONSOLE = true;
+						loadConsole = true;
 					}
 				}
 			}
@@ -36,7 +36,7 @@ void readConfig() {
 		std::ofstream configOut("config.cfg");
 		if (configOut.is_open()) {
 			configOut << "Console:true";
-			LOADCONSOLE = true;
+			loadConsole = true;
 		}
 	}
 }

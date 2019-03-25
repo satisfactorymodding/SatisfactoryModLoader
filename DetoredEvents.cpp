@@ -7,11 +7,11 @@
 #include <vector>
 #include <detours.h>
 
-const char* Module = "FactoryGame-Win64-Shipping.exe";
+const char* module = "FactoryGame-Win64-Shipping.exe";
 
-std::map<HookEvent, Hook> HookList = {};
+std::map<HookEvent, Hook> hookList = {};
 
-static std::map<HookEvent, OriginalFunction> FunctionList = {
+static std::map<HookEvent, OriginalFunction> functionList = {
 	//{ HookEvent::UpdateMainMenu, "UpdateMainMenu" }
 	{HookEvent::OnPickupFoliage, OriginalFunction{ NULL, "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks" }}
 };
@@ -23,19 +23,19 @@ void UFGFoliageLibrary_CheckInventorySpaceAndGetStacks() {
 
 // so far confirmed to work with function names
 void add_event(HookEvent event, PVOID hook) {
-	auto iterator = HookList.find(event);
-	if (iterator != HookList.end()) {
+	auto iterator = hookList.find(event);
+	if (iterator != hookList.end()) {
 		Hook h = (*iterator).second;
 		h.HookFunctions.push_back(hook);
 		log("Added new hook to " + std::to_string(event));
 		return;
 	}
 
-	HookList.insert(std::pair<HookEvent, Hook>(
+	hookList.insert(std::pair<HookEvent, Hook>(
 		event, 
 		Hook {
 			event,
-			FunctionList[event].Name,
+			functionList[event].Name,
 			std::vector<PVOID>{ hook }
 	}));
 
@@ -48,15 +48,15 @@ PVOID hook_event (HookEvent event, PVOID hook) {
 	DetourUpdateThread(GetCurrentThread());
 
 	// hooks
-	PVOID onHook = DetourFindFunction(Module, FunctionList[event].Name);
+	PVOID onHook = DetourFindFunction(module, functionList[event].Name);
 	if (!onHook) {
 		log("Invalid function");
 		return NULL;
 	}
 	DetourAttach(&(PVOID&)onHook, hook);
 
-	if (FunctionList[event].Func == NULL) {
-		FunctionList[event].Func = onHook;
+	if (functionList[event].Func == NULL) {
+		functionList[event].Func = onHook;
 	}
 
 	DetourTransactionCommit();
