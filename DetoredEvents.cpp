@@ -2,6 +2,7 @@
 #include "DetoredEvents.h"
 #include "DLLMain.h"
 #include "timer.h"
+#include "config.h"
 #include <iostream>
 #include <Windows.h>
 #include <map>
@@ -20,7 +21,9 @@ static std::map<Event, OriginalFunction> functionList = {
 
 
 int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* meshComponent, void* out_validStacks) {
-	log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
+	if (debugOutput) {
+		log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
+	}
 
 	// run mod functions
 	run_event(Event::OnPickupFoliage);

@@ -15,6 +15,8 @@ typedef void(*FUNC)(void);
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
 
+	//FApp::GetBuildVersion
+
 	// Allocate console
 	AllocConsole();
 	FILE* fp;
@@ -48,7 +50,9 @@ void mod_loader_entry() {
 			std::string file = pathExact + entry.path().filename().string();
 			std::wstring stemp = std::wstring(file.begin(), file.end());
 
-			log("Attempting to load mod: " + file);
+			if (debugOutput) {
+				log("Attempting to load mod: " + file);
+			}
 
 			LPCWSTR sw = stemp.c_str();
 
@@ -98,11 +102,12 @@ void mod_loader_entry() {
 			};
 
 			modList.push_back(mod);
-
-			log("[Name] " + mod.name, false);
-			log(" [Version] " + mod.version, false, false);
-			log(" [Description] " + mod.description, false, false);
-			log(" [Authors] " + mod.authors, true, false);
+			if (debugOutput) {
+				log("[Name] " + mod.name, false);
+				log(" [Version] " + mod.version, false, false);
+				log(" [Description] " + mod.description, false, false);
+				log(" [Authors] " + mod.authors, true, false);
+			}
 		}
 	}
 
@@ -115,10 +120,8 @@ void mod_loader_entry() {
 		log(" mod", true, false);
 	}
 
-	// assign test event
-	hook_event(Event::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
-	// does not work currently
-	// hook_event(Event::OnPlayerBeginPlay, APlayerController_BeginPlay);
+	// register all hook events
+	register_hooks();
 
 	run_pre_init();
 
@@ -212,6 +215,12 @@ void run_event(Event event) {
 			returnFunc();
 		}
 	}
+}
+
+void register_hooks() {
+	hook_event(Event::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
+	// does not work currently
+	// hook_event(Event::OnPlayerBeginPlay, APlayerController_BeginPlay);
 }
 
 void run_pre_init() {

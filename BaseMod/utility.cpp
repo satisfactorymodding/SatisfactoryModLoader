@@ -6,7 +6,7 @@
 void log(std::string msg) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 	SetConsoleTextAttribute(hConsole, 11);
-	std::cout << "[" + ModName + "]";
+	std::cout << "[" + ModName + "] ";
 
 	std::cout << msg;
 	std::cout << std::endl;

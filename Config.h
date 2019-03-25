@@ -3,3 +3,5 @@
 void readConfig();
 
 extern bool loadConsole;
+
+extern bool debugOutput;
