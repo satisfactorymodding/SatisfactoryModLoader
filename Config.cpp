@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "Config.h"
-#include "DllMain.h"
+#include "Utility.h"
 #include <string>
 #include <iostream>
 #include <fstream>
 
 bool loadConsole = true;
 
-void readConfig() {
+extern void readConfig() {
 	log("Finding config file...");
 	std::ifstream config("config.cfg");
 	std::string line;
@@ -38,5 +38,10 @@ void readConfig() {
 			configOut << "Console:true";
 			loadConsole = true;
 		}
+	}
+
+	// do config stuff here
+	if (!loadConsole) { // destroy the console if stated by the config file
+		ShowWindow(GetConsoleWindow(), SW_HIDE);
 	}
 }

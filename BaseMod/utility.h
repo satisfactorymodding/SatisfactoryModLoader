@@ -10,7 +10,10 @@ enum Event {
 	OnPickupFoliage,
 	// Called when the player starts playing. Called once on the server and called once on the client.
 	// (void)
-	OnPlayerBeginPlay
+	OnPlayerBeginPlay,
+	// Called when the player takes damage
+	// (AActor damagedActor, FLOAT damageAmount, UDamageType damageType, AController instigatedBy, AController instigatedBy, AActor damageCauser, AActor damageCauser)
+	OnPlayerTakeDamage
 	};
 
 void log(std::string msg);
