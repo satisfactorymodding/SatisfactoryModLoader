@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ModInfo.h"
-#include <string>
 
 EXTERN_DLL_EXPORT void isMod() {}
 

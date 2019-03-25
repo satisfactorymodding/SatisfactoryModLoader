@@ -54,6 +54,7 @@ void mod_loader_entry() {
 
 			FARPROC valid = GetProcAddress(dll, "isMod");
 			if (!valid) { //check validity of the mod dll
+				logError("Unloading non-mod DLL " + file);
 				FreeLibrary(dll);
 				continue;
 			}
@@ -64,6 +65,7 @@ void mod_loader_entry() {
 			std::tuple<bool, std::string> modAuthors = get_field_value<std::string>(dll, "ModAuthors");
 			
 			if (!std::get<0>(modName) || !std::get<0>(modVersion) || !std::get<0>(modDescription) || !std::get<0>(modAuthors)) {
+				logError("Mod DLL " + file + " does not have the required information!");
 				FreeLibrary(dll);
 				continue;
 			}
@@ -72,7 +74,7 @@ void mod_loader_entry() {
 			bool isDuplicate = false;
 			for (Mod existingMod : modList) {
 				if (existingMod.name == std::get<1>(modName)) {
-					log("Skipping duplicate mod " + existingMod.name);
+					logError("Skipping duplicate mod " + existingMod.name);
 					FreeLibrary(dll);
 					isDuplicate = true;
 					break;
@@ -114,11 +116,15 @@ void mod_loader_entry() {
 	// assign test event
 	hook_event(Event::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
 
+	run_pre_init();
+
 	log("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
 
 template<typename T>
 void log(T msg, bool endLine, bool showHeader, const char* event) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, 10);
 	if (showHeader) {
 		std::cout << "[SML";
 	
@@ -133,6 +139,28 @@ void log(T msg, bool endLine, bool showHeader, const char* event) {
 	if (endLine) {
 		std::cout << std::endl;
 	}
+	SetConsoleTextAttribute(hConsole, 15);
+}
+
+template<typename T>
+void logError(T msg, bool endLine, bool showHeader, const char* event) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, 12);
+	if (showHeader) {
+		std::cout << "[SML";
+
+		if (std::strlen(event) > 0) {
+			std::cout << " | " << event;
+		}
+
+		std::cout << "] ";
+	}
+
+	std::cout << msg;
+	if (endLine) {
+		std::cout << std::endl;
+	}
+	SetConsoleTextAttribute(hConsole, 15);
 }
 
 template <typename O>
@@ -183,7 +211,8 @@ void run_event(Event event) {
 }
 
 void run_pre_init() {
-	log("Pre Initializing!", true, true, "PREINIT");
+	log("Pre Initializing all mods", true, true);
+	run_event(Event::OnPreInit);
 	return;
 }
 

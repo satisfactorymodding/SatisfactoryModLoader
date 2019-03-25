@@ -17,7 +17,7 @@ static std::map<Event, OriginalFunction> functionList = {
 };
 
 void UFGFoliageLibrary_CheckInventorySpaceAndGetStacks() {
-	log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
+	//log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
 
 	// run mod functions
 	run_event(Event::OnPickupFoliage);
