@@ -10,6 +10,8 @@
 #include <Windows.h>
 #include <tuple>
 
+typedef void(*FUNC)(void);
+
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
 
@@ -115,6 +117,8 @@ void mod_loader_entry() {
 
 	// assign test event
 	hook_event(Event::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
+	// does not work currently
+	// hook_event(Event::OnPlayerBeginPlay, APlayerController_BeginPlay);
 
 	run_pre_init();
 

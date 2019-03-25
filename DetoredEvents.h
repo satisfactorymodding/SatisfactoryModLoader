@@ -4,21 +4,17 @@
 #include <map>
 #include <detours.h>
 
-class Hook {
-public:
-	Event Event;
-	const char* FunctionName;
-	std::vector<PVOID> HookFunctions;
-};
+typedef void(*registerFunc)(Event event, PVOID hook);
 
 class OriginalFunction {
 public:
+	//registerFunc RegisterFunc;
 	PVOID Func;
 	const char* Name;
 };
 
-typedef void(*voidFunc)();
+int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* meshComponent, void* out_validStacks);
 
-void UFGFoliageLibrary_CheckInventorySpaceAndGetStacks();
+void APlayerController_BeginPlay();
 
-PVOID hook_event(Event event, PVOID hook);
+void hook_event(Event event, PVOID hook);
