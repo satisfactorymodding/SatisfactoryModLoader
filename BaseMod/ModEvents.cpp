@@ -5,14 +5,14 @@
 
 // Events
 // - Create events you want to hook into the game here
-void TestTick() {
-	printf("TestTick\n");
+void OnPickupFoliageTest() {
+	printf("OnPickupFoliageTest\n");
 }
 
 // Utility
 // - Register events you want to hook into the game here
 EXTERN_DLL_EXPORT extern std::map<Event, FUNC> functions = {
-	{ Event::Test, TestTick }
+	{ Event::OnPickupFoliage, OnPickupFoliageTest }
 };
 
 // Don't edit

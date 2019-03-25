@@ -149,15 +149,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ModInfo.h" />
+    <ClInclude Include="modinfo.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BaseMod.cpp" />
+    <ClCompile Include="basemod.cpp" />
     <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="ModEvents.cpp" />
-    <ClCompile Include="ModInfo.cpp" />
+    <ClCompile Include="modevents.cpp" />
+    <ClCompile Include="modinfo.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

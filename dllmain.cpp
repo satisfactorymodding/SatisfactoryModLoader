@@ -111,11 +111,8 @@ void mod_loader_entry() {
 		log(" mod", true, false);
 	}
 
-	// run test event
-	run_event(Event::Test);
-
 	// assign test event
-	hook_event(HookEvent::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
+	hook_event(Event::OnPickupFoliage, UFGFoliageLibrary_CheckInventorySpaceAndGetStacks);
 
 	log("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }

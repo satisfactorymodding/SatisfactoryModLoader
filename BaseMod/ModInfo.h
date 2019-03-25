@@ -2,7 +2,7 @@
 #define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
 
 enum Event {
-	None, Test
+	OnPickupFoliage
 };
 
 typedef void(*FUNC)();

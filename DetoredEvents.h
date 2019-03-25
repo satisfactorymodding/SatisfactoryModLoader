@@ -1,15 +1,12 @@
 #pragma once
+#include "dllmain.h"
 #include <vector>
 #include <map>
 #include <detours.h>
 
-enum HookEvent {
-	OnPickupFoliage,
-};
-
 class Hook {
 public:
-	HookEvent Event;
+	Event Event;
 	const char* FunctionName;
 	std::vector<PVOID> HookFunctions;
 };
@@ -24,4 +21,4 @@ typedef void(*voidFunc)();
 
 void UFGFoliageLibrary_CheckInventorySpaceAndGetStacks();
 
-PVOID hook_event(HookEvent event, PVOID hook);
+PVOID hook_event(Event event, PVOID hook);

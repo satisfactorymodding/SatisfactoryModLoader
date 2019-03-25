@@ -2,7 +2,7 @@
 #include <tuple>
 #include <string>
 enum Event {
-	None, Test
+	OnPickupFoliage
 };
 
 void mod_loader_entry();

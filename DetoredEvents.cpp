@@ -9,40 +9,44 @@
 
 const char* module = "FactoryGame-Win64-Shipping.exe";
 
-std::map<HookEvent, Hook> hookList = {};
+std::map<Event, Hook> hookList = {};
 
-static std::map<HookEvent, OriginalFunction> functionList = {
+static std::map<Event, OriginalFunction> functionList = {
 	//{ HookEvent::UpdateMainMenu, "UpdateMainMenu" }
-	{HookEvent::OnPickupFoliage, OriginalFunction{ NULL, "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks" }}
+	{Event::OnPickupFoliage, OriginalFunction{ NULL, "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks" }}
 };
 
 void UFGFoliageLibrary_CheckInventorySpaceAndGetStacks() {
 	log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
+
+	// run mod functions
+	run_event(Event::OnPickupFoliage);
+
 	// TODO: run original function
 }
 
 // so far confirmed to work with function names
-void add_event(HookEvent event, PVOID hook) {
-	auto iterator = hookList.find(event);
-	if (iterator != hookList.end()) {
-		Hook h = (*iterator).second;
-		h.HookFunctions.push_back(hook);
-		log("Added new hook to " + std::to_string(event));
-		return;
-	}
+//void add_event(Event event, PVOID hook) {
+//	auto iterator = hookList.find(event);
+//	if (iterator != hookList.end()) {
+//		Hook h = (*iterator).second;
+//		h.HookFunctions.push_back(hook);
+//		log("Added new hook to " + std::to_string(event));
+//		return;
+//	}
+//
+//	hookList.insert(std::pair<Event, Hook>(
+//		event, 
+//		Hook {
+//			event,
+//			functionList[event].Name,
+//			std::vector<PVOID>{ hook }
+//	}));
+//
+//	log("(New Event Created) Added new hook to " + std::to_string(event));
+//}
 
-	hookList.insert(std::pair<HookEvent, Hook>(
-		event, 
-		Hook {
-			event,
-			functionList[event].Name,
-			std::vector<PVOID>{ hook }
-	}));
-
-	log("(New Event Created) Added new hook to " + std::to_string(event));
-}
-
-PVOID hook_event (HookEvent event, PVOID hook) {
+PVOID hook_event (Event event, PVOID hook) {
 	DetourRestoreAfterWith(); // might not need
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
@@ -61,7 +65,7 @@ PVOID hook_event (HookEvent event, PVOID hook) {
 
 	DetourTransactionCommit();
 
-	add_event(event, hook);
+	//add_event(event, hook);
 
 	return onHook;
 }
