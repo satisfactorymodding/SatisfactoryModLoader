@@ -2,7 +2,7 @@
 #include <string>
 #define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
 
-typedef void(*FUNC)();
+typedef void(*FUNC)(PVOID);
 
 EXTERN_DLL_EXPORT std::string ModName;
 EXTERN_DLL_EXPORT std::string ModVersion;

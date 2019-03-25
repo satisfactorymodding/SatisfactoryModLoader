@@ -7,11 +7,12 @@
 // Custom Events
 // - Create events you want to hook into the game here
 // - To find out when events are called, please check the Event enum.
-void OnPickupFoliageTest() {
+void OnPickupFoliageTest(void* args) {
 	log("Foliage Picked up!");
+	std::cout << (&args)[0] << std::endl;
 }
 
-void OnPreInitialize() {
+void OnPreInitialize(void* args) {
 	log("Mod Pre initialized!");
 }
 
@@ -24,7 +25,7 @@ EXTERN_DLL_EXPORT extern std::map<Event, FUNC> functions = {
 };
 
 // Don't edit
-EXTERN_DLL_EXPORT FUNC GetTickEvent(Event event) {
+EXTERN_DLL_EXPORT FUNC get_event(Event event) {
 	auto iterator = functions.find(event);
 	if (iterator != functions.end()) {
 		return (*iterator).second;

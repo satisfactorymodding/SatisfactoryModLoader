@@ -103,10 +103,7 @@ void mod_loader_entry() {
 
 			modList.push_back(mod);
 			if (debugOutput) {
-				log("[Name] " + mod.name, false);
-				log(" [Version] " + mod.version, false, false);
-				log(" [Description] " + mod.description, false, false);
-				log(" [Authors] " + mod.authors, true, false);
+				log("Loaded " + mod.name + "@" + mod.version);
 			}
 		}
 	}
@@ -204,16 +201,23 @@ std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
 	return std::make_tuple(true, *n1);
 }
 
-void run_event(Event event) {
+void run_event(Event event, void* args) {
 	for (Mod mod : modList) {
-		FARPROC func = get_function(mod.fileModule, "GetTickEvent");
+		FARPROC func = get_function(mod.fileModule, "get_event");
+		auto pointer = (PVOID(WINAPI*)(Event))func;
+		auto rType = (void(WINAPI*)(void* args))pointer(event);
+		rType(args);
 
-		typedef FUNC GETFUNC(Event);
-		GETFUNC* f = (GETFUNC*)func;
-		FUNC returnFunc = (*f)(event);
-		if (returnFunc != NULL) {
-			returnFunc();
+		//typedef FUNC GETFUNC(Event);
+		/*auto pointer = (PVOID(WINAPI*)(Event))func;
+		auto iterator = functionList.find(event);
+		auto rType = (void(WINAPI*)(PVOID))pointer(event);
+		if (iterator != functionList.end()) {
+			rType((*iterator).second.Func);
 		}
+		else {
+			rType(NULL);
+		}*/
 	}
 }
 
@@ -225,7 +229,7 @@ void register_hooks() {
 
 void run_pre_init() {
 	log("Pre Initializing all mods", true, true);
-	run_event(Event::OnPreInit);
+	run_event(Event::OnPreInit, NULL);
 	return;
 }
 
