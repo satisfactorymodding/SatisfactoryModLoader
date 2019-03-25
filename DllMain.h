@@ -23,7 +23,7 @@ std::tuple<bool, O> get_field_value(HMODULE module, const char* procName);
 
 FARPROC get_function(HMODULE module, const char* procName);
 
-void run_event(Event event);
+void run_event(Event event, void* args);
 
 void run_pre_init();
 

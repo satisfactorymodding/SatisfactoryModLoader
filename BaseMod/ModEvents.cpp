@@ -7,11 +7,12 @@
 // Custom Events
 // - Create events you want to hook into the game here
 // - To find out when events are called, please check the Event enum.
-void OnPickupFoliageTest(PVOID func) {
+void OnPickupFoliageTest(void* args) {
 	log("Foliage Picked up!");
+	std::cout << (&args)[0] << std::endl;
 }
 
-void OnPreInitialize(PVOID func) {
+void OnPreInitialize(void* args) {
 	log("Mod Pre initialized!");
 }
 
