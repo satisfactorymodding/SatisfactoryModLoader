@@ -1,18 +1,26 @@
 #include "stdafx.h"
 #include "modinfo.h"
+#include "utility.h"
 #include <iostream>
 #include <map>
 
-// Events
+// Custom Events
 // - Create events you want to hook into the game here
+// - To find out when events are called, please check the Event enum.
 void OnPickupFoliageTest() {
-	printf("OnPickupFoliageTest\n");
+	log("Foliage Picked up!");
 }
+
+void OnPreInitialize() {
+	log("Mod Pre initialized!");
+}
+
 
 // Utility
 // - Register events you want to hook into the game here
 EXTERN_DLL_EXPORT extern std::map<Event, FUNC> functions = {
-	{ Event::OnPickupFoliage, OnPickupFoliageTest }
+	{ Event::OnPickupFoliage, OnPickupFoliageTest },
+	{ Event::OnPreInit, OnPreInitialize }
 };
 
 // Don't edit
