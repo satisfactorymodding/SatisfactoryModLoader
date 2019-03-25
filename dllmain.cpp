@@ -198,13 +198,17 @@ std::tuple<bool, O> get_field_value(HMODULE module, const char* procName) {
 
 void run_event(Event event) {
 	for (Mod mod : modList) {
-		FARPROC func = get_function(mod.fileModule, "GetTickEvent");
+		FARPROC func = get_function(mod.fileModule, "get_event");
 
-		typedef FUNC GETFUNC(Event);
-		GETFUNC* f = (GETFUNC*)func;
-		FUNC returnFunc = (*f)(event);
-		if (returnFunc != NULL) {
-			returnFunc();
+		//typedef FUNC GETFUNC(Event);
+		auto pointer = (PVOID(WINAPI*)(Event))func;
+		auto iterator = functionList.find(event);
+		auto rType = (void(WINAPI*)(PVOID))pointer(event);
+		if (iterator != functionList.end()) {
+			rType((*iterator).second.Func);
+		}
+		else {
+			rType(NULL);
 		}
 	}
 }

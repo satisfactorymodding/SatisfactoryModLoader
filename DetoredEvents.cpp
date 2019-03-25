@@ -9,12 +9,6 @@
 
 const char* module = "FactoryGame-Win64-Shipping.exe";
 
-static std::map<Event, OriginalFunction> functionList = {
-	{Event::OnPickupFoliage, OriginalFunction { NULL, "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks" }},
-	{Event::OnPlayerBeginPlay, OriginalFunction { NULL, "APlayerController::BeginPlay" }}
-};
-
-
 int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* meshComponent, void* out_validStacks) {
 	log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
 
@@ -22,10 +16,7 @@ int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* 
 	run_event(Event::OnPickupFoliage);
 
 	// TODO: run original function
-	std::cout << out_validStacks << std::endl;
-
 	auto pointer = (int8_t(WINAPI*)(VOID*, VOID*, VOID*))functionList[Event::OnPickupFoliage].Func;
-	std::cout << *pointer << std::endl;
 	return pointer(character, meshComponent, out_validStacks);
 }
 

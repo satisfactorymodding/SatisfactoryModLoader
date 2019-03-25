@@ -11,6 +11,11 @@ public:
 	const char* Name;
 };
 
+static std::map<Event, OriginalFunction> functionList = {
+	{Event::OnPickupFoliage, OriginalFunction { NULL, "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks" }},
+	{Event::OnPlayerBeginPlay, OriginalFunction { NULL, "APlayerController::BeginPlay" }}
+};
+
 int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* meshComponent, void* out_validStacks);
 
 void APlayerController_BeginPlay();
