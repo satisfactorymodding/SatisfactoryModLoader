@@ -29,8 +29,11 @@ public:
 		std::vector<void*> args = {
 			healthComponent, damagedActor, &damageAmount, damageType, instigatedBy, damageCauser
 		};
-		// std::vector<void*>
+		// std::vector<void*>&
 		modFunction(TakeDamageEvent(), args);
+
+		log("Damage:", false, true);
+		log(*(float*)args[2], true, false);
 
 		// original function
 		auto pointer = (void (WINAPI*)(VOID*, VOID*, float, VOID*, VOID*, VOID*))originalFunctions[descriptor].Function;

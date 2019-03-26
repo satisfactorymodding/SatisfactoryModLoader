@@ -6,6 +6,7 @@
 #include <fstream>
 
 bool loadConsole = true;
+bool debugOutput = true;
 
 extern void readConfig() {
 	log("Finding config file...");
