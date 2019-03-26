@@ -1,4 +1,5 @@
 #pragma once
+
 class Dispatcher;
 
 class Connection
@@ -19,4 +20,3 @@ private:
 
 	friend class Dispatcher;
 };
-

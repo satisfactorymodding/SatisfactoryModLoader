@@ -5,21 +5,33 @@
 #include <vector>
 
 class Connection;
+class Dispatcher;
+
+typedef void(*EventFunc)(std::vector<void*>&);
 
 class Dispatcher {
 public:
-	using SlotType = std::function<void(const Event&)>;
-
-	Connection subscribe(const EventType& descriptor, SlotType&& slot);
+	Connection subscribe(const EventType& descriptor, EventFunc slot);
 	void unsubscribe(const Connection& connection);
-	void post(const Event& event) const;
+	void post(const Event& event, std::vector<void*>& args) const {
+		auto type = event.type();
+
+		if (_observers.find(type) == _observers.end()) {
+			return;
+		}
+
+		auto observers = _observers.at(type);
+		for (auto observer : observers) {
+			observer.slot(args);
+		}
+	}
 
 private:
 	unsigned int _nextID = 0;
 
 	struct SlotHandle {
 		unsigned int id;
-		SlotType slot;
+		EventFunc slot;
 	};
 
 	std::map<EventType, std::vector<SlotHandle>> _observers;

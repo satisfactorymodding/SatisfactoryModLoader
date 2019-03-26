@@ -31,13 +31,6 @@ void ModHandler::find_mods(std::string path) {
 
 			HMODULE dll = LoadLibrary(sw);
 
-			FARPROC valid = GetProcAddress(dll, "isMod");
-			if (!valid) {
-				logError("Unloading non-mod DLL " + file);
-				FreeLibrary(dll);
-				continue;
-			}
-
 			std::string modName;
 			std::string modVersion;
 			std::string modDescription;

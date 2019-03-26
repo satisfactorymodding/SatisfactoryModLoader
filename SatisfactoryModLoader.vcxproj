@@ -158,14 +158,17 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="Connection.h" />
     <ClInclude Include="Dispatcher.h" />
+    <ClInclude Include="Enum.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventLoader.h" />
     <ClInclude Include="FoliagePickupEvent.h" />
+    <ClInclude Include="InventoryHasAuthorityEvent.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Mod.h" />
     <ClInclude Include="ModHandler.h" />
     <ClInclude Include="Reflection.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TakeDamageEvent.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="Utility.h" />
@@ -175,7 +178,6 @@
     <ClCompile Include="Connection.cpp" />
     <ClCompile Include="Dispatcher.cpp" />
     <ClCompile Include="Event.cpp" />
-    <ClCompile Include="FoliagePickupEvent.cpp" />
     <ClCompile Include="EventLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModHandler.cpp" />

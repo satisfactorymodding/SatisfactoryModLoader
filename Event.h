@@ -6,6 +6,7 @@ enum EventType {
 	OnFoliagePickup,
 	OnPlayerBeginPlay,
 	OnPlayerTakeDamage,
+	OnInventoryHasAuthority,
 	END
 };
 

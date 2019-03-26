@@ -41,7 +41,7 @@ void mod_loader_entry() {
 	
 	// assign events
 	EventLoader eventLoader;
-	eventLoader.load_events();
+	eventLoader.load_events(modHandler.Mods);
 
 	for (Mod mod : modHandler.Mods) {
 		eventLoader.subscribe_mod(mod);
