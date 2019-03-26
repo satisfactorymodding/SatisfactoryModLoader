@@ -1,8 +1,8 @@
 #pragma once
 #include "Event.h"
+#include "Utility.h"
 
-class FoliagePickupEvent : public Event
-{
+class FoliagePickupEvent : public Event {
 public:
 	FoliagePickupEvent();
 	virtual ~FoliagePickupEvent();
@@ -10,6 +10,9 @@ public:
 	static constexpr EventType descriptor = EventType::OnFoliagePickup;
 
 	virtual EventType type() const;
+	virtual const char* name() const;
 
-	virtual void use(const Event& event);
+	static void use(const Event& event) {
+		log("FoliagePickupEvent");
+	}
 };

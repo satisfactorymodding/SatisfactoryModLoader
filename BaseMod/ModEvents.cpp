@@ -8,27 +8,13 @@
 // Custom Events
 // - Create events you want to hook into the game here
 // - To find out when events are called, please check the Event enum.
-void OnPickupFoliageEvent(void* args) {
-	log("Foliage Picked up!");
-	std::cout << (&args)[0] << std::endl;
-}
-
-void OnPlayerTakeDamageEvent(void* args) {
-	log("Damaged!");
-	/*intptr_t damage = (intptr_t)(&args)[1];
-	log(std::to_string(damage));*/
-}
-
 void OnPreInitializeEvent(void* args) {
 	log("Mod Pre initialized!");
 }
 
-
 // Utility
 // - Register events you want to hook into the game here
 EXTERN_DLL_EXPORT extern std::map<Event, FUNC> functions = {
-	{ Event::OnPickupFoliage, OnPickupFoliageEvent },
-	{ Event::OnPlayerTakeDamage, OnPlayerTakeDamageEvent },
 	{ Event::OnPreInit, OnPreInitializeEvent }
 };
 

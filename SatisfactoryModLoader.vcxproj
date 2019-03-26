@@ -157,10 +157,9 @@
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="Connection.h" />
-    <ClInclude Include="DemoEvent.h" />
     <ClInclude Include="Dispatcher.h" />
     <ClInclude Include="Event.h" />
-    <ClInclude Include="Events.h" />
+    <ClInclude Include="EventLoader.h" />
     <ClInclude Include="FoliagePickupEvent.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="Mod.h" />
@@ -174,10 +173,10 @@
   <ItemGroup>
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="Connection.cpp" />
-    <ClCompile Include="DemoEvent.cpp" />
     <ClCompile Include="Dispatcher.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="FoliagePickupEvent.cpp" />
+    <ClCompile Include="EventLoader.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="ModHandler.cpp" />
     <ClCompile Include="Reflection.cpp" />
@@ -188,7 +187,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Timer.cpp" />
-    <ClCompile Include="Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -4,9 +4,7 @@
 #include "Config.h"
 #include "Reflection.h"
 #include "ModHandler.h"
-#include "Connection.h"
-#include "Dispatcher.h"
-#include "Events.h"
+#include "EventLoader.h"
 #include <string>
 #include <iostream>
 #include <Windows.h>
@@ -14,9 +12,7 @@
 
 // Main DLL for loading mod DLLs
 void freeObserver(const Event& event) {
-	if (event.type() == DemoEvent::descriptor) {
-		std::cout << __FUNCSIG__ << ": DemoEvent" << std::endl;
-	}
+	std::cout << __FUNCSIG__ << ": DemoEvent" << std::endl;
 }
 
 void mod_loader_entry() {
@@ -44,10 +40,12 @@ void mod_loader_entry() {
 	log("Loaded " + std::to_string(listSize) + " mod" + (listSize > 1 ? "" : "s"));
 	
 	// assign events
-	Dispatcher dispatcher;
+	EventLoader eventLoader;
+	eventLoader.load_events();
 
-	FoliagePickupEvent e;
-	auto onFoliagePickup = dispatcher.subscribe(FoliagePickupEvent::descriptor, freeObserver);
+	for (Mod mod : modHandler.Mods) {
+		eventLoader.subscribe_mod(mod);
+	}
 
 	log("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }

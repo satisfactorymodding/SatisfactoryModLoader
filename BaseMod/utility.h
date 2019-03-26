@@ -14,6 +14,16 @@ enum Event {
 	// Called when the player takes damage
 	// (AActor damagedActor, FLOAT damageAmount, UDamageType damageType, AController instigatedBy, AController instigatedBy, AActor damageCauser, AActor damageCauser)
 	OnPlayerTakeDamage
-	};
+};
 
-void log(std::string msg);
+// Provides a colored log with the mod's name
+template<typename T>
+void log(T msg) {
+	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+	SetConsoleTextAttribute(hConsole, 11);
+	std::cout << "[" + ModName + "] ";
+
+	std::cout << msg;
+	std::cout << std::endl;
+	SetConsoleTextAttribute(hConsole, 15);
+}

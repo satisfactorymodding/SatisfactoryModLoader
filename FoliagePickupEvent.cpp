@@ -13,6 +13,6 @@ EventType FoliagePickupEvent::type() const {
 	return descriptor;
 }
 
-void FoliagePickupEvent::use(const Event& event) {
-	log("FoliagePickupEvent");
+const char* FoliagePickupEvent::name() const {
+	return "UFGFoliageLibrary::CheckInventorySpaceAndGetStacks";
 }

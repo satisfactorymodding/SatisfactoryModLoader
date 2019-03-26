@@ -2,8 +2,11 @@
 #include <string>
 
 enum EventType {
-	None,
-	OnFoliagePickup
+	OnPreInit,
+	OnFoliagePickup,
+	OnPlayerBeginPlay,
+	OnPlayerTakeDamage,
+	END
 };
 
 class Event {
@@ -11,5 +14,5 @@ public:
 	virtual ~Event();
 
 	virtual EventType type() const = 0;
-	virtual void use(const Event& event);
+	virtual const char* name() const = 0;
 };

@@ -3,6 +3,3 @@
 
 Event::~Event(){
 }
-
-void Event::use(const Event& event) {
-}
