@@ -1,6 +1,6 @@
 #include <windows.h>
 #include <stdio.h>
-#include "..\dllmain.h"
+#include "..\main.h"
 
 HINSTANCE mHinst = 0, mHinstDLL = 0;
 extern "C" UINT_PTR mProcs[12] = {0};

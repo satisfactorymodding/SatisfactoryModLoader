@@ -1,34 +1,37 @@
 #include "stdafx.h"
-#include "modinfo.h"
-#include "utility.h"
+#include "ModInfo.h"
+#include "Utility.h"
+#include "ModEvents.h"
 #include <iostream>
-#include <map>
+#include <cstdint>
+
+#include "FoliagePickupEvent.h"
+#include "TakeDamageEvent.h"
 
 // Custom Events
 // - Create events you want to hook into the game here
 // - To find out when events are called, please check the Event enum.
-void OnPickupFoliageTest(void* args) {
-	log("Foliage Picked up!");
-	std::cout << (&args)[0] << std::endl;
+void OnPreInitializeEvent(std::vector<void*>& args) {
+	log_mod("Mod Pre initialized!");
 }
 
-void OnPreInitialize(void* args) {
-	log("Mod Pre initialized!");
+void OnPlayerPickupFoliage(std::vector<void*>& args) {
+	log_mod("Picked up foliage");
+	log_mod(args.size());
 }
 
+void OnPlayerTakenDamage(std::vector<void*>& args) {
+	log_mod("Taken damage");
+	float dmg = 0;
+	args[2] = &dmg;
+	log_mod(*(float*)args[2]);
+}
 
-// Utility
-// - Register events you want to hook into the game here
-EXTERN_DLL_EXPORT extern std::map<Event, FUNC> functions = {
-	{ Event::OnPickupFoliage, OnPickupFoliageTest },
-	{ Event::OnPreInit, OnPreInitialize }
-};
+EXTERN_DLL_EXPORT void setup() {
+	dispatcher.subscribe(FoliagePickupEvent::descriptor, OnPlayerPickupFoliage);
+	dispatcher.subscribe(TakeDamageEvent::descriptor, OnPlayerTakenDamage);
+}
 
-// Don't edit
-EXTERN_DLL_EXPORT FUNC get_event(Event event) {
-	auto iterator = functions.find(event);
-	if (iterator != functions.end()) {
-		return (*iterator).second;
-	}
-	return NULL;
+EXTERN_DLL_EXPORT void run_event(const Event& event, std::vector<void*>& args) {
+	dispatcher.post(event, args);
 }

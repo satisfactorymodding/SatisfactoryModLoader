@@ -10,6 +10,9 @@
 
 const char* module = "FactoryGame-Win64-Shipping.exe";
 
+// EVENTS
+
+// (AFGCharacterPlayer character, UHierarchicalInstancedStaticMeshComponent meshComponent, TArray<FInventoryStack,FDefaultAllocator> out_validStacks)
 int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* meshComponent, void* out_validStacks) {
 	if (debugOutput) {
 		log("UFGFoliageLibrary::CheckInventorySpaceAndGetStacks");
@@ -19,16 +22,19 @@ int8_t UFGFoliageLibrary_CheckInventorySpaceAndGetStacks(void* character, void* 
 
 	// run mod functions
 	void* data[] = {
-		character
+		character,
+		meshComponent,
+		out_validStacks
 	};
 
 	run_event(Event::OnPickupFoliage, data);
 
-	// TODO: run original function
+	// run original function
 	auto pointer = (int8_t(WINAPI*)(VOID*, VOID*, VOID*))functionList[Event::OnPickupFoliage].Func;
 	return pointer(character, meshComponent, out_validStacks);
 }
 
+// (void)
 void APlayerController_BeginPlay() {
 	/*if (!functionList[Event::OnPlayerBeginPlay].Usable) {
 		return;
@@ -49,6 +55,29 @@ void APlayerController_BeginPlay() {
 	}, 1000);*/
 }
 
+// (AActor damagedActor, FLOAT damageAmount, UDamageType damageType, AController instigatedBy, AController instigatedBy, AActor damageCauser, AActor damageCauser)
+void UFGHealthComponent_TakeDamage(void* healthComponent, void* actor, FLOAT damageAmount, void* damageType, void* instigatedByA, void* instigatedByB, void* damageCauserA, void* damageCauserB) {
+	log("UFGHealthComponent::TakeDamage");
+
+	// run mod functions
+	void* data[] = {
+		healthComponent,
+		actor,
+		damageAmount,
+		damageType,
+		instigatedByA,
+		instigatedByB,
+		damageCauserA,
+		damageCauserB
+	};
+
+	run_event(Event::OnPlayerTakeDamage, data);
+
+	// run original function
+	auto pointer = (void(WINAPI*)(VOID*, VOID*, FLOAT, VOID*, VOID*, VOID*, VOID*, VOID*))functionList[Event::OnPlayerTakeDamage].Func;
+	pointer(healthComponent, actor, damageAmount, damageType, instigatedByA, instigatedByB, damageCauserA, damageCauserB);
+}
+
 void hook_event (Event event, PVOID hook) {
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
@@ -59,7 +88,7 @@ void hook_event (Event event, PVOID hook) {
 		return;
 	}
 
-	long address = DetourAttach(&(PVOID&)onHook, hook);
+	DetourAttach(&(PVOID&)onHook, hook);
 
 	DetourTransactionCommit();
 

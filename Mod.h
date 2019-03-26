@@ -1,8 +1,6 @@
 #pragma once
-
-#include <vector>
-
-// Some utilities with mods, including a mod struct definition and a mod list
+#include <Windows.h>
+#include <string>
 
 struct Mod {
 	LPCWSTR fileName;
@@ -12,5 +10,3 @@ struct Mod {
 	std::string description;
 	std::string authors;
 };
-
-extern std::vector<Mod> modList;
