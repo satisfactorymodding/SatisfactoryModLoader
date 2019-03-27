@@ -1,6 +1,9 @@
 # SatisfactoryModLoader
 A tool to load mods for the game Satisfactory. It's under development until Coffee Stain releases an unreal mod API.
 
+# Discord Server
+Join our [discord server](https://discord.gg/QzcG9nX) to talk about SML or Satisfactory Modding in general.
+
 # Compilation instructions
 When this tool is ready to use, stable releases will be found in the releases section. for now, you can compile this yourself.
 ## Required tools:
