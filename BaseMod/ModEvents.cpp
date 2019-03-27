@@ -22,9 +22,8 @@ void OnPlayerPickupFoliage(std::vector<void*>& args) {
 
 void OnPlayerTakenDamage(std::vector<void*>& args) {
 	log_mod("Taken damage");
-	/*float base = *(float*)args[2];
-	float dmg = 10.f;
-	args[2] = &dmg;*/
+	float base = *(float*)args[2];
+	*(float*)args[2] = base + 10.f;
 }
 
 EXTERN_DLL_EXPORT void setup() {
