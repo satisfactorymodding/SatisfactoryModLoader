@@ -155,9 +155,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BeginPlayEvent.h" />
     <ClInclude Include="Config.h" />
     <ClInclude Include="Connection.h" />
     <ClInclude Include="Dispatcher.h" />
+    <ClInclude Include="EnterChatMessageEvent.h" />
     <ClInclude Include="Enum.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="EventLoader.h" />
@@ -168,6 +170,7 @@
     <ClInclude Include="ModHandler.h" />
     <ClInclude Include="Reflection.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="SuicideEvent.h" />
     <ClInclude Include="TakeDamageEvent.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Timer.h" />

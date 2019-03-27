@@ -25,7 +25,7 @@ public:
 		log("TakeDamageEvent");
 
 		// mod functions
-		auto modFunction = (void(WINAPI*)(const Event&, std::vector<void*>&))originalFunctions[descriptor].ModFunction;
+		auto modFunction = (ModFunc)originalFunctions[descriptor].ModFunction;
 		std::vector<void*> args = {
 			healthComponent, damagedActor, &damageAmount, damageType, instigatedBy, damageCauser
 		};

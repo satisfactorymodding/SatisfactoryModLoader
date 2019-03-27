@@ -31,6 +31,7 @@ EXTERN_DLL_EXPORT void setup() {
 	dispatcher.subscribe(TakeDamageEvent::descriptor, OnPlayerTakenDamage);
 }
 
-EXTERN_DLL_EXPORT void run_event(const Event& event, std::vector<void*>& args) {
+EXTERN_DLL_EXPORT std::vector<void*> run_event(const Event& event, std::vector<void*>& args) {
 	dispatcher.post(event, args);
+	return args;
 }

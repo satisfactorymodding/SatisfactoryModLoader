@@ -17,16 +17,18 @@ void freeObserver(const Event& event) {
 
 void mod_loader_entry() {
 
+	readConfig();
+
 	// Allocate console
-	AllocConsole();
-	FILE* fp;
-	freopen_s(&fp, "CONOIN$", "r", stdin);
-	freopen_s(&fp, "CONOUT$", "w", stdout);
-	freopen_s(&fp, "CONOUT$", "w", stderr);
+	if (loadConsole) {
+		AllocConsole();
+		FILE* fp;
+		freopen_s(&fp, "CONOIN$", "r", stdin);
+		freopen_s(&fp, "CONOUT$", "w", stdout);
+		freopen_s(&fp, "CONOUT$", "w", stderr);
+	}
 
 	log("Attached SatisfactoryModLoader to Satisfactory");
-
-	readConfig();
 	
 	// load mods
 	char p[MAX_PATH];

@@ -10,6 +10,9 @@
 #include "FoliagePickupEvent.h"
 #include "InventoryHasAuthorityEvent.h"
 #include "TakeDamageEvent.h"
+#include "EnterChatMessageEvent.h"
+#include "SuicideEvent.h"
+#include "BeginPlayEvent.h"
 
 std::vector<Mod> _modList;
 
@@ -24,6 +27,15 @@ void EventLoader::load_events(std::vector<Mod> mods) {
 
 	TakeDamageEvent e3;
 	hook_event(e3, TakeDamageEvent::use);
+
+	EnterChatMessageEvent e4;
+	hook_event(e4, EnterChatMessageEvent::use);
+
+	SuicideEvent e5;
+	hook_event(e5, SuicideEvent::use);
+
+	BeginPlayEvent e6;
+	hook_event(e6, BeginPlayEvent::use);
 }
 
 void EventLoader::subscribe_mod(Mod mod) {
@@ -32,12 +44,14 @@ void EventLoader::subscribe_mod(Mod mod) {
 	pointer();
 }
 
-void hook_mod(const Event& e, std::vector<void*>& args) {
+std::vector<void*> hook_mod(const Event& e, std::vector<void*>& args) {
+	std::vector<void*> returns = args;
 	for (Mod mod : _modList) {
 		FARPROC func = get_function(mod.fileModule, "run_event");
-		auto pointer = (void(WINAPI*)(const Event&, std::vector<void*>&))func;
-		pointer(e, args);
+		auto pointer = (std::vector<void*>(WINAPI*)(const Event&, std::vector<void*>&))func;
+		returns = pointer(e, returns);
 	}
+	return returns;
 }
 
 void EventLoader::hook_event(const Event& e, PVOID hook) {

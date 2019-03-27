@@ -54,9 +54,4 @@ extern void readConfig() {
 			loadConsole = true;
 		}
 	}
-
-	// do config stuff here
-	if (!loadConsole) { // destroy the console if stated by the config file
-		ShowWindow(GetConsoleWindow(), SW_HIDE);
-	}
 }
