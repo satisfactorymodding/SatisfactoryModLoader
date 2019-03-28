@@ -70,26 +70,30 @@ public:
 		std::string msgString(chars);
 
 		// run mod functions to get and get a return vector
-		auto modFunction = (ModFunc)originalFunctions[descriptor].ModFunction;
+		/*auto modFunction = (ModFunc)originalFunctions[descriptor].ModFunction;
 		std::vector<std::string> returns = {};
 		std::vector<void*> args = {
 			player, &msgString, &returns
-		};
+		};*/
+		if (msgString == "/kill") {
+			send_message(player, "Killed the host");
+			SuicideEvent::use(player);
+		}
 
 		// get new arguments from the output
-		std::vector<void*> newArguments = modFunction(EnterChatMessageEvent(), args);
+		//std::vector<void*> newArguments = modFunction(EnterChatMessageEvent(), args);
 
 		// run default function if no return values were given
-		if (returns.capacity() == 0) {
+		/*if (returns.capacity() == 0) {
 			auto pointer = (EnterChatMessageFunc)originalFunctions[descriptor].Function;
 			pointer(player, message);
 			return;
-		}
+		}*/
 
 		// use new data
-		for (std::string v : returns) {
+		/*for (std::string v : returns) {
 			EnterChatMessageEvent::send_message(newArguments[0], v.c_str());
-		}
+		}*/
 	}
 
 private:

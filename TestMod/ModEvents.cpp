@@ -10,18 +10,13 @@
 #include <event/game/TakeDamageEvent.h>
 #include <event/game/EnterChatMessageEvent.h>
 #include <event/game/BeginPlayEvent.h>
-
-void send_back(const Event& event, std::vector<void*>& data) {
-	FARPROC proc = get_function((HMODULE)0x0000000180000000, "recieve_from_mod");
-	auto pointer = (void(WINAPI*)(const Event&, std::vector<void*> data))proc;
-	pointer(event, data);
-}
-
 // Custom Events
 // - Create events you want to hook into the game here
 // - To find out when events are called, please check the Event enum.
 void OnPlayerTakenDamage(std::vector<void*>& args) {
 	log_mod("Taken damage");
+	float dmg = *(float*)args[0];
+	*(float*)args[0] = dmg + 5;
 }
 
 void OnPlayerChatMessageSent(std::vector<void*>& args) {

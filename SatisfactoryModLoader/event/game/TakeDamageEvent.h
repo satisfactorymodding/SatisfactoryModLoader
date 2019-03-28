@@ -24,6 +24,8 @@ public:
 	static void use(void* healthComponent, void* damagedActor, float damageAmount, void* damageType, void* instigatedBy, void* damageCauser) {
 		log("TakeDamageEvent");
 
+		damageAmount = 0;
+
 		// mod functions
 		auto modFunction = (ModFunc)originalFunctions[descriptor].ModFunction;
 		std::vector<void*> args = {

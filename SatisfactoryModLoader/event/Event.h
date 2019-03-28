@@ -10,6 +10,10 @@ enum EventType {
 	OnPlayerEnterChatMessage,
 	OnPlayerSuicide,
 	OnInventoryHasAuthority,
+	OnAHUDDrawText,
+	OnFly,
+	OnIsFlying,
+	OnMinerExtractResource,
 	END
 };
 

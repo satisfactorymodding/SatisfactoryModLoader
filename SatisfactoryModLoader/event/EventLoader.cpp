@@ -13,6 +13,11 @@
 #include <event/game/TakeDamageEvent.h>
 #include <event/game/SuicideEvent.h>
 #include <event/game/BeginPlayEvent.h>
+#include <event/game/AHUDDrawText.h>
+#include <event/game/FlyEvent.h>
+#include <event/game/IsFlyingEvent.h>
+#include <event/game/SpawnActorEvent.h>
+#include <event/game/ResourceNodeExtractResourceEvent.h>
 
 // holds a cache of the global mod list
 std::vector<Mod> _modList;
@@ -21,8 +26,8 @@ std::vector<Mod> _modList;
 void EventLoader::load_events(std::vector<Mod> mods) {
 	_modList = mods;
 
-	FoliagePickupEvent e;
-	hook_event(e, FoliagePickupEvent::use);
+	/*FoliagePickupEvent e;
+	hook_event(e, FoliagePickupEvent::use);*/
 
 	/*InventoryHasAuthorityEvent e2;
 	hook_event(e2, InventoryHasAuthorityEvent::use);*/
@@ -36,8 +41,23 @@ void EventLoader::load_events(std::vector<Mod> mods) {
 	SuicideEvent e5;
 	hook_event(e5, SuicideEvent::use);
 
-	BeginPlayEvent e6;
-	hook_event(e6, BeginPlayEvent::use);
+	/*BeginPlayEvent e6;
+	hook_event(e6, BeginPlayEvent::use);*/
+
+	/*AHUDDrawText e7;
+	hook_event(e7, AHUDDrawText::use);
+
+	FlyEvent e8;
+	hook_event(e8, FlyEvent::use);
+
+	IsFlyingEvent e9;
+	hook_event(e9, IsFlyingEvent::use);
+
+	SpawnActorEvent e10;
+	hook_event(e10, SpawnActorEvent::use);*/
+
+	ResourceNodeExtractResourceEvent e11;
+	hook_event(e11, ResourceNodeExtractResourceEvent::use);
 }
 
 // run a mod's setup function
