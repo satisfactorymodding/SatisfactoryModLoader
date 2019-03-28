@@ -1,6 +1,6 @@
 #pragma once
 #include "Event.h"
-#include "Utility.h"
+#include <util/Utility.h>
 #include "EventLoader.h"
 
 class TakeDamageEvent : public Event {

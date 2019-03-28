@@ -1,7 +1,7 @@
 #pragma once
-#include "Event.h"
-#include "Utility.h"
-#include "EventLoader.h"
+#include <event/Event.h>
+#include <util/Utility.h>
+#include <event/EventLoader.h>
 #include "SuicideEvent.h"
 
 class EnterChatMessageEvent : public Event {

@@ -1,10 +1,10 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
-#include "stdafx.h"
-#include "Utility.h"
-#include "Config.h"
-#include "Reflection.h"
-#include "ModHandler.h"
-#include "EventLoader.h"
+#include <stdafx.h>
+#include <util/Utility.h>
+#include <util/Config.h>
+#include <util/Reflection.h>
+#include <mod/ModHandler.h>
+#include <event/EventLoader.h>
 #include <string>
 #include <iostream>
 #include <Windows.h>

@@ -132,7 +132,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -141,7 +141,7 @@
       <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -155,43 +155,38 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BeginPlayEvent.h" />
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="Connection.h" />
-    <ClInclude Include="Dispatcher.h" />
-    <ClInclude Include="EnterChatMessageEvent.h" />
-    <ClInclude Include="Enum.h" />
-    <ClInclude Include="Event.h" />
-    <ClInclude Include="EventLoader.h" />
-    <ClInclude Include="FoliagePickupEvent.h" />
-    <ClInclude Include="InventoryHasAuthorityEvent.h" />
-    <ClInclude Include="Main.h" />
-    <ClInclude Include="Mod.h" />
-    <ClInclude Include="ModHandler.h" />
-    <ClInclude Include="Reflection.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="SuicideEvent.h" />
-    <ClInclude Include="TakeDamageEvent.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="Timer.h" />
-    <ClInclude Include="Utility.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\Connection.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\Dispatcher.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\Event.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\EventLoader.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\BeginPlayEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\EnterChatMessageEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\FoliagePickupEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\InventoryHasAuthorityEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\SuicideEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\TakeDamageEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\Main.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\Mod.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\ModHandler.h" />
+    <ClInclude Include="SatisfactoryModLoader\stdafx.h" />
+    <ClInclude Include="SatisfactoryModLoader\targetver.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Config.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Enum.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\timer.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="Connection.cpp" />
-    <ClCompile Include="Dispatcher.cpp" />
-    <ClCompile Include="Event.cpp" />
-    <ClCompile Include="EventLoader.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="ModHandler.cpp" />
-    <ClCompile Include="Reflection.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\event\Connection.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\event\Dispatcher.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\event\Event.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\event\EventLoader.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\Main.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\mod\ModHandler.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\stdafx.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Config.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\timer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

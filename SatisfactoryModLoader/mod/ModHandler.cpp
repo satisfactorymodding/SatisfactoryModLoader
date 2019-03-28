@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ModHandler.h"
-#include "Utility.h"
-#include "Reflection.h"
+#include <util/Utility.h>
+#include <util/Reflection.h>
 #include <filesystem>
 
 void ModHandler::load_mods(const char* startingPath) {

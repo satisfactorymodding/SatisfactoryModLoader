@@ -1,18 +1,18 @@
 #include "stdafx.h"
 #include "EventLoader.h"
-#include "Utility.h"
-#include "Reflection.h"
-#include "ModHandler.h"
+#include <util/Utility.h>
+#include <util/Reflection.h>
+#include <mod/ModHandler.h>"
 #include <detours.h>
 #include <algorithm>
 
 // events
-#include "FoliagePickupEvent.h"
-#include "InventoryHasAuthorityEvent.h"
-#include "TakeDamageEvent.h"
-#include "EnterChatMessageEvent.h"
-#include "SuicideEvent.h"
-#include "BeginPlayEvent.h"
+#include <event/game/FoliagePickupEvent.h>
+#include <event/game/InventoryHasAuthorityEvent.h>
+#include <event/game/EnterChatMessageEvent.h>
+#include <event/game/TakeDamageEvent.h>
+#include <event/game/SuicideEvent.h>
+#include <event/game/BeginPlayEvent.h>
 
 std::vector<Mod> _modList;
 
