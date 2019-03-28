@@ -23,9 +23,12 @@ public:
 	// ; void __fastcall AFGPlayerController::Suicide(AFGPlayerController *this)
 	static void use(void* character) {
 		log("Suicided");
-		auto pointer = (bool(WINAPI*)(VOID*))originalFunctions[descriptor].Function;
+		auto pointer = (SuicideFunction)originalFunctions[descriptor].Function;
 		pointer(character);
 	}
+
+private:
+	typedef void(WINAPI* SuicideFunction)(VOID*);
 };
 
 SuicideEvent::SuicideEvent() {

@@ -23,9 +23,12 @@ public:
 	// ; bool __fastcall UFGFoliageLibrary::CheckInventorySpaceAndGetStacks(AFGCharacterPlayer *character, UHierarchicalInstancedStaticMeshComponent *meshComponent, TArray<FInventoryStack,FDefaultAllocator> *out_validStacks)
 	static bool use(void* character, void* meshComponent, void* out_validStacks) {
 		log("FoliagePickupEvent");
-		auto pointer = (bool(WINAPI*)(VOID*, VOID*, VOID*))originalFunctions[descriptor].Function;
+		auto pointer = (FoliagePickupFunction)originalFunctions[descriptor].Function;
 		return pointer(character, meshComponent, out_validStacks);
 	}
+
+private:
+	typedef bool(WINAPI* FoliagePickupFunction)(VOID*, VOID*, VOID*);
 };
 
 FoliagePickupEvent::FoliagePickupEvent() {

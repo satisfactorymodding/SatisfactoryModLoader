@@ -10,6 +10,7 @@ unsigned int Connection::id() const {
 	return _id;
 }
 
+// shortcut to unsubscribe
 void Connection::disconnect() {
 	if (_dispatcher) {
 		_dispatcher->unsubscribe(*this);

@@ -4,6 +4,7 @@
 #include <util/Reflection.h>
 #include <filesystem>
 
+// load all mods from the given path
 void ModHandler::load_mods(const char* startingPath) {
 	// split the path
 	std::string appPath(startingPath);
@@ -13,6 +14,7 @@ void ModHandler::load_mods(const char* startingPath) {
 	ModHandler::find_mods(path);
 }
 
+// find all valid mods
 void ModHandler::find_mods(std::string path) {
 	std::string pathExact = path + "\\";
 
@@ -46,11 +48,11 @@ void ModHandler::find_mods(std::string path) {
 				continue;
 			}
 
-			//check if the mod has already been loaded
+			// check if the mod has already been loaded
 			bool isDuplicate = false;
 			for (Mod existingMod : ModHandler::Mods) {
 				if (existingMod.name == modName) {
-					logError("Skipping duplicate mod " + existingMod.name);
+					logError("Skipping duplicate mod [" + existingMod.name + "]");
 					FreeLibrary(dll);
 					isDuplicate = true;
 					break;
@@ -61,7 +63,7 @@ void ModHandler::find_mods(std::string path) {
 				continue;
 			}
 
-			//// if valid, initalize a mod struct and add it to the modlist
+			// if valid, initalize a mod struct and add it to the modlist
 			Mod mod = {
 				sw,
 				dll,
@@ -73,7 +75,7 @@ void ModHandler::find_mods(std::string path) {
 
 			ModHandler::Mods.push_back(mod);
 
-			log("Loaded " + mod.name);
+			log("Loaded [" + mod.name + "]");
 		}
 	}
 }

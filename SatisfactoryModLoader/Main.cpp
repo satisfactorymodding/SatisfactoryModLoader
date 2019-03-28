@@ -11,15 +11,11 @@
 #include <functional>
 
 // Main DLL for loading mod DLLs
-void freeObserver(const Event& event) {
-	std::cout << __FUNCSIG__ << ": DemoEvent" << std::endl;
-}
-
 void mod_loader_entry() {
+	// load up all of the configuration information
+	readConfig();
 
-	//readConfig();
-
-	// Allocate console
+	// launch the game's internal console and hook into it
 	if (loadConsole) {
 		AllocConsole();
 		FILE* fp;
@@ -27,12 +23,15 @@ void mod_loader_entry() {
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
 	}
+
 	log("Attached SatisfactoryModLoader to Satisfactory");
 	
 	// load mods
+	// get path
 	char p[MAX_PATH];
 	GetModuleFileNameA(NULL, p, MAX_PATH);
 
+	// load mods
 	ModHandler modHandler;
 	modHandler.load_mods(p);
 
@@ -44,29 +43,10 @@ void mod_loader_entry() {
 	EventLoader eventLoader;
 	eventLoader.load_events(modHandler.Mods);
 
+	// hook mods up and run their 'setup' functions
 	for (Mod mod : modHandler.Mods) {
 		eventLoader.subscribe_mod(mod);
 	}
 
 	log("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
-
-//void run_event(Event event, void* args) {
-//	for (Mod mod : modList) {
-//		FARPROC func = get_function(mod.fileModule, "get_event");
-//		auto pointer = (PVOID(WINAPI*)(Event))func;
-//		auto rType = (void(WINAPI*)(void* args))pointer(event);
-//		rType(args);
-//	}
-//}
-//
-//void run_pre_init() {
-//	log("Pre Initializing all mods", true, true);
-//	run_event(Event::OnPreInit, NULL);
-//	return;
-//}
-//
-//void run_post_init() {
-//	log("Post Initializing!", true, true, "POSTINIT");
-//	return;
-//}

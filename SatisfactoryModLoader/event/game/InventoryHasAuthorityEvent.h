@@ -23,9 +23,12 @@ public:
 	// ; bool __fastcall UFGInventoryComponent::HasAuthority(UFGInventoryComponent *this)
 	static bool use(void* inventory) {
 		log("InventoryHasAuthorityEvent");
-		auto pointer = (bool (WINAPI*)(VOID*))originalFunctions[descriptor].Function;
+		auto pointer = (InventoryHasAuthorityFunction)originalFunctions[descriptor].Function;
 		return pointer(inventory);
 	}
+
+private:
+	typedef bool(WINAPI* InventoryHasAuthorityFunction)(VOID*);
 };
 
 InventoryHasAuthorityEvent::InventoryHasAuthorityEvent() {

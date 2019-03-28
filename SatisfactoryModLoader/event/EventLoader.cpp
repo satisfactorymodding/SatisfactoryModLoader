@@ -14,8 +14,10 @@
 #include <event/game/SuicideEvent.h>
 #include <event/game/BeginPlayEvent.h>
 
+// holds a cache of the global mod list
 std::vector<Mod> _modList;
 
+// hooks various events to their corresponding original functions
 void EventLoader::load_events(std::vector<Mod> mods) {
 	_modList = mods;
 
@@ -38,12 +40,14 @@ void EventLoader::load_events(std::vector<Mod> mods) {
 	hook_event(e6, BeginPlayEvent::use);
 }
 
+// run a mod's setup function
 void EventLoader::subscribe_mod(Mod mod) {
 	FARPROC func = get_function(mod.fileModule, "setup");
 	auto pointer = (PVOID(WINAPI*)(void))func;
 	pointer();
 }
 
+// run a mod's 'run_event' which runs all available functions of the given Event
 std::vector<void*> hook_mod(const Event& e, std::vector<void*>& args) {
 	std::vector<void*> returns = args;
 	for (Mod mod : _modList) {
@@ -54,10 +58,12 @@ std::vector<void*> hook_mod(const Event& e, std::vector<void*>& args) {
 	return returns;
 }
 
+// hooks an event into an original function
 void EventLoader::hook_event(const Event& e, PVOID hook) {
 	DetourTransactionBegin();
 	DetourUpdateThread(GetCurrentThread());
 
+	// find the function by name
 	PVOID func = DetourFindFunction(_module, e.name());
 	if (!func) {
 		log("Invalid function: ", false);
@@ -65,6 +71,7 @@ void EventLoader::hook_event(const Event& e, PVOID hook) {
 		return;
 	}
 
+	// attach it, clearly
 	DetourAttach(&(PVOID&)func, hook);
 
 	DetourTransactionCommit();

@@ -3,6 +3,7 @@
 #include "Connection.h"
 #include <algorithm>
 
+// add a new function to the event
 Connection Dispatcher::subscribe(const EventType& descriptor, EventFunc slot) {
 	auto id = _nextID;
 	SlotHandle handle = { id,slot };
@@ -13,6 +14,7 @@ Connection Dispatcher::subscribe(const EventType& descriptor, EventFunc slot) {
 	return Connection(this, id);
 }
 
+// remove a function from the event by connection
 void Dispatcher::unsubscribe(const Connection& connection) {
 	for (auto pair : _observers) {
 		auto handles = pair.second;

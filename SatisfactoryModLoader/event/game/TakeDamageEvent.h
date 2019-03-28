@@ -36,9 +36,12 @@ public:
 		log(*(float*)args[2], true, false);
 
 		// original function
-		auto pointer = (void (WINAPI*)(VOID*, VOID*, float, VOID*, VOID*, VOID*))originalFunctions[descriptor].Function;
+		auto pointer = (TakeDamageFunction)originalFunctions[descriptor].Function;
 		pointer(args[0], args[1], *(float*)args[2], args[3], args[4], args[5]);
 	}
+
+private:
+	typedef void(WINAPI* TakeDamageFunction)(VOID*, VOID*, float, VOID*, VOID*, VOID*);
 };
 
 TakeDamageEvent::TakeDamageEvent() {

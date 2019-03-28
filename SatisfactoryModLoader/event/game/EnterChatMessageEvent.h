@@ -2,6 +2,7 @@
 #include <event/Event.h>
 #include <util/Utility.h>
 #include <event/EventLoader.h>
+#include <util/FString.h>
 #include "SuicideEvent.h"
 
 class EnterChatMessageEvent : public Event {
@@ -21,12 +22,7 @@ public:
 		return addressName;
 	}
 
-	struct s2 {
-		int16_t* data;
-		int32_t length;
-	};
-
-	static void create_message(s2* data, const char* message) {
+	static void create_message(FString* data, const char* message) {
 		data->length = strlen(message) + 1;
 		int16_t *chars = new int16_t[data->length + 1];
 		for (size_t i = 0; i < data->length; i++) {
@@ -41,48 +37,51 @@ public:
 			log("player != NULL");
 		}
 
-		s2 msg;
+		FString msg;
 		create_message(&msg, message);
 
-		auto pointer = (void(WINAPI*)(VOID*, s2*))originalFunctions[descriptor].Function;
+		auto pointer = (EnterChatMessageFunc)originalFunctions[descriptor].Function;
 
 		log("POINTER");
 		pointer(player, &msg);
 	}
 
 	static void send_messages(void* player, std::vector<const char*> messages) {
-		s2 msg;
+		FString msg;
 		for (const char* m : messages) {
 			create_message(&msg, m);
 
-			auto pointer = (void(WINAPI*)(VOID*, s2*))originalFunctions[descriptor].Function;
+			auto pointer = (EnterChatMessageFunc)originalFunctions[descriptor].Function;
 			pointer(player, &msg);
 		}
 	}
 
 	//; void __fastcall AFGPlayerController::EnterChatMessage(AFGPlayerController *this, FString *inMessage)
-	static void use(void* player, s2* message) {
+	static void use(void* player, FString* message) {
 		log("EnterChatMessage");
 
+		// convert the default message to a readable char*
 		char* chars = new char[message->length + 2];
 		for (size_t i = 0; i < message->length; i++) {
 			chars[i] = message->data[i];
 		}
 
-		const char* msg = (const char*)chars;
+		// convert to a string
+		std::string msgString(chars);
 
-		std::string msgString(msg);
-
+		// run mod functions to get and get a return vector
 		auto modFunction = (ModFunc)originalFunctions[descriptor].ModFunction;
 		std::vector<std::string> returns = {};
 		std::vector<void*> args = {
 			player, &msgString, &returns
 		};
 
+		// get new arguments from the output
 		std::vector<void*> newArguments = modFunction(EnterChatMessageEvent(), args);
 
+		// run default function if no return values were given
 		if (returns.capacity() == 0) {
-			auto pointer = (void(WINAPI*)(VOID*, s2*))originalFunctions[descriptor].Function;
+			auto pointer = (EnterChatMessageFunc)originalFunctions[descriptor].Function;
 			pointer(player, message);
 			return;
 		}
@@ -92,6 +91,9 @@ public:
 			EnterChatMessageEvent::send_message(newArguments[0], v.c_str());
 		}
 	}
+
+private:
+	typedef void(WINAPI* EnterChatMessageFunc)(VOID*, FString*);
 };
 
 EnterChatMessageEvent::EnterChatMessageEvent() {

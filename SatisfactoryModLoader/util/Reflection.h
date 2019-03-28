@@ -4,6 +4,7 @@
 
 FARPROC get_function(HMODULE module, const char* procName);
 
+// gets a function's value
 template <typename O>
 bool get_function_value(HMODULE module, const char* procName, O& value) {
 	FARPROC proc = GetProcAddress(module, procName);
@@ -17,6 +18,7 @@ bool get_function_value(HMODULE module, const char* procName, O& value) {
 	return true;
 }
 
+// gets a field's value
 template <typename O>
 bool get_field_value(HMODULE module, const char* procName, O& value) {
 	FARPROC proc = get_function(module, procName);

@@ -27,10 +27,12 @@ public:
 	static void use(void* character) {
 		log("BeginPlayEvent");
 		localPlayer = character;
-		auto pointer = (bool(WINAPI*)(VOID*))originalFunctions[descriptor].Function;
+		auto pointer = (BeginPlayFunction)originalFunctions[descriptor].Function;
 		pointer(character);
-		EnterChatMessageEvent::send_message(localPlayer, "Zoinks");
 	}
+
+private:
+	typedef void(WINAPI* BeginPlayFunction)(VOID*);
 };
 
 BeginPlayEvent::BeginPlayEvent() {
