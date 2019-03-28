@@ -17,6 +17,7 @@ void mod_loader_entry() {
 
 	// launch the game's internal console and hook into it
 	AllocConsole();
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	FILE* fp;
 	freopen_s(&fp, "CONOIN$", "r", stdin);
 	freopen_s(&fp, "CONOUT$", "w", stdout);
@@ -29,8 +30,8 @@ void mod_loader_entry() {
 	// load up all of the configuration information
 	readConfig();
 
-	if (!loadConsole) {
-		ShowWindow(GetConsoleWindow(), SW_HIDE);
+	if (loadConsole) {
+		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	}
 	
 	// load mods
