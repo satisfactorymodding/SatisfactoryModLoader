@@ -13,6 +13,7 @@ LPCSTR mImportNames[] = {"DllMain", "XInputEnable", "XInputGetBatteryInformation
 BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 	mHinst = hinstDLL;
 	if (fdwReason == DLL_PROCESS_ATTACH) {
+		mod_loader_entry();
 		load_original_dll();
 		for (int i = 0; i < 12; i++)
 			mProcs[i] = (UINT_PTR)GetProcAddress(mHinstDLL, mImportNames[i]);
@@ -26,7 +27,7 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 	}
 	if ( fdwReason == DLL_THREAD_ATTACH) {
 		hooked = true;
-		mod_loader_entry();
+		//mod_loader_entry();
 	}
 	return ( TRUE );
 }
