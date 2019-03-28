@@ -2,14 +2,14 @@
 #include "ModInfo.h"
 #include "Utility.h"
 #include "ModEvents.h"
-#include "Reflection.h"
+#include <util/Reflection.h>
 #include <iostream>
 #include <cstdint>
 
-#include "FoliagePickupEvent.h"
-#include "TakeDamageEvent.h"
-#include "EnterChatMessageEvent.h"
-#include "BeginPlayEvent.h"
+#include <event/game/FoliagePickupEvent.h>
+#include <event/game/TakeDamageEvent.h>
+#include <event/game/EnterChatMessageEvent.h>
+#include <event/game/BeginPlayEvent.h>
 
 void send_back(const Event& event, std::vector<void*>& data) {
 	FARPROC proc = get_function((HMODULE)0x0000000180000000, "recieve_from_mod");

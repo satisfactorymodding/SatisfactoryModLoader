@@ -5,8 +5,8 @@
 #include <iostream>
 #include <cstdint>
 
-#include "FoliagePickupEvent.h"
-#include "TakeDamageEvent.h"
+#include <event/game/FoliagePickupEvent.h>
+#include <event/game/TakeDamageEvent.h>
 
 // Custom Events
 // - Create events you want to hook into the game here

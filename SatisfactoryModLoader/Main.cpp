@@ -17,7 +17,7 @@ void freeObserver(const Event& event) {
 
 void mod_loader_entry() {
 
-	readConfig();
+	//readConfig();
 
 	// Allocate console
 	if (loadConsole) {
@@ -27,7 +27,6 @@ void mod_loader_entry() {
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
 	}
-
 	log("Attached SatisfactoryModLoader to Satisfactory");
 	
 	// load mods
@@ -39,7 +38,7 @@ void mod_loader_entry() {
 
 	// log mod size
 	size_t listSize = modHandler.Mods.size();
-	log("Loaded " + std::to_string(listSize) + " mod" + (listSize > 1 ? "" : "s"));
+	log("Loaded " + std::to_string(listSize) + " mod" + (listSize > 1 ? "s" : ""));
 	
 	// assign events
 	EventLoader eventLoader;
