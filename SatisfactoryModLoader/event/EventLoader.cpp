@@ -68,6 +68,7 @@ void EventLoader::hook_event(const Event& e, PVOID hook) {
 	if (!func) {
 		log("Invalid function: ", false);
 		log(e.name(), true, false);
+		DetourTransactionAbort();
 		return;
 	}
 
