@@ -38,7 +38,7 @@ void OnPlayerChatMessageSent(std::vector<void*>& args) {
 void DoGetLocalizedPackagePath(std::vector<void*>& args) {
 	// Redirect some asset files to our pak
 
-	FString* InSourcePackagePath = (FString*) args[1];
+	FString* InSourcePackagePath = (FString*)args[1];
 	char* chars = new char[InSourcePackagePath->length];
 	for (size_t i = 0; i < InSourcePackagePath->length; i++) {
 		chars[i] = InSourcePackagePath->data[i];
@@ -46,7 +46,8 @@ void DoGetLocalizedPackagePath(std::vector<void*>& args) {
 
 	if (strcmp(chars, "/Game/FactoryGame/Interface/UI/Assets/Logo/SatisfactoryLogotype_EarlyAccess") == 0
 		|| strcmp(chars, "/Game/FactoryGame/Interface/UI/Assets/MainMenu/NewsDefaultImage") == 0
-		|| strcmp(chars, "/Game/FactoryGame/Buildable/Factory/ConstructorMk1/Mesh/ConstructorMk1_static") == 0) {
+		|| strcmp(chars, "/Game/FactoryGame/Buildable/Factory/ConstructorMk1/Mesh/ConstructorMk1_static") == 0
+		|| strcmp(chars, "/Game/FactoryGame/Buildable/Factory/ConveyorBeltMk1/Mesh/ConveyorBeltMk1_static") == 0) {
 		// Load from FactoryLame package instead of FactoryGame
 		InSourcePackagePath->data[13] = 'L';
 	}
