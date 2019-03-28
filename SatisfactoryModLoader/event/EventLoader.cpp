@@ -13,6 +13,8 @@
 #include <event/game/TakeDamageEvent.h>
 #include <event/game/SuicideEvent.h>
 #include <event/game/BeginPlayEvent.h>
+#include <event/game/GetPakSigningKeys.h>
+#include <event/game/GetLocalizedPackagePath.h>
 
 // holds a cache of the global mod list
 std::vector<Mod> _modList;
@@ -38,6 +40,12 @@ void EventLoader::load_events(std::vector<Mod> mods) {
 
 	BeginPlayEvent e6;
 	hook_event(e6, BeginPlayEvent::use);
+
+	GetPakSigningKeysEvent e7;
+	hook_event(e7, GetPakSigningKeysEvent::use);
+
+	GetLocalizedPackagePathEvent e8;
+	hook_event(e8, GetLocalizedPackagePathEvent::use);
 }
 
 // run a mod's setup function

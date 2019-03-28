@@ -10,6 +10,8 @@ enum EventType {
 	OnPlayerEnterChatMessage,
 	OnPlayerSuicide,
 	OnInventoryHasAuthority,
+	GetPakSigningKeys,
+	GetLocalizedPackagePath,
 	END
 };
 

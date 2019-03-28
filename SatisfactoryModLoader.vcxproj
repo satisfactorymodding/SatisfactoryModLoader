@@ -162,6 +162,8 @@
     <ClInclude Include="SatisfactoryModLoader\event\game\BeginPlayEvent.h" />
     <ClInclude Include="SatisfactoryModLoader\event\game\EnterChatMessageEvent.h" />
     <ClInclude Include="SatisfactoryModLoader\event\game\FoliagePickupEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\GetLocalizedPackagePath.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\GetPakSigningKeys.h" />
     <ClInclude Include="SatisfactoryModLoader\event\game\InventoryHasAuthorityEvent.h" />
     <ClInclude Include="SatisfactoryModLoader\event\game\SuicideEvent.h" />
     <ClInclude Include="SatisfactoryModLoader\event\game\TakeDamageEvent.h" />
