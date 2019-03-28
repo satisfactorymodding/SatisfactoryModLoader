@@ -13,7 +13,7 @@
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
 	// load up all of the configuration information
-	readConfig();
+	// readConfig();
 
 	// launch the game's internal console and hook into it
 	if (loadConsole) {

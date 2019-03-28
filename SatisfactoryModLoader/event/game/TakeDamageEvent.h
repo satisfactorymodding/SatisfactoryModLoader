@@ -27,17 +27,17 @@ public:
 		// mod functions
 		auto modFunction = (ModFunc)originalFunctions[descriptor].ModFunction;
 		std::vector<void*> args = {
-			healthComponent, damagedActor, &damageAmount, damageType, instigatedBy, damageCauser
+			&damageAmount
 		};
 		// std::vector<void*>&
 		modFunction(TakeDamageEvent(), args);
 
 		log("Damage:", false, true);
-		log(*(float*)args[2], true, false);
+		log(*(float*)args[0], true, false);
 
 		// original function
 		auto pointer = (TakeDamageFunction)originalFunctions[descriptor].Function;
-		pointer(args[0], args[1], *(float*)args[2], args[3], args[4], args[5]);
+		pointer(healthComponent, damagedActor, *(float*)args[0], damageType, instigatedBy, damageCauser);
 	}
 
 private:
