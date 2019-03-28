@@ -2,6 +2,7 @@
 #include "ModHandler.h"
 #include <util/Utility.h>
 #include <util/Reflection.h>
+#include <util/Config.h>
 #include <filesystem>
 
 // load all mods from the given path
@@ -26,8 +27,9 @@ void ModHandler::find_mods(std::string path) {
 		if (entry.path().extension().string() == ".dll") {
 			std::string file = pathExact + entry.path().filename().string();
 			std::wstring stemp = std::wstring(file.begin(), file.end());
-
-			log("Attempting to load mod: " + file);
+			if (debugOutput) {
+				log("Attempting to load mod: " + file);
+			}
 
 			LPCWSTR sw = stemp.c_str();
 
@@ -74,8 +76,10 @@ void ModHandler::find_mods(std::string path) {
 			};
 
 			ModHandler::Mods.push_back(mod);
-
-			log("Loaded [" + mod.name + "]");
+			if (debugOutput) {
+				log("Loaded [" + mod.name + + "@" + mod.version + "]");
+			}
 		}
 	}
+
 }

@@ -6,3 +6,5 @@
 #include <Windows.h>
 
 void mod_loader_entry();
+
+void cleanup();

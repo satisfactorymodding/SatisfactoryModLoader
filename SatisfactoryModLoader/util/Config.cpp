@@ -6,7 +6,7 @@
 #include <fstream>
 
 bool loadConsole = true;
-bool debugOutput = true;
+bool debugOutput = false;
 
 extern void readConfig() {
 	log("Finding config file...");
@@ -23,14 +23,13 @@ extern void readConfig() {
 					if (id == "Console") {
 						if (value == "false") { //see if console is false
 							loadConsole = false;
-							log("You are free to close this window now.");
 						}
 						else {
 							loadConsole = true;
 						}
 					}
 					else if (id == "Debug") {
-						if (value == "true") { //see if console is false
+						if (value == "true") { //see if debug output is true
 							debugOutput = true;
 						}
 						else {
@@ -49,9 +48,10 @@ extern void readConfig() {
 			configOut << "# SatisfactoryModLoader config file" << "\n\n";
 			configOut << "# Toggles the console's visibility after launching Satisfactory." << "\n";
 			configOut << "Console:true" << "\n";
-			configOut << "# Enable debug output for SML to display extra info." << "\n";
+			configOut << "# Enable debug output for SML to display extra info in the console." << "\n";
 			configOut << "Debug:false" << "\n";
 			loadConsole = true;
+			debugOutput = false;
 		}
 	}
 }

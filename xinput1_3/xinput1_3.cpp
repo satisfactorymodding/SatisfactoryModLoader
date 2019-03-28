@@ -18,6 +18,7 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 			mProcs[i] = (UINT_PTR)GetProcAddress(mHinstDLL, mImportNames[i]);
 	}
 	else if (fdwReason == DLL_PROCESS_DETACH) {
+		cleanup();
 		FreeLibrary(mHinstDLL);
 	} 
 	
