@@ -1,18 +1,19 @@
 #include "stdafx.h"
-#include "EventLoader.h"
-#include <util/Utility.h>
-#include <util/Reflection.h>
-#include <mod/ModHandler.h>"
-#include <detours.h>
-#include <algorithm>
 
-// events
-#include <event/game/FoliagePickupEvent.h>
-#include <event/game/InventoryHasAuthorityEvent.h>
-#include <event/game/EnterChatMessageEvent.h>
-#include <event/game/TakeDamageEvent.h>
-#include <event/game/SuicideEvent.h>
-#include <event/game/BeginPlayEvent.h>
+#include "event/EventLoader.h"
+#include "event/game/FoliagePickupEvent.h"
+#include "event/game/InventoryHasAuthorityEvent.h"
+#include "event/game/EnterChatMessageEvent.h"
+#include "event/game/TakeDamageEvent.h"
+#include "event/game/SuicideEvent.h"
+#include "event/game/BeginPlayEvent.h"
+#include "mod/ModHandler.h"
+#include "util/Utility.h"
+#include "util/Reflection.h"
+
+#include <detours.h>
+
+#include <algorithm>
 
 // holds a cache of the global mod list
 std::vector<Mod> _modList;

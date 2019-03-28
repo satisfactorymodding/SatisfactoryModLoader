@@ -1,6 +1,8 @@
 #include "stdafx.h"
-#include "Dispatcher.h"
-#include "Connection.h"
+
+#include "event/Connection.h"
+#include "event/Dispatcher.h"
+
 #include <algorithm>
 
 // add a new function to the event

@@ -1,7 +1,7 @@
 #pragma once
-#include <event/Event.h>
-#include <util/Utility.h>
-#include <event/EventLoader.h>
+#include "event/Event.h"
+#include "event/EventLoader.h"
+#include "util/Utility.h"
 
 class FoliagePickupEvent : public Event {
 public:
@@ -20,7 +20,7 @@ public:
 		return addressName;
 	}
 
-	// ; bool __fastcall UFGFoliageLibrary::CheckInventorySpaceAndGetStacks(AFGCharacterPlayer *character, UHierarchicalInstancedStaticMeshComponent *meshComponent, TArray<FInventoryStack,FDefaultAllocator> *out_validStacks)
+	// ; bool __fastcall UFGFoliageLibrary::CheckInventorySpaceAndGetStacks(AFGCharacterPlayer *character, UHierarchicalInstancedStaticMeshComponent *meshComponent, TArray"FInventoryStack,FDefaultAllocator" *out_validStacks)
 	static bool use(void* character, void* meshComponent, void* out_validStacks) {
 		log("FoliagePickupEvent");
 		auto pointer = (FoliagePickupFunction)originalFunctions[descriptor].Function;

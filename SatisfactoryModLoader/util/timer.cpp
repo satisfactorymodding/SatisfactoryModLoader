@@ -1,8 +1,10 @@
 #include "stdafx.h"
-#include "timer.h"
+
+#include "util/timer.h"
+
+#include <chrono>
 #include <iostream>
 #include <thread>
-#include <chrono>
 
 template<typename T>
 void Timer::setTimeout(T function, int delay) {

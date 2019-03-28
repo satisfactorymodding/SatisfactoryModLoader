@@ -1,14 +1,15 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
-#include <stdafx.h>
-#include <util/Utility.h>
-#include <util/Config.h>
-#include <util/Reflection.h>
-#include <mod/ModHandler.h>
-#include <event/EventLoader.h>
-#include <string>
-#include <iostream>
-#include <Windows.h>
+#include "stdafx.h"
+
+#include "event/EventLoader.h"
+#include "mod/ModHandler.h"
+#include "util/Utility.h"
+#include "util/Config.h"
+#include "util/Reflection.h"
+
 #include <functional>
+#include <iostream>
+#include <string>
+#include <Windows.h>
 
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {

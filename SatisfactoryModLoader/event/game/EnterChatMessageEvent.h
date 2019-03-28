@@ -1,9 +1,9 @@
 #pragma once
-#include <event/Event.h>
-#include <util/Utility.h>
-#include <event/EventLoader.h>
-#include <util/FString.h>
-#include "SuicideEvent.h"
+#include "event/Event.h"
+#include "event/EventLoader.h"
+#include "event/game/SuicideEvent.h"
+#include "util/Utility.h"
+#include "util/FString.h"
 
 class EnterChatMessageEvent : public Event {
 public:

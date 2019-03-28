@@ -1,5 +1,6 @@
 #pragma once
-#include "Mod.h"
+#include "mod/Mod.h"
+
 #include <string>
 #include <vector>
 

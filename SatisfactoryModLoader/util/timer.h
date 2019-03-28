@@ -1,4 +1,5 @@
 #pragma once
+
 class Timer {
 	bool clear = false;
 

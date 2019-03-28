@@ -1,6 +1,7 @@
-#include <stdafx.h>
-#include "Connection.h"
-#include "Dispatcher.h"
+#include "stdafx.h"
+
+#include "event/Connection.h"
+#include "event/Dispatcher.h"
 
 Connection::Connection()
 {

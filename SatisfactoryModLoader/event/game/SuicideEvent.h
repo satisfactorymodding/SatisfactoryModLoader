@@ -1,7 +1,7 @@
 #pragma once
-#include <event/Event.h>
-#include <util/Utility.h>
-#include <event/EventLoader.h>
+#include "event/Event.h"
+#include "event/EventLoader.h"
+#include "util/Utility.h"
 
 class SuicideEvent : public Event {
 public:

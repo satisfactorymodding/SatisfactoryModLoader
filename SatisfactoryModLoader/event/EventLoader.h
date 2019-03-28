@@ -1,7 +1,8 @@
 #pragma once
-#include "Connection.h"
-#include "Dispatcher.h"
-#include <mod/Mod.h>
+#include "event/Connection.h"
+#include "event/Dispatcher.h"
+#include "mod/Mod.h"
+
 #include <map>
 #include <tuple>
 

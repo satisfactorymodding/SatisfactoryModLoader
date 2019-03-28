@@ -1,6 +1,6 @@
 #pragma once
-#include <Windows.h>
 #include <string>
+#include <Windows.h>
 
 struct Mod {
 	LPCWSTR fileName;

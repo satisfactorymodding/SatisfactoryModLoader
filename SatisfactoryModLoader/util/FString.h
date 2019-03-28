@@ -1,6 +1,6 @@
 #pragma once
-#include <Windows.h>
 #include <cstdint>
+#include <Windows.h>
 
 struct FString {
 	int16_t* data;

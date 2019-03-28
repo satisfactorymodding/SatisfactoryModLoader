@@ -1,8 +1,8 @@
 #pragma once
-#include <event/Event.h>
-#include <util/Utility.h>
-#include <event/EventLoader.h>
-#include "EnterChatMessageEvent.h"
+#include "event/Event.h"
+#include "event/EventLoader.h"
+#include "event/game/EnterChatMessageEvent.h"
+#include "util/Utility.h"
 
 extern void* localPlayer = NULL;
 

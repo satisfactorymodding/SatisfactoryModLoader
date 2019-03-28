@@ -1,7 +1,9 @@
 #include "stdafx.h"
-#include "ModHandler.h"
-#include <util/Utility.h>
-#include <util/Reflection.h>
+
+#include "mod/ModHandler.h"
+#include "util/Utility.h"
+#include "util/Reflection.h"
+
 #include <filesystem>
 
 // load all mods from the given path

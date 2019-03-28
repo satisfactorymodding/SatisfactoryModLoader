@@ -1,6 +1,6 @@
 #pragma once
-#include <Windows.h>
 #include <string>
+#include <Windows.h>
 
 FARPROC get_function(HMODULE module, const char* procName);
 

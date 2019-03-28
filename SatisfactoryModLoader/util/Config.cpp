@@ -1,9 +1,11 @@
 #include "stdafx.h"
-#include "Config.h"
-#include "Utility.h"
+
+#include "util/Config.h"
+#include "util/Utility.h"
+
 #include <string>
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 bool loadConsole = true;
 bool debugOutput = true;
