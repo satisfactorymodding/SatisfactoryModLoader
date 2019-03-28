@@ -10,16 +10,19 @@
 
 // Custom Events
 // - Create events you want to hook into the game here
-// - To find out when events are called, please check the Event enum.
-void OnPreInitializeEvent(std::vector<void*>& args) {
+// - To find out what events you can use, check SatisfactoryModLoader/event/game.
+void OnPreInitializeEvent() {
 	log_mod("Mod Pre initialized!");
+	//Add code which needs to be run when the mod starts here
 }
 
+// Called when leaves or sticks are picked up
 void OnPlayerPickupFoliage(std::vector<void*>& args) {
 	log_mod("Picked up foliage");
 	log_mod(args.size());
 }
 
+// Called when the player takes damage
 void OnPlayerTakenDamage(std::vector<void*>& args) {
 	log_mod("Taken damage");
 	float dmg = *(float*)args[0];
@@ -27,6 +30,7 @@ void OnPlayerTakenDamage(std::vector<void*>& args) {
 }
 
 EXTERN_DLL_EXPORT void setup() {
+	OnPreInitializeEvent();
 	dispatcher.subscribe(FoliagePickupEvent::descriptor, OnPlayerPickupFoliage);
 	dispatcher.subscribe(TakeDamageEvent::descriptor, OnPlayerTakenDamage);
 }
