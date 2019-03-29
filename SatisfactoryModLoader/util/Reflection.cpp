@@ -15,14 +15,14 @@ FARPROC get_function(HMODULE module, const char* procName) {
 
 void get_mod_values(std::vector<Mod> mods, const char* procName, std::vector<void*>& value) {
 	for (Mod mod : mods) {
-		log(LogType::Normal, "Checking Mod: ", mod.name);
+		//log(LogType::Normal, "Checking Mod: ", mod.name);
 		auto proc = GetProcAddress(mod.fileModule, procName);
 		if (!proc) {
-			log(LogType::Normal, procName, " not found for mod: ", mod.name);
+			//log(LogType::Normal, procName, " not found for mod: ", mod.name);
 			continue;
 		}
 
-		log(LogType::Normal, procName, " was found for mod: ", mod.name);
+		//log(LogType::Normal, procName, " was found for mod: ", mod.name);
 		auto pointer = (void(WINAPI*)(std::vector<void*>&))proc;
 		pointer(value);
 	}

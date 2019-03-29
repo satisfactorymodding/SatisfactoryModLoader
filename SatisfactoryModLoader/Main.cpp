@@ -69,7 +69,7 @@ void cleanup() {
 
 EXTERN_DLL_EXPORT void* request_data_other(EventType type) {
 	switch (type) {
-	case EventType::PlayerBeginPlay:
+	case EventType::PlayerControllerBeginPlay:
 		return localPlayerController;
 	}
 

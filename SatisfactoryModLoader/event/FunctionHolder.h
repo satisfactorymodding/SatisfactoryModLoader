@@ -10,3 +10,5 @@ static std::vector<Mod> modList;
 static void* localPlayerController;
 static void* gameInstance;
 static void* worldInstance;
+static void* hookshotInstance;
+static void* playerInstance;

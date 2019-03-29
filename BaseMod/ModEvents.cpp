@@ -49,7 +49,7 @@ void get_player() {
 }
 
 // global events
-EXTERN_DLL_EXPORT void player_begin_play_event(std::vector<void*>& args) {
+EXTERN_DLL_EXPORT void player_controller_begin_play_event(std::vector<void*>& args) {
 	localPlayerController = args[0];
 }
 

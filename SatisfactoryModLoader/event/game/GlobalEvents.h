@@ -17,7 +17,6 @@ EXTERN_DLL_EXPORT void* game_instance_get_world(void* game) {
 
 // ; void __fastcall UGameInstance::ReceiveInit(UGameInstance *__hidden this)
 EXTERN_DLL_EXPORT void game_instance_recieve_init(void* game) {
-	log(LogType::Normal, "Recieved the game instance");
 	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::GameInstanceRecieveInit];
 	gameInstance = game;
 	pointer(game);
