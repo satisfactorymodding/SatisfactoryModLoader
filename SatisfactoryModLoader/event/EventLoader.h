@@ -1,27 +1,13 @@
 #pragma once
-#include "Connection.h"
-#include "Dispatcher.h"
+#include <vector>
 #include <mod/Mod.h>
-#include <map>
-#include <tuple>
+#include <event/Event.h>
 
 class EventLoader {
 public:
-	void load_events(std::vector<Mod> mods);
+	EventLoader(std::vector<Mod> mods);
 
-	void subscribe_mod(Mod mod);
-	
-	Dispatcher dispatcher;
+	void hook_events();
 private:
-	void hook_event(const Event& e, PVOID hook);
-
-	const char* _module = "FactoryGame-Win64-Shipping.exe";
+	void hook_event(PVOID hook, EventType type, const char* function);
 };
-
-class OriginalFunction {
-public:
-	PVOID Function;
-	PVOID ModFunction;
-};
-
-static std::map<EventType, OriginalFunction> originalFunctions;

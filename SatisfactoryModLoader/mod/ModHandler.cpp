@@ -1,9 +1,9 @@
-#include "stdafx.h"
-#include "ModHandler.h"
+#include <stdafx.h>
+#include <filesystem>
 #include <util/Utility.h>
 #include <util/Reflection.h>
 #include <util/Config.h>
-#include <filesystem>
+#include "ModHandler.h"
 
 // load all mods from the given path
 void ModHandler::load_mods(const char* startingPath) {
@@ -19,7 +19,7 @@ void ModHandler::load_mods(const char* startingPath) {
 void ModHandler::find_mods(std::string path) {
 	std::string pathExact = path + "\\";
 
-	log("Looking for mods in: " + path);
+	log(LogType::Normal, "Looking for mods in: ", path);
 
 	ModHandler::Mods = std::vector<Mod>();
 
@@ -28,7 +28,7 @@ void ModHandler::find_mods(std::string path) {
 			std::string file = pathExact + entry.path().filename().string();
 			std::wstring stemp = std::wstring(file.begin(), file.end());
 			if (debugOutput) {
-				log("Attempting to load mod: " + file);
+				log(LogType::Normal, "Attempting to load mod: ", file);
 			}
 
 			LPCWSTR sw = stemp.c_str();
@@ -45,7 +45,7 @@ void ModHandler::find_mods(std::string path) {
 				!get_field_value(dll, "ModDescription", modDescription) ||
 				!get_field_value(dll, "ModAuthors", modAuthors)) {
 
-				logError("Mod DLL " + file + " does not have the required information!");
+				log(LogType::Error, "Mod DLL ", file, " does not have the required information!");
 				FreeLibrary(dll);
 				continue;
 			}
@@ -54,7 +54,7 @@ void ModHandler::find_mods(std::string path) {
 			bool isDuplicate = false;
 			for (Mod existingMod : ModHandler::Mods) {
 				if (existingMod.name == modName) {
-					logError("Skipping duplicate mod [" + existingMod.name + "]");
+					log(LogType::Warning, "Skipping duplicate mod [", existingMod.name, "]");
 					FreeLibrary(dll);
 					isDuplicate = true;
 					break;
@@ -77,7 +77,7 @@ void ModHandler::find_mods(std::string path) {
 
 			ModHandler::Mods.push_back(mod);
 			if (debugOutput) {
-				log("Loaded [" + mod.name + + "@" + mod.version + "]");
+				log(LogType::Normal, "Loaded [", mod.name, "@", mod.version, "]");
 			}
 		}
 	}

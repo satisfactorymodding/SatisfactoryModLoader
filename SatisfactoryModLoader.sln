@@ -9,8 +9,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xinput1_3", "xinput1_3\xinp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseMod", "BaseMod\BaseMod.vcxproj", "{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMod", "TestMod\TestMod.vcxproj", "{022E0DCF-A334-43E3-92A3-2A77F02F0094}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -42,14 +40,6 @@ Global
 		{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}.Release|x64.Build.0 = Release|x64
 		{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}.Release|x86.ActiveCfg = Release|Win32
 		{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}.Release|x86.Build.0 = Release|Win32
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Debug|x64.ActiveCfg = Debug|x64
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Debug|x64.Build.0 = Debug|x64
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Debug|x86.ActiveCfg = Debug|Win32
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Debug|x86.Build.0 = Debug|Win32
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Release|x64.ActiveCfg = Release|x64
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Release|x64.Build.0 = Release|x64
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Release|x86.ActiveCfg = Release|Win32
-		{022E0DCF-A334-43E3-92A3-2A77F02F0094}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -159,28 +159,16 @@
     <ClInclude Include="SatisfactoryModLoader\event\Dispatcher.h" />
     <ClInclude Include="SatisfactoryModLoader\event\Event.h" />
     <ClInclude Include="SatisfactoryModLoader\event\EventLoader.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\AHUDDrawText.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\BeginPlayEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\EnterChatMessageEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\FlyEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\FoliagePickupEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\InventoryHasAuthorityEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\IsFlyingEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\ResourceNodeExtractResourceEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\SpawnActorEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\SuicideEvent.h" />
-    <ClInclude Include="SatisfactoryModLoader\event\game\TakeDamageEvent.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\FunctionHolder.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\EtcEvents.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\PlayerEvents.h" />
     <ClInclude Include="SatisfactoryModLoader\Main.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Mod.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\ModHandler.h" />
     <ClInclude Include="SatisfactoryModLoader\stdafx.h" />
     <ClInclude Include="SatisfactoryModLoader\targetver.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Config.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\Enum.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\FLinearColor.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\FString.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\timer.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
   </ItemGroup>
   <ItemGroup>
@@ -193,7 +181,6 @@
     <ClCompile Include="SatisfactoryModLoader\stdafx.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Config.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\util\timer.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

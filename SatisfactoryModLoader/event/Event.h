@@ -3,17 +3,10 @@
 #include <vector>
 
 enum EventType {
-	OnPreInit,
-	OnFoliagePickup,
-	OnPlayerBeginPlay,
-	OnPlayerTakeDamage,
-	OnPlayerEnterChatMessage,
-	OnPlayerSuicide,
-	OnInventoryHasAuthority,
-	OnAHUDDrawText,
-	OnFly,
-	OnIsFlying,
-	OnMinerExtractResource,
+	PlayerSuicide,
+	PlayerTookDamage,
+	PlayerBeginPlay,
+	PlayerSentMessage,
 	END
 };
 

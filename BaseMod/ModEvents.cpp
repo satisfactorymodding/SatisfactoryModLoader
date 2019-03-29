@@ -1,41 +1,46 @@
-#include "stdafx.h"
-#include "ModInfo.h"
-#include "Utility.h"
+#include <stdafx.h>
+#include <string>
+#include <event/game/PlayerEvents.h>
 #include "ModEvents.h"
-#include <iostream>
-#include <cstdint>
+#include "ModInfo.h"
 
-#include <event/game/FoliagePickupEvent.h>
-#include <event/game/TakeDamageEvent.h>
-
-// Custom Events
-// - Create events you want to hook into the game here
-// - To find out what events you can use, check SatisfactoryModLoader/event/game.
-void OnPreInitializeEvent() {
-	log_mod("Mod Pre initialized!");
-	//Add code which needs to be run when the mod starts here
+void* request_data(EventType type) {
+	auto pointer = (void*(WINAPI*)(EventType))get_function((HMODULE)module, "request_data_other");
+	return pointer(type);
 }
 
-// Called when leaves or sticks are picked up
-void OnPlayerPickupFoliage(std::vector<void*>& args) {
-	log_mod("Picked up foliage");
-	log_mod(args.size());
+void run_event(EventType type, std::vector<void*>& data) {
+	auto pointer = (void(WINAPI*)(EventType, std::vector<void*>&))get_function((HMODULE)module, "request_run_event");
+	if (pointer == NULL) {
+		log(LogType::Error, "Pointer is null");
+		return;
+	}
+	pointer(type, data);
 }
 
-// Called when the player takes damage
-void OnPlayerTakenDamage(std::vector<void*>& args) {
-	log_mod("Taken damage");
-	float dmg = *(float*)args[0];
-	*(float*)args[0] = dmg + 5;
+// custom events
+void suicide() {
+	//void* controller = request_data(EventType::PlayerBeginPlay);
+	if (localPlayerController == NULL) {
+		log(LogType::Error, "Local Controller was NULL when requested.");
+		return;
+	}
+
+	auto args = std::vector<void*>{
+		localPlayerController
+	};
+
+	// runs a mod loader function
+	run_event(EventType::PlayerSuicide, args);
 }
 
-EXTERN_DLL_EXPORT void setup() {
-	OnPreInitializeEvent();
-	dispatcher.subscribe(FoliagePickupEvent::descriptor, OnPlayerPickupFoliage);
-	dispatcher.subscribe(TakeDamageEvent::descriptor, OnPlayerTakenDamage);
+// global events
+EXTERN_DLL_EXPORT void player_begin_play_event(std::vector<void*>& args) {
+	log(LogType::Normal, __FILE__, ": ", __FUNCSIG__);
+	localPlayerController = args[0];
 }
 
-EXTERN_DLL_EXPORT std::vector<void*> run_event(const Event& event, std::vector<void*>& args) {
-	dispatcher.post(event, args);
-	return args;
+EXTERN_DLL_EXPORT void player_sent_message_event(std::vector<void*>& args) {
+	log(LogType::Normal, __FILE__, ": ", __FUNCSIG__);
+	suicide();
 }

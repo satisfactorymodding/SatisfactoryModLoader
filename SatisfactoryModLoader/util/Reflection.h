@@ -1,8 +1,14 @@
 #pragma once
 #include <Windows.h>
 #include <string>
+#include <vector>
+#include <mod/Mod.h>
+
+#define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
 
 FARPROC get_function(HMODULE module, const char* procName);
+
+void get_mod_values(std::vector<Mod> mods, const char* procName, std::vector<void*>& value);
 
 // gets a function's value
 template <typename O>

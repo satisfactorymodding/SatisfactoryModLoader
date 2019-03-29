@@ -9,12 +9,12 @@ bool loadConsole = true;
 bool debugOutput = false;
 
 extern void readConfig() {
-	log("Finding config file...");
+	log(LogType::Normal, "Finding config file...");
 	std::ifstream config("config.cfg");
 	std::string line;
 	if (config.good()) { // see if a config file exists
 		if (config.is_open()) {
-			log("Reading the config file!");
+			log(LogType::Normal, "Reading the config file!");
 			while (getline(config, line)) { // read the config file line by linee
 				if (!(line.substr(0, 1) == "#")) {
 					size_t seperator = line.find(":"); // separate string into a id/value pair
@@ -41,8 +41,8 @@ extern void readConfig() {
 		}
 	}
 	else { // create a config file if does not exist
-		log("No config file found!");
-		log("Creating new config file...");
+		log(LogType::Error, "No config file found!");
+		log(LogType::Normal, "Creating new config file...");
 		std::ofstream configOut("config.cfg");
 		if (configOut.is_open()) {
 			configOut << "# SatisfactoryModLoader config file" << "\n\n";

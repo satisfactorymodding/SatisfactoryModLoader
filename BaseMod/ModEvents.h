@@ -1,3 +1,4 @@
 #pragma once
-#include <event/Dispatcher.h>
-static Dispatcher dispatcher;
+#include <Windows.h>
+
+long long module = 0x180000000;

@@ -2,63 +2,44 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <utility>
 
-static constexpr const char* _header = "SML";
+static constexpr const char* _header = "[SML] ";
+static std::ofstream _logFile("SatisfactoryModLoader.log");
 
-extern std::ofstream logFile;
+enum LogType {
+	Normal,
+	Warning,
+	Error
+};
+
+const int _consoleDefault = 15;
+const int _consoleNormal = 10;
+const int _consoleWarning = 14;
+const int _consoleError = 12;
+
+static bool _usingConsole;
+
+void set_console_color(int color);
+
+void log(LogType type);
 
 // logs a message of <T> with various modifiers
-template<typename T>
-void log(T msg, bool endLine = true, bool showHeader = true, const char* event = "") {
-	// grabs the console
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	// sets the console color
-	SetConsoleTextAttribute(hConsole, 10);
+template<typename First, typename ...Args>
+void log(LogType type, First&& arg0, Args&& ...args) {
+	set_console_color(type == LogType::Normal ? _consoleNormal : type == LogType::Warning ? _consoleWarning : _consoleError);
 
-	// send the header information
-	if (showHeader) {
-		std::cout << "[" << _header;
-
-		if (std::strlen(event) > 0) {
-			std::cout << " | " << event;
-		}
-
-		std::cout << "] ";
+	if (!_usingConsole) {
+		std::cout << _header;
+		_usingConsole = true;
 	}
 
-	// send the message
-	std::cout << msg;
-	if (endLine) {
+	std::cout << std::forward<First>(arg0);
+	log(type, std::forward<Args>(args)...);
+
+	if (sizeof...(args) == 0) {
 		std::cout << std::endl;
+		set_console_color(_consoleDefault);
+		_usingConsole = false;
 	}
-
-	logFile << msg << "\n";
-
-	// reset the console color
-	SetConsoleTextAttribute(hConsole, 15);
-}
-
-// logs an error message of <T> with various modifiers
-template<typename T>
-void logError(T msg, bool endLine = true, bool showHeader = true) {
-	// grabs the console
-	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-	// sets the console color
-	SetConsoleTextAttribute(hConsole, 12);
-
-	// send the header information
-	if (showHeader) {
-		std::cout << "[" << _header << "|ERROR] ";
-	}
-
-	// send the message
-	std::cout << msg;
-	if (endLine) {
-		std::cout << std::endl;
-	}
-
-	logFile << "[ERROR] " << msg << "\n";
-
-	// reset the console color
-	SetConsoleTextAttribute(hConsole, 15);
 }
