@@ -4,26 +4,30 @@
 #include "Reflection.h";
 
 // gets a function from a module by name
-FARPROC get_function(HMODULE module, const char* procName) {
-	FARPROC proc = GetProcAddress(module, procName);
-	if (!proc) {
-		return NULL;
-	}
+//FARPROC get_function(HMODULE module, const char* procName) {
+//	FARPROC proc = GetProcAddress(module, procName);
+//	if (!proc) {
+//		return NULL;
+//	}
+//
+//	return proc;
+//}
 
-	return proc;
+PVOID get_function(std::string module, const char* procName) {
+	return DetourFindFunction((LPCSTR)&(module), procName);
 }
 
-void get_mod_values(std::vector<Mod> mods, const char* procName, std::vector<void*>& value) {
-	for (Mod mod : mods) {
-		//log(LogType::Normal, "Checking Mod: ", mod.name);
-		auto proc = GetProcAddress(mod.fileModule, procName);
-		if (!proc) {
-			//log(LogType::Normal, procName, " not found for mod: ", mod.name);
-			continue;
-		}
+PVOID get_address_function(long long module, const char* procName) {
+	return GetProcAddress((HMODULE)module, procName);
+}
 
-		//log(LogType::Normal, procName, " was found for mod: ", mod.name);
-		auto pointer = (void(WINAPI*)(std::vector<void*>&))proc;
-		pointer(value);
+PVOID get_dll_function(std::string module, const char* procName) {
+	return get_function(module + ".dll", procName);
+}
+
+void run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args) {
+	for (Mod mod : mods) {
+		auto pointer = (void(WINAPI*)(EventType, std::vector<void*>&))get_dll_function(mod.name, "run");
+		pointer(type, args);
 	}
 }

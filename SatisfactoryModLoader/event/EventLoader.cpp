@@ -38,7 +38,6 @@ void EventLoader::hook_events() {
 	hook_event(player_hookshot_primary_key, EventType::PlayerHookshotPrimaryKey, "AFGHookshot::OnPrimaryFirePressed");
 	hook_event(player_hookshot_secondary_key, EventType::PlayerHookshotSecondaryKey, "AFGHookshot::OnSecondaryFirePressed");
 	hook_event(player_portable_miner_dispenser_primary_key, EventType::PlayerPortableMinerDispenserKey, "AFGPortableMinerDispenser::OnPrimaryFirePressed");
-	hook_event(load_item_descriptor, EventType::LoadItemDescriptor, "UFGItemDescriptor::UFGItemDescriptor");
 	// ui events
 	hook_event(u_button_pressed, EventType::UButtonPressed, "UButton::IsPressed");
 	hook_event(u_check_box_pressed, EventType::UCheckBoxPressed, "UCheckBox::IsPressed");
@@ -46,7 +45,6 @@ void EventLoader::hook_events() {
 	hook_event(s_button_pressed, EventType::SButtonPressed, "SButton::IsPressed");
 	hook_event(uak_check_box_pressed, EventType::UAkCheckBoxPressed, "UAkCheckBox::IsPressed");
 	// global events
-	hook_event(game_instance_recieve_init, EventType::GameInstanceRecieveInit, "UGameInstance::ReceiveInit");
 	hook_event(game_instance_get_world, EventType::GameInstanceGetWorld, "UGameInstance::GetWorld");
 }
 

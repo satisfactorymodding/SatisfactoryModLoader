@@ -3,32 +3,24 @@
 #include <string>
 #include <vector>
 #include <mod/Mod.h>
+#include <event/Event.h>
+#include <detours.h>
 
 #define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
 
-FARPROC get_function(HMODULE module, const char* procName);
+static std::string gameModule = "FactoryGame-Win64-Shipping.exe";
+static long long modLoaderModule = 0x180000000;
 
-void get_mod_values(std::vector<Mod> mods, const char* procName, std::vector<void*>& value);
-
-// gets a function's value
-template <typename O>
-bool get_function_value(HMODULE module, const char* procName, O& value) {
-	FARPROC proc = GetProcAddress(module, procName);
-	if (!proc) {
-		return false;
-	}
-
-	typedef O TFUNC();
-	TFUNC* f = (TFUNC*)proc;
-	value = f();
-	return true;
-}
+PVOID get_function(std::string module, const char* procName);
+PVOID get_address_function(long long module, const char* procName);
+PVOID get_dll_function(std::string module, const char* procName);
+void run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args);
 
 // gets a field's value
 template <typename O>
 bool get_field_value(HMODULE module, const char* procName, O& value) {
-	FARPROC proc = get_function(module, procName);
-	if (!proc) {
+	FARPROC proc = GetProcAddress(module, procName);
+	if (proc == NULL) {
 		return false;
 	}
 

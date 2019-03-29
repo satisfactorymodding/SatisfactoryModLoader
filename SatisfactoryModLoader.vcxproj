@@ -177,7 +177,6 @@
   <ItemGroup>
     <ClCompile Include="SatisfactoryModLoader\event\Connection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\event\Dispatcher.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\event\Event.cpp" />
     <ClCompile Include="SatisfactoryModLoader\event\EventLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Main.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\ModHandler.cpp" />

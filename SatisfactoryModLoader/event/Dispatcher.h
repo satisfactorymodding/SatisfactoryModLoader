@@ -13,9 +13,7 @@ class Dispatcher {
 public:
 	Connection subscribe(const EventType& descriptor, EventFunc slot);
 	void unsubscribe(const Connection& connection);
-	void post(const Event& event, std::vector<void*>& args) const {
-		auto type = event.type();
-
+	void post(const EventType type, std::vector<void*>& args) const {
 		if (_observers.find(type) == _observers.end()) {
 			return;
 		}

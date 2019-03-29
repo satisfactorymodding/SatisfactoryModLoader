@@ -15,13 +15,20 @@ void ModHandler::load_mods(const char* startingPath) {
 	ModHandler::find_mods(path);
 }
 
+void ModHandler::setup_mods() {
+	for (Mod mod : mods) {
+		auto pointer = (void(WINAPI*)())get_dll_function(mod.name, "setup");
+		pointer();
+	}
+}
+
 // find all valid mods
 void ModHandler::find_mods(std::string path) {
 	std::string pathExact = path + "\\";
 
 	log(LogType::Normal, "Looking for mods in: ", path);
 
-	ModHandler::Mods = std::vector<Mod>();
+	ModHandler::mods = std::vector<Mod>();
 
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 		if (entry.path().extension().string() == ".dll") {
@@ -52,7 +59,7 @@ void ModHandler::find_mods(std::string path) {
 
 			// check if the mod has already been loaded
 			bool isDuplicate = false;
-			for (Mod existingMod : ModHandler::Mods) {
+			for (Mod existingMod : ModHandler::mods) {
 				if (existingMod.name == modName) {
 					log(LogType::Warning, "Skipping duplicate mod [", existingMod.name, "]");
 					FreeLibrary(dll);
@@ -75,7 +82,7 @@ void ModHandler::find_mods(std::string path) {
 				modAuthors
 			};
 
-			ModHandler::Mods.push_back(mod);
+			ModHandler::mods.push_back(mod);
 			if (debugOutput) {
 				log(LogType::Normal, "Loaded [", mod.name, "@", mod.version, "]");
 			}

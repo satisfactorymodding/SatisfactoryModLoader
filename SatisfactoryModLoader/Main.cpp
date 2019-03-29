@@ -40,14 +40,15 @@ void mod_loader_entry() {
 	// load mods
 	ModHandler modHandler;
 	modHandler.load_mods(p);
+	modHandler.setup_mods();
 
 	// log mod size
-	size_t listSize = modHandler.Mods.size();
+	size_t listSize = modHandler.mods.size();
 	log(LogType::Normal, "Loaded ", listSize, " mod", (listSize > 1 || listSize == 0 ? "s" : ""));
 
 	//display condensed form of mod information
 	std::string modList = "[";
-	for (Mod mod : modHandler.Mods) {
+	for (Mod mod : modHandler.mods) {
 		modList.append(mod.name + "@" + mod.version + ", ");
 	}
 
@@ -56,7 +57,7 @@ void mod_loader_entry() {
 	}
 
 	// hook original functions
-	EventLoader eventLoader(modHandler.Mods);
+	EventLoader eventLoader(modHandler.mods);
 	eventLoader.hook_events();
 
 	log(LogType::Normal, "SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
@@ -65,32 +66,4 @@ void mod_loader_entry() {
 //cleans up when the program is killed
 void cleanup() {
 	_logFile.close();
-}
-
-EXTERN_DLL_EXPORT void* request_data_other(EventType type) {
-	switch (type) {
-	case EventType::PlayerControllerBeginPlay:
-		return localPlayerController;
-	}
-
-	return NULL;
-}
-
-EXTERN_DLL_EXPORT void request_run_event(EventType type, std::vector<void*>& data) {
-	log(LogType::Normal, "request_run_event");
-
-	long long module = 0x180000000;
-
-	FARPROC function;
-
-	switch (type) {
-	case EventType::PlayerSuicide:
-		function = get_function((HMODULE)module, "player_suicide");
-		((void(WINAPI*)(void*))function)(data[0]);
-		break;
-	case EventType::GameGetPlayer:
-		function = get_function((HMODULE)module, "game_get_player");
-		((void*(WINAPI*)(void*, int))function)(data[0], 0);
-		break;
-	}
 }
