@@ -34,13 +34,29 @@ void suicide() {
 	run_event(EventType::PlayerSuicide, args);
 }
 
+void get_player() {
+	if (worldInstance == NULL) {
+		log(LogType::Error, "World Instance was NULL when requested.");
+		return;
+	}
+
+	auto args = std::vector<void*>{
+		worldInstance
+	};
+
+	// runs a mod loader function
+	run_event(EventType::GameGetPlayer, args);
+}
+
 // global events
 EXTERN_DLL_EXPORT void player_begin_play_event(std::vector<void*>& args) {
-	log(LogType::Normal, __FILE__, ": ", __FUNCSIG__);
 	localPlayerController = args[0];
 }
 
+EXTERN_DLL_EXPORT void game_instance_get_world_event(std::vector<void*>& args) {
+	worldInstance = args[0];
+}
+
 EXTERN_DLL_EXPORT void player_sent_message_event(std::vector<void*>& args) {
-	log(LogType::Normal, __FILE__, ": ", __FUNCSIG__);
-	suicide();
+	get_player();
 }

@@ -7,6 +7,9 @@ enum EventType {
 	PlayerTookDamage,
 	PlayerBeginPlay,
 	PlayerSentMessage,
+	GameInstanceRecieveInit,
+	GameInstanceGetWorld,
+	GameGetPlayer,
 	END
 };
 

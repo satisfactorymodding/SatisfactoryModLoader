@@ -81,10 +81,16 @@ EXTERN_DLL_EXPORT void request_run_event(EventType type, std::vector<void*>& dat
 
 	long long module = 0x180000000;
 
+	FARPROC function;
+
 	switch (type) {
 	case EventType::PlayerSuicide:
-		auto function = get_function((HMODULE)module, "player_suicide");
+		function = get_function((HMODULE)module, "player_suicide");
 		((void(WINAPI*)(void*))function)(data[0]);
+		break;
+	case EventType::GameGetPlayer:
+		function = get_function((HMODULE)module, "game_get_player");
+		((void*(WINAPI*)(void*, int))function)(data[0], 0);
 		break;
 	}
 }

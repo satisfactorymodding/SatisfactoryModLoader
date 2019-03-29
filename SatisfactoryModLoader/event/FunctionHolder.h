@@ -7,4 +7,6 @@
 
 static std::map<EventType, PVOID> hookedFunctions;
 static std::vector<Mod> modList;
-static void* localPlayerController = NULL;
+static void* localPlayerController;
+static void* gameInstance;
+static void* worldInstance;
