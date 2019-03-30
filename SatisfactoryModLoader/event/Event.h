@@ -40,6 +40,7 @@ enum EventType {
 	InputKey,
 	InventoryRegister,
 	InventorySort,
+	ActorGetWorld,
 	END
 };
 

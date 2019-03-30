@@ -49,6 +49,9 @@ void EventLoader::hook_events() {
 	// etc events
 	hook_event(input_key, EventType::InputKey, "UPlayerInput::InputKey");
 	hook_event(inventory_sort, EventType::InventorySort, "UFGInventoryComponent::SortInventory");
+
+	// non-hook events
+	insert_event(EventType::ActorGetWorld, "AActor::GetWorld");
 }
 
 // hooks an event into an original function
@@ -70,4 +73,8 @@ void EventLoader::hook_event(PVOID hook, EventType type, const char* function) {
 	DetourTransactionCommit();
 
 	hookedFunctions.insert(std::pair<EventType, PVOID>(type, func));
+}
+
+void EventLoader::insert_event(EventType type, const char* function) {
+	hookedFunctions.insert(std::pair<EventType, PVOID>(type, DetourFindFunction(gameModule, function)));
 }

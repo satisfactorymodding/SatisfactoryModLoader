@@ -10,4 +10,5 @@ public:
 	void hook_events();
 private:
 	void hook_event(PVOID hook, EventType type, const char* function);
+	void insert_event(EventType type, const char* function);
 };
