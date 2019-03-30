@@ -36,5 +36,6 @@ enum EventType {
 	SButtonPressed,
 	GameInstanceGetWorld,
 	GameGetPlayer,
+	ItemDescriptorConstructor,
 	END
 };

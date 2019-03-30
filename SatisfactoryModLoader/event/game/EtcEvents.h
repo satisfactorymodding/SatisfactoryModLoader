@@ -7,3 +7,9 @@ static void player_took_damage(void* healthComponent, void* damagedActor, float 
 	auto pointer = (void(WINAPI*)(void*, void*, float, void*, void* ,void*))hookedFunctions[EventType::PlayerTookDamage];
 	pointer(healthComponent, damagedActor, damageAmount, damageType, instigatedBy, damageCauser);
 }
+
+// ; void __fastcall UFGItemDescriptor::UFGItemDescriptor(UFGItemDescriptor *this)
+void item_descriptor_constructor(void* item) {
+	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::ItemDescriptorConstructor];
+	pointer(item);
+}
