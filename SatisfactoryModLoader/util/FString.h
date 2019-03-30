@@ -6,11 +6,13 @@ struct FString {
 	int16_t* data;
 	int32_t length;
 
+	FString();
 	FString(const char* message);
-
 private:
 	void create_message(const char* message);
 };
+
+FString::FString(){}
 
 FString::FString(const char* message) {
 	this->create_message(message);

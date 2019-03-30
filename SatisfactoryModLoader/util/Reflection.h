@@ -6,14 +6,13 @@
 #include <event/Event.h>
 #include <detours.h>
 
-#define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
+#define GLOBAL extern "C" __declspec(dllexport)
 
-static std::string gameModule = "FactoryGame-Win64-Shipping.exe";
+static const char* gameModule = "FactoryGame-Win64-Shipping.exe";
 static long long modLoaderModule = 0x180000000;
 
 PVOID get_function(std::string module, const char* procName);
 PVOID get_address_function(long long module, const char* procName);
-PVOID get_dll_function(std::string module, const char* procName);
 void run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args);
 
 // gets a field's value

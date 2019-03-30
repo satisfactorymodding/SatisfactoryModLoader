@@ -7,7 +7,7 @@
 #include <util/FString.h>
 
 // other extern events
-EXTERN_DLL_EXPORT void player_send_message(void* player, std::string message) {
+GLOBAL void player_send_message(void* player, std::string message) {
 	FString msg = message.c_str();
 
 	auto pointer = (void(WINAPI*)(void*, FString*))hookedFunctions[EventType::PlayerSentMessage];
@@ -20,9 +20,8 @@ EXTERN_DLL_EXPORT void player_send_message(void* player, std::string message) {
 void player_controller_begin_play(void* controller) {
 	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::PlayerControllerBeginPlay];
 	localPlayerController = controller;
-	float testFloat = 6;
 	auto args = std::vector<void*>{
-		controller, &testFloat
+		controller
 	};
 	run_mods(modList, EventType::PlayerControllerBeginPlay, args);
 	pointer(controller);
@@ -36,7 +35,7 @@ void player_begin_play(void* player) {
 }
 
 //; void __fastcall AFGPlayerController::Suicide(AFGPlayerController *this)
-EXTERN_DLL_EXPORT void player_suicide(void* player) {
+GLOBAL void player_suicide(void* player) {
 	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::PlayerSuicide];
 	pointer(player);
 }

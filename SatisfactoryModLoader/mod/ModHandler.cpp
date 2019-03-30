@@ -17,7 +17,12 @@ void ModHandler::load_mods(const char* startingPath) {
 
 void ModHandler::setup_mods() {
 	for (Mod mod : mods) {
-		auto pointer = (void(WINAPI*)())get_dll_function(mod.name, "setup");
+		log(LogType::Normal, "Setting up ", mod.name);
+		auto pointer = (void(WINAPI*)())get_function(mod.name, "setup");
+		if (pointer == NULL) {
+			log(LogType::Error, "Setup function missing for ", mod.name);
+			continue;
+		}
 		pointer();
 	}
 }
@@ -88,5 +93,4 @@ void ModHandler::find_mods(std::string path) {
 			}
 		}
 	}
-
 }

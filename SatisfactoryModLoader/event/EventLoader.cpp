@@ -46,6 +46,9 @@ void EventLoader::hook_events() {
 	hook_event(uak_check_box_pressed, EventType::UAkCheckBoxPressed, "UAkCheckBox::IsPressed");
 	// global events
 	hook_event(game_instance_get_world, EventType::GameInstanceGetWorld, "UGameInstance::GetWorld");
+	// etc events
+	hook_event(input_key, EventType::InputKey, "UPlayerInput::InputKey");
+	hook_event(inventory_sort, EventType::InventorySort, "UFGInventoryComponent::SortInventory");
 }
 
 // hooks an event into an original function
@@ -54,7 +57,7 @@ void EventLoader::hook_event(PVOID hook, EventType type, const char* function) {
 	DetourUpdateThread(GetCurrentThread());
 
 	// find the function by name
-	PVOID func = DetourFindFunction("FactoryGame-Win64-Shipping.exe", function);
+	PVOID func = DetourFindFunction(gameModule, function);
 	if (!func) {
 		log(LogType::Error, "Invalid function: ", function);
 		return;
