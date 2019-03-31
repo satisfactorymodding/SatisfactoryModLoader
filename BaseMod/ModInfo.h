@@ -9,7 +9,7 @@
 
 #define GLOBAL extern "C" __declspec(dllexport)
 
-GLOBAL std::string ModName;
-GLOBAL std::string ModVersion;
-GLOBAL std::string ModDescription;
-GLOBAL std::string ModAuthors;
+GLOBAL const std::string ModName;
+GLOBAL const std::string ModVersion;
+GLOBAL const std::string ModDescription;
+GLOBAL const std::string ModAuthors;
