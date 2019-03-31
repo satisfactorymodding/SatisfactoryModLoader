@@ -13,7 +13,7 @@ PVOID get_address_function(long long module, const char* procName) {
 
 void run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args) {
 	for (Mod mod : mods) {
-		auto pointer = (void(WINAPI*)(EventType, std::vector<void*>&))get_function(mod.name, "run");
+		auto pointer = (void(WINAPI*)(EventType, std::vector<void*>&))get_function(mod.fileName, "run");
 		pointer(type, args);
 	}
 }

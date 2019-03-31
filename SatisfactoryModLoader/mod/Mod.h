@@ -3,7 +3,7 @@
 #include <string>
 
 struct Mod {
-	LPCWSTR fileName;
+	std::string fileName;
 	HMODULE fileModule;
 	std::string name;
 	std::string version;

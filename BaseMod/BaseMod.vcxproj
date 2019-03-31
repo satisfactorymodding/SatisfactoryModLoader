@@ -51,7 +51,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\mods\</OutDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\mods\$(ProjectName)\</OutDir>
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)xinput1_3\detours</IncludePath>
     <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(SolutionDir)xinput1_3\detours</LibraryPath>
   </PropertyGroup>
