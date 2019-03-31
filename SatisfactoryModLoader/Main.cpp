@@ -12,6 +12,8 @@
 #include <event/EventLoader.h>
 #include <event/FunctionHolder.h>
 
+#include <chrono>
+#include <thread>
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
 	// launch the game's internal console and hook into it
@@ -21,7 +23,6 @@ void mod_loader_entry() {
 	freopen_s(&fp, "CONOIN$", "r", stdin);
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
-	remove("SatisfactoryModLoader.log");
 
 	log(LogType::Normal, "Attached SatisfactoryModLoader to Satisfactory");
 
@@ -65,5 +66,6 @@ void mod_loader_entry() {
 
 //cleans up when the program is killed
 void cleanup() {
+	log(LogType::Normal, "SML shutting down...");
 	_logFile.close();
 }

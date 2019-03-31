@@ -6,7 +6,7 @@
 #include "ModInfo.h"
 
 void setup() {
-	log(LogType::Normal, "Setup completed for ", ModName);
+	mod_log(ModName, "Setup completed for ", ModName);
 }
 
 void run(EventType type, std::vector<void*>& args) {
