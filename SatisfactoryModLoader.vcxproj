@@ -160,6 +160,7 @@
     <ClInclude Include="SatisfactoryModLoader\util\Config.h" />
     <ClInclude Include="SatisfactoryModLoader\util\FKey.h" />
     <ClInclude Include="SatisfactoryModLoader\util\FString.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\json.hpp" />
     <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
   </ItemGroup>

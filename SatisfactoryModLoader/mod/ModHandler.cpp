@@ -47,10 +47,10 @@ void ModHandler::find_mods(std::string path) {
 
 			HMODULE dll = LoadLibrary(sw);
 
-			std::string modName;
-			std::string modVersion;
-			std::string modDescription;
-			std::string modAuthors;
+			const char* modName;
+			const char* modVersion;
+			const char* modDescription;
+			const char* modAuthors;
 
 			if (!get_field_value(dll, "ModName", modName) ||
 				!get_field_value(dll, "ModVersion", modVersion) ||
