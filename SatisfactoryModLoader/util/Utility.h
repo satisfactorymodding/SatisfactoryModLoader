@@ -25,7 +25,11 @@ static bool _firstLogLine = true;
 
 void set_console_color(int color);
 
+void log();
+
 void log(LogType type);
+
+void mod_log(std::string modname);
 
 // logs a message of <T> with various modifiers
 template<typename First, typename ...Args>
@@ -95,9 +99,9 @@ void mod_log(std::string modname, First&& arg0, Args&& ...args) {
 		_firstLogLine = false;
 	}
 
-	_logFile << std::forward<First>(arg0);
 	std::cout << std::forward<First>(arg0);
-	log(modname, std::forward<Args>(args)...);
+	_logFile << std::forward<First>(arg0);
+	mod_log(modname, std::forward<Args>(args)...);
 
 	if (sizeof...(args) == 0) {
 		_firstLogLine = true;
