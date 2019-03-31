@@ -5,10 +5,10 @@
 #include "BaseMod.h"
 #include "ModInfo.h"
 
-void setup() {
+GLOBAL void setup() {
 	mod_log(ModName, "Setup completed for ", ModName);
 }
 
-void run(EventType type, std::vector<void*>& args) {
+GLOBAL void run(EventType type, std::vector<void*>& args) {
 	dispatcher.post(type, args);
 }
