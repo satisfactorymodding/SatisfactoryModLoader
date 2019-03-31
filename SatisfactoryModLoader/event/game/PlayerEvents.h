@@ -45,13 +45,24 @@ GLOBAL void player_suicide(void* player) {
 void player_sent_message(void* player, FString* message) {
 	auto pointer = (void(WINAPI*)(void*, FString*))hookedFunctions[EventType::PlayerSentMessage];
 	bool useMessage = true;
+
+	char* chars = new char[message->length];
+
+	for (size_t i = 0; i < message->length; i++) {
+		chars[i] = message->data[i];
+	}
+
+	std::string str(chars);
+
 	auto args = std::vector<void*>{
-		&useMessage
+		&useMessage, &str
 	};
+
 	run_mods(modList, EventType::PlayerSentMessage, args);
 	if (!useMessage) { 
 		return; 
 	}
+
 	pointer(player, message);
 }
 

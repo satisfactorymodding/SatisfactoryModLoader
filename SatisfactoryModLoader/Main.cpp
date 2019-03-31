@@ -5,6 +5,8 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <functional>
+#include <chrono>
+#include <thread>
 #include <util/Utility.h>
 #include <util/Config.h>
 #include <util/Reflection.h>
@@ -12,8 +14,6 @@
 #include <event/EventLoader.h>
 #include <event/FunctionHolder.h>
 
-#include <chrono>
-#include <thread>
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
 	// launch the game's internal console and hook into it

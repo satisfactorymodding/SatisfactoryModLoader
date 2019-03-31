@@ -23,8 +23,8 @@ bool get_field_value(HMODULE module, const char* procName, O& value) {
 		return false;
 	}
 
-	typedef O(funcN);
-	funcN* n1 = (funcN*)proc;
+	//typedef O(funcN);
+	O* n1 = (O*)proc;
 	value = *n1;
 	return true;
 }

@@ -20,7 +20,6 @@ const int _consoleError = 12;
 const int _consoleMod = 11;
 
 static bool _usingConsole;
-
 static bool _firstLogLine = true;
 
 void set_console_color(int color);
