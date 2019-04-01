@@ -2,6 +2,8 @@
 
 void readConfig();
 
-extern bool loadConsole;
+static bool loadConsole = true;
 
-extern bool debugOutput;
+static bool debugOutput = false;
+
+static bool supressErrors = false;
