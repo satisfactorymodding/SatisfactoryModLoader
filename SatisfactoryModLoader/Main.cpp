@@ -30,6 +30,8 @@ void mod_loader_entry() {
 	// load up all of the configuration information
 	readConfig();
 
+	check_version(targetVersion);
+
 	if (loadConsole) {
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	}
@@ -61,8 +63,6 @@ void mod_loader_entry() {
 	// hook original functions
 	EventLoader eventLoader(modHandler.mods);
 	eventLoader.hook_events();
-
-	check_version(targetVersion);
 
 	log(LogType::Normal, "SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
