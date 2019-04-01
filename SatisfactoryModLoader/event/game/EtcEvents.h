@@ -23,6 +23,10 @@ static void player_took_damage(void* healthComponent, void* damagedActor, float 
 
 // ; void __fastcall UFGItemDescriptor::UFGItemDescriptor(UFGItemDescriptor *this)
 void item_descriptor_constructor(void* item) {
+	auto args = std::vector<void*>{
+		item
+	};
+	run_mods(modList, EventType::ItemDescriptorConstructor, args);
 	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::ItemDescriptorConstructor];
 	pointer(item);
 }
@@ -51,16 +55,28 @@ GLOBAL void inventory_sort(void* inventory) {
 
 // ; bool __fastcall UPlayerInput::InputKey(UPlayerInput *this, FKey Key, EInputEvent Event, float AmountDepressed, bool bGamepad)
 bool input_key(void* input, void* key, void* event, float amountDepressed, bool gamepad) {
+	auto args = std::vector<void*>{
+		input,
+		key,
+		event,
+		&amountDepressed,
+		&gamepad
+	};
+	run_mods(modList, EventType::InputKey, args);
 	auto pointer = (bool(WINAPI*)(void*, void*, void*, float, bool))hookedFunctions[EventType::InputKey];
 	bool down = pointer(input, key, event, amountDepressed, gamepad);
-
-	auto args = std::vector<void*>{};
-	run_mods(modList, EventType::InputKey, args);
 	return down;
 }
 
 // ; void __fastcall AActor::GetComponents<UFGInventoryComponent,FDefaultAllocator>(AActor *this, TArray<UFGInventoryComponent *,FDefaultAllocator> *OutComponents, bool bIncludeFromChildActors)
 void get_inventories(void* actor, void* outComponents, bool includeChildren) {
+	auto args = std::vector<void*>{
+		actor,
+		outComponents,
+		&includeChildren
+
+	};
+	run_mods(modList, EventType::InventoryRegister, args);
 	auto pointer = (bool(WINAPI*)(void*, void*, bool))hookedFunctions[EventType::InventoryRegister];
 	pointer(actor, outComponents, includeChildren);
 }
