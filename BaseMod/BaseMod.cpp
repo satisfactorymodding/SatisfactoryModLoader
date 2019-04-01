@@ -21,7 +21,7 @@
 	get_mod_loader_function(functionName) - runs a modloader event by name
 	dispatcher.subscribe(type, function)  - subscribes a function to an event
 	GetAsyncKeyState(key)				  - checks a key press
-	mod_log(logType, msg)				  - logs a message to the console
+	mod_log(modName, msg)				  - logs a message to the console
 
 */
 
@@ -29,7 +29,7 @@ void* player;
 
 void killing_player() {
 	if (player != NULL) {
-		log(LogType::Normal, "Attempting to kill the player");
+		mod_log("BaseMod", "Attempting to kill the player");
 		auto pointer = (void(WINAPI*)(void*))get_mod_loader_function("player_suicide");
 		pointer(player);
 	}
@@ -37,13 +37,13 @@ void killing_player() {
 
 void check_f_key(std::vector<void*>& args) {
 	if (GetAsyncKeyState('G')) {
-		log(LogType::Normal, "G key pressed");
+		mod_log("BaseMod", "G key pressed");
 		killing_player();
 	}
 }
 
 void getting_player(std::vector<void*>& args) {
-	log(LogType::Normal, "Got player");
+	mod_log("BaseMod", "Got player");
 	player = args[0];
 }
 
