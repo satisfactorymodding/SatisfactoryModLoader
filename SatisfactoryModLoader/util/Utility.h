@@ -24,6 +24,8 @@ static bool _firstLogLine = true;
 
 void set_console_color(int color);
 
+void check_version(std::string target);
+
 void log();
 
 void log(LogType type);

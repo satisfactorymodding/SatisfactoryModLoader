@@ -1,5 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include <stdafx.h>
+#include <Main.h>
 #include <string>
 #include <iostream>
 #include <Windows.h>
@@ -60,6 +61,8 @@ void mod_loader_entry() {
 	// hook original functions
 	EventLoader eventLoader(modHandler.mods);
 	eventLoader.hook_events();
+
+	check_version(targetVersion);
 
 	log(LogType::Normal, "SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
