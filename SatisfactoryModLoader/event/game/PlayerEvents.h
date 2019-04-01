@@ -40,6 +40,7 @@ void player_begin_play(void* player) {
 
 //; void __fastcall AFGPlayerController::Suicide(AFGPlayerController *this)
 GLOBAL void player_suicide(void* player) {
+	log(LogType::Normal, "Attempting to kill the player 2");
 	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::PlayerSuicide];
 	auto args = std::vector<void*>{
 		player

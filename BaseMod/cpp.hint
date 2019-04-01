@@ -6,3 +6,4 @@
 // such as names of functions and macros.
 // For more information see https://go.microsoft.com/fwlink/?linkid=865984
 #define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
+#define GLOBAL extern "C" __declspec(dllexport)
