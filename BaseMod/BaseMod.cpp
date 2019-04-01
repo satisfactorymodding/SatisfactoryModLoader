@@ -21,7 +21,7 @@
 	get_mod_loader_function(functionName) - runs a modloader event by name
 	dispatcher.subscribe(type, function)  - subscribes a function to an event
 	GetAsyncKeyState(key)				  - checks a key press
-	log(logType, msg)					  - logs a message to the console
+	mod_log(logType, msg)				  - logs a message to the console
 
 */
 
