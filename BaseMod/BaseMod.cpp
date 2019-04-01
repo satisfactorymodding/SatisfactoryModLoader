@@ -6,6 +6,24 @@
 #include "ModInfo.h"
 
 // example events
+/*
+
+	[Tips]
+	Pointers passed from the original function to the mod loader are not
+		able to be used in a mod. They are fake pointers, so you need to
+		send it back to the mod loader when you call a function from there
+
+	Here is an example of getting a value from the args:
+	float value							  : float f = *(float*)args[0];
+	float pointer						  : float* fPtr = (float*)args[0];
+
+	[Useful functions]
+	get_mod_loader_function(functionName) - runs a modloader event by name
+	dispatcher.subscribe(type, function)  - subscribes a function to an event
+	GetAsyncKeyState(key)				  - checks a key press
+	log(logType, msg)					  - logs a message to the console
+
+*/
 
 void* player;
 
