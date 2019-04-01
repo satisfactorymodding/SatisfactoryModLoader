@@ -12,7 +12,7 @@ void* player;
 void killing_player() {
 	if (player != NULL) {
 		log(LogType::Normal, "Attempting to kill the player");
-		auto pointer = (void(WINAPI*)(void*))get_address_function(modLoaderModule, "player_suicide");
+		auto pointer = (void(WINAPI*)(void*))get_mod_loader_function("player_suicide");
 		pointer(player);
 	}
 }

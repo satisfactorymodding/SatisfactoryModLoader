@@ -11,6 +11,10 @@ PVOID get_address_function(long long module, const char* procName) {
 	return GetProcAddress((HMODULE)module, procName);
 }
 
+PVOID get_mod_loader_function(const char* procName) {
+	return GetProcAddress((HMODULE)modLoaderModule, procName);
+}
+
 void run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args) {
 	for (Mod mod : mods) {
 		auto pointer = (void(WINAPI*)(EventType, std::vector<void*>&))get_function(mod.fileName, "run");
