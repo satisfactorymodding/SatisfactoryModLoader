@@ -25,7 +25,13 @@ void mod_loader_entry() {
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 
-	log(LogType::Normal, "Attached SatisfactoryModLoader to Satisfactory");
+	info("Test");
+	warning("Test");
+	error("Test");
+	info_mod("Mod", "Test");
+	warning_mod("BaseMod", "Test");
+	error_mod("BaseMod", "Test");
+	info("Attached SatisfactoryModLoader to Satisfactory");
 
 	// load up all of the configuration information
 	readConfig();
@@ -48,7 +54,7 @@ void mod_loader_entry() {
 
 	// log mod size
 	size_t listSize = modHandler.mods.size();
-	log(LogType::Normal, "Loaded ", listSize, " mod", (listSize > 1 || listSize == 0 ? "s" : ""));
+	info("Loaded ", listSize, " mod", (listSize > 1 || listSize == 0 ? "s" : ""));
 
 	//display condensed form of mod information
 	std::string modList = "[";
@@ -57,18 +63,18 @@ void mod_loader_entry() {
 	}
 
 	if (listSize > 0) {
-		log(LogType::Normal, "Loaded mods: ", modList.substr(0, modList.length() - 2), "]");
+		info("Loaded mods: ", modList.substr(0, modList.length() - 2), "]");
 	}
 
 	// hook original functions
 	EventLoader eventLoader(modHandler.mods);
 	eventLoader.hook_events();
 
-	log(LogType::Normal, "SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
+	info("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
 
 //cleans up when the program is killed
 void cleanup() {
-	log(LogType::Normal, "SML shutting down...");
+	info("SML shutting down...");
 	_logFile.close();
 }

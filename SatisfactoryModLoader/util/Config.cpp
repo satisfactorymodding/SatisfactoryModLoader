@@ -10,13 +10,13 @@
 using json = nlohmann::json;
 
 extern void readConfig() {
-	log(LogType::Normal, "Finding config file...");
+	info("Finding config file...");
 	std::ifstream config("config.cfg");
 	std::string line;
 	// see if a config file exists
 	if (config.good()) {
 		if (config.is_open()) {
-			log(LogType::Normal, "Reading the config file");
+			info("Reading the config file");
 			
 			std::string contents;
 			// read the config file line by line
@@ -38,8 +38,8 @@ extern void readConfig() {
 	}
 	// create a config file if does not exist
 	else {
-		log(LogType::Error, "No config file found!");
-		log(LogType::Normal, "Creating new config file...");
+		error("No config file found!");
+		info("Creating new config file...");
 		std::ofstream configOut("config.cfg");
 		if (configOut.is_open()) {
 			auto j = R"({

@@ -29,7 +29,7 @@ void* player;
 
 void killing_player() {
 	if (player != NULL) {
-		mod_log("BaseMod", "Attempting to kill the player");
+		info_mod("BaseMod", "Attempting to kill the player");
 		auto pointer = (void(WINAPI*)(void*))get_mod_loader_function("player_suicide");
 		pointer(player);
 	}
@@ -37,14 +37,14 @@ void killing_player() {
 
 bool check_g_key(std::vector<void*>& args) {
 	if (GetAsyncKeyState('G')) {
-		mod_log("BaseMod", "G key pressed");
+		info_mod("BaseMod", "G key pressed");
 		killing_player();
 	}
 	return true;
 }
 
 bool getting_player(std::vector<void*>& args) {
-	mod_log("BaseMod", "Got player");
+	info_mod("BaseMod", "Got player");
 	player = args[0];
 	return true;
 }

@@ -21,10 +21,10 @@ void ModHandler::load_mods(const char* startingPath) {
 
 void ModHandler::setup_mods() {
 	for (Mod mod : mods) {
-		log(LogType::Normal, "Setting up ", mod.name);
+		info("Setting up ", mod.name);
 		auto pointer = (void(WINAPI*)())get_function(mod.fileName, "setup");
 		if (pointer == NULL) {
-			log(LogType::Error, "Setup function missing for ", mod.name);
+			error("Setup function missing for ", mod.name);
 			continue;
 		}
 		pointer();
@@ -36,7 +36,7 @@ void ModHandler::get_files(std::string path) {
 
 	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 
-		log(LogType::Normal, entry.path().string());
+		info(entry.path().string());
 
 		if (!entry.path().has_extension()) {
 			get_files(entry.path().string());
@@ -47,7 +47,7 @@ void ModHandler::get_files(std::string path) {
 			std::string file = pathExact + entry.path().filename().string();
 			std::wstring stemp = std::wstring(file.begin(), file.end());
 			if (debugOutput) {
-				log(LogType::Normal, "Attempting to load mod: ", file);
+				info("Attempting to load mod: ", file);
 			}
 
 			LPCWSTR sw = stemp.c_str();
@@ -58,7 +58,7 @@ void ModHandler::get_files(std::string path) {
 			size_t namePos = s.find_last_of('.');
 			std::string fileName = s.substr(0, namePos);
 
-			log(LogType::Normal, "Path: " + path + "\\" + fileName + ".cfg");
+			info("Path: " + path + "\\" + fileName + ".cfg");
 
 			std::ifstream config(path + "\\" + fileName + ".cfg");
 			std::string line;
@@ -78,7 +78,7 @@ void ModHandler::get_files(std::string path) {
 					bool isDuplicate = false;
 					for (Mod existingMod : ModHandler::mods) {
 						if (existingMod.name == j["Name"]) {
-							log(LogType::Warning, "Skipping duplicate mod [", existingMod.name, "]");
+							warning("Skipping duplicate mod [", existingMod.name, "]");
 							FreeLibrary(dll);
 							isDuplicate = true;
 							break;
@@ -101,12 +101,12 @@ void ModHandler::get_files(std::string path) {
 
 					ModHandler::mods.push_back(mod);
 					if (debugOutput) {
-						log(LogType::Normal, "Loaded [", mod.name, "@", mod.version, "]");
+						info("Loaded [", mod.name, "@", mod.version, "]");
 					}
 				}
 			}
 			else {
-				log(LogType::Error, "Mod DLL ", fileName, " does not have the required information!");
+				error("Mod DLL ", fileName, " does not have the required information!");
 				FreeLibrary(dll);
 				continue;
 			}
@@ -118,7 +118,7 @@ void ModHandler::get_files(std::string path) {
 void ModHandler::find_mods(std::string path) {
 	std::string pathExact = path + "\\";
 
-	log(LogType::Normal, "Looking for mods in: ", path);
+	info("Looking for mods in: ", path);
 
 	ModHandler::mods = std::vector<Mod>();
 

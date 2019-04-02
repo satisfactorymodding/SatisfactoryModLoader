@@ -15,7 +15,7 @@ void player_controller_begin_play(void* controller) {
 	long long newAddress = address + offset;
 	void* p = (void*)newAddress;
 
-	log(LogType::Normal, "inTutorialMode: ", *(BOOL*)p);
+	info("inTutorialMode: ", *(BOOL*)p);
 	auto args = std::vector<void*>{
 		controller
 	};

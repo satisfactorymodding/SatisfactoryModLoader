@@ -4,90 +4,126 @@
 #include <fstream>
 #include <utility>
 
-static constexpr const char* _header = "[SML] ";
 static std::ofstream _logFile("SatisfactoryModLoader.log", std::ios_base::app);
 
 enum LogType {
-	Normal,
+	Info,
 	Warning,
-	Error
+	Error,
+	ModInfo,
+	ModWarning,
+	ModError
 };
 
-const int _consoleDefault = 15;
-const int _consoleNormal = 10;
-const int _consoleWarning = 14;
-const int _consoleError = 12;
-const int _consoleMod = 11;
-
 static bool _usingConsole;
-static bool _firstLogLine = true;
 
-void set_console_color(int color);
+enum ConsoleColor {
+	DarkBlue,
+	DarkGreen,
+	DarkCyan,
+	DarkRed,
+	DarkMagenta,
+	DarkYellow,
+	DarkWhite,
+	Grey,
+	Blue,
+	Green,
+	Cyan,
+	Red,
+	Magenta,
+	Yellow,
+	White
+};
+
+void set_console_color(ConsoleColor color);
 
 void check_version(std::string target);
 
 void log();
 
-void log(LogType type);
+void log(std::string header, LogType type);
 
 void mod_log(std::string modname);
 
 // logs a message of <T> with various modifiers
 template<typename First, typename ...Args>
-void log(LogType type, First&& arg0, Args&& ...args) {
-	set_console_color(type == LogType::Normal ? _consoleNormal : type == LogType::Warning ? _consoleWarning : _consoleError);
-
+void log(std::string header, LogType type, First&& arg0, Args&& ...args) {
 	if (!_usingConsole) {
-		std::cout << _header;
 		_usingConsole = true;
+
+		std::string logType;
+
+		switch (type) {
+		case Info:
+		case ModInfo:
+			logType = "Info]    ";
+			break;
+		case Warning:
+		case ModWarning:
+			logType = "Warning] ";
+			break;
+		case Error:
+		case ModError:
+			logType = "Error]   ";
+			break;
+		}
+
+		// log line
+		_logFile << "[" + header + "::" + logType;
+
+		// cout line
+		set_console_color(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
+		std::cout << "[" << header << "] ";
+
+		set_console_color(
+			type == LogType::Info || type == LogType::ModInfo ? ConsoleColor::Green :
+			type == LogType::Warning || type == LogType::ModWarning ? ConsoleColor::Yellow :
+			ConsoleColor::Red);
 	}
 
-	if (_firstLogLine) {
-		if (type == LogType::Warning) {
-			_logFile << "[WARN]";
-		}
-		if (type == LogType::Error) {
-			_logFile << "[ERROR]";
-		}
-		_firstLogLine = false;
-	}
 	std::cout << std::forward<First>(arg0);
 	_logFile << std::forward<First>(arg0);
-	log(type, std::forward<Args>(args)...);
+	log(header, type, std::forward<Args>(args)...);
 
 	if (sizeof...(args) == 0) {
-		_firstLogLine = true;
-		_logFile << std::endl;
 		std::cout << std::endl;
-		set_console_color(_consoleDefault);
-		_usingConsole = false;
+		_logFile << std::endl;
+		set_console_color(ConsoleColor::White);
 	}
 }
 
 template<typename First, typename ...Args>
-void mod_log(std::string modname, First&& arg0, Args&& ...args) {
-	set_console_color(_consoleMod);
+void info(First&& arg0, Args&& ...args) {
+	_usingConsole = false;
+	log("SML", LogType::Info, arg0, args...);
+}
 
-	if (!_usingConsole) {
-		std::cout << _header;
-		_usingConsole = true;
-	}
+template<typename First, typename ...Args>
+void warning(First&& arg0, Args&& ...args) {
+	_usingConsole = false;
+	log("SML", LogType::Warning, arg0, args...);
+}
 
-	if (_firstLogLine) {
-		std::cout << "[" + modname + "] ";
-		_logFile << "[" + modname + "] ";
-		_firstLogLine = false;
-	}
+template<typename First, typename ...Args>
+void error(First&& arg0, Args&& ...args) {
+	_usingConsole = false;
+	log("SML", LogType::Error, arg0, args...);
+}
 
-	std::cout << std::forward<First>(arg0);
-	_logFile << std::forward<First>(arg0);
-	mod_log(modname, std::forward<Args>(args)...);
+template<typename First, typename ...Args>
+void info_mod(std::string mod, First&& arg0, Args&& ...args) {
+	_usingConsole = false;
+	log(mod, LogType::ModInfo, arg0, args...);
+}
 
-	if (sizeof...(args) == 0) {
-		_firstLogLine = true;
-		_logFile << std::endl;
-		std::cout << std::endl;
-		set_console_color(_consoleDefault);
-		_usingConsole = false;
-	}
+template<typename First, typename ...Args>
+void warning_mod(std::string mod, First&& arg0, Args&& ...args) {
+	_usingConsole = false;
+	log(mod, LogType::ModWarning, arg0, args...);
+}
+
+template<typename First, typename ...Args>
+void error_mod(std::string mod, First&& arg0, Args&& ...args) {
+	_usingConsole = false;
+	log(mod, LogType::ModError, arg0, args...);
 }

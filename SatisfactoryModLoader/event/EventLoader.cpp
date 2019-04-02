@@ -63,11 +63,11 @@ void EventLoader::hook_event(PVOID hook, EventType type, const char* function) {
 	// find the function by name
 	PVOID func = DetourFindFunction(gameModule, function);
 	if (!func) {
-		log(LogType::Error, "Invalid function: ", function);
+		error("Invalid function: ", function);
 		return;
 	}
 
-	log(LogType::Normal, "Hooked function: ", function);
+	info("Hooked function: ", function);
 
 	// attach it, clearly
 	DetourAttach(&(PVOID&)func, hook);
