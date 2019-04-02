@@ -14,7 +14,7 @@ static long long modLoaderModule = 0x180000000;
 PVOID get_function(std::string module, const char* procName);
 PVOID get_address_function(long long module, const char* procName);
 PVOID get_mod_loader_function(const char* procName);
-void run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args);
+bool run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args);
 
 // gets a field's value
 template <typename O>

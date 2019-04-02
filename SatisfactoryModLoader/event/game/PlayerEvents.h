@@ -6,24 +6,22 @@
 #include <util/Utility.h>
 #include <util/FString.h>
 
-// other extern events
-GLOBAL void player_send_message(void* player, std::string message) {
-	FString msg = message.c_str();
-
-	auto pointer = (void(WINAPI*)(void*, FString*))hookedFunctions[EventType::PlayerSentMessage];
-	pointer(player, &msg);
-}
-
-// mod loader events
-
 // ; void __fastcall AFGPlayerController::BeginPlay(AFGPlayerController *this)
 void player_controller_begin_play(void* controller) {
 	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::PlayerControllerBeginPlay];
-	localPlayerController = controller;
+
+	intptr_t address = (intptr_t)controller;
+	intptr_t offset = 0x0790;
+	long long newAddress = address + offset;
+	void* p = (void*)newAddress;
+
+	log(LogType::Normal, "inTutorialMode: ", *(BOOL*)p);
 	auto args = std::vector<void*>{
 		controller
 	};
-	run_mods(modList, EventType::PlayerControllerBeginPlay, args);
+	if (!run_mods(modList, EventType::PlayerControllerBeginPlay, args)) {
+		return;
+	}
 	pointer(controller);
 }
 
@@ -33,27 +31,15 @@ void player_begin_play(void* player) {
 	auto args = std::vector<void*>{
 		player
 	};
-	run_mods(modList, EventType::PlayerBeginPlay, args);
-	playerInstance = player;
+	if (!run_mods(modList, EventType::PlayerBeginPlay, args)) {
+		return;
+	}
 	pointer(player);
 }
-
-//; void __fastcall AFGPlayerController::Suicide(AFGPlayerController *this)
-GLOBAL void player_suicide(void* player) {
-	log(LogType::Normal, "Attempting to kill the player 2");
-	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::PlayerSuicide];
-	auto args = std::vector<void*>{
-		player
-	};
-	run_mods(modList, EventType::PlayerSuicide, args);
-	pointer(player);
-}
-
 
 // ; void __fastcall AFGPlayerController::EnterChatMessage(AFGPlayerController *this, FString *inMessage)
 void player_sent_message(void* player, FString* message) { //TODO: Fix this to not be redundant
 	auto pointer = (void(WINAPI*)(void*, FString*))hookedFunctions[EventType::PlayerSentMessage];
-	bool useMessage = true;
 
 	char* chars = new char[message->length];
 
@@ -64,12 +50,11 @@ void player_sent_message(void* player, FString* message) { //TODO: Fix this to n
 	std::string str(chars);
 
 	auto args = std::vector<void*>{
-		&useMessage, &str
+		&str
 	};
 
-	run_mods(modList, EventType::PlayerSentMessage, args);
-	if (!useMessage) { 
-		return; 
+	if (!run_mods(modList, EventType::PlayerSentMessage, args)) {
+		return;
 	}
 
 	pointer(player, message);
@@ -81,7 +66,9 @@ void player_reload_key_pressed(void* weapon) {
 	auto args = std::vector<void*> {
 		weapon
 	};
-	run_mods(modList, EventType::PlayerWeaponReloadKey, args);
+	if (!run_mods(modList, EventType::PlayerWeaponReloadKey, args)) {
+		return;
+	}
 	pointer(weapon);
 }
 
@@ -91,7 +78,9 @@ void player_weapon_primary_key(void* weapon) {
 	auto args = std::vector<void*>{
 		weapon
 	};
-	run_mods(modList, EventType::PlayerBuildGunPrimaryKey, args);
+	if (!run_mods(modList, EventType::PlayerBuildGunPrimaryKey, args)) {
+		return;
+	}
 	pointer(weapon);
 }
 
@@ -101,7 +90,9 @@ void player_stun_spear_key(void* spear) {
 	auto args = std::vector<void*>{
 		spear
 	};
-	run_mods(modList, EventType::PlayerStunSpearKey, args);
+	if (!run_mods(modList, EventType::PlayerStunSpearKey, args)) {
+		return;
+	}
 	pointer(spear);
 }
 
@@ -111,7 +102,9 @@ void player_scan_key(void* scanner) {
 	auto args = std::vector<void*>{
 		scanner
 	};
-	run_mods(modList, EventType::PlayerScanKey, args);
+	if (!run_mods(modList, EventType::PlayerScanKey, args)) {
+		return;
+	}
 	pointer(scanner);
 }
 
@@ -121,7 +114,9 @@ void player_use_key(void* player) {
 	auto args = std::vector<void*>{
 		player
 	};
-	run_mods(modList, EventType::PlayerUseKey, args);
+	if (!run_mods(modList, EventType::PlayerUseKey, args)) {
+		return;
+	}
 	pointer(player);
 }
 
@@ -131,7 +126,9 @@ void player_sprint_key(void* player) {
 	auto args = std::vector<void*>{
 		player
 	};
-	run_mods(modList, EventType::PlayerSprintKey, args);
+	if (!run_mods(modList, EventType::PlayerSprintKey, args)) {
+		return;
+	}
 	pointer(player);
 }
 
@@ -141,7 +138,9 @@ void player_color_gun_secondary_key(void* colorGun) {
 	auto args = std::vector<void*>{
 		colorGun
 	};
-	run_mods(modList, EventType::PlayerColorGunSecondaryKey, args);
+	if (!run_mods(modList, EventType::PlayerColorGunSecondaryKey, args)) {
+		return;
+	}
 	pointer(colorGun);
 }
 
@@ -151,7 +150,9 @@ void player_attention_ping_key(void* player) {
 	auto args = std::vector<void*>{
 		player
 	};
-	run_mods(modList, EventType::PlayerAttentionPingKey, args);
+	if (!run_mods(modList, EventType::PlayerAttentionPingKey, args)) {
+		return;
+	}
 	pointer(player);
 }
 
@@ -161,7 +162,9 @@ void player_c4_detonator_key(void* dispenser) {
 	auto args = std::vector<void*>{
 		dispenser
 	};
-	run_mods(modList, EventType::PlayerC4DetonateDispenserKey, args);
+	if (!run_mods(modList, EventType::PlayerC4DetonateDispenserKey, args)) {
+		return;
+	}
 	pointer(dispenser);
 }
 
@@ -171,7 +174,9 @@ void player_c4_detonator_primary_key(void* dispenser) {
 	auto args = std::vector<void*>{
 		dispenser
 	};
-	run_mods(modList, EventType::PlayerC4PrimaryKey, args);
+	if (!run_mods(modList, EventType::PlayerC4PrimaryKey, args)) {
+		return;
+	}
 	pointer(dispenser);
 }
 
@@ -181,7 +186,9 @@ void player_build_gun_primary_key(void* buildGun) {
 	auto args = std::vector<void*>{
 		buildGun
 	};
-	run_mods(modList, EventType::PlayerBuildGunPrimaryKey, args);
+	if (!run_mods(modList, EventType::PlayerBuildGunPrimaryKey, args)) {
+		return;
+	}
 	pointer(buildGun);
 }
 
@@ -191,7 +198,9 @@ void player_chainsaw_primary_key(void* chainsaw) {
 	auto args = std::vector<void*>{
 		chainsaw
 	};
-	run_mods(modList, EventType::PlayerChainsawPrimaryKey, args);
+	if (!run_mods(modList, EventType::PlayerChainsawPrimaryKey, args)) {
+		return;
+	}
 	pointer(chainsaw);
 }
 
@@ -201,7 +210,9 @@ void player_consumable_primary_key(void* consumable) {
 	auto args = std::vector<void*>{
 		consumable
 	};
-	run_mods(modList, EventType::PlayerConsumablePrimaryKey, args);
+	if (!run_mods(modList, EventType::PlayerConsumablePrimaryKey, args)) {
+		return;
+	}
 	pointer(consumable);
 }
 
@@ -211,7 +222,9 @@ void player_build_gun_scroll_down_key(void* buildGun) {
 	auto args = std::vector<void*>{
 		buildGun
 	};
-	run_mods(modList, EventType::PlayerBuildGunScrollDownKey, args);
+	if (!run_mods(modList, EventType::PlayerBuildGunScrollDownKey, args)) {
+		return;
+	}
 	pointer(buildGun);
 }
 
@@ -221,7 +234,9 @@ void player_build_gun_snap_to_guide_key(void* buildGun) {
 	auto args = std::vector<void*>{
 		buildGun
 	};
-	run_mods(modList, EventType::PlayerBuildGunSnapToGuideKey, args);
+	if (!run_mods(modList, EventType::PlayerBuildGunSnapToGuideKey, args)) {
+		return;
+	}
 	pointer(buildGun);
 }
 
@@ -231,7 +246,9 @@ void player_build_gun_no_snap_mode_key(void* buildGun) {
 	auto args = std::vector<void*>{
 		buildGun
 	};
-	run_mods(modList, EventType::PlayerBuildGunNoSnapModKey, args);
+	if (!run_mods(modList, EventType::PlayerBuildGunNoSnapModKey, args)) {
+		return;
+	}
 	pointer(buildGun);
 }
 
@@ -241,7 +258,9 @@ void player_build_gun_scroll_mode_key(void* buildGun) {
 	auto args = std::vector<void*>{
 		buildGun
 	};
-	run_mods(modList, EventType::PlayerBuildGunScrollModeKey, args);
+	if (!run_mods(modList, EventType::PlayerBuildGunScrollModeKey, args)) {
+		return;
+	}
 	pointer(buildGun);
 }
 
@@ -251,7 +270,9 @@ void player_hookshot_primary_key(void* hookshot) {
 	auto args = std::vector<void*>{
 		hookshot
 	};
-	run_mods(modList, EventType::PlayerHookshotPrimaryKey, args);
+	if (!run_mods(modList, EventType::PlayerHookshotPrimaryKey, args)) {
+		return;
+	}
 	pointer(hookshot);
 }
 
@@ -261,7 +282,9 @@ void player_hookshot_secondary_key(void* hookshot) {
 	auto args = std::vector<void*>{
 		hookshot
 	};
-	run_mods(modList, EventType::PlayerHookshotSecondaryKey, args);
+	if (!run_mods(modList, EventType::PlayerHookshotSecondaryKey, args)) {
+		return;
+	}
 	pointer(hookshot);
 }
 
@@ -271,6 +294,8 @@ void player_portable_miner_dispenser_primary_key(void* miner) {
 	auto args = std::vector<void*>{
 		miner
 	};
-	run_mods(modList, EventType::PlayerPortableMinerDispenserKey, args);
+	if (!run_mods(modList, EventType::PlayerPortableMinerDispenserKey, args)) {
+		return;
+	}
 	pointer(miner);
 }

@@ -7,21 +7,27 @@
 class Connection;
 class Dispatcher;
 
-typedef void(*EventFunc)(std::vector<void*>&);
+typedef bool(*EventFunc)(std::vector<void*>&);
 
 class Dispatcher {
 public:
 	Connection subscribe(const EventType& descriptor, EventFunc slot);
 	void unsubscribe(const Connection& connection);
-	void post(const EventType type, std::vector<void*>& args) const {
+	bool post(const EventType type, std::vector<void*>& args) const {
 		if (_observers.find(type) == _observers.end()) {
-			return;
+			return true;
 		}
+
+		bool run = true;
 
 		auto observers = _observers.at(type);
 		for (auto observer : observers) {
-			observer.slot(args);
+			if (!observer.slot(args)) {
+				run = false;
+			}
 		}
+
+		return run;
 	}
 
 private:

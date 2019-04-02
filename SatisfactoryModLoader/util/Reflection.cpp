@@ -15,9 +15,13 @@ PVOID get_mod_loader_function(const char* procName) {
 	return GetProcAddress((HMODULE)modLoaderModule, procName);
 }
 
-void run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args) {
+bool run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args) {
+	bool run = true;
 	for (Mod mod : mods) {
-		auto pointer = (void(WINAPI*)(EventType, std::vector<void*>&))get_function(mod.fileName, "run");
-		pointer(type, args);
+		auto pointer = (bool(WINAPI*)(EventType, std::vector<void*>&))get_function(mod.fileName, "run");
+		if (!pointer(type, args)) {
+			run = false;
+		}
 	}
+	return run;
 }

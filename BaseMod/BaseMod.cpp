@@ -35,23 +35,25 @@ void killing_player() {
 	}
 }
 
-void check_f_key(std::vector<void*>& args) {
+bool check_g_key(std::vector<void*>& args) {
 	if (GetAsyncKeyState('G')) {
 		mod_log("BaseMod", "G key pressed");
 		killing_player();
 	}
+	return true;
 }
 
-void getting_player(std::vector<void*>& args) {
+bool getting_player(std::vector<void*>& args) {
 	mod_log("BaseMod", "Got player");
 	player = args[0];
+	return true;
 }
 
 GLOBAL void setup() { 
-	dispatcher.subscribe(EventType::InputKey, check_f_key);
+	dispatcher.subscribe(EventType::InputKey, check_g_key);
 	dispatcher.subscribe(EventType::PlayerControllerBeginPlay, getting_player);
 }
 
-GLOBAL void run(EventType type, std::vector<void*>& args) {
-	dispatcher.post(type, args);
+GLOBAL bool run(EventType type, std::vector<void*>& args) {
+	return dispatcher.post(type, args);
 }
