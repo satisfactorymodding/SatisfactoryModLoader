@@ -57,3 +57,7 @@ GLOBAL void setup() {
 GLOBAL bool run(EventType type, std::vector<void*>& args) {
 	return dispatcher.post(type, args);
 }
+
+GLOBAL void cleanup() {
+	// do things
+}

@@ -75,6 +75,11 @@ void mod_loader_entry() {
 
 //cleans up when the program is killed
 void cleanup() {
+	for (Mod mod : modList) {
+		auto pointer = (void(WINAPI*)())get_function(mod.fileName, "cleanup");
+		pointer();
+	}
+
 	info("SML shutting down...");
 	_logFile.close();
 }
