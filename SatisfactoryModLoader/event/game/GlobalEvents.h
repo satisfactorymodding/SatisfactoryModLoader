@@ -7,7 +7,7 @@
 // ; UWorld *__fastcall UGameInstance::GetWorld(UGameInstance *this)
 GLOBAL void* game_instance_get_world(void* game) {
 	auto pointer = (void*(WINAPI*)(void*))hookedFunctions[EventType::GameInstanceGetWorld];
-	return game;
+	return pointer(game);
 }
 
 // ; APawn *__fastcall UGameplayStatics::GetPlayerPawn(UObject *WorldContextObject, int PlayerIndex)

@@ -5,7 +5,7 @@
 #include <utility>
 
 static constexpr const char* _header = "[SML] ";
-static std::ofstream _logFile("SatisfactoryModLoader.log");
+static std::ofstream _logFile("SatisfactoryModLoader.log", std::ios_base::app);
 
 enum LogType {
 	Normal,
@@ -57,28 +57,7 @@ void log(LogType type, First&& arg0, Args&& ...args) {
 
 	if (sizeof...(args) == 0) {
 		_firstLogLine = true;
-		_logFile << "\n";
-		std::cout << std::endl;
-		set_console_color(_consoleDefault);
-		_usingConsole = false;
-	}
-}
-
-template<typename First, typename ...Args>
-void log(First&& arg0, Args&& ...args) {
-	set_console_color(_consoleNormal);
-
-	if (!_usingConsole) {
-		std::cout << _header;
-		_usingConsole = true;
-	}
-
-	std::cout << std::forward<First>(arg0);
-	_logFile << std::forward<First>(arg0);
-	log(std::forward<Args>(args)...);
-
-	if (sizeof...(args) == 0) {
-		_logFile << "\n";
+		_logFile << std::endl;
 		std::cout << std::endl;
 		set_console_color(_consoleDefault);
 		_usingConsole = false;
@@ -106,7 +85,7 @@ void mod_log(std::string modname, First&& arg0, Args&& ...args) {
 
 	if (sizeof...(args) == 0) {
 		_firstLogLine = true;
-		_logFile << "\n";
+		_logFile << std::endl;
 		std::cout << std::endl;
 		set_console_color(_consoleDefault);
 		_usingConsole = false;

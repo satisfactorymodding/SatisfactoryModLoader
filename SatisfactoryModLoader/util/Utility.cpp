@@ -23,7 +23,7 @@ void check_version(std::string target) {
 	std::wstring satisVersion(pointer());
 	std::string str(satisVersion.begin(), satisVersion.end());
 	if (str.substr(str.length() - 5, str.length()) == target) {
-		log("Version check passed!");
+		log(LogType::Normal, "Version check passed!");
 	} else {
 		log(LogType::Error, "FATAL: Version check failed");
 		if (!supressErrors) {
