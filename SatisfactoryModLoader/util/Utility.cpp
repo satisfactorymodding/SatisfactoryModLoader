@@ -1,7 +1,7 @@
 #include <stdafx.h>
-#include "Utility.h"
 #include <detours.h>
-#include <util/Config.h>
+#include <Main.h>
+#include "Utility.h"
 
 void log() {}
 

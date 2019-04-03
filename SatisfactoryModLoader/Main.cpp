@@ -9,11 +9,11 @@
 #include <chrono>
 #include <thread>
 #include <util/Utility.h>
-#include <util/Config.h>
 #include <util/Reflection.h>
 #include <mod/ModHandler.h>
 #include <event/EventLoader.h>
 #include <event/FunctionHolder.h>
+#include <util/Configuration.h>
 
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
@@ -34,7 +34,7 @@ void mod_loader_entry() {
 	info("Attached SatisfactoryModLoader to Satisfactory");
 
 	// load up all of the configuration information
-	readConfig();
+	read_config();
 
 	check_version(targetVersion);
 
@@ -71,6 +71,25 @@ void mod_loader_entry() {
 	eventLoader.hook_events();
 
 	info("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
+}
+
+void read_config() {
+	info("Finding config file...");
+	Configuration loaderConfig("config");
+	if (!loaderConfig.exists()) {
+		error("No config file found!");
+		info("Creating new config file...");
+		loaderConfig.set("Console", true);
+		loaderConfig.set("Debug", false);
+		loaderConfig.set("SupressErrors", false);
+		loaderConfig.save();
+	}
+
+	loaderConfig.load();
+
+	loadConsole = loaderConfig.get<bool>("Console");
+	debugOutput = loaderConfig.get<bool>("Debug");
+	supressErrors = loaderConfig.get<bool>("SupressErrors");
 }
 
 //cleans up when the program is killed

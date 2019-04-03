@@ -2,6 +2,7 @@
 #include <string>
 #include <event/Event.h>
 #include <event/game/PlayerEvents.h>
+#include <util/Configuration.h>
 #include "BaseMod.h"
 #include "ModInfo.h"
 
@@ -24,6 +25,10 @@
 	mod_log(modName, msg)				  - logs a message to the console
 
 */
+
+/// config
+Configuration config("mods/BaseMod/BaseMod2");
+bool testValue;
 
 void* player;
 
@@ -49,7 +54,20 @@ bool getting_player(std::vector<void*>& args) {
 	return true;
 }
 
-GLOBAL void setup() { 
+GLOBAL void setup() {
+	// setup config file
+	if (!config.exists()) {
+		error("Config does not exist for mod. Creating one.");
+		config.set("TestValue", true);
+		config.save();
+	}
+
+	config.load();
+
+	testValue = config.get<bool>("TestValue");
+	warning("Test Value: ", testValue);
+
+	// hook events
 	dispatcher.subscribe(EventType::InputKey, check_g_key);
 	dispatcher.subscribe(EventType::PlayerControllerBeginPlay, getting_player);
 }

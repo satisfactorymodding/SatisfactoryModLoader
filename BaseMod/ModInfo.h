@@ -9,6 +9,4 @@
 
 #define GLOBAL extern "C" __declspec(dllexport)
 
-GLOBAL void recieve_hooked_functions(std::map<EventType, PVOID> functions) {
-	hookedFunctions = functions;
-}
+GLOBAL void recieve_hooked_functions(std::map<EventType, PVOID> functions);

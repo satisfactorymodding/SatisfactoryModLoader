@@ -157,7 +157,7 @@
     <ClInclude Include="SatisfactoryModLoader\mod\ModHandler.h" />
     <ClInclude Include="SatisfactoryModLoader\stdafx.h" />
     <ClInclude Include="SatisfactoryModLoader\targetver.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\Config.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Configuration.h" />
     <ClInclude Include="SatisfactoryModLoader\util\FKey.h" />
     <ClInclude Include="SatisfactoryModLoader\util\FString.h" />
     <ClInclude Include="SatisfactoryModLoader\util\json.hpp" />
@@ -171,7 +171,7 @@
     <ClCompile Include="SatisfactoryModLoader\Main.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\ModHandler.cpp" />
     <ClCompile Include="SatisfactoryModLoader\stdafx.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\util\Config.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Configuration.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
   </ItemGroup>
