@@ -56,7 +56,6 @@ bool getting_player(std::vector<void*>& args) {
 GLOBAL void setup() {
 	// setup config file
 	if (!config.exists()) {
-		error("Config does not exist for mod. Creating one.");
 		config.set("TestValue", true);
 		config.save();
 	}
