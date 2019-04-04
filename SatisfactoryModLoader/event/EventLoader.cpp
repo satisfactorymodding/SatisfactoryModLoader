@@ -38,6 +38,10 @@ void EventLoader::hook_events() {
 	hook_event(player_hookshot_primary_key, EventType::PlayerHookshotPrimaryKey, "AFGHookshot::OnPrimaryFirePressed");
 	hook_event(player_hookshot_secondary_key, EventType::PlayerHookshotSecondaryKey, "AFGHookshot::OnSecondaryFirePressed");
 	hook_event(player_portable_miner_dispenser_primary_key, EventType::PlayerPortableMinerDispenserKey, "AFGPortableMinerDispenser::OnPrimaryFirePressed");
+	hook_event(player_dismantle_key, EventType::PlayerDismantleKey, "AFGCharacterPlayer::HotKeyDismantle");
+	hook_event(build_gun_delay_percentage, EventType::BuildGunDelayPercentage, "UFGBuildGunState::GetBuildGunDelayPercentage");
+	hook_event(build_gun_begin_delay, EventType::BuildGunBeginDelay, "UFGBuildGunStateDismantle::BeginBuildGunDelay");
+	hook_event(build_gun_reset_delay, EventType::BuildGunResetDelay, "UFGBuildGunStateDismantle::ResetBuildGunDelay");
 	// ui events
 	hook_event(u_button_pressed, EventType::UButtonPressed, "UButton::IsPressed");
 	hook_event(u_check_box_pressed, EventType::UCheckBoxPressed, "UCheckBox::IsPressed");
