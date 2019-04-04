@@ -25,12 +25,6 @@ void mod_loader_entry() {
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 
-	info("Test");
-	warning("Test");
-	error("Test");
-	info_mod("Mod", "Test");
-	warning_mod("BaseMod", "Test");
-	error_mod("BaseMod", "Test");
 	info("Attached SatisfactoryModLoader to Satisfactory");
 
 	// load up all of the configuration information
