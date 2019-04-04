@@ -12,7 +12,6 @@ public:
 	Configuration(const char* name);
 	~Configuration();
 
-
 	template<typename T>
 	void set(const char* name, T value) {
 		_data[name] = value;
@@ -34,6 +33,7 @@ public:
 	bool exists();
 
 private:
+	std::string _defaultPath = "config\\";
 	std::string _name;
 	std::ifstream _fileInput;
 	std::ofstream _fileOutput;

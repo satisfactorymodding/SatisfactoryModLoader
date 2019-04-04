@@ -75,7 +75,7 @@ void mod_loader_entry() {
 
 void read_config() {
 	info("Finding config file...");
-	Configuration loaderConfig("config");
+	Configuration loaderConfig("..\\config");
 	if (!loaderConfig.exists()) {
 		error("No config file found!");
 		info("Creating new config file...");

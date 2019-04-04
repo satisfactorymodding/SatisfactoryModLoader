@@ -6,7 +6,6 @@
 #include "BaseMod.h"
 #include "ModInfo.h"
 
-// example events
 /*
 
 	[Tips]
@@ -27,7 +26,7 @@
 */
 
 /// config
-Configuration config("mods/BaseMod/BaseMod2");
+Configuration config("BaseMod");
 bool testValue;
 
 void* player;

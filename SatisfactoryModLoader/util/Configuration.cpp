@@ -3,7 +3,8 @@
 #include <util/Utility.h>
 
 Configuration::Configuration(const char* name) {
-	_name = std::string(name);
+	_name = std::string(_defaultPath);
+	_name.append(name);
 	_name.append(".cfg");
 }
 

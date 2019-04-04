@@ -2,7 +2,7 @@
 #include "ModInfo.h"
 
 GLOBAL std::string ModName = "BaseMod";
-GLOBAL std::string ModVersion = "0.1";
+GLOBAL std::string ModVersion = "0.2";
 GLOBAL std::string ModDescription = "Description";
 GLOBAL std::string ModAuthors = "Nomnom, SuperCoder79";
 

@@ -54,61 +54,53 @@ void ModHandler::get_files(std::string path) {
 
 			HMODULE dll = LoadLibrary(sw);
 
+			std::string modName;
+			std::string modVersion;
+			std::string modDescription;
+			std::string modAuthors;
+
+			if (!get_field_value(dll, "ModName", modName) ||
+				!get_field_value(dll, "ModVersion", modVersion) ||
+				!get_field_value(dll, "ModDescription", modDescription) ||
+				!get_field_value(dll, "ModAuthors", modAuthors)) {
+
+				error("Mod DLL ", file, " does not have the required information!");
+				FreeLibrary(dll);
+				continue;
+			}
+
+			// check if the mod has already been loaded
+			bool isDuplicate = false;
+			for (Mod existingMod : mods) {
+				if (existingMod.name == modName) {
+					warning("Skipping duplicate mod [", existingMod.name, "]");
+					FreeLibrary(dll);
+					isDuplicate = true;
+					break;
+				}
+			}
+
+			if (isDuplicate) {
+				continue;
+			}
+
 			std::string s = entry.path().filename().string();
 			size_t namePos = s.find_last_of('.');
 			std::string fileName = s.substr(0, namePos);
 
-			info("Path: " + path + "\\" + fileName + ".cfg");
+			// if valid, initalize a mod struct and add it to the modlist
+			Mod mod = {
+				fileName,
+				dll,
+				modName,
+				modVersion,
+				modDescription,
+				modAuthors
+			};
 
-			std::ifstream config(path + "\\" + fileName + ".cfg");
-			std::string line;
-			// see if a config file exists
-
-			if (config.good()) {
-				if (config.is_open()) {
-					std::string contents;
-					// read the config file line by line
-					while (getline(config, line)) {
-						contents += line;
-					}
-
-					auto j = json::parse(contents);
-
-					// check if the mod has already been loaded
-					bool isDuplicate = false;
-					for (Mod existingMod : ModHandler::mods) {
-						if (existingMod.name == j["Name"]) {
-							warning("Skipping duplicate mod [", existingMod.name, "]");
-							FreeLibrary(dll);
-							isDuplicate = true;
-							break;
-						}
-					}
-
-					if (isDuplicate) {
-						continue;
-					}
-
-					// if valid, initalize a mod struct and add it to the modlist
-					Mod mod = {
-						fileName,
-						dll,
-						j["Name"],
-						j["Version"],
-						j["Description"],
-						j["Authors"]
-					};
-
-					ModHandler::mods.push_back(mod);
-					if (debugOutput) {
-						info("Loaded [", mod.name, "@", mod.version, "]");
-					}
-				}
-			}
-			else {
-				error("Mod DLL ", fileName, " does not have the required information!");
-				FreeLibrary(dll);
-				continue;
+			ModHandler::mods.push_back(mod);
+			if (debugOutput) {
+				info("Loaded [", mod.name, "@", mod.version, "]");
 			}
 		}
 	}
