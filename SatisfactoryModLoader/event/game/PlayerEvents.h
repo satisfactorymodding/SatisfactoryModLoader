@@ -50,6 +50,7 @@ void player_sent_message(void* player, FString* message) { //TODO: Fix this to n
 	std::string str(chars);
 
 	auto args = std::vector<void*>{
+		player, 
 		&str
 	};
 

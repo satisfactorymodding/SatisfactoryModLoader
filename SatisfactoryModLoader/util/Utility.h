@@ -127,3 +127,8 @@ void error_mod(std::string mod, First&& arg0, Args&& ...args) {
 	_usingConsole = false;
 	log(mod, LogType::ModError, arg0, args...);
 }
+
+template <class T>
+T * offset(T * ptr, size_t offset) {
+	return (T *)(reinterpret_cast<unsigned char*>(ptr) + offset);
+}
