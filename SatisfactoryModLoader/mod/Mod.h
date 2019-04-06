@@ -9,4 +9,5 @@ struct Mod {
 	std::string version;
 	std::string description;
 	std::string authors;
+	std::vector<std::string> dependencies;
 };

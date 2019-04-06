@@ -45,6 +45,7 @@ void mod_loader_entry() {
 	ModHandler modHandler;
 	modHandler.load_mods(p);
 	modHandler.setup_mods();
+	modHandler.check_dependencies();
 
 	// log mod size
 	size_t listSize = modHandler.mods.size();
@@ -82,8 +83,17 @@ void read_config() {
 	loaderConfig.load();
 
 	loadConsole = loaderConfig.get<bool>("Console");
+	if (loadConsole == NULL) {
+		loadConsole = true;
+	}
 	debugOutput = loaderConfig.get<bool>("Debug");
+	if (debugOutput == NULL) {
+		debugOutput = false;
+	}
 	supressErrors = loaderConfig.get<bool>("SupressErrors");
+	if (supressErrors == NULL) {
+		supressErrors = false;
+	}
 }
 
 //cleans up when the program is killed

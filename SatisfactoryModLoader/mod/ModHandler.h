@@ -9,6 +9,7 @@ public:
 
 	void load_mods(const char* startingPath);
 	void setup_mods();
+	void check_dependencies();
 private:
 	void get_files(std::string path);
 	void find_mods(std::string path);

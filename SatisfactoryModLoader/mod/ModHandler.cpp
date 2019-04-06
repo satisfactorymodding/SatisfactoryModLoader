@@ -31,6 +31,31 @@ void ModHandler::setup_mods() {
 	}
 }
 
+void ModHandler::check_dependencies() {
+	std::vector<std::string> names;
+	for (Mod mod : mods) {
+		names.push_back(mod.name);
+	}
+	for (Mod mod : mods) {
+		for (std::string dep : mod.dependencies) {
+			info("Parsing dependency " + dep);
+			if (dep.substr(0, 1) == "*") {
+				auto it = std::find(names.begin(), names.end(), dep.substr(1));
+				if (it == names.end()) {
+					warning(mod.name + " is missing optional dependency " + dep.substr(1));
+				}
+			} else {
+				auto it = std::find(names.begin(), names.end(), dep);
+				if (it == names.end()) {
+					std::string msg = "Mod " + mod.name + " is missing dependency " + dep + "!\nPlease install " + dep + " or remove " + mod.name + ".\nPress Ok to exit.";
+					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
+					abort();
+				}
+			}
+		}
+	}
+}
+
 void ModHandler::get_files(std::string path) {
 	std::string pathExact = path + "\\";
 
@@ -58,11 +83,13 @@ void ModHandler::get_files(std::string path) {
 			std::string modVersion;
 			std::string modDescription;
 			std::string modAuthors;
+			std::vector<std::string> modDependencies;
 
 			if (!get_field_value(dll, "ModName", modName) ||
 				!get_field_value(dll, "ModVersion", modVersion) ||
 				!get_field_value(dll, "ModDescription", modDescription) ||
-				!get_field_value(dll, "ModAuthors", modAuthors)) {
+				!get_field_value(dll, "ModAuthors", modAuthors) ||
+				!get_field_value(dll, "ModDependencies", modDependencies)) {
 
 				error("Mod DLL ", file, " does not have the required information!");
 				FreeLibrary(dll);
@@ -95,7 +122,8 @@ void ModHandler::get_files(std::string path) {
 				modName,
 				modVersion,
 				modDescription,
-				modAuthors
+				modAuthors,
+				modDependencies
 			};
 
 			ModHandler::mods.push_back(mod);
