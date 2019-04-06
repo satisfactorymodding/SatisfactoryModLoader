@@ -15,8 +15,6 @@ enum LogType {
 	ModError
 };
 
-static bool _usingConsole;
-
 enum ConsoleColor {
 	DarkBlue,
 	DarkGreen,
@@ -41,49 +39,21 @@ void check_version(std::string target);
 
 void log();
 
-void log(std::string header, LogType type);
+void log(LogType type);
 
-void mod_log(std::string modname);
+void draw_header(std::string header, LogType type);
 
 // logs a message of <T> with various modifiers
 template<typename First, typename ...Args>
-void log(std::string header, LogType type, First&& arg0, Args&& ...args) {
-	if (!_usingConsole) {
-		_usingConsole = true;
-
-		std::string logType;
-
-		switch (type) {
-		case Info:
-		case ModInfo:
-			logType = "Info]    ";
-			break;
-		case Warning:
-		case ModWarning:
-			logType = "Warning] ";
-			break;
-		case Error:
-		case ModError:
-			logType = "Error]   ";
-			break;
-		}
-
-		// log line
-		_logFile << "[" + header + "::" + logType;
-
-		// cout line
-		set_console_color(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
-		std::cout << "[" << header << "] ";
-
-		set_console_color(
-			type == LogType::Info || type == LogType::ModInfo ? ConsoleColor::Green :
-			type == LogType::Warning || type == LogType::ModWarning ? ConsoleColor::Yellow :
-			ConsoleColor::Red);
-	}
+void log(LogType type, First&& arg0, Args&& ...args) {
+	set_console_color(
+		type == LogType::Info || type == LogType::ModInfo ? ConsoleColor::Green :
+		type == LogType::Warning || type == LogType::ModWarning ? ConsoleColor::Yellow :
+		ConsoleColor::Red);
 
 	std::cout << std::forward<First>(arg0);
 	_logFile << std::forward<First>(arg0);
-	log(header, type, std::forward<Args>(args)...);
+	log(type, std::forward<Args>(args)...);
 
 	if (sizeof...(args) == 0) {
 		std::cout << std::endl;
@@ -94,38 +64,38 @@ void log(std::string header, LogType type, First&& arg0, Args&& ...args) {
 
 template<typename First, typename ...Args>
 void info(First&& arg0, Args&& ...args) {
-	_usingConsole = false;
-	log("SML", LogType::Info, arg0, args...);
+	draw_header("SML", LogType::Info);
+	log(LogType::Info, arg0, args...);
 }
 
 template<typename First, typename ...Args>
 void warning(First&& arg0, Args&& ...args) {
-	_usingConsole = false;
-	log("SML", LogType::Warning, arg0, args...);
+	draw_header("SML", LogType::Warning);
+	log(LogType::Warning, arg0, args...);
 }
 
 template<typename First, typename ...Args>
 void error(First&& arg0, Args&& ...args) {
-	_usingConsole = false;
-	log("SML", LogType::Error, arg0, args...);
+	draw_header("SML", LogType::Error);
+	log(LogType::Error, arg0, args...);
 }
 
 template<typename First, typename ...Args>
 void info_mod(std::string mod, First&& arg0, Args&& ...args) {
-	_usingConsole = false;
-	log(mod, LogType::ModInfo, arg0, args...);
+	draw_header(mod, LogType::ModInfo);
+	log(LogType::ModInfo, arg0, args...);
 }
 
 template<typename First, typename ...Args>
 void warning_mod(std::string mod, First&& arg0, Args&& ...args) {
-	_usingConsole = false;
-	log(mod, LogType::ModWarning, arg0, args...);
+	draw_header(mod, LogType::ModWarning);
+	log(LogType::ModWarning, arg0, args...);
 }
 
 template<typename First, typename ...Args>
 void error_mod(std::string mod, First&& arg0, Args&& ...args) {
-	_usingConsole = false;
-	log(mod, LogType::ModError, arg0, args...);
+	draw_header(mod, LogType::ModError);
+	log(LogType::ModError, arg0, args...);
 }
 
 template <class T>
