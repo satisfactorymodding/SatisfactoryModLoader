@@ -50,6 +50,7 @@ void player_sent_message(void* player, FString* message) { //TODO: Fix this to n
 	std::string str(chars);
 
 	auto args = std::vector<void*>{
+		player, 
 		&str
 	};
 
@@ -298,4 +299,55 @@ void player_portable_miner_dispenser_primary_key(void* miner) {
 		return;
 	}
 	pointer(miner);
+}
+
+// ; void __fastcall AFGCharacterPlayer::HotKeyDismantle(AFGCharacterPlayer *this)
+void player_dismantle_key(void* player) {
+	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::PlayerDismantleKey];
+	auto args = std::vector<void*>{
+		player
+	};
+	if (!run_mods(modList, EventType::PlayerDismantleKey, args)) {
+		return;
+	}
+	pointer(player);
+}
+
+// ; float __fastcall UFGBuildGunState::GetBuildGunDelayPercentage(UFGBuildGunState *this)
+float build_gun_delay_percentage(void* buildGunState) {
+	auto pointer = (float(WINAPI*)(void*))hookedFunctions[EventType::BuildGunDelayPercentage];
+	auto args = std::vector<void*>{
+		buildGunState
+	};
+	if (!run_mods(modList, EventType::BuildGunDelayPercentage, args)) {
+		return *(float*)args[1];
+	}
+
+	return pointer(buildGunState);
+}
+
+// ; void __fastcall UFGBuildGunStateDismantle::BeginBuildGunDelay(UFGBuildGunStateDismantle *this)
+void build_gun_begin_delay(void* buildGunState) {
+	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::BuildGunBeginDelay];
+	auto args = std::vector<void*>{
+		buildGunState
+	};
+	if (!run_mods(modList, EventType::BuildGunBeginDelay, args)) {
+		return;
+	}
+
+	pointer(buildGunState);
+}
+
+// ; void __fastcall UFGBuildGunStateDismantle::ResetBuildGunDelay(UFGBuildGunStateDismantle *this)
+void build_gun_reset_delay(void* buildGunState) {
+	auto pointer = (void(WINAPI*)(void*))hookedFunctions[EventType::BuildGunResetDelay];
+	auto args = std::vector<void*>{
+		buildGunState
+	};
+	if (!run_mods(modList, EventType::BuildGunResetDelay, args)) {
+		return;
+	}
+
+	pointer(buildGunState);
 }

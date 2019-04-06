@@ -29,6 +29,7 @@ enum EventType {
 	PlayerPortableMinerDispenserKey,
 	PlayerWeaponReloadKey,
 	PlayerWeaponPrimaryKey,
+	PlayerDismantleKey,
 	UButtonPressed,
 	UButtonSlateHandlePressed,
 	UCheckBoxPressed,
@@ -41,6 +42,9 @@ enum EventType {
 	InventoryRegister,
 	InventorySort,
 	ActorGetWorld,
+	BuildGunDelayPercentage,
+	BuildGunBeginDelay,
+	BuildGunResetDelay,
 	END
 };
 

@@ -5,9 +5,33 @@
 
 void log() {}
 
-void log(std::string header, LogType type) {}
+void log(LogType type) {}
 
-void mod_log(std::string modname) {}
+void draw_header(std::string header, LogType type) {
+	std::string logType;
+
+	switch (type) {
+	case Info:
+	case ModInfo:
+		logType = "Info]    ";
+		break;
+	case Warning:
+	case ModWarning:
+		logType = "Warning] ";
+		break;
+	case Error:
+	case ModError:
+		logType = "Error]   ";
+		break;
+	}
+
+	// log line
+	_logFile << "[" + header + "::" + logType;
+
+	// cout line
+	set_console_color(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
+	std::cout << "[" << header << "] ";
+}
 
 void set_console_color(ConsoleColor color) {
 	HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
