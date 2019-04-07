@@ -54,7 +54,6 @@ void EventLoader::hook_events() {
 	hook_event(input_key, EventType::InputKey, "UPlayerInput::InputKey");
 	hook_event(inventory_sort, EventType::InventorySort, "UFGInventoryComponent::SortInventory");
 	hook_event(player_took_damage, EventType::PlayerTookDamage, "UFGHealthComponent::TakeDamage");
-
 	// non-hook events
 	insert_event(EventType::ActorGetWorld, "AActor::GetWorld");
 }
