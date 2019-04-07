@@ -14,6 +14,7 @@ void ModHandler::load_mods(const char* startingPath) {
 	// split the path
 	std::string appPath(startingPath);
 	size_t pos = appPath.find_last_of('\\');
+	CreateDirectoryA((appPath.substr(0, pos) + "\\mods").c_str(), NULL); //create the directory if it doesn't exist
 	std::string path = appPath.substr(0, pos) + "\\mods";
 
 	ModHandler::find_mods(path);
