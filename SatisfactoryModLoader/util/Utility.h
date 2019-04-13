@@ -4,7 +4,7 @@
 #include <fstream>
 #include <utility>
 
-static std::ofstream _logFile("SatisfactoryModLoader.log", std::ios_base::app);
+static std::ofstream logFile("SatisfactoryModLoader.log", std::ios_base::app);
 
 enum LogType {
 	Info,
@@ -52,12 +52,12 @@ void log(LogType type, First&& arg0, Args&& ...args) {
 		ConsoleColor::Red);
 
 	std::cout << std::forward<First>(arg0);
-	_logFile << std::forward<First>(arg0);
+	logFile << std::forward<First>(arg0);
 	log(type, std::forward<Args>(args)...);
 
 	if (sizeof...(args) == 0) {
 		std::cout << std::endl;
-		_logFile << std::endl;
+		logFile << std::endl;
 		set_console_color(ConsoleColor::White);
 	}
 }

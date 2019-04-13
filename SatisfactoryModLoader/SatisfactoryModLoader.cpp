@@ -104,5 +104,5 @@ void cleanup() {
 	}
 
 	info("SML shutting down...");
-	_logFile.close();
+	logFile.close();
 }
