@@ -1,6 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include <stdafx.h>
-#include <Main.h>
+#include <SatisfactoryModLoader.h>
 #include <string>
 #include <iostream>
 #include <Windows.h>

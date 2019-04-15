@@ -2,7 +2,7 @@
 #include <filesystem>
 #include <util/Utility.h>
 #include <util/Reflection.h>
-#include <Main.h>
+#include <SatisfactoryModLoader.h>
 #include "ModHandler.h"
 #include "util/json.hpp"
 

@@ -1,6 +1,6 @@
 #include <stdafx.h>
 #include <detours.h>
-#include <Main.h>
+#include <SatisfactoryModLoader.h>
 #include "Utility.h"
 
 void log() {}
