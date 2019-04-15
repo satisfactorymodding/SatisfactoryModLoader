@@ -26,7 +26,7 @@ void draw_header(std::string header, LogType type) {
 	}
 
 	// log line
-	_logFile << "[" + header + "::" + logType;
+	logFile << "[" + header + "::" + logType;
 
 	// cout line
 	set_console_color(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
