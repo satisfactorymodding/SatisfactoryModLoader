@@ -6,7 +6,7 @@
 #include <Windows.h>
 
 static const char* modLoaderVersion = "0.1.1";
-static const std::string targetVersion = "96731"; //CL of Satisfactory
+static const std::string targetVersion = "97236"; //CL of Satisfactory
 static bool loadConsole = true;
 static bool debugOutput = false;
 static bool supressErrors = false;
