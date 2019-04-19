@@ -7,6 +7,10 @@ PVOID get_function(std::string module, const char* procName) {
 	return DetourFindFunction((LPCSTR)&(module), procName);
 }
 
+PVOID get_satisfactory_function(const char* procName) {
+	return get_function("FactoryGame-Win64-Shipping.exe", procName);
+}
+
 PVOID get_address_function(long long module, const char* procName) {
 	return GetProcAddress((HMODULE)module, procName);
 }

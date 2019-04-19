@@ -32,7 +32,35 @@ void ModHandler::setup_mods() {
 	}
 }
 
+void ModHandler::post_setup_mods() {
+	info("Starting Post Setup!");
+	for (int i = 0; i < mods.size(); i++) {
+		//modNameDump.push_back(mods[i].name);
+		modNameDump.push_back(mods[i].name);
+	}
+	for (int i = 0; i < mods.size(); i++) {
+		recursive_dependency_load(mods[i], i);
+	}
+}
+
+void ModHandler::recursive_dependency_load(Mod mod, int i) { // this code is a massive hack, TODO: refactor this mess
+	for (std::string name : mod.dependencies) {
+		auto iterator = std::find(modNameDump.begin(), modNameDump.end(), name);
+		int loc = std::distance(modNameDump.begin(), iterator);
+		recursive_dependency_load(mods[loc], loc);
+	}
+	auto pointer = (void(WINAPI*)())get_function(mod.fileName, "post_setup");
+	if (pointer == NULL) {
+	} else {
+		if (!mod.postInitialized) {
+			mods[i].postInitialized = true;
+			pointer();
+		}
+	}
+}
+
 void ModHandler::check_dependencies() {
+	info("Verifying dependencies...");
 	std::vector<std::string> names;
 	for (Mod mod : mods) {
 		names.push_back(mod.name);
@@ -66,7 +94,7 @@ void ModHandler::get_files(std::string path) {
 
 		if (!entry.path().has_extension()) {
 			get_files(entry.path().string());
-			continue;
+			continue; 
 		}
 
 		if (entry.path().extension().string() == ".dll") {
@@ -124,7 +152,9 @@ void ModHandler::get_files(std::string path) {
 				modVersion,
 				modDescription,
 				modAuthors,
-				modDependencies
+				modDependencies,
+				//SML variables
+				false //postInitialized
 			};
 
 			ModHandler::mods.push_back(mod);

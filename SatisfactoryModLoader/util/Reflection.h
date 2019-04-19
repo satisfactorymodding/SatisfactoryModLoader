@@ -12,6 +12,7 @@ static const char* gameModule = "FactoryGame-Win64-Shipping.exe";
 static long long modLoaderModule = 0x180000000;
 
 PVOID get_function(std::string module, const char* procName);
+PVOID get_satisfactory_function(const char* procName);
 PVOID get_address_function(long long module, const char* procName);
 PVOID get_mod_loader_function(const char* procName);
 bool run_mods(std::vector<Mod> mods, EventType type, std::vector<void*>& args);

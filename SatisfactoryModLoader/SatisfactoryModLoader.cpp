@@ -18,6 +18,7 @@
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
 	// launch the game's internal console and hook into it
+	remove("SatisfactoryModLoader.log");
 	AllocConsole();
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	FILE* fp;
@@ -46,6 +47,7 @@ void mod_loader_entry() {
 	modHandler.load_mods(p);
 	modHandler.setup_mods();
 	modHandler.check_dependencies();
+	modHandler.post_setup_mods();
 
 	// log mod size
 	size_t listSize = modHandler.mods.size();
