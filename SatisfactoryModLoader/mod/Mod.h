@@ -8,6 +8,7 @@ struct Mod {
 	HMODULE fileModule;
 	std::string name;
 	std::string version;
+	std::string targetVarsion;
 	std::string description;
 	std::string authors;
 	std::vector<std::string> dependencies;

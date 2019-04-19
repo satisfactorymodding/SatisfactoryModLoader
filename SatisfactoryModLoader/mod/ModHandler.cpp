@@ -110,12 +110,14 @@ void ModHandler::get_files(std::string path) {
 
 			std::string modName;
 			std::string modVersion;
+			std::string modTargetVersion;
 			std::string modDescription;
 			std::string modAuthors;
 			std::vector<std::string> modDependencies;
 
 			if (!get_field_value(dll, "ModName", modName) ||
 				!get_field_value(dll, "ModVersion", modVersion) ||
+				!get_field_value(dll, "ModLoaderVersion", modTargetVersion) ||
 				!get_field_value(dll, "ModDescription", modDescription) ||
 				!get_field_value(dll, "ModAuthors", modAuthors) ||
 				!get_field_value(dll, "ModDependencies", modDependencies)) {
@@ -140,6 +142,16 @@ void ModHandler::get_files(std::string path) {
 				continue;
 			}
 
+			//check if modloader's version is the same as the mod's target version
+			size_t modTVOffset = modTargetVersion.find_last_of(".");
+			size_t SMLOffset = modLoaderVersion.find_last_of(".");
+			if (!(modTargetVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
+				std::string msg = "Mod " + modName + " does not match SML's version! Please ask the mod developer (" + modAuthors + ") to update their mod. Press OK to continue mod loading.";
+				MessageBoxA(NULL, msg.c_str(), "Mod Loading Warning", MB_ICONWARNING);
+				FreeLibrary(dll);
+				continue;
+			}
+
 			std::string s = entry.path().filename().string();
 			size_t namePos = s.find_last_of('.');
 			std::string fileName = s.substr(0, namePos);
@@ -150,6 +162,7 @@ void ModHandler::get_files(std::string path) {
 				dll,
 				modName,
 				modVersion,
+				modTargetVersion,
 				modDescription,
 				modAuthors,
 				modDependencies,

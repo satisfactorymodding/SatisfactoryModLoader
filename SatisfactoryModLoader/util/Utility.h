@@ -4,7 +4,7 @@
 #include <fstream>
 #include <utility>
 
-static std::ofstream logFile("SatisfactoryModLoader.log", std::ios_base::app);
+static std::ofstream logFile; //
 
 enum LogType {
 	Info,

@@ -18,13 +18,16 @@
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
 	// launch the game's internal console and hook into it
-	remove("SatisfactoryModLoader.log");
+	logFile = std::ofstream("SatisfactoryModLoader.log", std::ios_base::trunc);
+	logFile.close();
+	logFile = std::ofstream("SatisfactoryModLoader.log", std::ios_base::app);
 	AllocConsole();
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
 	FILE* fp;
 	freopen_s(&fp, "CONOIN$", "r", stdin);
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
+	logFile.clear();
 
 	info("Attached SatisfactoryModLoader to Satisfactory");
 
