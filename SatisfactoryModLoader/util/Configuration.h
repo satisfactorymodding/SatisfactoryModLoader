@@ -19,14 +19,14 @@ public:
 	}
 
 	template<typename T>
-	T get(const char* name) {
+	T get(const char* name, T defaultValue) {
 		if (_data.contains(name)) {
 			return _data[name];
 		}
-		else {
-			error("Key does not exist: ", name);
-			return NULL;
-		}
+
+		error("Key does not exist: ", name);
+		set(name, defaultValue);
+		return defaultValue;
 	}
 
 	SML_API void save();

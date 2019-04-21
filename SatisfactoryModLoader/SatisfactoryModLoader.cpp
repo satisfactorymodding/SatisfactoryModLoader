@@ -83,18 +83,9 @@ void read_config() {
 
 	loaderConfig.load();
 
-	loadConsole = loaderConfig.get<bool>("Console");
-	if (loadConsole == NULL) {
-		loadConsole = true;
-	}
-	debugOutput = loaderConfig.get<bool>("Debug");
-	if (debugOutput == NULL) {
-		debugOutput = false;
-	}
-	supressErrors = loaderConfig.get<bool>("SupressErrors");
-	if (supressErrors == NULL) {
-		supressErrors = false;
-	}
+	loadConsole = loaderConfig.get<bool>("Console", true);
+	debugOutput = loaderConfig.get<bool>("Debug", false);
+	supressErrors = loaderConfig.get<bool>("SupressErrors", false);
 }
 
 //cleans up when the program is killed
