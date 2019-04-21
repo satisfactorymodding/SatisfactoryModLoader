@@ -1,7 +1,8 @@
 #pragma once
-#include <Windows.h>
+
 #include <cstdint>
 #include <util/FString.h>
+#include <HookLoader.h>
 
 struct ITextData {
 public:
@@ -67,7 +68,11 @@ public:
 struct FText {
 	ITextData* TextData;
 	uint16_t flags;
+
+	const FString* ToString();
 };
+
+DEFINE_METHOD(FText::ToString);
 
 struct TAttribute {
 	FText Value;
@@ -83,12 +88,30 @@ struct FKeyDetails {
 	unsigned char bIsBindableInBlueprints : 1;
 	int64_t AxisType;
 	char Padding_1[6];
-	class TAttribute LongDisplayName;
-	class TAttribute ShortDisplayName;
+	TAttribute LongDisplayName;
+	TAttribute ShortDisplayName;
+};
+
+struct FName {
+	int comparisonIndex;
+	// int displayIndex;
+	unsigned number;
+
+	// TODO check that FString copy ctor works right
+	// FString GetPlainNameString() /* const */;
+};
+
+template <typename T>
+struct SharedPtr {
+	T* object;
+
+	T* operator->() const { return object; }
+
+private:
+	void* refcount;
 };
 
 struct FKey {
-	const wchar_t* SyntheticCharPrefix;
-	void* KeyName;
-	FKeyDetails* KeyDetails;
+	FName KeyName;
+	SharedPtr<FKeyDetails> KeyDetails;
 };

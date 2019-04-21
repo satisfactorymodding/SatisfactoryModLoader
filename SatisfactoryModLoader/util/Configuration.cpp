@@ -1,6 +1,8 @@
+#define WIN32_LEAN_AND_MEAN
 #include <stdafx.h>
 #include "Configuration.h"
 #include <util/Utility.h>
+#include <windows.h>
 
 Configuration::Configuration(const char* name) {
 	_name = std::string(_defaultPath);

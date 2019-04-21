@@ -1,7 +1,12 @@
+#define WIN32_LEAN_AND_MEAN
+
 #include <stdafx.h>
-#include <detours.h>
 #include <SatisfactoryModLoader.h>
+#include "DetoursFwd.h"
 #include "Utility.h"
+#include <game/Utility.h>
+
+#include <windows.h>
 
 void log() {}
 
@@ -40,11 +45,7 @@ void set_console_color(ConsoleColor color) {
 }
 
 void check_version(std::string target) {
-	DetourTransactionBegin();
-	DetourUpdateThread(GetCurrentThread());
-	auto pointer = (const wchar_t*(WINAPI*)())DetourFindFunction("FactoryGame-Win64-Shipping.exe", "BuildSettings::GetBuildVersion");
-	DetourTransactionCommit();
-	std::wstring satisVersion(pointer());
+	std::wstring satisVersion{ call<&BuildSettings::GetBuildVersion>() };
 	std::string str(satisVersion.begin(), satisVersion.end());
 	if (str.substr(str.length() - 5, str.length()) == target) {
 		info("Version check passed!");

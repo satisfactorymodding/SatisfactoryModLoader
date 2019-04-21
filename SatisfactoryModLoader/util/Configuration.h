@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <Lib.h>
 #include <util/json.hpp>
 #include <util/Utility.h>
 
@@ -9,8 +10,8 @@ using json = nlohmann::json;
 
 class Configuration {
 public:
-	Configuration(const char* name);
-	~Configuration();
+	SML_API Configuration(const char* name);
+	SML_API ~Configuration();
 
 	template<typename T>
 	void set(const char* name, T value) {
@@ -28,9 +29,9 @@ public:
 		}
 	}
 
-	void save();
-	void load();
-	bool exists();
+	SML_API void save();
+	SML_API void load();
+	SML_API bool exists();
 
 private:
 	std::string _defaultPath = "config\\";

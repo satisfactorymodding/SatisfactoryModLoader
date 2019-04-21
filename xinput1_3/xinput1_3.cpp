@@ -1,3 +1,4 @@
+#include <stdafx.h>
 #include <windows.h>
 #include <stdio.h>
 #include "../SatisfactoryModLoader/SatisfactoryModLoader.h"
@@ -53,18 +54,18 @@ void load_original_dll()
 	char buffer[MAX_PATH];
 
 	// Get path to system dir and to xinput1_3.dll
-	GetSystemDirectory(buffer, MAX_PATH);
+	GetSystemDirectoryA(buffer, MAX_PATH);
 
 	// Append DLL name
 	strcat_s(buffer, "\\xinput1_3.dll");
 
 	// Try to load the system's xinput1_3.dll, if pointer empty
-	if (!mHinstDLL) mHinstDLL = LoadLibrary(buffer);
+	if (!mHinstDLL) mHinstDLL = LoadLibraryA(buffer);
 
 	// Debug
 	if (!mHinstDLL)
 	{
-		OutputDebugString("PROXYDLL: Original xinput1_3.dll not loaded ERROR ****\r\n");
+		OutputDebugStringA("PROXYDLL: Original xinput1_3.dll not loaded ERROR ****\r\n");
 		ExitProcess(0); // Exit the hard way
 	}
 }
