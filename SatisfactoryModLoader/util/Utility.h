@@ -4,6 +4,8 @@
 #include <fstream>
 #include <utility>
 
+#include "../Lib.h"
+
 static std::ofstream logFile; //
 
 enum LogType {
@@ -33,15 +35,15 @@ enum ConsoleColor {
 	White
 };
 
-void set_console_color(ConsoleColor color);
+void SML_API set_console_color(ConsoleColor color);
 
-void check_version(std::string target);
+void SML_API check_version(std::string target);
 
-void log();
+void SML_API log();
 
-void log(LogType type);
+void SML_API log(LogType type);
 
-void draw_header(std::string header, LogType type);
+void SML_API draw_header(std::string header, LogType type);
 
 // logs a message of <T> with various modifiers
 template<typename First, typename ...Args>

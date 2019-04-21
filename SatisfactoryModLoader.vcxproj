@@ -145,41 +145,45 @@
     <Lib>
       <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
+    <PostBuildEvent>
+      <Command>xcopy "$(OutDir)$(TargetName).dll" "C:\Program Files\Epic Games\SatisfactoryEarlyAccess\FactoryGame\Binaries\Win64\" /Y /I
+xcopy "$(OutDir)$(TargetName).pdb" "C:\Program Files\Epic Games\SatisfactoryEarlyAccess\FactoryGame\Binaries\Win64\" /Y /I
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="SatisfactoryModLoader\events\PlayerEvents.h" />
-    <ClInclude Include="SatisfactoryModLoader\events\UtilityEvents.h" />
-    <ClInclude Include="SatisfactoryModLoader\Globals.h" />
+    <ClInclude Include="SatisfactoryModLoader\game\Etc.h" />
+    <ClInclude Include="SatisfactoryModLoader\game\Global.h" />
+    <ClInclude Include="SatisfactoryModLoader\game\Input.h" />
+    <ClInclude Include="SatisfactoryModLoader\game\Player.h" />
+    <ClInclude Include="SatisfactoryModLoader\game\UI.h" />
+    <ClInclude Include="SatisfactoryModLoader\game\Utility.h" />
     <ClInclude Include="SatisfactoryModLoader\HookLoader.h" />
-    <ClInclude Include="SatisfactoryModLoader\Internals.h" />
+    <ClInclude Include="SatisfactoryModLoader\HookLoaderInternal.h" />
     <ClInclude Include="SatisfactoryModLoader\Lib.h" />
-    <ClInclude Include="SatisfactoryModLoader\ModReturns.h" />
-    <ClInclude Include="SatisfactoryModLoader\other\BaseMod.h" />
-    <ClInclude Include="SatisfactoryModLoader\other\CommandParser.h" />
-    <ClInclude Include="SatisfactoryModLoader\other\CommandSystem.h" />
-    <ClInclude Include="SatisfactoryModLoader\utility\DetoursFwd.h" />
-    <ClInclude Include="SatisfactoryModLoader\utility\Logger.h" />
-    <ClInclude Include="SatisfactoryModLoader\utility\Reflection.h" />
-    <ClInclude Include="SatisfactoryModLoader\external\json.hpp" />
-    <ClInclude Include="SatisfactoryModLoader\Main.h" />
-    <ClInclude Include="SatisfactoryModLoader\ModLoader.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\Mod.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\ModHandler.h" />
+    <ClInclude Include="SatisfactoryModLoader\SatisfactoryModLoader.h" />
     <ClInclude Include="SatisfactoryModLoader\stdafx.h" />
     <ClInclude Include="SatisfactoryModLoader\targetver.h" />
-    <ClInclude Include="SatisfactoryModLoader\utility\Configuration.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Configuration.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\DetoursFwd.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\FKey.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\FString.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\json.hpp" />
+    <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SatisfactoryModLoader\events\PlayerEvents.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\events\UtilityEvents.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\Globals.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\HookLoader.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\Internals.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\other\CommandSystem.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\utility\Logger.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\utility\Reflection.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\Main.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\ModLoader.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\mod\Mod.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\mod\ModHandler.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\SatisfactoryModLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\stdafx.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\utility\Configuration.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Configuration.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
     <ClCompile Include="xinput1_3\xinput1_3.cpp" />
   </ItemGroup>
   <ItemGroup>

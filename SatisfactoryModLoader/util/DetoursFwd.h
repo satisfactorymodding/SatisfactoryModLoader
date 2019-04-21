@@ -13,6 +13,9 @@ namespace Detours {
 		//                          _In_ PVOID pDetour);
 		long __stdcall DetourAttach(void** ppPointer, void* pDetour);
 
+		// LONG WINAPI DetourUpdateThread(_In_ HANDLE hThread);
+		long __stdcall DetourUpdateThread(void* hThread);
+
 		// LONG WINAPI DetourTransactionCommit(VOID);
 		void __stdcall DetourTransactionCommit();
 	}

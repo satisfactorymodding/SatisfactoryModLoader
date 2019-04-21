@@ -8,6 +8,12 @@ struct FString {
 
 	FString();
 	FString(const char* message);
+
+	// TODO implement proper copy / move
+	FString(const FString&) = delete;
+	FString& operator=(const FString&) = delete;
+	FString(FString&&) = delete;
+	FString& operator=(FString&&) = delete;
 private:
 	void create_message(const char* message);
 };

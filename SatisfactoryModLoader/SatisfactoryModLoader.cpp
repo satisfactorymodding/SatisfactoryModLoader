@@ -1,4 +1,5 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
+#define WIN32_LEAN_AND_MEAN
 #include <stdafx.h>
 #include <SatisfactoryModLoader.h>
 #include <string>
@@ -11,9 +12,9 @@
 #include <util/Utility.h>
 #include <util/Reflection.h>
 #include <mod/ModHandler.h>
-#include <event/EventLoader.h>
-#include <event/FunctionHolder.h>
 #include <util/Configuration.h>
+
+static ModHandler modHandler;
 
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
@@ -46,7 +47,6 @@ void mod_loader_entry() {
 	GetModuleFileNameA(NULL, p, MAX_PATH);
 
 	// load mods
-	ModHandler modHandler;
 	modHandler.load_mods(p);
 	modHandler.setup_mods();
 	modHandler.check_dependencies();
@@ -58,17 +58,13 @@ void mod_loader_entry() {
 
 	//display condensed form of mod information
 	std::string modList = "[";
-	for (Mod mod : modHandler.mods) {
-		modList.append(mod.name + "@" + mod.version + ", ");
+	for (auto&& mod : modHandler.mods) {
+		modList.append(mod->info.name + "@" + mod->info.version + ", ");
 	}
 
 	if (listSize > 0) {
 		info("Loaded mods: ", modList.substr(0, modList.length() - 2), "]");
 	}
-
-	// hook original functions
-	EventLoader eventLoader(modHandler.mods);
-	eventLoader.hook_events();
 
 	info("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
@@ -103,10 +99,7 @@ void read_config() {
 
 //cleans up when the program is killed
 void cleanup() {
-	for (Mod mod : modList) {
-		auto pointer = (void(WINAPI*)())get_function(mod.fileName, "cleanup");
-		pointer();
-	}
+	modHandler.mods.clear();
 
 	info("SML shutting down...");
 	logFile.close();
