@@ -4,6 +4,9 @@ A tool used to load mods for the game Satisfactory. It's under development until
 # Discord Server
 Join our [discord server](https://discord.gg/QzcG9nX) to talk about SML or just Satisfactory Modding in general.
 
+# DISCLAIMER
+The developers of SML are not responsible for any damage to your system caused by mods developed with Satisfactory Mod Loader. Any mods that you download are AT YOUR OWN RISK and we cannot be responsible for the content of said mods and any damage that might be done to your system.
+
 # Compilation instructions
 When this tool is ready to use, stable releases will be found in the releases section. For now, you can compile this yourself.
 ## Required tools
