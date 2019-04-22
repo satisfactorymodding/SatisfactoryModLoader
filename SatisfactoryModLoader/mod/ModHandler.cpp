@@ -105,7 +105,7 @@ void ModHandler::get_files(std::string path) {
 				continue;
 			}
 
-			std::unique_ptr<Mod> mod{ modCreate() };
+			std::unique_ptr<Mod> mod { modCreate() };
 
 			if(mod == nullptr) {
 				error("Mod DLL ", file, " returned nullptr from modCreate()!");

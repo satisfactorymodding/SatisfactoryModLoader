@@ -5,11 +5,16 @@
 #include <util/Configuration.h>
 #include <mod/Mod.h>
 
+
+//version of SML that this was compiled for.
+#define SML_VERSION "0.1.1"
+
 /// config
 Configuration config("ExampleMod");
 bool testValue;
 
-Mod::Info info_{
+//information about the mod
+Mod::Info info_ {
 	SML_VERSION,
 
 	// name
@@ -37,9 +42,7 @@ class ExampleMod : public Mod {
 	}
 
 public:
-	ExampleMod()
-		: Mod(info_)
-	{
+	ExampleMod() : Mod(info_) {
 	}
 
 	void setup() override {
@@ -73,6 +76,8 @@ public:
 	}
 
 	void post_setup() override {
+		// write things to be done after other mods' setup functions
+		// Called after the post setup functions of mods that you depend on.
 	}
 
 	~ExampleMod() {
