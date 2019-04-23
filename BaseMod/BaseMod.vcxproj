@@ -58,9 +58,8 @@
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(OutDir)$(TargetName).dll" "C:\Program Files\Epic Games\SatisfactoryEarlyAccess\FactoryGame\Binaries\Win64\mods\" /Y /I
-xcopy "$(OutDir)$(TargetName).pdb" "C:\Program Files\Epic Games\SatisfactoryEarlyAccess\FactoryGame\Binaries\Win64\mods\" /Y /I
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

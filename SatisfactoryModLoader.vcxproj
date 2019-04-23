@@ -146,9 +146,8 @@
       <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>xcopy "$(OutDir)$(TargetName).dll" "C:\Program Files\Epic Games\SatisfactoryEarlyAccess\FactoryGame\Binaries\Win64\" /Y /I
-xcopy "$(OutDir)$(TargetName).pdb" "C:\Program Files\Epic Games\SatisfactoryEarlyAccess\FactoryGame\Binaries\Win64\" /Y /I
-</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
