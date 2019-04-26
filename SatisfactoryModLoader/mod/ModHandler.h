@@ -1,5 +1,6 @@
 #pragma once
 #include "Mod.h"
+#include "Registry.h"
 #include <string>
 #include <vector>
 #include <memory>
@@ -7,6 +8,7 @@
 class ModHandler {
 public:
 	std::vector<std::unique_ptr<Mod>> mods;
+	std::vector<Registry> commandRegistry;
 
 	void load_mods(const char* startingPath);
 	void setup_mods();

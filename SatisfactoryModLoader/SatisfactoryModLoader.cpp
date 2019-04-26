@@ -14,7 +14,8 @@
 #include <mod/ModHandler.h>
 #include <util/Configuration.h>
 
-static ModHandler modHandler;
+//Modhandler setup
+ModHandler modHandler;
 
 // Main DLL for loading mod DLLs
 void mod_loader_entry() {
@@ -41,7 +42,6 @@ void mod_loader_entry() {
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	}
 	
-	// load mods
 	// get path
 	char p[MAX_PATH];
 	GetModuleFileNameA(NULL, p, MAX_PATH);
@@ -51,10 +51,14 @@ void mod_loader_entry() {
 	modHandler.setup_mods();
 	modHandler.check_dependencies();
 	modHandler.post_setup_mods();
+	hookCommandRegistry();
 
 	// log mod size
 	size_t listSize = modHandler.mods.size();
 	info("Loaded ", listSize, " mod", (listSize > 1 || listSize == 0 ? "s" : ""));
+
+	//Display info about registries
+	info("Registered ", modHandler.commandRegistry.size(), " Command", (modHandler.commandRegistry.size() > 1 || modHandler.commandRegistry.size() == 0 ? "s" : ""));
 
 	//display condensed form of mod information
 	std::string modList = "[";

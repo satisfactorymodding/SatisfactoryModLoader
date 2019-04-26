@@ -4,7 +4,7 @@
 #include <game/Input.h>
 #include <util/Configuration.h>
 #include <mod/Mod.h>
-
+#include <mod/ModFunctions.h>
 
 //version of SML that this was compiled for.
 #define SML_VERSION "0.1.1"
@@ -12,6 +12,12 @@
 /// config
 Configuration config("ExampleMod");
 bool testValue;
+AFGPlayerController* player;
+
+void killPlayer() {
+	info_mod("ExampleMod", "Killed Player");
+	call<&AFGPlayerController::Suicide>(player);
+}
 
 //information about the mod
 Mod::Info info_ {
@@ -34,11 +40,10 @@ Mod::Info info_ {
 };
 
 class ExampleMod : public Mod {
-	AFGPlayerController* player;
 
-	void beginPlay(ModReturns*, AFGPlayerController* player) {
+	void beginPlay(ModReturns*, AFGPlayerController* playerIn) {
 		info_mod("ExampleMod", "Got player");
-		this->player = player;
+		player = playerIn;
 	}
 
 public:
@@ -73,6 +78,8 @@ public:
 			}
 			return false;
 		});
+
+		registerCommand("kill", killPlayer);
 	}
 
 	void post_setup() override {
