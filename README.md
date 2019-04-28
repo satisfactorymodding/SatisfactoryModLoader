@@ -8,15 +8,14 @@ Join our [discord server](https://discord.gg/QzcG9nX) to talk about SML or just 
 This software is provided by the author "as is". In no event shall the author be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any 
 theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
 
-# Compilation instructions
+# Compiling SatisfactoryModLoader
 When this tool is ready to use, stable releases will be found in the releases section. For now, you can compile this yourself.
 ## Required tools
 * Visual Studio 2017
+* Git client (optional, but makes things easier)
 
-When you clone this repository, you will see that there are 3 projects: SatisfactoryModLoader, BaseMod, and xinput1_3. SatisfactoryModLoader houses the code which runs the modloader and the associated code, BaseMod is the basic modding framework for mods to build off of, and xinput1_3 is a wrapper for the modloader which allows it to run automatically when the Satisfactory .EXE is started.
-The xinput1_3 project is the one that you need. __Make sure you are building with the configuration options Release and x64! It will not work otherwise!__
-Build the xinput1_3 project and the DLL that you need will appear in x64/Release.
-## Running instructions
-Take the xinput1_3.dll file and place it next to FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe (the game install directory), and then click that exe to run. If everything went well, a console window should appear. If you click "ok" Satisfactory will run as normal.
+First, make sure to run the commands `git submodule init` and then `git submodule update`. This will download the Detours repository and place it in the detours folder, which is needed for compilation. If you did not download a git client, or if you downloaded the repository instead of cloning it, you will need to manually download the Detours repo (https://github.com/Microsoft/Detours) and extract it into Detours/, otherwise visual studio will not find the files to compile. After that, you will see 3 projects in the solution: Detours, ExampleMod, and SatisfactoryModLoader. __Make sure you build with the configuration options Release and x64! It will not work otherwise!__ When the SatisfactoryModLoader project is compiled, you will find an xinput1_3.dll file in x64/Release folder.
+# Running SatisfactoryModLoader
+Take the xinput1_3.dll file and place it next to FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe (the game install directory), and then click that exe to run. If everything went well, a console window should appear. It will disappear once and then reappear; then the game should be good to go!
 
-Mods will be loaded from FactoryGame/Binaries/Win64/mods.
+Mods will be loaded from the folder FactoryGame/Binaries/Win64/mods.
