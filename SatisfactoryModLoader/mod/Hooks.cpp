@@ -11,6 +11,7 @@ PVOID pakFunc;
 
 using namespace std::placeholders;
 
+// parse commands when the player sends a message
 void player_sent_message(void* player, FString* message) {
 
 	auto pointer = (void(WINAPI*)(void*, void*))chatFunc;

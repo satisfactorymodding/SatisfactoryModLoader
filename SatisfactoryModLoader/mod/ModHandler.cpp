@@ -20,6 +20,7 @@ void ModHandler::load_mods(const char* startingPath) {
 	ModHandler::find_mods(path);
 }
 
+//call the setup function of every loaded mod
 void ModHandler::setup_mods() {
 	for (auto&& mod : mods) {
 		info("Setting up ", mod->info.name);
@@ -27,6 +28,7 @@ void ModHandler::setup_mods() {
 	}
 }
 
+//call the post setup function of every mod through recursive calling, ensuring the post setups of mod dependencies loaded before the original mod's post setup
 void ModHandler::post_setup_mods() {
 	info("Starting Post Setup!");
 	for (int i = 0; i < mods.size(); i++) {
@@ -37,6 +39,7 @@ void ModHandler::post_setup_mods() {
 	}
 }
 
+//recustively load mod dependencies
 void ModHandler::recursive_dependency_load(Mod& mod, int i) { // this code is a massive hack, TODO: refactor this mess
 	for (std::string name : mod.info.dependencies) {
 		auto iterator = std::find(modNameDump.begin(), modNameDump.end(), name);
@@ -46,6 +49,7 @@ void ModHandler::recursive_dependency_load(Mod& mod, int i) { // this code is a 
 	mod.call_post_setup();
 }
 
+// ensure that all dependencies of mods exist
 void ModHandler::check_dependencies() {
 	info("Verifying dependencies...");
 	std::vector<std::string> names;
@@ -63,6 +67,7 @@ void ModHandler::check_dependencies() {
 			} else {
 				auto it = std::find(names.begin(), names.end(), dep);
 				if (it == names.end()) {
+					//quit if a required dependency isn't loaded
 					std::string msg = "Mod " + mod->info.name + " is missing dependency " + dep + "!\nPlease install " + dep + " or remove " + mod->info.name + ".\nPress Ok to exit.";
 					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
 					abort();
@@ -72,6 +77,7 @@ void ModHandler::check_dependencies() {
 	}
 }
 
+//get the mod files and load them
 void ModHandler::get_files(std::string path) {
 	std::string pathExact = path + "\\";
 
@@ -124,6 +130,7 @@ void ModHandler::get_files(std::string path) {
 				}
 			}
 
+			//continue if the mod is loaded already
 			if (isDuplicate) {
 				continue;
 			}

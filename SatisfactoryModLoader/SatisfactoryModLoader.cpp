@@ -37,6 +37,7 @@ void mod_loader_entry() {
 	// load up all of the configuration information
 	read_config();
 
+	//make sure that SML's target and satisfactory's versions are the same
 	check_version(targetVersion);
 
 	if (loadConsole) {
@@ -74,6 +75,7 @@ void mod_loader_entry() {
 	info("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
 }
 
+//read the config file
 void read_config() {
 	info("Finding config file...");
 	Configuration loaderConfig("..\\config");

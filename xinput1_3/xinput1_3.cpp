@@ -61,11 +61,12 @@ void load_original_dll()
 	strcat_s(buffer, "\\xinput1_3.dll");
 
 	// Try to load the system's xinput1_3.dll, if pointer empty
-	if (!mHinstDLL) mHinstDLL = LoadLibraryA(buffer);
+	if (!mHinstDLL) {
+		mHinstDLL = LoadLibraryA(buffer);
+	}
 
 	// Debug
-	if (!mHinstDLL)
-	{
+	if (!mHinstDLL) {
 		OutputDebugStringA("PROXYDLL: Original xinput1_3.dll not loaded ERROR ****\r\n");
 		ExitProcess(0); // Exit the hard way
 	}
