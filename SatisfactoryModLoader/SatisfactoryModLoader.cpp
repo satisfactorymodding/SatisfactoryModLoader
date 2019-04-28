@@ -12,6 +12,7 @@
 #include <util/Utility.h>
 #include <util/Reflection.h>
 #include <mod/ModHandler.h>
+#include <mod/Hooks.h>
 #include <util/Configuration.h>
 
 //Modhandler setup
@@ -51,7 +52,7 @@ void mod_loader_entry() {
 	modHandler.setup_mods();
 	modHandler.check_dependencies();
 	modHandler.post_setup_mods();
-	hookCommandRegistry();
+	hookFunctions();
 
 	// log mod size
 	size_t listSize = modHandler.mods.size();
