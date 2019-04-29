@@ -5,10 +5,13 @@
 #include <vector>
 #include <memory>
 
+// holds important information about the loaded mods. It should never be accessed by mods directly.
 class ModHandler {
 public:
 	std::vector<std::unique_ptr<Mod>> mods;
+
 	std::vector<Registry> commandRegistry;
+	std::vector<Registry> APIRegistry;
 
 	void load_mods(const char* startingPath);
 	void setup_mods();

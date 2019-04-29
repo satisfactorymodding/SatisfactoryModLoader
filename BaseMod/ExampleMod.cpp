@@ -6,11 +6,17 @@
 #include <mod/Mod.h>
 #include <mod/ModFunctions.h>
 
-//version of SML that this was compiled for.
-#define SML_VERSION "0.1.1"
+//version of SML that this mod was compiled for.
+#define SML_VERSION "1.0.0-pr1"
+
+//define the mod name for easy changing and simple use
+#define MOD_NAME "ExampleMod"
+
+//define a log macro to make outputting to the log easier
+#define LOG(msg) info_mod(MOD_NAME, msg)
 
 // config
-Configuration config("ExampleMod");
+Configuration config(MOD_NAME);
 bool testValue;
 
 //global variables required by the mod
@@ -18,7 +24,7 @@ AFGPlayerController* player;
 
 // Function to be called as a command (called when /kill is called)
 void killPlayer() {
-	info_mod("ExampleMod", "Killed Player");
+	LOG("Killed Player");
 	call<&AFGPlayerController::Suicide>(player);
 }
 
@@ -28,7 +34,7 @@ Mod::Info modInfo {
 	SML_VERSION,
 
 	// name
-	"ExampleMod",
+	MOD_NAME,
 
 	// version
 	"0.2",
@@ -40,6 +46,7 @@ Mod::Info modInfo {
 	"SuperCoder79, Nomnom, anttirt",
 
 	// dependencies
+	// Place mod names that you want to ensure is loaded in this vector. If you place an asterisk (*) before the mod name, it will be loaded as an optional dependency instead.
 	{}
 };
 
@@ -48,7 +55,7 @@ class ExampleMod : public Mod {
 
 	//function to be hooked
 	void beginPlay(ModReturns*, AFGPlayerController* playerIn) {
-		info_mod("ExampleMod", "Got player");
+		LOG("Got Player");
 		player = playerIn;
 	}
 
@@ -83,19 +90,38 @@ public:
 		// use a lambda with captured this-ptr as handler
 		subscribe<&PlayerInput::InputKey>([this](ModReturns*, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
 			if(GetAsyncKeyState('G')) {
-				info_mod("ExampleMod", "G key pressed");
+				LOG("G key pressed");
 				call<&AFGPlayerController::Suicide>(player);
 			}
 			return false;
 		});
 
 		// register /kill to call the killPlayer function
-		registerCommand("kill", killPlayer);
+		registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class
+
+		//register killPlayer as a function that other mods can use if this mod is loaded.
+		registerAPIFunction("KillPlayer", killPlayer);
+
+		LOG("Finished ExampleMod setup!");
 	}
 
 	void post_setup() override {
 		// write things to be done after other mods' setup functions
 		// Called after the post setup functions of mods that you depend on.
+
+		//Check if mod "RandomMod" is loaded
+		if (isModLoaded("RandomMod")) {
+			LOG("Random mod is loaded!");
+			//grab the raw function pointer for "NonexistantFunction"
+			PVOID nonexistantFuncRaw = getAPIFunction("NonexistantFunction");
+			//Cast the raw function pointer into a usable function
+			auto nonexistantFunc = (void(WINAPI*)())nonexistantFuncRaw;
+			//call the nonexistant function
+			nonexistantFunc();
+			
+			//Sidenote: this code should crash because it is trying to access a function that is not registered, but it does not because we ensure the code is only run when "RandomMod" is loaded.
+		}
+
 	}
 
 	~ExampleMod() {

@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include <mod/ModHandler.h>
 
-static const std::string modLoaderVersion = "0.1.1"; // SML's version
+static const std::string modLoaderVersion = "1.0.0-pr1"; // SML's version
 static const std::string targetVersion = "97236"; //CL of Satisfactory
 static bool loadConsole = true;
 static bool debugOutput = false;

@@ -51,7 +51,6 @@ void ModHandler::recursive_dependency_load(Mod& mod, int i) { // this code is a 
 
 // ensure that all dependencies of mods exist
 void ModHandler::check_dependencies() {
-	info("Verifying dependencies...");
 	std::vector<std::string> names;
 	for (auto&& mod : mods) {
 		names.push_back(mod->info.name);
@@ -75,6 +74,7 @@ void ModHandler::check_dependencies() {
 			}
 		}
 	}
+	info("Verifyied dependencies");
 }
 
 //get the mod files and load them
