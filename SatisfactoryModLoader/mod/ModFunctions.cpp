@@ -31,8 +31,10 @@ SML_API void registerAPIFunction(std::string name, PVOID func) {
 // gets an API function from the mod handler
 SML_API PVOID getAPIFunction(std::string name) {
 	bool found = false;
+	PVOID func = NULL;
 	for (Registry reg : modHandler.APIRegistry) {
 		if (reg.name == name) {
+			func = reg.func;
 			found = true;
 		}
 	}
@@ -41,6 +43,7 @@ SML_API PVOID getAPIFunction(std::string name) {
 		MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
 		abort();
 	}
+	return func;
 }
 
 // checks if a mod is loaded through mod name
