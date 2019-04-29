@@ -61,6 +61,7 @@ void mod_loader_entry() {
 
 	//Display info about registries
 	info("Registered ", modHandler.commandRegistry.size(), " Command", (modHandler.commandRegistry.size() > 1 || modHandler.commandRegistry.size() == 0 ? "s" : ""));
+	info("Registered ", modHandler.APIRegistry.size(), " API function", (modHandler.APIRegistry.size() > 1 || modHandler.APIRegistry.size() == 0 ? "s" : ""));
 
 	//display condensed form of mod information
 	std::string modList = "[";
@@ -78,7 +79,7 @@ void mod_loader_entry() {
 //read the config file
 void read_config() {
 	info("Finding config file...");
-	Configuration loaderConfig("..\\config");
+	Configuration loaderConfig("..\\SatisfactoryModLoader");
 	if (!loaderConfig.exists()) {
 		error("No config file found!");
 		info("Creating new config file...");

@@ -7,7 +7,7 @@
 #include <mod/ModFunctions.h>
 
 //version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.0-pr1"
+#define SML_VERSION "1.0.0-pr2"
 
 //define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"
