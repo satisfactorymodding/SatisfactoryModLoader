@@ -42,6 +42,19 @@ void ModHandler::post_setup_mods() {
 //recustively load mod dependencies
 void ModHandler::recursive_dependency_load(Mod& mod, int i) { // this code is a massive hack, TODO: refactor this mess
 	for (std::string name : mod.info.dependencies) {
+		if (name.substr(0, 1) == "*") {
+			bool found = false;
+			for (auto&& mod : this->mods) {
+				if (mod->info.name == name.substr(1)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				continue;
+			}
+			name = name.substr(1);
+		}
 		auto iterator = std::find(modNameDump.begin(), modNameDump.end(), name);
 		int loc = std::distance(modNameDump.begin(), iterator);
 		recursive_dependency_load(*mods[loc], loc);
