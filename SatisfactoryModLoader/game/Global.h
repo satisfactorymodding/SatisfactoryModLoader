@@ -8,9 +8,20 @@
 #pragma warning (push)
 #pragma warning (disable: 4667)
 
+//enum ELevelTick {
+
+//};
+
+class UWorld {
+public:
+	void Tick(enum ELevelTick TickType, float DeltaSeconds);
+};
+
+DEFINE_METHOD(UWorld::Tick);
+
 class UGameInstance {
 public:
-	class UWorld* GetWorld();
+	UWorld* GetWorld();
 };
 
 DEFINE_METHOD(UGameInstance::GetWorld);

@@ -96,6 +96,11 @@ public:
 			return false;
 		});
 
+		//Tick functions are called every frame of the game. BE VERY CAREFUL WHEN USING THIS FUNCTION!!! Putting a lot of code in here will slow the game down to a crawl!
+		subscribe<&UWorld::Tick>([this](ModReturns*, UWorld* world, ELevelTick tick, float delta) {
+			//LOG("test");
+		});
+
 		// register /kill to call the killPlayer function
 		registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class
 
