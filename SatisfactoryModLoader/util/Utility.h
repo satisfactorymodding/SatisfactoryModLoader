@@ -37,7 +37,7 @@ enum ConsoleColor {
 
 void SML_API set_console_color(ConsoleColor color);
 
-void SML_API check_version(std::string target);
+void SML_API check_version(const std::string target[2]);
 
 void SML_API log();
 
