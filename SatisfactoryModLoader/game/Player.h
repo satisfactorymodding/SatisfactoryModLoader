@@ -5,142 +5,168 @@
 
 #pragma warning (push)
 #pragma warning (disable: 4667)
-
-class AFGCharacterBase {
-public:
-	void BeginPlay();
-	void GetHealthComponent(struct FFrame*, void* const);
-};
-
-DEFINE_METHOD(AFGCharacterBase::BeginPlay);
-
+namespace Classes {
+	class AFGCharacterBase {
+	public:
+		void BeginPlay();
+		void GetHealthComponent(struct FFrame*, void* const);
+	};
+}
+DEFINE_METHOD(Classes::AFGCharacterBase::BeginPlay);
 // manually override name
 template <>
-struct HookName<&AFGCharacterBase::GetHealthComponent> {
+struct HookName<&Classes::AFGCharacterBase::GetHealthComponent> {
 	static constexpr const char Name[] = "AFGCharacterBase::execGetHealthComponent";
 };
 
-EXPORT_METHOD(AFGCharacterBase::GetHealthComponent);
+EXPORT_METHOD(Classes::AFGCharacterBase::GetHealthComponent);
 
-class AFGCharacterPlayer : public AFGCharacterBase
-{
-public:
-	void BeginPlay();
-	void HotKeyDismantle();
-	void OnUsePressed();
-	void SprintPressed();
-};
+namespace Classes {
+	class AFGCharacterPlayer : public Classes::AFGCharacterBase
+	{
+	public:
+		void BeginPlay();
+		void HotKeyDismantle();
+		void OnUsePressed();
+		void SprintPressed();
+	};
+}
+DEFINE_METHOD(Classes::AFGCharacterPlayer::BeginPlay);
+DEFINE_METHOD(Classes::AFGCharacterPlayer::HotKeyDismantle);
+DEFINE_METHOD(Classes::AFGCharacterPlayer::OnUsePressed);
+DEFINE_METHOD(Classes::AFGCharacterPlayer::SprintPressed);
 
-DEFINE_METHOD(AFGCharacterPlayer::BeginPlay);
-DEFINE_METHOD(AFGCharacterPlayer::HotKeyDismantle);
-DEFINE_METHOD(AFGCharacterPlayer::OnUsePressed);
-DEFINE_METHOD(AFGCharacterPlayer::SprintPressed);
+namespace Classes {
+	class HealthComponent {
+	public:
+		void TakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType *damageType, class AController *instigatedBy, class AActor *damageCauser);
+	};
+}
 
-class HealthComponent {
-public:
-	void TakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType *damageType, class AController *instigatedBy, class AActor *damageCauser);
-};
+DEFINE_METHOD_PRE("UFG", Classes::HealthComponent::TakeDamage);
 
-DEFINE_METHOD_PRE("UFG", HealthComponent::TakeDamage);
+namespace Classes {
+	class UFGBuildGunState {
+	public:
+		float GetBuildGunDelayPercentage();
+	};
+}
 
-class UFGBuildGunState {
-public:
-	float GetBuildGunDelayPercentage();
-};
+DEFINE_METHOD(Classes::UFGBuildGunState::GetBuildGunDelayPercentage);
 
-DEFINE_METHOD(UFGBuildGunState::GetBuildGunDelayPercentage);
+namespace Classes {
+	class AFGBuildGun {
+	public:
+		void  OnNoSnapModePressed();
+		void  OnPrimaryFirePressed();
+		void  OnScrollDownPressed();
+		void  OnScrollModePressed();
+		void  OnSnapToGuideLinesPressed();
+	};
+}
 
-class AFGBuildGun {
-public:
-	void  OnNoSnapModePressed();
-	void  OnPrimaryFirePressed();
-	void  OnScrollDownPressed();
-	void  OnScrollModePressed();
-	void  OnSnapToGuideLinesPressed();
-};
+DEFINE_METHOD(Classes::AFGBuildGun::OnNoSnapModePressed);
+DEFINE_METHOD(Classes::AFGBuildGun::OnPrimaryFirePressed);
+DEFINE_METHOD(Classes::AFGBuildGun::OnScrollDownPressed);
+DEFINE_METHOD(Classes::AFGBuildGun::OnScrollModePressed);
+DEFINE_METHOD(Classes::AFGBuildGun::OnSnapToGuideLinesPressed);
 
-DEFINE_METHOD(AFGBuildGun::OnNoSnapModePressed);
-DEFINE_METHOD(AFGBuildGun::OnPrimaryFirePressed);
-DEFINE_METHOD(AFGBuildGun::OnScrollDownPressed);
-DEFINE_METHOD(AFGBuildGun::OnScrollModePressed);
-DEFINE_METHOD(AFGBuildGun::OnSnapToGuideLinesPressed);
+namespace Classes {
+	class AFGC4Dispenser {
+	public:
+		void  OnDetonatePressed();
+		void  OnPrimaryFirePressed();
+	};
+}
 
-class AFGC4Dispenser {
-public:
-	void  OnDetonatePressed();
-	void  OnPrimaryFirePressed();
-};
+DEFINE_METHOD(Classes::AFGC4Dispenser::OnDetonatePressed);
+DEFINE_METHOD(Classes::AFGC4Dispenser::OnPrimaryFirePressed);
 
-DEFINE_METHOD(AFGC4Dispenser::OnDetonatePressed);
-DEFINE_METHOD(AFGC4Dispenser::OnPrimaryFirePressed);
+namespace Classes {
+	class AFGChainsaw {
+	public:
+		void  OnPrimaryFirePressed();
+	};
+}
 
-class AFGChainsaw {
-public:
-	void  OnPrimaryFirePressed();
-};
+DEFINE_METHOD(Classes::AFGChainsaw::OnPrimaryFirePressed);
 
-DEFINE_METHOD(AFGChainsaw::OnPrimaryFirePressed);
+namespace Classes {
+	class AFGColorGun {
+	public:
+		void  OnSecondaryFirePressed();
+	};
+}
 
-class AFGColorGun {
-public:
-	void  OnSecondaryFirePressed();
-};
+DEFINE_METHOD(Classes::AFGColorGun::OnSecondaryFirePressed);
 
-DEFINE_METHOD(AFGColorGun::OnSecondaryFirePressed);
+namespace Classes {
+	class AFGConsumableEquipment {
+	public:
+		void  OnPrimaryFirePressed();
+	};
+}
 
-class AFGConsumableEquipment {
-public:
-	void  OnPrimaryFirePressed();
-};
+DEFINE_METHOD(Classes::AFGConsumableEquipment::OnPrimaryFirePressed);
 
-DEFINE_METHOD(AFGConsumableEquipment::OnPrimaryFirePressed);
+namespace Classes {
+	class AFGEquipmentStunSpear {
+	public:
+		void  OnFirePressed();
+	};
+}
 
-class AFGEquipmentStunSpear {
-public:
-	void  OnFirePressed();
-};
+DEFINE_METHOD(Classes::AFGEquipmentStunSpear::OnFirePressed);
 
-DEFINE_METHOD(AFGEquipmentStunSpear::OnFirePressed);
+namespace Classes {
+	class AFGHookshot {
+	public:
+		void  OnPrimaryFirePressed();
+		void  OnSecondaryFirePressed();
+	};
+}
 
-class AFGHookshot {
-public:
-	void  OnPrimaryFirePressed();
-	void  OnSecondaryFirePressed();
-};
+DEFINE_METHOD(Classes::AFGHookshot::OnPrimaryFirePressed);
+DEFINE_METHOD(Classes::AFGHookshot::OnSecondaryFirePressed);
 
-DEFINE_METHOD(AFGHookshot::OnPrimaryFirePressed);
-DEFINE_METHOD(AFGHookshot::OnSecondaryFirePressed);
+namespace Classes {
+	class AFGPortableMinerDispenser {
+	public:
+		void  OnPrimaryFirePressed();
+	};
+}
 
-class AFGPortableMinerDispenser {
-public:
-	void  OnPrimaryFirePressed();
-};
+DEFINE_METHOD(Classes::AFGPortableMinerDispenser::OnPrimaryFirePressed);
 
-DEFINE_METHOD(AFGPortableMinerDispenser::OnPrimaryFirePressed);
+namespace Classes {
+	class AFGResourceScanner {
+	public:
+		void  OnScanPressed();
+	};
+}
 
-class AFGResourceScanner {
-public:
-	void  OnScanPressed();
-};
+DEFINE_METHOD(Classes::AFGResourceScanner::OnScanPressed);
 
-DEFINE_METHOD(AFGResourceScanner::OnScanPressed);
+namespace Classes {
+	class AFGWeapon {
+	public:
+		void  OnPrimaryFirePressed();
+		void  OnReloadPressed();
+	};
+}
 
-class AFGWeapon {
-public:
-	void  OnPrimaryFirePressed();
-	void  OnReloadPressed();
-};
+DEFINE_METHOD(Classes::AFGWeapon::OnPrimaryFirePressed);
+DEFINE_METHOD(Classes::AFGWeapon::OnReloadPressed);
 
-DEFINE_METHOD(AFGWeapon::OnPrimaryFirePressed);
-DEFINE_METHOD(AFGWeapon::OnReloadPressed);
+namespace Classes {
+	class UFGBuildGunStateDismantle {
+	public:
+		void  BeginBuildGunDelay();
+		void  ResetBuildGunDelay();
+	};
+}
 
-class UFGBuildGunStateDismantle {
-public:
-	void  BeginBuildGunDelay();
-	void  ResetBuildGunDelay();
-};
-
-DEFINE_METHOD(UFGBuildGunStateDismantle::BeginBuildGunDelay);
-DEFINE_METHOD(UFGBuildGunStateDismantle::ResetBuildGunDelay);
+DEFINE_METHOD(Classes::UFGBuildGunStateDismantle::BeginBuildGunDelay);
+DEFINE_METHOD(Classes::UFGBuildGunStateDismantle::ResetBuildGunDelay);
 
 #pragma warning (pop)

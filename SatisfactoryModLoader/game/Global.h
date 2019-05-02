@@ -8,56 +8,64 @@
 #pragma warning (push)
 #pragma warning (disable: 4667)
 
-//enum ELevelTick {
+namespace Classes {
+	class UWorld {
+	public:
+		void Tick(enum ELevelTick TickType, float DeltaSeconds);
+	};
+}
 
-//};
+DEFINE_METHOD(Classes::UWorld::Tick);
 
-class UWorld {
-public:
-	void Tick(enum ELevelTick TickType, float DeltaSeconds);
-};
+namespace Classes {
+	class UGameInstance {
+	public:
+		UWorld* GetWorld();
+	};
+}
 
-DEFINE_METHOD(UWorld::Tick);
+DEFINE_METHOD(Classes::UGameInstance::GetWorld);
 
-class UGameInstance {
-public:
-	UWorld* GetWorld();
-};
+namespace Classes {
+	class UGameplayStatics {
+	public:
+		static class APawn* GetPlayerPawn(class UObject* WorldContextObject, int PlayerIndex);
+	};
+}
 
-DEFINE_METHOD(UGameInstance::GetWorld);
+DEFINE_METHOD(Classes::UGameplayStatics::GetPlayerPawn);
 
-class UGameplayStatics {
-public:
-	static class APawn* GetPlayerPawn(class UObject* WorldContextObject, int PlayerIndex);
-};
+namespace Classes {
+	class AFGPlayerController {
+	public:
+		void BeginPlay();
+		void EnterChatMessage(FString *inMessage);
+		void OnAttentionPingPressed();
+		void Suicide();
+	};
+}
 
-DEFINE_METHOD(UGameplayStatics::GetPlayerPawn);
+DEFINE_METHOD(Classes::AFGPlayerController::BeginPlay);
+DEFINE_METHOD(Classes::AFGPlayerController::EnterChatMessage);
+DEFINE_METHOD(Classes::AFGPlayerController::OnAttentionPingPressed);
+DEFINE_METHOD(Classes::AFGPlayerController::Suicide);
 
-class AFGPlayerController {
-public:
-	void BeginPlay();
-	void EnterChatMessage(FString *inMessage);
-	void OnAttentionPingPressed();
-	void Suicide();
-};
+namespace Classes {
+	class UFGInventoryComponent {
+	public:
+		void SortInventory();
+	};
+}
 
-DEFINE_METHOD(AFGPlayerController::BeginPlay);
-DEFINE_METHOD(AFGPlayerController::EnterChatMessage);
-DEFINE_METHOD(AFGPlayerController::OnAttentionPingPressed);
-DEFINE_METHOD(AFGPlayerController::Suicide);
+DEFINE_METHOD(Classes::UFGInventoryComponent::SortInventory);
 
-class UFGInventoryComponent {
-public:
-	void SortInventory();
-};
+namespace Classes {
+	class FPakPlatformFile {
+	public:
+		void GetPakSigningKeys(void* OutKey);
+	};
+}
 
-DEFINE_METHOD(UFGInventoryComponent::SortInventory);
-
-class FPakPlatformFile {
-public:
-	void GetPakSigningKeys(void* OutKey);
-};
-
-DEFINE_METHOD(FPakPlatformFile::GetPakSigningKeys);
+DEFINE_METHOD(Classes::FPakPlatformFile::GetPakSigningKeys);
 
 #pragma warning (pop)

@@ -5,34 +5,42 @@
 #pragma warning (push)
 #pragma warning (disable: 4667)
 
-class UButton {
-public:
-	bool IsPressed();
-	void SlateHandlePressed();
-};
+namespace Classes {
+	class UButton {
+	public:
+		bool IsPressed();
+		void SlateHandlePressed();
+	};
+}
 
-DEFINE_METHOD(UButton::IsPressed);
-DEFINE_METHOD(UButton::SlateHandlePressed);
+DEFINE_METHOD(Classes::UButton::IsPressed);
+DEFINE_METHOD(Classes::UButton::SlateHandlePressed);
 
-class UCheckBox {
-public:
-	bool IsPressed();
-};
+namespace Classes {
+	class UCheckBox {
+	public:
+		bool IsPressed();
+	};
+}
 
-DEFINE_METHOD(UCheckBox::IsPressed);
+DEFINE_METHOD(Classes::UCheckBox::IsPressed);
 
-class SButton {
-public:
-	bool IsPressed();
-};
+namespace Classes {
+	class SButton {
+	public:
+		bool IsPressed();
+	};
+}
 
-DEFINE_METHOD(SButton::IsPressed);
+DEFINE_METHOD(Classes::SButton::IsPressed);
 
-class UAkCheckBox {
-public:
-	bool IsPressed();
-};
+namespace Classes {
+	class UAkCheckBox {
+	public:
+		bool IsPressed();
+	};
+}
 
-DEFINE_METHOD(UAkCheckBox::IsPressed);
+DEFINE_METHOD(Classes::UAkCheckBox::IsPressed);
 
 #pragma warning (pop)
