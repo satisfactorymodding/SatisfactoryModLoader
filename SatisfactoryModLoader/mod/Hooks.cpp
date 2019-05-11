@@ -1,9 +1,12 @@
 #include <stdafx.h>
 #include "Hooks.h"
 #include <detours.h>
+#include <stdio.h> 
+#include <sstream>
 #include <functional>
 #include <SatisfactoryModLoader.h>
 #include <game/Global.h>
+#include "ModFunctions.h"
 #include <util/Utility.h>
 
 PVOID chatFunc;
@@ -23,11 +26,30 @@ void player_sent_message(void* player, FString* message) {
 	}
 
 	std::string str(chars);
+	std::vector<std::string> arguments;
+	std::stringstream ss(str);
+	std::string temp;
+	if (str.find(' ') == std::string::npos) {
+		info("not found");
+		arguments.push_back(str);
+	} else {
+		while (getline(ss, temp, ' ')) {
+			arguments.push_back(temp);
+		}
+	}
+	for (std::string s : arguments) {
+		info(s);
+	}
 	bool found = false;
 	for (Registry r : modHandler.commandRegistry) {
-		if (str == "/" + r.name) {
-			auto commandFunc = (void(WINAPI*)())r.func;
-			commandFunc();
+		if (arguments[0] == "/" + r.name) {
+			info("found");
+			auto commandFunc = (void(WINAPI*)(SML::CommandData))r.func;
+			SML::CommandData data = {
+				arguments.size(),
+				arguments
+			};
+			commandFunc(data);
 			found = true;
 		}
 	}

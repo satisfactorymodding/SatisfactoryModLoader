@@ -46,7 +46,7 @@ void set_console_color(ConsoleColor color) {
 
 //target[0] = normal CL, target [1] = experimental CL
 void check_version(const std::string target[2]) {
-	std::wstring satisVersion{ call<&Classes::BuildSettings::GetBuildVersion>() };
+	std::wstring satisVersion{ call<&BuildSettings::GetBuildVersion>() };
 	std::string str(satisVersion.begin(), satisVersion.end());
 	if (str.substr(str.length() - 5, str.length()) == target[0]) {
 		info("Version check passed!");

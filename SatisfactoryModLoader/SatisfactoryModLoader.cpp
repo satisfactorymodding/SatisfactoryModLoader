@@ -33,13 +33,12 @@ void mod_loader_entry() {
 	logFile.clear();
 
 	info("Attached SatisfactoryModLoader to Satisfactory");
-
+	
 	// load up all of the configuration information
 	read_config();
 
 	//make sure that SML's target and satisfactory's versions are the same
 	check_version(targetVersion);
-
 	if (loadConsole) {
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 	}

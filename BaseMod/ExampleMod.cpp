@@ -20,12 +20,18 @@ Configuration config(MOD_NAME);
 bool testValue;
 
 //global variables required by the mod
-Classes::AFGPlayerController* player;
+AFGPlayerController* player;
 
 // Function to be called as a command (called when /kill is called)
-void killPlayer() {
+// All command functions need to have the same parameters, which is SML::CommandData
+// CommandData has two things in it, the amount of parameters and a vector of the parameters.
+// The first item in the vector is always the command, so if someone did "/kill me" data.argc would be 2 and data.argv would be {"/kill", "me"}.
+void killPlayer(SML::CommandData data) {
+	for (std::string s : data.argv) {
+		LOG(s);
+	}
 	LOG("Killed Player");
-	call<&Classes::AFGPlayerController::Suicide>(player);
+	call<&AFGPlayerController::Suicide>(player);
 }
 
 //information about the mod
@@ -54,7 +60,7 @@ Mod::Info modInfo {
 class ExampleMod : public Mod {
 
 	//function to be hooked
-	void beginPlay(ModReturns* modReturns, Classes::AFGPlayerController* playerIn) {
+	void beginPlay(ModReturns* modReturns, AFGPlayerController* playerIn) {
 		LOG("Got Player");
 		player = playerIn;
 	}
@@ -86,23 +92,22 @@ public:
 		// More on namespaces:
 		// * The functions that will be of use to you are in the SML namespace. A tip is to type SML:: and see what functions are available for you to use. 
 		// The only non-namespaced functions are subscribe() and call() which cannot go into a namespace for technical reasons.
-		// * Classes that you can hook are in the Classes namespace.
 
 		// use a member function as handler
-		subscribe<&Classes::AFGPlayerController::BeginPlay>(std::bind(&ExampleMod::beginPlay, this, _1, _2)); //bind the beginPlay function, with placeholder variables
+		subscribe<&AFGPlayerController::BeginPlay>(std::bind(&ExampleMod::beginPlay, this, _1, _2)); //bind the beginPlay function, with placeholder variables
 		// because there are two inputs to the function, we use _1 and _2. If there were 3 inputs, we would use _1, _2, and _3, and so forth.
 
 		// use a lambda with captured this-ptr as handler
-		subscribe<&Classes::PlayerInput::InputKey>([this](ModReturns* modReturns, Classes::PlayerInput* playerInput, FKey key, Classes::InputEvent event, float amount, bool gamePad) {
+		subscribe<&PlayerInput::InputKey>([this](ModReturns* modReturns, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
 			if(GetAsyncKeyState('G')) {
 				LOG("G key pressed");
-				call<&Classes::AFGPlayerController::Suicide>(player);
+				call<&AFGPlayerController::Suicide>(player);
 			}
 			return false;
 		});
 
 		//Tick functions are called every frame of the game. BE VERY CAREFUL WHEN USING THIS FUNCTION!!! Putting a lot of code in here will slow the game down to a crawl!
-		subscribe<&Classes::UWorld::Tick>([this](ModReturns*, Classes::UWorld* world, Classes::ELevelTick tick, float delta) {
+		subscribe<&UWorld::Tick>([this](ModReturns*, UWorld* world, ELevelTick tick, float delta) {
 			//LOG("test");
 		});
 

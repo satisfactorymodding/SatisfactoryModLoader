@@ -6,8 +6,8 @@
 #include <Windows.h>
 #include <mod/ModHandler.h>
 
-static const std::string modLoaderVersion = "1.0.0-pr2"; // SML's version
-static const std::string targetVersion[] = {"97236", "98224"}; //CLs of Satisfactory, 1st is normal CL and 2nd is experimental CL
+static const std::string modLoaderVersion = "1.0.0-pr3"; // SML's version
+static const std::string targetVersion[] = {"97236", "98904"}; //CLs of Satisfactory, 1st is normal CL and 2nd is experimental CL
 static bool loadConsole = true;
 static bool debugOutput = false;
 static bool supressErrors = false;
