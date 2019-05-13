@@ -5,6 +5,10 @@
 
 #include <windows.h>
 
-void* get_field_value(void* module, const char* procName) {
-	return GetProcAddress((HMODULE)module, procName);
+namespace SML {
+	namespace Utility {
+		void* get_field_value(void* module, const char* procName) {
+			return GetProcAddress((HMODULE)module, procName);
+		}
+	}
 }

@@ -152,7 +152,7 @@ public:
 	arbitrary additional context to the handlers. For example a mod can use this to
 	bind to a class member function with a this parameter instead of a global function,
 	or to a lambda function with captured local variables.
-	
+
 	*/
 	typedef std::function<HandlerSignature> Handler;
 
@@ -161,7 +161,7 @@ public:
 	A lower-overhead alternative to std::function would be to store a raw function pointer
 	instead, but this would lose the ability for mods to pass along additional context,
 	which makes mod development more difficult.
-	
+
 	*/
 	// typedef HandlerSignature* Handler;
 
@@ -199,10 +199,10 @@ private:
 
 		R ret{};
 
-		for(auto&& handler : HandlerStorage<PF, Handler>::handlers)
+		for (auto&& handler : HandlerStorage<PF, Handler>::handlers)
 			ret = handler(&returns, args...);
 
-		if(returns.use_original_function)
+		if (returns.use_original_function)
 			return ((HookType*)HandlerStorage<PF, Handler>::original)(args...);
 
 		return ret;
@@ -219,10 +219,10 @@ private:
 		ModReturns returns;
 		returns.use_original_function = true;
 
-		for(auto&& handler : HandlerStorage<PF, Handler>::handlers)
+		for (auto&& handler : HandlerStorage<PF, Handler>::handlers)
 			handler(&returns, args...);
 
-		if(returns.use_original_function)
+		if (returns.use_original_function)
 			((HookType*)HandlerStorage<PF, Handler>::original)(args...);
 	}
 
@@ -238,7 +238,7 @@ private:
 	Additionally we have to use the superfluous X parameter to prevent the compiler from
 	automatically instantiating both functions when the HookInvoker class template instantation
 	is exported from the mod loader DLL.
-	
+
 	*/
 
 	template <typename X>
@@ -261,7 +261,7 @@ private:
 	*/
 
 	static void install_hook() {
-		if(!HandlerStorage<PF, Handler>::original) {
+		if (!HandlerStorage<PF, Handler>::original) {
 			Detours::DetourTransactionBegin();
 			HandlerStorage<PF, Handler>::original = Detours::DetourFindFunction(_gameModule, HookName<PF>::Name);
 			Detours::DetourAttach(&HandlerStorage<PF, Handler>::original, (void*)get_apply<R>(std::is_same<R, void>{}));
@@ -333,10 +333,10 @@ private:
 
 		R ret{};
 
-		for(auto&& handler : HandlerStorage<PMF, Handler>::handlers)
+		for (auto&& handler : HandlerStorage<PMF, Handler>::handlers)
 			ret = handler(&returns, thiz, args...);
 
-		if(returns.use_original_function)
+		if (returns.use_original_function)
 			return ((HookType*)HandlerStorage<PMF, Handler>::original)(thiz, args...);
 
 		return ret;
@@ -347,10 +347,10 @@ private:
 		ModReturns returns;
 		returns.use_original_function = true;
 
-		for(auto&& handler : HandlerStorage<PMF, Handler>::handlers)
+		for (auto&& handler : HandlerStorage<PMF, Handler>::handlers)
 			handler(&returns, thiz, args...);
 
-		if(returns.use_original_function)
+		if (returns.use_original_function)
 			((HookType*)HandlerStorage<PMF, Handler>::original)(thiz, args...);
 	}
 
@@ -358,7 +358,7 @@ private:
 
 	static void install_hook() {
 		// only if not already installed
-		if(!HandlerStorage<PMF, Handler>::original) {
+		if (!HandlerStorage<PMF, Handler>::original) {
 			Detours::DetourTransactionBegin();
 			HandlerStorage<PMF, Handler>::original = Detours::DetourFindFunction(_gameModule, HookName<PMF>::Name);
 			Detours::DetourAttach(&HandlerStorage<PMF, Handler>::original, (void*)get_apply<R>(std::is_same<R, void>{}));

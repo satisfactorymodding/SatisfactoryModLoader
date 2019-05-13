@@ -14,3 +14,61 @@ typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
 call(A... args) {
 	return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
 }
+
+namespace SML {
+	template <auto HookableFunction>
+	void subscribe(typename HookInvoker<decltype(HookableFunction), HookableFunction>::Handler handler) {
+		::subscribe(handler);
+	}
+
+	template <auto HookableFunction, typename... A>
+	typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
+		call(A... args) {
+		return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+	}
+}
+
+namespace SML {
+	namespace Objects {
+		template <auto HookableFunction>
+		void subscribe(typename HookInvoker<decltype(HookableFunction), HookableFunction>::Handler handler) {
+			::subscribe(handler);
+		}
+
+		template <auto HookableFunction, typename... A>
+		typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
+			call(A... args) {
+			return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+		}
+	}
+}
+
+namespace SML {
+	namespace Mod {
+		template <auto HookableFunction>
+		void subscribe(typename HookInvoker<decltype(HookableFunction), HookableFunction>::Handler handler) {
+			::subscribe(handler);
+		}
+
+		template <auto HookableFunction, typename... A>
+		typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
+			call(A... args) {
+			return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+		}
+	}
+}
+
+namespace SML {
+	namespace Utility {
+		template <auto HookableFunction>
+		void subscribe(typename HookInvoker<decltype(HookableFunction), HookableFunction>::Handler handler) {
+			::subscribe(handler);
+		}
+
+		template <auto HookableFunction, typename... A>
+		typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
+			call(A... args) {
+			return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+		}
+	}
+}

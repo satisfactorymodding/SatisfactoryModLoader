@@ -20,7 +20,7 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 		}
 	}
 	else if (fdwReason == DLL_PROCESS_DETACH) {
-		cleanup();
+		SML::cleanup();
 		FreeLibrary(mHinstDLL);
 	} 
 	
@@ -29,7 +29,7 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 	}
 	if ( fdwReason == DLL_THREAD_ATTACH) {
 		hooked = true;
-		mod_loader_entry();
+		SML::mod_loader_entry();
 	}
 	return ( TRUE );
 }

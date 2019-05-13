@@ -5,11 +5,18 @@
 #include <HookLoader.h>
 #include <HookLoaderInternal.h>
 
-extern PVOID chatFunc;
-extern PVOID pakFunc;
+namespace SML {
+	namespace Mod {
+		class Hooks {
+		public:
+			static PVOID chatFunc;
+			static PVOID pakFunc;
 
-void hookFunctions();
+			static void hookFunctions();
 
-//void get_signing_keys(ModReturns* modReturns, void* outKeys);
+			//void get_signing_keys(ModReturns* modReturns, void* outKeys);
 
-void player_sent_message(void* player, FString* message);
+			static void player_sent_message(void* player, SML::Objects::FString* message);
+		};
+	}
+}

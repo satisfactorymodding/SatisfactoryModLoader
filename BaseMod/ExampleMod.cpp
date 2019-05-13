@@ -2,71 +2,75 @@
 #include <string>
 #include <game/Global.h>
 #include <game/Input.h>
-#include <util/Configuration.h>
 #include <mod/Mod.h>
 #include <mod/ModFunctions.h>
+#include <util/JsonConfig.h>
 
-//version of SML that this mod was compiled for.
+using namespace SML::Mod;
+using namespace SML::Objects;
+
+// Version of SML that this mod was compiled for.
 #define SML_VERSION "1.0.0-pr2"
 
-//define the mod name for easy changing and simple use
+// define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"
 
-//define a log macro to make outputting to the log easier
-#define LOG(msg) info_mod(MOD_NAME, msg)
+// Define a log macro to make outputting to the log easier
+#define LOG(msg) SML::Utility::info_mod(MOD_NAME, msg)
 
-// config
-Configuration config(MOD_NAME);
-bool testValue;
+// Config
+json config = SML::Utility::JsonConfig::load(MOD_NAME, {
+	{"Float", 1.0}
+});
 
-//global variables required by the mod
+// Global variables required by the mod
 AFGPlayerController* player;
 
 // Function to be called as a command (called when /kill is called)
 // All command functions need to have the same parameters, which is SML::CommandData
 // CommandData has two things in it, the amount of parameters and a vector of the parameters.
 // The first item in the vector is always the command, so if someone did "/kill me" data.argc would be 2 and data.argv would be {"/kill", "me"}.
-void killPlayer(SML::CommandData data) {
+void killPlayer(CommandData data) {
 	for (std::string s : data.argv) {
 		LOG(s);
 	}
 	LOG("Killed Player");
-	call<&AFGPlayerController::Suicide>(player);
+	::call<&AFGPlayerController::Suicide>(player);
 }
 
-//information about the mod
+// information about the mod
 Mod::Info modInfo {
-	//target sml version
+	// Target sml version
 	SML_VERSION,
 
-	// name
+	// Name
 	MOD_NAME,
 
-	// version
+	// Version
 	"0.2",
 
-	// description
+	// Description
 	"A basic mod created to showcase SML's functionality.",
 
-	// authors
+	// Authors
 	"SuperCoder79, Nomnom, anttirt",
 
-	// dependencies
+	// Dependencies
 	// Place mod names that you want to ensure is loaded in this vector. If you place an asterisk (*) before the mod name, it will be loaded as an optional dependency instead.
 	{}
 };
 
-//The mod's class, put all functions inside here
+// The mod's class, put all functions inside here
 class ExampleMod : public Mod {
 
-	//function to be hooked
+	// Function to be hooked
 	void beginPlay(ModReturns* modReturns, AFGPlayerController* playerIn) {
 		LOG("Got Player");
 		player = playerIn;
 	}
 
 public:
-	//constructor for SML usage, do not rename!
+	// Constructor for SML usage, do not rename!
 	ExampleMod() : Mod(modInfo) {
 	}
 
@@ -86,65 +90,65 @@ public:
 		*/
 
 
-		// use the placeholders namespace
+		// Use the placeholders namespace
 		using namespace std::placeholders;
 
 		// More on namespaces:
 		// * The functions that will be of use to you are in the SML namespace. A tip is to type SML:: and see what functions are available for you to use. 
 		// The only non-namespaced functions are subscribe() and call() which cannot go into a namespace for technical reasons.
 
-		// use a member function as handler
-		subscribe<&AFGPlayerController::BeginPlay>(std::bind(&ExampleMod::beginPlay, this, _1, _2)); //bind the beginPlay function, with placeholder variables
-		// because there are two inputs to the function, we use _1 and _2. If there were 3 inputs, we would use _1, _2, and _3, and so forth.
+		// Use a member function as handler
+		::subscribe<&AFGPlayerController::BeginPlay>(std::bind(&ExampleMod::beginPlay, this, _1, _2)); //bind the beginPlay function, with placeholder variables
+		// Because there are two inputs to the function, we use _1 and _2. If there were 3 inputs, we would use _1, _2, and _3, and so forth.
 
-		// use a lambda with captured this-ptr as handler
-		subscribe<&PlayerInput::InputKey>([this](ModReturns* modReturns, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
+		// Use a lambda with captured this-ptr as handler
+		::subscribe<&PlayerInput::InputKey>([this](ModReturns* modReturns, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
 			if(GetAsyncKeyState('G')) {
 				LOG("G key pressed");
-				call<&AFGPlayerController::Suicide>(player);
+				::call<&AFGPlayerController::Suicide>(player);
 			}
 			return false;
 		});
 
-		//Tick functions are called every frame of the game. BE VERY CAREFUL WHEN USING THIS FUNCTION!!! Putting a lot of code in here will slow the game down to a crawl!
-		subscribe<&UWorld::Tick>([this](ModReturns*, UWorld* world, ELevelTick tick, float delta) {
+		// Tick functions are called every frame of the game. BE VERY CAREFUL WHEN USING THIS FUNCTION!!! Putting a lot of code in here will slow the game down to a crawl!
+		::subscribe<&UWorld::Tick>([this](ModReturns*, UWorld* world, ELevelTick tick, float delta) {
 			//LOG("test");
 		});
 
-		// register /kill to call the killPlayer function
-		SML::registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class
+		// Register /kill to call the killPlayer function
+		registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class
 
-		//register killPlayer as a function that other mods can use if this mod is loaded.
-		SML::registerAPIFunction("KillPlayer", killPlayer);
+		// Register killPlayer as a function that other mods can use if this mod is loaded.
+		registerAPIFunction("KillPlayer", killPlayer);
 
 		LOG("Finished ExampleMod setup!");
 	}
 
 	void post_setup() override {
-		// write things to be done after other mods' setup functions
+		// Write things to be done after other mods' setup functions
 		// Called after the post setup functions of mods that you depend on.
 
-		//Check if mod "RandomMod" is loaded
-		if (SML::isModLoaded("RandomMod")) {
+		// Check if mod "RandomMod" is loaded
+		if (isModLoaded("RandomMod")) {
 			LOG("Random mod is loaded!");
-			//grab the raw function pointer for "NonexistantFunction"
-			PVOID nonexistantFuncRaw = SML::getAPIFunction("NonexistantFunction");
-			//Cast the raw function pointer into a usable function
+			// Grab the raw function pointer for "NonexistantFunction"
+			PVOID nonexistantFuncRaw = getAPIFunction("NonexistantFunction");
+			// Cast the raw function pointer into a usable function
 			auto nonexistantFunc = (void(WINAPI*)())nonexistantFuncRaw;
-			//call the nonexistant function
+			// Call the nonexistant function
 			nonexistantFunc();
 			
-			//Sidenote: this code should crash because it is trying to access a function that is not registered, but it does not because we ensure the code is only run when "RandomMod" is loaded.
+			// Sidenote: this code should crash because it is trying to access a function that is not registered, but it does not because we ensure the code is only run when "RandomMod" is loaded.
 		}
 
 	}
 
 	~ExampleMod() {
-		// cleanup
+		// Cleanup
 	}
 };
 
-//required function to create the mod, do not rename!
+// Required function to create the mod, do not rename!
 MOD_API Mod* ModCreate() {
 	return new ExampleMod();
 }
