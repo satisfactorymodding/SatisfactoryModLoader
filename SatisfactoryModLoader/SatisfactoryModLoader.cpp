@@ -11,6 +11,7 @@
 #include <thread>
 #include <util/Utility.h>
 #include <util/Reflection.h>
+#include <util/JsonConfig.h>
 #include <mod/Hooks.h>
 
 namespace SML {
@@ -36,7 +37,7 @@ namespace SML {
 		Utility::info("Attached SatisfactoryModLoader to Satisfactory");
 
 		// load up all of the configuration information
-		//read_config();
+		read_config();
 
 		//make sure that SML's target and satisfactory's versions are the same
 		Utility::check_version(targetVersion);
@@ -79,7 +80,7 @@ namespace SML {
 	//read the config file
 	void read_config() {
 		Utility::info("Finding config file...");
-		/*json config = Utility::JsonConfig::load("SatisfactoryModLoader", {
+		json config = Utility::JsonConfig::load("SatisfactoryModLoader", {
 			{"Console", true},
 			{"Debug" , false},
 			{"Supress Errors", false}
@@ -87,7 +88,7 @@ namespace SML {
 
 		loadConsole = config["Console"].get<bool>();
 		debugOutput = config["Debug"].get<bool>();
-		supressErrors = config["Supress Errors"].get<bool>();*/
+		supressErrors = config["Supress Errors"].get<bool>();
 	}
 
 	//cleans up when the program is killed

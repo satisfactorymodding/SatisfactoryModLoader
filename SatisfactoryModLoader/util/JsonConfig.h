@@ -12,14 +12,16 @@ namespace SML {
 		class JsonConfig {
 		public:
 			static void save(const std::string& name, const json& data, bool useDefaultPath = true) {
-				std::string stringpath = "config/";
-				int status = _mkdir(stringpath.c_str());
+				info("Saving: " + name);
+
+				if (useDefaultPath) {
+					std::string stringpath = defaultPath;
+					int status = _mkdir(stringpath.c_str());
+				}
 
 				std::string path = std::string(useDefaultPath ? defaultPath : "");
 				path.append(name);
 				path.append(".cfg");
-
-				info("Path: " + path);
 
 				// dump
 				std::ofstream out;
@@ -34,8 +36,10 @@ namespace SML {
 				out.close();
 			}
 			static json load(const std::string& name, const json& defaultValues, bool useDefaultPath = true) {
-				if (!exists(name)) {
-					save(name, defaultValues);
+				info("Loading: " + name);
+
+				if (!exists(name, useDefaultPath)) {
+					save(name, defaultValues, useDefaultPath);
 
 					return defaultValues;
 				}
@@ -65,7 +69,7 @@ namespace SML {
 
 				loadedJson = setDefaultValues(loadedJson, defaultValues);
 
-				save(name, loadedJson); // save changes
+				save(name, loadedJson, useDefaultPath); // save changes
 
 				return loadedJson;
 			}
@@ -118,8 +122,8 @@ namespace SML {
 
 				return j;
 			}
-			static bool exists(const std::string& name) {
-				std::string path = std::string(defaultPath);
+			static bool exists(const std::string& name, bool useDefaultPath) {
+				std::string path = std::string(useDefaultPath ? defaultPath : "");
 				path.append(name);
 				path.append(".cfg");
 
