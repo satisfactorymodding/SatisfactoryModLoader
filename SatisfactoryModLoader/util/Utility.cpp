@@ -47,11 +47,8 @@ namespace SML {
 
 		//target[0] = normal CL, target [1] = experimental CL
 		void check_version(const std::string target[2]) {
-			info("1");
 			std::wstring satisVersion{ call<&Objects::BuildSettings::GetBuildVersion>() };
-			info("2");
 			std::string str(satisVersion.begin(), satisVersion.end());
-			info("3");
 			if (str.substr(str.length() - 5, str.length()) == target[0]) {
 				info("Version check passed!");
 			}
