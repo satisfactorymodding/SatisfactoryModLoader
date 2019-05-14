@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Lib.h"
+#include "../Sdk/SDK.hpp"
 #include <string>
 #include <vector>
 #include <util/Utility.h>

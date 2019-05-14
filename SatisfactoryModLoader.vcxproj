@@ -131,7 +131,7 @@
       <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;$(MSBuildProjectDirectory)\Sdk\SDK</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -175,6 +175,7 @@
     <ClInclude Include="SatisfactoryModLoader\util\JsonConfig.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
+    <ClInclude Include="Sdk\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
@@ -188,6 +189,10 @@
     <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
+    <ClCompile Include="Sdk\SDK\SF_Basic.cpp" />
+    <ClCompile Include="Sdk\SDK\SF_CoreUObject_functions.cpp" />
+    <ClCompile Include="Sdk\SDK\SF_Engine_functions.cpp" />
+    <ClCompile Include="Sdk\SDK\SF_FactoryGame_functions.cpp" />
     <ClCompile Include="xinput1_3\xinput1_3.cpp" />
   </ItemGroup>
   <ItemGroup>

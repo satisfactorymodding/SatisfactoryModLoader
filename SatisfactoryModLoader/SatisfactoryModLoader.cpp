@@ -1,5 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #define WIN32_LEAN_AND_MEAN
+#include "../Sdk/SDK.hpp"
 #include <stdafx.h>
 #include <SatisfactoryModLoader.h>
 #include <string>
@@ -44,6 +45,10 @@ namespace SML {
 		if (loadConsole) {
 			ShowWindow(GetConsoleWindow(), SW_SHOW);
 		}
+
+		// load sdk
+		SDK::InitSDK();
+		Utility::info("Loaded the Satisfactory SDK");
 
 		// get path
 		char p[MAX_PATH];

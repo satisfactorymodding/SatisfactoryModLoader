@@ -72,3 +72,16 @@ namespace SML {
 		}
 	}
 }
+
+namespace SDK {
+	template <auto HookableFunction>
+	void subscribe(typename HookInvoker<decltype(HookableFunction), HookableFunction>::Handler handler) {
+		::subscribe(handler);
+	}
+
+	template <auto HookableFunction, typename... A>
+	typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
+		call(A... args) {
+		return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+	}
+}
