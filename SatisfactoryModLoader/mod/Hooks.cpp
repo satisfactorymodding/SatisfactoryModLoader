@@ -65,8 +65,8 @@ namespace SML {
 			for (Registry r : modHandler.commandRegistry) {
 				if (arguments[0] == "/" + r.name) {
 					Utility::info("found");
-					auto commandFunc = (void(WINAPI*)(SML::Mod::CommandData))r.func;
-					SML::Mod::CommandData data = {
+					auto commandFunc = (void(WINAPI*)(SML::Mod::Functions::CommandData))r.func;
+					SML::Mod::Functions::CommandData data = {
 						arguments.size(),
 						arguments
 					};

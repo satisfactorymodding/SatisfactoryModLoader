@@ -30,7 +30,7 @@ AFGPlayerController* player;
 // All command functions need to have the same parameters, which is SML::CommandData
 // CommandData has two things in it, the amount of parameters and a vector of the parameters.
 // The first item in the vector is always the command, so if someone did "/kill me" data.argc would be 2 and data.argv would be {"/kill", "me"}.
-void killPlayer(CommandData data) {
+void killPlayer(Functions::CommandData data) {
 	for (std::string s : data.argv) {
 		LOG(s);
 	}
@@ -94,8 +94,7 @@ public:
 		using namespace std::placeholders;
 
 		// More on namespaces:
-		// * The functions that will be of use to you are in the SML namespace. A tip is to type SML:: and see what functions are available for you to use. 
-		// The only non-namespaced functions are subscribe() and call() which cannot go into a namespace for technical reasons.
+		// * The functions that will be of use to you are in the SML::Mods::Functions namespace. A tip is to type Functions:: and see what functions are available for you to use. 
 
 		// Use a member function as handler
 		::subscribe<&AFGPlayerController::BeginPlay>(std::bind(&ExampleMod::beginPlay, this, _1, _2)); //bind the beginPlay function, with placeholder variables
@@ -116,7 +115,7 @@ public:
 		});
 
 		// Register /kill to call the killPlayer function
-		registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class
+		Functions::registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class
 
 		// Register killPlayer as a function that other mods can use if this mod is loaded.
 		registerAPIFunction("KillPlayer", killPlayer);
@@ -129,10 +128,10 @@ public:
 		// Called after the post setup functions of mods that you depend on.
 
 		// Check if mod "RandomMod" is loaded
-		if (isModLoaded("RandomMod")) {
+		if (Functions::isModLoaded("RandomMod")) {
 			LOG("Random mod is loaded!");
 			// Grab the raw function pointer for "NonexistantFunction"
-			PVOID nonexistantFuncRaw = getAPIFunction("NonexistantFunction");
+			PVOID nonexistantFuncRaw = Functions::getAPIFunction("NonexistantFunction");
 			// Cast the raw function pointer into a usable function
 			auto nonexistantFunc = (void(WINAPI*)())nonexistantFuncRaw;
 			// Call the nonexistant function
