@@ -1,3 +1,6 @@
 [submodule "Detours"]
 	path = Detours
 	url = https://github.com/Microsoft/Detours.git
+[submodule "Sdk"]
+	path = Sdk
+	url = https://github.com/satisfactorymodding/SatisfactorySDK
