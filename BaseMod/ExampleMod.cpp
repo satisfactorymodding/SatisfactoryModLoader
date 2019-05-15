@@ -76,20 +76,6 @@ public:
 
 	// The setup function is the heart of the mod, where you hook your functions and register your commands and API functions. Do not rename!
 	void setup() override {
-		// Configs are horribly broken right now, disabled so the mod can actually load
-		/* 
-		if (!config.exists()) {
-			config.set("TestValue", true);
-			config.save();
-		}
-
-		config.load();
-
-		testValue = config.get<bool>("TestValue");
-		warning("Test Value: ", testValue);
-		*/
-
-
 		// Use the placeholders namespace
 		using namespace std::placeholders;
 
