@@ -1,6 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #define WIN32_LEAN_AND_MEAN
-#include "../Sdk/SDK.hpp"
+#include "../SatisfactorySdk/SDK.hpp"
 #include <stdafx.h>
 #include <SatisfactoryModLoader.h>
 #include <string>
