@@ -12,7 +12,7 @@ namespace SML {
 		class JsonConfig {
 		public:
 			static void save(const std::string& name, const json& data, bool useDefaultPath = true) {
-				info("Saving: " + name);
+				//info("Saving: " + name);
 
 				if (useDefaultPath) {
 					std::string stringpath = defaultPath;
@@ -36,7 +36,7 @@ namespace SML {
 				out.close();
 			}
 			static json load(const std::string& name, const json& defaultValues, bool useDefaultPath = true) {
-				info("Loading: " + name);
+				//info("Loading: " + name);
 
 				if (!exists(name, useDefaultPath)) {
 					save(name, defaultValues, useDefaultPath);

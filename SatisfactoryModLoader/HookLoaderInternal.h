@@ -34,10 +34,15 @@ mod subscriber function, so that they can control whether the original game func
 called once all mod functions have had their turn.
 
 */
-
-struct ModReturns {
-	bool use_original_function = true;
-};
+namespace SML {
+	namespace Mod {
+		namespace Functions {
+			struct ModReturns {
+				bool use_original_function = true;
+			};
+		}
+	}
+}
 
 /*
 
@@ -141,7 +146,7 @@ template <typename R, typename... A, R(*PF)(A...)>
 struct HookInvoker<R(*)(A...), PF> {
 public:
 	/* The signature that the mod handler functions must conform to. */
-	typedef R HandlerSignature(ModReturns*, A...);
+	typedef R HandlerSignature(SML::Mod::Functions::ModReturns*, A...);
 
 	/* Expose the return type so that it can be accessed from outside HookInvoker */
 	typedef R ReturnType;
@@ -194,7 +199,7 @@ private:
 
 	template <typename>
 	static R __fastcall apply(A... args) {
-		ModReturns returns;
+		SML::Mod::Functions::ModReturns returns;
 		returns.use_original_function = true;
 
 		R ret{};
@@ -216,7 +221,7 @@ private:
 
 	template <typename>
 	static void __fastcall apply_void(A... args) {
-		ModReturns returns;
+		SML::Mod::Functions::ModReturns returns;
 		returns.use_original_function = true;
 
 		for (auto&& handler : HandlerStorage<PF, Handler>::handlers)
@@ -302,7 +307,7 @@ template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
 struct HookInvoker<R(C::*)(A...), PMF> {
 public:
 	// mod handler function
-	typedef R HandlerSignature(ModReturns*, C*, A...);
+	typedef R HandlerSignature(SML::Mod::Functions::ModReturns*, C*, A...);
 
 	typedef R ReturnType;
 
@@ -328,7 +333,7 @@ private:
 
 	template <typename X>
 	static R __fastcall apply(C* thiz, A... args) {
-		ModReturns returns;
+		SML::Mod::Functions::ModReturns returns;
 		returns.use_original_function = true;
 
 		R ret{};
@@ -344,7 +349,7 @@ private:
 
 	template <typename X>
 	static void __fastcall apply_void(C* thiz, A... args) {
-		ModReturns returns;
+		SML::Mod::Functions::ModReturns returns;
 		returns.use_original_function = true;
 
 		for (auto&& handler : HandlerStorage<PMF, Handler>::handlers)

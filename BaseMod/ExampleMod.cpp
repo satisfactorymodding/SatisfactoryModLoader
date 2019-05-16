@@ -3,6 +3,7 @@
 #include <game/Global.h>
 #include <game/Input.h>
 #include <mod/Mod.h>
+#include <HookLoaderInternal.h>
 #include <mod/ModFunctions.h>
 #include <util/JsonConfig.h>
 
@@ -10,7 +11,7 @@ using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.0-pr2"
+#define SML_VERSION "1.0.0-pr4"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"
@@ -64,7 +65,10 @@ Mod::Info modInfo {
 class ExampleMod : public Mod {
 
 	// Function to be hooked
-	void beginPlay(ModReturns* modReturns, AFGPlayerController* playerIn) {
+	// Every hook has two parameters at the start, even when the target function does not have any parameters.
+	// The first is a pointer to ModReturns, which allows you to disable SML calling the function after your hook.
+	// The second is a pointer to an object of the base class of the function, which in this case is AFGPlayerController.
+	void beginPlay(Functions::ModReturns* modReturns, AFGPlayerController* playerIn) {
 		LOG("Got Player");
 		player = playerIn;
 	}
@@ -87,7 +91,7 @@ public:
 		// Because there are two inputs to the function, we use _1 and _2. If there were 3 inputs, we would use _1, _2, and _3, and so forth.
 
 		// Use a lambda with captured this-ptr as handler
-		::subscribe<&PlayerInput::InputKey>([this](ModReturns* modReturns, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
+		::subscribe<&PlayerInput::InputKey>([this](Functions::ModReturns* modReturns, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
 			if(GetAsyncKeyState('G')) {
 				LOG("G key pressed");
 				::call<&AFGPlayerController::Suicide>(player);
@@ -96,7 +100,7 @@ public:
 		});
 
 		// Tick functions are called every frame of the game. BE VERY CAREFUL WHEN USING THIS FUNCTION!!! Putting a lot of code in here will slow the game down to a crawl!
-		::subscribe<&UWorld::Tick>([this](ModReturns*, UWorld* world, ELevelTick tick, float delta) {
+		::subscribe<&UWorld::Tick>([this](Functions::ModReturns*, UWorld* world, ELevelTick tick, float delta) {
 			//LOG("test");
 		});
 
@@ -122,7 +126,6 @@ public:
 			auto nonexistantFunc = (void(WINAPI*)())nonexistantFuncRaw;
 			// Call the nonexistant function
 			nonexistantFunc();
-			
 			// Sidenote: this code should crash because it is trying to access a function that is not registered, but it does not because we ensure the code is only run when "RandomMod" is loaded.
 		}
 

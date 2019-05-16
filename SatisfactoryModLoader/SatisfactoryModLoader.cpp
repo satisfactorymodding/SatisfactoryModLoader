@@ -48,7 +48,7 @@ namespace SML {
 
 		// load sdk
 		SDK::InitSDK();
-		Utility::info("Loaded the Satisfactory SDK");
+		Utility::info("Initialized SDK");
 
 		// get path
 		char p[MAX_PATH];
