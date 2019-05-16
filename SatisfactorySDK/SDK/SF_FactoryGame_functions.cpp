@@ -5,6 +5,7 @@
 #endif
 
 #include "SF_FactoryGame_parameters.hpp"
+#include "stdafx.h"
 
 namespace SDK
 {

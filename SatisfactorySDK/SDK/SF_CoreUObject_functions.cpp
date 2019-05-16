@@ -4,6 +4,7 @@
 	#pragma pack(push, 0x8)
 #endif
 
+#include "stdafx.h"
 #include "SF_CoreUObject_parameters.hpp"
 
 namespace SDK

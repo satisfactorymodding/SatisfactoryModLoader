@@ -5,6 +5,7 @@
 #endif
 
 #include "SF_CoreUObject_classes.hpp"
+#include "stdafx.h"
 
 namespace SDK
 {
