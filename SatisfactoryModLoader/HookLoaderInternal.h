@@ -37,6 +37,10 @@ called once all mod functions have had their turn.
 namespace SML {
 	namespace Mod {
 		namespace Functions {
+			/*
+			Important data about a hook that SML needs.
+			 * use_original_function specifies whether the hooked function should be run or not.
+			*/
 			struct ModReturns {
 				bool use_original_function = true;
 			};

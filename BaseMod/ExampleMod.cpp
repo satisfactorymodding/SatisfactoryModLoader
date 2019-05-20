@@ -7,6 +7,16 @@
 #include <mod/ModFunctions.h>
 #include <util/JsonConfig.h>
 
+/*
+EXAMPLEMOD
+==========
+ExampleMod is a documented mod that uses all the available features of SML and can help you mod.
+If you are confused about what to do, just type Functions:: and autocomplete will give you options on some functions that you can use.
+If you don't know how to do something/use something, simply hover over it to read the provided documentation. If you're still confused, come to the discord and ask in #sml-help about your issue.
+SuperCoder or Nomnom will help you with your problem.
+*/
+
+// Use the namespaces so you have to type less stuff when adding on to your mod
 using namespace SML::Mod;
 using namespace SML::Objects;
 
@@ -108,7 +118,7 @@ public:
 		Functions::registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class
 
 		// Register killPlayer as a function that other mods can use if this mod is loaded.
-		registerAPIFunction("KillPlayer", killPlayer);
+		Functions::registerAPIFunction("KillPlayer", killPlayer);
 
 		LOG("Finished ExampleMod setup!");
 	}

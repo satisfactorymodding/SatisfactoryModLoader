@@ -6,7 +6,8 @@
 namespace SML {
 	namespace Mod {
 		namespace Functions {
-			// registers a command to the mod handler
+			
+			//registers a command to the mod handler
 			SML_API void registerCommand(std::string name, PVOID func) {
 				Registry r = {
 					name,
