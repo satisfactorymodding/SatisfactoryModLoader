@@ -37,7 +37,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
-    <WholeProgramOptimization>false</WholeProgramOptimization>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -69,7 +69,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
+    <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(MSBuildProjectDirectory)\xinput1_3\detours;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\xinput1_3\detours;$(LibraryPath)</LibraryPath>
     <TargetName>xinput1_3</TargetName>
@@ -124,14 +124,14 @@
     <ClCompile>
       <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <Optimization>Disabled</Optimization>
+      <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <WholeProgramOptimization>false</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;$(MSBuildProjectDirectory)\Sdk\SDK</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;$(MSBuildProjectDirectory)\SatisfactorySDK\SDK</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -141,6 +141,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
       <ModuleDefinitionFile>$(ProjectDir)xinput1_3\xinput1_3.def</ModuleDefinitionFile>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -175,7 +176,7 @@
     <ClInclude Include="SatisfactoryModLoader\util\JsonConfig.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
-    <ClInclude Include="Sdk\SDK.hpp" />
+    <ClInclude Include="SatisfactorySDK\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
@@ -189,10 +190,10 @@
     <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
-    <ClCompile Include="Sdk\SDK\SF_Basic.cpp" />
-    <ClCompile Include="Sdk\SDK\SF_CoreUObject_functions.cpp" />
-    <ClCompile Include="Sdk\SDK\SF_Engine_functions.cpp" />
-    <ClCompile Include="Sdk\SDK\SF_FactoryGame_functions.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\SF_Basic.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\SF_CoreUObject_functions.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\SF_Engine_functions.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\SF_FactoryGame_functions.cpp" />
     <ClCompile Include="xinput1_3\xinput1_3.cpp" />
   </ItemGroup>
   <ItemGroup>

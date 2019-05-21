@@ -1,6 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #define WIN32_LEAN_AND_MEAN
-#include "../Sdk/SDK.hpp"
+#include "../SatisfactorySdk/SDK.hpp"
 #include <stdafx.h>
 #include <SatisfactoryModLoader.h>
 #include <string>
@@ -48,7 +48,7 @@ namespace SML {
 
 		// load sdk
 		SDK::InitSDK();
-		Utility::info("Loaded the Satisfactory SDK");
+		Utility::info("Initialized SDK");
 
 		// get path
 		char p[MAX_PATH];
@@ -60,7 +60,8 @@ namespace SML {
 		modHandler.check_dependencies();
 		modHandler.post_setup_mods();
 		Mod::Hooks::hookFunctions();
-
+		modHandler.currentStage = SML::Mod::GameStage::RUN;
+			
 		// log mod size
 		size_t listSize = modHandler.mods.size();
 		Utility::info("Loaded ", listSize, " mod", (listSize > 1 || listSize == 0 ? "s" : ""));
@@ -68,6 +69,7 @@ namespace SML {
 		//Display info about registries
 		Utility::info("Registered ", modHandler.commandRegistry.size(), " Command", (modHandler.commandRegistry.size() > 1 || modHandler.commandRegistry.size() == 0 ? "s" : ""));
 		Utility::info("Registered ", modHandler.APIRegistry.size(), " API function", (modHandler.APIRegistry.size() > 1 || modHandler.APIRegistry.size() == 0 ? "s" : ""));
+		Utility::info("Registered ", modHandler.eventRegistry.size(), " Custom event", (modHandler.eventRegistry.size() > 1 || modHandler.eventRegistry.size() == 0 ? "s" : ""));
 
 		//display condensed form of mod information
 		std::string modList = "[";

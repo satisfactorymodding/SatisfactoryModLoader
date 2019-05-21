@@ -3,10 +3,24 @@
 #include "Registry.h"
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
 
 namespace SML {
 	namespace Mod {
+		enum GameStage {
+			//Before any mods are loaded
+			PRE_CONSTRUCT,
+			//When the mods are loaded from the file
+			CONSTRUCT,
+			//When the mods' setup functions are being called
+			SETUP,
+			//When the mods' post setup functions are being called
+			POST_SETUP,
+			//When SML has finished loading and Satisfactory has started running
+			RUN
+		};
+
 		// holds important information about the loaded mods. It should never be accessed by mods directly.
 		class ModHandler {
 		public:
@@ -14,6 +28,10 @@ namespace SML {
 
 			std::vector<Registry> commandRegistry;
 			std::vector<Registry> APIRegistry;
+
+			std::map<std::string, std::vector<PVOID>> eventRegistry;
+
+			GameStage currentStage = GameStage::PRE_CONSTRUCT;
 
 			void load_mods(const char* startingPath);
 			void setup_mods();
