@@ -50,6 +50,17 @@ namespace SML {
 			Sidenote: If you depend on something done in a mod's setup function, place that code in post__setup, because postInit is called in respect to mod dependencies, while setup is not.
 			*/
 			SML_API bool isModLoaded(std::string name);
+
+			/*
+			Broadcasts an event to all the handlers registered under name to all the mods.
+			Does nothing if a mod doesn't have a handler for the function.
+			*/
+			SML_API void broadcastEvent(std::string name);
+
+			/*
+			Register a handler for a custom event that is called when broadcastEvent is called with the same function name.
+			*/
+			SML_API void registerEvent(std::string name, PVOID func);
 		}
 	}
 }

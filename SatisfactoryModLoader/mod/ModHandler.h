@@ -3,6 +3,7 @@
 #include "Registry.h"
 #include <string>
 #include <vector>
+#include <map>
 #include <memory>
 
 namespace SML {
@@ -14,6 +15,8 @@ namespace SML {
 
 			std::vector<Registry> commandRegistry;
 			std::vector<Registry> APIRegistry;
+
+			std::map<std::string, std::vector<PVOID>> eventRegistry;
 
 			void load_mods(const char* startingPath);
 			void setup_mods();

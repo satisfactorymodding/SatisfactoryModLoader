@@ -49,6 +49,12 @@ void killPlayer(Functions::CommandData data) {
 	::call<&AFGPlayerController::Suicide>(player);
 }
 
+// A custom event handler for when ExampleMod's post setup is complete.
+// Other mods can also make a handler for ExampleMod_PostSetupComplete if they want to do something when the event is broadcast.
+void postSetupComplete() {
+	LOG("ExampleMod's post setup has been completed!");
+}
+
 // information about the mod
 Mod::Info modInfo {
 	// Target sml version
@@ -120,6 +126,9 @@ public:
 		// Register killPlayer as a function that other mods can use if this mod is loaded.
 		Functions::registerAPIFunction("KillPlayer", killPlayer);
 
+		//Register a custom event. This does not call the event, you have to do that with Functions::broadcastEvent.
+		Functions::registerEvent("ExampleMod_PostSetupComplete", postSetupComplete);
+
 		LOG("Finished ExampleMod setup!");
 	}
 
@@ -139,10 +148,16 @@ public:
 			// Sidenote: this code should crash because it is trying to access a function that is not registered, but it does not because we ensure the code is only run when "RandomMod" is loaded.
 		}
 
+		//Broadcast the event for ExampleMod and other mods that do something for ExampleMod_PostSetupComplete.
+		Functions::broadcastEvent("ExampleMod_PostSetupComplete");
+
+		//Broadcast an event from RandomMod. Since this doesn't exist, nothing will be done and no error will be thrown.
+		Functions::broadcastEvent("RandomMod_SomeEvent");
 	}
 
 	~ExampleMod() {
 		// Cleanup
+		LOG("ExampleMod finished cleanup!");
 	}
 };
 

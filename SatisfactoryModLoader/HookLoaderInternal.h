@@ -27,13 +27,6 @@ templates.
 #include <vector>
 #include <functional>
 
-/*
-
-A reference to a ModReturns structure is passed as an additional first argument to each
-mod subscriber function, so that they can control whether the original game function is
-called once all mod functions have had their turn.
-
-*/
 namespace SML {
 	namespace Mod {
 		namespace Functions {

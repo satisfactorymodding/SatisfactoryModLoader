@@ -61,6 +61,32 @@ namespace SML {
 				}
 				return found;
 			}
+
+			//runs all events registered under 'name'
+			SML_API void broadcastEvent(std::string name) {
+				if (modHandler.eventRegistry.count(name) == 0) {
+					// do nothing if event doesn't exist
+				}
+				else {
+					for (int i = 0; i < modHandler.eventRegistry[name].size(); i++) {
+						PVOID event = modHandler.eventRegistry[name][i];
+						auto func = (void(WINAPI*)()) event;
+						func();
+					}
+				}
+			}
+
+			//registers an event under 'name'
+			SML_API void registerEvent(std::string name, PVOID func) {
+				if (modHandler.eventRegistry.count(name) == 0) {
+					std::vector<PVOID> v = {
+						func
+					};
+					modHandler.eventRegistry.insert(std::pair<std::string, std::vector<PVOID>>(name, v));
+				} else {
+					modHandler.eventRegistry[name].push_back(func);
+				}
+			}
 		}
 	}
 }
