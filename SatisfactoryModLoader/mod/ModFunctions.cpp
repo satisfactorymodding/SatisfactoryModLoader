@@ -9,6 +9,9 @@ namespace SML {
 			
 			//registers a command to the mod handler
 			SML_API void registerCommand(std::string name, PVOID func) {
+				if (modHandler.currentStage != GameStage::SETUP) {
+					SML::Utility::warning("REGISTRY WARNING: command " + name + " was registered outside of setup!");
+				}
 				Registry r = {
 					name,
 					func
@@ -18,6 +21,9 @@ namespace SML {
 
 			// registers an API function to the mod handler
 			SML_API void registerAPIFunction(std::string name, PVOID func) {
+				if (modHandler.currentStage != GameStage::SETUP) {
+					SML::Utility::warning("REGISTRY WARNING: API function " + name + " was registered outside of setup!");
+				}
 				for (Registry reg : modHandler.APIRegistry) {
 					if (reg.name == name) {
 						std::string msg = "Duplicate API function " + name + " registered!\nPress Ok to exit.";
@@ -78,6 +84,9 @@ namespace SML {
 
 			//registers an event under 'name'
 			SML_API void registerEvent(std::string name, PVOID func) {
+				if (modHandler.currentStage != GameStage::SETUP) {
+					SML::Utility::warning("REGISTRY WARNING: event " + name + " was registered outside of setup!");
+				}
 				if (modHandler.eventRegistry.count(name) == 0) {
 					std::vector<PVOID> v = {
 						func

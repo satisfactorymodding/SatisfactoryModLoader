@@ -119,6 +119,8 @@ public:
 		::subscribe<&UWorld::Tick>([this](Functions::ModReturns*, UWorld* world, ELevelTick tick, float delta) {
 			//LOG("test");
 		});
+		
+		//Here, we do some registring. Registring must be done in setup to make sure that the registration will be available for later use.
 
 		// Register /kill to call the killPlayer function
 		Functions::registerCommand("kill", killPlayer); //functions registered like this must exist outside of the class

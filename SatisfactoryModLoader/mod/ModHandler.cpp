@@ -9,6 +9,7 @@ namespace SML {
 	namespace Mod {
 		// load all mods from the given path
 		void ModHandler::load_mods(const char* startingPath) {
+			this->currentStage = GameStage::CONSTRUCT;
 			// split the path
 			std::string appPath(startingPath);
 			size_t pos = appPath.find_last_of('\\');
@@ -20,15 +21,17 @@ namespace SML {
 
 		//call the setup function of every loaded mod
 		void ModHandler::setup_mods() {
+			Utility::info("Starting mod Setup!");
+			this->currentStage = GameStage::SETUP;
 			for (auto&& mod : mods) {
-				Utility::info("Setting up ", mod->info.name);
 				mod->setup();
 			}
 		}
 
 		//call the post setup function of every mod through recursive calling, ensuring the post setups of mod dependencies loaded before the original mod's post setup
 		void ModHandler::post_setup_mods() {
-			Utility::info("Starting Post Setup!");
+			this->currentStage = GameStage::POST_SETUP;
+			Utility::info("Starting mod Post Setup!");
 			for (int i = 0; i < mods.size(); i++) {
 				modNameDump.push_back(mods[i]->info.name);
 			}
@@ -94,8 +97,6 @@ namespace SML {
 			std::string pathExact = path + "\\";
 
 			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
-
-				Utility::info(entry.path().string());
 
 				if (!entry.path().has_extension()) {
 					get_files(entry.path().string());
