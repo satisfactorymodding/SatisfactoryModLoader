@@ -131,7 +131,7 @@
       <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;$(MSBuildProjectDirectory)\SatisfactorySDK\SDK</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;$(MSBuildProjectDirectory)\..\SatisfactorySDK\SDK</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -152,6 +152,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="SatisfactoryModLoader\assets\AssetLoader.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Etc.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Global.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Input.h" />
@@ -179,6 +180,7 @@
     <ClInclude Include="SatisfactorySDK\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SatisfactoryModLoader\assets\AssetLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Hooks.cpp" />

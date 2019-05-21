@@ -10,6 +10,7 @@
 #include <functional>
 #include <chrono>
 #include <thread>
+#include <assets/AssetLoader.h>
 #include <util/Utility.h>
 #include <util/Reflection.h>
 #include <util/JsonConfig.h>
@@ -48,6 +49,7 @@ namespace SML {
 
 		// load sdk
 		SDK::InitSDK();
+		Assets::AssetLoader::Init();
 		Utility::info("Initialized SDK");
 
 		// get path
