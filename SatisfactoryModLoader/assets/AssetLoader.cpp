@@ -3,6 +3,7 @@
 //Code provided by Brabb3l
 
 #include "AssetLoader.h"
+
 namespace SML {
 	namespace Assets {
 		SDK::UObject* AssetLoader::LoadObjectSimple(SDK::UClass *Class, const wchar_t *Name) {

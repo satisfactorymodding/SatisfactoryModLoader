@@ -6,6 +6,8 @@
 #include <HookLoaderInternal.h>
 #include <mod/ModFunctions.h>
 #include <util/JsonConfig.h>
+#include <assets/AssetFunctions.h>
+#include "../Detours/src/detours.h"
 
 /*
 EXAMPLEMOD
@@ -42,9 +44,6 @@ AFGPlayerController* player;
 // CommandData has two things in it, the amount of parameters and a vector of the parameters.
 // The first item in the vector is always the command, so if someone did "/kill me" data.argc would be 2 and data.argv would be {"/kill", "me"}.
 void killPlayer(Functions::CommandData data) {
-	for (std::string s : data.argv) {
-		LOG(s);
-	}
 	LOG("Killed Player");
 	::call<&AFGPlayerController::Suicide>(player);
 }

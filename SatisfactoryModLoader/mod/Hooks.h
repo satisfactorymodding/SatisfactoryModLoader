@@ -5,17 +5,18 @@
 #include <HookLoader.h>
 #include <HookLoaderInternal.h>
 #include "ModFunctions.h"
+#include <assets/AssetFunctions.h>
 
 namespace SML {
 	namespace Mod {
 		class Hooks {
 		public:
 			static PVOID chatFunc;
-			static PVOID pakFunc;
+			static PVOID worldFunc;
 
 			static void hookFunctions();
 
-			//void get_signing_keys(ModReturns* modReturns, void* outKeys);
+			static void get_world(void* self);
 
 			static void player_sent_message(void* player, SML::Objects::FString* message);
 

@@ -14,7 +14,7 @@ using namespace std::placeholders;
 namespace SML {
 	namespace Mod {
 		PVOID Hooks::chatFunc;
-		PVOID Hooks::pakFunc;
+		PVOID Hooks::worldFunc;
 
 		void Hooks::hookFunctions() {
 			DetourTransactionBegin();
@@ -25,13 +25,22 @@ namespace SML {
 			DetourAttach(&(PVOID&)chatFunc, player_sent_message);
 			Utility::info("Hooked Command Registry!");
 
-			//pakFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FPakPlatformFile::GetPakSigningKeys");
-			//DetourAttach(&(PVOID&)pakFunc, get_signing_keys);
-			//subscribe<&FPakPlatformFile::GetPakSigningKeys>(std::bind(get_signing_keys, _1, _2));
+			worldFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::PostLoad");
+			DetourAttach(&(PVOID&)worldFunc, get_world);
 
 			//info("Hooked Paks!");
 
 			DetourTransactionCommit();
+		}
+
+		void Hooks::get_world(void* self) {
+			auto pointer = (void(WINAPI*)(void*))worldFunc;
+			pointer(self);
+
+			PVOID getWorldRaw = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::GetWorld");
+			auto getWorld = (void*(WINAPI*)(void*))getWorldRaw;
+			Assets::CurrentWorld = getWorld(self);
+			Utility::info(Assets::CurrentWorld);
 		}
 
 		// parse commands when the player sends a message
@@ -128,7 +137,11 @@ namespace SML {
 							}
 							Utility::info("=======================");
 						}
-					} else {
+					}
+					else if (data.argv[1] == "world") {
+						Utility::info(Assets::CurrentWorld);
+					}
+					else {
 						Utility::info("Subcommand not recognized!");
 					}
 				}

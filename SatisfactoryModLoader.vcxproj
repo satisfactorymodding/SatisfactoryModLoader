@@ -152,7 +152,9 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="SatisfactoryModLoader\assets\AssetFunctions.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\AssetLoader.h" />
+    <ClInclude Include="SatisfactoryModLoader\assets\FObjectSpawnParameters.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Etc.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Global.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Input.h" />
@@ -180,6 +182,7 @@
     <ClInclude Include="SatisfactorySDK\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SatisfactoryModLoader\assets\AssetFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\assets\AssetLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
