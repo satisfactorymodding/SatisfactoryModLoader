@@ -1,6 +1,10 @@
 #include <stdafx.h>
 #include "ModFunctions.h"
 #include <SatisfactoryModLoader.h>
+#include <assets/FObjectSpawnParameters.h>
+#include <detours.h>
+#include <assets/AssetLoader.h>
+#include <assets/AssetFunctions.h>
 #include <memory>
 
 namespace SML {

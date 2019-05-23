@@ -7,7 +7,10 @@
 #include <mod/ModFunctions.h>
 #include <util/JsonConfig.h>
 #include <assets/AssetFunctions.h>
+#include <assets/AssetLoader.h>
+#include <assets/FObjectSpawnParameters.h>
 #include "../Detours/src/detours.h"
+#include "../SatisfactorySDK/SDK.hpp"
 
 /*
 EXAMPLEMOD
@@ -109,7 +112,7 @@ public:
 		::subscribe<&PlayerInput::InputKey>([this](Functions::ModReturns* modReturns, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
 			if(GetAsyncKeyState('G')) {
 				LOG("G key pressed");
-				::call<&AFGPlayerController::Suicide>(player);
+				//::call<&AFGPlayerController::Suicide>(player);
 			}
 			return false;
 		});

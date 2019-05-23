@@ -195,10 +195,10 @@
     <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
-    <ClCompile Include="SatisfactorySDK\SDK\SF_Basic.cpp" />
-    <ClCompile Include="SatisfactorySDK\SDK\SF_CoreUObject_functions.cpp" />
-    <ClCompile Include="SatisfactorySDK\SDK\SF_Engine_functions.cpp" />
-    <ClCompile Include="SatisfactorySDK\SDK\SF_FactoryGame_functions.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\FG_Basic.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\FG_CoreUObject_functions.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\FG_Engine_functions.cpp" />
+    <ClCompile Include="SatisfactorySDK\SDK\FG_FactoryGame_functions.cpp" />
     <ClCompile Include="xinput1_3\xinput1_3.cpp" />
   </ItemGroup>
   <ItemGroup>

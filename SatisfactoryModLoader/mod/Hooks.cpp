@@ -7,6 +7,7 @@
 #include <SatisfactoryModLoader.h>
 #include <game/Global.h>
 #include <util/Utility.h>
+#include <mod/ModFunctions.h>
 #include "ModFunctions.h"
 
 using namespace std::placeholders;
@@ -15,6 +16,7 @@ namespace SML {
 	namespace Mod {
 		PVOID Hooks::chatFunc;
 		PVOID Hooks::worldFunc;
+		PVOID Hooks::playerAddedFunc;
 
 		void Hooks::hookFunctions() {
 			DetourTransactionBegin();
@@ -28,9 +30,21 @@ namespace SML {
 			worldFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::PostLoad");
 			DetourAttach(&(PVOID&)worldFunc, get_world);
 
+			playerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGGameState::NotifyPlayerAdded");
+			DetourAttach(&(PVOID&)playerAddedFunc, player_added);
+
 			//info("Hooked Paks!");
 
 			DetourTransactionCommit();
+		}
+
+		void Hooks::player_added(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {
+			auto pointer = (void(WINAPI*)(void*, void*))playerAddedFunc;
+			//Utility::info("Player Added: ", player->GetName(), " - Controlled: ", player->IsControlled(), " - IsLocallyControlled: ", player->IsLocallyControlled());
+			if (player->IsControlled() && player->IsLocallyControlled()) {
+				Assets::SinglePlayerPawn = player;
+			}
+			pointer(gameState, player);
 		}
 
 		void Hooks::get_world(void* self) {
@@ -87,65 +101,73 @@ namespace SML {
 		}
 
 		bool Hooks::smlCommands(Functions::CommandData data) {
-			if (data.argv[0] == "/sml") {
-				if (data.argc == 1) {
-					Utility::info("Please enter a subcommand with /sml: help, modlist, die, commands, apis, events");
-				}
-				else if (data.argc >= 2) {
-					if (data.argv[1] == "help") {
-						Utility::info("/sml help     -> Displays this help message");
-						Utility::info("/sml modlist  -> Lists all the information about the loaded mods");
-						Utility::info("/sml die      -> Performs a hard shutdown");
-						Utility::info("/sml commands -> Lists all the commands in the registry");
-						Utility::info("/sml apis     -> Lists all the API functions in the registry");
-						Utility::info("/sml events   -> Lists all the custom events in the registry");
-					} else if (data.argv[1] == "modlist") {
-						for (auto&& m : modHandler.mods) {
-							Utility::info(m->info.name);
-							Utility::info(m->info.version);
-							Utility::info(m->info.loaderVersion);
-							Utility::info(m->info.description);
-							Utility::info(m->info.authors);
-							Utility::info("Dependencies: ");
-							for (std::string s : m->info.dependencies) {
-								Utility::info(s);
+			if (chatCommands) {
+				if (data.argv[0] == "/sml") {
+					if (data.argc == 1) {
+						Utility::info("Please enter a subcommand with /sml: help, modlist, die, commands, apis, events");
+					}
+					else if (data.argc >= 2) {
+						if (data.argv[1] == "help") {
+							Utility::info("/sml help     -> Displays this help message");
+							Utility::info("/sml modlist  -> Lists all the information about the loaded mods");
+							Utility::info("/sml die      -> Performs a hard shutdown");
+							Utility::info("/sml obj      -> Displays the memory address of various game objects");
+							Utility::info("/sml commands -> Lists all the commands in the registry");
+							Utility::info("/sml apis     -> Lists all the API functions in the registry");
+							Utility::info("/sml events   -> Lists all the custom events in the registry");
+						}
+						else if (data.argv[1] == "modlist") {
+							for (auto&& m : modHandler.mods) {
+								Utility::info(m->info.name);
+								Utility::info(m->info.version);
+								Utility::info(m->info.loaderVersion);
+								Utility::info(m->info.description);
+								Utility::info(m->info.authors);
+								Utility::info("Dependencies: ");
+								for (std::string s : m->info.dependencies) {
+									Utility::info(s);
+								}
+								Utility::info("=======================");
 							}
-							Utility::info("=======================");
 						}
-					}
-					else if (data.argv[1] == "die") {
-						Utility::info("Hard shutdown requested!");
-						SML::cleanup();
-						abort();
-					}
-					else if (data.argv[1] == "commands") {
-						for (Registry r : modHandler.commandRegistry) {
-							Utility::info(r.name, " -> ", r.func);
+						else if (data.argv[1] == "die") {
+							Utility::info("Hard shutdown requested!");
+							SML::cleanup();
+							abort();
 						}
+						else if (data.argv[1] == "commands") {
+							for (Registry r : modHandler.commandRegistry) {
+								Utility::info(r.name, " -> ", r.func);
+							}
 
-					}
-					else if (data.argv[1] == "apis") {
-						for (Registry r : modHandler.APIRegistry) {
-							Utility::info(r.name, " -> ", r.func);
 						}
-					}
-					else if (data.argv[1] == "events") {
-						for (auto r : modHandler.eventRegistry) {
-							Utility::info(r.first, ": ", r.second.size(), " function(s):");
-							for (PVOID p : r.second) {
-								Utility::info(p);
+						else if (data.argv[1] == "apis") {
+							for (Registry r : modHandler.APIRegistry) {
+								Utility::info(r.name, " -> ", r.func);
 							}
-							Utility::info("=======================");
+						}
+						else if (data.argv[1] == "events") {
+							for (auto r : modHandler.eventRegistry) {
+								Utility::info(r.first, ": ", r.second.size(), " function(s):");
+								for (PVOID p : r.second) {
+									Utility::info(p);
+								}
+								Utility::info("=======================");
+							}
+						}
+						else if (data.argv[1] == "obj") {
+							Utility::info("World:", Functions::getWorld());
+							Utility::info("Local Pawn:", Functions::getPlayerPawn());
+						}
+						else {
+							Utility::info("Subcommand not recognized!");
 						}
 					}
-					else if (data.argv[1] == "world") {
-						Utility::info(Assets::CurrentWorld);
-					}
-					else {
-						Utility::info("Subcommand not recognized!");
-					}
+					return true;
 				}
-				return true;
+			}
+			else {
+
 			}
 			return false;
 		}

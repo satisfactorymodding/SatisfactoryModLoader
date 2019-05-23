@@ -1,0 +1,127 @@
+#pragma once
+
+// Satisfactory SDK (V0.1.13 - Build 99427)
+
+#ifdef _MSC_VER
+	#pragma pack(push, 0x8)
+#endif
+
+#include "FG_Anim_GeneratorIntegratedBiomass_classes.hpp"
+
+namespace SDK
+{
+//---------------------------------------------------------------------------
+//Parameters
+//---------------------------------------------------------------------------
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_SequencePlayer_9C4296D14683FB0FD5054FB017F193E3
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_SequencePlayer_9C4296D14683FB0FD5054FB017F193E3_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_SequencePlayer_719F35654FAB14809E4602B7F74A14B7
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_SequencePlayer_719F35654FAB14809E4602B7F74A14B7_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_E8CDAD8E46DF96B6F7B7839325962335
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_E8CDAD8E46DF96B6F7B7839325962335_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_61831FBA44A273F8E0BCAF9797CD6B83
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_61831FBA44A273F8E0BCAF9797CD6B83_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_E14BDD4C4E2F9B1AE8F518AFB5A43123
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_E14BDD4C4E2F9B1AE8F518AFB5A43123_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_6FA0F0DF4EFC06392422EE8881610C8B
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_6FA0F0DF4EFC06392422EE8881610C8B_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_AFA14BD14A8E05B23A2215A9FCF657E4
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_AFA14BD14A8E05B23A2215A9FCF657E4_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_01B8E23E41BA28E071D573B7545540AC
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_01B8E23E41BA28E071D573B7545540AC_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_9A634FF249C90175F5A801AAA2FB7F5B
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_TransitionResult_9A634FF249C90175F5A801AAA2FB7F5B_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_SteamFxNotify
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_SteamFxNotify_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_SteamFxNotify_02
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_SteamFxNotify_02_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_SteamFxNotify_03
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_SteamFxNotify_03_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_SteamFxNotify_04
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_SteamFxNotify_04_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_SteamFxNotify_05
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_SteamFxNotify_05_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_SteamFxNotify_06
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_SteamFxNotify_06_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_SequencePlayer_DD6ECC8247B32203BB4484B15923E27D
+struct UAnim_GeneratorIntegratedBiomass_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_AnimGraphNode_SequencePlayer_DD6ECC8247B32203BB4484B15923E27D_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_BioGenEnteredProducingState
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_BioGenEnteredProducingState_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_BioGenLeftProducingState
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_BioGenLeftProducingState_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_BioGenEnteredFunnelPoweredState
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_BioGenEnteredFunnelPoweredState_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.AnimNotify_BioGenEnteredFunnelShutdownState
+struct UAnim_GeneratorIntegratedBiomass_C_AnimNotify_BioGenEnteredFunnelShutdownState_Params
+{
+};
+
+// Function Anim_GeneratorIntegratedBiomass.Anim_GeneratorIntegratedBiomass_C.ExecuteUbergraph_Anim_GeneratorIntegratedBiomass
+struct UAnim_GeneratorIntegratedBiomass_C_ExecuteUbergraph_Anim_GeneratorIntegratedBiomass_Params
+{
+	int                                                EntryPoint;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+}
+
+#ifdef _MSC_VER
+	#pragma pack(pop)
+#endif

@@ -1,0 +1,199 @@
+#pragma once
+
+// Satisfactory SDK (V0.1.13 - Build 99427)
+
+#ifdef _MSC_VER
+	#pragma pack(push, 0x8)
+#endif
+
+#include "FG_Anim_Spitter_classes.hpp"
+
+namespace SDK
+{
+//---------------------------------------------------------------------------
+//Parameters
+//---------------------------------------------------------------------------
+
+// Function Anim_Spitter.Anim_Spitter_C.CalculateAnimGraphVariables
+struct UAnim_Spitter_C_CalculateAnimGraphVariables_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_DE4BE947481096ABF302C68FE13F7527
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_DE4BE947481096ABF302C68FE13F7527_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_08046A124CF7A5454F205888A93F2ACA
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_08046A124CF7A5454F205888A93F2ACA_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_F81A446448B97515A5625FB6A475D546
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_F81A446448B97515A5625FB6A475D546_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_4310C5404B3437ADDA794CBC5402756F
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_4310C5404B3437ADDA794CBC5402756F_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_83C9835D40AEC7A2F83A7A8F1AF99258
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_83C9835D40AEC7A2F83A7A8F1AF99258_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_39003B8E465E1D358ADE998B6E5F1A54
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_39003B8E465E1D358ADE998B6E5F1A54_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_57EC1F474B949436ADDEBCB135629BF9
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_57EC1F474B949436ADDEBCB135629BF9_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotateRootBone_29C6E07F497EADE11A9A6CB1D3000664
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotateRootBone_29C6E07F497EADE11A9A6CB1D3000664_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotateRootBone_4F085E3A4CFE735A67ECAFB6074B7826
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotateRootBone_4F085E3A4CFE735A67ECAFB6074B7826_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_B4E3C1E4423A37F008AD45BCE7A2B79E
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_B4E3C1E4423A37F008AD45BCE7A2B79E_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotationOffsetBlendSpace_A8CFAE9743E1FC7400894FA5E04F37C2
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotationOffsetBlendSpace_A8CFAE9743E1FC7400894FA5E04F37C2_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotateRootBone_C18BB37D4B1D825BE1CCA3891B68D428
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_RotateRootBone_C18BB37D4B1D825BE1CCA3891B68D428_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_BE00186C484DE6269A16469D6762BC7A
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_BE00186C484DE6269A16469D6762BC7A_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_B0E218DF449587BADCDDACA531729A9B
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_B0E218DF449587BADCDDACA531729A9B_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_4F8C95E24C7346D297D553A96F9EC7AF
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_4F8C95E24C7346D297D553A96F9EC7AF_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_583465874EEDFCE1A9E7D0BE9B105BE6
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_583465874EEDFCE1A9E7D0BE9B105BE6_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_736E9DB641F02C1F28CE9884428D349A
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_ModifyBone_736E9DB641F02C1F28CE9884428D349A_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_52ED8B21439083F459931EA284050C70
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_52ED8B21439083F459931EA284050C70_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendSpacePlayer_BC462D524C94CDC5A72A3D8CA97E5A38
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendSpacePlayer_BC462D524C94CDC5A72A3D8CA97E5A38_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_DDEDB15746050ED4C6F8BFA812B2E771
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_BlendListByBool_DDEDB15746050ED4C6F8BFA812B2E771_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_D2176B2A468D5821867A938C732FB7CD
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_D2176B2A468D5821867A938C732FB7CD_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_C9A2C4744CC31A8CA3DA6398B7FABFD2
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_C9A2C4744CC31A8CA3DA6398B7FABFD2_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_859CB71B400A285FD10921A3622FD363
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_859CB71B400A285FD10921A3622FD363_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_75AE1D524F1EE16230E5FBBE9E8D9A6D
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_75AE1D524F1EE16230E5FBBE9E8D9A6D_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_04C813FB491ABC2E1F0127A0FC731DE7
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_04C813FB491ABC2E1F0127A0FC731DE7_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_9E855A614B2C00878464659B421B6957
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_9E855A614B2C00878464659B421B6957_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_E5A14AC943454B0D928B91923D852F46
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_E5A14AC943454B0D928B91923D852F46_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_F59AB4D046321D1D1D4ED6BFFA4CE266
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_F59AB4D046321D1D1D4ED6BFFA4CE266_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_4125F5E84ACF3BC77FAA7B8754C9577E
+struct UAnim_Spitter_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Spitter_AnimGraphNode_TransitionResult_4125F5E84ACF3BC77FAA7B8754C9577E_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.AnimNotify_SpitterWalkToRunNotify
+struct UAnim_Spitter_C_AnimNotify_SpitterWalkToRunNotify_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.OnRadialDamageTaken
+struct UAnim_Spitter_C_OnRadialDamageTaken_Params
+{
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.OnPointDamageTaken
+struct UAnim_Spitter_C_OnPointDamageTaken_Params
+{
+	struct FVector*                                    shootDIrection;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.BlueprintUpdateAnimation
+struct UAnim_Spitter_C_BlueprintUpdateAnimation_Params
+{
+	float*                                             DeltaTimeX;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Anim_Spitter.Anim_Spitter_C.ExecuteUbergraph_Anim_Spitter
+struct UAnim_Spitter_C_ExecuteUbergraph_Anim_Spitter_Params
+{
+	int                                                EntryPoint;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+}
+
+#ifdef _MSC_VER
+	#pragma pack(pop)
+#endif

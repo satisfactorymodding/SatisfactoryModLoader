@@ -8,6 +8,11 @@ namespace SML {
 		Current UWorld object.
 		*/
 		SML_API extern void* CurrentWorld;
+
+		/*
+		Single player character
+		*/
+		SML_API extern SDK::AFGCharacterPlayer* SinglePlayerPawn;
 	}
 	namespace Mod {
 		namespace Functions {
@@ -27,6 +32,17 @@ namespace SML {
 			Get the current world.
 			*/
 			SML_API void* getWorld();
+
+			/*
+			Get the player pawn
+			*/
+			SML_API SDK::AFGCharacterPlayer* getPlayerPawn();
+
+			SML_API void spawnActorAtPlayer(const wchar_t* name, float x, float y, float z);
+
+			SML_API void spawnActorAtPlayer(const wchar_t* name);
+
+			SML_API void spawnActor(const wchar_t* name, float x, float y, float z, float pitch, float roll, float yaw);
 		}
 	}
 }

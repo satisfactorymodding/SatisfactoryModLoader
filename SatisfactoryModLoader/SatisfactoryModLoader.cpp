@@ -47,10 +47,11 @@ namespace SML {
 			ShowWindow(GetConsoleWindow(), SW_SHOW);
 		}
 
-		// load sdk
+		// load sdk and assetloader
 		SDK::InitSDK();
 		Assets::AssetLoader::Init();
 		Utility::info("Initialized SDK");
+
 
 		// get path
 		char p[MAX_PATH];
@@ -92,12 +93,14 @@ namespace SML {
 		json config = Utility::JsonConfig::load("SatisfactoryModLoader", {
 			{"Console", true},
 			{"Debug" , false},
-			{"Supress Errors", false}
+			{"Supress Errors", false},
+			{"Chat Commands", true}
 		}, false);
 
 		loadConsole = config["Console"].get<bool>();
 		debugOutput = config["Debug"].get<bool>();
 		supressErrors = config["Supress Errors"].get<bool>();
+		chatCommands = config["Chat Commands"].get<bool>();
 	}
 
 	//cleans up when the program is killed

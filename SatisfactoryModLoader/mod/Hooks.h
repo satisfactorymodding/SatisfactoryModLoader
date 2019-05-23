@@ -13,10 +13,13 @@ namespace SML {
 		public:
 			static PVOID chatFunc;
 			static PVOID worldFunc;
+			static PVOID playerAddedFunc;
 
 			static void hookFunctions();
 
 			static void get_world(void* self);
+
+			static void player_added(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
 
 			static void player_sent_message(void* player, SML::Objects::FString* message);
 
