@@ -37,9 +37,9 @@ namespace SML {
 				auto myPlayer = Functions::getPlayerPawn();
 				auto buildingLocation = myPlayer->K2_GetActorLocation();
 				auto buildingRotation = myPlayer->K2_GetActorRotation();
-				buildingLocation.Z += x;
-				buildingLocation.X += y;
-				buildingLocation.Y += z;
+				buildingLocation.Z += z;
+				buildingLocation.X += x;
+				buildingLocation.Y += y;
 				PVOID spawnActorFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UWorld::SpawnActor");
 				auto spawnActor = (SDK::UClass * (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
 				spawnActor(Functions::getWorld(), obj, &buildingLocation, &buildingRotation, &params);
