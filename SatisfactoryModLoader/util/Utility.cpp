@@ -52,7 +52,7 @@ namespace SML {
 			if (str.substr(str.length() - 5, str.length()) == target[0]) {
 				info("Version check passed!");
 			}
-			else if (str.substr(str.length() - 5, str.length()) == target[1]) {
+			else if (str.substr(str.length() - 6, str.length()) == target[1]) {
 				warning("SML is running on the experimental branch, issues may occur!");
 			}
 			else {
