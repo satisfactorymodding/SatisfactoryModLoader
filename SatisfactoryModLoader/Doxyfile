@@ -1,0 +1,16 @@
+PROJECT_NAME           = Satisfactory Mod Loader
+INPUT                  = assets/AssetFunctions.h \
+                         mod/ModFunctions.h \
+                         mod/MathFunctions.h
+OUTPUT_DIRECTORY       = html
+WARNINGS               = YES
+SEARCHENGINE           = YES
+GENERATE_TREEVIEW      = YES
+SOURCE_BROWSER         = YES
+EXTRACT_ALL            = YES
+ALWAYS_DETAILED_SEC    = NO
+REPEAT_BRIEF           = YES
+BRIEF_MEMBER_DESC      = YES
+MULTILINE_CPP_IS_BRIEF = NO
+QT_AUTOBRIEF           = NO
+JAVADOC_AUTOBRIEF      = YES
