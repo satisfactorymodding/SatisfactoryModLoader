@@ -26,7 +26,8 @@ struct FActorSpawnParameters
 	SDK::FName Name;
 
 	/*
-	An Actor to use as a template when spawning the new Actor. The spawned Actor will be initialized using the property values of the template Actor. If left NULL the class default object (CDO) will be used to initialize the spawned Actor. */
+	An Actor to use as a template when spawning the new Actor. The spawned Actor will be initialized using the property values of the template Actor. If left NULL the class default object (CDO) will be used to initialize the spawned Actor.
+	*/
 	SDK::AActor* Template;
 
 	/*
