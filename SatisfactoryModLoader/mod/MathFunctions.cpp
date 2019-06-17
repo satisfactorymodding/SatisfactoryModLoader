@@ -1,0 +1,47 @@
+#include <stdafx.h>
+#include "MathFunctions.h"
+
+
+namespace SML {
+	namespace Mod {
+		namespace Functions {
+			SDK::FQuat toQuat(const SDK::FRotator& rotator) {
+				double cy = cos(rotator.Yaw * 0.5);
+				double sy = sin(rotator.Yaw * 0.5);
+				double cp = cos(rotator.Pitch * 0.5);
+				double sp = sin(rotator.Pitch * 0.5);
+				double cr = cos(rotator.Roll * 0.5);
+				double sr = sin(rotator.Roll * 0.5);
+
+				SDK::FQuat q;
+				q.W = cy * cp * cr + sy * sp * sr;
+				q.X = cy * cp * sr - sy * sp * cr;
+				q.Y = sy * cp * sr + cy * sp * cr;
+				q.Z = sy * cp * cr - cy * sp * sr;
+				return q;
+			}
+
+			SDK::FRotator toEuler(const SDK::FQuat& quat) {
+				double roll;
+				double pitch;
+				double yaw;
+
+				double sinr_cosp = 2.0 * (quat.W * quat.X + quat.Y * quat.Z);
+				double cosr_cosp = 1.0 - 2.0 * (quat.X * quat.X + quat.Y * quat.Y);
+				roll = atan2(sinr_cosp, cosr_cosp);
+
+				double sinp = 2.0 * (quat.W * quat.Y - quat.Z * quat.X);
+				if (fabs(sinp) >= 1)
+					pitch = copysign(3.14159265358979323846 / 2, sinp); //TODO: Replace with pi
+				else
+					pitch = asin(sinp);
+
+				double siny_cosp = 2.0 * (quat.W * quat.Z + quat.X * quat.Y);
+				double cosy_cosp = 1.0 - 2.0 * (quat.Y * quat.Y + quat.Z * quat.Z);
+				yaw = atan2(siny_cosp, cosy_cosp);
+
+				return SDK::FRotator(pitch, yaw, roll);
+			}
+		}
+	}
+}

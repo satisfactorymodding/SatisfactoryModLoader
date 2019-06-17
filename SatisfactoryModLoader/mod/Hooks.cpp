@@ -17,6 +17,7 @@ namespace SML {
 		PVOID Hooks::chatFunc;
 		PVOID Hooks::worldFunc;
 		PVOID Hooks::playerAddedFunc;
+		PVOID Hooks::engineInitFunc;
 
 		void Hooks::hookFunctions() {
 			DetourTransactionBegin();
@@ -33,9 +34,17 @@ namespace SML {
 			playerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGGameState::NotifyPlayerAdded");
 			DetourAttach(&(PVOID&)playerAddedFunc, player_added);
 
+			engineInitFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FEngineLoop::Init");
+			DetourAttach(&(PVOID&)engineInitFunc, engineInit);
+
 			//info("Hooked Paks!");
 
 			DetourTransactionCommit();
+		}
+
+		void Hooks::engineInit(void* engine) {
+			//caching of assets
+
 		}
 
 		void Hooks::player_added(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {

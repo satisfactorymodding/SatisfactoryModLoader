@@ -14,8 +14,11 @@ namespace SML {
 			static PVOID chatFunc;
 			static PVOID worldFunc;
 			static PVOID playerAddedFunc;
+			static PVOID engineInitFunc;
 
 			static void hookFunctions();
+
+			static void engineInit(void* fEngine);
 
 			static void get_world(void* self);
 

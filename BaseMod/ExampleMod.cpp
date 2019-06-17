@@ -5,9 +5,9 @@
 #include <mod/Mod.h>
 #include <HookLoaderInternal.h>
 #include <mod/ModFunctions.h>
+#include <mod/MathFunctions.h>
 #include <util/JsonConfig.h>
 #include <assets/AssetFunctions.h>
-#include <assets/AssetLoader.h>
 #include <assets/FObjectSpawnParameters.h>
 #include "../Detours/src/detours.h"
 #include "../SatisfactorySDK/SDK.hpp"
