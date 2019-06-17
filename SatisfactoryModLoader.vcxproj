@@ -165,6 +165,7 @@
     <ClInclude Include="SatisfactoryModLoader\HookLoaderInternal.h" />
     <ClInclude Include="SatisfactoryModLoader\Lib.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Hooks.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\MathFunctions.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Mod.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\ModFunctions.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\ModHandler.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Hooks.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\mod\MathFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Mod.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\ModFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\ModHandler.cpp" />

@@ -63,7 +63,7 @@ namespace SML {
 		modHandler.check_dependencies();
 		modHandler.post_setup_mods();
 		Mod::Hooks::hookFunctions();
-		modHandler.currentStage = SML::Mod::GameStage::RUN;
+		modHandler.currentStage = Mod::GameStage::INITIALIZING;
 			
 		// log mod size
 		size_t listSize = modHandler.mods.size();

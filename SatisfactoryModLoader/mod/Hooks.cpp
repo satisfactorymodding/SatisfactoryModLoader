@@ -9,6 +9,7 @@
 #include <util/Utility.h>
 #include <mod/ModFunctions.h>
 #include "ModFunctions.h"
+#include <assets/AssetLoader.h>
 
 using namespace std::placeholders;
 
@@ -44,7 +45,10 @@ namespace SML {
 
 		void Hooks::engineInit(void* engine) {
 			//caching of assets
-
+			modHandler.currentStage = GameStage::RUN;
+			for (std::pair< const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
+				modHandler.assetCache[asset.first] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), asset.first);
+			}
 		}
 
 		void Hooks::player_added(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {

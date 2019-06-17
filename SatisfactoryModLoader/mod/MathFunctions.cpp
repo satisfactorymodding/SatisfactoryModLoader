@@ -22,9 +22,9 @@ namespace SML {
 			}
 
 			SDK::FRotator toEuler(const SDK::FQuat& quat) {
-				double roll;
-				double pitch;
-				double yaw;
+				float roll;
+				float pitch;
+				float yaw;
 
 				double sinr_cosp = 2.0 * (quat.W * quat.X + quat.Y * quat.Z);
 				double cosr_cosp = 1.0 - 2.0 * (quat.X * quat.X + quat.Y * quat.Y);
@@ -40,7 +40,11 @@ namespace SML {
 				double cosy_cosp = 1.0 - 2.0 * (quat.Y * quat.Y + quat.Z * quat.Z);
 				yaw = atan2(siny_cosp, cosy_cosp);
 
-				return SDK::FRotator(pitch, yaw, roll);
+				SDK::FRotator rot = SDK::FRotator();
+				rot.Pitch = pitch;
+				rot.Roll = roll;
+				rot.Yaw = yaw;
+				return rot;
 			}
 		}
 	}

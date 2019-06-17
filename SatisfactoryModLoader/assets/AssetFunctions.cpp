@@ -1,10 +1,13 @@
 #include <stdafx.h>
 
+#include <string>
 #include <Windows.h>
 #include <detours.h>
 #include "AssetLoader.h"
 #include <Lib.h>
 #include "FObjectSpawnParameters.h"
+#include <SatisfactoryModLoader.h>
+#include <util/Utility.h>
 
 namespace SML {
 	namespace Assets {
@@ -63,6 +66,41 @@ namespace SML {
 				PVOID spawnActorFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UWorld::SpawnActor");
 				auto spawnActor = (SDK::UClass * (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
 				spawnActor(Functions::getWorld(), obj, &vec, &rot, &params);
+			}
+
+			SML_API void registerAssetForCache(const wchar_t* name) {
+				if (modHandler.currentStage == GameStage::SETUP || modHandler.currentStage == GameStage::POST_SETUP) {
+					if (modHandler.assetCache.count(name) > 0) {
+						Utility::warning("Skipping cache registration of existing asset ", name);
+					} else {
+						modHandler.assetCache.emplace(name, nullptr);
+					}
+				} else if (modHandler.currentStage == GameStage::RUN) {
+					if (modHandler.assetCache.count(name) > 0) {
+						Utility::warning("Skipping cache registration of existing asset ", name);
+					} else {
+						modHandler.assetCache.emplace(name, nullptr);
+						modHandler.assetCache[name] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
+					}
+				}
+			}
+
+			SML_API SDK::UObject* getAssetFromCache(const wchar_t* name) {
+				if (modHandler.currentStage != GameStage::RUN) {
+					std::wstring ws(name);
+					std::string msg = "Attempted to get cached asset\n" + std::string(ws.begin(), ws.end()) + "\n before it was cached! Press Ok to exit.";
+					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
+					abort();
+				} else {
+					if (modHandler.assetCache.count(name) > 0) {
+						return modHandler.assetCache[name];
+					}
+					else {
+						modHandler.assetCache.emplace(name, nullptr);
+						modHandler.assetCache[name] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
+						return modHandler.assetCache[name];
+					}
+				}
 			}
 		}
 	}

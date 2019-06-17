@@ -1,5 +1,6 @@
 #pragma once
 #include "Mod.h"
+#include <../SatisfactorySDK/SDK.hpp>
 #include "Registry.h"
 #include <string>
 #include <vector>
@@ -17,7 +18,9 @@ namespace SML {
 			SETUP,
 			//When the mods' post setup functions are being called
 			POST_SETUP,
-			//When SML has finished loading and Satisfactory has started running
+			//When SML has finished but assets haven't been loaded yet
+			INITIALIZING,
+			//When SML has finished loading and assets have started loading
 			RUN
 		};
 
@@ -30,6 +33,8 @@ namespace SML {
 			std::vector<Registry> APIRegistry;
 
 			std::map<std::string, std::vector<PVOID>> eventRegistry;
+
+			std::map< const wchar_t*, SDK::UObject*> assetCache;
 
 			GameStage currentStage = GameStage::PRE_CONSTRUCT;
 
