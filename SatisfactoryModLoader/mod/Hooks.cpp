@@ -49,6 +49,9 @@ namespace SML {
 			for (std::pair< const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
 				modHandler.assetCache[asset.first] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), asset.first);
 			}
+
+			auto pointer = (void(WINAPI*)(void*))engineInitFunc;
+			pointer(engine);
 		}
 
 		void Hooks::player_added(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {

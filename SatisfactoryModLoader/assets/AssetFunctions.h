@@ -17,6 +17,8 @@ namespace SML {
 	namespace Mod {
 		namespace Functions {
 			/**
+			* This function has been largely replaced by the asset caching system. To prevent slowdowns, use that instead!
+			* 
 			* Load an object from a pak file. Will crash if the pak is not installed.
 			*
 			* The asset name must be of the following format: \\Game\\FactoryGame\\Path\\To\\Asset\\AssetFile.AssetFile
@@ -42,17 +44,17 @@ namespace SML {
 			/**
 			* Spawn an actor at the player, offset by the XYZ values provided.
 			*/
-			SML_API void spawnActorAtPlayer(const wchar_t* name, float x, float y, float z);
+			SML_API void spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z);
 
 			/**
 			* Spawn an actor at the player.
 			*/
-			SML_API void spawnActorAtPlayer(const wchar_t* name);
+			SML_API void spawnActorAtPlayer(SDK::UObject* obj);
 
 			/**
 			* Spawn an actor at the provided location with the provided rotation.
 			*/
-			SML_API void spawnActor(const wchar_t* name, float x, float y, float z, float pitch, float roll, float yaw);
+			SML_API void spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw);
 
 			/**
 			* Registers an asset path for caching.

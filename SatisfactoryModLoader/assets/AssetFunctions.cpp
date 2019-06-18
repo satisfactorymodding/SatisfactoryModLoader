@@ -34,9 +34,8 @@ namespace SML {
 				return Assets::SinglePlayerPawn;
 			}
 
-			SML_API void spawnActorAtPlayer(const wchar_t* name, float x, float y, float z) {
+			SML_API void spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {
 				FActorSpawnParameters params = FActorSpawnParameters();
-				void* obj = SML::Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
 				auto myPlayer = Functions::getPlayerPawn();
 				auto buildingLocation = myPlayer->K2_GetActorLocation();
 				auto buildingRotation = myPlayer->K2_GetActorRotation();
@@ -48,13 +47,12 @@ namespace SML {
 				spawnActor(Functions::getWorld(), obj, &buildingLocation, &buildingRotation, &params);
 			}
 
-			SML_API void spawnActorAtPlayer(const wchar_t* name) {
-				spawnActorAtPlayer(name, 0, 0, 0);
+			SML_API void spawnActorAtPlayer(SDK::UObject* obj) {
+				spawnActorAtPlayer(obj, 0, 0, 0);
 			}
 
-			SML_API void spawnActor(const wchar_t* name, float x, float y, float z, float pitch, float roll, float yaw) {
+			SML_API void spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw) {
 				FActorSpawnParameters params = FActorSpawnParameters();
-				void* obj = SML::Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
 				SDK::FVector vec = SDK::FVector();
 				vec.X = x;
 				vec.Y = y;
