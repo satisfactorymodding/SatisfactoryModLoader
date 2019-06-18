@@ -57,11 +57,13 @@ namespace SML {
 
 			std::cout << std::forward<First>(arg0);
 			logFile << std::forward<First>(arg0);
+			logFile.flush();
 			log(type, std::forward<Args>(args)...);
 
 			if (sizeof...(args) == 0) {
 				std::cout << std::endl;
 				logFile << std::endl;
+				logFile.flush();
 				set_console_color(ConsoleColor::White);
 			}
 		}
