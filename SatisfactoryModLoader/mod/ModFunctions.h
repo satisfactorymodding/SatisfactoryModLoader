@@ -31,7 +31,7 @@ namespace SML {
 			};
 
 			/**
-			* Registers a command to be called when player does /<name> in Satisfactory's chat.
+			* Registers a command to be called when player does /[commandname] in Satisfactory's chat.
 			*
 			* The function *MUST* return void and have a Functions::CommandData in the parameters, with nothing else.
 			*/

@@ -5,7 +5,7 @@
 namespace SML {
 	namespace Mod {
 		namespace Functions {
-			SDK::FQuat toQuat(const SDK::FRotator& rotator) {
+			SML_API SDK::FQuat toQuat(const SDK::FRotator& rotator) {
 				double cy = cos(rotator.Yaw * 0.5);
 				double sy = sin(rotator.Yaw * 0.5);
 				double cp = cos(rotator.Pitch * 0.5);
@@ -21,7 +21,7 @@ namespace SML {
 				return q;
 			}
 
-			SDK::FRotator toEuler(const SDK::FQuat& quat) {
+			SML_API SDK::FRotator toEuler(const SDK::FQuat& quat) {
 				float roll;
 				float pitch;
 				float yaw;
@@ -46,6 +46,21 @@ namespace SML {
 				rot.Yaw = yaw;
 				return rot;
 			}
+		}
+		SML_API SDK::FVector makeVector(float x, float y, float z) {
+			SDK::FVector vec = SDK::FVector();
+			vec.X = x;
+			vec.Y = y;
+			vec.Z = z;
+			return vec;
+		}
+
+		SML_API SDK::FRotator makeRotator(float pitch, float roll, float yaw) {
+			SDK::FRotator rot = SDK::FRotator();
+			rot.Pitch = pitch;
+			rot.Roll = roll;
+			rot.Yaw = yaw;
+			return rot;
 		}
 	}
 }

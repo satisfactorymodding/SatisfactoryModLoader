@@ -66,21 +66,39 @@ namespace SML {
 				spawnActor(Functions::getWorld(), obj, &vec, &rot, &params);
 			}
 
-			SML_API void registerAssetForCache(const wchar_t* name) {
+			SML_API int registerAssetForCache(const wchar_t* name) {
+				int id = 0;
 				if (modHandler.currentStage == GameStage::SETUP || modHandler.currentStage == GameStage::POST_SETUP) {
 					if (modHandler.assetCache.count(name) > 0) {
 						Utility::warning("Skipping cache registration of existing asset ", name);
+						for (std::pair<int, const wchar_t*> pair : modHandler.assetIdRegistry) {
+							if (name == pair.second) {
+								id = pair.first;
+								break;
+							}
+						}
 					} else {
+						id = modHandler.assetCache.size();
 						modHandler.assetCache.emplace(name, nullptr);
+						modHandler.assetIdRegistry.emplace(id, name);
 					}
 				} else if (modHandler.currentStage == GameStage::RUN) {
 					if (modHandler.assetCache.count(name) > 0) {
 						Utility::warning("Skipping cache registration of existing asset ", name);
+						for (std::pair<int, const wchar_t*> pair : modHandler.assetIdRegistry) {
+							if (name == pair.second) {
+								id = pair.first;
+								break;
+							}
+						}
 					} else {
+						id = modHandler.assetCache.size();
 						modHandler.assetCache.emplace(name, nullptr);
 						modHandler.assetCache[name] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
+						modHandler.assetIdRegistry.emplace(id, name);
 					}
 				}
+				return id;
 			}
 
 			SML_API SDK::UObject* getAssetFromCache(const wchar_t* name) {
@@ -94,11 +112,33 @@ namespace SML {
 						return modHandler.assetCache[name];
 					}
 					else {
+						int id = modHandler.assetCache.size();
 						modHandler.assetCache.emplace(name, nullptr);
 						modHandler.assetCache[name] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
+						modHandler.assetIdRegistry.emplace(id, name);
 						return modHandler.assetCache[name];
 					}
 				}
+			}
+		}
+
+		SML_API SDK::UObject* getAssetFromCacheWithID(int id) {
+			if (modHandler.assetIdRegistry.count(id) > 0) {
+				return modHandler.assetCache[modHandler.assetIdRegistry[id]];
+			} else {
+				std::string msg = "Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
+				MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
+				abort();
+			}
+		}
+
+		SML_API const wchar_t* getAssetNameFromID(int id) {
+			if (modHandler.assetIdRegistry.count(id) > 0) {
+				return modHandler.assetIdRegistry[id];
+			} else {
+				std::string msg = "Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
+				MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
+				abort();
 			}
 		}
 	}

@@ -61,8 +61,10 @@ namespace SML {
 			*
 			* This removes delays and sutters when loading an asset during gameplay.
 			* Only call this during setup and post setup! calling it afterwards will just cache the object at the time it's called.
+			*
+			* This function returns an int id for ease of access when getting an item back from the cache.
 			*/
-			SML_API void registerAssetForCache(const wchar_t* name);
+			SML_API int registerAssetForCache(const wchar_t* name);
 
 			/**
 			* Returns the UObject pointer from the cache for spawning.
@@ -70,6 +72,19 @@ namespace SML {
 			* Will crash if called before satisfactory is running or if the name isn't found in the cache!
 			*/
 			SML_API SDK::UObject* getAssetFromCache(const wchar_t* name);
+
+
+			/**
+			* Gets an item back from the cache with the specified id.
+			* Will crash if the id isn't found.
+			*/
+			SML_API SDK::UObject* getAssetFromCacheWithID(int id);
+
+			/**
+			*  Get's an asset's name back from the cache with the name's id.
+			* Will crash if the id isn't found.
+			*/
+			SML_API const wchar_t* getAssetNameFromID(int id);
 		}
 	}
 }

@@ -34,7 +34,9 @@ namespace SML {
 
 			std::map<std::string, std::vector<PVOID>> eventRegistry;
 
-			std::map< const wchar_t*, SDK::UObject*> assetCache;
+			std::map<const wchar_t*, SDK::UObject*> assetCache;
+
+			std::map<int, const wchar_t*> assetIdRegistry;
 
 			GameStage currentStage = GameStage::PRE_CONSTRUCT;
 
