@@ -35,7 +35,7 @@ namespace SML {
 			 * use_original_function specifies whether the hooked function should be run or not.
 			*/
 			struct ModReturns {
-				bool use_original_function = true;
+				bool useOriginalFunction = true;
 			};
 		}
 	}
@@ -197,14 +197,14 @@ private:
 	template <typename>
 	static R __fastcall apply(A... args) {
 		SML::Mod::Functions::ModReturns returns;
-		returns.use_original_function = true;
+		returns.useOriginalFunction = true;
 
 		R ret{};
 
 		for (auto&& handler : HandlerStorage<PF, Handler>::handlers)
 			ret = handler(&returns, args...);
 
-		if (returns.use_original_function)
+		if (returns.useOriginalFunction)
 			return ((HookType*)HandlerStorage<PF, Handler>::original)(args...);
 
 		return ret;
@@ -219,16 +219,16 @@ private:
 	template <typename>
 	static void __fastcall apply_void(A... args) {
 		SML::Mod::Functions::ModReturns returns;
-		returns.use_original_function = true;
+		returns.useOriginalFunction = true;
 
 		for (auto&& handler : HandlerStorage<PF, Handler>::handlers)
 			handler(&returns, args...);
 
-		if (returns.use_original_function)
+		if (returns.useOriginalFunction)
 			((HookType*)HandlerStorage<PF, Handler>::original)(args...);
 	}
 
-	static constexpr const char _gameModule[] = "FactoryGame-Win64-Shipping.exe";
+	static constexpr const char gameModule[] = "FactoryGame-Win64-Shipping.exe";
 
 	/*
 
@@ -244,12 +244,12 @@ private:
 	*/
 
 	template <typename X>
-	static HookType* get_apply(std::true_type) {
+	static HookType* getApply(std::true_type) {
 		return &apply_void<X>;
 	}
 
 	template <typename X>
-	static HookType* get_apply(std::false_type) {
+	static HookType* getApply(std::false_type) {
 		return &apply<X>;
 	}
 
@@ -262,11 +262,11 @@ private:
 
 	*/
 
-	static void install_hook() {
+	static void installHook() {
 		if (!HandlerStorage<PF, Handler>::original) {
 			Detours::DetourTransactionBegin();
-			HandlerStorage<PF, Handler>::original = Detours::DetourFindFunction(_gameModule, HookName<PF>::Name);
-			Detours::DetourAttach(&HandlerStorage<PF, Handler>::original, (void*)get_apply<R>(std::is_same<R, void>{}));
+			HandlerStorage<PF, Handler>::original = Detours::DetourFindFunction(gameModule, HookName<PF>::Name);
+			Detours::DetourAttach(&HandlerStorage<PF, Handler>::original, (void*)getApply<R>(std::is_same<R, void>{}));
 			Detours::DetourTransactionCommit();
 		}
 	}
@@ -282,12 +282,12 @@ public:
 	*/
 
 	static void subscribe(Handler handler) {
-		install_hook();
+		installHook();
 		HandlerStorage<PF, Handler>::handlers.push_back(handler);
 	}
 
-	static HookType* get_original() {
-		install_hook();
+	static HookType* getOriginal() {
+		installHook();
 		return (HookType*)HandlerStorage<PF, Handler>::original;
 	}
 };
@@ -319,63 +319,63 @@ private:
 	typedef R __fastcall HookType(C*, A...);
 
 	template <typename X>
-	static HookType* get_apply(std::true_type) {
-		return &apply_void<X>;
+	static HookType* getApply(std::true_type) {
+		return &applyVoid<X>;
 	}
 
 	template <typename X>
-	static HookType* get_apply(std::false_type) {
+	static HookType* getApply(std::false_type) {
 		return &apply<X>;
 	}
 
 	template <typename X>
 	static R __fastcall apply(C* thiz, A... args) {
 		SML::Mod::Functions::ModReturns returns;
-		returns.use_original_function = true;
+		returns.useOriginalFunction = true;
 
 		R ret{};
 
 		for (auto&& handler : HandlerStorage<PMF, Handler>::handlers)
 			ret = handler(&returns, thiz, args...);
 
-		if (returns.use_original_function)
+		if (returns.useOriginalFunction)
 			return ((HookType*)HandlerStorage<PMF, Handler>::original)(thiz, args...);
 
 		return ret;
 	}
 
 	template <typename X>
-	static void __fastcall apply_void(C* thiz, A... args) {
+	static void __fastcall applyVoid(C* thiz, A... args) {
 		SML::Mod::Functions::ModReturns returns;
-		returns.use_original_function = true;
+		returns.useOriginalFunction = true;
 
 		for (auto&& handler : HandlerStorage<PMF, Handler>::handlers)
 			handler(&returns, thiz, args...);
 
-		if (returns.use_original_function)
+		if (returns.useOriginalFunction)
 			((HookType*)HandlerStorage<PMF, Handler>::original)(thiz, args...);
 	}
 
-	static constexpr const char _gameModule[] = "FactoryGame-Win64-Shipping.exe";
+	static constexpr const char gameModule[] = "FactoryGame-Win64-Shipping.exe";
 
-	static void install_hook() {
+	static void installHook() {
 		// only if not already installed
 		if (!HandlerStorage<PMF, Handler>::original) {
 			Detours::DetourTransactionBegin();
-			HandlerStorage<PMF, Handler>::original = Detours::DetourFindFunction(_gameModule, HookName<PMF>::Name);
-			Detours::DetourAttach(&HandlerStorage<PMF, Handler>::original, (void*)get_apply<R>(std::is_same<R, void>{}));
+			HandlerStorage<PMF, Handler>::original = Detours::DetourFindFunction(gameModule, HookName<PMF>::Name);
+			Detours::DetourAttach(&HandlerStorage<PMF, Handler>::original, (void*)getApply<R>(std::is_same<R, void>{}));
 			Detours::DetourTransactionCommit();
 		}
 	}
 
 public:
 	static void subscribe(Handler handler) {
-		install_hook();
+		installHook();
 		HandlerStorage<PMF, Handler>::handlers.push_back(handler);
 	}
 
-	static HookType* get_original() {
-		install_hook();
+	static HookType* getOriginal() {
+		installHook();
 		return (HookType*)HandlerStorage<PMF, Handler>::original;
 	}
 };

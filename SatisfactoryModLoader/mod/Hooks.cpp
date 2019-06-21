@@ -47,7 +47,7 @@ namespace SML {
 			//caching of assets
 			modHandler.currentStage = GameStage::RUN;
 			for (std::pair< const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
-				modHandler.assetCache[asset.first] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), asset.first);
+				modHandler.assetCache[asset.first] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), asset.first);
 			}
 
 			auto pointer = (void(WINAPI*)(void*))engineInitFunc;

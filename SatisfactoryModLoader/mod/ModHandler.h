@@ -40,15 +40,15 @@ namespace SML {
 
 			GameStage currentStage = GameStage::PRE_CONSTRUCT;
 
-			void load_mods(const char* startingPath);
-			void setup_mods();
-			void check_dependencies();
-			void post_setup_mods();
+			void loadMods(const char* startingPath);
+			void setupMods();
+			void checkDependencies();
+			void postSetupMods();
 		private:
 			std::vector<std::string> modNameDump;
-			void recursive_dependency_load(Mod& mod, int i);
-			void get_files(std::string path);
-			void find_mods(std::string path);
+			void recursiveDependencyLoad(Mod& mod, int i);
+			void getFiles(std::string path);
+			void findMods(std::string path);
 		};
 	}
 }

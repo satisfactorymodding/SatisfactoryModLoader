@@ -17,7 +17,7 @@ namespace SML {
 	namespace Mod {
 		namespace Functions {
 			SML_API SDK::UObject* loadObjectFromPak(SDK::UClass *ObjectClass, const wchar_t *InName) {
-				return Assets::AssetLoader::LoadObjectSimple(ObjectClass, InName);
+				return Assets::AssetLoader::loadObjectSimple(ObjectClass, InName);
 			}
 
 			SML_API void* spawnActor(void* UWorld, void* *UClass, void* *FVector, void* *FRotator, void* *FActorSpawnParameters) {
@@ -94,7 +94,7 @@ namespace SML {
 					} else {
 						id = modHandler.assetCache.size();
 						modHandler.assetCache.emplace(name, nullptr);
-						modHandler.assetCache[name] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
+						modHandler.assetCache[name] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), name);
 						modHandler.assetIdRegistry.emplace(id, name);
 					}
 				}
@@ -114,7 +114,7 @@ namespace SML {
 					else {
 						int id = modHandler.assetCache.size();
 						modHandler.assetCache.emplace(name, nullptr);
-						modHandler.assetCache[name] = Assets::AssetLoader::LoadObjectSimple(SDK::UClass::StaticClass(), name);
+						modHandler.assetCache[name] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), name);
 						modHandler.assetIdRegistry.emplace(id, name);
 						return modHandler.assetCache[name];
 					}

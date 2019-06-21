@@ -8,7 +8,7 @@
 namespace SML {
 	namespace Mod {
 		// load all mods from the given path
-		void ModHandler::load_mods(const char* startingPath) {
+		void ModHandler::loadMods(const char* startingPath) {
 			this->currentStage = GameStage::CONSTRUCT;
 			// split the path
 			std::string appPath(startingPath);
@@ -16,11 +16,11 @@ namespace SML {
 			CreateDirectoryA((appPath.substr(0, pos) + "\\mods").c_str(), NULL); //create the directory if it doesn't exist
 			std::string path = appPath.substr(0, pos) + "\\mods";
 
-			ModHandler::find_mods(path);
+			ModHandler::findMods(path);
 		}
 
 		//call the setup function of every loaded mod
-		void ModHandler::setup_mods() {
+		void ModHandler::setupMods() {
 			Utility::info("Starting mod Setup!");
 			this->currentStage = GameStage::SETUP;
 			for (auto&& mod : mods) {
@@ -29,19 +29,19 @@ namespace SML {
 		}
 
 		//call the post setup function of every mod through recursive calling, ensuring the post setups of mod dependencies loaded before the original mod's post setup
-		void ModHandler::post_setup_mods() {
+		void ModHandler::postSetupMods() {
 			this->currentStage = GameStage::POST_SETUP;
 			Utility::info("Starting mod Post Setup!");
 			for (int i = 0; i < mods.size(); i++) {
 				modNameDump.push_back(mods[i]->info.name);
 			}
 			for (int i = 0; i < mods.size(); i++) {
-				recursive_dependency_load(*mods[i], i);
+				recursiveDependencyLoad(*mods[i], i);
 			}
 		}
 
 		//recustively load mod dependencies
-		void ModHandler::recursive_dependency_load(Mod& mod, int i) { // this code is a massive hack, TODO: refactor this mess
+		void ModHandler::recursiveDependencyLoad(Mod& mod, int i) { // this code is a massive hack, TODO: refactor this mess
 			for (std::string name : mod.info.dependencies) {
 				if (name.substr(0, 1) == "*") {
 					bool found = false;
@@ -58,13 +58,13 @@ namespace SML {
 				}
 				auto iterator = std::find(modNameDump.begin(), modNameDump.end(), name);
 				int loc = std::distance(modNameDump.begin(), iterator);
-				recursive_dependency_load(*mods[loc], loc);
+				recursiveDependencyLoad(*mods[loc], loc);
 			}
-			mod.call_post_setup();
+			mod.callPostSetup();
 		}
 
 		// ensure that all dependencies of mods exist
-		void ModHandler::check_dependencies() {
+		void ModHandler::checkDependencies() {
 			std::vector<std::string> names;
 			for (auto&& mod : mods) {
 				names.push_back(mod->info.name);
@@ -93,13 +93,13 @@ namespace SML {
 		}
 
 		//get the mod files and load them
-		void ModHandler::get_files(std::string path) {
+		void ModHandler::getFiles(std::string path) {
 			std::string pathExact = path + "\\";
 
 			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 
 				if (!entry.path().has_extension()) {
-					get_files(entry.path().string());
+					getFiles(entry.path().string());
 					continue;
 				}
 
@@ -171,14 +171,14 @@ namespace SML {
 		}
 
 		// find all valid mods
-		void ModHandler::find_mods(std::string path) {
+		void ModHandler::findMods(std::string path) {
 			std::string pathExact = path + "\\";
 
 			Utility::info("Looking for mods in: ", path);
 
 			ModHandler::mods.clear();
 
-			get_files(path);
+			getFiles(path);
 		}
 	}
 }

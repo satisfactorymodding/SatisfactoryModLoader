@@ -37,20 +37,20 @@ namespace SML {
 			White
 		};
 
-		void SML_API set_console_color(ConsoleColor color);
+		void SML_API setConsoleColor(ConsoleColor color);
 
-		void SML_API check_version(const std::string target[2]);
+		void SML_API checkVersion(const std::string target[2]);
 
 		void SML_API log();
 
 		void SML_API log(LogType type);
 
-		void SML_API draw_header(std::string header, LogType type);
+		void SML_API writeHeader(std::string header, LogType type);
 
 		// logs a message of <T> with various modifiers
 		template<typename First, typename ...Args>
 		void log(LogType type, First&& arg0, Args&& ...args) {
-			set_console_color(
+			setConsoleColor(
 				type == LogType::Info || type == LogType::ModInfo ? ConsoleColor::Green :
 				type == LogType::Warning || type == LogType::ModWarning ? ConsoleColor::Yellow :
 				ConsoleColor::Red);
@@ -64,43 +64,43 @@ namespace SML {
 				std::cout << std::endl;
 				logFile << std::endl;
 				logFile.flush();
-				set_console_color(ConsoleColor::White);
+				setConsoleColor(ConsoleColor::White);
 			}
 		}
 
 		template<typename First, typename ...Args>
 		void info(First&& arg0, Args&& ...args) {
-			draw_header("SML", LogType::Info);
+			writeHeader("SML", LogType::Info);
 			log(LogType::Info, arg0, args...);
 		}
 
 		template<typename First, typename ...Args>
 		void warning(First&& arg0, Args&& ...args) {
-			draw_header("SML", LogType::Warning);
+			writeHeader("SML", LogType::Warning);
 			log(LogType::Warning, arg0, args...);
 		}
 
 		template<typename First, typename ...Args>
 		void error(First&& arg0, Args&& ...args) {
-			draw_header("SML", LogType::Error);
+			writeHeader("SML", LogType::Error);
 			log(LogType::Error, arg0, args...);
 		}
 
 		template<typename First, typename ...Args>
-		void info_mod(std::string mod, First&& arg0, Args&& ...args) {
-			draw_header(mod, LogType::ModInfo);
+		void infoMod(std::string mod, First&& arg0, Args&& ...args) {
+			writeHeader(mod, LogType::ModInfo);
 			log(LogType::ModInfo, arg0, args...);
 		}
 
 		template<typename First, typename ...Args>
-		void warning_mod(std::string mod, First&& arg0, Args&& ...args) {
-			draw_header(mod, LogType::ModWarning);
+		void warningMod(std::string mod, First&& arg0, Args&& ...args) {
+			writeHeader(mod, LogType::ModWarning);
 			log(LogType::ModWarning, arg0, args...);
 		}
 
 		template<typename First, typename ...Args>
-		void error_mod(std::string mod, First&& arg0, Args&& ...args) {
-			draw_header(mod, LogType::ModError);
+		void errorMod(std::string mod, First&& arg0, Args&& ...args) {
+			writeHeader(mod, LogType::ModError);
 			log(LogType::ModError, arg0, args...);
 		}
 

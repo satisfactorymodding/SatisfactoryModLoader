@@ -18,7 +18,7 @@ EXAMPLEMOD
 ExampleMod is a documented mod that uses all the available features of SML and can help you mod.
 If you are confused about what to do, just type Functions:: and autocomplete will give you options on some functions that you can use.
 If you don't know how to do something/use something, simply hover over it to read the provided documentation. If you're still confused, come to the discord and ask in #sml-help about your issue.
-SuperCoder or Nomnom will help you with your problem.
+SuperCoder will help you with your problem.
 */
 
 // Use the namespaces so you have to type less stuff when adding on to your mod
@@ -32,7 +32,7 @@ using namespace SML::Objects;
 #define MOD_NAME "ExampleMod"
 
 // Define a log macro to make outputting to the log easier
-#define LOG(msg) SML::Utility::info_mod(MOD_NAME, msg)
+#define LOG(msg) SML::Utility::infoMod(MOD_NAME, msg)
 
 // Config
 json config = SML::Utility::JsonConfig::load(MOD_NAME, {
@@ -148,7 +148,7 @@ public:
 		LOG("Finished ExampleMod setup!");
 	}
 
-	void post_setup() override {
+	void postSetup() override {
 		// Write things to be done after other mods' setup functions
 		// Called after the post setup functions of mods that you depend on.
 
