@@ -23,8 +23,6 @@ namespace SML {
 	// Main DLL for loading mod DLLs
 	void startSML() {
 		// launch the game's internal console and hook into it
-		Utility::logFile = std::ofstream(logName, std::ios_base::trunc);
-		Utility::logFile.close();
 		Utility::logFile = std::ofstream(logName, std::ios_base::app);
 		AllocConsole();
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -108,6 +106,7 @@ namespace SML {
 		modHandler.mods.clear();
 
 		Utility::info("SML shutting down...");
+		Utility::logFile.flush();
 		Utility::logFile.close();
 	}
 }

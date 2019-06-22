@@ -57,6 +57,29 @@ namespace SML {
 			SML_API void spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw);
 
 			/**
+			* Adds a UFGRecipe to the game.
+			* Code kindly provided by Trxnce.
+			*/
+			SML_API void addRecipe(SDK::UClass* recipe);
+
+			/**
+			* Returns an ItemStack from an item class and an item amount.
+			* Code kindly provided by Trxnce.
+			*/
+			SML_API SDK::FInventoryStack makeItemStack(SDK::UClass* clazz, const int& amount);
+
+			/**
+			* Adds an item with an amount to the player's inventory.
+			* Code kindly provided by Trxnce.
+			*/
+			SML_API void addItemStackToPlayer(SDK::UObject* item, const int& amount);
+
+			/**
+			* Adds a stack to the player's inventory.
+			*/
+			SML_API void addItemStackToPlayer(SDK::FInventoryStack stack);
+
+			/**
 			* Registers an asset path for caching.
 			*
 			* This removes delays and sutters when loading an asset during gameplay.

@@ -36,7 +36,7 @@ namespace SML {
 
 			SML_API void spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {
 				FActorSpawnParameters params = FActorSpawnParameters();
-				auto myPlayer = Functions::getPlayerPawn();
+				auto myPlayer = getPlayerPawn();
 				auto buildingLocation = myPlayer->K2_GetActorLocation();
 				auto buildingRotation = myPlayer->K2_GetActorRotation();
 				buildingLocation.Z += z;
@@ -44,7 +44,7 @@ namespace SML {
 				buildingLocation.Y += y;
 				PVOID spawnActorFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UWorld::SpawnActor");
 				auto spawnActor = (SDK::UClass * (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
-				spawnActor(Functions::getWorld(), obj, &buildingLocation, &buildingRotation, &params);
+				spawnActor(getWorld(), obj, &buildingLocation, &buildingRotation, &params);
 			}
 
 			SML_API void spawnActorAtPlayer(SDK::UObject* obj) {
@@ -63,7 +63,38 @@ namespace SML {
 				rot.Yaw = yaw;
 				PVOID spawnActorFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UWorld::SpawnActor");
 				auto spawnActor = (SDK::UClass * (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
-				spawnActor(Functions::getWorld(), obj, &vec, &rot, &params);
+				spawnActor(getWorld(), obj, &vec, &rot, &params);
+			}
+
+			SML_API void addRecipe(SDK::UClass* recipe) {
+				PVOID addAvailableRecipeFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGRecipeManager::AddAvailableRecipe");
+				auto addAvailableRecipe = static_cast<SDK::AFGRecipeManager * (WINAPI*)(void*, void*)>(addAvailableRecipeFn);
+				SDK::TSubclassOf<SDK::UFGRecipe> recipeClass(recipe);
+				addAvailableRecipe(static_cast<SDK::AFGGameState*>(reinterpret_cast<SDK::UWorld*>(getWorld())->GameState)->mRecipeManager, recipe);
+			}
+
+			SML_API SDK::FInventoryStack makeItemStack(SDK::UClass* clazz, const int& amount) {
+				SDK::FInventoryStack stack = SDK::FInventoryStack();
+				SDK::FInventoryItem item = SDK::FInventoryItem();
+
+				item.ItemClass = clazz;
+
+				stack.Item = item;
+				stack.NumItems = amount;
+
+				return stack;
+			}
+
+			SML_API void addItemStackToPlayer(SDK::FInventoryStack stack) {
+				auto player = getPlayerPawn();
+				player->mInventory->AddStack(stack, true);
+			}
+
+			SML_API void addItemStackToPlayer(SDK::UObject* item, const int& amount) {
+				SDK::FInventoryStack stack = makeItemStack(static_cast<SDK::UClass*>(item), amount);
+
+				auto player = getPlayerPawn();
+				player->mInventory->AddStack(stack, true);
 			}
 
 			SML_API int registerAssetForCache(const wchar_t* name) {
