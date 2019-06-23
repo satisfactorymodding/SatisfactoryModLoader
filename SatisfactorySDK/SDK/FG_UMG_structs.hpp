@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -8,12 +8,12 @@
 
 #include "FG_Basic.hpp"
 #include "FG_CoreUObject_classes.hpp"
-#include "FG_PropertyPath_classes.hpp"
+#include "FG_MovieSceneTracks_classes.hpp"
+#include "FG_Engine_classes.hpp"
 #include "FG_SlateCore_classes.hpp"
 #include "FG_Slate_classes.hpp"
-#include "FG_Engine_classes.hpp"
+#include "FG_PropertyPath_classes.hpp"
 #include "FG_InputCore_classes.hpp"
-#include "FG_MovieSceneTracks_classes.hpp"
 #include "FG_MovieScene_classes.hpp"
 
 namespace SDK
@@ -180,9 +180,9 @@ enum class EWidgetInteractionSource : uint8_t
 // 0x001C
 struct FWidgetTransform
 {
-	struct FVector2D                                   Translation;                                              // 0x0000(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FVector2D                                   Scale;                                                    // 0x0008(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FVector2D                                   Shear;                                                    // 0x0010(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FVector2D                                   Translation;                                              // 0x0000(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   Scale;                                                    // 0x0008(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   Shear;                                                    // 0x0010(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              Angle;                                                    // 0x0018(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };
 
@@ -219,9 +219,9 @@ struct FDynamicPropertyPath : public FCachedPropertyPath
 // 0x0028
 struct FAnchorData
 {
-	struct FMargin                                     Offsets;                                                  // 0x0000(0x0010) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FMargin                                     Offsets;                                                  // 0x0000(0x0010) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	struct FAnchors                                    Anchors;                                                  // 0x0010(0x0010) (Edit, BlueprintVisible)
-	struct FVector2D                                   Alignment;                                                // 0x0020(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FVector2D                                   Alignment;                                                // 0x0020(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct UMG.SlateChildSize
@@ -254,14 +254,14 @@ struct FMovieScene2DTransformMask
 // 0x003C
 struct FSlateMeshVertex
 {
-	struct FVector2D                                   Position;                                                 // 0x0000(0x0008) (IsPlainOldData)
-	struct FColor                                      Color;                                                    // 0x0008(0x0004) (IsPlainOldData)
-	struct FVector2D                                   UV0;                                                      // 0x000C(0x0008) (IsPlainOldData)
-	struct FVector2D                                   UV1;                                                      // 0x0014(0x0008) (IsPlainOldData)
-	struct FVector2D                                   UV2;                                                      // 0x001C(0x0008) (IsPlainOldData)
-	struct FVector2D                                   UV3;                                                      // 0x0024(0x0008) (IsPlainOldData)
-	struct FVector2D                                   UV4;                                                      // 0x002C(0x0008) (IsPlainOldData)
-	struct FVector2D                                   UV5;                                                      // 0x0034(0x0008) (IsPlainOldData)
+	struct FVector2D                                   Position;                                                 // 0x0000(0x0008) (ZeroConstructor, IsPlainOldData)
+	struct FColor                                      Color;                                                    // 0x0008(0x0004) (ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   UV0;                                                      // 0x000C(0x0008) (ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   UV1;                                                      // 0x0014(0x0008) (ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   UV2;                                                      // 0x001C(0x0008) (ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   UV3;                                                      // 0x0024(0x0008) (ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   UV4;                                                      // 0x002C(0x0008) (ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   UV5;                                                      // 0x0034(0x0008) (ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct UMG.WidgetAnimationBinding
@@ -270,7 +270,7 @@ struct FWidgetAnimationBinding
 {
 	struct FName                                       WidgetName;                                               // 0x0000(0x0008) (ZeroConstructor, IsPlainOldData)
 	struct FName                                       SlotWidgetName;                                           // 0x0008(0x0008) (ZeroConstructor, IsPlainOldData)
-	struct FGuid                                       AnimationGuid;                                            // 0x0010(0x0010) (IsPlainOldData)
+	struct FGuid                                       AnimationGuid;                                            // 0x0010(0x0010) (ZeroConstructor, IsPlainOldData)
 	bool                                               bIsRootWidget;                                            // 0x0020(0x0001) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0021(0x0007) MISSED OFFSET
 };
@@ -331,10 +331,10 @@ struct FMovieSceneWidgetMaterialSectionTemplate : public FMovieSceneParameterSec
 };
 
 // ScriptStruct UMG.RichTextStyleRow
-// 0x01E0 (0x01E8 - 0x0008)
+// 0x01E8 (0x01F0 - 0x0008)
 struct FRichTextStyleRow : public FTableRowBase
 {
-	struct FTextBlockStyle                             TextStyle;                                                // 0x0008(0x01E0) (Edit)
+	struct FTextBlockStyle                             TextStyle;                                                // 0x0008(0x01E8) (Edit)
 };
 
 // ScriptStruct UMG.RichImageRow

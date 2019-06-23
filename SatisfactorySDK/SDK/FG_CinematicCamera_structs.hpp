@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -41,7 +41,7 @@ struct FCameraLookatTrackingSettings
 	float                                              LookAtTrackingInterpSpeed;                                // 0x0004(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x10];                                      // 0x0008(0x0010) MISSED OFFSET
 	class AActor*                                      ActorToTrack;                                             // 0x0018(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     RelativeOffset;                                           // 0x0020(0x000C) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FVector                                     RelativeOffset;                                           // 0x0020(0x000C) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      bAllowRoll : 1;                                           // 0x002C(0x0001) (Edit, BlueprintVisible)
 	unsigned char                                      UnknownData02[0x3];                                       // 0x002D(0x0003) MISSED OFFSET
 };
@@ -72,7 +72,7 @@ struct FCameraLensSettings
 struct FCameraTrackingFocusSettings
 {
 	class AActor*                                      ActorToTrack;                                             // 0x0000(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     RelativeOffset;                                           // 0x0008(0x000C) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FVector                                     RelativeOffset;                                           // 0x0008(0x000C) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      bDrawDebugTrackingFocusPoint : 1;                         // 0x0014(0x0001) (Edit, BlueprintVisible, Transient)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x0015(0x0003) MISSED OFFSET
 };
@@ -87,7 +87,7 @@ struct FCameraFocusSettings
 	struct FCameraTrackingFocusSettings                TrackingFocusSettings;                                    // 0x0008(0x0018) (Edit, BlueprintVisible)
 	unsigned char                                      bDrawDebugFocusPlane : 1;                                 // 0x0020(0x0001) (Edit, Transient)
 	unsigned char                                      UnknownData01[0x3];                                       // 0x0021(0x0003) MISSED OFFSET
-	struct FColor                                      DebugFocusPlaneColor;                                     // 0x0024(0x0004) (Edit, IsPlainOldData)
+	struct FColor                                      DebugFocusPlaneColor;                                     // 0x0024(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      bSmoothFocusChanges : 1;                                  // 0x0028(0x0001) (Edit, BlueprintVisible)
 	unsigned char                                      UnknownData02[0x3];                                       // 0x0029(0x0003) MISSED OFFSET
 	float                                              FocusSmoothingInterpSpeed;                                // 0x002C(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
@@ -100,7 +100,7 @@ struct FCameraFocusSettings
 struct FNamedFilmbackPreset
 {
 	class FString                                      Name;                                                     // 0x0000(0x0010) (ZeroConstructor)
-	struct FCameraFilmbackSettings                     FilmbackSettings;                                         // 0x0010(0x000C) (IsPlainOldData)
+	struct FCameraFilmbackSettings                     FilmbackSettings;                                         // 0x0010(0x000C)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x001C(0x0004) MISSED OFFSET
 };
 
@@ -109,7 +109,7 @@ struct FNamedFilmbackPreset
 struct FNamedLensPreset
 {
 	class FString                                      Name;                                                     // 0x0000(0x0010) (ZeroConstructor)
-	struct FCameraLensSettings                         LensSettings;                                             // 0x0010(0x0018) (IsPlainOldData)
+	struct FCameraLensSettings                         LensSettings;                                             // 0x0010(0x0018) (ZeroConstructor, IsPlainOldData)
 };
 
 }

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,26 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.ConstructFromManufacturingWidget
+// ()
+// Parameters:
+// class UWidget_Manufacturing_C* WidgetManufacturing            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_ManufacturingIOSlot_C::ConstructFromManufacturingWidget(class UWidget_Manufacturing_C* WidgetManufacturing)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.ConstructFromManufacturingWidget");
+
+	UWidget_ManufacturingIOSlot_C_ConstructFromManufacturingWidget_Params params;
+	params.WidgetManufacturing = WidgetManufacturing;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.UpdateOutputTooltip
 // ()
@@ -218,14 +238,14 @@ void UWidget_ManufacturingIOSlot_C::Construct()
 // Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.Set CostSlot
 // ()
 // Parameters:
-// int                            slotIdx                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            SlotIdx                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_ManufacturingIOSlot_C::Set_CostSlot(int slotIdx)
+void UWidget_ManufacturingIOSlot_C::Set_CostSlot(int SlotIdx)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.Set CostSlot");
 
 	UWidget_ManufacturingIOSlot_C_Set_CostSlot_Params params;
-	params.slotIdx = slotIdx;
+	params.SlotIdx = SlotIdx;
 
 	auto flags = fn->FunctionFlags;
 

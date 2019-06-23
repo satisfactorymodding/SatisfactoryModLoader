@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class ABP_VehicleTargetPoint_C : public AFGTargetPoint
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0350(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0350(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UStaticMeshComponent*                        ArrowMesh;                                                // 0x0358(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UTextRenderComponent*                        TextRender;                                               // 0x0360(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FText                                       mUseText;                                                 // 0x0368(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)

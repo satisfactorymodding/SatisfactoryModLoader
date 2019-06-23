@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,8 +20,8 @@ struct UWidget_CostSlotWrapper_C_SetIconBrush_Params
 	class UTexture*                                    IconTexture;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressbarPercent
-struct UWidget_CostSlotWrapper_C_GetProgressbarPercent_Params
+// Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressBarPercent
+struct UWidget_CostSlotWrapper_C_GetProgressBarPercent_Params
 {
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
@@ -29,7 +29,7 @@ struct UWidget_CostSlotWrapper_C_GetProgressbarPercent_Params
 // Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetOrange
 struct UWidget_CostSlotWrapper_C_GetOrange_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.SetTextboxFormating
@@ -41,7 +41,7 @@ struct UWidget_CostSlotWrapper_C_SetTextboxFormating_Params
 // Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetDarkGray
 struct UWidget_CostSlotWrapper_C_GetDarkGray_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.SetPartsNumbers
@@ -56,7 +56,7 @@ struct UWidget_CostSlotWrapper_C_Setup_CostIcon_Params
 	class UTexture*                                    IconTexture;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FItemAmount                                 ItemAmount;                                               // (BlueprintVisible, BlueprintReadOnly, Parm)
 	class UFGInventoryComponent*                       CachedInventoryComponent;                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-	int                                                slotIdx;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                SlotIdx;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                CurrentNumInSlot;                                         // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               SmallSlot;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               BigSlot;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)

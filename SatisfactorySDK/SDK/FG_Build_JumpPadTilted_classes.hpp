@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_JumpPadTilted.Build_JumpPadTilted_C
-// 0x0000 (0x0680 - 0x0680)
+// 0x0000 (0x06A8 - 0x06A8)
 class ABuild_JumpPadTilted_C : public ABuild_JumpPad_C
 {
 public:

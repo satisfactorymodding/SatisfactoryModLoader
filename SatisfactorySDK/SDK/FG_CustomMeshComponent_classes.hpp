@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // Class CustomMeshComponent.CustomMeshComponent
-// 0x0010 (0x05A0 - 0x0590)
+// 0x0010 (0x0590 - 0x0580)
 class UCustomMeshComponent : public UMeshComponent
 {
 public:
-	unsigned char                                      UnknownData00[0x10];                                      // 0x0590(0x0010) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x10];                                      // 0x0580(0x0010) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

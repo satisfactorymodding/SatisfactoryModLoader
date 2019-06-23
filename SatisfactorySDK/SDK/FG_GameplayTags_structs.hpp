@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -45,6 +45,17 @@ enum class EGameplayTagMatchType : uint8_t
 	Explicit                       = 0,
 	IncludeParentTags              = 1,
 	EGameplayTagMatchType_MAX      = 2
+};
+
+
+// Enum GameplayTags.EGameplayTagSelectionType
+enum class EGameplayTagSelectionType : uint8_t
+{
+	None                           = 0,
+	NonRestrictedOnly              = 1,
+	RestrictedOnly                 = 2,
+	All                            = 3,
+	EGameplayTagSelectionType_MAX  = 4
 };
 
 

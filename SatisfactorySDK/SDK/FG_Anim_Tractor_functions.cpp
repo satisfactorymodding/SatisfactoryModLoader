@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,23 +11,6 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
-
-// Function Anim_Tractor.Anim_Tractor_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tractor_AnimGraphNode_ModifyBone_EC1CAF97464D6DE81FC0748046B0E972
-// ()
-
-void UAnim_Tractor_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tractor_AnimGraphNode_ModifyBone_EC1CAF97464D6DE81FC0748046B0E972()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Tractor.Anim_Tractor_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tractor_AnimGraphNode_ModifyBone_EC1CAF97464D6DE81FC0748046B0E972");
-
-	UAnim_Tractor_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tractor_AnimGraphNode_ModifyBone_EC1CAF97464D6DE81FC0748046B0E972_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
 
 // Function Anim_Tractor.Anim_Tractor_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tractor_AnimGraphNode_ModifyBone_099B4C1F49B2CD259B77A6ACDF48E461
 // ()

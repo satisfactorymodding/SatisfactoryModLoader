@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_InventorySlot.Widget_InventorySlot_C
-// 0x0121 (0x0329 - 0x0208)
+// 0x0130 (0x0338 - 0x0208)
 class UWidget_InventorySlot_C : public UUserWidget
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0208(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0208(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UWidgetAnimation*                            EmptySlot;                                                // 0x0210(0x0008) (BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
 	class UWidgetAnimation*                            OnHover;                                                  // 0x0218(0x0008) (BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
 	class UTextBlock*                                  BackgroundText;                                           // 0x0220(0x0008) (BlueprintVisible, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
@@ -64,6 +64,8 @@ public:
 	unsigned char                                      UnknownData02[0x7];                                       // 0x0311(0x0007) MISSED OFFSET
 	struct FScriptMulticastDelegate                    OnMoveStack;                                              // 0x0318(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
 	bool                                               mBigSlot;                                                 // 0x0328(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData03[0x7];                                       // 0x0329(0x0007) MISSED OFFSET
+	struct FTimerHandle                                mUpdateTimer;                                             // 0x0330(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
 
 	static UClass* StaticClass()
 	{
@@ -90,9 +92,9 @@ public:
 	void GetItemClass(class UClass** ItemClass);
 	void GetStack(struct FInventoryStack* stack);
 	struct FEventReply OnMouseDoubleClick(const struct FGeometry& MyGeometry, struct FPointerEvent* MouseEvent);
-	class UWidget* GetToolTipWidget();
+	class UWidget* GetTooltipWidget();
 	ESlateVisibility GetNumLabelVisibility();
-	void GetFilterImageVisibility(bool* Visible);
+	void GetFilterImageVisibility(bool* visible);
 	class UWidget* CreateSplitSlider();
 	struct FText GetStackNumber();
 	struct FEventReply OnFocusReceived(struct FGeometry* MyGeometry, struct FFocusEvent* InFocusEvent);
@@ -110,11 +112,13 @@ public:
 	void OnDragLeave(struct FPointerEvent* PointerEvent, class UDragDropOperation** Operation);
 	void OnDragEnter(struct FGeometry* MyGeometry, struct FPointerEvent* PointerEvent, class UDragDropOperation** Operation);
 	void OnFocusLost(struct FFocusEvent* InFocusEvent);
-	void OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent);
 	void Tick(struct FGeometry* MyGeometry, float* InDeltaTime);
 	void SubscribeToParentWindow(class UWidget_Window_C* ParentWindow);
-	void Construct();
 	void PreConstruct(bool* IsDesignTime);
+	void UpdateStyle();
+	void OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent);
+	void Destruct();
+	void Construct();
 	void ExecuteUbergraph_Widget_InventorySlot(int EntryPoint);
 	void OnMoveStack__DelegateSignature(class UWidget_InventorySlot_C* Sender);
 	void OnSlotHovered__DelegateSignature(class UWidget_InventorySlot_C* SelfInventorySlot);

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -29,40 +29,6 @@ void UAnim_TruckStation_C::CalculateAnimGraphVariables()
 }
 
 
-// Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_F9EA0CE74905C1C94E83449C36F379BE
-// ()
-
-void UAnim_TruckStation_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_F9EA0CE74905C1C94E83449C36F379BE()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_F9EA0CE74905C1C94E83449C36F379BE");
-
-	UAnim_TruckStation_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_F9EA0CE74905C1C94E83449C36F379BE_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_SequencePlayer_C791FC074CC5A922542B19A0584A9DF0
-// ()
-
-void UAnim_TruckStation_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_SequencePlayer_C791FC074CC5A922542B19A0584A9DF0()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_SequencePlayer_C791FC074CC5A922542B19A0584A9DF0");
-
-	UAnim_TruckStation_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_SequencePlayer_C791FC074CC5A922542B19A0584A9DF0_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_BA79A65D40E552FCF0E8F2AD451D5B6F
 // ()
 
@@ -71,40 +37,6 @@ void UAnim_TruckStation_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Truc
 	static auto fn = UObject::FindObject<UFunction>("Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_BA79A65D40E552FCF0E8F2AD451D5B6F");
 
 	UAnim_TruckStation_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_BA79A65D40E552FCF0E8F2AD451D5B6F_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_20B21DF34DFEA9E4CE85D38B5CE13911
-// ()
-
-void UAnim_TruckStation_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_20B21DF34DFEA9E4CE85D38B5CE13911()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_20B21DF34DFEA9E4CE85D38B5CE13911");
-
-	UAnim_TruckStation_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_TransitionResult_20B21DF34DFEA9E4CE85D38B5CE13911_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_BlendListByBool_C4A7B5014F1E6F59E8FEF29C24DC7618
-// ()
-
-void UAnim_TruckStation_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_BlendListByBool_C4A7B5014F1E6F59E8FEF29C24DC7618()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_TruckStation.Anim_TruckStation_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_BlendListByBool_C4A7B5014F1E6F59E8FEF29C24DC7618");
-
-	UAnim_TruckStation_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_TruckStation_AnimGraphNode_BlendListByBool_C4A7B5014F1E6F59E8FEF29C24DC7618_Params params;
 
 	auto flags = fn->FunctionFlags;
 

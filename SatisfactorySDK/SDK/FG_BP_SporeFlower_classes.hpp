@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_SporeFlower.BP_SporeFlower_C
-// 0x00A0 (0x0400 - 0x0360)
+// 0x00A1 (0x0401 - 0x0360)
 class ABP_SporeFlower_C : public AFGSporeFlower
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0360(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0360(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UParticleSystemComponent*                    FireFlies_02;                                             // 0x0368(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UParticleSystemComponent*                    FireFlies_01;                                             // 0x0370(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class USphereComponent*                            TriggerSphere;                                            // 0x0378(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
@@ -42,6 +42,7 @@ public:
 	class UAnimSequence*                               mGrowAnimation;                                           // 0x03E8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	class UAnimSequence*                               mSporeAnimation;                                          // 0x03F0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	struct FTimerHandle                                mUpdateAnimPositionTimer;                                 // 0x03F8(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
+	bool                                               mIsSignificant;                                           // 0x0400(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -50,6 +51,7 @@ public:
 	}
 
 
+	void SetTickStatus(bool doTick);
 	void OnRep_mReplicatedAnimPosition();
 	void OnRep_mState();
 	void OnRep_mGasState();

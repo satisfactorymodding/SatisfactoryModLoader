@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -25,25 +25,25 @@ struct UWidget_BuildMenu_RightClickMenu_C_OnKeyDown_Params
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverBindToHotbar
 struct UWidget_BuildMenu_RightClickMenu_C_GetHoverBindToHotbar_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverColorCodex
 struct UWidget_BuildMenu_RightClickMenu_C_GetHoverColorCodex_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverColorRemoveFromShoppingList
 struct UWidget_BuildMenu_RightClickMenu_C_GetHoverColorRemoveFromShoppingList_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverColorAddToShoppingList
 struct UWidget_BuildMenu_RightClickMenu_C_GetHoverColorAddToShoppingList_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetRemoveItemButtonVisibility

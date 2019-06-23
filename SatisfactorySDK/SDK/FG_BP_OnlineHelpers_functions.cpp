@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -62,7 +62,7 @@ void UBP_OnlineHelpers_C::GetSessionFromFriendNetId(class UObject* WorldContext,
 }
 
 
-// Function BP_OnlineHelpers.BP_OnlineHelpers_C.IsHost
+// Function BP_OnlineHelpers.BP_OnlineHelpers_C.isHost
 // ()
 // Parameters:
 // class APlayerState*            PlayerState                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
@@ -70,11 +70,11 @@ void UBP_OnlineHelpers_C::GetSessionFromFriendNetId(class UObject* WorldContext,
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           isOurself                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UBP_OnlineHelpers_C::IsHost(class APlayerState* PlayerState, class APlayerController* OwningPlayer, class UObject* __WorldContext, bool* isOurself)
+void UBP_OnlineHelpers_C::isHost(class APlayerState* PlayerState, class APlayerController* OwningPlayer, class UObject* __WorldContext, bool* isOurself)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_OnlineHelpers.BP_OnlineHelpers_C.IsHost");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_OnlineHelpers.BP_OnlineHelpers_C.isHost");
 
-	UBP_OnlineHelpers_C_IsHost_Params params;
+	UBP_OnlineHelpers_C_isHost_Params params;
 	params.PlayerState = PlayerState;
 	params.OwningPlayer = OwningPlayer;
 	params.__WorldContext = __WorldContext;
@@ -209,7 +209,7 @@ void UBP_OnlineHelpers_C::IsFriendInOnlineSession(class UObject* WorldContext, c
 // Parameters:
 // struct FOnlinePresence         presence                       (BlueprintVisible, BlueprintReadOnly, Parm)
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FFCompactPresence       compactPresence                (Parm, OutParm)
+// struct FFCompactPresence       compactPresence                (Parm, OutParm, ZeroConstructor)
 
 void UBP_OnlineHelpers_C::GetCompactPresence(const struct FOnlinePresence& presence, class UObject* __WorldContext, struct FFCompactPresence* compactPresence)
 {

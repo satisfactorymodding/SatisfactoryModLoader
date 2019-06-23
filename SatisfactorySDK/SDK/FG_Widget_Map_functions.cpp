@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -69,7 +69,7 @@ void UWidget_Map_C::UpdateObjectOnMap(class UFGActorRepresentation* actorReprese
 // Function Widget_Map.Widget_Map_C.CenterMapOnPlayer
 // ()
 // Parameters:
-// struct FVector2D               normalizedWorldLocation        (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector2D               normalizedWorldLocation        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Map_C::CenterMapOnPlayer(const struct FVector2D& normalizedWorldLocation)
 {
@@ -211,8 +211,8 @@ struct FEventReply UWidget_Map_C::OnMouseButtonUp(struct FGeometry* MyGeometry, 
 // Function Widget_Map.Widget_Map_C.ScrollMap
 // ()
 // Parameters:
-// struct FVector2D               MouseOrigin                    (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FVector2D               MapOrigin                      (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector2D               MouseOrigin                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               MapOrigin                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Map_C::ScrollMap(const struct FVector2D& MouseOrigin, const struct FVector2D& MapOrigin)
 {
@@ -258,7 +258,7 @@ struct FEventReply UWidget_Map_C::OnMouseButtonDown(struct FGeometry* MyGeometry
 // Function Widget_Map.Widget_Map_C.ZoomMap
 // ()
 // Parameters:
-// struct FVector2D               ZoomValue                      (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector2D               ZoomValue                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Map_C::ZoomMap(const struct FVector2D& ZoomValue)
 {
@@ -459,7 +459,7 @@ void UWidget_Map_C::OnObjectUpdatedOnMap(class UFGActorRepresentation** actorRep
 // Function Widget_Map.Widget_Map_C.OnMapCentered
 // ()
 // Parameters:
-// struct FVector2D*              normalizedWorldLocation        (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector2D*              normalizedWorldLocation        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Map_C::OnMapCentered(struct FVector2D* normalizedWorldLocation)
 {

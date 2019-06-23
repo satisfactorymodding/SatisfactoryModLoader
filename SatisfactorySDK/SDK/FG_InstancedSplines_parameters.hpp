@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,10 +18,10 @@ namespace SDK
 struct UFGInstancedSplineMeshComponent_UpdateInstanceTransform_Params
 {
 	int                                                InstanceIndex;                                            // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     StartPos;                                                 // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector                                     StartTangent;                                             // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector                                     EndPos;                                                   // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector                                     EndTangent;                                               // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FVector                                     StartPos;                                                 // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector                                     StartTangent;                                             // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector                                     EndPos;                                                   // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector                                     EndTangent;                                               // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	bool                                               bWorldSpace;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bMarkRenderStateDirty;                                    // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bTeleport;                                                // (Parm, ZeroConstructor, IsPlainOldData)
@@ -49,10 +49,10 @@ struct UFGInstancedSplineMeshComponent_ClearInstances_Params
 // Function InstancedSplines.FGInstancedSplineMeshComponent.AddInstance
 struct UFGInstancedSplineMeshComponent_AddInstance_Params
 {
-	struct FVector                                     StartPos;                                                 // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector                                     StartTangent;                                             // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector                                     EndPos;                                                   // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector                                     EndTangent;                                               // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FVector                                     StartPos;                                                 // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector                                     StartTangent;                                             // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector                                     EndPos;                                                   // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector                                     EndTangent;                                               // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 

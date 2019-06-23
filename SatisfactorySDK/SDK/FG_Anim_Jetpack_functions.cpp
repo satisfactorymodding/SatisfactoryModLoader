@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -12,40 +12,6 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A
-// ()
-
-void UAnim_Jetpack_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A");
-
-	UAnim_Jetpack_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_BlendSpacePlayer_A552F60447EAB45773E3589038904EB9
-// ()
-
-void UAnim_Jetpack_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_BlendSpacePlayer_A552F60447EAB45773E3589038904EB9()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_BlendSpacePlayer_A552F60447EAB45773E3589038904EB9");
-
-	UAnim_Jetpack_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_BlendSpacePlayer_A552F60447EAB45773E3589038904EB9_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_4BE4DAB24DFBF4B7874053932CFC86FF
 // ()
 
@@ -54,6 +20,23 @@ void UAnim_Jetpack_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_A
 	static auto fn = UObject::FindObject<UFunction>("Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_4BE4DAB24DFBF4B7874053932CFC86FF");
 
 	UAnim_Jetpack_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_4BE4DAB24DFBF4B7874053932CFC86FF_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A
+// ()
+
+void UAnim_Jetpack_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Anim_Jetpack.Anim_Jetpack_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A");
+
+	UAnim_Jetpack_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Jetpack_AnimGraphNode_TransitionResult_BB0735394DCC5B947AF456B82D2E797A_Params params;
 
 	auto flags = fn->FunctionFlags;
 

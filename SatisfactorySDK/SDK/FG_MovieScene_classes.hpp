@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class UMovieSceneSignedObject : public UObject
 {
 public:
-	struct FGuid                                       Signature;                                                // 0x0028(0x0010) (IsPlainOldData)
+	struct FGuid                                       Signature;                                                // 0x0028(0x0010) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x18];                                      // 0x0038(0x0018) MISSED OFFSET
 
 	static UClass* StaticClass()
@@ -118,7 +118,7 @@ public:
 
 
 // Class MovieScene.MovieSceneSequencePlayer
-// 0x07B8 (0x07E0 - 0x0028)
+// 0x07A0 (0x07C8 - 0x0028)
 class UMovieSceneSequencePlayer : public UObject
 {
 public:
@@ -138,7 +138,8 @@ public:
 	int                                                CurrentNumLoops;                                          // 0x03E0(0x0004) (ZeroConstructor, Transient, IsPlainOldData)
 	unsigned char                                      UnknownData03[0x14];                                      // 0x03E4(0x0014) MISSED OFFSET
 	struct FMovieSceneSequencePlaybackSettings         PlaybackSettings;                                         // 0x03F8(0x0040)
-	unsigned char                                      UnknownData04[0x3A8];                                     // 0x0438(0x03A8) MISSED OFFSET
+	struct FMovieSceneRootEvaluationTemplateInstance   RootTemplateInstance;                                     // 0x0438(0x0300) (Transient)
+	unsigned char                                      UnknownData04[0x90];                                      // 0x0738(0x0090) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -176,6 +177,7 @@ public:
 	float GetPlaybackStart();
 	float GetPlaybackPosition();
 	float GetPlaybackEnd();
+	TArray<struct FMovieSceneObjectBindingID> GetObjectBindings(class UObject* InObject);
 	float GetLength();
 	struct FFrameRate GetFrameRate();
 	int GetFrameDuration();
@@ -200,8 +202,8 @@ public:
 	class UMovieSceneTrack*                            CameraCutTrack;                                           // 0x0090(0x0008) (ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FMovieSceneFrameRange                       SelectionRange;                                           // 0x0098(0x0010)
 	struct FMovieSceneFrameRange                       PlaybackRange;                                            // 0x00A8(0x0010)
-	struct FFrameRate                                  TickResolution;                                           // 0x00B8(0x0008)
-	struct FFrameRate                                  DisplayRate;                                              // 0x00C0(0x0008)
+	struct FFrameRate                                  TickResolution;                                           // 0x00B8(0x0008) (ZeroConstructor, IsPlainOldData)
+	struct FFrameRate                                  DisplayRate;                                              // 0x00C0(0x0008) (ZeroConstructor, IsPlainOldData)
 	EMovieSceneEvaluationType                          EvaluationType;                                           // 0x00C8(0x0001) (ZeroConstructor, IsPlainOldData)
 	EUpdateClockSource                                 ClockSource;                                              // 0x00C9(0x0001) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x6];                                       // 0x00CA(0x0006) MISSED OFFSET
@@ -350,39 +352,6 @@ public:
 };
 
 
-// Class MovieScene.MovieSceneSegmentCompilerTestTrack
-// 0x0018 (0x0070 - 0x0058)
-class UMovieSceneSegmentCompilerTestTrack : public UMovieSceneTrack
-{
-public:
-	bool                                               bHighPassFilter;                                          // 0x0058(0x0001) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x7];                                       // 0x0059(0x0007) MISSED OFFSET
-	TArray<class UMovieSceneSection*>                  SectionArray;                                             // 0x0060(0x0010) (ExportObject, ZeroConstructor)
-
-	static UClass* StaticClass()
-	{
-		static auto ptr = UObject::FindClass("Class MovieScene.MovieSceneSegmentCompilerTestTrack");
-		return ptr;
-	}
-
-};
-
-
-// Class MovieScene.MovieSceneSegmentCompilerTestSection
-// 0x0000 (0x00E0 - 0x00E0)
-class UMovieSceneSegmentCompilerTestSection : public UMovieSceneSection
-{
-public:
-
-	static UClass* StaticClass()
-	{
-		static auto ptr = UObject::FindClass("Class MovieScene.MovieSceneSegmentCompilerTestSection");
-		return ptr;
-	}
-
-};
-
-
 // Class MovieScene.MovieSceneSubSection
 // 0x0070 (0x0150 - 0x00E0)
 class UMovieSceneSubSection : public UMovieSceneSection
@@ -418,6 +387,55 @@ public:
 	static UClass* StaticClass()
 	{
 		static auto ptr = UObject::FindClass("Class MovieScene.MovieSceneSubTrack");
+		return ptr;
+	}
+
+};
+
+
+// Class MovieScene.TestMovieSceneTrack
+// 0x0018 (0x0070 - 0x0058)
+class UTestMovieSceneTrack : public UMovieSceneTrack
+{
+public:
+	bool                                               bHighPassFilter;                                          // 0x0058(0x0001) (ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x7];                                       // 0x0059(0x0007) MISSED OFFSET
+	TArray<class UMovieSceneSection*>                  SectionArray;                                             // 0x0060(0x0010) (ExportObject, ZeroConstructor)
+
+	static UClass* StaticClass()
+	{
+		static auto ptr = UObject::FindClass("Class MovieScene.TestMovieSceneTrack");
+		return ptr;
+	}
+
+};
+
+
+// Class MovieScene.TestMovieSceneSection
+// 0x0000 (0x00E0 - 0x00E0)
+class UTestMovieSceneSection : public UMovieSceneSection
+{
+public:
+
+	static UClass* StaticClass()
+	{
+		static auto ptr = UObject::FindClass("Class MovieScene.TestMovieSceneSection");
+		return ptr;
+	}
+
+};
+
+
+// Class MovieScene.TestMovieSceneSequence
+// 0x0008 (0x0350 - 0x0348)
+class UTestMovieSceneSequence : public UMovieSceneSequence
+{
+public:
+	class UMovieScene*                                 MovieScene;                                               // 0x0348(0x0008) (ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+	static UClass* StaticClass()
+	{
+		static auto ptr = UObject::FindClass("Class MovieScene.TestMovieSceneSequence");
 		return ptr;
 	}
 

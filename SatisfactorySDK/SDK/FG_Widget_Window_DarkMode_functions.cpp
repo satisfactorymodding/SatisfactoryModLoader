@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,45 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.InitTabs
+// ()
+
+void UWidget_Window_DarkMode_C::InitTabs()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.InitTabs");
+
+	UWidget_Window_DarkMode_C_InitTabs_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.SetInventoryVisibility
+// ()
+// Parameters:
+// bool                           mShowInventory                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           animate                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Window_DarkMode_C::SetInventoryVisibility(bool mShowInventory, bool animate)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.SetInventoryVisibility");
+
+	UWidget_Window_DarkMode_C_SetInventoryVisibility_Params params;
+	params.mShowInventory = mShowInventory;
+	params.animate = animate;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.GetDividerButtonSlotVisibility
 // ()
@@ -270,6 +309,77 @@ void UWidget_Window_DarkMode_C::OnCloseButtonClicked()
 }
 
 
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.LerpShowInventory
+// ()
+
+void UWidget_Window_DarkMode_C::LerpShowInventory()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.LerpShowInventory");
+
+	UWidget_Window_DarkMode_C_LerpShowInventory_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_2_OnButtonClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            ButtonIndex                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Window_DarkMode_C::BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_2_OnButtonClicked__DelegateSignature(int ButtonIndex)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_2_OnButtonClicked__DelegateSignature");
+
+	UWidget_Window_DarkMode_C_BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_2_OnButtonClicked__DelegateSignature_Params params;
+	params.ButtonIndex = ButtonIndex;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_0_OnNoTabsGenerated__DelegateSignature
+// ()
+
+void UWidget_Window_DarkMode_C::BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_0_OnNoTabsGenerated__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_0_OnNoTabsGenerated__DelegateSignature");
+
+	UWidget_Window_DarkMode_C_BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_0_OnNoTabsGenerated__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_1_OnTabsGenerated__DelegateSignature
+// ()
+
+void UWidget_Window_DarkMode_C::BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_1_OnTabsGenerated__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_1_OnTabsGenerated__DelegateSignature");
+
+	UWidget_Window_DarkMode_C_BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_1_OnTabsGenerated__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.ExecuteUbergraph_Widget_Window_DarkMode
 // ()
 // Parameters:
@@ -281,6 +391,26 @@ void UWidget_Window_DarkMode_C::ExecuteUbergraph_Widget_Window_DarkMode(int Entr
 
 	UWidget_Window_DarkMode_C_ExecuteUbergraph_Widget_Window_DarkMode_Params params;
 	params.EntryPoint = EntryPoint;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.OnTabButtonClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            ButtonIndex                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Window_DarkMode_C::OnTabButtonClicked__DelegateSignature(int ButtonIndex)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.OnTabButtonClicked__DelegateSignature");
+
+	UWidget_Window_DarkMode_C_OnTabButtonClicked__DelegateSignature_Params params;
+	params.ButtonIndex = ButtonIndex;
 
 	auto flags = fn->FunctionFlags;
 

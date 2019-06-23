@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,7 +18,7 @@ namespace SDK
 struct UWidget_SaveListRow_C_SetColorForImage_Params
 {
 	class UImage*                                      ImageBG;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetNewSaveGameVisibility
@@ -56,19 +56,19 @@ struct UWidget_SaveListRow_C_GetTextColor_Params
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetIconBGColor
 struct UWidget_SaveListRow_C_GetIconBGColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetIconColor
 struct UWidget_SaveListRow_C_GetIconColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetButtonColor
 struct UWidget_SaveListRow_C_GetButtonColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetNewSaveVisibility

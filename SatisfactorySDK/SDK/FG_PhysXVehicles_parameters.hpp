@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -48,7 +48,7 @@ struct UWheeledVehicleMovementComponent_SetHandbrakeInput_Params
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetGroupsToIgnoreMask
 struct UWheeledVehicleMovementComponent_SetGroupsToIgnoreMask_Params
 {
-	struct FNavAvoidanceMask                           GroupMask;                                                // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FNavAvoidanceMask                           GroupMask;                                                // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 };
 
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetGroupsToIgnore
@@ -60,7 +60,7 @@ struct UWheeledVehicleMovementComponent_SetGroupsToIgnore_Params
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetGroupsToAvoidMask
 struct UWheeledVehicleMovementComponent_SetGroupsToAvoidMask_Params
 {
-	struct FNavAvoidanceMask                           GroupMask;                                                // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FNavAvoidanceMask                           GroupMask;                                                // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 };
 
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetGroupsToAvoid
@@ -90,7 +90,7 @@ struct UWheeledVehicleMovementComponent_SetBrakeInput_Params
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetAvoidanceGroupMask
 struct UWheeledVehicleMovementComponent_SetAvoidanceGroupMask_Params
 {
-	struct FNavAvoidanceMask                           GroupMask;                                                // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FNavAvoidanceMask                           GroupMask;                                                // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 };
 
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetAvoidanceGroup

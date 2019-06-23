@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Recipe_IronPlate.Recipe_IronPlate_C
-// 0x0000 (0x0090 - 0x0090)
+// 0x0000 (0x0080 - 0x0080)
 class URecipe_IronPlate_C : public UFGRecipe
 {
 public:

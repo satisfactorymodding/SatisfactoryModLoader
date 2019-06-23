@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,30 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_PortableMiner.Widget_PortableMiner_C.DropInventorySlotStack
+// ()
+// Parameters:
+// class UWidget_InventorySlot_C** InventorySlot                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// bool                           WasStackMoved                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_PortableMiner_C::DropInventorySlotStack(class UWidget_InventorySlot_C** InventorySlot, bool* WasStackMoved)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PortableMiner.Widget_PortableMiner_C.DropInventorySlotStack");
+
+	UWidget_PortableMiner_C_DropInventorySlotStack_Params params;
+	params.InventorySlot = InventorySlot;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (WasStackMoved != nullptr)
+		*WasStackMoved = params.WasStackMoved;
+}
+
 
 // Function Widget_PortableMiner.Widget_PortableMiner_C.InitCallbacks
 // ()

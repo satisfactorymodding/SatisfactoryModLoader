@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -22,7 +22,7 @@ struct UWidget_Multiplayer_ListButton_C_UpdateNATWarningForClient_Params
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.GetHostingNATIsse
 struct UWidget_Multiplayer_ListButton_C_GetHostingNATIsse_Params
 {
-	ECachedNATType                                     HostNAT;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECachedNATType                                     hostNat;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     clientNat;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       ToolTip;                                                  // (Parm, OutParm)
 };
@@ -30,7 +30,7 @@ struct UWidget_Multiplayer_ListButton_C_GetHostingNATIsse_Params
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.GetConnectingNATIsse
 struct UWidget_Multiplayer_ListButton_C_GetConnectingNATIsse_Params
 {
-	ECachedNATType                                     HostNAT;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECachedNATType                                     hostNat;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     clientNat;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       ToolTip;                                                  // (Parm, OutParm)
 };
@@ -38,7 +38,7 @@ struct UWidget_Multiplayer_ListButton_C_GetConnectingNATIsse_Params
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.IsNATIssue
 struct UWidget_Multiplayer_ListButton_C_IsNATIssue_Params
 {
-	ECachedNATType                                     HostNAT;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECachedNATType                                     hostNat;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     clientNat;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               isIssue;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
@@ -87,7 +87,7 @@ struct UWidget_Multiplayer_ListButton_C_Internal_UpdateButton_Params
 	bool                                               isSelectable;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               IsNonInteractable;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     natType;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	bool                                               IsHost;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               isHost;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               careAboutNAT;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
@@ -100,7 +100,7 @@ struct UWidget_Multiplayer_ListButton_C_SetupForJoinGame_Params
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.SetButtonColor
 struct UWidget_Multiplayer_ListButton_C_SetButtonColor_Params
 {
-	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.ClearListSelection

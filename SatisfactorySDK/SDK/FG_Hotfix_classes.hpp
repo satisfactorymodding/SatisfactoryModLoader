@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -46,8 +46,11 @@ public:
 	float                                              UpdateCheckCompleteDelay;                                 // 0x008C(0x0004) (ZeroConstructor, Config, IsPlainOldData)
 	float                                              HotfixAvailabilityCheckCompleteDelay;                     // 0x0090(0x0004) (ZeroConstructor, Config, IsPlainOldData)
 	float                                              UpdateCheckAvailabilityCompleteDelay;                     // 0x0094(0x0004) (ZeroConstructor, Config, IsPlainOldData)
-	int                                                AppSuspendedUpdateCheckTimeSeconds;                       // 0x0098(0x0004) (ZeroConstructor, Config, IsPlainOldData)
-	unsigned char                                      UnknownData01[0xC];                                       // 0x009C(0x000C) MISSED OFFSET
+	bool                                               bCheckPlatformOSSForUpdate;                               // 0x0098(0x0001) (ZeroConstructor, Config, IsPlainOldData)
+	bool                                               bCheckOSSForUpdate;                                       // 0x0099(0x0001) (ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x2];                                       // 0x009A(0x0002) MISSED OFFSET
+	int                                                AppSuspendedUpdateCheckTimeSeconds;                       // 0x009C(0x0004) (ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x8];                                       // 0x00A0(0x0008) MISSED OFFSET
 	bool                                               bPlatformEnvironmentDetected;                             // 0x00A8(0x0001) (ZeroConstructor, IsPlainOldData)
 	bool                                               bInitialUpdateFinished;                                   // 0x00A9(0x0001) (ZeroConstructor, IsPlainOldData)
 	bool                                               bCheckHotfixAvailabilityOnly;                             // 0x00AA(0x0001) (ZeroConstructor, IsPlainOldData)
@@ -55,10 +58,10 @@ public:
 	int                                                WorstNumFilesPendingLoadViewed;                           // 0x00AC(0x0004) (ZeroConstructor, IsPlainOldData)
 	EPatchCheckResult                                  LastPatchCheckResult;                                     // 0x00B0(0x0001) (ZeroConstructor, IsPlainOldData)
 	EHotfixResult                                      LastHotfixResult;                                         // 0x00B1(0x0001) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x2E];                                      // 0x00B2(0x002E) MISSED OFFSET
-	struct FDateTime                                   LastUpdateCheck[0x2];                                     // 0x00E0(0x0008)
+	unsigned char                                      UnknownData03[0x2E];                                      // 0x00B2(0x002E) MISSED OFFSET
+	struct FDateTime                                   LastUpdateCheck[0x2];                                     // 0x00E0(0x0008) (ZeroConstructor)
 	EUpdateCompletionStatus                            LastCompletionResult[0x2];                                // 0x00F0(0x0001) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData03[0x16];                                      // 0x00F2(0x0016) MISSED OFFSET
+	unsigned char                                      UnknownData04[0x16];                                      // 0x00F2(0x0016) MISSED OFFSET
 	class UEnum*                                       UpdateStateEnum;                                          // 0x0108(0x0008) (ZeroConstructor, IsPlainOldData)
 	class UEnum*                                       UpdateCompletionEnum;                                     // 0x0110(0x0008) (ZeroConstructor, IsPlainOldData)
 

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetProgressBarBorderColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingList_IngredientRow_C::GetProgressBarBorderColor()
 {
@@ -57,7 +57,7 @@ struct FSlateColor UWidget_ShoppingList_IngredientRow_C::GetTextColor()
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetIconBGColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingList_IngredientRow_C::GetIconBGColor()
 {
@@ -99,7 +99,7 @@ ESlateVisibility UWidget_ShoppingList_IngredientRow_C::GetBorderVisibility()
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetProgressBGColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingList_IngredientRow_C::GetProgressBGColor()
 {
@@ -162,7 +162,7 @@ ESlateVisibility UWidget_ShoppingList_IngredientRow_C::GetCheckboxVisibility()
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetProgressBarColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingList_IngredientRow_C::GetProgressBarColor()
 {

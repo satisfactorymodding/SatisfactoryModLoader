@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -24,15 +24,15 @@ struct UComposureBlueprintLibrary_SetUVMapSettingsToMaterialParameters_Params
 // Function Composure.ComposureBlueprintLibrary.InvertUVDisplacementMapEncodingParameters
 struct UComposureBlueprintLibrary_InvertUVDisplacementMapEncodingParameters_Params
 {
-	struct FVector2D                                   In;                                                       // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector2D                                   Out;                                                      // (Parm, OutParm, IsPlainOldData)
+	struct FVector2D                                   In;                                                       // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector2D                                   Out;                                                      // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Composure.ComposureBlueprintLibrary.GetRedGreenUVFactorsFromChromaticAberration
 struct UComposureBlueprintLibrary_GetRedGreenUVFactorsFromChromaticAberration_Params
 {
 	float                                              ChromaticAberrationAmount;                                // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector2D                                   RedGreenUVFactors;                                        // (Parm, OutParm, IsPlainOldData)
+	struct FVector2D                                   RedGreenUVFactors;                                        // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Composure.ComposureBlueprintLibrary.GetProjectionMatrixFromPostMoveSettings
@@ -41,7 +41,7 @@ struct UComposureBlueprintLibrary_GetProjectionMatrixFromPostMoveSettings_Params
 	struct FComposurePostMoveSettings                  PostMoveSettings;                                         // (ConstParm, Parm, OutParm, ReferenceParm)
 	float                                              HorizontalFOVAngle;                                       // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              AspectRatio;                                              // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FMatrix                                     ProjectionMatrix;                                         // (Parm, OutParm, IsPlainOldData)
+	struct FMatrix                                     ProjectionMatrix;                                         // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Composure.ComposureBlueprintLibrary.GetPlayerDisplayGamma
@@ -56,8 +56,8 @@ struct UComposureBlueprintLibrary_GetCroppingUVTransformationMatrixFromPostMoveS
 {
 	struct FComposurePostMoveSettings                  PostMoveSettings;                                         // (ConstParm, Parm, OutParm, ReferenceParm)
 	float                                              AspectRatio;                                              // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FMatrix                                     CropingUVTransformationMatrix;                            // (Parm, OutParm, IsPlainOldData)
-	struct FMatrix                                     UncropingUVTransformationMatrix;                          // (Parm, OutParm, IsPlainOldData)
+	struct FMatrix                                     CropingUVTransformationMatrix;                            // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	struct FMatrix                                     UncropingUVTransformationMatrix;                          // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Composure.ComposureBlueprintLibrary.CreatePlayerCompositingTarget

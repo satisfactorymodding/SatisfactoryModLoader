@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -37,7 +37,7 @@ struct ABP_Sky_Sphere_C_CalculateDominantLight_Params
 struct ABP_Sky_Sphere_C_CalculateDiscBrightness_Params
 {
 	class ALight*                                      Light;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FFBrightnessAdjustment                      brightnessAdjustment;                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+	struct FFBrightnessAdjustment                      brightnessAdjustment;                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	float                                              discBrightness;                                           // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
@@ -50,10 +50,10 @@ struct ABP_Sky_Sphere_C_CalculateBrightness_Params
 // Function BP_Sky_Sphere.BP_Sky_Sphere_C.CalculateLightRotation
 struct ABP_Sky_Sphere_C_CalculateLightRotation_Params
 {
-	struct FRotator                                    OriginalRotation;                                         // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-	struct FRotator                                    RotationAxis;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FRotator                                    OriginalRotation;                                         // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FRotator                                    RotationAxis;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FRuntimeFloatCurve                          LightRotationCurve;                                       // (BlueprintVisible, BlueprintReadOnly, Parm)
-	struct FRotator                                    NewRotation;                                              // (Parm, OutParm, IsPlainOldData)
+	struct FRotator                                    NewRotation;                                              // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_Sky_Sphere.BP_Sky_Sphere_C.UpdateGlobalParameters

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -30,7 +30,7 @@ struct ABuild_RadarTower_C_UpdateRepresentation_Params
 // Function Build_RadarTower.Build_RadarTower_C.GetActorRepresentationColor
 struct ABuild_RadarTower_C_GetActorRepresentationColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Build_RadarTower.Build_RadarTower_C.GetActorRepresentationText
@@ -84,13 +84,13 @@ struct ABuild_RadarTower_C_GetActorShouldShowOnMap_Params
 // Function Build_RadarTower.Build_RadarTower_C.GetRealActorLocation
 struct ABuild_RadarTower_C_GetRealActorLocation_Params
 {
-	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Build_RadarTower.Build_RadarTower_C.GetRealActorRotation
 struct ABuild_RadarTower_C_GetRealActorRotation_Params
 {
-	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Build_RadarTower.Build_RadarTower_C.IsActorStatic

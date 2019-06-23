@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -49,6 +49,21 @@ struct UWidget_ManufacturingStat_C_OnDragLeave_Params
 {
 	struct FPointerEvent*                              PointerEvent;                                             // (BlueprintVisible, BlueprintReadOnly, Parm)
 	class UDragDropOperation**                         Operation;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.Construct
+struct UWidget_ManufacturingStat_C_Construct_Params
+{
+};
+
+// Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.UpdateStat
+struct UWidget_ManufacturingStat_C_UpdateStat_Params
+{
+};
+
+// Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.Destruct
+struct UWidget_ManufacturingStat_C_Destruct_Params
+{
 };
 
 // Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.ExecuteUbergraph_Widget_ManufacturingStat

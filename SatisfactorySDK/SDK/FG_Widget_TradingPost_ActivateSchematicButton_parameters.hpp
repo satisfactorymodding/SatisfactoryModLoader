@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -29,7 +29,7 @@ struct UWidget_TradingPost_ActivateSchematicButton_C_GetText_Params
 // Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.GetColor
 struct UWidget_TradingPost_ActivateSchematicButton_C_GetColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.BndEvt__Button_26_K2Node_ComponentBoundEvent_100_OnButtonClickedEvent__DelegateSignature
@@ -39,6 +39,11 @@ struct UWidget_TradingPost_ActivateSchematicButton_C_BndEvt__Button_26_K2Node_Co
 
 // Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.BndEvt__mButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature
 struct UWidget_TradingPost_ActivateSchematicButton_C_BndEvt__mButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature_Params
+{
+};
+
+// Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.BndEvt__mButton_K2Node_ComponentBoundEvent_0_OnButtonHoverEvent__DelegateSignature
+struct UWidget_TradingPost_ActivateSchematicButton_C_BndEvt__mButton_K2Node_ComponentBoundEvent_0_OnButtonHoverEvent__DelegateSignature_Params
 {
 };
 

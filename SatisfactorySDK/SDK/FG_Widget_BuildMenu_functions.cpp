@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,40 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_BuildMenu.Widget_BuildMenu_C.HideSearchbar
+// ()
+
+void UWidget_BuildMenu_C::HideSearchbar()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.HideSearchbar");
+
+	UWidget_BuildMenu_C_HideSearchbar_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_BuildMenu.Widget_BuildMenu_C.ShowSearchbar
+// ()
+
+void UWidget_BuildMenu_C::ShowSearchbar()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.ShowSearchbar");
+
+	UWidget_BuildMenu_C_ShowSearchbar_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_BuildMenu.Widget_BuildMenu_C.IsShortcutSettingAllowed
 // ()
@@ -545,6 +579,40 @@ void UWidget_BuildMenu_C::Destruct()
 }
 
 
+// Function Widget_BuildMenu.Widget_BuildMenu_C.Construct
+// ()
+
+void UWidget_BuildMenu_C::Construct()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.Construct");
+
+	UWidget_BuildMenu_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_BuildMenu.Widget_BuildMenu_C.OnEscapePressed
+// ()
+
+void UWidget_BuildMenu_C::OnEscapePressed()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.OnEscapePressed");
+
+	UWidget_BuildMenu_C_OnEscapePressed_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_BuildMenu.Widget_BuildMenu_C.BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature
 // ()
 // Parameters:
@@ -595,40 +663,6 @@ void UWidget_BuildMenu_C::CheckSearchResultHover()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.CheckSearchResultHover");
 
 	UWidget_BuildMenu_C_CheckSearchResultHover_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_BuildMenu.Widget_BuildMenu_C.Construct
-// ()
-
-void UWidget_BuildMenu_C::Construct()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.Construct");
-
-	UWidget_BuildMenu_C_Construct_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_BuildMenu.Widget_BuildMenu_C.OnEscapePressed
-// ()
-
-void UWidget_BuildMenu_C::OnEscapePressed()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.OnEscapePressed");
-
-	UWidget_BuildMenu_C_OnEscapePressed_Params params;
 
 	auto flags = fn->FunctionFlags;
 

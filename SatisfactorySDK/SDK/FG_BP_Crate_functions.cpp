@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -101,7 +101,7 @@ EFogOfWarRevealType ABP_Crate_C::GetActorFogOfWarRevealType()
 // Function BP_Crate.BP_Crate_C.GetActorRepresentationColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor ABP_Crate_C::GetActorRepresentationColor()
 {
@@ -248,7 +248,7 @@ bool ABP_Crate_C::GetActorShouldShowOnMap()
 // Function BP_Crate.BP_Crate_C.GetRealActorLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ABP_Crate_C::GetRealActorLocation()
 {
@@ -269,7 +269,7 @@ struct FVector ABP_Crate_C::GetRealActorLocation()
 // Function BP_Crate.BP_Crate_C.GetRealActorRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator ABP_Crate_C::GetRealActorRotation()
 {

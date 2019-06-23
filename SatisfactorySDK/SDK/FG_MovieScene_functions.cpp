@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -116,7 +116,7 @@ void UMovieSceneSequencePlayer::SetPlaybackPosition(float NewPlaybackPosition)
 // Function MovieScene.MovieSceneSequencePlayer.SetFrameRate
 // ()
 // Parameters:
-// struct FFrameRate              FrameRate                      (Parm)
+// struct FFrameRate              FrameRate                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UMovieSceneSequencePlayer::SetFrameRate(const struct FFrameRate& FrameRate)
 {
@@ -588,6 +588,29 @@ float UMovieSceneSequencePlayer::GetPlaybackEnd()
 }
 
 
+// Function MovieScene.MovieSceneSequencePlayer.GetObjectBindings
+// ()
+// Parameters:
+// class UObject*                 InObject                       (Parm, ZeroConstructor, IsPlainOldData)
+// TArray<struct FMovieSceneObjectBindingID> ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+TArray<struct FMovieSceneObjectBindingID> UMovieSceneSequencePlayer::GetObjectBindings(class UObject* InObject)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function MovieScene.MovieSceneSequencePlayer.GetObjectBindings");
+
+	UMovieSceneSequencePlayer_GetObjectBindings_Params params;
+	params.InObject = InObject;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function MovieScene.MovieSceneSequencePlayer.GetLength
 // ()
 // Parameters:
@@ -612,7 +635,7 @@ float UMovieSceneSequencePlayer::GetLength()
 // Function MovieScene.MovieSceneSequencePlayer.GetFrameRate
 // ()
 // Parameters:
-// struct FFrameRate              ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FFrameRate              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FFrameRate UMovieSceneSequencePlayer::GetFrameRate()
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -337,11 +337,11 @@ public:
 
 
 // Class OnlineSubsystemUtils.IpConnection
-// 0x0020 (0x1910 - 0x18F0)
+// 0x0060 (0x1978 - 0x1918)
 class UIpConnection : public UNetConnection
 {
 public:
-	unsigned char                                      UnknownData00[0x20];                                      // 0x18F0(0x0020) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x60];                                      // 0x1918(0x0060) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -353,19 +353,20 @@ public:
 
 
 // Class OnlineSubsystemUtils.IpNetDriver
-// 0x0030 (0x0568 - 0x0538)
+// 0x0040 (0x06D8 - 0x0698)
 class UIpNetDriver : public UNetDriver
 {
 public:
-	unsigned char                                      LogPortUnreach : 1;                                       // 0x0538(0x0001) (Config)
-	unsigned char                                      AllowPlayerPortUnreach : 1;                               // 0x0538(0x0001) (Config)
-	unsigned char                                      UnknownData00[0x3];                                       // 0x0539(0x0003) MISSED OFFSET
-	uint32_t                                           MaxPortCountToTry;                                        // 0x053C(0x0004) (ZeroConstructor, Config, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x18];                                      // 0x0540(0x0018) MISSED OFFSET
-	uint32_t                                           ServerDesiredSocketReceiveBufferBytes;                    // 0x0558(0x0004) (ZeroConstructor, Config, IsPlainOldData)
-	uint32_t                                           ServerDesiredSocketSendBufferBytes;                       // 0x055C(0x0004) (ZeroConstructor, Config, IsPlainOldData)
-	uint32_t                                           ClientDesiredSocketReceiveBufferBytes;                    // 0x0560(0x0004) (ZeroConstructor, Config, IsPlainOldData)
-	uint32_t                                           ClientDesiredSocketSendBufferBytes;                       // 0x0564(0x0004) (ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      LogPortUnreach : 1;                                       // 0x0698(0x0001) (Config)
+	unsigned char                                      AllowPlayerPortUnreach : 1;                               // 0x0698(0x0001) (Config)
+	unsigned char                                      UnknownData00[0x3];                                       // 0x0699(0x0003) MISSED OFFSET
+	uint32_t                                           MaxPortCountToTry;                                        // 0x069C(0x0004) (ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x18];                                      // 0x06A0(0x0018) MISSED OFFSET
+	uint32_t                                           ServerDesiredSocketReceiveBufferBytes;                    // 0x06B8(0x0004) (ZeroConstructor, Config, IsPlainOldData)
+	uint32_t                                           ServerDesiredSocketSendBufferBytes;                       // 0x06BC(0x0004) (ZeroConstructor, Config, IsPlainOldData)
+	uint32_t                                           ClientDesiredSocketReceiveBufferBytes;                    // 0x06C0(0x0004) (ZeroConstructor, Config, IsPlainOldData)
+	uint32_t                                           ClientDesiredSocketSendBufferBytes;                       // 0x06C4(0x0004) (ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x10];                                      // 0x06C8(0x0010) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -493,12 +494,12 @@ public:
 
 
 // Class OnlineSubsystemUtils.OnlineEngineInterfaceImpl
-// 0x0108 (0x0130 - 0x0028)
+// 0x0100 (0x0128 - 0x0028)
 class UOnlineEngineInterfaceImpl : public UOnlineEngineInterface
 {
 public:
 	struct FName                                       VoiceSubsystemNameOverride;                               // 0x0028(0x0008) (ZeroConstructor, Config, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x100];                                     // 0x0030(0x0100) MISSED OFFSET
+	unsigned char                                      UnknownData00[0xF8];                                      // 0x0030(0x00F8) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

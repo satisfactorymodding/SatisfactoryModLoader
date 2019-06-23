@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -77,7 +77,7 @@ void ABP_Sky_Sphere_C::CalculateDominantLight()
 // ()
 // Parameters:
 // class ALight*                  Light                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FFBrightnessAdjustment  brightnessAdjustment           (BlueprintVisible, BlueprintReadOnly, Parm)
+// struct FFBrightnessAdjustment  brightnessAdjustment           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // float                          discBrightness                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void ABP_Sky_Sphere_C::CalculateDiscBrightness(class ALight* Light, const struct FFBrightnessAdjustment& brightnessAdjustment, float* discBrightness)
@@ -124,10 +124,10 @@ void ABP_Sky_Sphere_C::CalculateBrightness(float* Brightness)
 // Function BP_Sky_Sphere.BP_Sky_Sphere_C.CalculateLightRotation
 // ()
 // Parameters:
-// struct FRotator                OriginalRotation               (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FRotator                RotationAxis                   (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FRotator                OriginalRotation               (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                RotationAxis                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FRuntimeFloatCurve      LightRotationCurve             (BlueprintVisible, BlueprintReadOnly, Parm)
-// struct FRotator                NewRotation                    (Parm, OutParm, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void ABP_Sky_Sphere_C::CalculateLightRotation(const struct FRotator& OriginalRotation, const struct FRotator& RotationAxis, const struct FRuntimeFloatCurve& LightRotationCurve, struct FRotator* NewRotation)
 {

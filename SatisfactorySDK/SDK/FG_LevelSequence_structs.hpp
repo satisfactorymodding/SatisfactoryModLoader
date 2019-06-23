@@ -1,14 +1,14 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
 #endif
 
 #include "FG_Basic.hpp"
-#include "FG_CoreUObject_classes.hpp"
 #include "FG_UMG_classes.hpp"
+#include "FG_CoreUObject_classes.hpp"
 #include "FG_MovieScene_classes.hpp"
 #include "FG_Engine_classes.hpp"
 
@@ -30,7 +30,7 @@ struct FLevelSequenceObjectReferenceMap
 struct FLevelSequenceBindingReference
 {
 	class FString                                      PackageName;                                              // 0x0000(0x0010) (ZeroConstructor, Deprecated)
-	struct FSoftObjectPath                             ExternalObjectPath;                                       // 0x0010(0x0018)
+	struct FSoftObjectPath                             ExternalObjectPath;                                       // 0x0010(0x0018) (ZeroConstructor)
 	class FString                                      ObjectPath;                                               // 0x0028(0x0010) (ZeroConstructor)
 };
 
@@ -65,20 +65,23 @@ struct FLevelSequenceSnapshotSettings
 {
 	unsigned char                                      ZeroPadAmount;                                            // 0x0000(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, EditConst, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x0001(0x0003) MISSED OFFSET
-	struct FFrameRate                                  FrameRate;                                                // 0x0004(0x0008) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
+	struct FFrameRate                                  FrameRate;                                                // 0x0004(0x0008) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, EditConst, IsPlainOldData)
 };
 
 // ScriptStruct LevelSequence.LevelSequencePlayerSnapshot
-// 0x0058
+// 0x0088
 struct FLevelSequencePlayerSnapshot
 {
 	class FString                                      MasterName;                                               // 0x0000(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, EditConst)
 	struct FQualifiedFrameTime                         MasterTime;                                               // 0x0010(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
-	class FString                                      CurrentShotName;                                          // 0x0020(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, EditConst)
-	struct FQualifiedFrameTime                         CurrentShotLocalTime;                                     // 0x0030(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
-	class UCameraComponent*                            CameraComponent;                                          // 0x0040(0x0008) (Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, IsPlainOldData)
-	struct FLevelSequenceSnapshotSettings              Settings;                                                 // 0x0048(0x000C) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
-	struct FMovieSceneSequenceID                       ShotID;                                                   // 0x0054(0x0004)
+	struct FQualifiedFrameTime                         SourceTime;                                               // 0x0020(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
+	class FString                                      CurrentShotName;                                          // 0x0030(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, EditConst)
+	struct FQualifiedFrameTime                         CurrentShotLocalTime;                                     // 0x0040(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
+	struct FQualifiedFrameTime                         CurrentShotSourceTime;                                    // 0x0050(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
+	class FString                                      SourceTimecode;                                           // 0x0060(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, EditConst)
+	class UCameraComponent*                            CameraComponent;                                          // 0x0070(0x0008) (Edit, BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, EditConst, InstancedReference, IsPlainOldData)
+	struct FLevelSequenceSnapshotSettings              Settings;                                                 // 0x0078(0x000C) (Edit, BlueprintVisible, BlueprintReadOnly, EditConst)
+	struct FMovieSceneSequenceID                       ShotID;                                                   // 0x0084(0x0004)
 };
 
 // ScriptStruct LevelSequence.BoundActorProxy

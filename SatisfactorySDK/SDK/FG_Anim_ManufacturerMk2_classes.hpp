@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,20 +15,20 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // AnimBlueprintGeneratedClass Anim_ManufacturerMk2.Anim_ManufacturerMk2_C
-// 0x004F (0x0FD0 - 0x0F81)
+// 0x004F (0x0F30 - 0x0EE1)
 class UAnim_ManufacturerMk2_C : public UAnim_ManufacturerMk1_C
 {
 public:
-	unsigned char                                      UnknownData00[0x7];                                       // 0x0F81(0x0007) MISSED OFFSET
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0F88(0x0008) (Transient, DuplicateTransient)
-	class UParticleSystemComponent*                    mExhaustVfx01;                                            // 0x0F90(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class UParticleSystemComponent*                    mExhaustVfx02;                                            // 0x0F98(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class UParticleSystemComponent*                    mExhaustVfx03;                                            // 0x0FA0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class UParticleSystemComponent*                    mExhaustVfx04;                                            // 0x0FA8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class UParticleSystemComponent*                    mExhaustVfx05;                                            // 0x0FB0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class UParticleSystemComponent*                    mExhaustVfx06;                                            // 0x0FB8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class UParticleSystemComponent*                    mHeatGridVfx01;                                           // 0x0FC0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class UParticleSystemComponent*                    mHeatGridVfx02;                                           // 0x0FC8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x7];                                       // 0x0EE1(0x0007) MISSED OFFSET
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0EE8(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
+	class UParticleSystemComponent*                    mExhaustVfx01;                                            // 0x0EF0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	class UParticleSystemComponent*                    mExhaustVfx02;                                            // 0x0EF8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	class UParticleSystemComponent*                    mExhaustVfx03;                                            // 0x0F00(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	class UParticleSystemComponent*                    mExhaustVfx04;                                            // 0x0F08(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	class UParticleSystemComponent*                    mExhaustVfx05;                                            // 0x0F10(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	class UParticleSystemComponent*                    mExhaustVfx06;                                            // 0x0F18(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	class UParticleSystemComponent*                    mHeatGridVfx01;                                           // 0x0F20(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	class UParticleSystemComponent*                    mHeatGridVfx02;                                           // 0x0F28(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

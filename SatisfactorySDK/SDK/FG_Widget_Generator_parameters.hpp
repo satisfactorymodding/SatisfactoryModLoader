@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,23 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_Generator.Widget_Generator_C.OnReplicationDetailActorCreated
+struct UWidget_Generator_C_OnReplicationDetailActorCreated_Params
+{
+	class AActor*                                      ReplicationDetailActor;                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Generator.Widget_Generator_C.InitModule
+struct UWidget_Generator_C_InitModule_Params
+{
+};
+
+// Function Widget_Generator.Widget_Generator_C.InitNuclearGenerator
+struct UWidget_Generator_C_InitNuclearGenerator_Params
+{
+	class AFGBuildableGeneratorNuclear*                NuclearGenerator;                                         // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
 
 // Function Widget_Generator.Widget_Generator_C.UpdateHeaderText
 struct UWidget_Generator_C_UpdateHeaderText_Params
@@ -70,6 +87,11 @@ struct UWidget_Generator_C_GetBurnProgressPercent_Params
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function Widget_Generator.Widget_Generator_C.Init
+struct UWidget_Generator_C_Init_Params
+{
+};
+
 // Function Widget_Generator.Widget_Generator_C.Construct
 struct UWidget_Generator_C_Construct_Params
 {
@@ -92,11 +114,6 @@ struct UWidget_Generator_C_BndEvt__Widget_StandbyButton_K2Node_ComponentBoundEve
 {
 };
 
-// Function Widget_Generator.Widget_Generator_C.Init
-struct UWidget_Generator_C_Init_Params
-{
-};
-
 // Function Widget_Generator.Widget_Generator_C.ResetFuse
 struct UWidget_Generator_C_ResetFuse_Params
 {
@@ -105,6 +122,17 @@ struct UWidget_Generator_C_ResetFuse_Params
 // Function Widget_Generator.Widget_Generator_C.WarningMessageCheck
 struct UWidget_Generator_C_WarningMessageCheck_Params
 {
+};
+
+// Function Widget_Generator.Widget_Generator_C.SpawnSmoke
+struct UWidget_Generator_C_SpawnSmoke_Params
+{
+};
+
+// Function Widget_Generator.Widget_Generator_C.OnProductionChanged
+struct UWidget_Generator_C_OnProductionChanged_Params
+{
+	bool                                               State;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Generator.Widget_Generator_C.ExecuteUbergraph_Widget_Generator

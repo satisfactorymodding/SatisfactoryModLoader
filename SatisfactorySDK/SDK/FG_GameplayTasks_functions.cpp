@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -125,8 +125,8 @@ class UGameplayTask_ClaimResource* UGameplayTask_ClaimResource::ClaimResource(co
 // ()
 // Parameters:
 // TScriptInterface<class UGameplayTaskOwnerInterface> TaskOwner                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 SpawnLocation                  (Parm, IsPlainOldData)
-// struct FRotator                spawnRotation                  (Parm, IsPlainOldData)
+// struct FVector                 SpawnLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                spawnRotation                  (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  Class                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSpawnOnlyOnAuthority          (Parm, ZeroConstructor, IsPlainOldData)
 // class UGameplayTask_SpawnActor* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -37,7 +37,7 @@ public:
 	void SetSliderSteps(class USlider* mSlider, int mSteps, class UObject* __WorldContext);
 	void GetScanningObjectName(class APawn* owningPawn, class UObject* __WorldContext, struct FText* Object_Name);
 	void ShowHideHUD(bool isMenuOpen, class APawn* owningPawn, class AController* Controller, class UObject* __WorldContext);
-	void GetNumItemsFromInventory(class UFGInventoryComponent* InventoryComponent, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems);
+	void GetNumItemsFromInventory(class UFGInventoryComponent* inventoryComponent, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems);
 	void GetFactoryGameOrange(class UObject* __WorldContext, struct FLinearColor* Orange, struct FSlateColor* OrangeText);
 	void GetFactoryGameWhite(class UObject* __WorldContext, struct FSlateColor* TextWhite, struct FLinearColor* GraphicsWhite);
 	void GetNumItemsFromPlayerInventory(class APawn* owningPawn, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems);

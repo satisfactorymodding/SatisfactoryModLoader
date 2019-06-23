@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,85 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.PopulateSearchResults
+// ()
+// Parameters:
+// struct FText                   InText                         (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UWidget_Codex_Container_C::PopulateSearchResults(const struct FText& InText)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.PopulateSearchResults");
+
+	UWidget_Codex_Container_C_PopulateSearchResults_Params params;
+	params.InText = InText;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.UpdateItemInfo
+// ()
+// Parameters:
+// class UClass*                  product                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Codex_Container_C::UpdateItemInfo(class UClass* product)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.UpdateItemInfo");
+
+	UWidget_Codex_Container_C_UpdateItemInfo_Params params;
+	params.product = product;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.SetAllItemsAndBuildings
+// ()
+
+void UWidget_Codex_Container_C::SetAllItemsAndBuildings()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.SetAllItemsAndBuildings");
+
+	UWidget_Codex_Container_C_SetAllItemsAndBuildings_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.GenerateReceipes
+// ()
+// Parameters:
+// TArray<class UClass*>          InRecipes                      (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm)
+
+void UWidget_Codex_Container_C::GenerateReceipes(TArray<class UClass*>* InRecipes)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.GenerateReceipes");
+
+	UWidget_Codex_Container_C_GenerateReceipes_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (InRecipes != nullptr)
+		*InRecipes = params.InRecipes;
+}
+
 
 // Function Widget_Codex_Container.Widget_Codex_Container_C.UpdateNotifications
 // ()
@@ -232,6 +311,156 @@ void UWidget_Codex_Container_C::MarkAllAsRead()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.MarkAllAsRead");
 
 	UWidget_Codex_Container_C_MarkAllAsRead_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnTabButtonClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            ButtonIndex                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Codex_Container_C::BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnTabButtonClicked__DelegateSignature(int ButtonIndex)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnTabButtonClicked__DelegateSignature");
+
+	UWidget_Codex_Container_C_BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnTabButtonClicked__DelegateSignature_Params params;
+	params.ButtonIndex = ButtonIndex;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.OnRecipeButtonClicked
+// ()
+// Parameters:
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_ListButton_C*    ListButton                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_Codex_Container_C::OnRecipeButtonClicked(int Index, class UWidget_ListButton_C* ListButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.OnRecipeButtonClicked");
+
+	UWidget_Codex_Container_C_OnRecipeButtonClicked_Params params;
+	params.Index = Index;
+	params.ListButton = ListButton;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature
+// ()
+// Parameters:
+// struct FText                   Text                           (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UWidget_Codex_Container_C::BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature(const struct FText& Text)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature");
+
+	UWidget_Codex_Container_C_BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature_Params params;
+	params.Text = Text;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.OnSearchResultClicked
+// ()
+// Parameters:
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_ListButton_C*    ListButton                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_Codex_Container_C::OnSearchResultClicked(int Index, class UWidget_ListButton_C* ListButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.OnSearchResultClicked");
+
+	UWidget_Codex_Container_C_OnSearchResultClicked_Params params;
+	params.Index = Index;
+	params.ListButton = ListButton;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_ListButton_C*    ListButton                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_Codex_Container_C::BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature(int Index, class UWidget_ListButton_C* ListButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature");
+
+	UWidget_Codex_Container_C_BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature_Params params;
+	params.Index = Index;
+	params.ListButton = ListButton;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_C_0_K2Node_ComponentBoundEvent_3_OnClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_ListButton_C*    ListButton                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_Codex_Container_C::BndEvt__Widget_ListButton_C_0_K2Node_ComponentBoundEvent_3_OnClicked__DelegateSignature(int Index, class UWidget_ListButton_C* ListButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_C_0_K2Node_ComponentBoundEvent_3_OnClicked__DelegateSignature");
+
+	UWidget_Codex_Container_C_BndEvt__Widget_ListButton_C_0_K2Node_ComponentBoundEvent_3_OnClicked__DelegateSignature_Params params;
+	params.Index = Index;
+	params.ListButton = ListButton;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_C_1_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_ListButton_C*    ListButton                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_Codex_Container_C::BndEvt__Widget_ListButton_C_1_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature(int Index, class UWidget_ListButton_C* ListButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_C_1_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature");
+
+	UWidget_Codex_Container_C_BndEvt__Widget_ListButton_C_1_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature_Params params;
+	params.Index = Index;
+	params.ListButton = ListButton;
 
 	auto flags = fn->FunctionFlags;
 

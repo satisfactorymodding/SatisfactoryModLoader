@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,13 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_PortableMiner.Widget_PortableMiner_C.DropInventorySlotStack
+struct UWidget_PortableMiner_C_DropInventorySlotStack_Params
+{
+	class UWidget_InventorySlot_C**                    InventorySlot;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	bool                                               WasStackMoved;                                            // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+};
 
 // Function Widget_PortableMiner.Widget_PortableMiner_C.InitCallbacks
 struct UWidget_PortableMiner_C_InitCallbacks_Params

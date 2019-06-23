@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -59,7 +59,7 @@ struct FDetectedFeatureRegion : public FDetectedFeature
 // 0x0014 (0x0018 - 0x0004)
 struct FDetectedFeature2D : public FDetectedFeature
 {
-	struct FBox2D                                      BoundingBox;                                              // 0x0004(0x0014) (BlueprintVisible, BlueprintReadOnly)
+	struct FBox2D                                      BoundingBox;                                              // 0x0004(0x0014) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
 };
 
 // ScriptStruct AppleVision.DetectedFaceFeature2D
@@ -82,7 +82,7 @@ struct FDetectedFaceFeatureRegion : public FDetectedFeatureRegion
 // 0x0038 (0x0050 - 0x0018)
 struct FDetectedFace : public FDetectedFeatureRegion
 {
-	struct FBox2D                                      BoundingBox;                                              // 0x0018(0x0014) (BlueprintVisible, BlueprintReadOnly)
+	struct FBox2D                                      BoundingBox;                                              // 0x0018(0x0014) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x002C(0x0004) MISSED OFFSET
 	TArray<struct FDetectedFaceFeature2D>              Features;                                                 // 0x0030(0x0010) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
 	TArray<struct FDetectedFaceFeatureRegion>          FeatureRegions;                                           // 0x0040(0x0010) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor)

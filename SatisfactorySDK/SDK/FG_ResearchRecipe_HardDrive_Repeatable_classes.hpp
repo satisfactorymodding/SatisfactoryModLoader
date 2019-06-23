@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass ResearchRecipe_HardDrive_Repeatable.ResearchRecipe_HardDrive_Repeatable_C
-// 0x0000 (0x00E8 - 0x00E8)
+// 0x0000 (0x00D8 - 0x00D8)
 class UResearchRecipe_HardDrive_Repeatable_C : public UFGResearchRecipe
 {
 public:

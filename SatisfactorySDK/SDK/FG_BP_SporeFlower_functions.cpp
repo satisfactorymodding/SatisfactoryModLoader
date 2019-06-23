@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,26 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function BP_SporeFlower.BP_SporeFlower_C.SetTickStatus
+// ()
+// Parameters:
+// bool                           doTick                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void ABP_SporeFlower_C::SetTickStatus(bool doTick)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_SporeFlower.BP_SporeFlower_C.SetTickStatus");
+
+	ABP_SporeFlower_C_SetTickStatus_Params params;
+	params.doTick = doTick;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function BP_SporeFlower.BP_SporeFlower_C.OnRep_mReplicatedAnimPosition
 // ()

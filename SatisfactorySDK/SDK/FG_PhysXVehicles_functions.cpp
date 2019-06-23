@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -117,7 +117,7 @@ void UWheeledVehicleMovementComponent::SetHandbrakeInput(bool bNewHandbrake)
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetGroupsToIgnoreMask
 // ()
 // Parameters:
-// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UWheeledVehicleMovementComponent::SetGroupsToIgnoreMask(const struct FNavAvoidanceMask& GroupMask)
 {
@@ -157,7 +157,7 @@ void UWheeledVehicleMovementComponent::SetGroupsToIgnore(int GroupFlags)
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetGroupsToAvoidMask
 // ()
 // Parameters:
-// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UWheeledVehicleMovementComponent::SetGroupsToAvoidMask(const struct FNavAvoidanceMask& GroupMask)
 {
@@ -257,7 +257,7 @@ void UWheeledVehicleMovementComponent::SetBrakeInput(float Brake)
 // Function PhysXVehicles.WheeledVehicleMovementComponent.SetAvoidanceGroupMask
 // ()
 // Parameters:
-// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UWheeledVehicleMovementComponent::SetAvoidanceGroupMask(const struct FNavAvoidanceMask& GroupMask)
 {

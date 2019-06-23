@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -120,7 +120,7 @@ void UWidget_InventorySlot_C::ResetHoverEffect()
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetOrangeColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_InventorySlot_C::GetOrangeColor()
 {
@@ -141,7 +141,7 @@ struct FLinearColor UWidget_InventorySlot_C::GetOrangeColor()
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetSlotBorderColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_InventorySlot_C::GetSlotBorderColor()
 {
@@ -162,7 +162,7 @@ struct FLinearColor UWidget_InventorySlot_C::GetSlotBorderColor()
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetStackSizeBGColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_InventorySlot_C::GetStackSizeBGColor()
 {
@@ -233,7 +233,7 @@ struct FEventReply UWidget_InventorySlot_C::OnKeyDown(struct FGeometry* MyGeomet
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetSlotStateColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_InventorySlot_C::GetSlotStateColor()
 {
@@ -297,7 +297,7 @@ void UWidget_InventorySlot_C::CheckSlotHasItems(bool* slotHasItems)
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetSlotColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_InventorySlot_C::GetSlotColor()
 {
@@ -408,16 +408,16 @@ struct FEventReply UWidget_InventorySlot_C::OnMouseDoubleClick(const struct FGeo
 }
 
 
-// Function Widget_InventorySlot.Widget_InventorySlot_C.GetToolTipWidget
+// Function Widget_InventorySlot.Widget_InventorySlot_C.GetTooltipWidget
 // ()
 // Parameters:
 // class UWidget*                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
 
-class UWidget* UWidget_InventorySlot_C::GetToolTipWidget()
+class UWidget* UWidget_InventorySlot_C::GetTooltipWidget()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.GetToolTipWidget");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.GetTooltipWidget");
 
-	UWidget_InventorySlot_C_GetToolTipWidget_Params params;
+	UWidget_InventorySlot_C_GetTooltipWidget_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -453,9 +453,9 @@ ESlateVisibility UWidget_InventorySlot_C::GetNumLabelVisibility()
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetFilterImageVisibility
 // ()
 // Parameters:
-// bool                           Visible                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_InventorySlot_C::GetFilterImageVisibility(bool* Visible)
+void UWidget_InventorySlot_C::GetFilterImageVisibility(bool* visible)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.GetFilterImageVisibility");
 
@@ -467,8 +467,8 @@ void UWidget_InventorySlot_C::GetFilterImageVisibility(bool* Visible)
 
 	fn->FunctionFlags = flags;
 
-	if (Visible != nullptr)
-		*Visible = params.Visible;
+	if (visible != nullptr)
+		*visible = params.visible;
 }
 
 
@@ -842,28 +842,6 @@ void UWidget_InventorySlot_C::OnFocusLost(struct FFocusEvent* InFocusEvent)
 }
 
 
-// Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter
-// ()
-// Parameters:
-// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
-
-void UWidget_InventorySlot_C::OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter");
-
-	UWidget_InventorySlot_C_OnMouseEnter_Params params;
-	params.MyGeometry = MyGeometry;
-	params.MouseEvent = MouseEvent;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_InventorySlot.Widget_InventorySlot_C.Tick
 // ()
 // Parameters:
@@ -906,23 +884,6 @@ void UWidget_InventorySlot_C::SubscribeToParentWindow(class UWidget_Window_C* Pa
 }
 
 
-// Function Widget_InventorySlot.Widget_InventorySlot_C.Construct
-// ()
-
-void UWidget_InventorySlot_C::Construct()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.Construct");
-
-	UWidget_InventorySlot_C_Construct_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_InventorySlot.Widget_InventorySlot_C.PreConstruct
 // ()
 // Parameters:
@@ -934,6 +895,79 @@ void UWidget_InventorySlot_C::PreConstruct(bool* IsDesignTime)
 
 	UWidget_InventorySlot_C_PreConstruct_Params params;
 	params.IsDesignTime = IsDesignTime;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.UpdateStyle
+// ()
+
+void UWidget_InventorySlot_C::UpdateStyle()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.UpdateStyle");
+
+	UWidget_InventorySlot_C_UpdateStyle_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter
+// ()
+// Parameters:
+// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+
+void UWidget_InventorySlot_C::OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter");
+
+	UWidget_InventorySlot_C_OnMouseEnter_Params params;
+	params.MyGeometry = MyGeometry;
+	params.MouseEvent = MouseEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.Destruct
+// ()
+
+void UWidget_InventorySlot_C::Destruct()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.Destruct");
+
+	UWidget_InventorySlot_C_Destruct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.Construct
+// ()
+
+void UWidget_InventorySlot_C::Construct()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.Construct");
+
+	UWidget_InventorySlot_C_Construct_Params params;
 
 	auto flags = fn->FunctionFlags;
 

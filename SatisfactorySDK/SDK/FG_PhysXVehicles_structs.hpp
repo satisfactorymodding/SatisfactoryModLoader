@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -8,8 +8,8 @@
 
 #include "FG_Basic.hpp"
 #include "FG_Engine_classes.hpp"
-#include "FG_CoreUObject_classes.hpp"
 #include "FG_AnimGraphRuntime_classes.hpp"
+#include "FG_CoreUObject_classes.hpp"
 
 namespace SDK
 {
@@ -51,7 +51,7 @@ struct FWheelSetup
 {
 	class UClass*                                      WheelClass;                                               // 0x0000(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
 	struct FName                                       BoneName;                                                 // 0x0008(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     AdditionalOffset;                                         // 0x0010(0x000C) (Edit, IsPlainOldData)
+	struct FVector                                     AdditionalOffset;                                         // 0x0010(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 	bool                                               bDisableSteering;                                         // 0x001C(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x001D(0x0003) MISSED OFFSET
 };
@@ -137,10 +137,10 @@ struct FVehicleTransmissionData
 };
 
 // ScriptStruct PhysXVehicles.AnimNode_WheelHandler
-// 0x0018 (0x0130 - 0x0118)
+// 0x0018 (0x0108 - 0x00F0)
 struct FAnimNode_WheelHandler : public FAnimNode_SkeletalControlBase
 {
-	unsigned char                                      UnknownData00[0x18];                                      // 0x0118(0x0018) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x18];                                      // 0x00F0(0x0018) MISSED OFFSET
 };
 
 // ScriptStruct PhysXVehicles.VehicleAnimInstanceProxy

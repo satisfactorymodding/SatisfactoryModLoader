@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,7 +18,7 @@ namespace SDK
 struct UAssetRegistryHelpers_ToSoftObjectPath_Params
 {
 	struct FAssetData                                  InAssetData;                                              // (ConstParm, Parm, OutParm, ReferenceParm)
-	struct FSoftObjectPath                             ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+	struct FSoftObjectPath                             ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
 };
 
 // Function AssetRegistry.AssetRegistryHelpers.SetFilterTagsAndValues

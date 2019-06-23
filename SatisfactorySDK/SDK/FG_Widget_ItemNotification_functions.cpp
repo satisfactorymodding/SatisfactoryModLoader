@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -12,12 +12,27 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_ItemNotification.Widget_ItemNotification_C.GetTotalNumItemsInPlayerInventory
+// ()
+
+void UWidget_ItemNotification_C::GetTotalNumItemsInPlayerInventory()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.GetTotalNumItemsInPlayerInventory");
+
+	UWidget_ItemNotification_C_GetTotalNumItemsInPlayerInventory_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_ItemNotification.Widget_ItemNotification_C.GetNumItemsPickedUp
 // ()
-// Parameters:
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
-struct FText UWidget_ItemNotification_C::GetNumItemsPickedUp()
+void UWidget_ItemNotification_C::GetNumItemsPickedUp()
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.GetNumItemsPickedUp");
 
@@ -28,50 +43,6 @@ struct FText UWidget_ItemNotification_C::GetNumItemsPickedUp()
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ItemNotification.Widget_ItemNotification_C.GetItemName
-// ()
-// Parameters:
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FText UWidget_ItemNotification_C::GetItemName()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.GetItemName");
-
-	UWidget_ItemNotification_C_GetItemName_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ItemNotification.Widget_ItemNotification_C.GetNumItemsInInventory
-// ()
-// Parameters:
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FText UWidget_ItemNotification_C::GetNumItemsInInventory()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.GetNumItemsInInventory");
-
-	UWidget_ItemNotification_C_GetNumItemsInInventory_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
 }
 
 
@@ -95,27 +66,6 @@ void UWidget_ItemNotification_C::AddToNumItems(int NumItems)
 }
 
 
-// Function Widget_ItemNotification.Widget_ItemNotification_C.GetAddText
-// ()
-// Parameters:
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FText UWidget_ItemNotification_C::GetAddText()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.GetAddText");
-
-	UWidget_ItemNotification_C_GetAddText_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
 // Function Widget_ItemNotification.Widget_ItemNotification_C.Construct
 // ()
 
@@ -124,6 +74,40 @@ void UWidget_ItemNotification_C::Construct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.Construct");
 
 	UWidget_ItemNotification_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ItemNotification.Widget_ItemNotification_C.Destruct
+// ()
+
+void UWidget_ItemNotification_C::Destruct()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.Destruct");
+
+	UWidget_ItemNotification_C_Destruct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ItemNotification.Widget_ItemNotification_C.UpdatePickUpAmount
+// ()
+
+void UWidget_ItemNotification_C::UpdatePickUpAmount()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ItemNotification.Widget_ItemNotification_C.UpdatePickUpAmount");
+
+	UWidget_ItemNotification_C_UpdatePickUpAmount_Params params;
 
 	auto flags = fn->FunctionFlags;
 

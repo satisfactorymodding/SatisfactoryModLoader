@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -24,6 +24,17 @@ enum class EAppleTextureType : uint8_t
 	Surface                        = 3,
 	MetalTexture                   = 4,
 	EAppleTextureType_MAX          = 5
+};
+
+
+// Enum AppleImageUtils.ETextureRotationDirection
+enum class ETextureRotationDirection : uint8_t
+{
+	None                           = 0,
+	Left                           = 1,
+	Right                          = 2,
+	Down                           = 3,
+	ETextureRotationDirection_MAX  = 4
 };
 
 

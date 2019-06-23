@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // Class AkAudio.AkAcousticPortal
-// 0x00D0 (0x0430 - 0x0360)
+// 0x00C0 (0x0420 - 0x0360)
 class AAkAcousticPortal : public AVolume
 {
 public:
@@ -23,7 +23,7 @@ public:
 	unsigned char                                      UnknownData00[0x3];                                       // 0x0361(0x0003) MISSED OFFSET
 	float                                              ObstructionRefreshInterval;                               // 0x0364(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	TEnumAsByte<ECollisionChannel>                     ObstructionCollisionChannel;                              // 0x0368(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData01[0xC7];                                      // 0x0369(0x00C7) MISSED OFFSET
+	unsigned char                                      UnknownData01[0xB7];                                      // 0x0369(0x00B7) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -130,7 +130,7 @@ public:
 
 
 // Class AkAudio.AkComponent
-// 0x0220 (0x0460 - 0x0240)
+// 0x0210 (0x0450 - 0x0240)
 class UAkComponent : public USceneComponent
 {
 public:
@@ -158,9 +158,9 @@ public:
 	float                                              OcclusionRefreshInterval;                                 // 0x0284(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	class UAkAudioEvent*                               AkAudioEvent;                                             // 0x0288(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	class FString                                      EventName;                                                // 0x0290(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
-	unsigned char                                      UnknownData04[0x180];                                     // 0x02A0(0x0180) MISSED OFFSET
-	struct FScriptMulticastDelegate                    OnEventComplete;                                          // 0x0420(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	unsigned char                                      UnknownData05[0x30];                                      // 0x0430(0x0030) MISSED OFFSET
+	unsigned char                                      UnknownData04[0x170];                                     // 0x02A0(0x0170) MISSED OFFSET
+	struct FScriptMulticastDelegate                    OnEventComplete;                                          // 0x0410(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	unsigned char                                      UnknownData05[0x30];                                      // 0x0420(0x0030) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -189,11 +189,11 @@ public:
 
 
 // Class AkAudio.AkAudioInputComponent
-// 0x0010 (0x0470 - 0x0460)
+// 0x0010 (0x0460 - 0x0450)
 class UAkAudioInputComponent : public UAkComponent
 {
 public:
-	unsigned char                                      UnknownData00[0x10];                                      // 0x0460(0x0010) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x10];                                      // 0x0450(0x0010) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -224,24 +224,24 @@ public:
 
 
 // Class AkAudio.AkCheckBox
-// 0x0958 (0x0A70 - 0x0118)
+// 0x0948 (0x0A60 - 0x0118)
 class UAkCheckBox : public UContentWidget
 {
 public:
-	unsigned char                                      UnknownData00[0x2E8];                                     // 0x0118(0x02E8) MISSED OFFSET
-	ECheckBoxState                                     CheckedState;                                             // 0x0400(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x7];                                       // 0x0401(0x0007) MISSED OFFSET
-	struct FScriptDelegate                             CheckedStateDelegate;                                     // 0x0408(0x0014) (ZeroConstructor, InstancedReference)
-	struct FCheckBoxStyle                              WidgetStyle;                                              // 0x0418(0x0580) (Edit, BlueprintVisible)
-	TEnumAsByte<EHorizontalAlignment>                  HorizontalAlignment;                                      // 0x0998(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	bool                                               IsFocusable;                                              // 0x0999(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x6];                                       // 0x099A(0x0006) MISSED OFFSET
-	struct FAkBoolPropertyToControl                    ThePropertyToControl;                                     // 0x09A0(0x0010) (Edit)
-	struct FAkWwiseItemToControl                       ItemToControl;                                            // 0x09B0(0x0040) (Edit, Config, EditConst)
-	struct FScriptMulticastDelegate                    AkOnCheckStateChanged;                                    // 0x09F0(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	struct FScriptMulticastDelegate                    OnItemDropped;                                            // 0x0A00(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	struct FScriptMulticastDelegate                    OnPropertyDropped;                                        // 0x0A10(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	unsigned char                                      UnknownData03[0x50];                                      // 0x0A20(0x0050) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x2D8];                                     // 0x0118(0x02D8) MISSED OFFSET
+	ECheckBoxState                                     CheckedState;                                             // 0x03F0(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x7];                                       // 0x03F1(0x0007) MISSED OFFSET
+	struct FScriptDelegate                             CheckedStateDelegate;                                     // 0x03F8(0x0014) (ZeroConstructor, InstancedReference)
+	struct FCheckBoxStyle                              WidgetStyle;                                              // 0x0408(0x0580) (Edit, BlueprintVisible)
+	TEnumAsByte<EHorizontalAlignment>                  HorizontalAlignment;                                      // 0x0988(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	bool                                               IsFocusable;                                              // 0x0989(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x6];                                       // 0x098A(0x0006) MISSED OFFSET
+	struct FAkBoolPropertyToControl                    ThePropertyToControl;                                     // 0x0990(0x0010) (Edit)
+	struct FAkWwiseItemToControl                       ItemToControl;                                            // 0x09A0(0x0040) (Edit, Config, EditConst)
+	struct FScriptMulticastDelegate                    AkOnCheckStateChanged;                                    // 0x09E0(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	struct FScriptMulticastDelegate                    OnItemDropped;                                            // 0x09F0(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	struct FScriptMulticastDelegate                    OnPropertyDropped;                                        // 0x0A00(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	unsigned char                                      UnknownData03[0x50];                                      // 0x0A10(0x0050) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -307,6 +307,7 @@ public:
 	class UAkComponent* SpawnAkComponentAtLocation(class UObject* WorldContextObject, class UAkAudioEvent* AkEvent, const struct FVector& Location, const struct FRotator& Orientation, bool AutoPost);
 	void SetSwitch(const struct FName& SwitchGroup, const struct FName& SwitchState, class AActor* Actor);
 	void SetState(const struct FName& StateGroup, const struct FName& State);
+	void SetSpeakerAngles(TArray<float> SpeakerAngles, float HeightAngle, const class FString& DeviceShareset);
 	void SetPanningRule(EPanningRule PanRule);
 	void SetOutputBusVolume(float BusVolume, class AActor* Actor);
 	void SetOcclusionScalingFactor(float ScalingFactor);
@@ -327,6 +328,7 @@ public:
 	void LoadBank(class UAkAudioBank* Bank, const class FString& BankName, const struct FLatentActionInfo& LatentInfo, class UObject* WorldContextObject);
 	bool IsGame(class UObject* WorldContextObject);
 	bool IsEditor();
+	void GetSpeakerAngles(const class FString& DeviceShareset, TArray<float>* SpeakerAngles, float* HeightAngle);
 	float GetOcclusionScalingFactor();
 	float GetGlobalRTPCValue(const struct FName& RTPC);
 	class UAkComponent* GetAkComponentAttached(class USceneComponent* AttachToComponent, const struct FName& Socket, bool bAutoCreate);
@@ -558,7 +560,7 @@ public:
 
 
 // Class AkAudio.AkListernerComponent
-// 0x0000 (0x0460 - 0x0460)
+// 0x0000 (0x0450 - 0x0450)
 class UAkListernerComponent : public UAkComponent
 {
 public:
@@ -636,18 +638,21 @@ public:
 
 
 // Class AkAudio.AkSettings
-// 0x0090 (0x00B8 - 0x0028)
+// 0x0080 (0x00A8 - 0x0028)
 class UAkSettings : public UObject
 {
 public:
 	unsigned char                                      MaxSimultaneousReverbVolumes;                             // 0x0028(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0029(0x0007) MISSED OFFSET
 	struct FFilePath                                   WwiseProjectPath;                                         // 0x0030(0x0010) (Edit, Config)
-	struct FDirectoryPath                              WwiseWindowsInstallationPath;                             // 0x0040(0x0010) (Edit, Config)
-	struct FFilePath                                   WwiseMacInstallationPath;                                 // 0x0050(0x0010) (Edit, Config)
-	bool                                               bAutoConnectToWAAPI;                                      // 0x0060(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
-	bool                                               SuppressWwiseProjectPathWarnings;                         // 0x0061(0x0001) (ZeroConstructor, Config, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x56];                                      // 0x0062(0x0056) MISSED OFFSET
+	struct FDirectoryPath                              WwiseSoundBankFolder;                                     // 0x0040(0x0010) (Edit, Config)
+	bool                                               bAutoConnectToWAAPI;                                      // 0x0050(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	bool                                               bEnableMultiCoreRendering;                                // 0x0051(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	TEnumAsByte<ECollisionChannel>                     DefaultOcclusionCollisionChannel;                         // 0x0052(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x5];                                       // 0x0053(0x0005) MISSED OFFSET
+	struct FDirectoryPath                              WwiseWindowsInstallationPath;                             // 0x0058(0x0010) (Config, Deprecated)
+	struct FFilePath                                   WwiseMacInstallationPath;                                 // 0x0068(0x0010) (Config, Deprecated)
+	unsigned char                                      UnknownData02[0x30];                                      // 0x0078(0x0030) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -658,31 +663,50 @@ public:
 };
 
 
+// Class AkAudio.AkSettingsPerUser
+// 0x0028 (0x0050 - 0x0028)
+class UAkSettingsPerUser : public UObject
+{
+public:
+	struct FDirectoryPath                              WwiseWindowsInstallationPath;                             // 0x0028(0x0010) (Edit, Config)
+	struct FFilePath                                   WwiseMacInstallationPath;                                 // 0x0038(0x0010) (Edit, Config)
+	bool                                               SuppressWwiseProjectPathWarnings;                         // 0x0048(0x0001) (ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x7];                                       // 0x0049(0x0007) MISSED OFFSET
+
+	static UClass* StaticClass()
+	{
+		static auto ptr = UObject::FindClass("Class AkAudio.AkSettingsPerUser");
+		return ptr;
+	}
+
+};
+
+
 // Class AkAudio.AkSlider
-// 0x0318 (0x0418 - 0x0100)
+// 0x0428 (0x0528 - 0x0100)
 class UAkSlider : public UWidget
 {
 public:
 	float                                              Value;                                                    // 0x0100(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x0104(0x0004) MISSED OFFSET
 	struct FScriptDelegate                             ValueDelegate;                                            // 0x0108(0x0014) (ZeroConstructor, InstancedReference)
-	struct FSliderStyle                                WidgetStyle;                                              // 0x0118(0x0230) (Edit, BlueprintVisible)
-	TEnumAsByte<EOrientation>                          Orientation;                                              // 0x0348(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x3];                                       // 0x0349(0x0003) MISSED OFFSET
-	struct FLinearColor                                SliderBarColor;                                           // 0x034C(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, IsPlainOldData)
-	struct FLinearColor                                SliderHandleColor;                                        // 0x035C(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, IsPlainOldData)
-	bool                                               IndentHandle;                                             // 0x036C(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	bool                                               Locked;                                                   // 0x036D(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x2];                                       // 0x036E(0x0002) MISSED OFFSET
-	float                                              StepSize;                                                 // 0x0370(0x0004) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	bool                                               IsFocusable;                                              // 0x0374(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData03[0x3];                                       // 0x0375(0x0003) MISSED OFFSET
-	struct FAkPropertyToControl                        ThePropertyToControl;                                     // 0x0378(0x0010) (Edit, EditConst)
-	struct FAkWwiseItemToControl                       ItemToControl;                                            // 0x0388(0x0040) (Edit, Config, EditConst)
-	struct FScriptMulticastDelegate                    OnValueChanged;                                           // 0x03C8(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	struct FScriptMulticastDelegate                    OnItemDropped;                                            // 0x03D8(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	struct FScriptMulticastDelegate                    OnPropertyDropped;                                        // 0x03E8(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	unsigned char                                      UnknownData04[0x20];                                      // 0x03F8(0x0020) MISSED OFFSET
+	struct FSliderStyle                                WidgetStyle;                                              // 0x0118(0x0340) (Edit, BlueprintVisible)
+	TEnumAsByte<EOrientation>                          Orientation;                                              // 0x0458(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x3];                                       // 0x0459(0x0003) MISSED OFFSET
+	struct FLinearColor                                SliderBarColor;                                           // 0x045C(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	struct FLinearColor                                SliderHandleColor;                                        // 0x046C(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	bool                                               IndentHandle;                                             // 0x047C(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	bool                                               Locked;                                                   // 0x047D(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x2];                                       // 0x047E(0x0002) MISSED OFFSET
+	float                                              StepSize;                                                 // 0x0480(0x0004) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	bool                                               IsFocusable;                                              // 0x0484(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData03[0x3];                                       // 0x0485(0x0003) MISSED OFFSET
+	struct FAkPropertyToControl                        ThePropertyToControl;                                     // 0x0488(0x0010) (Edit, EditConst)
+	struct FAkWwiseItemToControl                       ItemToControl;                                            // 0x0498(0x0040) (Edit, Config, EditConst)
+	struct FScriptMulticastDelegate                    OnValueChanged;                                           // 0x04D8(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	struct FScriptMulticastDelegate                    OnItemDropped;                                            // 0x04E8(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	struct FScriptMulticastDelegate                    OnPropertyDropped;                                        // 0x04F8(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	unsigned char                                      UnknownData04[0x20];                                      // 0x0508(0x0020) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -40,7 +40,7 @@ struct FEventReply UWidget_BuildMenu_RightClickMenu_C::OnKeyDown(struct FGeometr
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverBindToHotbar
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_BuildMenu_RightClickMenu_C::GetHoverBindToHotbar()
 {
@@ -61,7 +61,7 @@ struct FLinearColor UWidget_BuildMenu_RightClickMenu_C::GetHoverBindToHotbar()
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverColorCodex
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_BuildMenu_RightClickMenu_C::GetHoverColorCodex()
 {
@@ -82,7 +82,7 @@ struct FLinearColor UWidget_BuildMenu_RightClickMenu_C::GetHoverColorCodex()
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverColorRemoveFromShoppingList
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_BuildMenu_RightClickMenu_C::GetHoverColorRemoveFromShoppingList()
 {
@@ -103,7 +103,7 @@ struct FLinearColor UWidget_BuildMenu_RightClickMenu_C::GetHoverColorRemoveFromS
 // Function Widget_BuildMenu_RightClickMenu.Widget_BuildMenu_RightClickMenu_C.GetHoverColorAddToShoppingList
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_BuildMenu_RightClickMenu_C::GetHoverColorAddToShoppingList()
 {

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -124,6 +124,57 @@ void UWidget_ManufacturingStat_C::OnDragLeave(struct FPointerEvent* PointerEvent
 	UWidget_ManufacturingStat_C_OnDragLeave_Params params;
 	params.PointerEvent = PointerEvent;
 	params.Operation = Operation;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.Construct
+// ()
+
+void UWidget_ManufacturingStat_C::Construct()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.Construct");
+
+	UWidget_ManufacturingStat_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.UpdateStat
+// ()
+
+void UWidget_ManufacturingStat_C::UpdateStat()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.UpdateStat");
+
+	UWidget_ManufacturingStat_C_UpdateStat_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.Destruct
+// ()
+
+void UWidget_ManufacturingStat_C::Destruct()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManufacturingStat.Widget_ManufacturingStat_C.Destruct");
+
+	UWidget_ManufacturingStat_C_Destruct_Params params;
 
 	auto flags = fn->FunctionFlags;
 

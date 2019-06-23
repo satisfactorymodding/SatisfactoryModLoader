@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -23,16 +23,16 @@ struct UWidget_ColorPicker_C_GetResetButtonVisibility_Params
 // Function Widget_ColorPicker.Widget_ColorPicker_C.GetOneDimensionalIndex
 struct UWidget_ColorPicker_C_GetOneDimensionalIndex_Params
 {
-	int                                                colorIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	int                                                ShadeIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                ColorIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                shadeIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                Index;                                                    // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_ColorPicker.Widget_ColorPicker_C.GetSavedColorFromIndexes
 struct UWidget_ColorPicker_C_GetSavedColorFromIndexes_Params
 {
-	int                                                colorIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	int                                                ShadeIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                ColorIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                shadeIndex;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FSlateColor                                 SavedColor;                                               // (Parm, OutParm)
 };
 
@@ -59,7 +59,7 @@ struct UWidget_ColorPicker_C_FirstTimeFillColors_Params
 // Function Widget_ColorPicker.Widget_ColorPicker_C.GetFinalColor
 struct UWidget_ColorPicker_C_GetFinalColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ColorPicker.Widget_ColorPicker_C.CloseColorPicker
@@ -133,7 +133,7 @@ struct UWidget_ColorPicker_C_ExecuteUbergraph_Widget_ColorPicker_Params
 // Function Widget_ColorPicker.Widget_ColorPicker_C.mOnColorPicked__DelegateSignature
 struct UWidget_ColorPicker_C_mOnColorPicked__DelegateSignature_Params
 {
-	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 }

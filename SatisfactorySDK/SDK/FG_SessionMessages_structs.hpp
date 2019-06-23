@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -35,7 +35,7 @@ struct FSessionServiceLog
 {
 	struct FName                                       Category;                                                 // 0x0000(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
 	class FString                                      Data;                                                     // 0x0008(0x0010) (Edit, ZeroConstructor)
-	struct FGuid                                       InstanceId;                                               // 0x0018(0x0010) (Edit, IsPlainOldData)
+	struct FGuid                                       InstanceId;                                               // 0x0018(0x0010) (Edit, ZeroConstructor, IsPlainOldData)
 	double                                             TimeSeconds;                                              // 0x0028(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      Verbosity;                                                // 0x0030(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0031(0x0007) MISSED OFFSET
@@ -49,12 +49,12 @@ struct FSessionServicePong
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0001(0x0007) MISSED OFFSET
 	class FString                                      BuildDate;                                                // 0x0008(0x0010) (Edit, ZeroConstructor)
 	class FString                                      DeviceName;                                               // 0x0018(0x0010) (Edit, ZeroConstructor)
-	struct FGuid                                       InstanceId;                                               // 0x0028(0x0010) (Edit, IsPlainOldData)
+	struct FGuid                                       InstanceId;                                               // 0x0028(0x0010) (Edit, ZeroConstructor, IsPlainOldData)
 	class FString                                      InstanceName;                                             // 0x0038(0x0010) (Edit, ZeroConstructor)
 	bool                                               IsConsoleBuild;                                           // 0x0048(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x7];                                       // 0x0049(0x0007) MISSED OFFSET
 	class FString                                      PlatformName;                                             // 0x0050(0x0010) (Edit, ZeroConstructor)
-	struct FGuid                                       SessionId;                                                // 0x0060(0x0010) (Edit, IsPlainOldData)
+	struct FGuid                                       SessionId;                                                // 0x0060(0x0010) (Edit, ZeroConstructor, IsPlainOldData)
 	class FString                                      SessionName;                                              // 0x0070(0x0010) (Edit, ZeroConstructor)
 	class FString                                      SessionOwner;                                             // 0x0080(0x0010) (Edit, ZeroConstructor)
 	bool                                               Standalone;                                               // 0x0090(0x0001) (Edit, ZeroConstructor, IsPlainOldData)

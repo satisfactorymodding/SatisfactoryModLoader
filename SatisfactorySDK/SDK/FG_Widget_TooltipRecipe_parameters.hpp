@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -27,6 +27,12 @@ struct UWidget_TooltipRecipe_C_OnHovered_Params
 // Function Widget_TooltipRecipe.Widget_TooltipRecipe_C.Construct
 struct UWidget_TooltipRecipe_C_Construct_Params
 {
+};
+
+// Function Widget_TooltipRecipe.Widget_TooltipRecipe_C.PreConstruct
+struct UWidget_TooltipRecipe_C_PreConstruct_Params
+{
+	bool*                                              IsDesignTime;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_TooltipRecipe.Widget_TooltipRecipe_C.ExecuteUbergraph_Widget_TooltipRecipe

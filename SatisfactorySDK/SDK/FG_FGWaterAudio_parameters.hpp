@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,7 +18,7 @@ namespace SDK
 struct UFGWaterAudio_C_OnCameraExitedWater_Params
 {
 	class AFGWaterVolume**                             waterVolume;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector*                                    exitLocation;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector*                                    exitLocation;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class AFGPlayerController**                        PC;                                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
@@ -26,7 +26,7 @@ struct UFGWaterAudio_C_OnCameraExitedWater_Params
 struct UFGWaterAudio_C_OnCameraEnteredWater_Params
 {
 	class AFGWaterVolume**                             waterVolume;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector*                                    enterLocation;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector*                                    enterLocation;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class AFGPlayerController**                        PC;                                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 

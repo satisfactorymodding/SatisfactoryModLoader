@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,10 +19,10 @@ namespace SDK
 // 0x0028
 struct FOverlayItem
 {
-	struct FTimespan                                   StartTime;                                                // 0x0000(0x0008) (Edit, BlueprintVisible)
-	struct FTimespan                                   EndTime;                                                  // 0x0008(0x0008) (Edit, BlueprintVisible)
+	struct FTimespan                                   StartTime;                                                // 0x0000(0x0008) (Edit, BlueprintVisible, ZeroConstructor)
+	struct FTimespan                                   EndTime;                                                  // 0x0008(0x0008) (Edit, BlueprintVisible, ZeroConstructor)
 	class FString                                      Text;                                                     // 0x0010(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
-	struct FVector2D                                   Position;                                                 // 0x0020(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FVector2D                                   Position;                                                 // 0x0020(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };
 
 }

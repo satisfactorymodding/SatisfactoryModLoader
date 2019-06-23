@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,63 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_Generator.Widget_Generator_C.OnReplicationDetailActorCreated
+// ()
+// Parameters:
+// class AActor*                  ReplicationDetailActor         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Generator_C::OnReplicationDetailActorCreated(class AActor* ReplicationDetailActor)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.OnReplicationDetailActorCreated");
+
+	UWidget_Generator_C_OnReplicationDetailActorCreated_Params params;
+	params.ReplicationDetailActor = ReplicationDetailActor;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Generator.Widget_Generator_C.InitModule
+// ()
+
+void UWidget_Generator_C::InitModule()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.InitModule");
+
+	UWidget_Generator_C_InitModule_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Generator.Widget_Generator_C.InitNuclearGenerator
+// ()
+// Parameters:
+// class AFGBuildableGeneratorNuclear* NuclearGenerator               (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Generator_C::InitNuclearGenerator(class AFGBuildableGeneratorNuclear* NuclearGenerator)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.InitNuclearGenerator");
+
+	UWidget_Generator_C_InitNuclearGenerator_Params params;
+	params.NuclearGenerator = NuclearGenerator;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_Generator.Widget_Generator_C.UpdateHeaderText
 // ()
@@ -206,6 +263,23 @@ float UWidget_Generator_C::GetBurnProgressPercent()
 }
 
 
+// Function Widget_Generator.Widget_Generator_C.Init
+// ()
+
+void UWidget_Generator_C::Init()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.Init");
+
+	UWidget_Generator_C_Init_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_Generator.Widget_Generator_C.Construct
 // ()
 
@@ -279,23 +353,6 @@ void UWidget_Generator_C::BndEvt__Widget_StandbyButton_K2Node_ComponentBoundEven
 }
 
 
-// Function Widget_Generator.Widget_Generator_C.Init
-// ()
-
-void UWidget_Generator_C::Init()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.Init");
-
-	UWidget_Generator_C_Init_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_Generator.Widget_Generator_C.ResetFuse
 // ()
 
@@ -321,6 +378,43 @@ void UWidget_Generator_C::WarningMessageCheck()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.WarningMessageCheck");
 
 	UWidget_Generator_C_WarningMessageCheck_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Generator.Widget_Generator_C.SpawnSmoke
+// ()
+
+void UWidget_Generator_C::SpawnSmoke()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.SpawnSmoke");
+
+	UWidget_Generator_C_SpawnSmoke_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Generator.Widget_Generator_C.OnProductionChanged
+// ()
+// Parameters:
+// bool                           State                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Generator_C::OnProductionChanged(bool State)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Generator.Widget_Generator_C.OnProductionChanged");
+
+	UWidget_Generator_C_OnProductionChanged_Params params;
+	params.State = State;
 
 	auto flags = fn->FunctionFlags;
 

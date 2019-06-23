@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -59,7 +59,7 @@ bool ABuild_SpaceElevator_C::UpdateRepresentation()
 // Function Build_SpaceElevator.Build_SpaceElevator_C.GetActorRepresentationColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor ABuild_SpaceElevator_C::GetActorRepresentationColor()
 {
@@ -248,7 +248,7 @@ bool ABuild_SpaceElevator_C::GetActorShouldShowOnMap()
 // Function Build_SpaceElevator.Build_SpaceElevator_C.GetRealActorLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ABuild_SpaceElevator_C::GetRealActorLocation()
 {
@@ -269,7 +269,7 @@ struct FVector ABuild_SpaceElevator_C::GetRealActorLocation()
 // Function Build_SpaceElevator.Build_SpaceElevator_C.GetRealActorRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator ABuild_SpaceElevator_C::GetRealActorRotation()
 {

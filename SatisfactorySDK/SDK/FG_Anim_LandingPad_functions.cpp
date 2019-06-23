@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -12,23 +12,6 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_C2876A294300AB58F38D12BD82860D4A
-// ()
-
-void UAnim_LandingPad_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_C2876A294300AB58F38D12BD82860D4A()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_C2876A294300AB58F38D12BD82860D4A");
-
-	UAnim_LandingPad_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_C2876A294300AB58F38D12BD82860D4A_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_1EB610874256993492C21CB7314D49F1
 // ()
 
@@ -37,40 +20,6 @@ void UAnim_LandingPad_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Landin
 	static auto fn = UObject::FindObject<UFunction>("Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_1EB610874256993492C21CB7314D49F1");
 
 	UAnim_LandingPad_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_1EB610874256993492C21CB7314D49F1_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_5FE59C4D4958213A2D0083B3058EEE2D
-// ()
-
-void UAnim_LandingPad_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_5FE59C4D4958213A2D0083B3058EEE2D()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_5FE59C4D4958213A2D0083B3058EEE2D");
-
-	UAnim_LandingPad_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_5FE59C4D4958213A2D0083B3058EEE2D_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_FC0C6E7D43EE683F25EFAABABC9E0759
-// ()
-
-void UAnim_LandingPad_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_FC0C6E7D43EE683F25EFAABABC9E0759()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_LandingPad.Anim_LandingPad_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_FC0C6E7D43EE683F25EFAABABC9E0759");
-
-	UAnim_LandingPad_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_LandingPad_AnimGraphNode_TransitionResult_FC0C6E7D43EE683F25EFAABABC9E0759_Params params;
 
 	auto flags = fn->FunctionFlags;
 

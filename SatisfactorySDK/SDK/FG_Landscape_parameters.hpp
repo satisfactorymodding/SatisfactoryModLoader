@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,7 +18,7 @@ namespace SDK
 struct ALandscapeProxy_SetLandscapeMaterialVectorParameterValue_Params
 {
 	struct FName                                       ParameterName;                                            // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                Value;                                                    // (Parm, IsPlainOldData)
+	struct FLinearColor                                Value;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Landscape.LandscapeProxy.SetLandscapeMaterialTextureParameterValue
@@ -92,6 +92,12 @@ struct ULandscapeComponent_GetMaterialInstanceDynamic_Params
 {
 	int                                                InIndex;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 	class UMaterialInstanceDynamic*                    ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function Landscape.LandscapeSplinesComponent.GetSplineMeshComponents
+struct ULandscapeSplinesComponent_GetSplineMeshComponents_Params
+{
+	TArray<class USplineMeshComponent*>                ReturnValue;                                              // (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm)
 };
 
 }

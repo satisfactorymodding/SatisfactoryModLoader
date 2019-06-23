@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function LevelSequence.LevelSequenceBurnInOptions.SetBurnIn
 // ()
 // Parameters:
-// struct FSoftClassPath          InBurnInClass                  (Parm)
+// struct FSoftClassPath          InBurnInClass                  (Parm, ZeroConstructor)
 
 void ULevelSequenceBurnInOptions::SetBurnIn(const struct FSoftClassPath& InBurnInClass)
 {
@@ -242,6 +242,23 @@ class UClass* ULevelSequenceBurnIn::GetSettingsClass()
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function LevelSequence.LevelSequenceDirector.OnCreated
+// ()
+
+void ULevelSequenceDirector::OnCreated()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function LevelSequence.LevelSequenceDirector.OnCreated");
+
+	ULevelSequenceDirector_OnCreated_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 }
 
 

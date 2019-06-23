@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -44,7 +44,7 @@ enum class EConstraintType : uint8_t
 // 0x0010
 struct FAxis
 {
-	struct FVector                                     Axis;                                                     // 0x0000(0x000C) (Edit, IsPlainOldData)
+	struct FVector                                     Axis;                                                     // 0x0000(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 	bool                                               bInLocalSpace;                                            // 0x000C(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x000D(0x0003) MISSED OFFSET
 };
@@ -95,7 +95,7 @@ struct FAimConstraintDescription : public FConstraintDescriptionEx
 	struct FAxis                                       LookUp_Axis;                                              // 0x0020(0x0010) (Edit)
 	bool                                               bUseLookUp;                                               // 0x0030(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x0031(0x0003) MISSED OFFSET
-	struct FVector                                     LookUpTarget;                                             // 0x0034(0x000C) (Edit, IsPlainOldData)
+	struct FVector                                     LookUpTarget;                                             // 0x0034(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct AnimationCore.TransformConstraintDescription
@@ -136,10 +136,10 @@ struct FTransformConstraint
 // 0x0060
 struct FConstraintOffset
 {
-	struct FVector                                     Translation;                                              // 0x0000(0x000C) (IsPlainOldData)
+	struct FVector                                     Translation;                                              // 0x0000(0x000C) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x000C(0x0004) MISSED OFFSET
 	struct FQuat                                       Rotation;                                                 // 0x0010(0x0010) (IsPlainOldData)
-	struct FVector                                     Scale;                                                    // 0x0020(0x000C) (IsPlainOldData)
+	struct FVector                                     Scale;                                                    // 0x0020(0x000C) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x4];                                       // 0x002C(0x0004) MISSED OFFSET
 	struct FTransform                                  Parent;                                                   // 0x0030(0x0030) (IsPlainOldData)
 };
@@ -157,9 +157,9 @@ struct FTransformFilter
 // 0x0024
 struct FEulerTransform
 {
-	struct FVector                                     Location;                                                 // 0x0000(0x000C) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FRotator                                    Rotation;                                                 // 0x000C(0x000C) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FVector                                     Scale;                                                    // 0x0018(0x000C) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FVector                                     Location;                                                 // 0x0000(0x000C) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FRotator                                    Rotation;                                                 // 0x000C(0x000C) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     Scale;                                                    // 0x0018(0x000C) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct AnimationCore.NodeChain

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -30,8 +30,8 @@ struct UBP_OnlineHelpers_C_GetSessionFromFriendNetId_Params
 	struct FBlueprintSessionResult                     session;                                                  // (Parm, OutParm)
 };
 
-// Function BP_OnlineHelpers.BP_OnlineHelpers_C.IsHost
-struct UBP_OnlineHelpers_C_IsHost_Params
+// Function BP_OnlineHelpers.BP_OnlineHelpers_C.isHost
+struct UBP_OnlineHelpers_C_isHost_Params
 {
 	class APlayerState*                                PlayerState;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class APlayerController*                           OwningPlayer;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
@@ -80,7 +80,7 @@ struct UBP_OnlineHelpers_C_GetCompactPresence_Params
 {
 	struct FOnlinePresence                             presence;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm)
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FFCompactPresence                           compactPresence;                                          // (Parm, OutParm)
+	struct FFCompactPresence                           compactPresence;                                          // (Parm, OutParm, ZeroConstructor)
 };
 
 // Function BP_OnlineHelpers.BP_OnlineHelpers_C.GetFriendSession

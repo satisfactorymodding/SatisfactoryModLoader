@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -25,9 +25,9 @@ struct UWidget_ColorGun_ColorPicker_C_CompressValue_Params
 // Function Widget_ColorGun_ColorPicker.Widget_ColorGun_ColorPicker_C.ConvertColorToPreviewColor
 struct UWidget_ColorGun_ColorPicker_C_ConvertColorToPreviewColor_Params
 {
-	struct FLinearColor                                InputColor;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                InputColor;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	float                                              MinValue;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                OutputColor;                                              // (Parm, OutParm, IsPlainOldData)
+	struct FLinearColor                                OutputColor;                                              // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_ColorGun_ColorPicker.Widget_ColorGun_ColorPicker_C.UpdatePreview
@@ -82,8 +82,8 @@ struct UWidget_ColorGun_ColorPicker_C_OnSlotEditClicked_Params
 // Function Widget_ColorGun_ColorPicker.Widget_ColorGun_ColorPicker_C.OnUpdatePreset
 struct UWidget_ColorGun_ColorPicker_C_OnUpdatePreset_Params
 {
-	struct FLinearColor                                PrimaryColor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-	struct FLinearColor                                SecondaryColor;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                PrimaryColor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FLinearColor                                SecondaryColor;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_ColorGun_ColorPicker.Widget_ColorGun_ColorPicker_C.ExecuteUbergraph_Widget_ColorGun_ColorPicker

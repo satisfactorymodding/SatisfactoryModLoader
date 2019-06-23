@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -35,7 +35,7 @@ void UWidget_SessionSaveRow_C::SetSelected(bool isSelected)
 // Function Widget_SessionSaveRow.Widget_SessionSaveRow_C.GetIconColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SessionSaveRow_C::GetIconColor()
 {
@@ -98,7 +98,7 @@ struct FSlateColor UWidget_SessionSaveRow_C::GetPlayDurationTextColor()
 // Function Widget_SessionSaveRow.Widget_SessionSaveRow_C.GetIconBGColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SessionSaveRow_C::GetIconBGColor()
 {
@@ -119,7 +119,7 @@ struct FLinearColor UWidget_SessionSaveRow_C::GetIconBGColor()
 // Function Widget_SessionSaveRow.Widget_SessionSaveRow_C.GetHoverColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SessionSaveRow_C::GetHoverColor()
 {

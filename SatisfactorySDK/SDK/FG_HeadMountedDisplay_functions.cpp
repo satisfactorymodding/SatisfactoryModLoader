@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,26 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.UpdateExternalTrackingHMDPosition
+// ()
+// Parameters:
+// struct FTransform              ExternalTrackingTransform      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+
+void UHeadMountedDisplayFunctionLibrary::UpdateExternalTrackingHMDPosition(const struct FTransform& ExternalTrackingTransform)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.UpdateExternalTrackingHMDPosition");
+
+	UHeadMountedDisplayFunctionLibrary_UpdateExternalTrackingHMDPosition_Params params;
+	params.ExternalTrackingTransform = ExternalTrackingTransform;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.SetWorldToMetersScale
 // ()
@@ -77,14 +97,15 @@ void UHeadMountedDisplayFunctionLibrary::SetSpectatorScreenTexture(class UTextur
 // Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.SetSpectatorScreenModeTexturePlusEyeLayout
 // ()
 // Parameters:
-// struct FVector2D               EyeRectMin                     (Parm, IsPlainOldData)
-// struct FVector2D               EyeRectMax                     (Parm, IsPlainOldData)
-// struct FVector2D               TextureRectMin                 (Parm, IsPlainOldData)
-// struct FVector2D               TextureRectMax                 (Parm, IsPlainOldData)
+// struct FVector2D               EyeRectMin                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               EyeRectMax                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               TextureRectMin                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               TextureRectMax                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bDrawEyeFirst                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bClearBlack                    (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bUseAlpha                      (Parm, ZeroConstructor, IsPlainOldData)
 
-void UHeadMountedDisplayFunctionLibrary::SetSpectatorScreenModeTexturePlusEyeLayout(const struct FVector2D& EyeRectMin, const struct FVector2D& EyeRectMax, const struct FVector2D& TextureRectMin, const struct FVector2D& TextureRectMax, bool bDrawEyeFirst, bool bClearBlack)
+void UHeadMountedDisplayFunctionLibrary::SetSpectatorScreenModeTexturePlusEyeLayout(const struct FVector2D& EyeRectMin, const struct FVector2D& EyeRectMax, const struct FVector2D& TextureRectMin, const struct FVector2D& TextureRectMax, bool bDrawEyeFirst, bool bClearBlack, bool bUseAlpha)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.SetSpectatorScreenModeTexturePlusEyeLayout");
 
@@ -95,6 +116,7 @@ void UHeadMountedDisplayFunctionLibrary::SetSpectatorScreenModeTexturePlusEyeLay
 	params.TextureRectMax = TextureRectMax;
 	params.bDrawEyeFirst = bDrawEyeFirst;
 	params.bClearBlack = bClearBlack;
+	params.bUseAlpha = bUseAlpha;
 
 	auto flags = fn->FunctionFlags;
 
@@ -370,8 +392,8 @@ struct FTransform UHeadMountedDisplayFunctionLibrary::GetTrackingToWorldTransfor
 // Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.GetTrackingSensorParameters
 // ()
 // Parameters:
-// struct FVector                 Origin                         (Parm, OutParm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Origin                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          LeftFOV                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          RightFOV                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          TopFOV                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -463,8 +485,8 @@ float UHeadMountedDisplayFunctionLibrary::GetScreenPercentage()
 // Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.GetPositionalTrackingCameraParameters
 // ()
 // Parameters:
-// struct FVector                 CameraOrigin                   (Parm, OutParm, IsPlainOldData)
-// struct FRotator                CameraRotation                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 CameraOrigin                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                CameraRotation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          HFOV                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          VFOV                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          CameraDistance                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -524,8 +546,8 @@ float UHeadMountedDisplayFunctionLibrary::GetPixelDensity()
 // Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.GetOrientationAndPosition
 // ()
 // Parameters:
-// struct FRotator                DeviceRotation                 (Parm, OutParm, IsPlainOldData)
-// struct FVector                 DevicePosition                 (Parm, OutParm, IsPlainOldData)
+// struct FRotator                DeviceRotation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 DevicePosition                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UHeadMountedDisplayFunctionLibrary::GetOrientationAndPosition(struct FRotator* DeviceRotation, struct FVector* DevicePosition)
 {
@@ -615,9 +637,9 @@ struct FName UHeadMountedDisplayFunctionLibrary::GetHMDDeviceName()
 // class UObject*                 WorldContext                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FXRDeviceId             XRDeviceId                     (ConstParm, Parm, OutParm, ReferenceParm)
 // bool                           bIsTracked                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                Orientation                    (Parm, OutParm, IsPlainOldData)
+// struct FRotator                Orientation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           bHasPositionalTracking         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Position                       (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Position                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UHeadMountedDisplayFunctionLibrary::GetDeviceWorldPose(class UObject* WorldContext, const struct FXRDeviceId& XRDeviceId, bool* bIsTracked, struct FRotator* Orientation, bool* bHasPositionalTracking, struct FVector* Position)
 {
@@ -649,9 +671,9 @@ void UHeadMountedDisplayFunctionLibrary::GetDeviceWorldPose(class UObject* World
 // Parameters:
 // struct FXRDeviceId             XRDeviceId                     (ConstParm, Parm, OutParm, ReferenceParm)
 // bool                           bIsTracked                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                Orientation                    (Parm, OutParm, IsPlainOldData)
+// struct FRotator                Orientation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           bHasPositionalTracking         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Position                       (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Position                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UHeadMountedDisplayFunctionLibrary::GetDevicePose(const struct FXRDeviceId& XRDeviceId, bool* bIsTracked, struct FRotator* Orientation, bool* bHasPositionalTracking, struct FVector* Position)
 {
@@ -742,6 +764,26 @@ bool UHeadMountedDisplayFunctionLibrary::EnableHMD(bool bEnable)
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.CalibrateExternalTrackingToHMD
+// ()
+// Parameters:
+// struct FTransform              ExternalTrackingTransform      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+
+void UHeadMountedDisplayFunctionLibrary::CalibrateExternalTrackingToHMD(const struct FTransform& ExternalTrackingTransform)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function HeadMountedDisplay.HeadMountedDisplayFunctionLibrary.CalibrateExternalTrackingToHMD");
+
+	UHeadMountedDisplayFunctionLibrary_CalibrateExternalTrackingToHMD_Params params;
+	params.ExternalTrackingTransform = ExternalTrackingTransform;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 }
 
 

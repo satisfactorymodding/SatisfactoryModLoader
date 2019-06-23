@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.GetLightGrayColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_TradingPost_RecipePreview_C::GetLightGrayColor()
 {
@@ -205,14 +205,14 @@ void UWidget_TradingPost_RecipePreview_C::AnimateRewards()
 }
 
 
-// Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostslots
+// Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostSlots
 // ()
 
-void UWidget_TradingPost_RecipePreview_C::AnimateCostslots()
+void UWidget_TradingPost_RecipePreview_C::AnimateCostSlots()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostslots");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostSlots");
 
-	UWidget_TradingPost_RecipePreview_C_AnimateCostslots_Params params;
+	UWidget_TradingPost_RecipePreview_C_AnimateCostSlots_Params params;
 
 	auto flags = fn->FunctionFlags;
 

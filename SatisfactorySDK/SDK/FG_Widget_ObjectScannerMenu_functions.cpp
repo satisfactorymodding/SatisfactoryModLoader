@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -61,7 +61,7 @@ ESlateVisibility UWidget_ObjectScannerMenu_C::Get_RingHighlighter_Visibility_1()
 // ()
 // Parameters:
 // int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               Translation                    (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               Translation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_ObjectScannerMenu_C::GetPositionInCircle(int Index, struct FVector2D* Translation)
 {

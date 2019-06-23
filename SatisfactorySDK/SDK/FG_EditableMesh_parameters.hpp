@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -165,8 +165,15 @@ struct UEditableMesh_SetAllowCompact_Params
 // Function EditableMesh.EditableMesh.SearchSpatialDatabaseForPolygonsPotentiallyIntersectingLineSegment
 struct UEditableMesh_SearchSpatialDatabaseForPolygonsPotentiallyIntersectingLineSegment_Params
 {
-	struct FVector                                     LineSegmentStart;                                         // (ConstParm, Parm, IsPlainOldData)
-	struct FVector                                     LineSegmentEnd;                                           // (ConstParm, Parm, IsPlainOldData)
+	struct FVector                                     LineSegmentStart;                                         // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     LineSegmentEnd;                                           // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+	TArray<struct FPolygonID>                          OutPolygons;                                              // (Parm, OutParm, ZeroConstructor)
+};
+
+// Function EditableMesh.EditableMesh.SearchSpatialDatabaseForPolygonsInVolume
+struct UEditableMesh_SearchSpatialDatabaseForPolygonsInVolume_Params
+{
+	TArray<struct FPlane>                              Planes;                                                   // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 	TArray<struct FPolygonID>                          OutPolygons;                                              // (Parm, OutParm, ZeroConstructor)
 };
 
@@ -804,7 +811,7 @@ struct UEditableMesh_ExtendVertices_Params
 {
 	TArray<struct FVertexID>                           VertexIDs;                                                // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 	bool                                               bOnlyExtendClosestEdge;                                   // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     ReferencePosition;                                        // (ConstParm, Parm, IsPlainOldData)
+	struct FVector                                     ReferencePosition;                                        // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	TArray<struct FVertexID>                           OutNewExtendedVertexIDs;                                  // (Parm, OutParm, ZeroConstructor)
 };
 
@@ -954,42 +961,42 @@ struct UEditableMesh_ComputePolygonsSharedEdges_Params
 struct UEditableMesh_ComputePolygonPlane_Params
 {
 	struct FPolygonID                                  PolygonID;                                                // (ConstParm, Parm)
-	struct FPlane                                      ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FPlane                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function EditableMesh.EditableMesh.ComputePolygonNormal
 struct UEditableMesh_ComputePolygonNormal_Params
 {
 	struct FPolygonID                                  PolygonID;                                                // (ConstParm, Parm)
-	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function EditableMesh.EditableMesh.ComputePolygonCenter
 struct UEditableMesh_ComputePolygonCenter_Params
 {
 	struct FPolygonID                                  PolygonID;                                                // (ConstParm, Parm)
-	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function EditableMesh.EditableMesh.ComputeBoundingBoxAndSphere
 struct UEditableMesh_ComputeBoundingBoxAndSphere_Params
 {
-	struct FBoxSphereBounds                            ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FBoxSphereBounds                            ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function EditableMesh.EditableMesh.ComputeBoundingBox
 struct UEditableMesh_ComputeBoundingBox_Params
 {
-	struct FBox                                        ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FBox                                        ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function EditableMesh.EditableMesh.ComputeBarycentricWeightForPointOnPolygon
 struct UEditableMesh_ComputeBarycentricWeightForPointOnPolygon_Params
 {
 	struct FPolygonID                                  PolygonID;                                                // (ConstParm, Parm)
-	struct FVector                                     PointOnPolygon;                                           // (ConstParm, Parm, IsPlainOldData)
+	struct FVector                                     PointOnPolygon;                                           // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	struct FMeshTriangle                               OutTriangle;                                              // (Parm, OutParm)
-	struct FVector                                     OutTriangleVertexWeights;                                 // (Parm, OutParm, IsPlainOldData)
+	struct FVector                                     OutTriangleVertexWeights;                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 

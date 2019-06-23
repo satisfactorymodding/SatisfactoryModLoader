@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -54,7 +54,7 @@ public:
 class UMovieScene3DConstraintSection : public UMovieSceneSection
 {
 public:
-	struct FGuid                                       ConstraintId;                                             // 0x00E0(0x0010) (Deprecated, IsPlainOldData)
+	struct FGuid                                       ConstraintId;                                             // 0x00E0(0x0010) (ZeroConstructor, Deprecated, IsPlainOldData)
 	struct FMovieSceneObjectBindingID                  ConstraintBindingID;                                      // 0x00F0(0x0018) (Edit)
 
 	static UClass* StaticClass()
@@ -385,7 +385,7 @@ public:
 class UMovieSceneCameraCutSection : public UMovieSceneSection
 {
 public:
-	struct FGuid                                       CameraGuid;                                               // 0x00E0(0x0010) (Deprecated, IsPlainOldData)
+	struct FGuid                                       CameraGuid;                                               // 0x00E0(0x0010) (ZeroConstructor, Deprecated, IsPlainOldData)
 	struct FMovieSceneObjectBindingID                  CameraBindingID;                                          // 0x00F0(0x0018) (Edit)
 
 	static UClass* StaticClass()
@@ -423,7 +423,7 @@ public:
 	float                                              PlayScale;                                                // 0x0108(0x0004) (ZeroConstructor, Deprecated, IsPlainOldData)
 	TEnumAsByte<ECameraAnimPlaySpace>                  PlaySpace;                                                // 0x010C(0x0001) (ZeroConstructor, Deprecated, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x010D(0x0003) MISSED OFFSET
-	struct FRotator                                    UserDefinedPlaySpace;                                     // 0x0110(0x000C) (Deprecated, IsPlainOldData)
+	struct FRotator                                    UserDefinedPlaySpace;                                     // 0x0110(0x000C) (ZeroConstructor, Deprecated, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x4];                                       // 0x011C(0x0004) MISSED OFFSET
 
 	static UClass* StaticClass()
@@ -566,6 +566,37 @@ public:
 };
 
 
+// Class MovieSceneTracks.MovieSceneEventSectionBase
+// 0x0000 (0x00E0 - 0x00E0)
+class UMovieSceneEventSectionBase : public UMovieSceneSection
+{
+public:
+
+	static UClass* StaticClass()
+	{
+		static auto ptr = UObject::FindClass("Class MovieSceneTracks.MovieSceneEventSectionBase");
+		return ptr;
+	}
+
+};
+
+
+// Class MovieSceneTracks.MovieSceneEventRepeaterSection
+// 0x0008 (0x00E8 - 0x00E0)
+class UMovieSceneEventRepeaterSection : public UMovieSceneEventSectionBase
+{
+public:
+	struct FMovieSceneEvent                            Event;                                                    // 0x00E0(0x0008) (Edit)
+
+	static UClass* StaticClass()
+	{
+		static auto ptr = UObject::FindClass("Class MovieSceneTracks.MovieSceneEventRepeaterSection");
+		return ptr;
+	}
+
+};
+
+
 // Class MovieSceneTracks.MovieSceneEventSection
 // 0x00F0 (0x01D0 - 0x00E0)
 class UMovieSceneEventSection : public UMovieSceneSection
@@ -605,6 +636,22 @@ public:
 };
 
 
+// Class MovieSceneTracks.MovieSceneEventTriggerSection
+// 0x0088 (0x0168 - 0x00E0)
+class UMovieSceneEventTriggerSection : public UMovieSceneEventSectionBase
+{
+public:
+	struct FMovieSceneEventChannel                     EventChannel;                                             // 0x00E0(0x0088)
+
+	static UClass* StaticClass()
+	{
+		static auto ptr = UObject::FindClass("Class MovieSceneTracks.MovieSceneEventTriggerSection");
+		return ptr;
+	}
+
+};
+
+
 // Class MovieSceneTracks.MovieSceneFloatSection
 // 0x00A0 (0x0180 - 0x00E0)
 class UMovieSceneFloatSection : public UMovieSceneSection
@@ -626,7 +673,7 @@ public:
 class UMovieSceneFadeSection : public UMovieSceneFloatSection
 {
 public:
-	struct FLinearColor                                FadeColor;                                                // 0x0180(0x0010) (Edit, IsPlainOldData)
+	struct FLinearColor                                FadeColor;                                                // 0x0180(0x0010) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      bFadeAudio : 1;                                           // 0x0190(0x0001) (Edit)
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0191(0x0007) MISSED OFFSET
 
@@ -942,7 +989,7 @@ class UMovieSceneSpawnTrack : public UMovieSceneTrack
 {
 public:
 	TArray<class UMovieSceneSection*>                  Sections;                                                 // 0x0058(0x0010) (ExportObject, ZeroConstructor)
-	struct FGuid                                       ObjectGuid;                                               // 0x0068(0x0010) (IsPlainOldData)
+	struct FGuid                                       ObjectGuid;                                               // 0x0068(0x0010) (ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

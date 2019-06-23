@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -95,8 +95,8 @@ struct UWidget_TradingPost_C_GetActiveSchematicTabEnabled_Params
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TradingPost.Widget_TradingPost_C.GetActiveTab
-struct UWidget_TradingPost_C_GetActiveTab_Params
+// Function Widget_TradingPost.Widget_TradingPost_C.SetActiveTab
+struct UWidget_TradingPost_C_SetActiveTab_Params
 {
 };
 
@@ -196,16 +196,6 @@ struct UWidget_TradingPost_C_purchasedSchematic_Params
 	class UClass*                                      purchasedSchematic;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__Widget_ImageTabButton_K2Node_ComponentBoundEvent_61_TabButtonClicked__DelegateSignature
-struct UWidget_TradingPost_C_BndEvt__Widget_ImageTabButton_K2Node_ComponentBoundEvent_61_TabButtonClicked__DelegateSignature_Params
-{
-};
-
-// Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__mActivatedSchematicTab_K2Node_ComponentBoundEvent_125_TabButtonClicked__DelegateSignature
-struct UWidget_TradingPost_C_BndEvt__mActivatedSchematicTab_K2Node_ComponentBoundEvent_125_TabButtonClicked__DelegateSignature_Params
-{
-};
-
 // Function Widget_TradingPost.Widget_TradingPost_C.mShakeWindow
 struct UWidget_TradingPost_C_mShakeWindow_Params
 {
@@ -219,6 +209,12 @@ struct UWidget_TradingPost_C_BndEvt__mWindow_K2Node_ComponentBoundEvent_0_OnClos
 // Function Widget_TradingPost.Widget_TradingPost_C.CreateSmoke
 struct UWidget_TradingPost_C_CreateSmoke_Params
 {
+};
+
+// Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__mWindow_K2Node_ComponentBoundEvent_3_OnTabButtonClicked__DelegateSignature
+struct UWidget_TradingPost_C_BndEvt__mWindow_K2Node_ComponentBoundEvent_3_OnTabButtonClicked__DelegateSignature_Params
+{
+	int                                                ButtonIndex;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_TradingPost.Widget_TradingPost_C.ExecuteUbergraph_Widget_TradingPost

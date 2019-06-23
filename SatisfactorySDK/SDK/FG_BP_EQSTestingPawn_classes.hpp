@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_EQSTestingPawn.BP_EQSTestingPawn_C
-// 0x0008 (0x07E8 - 0x07E0)
+// 0x0008 (0x07D8 - 0x07D0)
 class ABP_EQSTestingPawn_C : public AEQSTestingPawn
 {
 public:
-	class UAIPerceptionComponent*                      AIPerception;                                             // 0x07E0(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UAIPerceptionComponent*                      AIPerception;                                             // 0x07D0(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

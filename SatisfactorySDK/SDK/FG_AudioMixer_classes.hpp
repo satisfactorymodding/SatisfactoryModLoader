@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -71,8 +71,10 @@ public:
 	class USoundWave* StopRecordingOutput(class UObject* WorldContextObject, EAudioRecordingExportType ExportType, const class FString& Name, const class FString& Path, class USoundSubmix* SubmixToRecord, class USoundWave* ExistingSoundWaveToOverwrite);
 	void StartRecordingOutput(class UObject* WorldContextObject, float ExpectedDuration, class USoundSubmix* SubmixToRecord);
 	void SetBypassSourceEffectChainEntry(class UObject* WorldContextObject, class USoundEffectSourcePresetChain* PresetChain, int EntryIndex, bool bBypassed);
+	void ResumeRecordingOutput(class UObject* WorldContextObject, class USoundSubmix* SubmixToPause);
 	void RemoveSourceEffectFromPresetChain(class UObject* WorldContextObject, class USoundEffectSourcePresetChain* PresetChain, int EntryIndex);
 	void RemoveMasterSubmixEffect(class UObject* WorldContextObject, class USoundEffectSubmixPreset* SubmixEffectPreset);
+	void PauseRecordingOutput(class UObject* WorldContextObject, class USoundSubmix* SubmixToPause);
 	int GetNumberOfEntriesInSourceEffectChain(class UObject* WorldContextObject, class USoundEffectSourcePresetChain* PresetChain);
 	void ClearMasterSubmixEffects(class UObject* WorldContextObject);
 	void AddSourceEffectToPresetChain(class UObject* WorldContextObject, class USoundEffectSourcePresetChain* PresetChain, const struct FSourceEffectChainEntry& Entry);
@@ -119,12 +121,12 @@ public:
 
 
 // Class AudioMixer.SubmixEffectReverbPreset
-// 0x0088 (0x00C8 - 0x0040)
+// 0x0090 (0x00D0 - 0x0040)
 class USubmixEffectReverbPreset : public USoundEffectSubmixPreset
 {
 public:
-	unsigned char                                      UnknownData00[0x58];                                      // 0x0040(0x0058) MISSED OFFSET
-	struct FSubmixEffectReverbSettings                 Settings;                                                 // 0x0098(0x0030) (Edit, BlueprintVisible)
+	unsigned char                                      UnknownData00[0x5C];                                      // 0x0040(0x005C) MISSED OFFSET
+	struct FSubmixEffectReverbSettings                 Settings;                                                 // 0x009C(0x0034) (Edit, BlueprintVisible)
 
 	static UClass* StaticClass()
 	{
@@ -133,17 +135,17 @@ public:
 	}
 
 
-	void SetSettingsWithReverbEffect(class UReverbEffect* InReverbEffect, float WetLevel);
+	void SetSettingsWithReverbEffect(class UReverbEffect* InReverbEffect, float WetLevel, float DryLevel);
 	void SetSettings(const struct FSubmixEffectReverbSettings& InSettings);
 };
 
 
 // Class AudioMixer.SynthSound
-// 0x0020 (0x0270 - 0x0250)
+// 0x0020 (0x0280 - 0x0260)
 class USynthSound : public USoundWaveProcedural
 {
 public:
-	unsigned char                                      UnknownData00[0x20];                                      // 0x0250(0x0020) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x20];                                      // 0x0260(0x0020) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

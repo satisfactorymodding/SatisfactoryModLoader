@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -57,7 +57,7 @@ struct FText UWidget_TradingPost_ActivateSchematicButton_C::GetText()
 // Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.GetColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_TradingPost_ActivateSchematicButton_C::GetColor()
 {
@@ -100,6 +100,23 @@ void UWidget_TradingPost_ActivateSchematicButton_C::BndEvt__mButton_K2Node_Compo
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.BndEvt__mButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature");
 
 	UWidget_TradingPost_ActivateSchematicButton_C_BndEvt__mButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.BndEvt__mButton_K2Node_ComponentBoundEvent_0_OnButtonHoverEvent__DelegateSignature
+// ()
+
+void UWidget_TradingPost_ActivateSchematicButton_C::BndEvt__mButton_K2Node_ComponentBoundEvent_0_OnButtonHoverEvent__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_ActivateSchematicButton.Widget_TradingPost_ActivateSchematicButton_C.BndEvt__mButton_K2Node_ComponentBoundEvent_0_OnButtonHoverEvent__DelegateSignature");
+
+	UWidget_TradingPost_ActivateSchematicButton_C_BndEvt__mButton_K2Node_ComponentBoundEvent_0_OnButtonHoverEvent__DelegateSignature_Params params;
 
 	auto flags = fn->FunctionFlags;
 

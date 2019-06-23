@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,18 +15,16 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_WorkBenchIntegrated.Build_WorkBenchIntegrated_C
-// 0x0050 (0x05B8 - 0x0568)
+// 0x0040 (0x05A8 - 0x0568)
 class ABuild_WorkBenchIntegrated_C : public AFGBuildable
 {
 public:
 	class UBoxComponent*                               Box;                                                      // 0x0568(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight1;                                    // 0x0570(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight;                                     // 0x0578(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UStaticMeshComponent*                        Glass;                                                    // 0x0580(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingPointLight_C*                    BP_BuildingPointLight;                                    // 0x0588(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_WorkBenchComponent_C*                    BP_WorkBenchComponent;                                    // 0x0590(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UStaticMeshComponent*                        MainMesh;                                                 // 0x0598(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	struct FText                                       mOccupiedText;                                            // 0x05A0(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
+	class UStaticMeshComponent*                        Glass;                                                    // 0x0578(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UBP_WorkBenchComponent_C*                    BP_WorkBenchComponent;                                    // 0x0580(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UStaticMeshComponent*                        MainMesh;                                                 // 0x0588(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	struct FText                                       mOccupiedText;                                            // 0x0590(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
 
 	static UClass* StaticClass()
 	{

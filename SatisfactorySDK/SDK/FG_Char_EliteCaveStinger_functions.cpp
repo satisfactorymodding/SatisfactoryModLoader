@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -12,14 +12,14 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.UserConstructionScript
+// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.OnRep_bSpawnGass
 // ()
 
-void AChar_EliteCaveStinger_C::UserConstructionScript()
+void AChar_EliteCaveStinger_C::OnRep_bSpawnGass()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.UserConstructionScript");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.OnRep_bSpawnGass");
 
-	AChar_EliteCaveStinger_C_UserConstructionScript_Params params;
+	AChar_EliteCaveStinger_C_OnRep_bSpawnGass_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -29,14 +29,14 @@ void AChar_EliteCaveStinger_C::UserConstructionScript()
 }
 
 
-// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.ReceiveBeginPlay
+// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.UserConstructionScript
 // ()
 
-void AChar_EliteCaveStinger_C::ReceiveBeginPlay()
+void AChar_EliteCaveStinger_C::UserConstructionScript()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.ReceiveBeginPlay");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.UserConstructionScript");
 
-	AChar_EliteCaveStinger_C_ReceiveBeginPlay_Params params;
+	AChar_EliteCaveStinger_C_UserConstructionScript_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -63,25 +63,14 @@ void AChar_EliteCaveStinger_C::SpawnGas()
 }
 
 
-// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.OnTakeAnyDamage_Event_1
+// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.GasEffect
 // ()
-// Parameters:
-// class AActor*                  damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// float                          Damage                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class UDamageType*             DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_EliteCaveStinger_C::OnTakeAnyDamage_Event_1(class AActor* damagedActor, float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AChar_EliteCaveStinger_C::GasEffect()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.OnTakeAnyDamage_Event_1");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.GasEffect");
 
-	AChar_EliteCaveStinger_C_OnTakeAnyDamage_Event_1_Params params;
-	params.damagedActor = damagedActor;
-	params.Damage = Damage;
-	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	AChar_EliteCaveStinger_C_GasEffect_Params params;
 
 	auto flags = fn->FunctionFlags;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_BuildableSubsystem.BP_BuildableSubsystem_C
-// 0x0000 (0x0500 - 0x0500)
+// 0x0000 (0x0568 - 0x0568)
 class ABP_BuildableSubsystem_C : public AFGBuildableSubsystem
 {
 public:

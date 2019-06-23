@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function Widget_InventoryDragNDropRep.Widget_InventoryDragNDropRep_C.GetTextBackgroundColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_InventoryDragNDropRep_C::GetTextBackgroundColor()
 {
@@ -36,7 +36,7 @@ struct FLinearColor UWidget_InventoryDragNDropRep_C::GetTextBackgroundColor()
 // Function Widget_InventoryDragNDropRep.Widget_InventoryDragNDropRep_C.GetSlotColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_InventoryDragNDropRep_C::GetSlotColor()
 {

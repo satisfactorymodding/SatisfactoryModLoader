@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -48,7 +48,7 @@ struct UMovieSceneSequencePlayer_SetPlaybackPosition_Params
 // Function MovieScene.MovieSceneSequencePlayer.SetFrameRate
 struct UMovieSceneSequencePlayer_SetFrameRate_Params
 {
-	struct FFrameRate                                  FrameRate;                                                // (Parm)
+	struct FFrameRate                                  FrameRate;                                                // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function MovieScene.MovieSceneSequencePlayer.SetFrameRange
@@ -185,6 +185,13 @@ struct UMovieSceneSequencePlayer_GetPlaybackEnd_Params
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function MovieScene.MovieSceneSequencePlayer.GetObjectBindings
+struct UMovieSceneSequencePlayer_GetObjectBindings_Params
+{
+	class UObject*                                     InObject;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
+	TArray<struct FMovieSceneObjectBindingID>          ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
+};
+
 // Function MovieScene.MovieSceneSequencePlayer.GetLength
 struct UMovieSceneSequencePlayer_GetLength_Params
 {
@@ -194,7 +201,7 @@ struct UMovieSceneSequencePlayer_GetLength_Params
 // Function MovieScene.MovieSceneSequencePlayer.GetFrameRate
 struct UMovieSceneSequencePlayer_GetFrameRate_Params
 {
-	struct FFrameRate                                  ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+	struct FFrameRate                                  ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function MovieScene.MovieSceneSequencePlayer.GetFrameDuration

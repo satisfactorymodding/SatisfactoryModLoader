@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -50,13 +50,13 @@ public:
 
 
 // Class MediaAssets.FileMediaSource
-// 0x0018 (0x0050 - 0x0038)
+// 0x0028 (0x0060 - 0x0038)
 class UFileMediaSource : public UBaseMediaSource
 {
 public:
 	class FString                                      FilePath;                                                 // 0x0038(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
 	bool                                               PrecacheFile;                                             // 0x0048(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x7];                                       // 0x0049(0x0007) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x17];                                      // 0x0049(0x0017) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -101,9 +101,9 @@ public:
 	struct FScriptMulticastDelegate                    OnPlaybackSuspended;                                      // 0x0078(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
 	struct FScriptMulticastDelegate                    OnSeekCompleted;                                          // 0x0088(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
 	struct FScriptMulticastDelegate                    OnTracksChanged;                                          // 0x0098(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	struct FTimespan                                   CacheAhead;                                               // 0x00A8(0x0008) (BlueprintVisible)
-	struct FTimespan                                   CacheBehind;                                              // 0x00B0(0x0008) (BlueprintVisible)
-	struct FTimespan                                   CacheBehindGame;                                          // 0x00B8(0x0008) (BlueprintVisible)
+	struct FTimespan                                   CacheAhead;                                               // 0x00A8(0x0008) (BlueprintVisible, ZeroConstructor)
+	struct FTimespan                                   CacheBehind;                                              // 0x00B0(0x0008) (BlueprintVisible, ZeroConstructor)
+	struct FTimespan                                   CacheBehindGame;                                          // 0x00B8(0x0008) (BlueprintVisible, ZeroConstructor)
 	bool                                               NativeAudioOut;                                           // 0x00C0(0x0001) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	bool                                               PlayOnOpen;                                               // 0x00C1(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x2];                                       // 0x00C2(0x0002) MISSED OFFSET
@@ -113,12 +113,12 @@ public:
 	class UMediaPlaylist*                              Playlist;                                                 // 0x00C8(0x0008) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, Transient, IsPlainOldData)
 	int                                                PlaylistIndex;                                            // 0x00D0(0x0004) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData02[0x4];                                       // 0x00D4(0x0004) MISSED OFFSET
-	struct FTimespan                                   TimeDelay;                                                // 0x00D8(0x0008) (BlueprintVisible, BlueprintReadOnly)
+	struct FTimespan                                   TimeDelay;                                                // 0x00D8(0x0008) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
 	float                                              HorizontalFieldOfView;                                    // 0x00E0(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              VerticalFieldOfView;                                      // 0x00E4(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	struct FRotator                                    ViewRotation;                                             // 0x00E8(0x000C) (Edit, IsPlainOldData)
+	struct FRotator                                    ViewRotation;                                             // 0x00E8(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData03[0x2C];                                      // 0x00F4(0x002C) MISSED OFFSET
-	struct FGuid                                       PlayerGuid;                                               // 0x0120(0x0010) (IsPlainOldData)
+	struct FGuid                                       PlayerGuid;                                               // 0x0120(0x0010) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData04[0x8];                                       // 0x0130(0x0008) MISSED OFFSET
 
 	static UClass* StaticClass()
@@ -149,6 +149,7 @@ public:
 	bool Play();
 	bool Pause();
 	bool OpenUrl(const class FString& URL);
+	bool OpenSourceWithOptions(class UMediaSource* MediaSource, const struct FMediaPlayerOptions& options);
 	bool OpenSource(class UMediaSource* MediaSource);
 	bool OpenPlaylistIndex(class UMediaPlaylist* InPlaylist, int Index);
 	bool OpenPlaylist(class UMediaPlaylist* InPlaylist);
@@ -236,7 +237,7 @@ public:
 	bool                                               DynamicRateAdjustment;                                    // 0x05C4(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x3];                                       // 0x05C5(0x0003) MISSED OFFSET
 	float                                              RateAdjustmentFactor;                                     // 0x05C8(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	struct FFloatRange                                 RateAdjustmentRange;                                      // 0x05CC(0x0010) (Edit)
+	struct FFloatRange                                 RateAdjustmentRange;                                      // 0x05CC(0x0010) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData02[0x4];                                       // 0x05DC(0x0004) MISSED OFFSET
 	class UMediaPlayer*                                MediaPlayer;                                              // 0x05E0(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData03[0x78];                                      // 0x05E8(0x0078) MISSED OFFSET
@@ -255,18 +256,18 @@ public:
 
 
 // Class MediaAssets.MediaTexture
-// 0x0090 (0x0148 - 0x00B8)
+// 0x0090 (0x0140 - 0x00B0)
 class UMediaTexture : public UTexture
 {
 public:
-	TEnumAsByte<ETextureAddress>                       AddressX;                                                 // 0x00B8(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	TEnumAsByte<ETextureAddress>                       AddressY;                                                 // 0x00B9(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	bool                                               AutoClear;                                                // 0x00BA(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x1];                                       // 0x00BB(0x0001) MISSED OFFSET
-	struct FLinearColor                                ClearColor;                                               // 0x00BC(0x0010) (Edit, BlueprintVisible, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x4];                                       // 0x00CC(0x0004) MISSED OFFSET
-	class UMediaPlayer*                                MediaPlayer;                                              // 0x00D0(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x70];                                      // 0x00D8(0x0070) MISSED OFFSET
+	TEnumAsByte<ETextureAddress>                       AddressX;                                                 // 0x00B0(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	TEnumAsByte<ETextureAddress>                       AddressY;                                                 // 0x00B1(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	bool                                               AutoClear;                                                // 0x00B2(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x1];                                       // 0x00B3(0x0001) MISSED OFFSET
+	struct FLinearColor                                ClearColor;                                               // 0x00B4(0x0010) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x4];                                       // 0x00C4(0x0004) MISSED OFFSET
+	class UMediaPlayer*                                MediaPlayer;                                              // 0x00C8(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x70];                                      // 0x00D0(0x0070) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

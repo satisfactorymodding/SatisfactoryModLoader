@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -192,6 +192,28 @@ void UAudioMixerBlueprintLibrary::SetBypassSourceEffectChainEntry(class UObject*
 }
 
 
+// Function AudioMixer.AudioMixerBlueprintLibrary.ResumeRecordingOutput
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// class USoundSubmix*            SubmixToPause                  (Parm, ZeroConstructor, IsPlainOldData)
+
+void UAudioMixerBlueprintLibrary::ResumeRecordingOutput(class UObject* WorldContextObject, class USoundSubmix* SubmixToPause)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function AudioMixer.AudioMixerBlueprintLibrary.ResumeRecordingOutput");
+
+	UAudioMixerBlueprintLibrary_ResumeRecordingOutput_Params params;
+	params.WorldContextObject = WorldContextObject;
+	params.SubmixToPause = SubmixToPause;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function AudioMixer.AudioMixerBlueprintLibrary.RemoveSourceEffectFromPresetChain
 // ()
 // Parameters:
@@ -229,6 +251,28 @@ void UAudioMixerBlueprintLibrary::RemoveMasterSubmixEffect(class UObject* WorldC
 	UAudioMixerBlueprintLibrary_RemoveMasterSubmixEffect_Params params;
 	params.WorldContextObject = WorldContextObject;
 	params.SubmixEffectPreset = SubmixEffectPreset;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function AudioMixer.AudioMixerBlueprintLibrary.PauseRecordingOutput
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// class USoundSubmix*            SubmixToPause                  (Parm, ZeroConstructor, IsPlainOldData)
+
+void UAudioMixerBlueprintLibrary::PauseRecordingOutput(class UObject* WorldContextObject, class USoundSubmix* SubmixToPause)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function AudioMixer.AudioMixerBlueprintLibrary.PauseRecordingOutput");
+
+	UAudioMixerBlueprintLibrary_PauseRecordingOutput_Params params;
+	params.WorldContextObject = WorldContextObject;
+	params.SubmixToPause = SubmixToPause;
 
 	auto flags = fn->FunctionFlags;
 
@@ -288,7 +332,7 @@ void UAudioMixerBlueprintLibrary::ClearMasterSubmixEffects(class UObject* WorldC
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class USoundEffectSourcePresetChain* PresetChain                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FSourceEffectChainEntry Entry                          (Parm, IsPlainOldData)
+// struct FSourceEffectChainEntry Entry                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UAudioMixerBlueprintLibrary::AddSourceEffectToPresetChain(class UObject* WorldContextObject, class USoundEffectSourcePresetChain* PresetChain, const struct FSourceEffectChainEntry& Entry)
 {
@@ -374,14 +418,16 @@ void USubmixEffectSubmixEQPreset::SetSettings(const struct FSubmixEffectSubmixEQ
 // Parameters:
 // class UReverbEffect*           InReverbEffect                 (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          WetLevel                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// float                          DryLevel                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 
-void USubmixEffectReverbPreset::SetSettingsWithReverbEffect(class UReverbEffect* InReverbEffect, float WetLevel)
+void USubmixEffectReverbPreset::SetSettingsWithReverbEffect(class UReverbEffect* InReverbEffect, float WetLevel, float DryLevel)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function AudioMixer.SubmixEffectReverbPreset.SetSettingsWithReverbEffect");
 
 	USubmixEffectReverbPreset_SetSettingsWithReverbEffect_Params params;
 	params.InReverbEffect = InReverbEffect;
 	params.WetLevel = WetLevel;
+	params.DryLevel = DryLevel;
 
 	auto flags = fn->FunctionFlags;
 

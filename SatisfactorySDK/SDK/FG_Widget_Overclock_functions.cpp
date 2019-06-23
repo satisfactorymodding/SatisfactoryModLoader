@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -647,6 +647,26 @@ void UWidget_Overclock_C::SetupOverclock(float OvecklockAmount)
 
 	UWidget_Overclock_C_SetupOverclock_Params params;
 	params.OvecklockAmount = OvecklockAmount;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Overclock.Widget_Overclock_C.OnPotentialInventoryReplicated
+// ()
+// Parameters:
+// class AActor*                  replicationDetailActorOwner    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Overclock_C::OnPotentialInventoryReplicated(class AActor* replicationDetailActorOwner)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Overclock.Widget_Overclock_C.OnPotentialInventoryReplicated");
+
+	UWidget_Overclock_C_OnPotentialInventoryReplicated_Params params;
+	params.replicationDetailActorOwner = replicationDetailActorOwner;
 
 	auto flags = fn->FunctionFlags;
 

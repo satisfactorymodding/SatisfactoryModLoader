@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,33 +15,33 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Char_SpaceRabbit.Char_SpaceRabbit_C
-// 0x00B8 (0x0A18 - 0x0960)
+// 0x00B8 (0x0A28 - 0x0970)
 class AChar_SpaceRabbit_C : public AFGCreature
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0960(0x0008) (Transient, DuplicateTransient)
-	class UFGInventoryComponent*                       mInventory;                                               // 0x0968(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	struct FName                                       mFriendBBKeyName;                                         // 0x0970(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	struct FText                                       mPetText;                                                 // 0x0978(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
-	class AFGCharacterPlayer*                          mPotentialThreat;                                         // 0x0990(0x0008) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, IsPlainOldData)
-	struct FTimerHandle                                mWalkBackTimerHandle;                                     // 0x0998(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
-	bool                                               mIsWalkingBackwards;                                      // 0x09A0(0x0001) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x3];                                       // 0x09A1(0x0003) MISSED OFFSET
-	struct FVector                                     mWalkBackDirection;                                       // 0x09A4(0x000C) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
-	struct FScriptMulticastDelegate                    OnWalkBackStopped;                                        // 0x09B0(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
-	float                                              mWalkBackDistance;                                        // 0x09C0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x4];                                       // 0x09C4(0x0004) MISSED OFFSET
-	class AActor*                                      mFriendActor;                                             // 0x09C8(0x0008) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, SaveGame, IsPlainOldData)
-	int                                                mLootTableIndex;                                          // 0x09D0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, SaveGame, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x4];                                       // 0x09D4(0x0004) MISSED OFFSET
-	class UClass*                                      mLootSettings;                                            // 0x09D8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	struct FTimerHandle                                mLootTimerHandle;                                         // 0x09E0(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance, SaveGame)
-	float                                              mLotMinTime;                                              // 0x09E8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	float                                              mLotMaxTime;                                              // 0x09EC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	bool                                               mIsAlive;                                                 // 0x09F0(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	unsigned char                                      UnknownData03[0x7];                                       // 0x09F1(0x0007) MISSED OFFSET
-	struct FName                                       mGotBerryBBKeyName;                                       // 0x09F8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	struct FText                                       mFriendText;                                              // 0x0A00(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0970(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
+	class UFGInventoryComponent*                       mInventory;                                               // 0x0978(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	struct FName                                       mFriendBBKeyName;                                         // 0x0980(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FText                                       mPetText;                                                 // 0x0988(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
+	class AFGCharacterPlayer*                          mPotentialThreat;                                         // 0x09A0(0x0008) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, IsPlainOldData)
+	struct FTimerHandle                                mWalkBackTimerHandle;                                     // 0x09A8(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
+	bool                                               mIsWalkingBackwards;                                      // 0x09B0(0x0001) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x3];                                       // 0x09B1(0x0003) MISSED OFFSET
+	struct FVector                                     mWalkBackDirection;                                       // 0x09B4(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FScriptMulticastDelegate                    OnWalkBackStopped;                                        // 0x09C0(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
+	float                                              mWalkBackDistance;                                        // 0x09D0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x4];                                       // 0x09D4(0x0004) MISSED OFFSET
+	class AActor*                                      mFriendActor;                                             // 0x09D8(0x0008) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, SaveGame, IsPlainOldData)
+	int                                                mLootTableIndex;                                          // 0x09E0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, SaveGame, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x4];                                       // 0x09E4(0x0004) MISSED OFFSET
+	class UClass*                                      mLootSettings;                                            // 0x09E8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FTimerHandle                                mLootTimerHandle;                                         // 0x09F0(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance, SaveGame)
+	float                                              mLotMinTime;                                              // 0x09F8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	float                                              mLotMaxTime;                                              // 0x09FC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	bool                                               mIsAlive;                                                 // 0x0A00(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData03[0x7];                                       // 0x0A01(0x0007) MISSED OFFSET
+	struct FName                                       mGotBerryBBKeyName;                                       // 0x0A08(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FText                                       mFriendText;                                              // 0x0A10(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
 
 	static UClass* StaticClass()
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -26,7 +26,7 @@ public:
 	unsigned char                                      UnknownData00[0x4];                                       // 0x0344(0x0004) MISSED OFFSET
 	TArray<struct FCaveData>                           CaveDataArray;                                            // 0x0348(0x0010) (Edit, BlueprintVisible, ZeroConstructor)
 	class UStaticMesh*                                 mCaveMesh;                                                // 0x0358(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	struct FCaveData                                   CaveMeshDefaults;                                         // 0x0360(0x0018) (Edit, BlueprintVisible, DisableEditOnInstance)
+	struct FCaveData                                   CaveMeshDefaults;                                         // 0x0360(0x0018) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
 	class UStaticMesh*                                 mEntranceMesh;                                            // 0x0378(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	class UStaticMesh*                                 mExitMesh;                                                // 0x0380(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	bool                                               DrawCavePointNumbers;                                     // 0x0388(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)

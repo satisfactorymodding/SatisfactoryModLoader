@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -32,7 +32,7 @@ void AAttach_MedKit_C::UserConstructionScript()
 // Function Attach_MedKit.Attach_MedKit_C.PlayUseEffect
 // ()
 // Parameters:
-// struct FVector*                UseLocation                    (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector*                UseLocation                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void AAttach_MedKit_C::PlayUseEffect(struct FVector* UseLocation)
 {

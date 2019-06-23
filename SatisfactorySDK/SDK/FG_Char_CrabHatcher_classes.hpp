@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class AChar_CrabHatcher_C : public AFGCrabHatcher
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0990(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0990(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UParticleSystemComponent*                    CrabEggsHatch_01;                                         // 0x0998(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class USceneComponent*                             Scene;                                                    // 0x09A0(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UStaticMeshComponent*                        StaticMesh;                                               // 0x09A8(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)

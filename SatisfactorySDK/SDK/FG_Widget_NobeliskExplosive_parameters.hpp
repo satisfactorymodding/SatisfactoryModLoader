@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -23,7 +23,7 @@ struct UWidget_NobeliskExplosive_C_Get_mNobeliskThrowbar_Visibility_1_Params
 // Function Widget_NobeliskExplosive.Widget_NobeliskExplosive_C.Get_mNobeliskThrowbar_FillColorAndOpacity_1
 struct UWidget_NobeliskExplosive_C_Get_mNobeliskThrowbar_FillColorAndOpacity_1_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_NobeliskExplosive.Widget_NobeliskExplosive_C.GetThrowPercent

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,7 +20,7 @@ class UWidget_Options_C : public UBP_MenuBase_C
 {
 public:
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0251(0x0007) MISSED OFFSET
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0258(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0258(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UWidgetAnimation*                            ShowResetApplyButtons;                                    // 0x0260(0x0008) (BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
 	class UWidget_OptionsRow_C*                        ControlsHoldToSprint;                                     // 0x0268(0x0008) (BlueprintVisible, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
 	class UWidget_OptionsRow_C*                        ControlsSensitivity;                                      // 0x0270(0x0008) (BlueprintVisible, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
@@ -84,7 +84,7 @@ public:
 	class UWidget*                                     LastActiveWidget;                                         // 0x04C8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
 	TMap<class FString, struct FText>                  mLanguageData_IDontKnow;                                  // 0x04D0(0x0050) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance)
 	int                                                mNetworkQualityIndex;                                     // 0x0520(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	struct FIntPoint                                   CachedScreenResolution;                                   // 0x0524(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
+	struct FIntPoint                                   CachedScreenResolution;                                   // 0x0524(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	TEnumAsByte<EWindowMode>                           CachedFullscreenMode;                                     // 0x052C(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               ResolutionChanged;                                        // 0x052D(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
@@ -123,9 +123,9 @@ public:
 	void PopulateResolutionBox();
 	void PostProcessingNext();
 	void PostProcessingPrevious();
-	void FoliagePrevious();
 	void ShadowQualityNext();
 	void ShadowQualityPrevious();
+	void FoliagePrevious();
 	void FoliageNext();
 	void TextureQualityNext();
 	void TextureQualityPrevious();
@@ -156,6 +156,7 @@ public:
 	void OnMenuExit(class UWidget** prevMenu, bool* noAnimation);
 	void CheckResolutionChanges();
 	void ResolutionChangedAccepted(bool confirm);
+	void OpenRequireRestartIfRequired();
 	void Construct();
 	void ExecuteUbergraph_Widget_Options(int EntryPoint);
 	void OnBackClicked__DelegateSignature();

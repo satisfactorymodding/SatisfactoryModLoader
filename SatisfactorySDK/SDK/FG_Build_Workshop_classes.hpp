@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,19 +15,15 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_Workshop.Build_Workshop_C
-// 0x0058 (0x05C0 - 0x0568)
+// 0x0038 (0x05A0 - 0x0568)
 class ABuild_Workshop_C : public AFGBuildable
 {
 public:
 	class UFGFactoryLegsComponent*                     FGFactoryLegs;                                            // 0x0568(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGColoredInstanceMeshProxy*                 FGColoredInstanceMeshProxy;                               // 0x0570(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight1;                                    // 0x0578(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingPointLight_C*                    BP_BuildingPointLight1;                                   // 0x0580(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight;                                     // 0x0588(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingPointLight_C*                    BP_BuildingPointLight;                                    // 0x0590(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_WorkshopComponent_C*                     WorkshopComponent;                                        // 0x0598(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBoxComponent*                               Clearance;                                                // 0x05A0(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	struct FText                                       mOccupiedText;                                            // 0x05A8(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
+	class UBP_WorkshopComponent_C*                     WorkshopComponent;                                        // 0x0578(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UBoxComponent*                               Clearance;                                                // 0x0580(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	struct FText                                       mOccupiedText;                                            // 0x0588(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
 
 	static UClass* StaticClass()
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -154,21 +154,20 @@ public:
 
 
 // Class GameplayTasks.GameplayTasksComponent
-// 0x0080 (0x0170 - 0x00F0)
+// 0x0070 (0x0160 - 0x00F0)
 class UGameplayTasksComponent : public UActorComponent
 {
 public:
-	unsigned char                                      UnknownData00[0x8];                                       // 0x00F0(0x0008) MISSED OFFSET
-	bool                                               bIsNetDirty;                                              // 0x00F8(0x0001) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x7];                                       // 0x00F9(0x0007) MISSED OFFSET
+	unsigned char                                      UnknownData00[0xC];                                       // 0x00F0(0x000C) MISSED OFFSET
+	unsigned char                                      UnknownData01 : 1;                                        // 0x00FC(0x0001)
+	unsigned char                                      bIsNetDirty : 1;                                          // 0x00FC(0x0001)
+	unsigned char                                      UnknownData02[0x3];                                       // 0x00FD(0x0003) MISSED OFFSET
 	TArray<class UGameplayTask*>                       SimulatedTasks;                                           // 0x0100(0x0010) (Net, ZeroConstructor)
 	TArray<class UGameplayTask*>                       TaskPriorityQueue;                                        // 0x0110(0x0010) (ZeroConstructor)
-	unsigned char                                      UnknownData02[0x10];                                      // 0x0120(0x0010) MISSED OFFSET
+	unsigned char                                      UnknownData03[0x10];                                      // 0x0120(0x0010) MISSED OFFSET
 	TArray<class UGameplayTask*>                       TickingTasks;                                             // 0x0130(0x0010) (ZeroConstructor)
 	TArray<class UGameplayTask*>                       KnownTasks;                                               // 0x0140(0x0010) (ZeroConstructor, Transient)
-	unsigned char                                      UnknownData03[0x8];                                       // 0x0150(0x0008) MISSED OFFSET
-	struct FScriptMulticastDelegate                    OnClaimedResourcesChange;                                 // 0x0158(0x0010) (BlueprintVisible, ZeroConstructor, InstancedReference)
-	unsigned char                                      UnknownData04[0x8];                                       // 0x0168(0x0008) MISSED OFFSET
+	struct FScriptMulticastDelegate                    OnClaimedResourcesChange;                                 // 0x0150(0x0010) (BlueprintVisible, ZeroConstructor, InstancedReference)
 
 	static UClass* StaticClass()
 	{

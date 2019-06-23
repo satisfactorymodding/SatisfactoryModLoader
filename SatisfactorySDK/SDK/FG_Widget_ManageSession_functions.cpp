@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -29,17 +29,17 @@ void UWidget_ManageSession_C::ClearIngamePlayerList()
 }
 
 
-// Function Widget_ManageSession.Widget_ManageSession_C.IsHost
+// Function Widget_ManageSession.Widget_ManageSession_C.isHost
 // ()
 // Parameters:
 // class APlayerState*            State                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           isOurself                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_ManageSession_C::IsHost(class APlayerState* State, bool* isOurself)
+void UWidget_ManageSession_C::isHost(class APlayerState* State, bool* isOurself)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManageSession.Widget_ManageSession_C.IsHost");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManageSession.Widget_ManageSession_C.isHost");
 
-	UWidget_ManageSession_C_IsHost_Params params;
+	UWidget_ManageSession_C_isHost_Params params;
 	params.State = State;
 
 	auto flags = fn->FunctionFlags;

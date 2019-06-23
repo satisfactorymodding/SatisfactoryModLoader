@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // Class AssetRegistry.AssetRegistryImpl
-// 0x06D8 (0x0700 - 0x0028)
+// 0x06E8 (0x0710 - 0x0028)
 class UAssetRegistryImpl : public UObject
 {
 public:
-	unsigned char                                      UnknownData00[0x6D8];                                     // 0x0028(0x06D8) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x6E8];                                     // 0x0028(0x06E8) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

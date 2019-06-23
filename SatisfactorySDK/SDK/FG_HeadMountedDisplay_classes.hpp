@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -27,10 +27,11 @@ public:
 	}
 
 
+	void UpdateExternalTrackingHMDPosition(const struct FTransform& ExternalTrackingTransform);
 	void SetWorldToMetersScale(class UObject* WorldContext, float NewScale);
 	void SetTrackingOrigin(TEnumAsByte<EHMDTrackingOrigin> Origin);
 	void SetSpectatorScreenTexture(class UTexture* InTexture);
-	void SetSpectatorScreenModeTexturePlusEyeLayout(const struct FVector2D& EyeRectMin, const struct FVector2D& EyeRectMax, const struct FVector2D& TextureRectMin, const struct FVector2D& TextureRectMax, bool bDrawEyeFirst, bool bClearBlack);
+	void SetSpectatorScreenModeTexturePlusEyeLayout(const struct FVector2D& EyeRectMin, const struct FVector2D& EyeRectMax, const struct FVector2D& TextureRectMin, const struct FVector2D& TextureRectMax, bool bDrawEyeFirst, bool bClearBlack, bool bUseAlpha);
 	void SetSpectatorScreenMode(ESpectatorScreenMode Mode);
 	void SetClippingPlanes(float Near, float Far);
 	void ResetOrientationAndPosition(float Yaw, TEnumAsByte<EOrientPositionSelector> options);
@@ -57,29 +58,27 @@ public:
 	TArray<struct FXRDeviceId> EnumerateTrackedDevices(const struct FName& SystemId, EXRTrackedDeviceType DeviceType);
 	void EnableLowPersistenceMode(bool bEnable);
 	bool EnableHMD(bool bEnable);
+	void CalibrateExternalTrackingToHMD(const struct FTransform& ExternalTrackingTransform);
 };
 
 
 // Class HeadMountedDisplay.MotionControllerComponent
-// 0x00C0 (0x0620 - 0x0560)
+// 0x00B0 (0x0610 - 0x0560)
 class UMotionControllerComponent : public UPrimitiveComponent
 {
 public:
-	int                                                PlayerIndex;                                              // 0x0560(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	EControllerHand                                    Hand;                                                     // 0x0564(0x0001) (BlueprintVisible, ZeroConstructor, Deprecated, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x3];                                       // 0x0565(0x0003) MISSED OFFSET
-	struct FName                                       MotionSource;                                             // 0x0568(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      bDisableLowLatencyUpdate : 1;                             // 0x0570(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      UnknownData01[0x3];                                       // 0x0571(0x0003) MISSED OFFSET
-	ETrackingStatus                                    CurrentTrackingStatus;                                    // 0x0574(0x0001) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	bool                                               bDisplayDeviceModel;                                      // 0x0575(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x2];                                       // 0x0576(0x0002) MISSED OFFSET
-	struct FName                                       DisplayModelSource;                                       // 0x0578(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	class UStaticMesh*                                 CustomDisplayMesh;                                        // 0x0580(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	TArray<class UMaterialInterface*>                  DisplayMeshMaterialOverrides;                             // 0x0588(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
-	unsigned char                                      UnknownData03[0x68];                                      // 0x0598(0x0068) MISSED OFFSET
-	class UPrimitiveComponent*                         DisplayComponent;                                         // 0x0600(0x0008) (BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, Transient, InstancedReference, IsPlainOldData)
-	unsigned char                                      UnknownData04[0x18];                                      // 0x0608(0x0018) MISSED OFFSET
+	struct FName                                       MotionSource;                                             // 0x0560(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      bDisableLowLatencyUpdate : 1;                             // 0x0568(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      UnknownData00[0x3];                                       // 0x0569(0x0003) MISSED OFFSET
+	ETrackingStatus                                    CurrentTrackingStatus;                                    // 0x056C(0x0001) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	bool                                               bDisplayDeviceModel;                                      // 0x056D(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x2];                                       // 0x056E(0x0002) MISSED OFFSET
+	struct FName                                       DisplayModelSource;                                       // 0x0570(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	class UStaticMesh*                                 CustomDisplayMesh;                                        // 0x0578(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	TArray<class UMaterialInterface*>                  DisplayMeshMaterialOverrides;                             // 0x0580(0x0010) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
+	unsigned char                                      UnknownData02[0x60];                                      // 0x0590(0x0060) MISSED OFFSET
+	class UPrimitiveComponent*                         DisplayComponent;                                         // 0x05F0(0x0008) (BlueprintVisible, ExportObject, BlueprintReadOnly, ZeroConstructor, Transient, InstancedReference, IsPlainOldData)
+	unsigned char                                      UnknownData03[0x18];                                      // 0x05F8(0x0018) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

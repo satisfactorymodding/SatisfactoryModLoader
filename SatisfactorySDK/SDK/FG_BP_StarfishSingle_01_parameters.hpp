@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -25,10 +25,10 @@ struct ABP_StarfishSingle_01_C_Burrow_Params
 {
 };
 
-// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.canMove
-struct ABP_StarfishSingle_01_C_canMove_Params
+// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.CanMove
+struct ABP_StarfishSingle_01_C_CanMove_Params
 {
-	bool                                               canMove;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	bool                                               CanMove;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.MoveStarFish

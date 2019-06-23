@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,40 +20,6 @@ void ABP_StingerGas_C::UserConstructionScript()
 	static auto fn = UObject::FindObject<UFunction>("Function BP_StingerGas.BP_StingerGas_C.UserConstructionScript");
 
 	ABP_StingerGas_C_UserConstructionScript_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function BP_StingerGas.BP_StingerGas_C.Timeline_0__FinishedFunc
-// ()
-
-void ABP_StingerGas_C::Timeline_0__FinishedFunc()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_StingerGas.BP_StingerGas_C.Timeline_0__FinishedFunc");
-
-	ABP_StingerGas_C_Timeline_0__FinishedFunc_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function BP_StingerGas.BP_StingerGas_C.Timeline_0__UpdateFunc
-// ()
-
-void ABP_StingerGas_C::Timeline_0__UpdateFunc()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_StingerGas.BP_StingerGas_C.Timeline_0__UpdateFunc");
-
-	ABP_StingerGas_C_Timeline_0__UpdateFunc_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -88,6 +54,40 @@ void ABP_StingerGas_C::Timeline_1__UpdateFunc()
 	static auto fn = UObject::FindObject<UFunction>("Function BP_StingerGas.BP_StingerGas_C.Timeline_1__UpdateFunc");
 
 	ABP_StingerGas_C_Timeline_1__UpdateFunc_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_StingerGas.BP_StingerGas_C.Timeline_0__FinishedFunc
+// ()
+
+void ABP_StingerGas_C::Timeline_0__FinishedFunc()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_StingerGas.BP_StingerGas_C.Timeline_0__FinishedFunc");
+
+	ABP_StingerGas_C_Timeline_0__FinishedFunc_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_StingerGas.BP_StingerGas_C.Timeline_0__UpdateFunc
+// ()
+
+void ABP_StingerGas_C::Timeline_0__UpdateFunc()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_StingerGas.BP_StingerGas_C.Timeline_0__UpdateFunc");
+
+	ABP_StingerGas_C_Timeline_0__UpdateFunc_Params params;
 
 	auto flags = fn->FunctionFlags;
 

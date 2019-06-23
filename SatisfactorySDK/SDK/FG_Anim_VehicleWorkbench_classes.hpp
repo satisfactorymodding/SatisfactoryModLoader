@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,14 +15,14 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // AnimBlueprintGeneratedClass Anim_VehicleWorkbench.Anim_VehicleWorkbench_C
-// 0x00F8 (0x0458 - 0x0360)
+// 0x00E8 (0x0448 - 0x0360)
 class UAnim_VehicleWorkbench_C : public UAnimInstance
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0360(0x0008) (Transient, DuplicateTransient)
-	struct FAnimNode_Root                              AnimGraphNode_Root_189DAB524CCACEAF870DE7A7DE5F1719;      // 0x0368(0x0048)
-	struct FAnimNode_Slot                              AnimGraphNode_Slot_BFEAAA224EFB9618FC532584C580B23F;      // 0x03B0(0x0070)
-	struct FAnimNode_RefPose                           AnimGraphNode_LocalRefPose_FAA777984764E404855AB4AA9E7B9DA6;// 0x0420(0x0038)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0360(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
+	struct FAnimNode_Root                              AnimGraphNode_Root_189DAB524CCACEAF870DE7A7DE5F1719;      // 0x0368(0x0040)
+	struct FAnimNode_Slot                              AnimGraphNode_Slot_BFEAAA224EFB9618FC532584C580B23F;      // 0x03A8(0x0068)
+	struct FAnimNode_RefPose                           AnimGraphNode_LocalRefPose_FAA777984764E404855AB4AA9E7B9DA6;// 0x0410(0x0038)
 
 	static UClass* StaticClass()
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -36,8 +36,8 @@ struct UWidget_Sparks_C_ExecuteUbergraph_Widget_Sparks_Params
 // Function Widget_Sparks.Widget_Sparks_C.OnParticleBounce__DelegateSignature
 struct UWidget_Sparks_C_OnParticleBounce__DelegateSignature_Params
 {
-	struct FVector2D                                   Position;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-	struct FVector2D                                   Scale;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector2D                                   Position;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   Scale;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 }

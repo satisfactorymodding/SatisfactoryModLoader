@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -289,14 +289,14 @@ bool UWidget_TradingPost_C::GetActiveSchematicTabEnabled()
 }
 
 
-// Function Widget_TradingPost.Widget_TradingPost_C.GetActiveTab
+// Function Widget_TradingPost.Widget_TradingPost_C.SetActiveTab
 // ()
 
-void UWidget_TradingPost_C::GetActiveTab()
+void UWidget_TradingPost_C::SetActiveTab()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost.Widget_TradingPost_C.GetActiveTab");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost.Widget_TradingPost_C.SetActiveTab");
 
-	UWidget_TradingPost_C_GetActiveTab_Params params;
+	UWidget_TradingPost_C_SetActiveTab_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -631,40 +631,6 @@ void UWidget_TradingPost_C::purchasedSchematic(class UClass* purchasedSchematic)
 }
 
 
-// Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__Widget_ImageTabButton_K2Node_ComponentBoundEvent_61_TabButtonClicked__DelegateSignature
-// ()
-
-void UWidget_TradingPost_C::BndEvt__Widget_ImageTabButton_K2Node_ComponentBoundEvent_61_TabButtonClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__Widget_ImageTabButton_K2Node_ComponentBoundEvent_61_TabButtonClicked__DelegateSignature");
-
-	UWidget_TradingPost_C_BndEvt__Widget_ImageTabButton_K2Node_ComponentBoundEvent_61_TabButtonClicked__DelegateSignature_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__mActivatedSchematicTab_K2Node_ComponentBoundEvent_125_TabButtonClicked__DelegateSignature
-// ()
-
-void UWidget_TradingPost_C::BndEvt__mActivatedSchematicTab_K2Node_ComponentBoundEvent_125_TabButtonClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__mActivatedSchematicTab_K2Node_ComponentBoundEvent_125_TabButtonClicked__DelegateSignature");
-
-	UWidget_TradingPost_C_BndEvt__mActivatedSchematicTab_K2Node_ComponentBoundEvent_125_TabButtonClicked__DelegateSignature_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_TradingPost.Widget_TradingPost_C.mShakeWindow
 // ()
 
@@ -707,6 +673,26 @@ void UWidget_TradingPost_C::CreateSmoke()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost.Widget_TradingPost_C.CreateSmoke");
 
 	UWidget_TradingPost_C_CreateSmoke_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__mWindow_K2Node_ComponentBoundEvent_3_OnTabButtonClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            ButtonIndex                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_TradingPost_C::BndEvt__mWindow_K2Node_ComponentBoundEvent_3_OnTabButtonClicked__DelegateSignature(int ButtonIndex)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost.Widget_TradingPost_C.BndEvt__mWindow_K2Node_ComponentBoundEvent_3_OnTabButtonClicked__DelegateSignature");
+
+	UWidget_TradingPost_C_BndEvt__mWindow_K2Node_ComponentBoundEvent_3_OnTabButtonClicked__DelegateSignature_Params params;
+	params.ButtonIndex = ButtonIndex;
 
 	auto flags = fn->FunctionFlags;
 

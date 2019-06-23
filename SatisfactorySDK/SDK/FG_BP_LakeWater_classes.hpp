@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -28,8 +28,8 @@ public:
 	class UMaterialInstanceDynamic*                    Water_Material;                                           // 0x0348(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	float                                              Overall_Water_Scale;                                      // 0x0350(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              Variation_Amount;                                         // 0x0354(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                Primary_Water_Color;                                      // 0x0358(0x0010) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FLinearColor                                Secondary_Water_Color;                                    // 0x0368(0x0010) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FLinearColor                                Primary_Water_Color;                                      // 0x0358(0x0010) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FLinearColor                                Secondary_Water_Color;                                    // 0x0368(0x0010) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

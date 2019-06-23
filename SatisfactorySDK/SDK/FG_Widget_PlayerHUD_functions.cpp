@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -121,7 +121,7 @@ void UWidget_PlayerHUD_C::SetImageVisibility(bool Value, class UImage* Image)
 // Function Widget_PlayerHUD.Widget_PlayerHUD_C.OnDisabledInputGateChanged
 // ()
 // Parameters:
-// struct FDisabledInputGate      NewValue                       (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FDisabledInputGate      NewValue                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_PlayerHUD_C::OnDisabledInputGateChanged(const struct FDisabledInputGate& NewValue)
 {

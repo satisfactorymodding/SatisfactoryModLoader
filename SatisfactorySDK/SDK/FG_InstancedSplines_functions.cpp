@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -16,10 +16,10 @@ namespace SDK
 // ()
 // Parameters:
 // int                            InstanceIndex                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 StartPos                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 StartTangent                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 EndPos                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 EndTangent                     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 StartPos                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 StartTangent                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 EndPos                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 EndTangent                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           bWorldSpace                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bMarkRenderStateDirty          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -113,10 +113,10 @@ void UFGInstancedSplineMeshComponent::ClearInstances()
 // Function InstancedSplines.FGInstancedSplineMeshComponent.AddInstance
 // ()
 // Parameters:
-// struct FVector                 StartPos                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 StartTangent                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 EndPos                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 EndTangent                     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 StartPos                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 StartTangent                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 EndPos                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 EndTangent                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UFGInstancedSplineMeshComponent::AddInstance(const struct FVector& StartPos, const struct FVector& StartTangent, const struct FVector& EndPos, const struct FVector& EndTangent)

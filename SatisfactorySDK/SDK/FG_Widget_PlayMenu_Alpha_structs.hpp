@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -10,8 +10,8 @@
 #include "FG_BP_MenuBase_classes.hpp"
 #include "FG_Engine_classes.hpp"
 #include "FG_UMG_classes.hpp"
-#include "FG_FactoryGame_classes.hpp"
 #include "FG_StartingLocations_classes.hpp"
+#include "FG_FactoryGame_classes.hpp"
 
 namespace SDK
 {

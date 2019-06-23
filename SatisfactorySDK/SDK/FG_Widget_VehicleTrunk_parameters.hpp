@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -66,16 +66,6 @@ struct UWidget_VehicleTrunk_C_Init_Params
 
 // Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.Construct
 struct UWidget_VehicleTrunk_C_Construct_Params
-{
-};
-
-// Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.OnStorageClicked
-struct UWidget_VehicleTrunk_C_OnStorageClicked_Params
-{
-};
-
-// Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.OnManufacturingClicked
-struct UWidget_VehicleTrunk_C_OnManufacturingClicked_Params
 {
 };
 

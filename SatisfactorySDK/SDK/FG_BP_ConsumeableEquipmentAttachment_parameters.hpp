@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -34,7 +34,7 @@ struct ABP_ConsumeableEquipmentAttachment_C_ReceiveTick_Params
 // Function BP_ConsumeableEquipmentAttachment.BP_ConsumeableEquipmentAttachment_C.PlayUseEffect
 struct ABP_ConsumeableEquipmentAttachment_C_PlayUseEffect_Params
 {
-	struct FVector*                                    UseLocation;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector*                                    UseLocation;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_ConsumeableEquipmentAttachment.BP_ConsumeableEquipmentAttachment_C.OnAttach

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class UBTS_LookAngleDiff_C : public UBTService_BlueprintBase
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0098(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0098(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	struct FBlackboardKeySelector                      mThreatBBKey;                                             // 0x00A0(0x0028) (Edit, BlueprintVisible)
 	struct FBlackboardKeySelector                      mSneakLimitBBKey;                                         // 0x00C8(0x0028) (Edit, BlueprintVisible)
 	struct FBlackboardKeySelector                      mIsInViewBBKey;                                           // 0x00F0(0x0028) (Edit, BlueprintVisible)

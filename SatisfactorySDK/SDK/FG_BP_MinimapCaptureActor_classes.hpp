@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_MinimapCaptureActor.BP_MinimapCaptureActor_C
-// 0x0008 (0x0350 - 0x0348)
+// 0x0008 (0x0348 - 0x0340)
 class ABP_MinimapCaptureActor_C : public AFGMinimapCaptureActor
 {
 public:
-	class UTexture2D*                                  mMapTexture;                                              // 0x0348(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	class UTexture2D*                                  mMapTexture;                                              // 0x0340(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -21,7 +21,7 @@ struct FClothCollisionPrim_Sphere
 {
 	int                                                BoneIndex;                                                // 0x0000(0x0004) (ZeroConstructor, IsPlainOldData)
 	float                                              Radius;                                                   // 0x0004(0x0004) (ZeroConstructor, IsPlainOldData)
-	struct FVector                                     LocalPosition;                                            // 0x0008(0x000C) (IsPlainOldData)
+	struct FVector                                     LocalPosition;                                            // 0x0008(0x000C) (ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct ClothingSystemRuntimeInterface.ClothCollisionPrim_SphereConnection

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,63 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ClearAndHideSearchResults
+// ()
+
+void UWidget_ManualManufacturing_C::ClearAndHideSearchResults()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ClearAndHideSearchResults");
+
+	UWidget_ManualManufacturing_C_ClearAndHideSearchResults_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnSearchCreateResults
+// ()
+// Parameters:
+// struct FText                   Text                           (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UWidget_ManualManufacturing_C::OnSearchCreateResults(const struct FText& Text)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnSearchCreateResults");
+
+	UWidget_ManualManufacturing_C_OnSearchCreateResults_Params params;
+	params.Text = Text;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ShowOnlyAffordableRecipes
+// ()
+// Parameters:
+// bool                           OnlyShowAffordable             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_ManualManufacturing_C::ShowOnlyAffordableRecipes(bool OnlyShowAffordable)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ShowOnlyAffordableRecipes");
+
+	UWidget_ManualManufacturing_C_ShowOnlyAffordableRecipes_Params params;
+	params.OnlyShowAffordable = OnlyShowAffordable;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.SpaceBarOverride
 // ()
@@ -221,231 +278,6 @@ void UWidget_ManualManufacturing_C::GetCraftButtonFeedback()
 }
 
 
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitToShowSelectedRecipePhase
-// ()
-
-void UWidget_ManualManufacturing_C::InitToShowSelectedRecipePhase()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitToShowSelectedRecipePhase");
-
-	UWidget_ManualManufacturing_C_InitToShowSelectedRecipePhase_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2ButtonVisibility
-// ()
-// Parameters:
-// ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-ESlateVisibility UWidget_ManualManufacturing_C::GetPhase2ButtonVisibility()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2ButtonVisibility");
-
-	UWidget_ManualManufacturing_C_GetPhase2ButtonVisibility_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1ButtonVisibility
-// ()
-// Parameters:
-// ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-ESlateVisibility UWidget_ManualManufacturing_C::GetPhase1ButtonVisibility()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1ButtonVisibility");
-
-	UWidget_ManualManufacturing_C_GetPhase1ButtonVisibility_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2ButtonEnabled
-// ()
-// Parameters:
-// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-bool UWidget_ManualManufacturing_C::GetPhase2ButtonEnabled()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2ButtonEnabled");
-
-	UWidget_ManualManufacturing_C_GetPhase2ButtonEnabled_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.IsPhaseUnlocked
-// ()
-// Parameters:
-// TEnumAsByte<EGamePhase>        gamePhase                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// bool                           Unlocked                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-
-void UWidget_ManualManufacturing_C::IsPhaseUnlocked(TEnumAsByte<EGamePhase> gamePhase, bool* Unlocked)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.IsPhaseUnlocked");
-
-	UWidget_ManualManufacturing_C_IsPhaseUnlocked_Params params;
-	params.gamePhase = gamePhase;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	if (Unlocked != nullptr)
-		*Unlocked = params.Unlocked;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1ButtonEnabled
-// ()
-// Parameters:
-// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-bool UWidget_ManualManufacturing_C::GetPhase1ButtonEnabled()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1ButtonEnabled");
-
-	UWidget_ManualManufacturing_C_GetPhase1ButtonEnabled_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2Visibility
-// ()
-// Parameters:
-// ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-ESlateVisibility UWidget_ManualManufacturing_C::GetPhase2Visibility()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2Visibility");
-
-	UWidget_ManualManufacturing_C_GetPhase2Visibility_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1Visibility
-// ()
-// Parameters:
-// ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-ESlateVisibility UWidget_ManualManufacturing_C::GetPhase1Visibility()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1Visibility");
-
-	UWidget_ManualManufacturing_C_GetPhase1Visibility_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitRecipeLists
-// ()
-
-void UWidget_ManualManufacturing_C::InitRecipeLists()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitRecipeLists");
-
-	UWidget_ManualManufacturing_C_InitRecipeLists_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ToggleVisibilityOfPhase
-// ()
-// Parameters:
-// int                            phase                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-
-void UWidget_ManualManufacturing_C::ToggleVisibilityOfPhase(int phase)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ToggleVisibilityOfPhase");
-
-	UWidget_ManualManufacturing_C_ToggleVisibilityOfPhase_Params params;
-	params.phase = phase;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase0Visibility
-// ()
-// Parameters:
-// ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-ESlateVisibility UWidget_ManualManufacturing_C::GetPhase0Visibility()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase0Visibility");
-
-	UWidget_ManualManufacturing_C_GetPhase0Visibility_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.CloseVehicle
 // ()
 
@@ -582,15 +414,13 @@ void UWidget_ManualManufacturing_C::Cleanup()
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetAvailableRecipes
 // ()
 // Parameters:
-// TEnumAsByte<EGamePhase>        ForPhase                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class UClass*>          AvailableRecipes               (Parm, OutParm, ZeroConstructor)
 
-void UWidget_ManualManufacturing_C::GetAvailableRecipes(TEnumAsByte<EGamePhase> ForPhase, TArray<class UClass*>* AvailableRecipes)
+void UWidget_ManualManufacturing_C::GetAvailableRecipes(TArray<class UClass*>* AvailableRecipes)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetAvailableRecipes");
 
 	UWidget_ManualManufacturing_C_GetAvailableRecipes_Params params;
-	params.ForPhase = ForPhase;
 
 	auto flags = fn->FunctionFlags;
 
@@ -625,17 +455,12 @@ void UWidget_ManualManufacturing_C::SetSelectedRecipe(class UClass* mRecipe)
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitRecipeList
 // ()
-// Parameters:
-// TEnumAsByte<EGamePhase>        ForPhase                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class UScrollBox*              InScrollbox                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_ManualManufacturing_C::InitRecipeList(TEnumAsByte<EGamePhase> ForPhase, class UScrollBox* InScrollbox)
+void UWidget_ManualManufacturing_C::InitRecipeList()
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitRecipeList");
 
 	UWidget_ManualManufacturing_C_InitRecipeList_Params params;
-	params.ForPhase = ForPhase;
-	params.InScrollbox = InScrollbox;
 
 	auto flags = fn->FunctionFlags;
 
@@ -724,57 +549,6 @@ void UWidget_ManualManufacturing_C::Init()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.Init");
 
 	UWidget_ManualManufacturing_C_Init_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase0_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature
-// ()
-
-void UWidget_ManualManufacturing_C::BndEvt__mAccordionButtonPhase0_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase0_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature");
-
-	UWidget_ManualManufacturing_C_BndEvt__mAccordionButtonPhase0_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase1_K2Node_ComponentBoundEvent_1_OnClicked__DelegateSignature
-// ()
-
-void UWidget_ManualManufacturing_C::BndEvt__mAccordionButtonPhase1_K2Node_ComponentBoundEvent_1_OnClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase1_K2Node_ComponentBoundEvent_1_OnClicked__DelegateSignature");
-
-	UWidget_ManualManufacturing_C_BndEvt__mAccordionButtonPhase1_K2Node_ComponentBoundEvent_1_OnClicked__DelegateSignature_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase2_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature
-// ()
-
-void UWidget_ManualManufacturing_C::BndEvt__mAccordionButtonPhase2_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase2_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature");
-
-	UWidget_ManualManufacturing_C_BndEvt__mAccordionButtonPhase2_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1075,6 +849,63 @@ void UWidget_ManualManufacturing_C::HideAddedToInventoryEvent()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.HideAddedToInventoryEvent");
 
 	UWidget_ManualManufacturing_C_HideAddedToInventoryEvent_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__Button_0_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature
+// ()
+
+void UWidget_ManualManufacturing_C::BndEvt__Button_0_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__Button_0_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature");
+
+	UWidget_ManualManufacturing_C_BndEvt__Button_0_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mOnlyShowAffordableCheckbox_K2Node_ComponentBoundEvent_3_OnCheckChanged__DelegateSignature
+// ()
+// Parameters:
+// bool                           IsChecked                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_ManualManufacturing_C::BndEvt__mOnlyShowAffordableCheckbox_K2Node_ComponentBoundEvent_3_OnCheckChanged__DelegateSignature(bool IsChecked)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mOnlyShowAffordableCheckbox_K2Node_ComponentBoundEvent_3_OnCheckChanged__DelegateSignature");
+
+	UWidget_ManualManufacturing_C_BndEvt__mOnlyShowAffordableCheckbox_K2Node_ComponentBoundEvent_3_OnCheckChanged__DelegateSignature_Params params;
+	params.IsChecked = IsChecked;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature
+// ()
+// Parameters:
+// struct FText                   Text                           (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UWidget_ManualManufacturing_C::BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature(const struct FText& Text)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature");
+
+	UWidget_ManualManufacturing_C_BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature_Params params;
+	params.Text = Text;
 
 	auto flags = fn->FunctionFlags;
 

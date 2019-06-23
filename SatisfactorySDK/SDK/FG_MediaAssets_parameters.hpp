@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -76,7 +76,7 @@ struct UMediaPlayer_SupportsRate_Params
 // Function MediaAssets.MediaPlayer.SetViewRotation
 struct UMediaPlayer_SetViewRotation_Params
 {
-	struct FRotator                                    Rotation;                                                 // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FRotator                                    Rotation;                                                 // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	bool                                               Absolute;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
@@ -111,7 +111,7 @@ struct UMediaPlayer_SetTrackFormat_Params
 // Function MediaAssets.MediaPlayer.SetTimeDelay
 struct UMediaPlayer_SetTimeDelay_Params
 {
-	struct FTimespan                                   TimeDelay;                                                // (Parm)
+	struct FTimespan                                   TimeDelay;                                                // (Parm, ZeroConstructor)
 };
 
 // Function MediaAssets.MediaPlayer.SetRate
@@ -144,7 +144,7 @@ struct UMediaPlayer_SetDesiredPlayerName_Params
 // Function MediaAssets.MediaPlayer.SetBlockOnTime
 struct UMediaPlayer_SetBlockOnTime_Params
 {
-	struct FTimespan                                   Time;                                                     // (ConstParm, Parm, OutParm, ReferenceParm)
+	struct FTimespan                                   Time;                                                     // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 };
 
 // Function MediaAssets.MediaPlayer.SelectTrack
@@ -158,7 +158,7 @@ struct UMediaPlayer_SelectTrack_Params
 // Function MediaAssets.MediaPlayer.Seek
 struct UMediaPlayer_Seek_Params
 {
-	struct FTimespan                                   Time;                                                     // (ConstParm, Parm, OutParm, ReferenceParm)
+	struct FTimespan                                   Time;                                                     // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -196,6 +196,14 @@ struct UMediaPlayer_Pause_Params
 struct UMediaPlayer_OpenUrl_Params
 {
 	class FString                                      URL;                                                      // (Parm, ZeroConstructor)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function MediaAssets.MediaPlayer.OpenSourceWithOptions
+struct UMediaPlayer_OpenSourceWithOptions_Params
+{
+	class UMediaSource*                                MediaSource;                                              // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FMediaPlayerOptions                         options;                                                  // (ConstParm, Parm, OutParm, ReferenceParm)
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -285,7 +293,7 @@ struct UMediaPlayer_HasError_Params
 // Function MediaAssets.MediaPlayer.GetViewRotation
 struct UMediaPlayer_GetViewRotation_Params
 {
-	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function MediaAssets.MediaPlayer.GetVideoTrackType
@@ -301,7 +309,7 @@ struct UMediaPlayer_GetVideoTrackFrameRates_Params
 {
 	int                                                TrackIndex;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	int                                                FormatIndex;                                              // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FFloatRange                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+	struct FFloatRange                                 ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function MediaAssets.MediaPlayer.GetVideoTrackFrameRate
@@ -317,7 +325,7 @@ struct UMediaPlayer_GetVideoTrackDimensions_Params
 {
 	int                                                TrackIndex;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	int                                                FormatIndex;                                              // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FIntPoint                                   ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FIntPoint                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function MediaAssets.MediaPlayer.GetVideoTrackAspectRatio
@@ -367,13 +375,13 @@ struct UMediaPlayer_GetTrackDisplayName_Params
 // Function MediaAssets.MediaPlayer.GetTimeDelay
 struct UMediaPlayer_GetTimeDelay_Params
 {
-	struct FTimespan                                   ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+	struct FTimespan                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
 };
 
 // Function MediaAssets.MediaPlayer.GetTime
 struct UMediaPlayer_GetTime_Params
 {
-	struct FTimespan                                   ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+	struct FTimespan                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
 };
 
 // Function MediaAssets.MediaPlayer.GetSupportedRates
@@ -444,7 +452,7 @@ struct UMediaPlayer_GetHorizontalFieldOfView_Params
 // Function MediaAssets.MediaPlayer.GetDuration
 struct UMediaPlayer_GetDuration_Params
 {
-	struct FTimespan                                   ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+	struct FTimespan                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
 };
 
 // Function MediaAssets.MediaPlayer.GetDesiredPlayerName

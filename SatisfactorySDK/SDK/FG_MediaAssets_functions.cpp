@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -216,7 +216,7 @@ bool UMediaPlayer::SupportsRate(float Rate, bool Unthinned)
 // Function MediaAssets.MediaPlayer.SetViewRotation
 // ()
 // Parameters:
-// struct FRotator                Rotation                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FRotator                Rotation                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           Absolute                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -322,7 +322,7 @@ bool UMediaPlayer::SetTrackFormat(EMediaPlayerTrack TrackType, int TrackIndex, i
 // Function MediaAssets.MediaPlayer.SetTimeDelay
 // ()
 // Parameters:
-// struct FTimespan               TimeDelay                      (Parm)
+// struct FTimespan               TimeDelay                      (Parm, ZeroConstructor)
 
 void UMediaPlayer::SetTimeDelay(const struct FTimespan& TimeDelay)
 {
@@ -431,7 +431,7 @@ void UMediaPlayer::SetDesiredPlayerName(const struct FName& PlayerName)
 // Function MediaAssets.MediaPlayer.SetBlockOnTime
 // ()
 // Parameters:
-// struct FTimespan               Time                           (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FTimespan               Time                           (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 
 void UMediaPlayer::SetBlockOnTime(const struct FTimespan& Time)
 {
@@ -476,7 +476,7 @@ bool UMediaPlayer::SelectTrack(EMediaPlayerTrack TrackType, int TrackIndex)
 // Function MediaAssets.MediaPlayer.Seek
 // ()
 // Parameters:
-// struct FTimespan               Time                           (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FTimespan               Time                           (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UMediaPlayer::Seek(const struct FTimespan& Time)
@@ -613,6 +613,31 @@ bool UMediaPlayer::OpenUrl(const class FString& URL)
 
 	UMediaPlayer_OpenUrl_Params params;
 	params.URL = URL;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function MediaAssets.MediaPlayer.OpenSourceWithOptions
+// ()
+// Parameters:
+// class UMediaSource*            MediaSource                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FMediaPlayerOptions     options                        (ConstParm, Parm, OutParm, ReferenceParm)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UMediaPlayer::OpenSourceWithOptions(class UMediaSource* MediaSource, const struct FMediaPlayerOptions& options)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function MediaAssets.MediaPlayer.OpenSourceWithOptions");
+
+	UMediaPlayer_OpenSourceWithOptions_Params params;
+	params.MediaSource = MediaSource;
+	params.options = options;
 
 	auto flags = fn->FunctionFlags;
 
@@ -910,7 +935,7 @@ bool UMediaPlayer::HasError()
 // Function MediaAssets.MediaPlayer.GetViewRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UMediaPlayer::GetViewRotation()
 {
@@ -958,7 +983,7 @@ class FString UMediaPlayer::GetVideoTrackType(int TrackIndex, int FormatIndex)
 // Parameters:
 // int                            TrackIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // int                            FormatIndex                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FFloatRange             ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FFloatRange             ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FFloatRange UMediaPlayer::GetVideoTrackFrameRates(int TrackIndex, int FormatIndex)
 {
@@ -1008,7 +1033,7 @@ float UMediaPlayer::GetVideoTrackFrameRate(int TrackIndex, int FormatIndex)
 // Parameters:
 // int                            TrackIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // int                            FormatIndex                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FIntPoint               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntPoint               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntPoint UMediaPlayer::GetVideoTrackDimensions(int TrackIndex, int FormatIndex)
 {
@@ -1173,7 +1198,7 @@ struct FText UMediaPlayer::GetTrackDisplayName(EMediaPlayerTrack TrackType, int 
 // Function MediaAssets.MediaPlayer.GetTimeDelay
 // ()
 // Parameters:
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UMediaPlayer::GetTimeDelay()
 {
@@ -1194,7 +1219,7 @@ struct FTimespan UMediaPlayer::GetTimeDelay()
 // Function MediaAssets.MediaPlayer.GetTime
 // ()
 // Parameters:
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UMediaPlayer::GetTime()
 {
@@ -1436,7 +1461,7 @@ float UMediaPlayer::GetHorizontalFieldOfView()
 // Function MediaAssets.MediaPlayer.GetDuration
 // ()
 // Parameters:
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UMediaPlayer::GetDuration()
 {

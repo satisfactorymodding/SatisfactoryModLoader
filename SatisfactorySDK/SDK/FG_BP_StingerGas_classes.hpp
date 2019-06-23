@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class ABP_StingerGas_C : public AActor
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0328(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0328(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UFGDotComponent*                             FGDot;                                                    // 0x0330(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class USphereComponent*                            Sphere;                                                   // 0x0338(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class USceneComponent*                             DefaultSceneRoot;                                         // 0x0340(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
@@ -40,10 +40,10 @@ public:
 
 
 	void UserConstructionScript();
-	void Timeline_0__FinishedFunc();
-	void Timeline_0__UpdateFunc();
 	void Timeline_1__FinishedFunc();
 	void Timeline_1__UpdateFunc();
+	void Timeline_0__FinishedFunc();
+	void Timeline_0__UpdateFunc();
 	void ReceiveBeginPlay();
 	void ExecuteUbergraph_BP_StingerGas(int EntryPoint);
 };

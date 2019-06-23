@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,12 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_TakeDamage.Widget_TakeDamage_C.GetIsHealthCritical
+struct UWidget_TakeDamage_C_GetIsHealthCritical_Params
+{
+	bool                                               IsHealthCritical;                                         // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+};
 
 // Function Widget_TakeDamage.Widget_TakeDamage_C.Construct
 struct UWidget_TakeDamage_C_Construct_Params
@@ -42,6 +48,13 @@ struct UWidget_TakeDamage_C_SetPlayerPawn_Params
 // Function Widget_TakeDamage.Widget_TakeDamage_C.ShowWarningMessage
 struct UWidget_TakeDamage_C_ShowWarningMessage_Params
 {
+};
+
+// Function Widget_TakeDamage.Widget_TakeDamage_C.UpdateRadiation
+struct UWidget_TakeDamage_C_UpdateRadiation_Params
+{
+	bool                                               RadiationActive;                                          // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	float                                              amount;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_TakeDamage.Widget_TakeDamage_C.ExecuteUbergraph_Widget_TakeDamage

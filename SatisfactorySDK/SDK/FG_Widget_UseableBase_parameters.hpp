@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -25,7 +25,7 @@ struct UWidget_UseableBase_C_DropInventoryStackOnInventoryWidget_Params
 // Function Widget_UseableBase.Widget_UseableBase_C.InitInventoryWidgetCallbacks
 struct UWidget_UseableBase_C_InitInventoryWidgetCallbacks_Params
 {
-	class UWidget_Inventory_C*                         InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UWidget_Inventory_C*                         inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_UseableBase.Widget_UseableBase_C.OnInventorySlotStackMove
@@ -44,7 +44,7 @@ struct UWidget_UseableBase_C_DropInventorySlotStack_Params
 // Function Widget_UseableBase.Widget_UseableBase_C.SetInventoryVisibility
 struct UWidget_UseableBase_C_SetInventoryVisibility_Params
 {
-	bool                                               Visible;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_UseableBase.Widget_UseableBase_C.GetDefaultRCO

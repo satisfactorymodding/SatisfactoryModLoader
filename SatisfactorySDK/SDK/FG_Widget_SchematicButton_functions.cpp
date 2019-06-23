@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -183,7 +183,7 @@ ESlateVisibility UWidget_SchematicButton_C::GetActivateButtonVisibility()
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSelectedSchematicFeedback
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicButton_C::GetSelectedSchematicFeedback()
 {
@@ -226,7 +226,7 @@ void UWidget_SchematicButton_C::IsActiveSchematic(bool* IsActive)
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetCategoryIconColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicButton_C::GetCategoryIconColor()
 {
@@ -289,7 +289,7 @@ struct FSlateColor UWidget_SchematicButton_C::GetSchematicBoughtTextColor()
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSchematicBoughtBorderColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicButton_C::GetSchematicBoughtBorderColor()
 {
@@ -310,7 +310,7 @@ struct FLinearColor UWidget_SchematicButton_C::GetSchematicBoughtBorderColor()
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSchematicBoughtContentColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicButton_C::GetSchematicBoughtContentColor()
 {
@@ -331,7 +331,7 @@ struct FLinearColor UWidget_SchematicButton_C::GetSchematicBoughtContentColor()
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSchematicBoughtColorFeedback
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicButton_C::GetSchematicBoughtColorFeedback()
 {

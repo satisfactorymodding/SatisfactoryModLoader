@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -52,7 +52,7 @@ public:
 
 
 // Class ActorSequence.ActorSequencePlayer
-// 0x0000 (0x07E0 - 0x07E0)
+// 0x0000 (0x07C8 - 0x07C8)
 class UActorSequencePlayer : public UMovieSceneSequencePlayer
 {
 public:

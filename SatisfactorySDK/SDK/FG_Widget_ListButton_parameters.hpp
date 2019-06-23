@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_ListButton.Widget_ListButton_C.GetIconColor
 struct UWidget_ListButton_C_GetIconColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ListButton.Widget_ListButton_C.ClearListSelection
@@ -40,7 +40,7 @@ struct UWidget_ListButton_C_GetTextColor_Params
 // Function Widget_ListButton.Widget_ListButton_C.GetButtonBackground
 struct UWidget_ListButton_C_GetButtonBackground_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ListButton.Widget_ListButton_C.UpdateButton
@@ -49,7 +49,7 @@ struct UWidget_ListButton_C_UpdateButton_Params
 	class UTexture*                                    Icon;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       Title;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm)
 	struct FText                                       Description;                                              // (BlueprintVisible, BlueprintReadOnly, Parm)
-	ESlateVisibility                                   DescVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ESlateVisibility                                   descVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ESlateVisibility                                   IconVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       additionalInfo;                                           // (BlueprintVisible, BlueprintReadOnly, Parm)
 };

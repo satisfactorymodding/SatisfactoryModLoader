@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -37,8 +37,8 @@ void UComposureBlueprintLibrary::SetUVMapSettingsToMaterialParameters(const stru
 // Function Composure.ComposureBlueprintLibrary.InvertUVDisplacementMapEncodingParameters
 // ()
 // Parameters:
-// struct FVector2D               In                             (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               Out                            (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               In                             (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector2D               Out                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UComposureBlueprintLibrary::InvertUVDisplacementMapEncodingParameters(const struct FVector2D& In, struct FVector2D* Out)
 {
@@ -62,7 +62,7 @@ void UComposureBlueprintLibrary::InvertUVDisplacementMapEncodingParameters(const
 // ()
 // Parameters:
 // float                          ChromaticAberrationAmount      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               RedGreenUVFactors              (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               RedGreenUVFactors              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UComposureBlueprintLibrary::GetRedGreenUVFactorsFromChromaticAberration(float ChromaticAberrationAmount, struct FVector2D* RedGreenUVFactors)
 {
@@ -88,7 +88,7 @@ void UComposureBlueprintLibrary::GetRedGreenUVFactorsFromChromaticAberration(flo
 // struct FComposurePostMoveSettings PostMoveSettings               (ConstParm, Parm, OutParm, ReferenceParm)
 // float                          HorizontalFOVAngle             (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AspectRatio                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FMatrix                 ProjectionMatrix               (Parm, OutParm, IsPlainOldData)
+// struct FMatrix                 ProjectionMatrix               (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UComposureBlueprintLibrary::GetProjectionMatrixFromPostMoveSettings(const struct FComposurePostMoveSettings& PostMoveSettings, float HorizontalFOVAngle, float AspectRatio, struct FMatrix* ProjectionMatrix)
 {
@@ -139,8 +139,8 @@ void UComposureBlueprintLibrary::GetPlayerDisplayGamma(class APlayerCameraManage
 // Parameters:
 // struct FComposurePostMoveSettings PostMoveSettings               (ConstParm, Parm, OutParm, ReferenceParm)
 // float                          AspectRatio                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FMatrix                 CropingUVTransformationMatrix  (Parm, OutParm, IsPlainOldData)
-// struct FMatrix                 UncropingUVTransformationMatrix (Parm, OutParm, IsPlainOldData)
+// struct FMatrix                 CropingUVTransformationMatrix  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FMatrix                 UncropingUVTransformationMatrix (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UComposureBlueprintLibrary::GetCroppingUVTransformationMatrixFromPostMoveSettings(const struct FComposurePostMoveSettings& PostMoveSettings, float AspectRatio, struct FMatrix* CropingUVTransformationMatrix, struct FMatrix* UncropingUVTransformationMatrix)
 {

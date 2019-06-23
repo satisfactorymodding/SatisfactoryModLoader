@@ -1,14 +1,15 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
 #endif
 
 #include "FG_Basic.hpp"
-#include "FG_Engine_classes.hpp"
 #include "FG_CoreUObject_classes.hpp"
+#include "FG_Engine_classes.hpp"
+#include "FG_CinematicCamera_classes.hpp"
 
 namespace SDK
 {
@@ -24,6 +25,17 @@ enum class EDatasmithAreaLightActorShape : uint8_t
 	Sphere                         = 2,
 	Cylinder                       = 3,
 	EDatasmithAreaLightActorShape_MAX = 4
+};
+
+
+// Enum DatasmithContent.EVREDDataTableType
+enum class EVREDDataTableType : uint8_t
+{
+	NotDatatable                   = 0,
+	Variants                       = 1,
+	AnimClips                      = 2,
+	AnimNodes                      = 3,
+	EVREDDataTableType_MAX         = 4
 };
 
 
@@ -135,10 +147,12 @@ struct FDatasmithCameraLensSettingsTemplate
 };
 
 // ScriptStruct DatasmithContent.DatasmithCameraFocusSettingsTemplate
-// 0x0004
+// 0x0008
 struct FDatasmithCameraFocusSettingsTemplate
 {
-	float                                              ManualFocusDistance;                                      // 0x0000(0x0004) (ZeroConstructor, IsPlainOldData)
+	ECameraFocusMethod                                 FocusMethod;                                              // 0x0000(0x0001) (ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x3];                                       // 0x0001(0x0003) MISSED OFFSET
+	float                                              ManualFocusDistance;                                      // 0x0004(0x0004) (ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct DatasmithContent.DatasmithPostProcessSettingsTemplate
@@ -154,9 +168,9 @@ struct FDatasmithPostProcessSettingsTemplate
 	unsigned char                                      UnknownData00[0x3];                                       // 0x0001(0x0003) MISSED OFFSET
 	float                                              WhiteTemp;                                                // 0x0004(0x0004) (ZeroConstructor, IsPlainOldData)
 	float                                              VignetteIntensity;                                        // 0x0008(0x0004) (ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                FilmWhitePoint;                                           // 0x000C(0x0010) (IsPlainOldData)
+	struct FLinearColor                                FilmWhitePoint;                                           // 0x000C(0x0010) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x4];                                       // 0x001C(0x0004) MISSED OFFSET
-	struct FVector4                                    ColorSaturation;                                          // 0x0020(0x0010) (IsPlainOldData)
+	struct FVector4                                    ColorSaturation;                                          // 0x0020(0x0010) (ZeroConstructor, IsPlainOldData)
 	TEnumAsByte<EAutoExposureMethod>                   AutoExposureMethod;                                       // 0x0030(0x0001) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData02[0x3];                                       // 0x0031(0x0003) MISSED OFFSET
 	float                                              CameraISO;                                                // 0x0034(0x0004) (ZeroConstructor, IsPlainOldData)

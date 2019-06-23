@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -35,7 +35,7 @@ struct UWidget_MapObject_C_OnObjectFiltered_Params
 // Function Widget_MapObject.Widget_MapObject_C.OnObjectMoved
 struct UWidget_MapObject_C_OnObjectMoved_Params
 {
-	struct FVector2D*                                  normalizedLocation;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector2D*                                  normalizedLocation;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_MapObject.Widget_MapObject_C.OnActorRepresentationUpdated

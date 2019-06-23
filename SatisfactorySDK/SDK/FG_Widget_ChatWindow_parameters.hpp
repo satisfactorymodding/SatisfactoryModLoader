@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -37,7 +37,7 @@ struct UWidget_ChatWindow_C_OnChatMessageReceived_Params
 // Function Widget_ChatWindow.Widget_ChatWindow_C.SetInputWindowVisibility
 struct UWidget_ChatWindow_C_SetInputWindowVisibility_Params
 {
-	bool                                               Visible;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_ChatWindow.Widget_ChatWindow_C.GetInputWindowVisibility

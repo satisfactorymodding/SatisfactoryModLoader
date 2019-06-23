@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -123,14 +123,14 @@ void UWidget_Splitter_OutputList_C::ExecuteUbergraph_Widget_Splitter_OutputList(
 }
 
 
-// Function Widget_Splitter_OutputList.Widget_Splitter_OutputList_C.OnClicked__DelegateSignature
+// Function Widget_Splitter_OutputList.Widget_Splitter_OutputList_C.OnAddClicked__DelegateSignature
 // ()
 
-void UWidget_Splitter_OutputList_C::OnClicked__DelegateSignature()
+void UWidget_Splitter_OutputList_C::OnAddClicked__DelegateSignature()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_Splitter_OutputList.Widget_Splitter_OutputList_C.OnClicked__DelegateSignature");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Splitter_OutputList.Widget_Splitter_OutputList_C.OnAddClicked__DelegateSignature");
 
-	UWidget_Splitter_OutputList_C_OnClicked__DelegateSignature_Params params;
+	UWidget_Splitter_OutputList_C_OnAddClicked__DelegateSignature_Params params;
 
 	auto flags = fn->FunctionFlags;
 

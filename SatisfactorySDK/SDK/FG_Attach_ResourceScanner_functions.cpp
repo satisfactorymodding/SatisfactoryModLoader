@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -49,7 +49,7 @@ void AAttach_ResourceScanner_C::CustomEvent_1()
 // Function Attach_ResourceScanner.Attach_ResourceScanner_C.PlayUseEffect
 // ()
 // Parameters:
-// struct FVector*                UseLocation                    (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector*                UseLocation                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void AAttach_ResourceScanner_C::PlayUseEffect(struct FVector* UseLocation)
 {

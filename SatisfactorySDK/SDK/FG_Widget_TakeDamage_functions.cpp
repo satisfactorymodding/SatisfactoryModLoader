@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,28 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_TakeDamage.Widget_TakeDamage_C.GetIsHealthCritical
+// ()
+// Parameters:
+// bool                           IsHealthCritical               (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_TakeDamage_C::GetIsHealthCritical(bool* IsHealthCritical)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TakeDamage.Widget_TakeDamage_C.GetIsHealthCritical");
+
+	UWidget_TakeDamage_C_GetIsHealthCritical_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (IsHealthCritical != nullptr)
+		*IsHealthCritical = params.IsHealthCritical;
+}
+
 
 // Function Widget_TakeDamage.Widget_TakeDamage_C.Construct
 // ()
@@ -99,6 +121,28 @@ void UWidget_TakeDamage_C::ShowWarningMessage()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_TakeDamage.Widget_TakeDamage_C.ShowWarningMessage");
 
 	UWidget_TakeDamage_C_ShowWarningMessage_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_TakeDamage.Widget_TakeDamage_C.UpdateRadiation
+// ()
+// Parameters:
+// bool                           RadiationActive                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// float                          amount                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_TakeDamage_C::UpdateRadiation(bool RadiationActive, float amount)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TakeDamage.Widget_TakeDamage_C.UpdateRadiation");
+
+	UWidget_TakeDamage_C_UpdateRadiation_Params params;
+	params.RadiationActive = RadiationActive;
+	params.amount = amount;
 
 	auto flags = fn->FunctionFlags;
 

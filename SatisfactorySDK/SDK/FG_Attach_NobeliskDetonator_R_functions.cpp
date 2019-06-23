@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -49,7 +49,7 @@ void AAttach_NobeliskDetonator_R_C::OnIsLoadedSet()
 // Function Attach_NobeliskDetonator_R.Attach_NobeliskDetonator_R_C.PlayFireEffect
 // ()
 // Parameters:
-// struct FVector*                flashLocation                  (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector*                flashLocation                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void AAttach_NobeliskDetonator_R_C::PlayFireEffect(struct FVector* flashLocation)
 {
@@ -69,7 +69,7 @@ void AAttach_NobeliskDetonator_R_C::PlayFireEffect(struct FVector* flashLocation
 // Function Attach_NobeliskDetonator_R.Attach_NobeliskDetonator_R_C.OnBeginFireEffect
 // ()
 // Parameters:
-// struct FVector*                Location                       (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector*                Location                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void AAttach_NobeliskDetonator_R_C::OnBeginFireEffect(struct FVector* Location)
 {

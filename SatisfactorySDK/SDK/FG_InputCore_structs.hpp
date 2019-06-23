@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -40,9 +40,11 @@ enum class ETouchType : uint8_t
 	Began                          = 0,
 	Moved                          = 1,
 	Stationary                     = 2,
-	Ended                          = 3,
-	NumTypes                       = 4,
-	ETouchType_MAX                 = 5
+	ForceChanged                   = 3,
+	FirstMove                      = 4,
+	Ended                          = 5,
+	NumTypes                       = 6,
+	ETouchType_MAX                 = 7
 };
 
 

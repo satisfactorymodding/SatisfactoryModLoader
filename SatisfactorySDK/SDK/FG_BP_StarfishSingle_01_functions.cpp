@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -51,16 +51,16 @@ void ABP_StarfishSingle_01_C::Burrow()
 }
 
 
-// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.canMove
+// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.CanMove
 // ()
 // Parameters:
-// bool                           canMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// bool                           CanMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void ABP_StarfishSingle_01_C::canMove(bool* canMove)
+void ABP_StarfishSingle_01_C::CanMove(bool* CanMove)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.canMove");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.CanMove");
 
-	ABP_StarfishSingle_01_C_canMove_Params params;
+	ABP_StarfishSingle_01_C_CanMove_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -68,8 +68,8 @@ void ABP_StarfishSingle_01_C::canMove(bool* canMove)
 
 	fn->FunctionFlags = flags;
 
-	if (canMove != nullptr)
-		*canMove = params.canMove;
+	if (CanMove != nullptr)
+		*CanMove = params.CanMove;
 }
 
 

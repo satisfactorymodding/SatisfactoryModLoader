@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -66,7 +66,7 @@ void ABP_PlayerState_C::OnRep_mShoppingList()
 // Function BP_PlayerState.BP_PlayerState_C.GetShoppingListSortIndex
 // ()
 // Parameters:
-// struct FRecipeAmountStruct     RecipeAmountStruct             (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+// struct FRecipeAmountStruct     RecipeAmountStruct             (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int ABP_PlayerState_C::GetShoppingListSortIndex(struct FRecipeAmountStruct* RecipeAmountStruct)

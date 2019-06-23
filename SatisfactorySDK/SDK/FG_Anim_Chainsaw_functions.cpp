@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,23 +11,6 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
-
-// Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_F9A492804273E08EF63B95978512DE6A
-// ()
-
-void UAnim_Chainsaw_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_F9A492804273E08EF63B95978512DE6A()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_F9A492804273E08EF63B95978512DE6A");
-
-	UAnim_Chainsaw_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_F9A492804273E08EF63B95978512DE6A_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
 
 // Function Anim_Chainsaw.Anim_Chainsaw_C.BlueprintUpdateAnimation
 // ()
@@ -49,23 +32,6 @@ void UAnim_Chainsaw_C::BlueprintUpdateAnimation(float* DeltaTimeX)
 }
 
 
-// Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_EF38A83345031AA5B90DD29377325799
-// ()
-
-void UAnim_Chainsaw_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_EF38A83345031AA5B90DD29377325799()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_EF38A83345031AA5B90DD29377325799");
-
-	UAnim_Chainsaw_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_TransitionResult_EF38A83345031AA5B90DD29377325799_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_BlendListByBool_C38122B74370F3AA6202B5B035DBE849
 // ()
 
@@ -74,23 +40,6 @@ void UAnim_Chainsaw_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw
 	static auto fn = UObject::FindObject<UFunction>("Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_BlendListByBool_C38122B74370F3AA6202B5B035DBE849");
 
 	UAnim_Chainsaw_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_BlendListByBool_C38122B74370F3AA6202B5B035DBE849_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_BlendListByBool_9007B9E84DDD1F1ECE97E0AE8115C5EE
-// ()
-
-void UAnim_Chainsaw_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_BlendListByBool_9007B9E84DDD1F1ECE97E0AE8115C5EE()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Chainsaw.Anim_Chainsaw_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_BlendListByBool_9007B9E84DDD1F1ECE97E0AE8115C5EE");
-
-	UAnim_Chainsaw_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Chainsaw_AnimGraphNode_BlendListByBool_9007B9E84DDD1F1ECE97E0AE8115C5EE_Params params;
 
 	auto flags = fn->FunctionFlags;
 

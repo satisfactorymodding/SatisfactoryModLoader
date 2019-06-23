@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -16,7 +16,7 @@ namespace SDK
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Value                          (Parm, IsPlainOldData)
+// struct FLinearColor            Value                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void ALandscapeProxy::SetLandscapeMaterialVectorParameterValue(const struct FName& ParameterName, const struct FLinearColor& Value)
 {
@@ -250,6 +250,27 @@ class UMaterialInstanceDynamic* ULandscapeComponent::GetMaterialInstanceDynamic(
 
 	ULandscapeComponent_GetMaterialInstanceDynamic_Params params;
 	params.InIndex = InIndex;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Landscape.LandscapeSplinesComponent.GetSplineMeshComponents
+// ()
+// Parameters:
+// TArray<class USplineMeshComponent*> ReturnValue                    (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm)
+
+TArray<class USplineMeshComponent*> ULandscapeSplinesComponent::GetSplineMeshComponents()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Landscape.LandscapeSplinesComponent.GetSplineMeshComponents");
+
+	ULandscapeSplinesComponent_GetSplineMeshComponents_Params params;
 
 	auto flags = fn->FunctionFlags;
 

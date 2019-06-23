@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -94,7 +94,7 @@ void UWidget_MapCompass_Icon_C::SetIconType(ERepresentationType mRepresentationT
 // Function Widget_MapCompass_Icon.Widget_MapCompass_Icon_C.TestFunction
 // ()
 // Parameters:
-// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // ERepresentationType            mRepresentationType            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UTexture2D*              Icon                           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
@@ -198,7 +198,7 @@ void UWidget_MapCompass_Icon_C::SetIcon(class UTexture2D* Texture)
 // Function Widget_MapCompass_Icon.Widget_MapCompass_Icon_C.SetColor
 // ()
 // Parameters:
-// struct FLinearColor            InColorAndOpacity              (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            InColorAndOpacity              (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_MapCompass_Icon_C::SetColor(const struct FLinearColor& InColorAndOpacity)
 {

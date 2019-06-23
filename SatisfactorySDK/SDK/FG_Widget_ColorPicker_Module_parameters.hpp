@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -45,7 +45,7 @@ struct UWidget_ColorPicker_Module_C_BndEvt__mSaturationSlider_K2Node_ComponentBo
 // Function Widget_ColorPicker_Module.Widget_ColorPicker_Module_C.SetupColorAndSliders
 struct UWidget_ColorPicker_Module_C_SetupColorAndSliders_Params
 {
-	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_ColorPicker_Module.Widget_ColorPicker_Module_C.ExecuteUbergraph_Widget_ColorPicker_Module

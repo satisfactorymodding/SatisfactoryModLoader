@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -26,11 +26,11 @@ public:
 	float                                              BackgroundOpacityPercentage;                              // 0x0050(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	bool                                               bOrderTopToBottom;                                        // 0x0054(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x3];                                       // 0x0055(0x0003) MISSED OFFSET
-	struct FColor                                      InputColor;                                               // 0x0058(0x0004) (Edit, Config, IsPlainOldData)
-	struct FColor                                      HistoryColor;                                             // 0x005C(0x0004) (Edit, Config, IsPlainOldData)
-	struct FColor                                      AutoCompleteCommandColor;                                 // 0x0060(0x0004) (Edit, Config, IsPlainOldData)
-	struct FColor                                      AutoCompleteCVarColor;                                    // 0x0064(0x0004) (Edit, Config, IsPlainOldData)
-	struct FColor                                      AutoCompleteFadedColor;                                   // 0x0068(0x0004) (Edit, Config, IsPlainOldData)
+	struct FColor                                      InputColor;                                               // 0x0058(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	struct FColor                                      HistoryColor;                                             // 0x005C(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	struct FColor                                      AutoCompleteCommandColor;                                 // 0x0060(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	struct FColor                                      AutoCompleteCVarColor;                                    // 0x0064(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	struct FColor                                      AutoCompleteFadedColor;                                   // 0x0068(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	unsigned char                                      UnknownData02[0x4];                                       // 0x006C(0x0004) MISSED OFFSET
 
 	static UClass* StaticClass()
@@ -47,19 +47,20 @@ public:
 class UGameMapsSettings : public UObject
 {
 public:
-	struct FSoftObjectPath                             EditorStartupMap;                                         // 0x0028(0x0018) (Edit, Config)
+	struct FSoftObjectPath                             EditorStartupMap;                                         // 0x0028(0x0018) (Edit, ZeroConstructor, Config)
 	class FString                                      LocalMapOptions;                                          // 0x0040(0x0010) (Edit, ZeroConstructor, Config)
-	struct FSoftObjectPath                             TransitionMap;                                            // 0x0050(0x0018) (Edit, Config)
+	struct FSoftObjectPath                             TransitionMap;                                            // 0x0050(0x0018) (Edit, ZeroConstructor, Config)
 	bool                                               bUseSplitscreen;                                          // 0x0068(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	TEnumAsByte<ETwoPlayerSplitScreenType>             TwoPlayerSplitscreenLayout;                               // 0x0069(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	TEnumAsByte<EThreePlayerSplitScreenType>           ThreePlayerSplitscreenLayout;                             // 0x006A(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
-	bool                                               bOffsetPlayerGamepadIds;                                  // 0x006B(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x4];                                       // 0x006C(0x0004) MISSED OFFSET
-	struct FSoftClassPath                              GameInstanceClass;                                        // 0x0070(0x0018) (Edit, Config, NoClear)
-	struct FSoftObjectPath                             GameDefaultMap;                                           // 0x0088(0x0018) (Edit, Config)
-	struct FSoftObjectPath                             ServerDefaultMap;                                         // 0x00A0(0x0018) (Edit, Config)
-	struct FSoftClassPath                              GlobalDefaultGameMode;                                    // 0x00B8(0x0018) (Edit, Config, NoClear)
-	struct FSoftClassPath                              GlobalDefaultServerGameMode;                              // 0x00D0(0x0018) (Edit, Config)
+	EFourPlayerSplitScreenType                         FourPlayerSplitscreenLayout;                              // 0x006B(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	bool                                               bOffsetPlayerGamepadIds;                                  // 0x006C(0x0001) (Edit, ZeroConstructor, Config, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x3];                                       // 0x006D(0x0003) MISSED OFFSET
+	struct FSoftClassPath                              GameInstanceClass;                                        // 0x0070(0x0018) (Edit, ZeroConstructor, Config, NoClear)
+	struct FSoftObjectPath                             GameDefaultMap;                                           // 0x0088(0x0018) (Edit, ZeroConstructor, Config)
+	struct FSoftObjectPath                             ServerDefaultMap;                                         // 0x00A0(0x0018) (Edit, ZeroConstructor, Config)
+	struct FSoftClassPath                              GlobalDefaultGameMode;                                    // 0x00B8(0x0018) (Edit, ZeroConstructor, Config, NoClear)
+	struct FSoftClassPath                              GlobalDefaultServerGameMode;                              // 0x00D0(0x0018) (Edit, ZeroConstructor, Config)
 	TArray<struct FGameModeName>                       GameModeMapPrefixes;                                      // 0x00E8(0x0010) (Edit, ZeroConstructor, Config)
 	TArray<struct FGameModeName>                       GameModeClassAliases;                                     // 0x00F8(0x0010) (Edit, ZeroConstructor, Config)
 
@@ -146,7 +147,7 @@ public:
 	class FString                                      Homepage;                                                 // 0x0068(0x0010) (Edit, ZeroConstructor, Config)
 	class FString                                      LicensingTerms;                                           // 0x0078(0x0010) (Edit, ZeroConstructor, Config)
 	class FString                                      PrivacyPolicy;                                            // 0x0088(0x0010) (Edit, ZeroConstructor, Config)
-	struct FGuid                                       ProjectID;                                                // 0x0098(0x0010) (Edit, Config, IsPlainOldData)
+	struct FGuid                                       ProjectID;                                                // 0x0098(0x0010) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	class FString                                      ProjectName;                                              // 0x00A8(0x0010) (Edit, ZeroConstructor, Config)
 	class FString                                      ProjectVersion;                                           // 0x00B8(0x0010) (Edit, ZeroConstructor, Config)
 	class FString                                      SupportContact;                                           // 0x00C8(0x0010) (Edit, ZeroConstructor, Config)

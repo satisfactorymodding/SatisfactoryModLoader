@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -397,57 +397,6 @@ void UWidget_SplitterProgrammable_C::Construct()
 }
 
 
-// Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature
-// ()
-
-void UWidget_SplitterProgrammable_C::BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature");
-
-	UWidget_SplitterProgrammable_C_BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature
-// ()
-
-void UWidget_SplitterProgrammable_C::BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature");
-
-	UWidget_SplitterProgrammable_C_BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_6_OnClicked__DelegateSignature
-// ()
-
-void UWidget_SplitterProgrammable_C::BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_6_OnClicked__DelegateSignature()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_6_OnClicked__DelegateSignature");
-
-	UWidget_SplitterProgrammable_C_BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_6_OnClicked__DelegateSignature_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.UpdateListFromServer
 // ()
 
@@ -473,6 +422,57 @@ void UWidget_SplitterProgrammable_C::Destruct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.Destruct");
 
 	UWidget_SplitterProgrammable_C_Destruct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_0_OnAddClicked__DelegateSignature
+// ()
+
+void UWidget_SplitterProgrammable_C::BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_0_OnAddClicked__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_0_OnAddClicked__DelegateSignature");
+
+	UWidget_SplitterProgrammable_C_BndEvt__mLeftOutputList_K2Node_ComponentBoundEvent_0_OnAddClicked__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_1_OnAddClicked__DelegateSignature
+// ()
+
+void UWidget_SplitterProgrammable_C::BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_1_OnAddClicked__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_1_OnAddClicked__DelegateSignature");
+
+	UWidget_SplitterProgrammable_C_BndEvt__mCenterOutputList_K2Node_ComponentBoundEvent_1_OnAddClicked__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_2_OnAddClicked__DelegateSignature
+// ()
+
+void UWidget_SplitterProgrammable_C::BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_2_OnAddClicked__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_SplitterProgrammable.Widget_SplitterProgrammable_C.BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_2_OnAddClicked__DelegateSignature");
+
+	UWidget_SplitterProgrammable_C_BndEvt__mRightOutputList_K2Node_ComponentBoundEvent_2_OnAddClicked__DelegateSignature_Params params;
 
 	auto flags = fn->FunctionFlags;
 

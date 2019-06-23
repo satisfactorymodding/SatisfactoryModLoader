@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,40 +11,6 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
-
-// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.UpdateRTPCs
-// ()
-
-void UBP_RailroadVehicleSoundComponent_C::UpdateRTPCs()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.UpdateRTPCs");
-
-	UBP_RailroadVehicleSoundComponent_C_UpdateRTPCs_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.ReceiveBeginPlay
-// ()
-
-void UBP_RailroadVehicleSoundComponent_C::ReceiveBeginPlay()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.ReceiveBeginPlay");
-
-	UBP_RailroadVehicleSoundComponent_C_ReceiveBeginPlay_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
 
 // Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.OnStartedMoving
 // ()
@@ -71,6 +37,40 @@ void UBP_RailroadVehicleSoundComponent_C::OnStoppedMoving()
 	static auto fn = UObject::FindObject<UFunction>("Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.OnStoppedMoving");
 
 	UBP_RailroadVehicleSoundComponent_C_OnStoppedMoving_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.ReceiveBeginPlay
+// ()
+
+void UBP_RailroadVehicleSoundComponent_C::ReceiveBeginPlay()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.ReceiveBeginPlay");
+
+	UBP_RailroadVehicleSoundComponent_C_ReceiveBeginPlay_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.UpdateRTPCs
+// ()
+
+void UBP_RailroadVehicleSoundComponent_C::UpdateRTPCs()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.UpdateRTPCs");
+
+	UBP_RailroadVehicleSoundComponent_C_UpdateRTPCs_Params params;
 
 	auto flags = fn->FunctionFlags;
 

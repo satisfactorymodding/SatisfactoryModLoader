@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -35,9 +35,9 @@ enum class EImpactDamageOverride : uint8_t
 // 0x0024
 struct FFractureMaterial
 {
-	struct FVector2D                                   UVScale;                                                  // 0x0000(0x0008) (Edit, IsPlainOldData)
-	struct FVector2D                                   UVOffset;                                                 // 0x0008(0x0008) (Edit, IsPlainOldData)
-	struct FVector                                     Tangent;                                                  // 0x0010(0x000C) (Edit, IsPlainOldData)
+	struct FVector2D                                   UVScale;                                                  // 0x0000(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   UVOffset;                                                 // 0x0008(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     Tangent;                                                  // 0x0010(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              UAngle;                                                   // 0x001C(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	int                                                InteriorElementIndex;                                     // 0x0020(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 };
@@ -75,7 +75,7 @@ struct FDestructibleDebrisParameters
 	float                                              DebrisLifetimeMax;                                        // 0x0004(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              DebrisMaxSeparationMin;                                   // 0x0008(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              DebrisMaxSeparationMax;                                   // 0x000C(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	struct FBox                                        ValidBounds;                                              // 0x0010(0x001C) (Edit, IsPlainOldData)
+	struct FBox                                        ValidBounds;                                              // 0x0010(0x001C) (Edit, ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct ApexDestruction.DestructibleAdvancedParameters

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -33,7 +33,7 @@ void ABP_FoilagePickup_C::UserConstructionScript()
 // ()
 // Parameters:
 // class UFGFoliageResourceUserData** foliageUserData                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector*                atLocation                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector*                atLocation                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void ABP_FoilagePickup_C::PlayPickupEffect(class UFGFoliageResourceUserData** foliageUserData, struct FVector* atLocation)
 {

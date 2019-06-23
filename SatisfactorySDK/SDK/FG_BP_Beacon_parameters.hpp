@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -50,7 +50,7 @@ struct ABP_Beacon_C_IsUseable_Params
 struct ABP_Beacon_C_UpdateUseState_Params
 {
 	class AFGCharacterPlayer*                          byCharacter;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     atLocation;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FVector                                     atLocation;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	class UPrimitiveComponent*                         componentHit;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FUseState                                   out_useState;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
 };
@@ -83,7 +83,7 @@ struct ABP_Beacon_C_GetActorFogOfWarRevealType_Params
 // Function BP_Beacon.BP_Beacon_C.GetActorRepresentationColor
 struct ABP_Beacon_C_GetActorRepresentationColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Beacon.BP_Beacon_C.GetActorRepresentationText
@@ -119,13 +119,13 @@ struct ABP_Beacon_C_RemoveAsRepresentation_Params
 // Function BP_Beacon.BP_Beacon_C.GetRealActorRotation
 struct ABP_Beacon_C_GetRealActorRotation_Params
 {
-	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Beacon.BP_Beacon_C.GetRealActorLocation
 struct ABP_Beacon_C_GetRealActorLocation_Params
 {
-	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Beacon.BP_Beacon_C.GetActorShouldShowOnMap

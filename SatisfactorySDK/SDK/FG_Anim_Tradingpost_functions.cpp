@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -37,91 +37,6 @@ void UAnim_Tradingpost_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradi
 	static auto fn = UObject::FindObject<UFunction>("Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_22EEA86B4A2F634DDF22FCA3B594EEF4");
 
 	UAnim_Tradingpost_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_22EEA86B4A2F634DDF22FCA3B594EEF4_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_4FFA5BDF419A6592ECFC4895165E9632
-// ()
-
-void UAnim_Tradingpost_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_4FFA5BDF419A6592ECFC4895165E9632()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_4FFA5BDF419A6592ECFC4895165E9632");
-
-	UAnim_Tradingpost_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_4FFA5BDF419A6592ECFC4895165E9632_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_467B016A4BF40A327C9E67850E6AE5E6
-// ()
-
-void UAnim_Tradingpost_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_467B016A4BF40A327C9E67850E6AE5E6()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_467B016A4BF40A327C9E67850E6AE5E6");
-
-	UAnim_Tradingpost_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_467B016A4BF40A327C9E67850E6AE5E6_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_9F3C24B049153AF832369FB52F2FF818
-// ()
-
-void UAnim_Tradingpost_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_9F3C24B049153AF832369FB52F2FF818()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_9F3C24B049153AF832369FB52F2FF818");
-
-	UAnim_Tradingpost_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_9F3C24B049153AF832369FB52F2FF818_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_FF370BFA480AA3B189DF88B06C5F713C
-// ()
-
-void UAnim_Tradingpost_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_FF370BFA480AA3B189DF88B06C5F713C()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_FF370BFA480AA3B189DF88B06C5F713C");
-
-	UAnim_Tradingpost_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_FF370BFA480AA3B189DF88B06C5F713C_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_C0084E6E438FADC804188CAF4245D5A1
-// ()
-
-void UAnim_Tradingpost_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_C0084E6E438FADC804188CAF4245D5A1()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Tradingpost.Anim_Tradingpost_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_C0084E6E438FADC804188CAF4245D5A1");
-
-	UAnim_Tradingpost_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Tradingpost_AnimGraphNode_TransitionResult_C0084E6E438FADC804188CAF4245D5A1_Params params;
 
 	auto flags = fn->FunctionFlags;
 

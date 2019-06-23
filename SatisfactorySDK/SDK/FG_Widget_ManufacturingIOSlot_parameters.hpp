@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,12 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.ConstructFromManufacturingWidget
+struct UWidget_ManufacturingIOSlot_C_ConstructFromManufacturingWidget_Params
+{
+	class UWidget_Manufacturing_C*                     WidgetManufacturing;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+};
 
 // Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.UpdateOutputTooltip
 struct UWidget_ManufacturingIOSlot_C_UpdateOutputTooltip_Params
@@ -75,7 +81,7 @@ struct UWidget_ManufacturingIOSlot_C_Construct_Params
 // Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.Set CostSlot
 struct UWidget_ManufacturingIOSlot_C_Set_CostSlot_Params
 {
-	int                                                slotIdx;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                SlotIdx;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_ManufacturingIOSlot.Widget_ManufacturingIOSlot_C.ExecuteUbergraph_Widget_ManufacturingIOSlot

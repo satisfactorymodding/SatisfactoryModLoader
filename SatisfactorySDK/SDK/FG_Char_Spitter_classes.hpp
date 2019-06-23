@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,18 +15,18 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Char_Spitter.Char_Spitter_C
-// 0x003D (0x09AD - 0x0970)
+// 0x003D (0x09BD - 0x0980)
 class AChar_Spitter_C : public AFGEnemy
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0970(0x0008) (Transient, DuplicateTransient)
-	class UCapsuleComponent*                           Capsule;                                                  // 0x0978(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	bool                                               mIsStrafing;                                              // 0x0980(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x7];                                       // 0x0981(0x0007) MISSED OFFSET
-	struct FScriptMulticastDelegate                    OnStrafeEnded;                                            // 0x0988(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
-	struct FTimerHandle                                mStrafeHandler;                                           // 0x0998(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
-	struct FVector                                     mStrafeDirection;                                         // 0x09A0(0x000C) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
-	bool                                               mDoStrafeRight;                                           // 0x09AC(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0980(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
+	class UCapsuleComponent*                           Capsule;                                                  // 0x0988(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	bool                                               mIsStrafing;                                              // 0x0990(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x7];                                       // 0x0991(0x0007) MISSED OFFSET
+	struct FScriptMulticastDelegate                    OnStrafeEnded;                                            // 0x0998(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
+	struct FTimerHandle                                mStrafeHandler;                                           // 0x09A8(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
+	struct FVector                                     mStrafeDirection;                                         // 0x09B0(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	bool                                               mDoStrafeRight;                                           // 0x09BC(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

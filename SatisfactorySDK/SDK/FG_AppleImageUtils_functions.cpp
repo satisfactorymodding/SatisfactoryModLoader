@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,9 +18,11 @@ namespace SDK
 // class UTexture*                SourceImage                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bWantColor                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseGpu                        (Parm, ZeroConstructor, IsPlainOldData)
+// float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
+// ETextureRotationDirection      Rotate                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToTIFF(class UTexture* SourceImage, bool bWantColor, bool bUseGpu)
+class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToTIFF(class UTexture* SourceImage, bool bWantColor, bool bUseGpu, float Scale, ETextureRotationDirection Rotate)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function AppleImageUtils.AppleImageUtilsBaseAsyncTaskBlueprintProxy.CreateProxyObjectForConvertToTIFF");
 
@@ -28,6 +30,8 @@ class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTask
 	params.SourceImage = SourceImage;
 	params.bWantColor = bWantColor;
 	params.bUseGpu = bUseGpu;
+	params.Scale = Scale;
+	params.Rotate = Rotate;
 
 	auto flags = fn->FunctionFlags;
 
@@ -45,9 +49,11 @@ class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTask
 // class UTexture*                SourceImage                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bWantColor                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseGpu                        (Parm, ZeroConstructor, IsPlainOldData)
+// float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
+// ETextureRotationDirection      Rotate                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToPNG(class UTexture* SourceImage, bool bWantColor, bool bUseGpu)
+class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToPNG(class UTexture* SourceImage, bool bWantColor, bool bUseGpu, float Scale, ETextureRotationDirection Rotate)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function AppleImageUtils.AppleImageUtilsBaseAsyncTaskBlueprintProxy.CreateProxyObjectForConvertToPNG");
 
@@ -55,6 +61,8 @@ class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTask
 	params.SourceImage = SourceImage;
 	params.bWantColor = bWantColor;
 	params.bUseGpu = bUseGpu;
+	params.Scale = Scale;
+	params.Rotate = Rotate;
 
 	auto flags = fn->FunctionFlags;
 
@@ -73,9 +81,11 @@ class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTask
 // int                            Quality                        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bWantColor                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseGpu                        (Parm, ZeroConstructor, IsPlainOldData)
+// float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
+// ETextureRotationDirection      Rotate                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToJPEG(class UTexture* SourceImage, int Quality, bool bWantColor, bool bUseGpu)
+class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToJPEG(class UTexture* SourceImage, int Quality, bool bWantColor, bool bUseGpu, float Scale, ETextureRotationDirection Rotate)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function AppleImageUtils.AppleImageUtilsBaseAsyncTaskBlueprintProxy.CreateProxyObjectForConvertToJPEG");
 
@@ -84,6 +94,8 @@ class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTask
 	params.Quality = Quality;
 	params.bWantColor = bWantColor;
 	params.bUseGpu = bUseGpu;
+	params.Scale = Scale;
+	params.Rotate = Rotate;
 
 	auto flags = fn->FunctionFlags;
 
@@ -102,9 +114,11 @@ class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTask
 // int                            Quality                        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bWantColor                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseGpu                        (Parm, ZeroConstructor, IsPlainOldData)
+// float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
+// ETextureRotationDirection      Rotate                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToHEIF(class UTexture* SourceImage, int Quality, bool bWantColor, bool bUseGpu)
+class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTaskBlueprintProxy::CreateProxyObjectForConvertToHEIF(class UTexture* SourceImage, int Quality, bool bWantColor, bool bUseGpu, float Scale, ETextureRotationDirection Rotate)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function AppleImageUtils.AppleImageUtilsBaseAsyncTaskBlueprintProxy.CreateProxyObjectForConvertToHEIF");
 
@@ -113,6 +127,8 @@ class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* UAppleImageUtilsBaseAsyncTask
 	params.Quality = Quality;
 	params.bWantColor = bWantColor;
 	params.bUseGpu = bUseGpu;
+	params.Scale = Scale;
+	params.Rotate = Rotate;
 
 	auto flags = fn->FunctionFlags;
 

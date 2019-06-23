@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,7 +20,7 @@ namespace SDK
 // 0x001C
 struct FDropTimecode
 {
-	struct FTimecode                                   Timecode;                                                 // 0x0000(0x0014) (BlueprintVisible)
+	struct FTimecode                                   Timecode;                                                 // 0x0000(0x0014) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	int                                                FrameRate;                                                // 0x0014(0x0004) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	bool                                               bColorFraming;                                            // 0x0018(0x0001) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	bool                                               bRunningForward;                                          // 0x0019(0x0001) (BlueprintVisible, ZeroConstructor, IsPlainOldData)

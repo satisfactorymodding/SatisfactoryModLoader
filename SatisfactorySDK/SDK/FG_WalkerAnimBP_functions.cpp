@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,23 +11,6 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
-
-// Function WalkerAnimBP.WalkerAnimBP_C.EvaluateGraphExposedInputs_ExecuteUbergraph_WalkerAnimBP_AnimGraphNode_BlendSpacePlayer_266D62DD44B286D763DAC0AB630AFA52
-// ()
-
-void UWalkerAnimBP_C::EvaluateGraphExposedInputs_ExecuteUbergraph_WalkerAnimBP_AnimGraphNode_BlendSpacePlayer_266D62DD44B286D763DAC0AB630AFA52()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function WalkerAnimBP.WalkerAnimBP_C.EvaluateGraphExposedInputs_ExecuteUbergraph_WalkerAnimBP_AnimGraphNode_BlendSpacePlayer_266D62DD44B286D763DAC0AB630AFA52");
-
-	UWalkerAnimBP_C_EvaluateGraphExposedInputs_ExecuteUbergraph_WalkerAnimBP_AnimGraphNode_BlendSpacePlayer_266D62DD44B286D763DAC0AB630AFA52_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
 
 // Function WalkerAnimBP.WalkerAnimBP_C.BlueprintUpdateAnimation
 // ()

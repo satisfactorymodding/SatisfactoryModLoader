@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -16,7 +16,7 @@ namespace SDK
 // ()
 // Parameters:
 // float                          NormalizedValue                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ZoomValue                      (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               ZoomValue                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_MapContainer_C::NormalizedValueToZoomValue(float NormalizedValue, struct FVector2D* ZoomValue)
 {

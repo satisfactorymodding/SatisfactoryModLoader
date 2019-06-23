@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -41,7 +41,7 @@ struct UWidget_MapCompass_Icon_C_SetIconType_Params
 // Function Widget_MapCompass_Icon.Widget_MapCompass_Icon_C.TestFunction
 struct UWidget_MapCompass_Icon_C_TestFunction_Params
 {
-	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ERepresentationType                                mRepresentationType;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UTexture2D*                                  Icon;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
@@ -73,7 +73,7 @@ struct UWidget_MapCompass_Icon_C_SetIcon_Params
 // Function Widget_MapCompass_Icon.Widget_MapCompass_Icon_C.SetColor
 struct UWidget_MapCompass_Icon_C_SetColor_Params
 {
-	struct FLinearColor                                InColorAndOpacity;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                InColorAndOpacity;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_MapCompass_Icon.Widget_MapCompass_Icon_C.BndEvt__Button_1_K2Node_ComponentBoundEvent_1_OnButtonHoverEvent__DelegateSignature

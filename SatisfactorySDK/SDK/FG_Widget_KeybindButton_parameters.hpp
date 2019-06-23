@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -33,7 +33,7 @@ struct UWidget_KeybindButton_C_KeyBindingOverrideConfirmed_Params
 // Function Widget_KeybindButton.Widget_KeybindButton_C.GetHoverColor
 struct UWidget_KeybindButton_C_GetHoverColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_KeybindButton.Widget_KeybindButton_C.HandleInput

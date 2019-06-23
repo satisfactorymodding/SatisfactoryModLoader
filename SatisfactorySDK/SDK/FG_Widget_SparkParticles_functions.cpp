@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -35,8 +35,8 @@ void UWidget_SparkParticles_C::CreateSparks(int NumberOfSparks)
 // Function Widget_SparkParticles.Widget_SparkParticles_C.OnSparkBounce
 // ()
 // Parameters:
-// struct FVector2D               Position                       (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FVector2D               Scale                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector2D               Position                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Scale                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_SparkParticles_C::OnSparkBounce(const struct FVector2D& Position, const struct FVector2D& Scale)
 {

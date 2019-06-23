@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,23 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_Output_Slot.Widget_Output_Slot_C.UpdateWasteSlotVisibility
+// ()
+
+void UWidget_Output_Slot_C::UpdateWasteSlotVisibility()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Output_Slot.Widget_Output_Slot_C.UpdateWasteSlotVisibility");
+
+	UWidget_Output_Slot_C_UpdateWasteSlotVisibility_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_Output_Slot.Widget_Output_Slot_C.CreateEfficiencyToolTip
 // ()
@@ -83,6 +100,26 @@ void UWidget_Output_Slot_C::Construct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_Output_Slot.Widget_Output_Slot_C.Construct");
 
 	UWidget_Output_Slot_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Output_Slot.Widget_Output_Slot_C.PreConstruct
+// ()
+// Parameters:
+// bool*                          IsDesignTime                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Output_Slot_C::PreConstruct(bool* IsDesignTime)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Output_Slot.Widget_Output_Slot_C.PreConstruct");
+
+	UWidget_Output_Slot_C_PreConstruct_Params params;
+	params.IsDesignTime = IsDesignTime;
 
 	auto flags = fn->FunctionFlags;
 

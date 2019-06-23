@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -40,7 +40,7 @@ struct ABP_Explorer_C_OnRep_mFlashlightOn_Params
 // Function BP_Explorer.BP_Explorer_C.GetAttackLocation
 struct ABP_Explorer_C_GetAttackLocation_Params
 {
-	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Explorer.BP_Explorer_C.GetEnemyTargetDesirability

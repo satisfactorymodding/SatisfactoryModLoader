@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -182,18 +182,18 @@ void UWidget_PlayerInventory_C::Cleanup()
 // Function Widget_PlayerInventory.Widget_PlayerInventory_C.SetInventoryComponents
 // ()
 // Parameters:
-// class UFGInventoryComponent*   InventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UFGInventoryComponent*   inventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // class UFGInventoryComponent*   arms                           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // class UFGInventoryComponent*   Back                           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // class UFGInventoryComponent*   head                           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // class UFGInventoryComponent*   Trash                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_PlayerInventory_C::SetInventoryComponents(class UFGInventoryComponent* InventoryComponent, class UFGInventoryComponent* arms, class UFGInventoryComponent* Back, class UFGInventoryComponent* head, class UFGInventoryComponent* Trash)
+void UWidget_PlayerInventory_C::SetInventoryComponents(class UFGInventoryComponent* inventoryComponent, class UFGInventoryComponent* arms, class UFGInventoryComponent* Back, class UFGInventoryComponent* head, class UFGInventoryComponent* Trash)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerInventory.Widget_PlayerInventory_C.SetInventoryComponents");
 
 	UWidget_PlayerInventory_C_SetInventoryComponents_Params params;
-	params.InventoryComponent = InventoryComponent;
+	params.inventoryComponent = inventoryComponent;
 	params.arms = arms;
 	params.Back = Back;
 	params.head = head;

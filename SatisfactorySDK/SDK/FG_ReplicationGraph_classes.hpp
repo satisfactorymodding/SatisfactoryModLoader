@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // Class ReplicationGraph.ReplicationGraph
-// 0x01C8 (0x01F0 - 0x0028)
+// 0x02C8 (0x02F0 - 0x0028)
 class UReplicationGraph : public UReplicationDriver
 {
 public:
@@ -23,10 +23,10 @@ public:
 	class UNetDriver*                                  NetDriver;                                                // 0x0030(0x0008) (ZeroConstructor, IsPlainOldData)
 	TArray<class UNetReplicationGraphConnection*>      Connections;                                              // 0x0038(0x0010) (ZeroConstructor)
 	TArray<class UNetReplicationGraphConnection*>      PendingConnections;                                       // 0x0048(0x0010) (ZeroConstructor)
-	unsigned char                                      UnknownData00[0x30];                                      // 0x0058(0x0030) MISSED OFFSET
-	TArray<class UReplicationGraphNode*>               GlobalGraphNodes;                                         // 0x0088(0x0010) (ZeroConstructor)
-	TArray<class UReplicationGraphNode*>               PrepareForReplicationNodes;                               // 0x0098(0x0010) (ZeroConstructor)
-	unsigned char                                      UnknownData01[0x148];                                     // 0x00A8(0x0148) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x40];                                      // 0x0058(0x0040) MISSED OFFSET
+	TArray<class UReplicationGraphNode*>               GlobalGraphNodes;                                         // 0x0098(0x0010) (ZeroConstructor)
+	TArray<class UReplicationGraphNode*>               PrepareForReplicationNodes;                               // 0x00A8(0x0010) (ZeroConstructor)
+	unsigned char                                      UnknownData01[0x238];                                     // 0x00B8(0x0238) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -38,14 +38,14 @@ public:
 
 
 // Class ReplicationGraph.BasicReplicationGraph
-// 0x0030 (0x0220 - 0x01F0)
+// 0x0030 (0x0320 - 0x02F0)
 class UBasicReplicationGraph : public UReplicationGraph
 {
 public:
-	class UReplicationGraphNode_GridSpatialization2D*  GridNode;                                                 // 0x01F0(0x0008) (ZeroConstructor, IsPlainOldData)
-	class UReplicationGraphNode_ActorList*             AlwaysRelevantNode;                                       // 0x01F8(0x0008) (ZeroConstructor, IsPlainOldData)
-	TArray<struct FConnectionAlwaysRelevantNodePair>   AlwaysRelevantForConnectionList;                          // 0x0200(0x0010) (ZeroConstructor)
-	TArray<class AActor*>                              ActorsWithoutNetConnection;                               // 0x0210(0x0010) (ZeroConstructor)
+	class UReplicationGraphNode_GridSpatialization2D*  GridNode;                                                 // 0x02F0(0x0008) (ZeroConstructor, IsPlainOldData)
+	class UReplicationGraphNode_ActorList*             AlwaysRelevantNode;                                       // 0x02F8(0x0008) (ZeroConstructor, IsPlainOldData)
+	TArray<struct FConnectionAlwaysRelevantNodePair>   AlwaysRelevantForConnectionList;                          // 0x0300(0x0010) (ZeroConstructor)
+	TArray<class AActor*>                              ActorsWithoutNetConnection;                               // 0x0310(0x0010) (ZeroConstructor)
 
 	static UClass* StaticClass()
 	{
@@ -57,12 +57,12 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode
-// 0x0078 (0x00A0 - 0x0028)
+// 0x0028 (0x0050 - 0x0028)
 class UReplicationGraphNode : public UObject
 {
 public:
 	TArray<class UReplicationGraphNode*>               AllChildNodes;                                            // 0x0028(0x0010) (ZeroConstructor)
-	unsigned char                                      UnknownData00[0x68];                                      // 0x0038(0x0068) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x18];                                      // 0x0038(0x0018) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -74,11 +74,11 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_ActorList
-// 0x00B0 (0x0150 - 0x00A0)
+// 0x00A8 (0x00F8 - 0x0050)
 class UReplicationGraphNode_ActorList : public UReplicationGraphNode
 {
 public:
-	unsigned char                                      UnknownData00[0xB0];                                      // 0x00A0(0x00B0) MISSED OFFSET
+	unsigned char                                      UnknownData00[0xA8];                                      // 0x0050(0x00A8) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -90,11 +90,11 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_ActorListFrequencyBuckets
-// 0x00E0 (0x0180 - 0x00A0)
+// 0x00E8 (0x0138 - 0x0050)
 class UReplicationGraphNode_ActorListFrequencyBuckets : public UReplicationGraphNode
 {
 public:
-	unsigned char                                      UnknownData00[0xE0];                                      // 0x00A0(0x00E0) MISSED OFFSET
+	unsigned char                                      UnknownData00[0xE8];                                      // 0x0050(0x00E8) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -106,11 +106,11 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_ConnectionDormanyNode
-// 0x0090 (0x01E0 - 0x0150)
+// 0x0098 (0x0190 - 0x00F8)
 class UReplicationGraphNode_ConnectionDormanyNode : public UReplicationGraphNode_ActorList
 {
 public:
-	unsigned char                                      UnknownData00[0x90];                                      // 0x0150(0x0090) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x98];                                      // 0x00F8(0x0098) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -122,11 +122,11 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_DormancyNode
-// 0x0050 (0x01A0 - 0x0150)
+// 0x0050 (0x0148 - 0x00F8)
 class UReplicationGraphNode_DormancyNode : public UReplicationGraphNode_ActorList
 {
 public:
-	unsigned char                                      UnknownData00[0x50];                                      // 0x0150(0x0050) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x50];                                      // 0x00F8(0x0050) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -138,12 +138,13 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_GridCell
-// 0x0010 (0x0160 - 0x0150)
+// 0x0058 (0x0150 - 0x00F8)
 class UReplicationGraphNode_GridCell : public UReplicationGraphNode_ActorList
 {
 public:
-	class UReplicationGraphNode_DormancyNode*          DormancyNode;                                             // 0x0150(0x0008) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x8];                                       // 0x0158(0x0008) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x48];                                      // 0x00F8(0x0048) MISSED OFFSET
+	class UReplicationGraphNode*                       DynamicNode;                                              // 0x0140(0x0008) (ZeroConstructor, IsPlainOldData)
+	class UReplicationGraphNode_DormancyNode*          DormancyNode;                                             // 0x0148(0x0008) (ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -155,11 +156,11 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_GridSpatialization2D
-// 0x0130 (0x01D0 - 0x00A0)
+// 0x0170 (0x01C0 - 0x0050)
 class UReplicationGraphNode_GridSpatialization2D : public UReplicationGraphNode
 {
 public:
-	unsigned char                                      UnknownData00[0x130];                                     // 0x00A0(0x0130) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x170];                                     // 0x0050(0x0170) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -171,12 +172,12 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_AlwaysRelevant
-// 0x0020 (0x00C0 - 0x00A0)
+// 0x0018 (0x0068 - 0x0050)
 class UReplicationGraphNode_AlwaysRelevant : public UReplicationGraphNode
 {
 public:
-	class UReplicationGraphNode*                       ChildNode;                                                // 0x00A0(0x0008) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x18];                                      // 0x00A8(0x0018) MISSED OFFSET
+	class UReplicationGraphNode*                       ChildNode;                                                // 0x0050(0x0008) (ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x10];                                      // 0x0058(0x0010) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -188,13 +189,13 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_AlwaysRelevant_ForConnection
-// 0x0020 (0x0170 - 0x0150)
+// 0x0028 (0x0120 - 0x00F8)
 class UReplicationGraphNode_AlwaysRelevant_ForConnection : public UReplicationGraphNode_ActorList
 {
 public:
-	unsigned char                                      UnknownData00[0x10];                                      // 0x0150(0x0010) MISSED OFFSET
-	class AActor*                                      LastViewer;                                               // 0x0160(0x0008) (ZeroConstructor, IsPlainOldData)
-	class AActor*                                      LastViewTarget;                                           // 0x0168(0x0008) (ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x18];                                      // 0x00F8(0x0018) MISSED OFFSET
+	class AActor*                                      LastViewer;                                               // 0x0110(0x0008) (ZeroConstructor, IsPlainOldData)
+	class AActor*                                      LastViewTarget;                                           // 0x0118(0x0008) (ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -206,12 +207,12 @@ public:
 
 
 // Class ReplicationGraph.ReplicationGraphNode_TearOff_ForConnection
-// 0x0030 (0x00D0 - 0x00A0)
+// 0x0028 (0x0078 - 0x0050)
 class UReplicationGraphNode_TearOff_ForConnection : public UReplicationGraphNode
 {
 public:
-	TArray<struct FTearOffActorInfo>                   TearOffActors;                                            // 0x00A0(0x0010) (ZeroConstructor)
-	unsigned char                                      UnknownData00[0x20];                                      // 0x00B0(0x0020) MISSED OFFSET
+	TArray<struct FTearOffActorInfo>                   TearOffActors;                                            // 0x0050(0x0010) (ZeroConstructor)
+	unsigned char                                      UnknownData00[0x18];                                      // 0x0060(0x0018) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -223,17 +224,17 @@ public:
 
 
 // Class ReplicationGraph.NetReplicationGraphConnection
-// 0x0130 (0x0158 - 0x0028)
+// 0x0180 (0x01A8 - 0x0028)
 class UNetReplicationGraphConnection : public UReplicationConnectionDriver
 {
 public:
 	class UNetConnection*                              NetConnection;                                            // 0x0028(0x0008) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData00[0xF0];                                      // 0x0030(0x00F0) MISSED OFFSET
-	class AReplicationGraphDebugActor*                 DebugActor;                                               // 0x0120(0x0008) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData01[0x8];                                       // 0x0128(0x0008) MISSED OFFSET
-	TArray<class UReplicationGraphNode*>               ConnectionGraphNodes;                                     // 0x0130(0x0010) (ZeroConstructor)
-	class UReplicationGraphNode_TearOff_ForConnection* TearOffNode;                                              // 0x0140(0x0008) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x10];                                      // 0x0148(0x0010) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x140];                                     // 0x0030(0x0140) MISSED OFFSET
+	class AReplicationGraphDebugActor*                 DebugActor;                                               // 0x0170(0x0008) (ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x8];                                       // 0x0178(0x0008) MISSED OFFSET
+	TArray<class UReplicationGraphNode*>               ConnectionGraphNodes;                                     // 0x0180(0x0010) (ZeroConstructor)
+	class UReplicationGraphNode_TearOff_ForConnection* TearOffNode;                                              // 0x0190(0x0008) (ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x10];                                      // 0x0198(0x0010) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -261,6 +262,7 @@ public:
 
 	void ServerStopDebugging();
 	void ServerStartDebugging();
+	void ServerSetPeriodFrameForClass(class UClass* Class, int PeriodFrame);
 	void ServerSetCullDistanceForClass(class UClass* Class, float CullDistance);
 	void ServerPrintAllActorInfo(const class FString& str);
 	void ServerPrintAllActorDependencies(const class FString& str);

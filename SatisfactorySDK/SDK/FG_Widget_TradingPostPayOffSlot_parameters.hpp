@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -35,11 +35,11 @@ struct UWidget_TradingPostPayOffSlot_C_GetSlotBackgroundBrush_Params
 // Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetDarkGrayColor
 struct UWidget_TradingPostPayOffSlot_C_GetDarkGrayColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressbarPercent
-struct UWidget_TradingPostPayOffSlot_C_GetProgressbarPercent_Params
+// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressBarPercent
+struct UWidget_TradingPostPayOffSlot_C_GetProgressBarPercent_Params
 {
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
@@ -61,8 +61,8 @@ struct UWidget_TradingPostPayOffSlot_C_GetPaidOffSlotVisibility_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressbarVisibility
-struct UWidget_TradingPostPayOffSlot_C_GetProgressbarVisibility_Params
+// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressBarVisibility
+struct UWidget_TradingPostPayOffSlot_C_GetProgressBarVisibility_Params
 {
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

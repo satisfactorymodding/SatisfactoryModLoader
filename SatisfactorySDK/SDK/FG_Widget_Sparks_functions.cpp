@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -77,8 +77,8 @@ void UWidget_Sparks_C::ExecuteUbergraph_Widget_Sparks(int EntryPoint)
 // Function Widget_Sparks.Widget_Sparks_C.OnParticleBounce__DelegateSignature
 // ()
 // Parameters:
-// struct FVector2D               Position                       (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FVector2D               Scale                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector2D               Position                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Scale                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Sparks_C::OnParticleBounce__DelegateSignature(const struct FVector2D& Position, const struct FVector2D& Scale)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetHealthFillColor
 struct UWidget_PlayerHealthBar_C_GetHealthFillColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.IsValidHealthComponent
@@ -32,8 +32,8 @@ struct UWidget_PlayerHealthBar_C_GetHealthbar_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressbarPercent
-struct UWidget_PlayerHealthBar_C_GetProgressbarPercent_Params
+// Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressBarPercent
+struct UWidget_PlayerHealthBar_C_GetProgressBarPercent_Params
 {
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

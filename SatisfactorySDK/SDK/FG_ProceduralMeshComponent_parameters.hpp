@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,8 +18,8 @@ namespace SDK
 struct UKismetProceduralMeshLibrary_SliceProceduralMesh_Params
 {
 	class UProceduralMeshComponent*                    InProcMesh;                                               // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-	struct FVector                                     PlanePosition;                                            // (Parm, IsPlainOldData)
-	struct FVector                                     PlaneNormal;                                              // (Parm, IsPlainOldData)
+	struct FVector                                     PlanePosition;                                            // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     PlaneNormal;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bCreateOtherHalf;                                         // (Parm, ZeroConstructor, IsPlainOldData)
 	class UProceduralMeshComponent*                    OutOtherHalfProcMesh;                                     // (Parm, OutParm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	EProcMeshSliceCapOption                            CapOption;                                                // (Parm, ZeroConstructor, IsPlainOldData)
@@ -54,7 +54,7 @@ struct UKismetProceduralMeshLibrary_GetSectionFromProceduralMesh_Params
 // Function ProceduralMeshComponent.KismetProceduralMeshLibrary.GenerateBoxMesh
 struct UKismetProceduralMeshLibrary_GenerateBoxMesh_Params
 {
-	struct FVector                                     BoxRadius;                                                // (Parm, IsPlainOldData)
+	struct FVector                                     BoxRadius;                                                // (Parm, ZeroConstructor, IsPlainOldData)
 	TArray<struct FVector>                             Vertices;                                                 // (Parm, OutParm, ZeroConstructor)
 	TArray<int>                                        Triangles;                                                // (Parm, OutParm, ZeroConstructor)
 	TArray<struct FVector>                             Normals;                                                  // (Parm, OutParm, ZeroConstructor)

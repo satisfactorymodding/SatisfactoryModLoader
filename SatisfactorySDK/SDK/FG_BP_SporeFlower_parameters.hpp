@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,12 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function BP_SporeFlower.BP_SporeFlower_C.SetTickStatus
+struct ABP_SporeFlower_C_SetTickStatus_Params
+{
+	bool                                               doTick;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
 
 // Function BP_SporeFlower.BP_SporeFlower_C.OnRep_mReplicatedAnimPosition
 struct ABP_SporeFlower_C_OnRep_mReplicatedAnimPosition_Params

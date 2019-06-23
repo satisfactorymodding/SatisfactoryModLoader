@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -29,25 +29,25 @@ struct UWidget_ShoppingListRecipeRow_C_GetTextColor_Params
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetAddButtonIconColor
 struct UWidget_ShoppingListRecipeRow_C_GetAddButtonIconColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetAddButtonColor
 struct UWidget_ShoppingListRecipeRow_C_GetAddButtonColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetRemoveButtonIconColor
 struct UWidget_ShoppingListRecipeRow_C_GetRemoveButtonIconColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetRemoveButtonColor
 struct UWidget_ShoppingListRecipeRow_C_GetRemoveButtonColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetAmount

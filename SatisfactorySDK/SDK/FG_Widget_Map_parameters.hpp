@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -33,7 +33,7 @@ struct UWidget_Map_C_UpdateObjectOnMap_Params
 // Function Widget_Map.Widget_Map_C.CenterMapOnPlayer
 struct UWidget_Map_C_CenterMapOnPlayer_Params
 {
-	struct FVector2D                                   normalizedWorldLocation;                                  // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector2D                                   normalizedWorldLocation;                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Map.Widget_Map_C.OnIconUnhover
@@ -76,8 +76,8 @@ struct UWidget_Map_C_OnMouseButtonUp_Params
 // Function Widget_Map.Widget_Map_C.ScrollMap
 struct UWidget_Map_C_ScrollMap_Params
 {
-	struct FVector2D                                   MouseOrigin;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-	struct FVector2D                                   MapOrigin;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector2D                                   MouseOrigin;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   MapOrigin;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Map.Widget_Map_C.OnMouseButtonDown
@@ -91,7 +91,7 @@ struct UWidget_Map_C_OnMouseButtonDown_Params
 // Function Widget_Map.Widget_Map_C.ZoomMap
 struct UWidget_Map_C_ZoomMap_Params
 {
-	struct FVector2D                                   ZoomValue;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector2D                                   ZoomValue;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Map.Widget_Map_C.OnMouseWheel
@@ -152,7 +152,7 @@ struct UWidget_Map_C_OnObjectUpdatedOnMap_Params
 // Function Widget_Map.Widget_Map_C.OnMapCentered
 struct UWidget_Map_C_OnMapCentered_Params
 {
-	struct FVector2D*                                  normalizedWorldLocation;                                  // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector2D*                                  normalizedWorldLocation;                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Map.Widget_Map_C.ExecuteUbergraph_Widget_Map

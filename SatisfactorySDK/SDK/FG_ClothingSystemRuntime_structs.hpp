@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -53,7 +53,7 @@ struct FClothConstraintSetup
 };
 
 // ScriptStruct ClothingSystemRuntime.ClothConfig
-// 0x00C4
+// 0x00D4
 struct FClothConfig
 {
 	EClothingWindMethod                                WindMethod;                                               // 0x0000(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
@@ -65,23 +65,26 @@ struct FClothConfig
 	float                                              SelfCollisionRadius;                                      // 0x0044(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              SelfCollisionStiffness;                                   // 0x0048(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              SelfCollisionCullScale;                                   // 0x004C(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     Damping;                                                  // 0x0050(0x000C) (Edit, IsPlainOldData)
+	struct FVector                                     Damping;                                                  // 0x0050(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              Friction;                                                 // 0x005C(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              WindDragCoefficient;                                      // 0x0060(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              WindLiftCoefficient;                                      // 0x0064(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     LinearDrag;                                               // 0x0068(0x000C) (Edit, IsPlainOldData)
-	struct FVector                                     AngularDrag;                                              // 0x0074(0x000C) (Edit, IsPlainOldData)
-	struct FVector                                     LinearInertiaScale;                                       // 0x0080(0x000C) (Edit, IsPlainOldData)
-	struct FVector                                     AngularInertiaScale;                                      // 0x008C(0x000C) (Edit, IsPlainOldData)
-	struct FVector                                     CentrifugalInertiaScale;                                  // 0x0098(0x000C) (Edit, IsPlainOldData)
+	struct FVector                                     LinearDrag;                                               // 0x0068(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     AngularDrag;                                              // 0x0074(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     LinearInertiaScale;                                       // 0x0080(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     AngularInertiaScale;                                      // 0x008C(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     CentrifugalInertiaScale;                                  // 0x0098(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              SolverFrequency;                                          // 0x00A4(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              StiffnessFrequency;                                       // 0x00A8(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              GravityScale;                                             // 0x00AC(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	float                                              TetherStiffness;                                          // 0x00B0(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	float                                              TetherLimit;                                              // 0x00B4(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	float                                              CollisionThickness;                                       // 0x00B8(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	float                                              AnimDriveSpringStiffness;                                 // 0x00BC(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	float                                              AnimDriveDamperStiffness;                                 // 0x00C0(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     GravityOverride;                                          // 0x00B0(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	bool                                               bUseGravityOverride;                                      // 0x00BC(0x0001) (Edit, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x3];                                       // 0x00BD(0x0003) MISSED OFFSET
+	float                                              TetherStiffness;                                          // 0x00C0(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+	float                                              TetherLimit;                                              // 0x00C4(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+	float                                              CollisionThickness;                                       // 0x00C8(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+	float                                              AnimDriveSpringStiffness;                                 // 0x00CC(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+	float                                              AnimDriveDamperStiffness;                                 // 0x00D0(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct ClothingSystemRuntime.ClothVertBoneData

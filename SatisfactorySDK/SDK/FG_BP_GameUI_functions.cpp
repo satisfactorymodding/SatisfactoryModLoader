@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -447,7 +447,7 @@ void UBP_GameUI_C::AddMessageNotification(class UClass* newMessage)
 // Function BP_GameUI.BP_GameUI_C.GetItemDropLocation
 // ()
 // Parameters:
-// struct FVector                 dropLocation                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 dropLocation                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UBP_GameUI_C::GetItemDropLocation(struct FVector* dropLocation)
 {
@@ -996,23 +996,6 @@ void UBP_GameUI_C::OnChatMessageReceived()
 }
 
 
-// Function BP_GameUI.BP_GameUI_C.ResetInput
-// ()
-
-void UBP_GameUI_C::ResetInput()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_GameUI.BP_GameUI_C.ResetInput");
-
-	UBP_GameUI_C_ResetInput_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function BP_GameUI.BP_GameUI_C.ClearHintOnTutorialStepCompleted
 // ()
 
@@ -1030,6 +1013,23 @@ void UBP_GameUI_C::ClearHintOnTutorialStepCompleted()
 }
 
 
+// Function BP_GameUI.BP_GameUI_C.ResetInput
+// ()
+
+void UBP_GameUI_C::ResetInput()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_GameUI.BP_GameUI_C.ResetInput");
+
+	UBP_GameUI_C_ResetInput_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function BP_GameUI.BP_GameUI_C.ShowRespawnMessage
 // ()
 
@@ -1038,6 +1038,62 @@ void UBP_GameUI_C::ShowRespawnMessage()
 	static auto fn = UObject::FindObject<UFunction>("Function BP_GameUI.BP_GameUI_C.ShowRespawnMessage");
 
 	UBP_GameUI_C_ShowRespawnMessage_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_GameUI.BP_GameUI_C.OnReceiveRadiationStart
+// ()
+
+void UBP_GameUI_C::OnReceiveRadiationStart()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_GameUI.BP_GameUI_C.OnReceiveRadiationStart");
+
+	UBP_GameUI_C_OnReceiveRadiationStart_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_GameUI.BP_GameUI_C.OnReceiveRadiationStop
+// ()
+
+void UBP_GameUI_C::OnReceiveRadiationStop()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_GameUI.BP_GameUI_C.OnReceiveRadiationStop");
+
+	UBP_GameUI_C_OnReceiveRadiationStop_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_GameUI.BP_GameUI_C.OnRadiationIntensityUpdated
+// ()
+// Parameters:
+// float*                         radiationIntensity             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// float*                         radiationImmunity              (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UBP_GameUI_C::OnRadiationIntensityUpdated(float* radiationIntensity, float* radiationImmunity)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_GameUI.BP_GameUI_C.OnRadiationIntensityUpdated");
+
+	UBP_GameUI_C_OnRadiationIntensityUpdated_Params params;
+	params.radiationIntensity = radiationIntensity;
+	params.radiationImmunity = radiationImmunity;
 
 	auto flags = fn->FunctionFlags;
 

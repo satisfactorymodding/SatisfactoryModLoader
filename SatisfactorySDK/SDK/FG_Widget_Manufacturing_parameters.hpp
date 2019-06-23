@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_Manufacturing.Widget_Manufacturing_C.ReconstructIOSlots
+struct UWidget_Manufacturing_C_ReconstructIOSlots_Params
+{
+};
 
 // Function Widget_Manufacturing.Widget_Manufacturing_C.DropInventorySlotStack
 struct UWidget_Manufacturing_C_DropInventorySlotStack_Params
@@ -123,16 +128,6 @@ struct UWidget_Manufacturing_C_OnNewRecipeSet_Params
 	class UClass*                                      newRecipe;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function Widget_Manufacturing.Widget_Manufacturing_C.OnRecipeButtonClicked
-struct UWidget_Manufacturing_C_OnRecipeButtonClicked_Params
-{
-};
-
-// Function Widget_Manufacturing.Widget_Manufacturing_C.OnInfoButtonClicked
-struct UWidget_Manufacturing_C_OnInfoButtonClicked_Params
-{
-};
-
 // Function Widget_Manufacturing.Widget_Manufacturing_C.BndEvt__Widget_StandbyButton_K2Node_ComponentBoundEvent_12_OnStandbyClicked__DelegateSignature
 struct UWidget_Manufacturing_C_BndEvt__Widget_StandbyButton_K2Node_ComponentBoundEvent_12_OnStandbyClicked__DelegateSignature_Params
 {
@@ -163,6 +158,18 @@ struct UWidget_Manufacturing_C_Destruct_Params
 // Function Widget_Manufacturing.Widget_Manufacturing_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnClose__DelegateSignature
 struct UWidget_Manufacturing_C_BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnClose__DelegateSignature_Params
 {
+};
+
+// Function Widget_Manufacturing.Widget_Manufacturing_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_1_OnTabButtonClicked__DelegateSignature
+struct UWidget_Manufacturing_C_BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_1_OnTabButtonClicked__DelegateSignature_Params
+{
+	int                                                ButtonIndex;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Manufacturing.Widget_Manufacturing_C.OnReplicationDetailActorReplicated
+struct UWidget_Manufacturing_C_OnReplicationDetailActorReplicated_Params
+{
+	class AActor*                                      replicationDetailActorOwner;                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Manufacturing.Widget_Manufacturing_C.ExecuteUbergraph_Widget_Manufacturing

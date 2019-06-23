@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -57,7 +57,7 @@ struct FSlateColor UWidget_ShoppingListRecipeRow_C::GetTextColor()
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetAddButtonIconColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingListRecipeRow_C::GetAddButtonIconColor()
 {
@@ -78,7 +78,7 @@ struct FLinearColor UWidget_ShoppingListRecipeRow_C::GetAddButtonIconColor()
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetAddButtonColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingListRecipeRow_C::GetAddButtonColor()
 {
@@ -99,7 +99,7 @@ struct FLinearColor UWidget_ShoppingListRecipeRow_C::GetAddButtonColor()
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetRemoveButtonIconColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingListRecipeRow_C::GetRemoveButtonIconColor()
 {
@@ -120,7 +120,7 @@ struct FLinearColor UWidget_ShoppingListRecipeRow_C::GetRemoveButtonIconColor()
 // Function Widget_ShoppingListRecipeRow.Widget_ShoppingListRecipeRow_C.GetRemoveButtonColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ShoppingListRecipeRow_C::GetRemoveButtonColor()
 {

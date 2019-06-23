@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_MaterialEffect_Build.BP_MaterialEffect_Build_C
-// 0x03C8 (0x0528 - 0x0160)
+// 0x03B8 (0x0518 - 0x0160)
 class UBP_MaterialEffect_Build_C : public UFGMaterialEffect_Build
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0160(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0160(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	int                                                mCurrentStep;                                             // 0x0168(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              mElapsedTime;                                             // 0x016C(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	float                                              mThrowDuration;                                           // 0x0170(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
@@ -41,15 +41,11 @@ public:
 	struct FRuntimeFloatCurve                          mGlowPowerCurve;                                          // 0x0318(0x0078) (Edit, BlueprintVisible, DisableEditOnInstance)
 	struct FRuntimeFloatCurve                          mVolumeCurve;                                             // 0x0390(0x0078) (Edit, BlueprintVisible, DisableEditOnInstance)
 	int                                                mItemsThrown;                                             // 0x0408(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	bool                                               mIsHub;                                                   // 0x040C(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	bool                                               mIsSpaceElevator;                                         // 0x040D(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x2];                                       // 0x040E(0x0002) MISSED OFFSET
-	struct FVector                                     mBoxBounds;                                               // 0x0410(0x000C) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
-	struct FVector                                     mOrigin;                                                  // 0x041C(0x000C) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
+	struct FVector                                     mBoxBounds;                                               // 0x040C(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FVector                                     mOrigin;                                                  // 0x0418(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x4];                                       // 0x0424(0x0004) MISSED OFFSET
 	struct FRuntimeFloatCurve                          mParticleCurve;                                           // 0x0428(0x0078) (Edit, BlueprintVisible, DisableEditOnInstance)
 	struct FRuntimeFloatCurve                          mParticleVeloCurve;                                       // 0x04A0(0x0078) (Edit, BlueprintVisible, DisableEditOnInstance)
-	class UAkComponent*                                AK_Component;                                             // 0x0518(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	class ALevelSequenceActor*                         mSpaceElevatorSequence;                                   // 0x0520(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -72,7 +72,7 @@ float ABP_Tractor_C::GetEnemyTargetDesirability(class AFGEnemyController** forCo
 // Function BP_Tractor.BP_Tractor_C.GetAttackLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ABP_Tractor_C::GetAttackLocation()
 {

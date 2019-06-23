@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class UWidget_Multiplayer_ListButton_C : public UFGWidgetMultiplayer
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0220(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0220(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UButton*                                     ActionButton;                                             // 0x0228(0x0008) (BlueprintVisible, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
 	class UButton*                                     ActionButton2;                                            // 0x0230(0x0008) (BlueprintVisible, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
 	class USizeBox*                                    ActionButtonContainer;                                    // 0x0238(0x0008) (BlueprintVisible, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
@@ -76,14 +76,14 @@ public:
 
 
 	void UpdateNATWarningForClient();
-	void GetHostingNATIsse(ECachedNATType HostNAT, ECachedNATType clientNat, struct FText* ToolTip);
-	void GetConnectingNATIsse(ECachedNATType HostNAT, ECachedNATType clientNat, struct FText* ToolTip);
-	void IsNATIssue(ECachedNATType HostNAT, ECachedNATType clientNat, bool* isIssue);
+	void GetHostingNATIsse(ECachedNATType hostNat, ECachedNATType clientNat, struct FText* ToolTip);
+	void GetConnectingNATIsse(ECachedNATType hostNat, ECachedNATType clientNat, struct FText* ToolTip);
+	void IsNATIssue(ECachedNATType hostNat, ECachedNATType clientNat, bool* isIssue);
 	void UpdateNATWarningForHost();
 	void SetupForManagePlayers(class AFGPlayerState* PlayerState);
 	void SetupForJoinInvite(struct FPendingInvite* invite);
 	void SetupForSendInvite(struct FFGOnlineFriend* _friend);
-	void Internal_UpdateButton(const struct FText& Title, bool IsOnline, const struct FText& additionalInfo, int PlayersInSession, bool privateSession, int TimePlayed, const struct FText& ActionButtonText, bool hideSessionInfo, bool isPlayingSatisfactory, bool hideActionButton, bool hideSecondaryActionButton, bool disableActionButton, const struct FText& actionButtonTooltip, bool inAGame, const struct FBlueprintSessionResult& session, bool isSelectable, bool IsNonInteractable, ECachedNATType natType, bool IsHost, bool careAboutNAT);
+	void Internal_UpdateButton(const struct FText& Title, bool IsOnline, const struct FText& additionalInfo, int PlayersInSession, bool privateSession, int TimePlayed, const struct FText& ActionButtonText, bool hideSessionInfo, bool isPlayingSatisfactory, bool hideActionButton, bool hideSecondaryActionButton, bool disableActionButton, const struct FText& actionButtonTooltip, bool inAGame, const struct FBlueprintSessionResult& session, bool isSelectable, bool IsNonInteractable, ECachedNATType natType, bool isHost, bool careAboutNAT);
 	void SetupForJoinGame(struct FFGOnlineFriend* _friend);
 	void SetButtonColor(const struct FLinearColor& Color);
 	void ClearListSelection();

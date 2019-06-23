@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -32,7 +32,7 @@ void UWidget_SchematicRewardItem_C::SetCategoryIconColor()
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetLockedIcon
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicRewardItem_C::GetLockedIcon()
 {
@@ -94,7 +94,7 @@ struct FSlateBrush UWidget_SchematicRewardItem_C::GetCategoryIcon()
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetLinesColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicRewardItem_C::GetLinesColor()
 {
@@ -115,7 +115,7 @@ struct FLinearColor UWidget_SchematicRewardItem_C::GetLinesColor()
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetButtonColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicRewardItem_C::GetButtonColor()
 {
@@ -136,7 +136,7 @@ struct FLinearColor UWidget_SchematicRewardItem_C::GetButtonColor()
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetCategoryIconBackgroundColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SchematicRewardItem_C::GetCategoryIconBackgroundColor()
 {

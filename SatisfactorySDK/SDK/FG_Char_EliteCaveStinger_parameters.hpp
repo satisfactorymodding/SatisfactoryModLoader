@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -14,13 +14,13 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
-// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.UserConstructionScript
-struct AChar_EliteCaveStinger_C_UserConstructionScript_Params
+// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.OnRep_bSpawnGass
+struct AChar_EliteCaveStinger_C_OnRep_bSpawnGass_Params
 {
 };
 
-// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.ReceiveBeginPlay
-struct AChar_EliteCaveStinger_C_ReceiveBeginPlay_Params
+// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.UserConstructionScript
+struct AChar_EliteCaveStinger_C_UserConstructionScript_Params
 {
 };
 
@@ -29,14 +29,9 @@ struct AChar_EliteCaveStinger_C_SpawnGas_Params
 {
 };
 
-// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.OnTakeAnyDamage_Event_1
-struct AChar_EliteCaveStinger_C_OnTakeAnyDamage_Event_1_Params
+// Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.GasEffect
+struct AChar_EliteCaveStinger_C_GasEffect_Params
 {
-	class AActor*                                      damagedActor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	float                                              Damage;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class UDamageType*                                 DamageType;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Char_EliteCaveStinger.Char_EliteCaveStinger_C.ExecuteUbergraph_Char_EliteCaveStinger

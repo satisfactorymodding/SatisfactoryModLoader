@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_SignSettings.BP_SignSettings_C
-// 0x0000 (0x0060 - 0x0060)
+// 0x0000 (0x0070 - 0x0070)
 class UBP_SignSettings_C : public UFGSignSettings
 {
 public:

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,17 +15,17 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // Class EditableMesh.EditableMesh
-// 0x1048 (0x1070 - 0x0028)
+// 0x05F8 (0x0620 - 0x0028)
 class UEditableMesh : public UObject
 {
 public:
-	unsigned char                                      UnknownData00[0xD50];                                     // 0x0028(0x0D50) MISSED OFFSET
-	TArray<class UEditableMeshAdapter*>                Adapters;                                                 // 0x0D78(0x0010) (ZeroConstructor)
-	int                                                TextureCoordinateCount;                                   // 0x0D88(0x0004) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData01[0xF8];                                      // 0x0D8C(0x00F8) MISSED OFFSET
-	int                                                PendingCompactCounter;                                    // 0x0E84(0x0004) (ZeroConstructor, IsPlainOldData)
-	int                                                SubdivisionCount;                                         // 0x0E88(0x0004) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x1E4];                                     // 0x0E8C(0x01E4) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x300];                                     // 0x0028(0x0300) MISSED OFFSET
+	TArray<class UEditableMeshAdapter*>                Adapters;                                                 // 0x0328(0x0010) (ZeroConstructor)
+	int                                                TextureCoordinateCount;                                   // 0x0338(0x0004) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0xF8];                                      // 0x033C(0x00F8) MISSED OFFSET
+	int                                                PendingCompactCounter;                                    // 0x0434(0x0004) (ZeroConstructor, IsPlainOldData)
+	int                                                SubdivisionCount;                                         // 0x0438(0x0004) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x1E4];                                     // 0x043C(0x01E4) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -57,6 +57,7 @@ public:
 	void SetAllowSpatialDatabase(bool bInAllowSpatialDatabase);
 	void SetAllowCompact(bool bInAllowCompact);
 	void SearchSpatialDatabaseForPolygonsPotentiallyIntersectingLineSegment(const struct FVector& LineSegmentStart, const struct FVector& LineSegmentEnd, TArray<struct FPolygonID>* OutPolygons);
+	void SearchSpatialDatabaseForPolygonsInVolume(TArray<struct FPlane> Planes, TArray<struct FPolygonID>* OutPolygons);
 	class UEditableMesh* RevertInstance();
 	void Revert();
 	void RemovePolygonPerimeterVertices(const struct FPolygonID& PolygonID, int FirstVertexNumberToRemove, int NumVerticesToRemove, bool bDeleteOrphanedVertexInstances);

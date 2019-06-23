@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -36,7 +36,7 @@ ESlateVisibility UWidget_NobeliskExplosive_C::Get_mNobeliskThrowbar_Visibility_1
 // Function Widget_NobeliskExplosive.Widget_NobeliskExplosive_C.Get_mNobeliskThrowbar_FillColorAndOpacity_1
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_NobeliskExplosive_C::Get_mNobeliskThrowbar_FillColorAndOpacity_1()
 {

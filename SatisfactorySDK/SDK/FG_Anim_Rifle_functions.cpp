@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,23 +11,6 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
-
-// Function Anim_Rifle.Anim_Rifle_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Rifle_AnimGraphNode_BlendListByBool_9810A5E74A4B67E52CD4DEA7D9E5E937
-// ()
-
-void UAnim_Rifle_C::EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Rifle_AnimGraphNode_BlendListByBool_9810A5E74A4B67E52CD4DEA7D9E5E937()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_Rifle.Anim_Rifle_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Rifle_AnimGraphNode_BlendListByBool_9810A5E74A4B67E52CD4DEA7D9E5E937");
-
-	UAnim_Rifle_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Rifle_AnimGraphNode_BlendListByBool_9810A5E74A4B67E52CD4DEA7D9E5E937_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
 
 // Function Anim_Rifle.Anim_Rifle_C.BlueprintUpdateAnimation
 // ()

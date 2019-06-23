@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -78,16 +78,16 @@ ESlateVisibility UWidget_SpaceElevatorPayOffSlot_C::GetPaidOffSlotVisibility()
 }
 
 
-// Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressbarVisibility
+// Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressBarVisibility
 // ()
 // Parameters:
 // ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-ESlateVisibility UWidget_SpaceElevatorPayOffSlot_C::GetProgressbarVisibility()
+ESlateVisibility UWidget_SpaceElevatorPayOffSlot_C::GetProgressBarVisibility()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressbarVisibility");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressBarVisibility");
 
-	UWidget_SpaceElevatorPayOffSlot_C_GetProgressbarVisibility_Params params;
+	UWidget_SpaceElevatorPayOffSlot_C_GetProgressBarVisibility_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -141,16 +141,16 @@ ESlateVisibility UWidget_SpaceElevatorPayOffSlot_C::GetPaidOffFeedbackImage()
 }
 
 
-// Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressbarPercent
+// Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressBarPercent
 // ()
 // Parameters:
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float UWidget_SpaceElevatorPayOffSlot_C::GetProgressbarPercent()
+float UWidget_SpaceElevatorPayOffSlot_C::GetProgressBarPercent()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressbarPercent");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressBarPercent");
 
-	UWidget_SpaceElevatorPayOffSlot_C_GetProgressbarPercent_Params params;
+	UWidget_SpaceElevatorPayOffSlot_C_GetProgressBarPercent_Params params;
 
 	auto flags = fn->FunctionFlags;
 

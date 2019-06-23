@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,11 +13,6 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
-
-// Function Anim_Rifle.Anim_Rifle_C.EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Rifle_AnimGraphNode_BlendListByBool_9810A5E74A4B67E52CD4DEA7D9E5E937
-struct UAnim_Rifle_C_EvaluateGraphExposedInputs_ExecuteUbergraph_Anim_Rifle_AnimGraphNode_BlendListByBool_9810A5E74A4B67E52CD4DEA7D9E5E937_Params
-{
-};
 
 // Function Anim_Rifle.Anim_Rifle_C.BlueprintUpdateAnimation
 struct UAnim_Rifle_C_BlueprintUpdateAnimation_Params

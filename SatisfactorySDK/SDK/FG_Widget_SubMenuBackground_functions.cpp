@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,14 +15,14 @@ namespace SDK
 // Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.OnSpawnAnim
 // ()
 // Parameters:
-// class UPanelWidget*            OverwritePanelWIdget           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UPanelWidget*            OverwritePanelWidget           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_SubMenuBackground_C::OnSpawnAnim(class UPanelWidget* OverwritePanelWIdget)
+void UWidget_SubMenuBackground_C::OnSpawnAnim(class UPanelWidget* OverwritePanelWidget)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.OnSpawnAnim");
 
 	UWidget_SubMenuBackground_C_OnSpawnAnim_Params params;
-	params.OverwritePanelWIdget = OverwritePanelWIdget;
+	params.OverwritePanelWidget = OverwritePanelWidget;
 
 	auto flags = fn->FunctionFlags;
 
@@ -52,14 +52,14 @@ void UWidget_SubMenuBackground_C::Construct()
 // Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.PlayListSpawnAnim
 // ()
 // Parameters:
-// class UPanelWidget*            OverwritePanelWIdget           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UPanelWidget*            OverwritePanelWidget           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_SubMenuBackground_C::PlayListSpawnAnim(class UPanelWidget* OverwritePanelWIdget)
+void UWidget_SubMenuBackground_C::PlayListSpawnAnim(class UPanelWidget* OverwritePanelWidget)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.PlayListSpawnAnim");
 
 	UWidget_SubMenuBackground_C_PlayListSpawnAnim_Params params;
-	params.OverwritePanelWIdget = OverwritePanelWIdget;
+	params.OverwritePanelWidget = OverwritePanelWidget;
 
 	auto flags = fn->FunctionFlags;
 

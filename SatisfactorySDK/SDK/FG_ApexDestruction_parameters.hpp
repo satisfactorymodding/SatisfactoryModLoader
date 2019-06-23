@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -30,7 +30,7 @@ struct UDestructibleComponent_GetDestructibleMesh_Params
 struct UDestructibleComponent_ApplyRadiusDamage_Params
 {
 	float                                              BaseDamage;                                               // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     HurtOrigin;                                               // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FVector                                     HurtOrigin;                                               // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	float                                              DamageRadius;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              ImpulseStrength;                                          // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bFullDamage;                                              // (Parm, ZeroConstructor, IsPlainOldData)
@@ -40,8 +40,8 @@ struct UDestructibleComponent_ApplyRadiusDamage_Params
 struct UDestructibleComponent_ApplyDamage_Params
 {
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     HitLocation;                                              // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	struct FVector                                     ImpulseDir;                                               // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FVector                                     HitLocation;                                              // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+	struct FVector                                     ImpulseDir;                                               // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	float                                              ImpulseStrength;                                          // (Parm, ZeroConstructor, IsPlainOldData)
 };
 

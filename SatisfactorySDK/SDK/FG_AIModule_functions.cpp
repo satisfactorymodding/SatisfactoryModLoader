@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -84,6 +84,26 @@ void AAIController::UnclaimTaskResource(class UClass* ResourceClass)
 
 	AAIController_UnclaimTaskResource_Params params;
 	params.ResourceClass = ResourceClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function AIModule.AIController.SetPathFollowingComponent
+// ()
+// Parameters:
+// class UPathFollowingComponent* NewPFComponent                 (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void AAIController::SetPathFollowingComponent(class UPathFollowingComponent* NewPFComponent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function AIModule.AIController.SetPathFollowingComponent");
+
+	AAIController_SetPathFollowingComponent_Params params;
+	params.NewPFComponent = NewPFComponent;
 
 	auto flags = fn->FunctionFlags;
 
@@ -223,7 +243,7 @@ void AAIController::OnGameplayTaskResourcesClaimed(const struct FGameplayResourc
 // Function AIModule.AIController.MoveToLocation
 // ()
 // Parameters:
-// struct FVector                 Dest                           (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Dest                           (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          AcceptanceRadius               (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bStopOnOverlap                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUsePathfinding                (Parm, ZeroConstructor, IsPlainOldData)
@@ -315,7 +335,7 @@ void AAIController::K2_SetFocus(class AActor* NewFocus)
 // Function AIModule.AIController.K2_SetFocalPoint
 // ()
 // Parameters:
-// struct FVector                 FP                             (Parm, IsPlainOldData)
+// struct FVector                 FP                             (Parm, ZeroConstructor, IsPlainOldData)
 
 void AAIController::K2_SetFocalPoint(const struct FVector& FP)
 {
@@ -415,7 +435,7 @@ TEnumAsByte<EPathFollowingStatus> AAIController::GetMoveStatus()
 // Function AIModule.AIController.GetImmediateMoveDestination
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AAIController::GetImmediateMoveDestination()
 {
@@ -458,7 +478,7 @@ class AActor* AAIController::GetFocusActor()
 // ()
 // Parameters:
 // class AActor*                  Actor                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AAIController::GetFocalPointOnActor(class AActor* Actor)
 {
@@ -480,7 +500,7 @@ struct FVector AAIController::GetFocalPointOnActor(class AActor* Actor)
 // Function AIModule.AIController.GetFocalPoint
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AAIController::GetFocalPoint()
 {
@@ -591,8 +611,8 @@ void UAIBlueprintHelperLibrary::UnlockAIResourcesWithAnimation(class UAnimInstan
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  PawnClass                      (Parm, ZeroConstructor, IsPlainOldData)
 // class UBehaviorTree*           BehaviorTree                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bNoCollisionFail               (Parm, ZeroConstructor, IsPlainOldData)
 // class APawn*                   ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -622,7 +642,7 @@ class APawn* UAIBlueprintHelperLibrary::SpawnAIFromClass(class UObject* WorldCon
 // ()
 // Parameters:
 // class AController*             Controller                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Goal                           (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Goal                           (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UAIBlueprintHelperLibrary::SimpleMoveToLocation(class AController* Controller, const struct FVector& Goal)
 {
@@ -715,7 +735,7 @@ void UAIBlueprintHelperLibrary::LockAIResourcesWithAnimation(class UAnimInstance
 // Function AIModule.AIBlueprintHelperLibrary.IsValidAIRotation
 // ()
 // Parameters:
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UAIBlueprintHelperLibrary::IsValidAIRotation(const struct FRotator& Rotation)
@@ -738,7 +758,7 @@ bool UAIBlueprintHelperLibrary::IsValidAIRotation(const struct FRotator& Rotatio
 // Function AIModule.AIBlueprintHelperLibrary.IsValidAILocation
 // ()
 // Parameters:
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UAIBlueprintHelperLibrary::IsValidAILocation(const struct FVector& Location)
@@ -761,7 +781,7 @@ bool UAIBlueprintHelperLibrary::IsValidAILocation(const struct FVector& Location
 // Function AIModule.AIBlueprintHelperLibrary.IsValidAIDirection
 // ()
 // Parameters:
-// struct FVector                 DirectionVector                (Parm, IsPlainOldData)
+// struct FVector                 DirectionVector                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UAIBlueprintHelperLibrary::IsValidAIDirection(const struct FVector& DirectionVector)
@@ -855,7 +875,7 @@ class AAIController* UAIBlueprintHelperLibrary::GetAIController(class AActor* Co
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class APawn*                   Pawn                           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Destination                    (Parm, IsPlainOldData)
+// struct FVector                 Destination                    (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  targetActor                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AcceptanceRadius               (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bStopOnOverlap                 (Parm, ZeroConstructor, IsPlainOldData)
@@ -1415,8 +1435,8 @@ void UAISense_Blueprint::GetAllListenerActors(TArray<class AActor*>* ListenerAct
 // class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  Instigator                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 EventLocation                  (Parm, IsPlainOldData)
-// struct FVector                 HitLocation                    (Parm, IsPlainOldData)
+// struct FVector                 EventLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UAISense_Damage::ReportDamageEvent(class UObject* WorldContextObject, class AActor* damagedActor, class AActor* Instigator, float damageAmount, const struct FVector& EventLocation, const struct FVector& HitLocation)
 {
@@ -1442,7 +1462,7 @@ void UAISense_Damage::ReportDamageEvent(class UObject* WorldContextObject, class
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NoiseLocation                  (Parm, IsPlainOldData)
+// struct FVector                 NoiseLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Loudness                       (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  Instigator                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxRange                       (Parm, ZeroConstructor, IsPlainOldData)
@@ -1520,7 +1540,7 @@ void UAISense_Prediction::RequestControllerPredictionEvent(class AAIController* 
 // ()
 // Parameters:
 // class AAIController*           Controller                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 GoalLocation                   (Parm, IsPlainOldData)
+// struct FVector                 GoalLocation                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  GoalActor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AcceptanceRadius               (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EAIOptionFlag>     StopOnOverlap                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -1732,7 +1752,7 @@ void UBehaviorTreeComponent::AddCooldownTagDuration(const struct FGameplayTag& C
 // ()
 // Parameters:
 // struct FName                   KeyName                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
-// struct FVector                 VectorValue                    (Parm, IsPlainOldData)
+// struct FVector                 VectorValue                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBlackboardComponent::SetValueAsVector(const struct FName& KeyName, const struct FVector& VectorValue)
 {
@@ -1776,7 +1796,7 @@ void UBlackboardComponent::SetValueAsString(const struct FName& KeyName, const c
 // ()
 // Parameters:
 // struct FName                   KeyName                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
-// struct FRotator                VectorValue                    (Parm, IsPlainOldData)
+// struct FRotator                VectorValue                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBlackboardComponent::SetValueAsRotator(const struct FName& KeyName, const struct FRotator& VectorValue)
 {
@@ -1975,7 +1995,7 @@ bool UBlackboardComponent::IsVectorValueSet(const struct FName& KeyName)
 // ()
 // Parameters:
 // struct FName                   KeyName                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UBlackboardComponent::GetValueAsVector(const struct FName& KeyName)
 {
@@ -2021,7 +2041,7 @@ class FString UBlackboardComponent::GetValueAsString(const struct FName& KeyName
 // ()
 // Parameters:
 // struct FName                   KeyName                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UBlackboardComponent::GetValueAsRotator(const struct FName& KeyName)
 {
@@ -2205,7 +2225,7 @@ bool UBlackboardComponent::GetValueAsBool(const struct FName& KeyName)
 // ()
 // Parameters:
 // struct FName                   KeyName                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
-// struct FRotator                ResultRotation                 (Parm, OutParm, IsPlainOldData)
+// struct FRotator                ResultRotation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UBlackboardComponent::GetRotationFromEntry(const struct FName& KeyName, struct FRotator* ResultRotation)
@@ -2232,7 +2252,7 @@ bool UBlackboardComponent::GetRotationFromEntry(const struct FName& KeyName, str
 // ()
 // Parameters:
 // struct FName                   KeyName                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
-// struct FVector                 ResultLocation                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 ResultLocation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UBlackboardComponent::GetLocationFromEntry(const struct FName& KeyName, struct FVector* ResultLocation)
@@ -2630,7 +2650,7 @@ void UBTFunctionLibrary::StartUsingExternalEvent(class UBTNode* NodeOwner, class
 // Parameters:
 // class UBTNode*                 NodeOwner                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FBlackboardKeySelector  Key                            (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 Value                          (Parm, IsPlainOldData)
+// struct FVector                 Value                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBTFunctionLibrary::SetBlackboardValueAsVector(class UBTNode* NodeOwner, const struct FBlackboardKeySelector& Key, const struct FVector& Value)
 {
@@ -2678,7 +2698,7 @@ void UBTFunctionLibrary::SetBlackboardValueAsString(class UBTNode* NodeOwner, co
 // Parameters:
 // class UBTNode*                 NodeOwner                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FBlackboardKeySelector  Key                            (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FRotator                Value                          (Parm, IsPlainOldData)
+// struct FRotator                Value                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBTFunctionLibrary::SetBlackboardValueAsRotator(class UBTNode* NodeOwner, const struct FBlackboardKeySelector& Key, const struct FRotator& Value)
 {
@@ -2916,7 +2936,7 @@ class UBehaviorTreeComponent* UBTFunctionLibrary::GetOwnerComponent(class UBTNod
 // Parameters:
 // class UBTNode*                 NodeOwner                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FBlackboardKeySelector  Key                            (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UBTFunctionLibrary::GetBlackboardValueAsVector(class UBTNode* NodeOwner, const struct FBlackboardKeySelector& Key)
 {
@@ -2966,7 +2986,7 @@ class FString UBTFunctionLibrary::GetBlackboardValueAsString(class UBTNode* Node
 // Parameters:
 // class UBTNode*                 NodeOwner                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FBlackboardKeySelector  Key                            (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UBTFunctionLibrary::GetBlackboardValueAsRotator(class UBTNode* NodeOwner, const struct FBlackboardKeySelector& Key)
 {
@@ -3699,7 +3719,7 @@ void UPathFollowingComponent::OnNavDataRegistered(class ANavigationData* NavData
 // Parameters:
 // class AActor*                  SelfActor                      (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  OtherActor                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NormalImpulse                  (Parm, IsPlainOldData)
+// struct FVector                 NormalImpulse                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              Hit                            (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 
 void UPathFollowingComponent::OnActorBump(class AActor* SelfActor, class AActor* OtherActor, const struct FVector& NormalImpulse, const struct FHitResult& Hit)
@@ -3723,7 +3743,7 @@ void UPathFollowingComponent::OnActorBump(class AActor* SelfActor, class AActor*
 // Function AIModule.PathFollowingComponent.GetPathDestination
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPathFollowingComponent::GetPathDestination()
 {
@@ -3787,7 +3807,7 @@ void UCrowdFollowingComponent::SuspendCrowdSteering(bool bSuspend)
 // Parameters:
 // class UObject*                 QuerierObject                  (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  QuerierActor                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ResultingLocation              (Parm, OutParm, IsPlainOldData)
+// struct FVector                 ResultingLocation              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UEnvQueryContext_BlueprintBase::ProvideSingleLocation(class UObject* QuerierObject, class AActor* QuerierActor, struct FVector* ResultingLocation)
 {
@@ -3930,7 +3950,7 @@ void UEnvQueryGenerator_BlueprintBase::DoItemGeneration(TArray<struct FVector> C
 // Function AIModule.EnvQueryGenerator_BlueprintBase.AddGeneratedVector
 // ()
 // Parameters:
-// struct FVector                 GeneratedVector                (Parm, IsPlainOldData)
+// struct FVector                 GeneratedVector                (Parm, ZeroConstructor, IsPlainOldData)
 
 void UEnvQueryGenerator_BlueprintBase::AddGeneratedVector(const struct FVector& GeneratedVector)
 {
@@ -4151,7 +4171,7 @@ void ANavLinkProxy::ResumePathFollowing(class AActor* Agent)
 // ()
 // Parameters:
 // class AActor*                  Agent                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Destination                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Destination                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void ANavLinkProxy::ReceiveSmartLinkReached(class AActor* Agent, const struct FVector& Destination)
 {
@@ -4264,8 +4284,8 @@ void UNavLocalGridManager::RemoveLocalNavigationGrid(class UObject* WorldContext
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TArray<struct FVector>         PathPoints                     (Parm, OutParm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -4326,7 +4346,7 @@ int UNavLocalGridManager::AddLocalNavigationGridForPoints(class UObject* WorldCo
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Location                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // int                            Radius2D                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Height                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bRebuildGrids                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -4357,7 +4377,7 @@ int UNavLocalGridManager::AddLocalNavigationGridForPoint(class UObject* WorldCon
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Location                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          CapsuleRadius                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          CapsuleHalfHeight              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Radius2D                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
@@ -4392,9 +4412,9 @@ int UNavLocalGridManager::AddLocalNavigationGridForCapsule(class UObject* WorldC
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Extent                         (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 Extent                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Radius2D                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Height                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bRebuildGrids                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -4777,7 +4797,7 @@ void UPawnSensingComponent::SeePawnDelegate__DelegateSignature(class APawn* Pawn
 // ()
 // Parameters:
 // class APawn*                   Instigator                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Location                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          Volume                         (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPawnSensingComponent::HearNoiseDelegate__DelegateSignature(class APawn* Instigator, const struct FVector& Location, float Volume)

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,8 +15,8 @@ namespace SDK
 // Function Widget_ColorPicker_Preview.Widget_ColorPicker_Preview_C.SetColors
 // ()
 // Parameters:
-// struct FLinearColor            PrimaryColor                   (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FLinearColor            SecondaryColor                 (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            PrimaryColor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            SecondaryColor                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_ColorPicker_Preview_C::SetColors(const struct FLinearColor& PrimaryColor, const struct FLinearColor& SecondaryColor)
 {

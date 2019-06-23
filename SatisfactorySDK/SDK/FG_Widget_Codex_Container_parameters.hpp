@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,29 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.PopulateSearchResults
+struct UWidget_Codex_Container_C_PopulateSearchResults_Params
+{
+	struct FText                                       InText;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.UpdateItemInfo
+struct UWidget_Codex_Container_C_UpdateItemInfo_Params
+{
+	class UClass*                                      product;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.SetAllItemsAndBuildings
+struct UWidget_Codex_Container_C_SetAllItemsAndBuildings_Params
+{
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.GenerateReceipes
+struct UWidget_Codex_Container_C_GenerateReceipes_Params
+{
+	TArray<class UClass*>                              InRecipes;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm)
+};
 
 // Function Widget_Codex_Container.Widget_Codex_Container_C.UpdateNotifications
 struct UWidget_Codex_Container_C_UpdateNotifications_Params
@@ -81,6 +104,53 @@ struct UWidget_Codex_Container_C_Tick_Params
 // Function Widget_Codex_Container.Widget_Codex_Container_C.MarkAllAsRead
 struct UWidget_Codex_Container_C_MarkAllAsRead_Params
 {
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnTabButtonClicked__DelegateSignature
+struct UWidget_Codex_Container_C_BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnTabButtonClicked__DelegateSignature_Params
+{
+	int                                                ButtonIndex;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.OnRecipeButtonClicked
+struct UWidget_Codex_Container_C_OnRecipeButtonClicked_Params
+{
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_ListButton_C*                        ListButton;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature
+struct UWidget_Codex_Container_C_BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature_Params
+{
+	struct FText                                       Text;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.OnSearchResultClicked
+struct UWidget_Codex_Container_C_OnSearchResultClicked_Params
+{
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_ListButton_C*                        ListButton;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature
+struct UWidget_Codex_Container_C_BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature_Params
+{
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_ListButton_C*                        ListButton;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_C_0_K2Node_ComponentBoundEvent_3_OnClicked__DelegateSignature
+struct UWidget_Codex_Container_C_BndEvt__Widget_ListButton_C_0_K2Node_ComponentBoundEvent_3_OnClicked__DelegateSignature_Params
+{
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_ListButton_C*                        ListButton;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+};
+
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__Widget_ListButton_C_1_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature
+struct UWidget_Codex_Container_C_BndEvt__Widget_ListButton_C_1_K2Node_ComponentBoundEvent_4_OnClicked__DelegateSignature_Params
+{
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_ListButton_C*                        ListButton;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_Codex_Container.Widget_Codex_Container_C.ExecuteUbergraph_Widget_Codex_Container

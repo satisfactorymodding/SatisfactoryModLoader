@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -59,7 +59,7 @@ bool ABP_WheeledVehicle_C::UpdateRepresentation()
 // Function BP_WheeledVehicle.BP_WheeledVehicle_C.GetActorRepresentationColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor ABP_WheeledVehicle_C::GetActorRepresentationColor()
 {
@@ -269,7 +269,7 @@ bool ABP_WheeledVehicle_C::GetActorShouldShowOnMap()
 // Function BP_WheeledVehicle.BP_WheeledVehicle_C.GetRealActorLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ABP_WheeledVehicle_C::GetRealActorLocation()
 {
@@ -290,7 +290,7 @@ struct FVector ABP_WheeledVehicle_C::GetRealActorLocation()
 // Function BP_WheeledVehicle.BP_WheeledVehicle_C.GetRealActorRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator ABP_WheeledVehicle_C::GetRealActorRotation()
 {
@@ -332,7 +332,7 @@ bool ABP_WheeledVehicle_C::IsActorStatic()
 // Function BP_WheeledVehicle.BP_WheeledVehicle_C.GetDriftForceOffset
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ABP_WheeledVehicle_C::GetDriftForceOffset()
 {
@@ -515,16 +515,16 @@ void ABP_WheeledVehicle_C::StopVehicle()
 }
 
 
-// Function BP_WheeledVehicle.BP_WheeledVehicle_C.canMove
+// Function BP_WheeledVehicle.BP_WheeledVehicle_C.CanMove
 // ()
 // Parameters:
-// bool                           canMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// bool                           CanMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void ABP_WheeledVehicle_C::canMove(bool* canMove)
+void ABP_WheeledVehicle_C::CanMove(bool* CanMove)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_WheeledVehicle.BP_WheeledVehicle_C.canMove");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_WheeledVehicle.BP_WheeledVehicle_C.CanMove");
 
-	ABP_WheeledVehicle_C_canMove_Params params;
+	ABP_WheeledVehicle_C_CanMove_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -532,8 +532,8 @@ void ABP_WheeledVehicle_C::canMove(bool* canMove)
 
 	fn->FunctionFlags = flags;
 
-	if (canMove != nullptr)
-		*canMove = params.canMove;
+	if (CanMove != nullptr)
+		*CanMove = params.CanMove;
 }
 
 
@@ -782,7 +782,7 @@ void ABP_WheeledVehicle_C::PonderOpeningTrunk(class AFGCharacterPlayer* inCharac
 // ()
 // Parameters:
 // class AFGCharacterPlayer**     byCharacter                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector*                atLocation                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector*                atLocation                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // class UPrimitiveComponent**    componentHit                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FUseState               out_useState                   (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
 
@@ -1346,9 +1346,9 @@ void ABP_WheeledVehicle_C::ReceiveUnpossessed(class AController** OldController)
 // class AActor**                 Other                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent**    OtherComp                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // bool*                          bSelfMoved                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector*                HitLocation                    (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FVector*                HitNormal                      (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FVector*                NormalImpulse                  (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector*                HitLocation                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector*                HitNormal                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector*                NormalImpulse                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult*             Hit                            (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
 
 void ABP_WheeledVehicle_C::ReceiveHit(class UPrimitiveComponent** MyComp, class AActor** Other, class UPrimitiveComponent** OtherComp, bool* bSelfMoved, struct FVector* HitLocation, struct FVector* HitNormal, struct FVector* NormalImpulse, struct FHitResult* Hit)
@@ -1877,7 +1877,7 @@ void ABP_WheeledVehicle_C::ReceiveOnDriverLeave()
 // Parameters:
 // class UParticleSystem**        destroyEffect                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UAkAudioEvent**          destroyAudioEvent              (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector*                Location                       (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector*                Location                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void ABP_WheeledVehicle_C::PlayFoliageDestroyedEffect(class UParticleSystem** destroyEffect, class UAkAudioEvent** destroyAudioEvent, struct FVector* Location)
 {

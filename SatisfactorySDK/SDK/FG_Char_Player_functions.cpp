@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -59,7 +59,7 @@ bool AChar_Player_C::UpdateRepresentation()
 // Function Char_Player.Char_Player_C.GetActorRepresentationColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor AChar_Player_C::GetActorRepresentationColor()
 {
@@ -227,7 +227,7 @@ bool AChar_Player_C::RemoveAsRepresentation()
 // Function Char_Player.Char_Player_C.GetRealActorRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator AChar_Player_C::GetRealActorRotation()
 {
@@ -290,7 +290,7 @@ bool AChar_Player_C::GetActorShouldShowOnMap()
 // Function Char_Player.Char_Player_C.GetRealActorLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AChar_Player_C::GetRealActorLocation()
 {
@@ -816,43 +816,6 @@ void AChar_Player_C::InpActEvt_EmoteWheel_K2Node_InputActionEvent_1(const struct
 }
 
 
-// Function Char_Player.Char_Player_C.CameraTick
-// ()
-
-void AChar_Player_C::CameraTick()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.CameraTick");
-
-	AChar_Player_C_CameraTick_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Char_Player.Char_Player_C.OnLanded
-// ()
-// Parameters:
-// struct FHitResult*             Hit                            (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
-
-void AChar_Player_C::OnLanded(struct FHitResult* Hit)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnLanded");
-
-	AChar_Player_C_OnLanded_Params params;
-	params.Hit = Hit;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Char_Player.Char_Player_C.SetFirstPersonMode
 // ()
 
@@ -1006,17 +969,14 @@ void AChar_Player_C::ReceiveDied()
 }
 
 
-// Function Char_Player.Char_Player_C.ReceivePossessed
+// Function Char_Player.Char_Player_C.CameraTick
 // ()
-// Parameters:
-// class AController**            NewController                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_Player_C::ReceivePossessed(class AController** NewController)
+void AChar_Player_C::CameraTick()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.ReceivePossessed");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.CameraTick");
 
-	AChar_Player_C_ReceivePossessed_Params params;
-	params.NewController = NewController;
+	AChar_Player_C_CameraTick_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1034,51 +994,6 @@ void AChar_Player_C::PlayPickupEffects()
 	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.PlayPickupEffects");
 
 	AChar_Player_C_PlayPickupEffects_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Char_Player.Char_Player_C.ReceiveDestroyed
-// ()
-
-void AChar_Player_C::ReceiveDestroyed()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.ReceiveDestroyed");
-
-	AChar_Player_C_ReceiveDestroyed_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Char_Player.Char_Player_C.TakeDamageEvent
-// ()
-// Parameters:
-// class AActor*                  damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// float                          damageAmount                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class UDamageType*             DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-
-void AChar_Player_C::TakeDamageEvent(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.TakeDamageEvent");
-
-	AChar_Player_C_TakeDamageEvent_Params params;
-	params.damagedActor = damagedActor;
-	params.damageAmount = damageAmount;
-	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1113,6 +1028,26 @@ void AChar_Player_C::OnReviveComplete()
 	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnReviveComplete");
 
 	AChar_Player_C_OnReviveComplete_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Player.Char_Player_C.OnLanded
+// ()
+// Parameters:
+// struct FHitResult*             Hit                            (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
+
+void AChar_Player_C::OnLanded(struct FHitResult* Hit)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnLanded");
+
+	AChar_Player_C_OnLanded_Params params;
+	params.Hit = Hit;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1179,21 +1114,14 @@ void AChar_Player_C::OnReceiveRadiationStart()
 }
 
 
-// Function Char_Player.Char_Player_C.OnReceiveRadiationTick
+// Function Char_Player.Char_Player_C.OnReceiveRadiationStop
 // ()
-// Parameters:
-// float*                         amount                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// float*                         Duration                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class UClass**                 DamageType                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_Player_C::OnReceiveRadiationTick(float* amount, float* Duration, class UClass** DamageType)
+void AChar_Player_C::OnReceiveRadiationStop()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnReceiveRadiationTick");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnReceiveRadiationStop");
 
-	AChar_Player_C_OnReceiveRadiationTick_Params params;
-	params.amount = amount;
-	params.Duration = Duration;
-	params.DamageType = DamageType;
+	AChar_Player_C_OnReceiveRadiationStop_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1203,14 +1131,62 @@ void AChar_Player_C::OnReceiveRadiationTick(float* amount, float* Duration, clas
 }
 
 
-// Function Char_Player.Char_Player_C.OnReceiveRadiationStop
+// Function Char_Player.Char_Player_C.ReceivePossessed
+// ()
+// Parameters:
+// class AController**            NewController                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_Player_C::ReceivePossessed(class AController** NewController)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.ReceivePossessed");
+
+	AChar_Player_C_ReceivePossessed_Params params;
+	params.NewController = NewController;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Player.Char_Player_C.ReceiveDestroyed
 // ()
 
-void AChar_Player_C::OnReceiveRadiationStop()
+void AChar_Player_C::ReceiveDestroyed()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnReceiveRadiationStop");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.ReceiveDestroyed");
 
-	AChar_Player_C_OnReceiveRadiationStop_Params params;
+	AChar_Player_C_ReceiveDestroyed_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Player.Char_Player_C.TakeDamageEvent
+// ()
+// Parameters:
+// class AActor*                  damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// float                          damageAmount                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UDamageType*             DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_Player_C::TakeDamageEvent(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.TakeDamageEvent");
+
+	AChar_Player_C_TakeDamageEvent_Params params;
+	params.damagedActor = damagedActor;
+	params.damageAmount = damageAmount;
+	params.DamageType = DamageType;
+	params.instigatedBy = instigatedBy;
+	params.damageCauser = damageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1248,26 +1224,6 @@ void AChar_Player_C::ReceiveTick(float* DeltaSeconds)
 
 	AChar_Player_C_ReceiveTick_Params params;
 	params.DeltaSeconds = DeltaSeconds;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Char_Player.Char_Player_C.AudioTickEvent
-// ()
-// Parameters:
-// float                          AudioTick                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-
-void AChar_Player_C::AudioTickEvent(float AudioTick)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.AudioTickEvent");
-
-	AChar_Player_C_AudioTickEvent_Params params;
-	params.AudioTick = AudioTick;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1334,7 +1290,7 @@ void AChar_Player_C::Server_SetFlashlightOn(bool FlashlightOn)
 // Function Char_Player.Char_Player_C.OnDisabledInputGateChanged
 // ()
 // Parameters:
-// struct FDisabledInputGate*     NewValue                       (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FDisabledInputGate*     NewValue                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void AChar_Player_C::OnDisabledInputGateChanged(struct FDisabledInputGate* NewValue)
 {
@@ -1342,6 +1298,26 @@ void AChar_Player_C::OnDisabledInputGateChanged(struct FDisabledInputGate* NewVa
 
 	AChar_Player_C_OnDisabledInputGateChanged_Params params;
 	params.NewValue = NewValue;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Player.Char_Player_C.AudioTickEvent
+// ()
+// Parameters:
+// float                          AudioTick                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_Player_C::AudioTickEvent(float AudioTick)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.AudioTickEvent");
+
+	AChar_Player_C_AudioTickEvent_Params params;
+	params.AudioTick = AudioTick;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1596,6 +1572,28 @@ void AChar_Player_C::StopIsLookedAt(class AFGCharacterPlayer** byCharacter, stru
 	AChar_Player_C_StopIsLookedAt_Params params;
 	params.byCharacter = byCharacter;
 	params.State = State;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Player.Char_Player_C.OnRadiationIntensityUpdated
+// ()
+// Parameters:
+// float*                         radiationIntensity             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// float*                         radiationImmunity              (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_Player_C::OnRadiationIntensityUpdated(float* radiationIntensity, float* radiationImmunity)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnRadiationIntensityUpdated");
+
+	AChar_Player_C_OnRadiationIntensityUpdated_Params params;
+	params.radiationIntensity = radiationIntensity;
+	params.radiationImmunity = radiationImmunity;
 
 	auto flags = fn->FunctionFlags;
 

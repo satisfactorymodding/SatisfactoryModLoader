@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -45,6 +45,12 @@ struct UWidget_DismantleMode_C_Tick_Params
 // Function Widget_DismantleMode.Widget_DismantleMode_C.Construct
 struct UWidget_DismantleMode_C_Construct_Params
 {
+};
+
+// Function Widget_DismantleMode.Widget_DismantleMode_C.OnDismantleRefundChanged
+struct UWidget_DismantleMode_C_OnDismantleRefundChanged_Params
+{
+	class UFGBuildGunStateDismantle*                   dismantleGun;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_DismantleMode.Widget_DismantleMode_C.ExecuteUbergraph_Widget_DismantleMode

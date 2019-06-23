@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,12 +15,12 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_BuildGunStateDismantle.BP_BuildGunStateDismantle_C
-// 0x0010 (0x0068 - 0x0058)
+// 0x0010 (0x0090 - 0x0080)
 class UBP_BuildGunStateDismantle_C : public UFGBuildGunStateDismantle
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0058(0x0008) (Transient, DuplicateTransient)
-	class UWidget_DismantleMode_C*                     mDismantleUI;                                             // 0x0060(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0080(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
+	class UWidget_DismantleMode_C*                     mDismantleUI;                                             // 0x0088(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

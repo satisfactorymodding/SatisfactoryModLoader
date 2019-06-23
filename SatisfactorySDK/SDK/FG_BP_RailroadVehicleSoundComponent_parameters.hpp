@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -14,8 +14,13 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
-// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.UpdateRTPCs
-struct UBP_RailroadVehicleSoundComponent_C_UpdateRTPCs_Params
+// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.OnStartedMoving
+struct UBP_RailroadVehicleSoundComponent_C_OnStartedMoving_Params
+{
+};
+
+// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.OnStoppedMoving
+struct UBP_RailroadVehicleSoundComponent_C_OnStoppedMoving_Params
 {
 };
 
@@ -24,13 +29,8 @@ struct UBP_RailroadVehicleSoundComponent_C_ReceiveBeginPlay_Params
 {
 };
 
-// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.OnStartedMoving
-struct UBP_RailroadVehicleSoundComponent_C_OnStartedMoving_Params
-{
-};
-
-// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.OnStoppedMoving
-struct UBP_RailroadVehicleSoundComponent_C_OnStoppedMoving_Params
+// Function BP_RailroadVehicleSoundComponent.BP_RailroadVehicleSoundComponent_C.UpdateRTPCs
+struct UBP_RailroadVehicleSoundComponent_C_UpdateRTPCs_Params
 {
 };
 

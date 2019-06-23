@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -32,7 +32,7 @@ struct AChar_SpaceGiraffe_C_IsUseable_Params
 struct AChar_SpaceGiraffe_C_UpdateUseState_Params
 {
 	class AFGCharacterPlayer*                          byCharacter;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     atLocation;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FVector                                     atLocation;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	class UPrimitiveComponent*                         componentHit;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FUseState                                   out_useState;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
 };
@@ -99,7 +99,7 @@ struct AChar_SpaceGiraffe_C_NotifyOnTakeDamage_Params
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.StartRotationMovement
 struct AChar_SpaceGiraffe_C_StartRotationMovement_Params
 {
-	struct FRotator*                                   TargetRotation;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FRotator*                                   TargetRotation;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.InpAxisEvt_MoveForward_K2Node_InputAxisEvent_1

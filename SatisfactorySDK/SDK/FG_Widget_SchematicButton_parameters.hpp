@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -65,7 +65,7 @@ struct UWidget_SchematicButton_C_GetActivateButtonVisibility_Params
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSelectedSchematicFeedback
 struct UWidget_SchematicButton_C_GetSelectedSchematicFeedback_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicButton.Widget_SchematicButton_C.IsActiveSchematic
@@ -77,7 +77,7 @@ struct UWidget_SchematicButton_C_IsActiveSchematic_Params
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetCategoryIconColor
 struct UWidget_SchematicButton_C_GetCategoryIconColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSchematicActivatedBorderVisibility
@@ -95,19 +95,19 @@ struct UWidget_SchematicButton_C_GetSchematicBoughtTextColor_Params
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSchematicBoughtBorderColor
 struct UWidget_SchematicButton_C_GetSchematicBoughtBorderColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSchematicBoughtContentColor
 struct UWidget_SchematicButton_C_GetSchematicBoughtContentColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetSchematicBoughtColorFeedback
 struct UWidget_SchematicButton_C_GetSchematicBoughtColorFeedback_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicButton.Widget_SchematicButton_C.GetCategoryIcon

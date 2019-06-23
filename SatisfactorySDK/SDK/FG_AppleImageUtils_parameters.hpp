@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,6 +20,8 @@ struct UAppleImageUtilsBaseAsyncTaskBlueprintProxy_CreateProxyObjectForConvertTo
 	class UTexture*                                    SourceImage;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bWantColor;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bUseGpu;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              Scale;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+	ETextureRotationDirection                          Rotate;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -29,6 +31,8 @@ struct UAppleImageUtilsBaseAsyncTaskBlueprintProxy_CreateProxyObjectForConvertTo
 	class UTexture*                                    SourceImage;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bWantColor;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bUseGpu;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              Scale;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+	ETextureRotationDirection                          Rotate;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -39,6 +43,8 @@ struct UAppleImageUtilsBaseAsyncTaskBlueprintProxy_CreateProxyObjectForConvertTo
 	int                                                Quality;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bWantColor;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bUseGpu;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              Scale;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+	ETextureRotationDirection                          Rotate;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -49,6 +55,8 @@ struct UAppleImageUtilsBaseAsyncTaskBlueprintProxy_CreateProxyObjectForConvertTo
 	int                                                Quality;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bWantColor;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bUseGpu;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              Scale;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+	ETextureRotationDirection                          Rotate;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAppleImageUtilsBaseAsyncTaskBlueprintProxy* ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 

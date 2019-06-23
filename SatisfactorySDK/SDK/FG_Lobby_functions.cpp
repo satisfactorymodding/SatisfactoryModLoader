@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -157,7 +157,7 @@ void ALobbyBeaconClient::ClientWasKicked(const struct FText& KickReason)
 // Function Lobby.LobbyBeaconClient.ClientSetInviteFlags
 // ()
 // Parameters:
-// struct FJoinabilitySettings    Settings                       (ConstParm, Parm, ReferenceParm)
+// struct FJoinabilitySettings    Settings                       (ConstParm, Parm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void ALobbyBeaconClient::ClientSetInviteFlags(const struct FJoinabilitySettings& Settings)
 {

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -74,6 +74,11 @@ struct ABuild_LandingPad_C_OnHasPowerChanged_Params
 
 // Function Build_LandingPad.Build_LandingPad_C.ReceiveDestroyed
 struct ABuild_LandingPad_C_ReceiveDestroyed_Params
+{
+};
+
+// Function Build_LandingPad.Build_LandingPad_C.ReceiveBeginPlay
+struct ABuild_LandingPad_C_ReceiveBeginPlay_Params
 {
 };
 

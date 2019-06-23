@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -95,7 +95,7 @@ class UWidget* UWidget_RecipeButton_C::CreateRightClickMenu()
 // Function Widget_RecipeButton.Widget_RecipeButton_C.GetButtonHoverColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_RecipeButton_C::GetButtonHoverColor()
 {
@@ -260,7 +260,7 @@ struct FSlateBrush UWidget_RecipeButton_C::GetRecipeIcon()
 // Function Widget_RecipeButton.Widget_RecipeButton_C.GetIconColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_RecipeButton_C::GetIconColor()
 {
@@ -451,6 +451,28 @@ void UWidget_RecipeButton_C::UpdateWindowWidgetOffset_Event()
 }
 
 
+// Function Widget_RecipeButton.Widget_RecipeButton_C.BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_ListButton_C*    ListButton                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_RecipeButton_C::BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature(int Index, class UWidget_ListButton_C* ListButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_RecipeButton.Widget_RecipeButton_C.BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature");
+
+	UWidget_RecipeButton_C_BndEvt__Widget_ListButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature_Params params;
+	params.Index = Index;
+	params.ListButton = ListButton;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_RecipeButton.Widget_RecipeButton_C.ExecuteUbergraph_Widget_RecipeButton
 // ()
 // Parameters:
@@ -462,6 +484,26 @@ void UWidget_RecipeButton_C::ExecuteUbergraph_Widget_RecipeButton(int EntryPoint
 
 	UWidget_RecipeButton_C_ExecuteUbergraph_Widget_RecipeButton_Params params;
 	params.EntryPoint = EntryPoint;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_RecipeButton.Widget_RecipeButton_C.OnRecipeButtonClicked__DelegateSignature
+// ()
+// Parameters:
+// class UWidget_RecipeButton_C*  ClickedButton                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_RecipeButton_C::OnRecipeButtonClicked__DelegateSignature(class UWidget_RecipeButton_C* ClickedButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_RecipeButton.Widget_RecipeButton_C.OnRecipeButtonClicked__DelegateSignature");
+
+	UWidget_RecipeButton_C_OnRecipeButtonClicked__DelegateSignature_Params params;
+	params.ClickedButton = ClickedButton;
 
 	auto flags = fn->FunctionFlags;
 

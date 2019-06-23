@@ -1,15 +1,15 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
 #endif
 
 #include "FG_Basic.hpp"
+#include "FG_SlateCore_classes.hpp"
 #include "FG_Engine_classes.hpp"
 #include "FG_CoreUObject_classes.hpp"
-#include "FG_SlateCore_classes.hpp"
 
 namespace SDK
 {
@@ -114,9 +114,9 @@ struct FPaperFlipbookKeyFrame
 // 0x0050
 struct FSpriteInstanceData
 {
-	struct FMatrix                                     Transform;                                                // 0x0000(0x0040) (Edit, IsPlainOldData)
+	struct FMatrix                                     Transform;                                                // 0x0000(0x0040) (Edit, ZeroConstructor, IsPlainOldData)
 	class UPaperSprite*                                SourceSprite;                                             // 0x0040(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
-	struct FColor                                      VertexColor;                                              // 0x0048(0x0004) (Edit, IsPlainOldData)
+	struct FColor                                      VertexColor;                                              // 0x0048(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	int                                                MaterialIndex;                                            // 0x004C(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 };
 
@@ -171,8 +171,8 @@ struct FSpriteGeometryShape
 	ESpriteShapeType                                   ShapeType;                                                // 0x0000(0x0001) (Edit, ZeroConstructor, EditConst, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0001(0x0007) MISSED OFFSET
 	TArray<struct FVector2D>                           Vertices;                                                 // 0x0008(0x0010) (Edit, ZeroConstructor)
-	struct FVector2D                                   BoxSize;                                                  // 0x0018(0x0008) (Edit, EditConst, IsPlainOldData)
-	struct FVector2D                                   BoxPosition;                                              // 0x0020(0x0008) (Edit, EditConst, IsPlainOldData)
+	struct FVector2D                                   BoxSize;                                                  // 0x0018(0x0008) (Edit, ZeroConstructor, EditConst, IsPlainOldData)
+	struct FVector2D                                   BoxPosition;                                              // 0x0020(0x0008) (Edit, ZeroConstructor, EditConst, IsPlainOldData)
 	float                                              Rotation;                                                 // 0x0028(0x0004) (Edit, ZeroConstructor, EditConst, IsPlainOldData)
 	bool                                               bNegativeWinding;                                         // 0x002C(0x0001) (Edit, ZeroConstructor, EditConst, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x3];                                       // 0x002D(0x0003) MISSED OFFSET
@@ -231,11 +231,11 @@ struct FPaperSpriteAtlasSlot
 // 0x00D0
 struct FSpriteDrawCallRecord
 {
-	struct FVector                                     Destination;                                              // 0x0000(0x000C) (IsPlainOldData)
+	struct FVector                                     Destination;                                              // 0x0000(0x000C) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x000C(0x0004) MISSED OFFSET
 	class UTexture*                                    BaseTexture;                                              // 0x0010(0x0008) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x30];                                      // 0x0018(0x0030) MISSED OFFSET
-	struct FColor                                      Color;                                                    // 0x0048(0x0004) (IsPlainOldData)
+	struct FColor                                      Color;                                                    // 0x0048(0x0004) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData02[0x84];                                      // 0x004C(0x0084) MISSED OFFSET
 };
 

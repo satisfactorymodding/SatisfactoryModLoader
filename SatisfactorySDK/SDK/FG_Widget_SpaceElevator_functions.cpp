@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,23 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_SpaceElevator.Widget_SpaceElevator_C.DisplayEarlyAccessBlocker
+// ()
+
+void UWidget_SpaceElevator_C::DisplayEarlyAccessBlocker()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_SpaceElevator.Widget_SpaceElevator_C.DisplayEarlyAccessBlocker");
+
+	UWidget_SpaceElevator_C_DisplayEarlyAccessBlocker_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_SpaceElevator.Widget_SpaceElevator_C.UpdateHeaderText
 // ()

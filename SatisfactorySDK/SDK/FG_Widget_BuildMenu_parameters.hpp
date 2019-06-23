@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,16 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_BuildMenu.Widget_BuildMenu_C.HideSearchbar
+struct UWidget_BuildMenu_C_HideSearchbar_Params
+{
+};
+
+// Function Widget_BuildMenu.Widget_BuildMenu_C.ShowSearchbar
+struct UWidget_BuildMenu_C_ShowSearchbar_Params
+{
+};
 
 // Function Widget_BuildMenu.Widget_BuildMenu_C.IsShortcutSettingAllowed
 struct UWidget_BuildMenu_C_IsShortcutSettingAllowed_Params
@@ -172,6 +182,16 @@ struct UWidget_BuildMenu_C_Destruct_Params
 {
 };
 
+// Function Widget_BuildMenu.Widget_BuildMenu_C.Construct
+struct UWidget_BuildMenu_C_Construct_Params
+{
+};
+
+// Function Widget_BuildMenu.Widget_BuildMenu_C.OnEscapePressed
+struct UWidget_BuildMenu_C_OnEscapePressed_Params
+{
+};
+
 // Function Widget_BuildMenu.Widget_BuildMenu_C.BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature
 struct UWidget_BuildMenu_C_BndEvt__mSearchBar_K2Node_ComponentBoundEvent_1_OnTextChanged__DelegateSignature_Params
 {
@@ -187,16 +207,6 @@ struct UWidget_BuildMenu_C_BndEvt__mSearchBar_K2Node_ComponentBoundEvent_2_OnTex
 
 // Function Widget_BuildMenu.Widget_BuildMenu_C.CheckSearchResultHover
 struct UWidget_BuildMenu_C_CheckSearchResultHover_Params
-{
-};
-
-// Function Widget_BuildMenu.Widget_BuildMenu_C.Construct
-struct UWidget_BuildMenu_C_Construct_Params
-{
-};
-
-// Function Widget_BuildMenu.Widget_BuildMenu_C.OnEscapePressed
-struct UWidget_BuildMenu_C_OnEscapePressed_Params
 {
 };
 

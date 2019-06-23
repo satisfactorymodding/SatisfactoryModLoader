@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -40,7 +40,7 @@ void AController_SpaceRabbit_C::isThreat(const struct FName& inTag, bool* isThre
 // ()
 // Parameters:
 // class AActor*                  inActor                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 soundLocation                  (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector                 soundLocation                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   Tag                            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           didReact                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 

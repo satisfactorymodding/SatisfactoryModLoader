@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class UImgMediaSettings : public UObject
 {
 public:
-	struct FFrameRate                                  DefaultFrameRate;                                         // 0x0028(0x0008) (Edit, Config)
+	struct FFrameRate                                  DefaultFrameRate;                                         // 0x0028(0x0008) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	float                                              CacheBehindPercentage;                                    // 0x0030(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	float                                              CacheSizeGB;                                              // 0x0034(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	int                                                CacheThreads;                                             // 0x0038(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)

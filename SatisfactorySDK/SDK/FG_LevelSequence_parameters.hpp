@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function LevelSequence.LevelSequenceBurnInOptions.SetBurnIn
 struct ULevelSequenceBurnInOptions_SetBurnIn_Params
 {
-	struct FSoftClassPath                              InBurnInClass;                                            // (Parm)
+	struct FSoftClassPath                              InBurnInClass;                                            // (Parm, ZeroConstructor)
 };
 
 // Function LevelSequence.LevelSequenceActor.SetSequence
@@ -84,6 +84,11 @@ struct ULevelSequenceBurnIn_SetSettings_Params
 struct ULevelSequenceBurnIn_GetSettingsClass_Params
 {
 	class UClass*                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function LevelSequence.LevelSequenceDirector.OnCreated
+struct ULevelSequenceDirector_OnCreated_Params
+{
 };
 
 // Function LevelSequence.LevelSequencePlayer.CreateLevelSequencePlayer

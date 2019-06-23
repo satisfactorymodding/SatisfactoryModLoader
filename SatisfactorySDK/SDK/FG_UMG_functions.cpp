@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -95,7 +95,7 @@ void UWidget::SetToolTip(class UWidget* Widget)
 // Function UMG.Widget.SetRenderTranslation
 // ()
 // Parameters:
-// struct FVector2D               Translation                    (Parm, IsPlainOldData)
+// struct FVector2D               Translation                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget::SetRenderTranslation(const struct FVector2D& Translation)
 {
@@ -115,7 +115,7 @@ void UWidget::SetRenderTranslation(const struct FVector2D& Translation)
 // Function UMG.Widget.SetRenderTransformPivot
 // ()
 // Parameters:
-// struct FVector2D               Pivot                          (Parm, IsPlainOldData)
+// struct FVector2D               Pivot                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget::SetRenderTransformPivot(const struct FVector2D& Pivot)
 {
@@ -155,7 +155,7 @@ void UWidget::SetRenderTransform(const struct FWidgetTransform& InTransform)
 // Function UMG.Widget.SetRenderShear
 // ()
 // Parameters:
-// struct FVector2D               Shear                          (Parm, IsPlainOldData)
+// struct FVector2D               Shear                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget::SetRenderShear(const struct FVector2D& Shear)
 {
@@ -175,7 +175,7 @@ void UWidget::SetRenderShear(const struct FVector2D& Shear)
 // Function UMG.Widget.SetRenderScale
 // ()
 // Parameters:
-// struct FVector2D               Scale                          (Parm, IsPlainOldData)
+// struct FVector2D               Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget::SetRenderScale(const struct FVector2D& Scale)
 {
@@ -883,7 +883,7 @@ TEnumAsByte<EMouseCursor> UWidget::GetMouseCursor__DelegateSignature()
 // DelegateFunction UMG.Widget.GetLinearColor__DelegateSignature
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget::GetLinearColor__DelegateSignature()
 {
@@ -967,7 +967,7 @@ float UWidget::GetFloat__DelegateSignature()
 // Function UMG.Widget.GetDesiredSize
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UWidget::GetDesiredSize()
 {
@@ -1549,7 +1549,7 @@ void UUserWidget::StopAllAnimations()
 // Function UMG.UserWidget.SetPositionInViewport
 // ()
 // Parameters:
-// struct FVector2D               Position                       (Parm, IsPlainOldData)
+// struct FVector2D               Position                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bRemoveDPIScale                (Parm, ZeroConstructor, IsPlainOldData)
 
 void UUserWidget::SetPositionInViewport(const struct FVector2D& Position, bool bRemoveDPIScale)
@@ -1593,7 +1593,7 @@ void UUserWidget::SetPlaybackSpeed(class UWidgetAnimation* InAnimation, float Pl
 // Function UMG.UserWidget.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UUserWidget::SetPadding(const struct FMargin& InPadding)
 {
@@ -1715,7 +1715,7 @@ void UUserWidget::SetForegroundColor(const struct FSlateColor& InForegroundColor
 // Function UMG.UserWidget.SetDesiredSizeInViewport
 // ()
 // Parameters:
-// struct FVector2D               Size                           (Parm, IsPlainOldData)
+// struct FVector2D               Size                           (Parm, ZeroConstructor, IsPlainOldData)
 
 void UUserWidget::SetDesiredSizeInViewport(const struct FVector2D& Size)
 {
@@ -1735,7 +1735,7 @@ void UUserWidget::SetDesiredSizeInViewport(const struct FVector2D& Size)
 // Function UMG.UserWidget.SetColorAndOpacity
 // ()
 // Parameters:
-// struct FLinearColor            InColorAndOpacity              (Parm, IsPlainOldData)
+// struct FLinearColor            InColorAndOpacity              (Parm, ZeroConstructor, IsPlainOldData)
 
 void UUserWidget::SetColorAndOpacity(const struct FLinearColor& InColorAndOpacity)
 {
@@ -1775,7 +1775,7 @@ void UUserWidget::SetAnchorsInViewport(const struct FAnchors& Anchors)
 // Function UMG.UserWidget.SetAlignmentInViewport
 // ()
 // Parameters:
-// struct FVector2D               Alignment                      (Parm, IsPlainOldData)
+// struct FVector2D               Alignment                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UUserWidget::SetAlignmentInViewport(const struct FVector2D& Alignment)
 {
@@ -2031,6 +2031,31 @@ struct FEventReply UUserWidget::OnTouchGesture(const struct FGeometry& MyGeometr
 	UUserWidget_OnTouchGesture_Params params;
 	params.MyGeometry = MyGeometry;
 	params.GestureEvent = GestureEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function UMG.UserWidget.OnTouchForceChanged
+// ()
+// Parameters:
+// struct FGeometry               MyGeometry                     (Parm, IsPlainOldData)
+// struct FPointerEvent           InTouchEvent                   (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FEventReply             ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FEventReply UUserWidget::OnTouchForceChanged(const struct FGeometry& MyGeometry, const struct FPointerEvent& InTouchEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function UMG.UserWidget.OnTouchForceChanged");
+
+	UUserWidget_OnTouchForceChanged_Params params;
+	params.MyGeometry = MyGeometry;
+	params.InTouchEvent = InTouchEvent;
 
 	auto flags = fn->FunctionFlags;
 
@@ -2440,6 +2465,23 @@ struct FEventReply UUserWidget::OnKeyChar(const struct FGeometry& MyGeometry, co
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function UMG.UserWidget.OnInitialized
+// ()
+
+void UUserWidget::OnInitialized()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function UMG.UserWidget.OnInitialized");
+
+	UUserWidget_OnInitialized_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 }
 
 
@@ -2989,7 +3031,7 @@ struct FAnchors UUserWidget::GetAnchorsInViewport()
 // Function UMG.UserWidget.GetAlignmentInViewport
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UUserWidget::GetAlignmentInViewport()
 {
@@ -3121,6 +3163,66 @@ class UVerticalBoxSlot* UVerticalBox::AddChildToVerticalBox(class UWidget* Conte
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function UMG.DragDropOperation.Drop
+// ()
+// Parameters:
+// struct FPointerEvent           PointerEvent                   (ConstParm, Parm, OutParm, ReferenceParm)
+
+void UDragDropOperation::Drop(const struct FPointerEvent& PointerEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function UMG.DragDropOperation.Drop");
+
+	UDragDropOperation_Drop_Params params;
+	params.PointerEvent = PointerEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function UMG.DragDropOperation.Dragged
+// ()
+// Parameters:
+// struct FPointerEvent           PointerEvent                   (ConstParm, Parm, OutParm, ReferenceParm)
+
+void UDragDropOperation::Dragged(const struct FPointerEvent& PointerEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function UMG.DragDropOperation.Dragged");
+
+	UDragDropOperation_Dragged_Params params;
+	params.PointerEvent = PointerEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function UMG.DragDropOperation.DragCancelled
+// ()
+// Parameters:
+// struct FPointerEvent           PointerEvent                   (ConstParm, Parm, OutParm, ReferenceParm)
+
+void UDragDropOperation::DragCancelled(const struct FPointerEvent& PointerEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function UMG.DragDropOperation.DragCancelled");
+
+	UDragDropOperation_DragCancelled_Params params;
+	params.PointerEvent = PointerEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 }
 
 
@@ -3296,7 +3398,7 @@ void UBackgroundBlur::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVer
 // Function UMG.BackgroundBlur.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBackgroundBlur::SetPadding(const struct FMargin& InPadding)
 {
@@ -3436,7 +3538,7 @@ void UBackgroundBlurSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> I
 // Function UMG.BackgroundBlurSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBackgroundBlurSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -3517,7 +3619,7 @@ void UBorder::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVerticalAli
 // Function UMG.Border.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBorder::SetPadding(const struct FMargin& InPadding)
 {
@@ -3557,7 +3659,7 @@ void UBorder::SetHorizontalAlignment(TEnumAsByte<EHorizontalAlignment> InHorizon
 // Function UMG.Border.SetDesiredSizeScale
 // ()
 // Parameters:
-// struct FVector2D               InScale                        (Parm, IsPlainOldData)
+// struct FVector2D               InScale                        (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBorder::SetDesiredSizeScale(const struct FVector2D& InScale)
 {
@@ -3577,7 +3679,7 @@ void UBorder::SetDesiredSizeScale(const struct FVector2D& InScale)
 // Function UMG.Border.SetContentColorAndOpacity
 // ()
 // Parameters:
-// struct FLinearColor            InContentColorAndOpacity       (Parm, IsPlainOldData)
+// struct FLinearColor            InContentColorAndOpacity       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBorder::SetContentColorAndOpacity(const struct FLinearColor& InContentColorAndOpacity)
 {
@@ -3657,7 +3759,7 @@ void UBorder::SetBrushFromAsset(class USlateBrushAsset* Asset)
 // Function UMG.Border.SetBrushColor
 // ()
 // Parameters:
-// struct FLinearColor            InBrushColor                   (Parm, IsPlainOldData)
+// struct FLinearColor            InBrushColor                   (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBorder::SetBrushColor(const struct FLinearColor& InBrushColor)
 {
@@ -3738,7 +3840,7 @@ void UBorderSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVertica
 // Function UMG.BorderSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBorderSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -3859,7 +3961,7 @@ void UButton::SetPressMethod(TEnumAsByte<EButtonPressMethod> InPressMethod)
 // Function UMG.Button.SetColorAndOpacity
 // ()
 // Parameters:
-// struct FLinearColor            InColorAndOpacity              (Parm, IsPlainOldData)
+// struct FLinearColor            InColorAndOpacity              (Parm, ZeroConstructor, IsPlainOldData)
 
 void UButton::SetColorAndOpacity(const struct FLinearColor& InColorAndOpacity)
 {
@@ -3899,7 +4001,7 @@ void UButton::SetClickMethod(TEnumAsByte<EButtonClickMethod> InClickMethod)
 // Function UMG.Button.SetBackgroundColor
 // ()
 // Parameters:
-// struct FLinearColor            InBackgroundColor              (Parm, IsPlainOldData)
+// struct FLinearColor            InBackgroundColor              (Parm, ZeroConstructor, IsPlainOldData)
 
 void UButton::SetBackgroundColor(const struct FLinearColor& InBackgroundColor)
 {
@@ -3960,7 +4062,7 @@ void UButtonSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVertica
 // Function UMG.ButtonSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UButtonSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -4043,7 +4145,7 @@ void UCanvasPanelSlot::SetZOrder(int InZOrder)
 // Function UMG.CanvasPanelSlot.SetSize
 // ()
 // Parameters:
-// struct FVector2D               InSize                         (Parm, IsPlainOldData)
+// struct FVector2D               InSize                         (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvasPanelSlot::SetSize(const struct FVector2D& InSize)
 {
@@ -4063,7 +4165,7 @@ void UCanvasPanelSlot::SetSize(const struct FVector2D& InSize)
 // Function UMG.CanvasPanelSlot.SetPosition
 // ()
 // Parameters:
-// struct FVector2D               InPosition                     (Parm, IsPlainOldData)
+// struct FVector2D               InPosition                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvasPanelSlot::SetPosition(const struct FVector2D& InPosition)
 {
@@ -4083,7 +4185,7 @@ void UCanvasPanelSlot::SetPosition(const struct FVector2D& InPosition)
 // Function UMG.CanvasPanelSlot.SetOffsets
 // ()
 // Parameters:
-// struct FMargin                 InOffset                       (Parm, IsPlainOldData)
+// struct FMargin                 InOffset                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvasPanelSlot::SetOffsets(const struct FMargin& InOffset)
 {
@@ -4103,7 +4205,7 @@ void UCanvasPanelSlot::SetOffsets(const struct FMargin& InOffset)
 // Function UMG.CanvasPanelSlot.SetMinimum
 // ()
 // Parameters:
-// struct FVector2D               InMinimumAnchors               (Parm, IsPlainOldData)
+// struct FVector2D               InMinimumAnchors               (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvasPanelSlot::SetMinimum(const struct FVector2D& InMinimumAnchors)
 {
@@ -4123,7 +4225,7 @@ void UCanvasPanelSlot::SetMinimum(const struct FVector2D& InMinimumAnchors)
 // Function UMG.CanvasPanelSlot.SetMaximum
 // ()
 // Parameters:
-// struct FVector2D               InMaximumAnchors               (Parm, IsPlainOldData)
+// struct FVector2D               InMaximumAnchors               (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvasPanelSlot::SetMaximum(const struct FVector2D& InMaximumAnchors)
 {
@@ -4203,7 +4305,7 @@ void UCanvasPanelSlot::SetAnchors(const struct FAnchors& InAnchors)
 // Function UMG.CanvasPanelSlot.SetAlignment
 // ()
 // Parameters:
-// struct FVector2D               InAlignment                    (Parm, IsPlainOldData)
+// struct FVector2D               InAlignment                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvasPanelSlot::SetAlignment(const struct FVector2D& InAlignment)
 {
@@ -4244,7 +4346,7 @@ int UCanvasPanelSlot::GetZOrder()
 // Function UMG.CanvasPanelSlot.GetSize
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UCanvasPanelSlot::GetSize()
 {
@@ -4265,7 +4367,7 @@ struct FVector2D UCanvasPanelSlot::GetSize()
 // Function UMG.CanvasPanelSlot.GetPosition
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UCanvasPanelSlot::GetPosition()
 {
@@ -4286,7 +4388,7 @@ struct FVector2D UCanvasPanelSlot::GetPosition()
 // Function UMG.CanvasPanelSlot.GetOffsets
 // ()
 // Parameters:
-// struct FMargin                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FMargin                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FMargin UCanvasPanelSlot::GetOffsets()
 {
@@ -4370,7 +4472,7 @@ struct FAnchors UCanvasPanelSlot::GetAnchors()
 // Function UMG.CanvasPanelSlot.GetAlignment
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UCanvasPanelSlot::GetAlignment()
 {
@@ -4596,7 +4698,7 @@ struct FSlateColor UColorBinding::GetSlateValue()
 // Function UMG.ColorBinding.GetLinearValue
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UColorBinding::GetLinearValue()
 {
@@ -4855,70 +4957,10 @@ void UComboBoxString::AddOption(const class FString& Option)
 }
 
 
-// Function UMG.DragDropOperation.Drop
-// ()
-// Parameters:
-// struct FPointerEvent           PointerEvent                   (ConstParm, Parm, OutParm, ReferenceParm)
-
-void UDragDropOperation::Drop(const struct FPointerEvent& PointerEvent)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function UMG.DragDropOperation.Drop");
-
-	UDragDropOperation_Drop_Params params;
-	params.PointerEvent = PointerEvent;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function UMG.DragDropOperation.Dragged
-// ()
-// Parameters:
-// struct FPointerEvent           PointerEvent                   (ConstParm, Parm, OutParm, ReferenceParm)
-
-void UDragDropOperation::Dragged(const struct FPointerEvent& PointerEvent)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function UMG.DragDropOperation.Dragged");
-
-	UDragDropOperation_Dragged_Params params;
-	params.PointerEvent = PointerEvent;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function UMG.DragDropOperation.DragCancelled
-// ()
-// Parameters:
-// struct FPointerEvent           PointerEvent                   (ConstParm, Parm, OutParm, ReferenceParm)
-
-void UDragDropOperation::DragCancelled(const struct FPointerEvent& PointerEvent)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function UMG.DragDropOperation.DragCancelled");
-
-	UDragDropOperation_DragCancelled_Params params;
-	params.PointerEvent = PointerEvent;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function UMG.DynamicEntryBox.SetEntrySpacing
 // ()
 // Parameters:
-// struct FVector2D               InEntrySpacing                 (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector2D               InEntrySpacing                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UDynamicEntryBox::SetEntrySpacing(const struct FVector2D& InEntrySpacing)
 {
@@ -5006,6 +5048,29 @@ TArray<class UUserWidget*> UDynamicEntryBox::GetAllEntries()
 	static auto fn = UObject::FindObject<UFunction>("Function UMG.DynamicEntryBox.GetAllEntries");
 
 	UDynamicEntryBox_GetAllEntries_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function UMG.DynamicEntryBox.BP_CreateEntryOfClass
+// ()
+// Parameters:
+// class UClass*                  EntryClass                     (Parm, ZeroConstructor, IsPlainOldData)
+// class UUserWidget*             ReturnValue                    (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
+
+class UUserWidget* UDynamicEntryBox::BP_CreateEntryOfClass(class UClass* EntryClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function UMG.DynamicEntryBox.BP_CreateEntryOfClass");
+
+	UDynamicEntryBox_BP_CreateEntryOfClass_Params params;
+	params.EntryClass = EntryClass;
 
 	auto flags = fn->FunctionFlags;
 
@@ -5594,7 +5659,7 @@ void UGridSlot::SetRow(int InRow)
 // Function UMG.GridSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UGridSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -5757,7 +5822,7 @@ void UHorizontalBoxSlot::SetSize(const struct FSlateChildSize& InSize)
 // Function UMG.HorizontalBoxSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UHorizontalBoxSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -5817,7 +5882,7 @@ void UImage::SetOpacity(float InOpacity)
 // Function UMG.Image.SetColorAndOpacity
 // ()
 // Parameters:
-// struct FLinearColor            InColorAndOpacity              (Parm, IsPlainOldData)
+// struct FLinearColor            InColorAndOpacity              (Parm, ZeroConstructor, IsPlainOldData)
 
 void UImage::SetColorAndOpacity(const struct FLinearColor& InColorAndOpacity)
 {
@@ -5857,7 +5922,7 @@ void UImage::SetBrushTintColor(const struct FSlateColor& TintColor)
 // Function UMG.Image.SetBrushSize
 // ()
 // Parameters:
-// struct FVector2D               DesiredSize                    (Parm, IsPlainOldData)
+// struct FVector2D               DesiredSize                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UImage::SetBrushSize(const struct FVector2D& DesiredSize)
 {
@@ -5908,6 +5973,28 @@ void UImage::SetBrushFromTexture(class UTexture2D* Texture, bool bMatchSize)
 
 	UImage_SetBrushFromTexture_Params params;
 	params.Texture = Texture;
+	params.bMatchSize = bMatchSize;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function UMG.Image.SetBrushFromSoftTexture
+// ()
+// Parameters:
+// TSoftObjectPtr<class UTexture2D> SoftTexture                    (Parm)
+// bool                           bMatchSize                     (Parm, ZeroConstructor, IsPlainOldData)
+
+void UImage::SetBrushFromSoftTexture(TSoftObjectPtr<class UTexture2D> SoftTexture, bool bMatchSize)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function UMG.Image.SetBrushFromSoftTexture");
+
+	UImage_SetBrushFromSoftTexture_Params params;
+	params.SoftTexture = SoftTexture;
 	params.bMatchSize = bMatchSize;
 
 	auto flags = fn->FunctionFlags;
@@ -7068,7 +7155,7 @@ bool UMenuAnchor::HasOpenSubMenus()
 // Function UMG.MenuAnchor.GetMenuPosition
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UMenuAnchor::GetMenuPosition()
 {
@@ -7396,7 +7483,7 @@ void UOverlaySlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVertic
 // Function UMG.OverlaySlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UOverlaySlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -7476,7 +7563,7 @@ void UProgressBar::SetIsMarquee(bool InbIsMarquee)
 // Function UMG.ProgressBar.SetFillColorAndOpacity
 // ()
 // Parameters:
-// struct FLinearColor            inColor                        (Parm, IsPlainOldData)
+// struct FLinearColor            inColor                        (Parm, ZeroConstructor, IsPlainOldData)
 
 void UProgressBar::SetFillColorAndOpacity(const struct FLinearColor& inColor)
 {
@@ -7765,7 +7852,7 @@ void UScaleBoxSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVerti
 // Function UMG.ScaleBoxSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UScaleBoxSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -7867,7 +7954,7 @@ void UScrollBox::SetScrollBarVisibility(ESlateVisibility NewScrollBarVisibility)
 // Function UMG.ScrollBox.SetScrollbarThickness
 // ()
 // Parameters:
-// struct FVector2D               NewScrollbarThickness          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector2D               NewScrollbarThickness          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UScrollBox::SetScrollbarThickness(const struct FVector2D& NewScrollbarThickness)
 {
@@ -8067,7 +8154,7 @@ void UScrollBoxSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVert
 // Function UMG.ScrollBoxSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UScrollBoxSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -8386,7 +8473,7 @@ void USizeBoxSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVertic
 // Function UMG.SizeBoxSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void USizeBoxSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -8428,8 +8515,8 @@ void USizeBoxSlot::SetHorizontalAlignment(TEnumAsByte<EHorizontalAlignment> InHo
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // struct FGeometry               Geometry                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               LocalCoordinate                (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               LocalCoordinate                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USlateBlueprintLibrary::ScreenToWidgetLocal(class UObject* WorldContextObject, const struct FGeometry& Geometry, const struct FVector2D& ScreenPosition, struct FVector2D* LocalCoordinate)
 {
@@ -8455,8 +8542,8 @@ void USlateBlueprintLibrary::ScreenToWidgetLocal(class UObject* WorldContextObje
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               AbsoluteCoordinate             (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               AbsoluteCoordinate             (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USlateBlueprintLibrary::ScreenToWidgetAbsolute(class UObject* WorldContextObject, const struct FVector2D& ScreenPosition, struct FVector2D* AbsoluteCoordinate)
 {
@@ -8481,8 +8568,8 @@ void USlateBlueprintLibrary::ScreenToWidgetAbsolute(class UObject* WorldContextO
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               ViewportPosition               (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ViewportPosition               (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USlateBlueprintLibrary::ScreenToViewport(class UObject* WorldContextObject, const struct FVector2D& ScreenPosition, struct FVector2D* ViewportPosition)
 {
@@ -8508,9 +8595,9 @@ void USlateBlueprintLibrary::ScreenToViewport(class UObject* WorldContextObject,
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // struct FGeometry               Geometry                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               LocalCoordinate                (Parm, IsPlainOldData)
-// struct FVector2D               PixelPosition                  (Parm, OutParm, IsPlainOldData)
-// struct FVector2D               ViewportPosition               (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               LocalCoordinate                (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               PixelPosition                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ViewportPosition               (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USlateBlueprintLibrary::LocalToViewport(class UObject* WorldContextObject, const struct FGeometry& Geometry, const struct FVector2D& LocalCoordinate, struct FVector2D* PixelPosition, struct FVector2D* ViewportPosition)
 {
@@ -8538,8 +8625,8 @@ void USlateBlueprintLibrary::LocalToViewport(class UObject* WorldContextObject, 
 // ()
 // Parameters:
 // struct FGeometry               Geometry                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               LocalCoordinate                (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               LocalCoordinate                (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USlateBlueprintLibrary::LocalToAbsolute(const struct FGeometry& Geometry, const struct FVector2D& LocalCoordinate)
 {
@@ -8563,7 +8650,7 @@ struct FVector2D USlateBlueprintLibrary::LocalToAbsolute(const struct FGeometry&
 // ()
 // Parameters:
 // struct FGeometry               Geometry                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               AbsoluteCoordinate             (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector2D               AbsoluteCoordinate             (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool USlateBlueprintLibrary::IsUnderLocation(const struct FGeometry& Geometry, const struct FVector2D& AbsoluteCoordinate)
@@ -8588,7 +8675,7 @@ bool USlateBlueprintLibrary::IsUnderLocation(const struct FGeometry& Geometry, c
 // ()
 // Parameters:
 // struct FGeometry               Geometry                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USlateBlueprintLibrary::GetLocalSize(const struct FGeometry& Geometry)
 {
@@ -8611,7 +8698,7 @@ struct FVector2D USlateBlueprintLibrary::GetLocalSize(const struct FGeometry& Ge
 // ()
 // Parameters:
 // struct FGeometry               Geometry                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USlateBlueprintLibrary::GetAbsoluteSize(const struct FGeometry& Geometry)
 {
@@ -8659,9 +8746,9 @@ bool USlateBlueprintLibrary::EqualEqual_SlateBrush(const struct FSlateBrush& A, 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               AbsoluteDesktopCoordinate      (Parm, IsPlainOldData)
-// struct FVector2D               PixelPosition                  (Parm, OutParm, IsPlainOldData)
-// struct FVector2D               ViewportPosition               (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               AbsoluteDesktopCoordinate      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               PixelPosition                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ViewportPosition               (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USlateBlueprintLibrary::AbsoluteToViewport(class UObject* WorldContextObject, const struct FVector2D& AbsoluteDesktopCoordinate, struct FVector2D* PixelPosition, struct FVector2D* ViewportPosition)
 {
@@ -8688,8 +8775,8 @@ void USlateBlueprintLibrary::AbsoluteToViewport(class UObject* WorldContextObjec
 // ()
 // Parameters:
 // struct FGeometry               Geometry                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               AbsoluteCoordinate             (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               AbsoluteCoordinate             (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USlateBlueprintLibrary::AbsoluteToLocal(const struct FGeometry& Geometry, const struct FVector2D& AbsoluteCoordinate)
 {
@@ -8752,7 +8839,7 @@ void USlider::SetStepSize(float InValue)
 // Function UMG.Slider.SetSliderHandleColor
 // ()
 // Parameters:
-// struct FLinearColor            InValue                        (Parm, IsPlainOldData)
+// struct FLinearColor            InValue                        (Parm, ZeroConstructor, IsPlainOldData)
 
 void USlider::SetSliderHandleColor(const struct FLinearColor& InValue)
 {
@@ -8772,7 +8859,7 @@ void USlider::SetSliderHandleColor(const struct FLinearColor& InValue)
 // Function UMG.Slider.SetSliderBarColor
 // ()
 // Parameters:
-// struct FLinearColor            InValue                        (Parm, IsPlainOldData)
+// struct FLinearColor            InValue                        (Parm, ZeroConstructor, IsPlainOldData)
 
 void USlider::SetSliderBarColor(const struct FLinearColor& InValue)
 {
@@ -8853,7 +8940,7 @@ float USlider::GetValue()
 // Function UMG.Spacer.SetSize
 // ()
 // Parameters:
-// struct FVector2D               InSize                         (Parm, IsPlainOldData)
+// struct FVector2D               InSize                         (Parm, ZeroConstructor, IsPlainOldData)
 
 void USpacer::SetSize(const struct FVector2D& InSize)
 {
@@ -9287,7 +9374,7 @@ void UTextBlock::SetText(const struct FText& InText)
 // Function UMG.TextBlock.SetShadowOffset
 // ()
 // Parameters:
-// struct FVector2D               InShadowOffset                 (Parm, IsPlainOldData)
+// struct FVector2D               InShadowOffset                 (Parm, ZeroConstructor, IsPlainOldData)
 
 void UTextBlock::SetShadowOffset(const struct FVector2D& InShadowOffset)
 {
@@ -9307,7 +9394,7 @@ void UTextBlock::SetShadowOffset(const struct FVector2D& InShadowOffset)
 // Function UMG.TextBlock.SetShadowColorAndOpacity
 // ()
 // Parameters:
-// struct FLinearColor            InShadowColorAndOpacity        (Parm, IsPlainOldData)
+// struct FLinearColor            InShadowColorAndOpacity        (Parm, ZeroConstructor, IsPlainOldData)
 
 void UTextBlock::SetShadowColorAndOpacity(const struct FLinearColor& InShadowColorAndOpacity)
 {
@@ -9686,7 +9773,7 @@ void UTreeView::CollapseAll()
 // Function UMG.UniformGridPanel.SetSlotPadding
 // ()
 // Parameters:
-// struct FMargin                 InSlotPadding                  (Parm, IsPlainOldData)
+// struct FMargin                 InSlotPadding                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void UUniformGridPanel::SetSlotPadding(const struct FMargin& InSlotPadding)
 {
@@ -9889,7 +9976,7 @@ void UVerticalBoxSlot::SetSize(const struct FSlateChildSize& InSize)
 // Function UMG.VerticalBoxSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UVerticalBoxSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -9952,7 +10039,7 @@ class AActor* UViewport::Spawn(class UClass* ActorClass)
 // Function UMG.Viewport.SetViewRotation
 // ()
 // Parameters:
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UViewport::SetViewRotation(const struct FRotator& Rotation)
 {
@@ -9972,7 +10059,7 @@ void UViewport::SetViewRotation(const struct FRotator& Rotation)
 // Function UMG.Viewport.SetViewLocation
 // ()
 // Parameters:
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UViewport::SetViewLocation(const struct FVector& Location)
 {
@@ -9992,7 +10079,7 @@ void UViewport::SetViewLocation(const struct FVector& Location)
 // Function UMG.Viewport.GetViewRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UViewport::GetViewRotation()
 {
@@ -10034,7 +10121,7 @@ class UWorld* UViewport::GetViewportWorld()
 // Function UMG.Viewport.GetViewLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UViewport::GetViewLocation()
 {
@@ -10283,7 +10370,7 @@ struct FEventReply UWidgetBlueprintLibrary::SetUserFocus(class UWidget* FocusWid
 // ()
 // Parameters:
 // struct FEventReply             Reply                          (Parm, OutParm, ReferenceParm)
-// struct FVector2D               NewMousePosition               (Parm, IsPlainOldData)
+// struct FVector2D               NewMousePosition               (Parm, ZeroConstructor, IsPlainOldData)
 // struct FEventReply             ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FEventReply UWidgetBlueprintLibrary::SetMousePosition(const struct FVector2D& NewMousePosition, struct FEventReply* Reply)
@@ -10432,7 +10519,7 @@ void UWidgetBlueprintLibrary::SetInputMode_GameAndUI(class APlayerController* Ta
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EMouseCursor>      CursorShape                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   CursorName                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               HotSpot                        (Parm, IsPlainOldData)
+// struct FVector2D               HotSpot                        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UWidgetBlueprintLibrary::SetHardwareCursor(class UObject* WorldContextObject, TEnumAsByte<EMouseCursor> CursorShape, const struct FName& CursorName, const struct FVector2D& HotSpot)
@@ -10777,9 +10864,9 @@ struct FEventReply UWidgetBlueprintLibrary::Handled()
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector4                SafePadding                    (Parm, OutParm, IsPlainOldData)
-// struct FVector2D               SafePaddingScale               (Parm, OutParm, IsPlainOldData)
-// struct FVector4                SpillOverPadding               (Parm, OutParm, IsPlainOldData)
+// struct FVector4                SafePadding                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               SafePaddingScale               (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector4                SpillOverPadding               (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetBlueprintLibrary::GetSafeZonePadding(class UObject* WorldContextObject, struct FVector4* SafePadding, struct FVector2D* SafePaddingScale, struct FVector4* SpillOverPadding)
 {
@@ -11119,11 +11206,11 @@ struct FEventReply UWidgetBlueprintLibrary::EndDragDrop(struct FEventReply* Repl
 // Parameters:
 // struct FPaintContext           Context                        (Parm, OutParm, ReferenceParm)
 // struct FText                   Text                           (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector2D               Position                       (Parm, IsPlainOldData)
+// struct FVector2D               Position                       (Parm, ZeroConstructor, IsPlainOldData)
 // class UFont*                   Font                           (Parm, ZeroConstructor, IsPlainOldData)
 // int                            FontSize                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   FontTypeFace                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Tint                           (Parm, IsPlainOldData)
+// struct FLinearColor            Tint                           (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetBlueprintLibrary::DrawTextFormatted(const struct FText& Text, const struct FVector2D& Position, class UFont* Font, int FontSize, const struct FName& FontTypeFace, const struct FLinearColor& Tint, struct FPaintContext* Context)
 {
@@ -11153,8 +11240,8 @@ void UWidgetBlueprintLibrary::DrawTextFormatted(const struct FText& Text, const 
 // Parameters:
 // struct FPaintContext           Context                        (Parm, OutParm, ReferenceParm)
 // class FString                  inString                       (Parm, ZeroConstructor)
-// struct FVector2D               Position                       (Parm, IsPlainOldData)
-// struct FLinearColor            Tint                           (Parm, IsPlainOldData)
+// struct FVector2D               Position                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            Tint                           (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetBlueprintLibrary::DrawText(const class FString& inString, const struct FVector2D& Position, const struct FLinearColor& Tint, struct FPaintContext* Context)
 {
@@ -11181,7 +11268,7 @@ void UWidgetBlueprintLibrary::DrawText(const class FString& inString, const stru
 // Parameters:
 // struct FPaintContext           Context                        (Parm, OutParm, ReferenceParm)
 // TArray<struct FVector2D>       Points                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-// struct FLinearColor            Tint                           (Parm, IsPlainOldData)
+// struct FLinearColor            Tint                           (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAntiAlias                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetBlueprintLibrary::DrawLines(TArray<struct FVector2D> Points, const struct FLinearColor& Tint, bool bAntiAlias, struct FPaintContext* Context)
@@ -11208,9 +11295,9 @@ void UWidgetBlueprintLibrary::DrawLines(TArray<struct FVector2D> Points, const s
 // ()
 // Parameters:
 // struct FPaintContext           Context                        (Parm, OutParm, ReferenceParm)
-// struct FVector2D               PositionA                      (Parm, IsPlainOldData)
-// struct FVector2D               PositionB                      (Parm, IsPlainOldData)
-// struct FLinearColor            Tint                           (Parm, IsPlainOldData)
+// struct FVector2D               PositionA                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               PositionB                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            Tint                           (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAntiAlias                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetBlueprintLibrary::DrawLine(const struct FVector2D& PositionA, const struct FVector2D& PositionB, const struct FLinearColor& Tint, bool bAntiAlias, struct FPaintContext* Context)
@@ -11238,10 +11325,10 @@ void UWidgetBlueprintLibrary::DrawLine(const struct FVector2D& PositionA, const 
 // ()
 // Parameters:
 // struct FPaintContext           Context                        (Parm, OutParm, ReferenceParm)
-// struct FVector2D               Position                       (Parm, IsPlainOldData)
-// struct FVector2D               Size                           (Parm, IsPlainOldData)
+// struct FVector2D               Position                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Size                           (Parm, ZeroConstructor, IsPlainOldData)
 // class USlateBrushAsset*        Brush                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Tint                           (Parm, IsPlainOldData)
+// struct FLinearColor            Tint                           (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetBlueprintLibrary::DrawBox(const struct FVector2D& Position, const struct FVector2D& Size, class USlateBrushAsset* Brush, const struct FLinearColor& Tint, struct FPaintContext* Context)
 {
@@ -11510,7 +11597,7 @@ void UWidgetComponent::SetWidget(class UUserWidget* Widget)
 // Function UMG.WidgetComponent.SetTintColorAndOpacity
 // ()
 // Parameters:
-// struct FLinearColor            NewTintColorAndOpacity         (ConstParm, Parm, IsPlainOldData)
+// struct FLinearColor            NewTintColorAndOpacity         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetComponent::SetTintColorAndOpacity(const struct FLinearColor& NewTintColorAndOpacity)
 {
@@ -11570,7 +11657,7 @@ void UWidgetComponent::SetManuallyRedraw(bool bUseManualRedraw)
 // Function UMG.WidgetComponent.SetDrawSize
 // ()
 // Parameters:
-// struct FVector2D               Size                           (Parm, IsPlainOldData)
+// struct FVector2D               Size                           (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetComponent::SetDrawSize(const struct FVector2D& Size)
 {
@@ -11590,7 +11677,7 @@ void UWidgetComponent::SetDrawSize(const struct FVector2D& Size)
 // Function UMG.WidgetComponent.SetBackgroundColor
 // ()
 // Parameters:
-// struct FLinearColor            NewBackgroundColor             (ConstParm, Parm, IsPlainOldData)
+// struct FLinearColor            NewBackgroundColor             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetComponent::SetBackgroundColor(const struct FLinearColor& NewBackgroundColor)
 {
@@ -11711,7 +11798,7 @@ class UMaterialInstanceDynamic* UWidgetComponent::GetMaterialInstance()
 // Function UMG.WidgetComponent.GetDrawSize
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UWidgetComponent::GetDrawSize()
 {
@@ -12013,7 +12100,7 @@ class UWidgetComponent* UWidgetInteractionComponent::GetHoveredWidgetComponent()
 // Function UMG.WidgetInteractionComponent.Get2DHitLocation
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UWidgetInteractionComponent::Get2DHitLocation()
 {
@@ -12216,8 +12303,8 @@ void UWidgetLayoutLibrary::RemoveAllWidgets(class UObject* WorldContextObject)
 // ()
 // Parameters:
 // class APlayerController*       PlayerController               (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 WorldLocation                  (Parm, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UWidgetLayoutLibrary::ProjectWorldLocationToWidgetPosition(class APlayerController* PlayerController, const struct FVector& WorldLocation, struct FVector2D* ScreenPosition)
@@ -12268,7 +12355,7 @@ struct FGeometry UWidgetLayoutLibrary::GetViewportWidgetGeometry(class UObject* 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UWidgetLayoutLibrary::GetViewportSize(class UObject* WorldContextObject)
 {
@@ -12367,7 +12454,7 @@ bool UWidgetLayoutLibrary::GetMousePositionScaledByDPI(class APlayerController* 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UWidgetLayoutLibrary::GetMousePositionOnViewport(class UObject* WorldContextObject)
 {
@@ -12389,7 +12476,7 @@ struct FVector2D UWidgetLayoutLibrary::GetMousePositionOnViewport(class UObject*
 // Function UMG.WidgetLayoutLibrary.GetMousePositionOnPlatform
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UWidgetLayoutLibrary::GetMousePositionOnPlatform()
 {
@@ -12430,7 +12517,7 @@ void UWidgetSwitcherSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> I
 // Function UMG.WidgetSwitcherSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidgetSwitcherSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -12490,7 +12577,7 @@ void UWindowTitleBarArea::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> I
 // Function UMG.WindowTitleBarArea.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWindowTitleBarArea::SetPadding(const struct FMargin& InPadding)
 {
@@ -12550,7 +12637,7 @@ void UWindowTitleBarAreaSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignmen
 // Function UMG.WindowTitleBarAreaSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWindowTitleBarAreaSlot::SetPadding(const struct FMargin& InPadding)
 {
@@ -12590,7 +12677,7 @@ void UWindowTitleBarAreaSlot::SetHorizontalAlignment(TEnumAsByte<EHorizontalAlig
 // Function UMG.WrapBox.SetInnerSlotPadding
 // ()
 // Parameters:
-// struct FVector2D               InPadding                      (Parm, IsPlainOldData)
+// struct FVector2D               InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWrapBox::SetInnerSlotPadding(const struct FVector2D& InPadding)
 {
@@ -12653,7 +12740,7 @@ void UWrapBoxSlot::SetVerticalAlignment(TEnumAsByte<EVerticalAlignment> InVertic
 // Function UMG.WrapBoxSlot.SetPadding
 // ()
 // Parameters:
-// struct FMargin                 InPadding                      (Parm, IsPlainOldData)
+// struct FMargin                 InPadding                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UWrapBoxSlot::SetPadding(const struct FMargin& InPadding)
 {

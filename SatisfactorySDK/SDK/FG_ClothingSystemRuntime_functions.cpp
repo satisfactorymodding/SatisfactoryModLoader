@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -55,7 +55,7 @@ void UClothingSimulationInteractorNv::SetAnimDriveDamperStiffness(float InStiffn
 // Function ClothingSystemRuntime.ClothingSimulationInteractorNv.EnableGravityOverride
 // ()
 // Parameters:
-// struct FVector                 InVector                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InVector                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UClothingSimulationInteractorNv::EnableGravityOverride(const struct FVector& InVector)
 {

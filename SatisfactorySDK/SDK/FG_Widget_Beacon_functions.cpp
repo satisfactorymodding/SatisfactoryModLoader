@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function Widget_Beacon.Widget_Beacon_C.SetBeaconColor
 // ()
 // Parameters:
-// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Beacon_C::SetBeaconColor(const struct FLinearColor& Color)
 {
@@ -109,7 +109,7 @@ void UWidget_Beacon_C::BndEvt__mColorButton_K2Node_ComponentBoundEvent_115_OnBut
 // Function Widget_Beacon.Widget_Beacon_C.OnColorPicked
 // ()
 // Parameters:
-// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Beacon_C::OnColorPicked(const struct FLinearColor& Color)
 {
@@ -185,7 +185,7 @@ void UWidget_Beacon_C::BndEvt__mTowerName_K2Node_ComponentBoundEvent_1_OnEditabl
 // Function Widget_Beacon.Widget_Beacon_C.UpdateColor
 // ()
 // Parameters:
-// struct FLinearColor            New_Color                      (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            New_Color                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_Beacon_C::UpdateColor(const struct FLinearColor& New_Color)
 {

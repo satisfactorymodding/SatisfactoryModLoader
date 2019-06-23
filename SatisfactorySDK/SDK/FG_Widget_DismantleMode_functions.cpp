@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -114,6 +114,26 @@ void UWidget_DismantleMode_C::Construct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_DismantleMode.Widget_DismantleMode_C.Construct");
 
 	UWidget_DismantleMode_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_DismantleMode.Widget_DismantleMode_C.OnDismantleRefundChanged
+// ()
+// Parameters:
+// class UFGBuildGunStateDismantle* dismantleGun                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_DismantleMode_C::OnDismantleRefundChanged(class UFGBuildGunStateDismantle* dismantleGun)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_DismantleMode.Widget_DismantleMode_C.OnDismantleRefundChanged");
+
+	UWidget_DismantleMode_C_OnDismantleRefundChanged_Params params;
+	params.dismantleGun = dismantleGun;
 
 	auto flags = fn->FunctionFlags;
 

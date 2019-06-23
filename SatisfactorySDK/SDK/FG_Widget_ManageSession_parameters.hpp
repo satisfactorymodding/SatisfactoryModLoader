@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,8 +19,8 @@ struct UWidget_ManageSession_C_ClearIngamePlayerList_Params
 {
 };
 
-// Function Widget_ManageSession.Widget_ManageSession_C.IsHost
-struct UWidget_ManageSession_C_IsHost_Params
+// Function Widget_ManageSession.Widget_ManageSession_C.isHost
+struct UWidget_ManageSession_C_isHost_Params
 {
 	class APlayerState*                                State;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               isOurself;                                                // (Parm, OutParm, ZeroConstructor, IsPlainOldData)

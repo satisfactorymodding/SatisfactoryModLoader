@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,18 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.InitTabs
+struct UWidget_Window_DarkMode_C_InitTabs_Params
+{
+};
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.SetInventoryVisibility
+struct UWidget_Window_DarkMode_C_SetInventoryVisibility_Params
+{
+	bool                                               mShowInventory;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               animate;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
 
 // Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.GetDividerButtonSlotVisibility
 struct UWidget_Window_DarkMode_C_GetDividerButtonSlotVisibility_Params
@@ -91,10 +103,37 @@ struct UWidget_Window_DarkMode_C_OnCloseButtonClicked_Params
 {
 };
 
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.LerpShowInventory
+struct UWidget_Window_DarkMode_C_LerpShowInventory_Params
+{
+};
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_2_OnButtonClicked__DelegateSignature
+struct UWidget_Window_DarkMode_C_BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_2_OnButtonClicked__DelegateSignature_Params
+{
+	int                                                ButtonIndex;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_0_OnNoTabsGenerated__DelegateSignature
+struct UWidget_Window_DarkMode_C_BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_0_OnNoTabsGenerated__DelegateSignature_Params
+{
+};
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_1_OnTabsGenerated__DelegateSignature
+struct UWidget_Window_DarkMode_C_BndEvt__Widget_TabsContainer_K2Node_ComponentBoundEvent_1_OnTabsGenerated__DelegateSignature_Params
+{
+};
+
 // Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.ExecuteUbergraph_Widget_Window_DarkMode
 struct UWidget_Window_DarkMode_C_ExecuteUbergraph_Widget_Window_DarkMode_Params
 {
 	int                                                EntryPoint;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.OnTabButtonClicked__DelegateSignature
+struct UWidget_Window_DarkMode_C_OnTabButtonClicked__DelegateSignature_Params
+{
+	int                                                ButtonIndex;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.OnClose__DelegateSignature

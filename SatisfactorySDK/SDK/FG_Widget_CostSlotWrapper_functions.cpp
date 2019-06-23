@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -32,16 +32,16 @@ void UWidget_CostSlotWrapper_C::SetIconBrush(class UTexture* IconTexture)
 }
 
 
-// Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressbarPercent
+// Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressBarPercent
 // ()
 // Parameters:
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float UWidget_CostSlotWrapper_C::GetProgressbarPercent()
+float UWidget_CostSlotWrapper_C::GetProgressBarPercent()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressbarPercent");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressBarPercent");
 
-	UWidget_CostSlotWrapper_C_GetProgressbarPercent_Params params;
+	UWidget_CostSlotWrapper_C_GetProgressBarPercent_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -56,7 +56,7 @@ float UWidget_CostSlotWrapper_C::GetProgressbarPercent()
 // Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetOrange
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_CostSlotWrapper_C::GetOrange()
 {
@@ -97,7 +97,7 @@ void UWidget_CostSlotWrapper_C::SetTextboxFormating(bool HasItems)
 // Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetDarkGray
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_CostSlotWrapper_C::GetDarkGray()
 {
@@ -142,13 +142,13 @@ struct FText UWidget_CostSlotWrapper_C::SetPartsNumbers()
 // class UTexture*                IconTexture                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FItemAmount             ItemAmount                     (BlueprintVisible, BlueprintReadOnly, Parm)
 // class UFGInventoryComponent*   CachedInventoryComponent       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// int                            slotIdx                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            SlotIdx                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // int                            CurrentNumInSlot               (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           SmallSlot                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           BigSlot                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ForceOrangeTextbox             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_CostSlotWrapper_C::Setup_CostIcon(class UTexture* IconTexture, const struct FItemAmount& ItemAmount, class UFGInventoryComponent* CachedInventoryComponent, int slotIdx, int CurrentNumInSlot, bool SmallSlot, bool BigSlot, bool ForceOrangeTextbox)
+void UWidget_CostSlotWrapper_C::Setup_CostIcon(class UTexture* IconTexture, const struct FItemAmount& ItemAmount, class UFGInventoryComponent* CachedInventoryComponent, int SlotIdx, int CurrentNumInSlot, bool SmallSlot, bool BigSlot, bool ForceOrangeTextbox)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.Setup CostIcon");
 
@@ -156,7 +156,7 @@ void UWidget_CostSlotWrapper_C::Setup_CostIcon(class UTexture* IconTexture, cons
 	params.IconTexture = IconTexture;
 	params.ItemAmount = ItemAmount;
 	params.CachedInventoryComponent = CachedInventoryComponent;
-	params.slotIdx = slotIdx;
+	params.SlotIdx = SlotIdx;
 	params.CurrentNumInSlot = CurrentNumInSlot;
 	params.SmallSlot = SmallSlot;
 	params.BigSlot = BigSlot;

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -522,7 +522,7 @@ void UAkCheckBox::SetCheckedState(ECheckBoxState InCheckedState)
 // Function AkAudio.AkCheckBox.SetAkItemId
 // ()
 // Parameters:
-// struct FGuid                   ItemId                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGuid                   ItemId                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UAkCheckBox::SetAkItemId(const struct FGuid& ItemId)
 {
@@ -646,7 +646,7 @@ class FString UAkCheckBox::GetAkProperty()
 // Function AkAudio.AkCheckBox.GetAkItemId
 // ()
 // Parameters:
-// struct FGuid                   ReturnValue                    (ConstParm, Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FGuid                   ReturnValue                    (ConstParm, Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FGuid UAkCheckBox::GetAkItemId()
 {
@@ -962,8 +962,8 @@ void UAkGameplayStatics::StartAllAmbientSounds(class UObject* WorldContextObject
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class UAkAudioEvent*           AkEvent                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           AutoPost                       (Parm, ZeroConstructor, IsPlainOldData)
 // class UAkComponent*            ReturnValue                    (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
 
@@ -1025,6 +1025,30 @@ void UAkGameplayStatics::SetState(const struct FName& StateGroup, const struct F
 	UAkGameplayStatics_SetState_Params params;
 	params.StateGroup = StateGroup;
 	params.State = State;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function AkAudio.AkGameplayStatics.SetSpeakerAngles
+// ()
+// Parameters:
+// TArray<float>                  SpeakerAngles                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// float                          HeightAngle                    (Parm, ZeroConstructor, IsPlainOldData)
+// class FString                  DeviceShareset                 (Parm, ZeroConstructor)
+
+void UAkGameplayStatics::SetSpeakerAngles(TArray<float> SpeakerAngles, float HeightAngle, const class FString& DeviceShareset)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function AkAudio.AkGameplayStatics.SetSpeakerAngles");
+
+	UAkGameplayStatics_SetSpeakerAngles_Params params;
+	params.SpeakerAngles = SpeakerAngles;
+	params.HeightAngle = HeightAngle;
+	params.DeviceShareset = DeviceShareset;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1296,8 +1320,8 @@ class UAkComponent* UAkGameplayStatics::PostAkEventAttached(class UAkAudioEvent*
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class UAkAudioEvent*           AkEvent                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (Parm, ZeroConstructor, IsPlainOldData)
 // class UAkComponent*            ReturnValue                    (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
 
 class UAkComponent* UAkGameplayStatics::PostAkEventAtLocation(class UObject* WorldContextObject, class UAkAudioEvent* AkEvent, const struct FVector& Location, const struct FRotator& Orientation)
@@ -1495,6 +1519,33 @@ bool UAkGameplayStatics::IsEditor()
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function AkAudio.AkGameplayStatics.GetSpeakerAngles
+// ()
+// Parameters:
+// TArray<float>                  SpeakerAngles                  (Parm, OutParm, ZeroConstructor)
+// float                          HeightAngle                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// class FString                  DeviceShareset                 (Parm, ZeroConstructor)
+
+void UAkGameplayStatics::GetSpeakerAngles(const class FString& DeviceShareset, TArray<float>* SpeakerAngles, float* HeightAngle)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function AkAudio.AkGameplayStatics.GetSpeakerAngles");
+
+	UAkGameplayStatics_GetSpeakerAngles_Params params;
+	params.DeviceShareset = DeviceShareset;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (SpeakerAngles != nullptr)
+		*SpeakerAngles = params.SpeakerAngles;
+	if (HeightAngle != nullptr)
+		*HeightAngle = params.HeightAngle;
 }
 
 
@@ -2176,7 +2227,7 @@ void UAkSlider::SetStepSize(float InValue)
 // Function AkAudio.AkSlider.SetSliderHandleColor
 // ()
 // Parameters:
-// struct FLinearColor            InValue                        (Parm, IsPlainOldData)
+// struct FLinearColor            InValue                        (Parm, ZeroConstructor, IsPlainOldData)
 
 void UAkSlider::SetSliderHandleColor(const struct FLinearColor& InValue)
 {
@@ -2196,7 +2247,7 @@ void UAkSlider::SetSliderHandleColor(const struct FLinearColor& InValue)
 // Function AkAudio.AkSlider.SetSliderBarColor
 // ()
 // Parameters:
-// struct FLinearColor            InValue                        (Parm, IsPlainOldData)
+// struct FLinearColor            InValue                        (Parm, ZeroConstructor, IsPlainOldData)
 
 void UAkSlider::SetSliderBarColor(const struct FLinearColor& InValue)
 {
@@ -2276,7 +2327,7 @@ void UAkSlider::SetAkSliderItemProperty(const class FString& ItemProperty)
 // Function AkAudio.AkSlider.SetAkSliderItemId
 // ()
 // Parameters:
-// struct FGuid                   ItemId                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGuid                   ItemId                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UAkSlider::SetAkSliderItemId(const struct FGuid& ItemId)
 {
@@ -2338,7 +2389,7 @@ class FString UAkSlider::GetAkSliderItemProperty()
 // Function AkAudio.AkSlider.GetAkSliderItemId
 // ()
 // Parameters:
-// struct FGuid                   ReturnValue                    (ConstParm, Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FGuid                   ReturnValue                    (ConstParm, Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FGuid UAkSlider::GetAkSliderItemId()
 {

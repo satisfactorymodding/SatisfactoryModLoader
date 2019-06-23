@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_ColorPicker_SingleColor.Widget_ColorPicker_SingleColor_C.SetupStartColor
 struct UWidget_ColorPicker_SingleColor_C_SetupStartColor_Params
 {
-	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_ColorPicker_SingleColor.Widget_ColorPicker_SingleColor_C.PreConstruct
@@ -45,7 +45,7 @@ struct UWidget_ColorPicker_SingleColor_C_ExecuteUbergraph_Widget_ColorPicker_Sin
 // Function Widget_ColorPicker_SingleColor.Widget_ColorPicker_SingleColor_C.OnClose__DelegateSignature
 struct UWidget_ColorPicker_SingleColor_C_OnClose__DelegateSignature_Params
 {
-	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 }

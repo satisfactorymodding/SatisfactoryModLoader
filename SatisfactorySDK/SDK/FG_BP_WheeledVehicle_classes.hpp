@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -19,7 +19,7 @@ namespace SDK
 class ABP_WheeledVehicle_C : public AFGWheeledVehicle
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x06A0(0x0008) (Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x06A0(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 	class UBillboardComponent*                         DriftForceLocation;                                       // 0x06A8(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGVehicleCollisionBoxComponent*             VehicleCollisionBox;                                      // 0x06B0(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UBoxComponent*                               Box;                                                      // 0x06B8(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
@@ -28,7 +28,7 @@ public:
 	unsigned char                                      UnknownData00[0x3];                                       // 0x06C9(0x0003) MISSED OFFSET
 	float                                              mRecordCounter;                                           // 0x06CC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	float                                              mRecordInterval;                                          // 0x06D0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	struct FVector                                     mCurrentDestination;                                      // 0x06D4(0x000C) (Edit, BlueprintVisible, DisableEditOnInstance, SaveGame, IsPlainOldData)
+	struct FVector                                     mCurrentDestination;                                      // 0x06D4(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, SaveGame, IsPlainOldData)
 	bool                                               mObjectInFront;                                           // 0x06E0(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x3];                                       // 0x06E1(0x0003) MISSED OFFSET
 	float                                              mReverseMaxDistance;                                      // 0x06E4(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
@@ -40,10 +40,10 @@ public:
 	bool                                               mIsFollowingPath;                                         // 0x0704(0x0001) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData03[0x3];                                       // 0x0705(0x0003) MISSED OFFSET
 	int                                                mSpeedLimit;                                              // 0x0708(0x0004) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, SaveGame, IsPlainOldData)
-	struct FVector                                     mJumpForce;                                               // 0x070C(0x000C) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
+	struct FVector                                     mJumpForce;                                               // 0x070C(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mIsFreeCamera;                                            // 0x0718(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData04[0x3];                                       // 0x0719(0x0003) MISSED OFFSET
-	struct FRotator                                    mDefaultCameraRotation;                                   // 0x071C(0x000C) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
+	struct FRotator                                    mDefaultCameraRotation;                                   // 0x071C(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	class AFGCharacterPlayer*                          mTrunkUser;                                               // 0x0728(0x0008) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mIsInventoryOpen;                                         // 0x0730(0x0001) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData05[0x3];                                       // 0x0731(0x0003) MISSED OFFSET
@@ -126,7 +126,7 @@ public:
 	void TickSimulationMovement();
 	void CalculateReverseSteering();
 	void StopVehicle();
-	void canMove(bool* canMove);
+	void CanMove(bool* CanMove);
 	void UpdateEngineLoadSound(float dt);
 	void UpdateAccelerationSound();
 	void UpdateThrottleState();

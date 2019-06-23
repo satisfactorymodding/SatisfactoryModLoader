@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -165,7 +165,7 @@ EFogOfWarRevealType ABP_DeathMarker_C::GetActorFogOfWarRevealType()
 // Function BP_DeathMarker.BP_DeathMarker_C.GetActorRepresentationColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor ABP_DeathMarker_C::GetActorRepresentationColor()
 {
@@ -312,7 +312,7 @@ bool ABP_DeathMarker_C::GetActorShouldShowOnMap()
 // Function BP_DeathMarker.BP_DeathMarker_C.GetRealActorLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ABP_DeathMarker_C::GetRealActorLocation()
 {
@@ -333,7 +333,7 @@ struct FVector ABP_DeathMarker_C::GetRealActorLocation()
 // Function BP_DeathMarker.BP_DeathMarker_C.GetRealActorRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator ABP_DeathMarker_C::GetRealActorRotation()
 {

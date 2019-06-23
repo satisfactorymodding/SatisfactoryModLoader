@@ -1,15 +1,15 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
 #endif
 
 #include "FG_Basic.hpp"
+#include "FG_MovieSceneTracks_classes.hpp"
 #include "FG_Engine_classes.hpp"
 #include "FG_CoreUObject_classes.hpp"
-#include "FG_MovieSceneTracks_classes.hpp"
 #include "FG_MovieScene_classes.hpp"
 
 namespace SDK
@@ -22,9 +22,9 @@ namespace SDK
 // 0x00A0
 struct FComposureUVMapSettings
 {
-	struct FMatrix                                     PreUVDisplacementMatrix;                                  // 0x0000(0x0040) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FMatrix                                     PostUVDisplacementMatrix;                                 // 0x0040(0x0040) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FVector2D                                   DisplacementDecodeParameters;                             // 0x0080(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FMatrix                                     PreUVDisplacementMatrix;                                  // 0x0000(0x0040) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FMatrix                                     PostUVDisplacementMatrix;                                 // 0x0040(0x0040) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   DisplacementDecodeParameters;                             // 0x0080(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	class UTexture*                                    DisplacementTexture;                                      // 0x0088(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      bUseDisplacementBlueAndAlphaChannels : 1;                 // 0x0090(0x0001) (Edit, BlueprintVisible)
 	unsigned char                                      UnknownData00[0xF];                                       // 0x0091(0x000F) MISSED OFFSET
@@ -34,8 +34,8 @@ struct FComposureUVMapSettings
 // 0x0018
 struct FComposurePostMoveSettings
 {
-	struct FVector2D                                   Pivot;                                                    // 0x0000(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
-	struct FVector2D                                   Translation;                                              // 0x0008(0x0008) (Edit, BlueprintVisible, IsPlainOldData)
+	struct FVector2D                                   Pivot;                                                    // 0x0000(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   Translation;                                              // 0x0008(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              RotationAngle;                                            // 0x0010(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              Scale;                                                    // 0x0014(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };

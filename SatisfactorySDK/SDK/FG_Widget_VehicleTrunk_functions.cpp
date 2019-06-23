@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -188,40 +188,6 @@ void UWidget_VehicleTrunk_C::Construct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.Construct");
 
 	UWidget_VehicleTrunk_C_Construct_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.OnStorageClicked
-// ()
-
-void UWidget_VehicleTrunk_C::OnStorageClicked()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.OnStorageClicked");
-
-	UWidget_VehicleTrunk_C_OnStorageClicked_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.OnManufacturingClicked
-// ()
-
-void UWidget_VehicleTrunk_C::OnManufacturingClicked()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_VehicleTrunk.Widget_VehicleTrunk_C.OnManufacturingClicked");
-
-	UWidget_VehicleTrunk_C_OnManufacturingClicked_Params params;
 
 	auto flags = fn->FunctionFlags;
 

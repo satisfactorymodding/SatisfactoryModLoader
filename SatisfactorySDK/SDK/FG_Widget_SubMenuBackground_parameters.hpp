@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.OnSpawnAnim
 struct UWidget_SubMenuBackground_C_OnSpawnAnim_Params
 {
-	class UPanelWidget*                                OverwritePanelWIdget;                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UPanelWidget*                                OverwritePanelWidget;                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.Construct
@@ -28,7 +28,7 @@ struct UWidget_SubMenuBackground_C_Construct_Params
 // Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.PlayListSpawnAnim
 struct UWidget_SubMenuBackground_C_PlayListSpawnAnim_Params
 {
-	class UPanelWidget*                                OverwritePanelWIdget;                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UPanelWidget*                                OverwritePanelWidget;                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_SubMenuBackground.Widget_SubMenuBackground_C.PreConstruct

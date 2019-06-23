@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -59,7 +59,7 @@ bool ABuild_TradingPost_C::UpdateRepresentation()
 // Function Build_TradingPost.Build_TradingPost_C.GetActorRepresentationColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor ABuild_TradingPost_C::GetActorRepresentationColor()
 {
@@ -227,7 +227,7 @@ bool ABuild_TradingPost_C::RemoveAsRepresentation()
 // Function Build_TradingPost.Build_TradingPost_C.GetRealActorRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator ABuild_TradingPost_C::GetRealActorRotation()
 {
@@ -248,7 +248,7 @@ struct FRotator ABuild_TradingPost_C::GetRealActorRotation()
 // Function Build_TradingPost.Build_TradingPost_C.GetRealActorLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ABuild_TradingPost_C::GetRealActorLocation()
 {

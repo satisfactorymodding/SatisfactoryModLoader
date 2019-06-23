@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,14 +15,18 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // Class MediaCompositing.MovieSceneMediaSection
-// 0x0028 (0x0108 - 0x00E0)
+// 0x0030 (0x0110 - 0x00E0)
 class UMovieSceneMediaSection : public UMovieSceneSection
 {
 public:
-	class FString                                      Proxy;                                                    // 0x00E0(0x0010) (Edit, ZeroConstructor)
-	class UMediaSoundComponent*                        MediaSoundComponent;                                      // 0x00F0(0x0008) (Edit, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UMediaTexture*                               MediaTexture;                                             // 0x00F8(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
-	class UMediaSource*                                MediaSource;                                              // 0x0100(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
+	class UMediaSource*                                MediaSource;                                              // 0x00E0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	bool                                               bLooping;                                                 // 0x00E8(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x7];                                       // 0x00E9(0x0007) MISSED OFFSET
+	class UMediaTexture*                               MediaTexture;                                             // 0x00F0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	class UMediaSoundComponent*                        MediaSoundComponent;                                      // 0x00F8(0x0008) (Edit, BlueprintVisible, ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData)
+	bool                                               bUseExternalMediaPlayer;                                  // 0x0100(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData01[0x7];                                       // 0x0101(0x0007) MISSED OFFSET
+	class UMediaPlayer*                                ExternalMediaPlayer;                                      // 0x0108(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

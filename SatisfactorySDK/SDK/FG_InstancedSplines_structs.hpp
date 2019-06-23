@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,10 +20,10 @@ namespace SDK
 // 0x0030
 struct FInstancedSplineInstanceData
 {
-	struct FVector                                     StartPos;                                                 // 0x0000(0x000C) (Edit, IsPlainOldData)
-	struct FVector                                     StartTangent;                                             // 0x000C(0x000C) (Edit, IsPlainOldData)
-	struct FVector                                     EndPos;                                                   // 0x0018(0x000C) (Edit, IsPlainOldData)
-	struct FVector                                     EndTangent;                                               // 0x0024(0x000C) (Edit, IsPlainOldData)
+	struct FVector                                     StartPos;                                                 // 0x0000(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     StartTangent;                                             // 0x000C(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     EndPos;                                                   // 0x0018(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     EndTangent;                                               // 0x0024(0x000C) (Edit, ZeroConstructor, IsPlainOldData)
 };
 
 }

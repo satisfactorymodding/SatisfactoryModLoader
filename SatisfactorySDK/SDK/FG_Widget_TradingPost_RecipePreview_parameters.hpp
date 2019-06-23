@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.GetLightGrayColor
 struct UWidget_TradingPost_RecipePreview_C_GetLightGrayColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.GetLightGrayText
@@ -70,8 +70,8 @@ struct UWidget_TradingPost_RecipePreview_C_AnimateRewards_Params
 {
 };
 
-// Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostslots
-struct UWidget_TradingPost_RecipePreview_C_AnimateCostslots_Params
+// Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostSlots
+struct UWidget_TradingPost_RecipePreview_C_AnimateCostSlots_Params
 {
 };
 

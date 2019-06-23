@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,23 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ClearAndHideSearchResults
+struct UWidget_ManualManufacturing_C_ClearAndHideSearchResults_Params
+{
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnSearchCreateResults
+struct UWidget_ManualManufacturing_C_OnSearchCreateResults_Params
+{
+	struct FText                                       Text;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ShowOnlyAffordableRecipes
+struct UWidget_ManualManufacturing_C_ShowOnlyAffordableRecipes_Params
+{
+	bool                                               OnlyShowAffordable;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.SpaceBarOverride
 struct UWidget_ManualManufacturing_C_SpaceBarOverride_Params
@@ -76,71 +93,6 @@ struct UWidget_ManualManufacturing_C_GetCraftButtonFeedback_Params
 {
 };
 
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitToShowSelectedRecipePhase
-struct UWidget_ManualManufacturing_C_InitToShowSelectedRecipePhase_Params
-{
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2ButtonVisibility
-struct UWidget_ManualManufacturing_C_GetPhase2ButtonVisibility_Params
-{
-	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1ButtonVisibility
-struct UWidget_ManualManufacturing_C_GetPhase1ButtonVisibility_Params
-{
-	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2ButtonEnabled
-struct UWidget_ManualManufacturing_C_GetPhase2ButtonEnabled_Params
-{
-	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.IsPhaseUnlocked
-struct UWidget_ManualManufacturing_C_IsPhaseUnlocked_Params
-{
-	TEnumAsByte<EGamePhase>                            gamePhase;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	bool                                               Unlocked;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1ButtonEnabled
-struct UWidget_ManualManufacturing_C_GetPhase1ButtonEnabled_Params
-{
-	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase2Visibility
-struct UWidget_ManualManufacturing_C_GetPhase2Visibility_Params
-{
-	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase1Visibility
-struct UWidget_ManualManufacturing_C_GetPhase1Visibility_Params
-{
-	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitRecipeLists
-struct UWidget_ManualManufacturing_C_InitRecipeLists_Params
-{
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ToggleVisibilityOfPhase
-struct UWidget_ManualManufacturing_C_ToggleVisibilityOfPhase_Params
-{
-	int                                                phase;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetPhase0Visibility
-struct UWidget_ManualManufacturing_C_GetPhase0Visibility_Params
-{
-	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.CloseVehicle
 struct UWidget_ManualManufacturing_C_CloseVehicle_Params
 {
@@ -183,7 +135,6 @@ struct UWidget_ManualManufacturing_C_Cleanup_Params
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetAvailableRecipes
 struct UWidget_ManualManufacturing_C_GetAvailableRecipes_Params
 {
-	TEnumAsByte<EGamePhase>                            ForPhase;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	TArray<class UClass*>                              AvailableRecipes;                                         // (Parm, OutParm, ZeroConstructor)
 };
 
@@ -196,8 +147,6 @@ struct UWidget_ManualManufacturing_C_SetSelectedRecipe_Params
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitRecipeList
 struct UWidget_ManualManufacturing_C_InitRecipeList_Params
 {
-	TEnumAsByte<EGamePhase>                            ForPhase;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class UScrollBox*                                  InScrollbox;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.Destruct
@@ -223,21 +172,6 @@ struct UWidget_ManualManufacturing_C_OnNewRecipeSet_Params
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.Init
 struct UWidget_ManualManufacturing_C_Init_Params
-{
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase0_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature
-struct UWidget_ManualManufacturing_C_BndEvt__mAccordionButtonPhase0_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature_Params
-{
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase1_K2Node_ComponentBoundEvent_1_OnClicked__DelegateSignature
-struct UWidget_ManualManufacturing_C_BndEvt__mAccordionButtonPhase1_K2Node_ComponentBoundEvent_1_OnClicked__DelegateSignature_Params
-{
-};
-
-// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mAccordionButtonPhase2_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature
-struct UWidget_ManualManufacturing_C_BndEvt__mAccordionButtonPhase2_K2Node_ComponentBoundEvent_2_OnClicked__DelegateSignature_Params
 {
 };
 
@@ -328,6 +262,23 @@ struct UWidget_ManualManufacturing_C_ShowAddedToInventory_Params
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.HideAddedToInventoryEvent
 struct UWidget_ManualManufacturing_C_HideAddedToInventoryEvent_Params
 {
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__Button_0_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature
+struct UWidget_ManualManufacturing_C_BndEvt__Button_0_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature_Params
+{
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mOnlyShowAffordableCheckbox_K2Node_ComponentBoundEvent_3_OnCheckChanged__DelegateSignature
+struct UWidget_ManualManufacturing_C_BndEvt__mOnlyShowAffordableCheckbox_K2Node_ComponentBoundEvent_3_OnCheckChanged__DelegateSignature_Params
+{
+	bool                                               IsChecked;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature
+struct UWidget_ManualManufacturing_C_BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature_Params
+{
+	struct FText                                       Text;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
 };
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ExecuteUbergraph_Widget_ManualManufacturing

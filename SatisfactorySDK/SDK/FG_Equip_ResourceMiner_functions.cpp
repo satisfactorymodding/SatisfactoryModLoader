@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -152,7 +152,7 @@ void AEquip_ResourceMiner_C::PlaySecondEffects()
 // ()
 // Parameters:
 // class AActor*                  Hit_Actor_Ref                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Hit_Location                   (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FVector                 Hit_Location                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void AEquip_ResourceMiner_C::HitDeposit(class AActor* Hit_Actor_Ref, const struct FVector& Hit_Location)
 {

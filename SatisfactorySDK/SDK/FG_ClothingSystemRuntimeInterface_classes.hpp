@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,7 +20,7 @@ class UClothingAssetBase : public UObject
 {
 public:
 	class FString                                      ImportedFilePath;                                         // 0x0028(0x0010) (Edit, ZeroConstructor, EditConst)
-	struct FGuid                                       AssetGuid;                                                // 0x0038(0x0010) (IsPlainOldData)
+	struct FGuid                                       AssetGuid;                                                // 0x0038(0x0010) (ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

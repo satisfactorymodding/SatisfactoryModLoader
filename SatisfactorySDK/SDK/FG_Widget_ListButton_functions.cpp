@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function Widget_ListButton.Widget_ListButton_C.GetIconColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ListButton_C::GetIconColor()
 {
@@ -96,7 +96,7 @@ struct FSlateColor UWidget_ListButton_C::GetTextColor()
 // Function Widget_ListButton.Widget_ListButton_C.GetButtonBackground
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ListButton_C::GetButtonBackground()
 {
@@ -120,11 +120,11 @@ struct FLinearColor UWidget_ListButton_C::GetButtonBackground()
 // class UTexture*                Icon                           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   Title                          (BlueprintVisible, BlueprintReadOnly, Parm)
 // struct FText                   Description                    (BlueprintVisible, BlueprintReadOnly, Parm)
-// ESlateVisibility               DescVisibility                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ESlateVisibility               descVisibility                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // ESlateVisibility               IconVisibility                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   additionalInfo                 (BlueprintVisible, BlueprintReadOnly, Parm)
 
-void UWidget_ListButton_C::UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility DescVisibility, ESlateVisibility IconVisibility, const struct FText& additionalInfo)
+void UWidget_ListButton_C::UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility descVisibility, ESlateVisibility IconVisibility, const struct FText& additionalInfo)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ListButton.Widget_ListButton_C.UpdateButton");
 
@@ -132,7 +132,7 @@ void UWidget_ListButton_C::UpdateButton(class UTexture* Icon, const struct FText
 	params.Icon = Icon;
 	params.Title = Title;
 	params.Description = Description;
-	params.DescVisibility = DescVisibility;
+	params.descVisibility = descVisibility;
 	params.IconVisibility = IconVisibility;
 	params.additionalInfo = additionalInfo;
 

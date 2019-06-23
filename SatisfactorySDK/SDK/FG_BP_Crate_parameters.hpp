@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -42,7 +42,7 @@ struct ABP_Crate_C_GetActorFogOfWarRevealType_Params
 // Function BP_Crate.BP_Crate_C.GetActorRepresentationColor
 struct ABP_Crate_C_GetActorRepresentationColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Crate.BP_Crate_C.GetActorRepresentationText
@@ -84,13 +84,13 @@ struct ABP_Crate_C_GetActorShouldShowOnMap_Params
 // Function BP_Crate.BP_Crate_C.GetRealActorLocation
 struct ABP_Crate_C_GetRealActorLocation_Params
 {
-	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Crate.BP_Crate_C.GetRealActorRotation
 struct ABP_Crate_C_GetRealActorRotation_Params
 {
-	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FRotator                                    ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Crate.BP_Crate_C.IsActorStatic

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -503,8 +503,8 @@ void UEditableMesh::SetAllowCompact(bool bInAllowCompact)
 // Function EditableMesh.EditableMesh.SearchSpatialDatabaseForPolygonsPotentiallyIntersectingLineSegment
 // ()
 // Parameters:
-// struct FVector                 LineSegmentStart               (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 LineSegmentEnd                 (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 LineSegmentStart               (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LineSegmentEnd                 (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FPolygonID>      OutPolygons                    (Parm, OutParm, ZeroConstructor)
 
 void UEditableMesh::SearchSpatialDatabaseForPolygonsPotentiallyIntersectingLineSegment(const struct FVector& LineSegmentStart, const struct FVector& LineSegmentEnd, TArray<struct FPolygonID>* OutPolygons)
@@ -514,6 +514,30 @@ void UEditableMesh::SearchSpatialDatabaseForPolygonsPotentiallyIntersectingLineS
 	UEditableMesh_SearchSpatialDatabaseForPolygonsPotentiallyIntersectingLineSegment_Params params;
 	params.LineSegmentStart = LineSegmentStart;
 	params.LineSegmentEnd = LineSegmentEnd;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (OutPolygons != nullptr)
+		*OutPolygons = params.OutPolygons;
+}
+
+
+// Function EditableMesh.EditableMesh.SearchSpatialDatabaseForPolygonsInVolume
+// ()
+// Parameters:
+// TArray<struct FPlane>          Planes                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// TArray<struct FPolygonID>      OutPolygons                    (Parm, OutParm, ZeroConstructor)
+
+void UEditableMesh::SearchSpatialDatabaseForPolygonsInVolume(TArray<struct FPlane> Planes, TArray<struct FPolygonID>* OutPolygons)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function EditableMesh.EditableMesh.SearchSpatialDatabaseForPolygonsInVolume");
+
+	UEditableMesh_SearchSpatialDatabaseForPolygonsInVolume_Params params;
+	params.Planes = Planes;
 
 	auto flags = fn->FunctionFlags;
 
@@ -2596,7 +2620,7 @@ void UEditableMesh::ExtrudePolygons(TArray<struct FPolygonID> Polygons, float Ex
 // Parameters:
 // TArray<struct FVertexID>       VertexIDs                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bOnlyExtendClosestEdge         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReferencePosition              (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 ReferencePosition              (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FVertexID>       OutNewExtendedVertexIDs        (Parm, OutParm, ZeroConstructor)
 
 void UEditableMesh::ExtendVertices(TArray<struct FVertexID> VertexIDs, bool bOnlyExtendClosestEdge, const struct FVector& ReferencePosition, TArray<struct FVertexID>* OutNewExtendedVertexIDs)
@@ -3082,7 +3106,7 @@ void UEditableMesh::ComputePolygonsSharedEdges(TArray<struct FPolygonID> Polygon
 // ()
 // Parameters:
 // struct FPolygonID              PolygonID                      (ConstParm, Parm)
-// struct FPlane                  ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FPlane                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FPlane UEditableMesh::ComputePolygonPlane(const struct FPolygonID& PolygonID)
 {
@@ -3105,7 +3129,7 @@ struct FPlane UEditableMesh::ComputePolygonPlane(const struct FPolygonID& Polygo
 // ()
 // Parameters:
 // struct FPolygonID              PolygonID                      (ConstParm, Parm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UEditableMesh::ComputePolygonNormal(const struct FPolygonID& PolygonID)
 {
@@ -3128,7 +3152,7 @@ struct FVector UEditableMesh::ComputePolygonNormal(const struct FPolygonID& Poly
 // ()
 // Parameters:
 // struct FPolygonID              PolygonID                      (ConstParm, Parm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UEditableMesh::ComputePolygonCenter(const struct FPolygonID& PolygonID)
 {
@@ -3150,7 +3174,7 @@ struct FVector UEditableMesh::ComputePolygonCenter(const struct FPolygonID& Poly
 // Function EditableMesh.EditableMesh.ComputeBoundingBoxAndSphere
 // ()
 // Parameters:
-// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FBoxSphereBounds UEditableMesh::ComputeBoundingBoxAndSphere()
 {
@@ -3171,7 +3195,7 @@ struct FBoxSphereBounds UEditableMesh::ComputeBoundingBoxAndSphere()
 // Function EditableMesh.EditableMesh.ComputeBoundingBox
 // ()
 // Parameters:
-// struct FBox                    ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FBox                    ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FBox UEditableMesh::ComputeBoundingBox()
 {
@@ -3193,9 +3217,9 @@ struct FBox UEditableMesh::ComputeBoundingBox()
 // ()
 // Parameters:
 // struct FPolygonID              PolygonID                      (ConstParm, Parm)
-// struct FVector                 PointOnPolygon                 (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 PointOnPolygon                 (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FMeshTriangle           OutTriangle                    (Parm, OutParm)
-// struct FVector                 OutTriangleVertexWeights       (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutTriangleVertexWeights       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UEditableMesh::ComputeBarycentricWeightForPointOnPolygon(const struct FPolygonID& PolygonID, const struct FVector& PointOnPolygon, struct FMeshTriangle* OutTriangle, struct FVector* OutTriangleVertexWeights)

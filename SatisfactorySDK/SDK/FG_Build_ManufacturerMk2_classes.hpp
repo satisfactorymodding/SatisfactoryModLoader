@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_ManufacturerMk2.Build_ManufacturerMk2_C
-// 0x0008 (0x0710 - 0x0708)
+// 0x0008 (0x0748 - 0x0740)
 class ABuild_ManufacturerMk2_C : public ABuild_ManufacturerMk1_C
 {
 public:
-	class UBP_LadderComponent_C*                       BP_LadderComponent;                                       // 0x0708(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UBP_LadderComponent_C*                       BP_LadderComponent;                                       // 0x0740(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

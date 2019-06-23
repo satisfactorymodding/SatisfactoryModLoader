@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -27,7 +27,7 @@ public:
 	struct FText                                       mText;                                                    // 0x0228(0x0028) (Edit, BlueprintVisible)
 	struct FScriptMulticastDelegate                    OnItemSelected;                                           // 0x0240(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
 	struct FText                                       mDescription;                                             // 0x0250(0x0028) (Edit, BlueprintVisible)
-	struct FVector2D                                   mCirclePosition;                                          // 0x0268(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
+	struct FVector2D                                   mCirclePosition;                                          // 0x0268(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	class UClass*                                      mScannedActorClass;                                       // 0x0270(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()

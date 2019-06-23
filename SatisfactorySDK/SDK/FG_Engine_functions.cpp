@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #include <stdafx.h>
 
@@ -276,7 +276,7 @@ void AActor::SetActorTickEnabled(bool bEnabled)
 // Function Engine.Actor.SetActorScale3D
 // ()
 // Parameters:
-// struct FVector                 NewScale3D                     (Parm, IsPlainOldData)
+// struct FVector                 NewScale3D                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void AActor::SetActorScale3D(const struct FVector& NewScale3D)
 {
@@ -296,7 +296,7 @@ void AActor::SetActorScale3D(const struct FVector& NewScale3D)
 // Function Engine.Actor.SetActorRelativeScale3D
 // ()
 // Parameters:
-// struct FVector                 NewRelativeScale               (Parm, IsPlainOldData)
+// struct FVector                 NewRelativeScale               (Parm, ZeroConstructor, IsPlainOldData)
 
 void AActor::SetActorRelativeScale3D(const struct FVector& NewRelativeScale)
 {
@@ -418,7 +418,7 @@ void AActor::ReceiveTick(float DeltaSeconds)
 // Parameters:
 // float                          DamageReceived                 (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (Parm, IsPlainOldData)
+// struct FVector                 Origin                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              HitInfo                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 // class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
@@ -448,11 +448,11 @@ void AActor::ReceiveRadialDamage(float DamageReceived, class UDamageType* Damage
 // Parameters:
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 HitLocation                    (Parm, IsPlainOldData)
-// struct FVector                 HitNormal                      (Parm, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitNormal                      (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     HitComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ShotFromDirection              (Parm, IsPlainOldData)
+// struct FVector                 ShotFromDirection              (Parm, ZeroConstructor, IsPlainOldData)
 // class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              HitInfo                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
@@ -488,9 +488,9 @@ void AActor::ReceivePointDamage(float Damage, class UDamageType* DamageType, con
 // class AActor*                  Other                          (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     OtherComp                      (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // bool                           bSelfMoved                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 HitLocation                    (Parm, IsPlainOldData)
-// struct FVector                 HitNormal                      (Parm, IsPlainOldData)
-// struct FVector                 NormalImpulse                  (Parm, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitNormal                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 NormalImpulse                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              Hit                            (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 
 void AActor::ReceiveHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, const struct FVector& HitLocation, const struct FVector& HitNormal, const struct FVector& NormalImpulse, const struct FHitResult& Hit)
@@ -903,7 +903,7 @@ void AActor::OnRep_AttachmentReplication()
 // Parameters:
 // float                          Loudness                       (Parm, ZeroConstructor, IsPlainOldData)
 // class APawn*                   NoiseInstigator                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NoiseLocation                  (Parm, IsPlainOldData)
+// struct FVector                 NoiseLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxRange                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   Tag                            (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -952,8 +952,8 @@ class UMaterialInstanceDynamic* AActor::MakeMIDForMaterial(class UMaterialInterf
 // Function Engine.Actor.K2_TeleportTo
 // ()
 // Parameters:
-// struct FVector                 DestLocation                   (Parm, IsPlainOldData)
-// struct FRotator                DestRotation                   (Parm, IsPlainOldData)
+// struct FVector                 DestLocation                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                DestRotation                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool AActor::K2_TeleportTo(const struct FVector& DestLocation, const struct FRotator& DestRotation)
@@ -1008,7 +1008,7 @@ bool AActor::K2_SetActorTransform(const struct FTransform& NewTransform, bool bS
 // Function Engine.Actor.K2_SetActorRotation
 // ()
 // Parameters:
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTeleportPhysics               (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -1061,7 +1061,7 @@ void AActor::K2_SetActorRelativeTransform(const struct FTransform& NewRelativeTr
 // Function Engine.Actor.K2_SetActorRelativeRotation
 // ()
 // Parameters:
-// struct FRotator                NewRelativeRotation            (Parm, IsPlainOldData)
+// struct FRotator                NewRelativeRotation            (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1089,7 +1089,7 @@ void AActor::K2_SetActorRelativeRotation(const struct FRotator& NewRelativeRotat
 // Function Engine.Actor.K2_SetActorRelativeLocation
 // ()
 // Parameters:
-// struct FVector                 NewRelativeLocation            (Parm, IsPlainOldData)
+// struct FVector                 NewRelativeLocation            (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1117,8 +1117,8 @@ void AActor::K2_SetActorRelativeLocation(const struct FVector& NewRelativeLocati
 // Function Engine.Actor.K2_SetActorLocationAndRotation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1150,7 +1150,7 @@ bool AActor::K2_SetActorLocationAndRotation(const struct FVector& NewLocation, c
 // Function Engine.Actor.K2_SetActorLocation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1259,7 +1259,7 @@ class USceneComponent* AActor::K2_GetRootComponent()
 // Function Engine.Actor.K2_GetActorRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator AActor::K2_GetActorRotation()
 {
@@ -1280,7 +1280,7 @@ struct FRotator AActor::K2_GetActorRotation()
 // Function Engine.Actor.K2_GetActorLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::K2_GetActorLocation()
 {
@@ -1502,7 +1502,7 @@ void AActor::K2_AddActorWorldTransform(const struct FTransform& DeltaTransform, 
 // Function Engine.Actor.K2_AddActorWorldRotation
 // ()
 // Parameters:
-// struct FRotator                DeltaRotation                  (Parm, IsPlainOldData)
+// struct FRotator                DeltaRotation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1530,7 +1530,7 @@ void AActor::K2_AddActorWorldRotation(const struct FRotator& DeltaRotation, bool
 // Function Engine.Actor.K2_AddActorWorldOffset
 // ()
 // Parameters:
-// struct FVector                 DeltaLocation                  (Parm, IsPlainOldData)
+// struct FVector                 DeltaLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1586,7 +1586,7 @@ void AActor::K2_AddActorLocalTransform(const struct FTransform& NewTransform, bo
 // Function Engine.Actor.K2_AddActorLocalRotation
 // ()
 // Parameters:
-// struct FRotator                DeltaRotation                  (Parm, IsPlainOldData)
+// struct FRotator                DeltaRotation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1614,7 +1614,7 @@ void AActor::K2_AddActorLocalRotation(const struct FRotator& DeltaRotation, bool
 // Function Engine.Actor.K2_AddActorLocalOffset
 // ()
 // Parameters:
-// struct FVector                 DeltaLocation                  (Parm, IsPlainOldData)
+// struct FVector                 DeltaLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -1772,7 +1772,7 @@ float AActor::GetVerticalDistanceTo(class AActor* OtherActor)
 // Function Engine.Actor.GetVelocity
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::GetVelocity()
 {
@@ -2073,7 +2073,7 @@ class APawn* AActor::GetInstigator()
 // ()
 // Parameters:
 // struct FKey                    InputAxisKey                   (ConstParm, Parm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::GetInputVectorAxisValue(const struct FKey& InputAxisKey)
 {
@@ -2413,7 +2413,7 @@ void AActor::GetAllChildActors(bool bIncludeDescendants, TArray<class AActor*>* 
 // Function Engine.Actor.GetActorUpVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::GetActorUpVector()
 {
@@ -2476,7 +2476,7 @@ float AActor::GetActorTickInterval()
 // Function Engine.Actor.GetActorScale3D
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::GetActorScale3D()
 {
@@ -2497,7 +2497,7 @@ struct FVector AActor::GetActorScale3D()
 // Function Engine.Actor.GetActorRightVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::GetActorRightVector()
 {
@@ -2518,7 +2518,7 @@ struct FVector AActor::GetActorRightVector()
 // Function Engine.Actor.GetActorRelativeScale3D
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::GetActorRelativeScale3D()
 {
@@ -2539,7 +2539,7 @@ struct FVector AActor::GetActorRelativeScale3D()
 // Function Engine.Actor.GetActorForwardVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AActor::GetActorForwardVector()
 {
@@ -2560,8 +2560,8 @@ struct FVector AActor::GetActorForwardVector()
 // Function Engine.Actor.GetActorEyesViewPoint
 // ()
 // Parameters:
-// struct FVector                 OutLocation                    (Parm, OutParm, IsPlainOldData)
-// struct FRotator                OutRotation                    (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutLocation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                OutRotation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void AActor::GetActorEyesViewPoint(struct FVector* OutLocation, struct FRotator* OutRotation)
 {
@@ -2607,8 +2607,8 @@ bool AActor::GetActorEnableCollision()
 // ()
 // Parameters:
 // bool                           bOnlyCollidingComponents       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (Parm, OutParm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Origin                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoxExtent                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void AActor::GetActorBounds(bool bOnlyCollidingComponents, struct FVector* Origin, struct FVector* BoxExtent)
 {
@@ -3362,7 +3362,7 @@ bool USceneComponent::SnapTo(class USceneComponent* InParent, const struct FName
 // Function Engine.SceneComponent.SetWorldScale3D
 // ()
 // Parameters:
-// struct FVector                 NewScale                       (Parm, IsPlainOldData)
+// struct FVector                 NewScale                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void USceneComponent::SetWorldScale3D(const struct FVector& NewScale)
 {
@@ -3424,7 +3424,7 @@ void USceneComponent::SetShouldUpdatePhysicsVolume(bool bInShouldUpdatePhysicsVo
 // Function Engine.SceneComponent.SetRelativeScale3D
 // ()
 // Parameters:
-// struct FVector                 NewScale3D                     (Parm, IsPlainOldData)
+// struct FVector                 NewScale3D                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void USceneComponent::SetRelativeScale3D(const struct FVector& NewScale3D)
 {
@@ -3432,6 +3432,26 @@ void USceneComponent::SetRelativeScale3D(const struct FVector& NewScale3D)
 
 	USceneComponent_SetRelativeScale3D_Params params;
 	params.NewScale3D = NewScale3D;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.SceneComponent.SetMobility
+// ()
+// Parameters:
+// TEnumAsByte<EComponentMobility> NewMobility                    (Parm, ZeroConstructor, IsPlainOldData)
+
+void USceneComponent::SetMobility(TEnumAsByte<EComponentMobility> NewMobility)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.SceneComponent.SetMobility");
+
+	USceneComponent_SetMobility_Params params;
+	params.NewMobility = NewMobility;
 
 	auto flags = fn->FunctionFlags;
 
@@ -3623,7 +3643,7 @@ void USceneComponent::K2_SetWorldTransform(const struct FTransform& NewTransform
 // Function Engine.SceneComponent.K2_SetWorldRotation
 // ()
 // Parameters:
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -3651,8 +3671,8 @@ void USceneComponent::K2_SetWorldRotation(const struct FRotator& NewRotation, bo
 // Function Engine.SceneComponent.K2_SetWorldLocationAndRotation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -3681,7 +3701,7 @@ void USceneComponent::K2_SetWorldLocationAndRotation(const struct FVector& NewLo
 // Function Engine.SceneComponent.K2_SetWorldLocation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -3737,7 +3757,7 @@ void USceneComponent::K2_SetRelativeTransform(const struct FTransform& NewTransf
 // Function Engine.SceneComponent.K2_SetRelativeRotation
 // ()
 // Parameters:
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -3765,8 +3785,8 @@ void USceneComponent::K2_SetRelativeRotation(const struct FRotator& NewRotation,
 // Function Engine.SceneComponent.K2_SetRelativeLocationAndRotation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -3795,7 +3815,7 @@ void USceneComponent::K2_SetRelativeLocationAndRotation(const struct FVector& Ne
 // Function Engine.SceneComponent.K2_SetRelativeLocation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -3844,7 +3864,7 @@ struct FTransform USceneComponent::K2_GetComponentToWorld()
 // Function Engine.SceneComponent.K2_GetComponentScale
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USceneComponent::K2_GetComponentScale()
 {
@@ -3865,7 +3885,7 @@ struct FVector USceneComponent::K2_GetComponentScale()
 // Function Engine.SceneComponent.K2_GetComponentRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USceneComponent::K2_GetComponentRotation()
 {
@@ -3886,7 +3906,7 @@ struct FRotator USceneComponent::K2_GetComponentRotation()
 // Function Engine.SceneComponent.K2_GetComponentLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USceneComponent::K2_GetComponentLocation()
 {
@@ -4023,7 +4043,7 @@ void USceneComponent::K2_AddWorldTransform(const struct FTransform& DeltaTransfo
 // Function Engine.SceneComponent.K2_AddWorldRotation
 // ()
 // Parameters:
-// struct FRotator                DeltaRotation                  (Parm, IsPlainOldData)
+// struct FRotator                DeltaRotation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -4051,7 +4071,7 @@ void USceneComponent::K2_AddWorldRotation(const struct FRotator& DeltaRotation, 
 // Function Engine.SceneComponent.K2_AddWorldOffset
 // ()
 // Parameters:
-// struct FVector                 DeltaLocation                  (Parm, IsPlainOldData)
+// struct FVector                 DeltaLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -4079,7 +4099,7 @@ void USceneComponent::K2_AddWorldOffset(const struct FVector& DeltaLocation, boo
 // Function Engine.SceneComponent.K2_AddRelativeRotation
 // ()
 // Parameters:
-// struct FRotator                DeltaRotation                  (Parm, IsPlainOldData)
+// struct FRotator                DeltaRotation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -4107,7 +4127,7 @@ void USceneComponent::K2_AddRelativeRotation(const struct FRotator& DeltaRotatio
 // Function Engine.SceneComponent.K2_AddRelativeLocation
 // ()
 // Parameters:
-// struct FVector                 DeltaLocation                  (Parm, IsPlainOldData)
+// struct FVector                 DeltaLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -4163,7 +4183,7 @@ void USceneComponent::K2_AddLocalTransform(const struct FTransform& DeltaTransfo
 // Function Engine.SceneComponent.K2_AddLocalRotation
 // ()
 // Parameters:
-// struct FRotator                DeltaRotation                  (Parm, IsPlainOldData)
+// struct FRotator                DeltaRotation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -4191,7 +4211,7 @@ void USceneComponent::K2_AddLocalRotation(const struct FRotator& DeltaRotation, 
 // Function Engine.SceneComponent.K2_AddLocalOffset
 // ()
 // Parameters:
-// struct FVector                 DeltaLocation                  (Parm, IsPlainOldData)
+// struct FVector                 DeltaLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              SweepHitResult                 (Parm, OutParm, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -4284,7 +4304,7 @@ bool USceneComponent::IsAnySimulatingPhysics()
 // Function Engine.SceneComponent.GetUpVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USceneComponent::GetUpVector()
 {
@@ -4331,7 +4351,7 @@ struct FTransform USceneComponent::GetSocketTransform(const struct FName& InSock
 // ()
 // Parameters:
 // struct FName                   InSocketName                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USceneComponent::GetSocketRotation(const struct FName& InSocketName)
 {
@@ -4377,7 +4397,7 @@ struct FQuat USceneComponent::GetSocketQuaternion(const struct FName& InSocketNa
 // ()
 // Parameters:
 // struct FName                   InSocketName                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USceneComponent::GetSocketLocation(const struct FName& InSocketName)
 {
@@ -4420,7 +4440,7 @@ bool USceneComponent::GetShouldUpdatePhysicsVolume()
 // Function Engine.SceneComponent.GetRightVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USceneComponent::GetRightVector()
 {
@@ -4526,7 +4546,7 @@ int USceneComponent::GetNumChildrenComponents()
 // Function Engine.SceneComponent.GetForwardVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USceneComponent::GetForwardVector()
 {
@@ -4547,7 +4567,7 @@ struct FVector USceneComponent::GetForwardVector()
 // Function Engine.SceneComponent.GetComponentVelocity
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USceneComponent::GetComponentVelocity()
 {
@@ -5097,7 +5117,7 @@ void UPrimitiveComponent::SetPhysicsMaxAngularVelocity(float NewMaxAngVel, bool 
 // Function Engine.PrimitiveComponent.SetPhysicsLinearVelocity
 // ()
 // Parameters:
-// struct FVector                 NewVel                         (Parm, IsPlainOldData)
+// struct FVector                 NewVel                         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -5121,7 +5141,7 @@ void UPrimitiveComponent::SetPhysicsLinearVelocity(const struct FVector& NewVel,
 // Function Engine.PrimitiveComponent.SetPhysicsAngularVelocityInRadians
 // ()
 // Parameters:
-// struct FVector                 NewAngVel                      (Parm, IsPlainOldData)
+// struct FVector                 NewAngVel                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -5145,7 +5165,7 @@ void UPrimitiveComponent::SetPhysicsAngularVelocityInRadians(const struct FVecto
 // Function Engine.PrimitiveComponent.SetPhysicsAngularVelocityInDegrees
 // ()
 // Parameters:
-// struct FVector                 NewAngVel                      (Parm, IsPlainOldData)
+// struct FVector                 NewAngVel                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -5169,7 +5189,7 @@ void UPrimitiveComponent::SetPhysicsAngularVelocityInDegrees(const struct FVecto
 // Function Engine.PrimitiveComponent.SetPhysicsAngularVelocity
 // ()
 // Parameters:
-// struct FVector                 NewAngVel                      (Parm, IsPlainOldData)
+// struct FVector                 NewAngVel                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -5605,7 +5625,7 @@ void UPrimitiveComponent::SetCollisionEnabled(TEnumAsByte<ECollisionEnabled> New
 // Function Engine.PrimitiveComponent.SetCenterOfMass
 // ()
 // Parameters:
-// struct FVector                 CenterOfMassOffset             (Parm, IsPlainOldData)
+// struct FVector                 CenterOfMassOffset             (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::SetCenterOfMass(const struct FVector& CenterOfMassOffset, const struct FName& BoneName)
@@ -5707,7 +5727,7 @@ void UPrimitiveComponent::SetAllUseCCD(bool InUseCCD)
 // Function Engine.PrimitiveComponent.SetAllPhysicsLinearVelocity
 // ()
 // Parameters:
-// struct FVector                 NewVel                         (Parm, IsPlainOldData)
+// struct FVector                 NewVel                         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::SetAllPhysicsLinearVelocity(const struct FVector& NewVel, bool bAddToCurrent)
@@ -5729,7 +5749,7 @@ void UPrimitiveComponent::SetAllPhysicsLinearVelocity(const struct FVector& NewV
 // Function Engine.PrimitiveComponent.SetAllPhysicsAngularVelocityInRadians
 // ()
 // Parameters:
-// struct FVector                 NewAngVel                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 NewAngVel                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::SetAllPhysicsAngularVelocityInRadians(const struct FVector& NewAngVel, bool bAddToCurrent)
@@ -5751,7 +5771,7 @@ void UPrimitiveComponent::SetAllPhysicsAngularVelocityInRadians(const struct FVe
 // Function Engine.PrimitiveComponent.SetAllPhysicsAngularVelocityInDegrees
 // ()
 // Parameters:
-// struct FVector                 NewAngVel                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 NewAngVel                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::SetAllPhysicsAngularVelocityInDegrees(const struct FVector& NewAngVel, bool bAddToCurrent)
@@ -5773,7 +5793,7 @@ void UPrimitiveComponent::SetAllPhysicsAngularVelocityInDegrees(const struct FVe
 // Function Engine.PrimitiveComponent.SetAllPhysicsAngularVelocity
 // ()
 // Parameters:
-// struct FVector                 NewAngVel                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 NewAngVel                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           bAddToCurrent                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::SetAllPhysicsAngularVelocity(const struct FVector& NewAngVel, bool bAddToCurrent)
@@ -5815,9 +5835,9 @@ void UPrimitiveComponent::SetAllMassScale(float InMassScale)
 // Function Engine.PrimitiveComponent.ScaleByMomentOfInertia
 // ()
 // Parameters:
-// struct FVector                 InputVector                    (Parm, IsPlainOldData)
+// struct FVector                 InputVector                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::ScaleByMomentOfInertia(const struct FVector& InputVector, const struct FName& BoneName)
 {
@@ -5857,20 +5877,111 @@ void UPrimitiveComponent::PutRigidBodyToSleep(const struct FName& BoneName)
 }
 
 
-// Function Engine.PrimitiveComponent.K2_LineTraceComponent
+// Function Engine.PrimitiveComponent.K2_SphereTraceComponent
 // ()
 // Parameters:
-// struct FVector                 TraceStart                     (Parm, IsPlainOldData)
-// struct FVector                 TraceEnd                       (Parm, IsPlainOldData)
+// struct FVector                 TraceStart                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 TraceEnd                       (Parm, ZeroConstructor, IsPlainOldData)
+// float                          SphereRadius                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bShowTrace                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 HitLocation                    (Parm, OutParm, IsPlainOldData)
-// struct FVector                 HitNormal                      (Parm, OutParm, IsPlainOldData)
+// bool                           bPersistentShowTrace           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitNormal                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-bool UPrimitiveComponent::K2_LineTraceComponent(const struct FVector& TraceStart, const struct FVector& TraceEnd, bool bTraceComplex, bool bShowTrace, struct FVector* HitLocation, struct FVector* HitNormal, struct FName* BoneName, struct FHitResult* OutHit)
+bool UPrimitiveComponent::K2_SphereTraceComponent(const struct FVector& TraceStart, const struct FVector& TraceEnd, float SphereRadius, bool bTraceComplex, bool bShowTrace, bool bPersistentShowTrace, struct FVector* HitLocation, struct FVector* HitNormal, struct FName* BoneName, struct FHitResult* OutHit)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.PrimitiveComponent.K2_SphereTraceComponent");
+
+	UPrimitiveComponent_K2_SphereTraceComponent_Params params;
+	params.TraceStart = TraceStart;
+	params.TraceEnd = TraceEnd;
+	params.SphereRadius = SphereRadius;
+	params.bTraceComplex = bTraceComplex;
+	params.bShowTrace = bShowTrace;
+	params.bPersistentShowTrace = bPersistentShowTrace;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (HitLocation != nullptr)
+		*HitLocation = params.HitLocation;
+	if (HitNormal != nullptr)
+		*HitNormal = params.HitNormal;
+	if (BoneName != nullptr)
+		*BoneName = params.BoneName;
+	if (OutHit != nullptr)
+		*OutHit = params.OutHit;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.PrimitiveComponent.K2_SphereOverlapComponent
+// ()
+// Parameters:
+// struct FVector                 InSphereCentre                 (Parm, ZeroConstructor, IsPlainOldData)
+// float                          InSphereRadius                 (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bShowTrace                     (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bPersistentShowTrace           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitNormal                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FName                   BoneName                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UPrimitiveComponent::K2_SphereOverlapComponent(const struct FVector& InSphereCentre, float InSphereRadius, bool bTraceComplex, bool bShowTrace, bool bPersistentShowTrace, struct FVector* HitLocation, struct FVector* HitNormal, struct FName* BoneName, struct FHitResult* OutHit)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.PrimitiveComponent.K2_SphereOverlapComponent");
+
+	UPrimitiveComponent_K2_SphereOverlapComponent_Params params;
+	params.InSphereCentre = InSphereCentre;
+	params.InSphereRadius = InSphereRadius;
+	params.bTraceComplex = bTraceComplex;
+	params.bShowTrace = bShowTrace;
+	params.bPersistentShowTrace = bPersistentShowTrace;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (HitLocation != nullptr)
+		*HitLocation = params.HitLocation;
+	if (HitNormal != nullptr)
+		*HitNormal = params.HitNormal;
+	if (BoneName != nullptr)
+		*BoneName = params.BoneName;
+	if (OutHit != nullptr)
+		*OutHit = params.OutHit;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.PrimitiveComponent.K2_LineTraceComponent
+// ()
+// Parameters:
+// struct FVector                 TraceStart                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 TraceEnd                       (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bShowTrace                     (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bPersistentShowTrace           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitNormal                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FName                   BoneName                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UPrimitiveComponent::K2_LineTraceComponent(const struct FVector& TraceStart, const struct FVector& TraceEnd, bool bTraceComplex, bool bShowTrace, bool bPersistentShowTrace, struct FVector* HitLocation, struct FVector* HitNormal, struct FName* BoneName, struct FHitResult* OutHit)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.PrimitiveComponent.K2_LineTraceComponent");
 
@@ -5879,6 +5990,7 @@ bool UPrimitiveComponent::K2_LineTraceComponent(const struct FVector& TraceStart
 	params.TraceEnd = TraceEnd;
 	params.bTraceComplex = bTraceComplex;
 	params.bShowTrace = bShowTrace;
+	params.bPersistentShowTrace = bPersistentShowTrace;
 
 	auto flags = fn->FunctionFlags;
 
@@ -5957,6 +6069,50 @@ bool UPrimitiveComponent::K2_IsCollisionEnabled()
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.PrimitiveComponent.K2_BoxOverlapComponent
+// ()
+// Parameters:
+// struct FVector                 InBoxCentre                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FBox                    InBox                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bShowTrace                     (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bPersistentShowTrace           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitNormal                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FName                   BoneName                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UPrimitiveComponent::K2_BoxOverlapComponent(const struct FVector& InBoxCentre, const struct FBox& InBox, bool bTraceComplex, bool bShowTrace, bool bPersistentShowTrace, struct FVector* HitLocation, struct FVector* HitNormal, struct FName* BoneName, struct FHitResult* OutHit)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.PrimitiveComponent.K2_BoxOverlapComponent");
+
+	UPrimitiveComponent_K2_BoxOverlapComponent_Params params;
+	params.InBoxCentre = InBoxCentre;
+	params.InBox = InBox;
+	params.bTraceComplex = bTraceComplex;
+	params.bShowTrace = bShowTrace;
+	params.bPersistentShowTrace = bPersistentShowTrace;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (HitLocation != nullptr)
+		*HitLocation = params.HitLocation;
+	if (HitNormal != nullptr)
+		*HitNormal = params.HitNormal;
+	if (BoneName != nullptr)
+		*BoneName = params.BoneName;
+	if (OutHit != nullptr)
+		*OutHit = params.OutHit;
 
 	return params.ReturnValue;
 }
@@ -6118,9 +6274,9 @@ struct FWalkableSlopeOverride UPrimitiveComponent::GetWalkableSlopeOverride()
 // Function Engine.PrimitiveComponent.GetPhysicsLinearVelocityAtPoint
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::GetPhysicsLinearVelocityAtPoint(const struct FVector& Point, const struct FName& BoneName)
 {
@@ -6144,7 +6300,7 @@ struct FVector UPrimitiveComponent::GetPhysicsLinearVelocityAtPoint(const struct
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::GetPhysicsLinearVelocity(const struct FName& BoneName)
 {
@@ -6167,7 +6323,7 @@ struct FVector UPrimitiveComponent::GetPhysicsLinearVelocity(const struct FName&
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::GetPhysicsAngularVelocityInRadians(const struct FName& BoneName)
 {
@@ -6190,7 +6346,7 @@ struct FVector UPrimitiveComponent::GetPhysicsAngularVelocityInRadians(const str
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::GetPhysicsAngularVelocityInDegrees(const struct FName& BoneName)
 {
@@ -6213,7 +6369,7 @@ struct FVector UPrimitiveComponent::GetPhysicsAngularVelocityInDegrees(const str
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::GetPhysicsAngularVelocity(const struct FName& BoneName)
 {
@@ -6418,7 +6574,7 @@ float UPrimitiveComponent::GetLinearDamping()
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::GetInertiaTensor(const struct FName& BoneName)
 {
@@ -6547,8 +6703,8 @@ TEnumAsByte<ECollisionEnabled> UPrimitiveComponent::GetCollisionEnabled()
 // Function Engine.PrimitiveComponent.GetClosestPointOnCollision
 // ()
 // Parameters:
-// struct FVector                 Point                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 OutPointOnBody                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Point                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 OutPointOnBody                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -6577,7 +6733,7 @@ float UPrimitiveComponent::GetClosestPointOnCollision(const struct FVector& Poin
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPrimitiveComponent::GetCenterOfMass(const struct FName& BoneName)
 {
@@ -6794,7 +6950,7 @@ bool UPrimitiveComponent::CanCharacterStepUp(class APawn* Pawn)
 // Function Engine.PrimitiveComponent.AddTorqueInRadians
 // ()
 // Parameters:
-// struct FVector                 Torque                         (Parm, IsPlainOldData)
+// struct FVector                 Torque                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAccelChange                   (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -6818,7 +6974,7 @@ void UPrimitiveComponent::AddTorqueInRadians(const struct FVector& Torque, const
 // Function Engine.PrimitiveComponent.AddTorqueInDegrees
 // ()
 // Parameters:
-// struct FVector                 Torque                         (Parm, IsPlainOldData)
+// struct FVector                 Torque                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAccelChange                   (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -6842,7 +6998,7 @@ void UPrimitiveComponent::AddTorqueInDegrees(const struct FVector& Torque, const
 // Function Engine.PrimitiveComponent.AddTorque
 // ()
 // Parameters:
-// struct FVector                 Torque                         (Parm, IsPlainOldData)
+// struct FVector                 Torque                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAccelChange                   (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -6866,7 +7022,7 @@ void UPrimitiveComponent::AddTorque(const struct FVector& Torque, const struct F
 // Function Engine.PrimitiveComponent.AddRadialImpulse
 // ()
 // Parameters:
-// struct FVector                 Origin                         (Parm, IsPlainOldData)
+// struct FVector                 Origin                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Strength                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ERadialImpulseFalloff> Falloff                        (Parm, ZeroConstructor, IsPlainOldData)
@@ -6894,7 +7050,7 @@ void UPrimitiveComponent::AddRadialImpulse(const struct FVector& Origin, float R
 // Function Engine.PrimitiveComponent.AddRadialForce
 // ()
 // Parameters:
-// struct FVector                 Origin                         (Parm, IsPlainOldData)
+// struct FVector                 Origin                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Strength                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ERadialImpulseFalloff> Falloff                        (Parm, ZeroConstructor, IsPlainOldData)
@@ -6922,8 +7078,8 @@ void UPrimitiveComponent::AddRadialForce(const struct FVector& Origin, float Rad
 // Function Engine.PrimitiveComponent.AddImpulseAtLocation
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::AddImpulseAtLocation(const struct FVector& Impulse, const struct FVector& Location, const struct FName& BoneName)
@@ -6946,7 +7102,7 @@ void UPrimitiveComponent::AddImpulseAtLocation(const struct FVector& Impulse, co
 // Function Engine.PrimitiveComponent.AddImpulse
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bVelChange                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -6970,8 +7126,8 @@ void UPrimitiveComponent::AddImpulse(const struct FVector& Impulse, const struct
 // Function Engine.PrimitiveComponent.AddForceAtLocationLocal
 // ()
 // Parameters:
-// struct FVector                 Force                          (Parm, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Force                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::AddForceAtLocationLocal(const struct FVector& Force, const struct FVector& Location, const struct FName& BoneName)
@@ -6994,8 +7150,8 @@ void UPrimitiveComponent::AddForceAtLocationLocal(const struct FVector& Force, c
 // Function Engine.PrimitiveComponent.AddForceAtLocation
 // ()
 // Parameters:
-// struct FVector                 Force                          (Parm, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Force                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPrimitiveComponent::AddForceAtLocation(const struct FVector& Force, const struct FVector& Location, const struct FName& BoneName)
@@ -7018,7 +7174,7 @@ void UPrimitiveComponent::AddForceAtLocation(const struct FVector& Force, const 
 // Function Engine.PrimitiveComponent.AddForce
 // ()
 // Parameters:
-// struct FVector                 Force                          (Parm, IsPlainOldData)
+// struct FVector                 Force                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAccelChange                   (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -7042,7 +7198,7 @@ void UPrimitiveComponent::AddForce(const struct FVector& Force, const struct FNa
 // Function Engine.PrimitiveComponent.AddAngularImpulseInRadians
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bVelChange                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -7066,7 +7222,7 @@ void UPrimitiveComponent::AddAngularImpulseInRadians(const struct FVector& Impul
 // Function Engine.PrimitiveComponent.AddAngularImpulseInDegrees
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bVelChange                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -7090,7 +7246,7 @@ void UPrimitiveComponent::AddAngularImpulseInDegrees(const struct FVector& Impul
 // Function Engine.PrimitiveComponent.AddAngularImpulse
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bVelChange                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -7115,7 +7271,7 @@ void UPrimitiveComponent::AddAngularImpulse(const struct FVector& Impulse, const
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ParameterValue                 (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 ParameterValue                 (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 
 void UMeshComponent::SetVectorParameterValueOnMaterials(const struct FName& ParameterName, const struct FVector& ParameterValue)
 {
@@ -7291,10 +7447,10 @@ void USkinnedMeshComponent::UnHideBoneByName(const struct FName& BoneName)
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InPosition                     (Parm, IsPlainOldData)
-// struct FRotator                InRotation                     (Parm, IsPlainOldData)
-// struct FVector                 OutPosition                    (Parm, OutParm, IsPlainOldData)
-// struct FRotator                OutRotation                    (Parm, OutParm, IsPlainOldData)
+// struct FVector                 InPosition                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                InRotation                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 OutPosition                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                OutRotation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USkinnedMeshComponent::TransformToBoneSpace(const struct FName& BoneName, const struct FVector& InPosition, const struct FRotator& InRotation, struct FVector* OutPosition, struct FRotator* OutRotation)
 {
@@ -7322,10 +7478,10 @@ void USkinnedMeshComponent::TransformToBoneSpace(const struct FName& BoneName, c
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InPosition                     (Parm, IsPlainOldData)
-// struct FRotator                InRotation                     (Parm, IsPlainOldData)
-// struct FVector                 OutPosition                    (Parm, OutParm, IsPlainOldData)
-// struct FRotator                OutRotation                    (Parm, OutParm, IsPlainOldData)
+// struct FVector                 InPosition                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                InRotation                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 OutPosition                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                OutRotation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USkinnedMeshComponent::TransformFromBoneSpace(const struct FName& BoneName, const struct FVector& InPosition, const struct FRotator& InRotation, struct FVector* OutPosition, struct FRotator* OutRotation)
 {
@@ -7720,7 +7876,7 @@ struct FName USkinnedMeshComponent::GetSocketBoneName(const struct FName& InSock
 // ()
 // Parameters:
 // int                            BoneIndex                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USkinnedMeshComponent::GetRefPosePosition(int BoneIndex)
 {
@@ -7804,6 +7960,31 @@ int USkinnedMeshComponent::GetNumBones()
 }
 
 
+// Function Engine.SkinnedMeshComponent.GetDeltaTransformFromRefPose
+// ()
+// Parameters:
+// struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FName                   BaseName                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FTransform              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+
+struct FTransform USkinnedMeshComponent::GetDeltaTransformFromRefPose(const struct FName& BoneName, const struct FName& BaseName)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.SkinnedMeshComponent.GetDeltaTransformFromRefPose");
+
+	USkinnedMeshComponent_GetDeltaTransformFromRefPose_Params params;
+	params.BoneName = BoneName;
+	params.BaseName = BaseName;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.SkinnedMeshComponent.GetBoneName
 // ()
 // Parameters:
@@ -7853,8 +8034,8 @@ int USkinnedMeshComponent::GetBoneIndex(const struct FName& BoneName)
 // Function Engine.SkinnedMeshComponent.FindClosestBone_K2
 // ()
 // Parameters:
-// struct FVector                 TestLocation                   (Parm, IsPlainOldData)
-// struct FVector                 BoneLocation                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 TestLocation                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoneLocation                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          IgnoreScale                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bRequirePhysicsAsset           (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -8061,7 +8242,7 @@ class UNodeMappingContainer* USkeletalMesh::GetNodeMappingContainer(class UBluep
 // Function Engine.SkeletalMesh.GetImportedBounds
 // ()
 // Parameters:
-// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FBoxSphereBounds USkeletalMesh::GetImportedBounds()
 {
@@ -8082,7 +8263,7 @@ struct FBoxSphereBounds USkeletalMesh::GetImportedBounds()
 // Function Engine.SkeletalMesh.GetBounds
 // ()
 // Parameters:
-// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FBoxSphereBounds USkeletalMesh::GetBounds()
 {
@@ -8294,11 +8475,11 @@ void UCameraModifier::BlueprintModifyPostProcess(float DeltaTime, float* PostPro
 // ()
 // Parameters:
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ViewLocation                   (Parm, IsPlainOldData)
-// struct FRotator                ViewRotation                   (Parm, IsPlainOldData)
+// struct FVector                 ViewLocation                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ViewRotation                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          FOV                            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewViewLocation                (Parm, OutParm, IsPlainOldData)
-// struct FRotator                NewViewRotation                (Parm, OutParm, IsPlainOldData)
+// struct FVector                 NewViewLocation                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewViewRotation                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          NewFOV                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UCameraModifier::BlueprintModifyCamera(float DeltaTime, const struct FVector& ViewLocation, const struct FRotator& ViewRotation, float FOV, struct FVector* NewViewLocation, struct FRotator* NewViewRotation, float* NewFOV)
@@ -8409,7 +8590,7 @@ void APawn::ReceivePossessed(class AController* NewController)
 // ()
 // Parameters:
 // float                          Loudness                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NoiseLocation                  (Parm, IsPlainOldData)
+// struct FVector                 NoiseLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseNoiseMakerLocation         (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  NoiseMaker                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -8468,7 +8649,7 @@ void APawn::OnRep_Controller()
 // Function Engine.Pawn.LaunchPawn
 // ()
 // Parameters:
-// struct FVector                 LaunchVelocity                 (Parm, IsPlainOldData)
+// struct FVector                 LaunchVelocity                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bXYOverride                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bZOverride                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -8492,7 +8673,7 @@ void APawn::LaunchPawn(const struct FVector& LaunchVelocity, bool bXYOverride, b
 // Function Engine.Pawn.K2_GetMovementInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APawn::K2_GetMovementInputVector()
 {
@@ -8597,7 +8778,7 @@ bool APawn::IsControlled()
 // Function Engine.Pawn.GetPendingMovementInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APawn::GetPendingMovementInputVector()
 {
@@ -8618,7 +8799,7 @@ struct FVector APawn::GetPendingMovementInputVector()
 // Function Engine.Pawn.GetNavAgentLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APawn::GetNavAgentLocation()
 {
@@ -8683,7 +8864,7 @@ class AActor* APawn::GetMovementBaseActor(class APawn* Pawn)
 // Function Engine.Pawn.GetLastMovementInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APawn::GetLastMovementInputVector()
 {
@@ -8704,7 +8885,7 @@ struct FVector APawn::GetLastMovementInputVector()
 // Function Engine.Pawn.GetControlRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator APawn::GetControlRotation()
 {
@@ -8746,7 +8927,7 @@ class AController* APawn::GetController()
 // Function Engine.Pawn.GetBaseAimRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator APawn::GetBaseAimRotation()
 {
@@ -8784,7 +8965,7 @@ void APawn::DetachFromControllerPendingDestroy()
 // Function Engine.Pawn.ConsumeMovementInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APawn::ConsumeMovementInputVector()
 {
@@ -8805,7 +8986,7 @@ struct FVector APawn::ConsumeMovementInputVector()
 // Function Engine.Pawn.AddMovementInput
 // ()
 // Parameters:
-// struct FVector                 WorldDirection                 (Parm, IsPlainOldData)
+// struct FVector                 WorldDirection                 (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScaleValue                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bForce                         (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -9213,9 +9394,9 @@ float ACharacter::PlayAnimMontage(class UAnimMontage* AnimMontage, float InPlayR
 // Function Engine.Character.OnWalkingOffLedge
 // ()
 // Parameters:
-// struct FVector                 PreviousFloorImpactNormal      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 PreviousFloorContactNormal     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 PreviousLocation               (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 PreviousFloorImpactNormal      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 PreviousFloorContactNormal     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 PreviousLocation               (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          TimeDelta                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void ACharacter::OnWalkingOffLedge(const struct FVector& PreviousFloorImpactNormal, const struct FVector& PreviousFloorContactNormal, const struct FVector& PreviousLocation, float TimeDelta)
@@ -9270,6 +9451,23 @@ void ACharacter::OnRep_ReplicatedBasedMovement()
 }
 
 
+// Function Engine.Character.OnRep_ReplayLastTransformUpdateTimeStamp
+// ()
+
+void ACharacter::OnRep_ReplayLastTransformUpdateTimeStamp()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.Character.OnRep_ReplayLastTransformUpdateTimeStamp");
+
+	ACharacter_OnRep_ReplayLastTransformUpdateTimeStamp_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Engine.Character.OnRep_IsCrouched
 // ()
 
@@ -9290,7 +9488,7 @@ void ACharacter::OnRep_IsCrouched()
 // Function Engine.Character.OnLaunched
 // ()
 // Parameters:
-// struct FVector                 LaunchVelocity                 (Parm, IsPlainOldData)
+// struct FVector                 LaunchVelocity                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bXYOverride                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bZOverride                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -9351,7 +9549,7 @@ void ACharacter::OnJumped()
 // Function Engine.Character.LaunchCharacter
 // ()
 // Parameters:
-// struct FVector                 LaunchVelocity                 (Parm, IsPlainOldData)
+// struct FVector                 LaunchVelocity                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bXYOverride                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bZOverride                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -9566,7 +9764,7 @@ class UAnimMontage* ACharacter::GetCurrentMontage()
 // Function Engine.Character.GetBaseTranslationOffset
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector ACharacter::GetBaseTranslationOffset()
 {
@@ -9587,7 +9785,7 @@ struct FVector ACharacter::GetBaseTranslationOffset()
 // Function Engine.Character.GetBaseRotationOffsetRotator
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator ACharacter::GetBaseRotationOffsetRotator()
 {
@@ -9650,7 +9848,7 @@ void ACharacter::Crouch(bool bClientSimulation)
 // ()
 // Parameters:
 // float                          Timestamp                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewLoc                         (Parm, IsPlainOldData)
+// struct FVector                 NewLoc                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     NewBase                        (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   NewBaseBoneName                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bHasBase                       (Parm, ZeroConstructor, IsPlainOldData)
@@ -9736,7 +9934,7 @@ void ACharacter::ClientCheatFly()
 // struct FRootMotionSourceGroup  ServerRootMotion               (Parm)
 // bool                           bHasAnimRootMotion             (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ServerMontageTrackPosition     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ServerLoc                      (Parm, IsPlainOldData)
+// struct FVector                 ServerLoc                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector_NetQuantizeNormal ServerRotation                 (Parm)
 // float                          ServerVelZ                     (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     ServerBase                     (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
@@ -9776,7 +9974,7 @@ void ACharacter::ClientAdjustRootMotionSourcePosition(float Timestamp, const str
 // Parameters:
 // float                          Timestamp                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ServerMontageTrackPosition     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ServerLoc                      (Parm, IsPlainOldData)
+// struct FVector                 ServerLoc                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector_NetQuantizeNormal ServerRotation                 (Parm)
 // float                          ServerVelZ                     (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     ServerBase                     (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
@@ -9813,8 +10011,8 @@ void ACharacter::ClientAdjustRootMotionPosition(float Timestamp, float ServerMon
 // ()
 // Parameters:
 // float                          Timestamp                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewLoc                         (Parm, IsPlainOldData)
-// struct FVector                 NewVel                         (Parm, IsPlainOldData)
+// struct FVector                 NewLoc                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 NewVel                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     NewBase                        (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   NewBaseBoneName                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bHasBase                       (Parm, ZeroConstructor, IsPlainOldData)
@@ -9908,8 +10106,8 @@ bool ACharacter::CanJump()
 // Function Engine.Character.CacheInitialMeshOffset
 // ()
 // Parameters:
-// struct FVector                 MeshRelativeLocation           (Parm, IsPlainOldData)
-// struct FRotator                MeshRelativeRotation           (Parm, IsPlainOldData)
+// struct FVector                 MeshRelativeLocation           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                MeshRelativeRotation           (Parm, ZeroConstructor, IsPlainOldData)
 
 void ACharacter::CacheInitialMeshOffset(const struct FVector& MeshRelativeLocation, const struct FRotator& MeshRelativeRotation)
 {
@@ -9948,7 +10146,7 @@ void USplineComponent::UpdateSpline()
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InLocation                     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InLocation                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void USplineComponent::SetWorldLocationAtSplinePoint(int PointIndex, const struct FVector& InLocation)
 {
@@ -9970,7 +10168,7 @@ void USplineComponent::SetWorldLocationAtSplinePoint(int PointIndex, const struc
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InUpVector                     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InUpVector                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateSpline                  (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -9995,7 +10193,7 @@ void USplineComponent::SetUpVectorAtSplinePoint(int PointIndex, const struct FVe
 // Function Engine.SplineComponent.SetUnselectedSplineSegmentColor
 // ()
 // Parameters:
-// struct FLinearColor            SegmentColor                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            SegmentColor                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void USplineComponent::SetUnselectedSplineSegmentColor(const struct FLinearColor& SegmentColor)
 {
@@ -10016,8 +10214,8 @@ void USplineComponent::SetUnselectedSplineSegmentColor(const struct FLinearColor
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InArriveTangent                (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 InLeaveTangent                 (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InArriveTangent                (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 InLeaveTangent                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateSpline                  (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -10044,7 +10242,7 @@ void USplineComponent::SetTangentsAtSplinePoint(int PointIndex, const struct FVe
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InTangent                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InTangent                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateSpline                  (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -10181,7 +10379,7 @@ void USplineComponent::SetSplineLocalPoints(TArray<struct FVector> Points)
 // Function Engine.SplineComponent.SetSelectedSplineSegmentColor
 // ()
 // Parameters:
-// struct FLinearColor            SegmentColor                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            SegmentColor                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void USplineComponent::SetSelectedSplineSegmentColor(const struct FLinearColor& SegmentColor)
 {
@@ -10202,7 +10400,7 @@ void USplineComponent::SetSelectedSplineSegmentColor(const struct FLinearColor& 
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InLocation                     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InLocation                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateSpline                  (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -10247,7 +10445,7 @@ void USplineComponent::SetDrawDebug(bool bShow)
 // Function Engine.SplineComponent.SetDefaultUpVector
 // ()
 // Parameters:
-// struct FVector                 UpVector                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 UpVector                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineComponent::SetDefaultUpVector(const struct FVector& UpVector, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
@@ -10379,7 +10577,7 @@ bool USplineComponent::IsClosedLoop()
 // ()
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetWorldTangentAtDistanceAlongSpline(float Distance)
 {
@@ -10403,7 +10601,7 @@ struct FVector USplineComponent::GetWorldTangentAtDistanceAlongSpline(float Dist
 // Parameters:
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USplineComponent::GetWorldRotationAtTime(float Time, bool bUseConstantVelocity)
 {
@@ -10427,7 +10625,7 @@ struct FRotator USplineComponent::GetWorldRotationAtTime(float Time, bool bUseCo
 // ()
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USplineComponent::GetWorldRotationAtDistanceAlongSpline(float Distance)
 {
@@ -10451,7 +10649,7 @@ struct FRotator USplineComponent::GetWorldRotationAtDistanceAlongSpline(float Di
 // Parameters:
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetWorldLocationAtTime(float Time, bool bUseConstantVelocity)
 {
@@ -10475,7 +10673,7 @@ struct FVector USplineComponent::GetWorldLocationAtTime(float Time, bool bUseCon
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetWorldLocationAtSplinePoint(int PointIndex)
 {
@@ -10498,7 +10696,7 @@ struct FVector USplineComponent::GetWorldLocationAtSplinePoint(int PointIndex)
 // ()
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetWorldLocationAtDistanceAlongSpline(float Distance)
 {
@@ -10522,7 +10720,7 @@ struct FVector USplineComponent::GetWorldLocationAtDistanceAlongSpline(float Dis
 // Parameters:
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetWorldDirectionAtTime(float Time, bool bUseConstantVelocity)
 {
@@ -10546,7 +10744,7 @@ struct FVector USplineComponent::GetWorldDirectionAtTime(float Time, bool bUseCo
 // ()
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetWorldDirectionAtDistanceAlongSpline(float Distance)
 {
@@ -10571,7 +10769,7 @@ struct FVector USplineComponent::GetWorldDirectionAtDistanceAlongSpline(float Di
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetUpVectorAtTime(float Time, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, bool bUseConstantVelocity)
 {
@@ -10597,7 +10795,7 @@ struct FVector USplineComponent::GetUpVectorAtTime(float Time, TEnumAsByte<ESpli
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetUpVectorAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -10622,7 +10820,7 @@ struct FVector USplineComponent::GetUpVectorAtSplinePoint(int PointIndex, TEnumA
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetUpVectorAtDistanceAlongSpline(float Distance, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -10729,8 +10927,8 @@ struct FTransform USplineComponent::GetTransformAtDistanceAlongSpline(float Dist
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ArriveTangent                  (Parm, OutParm, IsPlainOldData)
-// struct FVector                 LeaveTangent                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 ArriveTangent                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LeaveTangent                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineComponent::GetTangentsAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, struct FVector* ArriveTangent, struct FVector* LeaveTangent)
@@ -10760,7 +10958,7 @@ void USplineComponent::GetTangentsAtSplinePoint(int PointIndex, TEnumAsByte<ESpl
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetTangentAtTime(float Time, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, bool bUseConstantVelocity)
 {
@@ -10786,7 +10984,7 @@ struct FVector USplineComponent::GetTangentAtTime(float Time, TEnumAsByte<ESplin
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetTangentAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -10811,7 +11009,7 @@ struct FVector USplineComponent::GetTangentAtSplinePoint(int PointIndex, TEnumAs
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetTangentAtDistanceAlongSpline(float Distance, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -10928,7 +11126,7 @@ float USplineComponent::GetSplineLength()
 // Parameters:
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetScaleAtTime(float Time, bool bUseConstantVelocity)
 {
@@ -10952,7 +11150,7 @@ struct FVector USplineComponent::GetScaleAtTime(float Time, bool bUseConstantVel
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetScaleAtSplinePoint(int PointIndex)
 {
@@ -10975,7 +11173,7 @@ struct FVector USplineComponent::GetScaleAtSplinePoint(int PointIndex)
 // ()
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetScaleAtDistanceAlongSpline(float Distance)
 {
@@ -11000,7 +11198,7 @@ struct FVector USplineComponent::GetScaleAtDistanceAlongSpline(float Distance)
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USplineComponent::GetRotationAtTime(float Time, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, bool bUseConstantVelocity)
 {
@@ -11026,7 +11224,7 @@ struct FRotator USplineComponent::GetRotationAtTime(float Time, TEnumAsByte<ESpl
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USplineComponent::GetRotationAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11051,7 +11249,7 @@ struct FRotator USplineComponent::GetRotationAtSplinePoint(int PointIndex, TEnum
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USplineComponent::GetRotationAtDistanceAlongSpline(float Distance, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11154,7 +11352,7 @@ float USplineComponent::GetRollAtDistanceAlongSpline(float Distance, TEnumAsByte
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetRightVectorAtTime(float Time, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, bool bUseConstantVelocity)
 {
@@ -11180,7 +11378,7 @@ struct FVector USplineComponent::GetRightVectorAtTime(float Time, TEnumAsByte<ES
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetRightVectorAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11205,7 +11403,7 @@ struct FVector USplineComponent::GetRightVectorAtSplinePoint(int PointIndex, TEn
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetRightVectorAtDistanceAlongSpline(float Distance, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11252,7 +11450,7 @@ int USplineComponent::GetNumberOfSplinePoints()
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetLocationAtTime(float Time, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, bool bUseConstantVelocity)
 {
@@ -11278,7 +11476,7 @@ struct FVector USplineComponent::GetLocationAtTime(float Time, TEnumAsByte<ESpli
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetLocationAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11303,7 +11501,7 @@ struct FVector USplineComponent::GetLocationAtSplinePoint(int PointIndex, TEnumA
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetLocationAtDistanceAlongSpline(float Distance, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11327,8 +11525,8 @@ struct FVector USplineComponent::GetLocationAtDistanceAlongSpline(float Distance
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Tangent                        (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Tangent                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineComponent::GetLocationAndTangentAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, struct FVector* Location, struct FVector* Tangent)
@@ -11356,8 +11554,8 @@ void USplineComponent::GetLocationAndTangentAtSplinePoint(int PointIndex, TEnumA
 // ()
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 LocalLocation                  (Parm, OutParm, IsPlainOldData)
-// struct FVector                 LocalTangent                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 LocalLocation                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LocalTangent                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void USplineComponent::GetLocalLocationAndTangentAtSplinePoint(int PointIndex, struct FVector* LocalLocation, struct FVector* LocalTangent)
 {
@@ -11384,7 +11582,7 @@ void USplineComponent::GetLocalLocationAndTangentAtSplinePoint(int PointIndex, s
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetLeaveTangentAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11456,7 +11654,7 @@ float USplineComponent::GetDistanceAlongSplineAtSplinePoint(int PointIndex)
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseConstantVelocity           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetDirectionAtTime(float Time, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace, bool bUseConstantVelocity)
 {
@@ -11482,7 +11680,7 @@ struct FVector USplineComponent::GetDirectionAtTime(float Time, TEnumAsByte<ESpl
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetDirectionAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11507,7 +11705,7 @@ struct FVector USplineComponent::GetDirectionAtSplinePoint(int PointIndex, TEnum
 // Parameters:
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetDirectionAtDistanceAlongSpline(float Distance, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11531,7 +11729,7 @@ struct FVector USplineComponent::GetDirectionAtDistanceAlongSpline(float Distanc
 // ()
 // Parameters:
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetDefaultUpVector(TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11555,7 +11753,7 @@ struct FVector USplineComponent::GetDefaultUpVector(TEnumAsByte<ESplineCoordinat
 // Parameters:
 // int                            PointIndex                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::GetArriveTangentAtSplinePoint(int PointIndex, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11578,9 +11776,9 @@ struct FVector USplineComponent::GetArriveTangentAtSplinePoint(int PointIndex, T
 // Function Engine.SplineComponent.FindUpVectorClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::FindUpVectorClosestToWorldLocation(const struct FVector& WorldLocation, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11603,7 +11801,7 @@ struct FVector USplineComponent::FindUpVectorClosestToWorldLocation(const struct
 // Function Engine.SplineComponent.FindTransformClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUseScale                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FTransform              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
@@ -11630,9 +11828,9 @@ struct FTransform USplineComponent::FindTransformClosestToWorldLocation(const st
 // Function Engine.SplineComponent.FindTangentClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::FindTangentClosestToWorldLocation(const struct FVector& WorldLocation, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11655,8 +11853,8 @@ struct FVector USplineComponent::FindTangentClosestToWorldLocation(const struct 
 // Function Engine.SplineComponent.FindScaleClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::FindScaleClosestToWorldLocation(const struct FVector& WorldLocation)
 {
@@ -11678,9 +11876,9 @@ struct FVector USplineComponent::FindScaleClosestToWorldLocation(const struct FV
 // Function Engine.SplineComponent.FindRotationClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USplineComponent::FindRotationClosestToWorldLocation(const struct FVector& WorldLocation, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11703,7 +11901,7 @@ struct FRotator USplineComponent::FindRotationClosestToWorldLocation(const struc
 // Function Engine.SplineComponent.FindRollClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -11728,9 +11926,9 @@ float USplineComponent::FindRollClosestToWorldLocation(const struct FVector& Wor
 // Function Engine.SplineComponent.FindRightVectorClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::FindRightVectorClosestToWorldLocation(const struct FVector& WorldLocation, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11753,9 +11951,9 @@ struct FVector USplineComponent::FindRightVectorClosestToWorldLocation(const str
 // Function Engine.SplineComponent.FindLocationClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::FindLocationClosestToWorldLocation(const struct FVector& WorldLocation, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11778,7 +11976,7 @@ struct FVector USplineComponent::FindLocationClosestToWorldLocation(const struct
 // Function Engine.SplineComponent.FindInputKeyClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float USplineComponent::FindInputKeyClosestToWorldLocation(const struct FVector& WorldLocation)
@@ -11801,7 +11999,7 @@ float USplineComponent::FindInputKeyClosestToWorldLocation(const struct FVector&
 // Function Engine.SplineComponent.FindDistanceClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float USplineComponent::FindDistanceClosestToWorldLocation(const struct FVector& WorldLocation)
@@ -11824,9 +12022,9 @@ float USplineComponent::FindDistanceClosestToWorldLocation(const struct FVector&
 // Function Engine.SplineComponent.FindDirectionClosestToWorldLocation
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineComponent::FindDirectionClosestToWorldLocation(const struct FVector& WorldLocation, TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace)
 {
@@ -11886,7 +12084,7 @@ void USplineComponent::ClearSplinePoints(bool bUpdateSpline)
 // Function Engine.SplineComponent.AddSplineWorldPoint
 // ()
 // Parameters:
-// struct FVector                 Position                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Position                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void USplineComponent::AddSplineWorldPoint(const struct FVector& Position)
 {
@@ -11928,7 +12126,7 @@ void USplineComponent::AddSplinePointFromData(const struct FSplinePointData& Dat
 // Function Engine.SplineComponent.AddSplinePointAtIndex
 // ()
 // Parameters:
-// struct FVector                 Position                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Position                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // int                            Index                          (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateSpline                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -11954,7 +12152,7 @@ void USplineComponent::AddSplinePointAtIndex(const struct FVector& Position, int
 // Function Engine.SplineComponent.AddSplinePoint
 // ()
 // Parameters:
-// struct FVector                 Position                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Position                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TEnumAsByte<ESplineCoordinateSpace> CoordinateSpace                (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateSpline                  (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -11978,7 +12176,7 @@ void USplineComponent::AddSplinePoint(const struct FVector& Position, TEnumAsByt
 // Function Engine.SplineComponent.AddSplineLocalPoint
 // ()
 // Parameters:
-// struct FVector                 Position                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Position                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void USplineComponent::AddSplineLocalPoint(const struct FVector& Position)
 {
@@ -12517,7 +12715,7 @@ void UMovementComponent::SetUpdatedComponent(class USceneComponent* NewUpdatedCo
 // Function Engine.MovementComponent.SetPlaneConstraintOrigin
 // ()
 // Parameters:
-// struct FVector                 PlaneOrigin                    (Parm, IsPlainOldData)
+// struct FVector                 PlaneOrigin                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UMovementComponent::SetPlaneConstraintOrigin(const struct FVector& PlaneOrigin)
 {
@@ -12537,7 +12735,7 @@ void UMovementComponent::SetPlaneConstraintOrigin(const struct FVector& PlaneOri
 // Function Engine.MovementComponent.SetPlaneConstraintNormal
 // ()
 // Parameters:
-// struct FVector                 PlaneNormal                    (Parm, IsPlainOldData)
+// struct FVector                 PlaneNormal                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UMovementComponent::SetPlaneConstraintNormal(const struct FVector& PlaneNormal)
 {
@@ -12557,8 +12755,8 @@ void UMovementComponent::SetPlaneConstraintNormal(const struct FVector& PlaneNor
 // Function Engine.MovementComponent.SetPlaneConstraintFromVectors
 // ()
 // Parameters:
-// struct FVector                 Forward                        (Parm, IsPlainOldData)
-// struct FVector                 Up                             (Parm, IsPlainOldData)
+// struct FVector                 Forward                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Up                             (Parm, ZeroConstructor, IsPlainOldData)
 
 void UMovementComponent::SetPlaneConstraintFromVectors(const struct FVector& Forward, const struct FVector& Up)
 {
@@ -12639,8 +12837,8 @@ void UMovementComponent::PhysicsVolumeChanged(class APhysicsVolume* NewVolume)
 // Function Engine.MovementComponent.K2_MoveUpdatedComponent
 // ()
 // Parameters:
-// struct FVector                 Delta                          (Parm, IsPlainOldData)
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FVector                 Delta                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bSweep                         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTeleport                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -12737,7 +12935,7 @@ bool UMovementComponent::IsExceedingMaxSpeed(float MaxSpeed)
 // Function Engine.MovementComponent.GetPlaneConstraintOrigin
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (ConstParm, Parm, OutParm, ReturnParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (ConstParm, Parm, OutParm, ZeroConstructor, ReturnParm, ReferenceParm, IsPlainOldData)
 
 struct FVector UMovementComponent::GetPlaneConstraintOrigin()
 {
@@ -12758,7 +12956,7 @@ struct FVector UMovementComponent::GetPlaneConstraintOrigin()
 // Function Engine.MovementComponent.GetPlaneConstraintNormal
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (ConstParm, Parm, OutParm, ReturnParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (ConstParm, Parm, OutParm, ZeroConstructor, ReturnParm, ReferenceParm, IsPlainOldData)
 
 struct FVector UMovementComponent::GetPlaneConstraintNormal()
 {
@@ -12863,8 +13061,8 @@ float UMovementComponent::GetGravityZ()
 // Function Engine.MovementComponent.ConstrainNormalToPlane
 // ()
 // Parameters:
-// struct FVector                 Normal                         (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Normal                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UMovementComponent::ConstrainNormalToPlane(const struct FVector& Normal)
 {
@@ -12886,8 +13084,8 @@ struct FVector UMovementComponent::ConstrainNormalToPlane(const struct FVector& 
 // Function Engine.MovementComponent.ConstrainLocationToPlane
 // ()
 // Parameters:
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UMovementComponent::ConstrainLocationToPlane(const struct FVector& Location)
 {
@@ -12909,8 +13107,8 @@ struct FVector UMovementComponent::ConstrainLocationToPlane(const struct FVector
 // Function Engine.MovementComponent.ConstrainDirectionToPlane
 // ()
 // Parameters:
-// struct FVector                 Direction                      (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Direction                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UMovementComponent::ConstrainDirectionToPlane(const struct FVector& Direction)
 {
@@ -13071,7 +13269,7 @@ bool UNavMovementComponent::IsCrouching()
 // Function Engine.PawnMovementComponent.K2_GetInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPawnMovementComponent::K2_GetInputVector()
 {
@@ -13113,7 +13311,7 @@ bool UPawnMovementComponent::IsMoveInputIgnored()
 // Function Engine.PawnMovementComponent.GetPendingInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPawnMovementComponent::GetPendingInputVector()
 {
@@ -13155,7 +13353,7 @@ class APawn* UPawnMovementComponent::GetPawnOwner()
 // Function Engine.PawnMovementComponent.GetLastInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPawnMovementComponent::GetLastInputVector()
 {
@@ -13176,7 +13374,7 @@ struct FVector UPawnMovementComponent::GetLastInputVector()
 // Function Engine.PawnMovementComponent.ConsumeInputVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPawnMovementComponent::ConsumeInputVector()
 {
@@ -13197,7 +13395,7 @@ struct FVector UPawnMovementComponent::ConsumeInputVector()
 // Function Engine.PawnMovementComponent.AddInputVector
 // ()
 // Parameters:
-// struct FVector                 WorldVector                    (Parm, IsPlainOldData)
+// struct FVector                 WorldVector                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bForce                         (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPawnMovementComponent::AddInputVector(const struct FVector& WorldVector, bool bForce)
@@ -14168,9 +14366,9 @@ void USkeletalMeshComponent::K2_SetAnimInstanceClass(class UClass* NewClass)
 // Function Engine.SkeletalMeshComponent.K2_GetClosestPointOnPhysicsAsset
 // ()
 // Parameters:
-// struct FVector                 WorldPosition                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 ClosestWorldPosition           (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Normal                         (Parm, OutParm, IsPlainOldData)
+// struct FVector                 WorldPosition                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 ClosestWorldPosition           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Normal                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Distance                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -14329,10 +14527,33 @@ float USkeletalMeshComponent::GetTeleportDistanceThreshold()
 }
 
 
+// Function Engine.SkeletalMeshComponent.GetSubInstanceByName
+// ()
+// Parameters:
+// struct FName                   InName                         (Parm, ZeroConstructor, IsPlainOldData)
+// class UAnimInstance*           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+class UAnimInstance* USkeletalMeshComponent::GetSubInstanceByName(const struct FName& InName)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.SkeletalMeshComponent.GetSubInstanceByName");
+
+	USkeletalMeshComponent_GetSubInstanceByName_Params params;
+	params.InName = InName;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.SkeletalMeshComponent.GetSkeletalCenterOfMass
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USkeletalMeshComponent::GetSkeletalCenterOfMass()
 {
@@ -14715,8 +14936,8 @@ void USkeletalMeshComponent::ClearMorphTargets()
 // Function Engine.SkeletalMeshComponent.BreakConstraint
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
-// struct FVector                 HitLocation                    (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   InBoneName                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void USkeletalMeshComponent::BreakConstraint(const struct FVector& Impulse, const struct FVector& HitLocation, const struct FName& InBoneName)
@@ -14778,7 +14999,7 @@ void USkeletalMeshComponent::AllowAnimCurveEvaluation(const struct FName& NameOf
 // Function Engine.SkeletalMeshComponent.AddImpulseToAllBodiesBelow
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bVelChange                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bIncludeSelf                   (Parm, ZeroConstructor, IsPlainOldData)
@@ -14804,7 +15025,7 @@ void USkeletalMeshComponent::AddImpulseToAllBodiesBelow(const struct FVector& Im
 // Function Engine.SkeletalMeshComponent.AddForceToAllBodiesBelow
 // ()
 // Parameters:
-// struct FVector                 Force                          (Parm, IsPlainOldData)
+// struct FVector                 Force                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAccelChange                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bIncludeSelf                   (Parm, ZeroConstructor, IsPlainOldData)
@@ -16191,8 +16412,8 @@ void UAnimInstance::ClearMorphTargets()
 // Function Engine.AnimInstance.CalculateDirection
 // ()
 // Parameters:
-// struct FVector                 Velocity                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                BaseRotation                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Velocity                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                BaseRotation                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UAnimInstance::CalculateDirection(const struct FVector& Velocity, const struct FRotator& BaseRotation)
@@ -16284,6 +16505,288 @@ void UAnimInstance::BlueprintBeginPlay()
 }
 
 
+// Function Engine.TextRenderComponent.SetYScale
+// ()
+// Parameters:
+// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetYScale(float Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetYScale");
+
+	UTextRenderComponent_SetYScale_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetXScale
+// ()
+// Parameters:
+// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetXScale(float Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetXScale");
+
+	UTextRenderComponent_SetXScale_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetWorldSize
+// ()
+// Parameters:
+// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetWorldSize(float Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetWorldSize");
+
+	UTextRenderComponent_SetWorldSize_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetVertSpacingAdjust
+// ()
+// Parameters:
+// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetVertSpacingAdjust(float Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetVertSpacingAdjust");
+
+	UTextRenderComponent_SetVertSpacingAdjust_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetVerticalAlignment
+// ()
+// Parameters:
+// TEnumAsByte<EVerticalTextAligment> Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetVerticalAlignment(TEnumAsByte<EVerticalTextAligment> Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetVerticalAlignment");
+
+	UTextRenderComponent_SetVerticalAlignment_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetTextRenderColor
+// ()
+// Parameters:
+// struct FColor                  Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetTextRenderColor(const struct FColor& Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetTextRenderColor");
+
+	UTextRenderComponent_SetTextRenderColor_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetTextMaterial
+// ()
+// Parameters:
+// class UMaterialInterface*      Material                       (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetTextMaterial(class UMaterialInterface* Material)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetTextMaterial");
+
+	UTextRenderComponent_SetTextMaterial_Params params;
+	params.Material = Material;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetText
+// ()
+// Parameters:
+// class FString                  Value                          (Parm, ZeroConstructor)
+
+void UTextRenderComponent::SetText(const class FString& Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetText");
+
+	UTextRenderComponent_SetText_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetHorizSpacingAdjust
+// ()
+// Parameters:
+// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetHorizSpacingAdjust(float Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetHorizSpacingAdjust");
+
+	UTextRenderComponent_SetHorizSpacingAdjust_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetHorizontalAlignment
+// ()
+// Parameters:
+// TEnumAsByte<EHorizTextAligment> Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetHorizontalAlignment(TEnumAsByte<EHorizTextAligment> Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetHorizontalAlignment");
+
+	UTextRenderComponent_SetHorizontalAlignment_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.SetFont
+// ()
+// Parameters:
+// class UFont*                   Value                          (Parm, ZeroConstructor, IsPlainOldData)
+
+void UTextRenderComponent::SetFont(class UFont* Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetFont");
+
+	UTextRenderComponent_SetFont_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.K2_SetText
+// ()
+// Parameters:
+// struct FText                   Value                          (ConstParm, Parm, OutParm, ReferenceParm)
+
+void UTextRenderComponent::K2_SetText(const struct FText& Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.K2_SetText");
+
+	UTextRenderComponent_K2_SetText_Params params;
+	params.Value = Value;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.TextRenderComponent.GetTextWorldSize
+// ()
+// Parameters:
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FVector UTextRenderComponent::GetTextWorldSize()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.GetTextWorldSize");
+
+	UTextRenderComponent_GetTextWorldSize_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.TextRenderComponent.GetTextLocalSize
+// ()
+// Parameters:
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FVector UTextRenderComponent::GetTextLocalSize()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.GetTextLocalSize");
+
+	UTextRenderComponent_GetTextLocalSize_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.CharacterMovementComponent.SetWalkableFloorZ
 // ()
 // Parameters:
@@ -16349,7 +16852,7 @@ void UCharacterMovementComponent::SetMovementMode(TEnumAsByte<EMovementMode> New
 // Function Engine.CharacterMovementComponent.SetGroupsToIgnoreMask
 // ()
 // Parameters:
-// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UCharacterMovementComponent::SetGroupsToIgnoreMask(const struct FNavAvoidanceMask& GroupMask)
 {
@@ -16389,7 +16892,7 @@ void UCharacterMovementComponent::SetGroupsToIgnore(int GroupFlags)
 // Function Engine.CharacterMovementComponent.SetGroupsToAvoidMask
 // ()
 // Parameters:
-// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UCharacterMovementComponent::SetGroupsToAvoidMask(const struct FNavAvoidanceMask& GroupMask)
 {
@@ -16429,7 +16932,7 @@ void UCharacterMovementComponent::SetGroupsToAvoid(int GroupFlags)
 // Function Engine.CharacterMovementComponent.SetAvoidanceGroupMask
 // ()
 // Parameters:
-// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FNavAvoidanceMask       GroupMask                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UCharacterMovementComponent::SetAvoidanceGroupMask(const struct FNavAvoidanceMask& GroupMask)
 {
@@ -16552,7 +17055,7 @@ float UCharacterMovementComponent::K2_GetModifiedMaxAcceleration()
 // Function Engine.CharacterMovementComponent.K2_FindFloor
 // ()
 // Parameters:
-// struct FVector                 CapsuleLocation                (Parm, IsPlainOldData)
+// struct FVector                 CapsuleLocation                (Parm, ZeroConstructor, IsPlainOldData)
 // struct FFindFloorResult        FloorResult                    (Parm, OutParm)
 
 void UCharacterMovementComponent::K2_FindFloor(const struct FVector& CapsuleLocation, struct FFindFloorResult* FloorResult)
@@ -16576,7 +17079,7 @@ void UCharacterMovementComponent::K2_FindFloor(const struct FVector& CapsuleLoca
 // Function Engine.CharacterMovementComponent.K2_ComputeFloorDist
 // ()
 // Parameters:
-// struct FVector                 CapsuleLocation                (Parm, IsPlainOldData)
+// struct FVector                 CapsuleLocation                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          LineDistance                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          SweepDistance                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          SweepRadius                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -16815,10 +17318,73 @@ float UCharacterMovementComponent::GetMaxAcceleration()
 }
 
 
+// Function Engine.CharacterMovementComponent.GetLastUpdateVelocity
+// ()
+// Parameters:
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FVector UCharacterMovementComponent::GetLastUpdateVelocity()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.CharacterMovementComponent.GetLastUpdateVelocity");
+
+	UCharacterMovementComponent_GetLastUpdateVelocity_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.CharacterMovementComponent.GetLastUpdateRotation
+// ()
+// Parameters:
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FRotator UCharacterMovementComponent::GetLastUpdateRotation()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.CharacterMovementComponent.GetLastUpdateRotation");
+
+	UCharacterMovementComponent_GetLastUpdateRotation_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.CharacterMovementComponent.GetLastUpdateLocation
+// ()
+// Parameters:
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FVector UCharacterMovementComponent::GetLastUpdateLocation()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.CharacterMovementComponent.GetLastUpdateLocation");
+
+	UCharacterMovementComponent_GetLastUpdateLocation_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.CharacterMovementComponent.GetImpartedMovementBaseVelocity
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UCharacterMovementComponent::GetImpartedMovementBaseVelocity()
 {
@@ -16839,7 +17405,7 @@ struct FVector UCharacterMovementComponent::GetImpartedMovementBaseVelocity()
 // Function Engine.CharacterMovementComponent.GetCurrentAcceleration
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UCharacterMovementComponent::GetCurrentAcceleration()
 {
@@ -16992,7 +17558,7 @@ void UCharacterMovementComponent::CalcVelocity(float DeltaTime, float Friction, 
 // Function Engine.CharacterMovementComponent.AddImpulse
 // ()
 // Parameters:
-// struct FVector                 Impulse                        (Parm, IsPlainOldData)
+// struct FVector                 Impulse                        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bVelocityChange                (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCharacterMovementComponent::AddImpulse(const struct FVector& Impulse, bool bVelocityChange)
@@ -17014,7 +17580,7 @@ void UCharacterMovementComponent::AddImpulse(const struct FVector& Impulse, bool
 // Function Engine.CharacterMovementComponent.AddForce
 // ()
 // Parameters:
-// struct FVector                 Force                          (Parm, IsPlainOldData)
+// struct FVector                 Force                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCharacterMovementComponent::AddForce(const struct FVector& Force)
 {
@@ -17068,8 +17634,8 @@ void AController::StopMovement()
 // Function Engine.Controller.SetInitialLocationAndRotation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                NewRotation                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 NewLocation                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                NewRotation                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void AController::SetInitialLocationAndRotation(const struct FVector& NewLocation, const struct FRotator& NewRotation)
 {
@@ -17130,7 +17696,7 @@ void AController::SetIgnoreLookInput(bool bNewLookInput)
 // Function Engine.Controller.SetControlRotation
 // ()
 // Parameters:
-// struct FRotator                NewRotation                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FRotator                NewRotation                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void AController::SetControlRotation(const struct FRotator& NewRotation)
 {
@@ -17282,7 +17848,7 @@ void AController::OnRep_Pawn()
 // ()
 // Parameters:
 // class AActor*                  Other                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ViewPoint                      (Parm, IsPlainOldData)
+// struct FVector                 ViewPoint                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAlternateChecks               (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -17455,7 +18021,7 @@ class AActor* AController::GetViewTarget()
 // Function Engine.Controller.GetDesiredRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator AController::GetDesiredRotation()
 {
@@ -17476,7 +18042,7 @@ struct FRotator AController::GetDesiredRotation()
 // Function Engine.Controller.GetControlRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator AController::GetControlRotation()
 {
@@ -17497,7 +18063,7 @@ struct FRotator AController::GetControlRotation()
 // Function Engine.Controller.ClientSetRotation
 // ()
 // Parameters:
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bResetCamera                   (Parm, ZeroConstructor, IsPlainOldData)
 
 void AController::ClientSetRotation(const struct FRotator& NewRotation, bool bResetCamera)
@@ -17519,8 +18085,8 @@ void AController::ClientSetRotation(const struct FRotator& NewRotation, bool bRe
 // Function Engine.Controller.ClientSetLocation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void AController::ClientSetLocation(const struct FVector& NewLocation, const struct FRotator& NewRotation)
 {
@@ -17844,7 +18410,7 @@ void APlayerController::SetDisableHaptics(bool bNewDisabled)
 // Function Engine.PlayerController.SetControllerLightColor
 // ()
 // Parameters:
-// struct FColor                  Color                          (Parm, IsPlainOldData)
+// struct FColor                  Color                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::SetControllerLightColor(const struct FColor& Color)
 {
@@ -17893,8 +18459,8 @@ void APlayerController::SetCinematicMode(bool bInCinematicMode, bool bHidePlayer
 // ()
 // Parameters:
 // class USceneComponent*         AttachToComponent              (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::SetAudioListenerOverride(class USceneComponent* AttachToComponent, const struct FVector& Location, const struct FRotator& Rotation)
 {
@@ -17917,7 +18483,7 @@ void APlayerController::SetAudioListenerOverride(class USceneComponent* AttachTo
 // ()
 // Parameters:
 // class USceneComponent*         AttachToComponent              (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector                 AttenuationLocationOVerride    (Parm, IsPlainOldData)
+// struct FVector                 AttenuationLocationOVerride    (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::SetAudioListenerAttenuationOverride(class USceneComponent* AttachToComponent, const struct FVector& AttenuationLocationOVerride)
 {
@@ -18147,8 +18713,8 @@ void APlayerController::ServerSetSpectatorWaiting(bool bWaiting)
 // Function Engine.PlayerController.ServerSetSpectatorLocation
 // ()
 // Parameters:
-// struct FVector                 NewLoc                         (Parm, IsPlainOldData)
-// struct FRotator                NewRot                         (Parm, IsPlainOldData)
+// struct FVector                 NewLoc                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewRot                         (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::ServerSetSpectatorLocation(const struct FVector& NewLoc, const struct FRotator& NewRot)
 {
@@ -18374,8 +18940,8 @@ void APlayerController::RestartLevel()
 // Function Engine.PlayerController.ProjectWorldLocationToScreen
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (Parm, IsPlainOldData)
-// struct FVector2D               ScreenLocation                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ScreenLocation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           bPlayerViewportRelative        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -18618,7 +19184,7 @@ bool APlayerController::GetMousePosition(float* LocationX, float* LocationY)
 // ()
 // Parameters:
 // struct FKey                    Key                            (Parm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APlayerController::GetInputVectorKeyState(const struct FKey& Key)
 {
@@ -18695,10 +19261,10 @@ void APlayerController::GetInputMouseDelta(float* DeltaX, float* DeltaY)
 // Function Engine.PlayerController.GetInputMotionState
 // ()
 // Parameters:
-// struct FVector                 Tilt                           (Parm, OutParm, IsPlainOldData)
-// struct FVector                 RotationRate                   (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Gravity                        (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Acceleration                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Tilt                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 RotationRate                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Gravity                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Acceleration                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::GetInputMotionState(struct FVector* Tilt, struct FVector* RotationRate, struct FVector* Gravity, struct FVector* Acceleration)
 {
@@ -19000,7 +19566,7 @@ bool APlayerController::GetHitResultUnderCursor(TEnumAsByte<ECollisionChannel> T
 // Function Engine.PlayerController.GetFocalLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APlayerController::GetFocalLocation()
 {
@@ -19060,8 +19626,8 @@ void APlayerController::EnableCheats()
 // Parameters:
 // float                          ScreenX                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScreenY                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 WorldLocation                  (Parm, OutParm, IsPlainOldData)
-// struct FVector                 WorldDirection                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 WorldDirection                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool APlayerController::DeprojectScreenPositionToWorld(float ScreenX, float ScreenY, struct FVector* WorldLocation, struct FVector* WorldDirection)
@@ -19090,8 +19656,8 @@ bool APlayerController::DeprojectScreenPositionToWorld(float ScreenX, float Scre
 // Function Engine.PlayerController.DeprojectMousePositionToWorld
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (Parm, OutParm, IsPlainOldData)
-// struct FVector                 WorldDirection                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 WorldDirection                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool APlayerController::DeprojectMousePositionToWorld(struct FVector* WorldLocation, struct FVector* WorldDirection)
@@ -19246,7 +19812,7 @@ void APlayerController::ClientUnmutePlayer(const struct FUniqueNetIdRepl& Player
 // class FString                  URL                            (Parm, ZeroConstructor)
 // TEnumAsByte<ETravelType>       TravelType                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSeamless                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FGuid                   MapPackageGuid                 (Parm, IsPlainOldData)
+// struct FGuid                   MapPackageGuid                 (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::ClientTravelInternal(const class FString& URL, TEnumAsByte<ETravelType> TravelType, bool bSeamless, const struct FGuid& MapPackageGuid)
 {
@@ -19272,7 +19838,7 @@ void APlayerController::ClientTravelInternal(const class FString& URL, TEnumAsBy
 // class FString                  URL                            (Parm, ZeroConstructor)
 // TEnumAsByte<ETravelType>       TravelType                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSeamless                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FGuid                   MapPackageGuid                 (Parm, IsPlainOldData)
+// struct FGuid                   MapPackageGuid                 (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::ClientTravel(const class FString& URL, TEnumAsByte<ETravelType> TravelType, bool bSeamless, const struct FGuid& MapPackageGuid)
 {
@@ -19555,8 +20121,8 @@ void APlayerController::ClientSetCameraMode(const struct FName& NewCamMode)
 // ()
 // Parameters:
 // bool                           bEnableFading                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FColor                  FadeColor                      (Parm, IsPlainOldData)
-// struct FVector2D               FadeAlpha                      (Parm, IsPlainOldData)
+// struct FColor                  FadeColor                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               FadeAlpha                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          FadeTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bFadeAudio                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -19717,18 +20283,18 @@ void APlayerController::ClientRepObjRef(class UObject* Object)
 // ()
 // Parameters:
 // class UClass*                  MESSAGE                        (Parm, ZeroConstructor, IsPlainOldData)
-// int                            SWITCH                         (Parm, ZeroConstructor, IsPlainOldData)
+// int                            Switch                         (Parm, ZeroConstructor, IsPlainOldData)
 // class APlayerState*            RelatedPlayerState_2           (Parm, ZeroConstructor, IsPlainOldData)
 // class APlayerState*            RelatedPlayerState_3           (Parm, ZeroConstructor, IsPlainOldData)
 // class UObject*                 OptionalObject                 (Parm, ZeroConstructor, IsPlainOldData)
 
-void APlayerController::ClientReceiveLocalizedMessage(class UClass* MESSAGE, int SWITCH, class APlayerState* RelatedPlayerState_2, class APlayerState* RelatedPlayerState_3, class UObject* OptionalObject)
+void APlayerController::ClientReceiveLocalizedMessage(class UClass* MESSAGE, int Switch, class APlayerState* RelatedPlayerState_2, class APlayerState* RelatedPlayerState_3, class UObject* OptionalObject)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.PlayerController.ClientReceiveLocalizedMessage");
 
 	APlayerController_ClientReceiveLocalizedMessage_Params params;
 	params.MESSAGE = MESSAGE;
-	params.SWITCH = SWITCH;
+	params.Switch = Switch;
 	params.RelatedPlayerState_2 = RelatedPlayerState_2;
 	params.RelatedPlayerState_3 = RelatedPlayerState_3;
 	params.OptionalObject = OptionalObject;
@@ -19795,7 +20361,7 @@ void APlayerController::ClientPrepareMapChange(const struct FName& LevelName, bo
 // ()
 // Parameters:
 // class USoundBase*              Sound                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          VolumeMultiplier               (Parm, ZeroConstructor, IsPlainOldData)
 // float                          PitchMultiplier                (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -19873,7 +20439,7 @@ void APlayerController::ClientPlayForceFeedback(class UForceFeedbackEffect* Forc
 // class UClass*                  Shake                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ECameraAnimPlaySpace> PlaySpace                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                UserPlaySpaceRot               (Parm, IsPlainOldData)
+// struct FRotator                UserPlaySpaceRot               (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::ClientPlayCameraShake(class UClass* Shake, float Scale, TEnumAsByte<ECameraAnimPlaySpace> PlaySpace, const struct FRotator& UserPlaySpaceRot)
 {
@@ -19904,7 +20470,7 @@ void APlayerController::ClientPlayCameraShake(class UClass* Shake, float Scale, 
 // bool                           bLoop                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bRandomStartTime               (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ECameraAnimPlaySpace> Space                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                CustomPlaySpace                (Parm, IsPlainOldData)
+// struct FRotator                CustomPlaySpace                (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerController::ClientPlayCameraAnim(class UCameraAnim* AnimToPlay, float Scale, float Rate, float BlendInTime, float BlendOutTime, bool bLoop, bool bRandomStartTime, TEnumAsByte<ECameraAnimPlaySpace> Space, const struct FRotator& CustomPlaySpace)
 {
@@ -20200,7 +20766,7 @@ void APlayerController::ClientCancelPendingMapChange()
 // Function Engine.PlayerController.ClientAddTextureStreamingLoc
 // ()
 // Parameters:
-// struct FVector                 InLoc                          (Parm, IsPlainOldData)
+// struct FVector                 InLoc                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bOverrideLocation              (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -21316,8 +21882,8 @@ void UCheatManager::ChangeSize(float F)
 // Function Engine.CheatManager.BugItStringCreator
 // ()
 // Parameters:
-// struct FVector                 ViewLocation                   (Parm, IsPlainOldData)
-// struct FRotator                ViewRotation                   (Parm, IsPlainOldData)
+// struct FVector                 ViewLocation                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ViewRotation                   (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  GoString                       (Parm, OutParm, ZeroConstructor)
 // class FString                  LocString                      (Parm, OutParm, ZeroConstructor)
 
@@ -21498,8 +22064,8 @@ void UStaticMeshComponent::OnRep_StaticMesh(class UStaticMesh* OldStaticMesh)
 // Function Engine.StaticMeshComponent.GetLocalBounds
 // ()
 // Parameters:
-// struct FVector                 Min                            (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Max                            (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Min                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Max                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UStaticMeshComponent::GetLocalBounds(struct FVector* Min, struct FVector* Max)
 {
@@ -22848,7 +23414,7 @@ void UGameUserSettings::SetShadowQuality(int Value)
 // Function Engine.GameUserSettings.SetScreenResolution
 // ()
 // Parameters:
-// struct FIntPoint               Resolution                     (Parm, IsPlainOldData)
+// struct FIntPoint               Resolution                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UGameUserSettings::SetScreenResolution(const struct FIntPoint& Resolution)
 {
@@ -23452,7 +24018,7 @@ int UGameUserSettings::GetShadowQuality()
 // Function Engine.GameUserSettings.GetScreenResolution
 // ()
 // Parameters:
-// struct FIntPoint               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntPoint               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntPoint UGameUserSettings::GetScreenResolution()
 {
@@ -23619,7 +24185,7 @@ int UGameUserSettings::GetOverallScalabilityLevel()
 // Function Engine.GameUserSettings.GetLastConfirmedScreenResolution
 // ()
 // Parameters:
-// struct FIntPoint               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntPoint               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntPoint UGameUserSettings::GetLastConfirmedScreenResolution()
 {
@@ -23745,7 +24311,7 @@ int UGameUserSettings::GetFoliageQuality()
 // Function Engine.GameUserSettings.GetDesktopResolution
 // ()
 // Parameters:
-// struct FIntPoint               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntPoint               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntPoint UGameUserSettings::GetDesktopResolution()
 {
@@ -23766,7 +24332,7 @@ struct FIntPoint UGameUserSettings::GetDesktopResolution()
 // Function Engine.GameUserSettings.GetDefaultWindowPosition
 // ()
 // Parameters:
-// struct FIntPoint               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntPoint               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntPoint UGameUserSettings::GetDefaultWindowPosition()
 {
@@ -23829,7 +24395,7 @@ float UGameUserSettings::GetDefaultResolutionScale()
 // Function Engine.GameUserSettings.GetDefaultResolution
 // ()
 // Parameters:
-// struct FIntPoint               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntPoint               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntPoint UGameUserSettings::GetDefaultResolution()
 {
@@ -24298,8 +24864,8 @@ void AHUD::ReceiveDrawHUD(int SizeX, int SizeY)
 // Function Engine.HUD.Project
 // ()
 // Parameters:
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector AHUD::Project(const struct FVector& Location)
 {
@@ -24429,8 +24995,8 @@ class APawn* AHUD::GetOwningPawn()
 // ()
 // Parameters:
 // class UClass*                  ClassFilter                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               FirstPoint                     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               SecondPoint                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector2D               FirstPoint                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector2D               SecondPoint                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // TArray<class AActor*>          OutActors                      (Parm, OutParm, ZeroConstructor)
 // bool                           bIncludeNonCollidingComponents (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bActorMustBeFullyEnclosed      (Parm, ZeroConstructor, IsPlainOldData)
@@ -24497,12 +25063,12 @@ void AHUD::DrawTextureSimple(class UTexture* Texture, float ScreenX, float Scree
 // float                          TextureV                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          TextureUWidth                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          TextureVHeight                 (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TintColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            TintColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBlendMode>        BlendMode                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bScalePosition                 (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               RotPivot                       (Parm, IsPlainOldData)
+// struct FVector2D               RotPivot                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void AHUD::DrawTexture(class UTexture* Texture, float ScreenX, float ScreenY, float ScreenW, float ScreenH, float TextureU, float TextureV, float TextureUWidth, float TextureVHeight, const struct FLinearColor& TintColor, TEnumAsByte<EBlendMode> BlendMode, float Scale, bool bScalePosition, float Rotation, const struct FVector2D& RotPivot)
 {
@@ -24537,7 +25103,7 @@ void AHUD::DrawTexture(class UTexture* Texture, float ScreenX, float ScreenY, fl
 // ()
 // Parameters:
 // class FString                  Text                           (Parm, ZeroConstructor)
-// struct FLinearColor            TextColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            TextColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScreenX                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScreenY                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UFont*                   Font                           (Parm, ZeroConstructor, IsPlainOldData)
@@ -24568,7 +25134,7 @@ void AHUD::DrawText(const class FString& Text, const struct FLinearColor& TextCo
 // Function Engine.HUD.DrawRect
 // ()
 // Parameters:
-// struct FLinearColor            RectColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            RectColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScreenX                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScreenY                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScreenW                        (Parm, ZeroConstructor, IsPlainOldData)
@@ -24597,15 +25163,15 @@ void AHUD::DrawRect(const struct FLinearColor& RectColor, float ScreenX, float S
 // ()
 // Parameters:
 // class UMaterialInterface*      Material                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               V0_Pos                         (Parm, IsPlainOldData)
-// struct FVector2D               V1_Pos                         (Parm, IsPlainOldData)
-// struct FVector2D               V2_Pos                         (Parm, IsPlainOldData)
-// struct FVector2D               V0_UV                          (Parm, IsPlainOldData)
-// struct FVector2D               V1_UV                          (Parm, IsPlainOldData)
-// struct FVector2D               V2_UV                          (Parm, IsPlainOldData)
-// struct FLinearColor            V0_Color                       (Parm, IsPlainOldData)
-// struct FLinearColor            V1_Color                       (Parm, IsPlainOldData)
-// struct FLinearColor            V2_Color                       (Parm, IsPlainOldData)
+// struct FVector2D               V0_Pos                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               V1_Pos                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               V2_Pos                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               V0_UV                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               V1_UV                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               V2_UV                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            V0_Color                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            V1_Color                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            V2_Color                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void AHUD::DrawMaterialTriangle(class UMaterialInterface* Material, const struct FVector2D& V0_Pos, const struct FVector2D& V1_Pos, const struct FVector2D& V2_Pos, const struct FVector2D& V0_UV, const struct FVector2D& V1_UV, const struct FVector2D& V2_UV, const struct FLinearColor& V0_Color, const struct FLinearColor& V1_Color, const struct FLinearColor& V2_Color)
 {
@@ -24678,7 +25244,7 @@ void AHUD::DrawMaterialSimple(class UMaterialInterface* Material, float ScreenX,
 // float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bScalePosition                 (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               RotPivot                       (Parm, IsPlainOldData)
+// struct FVector2D               RotPivot                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void AHUD::DrawMaterial(class UMaterialInterface* Material, float ScreenX, float ScreenY, float ScreenW, float ScreenH, float MaterialU, float MaterialV, float MaterialUWidth, float MaterialVHeight, float Scale, bool bScalePosition, float Rotation, const struct FVector2D& RotPivot)
 {
@@ -24714,7 +25280,7 @@ void AHUD::DrawMaterial(class UMaterialInterface* Material, float ScreenX, float
 // float                          StartScreenY                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          EndScreenX                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          EndScreenY                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          LineThickness                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void AHUD::DrawLine(float StartScreenX, float StartScreenY, float EndScreenX, float EndScreenY, const struct FLinearColor& LineColor, float LineThickness)
@@ -24742,8 +25308,8 @@ void AHUD::DrawLine(float StartScreenX, float StartScreenY, float EndScreenX, fl
 // Parameters:
 // float                          ScreenX                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ScreenY                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 WorldPosition                  (Parm, OutParm, IsPlainOldData)
-// struct FVector                 WorldDirection                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 WorldPosition                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 WorldDirection                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void AHUD::Deproject(float ScreenX, float ScreenY, struct FVector* WorldPosition, struct FVector* WorldDirection)
 {
@@ -24769,8 +25335,8 @@ void AHUD::Deproject(float ScreenX, float ScreenY, struct FVector* WorldPosition
 // Function Engine.HUD.AddHitBox
 // ()
 // Parameters:
-// struct FVector2D               Position                       (Parm, IsPlainOldData)
-// struct FVector2D               Size                           (Parm, IsPlainOldData)
+// struct FVector2D               Position                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Size                           (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   InName                         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bConsumesInput                 (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Priority                       (Parm, ZeroConstructor, IsPlainOldData)
@@ -24800,9 +25366,9 @@ void AHUD::AddHitBox(const struct FVector2D& Position, const struct FVector2D& S
 // class FString                  DebugText                      (Parm, ZeroConstructor)
 // class AActor*                  SrcActor                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Offset                         (Parm, IsPlainOldData)
-// struct FVector                 DesiredOffset                  (Parm, IsPlainOldData)
-// struct FColor                  TextColor                      (Parm, IsPlainOldData)
+// struct FVector                 Offset                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 DesiredOffset                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FColor                  TextColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSkipOverwriteCheck            (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAbsoluteLocation              (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bKeepAttachedToActor           (Parm, ZeroConstructor, IsPlainOldData)
@@ -24839,7 +25405,7 @@ void AHUD::AddDebugText(const class FString& DebugText, class AActor* SrcActor, 
 // Function Engine.BoxComponent.SetBoxExtent
 // ()
 // Parameters:
-// struct FVector                 InBoxExtent                    (Parm, IsPlainOldData)
+// struct FVector                 InBoxExtent                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateOverlaps                (Parm, ZeroConstructor, IsPlainOldData)
 
 void UBoxComponent::SetBoxExtent(const struct FVector& InBoxExtent, bool bUpdateOverlaps)
@@ -24861,7 +25427,7 @@ void UBoxComponent::SetBoxExtent(const struct FVector& InBoxExtent, bool bUpdate
 // Function Engine.BoxComponent.GetUnscaledBoxExtent
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UBoxComponent::GetUnscaledBoxExtent()
 {
@@ -24882,7 +25448,7 @@ struct FVector UBoxComponent::GetUnscaledBoxExtent()
 // Function Engine.BoxComponent.GetScaledBoxExtent
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UBoxComponent::GetScaledBoxExtent()
 {
@@ -25300,7 +25866,7 @@ bool UInstancedStaticMeshComponent::GetInstanceTransform(int InstanceIndex, bool
 // Function Engine.InstancedStaticMeshComponent.GetInstancesOverlappingSphere
 // ()
 // Parameters:
-// struct FVector                 Center                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Center                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSphereInWorldSpace            (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<int>                    ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
@@ -25327,7 +25893,7 @@ TArray<int> UInstancedStaticMeshComponent::GetInstancesOverlappingSphere(const s
 // Function Engine.InstancedStaticMeshComponent.GetInstancesOverlappingBox
 // ()
 // Parameters:
-// struct FBox                    Box                            (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FBox                    Box                            (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           bBoxInWorldSpace               (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<int>                    ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
@@ -25528,7 +26094,7 @@ class UMaterial* UMaterialInterface::GetBaseMaterial()
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UMaterialInstanceConstant::K2_GetVectorParameterValue(const struct FName& ParameterName)
 {
@@ -26084,6 +26650,27 @@ float UAnimSequenceBase::GetPlayLength()
 }
 
 
+// Function Engine.AnimMontage.GetDefaultBlendOutTime
+// ()
+// Parameters:
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UAnimMontage::GetDefaultBlendOutTime()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.AnimMontage.GetDefaultBlendOutTime");
+
+	UAnimMontage_GetDefaultBlendOutTime_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.AnimNotifyState_Trail.OverridePSTemplate
 // ()
 // Parameters:
@@ -26279,7 +26866,7 @@ void UAnimSingleNodeInstance::SetLooping(bool bIsLooping)
 // Function Engine.AnimSingleNodeInstance.SetBlendSpaceInput
 // ()
 // Parameters:
-// struct FVector                 InBlendInput                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InBlendInput                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UAnimSingleNodeInstance::SetBlendSpaceInput(const struct FVector& InBlendInput)
 {
@@ -26389,7 +26976,7 @@ class UAnimationAsset* UAnimSingleNodeInstance::GetAnimationAsset()
 // Function Engine.ArrowComponent.SetArrowColor
 // ()
 // Parameters:
-// struct FLinearColor            NewColor                       (Parm, IsPlainOldData)
+// struct FLinearColor            NewColor                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UArrowComponent::SetArrowColor(const struct FLinearColor& NewColor)
 {
@@ -26410,7 +26997,7 @@ void UArrowComponent::SetArrowColor(const struct FLinearColor& NewColor)
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FPrimaryAssetId         PrimaryAsset                   (Parm)
+// struct FPrimaryAssetId         PrimaryAsset                   (Parm, ZeroConstructor)
 // TArray<struct FName>           LoadBundles                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class UAsyncActionLoadPrimaryAsset* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -26437,7 +27024,7 @@ class UAsyncActionLoadPrimaryAsset* UAsyncActionLoadPrimaryAsset::AsyncLoadPrima
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FPrimaryAssetId         PrimaryAsset                   (Parm)
+// struct FPrimaryAssetId         PrimaryAsset                   (Parm, ZeroConstructor)
 // TArray<struct FName>           LoadBundles                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class UAsyncActionLoadPrimaryAssetClass* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -26754,7 +27341,7 @@ void UAtmosphericFogComponent::SetDensityMultiplier(float NewDensityMultiplier)
 // Function Engine.AtmosphericFogComponent.SetDefaultLightColor
 // ()
 // Parameters:
-// struct FLinearColor            NewLightColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            NewLightColor                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void UAtmosphericFogComponent::SetDefaultLightColor(const struct FLinearColor& NewLightColor)
 {
@@ -27019,7 +27606,7 @@ int UAvoidanceManager::GetNewAvoidanceUID()
 // ()
 // Parameters:
 // class UMovementComponent*      MovementComp                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UAvoidanceManager::GetAvoidanceVelocityForComponent(class UMovementComponent* MovementComp)
 {
@@ -27383,7 +27970,7 @@ void UBlueprintPlatformLibrary::ScheduleLocalNotificationBadgeFromNow(int inSeco
 // Function Engine.BlueprintPlatformLibrary.ScheduleLocalNotificationBadgeAtTime
 // ()
 // Parameters:
-// struct FDateTime               FireDateTime                   (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               FireDateTime                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           LocalTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  ActivationEvent                (Parm, ZeroConstructor)
 
@@ -27407,7 +27994,7 @@ void UBlueprintPlatformLibrary::ScheduleLocalNotificationBadgeAtTime(const struc
 // Function Engine.BlueprintPlatformLibrary.ScheduleLocalNotificationAtTime
 // ()
 // Parameters:
-// struct FDateTime               FireDateTime                   (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               FireDateTime                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           LocalTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   Title                          (ConstParm, Parm, OutParm, ReferenceParm)
 // struct FText                   Body                           (ConstParm, Parm, OutParm, ReferenceParm)
@@ -27459,6 +28046,27 @@ void UBlueprintPlatformLibrary::GetLaunchNotification(bool* NotificationLaunched
 		*ActivationEvent = params.ActivationEvent;
 	if (FireDate != nullptr)
 		*FireDate = params.FireDate;
+}
+
+
+// Function Engine.BlueprintPlatformLibrary.GetDeviceOrientation
+// ()
+// Parameters:
+// TEnumAsByte<EScreenOrientation> ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+TEnumAsByte<EScreenOrientation> UBlueprintPlatformLibrary::GetDeviceOrientation()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.BlueprintPlatformLibrary.GetDeviceOrientation");
+
+	UBlueprintPlatformLibrary_GetDeviceOrientation_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -27803,8 +28411,8 @@ void UCameraAnimInst::SetDuration(float NewDuration)
 // Parameters:
 // class UFont*                   RenderFont                     (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  RenderText                     (Parm, ZeroConstructor)
-// struct FVector2D               Scale                          (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               Scale                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UCanvas::K2_TextSize(class UFont* RenderFont, const class FString& RenderText, const struct FVector2D& Scale)
 {
@@ -27830,7 +28438,7 @@ struct FVector2D UCanvas::K2_TextSize(class UFont* RenderFont, const class FStri
 // Parameters:
 // class UFont*                   RenderFont                     (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  RenderText                     (Parm, ZeroConstructor)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UCanvas::K2_StrLen(class UFont* RenderFont, const class FString& RenderText)
 {
@@ -27853,8 +28461,8 @@ struct FVector2D UCanvas::K2_StrLen(class UFont* RenderFont, const class FString
 // Function Engine.Canvas.K2_Project
 // ()
 // Parameters:
-// struct FVector                 WorldLocation                  (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UCanvas::K2_Project(const struct FVector& WorldLocation)
 {
@@ -27899,14 +28507,14 @@ void UCanvas::K2_DrawTriangle(class UTexture* RenderTexture, TArray<struct FCanv
 // ()
 // Parameters:
 // class UTexture*                RenderTexture                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               ScreenSize                     (Parm, IsPlainOldData)
-// struct FVector2D               CoordinatePosition             (Parm, IsPlainOldData)
-// struct FVector2D               CoordinateSize                 (Parm, IsPlainOldData)
-// struct FLinearColor            RenderColor                    (Parm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ScreenSize                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               CoordinatePosition             (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               CoordinateSize                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            RenderColor                    (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBlendMode>        BlendMode                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               PivotPoint                     (Parm, IsPlainOldData)
+// struct FVector2D               PivotPoint                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvas::K2_DrawTexture(class UTexture* RenderTexture, const struct FVector2D& ScreenPosition, const struct FVector2D& ScreenSize, const struct FVector2D& CoordinatePosition, const struct FVector2D& CoordinateSize, const struct FLinearColor& RenderColor, TEnumAsByte<EBlendMode> BlendMode, float Rotation, const struct FVector2D& PivotPoint)
 {
@@ -27936,17 +28544,18 @@ void UCanvas::K2_DrawTexture(class UTexture* RenderTexture, const struct FVector
 // Parameters:
 // class UFont*                   RenderFont                     (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  RenderText                     (Parm, ZeroConstructor)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FLinearColor            RenderColor                    (Parm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Scale                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            RenderColor                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Kerning                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ShadowColor                    (Parm, IsPlainOldData)
-// struct FVector2D               ShadowOffset                   (Parm, IsPlainOldData)
+// struct FLinearColor            ShadowColor                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ShadowOffset                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bCentreX                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bCentreY                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bOutlined                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            OutlineColor                   (Parm, IsPlainOldData)
+// struct FLinearColor            OutlineColor                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void UCanvas::K2_DrawText(class UFont* RenderFont, const class FString& RenderText, const struct FVector2D& ScreenPosition, const struct FLinearColor& RenderColor, float Kerning, const struct FLinearColor& ShadowColor, const struct FVector2D& ShadowOffset, bool bCentreX, bool bCentreY, bool bOutlined, const struct FLinearColor& OutlineColor)
+void UCanvas::K2_DrawText(class UFont* RenderFont, const class FString& RenderText, const struct FVector2D& ScreenPosition, const struct FVector2D& Scale, const struct FLinearColor& RenderColor, float Kerning, const struct FLinearColor& ShadowColor, const struct FVector2D& ShadowOffset, bool bCentreX, bool bCentreY, bool bOutlined, const struct FLinearColor& OutlineColor)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.Canvas.K2_DrawText");
 
@@ -27954,6 +28563,7 @@ void UCanvas::K2_DrawText(class UFont* RenderFont, const class FString& RenderTe
 	params.RenderFont = RenderFont;
 	params.RenderText = RenderText;
 	params.ScreenPosition = ScreenPosition;
+	params.Scale = Scale;
 	params.RenderColor = RenderColor;
 	params.Kerning = Kerning;
 	params.ShadowColor = ShadowColor;
@@ -27975,10 +28585,10 @@ void UCanvas::K2_DrawText(class UFont* RenderFont, const class FString& RenderTe
 // ()
 // Parameters:
 // class UTexture*                RenderTexture                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               Radius                         (Parm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumberOfSides                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            RenderColor                    (Parm, IsPlainOldData)
+// struct FLinearColor            RenderColor                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvas::K2_DrawPolygon(class UTexture* RenderTexture, const struct FVector2D& ScreenPosition, const struct FVector2D& Radius, int NumberOfSides, const struct FLinearColor& RenderColor)
 {
@@ -28025,12 +28635,12 @@ void UCanvas::K2_DrawMaterialTriangle(class UMaterialInterface* RenderMaterial, 
 // ()
 // Parameters:
 // class UMaterialInterface*      RenderMaterial                 (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               ScreenSize                     (Parm, IsPlainOldData)
-// struct FVector2D               CoordinatePosition             (Parm, IsPlainOldData)
-// struct FVector2D               CoordinateSize                 (Parm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ScreenSize                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               CoordinatePosition             (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               CoordinateSize                 (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               PivotPoint                     (Parm, IsPlainOldData)
+// struct FVector2D               PivotPoint                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvas::K2_DrawMaterial(class UMaterialInterface* RenderMaterial, const struct FVector2D& ScreenPosition, const struct FVector2D& ScreenSize, const struct FVector2D& CoordinatePosition, const struct FVector2D& CoordinateSize, float Rotation, const struct FVector2D& PivotPoint)
 {
@@ -28056,10 +28666,10 @@ void UCanvas::K2_DrawMaterial(class UMaterialInterface* RenderMaterial, const st
 // Function Engine.Canvas.K2_DrawLine
 // ()
 // Parameters:
-// struct FVector2D               ScreenPositionA                (Parm, IsPlainOldData)
-// struct FVector2D               ScreenPositionB                (Parm, IsPlainOldData)
+// struct FVector2D               ScreenPositionA                (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ScreenPositionB                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            RenderColor                    (Parm, IsPlainOldData)
+// struct FLinearColor            RenderColor                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvas::K2_DrawLine(const struct FVector2D& ScreenPositionA, const struct FVector2D& ScreenPositionB, float Thickness, const struct FLinearColor& RenderColor)
 {
@@ -28082,10 +28692,10 @@ void UCanvas::K2_DrawLine(const struct FVector2D& ScreenPositionA, const struct 
 // Function Engine.Canvas.K2_DrawBox
 // ()
 // Parameters:
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               ScreenSize                     (Parm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ScreenSize                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            RenderColor                    (Parm, IsPlainOldData)
+// struct FLinearColor            RenderColor                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvas::K2_DrawBox(const struct FVector2D& ScreenPosition, const struct FVector2D& ScreenSize, float Thickness, const struct FLinearColor& RenderColor)
 {
@@ -28114,16 +28724,16 @@ void UCanvas::K2_DrawBox(const struct FVector2D& ScreenPosition, const struct FV
 // class UTexture*                RightBorderTexture             (Parm, ZeroConstructor, IsPlainOldData)
 // class UTexture*                TopBorderTexture               (Parm, ZeroConstructor, IsPlainOldData)
 // class UTexture*                BottomBorderTexture            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector2D               ScreenSize                     (Parm, IsPlainOldData)
-// struct FVector2D               CoordinatePosition             (Parm, IsPlainOldData)
-// struct FVector2D               CoordinateSize                 (Parm, IsPlainOldData)
-// struct FLinearColor            RenderColor                    (Parm, IsPlainOldData)
-// struct FVector2D               BorderScale                    (Parm, IsPlainOldData)
-// struct FVector2D               BackgroundScale                (Parm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ScreenSize                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               CoordinatePosition             (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               CoordinateSize                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            RenderColor                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               BorderScale                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               BackgroundScale                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               PivotPoint                     (Parm, IsPlainOldData)
-// struct FVector2D               CornerSize                     (Parm, IsPlainOldData)
+// struct FVector2D               PivotPoint                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               CornerSize                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UCanvas::K2_DrawBorder(class UTexture* BorderTexture, class UTexture* BackgroundTexture, class UTexture* LeftBorderTexture, class UTexture* RightBorderTexture, class UTexture* TopBorderTexture, class UTexture* BottomBorderTexture, const struct FVector2D& ScreenPosition, const struct FVector2D& ScreenSize, const struct FVector2D& CoordinatePosition, const struct FVector2D& CoordinateSize, const struct FLinearColor& RenderColor, const struct FVector2D& BorderScale, const struct FVector2D& BackgroundScale, float Rotation, const struct FVector2D& PivotPoint, const struct FVector2D& CornerSize)
 {
@@ -28158,9 +28768,9 @@ void UCanvas::K2_DrawBorder(class UTexture* BorderTexture, class UTexture* Backg
 // Function Engine.Canvas.K2_Deproject
 // ()
 // Parameters:
-// struct FVector2D               ScreenPosition                 (Parm, IsPlainOldData)
-// struct FVector                 WorldOrigin                    (Parm, OutParm, IsPlainOldData)
-// struct FVector                 WorldDirection                 (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 WorldOrigin                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 WorldDirection                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UCanvas::K2_Deproject(const struct FVector2D& ScreenPosition, struct FVector* WorldOrigin, struct FVector* WorldDirection)
 {
@@ -28709,13 +29319,36 @@ float UCurveFloat::GetFloatValue(float InTime)
 // ()
 // Parameters:
 // float                          InTime                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UCurveLinearColor::GetLinearColorValue(float InTime)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.CurveLinearColor.GetLinearColorValue");
 
 	UCurveLinearColor_GetLinearColorValue_Params params;
+	params.InTime = InTime;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.CurveLinearColor.GetClampedLinearColorValue
+// ()
+// Parameters:
+// float                          InTime                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FLinearColor UCurveLinearColor::GetClampedLinearColorValue(float InTime)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.CurveLinearColor.GetClampedLinearColorValue");
+
+	UCurveLinearColor_GetClampedLinearColorValue_Params params;
 	params.InTime = InTime;
 
 	auto flags = fn->FunctionFlags;
@@ -28797,33 +29430,6 @@ bool UCurveLinearColorAtlas::GetCurvePosition(class UCurveLinearColor* InCurve, 
 }
 
 
-// Function Engine.CurveLinearColorAtlas.GetCurveIndex
-// ()
-// Parameters:
-// class UCurveLinearColor*       InCurve                        (Parm, ZeroConstructor, IsPlainOldData)
-// int                            Index                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-bool UCurveLinearColorAtlas::GetCurveIndex(class UCurveLinearColor* InCurve, int* Index)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.CurveLinearColorAtlas.GetCurveIndex");
-
-	UCurveLinearColorAtlas_GetCurveIndex_Params params;
-	params.InCurve = InCurve;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	if (Index != nullptr)
-		*Index = params.Index;
-
-	return params.ReturnValue;
-}
-
-
 // Function Engine.CurveSourceInterface.GetCurveValue
 // ()
 // Parameters:
@@ -28894,7 +29500,7 @@ struct FName UCurveSourceInterface::GetBindingName()
 // ()
 // Parameters:
 // float                          InTime                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UCurveVector::GetVectorValue(float InTime)
 {
@@ -29024,6 +29630,31 @@ void UDataTableFunctionLibrary::EvaluateCurveTableRow(class UCurveTable* CurveTa
 }
 
 
+// Function Engine.DataTableFunctionLibrary.DoesDataTableRowExist
+// ()
+// Parameters:
+// class UDataTable*              Table                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FName                   RowName                        (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UDataTableFunctionLibrary::DoesDataTableRowExist(class UDataTable* Table, const struct FName& RowName)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.DataTableFunctionLibrary.DoesDataTableRowExist");
+
+	UDataTableFunctionLibrary_DoesDataTableRowExist_Params params;
+	params.Table = Table;
+	params.RowName = RowName;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.DebugCameraController.ToggleDisplay
 // ()
 
@@ -29102,8 +29733,8 @@ void ADebugCameraController::ReceiveOnDeactivate(class APlayerController* Restor
 // ()
 // Parameters:
 // class AActor*                  NewSelectedActor               (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 SelectHitLocation              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 SelectHitNormal                (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 SelectHitLocation              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 SelectHitNormal                (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // struct FHitResult              Hit                            (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 
 void ADebugCameraController::ReceiveOnActorSelected(class AActor* NewSelectedActor, const struct FVector& SelectHitLocation, const struct FVector& SelectHitNormal, const struct FHitResult& Hit)
@@ -29291,6 +29922,28 @@ void UDecalComponent::SetFadeOut(float StartDelay, float Duration, bool DestroyO
 }
 
 
+// Function Engine.DecalComponent.SetFadeIn
+// ()
+// Parameters:
+// float                          StartDelay                     (Parm, ZeroConstructor, IsPlainOldData)
+// float                          Duaration                      (Parm, ZeroConstructor, IsPlainOldData)
+
+void UDecalComponent::SetFadeIn(float StartDelay, float Duaration)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.DecalComponent.SetFadeIn");
+
+	UDecalComponent_SetFadeIn_Params params;
+	params.StartDelay = StartDelay;
+	params.Duaration = Duaration;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Engine.DecalComponent.SetDecalMaterial
 // ()
 // Parameters:
@@ -29321,6 +29974,48 @@ float UDecalComponent::GetFadeStartDelay()
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.DecalComponent.GetFadeStartDelay");
 
 	UDecalComponent_GetFadeStartDelay_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.DecalComponent.GetFadeInStartDelay
+// ()
+// Parameters:
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UDecalComponent::GetFadeInStartDelay()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.DecalComponent.GetFadeInStartDelay");
+
+	UDecalComponent_GetFadeInStartDelay_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.DecalComponent.GetFadeInDuration
+// ()
+// Parameters:
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UDecalComponent::GetFadeInDuration()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.DecalComponent.GetFadeInDuration");
+
+	UDecalComponent_GetFadeInDuration_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -29515,7 +30210,7 @@ void ALight::ToggleEnabled()
 // Function Engine.Light.SetLightFunctionScale
 // ()
 // Parameters:
-// struct FVector                 NewLightFunctionScale          (Parm, IsPlainOldData)
+// struct FVector                 NewLightFunctionScale          (Parm, ZeroConstructor, IsPlainOldData)
 
 void ALight::SetLightFunctionScale(const struct FVector& NewLightFunctionScale)
 {
@@ -29575,7 +30270,7 @@ void ALight::SetLightFunctionFadeDistance(float NewLightFunctionFadeDistance)
 // Function Engine.Light.SetLightColor
 // ()
 // Parameters:
-// struct FLinearColor            NewLightColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            NewLightColor                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void ALight::SetLightColor(const struct FLinearColor& NewLightColor)
 {
@@ -29713,7 +30408,7 @@ bool ALight::IsEnabled()
 // Function Engine.Light.GetLightColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor ALight::GetLightColor()
 {
@@ -29795,7 +30490,7 @@ void ULightComponentBase::SetCastShadows(bool bNewValue)
 // Function Engine.LightComponentBase.GetLightColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor ULightComponentBase::GetLightColor()
 {
@@ -29896,7 +30591,7 @@ void ULightComponent::SetShadowBias(float NewValue)
 // Function Engine.LightComponent.SetLightFunctionScale
 // ()
 // Parameters:
-// struct FVector                 NewLightFunctionScale          (Parm, IsPlainOldData)
+// struct FVector                 NewLightFunctionScale          (Parm, ZeroConstructor, IsPlainOldData)
 
 void ULightComponent::SetLightFunctionScale(const struct FVector& NewLightFunctionScale)
 {
@@ -29976,7 +30671,7 @@ void ULightComponent::SetLightFunctionDisabledBrightness(float NewValue)
 // Function Engine.LightComponent.SetLightColor
 // ()
 // Parameters:
-// struct FLinearColor            NewLightColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            NewLightColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bSRGB                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void ULightComponent::SetLightColor(const struct FLinearColor& NewLightColor, bool bSRGB)
@@ -30098,7 +30793,7 @@ void ULightComponent::SetEnableLightShaftBloom(bool bNewValue)
 // Function Engine.LightComponent.SetBloomTint
 // ()
 // Parameters:
-// struct FColor                  NewValue                       (Parm, IsPlainOldData)
+// struct FColor                  NewValue                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void ULightComponent::SetBloomTint(const struct FColor& NewValue)
 {
@@ -30238,7 +30933,7 @@ void UDirectionalLightComponent::SetOcclusionMaskDarkness(float NewValue)
 // Function Engine.DirectionalLightComponent.SetLightShaftOverrideDirection
 // ()
 // Parameters:
-// struct FVector                 NewValue                       (Parm, IsPlainOldData)
+// struct FVector                 NewValue                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UDirectionalLightComponent::SetLightShaftOverrideDirection(const struct FVector& NewValue)
 {
@@ -30481,7 +31176,7 @@ void AEmitter::ToggleActive()
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Param                          (Parm, IsPlainOldData)
+// struct FVector                 Param                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void AEmitter::SetVectorParameter(const struct FName& ParameterName, const struct FVector& Param)
 {
@@ -30567,7 +31262,7 @@ void AEmitter::SetFloatParameter(const struct FName& ParameterName, float Param)
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Param                          (Parm, IsPlainOldData)
+// struct FLinearColor            Param                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void AEmitter::SetColorParameter(const struct FName& ParameterName, const struct FLinearColor& Param)
 {
@@ -30759,7 +31454,7 @@ void UExponentialHeightFogComponent::SetVolumetricFogExtinctionScale(float NewVa
 // Function Engine.ExponentialHeightFogComponent.SetVolumetricFogEmissive
 // ()
 // Parameters:
-// struct FLinearColor            NewValue                       (Parm, IsPlainOldData)
+// struct FLinearColor            NewValue                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UExponentialHeightFogComponent::SetVolumetricFogEmissive(const struct FLinearColor& NewValue)
 {
@@ -30799,7 +31494,7 @@ void UExponentialHeightFogComponent::SetVolumetricFogDistance(float NewValue)
 // Function Engine.ExponentialHeightFogComponent.SetVolumetricFogAlbedo
 // ()
 // Parameters:
-// struct FColor                  NewValue                       (Parm, IsPlainOldData)
+// struct FColor                  NewValue                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UExponentialHeightFogComponent::SetVolumetricFogAlbedo(const struct FColor& NewValue)
 {
@@ -30879,7 +31574,7 @@ void UExponentialHeightFogComponent::SetNonDirectionalInscatteringColorDistance(
 // Function Engine.ExponentialHeightFogComponent.SetInscatteringTextureTint
 // ()
 // Parameters:
-// struct FLinearColor            Value                          (Parm, IsPlainOldData)
+// struct FLinearColor            Value                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UExponentialHeightFogComponent::SetInscatteringTextureTint(const struct FLinearColor& Value)
 {
@@ -30979,7 +31674,7 @@ void UExponentialHeightFogComponent::SetFogMaxOpacity(float Value)
 // Function Engine.ExponentialHeightFogComponent.SetFogInscatteringColor
 // ()
 // Parameters:
-// struct FLinearColor            Value                          (Parm, IsPlainOldData)
+// struct FLinearColor            Value                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UExponentialHeightFogComponent::SetFogInscatteringColor(const struct FLinearColor& Value)
 {
@@ -31099,7 +31794,7 @@ void UExponentialHeightFogComponent::SetDirectionalInscatteringExponent(float Va
 // Function Engine.ExponentialHeightFogComponent.SetDirectionalInscatteringColor
 // ()
 // Parameters:
-// struct FLinearColor            Value                          (Parm, IsPlainOldData)
+// struct FLinearColor            Value                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UExponentialHeightFogComponent::SetDirectionalInscatteringColor(const struct FLinearColor& Value)
 {
@@ -31113,6 +31808,29 @@ void UExponentialHeightFogComponent::SetDirectionalInscatteringColor(const struc
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.Exporter.ScriptRunAssetExportTask
+// ()
+// Parameters:
+// class UAssetExportTask*        Task                           (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UExporter::ScriptRunAssetExportTask(class UAssetExportTask* Task)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.Exporter.ScriptRunAssetExportTask");
+
+	UExporter_ScriptRunAssetExportTask_Params params;
+	params.Task = Task;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -31314,9 +32032,9 @@ void UGameplayStatics::UnloadStreamLevel(class UObject* WorldContextObject, cons
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 OutLaunchVelocity              (Parm, OutParm, IsPlainOldData)
-// struct FVector                 StartPos                       (Parm, IsPlainOldData)
-// struct FVector                 EndPos                         (Parm, IsPlainOldData)
+// struct FVector                 OutLaunchVelocity              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 StartPos                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 EndPos                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          OverrideGravityZ               (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ArcParam                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -31351,8 +32069,8 @@ bool UGameplayStatics::SuggestProjectileVelocity_CustomArc(class UObject* WorldC
 // class USoundBase*              Sound                          (Parm, ZeroConstructor, IsPlainOldData)
 // class USceneComponent*         AttachToComponent              (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   AttachPointName                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EAttachLocation>   LocationType                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bStopWhenAttachedToDestroyed   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          VolumeMultiplier               (Parm, ZeroConstructor, IsPlainOldData)
@@ -31397,8 +32115,8 @@ class UAudioComponent* UGameplayStatics::SpawnSoundAttached(class USoundBase* So
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class USoundBase*              Sound                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          VolumeMultiplier               (Parm, ZeroConstructor, IsPlainOldData)
 // float                          PitchMultiplier                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          StartTime                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -31501,8 +32219,8 @@ class UObject* UGameplayStatics::SpawnObject(class UClass* ObjectClass, class UO
 // class UForceFeedbackEffect*    ForceFeedbackEffect            (Parm, ZeroConstructor, IsPlainOldData)
 // class USceneComponent*         AttachToComponent              (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   AttachPointName                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EAttachLocation>   LocationType                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bStopWhenAttachedToDestroyed   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bLooping                       (Parm, ZeroConstructor, IsPlainOldData)
@@ -31545,8 +32263,8 @@ class UForceFeedbackComponent* UGameplayStatics::SpawnForceFeedbackAttached(clas
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class UForceFeedbackEffect*    ForceFeedbackEffect            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bLooping                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          IntensityMultiplier            (Parm, ZeroConstructor, IsPlainOldData)
 // float                          StartTime                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -31585,9 +32303,9 @@ class UForceFeedbackComponent* UGameplayStatics::SpawnForceFeedbackAtLocation(cl
 // class UParticleSystem*         EmitterTemplate                (Parm, ZeroConstructor, IsPlainOldData)
 // class USceneComponent*         AttachToComponent              (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   AttachPointName                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
-// struct FVector                 Scale                          (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EAttachLocation>   LocationType                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAutoDestroy                   (Parm, ZeroConstructor, IsPlainOldData)
 // EPSCPoolMethod                 PoolingMethod                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -31623,9 +32341,9 @@ class UParticleSystemComponent* UGameplayStatics::SpawnEmitterAttached(class UPa
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class UParticleSystem*         EmitterTemplate                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
-// struct FVector                 Scale                          (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAutoDestroy                   (Parm, ZeroConstructor, IsPlainOldData)
 // EPSCPoolMethod                 PoolingMethod                  (Parm, ZeroConstructor, IsPlainOldData)
 // class UParticleSystemComponent* ReturnValue                    (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
@@ -31660,8 +32378,8 @@ class UParticleSystemComponent* UGameplayStatics::SpawnEmitterAtLocation(class U
 // struct FDialogueContext        Context                        (ConstParm, Parm, OutParm, ReferenceParm)
 // class USceneComponent*         AttachToComponent              (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   AttachPointName                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EAttachLocation>   LocationType                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bStopWhenAttachedToDestroyed   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          VolumeMultiplier               (Parm, ZeroConstructor, IsPlainOldData)
@@ -31706,8 +32424,8 @@ class UAudioComponent* UGameplayStatics::SpawnDialogueAttached(class UDialogueWa
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class UDialogueWave*           Dialogue                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FDialogueContext        Context                        (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          VolumeMultiplier               (Parm, ZeroConstructor, IsPlainOldData)
 // float                          PitchMultiplier                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          StartTime                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -31780,11 +32498,11 @@ class UAudioComponent* UGameplayStatics::SpawnDialogue2D(class UObject* WorldCon
 // ()
 // Parameters:
 // class UMaterialInterface*      DecalMaterial                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 DecalSize                      (Parm, IsPlainOldData)
+// struct FVector                 DecalSize                      (Parm, ZeroConstructor, IsPlainOldData)
 // class USceneComponent*         AttachToComponent              (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   AttachPointName                (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EAttachLocation>   LocationType                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          LifeSpan                       (Parm, ZeroConstructor, IsPlainOldData)
 // class UDecalComponent*         ReturnValue                    (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
@@ -31818,9 +32536,9 @@ class UDecalComponent* UGameplayStatics::SpawnDecalAttached(class UMaterialInter
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class UMaterialInterface*      DecalMaterial                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 DecalSize                      (Parm, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 DecalSize                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          LifeSpan                       (Parm, ZeroConstructor, IsPlainOldData)
 // class UDecalComponent*         ReturnValue                    (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
 
@@ -31850,7 +32568,7 @@ class UDecalComponent* UGameplayStatics::SpawnDecalAtLocation(class UObject* Wor
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FIntVector              NewLocation                    (Parm, IsPlainOldData)
+// struct FIntVector              NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UGameplayStatics::SetWorldOriginLocation(class UObject* WorldContextObject, const struct FIntVector& NewLocation)
 {
@@ -32049,6 +32767,28 @@ bool UGameplayStatics::SetGamePaused(class UObject* WorldContextObject, bool bPa
 }
 
 
+// Function Engine.GameplayStatics.SetEnableWorldRendering
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bEnable                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void UGameplayStatics::SetEnableWorldRendering(class UObject* WorldContextObject, bool bEnable)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.GameplayStatics.SetEnableWorldRendering");
+
+	UGameplayStatics_SetEnableWorldRendering_Params params;
+	params.WorldContextObject = WorldContextObject;
+	params.bEnable = bEnable;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Engine.GameplayStatics.SetBaseSoundMix
 // ()
 // Parameters:
@@ -32124,8 +32864,8 @@ void UGameplayStatics::RemovePlayer(class APlayerController* Player, bool bDestr
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 WorldLocation                  (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UGameplayStatics::RebaseZeroOriginOntoLocal(class UObject* WorldContextObject, const struct FVector& WorldLocation)
 {
@@ -32149,8 +32889,8 @@ struct FVector UGameplayStatics::RebaseZeroOriginOntoLocal(class UObject* WorldC
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 WorldLocation                  (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UGameplayStatics::RebaseLocalOriginOntoZero(class UObject* WorldContextObject, const struct FVector& WorldLocation)
 {
@@ -32196,8 +32936,8 @@ void UGameplayStatics::PushSoundMixModifier(class UObject* WorldContextObject, c
 // ()
 // Parameters:
 // class APlayerController*       Player                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 WorldPosition                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 WorldPosition                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           bPlayerViewportRelative        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -32250,7 +32990,7 @@ void UGameplayStatics::PopSoundMixModifier(class UObject* WorldContextObject, cl
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  Shake                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Epicenter                      (Parm, IsPlainOldData)
+// struct FVector                 Epicenter                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InnerRadius                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          OuterRadius                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Falloff                        (Parm, ZeroConstructor, IsPlainOldData)
@@ -32284,8 +33024,8 @@ void UGameplayStatics::PlayWorldCameraShake(class UObject* WorldContextObject, c
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class USoundBase*              Sound                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          VolumeMultiplier               (Parm, ZeroConstructor, IsPlainOldData)
 // float                          PitchMultiplier                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          StartTime                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -32355,8 +33095,8 @@ void UGameplayStatics::PlaySound2D(class UObject* WorldContextObject, class USou
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class UDialogueWave*           Dialogue                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FDialogueContext        Context                        (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          VolumeMultiplier               (Parm, ZeroConstructor, IsPlainOldData)
 // float                          PitchMultiplier                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          StartTime                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -32473,18 +33213,18 @@ void UGameplayStatics::OpenLevel(class UObject* WorldContextObject, const struct
 // bool                           bInitialOverlap                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Time                           (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Distance                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FVector                 ImpactPoint                    (Parm, IsPlainOldData)
-// struct FVector                 Normal                         (Parm, IsPlainOldData)
-// struct FVector                 ImpactNormal                   (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ImpactPoint                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Normal                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ImpactNormal                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UPhysicalMaterial*       PhysMat                        (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  HitActor                       (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     HitComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   HitBoneName                    (Parm, ZeroConstructor, IsPlainOldData)
 // int                            HitItem                        (Parm, ZeroConstructor, IsPlainOldData)
 // int                            FaceIndex                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 TraceStart                     (Parm, IsPlainOldData)
-// struct FVector                 TraceEnd                       (Parm, IsPlainOldData)
+// struct FVector                 TraceStart                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 TraceEnd                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
 
 struct FHitResult UGameplayStatics::MakeHitResult(bool bBlockingHit, bool bInitialOverlap, float Time, float Distance, const struct FVector& Location, const struct FVector& ImpactPoint, const struct FVector& Normal, const struct FVector& ImpactNormal, class UPhysicalMaterial* PhysMat, class AActor* HitActor, class UPrimitiveComponent* HitComponent, const struct FName& HitBoneName, int HitItem, int FaceIndex, const struct FVector& TraceStart, const struct FVector& TraceEnd)
@@ -32648,7 +33388,7 @@ bool UGameplayStatics::HasLaunchOption(const class FString& OptionToCheck)
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class UStaticMesh*             StaticMesh                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 CenterPosition                 (Parm, IsPlainOldData)
+// struct FVector                 CenterPosition                 (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -32676,7 +33416,7 @@ int UGameplayStatics::GrassOverlappingSphereCount(class UObject* WorldContextObj
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FIntVector              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntVector              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntVector UGameplayStatics::GetWorldOriginLocation(class UObject* WorldContextObject)
 {
@@ -33148,6 +33888,29 @@ class UGameInstance* UGameplayStatics::GetGameInstance(class UObject* WorldConte
 }
 
 
+// Function Engine.GameplayStatics.GetEnableWorldRendering
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UGameplayStatics::GetEnableWorldRendering(class UObject* WorldContextObject)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.GameplayStatics.GetEnableWorldRendering");
+
+	UGameplayStatics_GetEnableWorldRendering_Params params;
+	params.WorldContextObject = WorldContextObject;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.GameplayStatics.GetCurrentReverbEffect
 // ()
 // Parameters:
@@ -33302,8 +34065,8 @@ void UGameplayStatics::GetAllActorsOfClass(class UObject* WorldContextObject, cl
 // Parameters:
 // TArray<class AActor*>          Actors                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bOnlyCollidingComponents       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Center                         (Parm, OutParm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Center                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoxExtent                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UGameplayStatics::GetActorArrayBounds(TArray<class AActor*> Actors, bool bOnlyCollidingComponents, struct FVector* Center, struct FVector* BoxExtent)
 {
@@ -33330,7 +34093,7 @@ void UGameplayStatics::GetActorArrayBounds(TArray<class AActor*> Actors, bool bO
 // ()
 // Parameters:
 // TArray<class AActor*>          Actors                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UGameplayStatics::GetActorArrayAverageLocation(TArray<class AActor*> Actors)
 {
@@ -33426,7 +34189,7 @@ class AActor* UGameplayStatics::FinishSpawningActor(class AActor* Actor, const s
 // Parameters:
 // struct FHitResult              Hit                            (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 // int                            UVChannel                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               UV                             (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               UV                             (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UGameplayStatics::FindCollisionUV(const struct FHitResult& Hit, int UVChannel, struct FVector2D* UV)
@@ -33499,9 +34262,9 @@ bool UGameplayStatics::DoesSaveGameExist(const class FString& SlotName, int User
 // ()
 // Parameters:
 // class APlayerController*       Player                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ScreenPosition                 (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 WorldPosition                  (Parm, OutParm, IsPlainOldData)
-// struct FVector                 WorldDirection                 (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               ScreenPosition                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 WorldPosition                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 WorldDirection                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UGameplayStatics::DeprojectScreenToWorld(class APlayerController* Player, const struct FVector2D& ScreenPosition, struct FVector* WorldPosition, struct FVector* WorldDirection)
@@ -33755,18 +34518,18 @@ void UGameplayStatics::CancelAsyncLoading()
 // bool                           bInitialOverlap                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Time                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Distance                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, OutParm, IsPlainOldData)
-// struct FVector                 ImpactPoint                    (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Normal                         (Parm, OutParm, IsPlainOldData)
-// struct FVector                 ImpactNormal                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ImpactPoint                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Normal                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ImpactNormal                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // class UPhysicalMaterial*       PhysMat                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  HitActor                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     HitComponent                   (Parm, OutParm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   HitBoneName                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            HitItem                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            FaceIndex                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 TraceStart                     (Parm, OutParm, IsPlainOldData)
-// struct FVector                 TraceEnd                       (Parm, OutParm, IsPlainOldData)
+// struct FVector                 TraceStart                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 TraceEnd                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UGameplayStatics::BreakHitResult(const struct FHitResult& Hit, bool* bBlockingHit, bool* bInitialOverlap, float* Time, float* Distance, struct FVector* Location, struct FVector* ImpactPoint, struct FVector* Normal, struct FVector* ImpactNormal, class UPhysicalMaterial** PhysMat, class AActor** HitActor, class UPrimitiveComponent** HitComponent, struct FName* HitBoneName, int* HitItem, int* FaceIndex, struct FVector* TraceStart, struct FVector* TraceEnd)
 {
@@ -33820,9 +34583,9 @@ void UGameplayStatics::BreakHitResult(const struct FHitResult& Hit, bool* bBlock
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 TossVelocity                   (Parm, OutParm, IsPlainOldData)
-// struct FVector                 StartLocation                  (Parm, IsPlainOldData)
-// struct FVector                 EndLocation                    (Parm, IsPlainOldData)
+// struct FVector                 TossVelocity                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 StartLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 EndLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          LaunchSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          OverrideGravityZ               (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ESuggestProjVelocityTraceOption> TraceOption                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -33865,9 +34628,9 @@ bool UGameplayStatics::BlueprintSuggestProjectileVelocity(class UObject* WorldCo
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // TArray<struct FVector>         OutPathPositions               (Parm, OutParm, ZeroConstructor)
-// struct FVector                 OutLastTraceDestination        (Parm, OutParm, IsPlainOldData)
-// struct FVector                 StartPos                       (Parm, IsPlainOldData)
-// struct FVector                 LaunchVelocity                 (Parm, IsPlainOldData)
+// struct FVector                 OutLastTraceDestination        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 StartPos                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LaunchVelocity                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTracePath                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ProjectileRadius               (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ECollisionChannel> TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
@@ -33922,9 +34685,9 @@ bool UGameplayStatics::Blueprint_PredictProjectilePath_ByTraceChannel(class UObj
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // TArray<struct FVector>         OutPathPositions               (Parm, OutParm, ZeroConstructor)
-// struct FVector                 OutLastTraceDestination        (Parm, OutParm, IsPlainOldData)
-// struct FVector                 StartPos                       (Parm, IsPlainOldData)
-// struct FVector                 LaunchVelocity                 (Parm, IsPlainOldData)
+// struct FVector                 OutLastTraceDestination        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 StartPos                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LaunchVelocity                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTracePath                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ProjectileRadius               (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -34118,7 +34881,7 @@ bool UGameplayStatics::AreSubtitlesEnabled()
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaximumRange                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -34147,7 +34910,7 @@ bool UGameplayStatics::AreAnyListenersWithinRange(class UObject* WorldContextObj
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          BaseDamage                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MinimumDamage                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          DamageInnerRadius              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DamageOuterRadius              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DamageFalloff                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -34191,7 +34954,7 @@ bool UGameplayStatics::ApplyRadialDamageWithFalloff(class UObject* WorldContextO
 // Parameters:
 // class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          BaseDamage                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          DamageRadius                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  DamageTypeClass                (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          IgnoreActors                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -34232,7 +34995,7 @@ bool UGameplayStatics::ApplyRadialDamage(class UObject* WorldContextObject, floa
 // Parameters:
 // class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          BaseDamage                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 HitFromDirection               (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 HitFromDirection               (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // struct FHitResult              HitInfo                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 // class AController*             EventInstigator                (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
@@ -34363,6 +35126,62 @@ void ASpotLight::SetInnerConeAngle(float NewInnerConeAngle)
 }
 
 
+// Function Engine.HealthSnapshotBlueprintLibrary.StopPerformanceSnapshots
+// ()
+
+void UHealthSnapshotBlueprintLibrary::StopPerformanceSnapshots()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.HealthSnapshotBlueprintLibrary.StopPerformanceSnapshots");
+
+	UHealthSnapshotBlueprintLibrary_StopPerformanceSnapshots_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.HealthSnapshotBlueprintLibrary.StartPerformanceSnapshots
+// ()
+
+void UHealthSnapshotBlueprintLibrary::StartPerformanceSnapshots()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.HealthSnapshotBlueprintLibrary.StartPerformanceSnapshots");
+
+	UHealthSnapshotBlueprintLibrary_StartPerformanceSnapshots_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.HealthSnapshotBlueprintLibrary.LogPerformanceSnapshot
+// ()
+// Parameters:
+// class FString                  SnapshotTitle                  (ConstParm, Parm, ZeroConstructor)
+// bool                           bResetStats                    (Parm, ZeroConstructor, IsPlainOldData)
+
+void UHealthSnapshotBlueprintLibrary::LogPerformanceSnapshot(const class FString& SnapshotTitle, bool bResetStats)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.HealthSnapshotBlueprintLibrary.LogPerformanceSnapshot");
+
+	UHealthSnapshotBlueprintLibrary_LogPerformanceSnapshot_Params params;
+	params.SnapshotTitle = SnapshotTitle;
+	params.bResetStats = bResetStats;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Engine.ImportanceSamplingLibrary.RandomSobolFloat
 // ()
 // Parameters:
@@ -34395,9 +35214,9 @@ float UImportanceSamplingLibrary::RandomSobolFloat(int Index, int Dimension, flo
 // Parameters:
 // int                            Index                          (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumCells                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Cell                           (Parm, IsPlainOldData)
-// struct FVector                 Seed                           (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Cell                           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Seed                           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UImportanceSamplingLibrary::RandomSobolCell3D(int Index, int NumCells, const struct FVector& Cell, const struct FVector& Seed)
 {
@@ -34424,9 +35243,9 @@ struct FVector UImportanceSamplingLibrary::RandomSobolCell3D(int Index, int NumC
 // Parameters:
 // int                            Index                          (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumCells                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               Cell                           (Parm, IsPlainOldData)
-// struct FVector2D               Seed                           (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               Cell                           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Seed                           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UImportanceSamplingLibrary::RandomSobolCell2D(int Index, int NumCells, const struct FVector2D& Cell, const struct FVector2D& Seed)
 {
@@ -34480,8 +35299,8 @@ float UImportanceSamplingLibrary::NextSobolFloat(int Index, int Dimension, float
 // Parameters:
 // int                            Index                          (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumCells                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 PreviousValue                  (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 PreviousValue                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UImportanceSamplingLibrary::NextSobolCell3D(int Index, int NumCells, const struct FVector& PreviousValue)
 {
@@ -34507,8 +35326,8 @@ struct FVector UImportanceSamplingLibrary::NextSobolCell3D(int Index, int NumCel
 // Parameters:
 // int                            Index                          (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumCells                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               PreviousValue                  (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               PreviousValue                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UImportanceSamplingLibrary::NextSobolCell2D(int Index, int NumCells, const struct FVector2D& PreviousValue)
 {
@@ -34558,11 +35377,11 @@ struct FImportanceTexture UImportanceSamplingLibrary::MakeImportanceTexture(clas
 // ()
 // Parameters:
 // struct FImportanceTexture      Texture                        (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector2D               Rand                           (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector2D               Rand                           (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // int                            Samples                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Intensity                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               SamplePosition                 (Parm, OutParm, IsPlainOldData)
-// struct FLinearColor            SampleColor                    (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               SamplePosition                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            SampleColor                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          SampleIntensity                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          SampleSize                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
@@ -34723,7 +35542,7 @@ void UInputComponent::GetTouchState(int FingerIndex, float* LocationX, float* Lo
 // ()
 // Parameters:
 // struct FKey                    Key                            (Parm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UInputComponent::GetControllerVectorKeyState(const struct FKey& Key)
 {
@@ -35698,7 +36517,7 @@ int UKismetArrayLibrary::Array_Add(TArray<int> TargetArray, int NewItem)
 // ()
 // Parameters:
 // class FString                  GuidString                     (Parm, ZeroConstructor)
-// struct FGuid                   OutGuid                        (Parm, OutParm, IsPlainOldData)
+// struct FGuid                   OutGuid                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           Success                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetGuidLibrary::Parse_StringToGuid(const class FString& GuidString, struct FGuid* OutGuid, bool* Success)
@@ -35724,8 +36543,8 @@ void UKismetGuidLibrary::Parse_StringToGuid(const class FString& GuidString, str
 // Function Engine.KismetGuidLibrary.NotEqual_GuidGuid
 // ()
 // Parameters:
-// struct FGuid                   A                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FGuid                   B                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGuid                   A                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FGuid                   B                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetGuidLibrary::NotEqual_GuidGuid(const struct FGuid& A, const struct FGuid& B)
@@ -35749,7 +36568,7 @@ bool UKismetGuidLibrary::NotEqual_GuidGuid(const struct FGuid& A, const struct F
 // Function Engine.KismetGuidLibrary.NewGuid
 // ()
 // Parameters:
-// struct FGuid                   ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FGuid                   ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FGuid UKismetGuidLibrary::NewGuid()
 {
@@ -35770,7 +36589,7 @@ struct FGuid UKismetGuidLibrary::NewGuid()
 // Function Engine.KismetGuidLibrary.IsValid_Guid
 // ()
 // Parameters:
-// struct FGuid                   InGuid                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGuid                   InGuid                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetGuidLibrary::IsValid_Guid(const struct FGuid& InGuid)
@@ -35793,7 +36612,7 @@ bool UKismetGuidLibrary::IsValid_Guid(const struct FGuid& InGuid)
 // Function Engine.KismetGuidLibrary.Invalidate_Guid
 // ()
 // Parameters:
-// struct FGuid                   InGuid                         (Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGuid                   InGuid                         (Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UKismetGuidLibrary::Invalidate_Guid(struct FGuid* InGuid)
 {
@@ -35815,8 +36634,8 @@ void UKismetGuidLibrary::Invalidate_Guid(struct FGuid* InGuid)
 // Function Engine.KismetGuidLibrary.EqualEqual_GuidGuid
 // ()
 // Parameters:
-// struct FGuid                   A                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FGuid                   B                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGuid                   A                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FGuid                   B                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetGuidLibrary::EqualEqual_GuidGuid(const struct FGuid& A, const struct FGuid& B)
@@ -35840,7 +36659,7 @@ bool UKismetGuidLibrary::EqualEqual_GuidGuid(const struct FGuid& A, const struct
 // Function Engine.KismetGuidLibrary.Conv_GuidToString
 // ()
 // Parameters:
-// struct FGuid                   InGuid                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGuid                   InGuid                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetGuidLibrary::Conv_GuidToString(const struct FGuid& InGuid)
@@ -35981,7 +36800,7 @@ int UKismetInputLibrary::PointerEvent_GetTouchpadIndex(const struct FPointerEven
 // ()
 // Parameters:
 // struct FPointerEvent           Input                          (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetInputLibrary::PointerEvent_GetScreenSpacePosition(const struct FPointerEvent& Input)
 {
@@ -36027,7 +36846,7 @@ int UKismetInputLibrary::PointerEvent_GetPointerIndex(const struct FPointerEvent
 // ()
 // Parameters:
 // struct FPointerEvent           Input                          (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetInputLibrary::PointerEvent_GetLastScreenSpacePosition(const struct FPointerEvent& Input)
 {
@@ -36073,7 +36892,7 @@ ESlateGesture UKismetInputLibrary::PointerEvent_GetGestureType(const struct FPoi
 // ()
 // Parameters:
 // struct FPointerEvent           Input                          (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetInputLibrary::PointerEvent_GetGestureDelta(const struct FPointerEvent& Input)
 {
@@ -36119,7 +36938,7 @@ struct FKey UKismetInputLibrary::PointerEvent_GetEffectingButton(const struct FP
 // ()
 // Parameters:
 // struct FPointerEvent           Input                          (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetInputLibrary::PointerEvent_GetCursorDelta(const struct FPointerEvent& Input)
 {
@@ -36998,7 +37817,7 @@ void UKismetInternationalizationLibrary::ClearCurrentAssetGroupCulture(const str
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class UMaterialParameterCollection* Collection                     (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ParameterValue                 (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            ParameterValue                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UKismetMaterialLibrary::SetVectorParameterValue(class UObject* WorldContextObject, class UMaterialParameterCollection* Collection, const struct FName& ParameterName, const struct FLinearColor& ParameterValue)
 {
@@ -37050,7 +37869,7 @@ void UKismetMaterialLibrary::SetScalarParameterValue(class UObject* WorldContext
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class UMaterialParameterCollection* Collection                     (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMaterialLibrary::GetVectorParameterValue(class UObject* WorldContextObject, class UMaterialParameterCollection* Collection, const struct FName& ParameterName)
 {
@@ -37153,7 +37972,7 @@ int UKismetMathLibrary::Xor_IntInt(int A, int B)
 // Function Engine.KismetMathLibrary.VSizeXY
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::VSizeXY(const struct FVector& A)
@@ -37176,7 +37995,7 @@ float UKismetMathLibrary::VSizeXY(const struct FVector& A)
 // Function Engine.KismetMathLibrary.VSizeSquared
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::VSizeSquared(const struct FVector& A)
@@ -37199,7 +38018,7 @@ float UKismetMathLibrary::VSizeSquared(const struct FVector& A)
 // Function Engine.KismetMathLibrary.VSize2DSquared
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::VSize2DSquared(const struct FVector2D& A)
@@ -37222,7 +38041,7 @@ float UKismetMathLibrary::VSize2DSquared(const struct FVector2D& A)
 // Function Engine.KismetMathLibrary.VSize2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::VSize2D(const struct FVector2D& A)
@@ -37245,7 +38064,7 @@ float UKismetMathLibrary::VSize2D(const struct FVector2D& A)
 // Function Engine.KismetMathLibrary.VSize
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::VSize(const struct FVector& A)
@@ -37268,10 +38087,10 @@ float UKismetMathLibrary::VSize(const struct FVector& A)
 // Function Engine.KismetMathLibrary.VLerp
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Alpha                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::VLerp(const struct FVector& A, const struct FVector& B, float Alpha)
 {
@@ -37295,11 +38114,11 @@ struct FVector UKismetMathLibrary::VLerp(const struct FVector& A, const struct F
 // Function Engine.KismetMathLibrary.VInterpTo_Constant
 // ()
 // Parameters:
-// struct FVector                 Current                        (Parm, IsPlainOldData)
-// struct FVector                 Target                         (Parm, IsPlainOldData)
+// struct FVector                 Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InterpSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::VInterpTo_Constant(const struct FVector& Current, const struct FVector& Target, float DeltaTime, float InterpSpeed)
 {
@@ -37324,11 +38143,11 @@ struct FVector UKismetMathLibrary::VInterpTo_Constant(const struct FVector& Curr
 // Function Engine.KismetMathLibrary.VInterpTo
 // ()
 // Parameters:
-// struct FVector                 Current                        (Parm, IsPlainOldData)
-// struct FVector                 Target                         (Parm, IsPlainOldData)
+// struct FVector                 Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InterpSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::VInterpTo(const struct FVector& Current, const struct FVector& Target, float DeltaTime, float InterpSpeed)
 {
@@ -37353,14 +38172,14 @@ struct FVector UKismetMathLibrary::VInterpTo(const struct FVector& Current, cons
 // Function Engine.KismetMathLibrary.VectorSpringInterp
 // ()
 // Parameters:
-// struct FVector                 Current                        (Parm, IsPlainOldData)
-// struct FVector                 Target                         (Parm, IsPlainOldData)
+// struct FVector                 Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVectorSpringState      SpringState                    (Parm, OutParm, ReferenceParm)
 // float                          Stiffness                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          CriticalDampingFactor          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Mass                           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::VectorSpringInterp(const struct FVector& Current, const struct FVector& Target, float Stiffness, float CriticalDampingFactor, float DeltaTime, float Mass, struct FVectorSpringState* SpringState)
 {
@@ -37390,11 +38209,11 @@ struct FVector UKismetMathLibrary::VectorSpringInterp(const struct FVector& Curr
 // Function Engine.KismetMathLibrary.Vector2DInterpTo_Constant
 // ()
 // Parameters:
-// struct FVector2D               Current                        (Parm, IsPlainOldData)
-// struct FVector2D               Target                         (Parm, IsPlainOldData)
+// struct FVector2D               Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InterpSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Vector2DInterpTo_Constant(const struct FVector2D& Current, const struct FVector2D& Target, float DeltaTime, float InterpSpeed)
 {
@@ -37419,11 +38238,11 @@ struct FVector2D UKismetMathLibrary::Vector2DInterpTo_Constant(const struct FVec
 // Function Engine.KismetMathLibrary.Vector2DInterpTo
 // ()
 // Parameters:
-// struct FVector2D               Current                        (Parm, IsPlainOldData)
-// struct FVector2D               Target                         (Parm, IsPlainOldData)
+// struct FVector2D               Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InterpSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Vector2DInterpTo(const struct FVector2D& Current, const struct FVector2D& Target, float DeltaTime, float InterpSpeed)
 {
@@ -37448,13 +38267,13 @@ struct FVector2D UKismetMathLibrary::Vector2DInterpTo(const struct FVector2D& Cu
 // Function Engine.KismetMathLibrary.VEase
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Alpha                          (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EEasingFunc>       EasingFunc                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          BlendExp                       (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Steps                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::VEase(const struct FVector& A, const struct FVector& B, float Alpha, TEnumAsByte<EEasingFunc> EasingFunc, float BlendExp, int Steps)
 {
@@ -37481,7 +38300,7 @@ struct FVector UKismetMathLibrary::VEase(const struct FVector& A, const struct F
 // Function Engine.KismetMathLibrary.UtcNow
 // ()
 // Parameters:
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::UtcNow()
 {
@@ -37503,8 +38322,8 @@ struct FDateTime UKismetMathLibrary::UtcNow()
 // ()
 // Parameters:
 // struct FTransform              T                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::TransformRotation(const struct FTransform& T, const struct FRotator& Rotation)
 {
@@ -37528,8 +38347,8 @@ struct FRotator UKismetMathLibrary::TransformRotation(const struct FTransform& T
 // ()
 // Parameters:
 // struct FTransform              T                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::TransformLocation(const struct FTransform& T, const struct FVector& Location)
 {
@@ -37553,8 +38372,8 @@ struct FVector UKismetMathLibrary::TransformLocation(const struct FTransform& T,
 // ()
 // Parameters:
 // struct FTransform              T                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Direction                      (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Direction                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::TransformDirection(const struct FTransform& T, const struct FVector& Direction)
 {
@@ -37600,7 +38419,7 @@ float UKismetMathLibrary::Transform_Determinant(const struct FTransform& Transfo
 // Function Engine.KismetMathLibrary.Today
 // ()
 // Parameters:
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::Today()
 {
@@ -37679,7 +38498,7 @@ struct FTransform UKismetMathLibrary::TInterpTo(const struct FTransform& Current
 // Function Engine.KismetMathLibrary.TimespanZeroValue
 // ()
 // Parameters:
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::TimespanZeroValue()
 {
@@ -37700,8 +38519,8 @@ struct FTimespan UKismetMathLibrary::TimespanZeroValue()
 // Function Engine.KismetMathLibrary.TimespanRatio
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::TimespanRatio(const struct FTimespan& A, const struct FTimespan& B)
@@ -37725,7 +38544,7 @@ float UKismetMathLibrary::TimespanRatio(const struct FTimespan& A, const struct 
 // Function Engine.KismetMathLibrary.TimespanMinValue
 // ()
 // Parameters:
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::TimespanMinValue()
 {
@@ -37746,7 +38565,7 @@ struct FTimespan UKismetMathLibrary::TimespanMinValue()
 // Function Engine.KismetMathLibrary.TimespanMaxValue
 // ()
 // Parameters:
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::TimespanMaxValue()
 {
@@ -37768,7 +38587,7 @@ struct FTimespan UKismetMathLibrary::TimespanMaxValue()
 // ()
 // Parameters:
 // class FString                  TimespanString                 (Parm, ZeroConstructor)
-// struct FTimespan               Result                         (Parm, OutParm)
+// struct FTimespan               Result                         (Parm, OutParm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::TimespanFromString(const class FString& TimespanString, struct FTimespan* Result)
@@ -37850,9 +38669,9 @@ float UKismetMathLibrary::Tan(float A)
 // Function Engine.KismetMathLibrary.Subtract_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Subtract_VectorVector(const struct FVector& A, const struct FVector& B)
 {
@@ -37875,9 +38694,9 @@ struct FVector UKismetMathLibrary::Subtract_VectorVector(const struct FVector& A
 // Function Engine.KismetMathLibrary.Subtract_VectorInt
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Subtract_VectorInt(const struct FVector& A, int B)
 {
@@ -37900,9 +38719,9 @@ struct FVector UKismetMathLibrary::Subtract_VectorInt(const struct FVector& A, i
 // Function Engine.KismetMathLibrary.Subtract_VectorFloat
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Subtract_VectorFloat(const struct FVector& A, float B)
 {
@@ -37925,9 +38744,9 @@ struct FVector UKismetMathLibrary::Subtract_VectorFloat(const struct FVector& A,
 // Function Engine.KismetMathLibrary.Subtract_Vector2DVector2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Subtract_Vector2DVector2D(const struct FVector2D& A, const struct FVector2D& B)
 {
@@ -37950,9 +38769,9 @@ struct FVector2D UKismetMathLibrary::Subtract_Vector2DVector2D(const struct FVec
 // Function Engine.KismetMathLibrary.Subtract_Vector2DFloat
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Subtract_Vector2DFloat(const struct FVector2D& A, float B)
 {
@@ -37975,9 +38794,9 @@ struct FVector2D UKismetMathLibrary::Subtract_Vector2DFloat(const struct FVector
 // Function Engine.KismetMathLibrary.Subtract_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::Subtract_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
 {
@@ -38050,9 +38869,9 @@ float UKismetMathLibrary::Subtract_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.Subtract_DateTimeTimespan
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FTimespan               B                              (Parm)
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::Subtract_DateTimeTimespan(const struct FDateTime& A, const struct FTimespan& B)
 {
@@ -38075,9 +38894,9 @@ struct FDateTime UKismetMathLibrary::Subtract_DateTimeTimespan(const struct FDat
 // Function Engine.KismetMathLibrary.Subtract_DateTimeDateTime
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               B                              (Parm)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               B                              (Parm, ZeroConstructor)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::Subtract_DateTimeDateTime(const struct FDateTime& A, const struct FDateTime& B)
 {
@@ -38240,7 +39059,7 @@ float UKismetMathLibrary::SignOfFloat(float A)
 // Function Engine.KismetMathLibrary.SetRandomStreamSeed
 // ()
 // Parameters:
-// struct FRandomStream           Stream                         (Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (Parm, OutParm, ZeroConstructor, ReferenceParm)
 // int                            NewSeed                        (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::SetRandomStreamSeed(int NewSeed, struct FRandomStream* Stream)
@@ -38264,10 +39083,10 @@ void UKismetMathLibrary::SetRandomStreamSeed(int NewSeed, struct FRandomStream* 
 // Function Engine.KismetMathLibrary.SelectVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bPickA                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::SelectVector(const struct FVector& A, const struct FVector& B, bool bPickA)
 {
@@ -38345,10 +39164,10 @@ class FString UKismetMathLibrary::SelectString(const class FString& A, const cla
 // Function Engine.KismetMathLibrary.SelectRotator
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bPickA                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::SelectRotator(const struct FRotator& A, const struct FRotator& B, bool bPickA)
 {
@@ -38453,10 +39272,10 @@ float UKismetMathLibrary::SelectFloat(float A, float B, bool bPickA)
 // Function Engine.KismetMathLibrary.SelectColor
 // ()
 // Parameters:
-// struct FLinearColor            A                              (Parm, IsPlainOldData)
-// struct FLinearColor            B                              (Parm, IsPlainOldData)
+// struct FLinearColor            A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            B                              (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bPickA                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::SelectColor(const struct FLinearColor& A, const struct FLinearColor& B, bool bPickA)
 {
@@ -38507,7 +39326,7 @@ class UClass* UKismetMathLibrary::SelectClass(class UClass* A, class UClass* B, 
 // Function Engine.KismetMathLibrary.SeedRandomStream
 // ()
 // Parameters:
-// struct FRandomStream           Stream                         (Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (Parm, OutParm, ZeroConstructor, ReferenceParm)
 
 void UKismetMathLibrary::SeedRandomStream(struct FRandomStream* Stream)
 {
@@ -38552,9 +39371,9 @@ int UKismetMathLibrary::Round(float A)
 // Function Engine.KismetMathLibrary.RotatorFromAxisAndAngle
 // ()
 // Parameters:
-// struct FVector                 Axis                           (Parm, IsPlainOldData)
+// struct FVector                 Axis                           (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Angle                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::RotatorFromAxisAndAngle(const struct FVector& Axis, float Angle)
 {
@@ -38577,10 +39396,10 @@ struct FRotator UKismetMathLibrary::RotatorFromAxisAndAngle(const struct FVector
 // Function Engine.KismetMathLibrary.RotateAngleAxis
 // ()
 // Parameters:
-// struct FVector                 InVect                         (Parm, IsPlainOldData)
+// struct FVector                 InVect                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AngleDeg                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Axis                           (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Axis                           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RotateAngleAxis(const struct FVector& InVect, float AngleDeg, const struct FVector& Axis)
 {
@@ -38604,11 +39423,11 @@ struct FVector UKismetMathLibrary::RotateAngleAxis(const struct FVector& InVect,
 // Function Engine.KismetMathLibrary.RLerp
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Alpha                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bShortestPath                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::RLerp(const struct FRotator& A, const struct FRotator& B, float Alpha, bool bShortestPath)
 {
@@ -38633,11 +39452,11 @@ struct FRotator UKismetMathLibrary::RLerp(const struct FRotator& A, const struct
 // Function Engine.KismetMathLibrary.RInterpTo_Constant
 // ()
 // Parameters:
-// struct FRotator                Current                        (Parm, IsPlainOldData)
-// struct FRotator                Target                         (Parm, IsPlainOldData)
+// struct FRotator                Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InterpSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::RInterpTo_Constant(const struct FRotator& Current, const struct FRotator& Target, float DeltaTime, float InterpSpeed)
 {
@@ -38662,11 +39481,11 @@ struct FRotator UKismetMathLibrary::RInterpTo_Constant(const struct FRotator& Cu
 // Function Engine.KismetMathLibrary.RInterpTo
 // ()
 // Parameters:
-// struct FRotator                Current                        (Parm, IsPlainOldData)
-// struct FRotator                Target                         (Parm, IsPlainOldData)
+// struct FRotator                Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InterpSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::RInterpTo(const struct FRotator& Current, const struct FRotator& Target, float DeltaTime, float InterpSpeed)
 {
@@ -38691,8 +39510,8 @@ struct FRotator UKismetMathLibrary::RInterpTo(const struct FRotator& Current, co
 // Function Engine.KismetMathLibrary.RGBToHSV_Vector
 // ()
 // Parameters:
-// struct FLinearColor            RGB                            (ConstParm, Parm, IsPlainOldData)
-// struct FLinearColor            HSV                            (Parm, OutParm, IsPlainOldData)
+// struct FLinearColor            RGB                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            HSV                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::RGBToHSV_Vector(const struct FLinearColor& RGB, struct FLinearColor* HSV)
 {
@@ -38715,7 +39534,7 @@ void UKismetMathLibrary::RGBToHSV_Vector(const struct FLinearColor& RGB, struct 
 // Function Engine.KismetMathLibrary.RGBToHSV
 // ()
 // Parameters:
-// struct FLinearColor            inColor                        (ConstParm, Parm, IsPlainOldData)
+// struct FLinearColor            inColor                        (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          H                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          S                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          V                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -38770,7 +39589,7 @@ void UKismetMathLibrary::ResetVectorSpringState(struct FVectorSpringState* Sprin
 // Function Engine.KismetMathLibrary.ResetRandomStream
 // ()
 // Parameters:
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 
 void UKismetMathLibrary::ResetRandomStream(const struct FRandomStream& Stream)
 {
@@ -38812,14 +39631,14 @@ void UKismetMathLibrary::ResetFloatSpringState(struct FFloatSpringState* SpringS
 // Function Engine.KismetMathLibrary.REase
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Alpha                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bShortestPath                  (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EEasingFunc>       EasingFunc                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          BlendExp                       (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Steps                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::REase(const struct FRotator& A, const struct FRotator& B, float Alpha, bool bShortestPath, TEnumAsByte<EEasingFunc> EasingFunc, float BlendExp, int Steps)
 {
@@ -38847,11 +39666,11 @@ struct FRotator UKismetMathLibrary::REase(const struct FRotator& A, const struct
 // Function Engine.KismetMathLibrary.RandomUnitVectorInEllipticalConeInRadiansFromStream
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          MaxYawInRadians                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxPitchInRadians              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInRadiansFromStream(const struct FVector& ConeDir, float MaxYawInRadians, float MaxPitchInRadians, const struct FRandomStream& Stream)
 {
@@ -38876,10 +39695,10 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInRadiansFrom
 // Function Engine.KismetMathLibrary.RandomUnitVectorInEllipticalConeInRadians
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (Parm, IsPlainOldData)
+// struct FVector                 ConeDir                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxYawInRadians                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxPitchInRadians              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInRadians(const struct FVector& ConeDir, float MaxYawInRadians, float MaxPitchInRadians)
 {
@@ -38903,11 +39722,11 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInRadians(con
 // Function Engine.KismetMathLibrary.RandomUnitVectorInEllipticalConeInDegreesFromStream
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          MaxYawInDegrees                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxPitchInDegrees              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInDegreesFromStream(const struct FVector& ConeDir, float MaxYawInDegrees, float MaxPitchInDegrees, const struct FRandomStream& Stream)
 {
@@ -38932,10 +39751,10 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInDegreesFrom
 // Function Engine.KismetMathLibrary.RandomUnitVectorInEllipticalConeInDegrees
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (Parm, IsPlainOldData)
+// struct FVector                 ConeDir                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxYawInDegrees                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          MaxPitchInDegrees              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInDegrees(const struct FVector& ConeDir, float MaxYawInDegrees, float MaxPitchInDegrees)
 {
@@ -38959,10 +39778,10 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInEllipticalConeInDegrees(con
 // Function Engine.KismetMathLibrary.RandomUnitVectorInConeInRadiansFromStream
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          ConeHalfAngleInRadians         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInConeInRadiansFromStream(const struct FVector& ConeDir, float ConeHalfAngleInRadians, const struct FRandomStream& Stream)
 {
@@ -38986,9 +39805,9 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInConeInRadiansFromStream(con
 // Function Engine.KismetMathLibrary.RandomUnitVectorInConeInRadians
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (Parm, IsPlainOldData)
+// struct FVector                 ConeDir                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ConeHalfAngleInRadians         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInConeInRadians(const struct FVector& ConeDir, float ConeHalfAngleInRadians)
 {
@@ -39011,10 +39830,10 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInConeInRadians(const struct 
 // Function Engine.KismetMathLibrary.RandomUnitVectorInConeInDegreesFromStream
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 ConeDir                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          ConeHalfAngleInDegrees         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInConeInDegreesFromStream(const struct FVector& ConeDir, float ConeHalfAngleInDegrees, const struct FRandomStream& Stream)
 {
@@ -39038,9 +39857,9 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInConeInDegreesFromStream(con
 // Function Engine.KismetMathLibrary.RandomUnitVectorInConeInDegrees
 // ()
 // Parameters:
-// struct FVector                 ConeDir                        (Parm, IsPlainOldData)
+// struct FVector                 ConeDir                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ConeHalfAngleInDegrees         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorInConeInDegrees(const struct FVector& ConeDir, float ConeHalfAngleInDegrees)
 {
@@ -39063,8 +39882,8 @@ struct FVector UKismetMathLibrary::RandomUnitVectorInConeInDegrees(const struct 
 // Function Engine.KismetMathLibrary.RandomUnitVectorFromStream
 // ()
 // Parameters:
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVectorFromStream(const struct FRandomStream& Stream)
 {
@@ -39086,7 +39905,7 @@ struct FVector UKismetMathLibrary::RandomUnitVectorFromStream(const struct FRand
 // Function Engine.KismetMathLibrary.RandomUnitVector
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomUnitVector()
 {
@@ -39108,8 +39927,8 @@ struct FVector UKismetMathLibrary::RandomUnitVector()
 // ()
 // Parameters:
 // bool                           bRoll                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::RandomRotatorFromStream(bool bRoll, const struct FRandomStream& Stream)
 {
@@ -39133,7 +39952,7 @@ struct FRotator UKismetMathLibrary::RandomRotatorFromStream(bool bRoll, const st
 // ()
 // Parameters:
 // bool                           bRoll                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::RandomRotator(bool bRoll)
 {
@@ -39155,9 +39974,9 @@ struct FRotator UKismetMathLibrary::RandomRotator(bool bRoll)
 // Function Engine.KismetMathLibrary.RandomPointInBoundingBox
 // ()
 // Parameters:
-// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 BoxExtent                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::RandomPointInBoundingBox(const struct FVector& Origin, const struct FVector& BoxExtent)
 {
@@ -39182,7 +40001,7 @@ struct FVector UKismetMathLibrary::RandomPointInBoundingBox(const struct FVector
 // Parameters:
 // int                            Min                            (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Max                            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::RandomIntegerInRangeFromStream(int Min, int Max, const struct FRandomStream& Stream)
@@ -39233,7 +40052,7 @@ int UKismetMathLibrary::RandomIntegerInRange(int Min, int Max)
 // ()
 // Parameters:
 // int                            Max                            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::RandomIntegerFromStream(int Max, const struct FRandomStream& Stream)
@@ -39282,7 +40101,7 @@ int UKismetMathLibrary::RandomInteger(int Max)
 // Parameters:
 // float                          Min                            (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Max                            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::RandomFloatInRangeFromStream(float Min, float Max, const struct FRandomStream& Stream)
@@ -39332,7 +40151,7 @@ float UKismetMathLibrary::RandomFloatInRange(float Min, float Max)
 // Function Engine.KismetMathLibrary.RandomFloatFromStream
 // ()
 // Parameters:
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::RandomFloatFromStream(const struct FRandomStream& Stream)
@@ -39377,7 +40196,7 @@ float UKismetMathLibrary::RandomFloat()
 // ()
 // Parameters:
 // float                          Weight                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           RandomStream                   (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           RandomStream                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::RandomBoolWithWeightFromStream(float Weight, const struct FRandomStream& RandomStream)
@@ -39424,7 +40243,7 @@ bool UKismetMathLibrary::RandomBoolWithWeight(float Weight)
 // Function Engine.KismetMathLibrary.RandomBoolFromStream
 // ()
 // Parameters:
-// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           Stream                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::RandomBoolFromStream(const struct FRandomStream& Stream)
@@ -39491,9 +40310,9 @@ float UKismetMathLibrary::RadiansToDegrees(float A)
 // Function Engine.KismetMathLibrary.ProjectVectorOnToVector
 // ()
 // Parameters:
-// struct FVector                 V                              (Parm, IsPlainOldData)
-// struct FVector                 Target                         (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 V                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Target                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::ProjectVectorOnToVector(const struct FVector& V, const struct FVector& Target)
 {
@@ -39516,9 +40335,9 @@ struct FVector UKismetMathLibrary::ProjectVectorOnToVector(const struct FVector&
 // Function Engine.KismetMathLibrary.ProjectVectorOnToPlane
 // ()
 // Parameters:
-// struct FVector                 V                              (Parm, IsPlainOldData)
-// struct FVector                 PlaneNormal                    (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 V                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 PlaneNormal                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::ProjectVectorOnToPlane(const struct FVector& V, const struct FVector& PlaneNormal)
 {
@@ -39541,10 +40360,10 @@ struct FVector UKismetMathLibrary::ProjectVectorOnToPlane(const struct FVector& 
 // Function Engine.KismetMathLibrary.ProjectPointOnToPlane
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
-// struct FVector                 PlaneBase                      (Parm, IsPlainOldData)
-// struct FVector                 PlaneNormal                    (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 PlaneBase                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 PlaneNormal                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::ProjectPointOnToPlane(const struct FVector& Point, const struct FVector& PlaneBase, const struct FVector& PlaneNormal)
 {
@@ -39579,6 +40398,29 @@ bool UKismetMathLibrary::PointsAreCoplanar(TArray<struct FVector> Points, float 
 	UKismetMathLibrary_PointsAreCoplanar_Params params;
 	params.Points = Points;
 	params.Tolerance = Tolerance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetMathLibrary.PerlinNoise1D
+// ()
+// Parameters:
+// float                          Value                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UKismetMathLibrary::PerlinNoise1D(float Value)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.PerlinNoise1D");
+
+	UKismetMathLibrary_PerlinNoise1D_Params params;
+	params.Value = Value;
 
 	auto flags = fn->FunctionFlags;
 
@@ -39693,7 +40535,7 @@ int UKismetMathLibrary::Or_IntInt(int A, int B)
 // Function Engine.KismetMathLibrary.Now
 // ()
 // Parameters:
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::Now()
 {
@@ -39714,8 +40556,8 @@ struct FDateTime UKismetMathLibrary::Now()
 // Function Engine.KismetMathLibrary.NotEqual_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ErrorTolerance                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -39741,8 +40583,8 @@ bool UKismetMathLibrary::NotEqual_VectorVector(const struct FVector& A, const st
 // Function Engine.KismetMathLibrary.NotEqual_Vector2DVector2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ErrorTolerance                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -39768,8 +40610,8 @@ bool UKismetMathLibrary::NotEqual_Vector2DVector2D(const struct FVector2D& A, co
 // Function Engine.KismetMathLibrary.NotEqual_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::NotEqual_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
@@ -39793,8 +40635,8 @@ bool UKismetMathLibrary::NotEqual_TimespanTimespan(const struct FTimespan& A, co
 // Function Engine.KismetMathLibrary.NotEqual_RotatorRotator
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ErrorTolerance                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -39920,8 +40762,8 @@ bool UKismetMathLibrary::NotEqual_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.NotEqual_DateTimeDateTime
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               B                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::NotEqual_DateTimeDateTime(const struct FDateTime& A, const struct FDateTime& B)
@@ -40093,9 +40935,9 @@ float UKismetMathLibrary::NormalizeToRange(float Value, float RangeMin, float Ra
 // Function Engine.KismetMathLibrary.NormalizedDeltaRotator
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::NormalizedDeltaRotator(const struct FRotator& A, const struct FRotator& B)
 {
@@ -40141,8 +40983,8 @@ float UKismetMathLibrary::NormalizeAxis(float Angle)
 // Function Engine.KismetMathLibrary.Normal2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Normal2D(const struct FVector2D& A)
 {
@@ -40164,8 +41006,8 @@ struct FVector2D UKismetMathLibrary::Normal2D(const struct FVector2D& A)
 // Function Engine.KismetMathLibrary.Normal
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Normal(const struct FVector& A)
 {
@@ -40187,8 +41029,8 @@ struct FVector UKismetMathLibrary::Normal(const struct FVector& A)
 // Function Engine.KismetMathLibrary.NegateVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::NegateVector(const struct FVector& A)
 {
@@ -40210,8 +41052,8 @@ struct FVector UKismetMathLibrary::NegateVector(const struct FVector& A)
 // Function Engine.KismetMathLibrary.NegateRotator
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::NegateRotator(const struct FRotator& A)
 {
@@ -40339,9 +41181,9 @@ float UKismetMathLibrary::MultiplyByPi(float Value)
 // Function Engine.KismetMathLibrary.Multiply_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Multiply_VectorVector(const struct FVector& A, const struct FVector& B)
 {
@@ -40364,9 +41206,9 @@ struct FVector UKismetMathLibrary::Multiply_VectorVector(const struct FVector& A
 // Function Engine.KismetMathLibrary.Multiply_VectorInt
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Multiply_VectorInt(const struct FVector& A, int B)
 {
@@ -40389,9 +41231,9 @@ struct FVector UKismetMathLibrary::Multiply_VectorInt(const struct FVector& A, i
 // Function Engine.KismetMathLibrary.Multiply_VectorFloat
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Multiply_VectorFloat(const struct FVector& A, float B)
 {
@@ -40414,9 +41256,9 @@ struct FVector UKismetMathLibrary::Multiply_VectorFloat(const struct FVector& A,
 // Function Engine.KismetMathLibrary.Multiply_Vector2DVector2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Multiply_Vector2DVector2D(const struct FVector2D& A, const struct FVector2D& B)
 {
@@ -40439,9 +41281,9 @@ struct FVector2D UKismetMathLibrary::Multiply_Vector2DVector2D(const struct FVec
 // Function Engine.KismetMathLibrary.Multiply_Vector2DFloat
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Multiply_Vector2DFloat(const struct FVector2D& A, float B)
 {
@@ -40464,9 +41306,9 @@ struct FVector2D UKismetMathLibrary::Multiply_Vector2DFloat(const struct FVector
 // Function Engine.KismetMathLibrary.Multiply_TimespanFloat
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // float                          Scalar                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::Multiply_TimespanFloat(const struct FTimespan& A, float Scalar)
 {
@@ -40489,9 +41331,9 @@ struct FTimespan UKismetMathLibrary::Multiply_TimespanFloat(const struct FTimesp
 // Function Engine.KismetMathLibrary.Multiply_RotatorInt
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::Multiply_RotatorInt(const struct FRotator& A, int B)
 {
@@ -40514,9 +41356,9 @@ struct FRotator UKismetMathLibrary::Multiply_RotatorInt(const struct FRotator& A
 // Function Engine.KismetMathLibrary.Multiply_RotatorFloat
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::Multiply_RotatorFloat(const struct FRotator& A, float B)
 {
@@ -40539,9 +41381,9 @@ struct FRotator UKismetMathLibrary::Multiply_RotatorFloat(const struct FRotator&
 // Function Engine.KismetMathLibrary.Multiply_LinearColorLinearColor
 // ()
 // Parameters:
-// struct FLinearColor            A                              (Parm, IsPlainOldData)
-// struct FLinearColor            B                              (Parm, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::Multiply_LinearColorLinearColor(const struct FLinearColor& A, const struct FLinearColor& B)
 {
@@ -40564,9 +41406,9 @@ struct FLinearColor UKismetMathLibrary::Multiply_LinearColorLinearColor(const st
 // Function Engine.KismetMathLibrary.Multiply_LinearColorFloat
 // ()
 // Parameters:
-// struct FLinearColor            A                              (Parm, IsPlainOldData)
+// struct FLinearColor            A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::Multiply_LinearColorFloat(const struct FLinearColor& A, float B)
 {
@@ -40689,9 +41531,9 @@ unsigned char UKismetMathLibrary::Multiply_ByteByte(unsigned char A, unsigned ch
 // Function Engine.KismetMathLibrary.MirrorVectorByNormal
 // ()
 // Parameters:
-// struct FVector                 InVect                         (Parm, IsPlainOldData)
-// struct FVector                 InNormal                       (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 InVect                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 InNormal                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::MirrorVectorByNormal(const struct FVector& InVect, const struct FVector& InNormal)
 {
@@ -40797,9 +41639,9 @@ void UKismetMathLibrary::MinOfByteArray(TArray<unsigned char> ByteArray, int* In
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FVector>         InVerts                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-// struct FVector                 SampleSurfaceNormal            (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 OutRectCenter                  (Parm, OutParm, IsPlainOldData)
-// struct FRotator                OutRectRotation                (Parm, OutParm, IsPlainOldData)
+// struct FVector                 SampleSurfaceNormal            (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 OutRectCenter                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                OutRectRotation                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          OutSideLengthX                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          OutSideLengthY                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           bDebugDraw                     (Parm, ZeroConstructor, IsPlainOldData)
@@ -40962,6 +41804,29 @@ int UKismetMathLibrary::Max(int A, int B)
 }
 
 
+// Function Engine.KismetMathLibrary.Matrix_GetOrigin
+// ()
+// Parameters:
+// struct FMatrix                 InMatrix                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FVector UKismetMathLibrary::Matrix_GetOrigin(const struct FMatrix& InMatrix)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.Matrix_GetOrigin");
+
+	UKismetMathLibrary_Matrix_GetOrigin_Params params;
+	params.InMatrix = InMatrix;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.KismetMathLibrary.MapRangeUnclamped
 // ()
 // Parameters:
@@ -41029,7 +41894,7 @@ float UKismetMathLibrary::MapRangeClamped(float Value, float InRangeA, float InR
 // Parameters:
 // float                          X                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Y                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::MakeVector2D(float X, float Y)
 {
@@ -41055,7 +41920,7 @@ struct FVector2D UKismetMathLibrary::MakeVector2D(float X, float Y)
 // float                          X                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Y                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Z                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::MakeVector(float X, float Y, float Z)
 {
@@ -41079,9 +41944,9 @@ struct FVector UKismetMathLibrary::MakeVector(float X, float Y, float Z)
 // Function Engine.KismetMathLibrary.MakeTransform
 // ()
 // Parameters:
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
-// struct FVector                 Scale                          (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FTransform              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
 
 struct FTransform UKismetMathLibrary::MakeTransform(const struct FVector& Location, const struct FRotator& Rotation, const struct FVector& Scale)
@@ -41111,7 +41976,7 @@ struct FTransform UKismetMathLibrary::MakeTransform(const struct FVector& Locati
 // int                            Minutes                        (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Seconds                        (Parm, ZeroConstructor, IsPlainOldData)
 // int                            FractionNano                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::MakeTimespan2(int Days, int Hours, int Minutes, int Seconds, int FractionNano)
 {
@@ -41142,7 +42007,7 @@ struct FTimespan UKismetMathLibrary::MakeTimespan2(int Days, int Hours, int Minu
 // int                            Minutes                        (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Seconds                        (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Milliseconds                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::MakeTimespan(int Days, int Hours, int Minutes, int Seconds, int Milliseconds)
 {
@@ -41168,9 +42033,9 @@ struct FTimespan UKismetMathLibrary::MakeTimespan(int Days, int Hours, int Minut
 // Function Engine.KismetMathLibrary.MakeRotFromZY
 // ()
 // Parameters:
-// struct FVector                 Z                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Y                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Z                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 Y                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromZY(const struct FVector& Z, const struct FVector& Y)
 {
@@ -41193,9 +42058,9 @@ struct FRotator UKismetMathLibrary::MakeRotFromZY(const struct FVector& Z, const
 // Function Engine.KismetMathLibrary.MakeRotFromZX
 // ()
 // Parameters:
-// struct FVector                 Z                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 X                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Z                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 X                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromZX(const struct FVector& Z, const struct FVector& X)
 {
@@ -41218,8 +42083,8 @@ struct FRotator UKismetMathLibrary::MakeRotFromZX(const struct FVector& Z, const
 // Function Engine.KismetMathLibrary.MakeRotFromZ
 // ()
 // Parameters:
-// struct FVector                 Z                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Z                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromZ(const struct FVector& Z)
 {
@@ -41241,9 +42106,9 @@ struct FRotator UKismetMathLibrary::MakeRotFromZ(const struct FVector& Z)
 // Function Engine.KismetMathLibrary.MakeRotFromYZ
 // ()
 // Parameters:
-// struct FVector                 Y                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Z                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Y                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 Z                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromYZ(const struct FVector& Y, const struct FVector& Z)
 {
@@ -41266,9 +42131,9 @@ struct FRotator UKismetMathLibrary::MakeRotFromYZ(const struct FVector& Y, const
 // Function Engine.KismetMathLibrary.MakeRotFromYX
 // ()
 // Parameters:
-// struct FVector                 Y                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 X                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Y                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 X                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromYX(const struct FVector& Y, const struct FVector& X)
 {
@@ -41291,8 +42156,8 @@ struct FRotator UKismetMathLibrary::MakeRotFromYX(const struct FVector& Y, const
 // Function Engine.KismetMathLibrary.MakeRotFromY
 // ()
 // Parameters:
-// struct FVector                 Y                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Y                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromY(const struct FVector& Y)
 {
@@ -41314,9 +42179,9 @@ struct FRotator UKismetMathLibrary::MakeRotFromY(const struct FVector& Y)
 // Function Engine.KismetMathLibrary.MakeRotFromXZ
 // ()
 // Parameters:
-// struct FVector                 X                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Z                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 X                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 Z                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromXZ(const struct FVector& X, const struct FVector& Z)
 {
@@ -41339,9 +42204,9 @@ struct FRotator UKismetMathLibrary::MakeRotFromXZ(const struct FVector& X, const
 // Function Engine.KismetMathLibrary.MakeRotFromXY
 // ()
 // Parameters:
-// struct FVector                 X                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Y                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 X                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 Y                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromXY(const struct FVector& X, const struct FVector& Y)
 {
@@ -41364,8 +42229,8 @@ struct FRotator UKismetMathLibrary::MakeRotFromXY(const struct FVector& X, const
 // Function Engine.KismetMathLibrary.MakeRotFromX
 // ()
 // Parameters:
-// struct FVector                 X                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 X                              (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotFromX(const struct FVector& X)
 {
@@ -41390,7 +42255,7 @@ struct FRotator UKismetMathLibrary::MakeRotFromX(const struct FVector& X)
 // float                          Roll                           (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Pitch                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Yaw                            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotator(float Roll, float Pitch, float Yaw)
 {
@@ -41414,10 +42279,10 @@ struct FRotator UKismetMathLibrary::MakeRotator(float Roll, float Pitch, float Y
 // Function Engine.KismetMathLibrary.MakeRotationFromAxes
 // ()
 // Parameters:
-// struct FVector                 Forward                        (Parm, IsPlainOldData)
-// struct FVector                 Right                          (Parm, IsPlainOldData)
-// struct FVector                 Up                             (Parm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Forward                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Right                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Up                             (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::MakeRotationFromAxes(const struct FVector& Forward, const struct FVector& Right, const struct FVector& Up)
 {
@@ -41442,7 +42307,7 @@ struct FRotator UKismetMathLibrary::MakeRotationFromAxes(const struct FVector& F
 // ()
 // Parameters:
 // int                            InitialSeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRandomStream           ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FRandomStream           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FRandomStream UKismetMathLibrary::MakeRandomStream(int InitialSeed)
 {
@@ -41450,6 +42315,33 @@ struct FRandomStream UKismetMathLibrary::MakeRandomStream(int InitialSeed)
 
 	UKismetMathLibrary_MakeRandomStream_Params params;
 	params.InitialSeed = InitialSeed;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetMathLibrary.MakeQualifiedFrameTime
+// ()
+// Parameters:
+// struct FFrameNumber            Frame                          (Parm)
+// struct FFrameRate              FrameRate                      (Parm, ZeroConstructor, IsPlainOldData)
+// float                          SubFrame                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FQualifiedFrameTime     ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FQualifiedFrameTime UKismetMathLibrary::MakeQualifiedFrameTime(const struct FFrameNumber& Frame, const struct FFrameRate& FrameRate, float SubFrame)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.MakeQualifiedFrameTime");
+
+	UKismetMathLibrary_MakeQualifiedFrameTime_Params params;
+	params.Frame = Frame;
+	params.FrameRate = FrameRate;
+	params.SubFrame = SubFrame;
 
 	auto flags = fn->FunctionFlags;
 
@@ -41491,9 +42383,9 @@ float UKismetMathLibrary::MakePulsatingValue(float InCurrentTime, float InPulses
 // Function Engine.KismetMathLibrary.MakePlaneFromPointAndNormal
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
-// struct FVector                 Normal                         (Parm, IsPlainOldData)
-// struct FPlane                  ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Normal                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FPlane                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FPlane UKismetMathLibrary::MakePlaneFromPointAndNormal(const struct FVector& Point, const struct FVector& Normal)
 {
@@ -41502,6 +42394,31 @@ struct FPlane UKismetMathLibrary::MakePlaneFromPointAndNormal(const struct FVect
 	UKismetMathLibrary_MakePlaneFromPointAndNormal_Params params;
 	params.Point = Point;
 	params.Normal = Normal;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetMathLibrary.MakeFrameRate
+// ()
+// Parameters:
+// int                            Numerator                      (Parm, ZeroConstructor, IsPlainOldData)
+// int                            Denominator                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FFrameRate              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FFrameRate UKismetMathLibrary::MakeFrameRate(int Numerator, int Denominator)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.MakeFrameRate");
+
+	UKismetMathLibrary_MakeFrameRate_Params params;
+	params.Numerator = Numerator;
+	params.Denominator = Denominator;
 
 	auto flags = fn->FunctionFlags;
 
@@ -41523,7 +42440,7 @@ struct FPlane UKismetMathLibrary::MakePlaneFromPointAndNormal(const struct FVect
 // int                            minute                         (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Second                         (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Millisecond                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::MakeDateTime(int Year, int Month, int Day, int hour, int minute, int Second, int Millisecond)
 {
@@ -41555,7 +42472,7 @@ struct FDateTime UKismetMathLibrary::MakeDateTime(int Year, int Month, int Day, 
 // float                          G                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          A                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::MakeColor(float R, float G, float B, float A)
 {
@@ -41580,9 +42497,9 @@ struct FLinearColor UKismetMathLibrary::MakeColor(float R, float G, float B, flo
 // Function Engine.KismetMathLibrary.MakeBox2D
 // ()
 // Parameters:
-// struct FVector2D               Min                            (Parm, IsPlainOldData)
-// struct FVector2D               Max                            (Parm, IsPlainOldData)
-// struct FBox2D                  ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FVector2D               Min                            (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Max                            (Parm, ZeroConstructor, IsPlainOldData)
+// struct FBox2D                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FBox2D UKismetMathLibrary::MakeBox2D(const struct FVector2D& Min, const struct FVector2D& Max)
 {
@@ -41605,9 +42522,9 @@ struct FBox2D UKismetMathLibrary::MakeBox2D(const struct FVector2D& Min, const s
 // Function Engine.KismetMathLibrary.MakeBox
 // ()
 // Parameters:
-// struct FVector                 Min                            (Parm, IsPlainOldData)
-// struct FVector                 Max                            (Parm, IsPlainOldData)
-// struct FBox                    ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Min                            (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Max                            (Parm, ZeroConstructor, IsPlainOldData)
+// struct FBox                    ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FBox UKismetMathLibrary::MakeBox(const struct FVector& Min, const struct FVector& Max)
 {
@@ -41678,12 +42595,12 @@ float UKismetMathLibrary::Log(float A, float Base)
 // Function Engine.KismetMathLibrary.LinePlaneIntersection_OriginNormal
 // ()
 // Parameters:
-// struct FVector                 LineStart                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 LineEnd                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 PlaneOrigin                    (Parm, IsPlainOldData)
-// struct FVector                 PlaneNormal                    (Parm, IsPlainOldData)
+// struct FVector                 LineStart                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 LineEnd                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 PlaneOrigin                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 PlaneNormal                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          T                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Intersection                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Intersection                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::LinePlaneIntersection_OriginNormal(const struct FVector& LineStart, const struct FVector& LineEnd, const struct FVector& PlaneOrigin, const struct FVector& PlaneNormal, float* T, struct FVector* Intersection)
@@ -41714,11 +42631,11 @@ bool UKismetMathLibrary::LinePlaneIntersection_OriginNormal(const struct FVector
 // Function Engine.KismetMathLibrary.LinePlaneIntersection
 // ()
 // Parameters:
-// struct FVector                 LineStart                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 LineEnd                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FPlane                  APlane                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 LineStart                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 LineEnd                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FPlane                  APlane                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          T                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Intersection                   (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Intersection                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::LinePlaneIntersection(const struct FVector& LineStart, const struct FVector& LineEnd, const struct FPlane& APlane, float* T, struct FVector* Intersection)
@@ -41748,10 +42665,10 @@ bool UKismetMathLibrary::LinePlaneIntersection(const struct FVector& LineStart, 
 // Function Engine.KismetMathLibrary.LinearColorLerpUsingHSV
 // ()
 // Parameters:
-// struct FLinearColor            A                              (Parm, IsPlainOldData)
-// struct FLinearColor            B                              (Parm, IsPlainOldData)
+// struct FLinearColor            A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Alpha                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::LinearColorLerpUsingHSV(const struct FLinearColor& A, const struct FLinearColor& B, float Alpha)
 {
@@ -41775,10 +42692,10 @@ struct FLinearColor UKismetMathLibrary::LinearColorLerpUsingHSV(const struct FLi
 // Function Engine.KismetMathLibrary.LinearColorLerp
 // ()
 // Parameters:
-// struct FLinearColor            A                              (Parm, IsPlainOldData)
-// struct FLinearColor            B                              (Parm, IsPlainOldData)
+// struct FLinearColor            A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Alpha                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::LinearColorLerp(const struct FLinearColor& A, const struct FLinearColor& B, float Alpha)
 {
@@ -41802,9 +42719,9 @@ struct FLinearColor UKismetMathLibrary::LinearColorLerp(const struct FLinearColo
 // Function Engine.KismetMathLibrary.LessLess_VectorRotator
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::LessLess_VectorRotator(const struct FVector& A, const struct FRotator& B)
 {
@@ -41827,8 +42744,8 @@ struct FVector UKismetMathLibrary::LessLess_VectorRotator(const struct FVector& 
 // Function Engine.KismetMathLibrary.LessEqual_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::LessEqual_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
@@ -41902,8 +42819,8 @@ bool UKismetMathLibrary::LessEqual_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.LessEqual_DateTimeDateTime
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               B                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::LessEqual_DateTimeDateTime(const struct FDateTime& A, const struct FDateTime& B)
@@ -41952,8 +42869,8 @@ bool UKismetMathLibrary::LessEqual_ByteByte(unsigned char A, unsigned char B)
 // Function Engine.KismetMathLibrary.Less_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::Less_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
@@ -42027,8 +42944,8 @@ bool UKismetMathLibrary::Less_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.Less_DateTimeDateTime
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               B                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::Less_DateTimeDateTime(const struct FDateTime& A, const struct FDateTime& B)
@@ -42104,9 +43021,9 @@ float UKismetMathLibrary::Lerp(float A, float B, float Alpha)
 // Function Engine.KismetMathLibrary.IsPointInBoxWithTransform
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FTransform              BoxWorldTransform              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (Parm, IsPlainOldData)
+// struct FVector                 BoxExtent                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::IsPointInBoxWithTransform(const struct FVector& Point, const struct FTransform& BoxWorldTransform, const struct FVector& BoxExtent)
@@ -42131,9 +43048,9 @@ bool UKismetMathLibrary::IsPointInBoxWithTransform(const struct FVector& Point, 
 // Function Engine.KismetMathLibrary.IsPointInBox
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
-// struct FVector                 BoxOrigin                      (Parm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (Parm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoxOrigin                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoxExtent                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::IsPointInBox(const struct FVector& Point, const struct FVector& BoxOrigin, const struct FVector& BoxExtent)
@@ -42158,7 +43075,7 @@ bool UKismetMathLibrary::IsPointInBox(const struct FVector& Point, const struct 
 // Function Engine.KismetMathLibrary.IsMorning
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::IsMorning(const struct FDateTime& A)
@@ -42204,7 +43121,7 @@ bool UKismetMathLibrary::IsLeapYear(int Year)
 // Function Engine.KismetMathLibrary.IsAfternoon
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::IsAfternoon(const struct FDateTime& A)
@@ -42251,8 +43168,8 @@ struct FTransform UKismetMathLibrary::InvertTransform(const struct FTransform& T
 // ()
 // Parameters:
 // struct FTransform              T                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::InverseTransformRotation(const struct FTransform& T, const struct FRotator& Rotation)
 {
@@ -42276,8 +43193,8 @@ struct FRotator UKismetMathLibrary::InverseTransformRotation(const struct FTrans
 // ()
 // Parameters:
 // struct FTransform              T                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::InverseTransformLocation(const struct FTransform& T, const struct FVector& Location)
 {
@@ -42301,8 +43218,8 @@ struct FVector UKismetMathLibrary::InverseTransformLocation(const struct FTransf
 // ()
 // Parameters:
 // struct FTransform              T                              (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Direction                      (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Direction                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::InverseTransformDirection(const struct FTransform& T, const struct FVector& Direction)
 {
@@ -42412,8 +43329,8 @@ float UKismetMathLibrary::Hypotenuse(float Width, float Height)
 // Function Engine.KismetMathLibrary.HSVToRGB_Vector
 // ()
 // Parameters:
-// struct FLinearColor            HSV                            (ConstParm, Parm, IsPlainOldData)
-// struct FLinearColor            RGB                            (Parm, OutParm, IsPlainOldData)
+// struct FLinearColor            HSV                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            RGB                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::HSVToRGB_Vector(const struct FLinearColor& HSV, struct FLinearColor* RGB)
 {
@@ -42440,7 +43357,7 @@ void UKismetMathLibrary::HSVToRGB_Vector(const struct FLinearColor& HSV, struct 
 // float                          S                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          V                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          A                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::HSVToRGB(float H, float S, float V, float A)
 {
@@ -42490,9 +43407,9 @@ float UKismetMathLibrary::GridSnap_Float(float Location, float GridSize)
 // Function Engine.KismetMathLibrary.GreaterGreater_VectorRotator
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::GreaterGreater_VectorRotator(const struct FVector& A, const struct FRotator& B)
 {
@@ -42515,8 +43432,8 @@ struct FVector UKismetMathLibrary::GreaterGreater_VectorRotator(const struct FVe
 // Function Engine.KismetMathLibrary.GreaterEqual_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::GreaterEqual_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
@@ -42590,8 +43507,8 @@ bool UKismetMathLibrary::GreaterEqual_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.GreaterEqual_DateTimeDateTime
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               B                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::GreaterEqual_DateTimeDateTime(const struct FDateTime& A, const struct FDateTime& B)
@@ -42640,8 +43557,8 @@ bool UKismetMathLibrary::GreaterEqual_ByteByte(unsigned char A, unsigned char B)
 // Function Engine.KismetMathLibrary.Greater_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::Greater_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
@@ -42715,8 +43632,8 @@ bool UKismetMathLibrary::Greater_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.Greater_DateTimeDateTime
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               B                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::Greater_DateTimeDateTime(const struct FDateTime& A, const struct FDateTime& B)
@@ -42765,7 +43682,7 @@ bool UKismetMathLibrary::Greater_ByteByte(unsigned char A, unsigned char B)
 // Function Engine.KismetMathLibrary.GetYear
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetYear(const struct FDateTime& A)
@@ -42788,7 +43705,7 @@ int UKismetMathLibrary::GetYear(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetYawPitchFromVector
 // ()
 // Parameters:
-// struct FVector                 InVec                          (Parm, IsPlainOldData)
+// struct FVector                 InVec                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Yaw                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Pitch                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
@@ -42816,7 +43733,7 @@ void UKismetMathLibrary::GetYawPitchFromVector(const struct FVector& InVec, floa
 // ()
 // Parameters:
 // TArray<struct FVector>         Vectors                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::GetVectorArrayAverage(TArray<struct FVector> Vectors)
 {
@@ -42838,8 +43755,8 @@ struct FVector UKismetMathLibrary::GetVectorArrayAverage(TArray<struct FVector> 
 // Function Engine.KismetMathLibrary.GetUpVector
 // ()
 // Parameters:
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::GetUpVector(const struct FRotator& InRot)
 {
@@ -42861,7 +43778,7 @@ struct FVector UKismetMathLibrary::GetUpVector(const struct FRotator& InRot)
 // Function Engine.KismetMathLibrary.GetTotalSeconds
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetTotalSeconds(const struct FTimespan& A)
@@ -42884,7 +43801,7 @@ float UKismetMathLibrary::GetTotalSeconds(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetTotalMinutes
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetTotalMinutes(const struct FTimespan& A)
@@ -42907,7 +43824,7 @@ float UKismetMathLibrary::GetTotalMinutes(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetTotalMilliseconds
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetTotalMilliseconds(const struct FTimespan& A)
@@ -42930,7 +43847,7 @@ float UKismetMathLibrary::GetTotalMilliseconds(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetTotalHours
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetTotalHours(const struct FTimespan& A)
@@ -42953,7 +43870,7 @@ float UKismetMathLibrary::GetTotalHours(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetTotalDays
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetTotalDays(const struct FTimespan& A)
@@ -42976,8 +43893,8 @@ float UKismetMathLibrary::GetTotalDays(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetTimeOfDay
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::GetTimeOfDay(const struct FDateTime& A)
 {
@@ -43020,9 +43937,9 @@ float UKismetMathLibrary::GetTAU()
 // Function Engine.KismetMathLibrary.GetSlopeDegreeAngles
 // ()
 // Parameters:
-// struct FVector                 MyRightYAxis                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 FloorNormal                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 UpVector                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 MyRightYAxis                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 FloorNormal                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 UpVector                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          OutSlopePitchDegreeAngle       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          OutSlopeRollDegreeAngle        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
@@ -43051,7 +43968,7 @@ void UKismetMathLibrary::GetSlopeDegreeAngles(const struct FVector& MyRightYAxis
 // Function Engine.KismetMathLibrary.GetSeconds
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetSeconds(const struct FTimespan& A)
@@ -43074,7 +43991,7 @@ int UKismetMathLibrary::GetSeconds(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetSecond
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetSecond(const struct FDateTime& A)
@@ -43097,8 +44014,8 @@ int UKismetMathLibrary::GetSecond(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetRightVector
 // ()
 // Parameters:
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::GetRightVector(const struct FRotator& InRot)
 {
@@ -43120,9 +44037,9 @@ struct FVector UKismetMathLibrary::GetRightVector(const struct FRotator& InRot)
 // Function Engine.KismetMathLibrary.GetReflectionVector
 // ()
 // Parameters:
-// struct FVector                 Direction                      (Parm, IsPlainOldData)
-// struct FVector                 SurfaceNormal                  (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Direction                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 SurfaceNormal                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::GetReflectionVector(const struct FVector& Direction, const struct FVector& SurfaceNormal)
 {
@@ -43145,9 +44062,9 @@ struct FVector UKismetMathLibrary::GetReflectionVector(const struct FVector& Dir
 // Function Engine.KismetMathLibrary.GetPointDistanceToSegment
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
-// struct FVector                 SegmentStart                   (Parm, IsPlainOldData)
-// struct FVector                 SegmentEnd                     (Parm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 SegmentStart                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 SegmentEnd                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetPointDistanceToSegment(const struct FVector& Point, const struct FVector& SegmentStart, const struct FVector& SegmentEnd)
@@ -43172,9 +44089,9 @@ float UKismetMathLibrary::GetPointDistanceToSegment(const struct FVector& Point,
 // Function Engine.KismetMathLibrary.GetPointDistanceToLine
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
-// struct FVector                 LineOrigin                     (Parm, IsPlainOldData)
-// struct FVector                 LineDirection                  (Parm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LineOrigin                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LineDirection                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetPointDistanceToLine(const struct FVector& Point, const struct FVector& LineOrigin, const struct FVector& LineDirection)
@@ -43220,7 +44137,7 @@ float UKismetMathLibrary::GetPI()
 // Function Engine.KismetMathLibrary.GetMonth
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetMonth(const struct FDateTime& A)
@@ -43243,7 +44160,7 @@ int UKismetMathLibrary::GetMonth(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetMinutes
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetMinutes(const struct FTimespan& A)
@@ -43266,7 +44183,7 @@ int UKismetMathLibrary::GetMinutes(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetMinute
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetMinute(const struct FDateTime& A)
@@ -43289,7 +44206,7 @@ int UKismetMathLibrary::GetMinute(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetMinElement
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetMinElement(const struct FVector& A)
@@ -43312,7 +44229,7 @@ float UKismetMathLibrary::GetMinElement(const struct FVector& A)
 // Function Engine.KismetMathLibrary.GetMilliseconds
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetMilliseconds(const struct FTimespan& A)
@@ -43335,7 +44252,7 @@ int UKismetMathLibrary::GetMilliseconds(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetMillisecond
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetMillisecond(const struct FDateTime& A)
@@ -43358,7 +44275,7 @@ int UKismetMathLibrary::GetMillisecond(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetMaxElement
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::GetMaxElement(const struct FVector& A)
@@ -43381,7 +44298,7 @@ float UKismetMathLibrary::GetMaxElement(const struct FVector& A)
 // Function Engine.KismetMathLibrary.GetHours
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetHours(const struct FTimespan& A)
@@ -43404,7 +44321,7 @@ int UKismetMathLibrary::GetHours(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetHour12
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetHour12(const struct FDateTime& A)
@@ -43427,7 +44344,7 @@ int UKismetMathLibrary::GetHour12(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetHour
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetHour(const struct FDateTime& A)
@@ -43450,8 +44367,8 @@ int UKismetMathLibrary::GetHour(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetForwardVector
 // ()
 // Parameters:
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::GetForwardVector(const struct FRotator& InRot)
 {
@@ -43473,8 +44390,8 @@ struct FVector UKismetMathLibrary::GetForwardVector(const struct FRotator& InRot
 // Function Engine.KismetMathLibrary.GetDuration
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::GetDuration(const struct FTimespan& A)
 {
@@ -43496,9 +44413,9 @@ struct FTimespan UKismetMathLibrary::GetDuration(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetDirectionUnitVector
 // ()
 // Parameters:
-// struct FVector                 From                           (Parm, IsPlainOldData)
-// struct FVector                 To                             (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 From                           (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 To                             (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::GetDirectionUnitVector(const struct FVector& From, const struct FVector& To)
 {
@@ -43521,7 +44438,7 @@ struct FVector UKismetMathLibrary::GetDirectionUnitVector(const struct FVector& 
 // Function Engine.KismetMathLibrary.GetDays
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetDays(const struct FTimespan& A)
@@ -43544,7 +44461,7 @@ int UKismetMathLibrary::GetDays(const struct FTimespan& A)
 // Function Engine.KismetMathLibrary.GetDayOfYear
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetDayOfYear(const struct FDateTime& A)
@@ -43567,7 +44484,7 @@ int UKismetMathLibrary::GetDayOfYear(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetDay
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 int UKismetMathLibrary::GetDay(const struct FDateTime& A)
@@ -43590,8 +44507,8 @@ int UKismetMathLibrary::GetDay(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetDate
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::GetDate(const struct FDateTime& A)
 {
@@ -43613,7 +44530,7 @@ struct FDateTime UKismetMathLibrary::GetDate(const struct FDateTime& A)
 // Function Engine.KismetMathLibrary.GetAzimuthAndElevation
 // ()
 // Parameters:
-// struct FVector                 InDirection                    (Parm, IsPlainOldData)
+// struct FVector                 InDirection                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FTransform              ReferenceFrame                 (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 // float                          Azimuth                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Elevation                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -43642,10 +44559,10 @@ void UKismetMathLibrary::GetAzimuthAndElevation(const struct FVector& InDirectio
 // Function Engine.KismetMathLibrary.GetAxes
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FVector                 X                              (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Y                              (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Z                              (Parm, OutParm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 X                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Y                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Z                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::GetAxes(const struct FRotator& A, struct FVector* X, struct FVector* Y, struct FVector* Z)
 {
@@ -43672,8 +44589,8 @@ void UKismetMathLibrary::GetAxes(const struct FRotator& A, struct FVector* X, st
 // Function Engine.KismetMathLibrary.FTruncVector
 // ()
 // Parameters:
-// struct FVector                 InVector                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FIntVector              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 InVector                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FIntVector              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntVector UKismetMathLibrary::FTruncVector(const struct FVector& InVector)
 {
@@ -43719,7 +44636,7 @@ int UKismetMathLibrary::FTrunc(float A)
 // ()
 // Parameters:
 // float                          Seconds                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::FromSeconds(float Seconds)
 {
@@ -43742,7 +44659,7 @@ struct FTimespan UKismetMathLibrary::FromSeconds(float Seconds)
 // ()
 // Parameters:
 // float                          Minutes                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::FromMinutes(float Minutes)
 {
@@ -43765,7 +44682,7 @@ struct FTimespan UKismetMathLibrary::FromMinutes(float Minutes)
 // ()
 // Parameters:
 // float                          Milliseconds                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::FromMilliseconds(float Milliseconds)
 {
@@ -43788,7 +44705,7 @@ struct FTimespan UKismetMathLibrary::FromMilliseconds(float Milliseconds)
 // ()
 // Parameters:
 // float                          Hours                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::FromHours(float Hours)
 {
@@ -43811,7 +44728,7 @@ struct FTimespan UKismetMathLibrary::FromHours(float Hours)
 // ()
 // Parameters:
 // float                          Days                           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::FromDays(float Days)
 {
@@ -44086,12 +45003,12 @@ float UKismetMathLibrary::FInterpEaseInOut(float A, float B, float Alpha, float 
 // Function Engine.KismetMathLibrary.FindNearestPointsOnLineSegments
 // ()
 // Parameters:
-// struct FVector                 Segment1Start                  (Parm, IsPlainOldData)
-// struct FVector                 Segment1End                    (Parm, IsPlainOldData)
-// struct FVector                 Segment2Start                  (Parm, IsPlainOldData)
-// struct FVector                 Segment2End                    (Parm, IsPlainOldData)
-// struct FVector                 Segment1Point                  (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Segment2Point                  (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Segment1Start                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Segment1End                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Segment2Start                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Segment2End                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Segment1Point                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Segment2Point                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::FindNearestPointsOnLineSegments(const struct FVector& Segment1Start, const struct FVector& Segment1End, const struct FVector& Segment2Start, const struct FVector& Segment2End, struct FVector* Segment1Point, struct FVector* Segment2Point)
 {
@@ -44119,9 +45036,9 @@ void UKismetMathLibrary::FindNearestPointsOnLineSegments(const struct FVector& S
 // Function Engine.KismetMathLibrary.FindLookAtRotation
 // ()
 // Parameters:
-// struct FVector                 Start                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Target                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 Target                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::FindLookAtRotation(const struct FVector& Start, const struct FVector& Target)
 {
@@ -44144,10 +45061,10 @@ struct FRotator UKismetMathLibrary::FindLookAtRotation(const struct FVector& Sta
 // Function Engine.KismetMathLibrary.FindClosestPointOnSegment
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
-// struct FVector                 SegmentStart                   (Parm, IsPlainOldData)
-// struct FVector                 SegmentEnd                     (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 SegmentStart                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 SegmentEnd                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::FindClosestPointOnSegment(const struct FVector& Point, const struct FVector& SegmentStart, const struct FVector& SegmentEnd)
 {
@@ -44171,10 +45088,10 @@ struct FVector UKismetMathLibrary::FindClosestPointOnSegment(const struct FVecto
 // Function Engine.KismetMathLibrary.FindClosestPointOnLine
 // ()
 // Parameters:
-// struct FVector                 Point                          (Parm, IsPlainOldData)
-// struct FVector                 LineOrigin                     (Parm, IsPlainOldData)
-// struct FVector                 LineDirection                  (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 Point                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LineOrigin                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LineDirection                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::FindClosestPointOnLine(const struct FVector& Point, const struct FVector& LineOrigin, const struct FVector& LineDirection)
 {
@@ -44294,8 +45211,8 @@ float UKismetMathLibrary::Exp(float A)
 // Function Engine.KismetMathLibrary.EqualEqual_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ErrorTolerance                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -44321,8 +45238,8 @@ bool UKismetMathLibrary::EqualEqual_VectorVector(const struct FVector& A, const 
 // Function Engine.KismetMathLibrary.EqualEqual_Vector2DVector2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ErrorTolerance                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -44373,8 +45290,8 @@ bool UKismetMathLibrary::EqualEqual_TransformTransform(const struct FTransform& 
 // Function Engine.KismetMathLibrary.EqualEqual_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::EqualEqual_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
@@ -44398,8 +45315,8 @@ bool UKismetMathLibrary::EqualEqual_TimespanTimespan(const struct FTimespan& A, 
 // Function Engine.KismetMathLibrary.EqualEqual_RotatorRotator
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ErrorTolerance                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -44525,8 +45442,8 @@ bool UKismetMathLibrary::EqualEqual_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.EqualEqual_DateTimeDateTime
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FDateTime               B                              (Parm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FDateTime               B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::EqualEqual_DateTimeDateTime(const struct FDateTime& A, const struct FDateTime& B)
@@ -44658,8 +45575,8 @@ float UKismetMathLibrary::Ease(float A, float B, float Alpha, TEnumAsByte<EEasin
 // Function Engine.KismetMathLibrary.DotProduct2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::DotProduct2D(const struct FVector2D& A, const struct FVector2D& B)
@@ -44683,8 +45600,8 @@ float UKismetMathLibrary::DotProduct2D(const struct FVector2D& A, const struct F
 // Function Engine.KismetMathLibrary.Dot_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::Dot_VectorVector(const struct FVector& A, const struct FVector& B)
@@ -44708,9 +45625,9 @@ float UKismetMathLibrary::Dot_VectorVector(const struct FVector& A, const struct
 // Function Engine.KismetMathLibrary.Divide_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Divide_VectorVector(const struct FVector& A, const struct FVector& B)
 {
@@ -44733,9 +45650,9 @@ struct FVector UKismetMathLibrary::Divide_VectorVector(const struct FVector& A, 
 // Function Engine.KismetMathLibrary.Divide_VectorInt
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Divide_VectorInt(const struct FVector& A, int B)
 {
@@ -44758,9 +45675,9 @@ struct FVector UKismetMathLibrary::Divide_VectorInt(const struct FVector& A, int
 // Function Engine.KismetMathLibrary.Divide_VectorFloat
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Divide_VectorFloat(const struct FVector& A, float B)
 {
@@ -44783,9 +45700,9 @@ struct FVector UKismetMathLibrary::Divide_VectorFloat(const struct FVector& A, f
 // Function Engine.KismetMathLibrary.Divide_Vector2DVector2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Divide_Vector2DVector2D(const struct FVector2D& A, const struct FVector2D& B)
 {
@@ -44808,9 +45725,9 @@ struct FVector2D UKismetMathLibrary::Divide_Vector2DVector2D(const struct FVecto
 // Function Engine.KismetMathLibrary.Divide_Vector2DFloat
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Divide_Vector2DFloat(const struct FVector2D& A, float B)
 {
@@ -44833,9 +45750,9 @@ struct FVector2D UKismetMathLibrary::Divide_Vector2DFloat(const struct FVector2D
 // Function Engine.KismetMathLibrary.Divide_TimespanFloat
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
 // float                          Scalar                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::Divide_TimespanFloat(const struct FTimespan& A, float Scalar)
 {
@@ -45167,7 +46084,7 @@ int UKismetMathLibrary::DaysInMonth(int Year, int Month)
 // Function Engine.KismetMathLibrary.DateTimeMinValue
 // ()
 // Parameters:
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::DateTimeMinValue()
 {
@@ -45188,7 +46105,7 @@ struct FDateTime UKismetMathLibrary::DateTimeMinValue()
 // Function Engine.KismetMathLibrary.DateTimeMaxValue
 // ()
 // Parameters:
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::DateTimeMaxValue()
 {
@@ -45210,7 +46127,7 @@ struct FDateTime UKismetMathLibrary::DateTimeMaxValue()
 // ()
 // Parameters:
 // class FString                  DateTimeString                 (Parm, ZeroConstructor)
-// struct FDateTime               Result                         (Parm, OutParm)
+// struct FDateTime               Result                         (Parm, OutParm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::DateTimeFromString(const class FString& DateTimeString, struct FDateTime* Result)
@@ -45237,7 +46154,7 @@ bool UKismetMathLibrary::DateTimeFromString(const class FString& DateTimeString,
 // ()
 // Parameters:
 // class FString                  IsoString                      (Parm, ZeroConstructor)
-// struct FDateTime               Result                         (Parm, OutParm)
+// struct FDateTime               Result                         (Parm, OutParm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetMathLibrary::DateTimeFromIsoString(const class FString& IsoString, struct FDateTime* Result)
@@ -45263,8 +46180,8 @@ bool UKismetMathLibrary::DateTimeFromIsoString(const class FString& IsoString, s
 // Function Engine.KismetMathLibrary.CrossProduct2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 float UKismetMathLibrary::CrossProduct2D(const struct FVector2D& A, const struct FVector2D& B)
@@ -45288,9 +46205,9 @@ float UKismetMathLibrary::CrossProduct2D(const struct FVector2D& A, const struct
 // Function Engine.KismetMathLibrary.Cross_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Cross_VectorVector(const struct FVector& A, const struct FVector& B)
 {
@@ -45316,7 +46233,7 @@ struct FVector UKismetMathLibrary::Cross_VectorVector(const struct FVector& A, c
 // float                          Yaw                            (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Pitch                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Length                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::CreateVectorFromYawPitch(float Yaw, float Pitch, float Length)
 {
@@ -45388,8 +46305,8 @@ struct FTransform UKismetMathLibrary::ConvertTransformToRelative(const struct FT
 // Function Engine.KismetMathLibrary.Conv_VectorToVector2D
 // ()
 // Parameters:
-// struct FVector                 InVector                       (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 InVector                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Conv_VectorToVector2D(const struct FVector& InVector)
 {
@@ -45411,7 +46328,7 @@ struct FVector2D UKismetMathLibrary::Conv_VectorToVector2D(const struct FVector&
 // Function Engine.KismetMathLibrary.Conv_VectorToTransform
 // ()
 // Parameters:
-// struct FVector                 InLocation                     (Parm, IsPlainOldData)
+// struct FVector                 InLocation                     (Parm, ZeroConstructor, IsPlainOldData)
 // struct FTransform              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
 
 struct FTransform UKismetMathLibrary::Conv_VectorToTransform(const struct FVector& InLocation)
@@ -45434,8 +46351,8 @@ struct FTransform UKismetMathLibrary::Conv_VectorToTransform(const struct FVecto
 // Function Engine.KismetMathLibrary.Conv_VectorToRotator
 // ()
 // Parameters:
-// struct FVector                 InVec                          (Parm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 InVec                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::Conv_VectorToRotator(const struct FVector& InVec)
 {
@@ -45457,8 +46374,8 @@ struct FRotator UKismetMathLibrary::Conv_VectorToRotator(const struct FVector& I
 // Function Engine.KismetMathLibrary.Conv_VectorToLinearColor
 // ()
 // Parameters:
-// struct FVector                 InVec                          (Parm, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 InVec                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::Conv_VectorToLinearColor(const struct FVector& InVec)
 {
@@ -45480,9 +46397,9 @@ struct FLinearColor UKismetMathLibrary::Conv_VectorToLinearColor(const struct FV
 // Function Engine.KismetMathLibrary.Conv_Vector2DToVector
 // ()
 // Parameters:
-// struct FVector2D               InVector2D                     (Parm, IsPlainOldData)
+// struct FVector2D               InVector2D                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Z                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Conv_Vector2DToVector(const struct FVector2D& InVector2D, float Z)
 {
@@ -45505,8 +46422,8 @@ struct FVector UKismetMathLibrary::Conv_Vector2DToVector(const struct FVector2D&
 // Function Engine.KismetMathLibrary.Conv_RotatorToVector
 // ()
 // Parameters:
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Conv_RotatorToVector(const struct FRotator& InRot)
 {
@@ -45525,11 +46442,80 @@ struct FVector UKismetMathLibrary::Conv_RotatorToVector(const struct FRotator& I
 }
 
 
+// Function Engine.KismetMathLibrary.Conv_RotatorToTransform
+// ()
+// Parameters:
+// struct FRotator                inRotator                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FTransform              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+
+struct FTransform UKismetMathLibrary::Conv_RotatorToTransform(const struct FRotator& inRotator)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.Conv_RotatorToTransform");
+
+	UKismetMathLibrary_Conv_RotatorToTransform_Params params;
+	params.inRotator = inRotator;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetMathLibrary.Conv_MatrixToTransform
+// ()
+// Parameters:
+// struct FMatrix                 InMatrix                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FTransform              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+
+struct FTransform UKismetMathLibrary::Conv_MatrixToTransform(const struct FMatrix& InMatrix)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.Conv_MatrixToTransform");
+
+	UKismetMathLibrary_Conv_MatrixToTransform_Params params;
+	params.InMatrix = InMatrix;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetMathLibrary.Conv_MatrixToRotator
+// ()
+// Parameters:
+// struct FMatrix                 InMatrix                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FRotator UKismetMathLibrary::Conv_MatrixToRotator(const struct FMatrix& InMatrix)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.Conv_MatrixToRotator");
+
+	UKismetMathLibrary_Conv_MatrixToRotator_Params params;
+	params.InMatrix = InMatrix;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.KismetMathLibrary.Conv_LinearColorToVector
 // ()
 // Parameters:
-// struct FLinearColor            InLinearColor                  (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            InLinearColor                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Conv_LinearColorToVector(const struct FLinearColor& InLinearColor)
 {
@@ -45551,8 +46537,8 @@ struct FVector UKismetMathLibrary::Conv_LinearColorToVector(const struct FLinear
 // Function Engine.KismetMathLibrary.Conv_LinearColorToColor
 // ()
 // Parameters:
-// struct FLinearColor            InLinearColor                  (Parm, IsPlainOldData)
-// struct FColor                  ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            InLinearColor                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FColor                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FColor UKismetMathLibrary::Conv_LinearColorToColor(const struct FLinearColor& InLinearColor)
 {
@@ -45574,8 +46560,8 @@ struct FColor UKismetMathLibrary::Conv_LinearColorToColor(const struct FLinearCo
 // Function Engine.KismetMathLibrary.Conv_IntVectorToVector
 // ()
 // Parameters:
-// struct FIntVector              InIntVector                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntVector              InIntVector                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Conv_IntVectorToVector(const struct FIntVector& InIntVector)
 {
@@ -45598,7 +46584,7 @@ struct FVector UKismetMathLibrary::Conv_IntVectorToVector(const struct FIntVecto
 // ()
 // Parameters:
 // int                            inInt                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FIntVector              ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FIntVector              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FIntVector UKismetMathLibrary::Conv_IntToIntVector(int inInt)
 {
@@ -45690,7 +46676,7 @@ bool UKismetMathLibrary::Conv_IntToBool(int inInt)
 // ()
 // Parameters:
 // float                          InFloat                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Conv_FloatToVector(float InFloat)
 {
@@ -45713,7 +46699,7 @@ struct FVector UKismetMathLibrary::Conv_FloatToVector(float InFloat)
 // ()
 // Parameters:
 // float                          InFloat                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::Conv_FloatToLinearColor(float InFloat)
 {
@@ -45735,8 +46721,8 @@ struct FLinearColor UKismetMathLibrary::Conv_FloatToLinearColor(float InFloat)
 // Function Engine.KismetMathLibrary.Conv_ColorToLinearColor
 // ()
 // Parameters:
-// struct FColor                  inColor                        (Parm, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FColor                  inColor                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::Conv_ColorToLinearColor(const struct FColor& inColor)
 {
@@ -45898,9 +46884,9 @@ struct FTransform UKismetMathLibrary::ComposeTransforms(const struct FTransform&
 // Function Engine.KismetMathLibrary.ComposeRotators
 // ()
 // Parameters:
-// struct FRotator                A                              (Parm, IsPlainOldData)
-// struct FRotator                B                              (Parm, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UKismetMathLibrary::ComposeRotators(const struct FRotator& A, const struct FRotator& B)
 {
@@ -45948,10 +46934,10 @@ bool UKismetMathLibrary::ClassIsChildOf(class UClass* TestClass, class UClass* P
 // Function Engine.KismetMathLibrary.ClampVectorSize
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Min                            (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Max                            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::ClampVectorSize(const struct FVector& A, float Min, float Max)
 {
@@ -46052,11 +47038,11 @@ int UKismetMathLibrary::Clamp(int Value, int Min, int Max)
 // Function Engine.KismetMathLibrary.CInterpTo
 // ()
 // Parameters:
-// struct FLinearColor            Current                        (Parm, IsPlainOldData)
-// struct FLinearColor            Target                         (Parm, IsPlainOldData)
+// struct FLinearColor            Current                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            Target                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DeltaTime                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          InterpSpeed                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetMathLibrary::CInterpTo(const struct FLinearColor& Current, const struct FLinearColor& Target, float DeltaTime, float InterpSpeed)
 {
@@ -46081,7 +47067,7 @@ struct FLinearColor UKismetMathLibrary::CInterpTo(const struct FLinearColor& Cur
 // Function Engine.KismetMathLibrary.BreakVector2D
 // ()
 // Parameters:
-// struct FVector2D               InVec                          (Parm, IsPlainOldData)
+// struct FVector2D               InVec                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          X                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Y                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
@@ -46108,7 +47094,7 @@ void UKismetMathLibrary::BreakVector2D(const struct FVector2D& InVec, float* X, 
 // Function Engine.KismetMathLibrary.BreakVector
 // ()
 // Parameters:
-// struct FVector                 InVec                          (Parm, IsPlainOldData)
+// struct FVector                 InVec                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          X                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Y                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Z                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -46139,9 +47125,9 @@ void UKismetMathLibrary::BreakVector(const struct FVector& InVec, float* X, floa
 // ()
 // Parameters:
 // struct FTransform              InTransform                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Location                       (Parm, OutParm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Scale                          (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Scale                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::BreakTransform(const struct FTransform& InTransform, struct FVector* Location, struct FRotator* Rotation, struct FVector* Scale)
 {
@@ -46168,7 +47154,7 @@ void UKismetMathLibrary::BreakTransform(const struct FTransform& InTransform, st
 // Function Engine.KismetMathLibrary.BreakTimespan2
 // ()
 // Parameters:
-// struct FTimespan               InTimespan                     (Parm)
+// struct FTimespan               InTimespan                     (Parm, ZeroConstructor)
 // int                            Days                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            Hours                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            Minutes                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -46204,7 +47190,7 @@ void UKismetMathLibrary::BreakTimespan2(const struct FTimespan& InTimespan, int*
 // Function Engine.KismetMathLibrary.BreakTimespan
 // ()
 // Parameters:
-// struct FTimespan               InTimespan                     (Parm)
+// struct FTimespan               InTimespan                     (Parm, ZeroConstructor)
 // int                            Days                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            Hours                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            Minutes                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -46240,10 +47226,10 @@ void UKismetMathLibrary::BreakTimespan(const struct FTimespan& InTimespan, int* 
 // Function Engine.KismetMathLibrary.BreakRotIntoAxes
 // ()
 // Parameters:
-// struct FRotator                InRot                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 X                              (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Y                              (Parm, OutParm, IsPlainOldData)
-// struct FVector                 Z                              (Parm, OutParm, IsPlainOldData)
+// struct FRotator                InRot                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 X                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Y                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Z                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::BreakRotIntoAxes(const struct FRotator& InRot, struct FVector* X, struct FVector* Y, struct FVector* Z)
 {
@@ -46270,7 +47256,7 @@ void UKismetMathLibrary::BreakRotIntoAxes(const struct FRotator& InRot, struct F
 // Function Engine.KismetMathLibrary.BreakRotator
 // ()
 // Parameters:
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Roll                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Pitch                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Yaw                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -46300,7 +47286,7 @@ void UKismetMathLibrary::BreakRotator(const struct FRotator& InRot, float* Roll,
 // Function Engine.KismetMathLibrary.BreakRandomStream
 // ()
 // Parameters:
-// struct FRandomStream           InRandomStream                 (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FRandomStream           InRandomStream                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // int                            InitialSeed                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetMathLibrary::BreakRandomStream(const struct FRandomStream& InRandomStream, int* InitialSeed)
@@ -46321,10 +47307,67 @@ void UKismetMathLibrary::BreakRandomStream(const struct FRandomStream& InRandomS
 }
 
 
+// Function Engine.KismetMathLibrary.BreakQualifiedFrameTime
+// ()
+// Parameters:
+// struct FQualifiedFrameTime     InFrameTime                    (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FFrameNumber            Frame                          (Parm, OutParm)
+// struct FFrameRate              FrameRate                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// float                          SubFrame                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UKismetMathLibrary::BreakQualifiedFrameTime(const struct FQualifiedFrameTime& InFrameTime, struct FFrameNumber* Frame, struct FFrameRate* FrameRate, float* SubFrame)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.BreakQualifiedFrameTime");
+
+	UKismetMathLibrary_BreakQualifiedFrameTime_Params params;
+	params.InFrameTime = InFrameTime;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (Frame != nullptr)
+		*Frame = params.Frame;
+	if (FrameRate != nullptr)
+		*FrameRate = params.FrameRate;
+	if (SubFrame != nullptr)
+		*SubFrame = params.SubFrame;
+}
+
+
+// Function Engine.KismetMathLibrary.BreakFrameRate
+// ()
+// Parameters:
+// struct FFrameRate              InFrameRate                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// int                            Numerator                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// int                            Denominator                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UKismetMathLibrary::BreakFrameRate(const struct FFrameRate& InFrameRate, int* Numerator, int* Denominator)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetMathLibrary.BreakFrameRate");
+
+	UKismetMathLibrary_BreakFrameRate_Params params;
+	params.InFrameRate = InFrameRate;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (Numerator != nullptr)
+		*Numerator = params.Numerator;
+	if (Denominator != nullptr)
+		*Denominator = params.Denominator;
+}
+
+
 // Function Engine.KismetMathLibrary.BreakDateTime
 // ()
 // Parameters:
-// struct FDateTime               InDateTime                     (Parm)
+// struct FDateTime               InDateTime                     (Parm, ZeroConstructor)
 // int                            Year                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            Month                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            Day                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -46366,7 +47409,7 @@ void UKismetMathLibrary::BreakDateTime(const struct FDateTime& InDateTime, int* 
 // Function Engine.KismetMathLibrary.BreakColor
 // ()
 // Parameters:
-// struct FLinearColor            inColor                        (ConstParm, Parm, IsPlainOldData)
+// struct FLinearColor            inColor                        (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          R                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          G                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -46670,9 +47713,9 @@ int UKismetMathLibrary::And_IntInt(int A, int B)
 // Function Engine.KismetMathLibrary.Add_VectorVector
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
-// struct FVector                 B                              (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Add_VectorVector(const struct FVector& A, const struct FVector& B)
 {
@@ -46695,9 +47738,9 @@ struct FVector UKismetMathLibrary::Add_VectorVector(const struct FVector& A, con
 // Function Engine.KismetMathLibrary.Add_VectorInt
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Add_VectorInt(const struct FVector& A, int B)
 {
@@ -46720,9 +47763,9 @@ struct FVector UKismetMathLibrary::Add_VectorInt(const struct FVector& A, int B)
 // Function Engine.KismetMathLibrary.Add_VectorFloat
 // ()
 // Parameters:
-// struct FVector                 A                              (Parm, IsPlainOldData)
+// struct FVector                 A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UKismetMathLibrary::Add_VectorFloat(const struct FVector& A, float B)
 {
@@ -46745,9 +47788,9 @@ struct FVector UKismetMathLibrary::Add_VectorFloat(const struct FVector& A, floa
 // Function Engine.KismetMathLibrary.Add_Vector2DVector2D
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
-// struct FVector2D               B                              (Parm, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               B                              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Add_Vector2DVector2D(const struct FVector2D& A, const struct FVector2D& B)
 {
@@ -46770,9 +47813,9 @@ struct FVector2D UKismetMathLibrary::Add_Vector2DVector2D(const struct FVector2D
 // Function Engine.KismetMathLibrary.Add_Vector2DFloat
 // ()
 // Parameters:
-// struct FVector2D               A                              (Parm, IsPlainOldData)
+// struct FVector2D               A                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          B                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UKismetMathLibrary::Add_Vector2DFloat(const struct FVector2D& A, float B)
 {
@@ -46795,9 +47838,9 @@ struct FVector2D UKismetMathLibrary::Add_Vector2DFloat(const struct FVector2D& A
 // Function Engine.KismetMathLibrary.Add_TimespanTimespan
 // ()
 // Parameters:
-// struct FTimespan               A                              (Parm)
-// struct FTimespan               B                              (Parm)
-// struct FTimespan               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimespan               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
+// struct FTimespan               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FTimespan UKismetMathLibrary::Add_TimespanTimespan(const struct FTimespan& A, const struct FTimespan& B)
 {
@@ -46870,9 +47913,9 @@ float UKismetMathLibrary::Add_FloatFloat(float A, float B)
 // Function Engine.KismetMathLibrary.Add_DateTimeTimespan
 // ()
 // Parameters:
-// struct FDateTime               A                              (Parm)
-// struct FTimespan               B                              (Parm)
-// struct FDateTime               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FDateTime               A                              (Parm, ZeroConstructor)
+// struct FTimespan               B                              (Parm, ZeroConstructor)
+// struct FDateTime               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FDateTime UKismetMathLibrary::Add_DateTimeTimespan(const struct FDateTime& A, const struct FTimespan& B)
 {
@@ -47370,7 +48413,7 @@ void UKismetRenderingLibrary::ReleaseRenderTarget2D(class UTextureRenderTarget2D
 // class UTextureRenderTarget2D*  TextureRenderTarget            (Parm, ZeroConstructor, IsPlainOldData)
 // float                          U                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          V                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FColor                  ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FColor                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FColor UKismetRenderingLibrary::ReadRenderTargetUV(class UObject* WorldContextObject, class UTextureRenderTarget2D* TextureRenderTarget, float U, float V)
 {
@@ -47399,7 +48442,7 @@ struct FColor UKismetRenderingLibrary::ReadRenderTargetUV(class UObject* WorldCo
 // class UTextureRenderTarget2D*  TextureRenderTarget            (Parm, ZeroConstructor, IsPlainOldData)
 // float                          U                              (Parm, ZeroConstructor, IsPlainOldData)
 // float                          V                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetRenderingLibrary::ReadRenderTargetRawUV(class UObject* WorldContextObject, class UTextureRenderTarget2D* TextureRenderTarget, float U, float V)
 {
@@ -47428,7 +48471,7 @@ struct FLinearColor UKismetRenderingLibrary::ReadRenderTargetRawUV(class UObject
 // class UTextureRenderTarget2D*  TextureRenderTarget            (Parm, ZeroConstructor, IsPlainOldData)
 // int                            X                              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Y                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UKismetRenderingLibrary::ReadRenderTargetRawPixel(class UObject* WorldContextObject, class UTextureRenderTarget2D* TextureRenderTarget, int X, int Y)
 {
@@ -47457,7 +48500,7 @@ struct FLinearColor UKismetRenderingLibrary::ReadRenderTargetRawPixel(class UObj
 // class UTextureRenderTarget2D*  TextureRenderTarget            (Parm, ZeroConstructor, IsPlainOldData)
 // int                            X                              (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Y                              (Parm, ZeroConstructor, IsPlainOldData)
-// struct FColor                  ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FColor                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FColor UKismetRenderingLibrary::ReadRenderTargetPixel(class UObject* WorldContextObject, class UTextureRenderTarget2D* TextureRenderTarget, int X, int Y)
 {
@@ -47490,7 +48533,7 @@ struct FColor UKismetRenderingLibrary::ReadRenderTargetPixel(class UObject* Worl
 // unsigned char                  Weight2                        (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Bone3                          (Parm, ZeroConstructor, IsPlainOldData)
 // unsigned char                  Weight3                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FSkelMeshSkinWeightInfo ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FSkelMeshSkinWeightInfo ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FSkelMeshSkinWeightInfo UKismetRenderingLibrary::MakeSkinWeightInfo(int Bone0, unsigned char Weight0, int Bone1, unsigned char Weight1, int Bone2, unsigned char Weight2, int Bone3, unsigned char Weight3)
 {
@@ -47530,6 +48573,31 @@ class UTexture2D* UKismetRenderingLibrary::ImportFileAsTexture2D(class UObject* 
 	UKismetRenderingLibrary_ImportFileAsTexture2D_Params params;
 	params.WorldContextObject = WorldContextObject;
 	params.Filename = Filename;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetRenderingLibrary.ImportBufferAsTexture2D
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
+// TArray<unsigned char>          Buffer                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// class UTexture2D*              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+class UTexture2D* UKismetRenderingLibrary::ImportBufferAsTexture2D(class UObject* WorldContextObject, TArray<unsigned char> Buffer)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetRenderingLibrary.ImportBufferAsTexture2D");
+
+	UKismetRenderingLibrary_ImportBufferAsTexture2D_Params params;
+	params.WorldContextObject = WorldContextObject;
+	params.Buffer = Buffer;
 
 	auto flags = fn->FunctionFlags;
 
@@ -47697,7 +48765,7 @@ void UKismetRenderingLibrary::ConvertRenderTargetToTexture2DEditorOnly(class UOb
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class UTextureRenderTarget2D*  TextureRenderTarget            (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ClearColor                     (Parm, IsPlainOldData)
+// struct FLinearColor            ClearColor                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetRenderingLibrary::ClearRenderTarget2D(class UObject* WorldContextObject, class UTextureRenderTarget2D* TextureRenderTarget, const struct FLinearColor& ClearColor)
 {
@@ -47719,7 +48787,7 @@ void UKismetRenderingLibrary::ClearRenderTarget2D(class UObject* WorldContextObj
 // Function Engine.KismetRenderingLibrary.BreakSkinWeightInfo
 // ()
 // Parameters:
-// struct FSkelMeshSkinWeightInfo InWeight                       (Parm, IsPlainOldData)
+// struct FSkelMeshSkinWeightInfo InWeight                       (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Bone0                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // unsigned char                  Weight0                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // int                            Bone1                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -47767,7 +48835,7 @@ void UKismetRenderingLibrary::BreakSkinWeightInfo(const struct FSkelMeshSkinWeig
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class UTextureRenderTarget2D*  TextureRenderTarget            (Parm, ZeroConstructor, IsPlainOldData)
 // class UCanvas*                 Canvas                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               Size                           (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               Size                           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // struct FDrawToRenderTargetContext Context                        (Parm, OutParm)
 
 void UKismetRenderingLibrary::BeginDrawCanvasToRenderTarget(class UObject* WorldContextObject, class UTextureRenderTarget2D* TextureRenderTarget, class UCanvas** Canvas, struct FVector2D* Size, struct FDrawToRenderTargetContext* Context)
@@ -48619,7 +49687,7 @@ int UKismetStringLibrary::CullArray(const class FString& SourceString, TArray<cl
 // Function Engine.KismetStringLibrary.Conv_VectorToString
 // ()
 // Parameters:
-// struct FVector                 InVec                          (Parm, IsPlainOldData)
+// struct FVector                 InVec                          (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetStringLibrary::Conv_VectorToString(const struct FVector& InVec)
@@ -48642,7 +49710,7 @@ class FString UKismetStringLibrary::Conv_VectorToString(const struct FVector& In
 // Function Engine.KismetStringLibrary.Conv_Vector2dToString
 // ()
 // Parameters:
-// struct FVector2D               InVec                          (Parm, IsPlainOldData)
+// struct FVector2D               InVec                          (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetStringLibrary::Conv_Vector2dToString(const struct FVector2D& InVec)
@@ -48689,7 +49757,7 @@ class FString UKismetStringLibrary::Conv_TransformToString(const struct FTransfo
 // ()
 // Parameters:
 // class FString                  inString                       (Parm, ZeroConstructor)
-// struct FVector2D               OutConvertedVector2D           (Parm, OutParm, IsPlainOldData)
+// struct FVector2D               OutConvertedVector2D           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           OutIsValid                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetStringLibrary::Conv_StringToVector2D(const class FString& inString, struct FVector2D* OutConvertedVector2D, bool* OutIsValid)
@@ -48716,7 +49784,7 @@ void UKismetStringLibrary::Conv_StringToVector2D(const class FString& inString, 
 // ()
 // Parameters:
 // class FString                  inString                       (Parm, ZeroConstructor)
-// struct FVector                 OutConvertedVector             (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutConvertedVector             (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           OutIsValid                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetStringLibrary::Conv_StringToVector(const class FString& inString, struct FVector* OutConvertedVector, bool* OutIsValid)
@@ -48743,7 +49811,7 @@ void UKismetStringLibrary::Conv_StringToVector(const class FString& inString, st
 // ()
 // Parameters:
 // class FString                  inString                       (Parm, ZeroConstructor)
-// struct FRotator                OutConvertedRotator            (Parm, OutParm, IsPlainOldData)
+// struct FRotator                OutConvertedRotator            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           OutIsValid                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetStringLibrary::Conv_StringToRotator(const class FString& inString, struct FRotator* OutConvertedRotator, bool* OutIsValid)
@@ -48839,7 +49907,7 @@ float UKismetStringLibrary::Conv_StringToFloat(const class FString& inString)
 // ()
 // Parameters:
 // class FString                  inString                       (Parm, ZeroConstructor)
-// struct FLinearColor            OutConvertedColor              (Parm, OutParm, IsPlainOldData)
+// struct FLinearColor            OutConvertedColor              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           OutIsValid                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetStringLibrary::Conv_StringToColor(const class FString& inString, struct FLinearColor* OutConvertedColor, bool* OutIsValid)
@@ -48865,7 +49933,7 @@ void UKismetStringLibrary::Conv_StringToColor(const class FString& inString, str
 // Function Engine.KismetStringLibrary.Conv_RotatorToString
 // ()
 // Parameters:
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetStringLibrary::Conv_RotatorToString(const struct FRotator& InRot)
@@ -48934,7 +50002,7 @@ class FString UKismetStringLibrary::Conv_NameToString(const struct FName& InName
 // Function Engine.KismetStringLibrary.Conv_IntVectorToString
 // ()
 // Parameters:
-// struct FIntVector              InIntVec                       (Parm, IsPlainOldData)
+// struct FIntVector              InIntVec                       (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetStringLibrary::Conv_IntVectorToString(const struct FIntVector& InIntVec)
@@ -49003,7 +50071,7 @@ class FString UKismetStringLibrary::Conv_FloatToString(float InFloat)
 // Function Engine.KismetStringLibrary.Conv_ColorToString
 // ()
 // Parameters:
-// struct FLinearColor            inColor                        (Parm, IsPlainOldData)
+// struct FLinearColor            inColor                        (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetStringLibrary::Conv_ColorToString(const struct FLinearColor& inColor)
@@ -49128,7 +50196,7 @@ class FString UKismetStringLibrary::Concat_StrStr(const class FString& A, const 
 // Parameters:
 // class FString                  AppendTo                       (Parm, ZeroConstructor)
 // class FString                  Prefix                         (Parm, ZeroConstructor)
-// struct FVector2D               InVector2D                     (Parm, IsPlainOldData)
+// struct FVector2D               InVector2D                     (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Suffix                         (Parm, ZeroConstructor)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
@@ -49157,7 +50225,7 @@ class FString UKismetStringLibrary::BuildString_Vector2d(const class FString& Ap
 // Parameters:
 // class FString                  AppendTo                       (Parm, ZeroConstructor)
 // class FString                  Prefix                         (Parm, ZeroConstructor)
-// struct FVector                 InVector                       (Parm, IsPlainOldData)
+// struct FVector                 InVector                       (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Suffix                         (Parm, ZeroConstructor)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
@@ -49186,7 +50254,7 @@ class FString UKismetStringLibrary::BuildString_Vector(const class FString& Appe
 // Parameters:
 // class FString                  AppendTo                       (Parm, ZeroConstructor)
 // class FString                  Prefix                         (Parm, ZeroConstructor)
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Suffix                         (Parm, ZeroConstructor)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
@@ -49273,7 +50341,7 @@ class FString UKismetStringLibrary::BuildString_Name(const class FString& Append
 // Parameters:
 // class FString                  AppendTo                       (Parm, ZeroConstructor)
 // class FString                  Prefix                         (Parm, ZeroConstructor)
-// struct FIntVector              InIntVector                    (Parm, IsPlainOldData)
+// struct FIntVector              InIntVector                    (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Suffix                         (Parm, ZeroConstructor)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
@@ -49360,7 +50428,7 @@ class FString UKismetStringLibrary::BuildString_Float(const class FString& Appen
 // Parameters:
 // class FString                  AppendTo                       (Parm, ZeroConstructor)
 // class FString                  Prefix                         (Parm, ZeroConstructor)
-// struct FLinearColor            inColor                        (Parm, IsPlainOldData)
+// struct FLinearColor            inColor                        (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Suffix                         (Parm, ZeroConstructor)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
@@ -49645,7 +50713,7 @@ void UKismetSystemLibrary::UnloadPrimaryAssetList(TArray<struct FPrimaryAssetId>
 // Function Engine.KismetSystemLibrary.UnloadPrimaryAsset
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 
 void UKismetSystemLibrary::UnloadPrimaryAsset(const struct FPrimaryAssetId& PrimaryAssetId)
 {
@@ -49653,6 +50721,26 @@ void UKismetSystemLibrary::UnloadPrimaryAsset(const struct FPrimaryAssetId& Prim
 
 	UKismetSystemLibrary_UnloadPrimaryAsset_Params params;
 	params.PrimaryAssetId = PrimaryAssetId;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.KismetSystemLibrary.TransactObject
+// ()
+// Parameters:
+// class UObject*                 Object                         (Parm, ZeroConstructor, IsPlainOldData)
+
+void UKismetSystemLibrary::TransactObject(class UObject* Object)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.TransactObject");
+
+	UKismetSystemLibrary_TransactObject_Params params;
+	params.Object = Object;
 
 	auto flags = fn->FunctionFlags;
 
@@ -49683,8 +50771,8 @@ void UKismetSystemLibrary::StackTrace()
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -49692,8 +50780,8 @@ void UKismetSystemLibrary::StackTrace()
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -49732,8 +50820,8 @@ bool UKismetSystemLibrary::SphereTraceSingleForObjects(class UObject* WorldConte
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -49741,8 +50829,8 @@ bool UKismetSystemLibrary::SphereTraceSingleForObjects(class UObject* WorldConte
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -49781,8 +50869,8 @@ bool UKismetSystemLibrary::SphereTraceSingleByProfile(class UObject* WorldContex
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -49790,8 +50878,8 @@ bool UKismetSystemLibrary::SphereTraceSingleByProfile(class UObject* WorldContex
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -49830,8 +50918,8 @@ bool UKismetSystemLibrary::SphereTraceSingle(class UObject* WorldContextObject, 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -49839,8 +50927,8 @@ bool UKismetSystemLibrary::SphereTraceSingle(class UObject* WorldContextObject, 
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -49879,8 +50967,8 @@ bool UKismetSystemLibrary::SphereTraceMultiForObjects(class UObject* WorldContex
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -49888,8 +50976,8 @@ bool UKismetSystemLibrary::SphereTraceMultiForObjects(class UObject* WorldContex
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -49928,8 +51016,8 @@ bool UKismetSystemLibrary::SphereTraceMultiByProfile(class UObject* WorldContext
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
@@ -49937,8 +51025,8 @@ bool UKismetSystemLibrary::SphereTraceMultiByProfile(class UObject* WorldContext
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -49977,7 +51065,7 @@ bool UKismetSystemLibrary::SphereTraceMulti(class UObject* WorldContextObject, c
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 SpherePos                      (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 SpherePos                      (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          SphereRadius                   (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class UClass*                  ComponentClassFilter           (Parm, ZeroConstructor, IsPlainOldData)
@@ -50014,7 +51102,7 @@ bool UKismetSystemLibrary::SphereOverlapComponents(class UObject* WorldContextOb
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 SpherePos                      (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 SpherePos                      (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          SphereRadius                   (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class UClass*                  ActorClassFilter               (Parm, ZeroConstructor, IsPlainOldData)
@@ -50171,7 +51259,7 @@ void UKismetSystemLibrary::SetVolumeButtonsHandledBySystem(bool bEnabled)
 // Parameters:
 // class UObject*                 Object                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   PropertyName                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Value                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Value                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UKismetSystemLibrary::SetVectorPropertyByName(class UObject* Object, const struct FName& PropertyName, const struct FVector& Value)
 {
@@ -50285,7 +51373,7 @@ void UKismetSystemLibrary::SetSuppressViewportTransitionMessage(class UObject* W
 // Parameters:
 // class UObject*                 Object                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   PropertyName                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FGenericStruct          Value                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FGenericStruct          Value                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UKismetSystemLibrary::SetStructurePropertyByName(class UObject* Object, const struct FName& PropertyName, const struct FGenericStruct& Value)
 {
@@ -50381,7 +51469,7 @@ void UKismetSystemLibrary::SetSoftClassPropertyByName(class UObject* Object, con
 // Parameters:
 // class UObject*                 Object                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   PropertyName                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                Value                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FRotator                Value                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UKismetSystemLibrary::SetRotatorPropertyByName(class UObject* Object, const struct FName& PropertyName, const struct FRotator& Value)
 {
@@ -50453,7 +51541,7 @@ void UKismetSystemLibrary::SetNamePropertyByName(class UObject* Object, const st
 // Parameters:
 // class UObject*                 Object                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   PropertyName                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Value                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            Value                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UKismetSystemLibrary::SetLinearColorPropertyByName(class UObject* Object, const struct FName& PropertyName, const struct FLinearColor& Value)
 {
@@ -50724,8 +51812,9 @@ void UKismetSystemLibrary::RegisterForRemoteNotifications()
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class APlayerController*       SpecificPlayer                 (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EQuitPreference>   QuitPreference                 (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           bIgnorePlatformRestrictions    (Parm, ZeroConstructor, IsPlainOldData)
 
-void UKismetSystemLibrary::QuitGame(class UObject* WorldContextObject, class APlayerController* SpecificPlayer, TEnumAsByte<EQuitPreference> QuitPreference)
+void UKismetSystemLibrary::QuitGame(class UObject* WorldContextObject, class APlayerController* SpecificPlayer, TEnumAsByte<EQuitPreference> QuitPreference, bool bIgnorePlatformRestrictions)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.QuitGame");
 
@@ -50733,6 +51822,7 @@ void UKismetSystemLibrary::QuitGame(class UObject* WorldContextObject, class APl
 	params.WorldContextObject = WorldContextObject;
 	params.SpecificPlayer = SpecificPlayer;
 	params.QuitPreference = QuitPreference;
+	params.bIgnorePlatformRestrictions = bIgnorePlatformRestrictions;
 
 	auto flags = fn->FunctionFlags;
 
@@ -50769,7 +51859,7 @@ void UKismetSystemLibrary::PrintWarning(const class FString& inString)
 // struct FText                   InText                         (ConstParm, Parm)
 // bool                           bPrintToScreen                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bPrintToLog                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TextColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            TextColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::PrintText(class UObject* WorldContextObject, const struct FText& InText, bool bPrintToScreen, bool bPrintToLog, const struct FLinearColor& TextColor, float Duration)
@@ -50799,7 +51889,7 @@ void UKismetSystemLibrary::PrintText(class UObject* WorldContextObject, const st
 // class FString                  inString                       (Parm, ZeroConstructor)
 // bool                           bPrintToScreen                 (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bPrintToLog                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TextColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            TextColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::PrintString(class UObject* WorldContextObject, const class FString& inString, bool bPrintToScreen, bool bPrintToLog, const struct FLinearColor& TextColor, float Duration)
@@ -50915,8 +52005,8 @@ bool UKismetSystemLibrary::NotEqual_SoftClassReference(TSoftObjectPtr<class UCla
 // Function Engine.KismetSystemLibrary.NotEqual_PrimaryAssetType
 // ()
 // Parameters:
-// struct FPrimaryAssetType       A                              (Parm)
-// struct FPrimaryAssetType       B                              (Parm)
+// struct FPrimaryAssetType       A                              (Parm, ZeroConstructor)
+// struct FPrimaryAssetType       B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetSystemLibrary::NotEqual_PrimaryAssetType(const struct FPrimaryAssetType& A, const struct FPrimaryAssetType& B)
@@ -50940,8 +52030,8 @@ bool UKismetSystemLibrary::NotEqual_PrimaryAssetType(const struct FPrimaryAssetT
 // Function Engine.KismetSystemLibrary.NotEqual_PrimaryAssetId
 // ()
 // Parameters:
-// struct FPrimaryAssetId         A                              (Parm)
-// struct FPrimaryAssetId         B                              (Parm)
+// struct FPrimaryAssetId         A                              (Parm, ZeroConstructor)
+// struct FPrimaryAssetId         B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetSystemLibrary::NotEqual_PrimaryAssetId(const struct FPrimaryAssetId& A, const struct FPrimaryAssetId& B)
@@ -50962,12 +52052,35 @@ bool UKismetSystemLibrary::NotEqual_PrimaryAssetId(const struct FPrimaryAssetId&
 }
 
 
+// Function Engine.KismetSystemLibrary.NormalizeFilename
+// ()
+// Parameters:
+// class FString                  InFilename                     (Parm, ZeroConstructor)
+// class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+class FString UKismetSystemLibrary::NormalizeFilename(const class FString& InFilename)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.NormalizeFilename");
+
+	UKismetSystemLibrary_NormalizeFilename_Params params;
+	params.InFilename = InFilename;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.KismetSystemLibrary.MoveComponentTo
 // ()
 // Parameters:
 // class USceneComponent*         component                      (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector                 TargetRelativeLocation         (Parm, IsPlainOldData)
-// struct FRotator                TargetRelativeRotation         (Parm, IsPlainOldData)
+// struct FVector                 TargetRelativeLocation         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                TargetRelativeRotation         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bEaseOut                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bEaseIn                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          OverTime                       (Parm, ZeroConstructor, IsPlainOldData)
@@ -51002,7 +52115,7 @@ void UKismetSystemLibrary::MoveComponentTo(class USceneComponent* component, con
 // ()
 // Parameters:
 // class FString                  PathString                     (Parm, ZeroConstructor)
-// struct FSoftObjectPath         ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FSoftObjectPath         ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FSoftObjectPath UKismetSystemLibrary::MakeSoftObjectPath(const class FString& PathString)
 {
@@ -51025,7 +52138,7 @@ struct FSoftObjectPath UKismetSystemLibrary::MakeSoftObjectPath(const class FStr
 // ()
 // Parameters:
 // class FString                  PathString                     (Parm, ZeroConstructor)
-// struct FSoftClassPath          ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FSoftClassPath          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FSoftClassPath UKismetSystemLibrary::MakeSoftClassPath(const class FString& PathString)
 {
@@ -51281,16 +52394,16 @@ void UKismetSystemLibrary::LoadAsset(class UObject* WorldContextObject, TSoftObj
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -51328,16 +52441,16 @@ bool UKismetSystemLibrary::LineTraceSingleForObjects(class UObject* WorldContext
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -51375,16 +52488,16 @@ bool UKismetSystemLibrary::LineTraceSingleByProfile(class UObject* WorldContextO
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -51422,16 +52535,16 @@ bool UKismetSystemLibrary::LineTraceSingle(class UObject* WorldContextObject, co
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -51469,16 +52582,16 @@ bool UKismetSystemLibrary::LineTraceMultiForObjects(class UObject* WorldContextO
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -51516,16 +52629,16 @@ bool UKismetSystemLibrary::LineTraceMultiByProfile(class UObject* WorldContextOb
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -52313,7 +53426,7 @@ bool UKismetSystemLibrary::IsValidSoftClassReference(TSoftObjectPtr<class UClass
 // Function Engine.KismetSystemLibrary.IsValidPrimaryAssetType
 // ()
 // Parameters:
-// struct FPrimaryAssetType       PrimaryAssetType               (Parm)
+// struct FPrimaryAssetType       PrimaryAssetType               (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetSystemLibrary::IsValidPrimaryAssetType(const struct FPrimaryAssetType& PrimaryAssetType)
@@ -52336,7 +53449,7 @@ bool UKismetSystemLibrary::IsValidPrimaryAssetType(const struct FPrimaryAssetTyp
 // Function Engine.KismetSystemLibrary.IsValidPrimaryAssetId
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetSystemLibrary::IsValidPrimaryAssetId(const struct FPrimaryAssetId& PrimaryAssetId)
@@ -52402,6 +53515,27 @@ bool UKismetSystemLibrary::IsValid(class UObject* Object)
 }
 
 
+// Function Engine.KismetSystemLibrary.IsUnattended
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UKismetSystemLibrary::IsUnattended()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.IsUnattended");
+
+	UKismetSystemLibrary_IsUnattended_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.KismetSystemLibrary.IsStandalone
 // ()
 // Parameters:
@@ -52437,6 +53571,27 @@ bool UKismetSystemLibrary::IsServer(class UObject* WorldContextObject)
 
 	UKismetSystemLibrary_IsServer_Params params;
 	params.WorldContextObject = WorldContextObject;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetSystemLibrary.IsScreensaverEnabled
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UKismetSystemLibrary::IsScreensaverEnabled()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.IsScreensaverEnabled");
+
+	UKismetSystemLibrary_IsScreensaverEnabled_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -52667,7 +53822,7 @@ bool UKismetSystemLibrary::GetSupportedFullscreenResolutions(TArray<struct FIntP
 // Function Engine.KismetSystemLibrary.GetSoftObjectReferenceFromPrimaryAssetId
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 // TSoftObjectPtr<class UObject>  ReturnValue                    (Parm, OutParm, ReturnParm)
 
 TSoftObjectPtr<class UObject> UKismetSystemLibrary::GetSoftObjectReferenceFromPrimaryAssetId(const struct FPrimaryAssetId& PrimaryAssetId)
@@ -52690,7 +53845,7 @@ TSoftObjectPtr<class UObject> UKismetSystemLibrary::GetSoftObjectReferenceFromPr
 // Function Engine.KismetSystemLibrary.GetSoftClassReferenceFromPrimaryAssetId
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 // TSoftObjectPtr<class UClass>   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 TSoftObjectPtr<class UClass> UKismetSystemLibrary::GetSoftClassReferenceFromPrimaryAssetId(const struct FPrimaryAssetId& PrimaryAssetId)
@@ -52848,7 +54003,7 @@ void UKismetSystemLibrary::GetPrimaryAssetsWithBundleState(TArray<struct FName> 
 // Function Engine.KismetSystemLibrary.GetPrimaryAssetIdList
 // ()
 // Parameters:
-// struct FPrimaryAssetType       PrimaryAssetType               (Parm)
+// struct FPrimaryAssetType       PrimaryAssetType               (Parm, ZeroConstructor)
 // TArray<struct FPrimaryAssetId> OutPrimaryAssetIdList          (Parm, OutParm, ZeroConstructor)
 
 void UKismetSystemLibrary::GetPrimaryAssetIdList(const struct FPrimaryAssetType& PrimaryAssetType, TArray<struct FPrimaryAssetId>* OutPrimaryAssetIdList)
@@ -52873,7 +54028,7 @@ void UKismetSystemLibrary::GetPrimaryAssetIdList(const struct FPrimaryAssetType&
 // ()
 // Parameters:
 // TSoftObjectPtr<class UObject>  SoftObjectReference            (Parm)
-// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FPrimaryAssetId UKismetSystemLibrary::GetPrimaryAssetIdFromSoftObjectReference(TSoftObjectPtr<class UObject> SoftObjectReference)
 {
@@ -52896,7 +54051,7 @@ struct FPrimaryAssetId UKismetSystemLibrary::GetPrimaryAssetIdFromSoftObjectRefe
 // ()
 // Parameters:
 // TSoftObjectPtr<class UClass>   SoftClassReference             (Parm)
-// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FPrimaryAssetId UKismetSystemLibrary::GetPrimaryAssetIdFromSoftClassReference(TSoftObjectPtr<class UClass> SoftClassReference)
 {
@@ -52919,7 +54074,7 @@ struct FPrimaryAssetId UKismetSystemLibrary::GetPrimaryAssetIdFromSoftClassRefer
 // ()
 // Parameters:
 // class UObject*                 Object                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FPrimaryAssetId UKismetSystemLibrary::GetPrimaryAssetIdFromObject(class UObject* Object)
 {
@@ -52942,7 +54097,7 @@ struct FPrimaryAssetId UKismetSystemLibrary::GetPrimaryAssetIdFromObject(class U
 // ()
 // Parameters:
 // class UClass*                  Class                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FPrimaryAssetId         ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FPrimaryAssetId UKismetSystemLibrary::GetPrimaryAssetIdFromClass(class UClass* Class)
 {
@@ -53052,7 +54207,7 @@ class FString UKismetSystemLibrary::GetObjectName(class UObject* Object)
 // Function Engine.KismetSystemLibrary.GetObjectFromPrimaryAssetId
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 // class UObject*                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 class UObject* UKismetSystemLibrary::GetObjectFromPrimaryAssetId(const struct FPrimaryAssetId& PrimaryAssetId)
@@ -53331,7 +54486,7 @@ class FString UKismetSystemLibrary::GetDefaultLanguage()
 // Function Engine.KismetSystemLibrary.GetCurrentBundleState
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 // bool                           bForceCurrentState             (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FName>           OutBundles                     (Parm, OutParm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -53436,8 +54591,8 @@ float UKismetSystemLibrary::GetConsoleVariableFloatValue(class UObject* WorldCon
 // ()
 // Parameters:
 // class USceneComponent*         component                      (ConstParm, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector                 Origin                         (Parm, OutParm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Origin                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoxExtent                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          SphereRadius                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::GetComponentBounds(class USceneComponent* component, struct FVector* Origin, struct FVector* BoxExtent, float* SphereRadius)
@@ -53486,7 +54641,7 @@ class FString UKismetSystemLibrary::GetCommandLine()
 // Function Engine.KismetSystemLibrary.GetClassFromPrimaryAssetId
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 // class UClass*                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 class UClass* UKismetSystemLibrary::GetClassFromPrimaryAssetId(const struct FPrimaryAssetId& PrimaryAssetId)
@@ -53580,8 +54735,8 @@ void UKismetSystemLibrary::GetActorListFromComponentList(TArray<class UPrimitive
 // ()
 // Parameters:
 // class AActor*                  Actor                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (Parm, OutParm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Origin                         (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoxExtent                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::GetActorBounds(class AActor* Actor, struct FVector* Origin, struct FVector* BoxExtent)
 {
@@ -53737,8 +54892,8 @@ bool UKismetSystemLibrary::EqualEqual_SoftClassReference(TSoftObjectPtr<class UC
 // Function Engine.KismetSystemLibrary.EqualEqual_PrimaryAssetType
 // ()
 // Parameters:
-// struct FPrimaryAssetType       A                              (Parm)
-// struct FPrimaryAssetType       B                              (Parm)
+// struct FPrimaryAssetType       A                              (Parm, ZeroConstructor)
+// struct FPrimaryAssetType       B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetSystemLibrary::EqualEqual_PrimaryAssetType(const struct FPrimaryAssetType& A, const struct FPrimaryAssetType& B)
@@ -53762,8 +54917,8 @@ bool UKismetSystemLibrary::EqualEqual_PrimaryAssetType(const struct FPrimaryAsse
 // Function Engine.KismetSystemLibrary.EqualEqual_PrimaryAssetId
 // ()
 // Parameters:
-// struct FPrimaryAssetId         A                              (Parm)
-// struct FPrimaryAssetId         B                              (Parm)
+// struct FPrimaryAssetId         A                              (Parm, ZeroConstructor)
+// struct FPrimaryAssetId         B                              (Parm, ZeroConstructor)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UKismetSystemLibrary::EqualEqual_PrimaryAssetId(const struct FPrimaryAssetId& A, const struct FPrimaryAssetId& B)
@@ -53784,14 +54939,35 @@ bool UKismetSystemLibrary::EqualEqual_PrimaryAssetId(const struct FPrimaryAssetI
 }
 
 
+// Function Engine.KismetSystemLibrary.EndTransaction
+// ()
+// Parameters:
+// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+int UKismetSystemLibrary::EndTransaction()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.EndTransaction");
+
+	UKismetSystemLibrary_EndTransaction_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Engine.KismetSystemLibrary.DrawDebugString
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 TextLocation                   (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 TextLocation                   (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Text                           (Parm, ZeroConstructor)
 // class AActor*                  TestBaseActor                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TextColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            TextColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::DrawDebugString(class UObject* WorldContextObject, const struct FVector& TextLocation, const class FString& Text, class AActor* TestBaseActor, const struct FLinearColor& TextColor, float Duration)
@@ -53818,10 +54994,10 @@ void UKismetSystemLibrary::DrawDebugString(class UObject* WorldContextObject, co
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Center                         (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Center                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Segments                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -53850,9 +55026,9 @@ void UKismetSystemLibrary::DrawDebugSphere(class UObject* WorldContextObject, co
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Position                       (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Position                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Size                           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            PointColor                     (Parm, IsPlainOldData)
+// struct FLinearColor            PointColor                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::DrawDebugPoint(class UObject* WorldContextObject, const struct FVector& Position, float Size, const struct FLinearColor& PointColor, float Duration)
@@ -53878,10 +55054,10 @@ void UKismetSystemLibrary::DrawDebugPoint(class UObject* WorldContextObject, con
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FPlane                  PlaneCoordinates               (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 Location                       (ConstParm, Parm, IsPlainOldData)
+// struct FPlane                  PlaneCoordinates               (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 Location                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Size                           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            PlaneColor                     (Parm, IsPlainOldData)
+// struct FLinearColor            PlaneColor                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::DrawDebugPlane(class UObject* WorldContextObject, const struct FPlane& PlaneCoordinates, const struct FVector& Location, float Size, const struct FLinearColor& PlaneColor, float Duration)
@@ -53908,9 +55084,9 @@ void UKismetSystemLibrary::DrawDebugPlane(class UObject* WorldContextObject, con
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 LineStart                      (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 LineEnd                        (ConstParm, Parm, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FVector                 LineStart                      (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LineEnd                        (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -53939,7 +55115,7 @@ void UKismetSystemLibrary::DrawDebugLine(class UObject* WorldContextObject, cons
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // struct FTransform              FrustumTransform               (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FLinearColor            FrustumColor                   (Parm, IsPlainOldData)
+// struct FLinearColor            FrustumColor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -53968,8 +55144,8 @@ void UKismetSystemLibrary::DrawDebugFrustum(class UObject* WorldContextObject, c
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // struct FDebugFloatHistory      FloatHistory                   (ConstParm, Parm, OutParm, ReferenceParm)
 // struct FTransform              DrawTransform                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector2D               DrawSize                       (Parm, IsPlainOldData)
-// struct FLinearColor            DrawColor                      (Parm, IsPlainOldData)
+// struct FVector2D               DrawSize                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            DrawColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::DrawDebugFloatHistoryTransform(class UObject* WorldContextObject, const struct FDebugFloatHistory& FloatHistory, const struct FTransform& DrawTransform, const struct FVector2D& DrawSize, const struct FLinearColor& DrawColor, float Duration)
@@ -53997,9 +55173,9 @@ void UKismetSystemLibrary::DrawDebugFloatHistoryTransform(class UObject* WorldCo
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // struct FDebugFloatHistory      FloatHistory                   (ConstParm, Parm, OutParm, ReferenceParm)
-// struct FVector                 DrawLocation                   (Parm, IsPlainOldData)
-// struct FVector2D               DrawSize                       (Parm, IsPlainOldData)
-// struct FLinearColor            DrawColor                      (Parm, IsPlainOldData)
+// struct FVector                 DrawLocation                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               DrawSize                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            DrawColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::DrawDebugFloatHistoryLocation(class UObject* WorldContextObject, const struct FDebugFloatHistory& FloatHistory, const struct FVector& DrawLocation, const struct FVector2D& DrawSize, const struct FLinearColor& DrawColor, float Duration)
@@ -54026,11 +55202,11 @@ void UKismetSystemLibrary::DrawDebugFloatHistoryLocation(class UObject* WorldCon
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // int                            Segments                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -54060,8 +55236,8 @@ void UKismetSystemLibrary::DrawDebugCylinder(class UObject* WorldContextObject, 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 AxisLoc                        (ConstParm, Parm, IsPlainOldData)
-// struct FRotator                AxisRot                        (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 AxisLoc                        (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                AxisRot                        (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
@@ -54090,13 +55266,13 @@ void UKismetSystemLibrary::DrawDebugCoordinateSystem(class UObject* WorldContext
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 Direction                      (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Direction                      (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Length                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AngleWidth                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AngleHeight                    (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumSides                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -54128,13 +55304,13 @@ void UKismetSystemLibrary::DrawDebugConeInDegrees(class UObject* WorldContextObj
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 Direction                      (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Direction                      (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Length                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AngleWidth                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          AngleHeight                    (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumSides                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -54166,14 +55342,14 @@ void UKismetSystemLibrary::DrawDebugCone(class UObject* WorldContextObject, cons
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Center                         (Parm, IsPlainOldData)
+// struct FVector                 Center                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumSegments                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 YAxis                          (Parm, IsPlainOldData)
-// struct FVector                 ZAxis                          (Parm, IsPlainOldData)
+// struct FVector                 YAxis                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ZAxis                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bDrawAxis                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::DrawDebugCircle(class UObject* WorldContextObject, const struct FVector& Center, float Radius, int NumSegments, const struct FLinearColor& LineColor, float Duration, float Thickness, const struct FVector& YAxis, const struct FVector& ZAxis, bool bDrawAxis)
@@ -54204,11 +55380,11 @@ void UKismetSystemLibrary::DrawDebugCircle(class UObject* WorldContextObject, co
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Center                         (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Center                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                Rotation                       (ConstParm, Parm, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FRotator                Rotation                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -54238,7 +55414,7 @@ void UKismetSystemLibrary::DrawDebugCapsule(class UObject* WorldContextObject, c
 // ()
 // Parameters:
 // class ACameraActor*            CameraActor                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            CameraColor                    (Parm, IsPlainOldData)
+// struct FLinearColor            CameraColor                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UKismetSystemLibrary::DrawDebugCamera(class ACameraActor* CameraActor, const struct FLinearColor& CameraColor, float Duration)
@@ -54262,10 +55438,10 @@ void UKismetSystemLibrary::DrawDebugCamera(class ACameraActor* CameraActor, cons
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Center                         (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 Extent                         (Parm, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Center                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Extent                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -54294,10 +55470,10 @@ void UKismetSystemLibrary::DrawDebugBox(class UObject* WorldContextObject, const
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 LineStart                      (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 LineEnd                        (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 LineStart                      (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 LineEnd                        (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          ArrowSize                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            LineColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            LineColor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -54388,6 +55564,52 @@ void UKismetSystemLibrary::CreateCopyForUndoBuffer(class UObject* ObjectToModify
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.KismetSystemLibrary.ConvertToRelativePath
+// ()
+// Parameters:
+// class FString                  Filename                       (Parm, ZeroConstructor)
+// class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+class FString UKismetSystemLibrary::ConvertToRelativePath(const class FString& Filename)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.ConvertToRelativePath");
+
+	UKismetSystemLibrary_ConvertToRelativePath_Params params;
+	params.Filename = Filename;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetSystemLibrary.ConvertToAbsolutePath
+// ()
+// Parameters:
+// class FString                  Filename                       (Parm, ZeroConstructor)
+// class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+class FString UKismetSystemLibrary::ConvertToAbsolutePath(const class FString& Filename)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.ConvertToAbsolutePath");
+
+	UKismetSystemLibrary_ConvertToAbsolutePath_Params params;
+	params.Filename = Filename;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -54486,7 +55708,7 @@ class UClass* UKismetSystemLibrary::Conv_SoftClassReferenceToClass(TSoftObjectPt
 // Function Engine.KismetSystemLibrary.Conv_PrimaryAssetTypeToString
 // ()
 // Parameters:
-// struct FPrimaryAssetType       PrimaryAssetType               (Parm)
+// struct FPrimaryAssetType       PrimaryAssetType               (Parm, ZeroConstructor)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetSystemLibrary::Conv_PrimaryAssetTypeToString(const struct FPrimaryAssetType& PrimaryAssetType)
@@ -54509,7 +55731,7 @@ class FString UKismetSystemLibrary::Conv_PrimaryAssetTypeToString(const struct F
 // Function Engine.KismetSystemLibrary.Conv_PrimaryAssetIdToString
 // ()
 // Parameters:
-// struct FPrimaryAssetId         PrimaryAssetId                 (Parm)
+// struct FPrimaryAssetId         PrimaryAssetId                 (Parm, ZeroConstructor)
 // class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 class FString UKismetSystemLibrary::Conv_PrimaryAssetIdToString(const struct FPrimaryAssetId& PrimaryAssetId)
@@ -54709,8 +55931,8 @@ void UKismetSystemLibrary::CollectGarbage()
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -54719,8 +55941,8 @@ void UKismetSystemLibrary::CollectGarbage()
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -54760,8 +55982,8 @@ bool UKismetSystemLibrary::CapsuleTraceSingleForObjects(class UObject* WorldCont
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -54770,8 +55992,8 @@ bool UKismetSystemLibrary::CapsuleTraceSingleForObjects(class UObject* WorldCont
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -54811,8 +56033,8 @@ bool UKismetSystemLibrary::CapsuleTraceSingleByProfile(class UObject* WorldConte
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
@@ -54821,8 +56043,8 @@ bool UKismetSystemLibrary::CapsuleTraceSingleByProfile(class UObject* WorldConte
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -54862,8 +56084,8 @@ bool UKismetSystemLibrary::CapsuleTraceSingle(class UObject* WorldContextObject,
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -54872,8 +56094,8 @@ bool UKismetSystemLibrary::CapsuleTraceSingle(class UObject* WorldContextObject,
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -54913,8 +56135,8 @@ bool UKismetSystemLibrary::CapsuleTraceMultiForObjects(class UObject* WorldConte
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -54923,8 +56145,8 @@ bool UKismetSystemLibrary::CapsuleTraceMultiForObjects(class UObject* WorldConte
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -54964,8 +56186,8 @@ bool UKismetSystemLibrary::CapsuleTraceMultiByProfile(class UObject* WorldContex
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
@@ -54974,8 +56196,8 @@ bool UKismetSystemLibrary::CapsuleTraceMultiByProfile(class UObject* WorldContex
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -55015,7 +56237,7 @@ bool UKismetSystemLibrary::CapsuleTraceMulti(class UObject* WorldContextObject, 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 CapsulePos                     (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 CapsulePos                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -55054,7 +56276,7 @@ bool UKismetSystemLibrary::CapsuleOverlapComponents(class UObject* WorldContextO
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 CapsulePos                     (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 CapsulePos                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // float                          HalfHeight                     (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -55112,10 +56334,30 @@ bool UKismetSystemLibrary::CanLaunchURL(const class FString& URL)
 }
 
 
+// Function Engine.KismetSystemLibrary.CancelTransaction
+// ()
+// Parameters:
+// int                            Index                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+
+void UKismetSystemLibrary::CancelTransaction(int Index)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.CancelTransaction");
+
+	UKismetSystemLibrary_CancelTransaction_Params params;
+	params.Index = Index;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Engine.KismetSystemLibrary.BreakSoftObjectPath
 // ()
 // Parameters:
-// struct FSoftObjectPath         InSoftObjectPath               (Parm)
+// struct FSoftObjectPath         InSoftObjectPath               (Parm, ZeroConstructor)
 // class FString                  PathString                     (Parm, OutParm, ZeroConstructor)
 
 void UKismetSystemLibrary::BreakSoftObjectPath(const struct FSoftObjectPath& InSoftObjectPath, class FString* PathString)
@@ -55139,7 +56381,7 @@ void UKismetSystemLibrary::BreakSoftObjectPath(const struct FSoftObjectPath& InS
 // Function Engine.KismetSystemLibrary.BreakSoftClassPath
 // ()
 // Parameters:
-// struct FSoftClassPath          InSoftClassPath                (Parm)
+// struct FSoftClassPath          InSoftClassPath                (Parm, ZeroConstructor)
 // class FString                  PathString                     (Parm, OutParm, ZeroConstructor)
 
 void UKismetSystemLibrary::BreakSoftClassPath(const struct FSoftClassPath& InSoftClassPath, class FString* PathString)
@@ -55164,18 +56406,18 @@ void UKismetSystemLibrary::BreakSoftClassPath(const struct FSoftClassPath& InSof
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 HalfSize                       (ConstParm, Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HalfSize                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -55215,18 +56457,18 @@ bool UKismetSystemLibrary::BoxTraceSingleForObjects(class UObject* WorldContextO
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 HalfSize                       (ConstParm, Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HalfSize                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -55266,18 +56508,18 @@ bool UKismetSystemLibrary::BoxTraceSingleByProfile(class UObject* WorldContextOb
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 HalfSize                       (ConstParm, Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HalfSize                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              OutHit                         (Parm, OutParm, IsPlainOldData)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -55317,18 +56559,18 @@ bool UKismetSystemLibrary::BoxTraceSingle(class UObject* WorldContextObject, con
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 HalfSize                       (ConstParm, Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HalfSize                       (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -55368,18 +56610,18 @@ bool UKismetSystemLibrary::BoxTraceMultiForObjects(class UObject* WorldContextOb
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 HalfSize                       (Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HalfSize                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   ProfileName                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -55419,18 +56661,18 @@ bool UKismetSystemLibrary::BoxTraceMultiByProfile(class UObject* WorldContextObj
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Start                          (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 End                            (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 HalfSize                       (Parm, IsPlainOldData)
-// struct FRotator                Orientation                    (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 Start                          (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 End                            (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 HalfSize                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Orientation                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ETraceTypeQuery>   TraceChannel                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bTraceComplex                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // TEnumAsByte<EDrawDebugTrace>   DrawDebugType                  (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<struct FHitResult>      OutHits                        (Parm, OutParm, ZeroConstructor)
 // bool                           bIgnoreSelf                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            TraceColor                     (Parm, IsPlainOldData)
-// struct FLinearColor            TraceHitColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            TraceColor                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            TraceHitColor                  (Parm, ZeroConstructor, IsPlainOldData)
 // float                          DrawTime                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -55470,8 +56712,8 @@ bool UKismetSystemLibrary::BoxTraceMulti(class UObject* WorldContextObject, cons
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 BoxPos                         (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 Extent                         (Parm, IsPlainOldData)
+// struct FVector                 BoxPos                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Extent                         (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class UClass*                  ComponentClassFilter           (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -55507,8 +56749,8 @@ bool UKismetSystemLibrary::BoxOverlapComponents(class UObject* WorldContextObjec
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 BoxPos                         (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 BoxExtent                      (Parm, IsPlainOldData)
+// struct FVector                 BoxPos                         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 BoxExtent                      (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class UClass*                  ActorClassFilter               (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          ActorsToIgnore                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
@@ -55535,6 +56777,33 @@ bool UKismetSystemLibrary::BoxOverlapActors(class UObject* WorldContextObject, c
 
 	if (OutActors != nullptr)
 		*OutActors = params.OutActors;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.KismetSystemLibrary.BeginTransaction
+// ()
+// Parameters:
+// class FString                  Context                        (Parm, ZeroConstructor)
+// struct FText                   Description                    (Parm)
+// class UObject*                 PrimaryObject                  (Parm, ZeroConstructor, IsPlainOldData)
+// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+int UKismetSystemLibrary::BeginTransaction(const class FString& Context, const struct FText& Description, class UObject* PrimaryObject)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.KismetSystemLibrary.BeginTransaction");
+
+	UKismetSystemLibrary_BeginTransaction_Params params;
+	params.Context = Context;
+	params.Description = Description;
+	params.PrimaryObject = PrimaryObject;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
 }
@@ -56055,7 +57324,7 @@ bool UKismetTextLibrary::EqualEqual_IgnoreCase_TextText(const struct FText& A, c
 // Function Engine.KismetTextLibrary.Conv_VectorToText
 // ()
 // Parameters:
-// struct FVector                 InVec                          (Parm, IsPlainOldData)
+// struct FVector                 InVec                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::Conv_VectorToText(const struct FVector& InVec)
@@ -56078,7 +57347,7 @@ struct FText UKismetTextLibrary::Conv_VectorToText(const struct FVector& InVec)
 // Function Engine.KismetTextLibrary.Conv_Vector2dToText
 // ()
 // Parameters:
-// struct FVector2D               InVec                          (Parm, IsPlainOldData)
+// struct FVector2D               InVec                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::Conv_Vector2dToText(const struct FVector2D& InVec)
@@ -56170,7 +57439,7 @@ struct FText UKismetTextLibrary::Conv_StringToText(const class FString& inString
 // Function Engine.KismetTextLibrary.Conv_RotatorToText
 // ()
 // Parameters:
-// struct FRotator                InRot                          (Parm, IsPlainOldData)
+// struct FRotator                InRot                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::Conv_RotatorToText(const struct FRotator& InRot)
@@ -56307,7 +57576,7 @@ struct FText UKismetTextLibrary::Conv_FloatToText(float Value, TEnumAsByte<ERoun
 // Function Engine.KismetTextLibrary.Conv_ColorToText
 // ()
 // Parameters:
-// struct FLinearColor            inColor                        (Parm, IsPlainOldData)
+// struct FLinearColor            inColor                        (Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::Conv_ColorToText(const struct FLinearColor& inColor)
@@ -56376,7 +57645,7 @@ struct FText UKismetTextLibrary::Conv_BoolToText(bool InBool)
 // Function Engine.KismetTextLibrary.AsTimeZoneTime_DateTime
 // ()
 // Parameters:
-// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class FString                  InTimeZone                     (Parm, ZeroConstructor)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
@@ -56401,7 +57670,7 @@ struct FText UKismetTextLibrary::AsTimeZoneTime_DateTime(const struct FDateTime&
 // Function Engine.KismetTextLibrary.AsTimeZoneDateTime_DateTime
 // ()
 // Parameters:
-// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class FString                  InTimeZone                     (Parm, ZeroConstructor)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
@@ -56426,7 +57695,7 @@ struct FText UKismetTextLibrary::AsTimeZoneDateTime_DateTime(const struct FDateT
 // Function Engine.KismetTextLibrary.AsTimeZoneDate_DateTime
 // ()
 // Parameters:
-// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // class FString                  InTimeZone                     (Parm, ZeroConstructor)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
@@ -56451,7 +57720,7 @@ struct FText UKismetTextLibrary::AsTimeZoneDate_DateTime(const struct FDateTime&
 // Function Engine.KismetTextLibrary.AsTimespan_Timespan
 // ()
 // Parameters:
-// struct FTimespan               InTimespan                     (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FTimespan               InTimespan                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::AsTimespan_Timespan(const struct FTimespan& InTimespan)
@@ -56474,7 +57743,7 @@ struct FText UKismetTextLibrary::AsTimespan_Timespan(const struct FTimespan& InT
 // Function Engine.KismetTextLibrary.AsTime_DateTime
 // ()
 // Parameters:
-// struct FDateTime               In                             (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               In                             (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::AsTime_DateTime(const struct FDateTime& In)
@@ -56534,7 +57803,7 @@ struct FText UKismetTextLibrary::AsPercent_Float(float Value, TEnumAsByte<ERound
 // Function Engine.KismetTextLibrary.AsDateTime_DateTime
 // ()
 // Parameters:
-// struct FDateTime               In                             (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               In                             (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::AsDateTime_DateTime(const struct FDateTime& In)
@@ -56557,7 +57826,7 @@ struct FText UKismetTextLibrary::AsDateTime_DateTime(const struct FDateTime& In)
 // Function Engine.KismetTextLibrary.AsDate_DateTime
 // ()
 // Parameters:
-// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ReferenceParm)
+// struct FDateTime               InDateTime                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
 // struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
 
 struct FText UKismetTextLibrary::AsDate_DateTime(const struct FDateTime& InDateTime)
@@ -56683,8 +57952,8 @@ struct FText UKismetTextLibrary::AsCurrency_Float(float Value, TEnumAsByte<ERoun
 // Function Engine.LevelScriptActor.WorldOriginLocationChanged
 // ()
 // Parameters:
-// struct FIntVector              OldOriginLocation              (Parm, IsPlainOldData)
-// struct FIntVector              NewOriginLocation              (Parm, IsPlainOldData)
+// struct FIntVector              OldOriginLocation              (Parm, ZeroConstructor, IsPlainOldData)
+// struct FIntVector              NewOriginLocation              (Parm, ZeroConstructor, IsPlainOldData)
 
 void ALevelScriptActor::WorldOriginLocationChanged(const struct FIntVector& OldOriginLocation, const struct FIntVector& NewOriginLocation)
 {
@@ -56979,21 +58248,21 @@ class ULevelStreaming* ULevelStreaming::CreateInstance(const class FString& Uniq
 }
 
 
-// Function Engine.LevelStreamingKismet.LoadLevelInstanceBySoftObjectPtr
+// Function Engine.LevelStreamingDynamic.LoadLevelInstanceBySoftObjectPtr
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // TSoftObjectPtr<class UWorld>   Level                          (Parm)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bOutSuccess                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// class ULevelStreamingKismet*   ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+// class ULevelStreamingDynamic*  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-class ULevelStreamingKismet* ULevelStreamingKismet::LoadLevelInstanceBySoftObjectPtr(class UObject* WorldContextObject, TSoftObjectPtr<class UWorld> Level, const struct FVector& Location, const struct FRotator& Rotation, bool* bOutSuccess)
+class ULevelStreamingDynamic* ULevelStreamingDynamic::LoadLevelInstanceBySoftObjectPtr(class UObject* WorldContextObject, TSoftObjectPtr<class UWorld> Level, const struct FVector& Location, const struct FRotator& Rotation, bool* bOutSuccess)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.LevelStreamingKismet.LoadLevelInstanceBySoftObjectPtr");
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.LevelStreamingDynamic.LoadLevelInstanceBySoftObjectPtr");
 
-	ULevelStreamingKismet_LoadLevelInstanceBySoftObjectPtr_Params params;
+	ULevelStreamingDynamic_LoadLevelInstanceBySoftObjectPtr_Params params;
 	params.WorldContextObject = WorldContextObject;
 	params.Level = Level;
 	params.Location = Location;
@@ -57012,21 +58281,21 @@ class ULevelStreamingKismet* ULevelStreamingKismet::LoadLevelInstanceBySoftObjec
 }
 
 
-// Function Engine.LevelStreamingKismet.LoadLevelInstance
+// Function Engine.LevelStreamingDynamic.LoadLevelInstance
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  LevelName                      (Parm, ZeroConstructor)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bOutSuccess                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
-// class ULevelStreamingKismet*   ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+// class ULevelStreamingDynamic*  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-class ULevelStreamingKismet* ULevelStreamingKismet::LoadLevelInstance(class UObject* WorldContextObject, const class FString& LevelName, const struct FVector& Location, const struct FRotator& Rotation, bool* bOutSuccess)
+class ULevelStreamingDynamic* ULevelStreamingDynamic::LoadLevelInstance(class UObject* WorldContextObject, const class FString& LevelName, const struct FVector& Location, const struct FRotator& Rotation, bool* bOutSuccess)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.LevelStreamingKismet.LoadLevelInstance");
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.LevelStreamingDynamic.LoadLevelInstance");
 
-	ULevelStreamingKismet_LoadLevelInstance_Params params;
+	ULevelStreamingDynamic_LoadLevelInstance_Params params;
 	params.WorldContextObject = WorldContextObject;
 	params.LevelName = LevelName;
 	params.Location = Location;
@@ -57146,7 +58415,7 @@ void UMaterialBillboardComponent::AddElement(class UMaterialInterface* Material,
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Value                          (Parm, IsPlainOldData)
+// struct FLinearColor            Value                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UMaterialInstanceDynamic::SetVectorParameterValue(const struct FName& ParameterName, const struct FLinearColor& Value)
 {
@@ -57236,7 +58505,7 @@ void UMaterialInstanceDynamic::K2_InterpolateMaterialInstanceParams(class UMater
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UMaterialInstanceDynamic::K2_GetVectorParameterValue(const struct FName& ParameterName)
 {
@@ -57536,7 +58805,7 @@ void UMeshVertexPainterKismetLibrary::RemovePaintedVertices(class UStaticMeshCom
 // ()
 // Parameters:
 // class UStaticMeshComponent*    StaticMeshComponent            (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FLinearColor            FillColor                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            FillColor                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           bConvertToSRGB                 (Parm, ZeroConstructor, IsPlainOldData)
 
 void UMeshVertexPainterKismetLibrary::PaintVerticesSingleColor(class UStaticMeshComponent* StaticMeshComponent, const struct FLinearColor& FillColor, bool bConvertToSRGB)
@@ -57560,8 +58829,8 @@ void UMeshVertexPainterKismetLibrary::PaintVerticesSingleColor(class UStaticMesh
 // ()
 // Parameters:
 // class UStaticMeshComponent*    StaticMeshComponent            (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FLinearColor            StartColor                     (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FLinearColor            EndColor                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            StartColor                     (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            EndColor                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // EVertexPaintAxis               Axis                           (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bConvertToSRGB                 (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -57575,6 +58844,50 @@ void UMeshVertexPainterKismetLibrary::PaintVerticesLerpAlongAxis(class UStaticMe
 	params.EndColor = EndColor;
 	params.Axis = Axis;
 	params.bConvertToSRGB = bConvertToSRGB;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.NavigationSystem.SimpleMoveToLocation
+// ()
+// Parameters:
+// class AController*             Controller                     (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 Goal                           (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+
+void UNavigationSystem::SimpleMoveToLocation(class AController* Controller, const struct FVector& Goal)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.NavigationSystem.SimpleMoveToLocation");
+
+	UNavigationSystem_SimpleMoveToLocation_Params params;
+	params.Controller = Controller;
+	params.Goal = Goal;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.NavigationSystem.SimpleMoveToActor
+// ()
+// Parameters:
+// class AController*             Controller                     (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  Goal                           (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+
+void UNavigationSystem::SimpleMoveToActor(class AController* Controller, class AActor* Goal)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.NavigationSystem.SimpleMoveToActor");
+
+	UNavigationSystem_SimpleMoveToActor_Params params;
+	params.Controller = Controller;
+	params.Goal = Goal;
 
 	auto flags = fn->FunctionFlags;
 
@@ -57611,7 +58924,7 @@ bool UParticleSystem::ContainsEmitterType(class UClass* TypeData)
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Param                          (Parm, IsPlainOldData)
+// struct FVector                 Param                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::SetVectorParameter(const struct FName& ParameterName, const struct FVector& Param)
 {
@@ -57745,7 +59058,7 @@ void UParticleSystemComponent::SetEmitterEnable(const struct FName& EmitterName,
 // ()
 // Parameters:
 // struct FName                   ParameterName                  (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Param                          (Parm, IsPlainOldData)
+// struct FLinearColor            Param                          (Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::SetColorParameter(const struct FName& ParameterName, const struct FLinearColor& Param)
 {
@@ -57767,7 +59080,7 @@ void UParticleSystemComponent::SetColorParameter(const struct FName& ParameterNa
 // ()
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewTangentPoint                (Parm, IsPlainOldData)
+// struct FVector                 NewTangentPoint                (Parm, ZeroConstructor, IsPlainOldData)
 // int                            TargetIndex                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::SetBeamTargetTangent(int EmitterIndex, const struct FVector& NewTangentPoint, int TargetIndex)
@@ -57815,7 +59128,7 @@ void UParticleSystemComponent::SetBeamTargetStrength(int EmitterIndex, float New
 // ()
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewTargetPoint                 (Parm, IsPlainOldData)
+// struct FVector                 NewTargetPoint                 (Parm, ZeroConstructor, IsPlainOldData)
 // int                            TargetIndex                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::SetBeamTargetPoint(int EmitterIndex, const struct FVector& NewTargetPoint, int TargetIndex)
@@ -57839,7 +59152,7 @@ void UParticleSystemComponent::SetBeamTargetPoint(int EmitterIndex, const struct
 // ()
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewTangentPoint                (Parm, IsPlainOldData)
+// struct FVector                 NewTangentPoint                (Parm, ZeroConstructor, IsPlainOldData)
 // int                            SourceIndex                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::SetBeamSourceTangent(int EmitterIndex, const struct FVector& NewTangentPoint, int SourceIndex)
@@ -57887,7 +59200,7 @@ void UParticleSystemComponent::SetBeamSourceStrength(int EmitterIndex, float New
 // ()
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewSourcePoint                 (Parm, IsPlainOldData)
+// struct FVector                 NewSourcePoint                 (Parm, ZeroConstructor, IsPlainOldData)
 // int                            SourceIndex                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::SetBeamSourcePoint(int EmitterIndex, const struct FVector& NewSourcePoint, int SourceIndex)
@@ -57911,7 +59224,7 @@ void UParticleSystemComponent::SetBeamSourcePoint(int EmitterIndex, const struct
 // ()
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewEndPoint                    (Parm, IsPlainOldData)
+// struct FVector                 NewEndPoint                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::SetBeamEndPoint(int EmitterIndex, const struct FVector& NewEndPoint)
 {
@@ -58069,7 +59382,7 @@ class UMaterialInterface* UParticleSystemComponent::GetNamedMaterial(const struc
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
 // int                            TargetIndex                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 OutTangentPoint                (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutTangentPoint                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UParticleSystemComponent::GetBeamTargetTangent(int EmitterIndex, int TargetIndex, struct FVector* OutTangentPoint)
@@ -58127,7 +59440,7 @@ bool UParticleSystemComponent::GetBeamTargetStrength(int EmitterIndex, int Targe
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
 // int                            TargetIndex                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 OutTargetPoint                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutTargetPoint                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UParticleSystemComponent::GetBeamTargetPoint(int EmitterIndex, int TargetIndex, struct FVector* OutTargetPoint)
@@ -58156,7 +59469,7 @@ bool UParticleSystemComponent::GetBeamTargetPoint(int EmitterIndex, int TargetIn
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
 // int                            SourceIndex                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 OutTangentPoint                (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutTangentPoint                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UParticleSystemComponent::GetBeamSourceTangent(int EmitterIndex, int SourceIndex, struct FVector* OutTangentPoint)
@@ -58214,7 +59527,7 @@ bool UParticleSystemComponent::GetBeamSourceStrength(int EmitterIndex, int Sourc
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
 // int                            SourceIndex                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 OutSourcePoint                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutSourcePoint                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UParticleSystemComponent::GetBeamSourcePoint(int EmitterIndex, int SourceIndex, struct FVector* OutSourcePoint)
@@ -58242,7 +59555,7 @@ bool UParticleSystemComponent::GetBeamSourcePoint(int EmitterIndex, int SourceIn
 // ()
 // Parameters:
 // int                            EmitterIndex                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 OutEndPoint                    (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutEndPoint                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UParticleSystemComponent::GetBeamEndPoint(int EmitterIndex, struct FVector* OutEndPoint)
@@ -58270,9 +59583,9 @@ bool UParticleSystemComponent::GetBeamEndPoint(int EmitterIndex, struct FVector*
 // Parameters:
 // struct FName                   InEventName                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // float                          InEmitterTime                  (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InLocation                     (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 InDirection                    (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 inVelocity                     (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 InLocation                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 InDirection                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 inVelocity                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 
 void UParticleSystemComponent::GenerateParticleEvent(const struct FName& InEventName, float InEmitterTime, const struct FVector& InLocation, const struct FVector& InDirection, const struct FVector& inVelocity)
 {
@@ -58366,7 +59679,7 @@ void UParticleSystemComponent::BeginTrails(const struct FName& InFirstSocketName
 // Parameters:
 // class AActor*                  NoiseMaker                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Loudness                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NoiseLocation                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 NoiseLocation                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UPawnNoiseEmitterComponent::MakeNoise(class AActor* NoiseMaker, float Loudness, const struct FVector& NoiseLocation)
 {
@@ -58631,7 +59944,7 @@ void UPhysicsConstraintComponent::SetLinearXLimit(TEnumAsByte<ELinearConstraintM
 // Function Engine.PhysicsConstraintComponent.SetLinearVelocityTarget
 // ()
 // Parameters:
-// struct FVector                 InVelTarget                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InVelTarget                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UPhysicsConstraintComponent::SetLinearVelocityTarget(const struct FVector& InVelTarget)
 {
@@ -58675,7 +59988,7 @@ void UPhysicsConstraintComponent::SetLinearVelocityDrive(bool bEnableDriveX, boo
 // Function Engine.PhysicsConstraintComponent.SetLinearPositionTarget
 // ()
 // Parameters:
-// struct FVector                 InPosTarget                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InPosTarget                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UPhysicsConstraintComponent::SetLinearPositionTarget(const struct FVector& InPosTarget)
 {
@@ -58786,7 +60099,7 @@ void UPhysicsConstraintComponent::SetDisableCollision(bool bDisableCollision)
 // ()
 // Parameters:
 // TEnumAsByte<EConstraintFrame>  Frame                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 RefPosition                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 RefPosition                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UPhysicsConstraintComponent::SetConstraintReferencePosition(TEnumAsByte<EConstraintFrame> Frame, const struct FVector& RefPosition)
 {
@@ -58808,8 +60121,8 @@ void UPhysicsConstraintComponent::SetConstraintReferencePosition(TEnumAsByte<ECo
 // ()
 // Parameters:
 // TEnumAsByte<EConstraintFrame>  Frame                          (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 PriAxis                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 SecAxis                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 PriAxis                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 SecAxis                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UPhysicsConstraintComponent::SetConstraintReferenceOrientation(TEnumAsByte<EConstraintFrame> Frame, const struct FVector& PriAxis, const struct FVector& SecAxis)
 {
@@ -58879,7 +60192,7 @@ void UPhysicsConstraintComponent::SetConstrainedComponents(class UPrimitiveCompo
 // Function Engine.PhysicsConstraintComponent.SetAngularVelocityTarget
 // ()
 // Parameters:
-// struct FVector                 InVelTarget                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InVelTarget                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UPhysicsConstraintComponent::SetAngularVelocityTarget(const struct FVector& InVelTarget)
 {
@@ -59029,7 +60342,7 @@ void UPhysicsConstraintComponent::SetAngularSwing1Limit(TEnumAsByte<EAngularCons
 // Function Engine.PhysicsConstraintComponent.SetAngularOrientationTarget
 // ()
 // Parameters:
-// struct FRotator                InPosTarget                    (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FRotator                InPosTarget                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UPhysicsConstraintComponent::SetAngularOrientationTarget(const struct FRotator& InPosTarget)
 {
@@ -59221,8 +60534,8 @@ float UPhysicsConstraintComponent::GetCurrentSwing1()
 // Function Engine.PhysicsConstraintComponent.GetConstraintForce
 // ()
 // Parameters:
-// struct FVector                 OutLinearForce                 (Parm, OutParm, IsPlainOldData)
-// struct FVector                 OutAngularForce                (Parm, OutParm, IsPlainOldData)
+// struct FVector                 OutLinearForce                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 OutAngularForce                (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsConstraintComponent::GetConstraintForce(struct FVector* OutLinearForce, struct FVector* OutAngularForce)
 {
@@ -59263,7 +60576,7 @@ void UPhysicsConstraintComponent::BreakConstraint()
 // Function Engine.PhysicsHandleComponent.SetTargetRotation
 // ()
 // Parameters:
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsHandleComponent::SetTargetRotation(const struct FRotator& NewRotation)
 {
@@ -59283,8 +60596,8 @@ void UPhysicsHandleComponent::SetTargetRotation(const struct FRotator& NewRotati
 // Function Engine.PhysicsHandleComponent.SetTargetLocationAndRotation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
-// struct FRotator                NewRotation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewRotation                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsHandleComponent::SetTargetLocationAndRotation(const struct FVector& NewLocation, const struct FRotator& NewRotation)
 {
@@ -59305,7 +60618,7 @@ void UPhysicsHandleComponent::SetTargetLocationAndRotation(const struct FVector&
 // Function Engine.PhysicsHandleComponent.SetTargetLocation
 // ()
 // Parameters:
-// struct FVector                 NewLocation                    (Parm, IsPlainOldData)
+// struct FVector                 NewLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsHandleComponent::SetTargetLocation(const struct FVector& NewLocation)
 {
@@ -59444,8 +60757,8 @@ void UPhysicsHandleComponent::ReleaseComponent()
 // Parameters:
 // class UPrimitiveComponent*     component                      (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   InBoneName                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
-// struct FRotator                Rotation                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                Rotation                       (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsHandleComponent::GrabComponentAtLocationWithRotation(class UPrimitiveComponent* component, const struct FName& InBoneName, const struct FVector& Location, const struct FRotator& Rotation)
 {
@@ -59470,7 +60783,7 @@ void UPhysicsHandleComponent::GrabComponentAtLocationWithRotation(class UPrimiti
 // Parameters:
 // class UPrimitiveComponent*     component                      (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   InBoneName                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 GrabLocation                   (Parm, IsPlainOldData)
+// struct FVector                 GrabLocation                   (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsHandleComponent::GrabComponentAtLocation(class UPrimitiveComponent* component, const struct FName& InBoneName, const struct FVector& GrabLocation)
 {
@@ -59494,7 +60807,7 @@ void UPhysicsHandleComponent::GrabComponentAtLocation(class UPrimitiveComponent*
 // Parameters:
 // class UPrimitiveComponent*     component                      (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   InBoneName                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 GrabLocation                   (Parm, IsPlainOldData)
+// struct FVector                 GrabLocation                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bConstrainRotation             (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsHandleComponent::GrabComponent(class UPrimitiveComponent* component, const struct FName& InBoneName, const struct FVector& GrabLocation, bool bConstrainRotation)
@@ -59518,8 +60831,8 @@ void UPhysicsHandleComponent::GrabComponent(class UPrimitiveComponent* component
 // Function Engine.PhysicsHandleComponent.GetTargetLocationAndRotation
 // ()
 // Parameters:
-// struct FVector                 TargetLocation                 (Parm, OutParm, IsPlainOldData)
-// struct FRotator                TargetRotation                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 TargetLocation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                TargetRotation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UPhysicsHandleComponent::GetTargetLocationAndRotation(struct FVector* TargetLocation, struct FRotator* TargetRotation)
 {
@@ -59564,7 +60877,7 @@ class UPrimitiveComponent* UPhysicsHandleComponent::GetGrabbedComponent()
 // Function Engine.PhysicsSpringComponent.GetSpringRestingPoint
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPhysicsSpringComponent::GetSpringRestingPoint()
 {
@@ -59585,7 +60898,7 @@ struct FVector UPhysicsSpringComponent::GetSpringRestingPoint()
 // Function Engine.PhysicsSpringComponent.GetSpringDirection
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPhysicsSpringComponent::GetSpringDirection()
 {
@@ -59606,7 +60919,7 @@ struct FVector UPhysicsSpringComponent::GetSpringDirection()
 // Function Engine.PhysicsSpringComponent.GetSpringCurrentEndPoint
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPhysicsSpringComponent::GetSpringCurrentEndPoint()
 {
@@ -60144,7 +61457,7 @@ void APlayerCameraManager::StopAllCameraAnims(bool bImmediate)
 // float                          FromAlpha                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ToAlpha                        (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Color                          (Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bShouldFadeAudio               (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bHoldWhenFinished              (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -60172,7 +61485,7 @@ void APlayerCameraManager::StartCameraFade(float FromAlpha, float ToAlpha, float
 // ()
 // Parameters:
 // float                          InFadeAmount                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            Color                          (Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bInFadeAudio                   (Parm, ZeroConstructor, IsPlainOldData)
 
 void APlayerCameraManager::SetManualCameraFade(float InFadeAmount, const struct FLinearColor& Color, bool bInFadeAudio)
@@ -60241,7 +61554,7 @@ void APlayerCameraManager::RemoveCameraLensEffect(class AEmitterCameraLensEffect
 // class UClass*                  ShakeClass                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Scale                          (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ECameraAnimPlaySpace> PlaySpace                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                UserPlaySpaceRot               (Parm, IsPlainOldData)
+// struct FRotator                UserPlaySpaceRot               (Parm, ZeroConstructor, IsPlainOldData)
 // class UCameraShake*            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 class UCameraShake* APlayerCameraManager::PlayCameraShake(class UClass* ShakeClass, float Scale, TEnumAsByte<ECameraAnimPlaySpace> PlaySpace, const struct FRotator& UserPlaySpaceRot)
@@ -60276,7 +61589,7 @@ class UCameraShake* APlayerCameraManager::PlayCameraShake(class UClass* ShakeCla
 // bool                           bRandomStartTime               (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Duration                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ECameraAnimPlaySpace> PlaySpace                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                UserPlaySpaceRot               (Parm, IsPlainOldData)
+// struct FRotator                UserPlaySpaceRot               (Parm, ZeroConstructor, IsPlainOldData)
 // class UCameraAnimInst*         ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 class UCameraAnimInst* APlayerCameraManager::PlayCameraAnim(class UCameraAnim* Anim, float Rate, float Scale, float BlendInTime, float BlendOutTime, bool bLoop, bool bRandomStartTime, float Duration, TEnumAsByte<ECameraAnimPlaySpace> PlaySpace, const struct FRotator& UserPlaySpaceRot)
@@ -60308,10 +61621,10 @@ class UCameraAnimInst* APlayerCameraManager::PlayCameraAnim(class UCameraAnim* A
 // Function Engine.PlayerCameraManager.PhotographyCameraModify
 // ()
 // Parameters:
-// struct FVector                 NewCameraLocation              (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 PreviousCameraLocation         (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 OriginalCameraLocation         (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 ResultCameraLocation           (Parm, OutParm, IsPlainOldData)
+// struct FVector                 NewCameraLocation              (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 PreviousCameraLocation         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 OriginalCameraLocation         (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ResultCameraLocation           (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void APlayerCameraManager::PhotographyCameraModify(const struct FVector& NewCameraLocation, const struct FVector& PreviousCameraLocation, const struct FVector& OriginalCameraLocation, struct FVector* ResultCameraLocation)
 {
@@ -60446,7 +61759,7 @@ float APlayerCameraManager::GetFOVAngle()
 // Function Engine.PlayerCameraManager.GetCameraRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator APlayerCameraManager::GetCameraRotation()
 {
@@ -60467,7 +61780,7 @@ struct FRotator APlayerCameraManager::GetCameraRotation()
 // Function Engine.PlayerCameraManager.GetCameraLocation
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector APlayerCameraManager::GetCameraLocation()
 {
@@ -60529,8 +61842,8 @@ void APlayerCameraManager::ClearCameraLensEffects()
 // ()
 // Parameters:
 // class AActor*                  CameraTarget                   (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 NewCameraLocation              (Parm, OutParm, IsPlainOldData)
-// struct FRotator                NewCameraRotation              (Parm, OutParm, IsPlainOldData)
+// struct FVector                 NewCameraLocation              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// struct FRotator                NewCameraRotation              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          NewCameraFOV                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
@@ -60607,14 +61920,16 @@ class AEmitterCameraLensEffectBase* APlayerCameraManager::AddCameraLensEffect(cl
 // Function Engine.PlayerInput.SetMouseSensitivity
 // ()
 // Parameters:
-// float                          Sensitivity                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// float                          SensitivityX                   (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// float                          SensitivityY                   (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 
-void UPlayerInput::SetMouseSensitivity(float Sensitivity)
+void UPlayerInput::SetMouseSensitivity(float SensitivityX, float SensitivityY)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.PlayerInput.SetMouseSensitivity");
 
 	UPlayerInput_SetMouseSensitivity_Params params;
-	params.Sensitivity = Sensitivity;
+	params.SensitivityX = SensitivityX;
+	params.SensitivityY = SensitivityY;
 
 	auto flags = fn->FunctionFlags;
 
@@ -60851,7 +62166,7 @@ void UPoseableMeshComponent::SetBoneTransformByName(const struct FName& BoneName
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InScale3D                      (Parm, IsPlainOldData)
+// struct FVector                 InScale3D                      (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBoneSpaces>       BoneSpace                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPoseableMeshComponent::SetBoneScaleByName(const struct FName& BoneName, const struct FVector& InScale3D, TEnumAsByte<EBoneSpaces> BoneSpace)
@@ -60875,7 +62190,7 @@ void UPoseableMeshComponent::SetBoneScaleByName(const struct FName& BoneName, co
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                InRotation                     (Parm, IsPlainOldData)
+// struct FRotator                InRotation                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBoneSpaces>       BoneSpace                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPoseableMeshComponent::SetBoneRotationByName(const struct FName& BoneName, const struct FRotator& InRotation, TEnumAsByte<EBoneSpaces> BoneSpace)
@@ -60899,7 +62214,7 @@ void UPoseableMeshComponent::SetBoneRotationByName(const struct FName& BoneName,
 // ()
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 InLocation                     (Parm, IsPlainOldData)
+// struct FVector                 InLocation                     (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBoneSpaces>       BoneSpace                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UPoseableMeshComponent::SetBoneLocationByName(const struct FName& BoneName, const struct FVector& InLocation, TEnumAsByte<EBoneSpaces> BoneSpace)
@@ -60969,7 +62284,7 @@ struct FTransform UPoseableMeshComponent::GetBoneTransformByName(const struct FN
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBoneSpaces>       BoneSpace                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPoseableMeshComponent::GetBoneScaleByName(const struct FName& BoneName, TEnumAsByte<EBoneSpaces> BoneSpace)
 {
@@ -60994,7 +62309,7 @@ struct FVector UPoseableMeshComponent::GetBoneScaleByName(const struct FName& Bo
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBoneSpaces>       BoneSpace                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator UPoseableMeshComponent::GetBoneRotationByName(const struct FName& BoneName, TEnumAsByte<EBoneSpaces> BoneSpace)
 {
@@ -61019,7 +62334,7 @@ struct FRotator UPoseableMeshComponent::GetBoneRotationByName(const struct FName
 // Parameters:
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<EBoneSpaces>       BoneSpace                      (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UPoseableMeshComponent::GetBoneLocationByName(const struct FName& BoneName, TEnumAsByte<EBoneSpaces> BoneSpace)
 {
@@ -61126,7 +62441,7 @@ void UProjectileMovementComponent::StopSimulating(const struct FHitResult& HitRe
 // Function Engine.ProjectileMovementComponent.SetVelocityInLocalSpace
 // ()
 // Parameters:
-// struct FVector                 NewVelocity                    (Parm, IsPlainOldData)
+// struct FVector                 NewVelocity                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void UProjectileMovementComponent::SetVelocityInLocalSpace(const struct FVector& NewVelocity)
 {
@@ -61134,6 +62449,43 @@ void UProjectileMovementComponent::SetVelocityInLocalSpace(const struct FVector&
 
 	UProjectileMovementComponent_SetVelocityInLocalSpace_Params params;
 	params.NewVelocity = NewVelocity;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.ProjectileMovementComponent.SetInterpolatedComponent
+// ()
+// Parameters:
+// class USceneComponent*         component                      (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UProjectileMovementComponent::SetInterpolatedComponent(class USceneComponent* component)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.ProjectileMovementComponent.SetInterpolatedComponent");
+
+	UProjectileMovementComponent_SetInterpolatedComponent_Params params;
+	params.component = component;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.ProjectileMovementComponent.ResetInterpolation
+// ()
+
+void UProjectileMovementComponent::ResetInterpolation()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.ProjectileMovementComponent.ResetInterpolation");
+
+	UProjectileMovementComponent_ResetInterpolation_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -61167,7 +62519,7 @@ void UProjectileMovementComponent::OnProjectileStopDelegate__DelegateSignature(c
 // ()
 // Parameters:
 // struct FHitResult              ImpactResult                   (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 ImpactVelocity                 (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 ImpactVelocity                 (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UProjectileMovementComponent::OnProjectileBounceDelegate__DelegateSignature(const struct FHitResult& ImpactResult, const struct FVector& ImpactVelocity)
 {
@@ -61185,11 +62537,33 @@ void UProjectileMovementComponent::OnProjectileBounceDelegate__DelegateSignature
 }
 
 
+// Function Engine.ProjectileMovementComponent.MoveInterpolationTarget
+// ()
+// Parameters:
+// struct FVector                 NewLocation                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FRotator                NewRotation                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+
+void UProjectileMovementComponent::MoveInterpolationTarget(const struct FVector& NewLocation, const struct FRotator& NewRotation)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.ProjectileMovementComponent.MoveInterpolationTarget");
+
+	UProjectileMovementComponent_MoveInterpolationTarget_Params params;
+	params.NewLocation = NewLocation;
+	params.NewRotation = NewRotation;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Engine.ProjectileMovementComponent.LimitVelocity
 // ()
 // Parameters:
-// struct FVector                 NewVelocity                    (Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 NewVelocity                    (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UProjectileMovementComponent::LimitVelocity(const struct FVector& NewVelocity)
 {
@@ -61197,6 +62571,48 @@ struct FVector UProjectileMovementComponent::LimitVelocity(const struct FVector&
 
 	UProjectileMovementComponent_LimitVelocity_Params params;
 	params.NewVelocity = NewVelocity;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.ProjectileMovementComponent.IsVelocityUnderSimulationThreshold
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UProjectileMovementComponent::IsVelocityUnderSimulationThreshold()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.ProjectileMovementComponent.IsVelocityUnderSimulationThreshold");
+
+	UProjectileMovementComponent_IsVelocityUnderSimulationThreshold_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Engine.ProjectileMovementComponent.IsInterpolationComplete
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UProjectileMovementComponent::IsInterpolationComplete()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.ProjectileMovementComponent.IsInterpolationComplete");
+
+	UProjectileMovementComponent_IsInterpolationComplete_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -61521,8 +62937,8 @@ void ASkeletalMeshActor::OnRep_ReplicatedMaterial0()
 // ()
 // Parameters:
 // class USkeletalMeshComponent*  SkelComp                       (ConstParm, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector                 WorldLocation                  (Parm, IsPlainOldData)
-// struct FVector                 WorldNormal                    (Parm, IsPlainOldData)
+// struct FVector                 WorldLocation                  (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 WorldNormal                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USkeletalMeshSocket::InitializeSocketFromLocation(class USkeletalMeshComponent* SkelComp, const struct FVector& WorldLocation, const struct FVector& WorldNormal)
 {
@@ -61545,7 +62961,7 @@ void USkeletalMeshSocket::InitializeSocketFromLocation(class USkeletalMeshCompon
 // ()
 // Parameters:
 // class USkeletalMeshComponent*  SkelComp                       (ConstParm, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USkeletalMeshSocket::GetSocketLocation(class USkeletalMeshComponent* SkelComp)
 {
@@ -61604,7 +63020,7 @@ void USkyLightComponent::SetVolumetricScatteringIntensity(float NewIntensity)
 // Function Engine.SkyLightComponent.SetOcclusionTint
 // ()
 // Parameters:
-// struct FColor                  InTint                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FColor                  InTint                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void USkyLightComponent::SetOcclusionTint(const struct FColor& InTint)
 {
@@ -61684,7 +63100,7 @@ void USkyLightComponent::SetMinOcclusion(float InMinOcclusion)
 // Function Engine.SkyLightComponent.SetLowerHemisphereColor
 // ()
 // Parameters:
-// struct FLinearColor            InLowerHemisphereColor         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FLinearColor            InLowerHemisphereColor         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void USkyLightComponent::SetLowerHemisphereColor(const struct FLinearColor& InLowerHemisphereColor)
 {
@@ -61704,7 +63120,7 @@ void USkyLightComponent::SetLowerHemisphereColor(const struct FLinearColor& InLo
 // Function Engine.SkyLightComponent.SetLightColor
 // ()
 // Parameters:
-// struct FLinearColor            NewLightColor                  (Parm, IsPlainOldData)
+// struct FLinearColor            NewLightColor                  (Parm, ZeroConstructor, IsPlainOldData)
 
 void USkyLightComponent::SetLightColor(const struct FLinearColor& NewLightColor)
 {
@@ -61850,6 +63266,26 @@ void USoundSubmix::StopRecordingOutput(class UObject* WorldContextObject, EAudio
 }
 
 
+// Function Engine.SoundSubmix.StopEnvelopeFollowing
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+
+void USoundSubmix::StopEnvelopeFollowing(class UObject* WorldContextObject)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.SoundSubmix.StopEnvelopeFollowing");
+
+	USoundSubmix_StopEnvelopeFollowing_Params params;
+	params.WorldContextObject = WorldContextObject;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Engine.SoundSubmix.StartRecordingOutput
 // ()
 // Parameters:
@@ -61863,6 +63299,48 @@ void USoundSubmix::StartRecordingOutput(class UObject* WorldContextObject, float
 	USoundSubmix_StartRecordingOutput_Params params;
 	params.WorldContextObject = WorldContextObject;
 	params.ExpectedDuration = ExpectedDuration;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.SoundSubmix.StartEnvelopeFollowing
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+
+void USoundSubmix::StartEnvelopeFollowing(class UObject* WorldContextObject)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.SoundSubmix.StartEnvelopeFollowing");
+
+	USoundSubmix_StartEnvelopeFollowing_Params params;
+	params.WorldContextObject = WorldContextObject;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Engine.SoundSubmix.AddEnvelopeFollowerDelegate
+// ()
+// Parameters:
+// class UObject*                 WorldContextObject             (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FScriptDelegate         OnSubmixEnvelopeBP             (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+
+void USoundSubmix::AddEnvelopeFollowerDelegate(class UObject* WorldContextObject, const struct FScriptDelegate& OnSubmixEnvelopeBP)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.SoundSubmix.AddEnvelopeFollowerDelegate");
+
+	USoundSubmix_AddEnvelopeFollowerDelegate_Params params;
+	params.WorldContextObject = WorldContextObject;
+	params.OnSubmixEnvelopeBP = OnSubmixEnvelopeBP;
 
 	auto flags = fn->FunctionFlags;
 
@@ -61892,7 +63370,7 @@ void USplineMeshComponent::UpdateMesh()
 // Function Engine.SplineMeshComponent.SetStartTangent
 // ()
 // Parameters:
-// struct FVector                 StartTangent                   (Parm, IsPlainOldData)
+// struct FVector                 StartTangent                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetStartTangent(const struct FVector& StartTangent, bool bUpdateMesh)
@@ -61914,7 +63392,7 @@ void USplineMeshComponent::SetStartTangent(const struct FVector& StartTangent, b
 // Function Engine.SplineMeshComponent.SetStartScale
 // ()
 // Parameters:
-// struct FVector2D               StartScale                     (Parm, IsPlainOldData)
+// struct FVector2D               StartScale                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetStartScale(const struct FVector2D& StartScale, bool bUpdateMesh)
@@ -61958,7 +63436,7 @@ void USplineMeshComponent::SetStartRoll(float StartRoll, bool bUpdateMesh)
 // Function Engine.SplineMeshComponent.SetStartPosition
 // ()
 // Parameters:
-// struct FVector                 StartPos                       (Parm, IsPlainOldData)
+// struct FVector                 StartPos                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetStartPosition(const struct FVector& StartPos, bool bUpdateMesh)
@@ -61980,7 +63458,7 @@ void USplineMeshComponent::SetStartPosition(const struct FVector& StartPos, bool
 // Function Engine.SplineMeshComponent.SetStartOffset
 // ()
 // Parameters:
-// struct FVector2D               StartOffset                    (Parm, IsPlainOldData)
+// struct FVector2D               StartOffset                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetStartOffset(const struct FVector2D& StartOffset, bool bUpdateMesh)
@@ -62002,10 +63480,10 @@ void USplineMeshComponent::SetStartOffset(const struct FVector2D& StartOffset, b
 // Function Engine.SplineMeshComponent.SetStartAndEnd
 // ()
 // Parameters:
-// struct FVector                 StartPos                       (Parm, IsPlainOldData)
-// struct FVector                 StartTangent                   (Parm, IsPlainOldData)
-// struct FVector                 EndPos                         (Parm, IsPlainOldData)
-// struct FVector                 EndTangent                     (Parm, IsPlainOldData)
+// struct FVector                 StartPos                       (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 StartTangent                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 EndPos                         (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 EndTangent                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetStartAndEnd(const struct FVector& StartPos, const struct FVector& StartTangent, const struct FVector& EndPos, const struct FVector& EndTangent, bool bUpdateMesh)
@@ -62030,7 +63508,7 @@ void USplineMeshComponent::SetStartAndEnd(const struct FVector& StartPos, const 
 // Function Engine.SplineMeshComponent.SetSplineUpDir
 // ()
 // Parameters:
-// struct FVector                 InSplineUpDir                  (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 InSplineUpDir                  (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetSplineUpDir(const struct FVector& InSplineUpDir, bool bUpdateMesh)
@@ -62074,7 +63552,7 @@ void USplineMeshComponent::SetForwardAxis(TEnumAsByte<ESplineMeshAxis> InForward
 // Function Engine.SplineMeshComponent.SetEndTangent
 // ()
 // Parameters:
-// struct FVector                 EndTangent                     (Parm, IsPlainOldData)
+// struct FVector                 EndTangent                     (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetEndTangent(const struct FVector& EndTangent, bool bUpdateMesh)
@@ -62096,7 +63574,7 @@ void USplineMeshComponent::SetEndTangent(const struct FVector& EndTangent, bool 
 // Function Engine.SplineMeshComponent.SetEndScale
 // ()
 // Parameters:
-// struct FVector2D               EndScale                       (Parm, IsPlainOldData)
+// struct FVector2D               EndScale                       (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetEndScale(const struct FVector2D& EndScale, bool bUpdateMesh)
@@ -62140,7 +63618,7 @@ void USplineMeshComponent::SetEndRoll(float EndRoll, bool bUpdateMesh)
 // Function Engine.SplineMeshComponent.SetEndPosition
 // ()
 // Parameters:
-// struct FVector                 EndPos                         (Parm, IsPlainOldData)
+// struct FVector                 EndPos                         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetEndPosition(const struct FVector& EndPos, bool bUpdateMesh)
@@ -62162,7 +63640,7 @@ void USplineMeshComponent::SetEndPosition(const struct FVector& EndPos, bool bUp
 // Function Engine.SplineMeshComponent.SetEndOffset
 // ()
 // Parameters:
-// struct FVector2D               EndOffset                      (Parm, IsPlainOldData)
+// struct FVector2D               EndOffset                      (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bUpdateMesh                    (Parm, ZeroConstructor, IsPlainOldData)
 
 void USplineMeshComponent::SetEndOffset(const struct FVector2D& EndOffset, bool bUpdateMesh)
@@ -62228,7 +63706,7 @@ void USplineMeshComponent::SetBoundaryMax(float InBoundaryMax, bool bUpdateMesh)
 // Function Engine.SplineMeshComponent.GetStartTangent
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineMeshComponent::GetStartTangent()
 {
@@ -62249,7 +63727,7 @@ struct FVector USplineMeshComponent::GetStartTangent()
 // Function Engine.SplineMeshComponent.GetStartScale
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USplineMeshComponent::GetStartScale()
 {
@@ -62291,7 +63769,7 @@ float USplineMeshComponent::GetStartRoll()
 // Function Engine.SplineMeshComponent.GetStartPosition
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineMeshComponent::GetStartPosition()
 {
@@ -62312,7 +63790,7 @@ struct FVector USplineMeshComponent::GetStartPosition()
 // Function Engine.SplineMeshComponent.GetStartOffset
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USplineMeshComponent::GetStartOffset()
 {
@@ -62333,7 +63811,7 @@ struct FVector2D USplineMeshComponent::GetStartOffset()
 // Function Engine.SplineMeshComponent.GetSplineUpDir
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineMeshComponent::GetSplineUpDir()
 {
@@ -62375,7 +63853,7 @@ TEnumAsByte<ESplineMeshAxis> USplineMeshComponent::GetForwardAxis()
 // Function Engine.SplineMeshComponent.GetEndTangent
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineMeshComponent::GetEndTangent()
 {
@@ -62396,7 +63874,7 @@ struct FVector USplineMeshComponent::GetEndTangent()
 // Function Engine.SplineMeshComponent.GetEndScale
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USplineMeshComponent::GetEndScale()
 {
@@ -62438,7 +63916,7 @@ float USplineMeshComponent::GetEndRoll()
 // Function Engine.SplineMeshComponent.GetEndPosition
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USplineMeshComponent::GetEndPosition()
 {
@@ -62459,7 +63937,7 @@ struct FVector USplineMeshComponent::GetEndPosition()
 // Function Engine.SplineMeshComponent.GetEndOffset
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D USplineMeshComponent::GetEndOffset()
 {
@@ -62583,7 +64061,7 @@ bool USpringArmComponent::IsCollisionFixApplied()
 // Function Engine.SpringArmComponent.GetUnfixedCameraPosition
 // ()
 // Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector USpringArmComponent::GetUnfixedCameraPosition()
 {
@@ -62604,7 +64082,7 @@ struct FVector USpringArmComponent::GetUnfixedCameraPosition()
 // Function Engine.SpringArmComponent.GetTargetRotation
 // ()
 // Parameters:
-// struct FRotator                ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FRotator                ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FRotator USpringArmComponent::GetTargetRotation()
 {
@@ -62715,7 +64193,7 @@ class UMaterialInterface* UStaticMesh::GetMaterial(int MaterialIndex)
 // Function Engine.StaticMesh.GetBounds
 // ()
 // Parameters:
-// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FBoxSphereBounds        ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FBoxSphereBounds UStaticMesh::GetBounds()
 {
@@ -62736,7 +64214,7 @@ struct FBoxSphereBounds UStaticMesh::GetBounds()
 // Function Engine.StaticMesh.GetBoundingBox
 // ()
 // Parameters:
-// struct FBox                    ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FBox                    ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FBox UStaticMesh::GetBoundingBox()
 {
@@ -62757,7 +64235,7 @@ struct FBox UStaticMesh::GetBoundingBox()
 // Function Engine.StereoLayerComponent.SetUVRect
 // ()
 // Parameters:
-// struct FBox2D                  InUVRect                       (Parm)
+// struct FBox2D                  InUVRect                       (Parm, ZeroConstructor)
 
 void UStereoLayerComponent::SetUVRect(const struct FBox2D& InUVRect)
 {
@@ -62797,7 +64275,7 @@ void UStereoLayerComponent::SetTexture(class UTexture* InTexture)
 // Function Engine.StereoLayerComponent.SetQuadSize
 // ()
 // Parameters:
-// struct FVector2D               InQuadSize                     (Parm, IsPlainOldData)
+// struct FVector2D               InQuadSize                     (Parm, ZeroConstructor, IsPlainOldData)
 
 void UStereoLayerComponent::SetQuadSize(const struct FVector2D& InQuadSize)
 {
@@ -62854,7 +64332,7 @@ void UStereoLayerComponent::MarkTextureForUpdate()
 // Function Engine.StereoLayerComponent.GetUVRect
 // ()
 // Parameters:
-// struct FBox2D                  ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FBox2D                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
 
 struct FBox2D UStereoLayerComponent::GetUVRect()
 {
@@ -62896,7 +64374,7 @@ class UTexture* UStereoLayerComponent::GetTexture()
 // Function Engine.StereoLayerComponent.GetQuadSize
 // ()
 // Parameters:
-// struct FVector2D               ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector2D               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector2D UStereoLayerComponent::GetQuadSize()
 {
@@ -62956,8 +64434,8 @@ void UStereoLayerFunctionLibrary::ShowSplashScreen()
 // ()
 // Parameters:
 // class UTexture*                Texture                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector2D               Scale                          (Parm, IsPlainOldData)
-// struct FVector2D               Offset                         (Parm, IsPlainOldData)
+// struct FVector2D               Scale                          (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector2D               Offset                         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bShowLoadingMovie              (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bShowOnSet                     (Parm, ZeroConstructor, IsPlainOldData)
 
@@ -63017,292 +64495,10 @@ void UStereoLayerFunctionLibrary::EnableAutoLoadingSplashScreen(bool InAutoShowE
 }
 
 
-// Function Engine.TextRenderComponent.SetYScale
-// ()
-// Parameters:
-// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetYScale(float Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetYScale");
-
-	UTextRenderComponent_SetYScale_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetXScale
-// ()
-// Parameters:
-// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetXScale(float Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetXScale");
-
-	UTextRenderComponent_SetXScale_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetWorldSize
-// ()
-// Parameters:
-// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetWorldSize(float Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetWorldSize");
-
-	UTextRenderComponent_SetWorldSize_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetVertSpacingAdjust
-// ()
-// Parameters:
-// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetVertSpacingAdjust(float Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetVertSpacingAdjust");
-
-	UTextRenderComponent_SetVertSpacingAdjust_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetVerticalAlignment
-// ()
-// Parameters:
-// TEnumAsByte<EVerticalTextAligment> Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetVerticalAlignment(TEnumAsByte<EVerticalTextAligment> Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetVerticalAlignment");
-
-	UTextRenderComponent_SetVerticalAlignment_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetTextRenderColor
-// ()
-// Parameters:
-// struct FColor                  Value                          (Parm, IsPlainOldData)
-
-void UTextRenderComponent::SetTextRenderColor(const struct FColor& Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetTextRenderColor");
-
-	UTextRenderComponent_SetTextRenderColor_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetTextMaterial
-// ()
-// Parameters:
-// class UMaterialInterface*      Material                       (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetTextMaterial(class UMaterialInterface* Material)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetTextMaterial");
-
-	UTextRenderComponent_SetTextMaterial_Params params;
-	params.Material = Material;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetText
-// ()
-// Parameters:
-// class FString                  Value                          (Parm, ZeroConstructor)
-
-void UTextRenderComponent::SetText(const class FString& Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetText");
-
-	UTextRenderComponent_SetText_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetHorizSpacingAdjust
-// ()
-// Parameters:
-// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetHorizSpacingAdjust(float Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetHorizSpacingAdjust");
-
-	UTextRenderComponent_SetHorizSpacingAdjust_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetHorizontalAlignment
-// ()
-// Parameters:
-// TEnumAsByte<EHorizTextAligment> Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetHorizontalAlignment(TEnumAsByte<EHorizTextAligment> Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetHorizontalAlignment");
-
-	UTextRenderComponent_SetHorizontalAlignment_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.SetFont
-// ()
-// Parameters:
-// class UFont*                   Value                          (Parm, ZeroConstructor, IsPlainOldData)
-
-void UTextRenderComponent::SetFont(class UFont* Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.SetFont");
-
-	UTextRenderComponent_SetFont_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.K2_SetText
-// ()
-// Parameters:
-// struct FText                   Value                          (ConstParm, Parm, OutParm, ReferenceParm)
-
-void UTextRenderComponent::K2_SetText(const struct FText& Value)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.K2_SetText");
-
-	UTextRenderComponent_K2_SetText_Params params;
-	params.Value = Value;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Engine.TextRenderComponent.GetTextWorldSize
-// ()
-// Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
-
-struct FVector UTextRenderComponent::GetTextWorldSize()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.GetTextWorldSize");
-
-	UTextRenderComponent_GetTextWorldSize_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Engine.TextRenderComponent.GetTextLocalSize
-// ()
-// Parameters:
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
-
-struct FVector UTextRenderComponent::GetTextLocalSize()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Engine.TextRenderComponent.GetTextLocalSize");
-
-	UTextRenderComponent_GetTextLocalSize_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
 // Function Engine.TimecodeProvider.GetTimecode
 // ()
 // Parameters:
-// struct FTimecode               ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FTimecode               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FTimecode UTimecodeProvider::GetTimecode()
 {
@@ -63344,7 +64540,7 @@ ETimecodeProviderSynchronizationState UTimecodeProvider::GetSynchronizationState
 // Function Engine.TimecodeProvider.GetFrameRate
 // ()
 // Parameters:
-// struct FFrameRate              ReturnValue                    (Parm, OutParm, ReturnParm)
+// struct FFrameRate              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FFrameRate UTimecodeProvider::GetFrameRate()
 {
@@ -63359,6 +64555,26 @@ struct FFrameRate UTimecodeProvider::GetFrameRate()
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function Engine.SystemTimeTimecodeProvider.SetFrameRate
+// ()
+// Parameters:
+// struct FFrameRate              InFrameRate                    (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+
+void USystemTimeTimecodeProvider::SetFrameRate(const struct FFrameRate& InFrameRate)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Engine.SystemTimeTimecodeProvider.SetFrameRate");
+
+	USystemTimeTimecodeProvider_SetFrameRate_Params params;
+	params.InFrameRate = InFrameRate;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 }
 
 
@@ -64052,10 +65268,10 @@ void UVisualLoggerKismetLibrary::LogText(class UObject* WorldContextObject, cons
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 SegmentStart                   (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 SegmentEnd                     (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 SegmentStart                   (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 SegmentEnd                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Text                           (Parm, ZeroConstructor)
-// struct FLinearColor            ObjectColor                    (Parm, IsPlainOldData)
+// struct FLinearColor            ObjectColor                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Thickness                      (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   CategoryName                   (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToMessageLog               (Parm, ZeroConstructor, IsPlainOldData)
@@ -64086,9 +65302,9 @@ void UVisualLoggerKismetLibrary::LogSegment(class UObject* WorldContextObject, c
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Location                       (Parm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Text                           (Parm, ZeroConstructor)
-// struct FLinearColor            ObjectColor                    (Parm, IsPlainOldData)
+// struct FLinearColor            ObjectColor                    (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   LogCategory                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToMessageLog               (Parm, ZeroConstructor, IsPlainOldData)
@@ -64118,9 +65334,9 @@ void UVisualLoggerKismetLibrary::LogLocation(class UObject* WorldContextObject, 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FBox                    BoxShape                       (Parm, IsPlainOldData)
+// struct FBox                    BoxShape                       (Parm, ZeroConstructor, IsPlainOldData)
 // class FString                  Text                           (Parm, ZeroConstructor)
-// struct FLinearColor            ObjectColor                    (Parm, IsPlainOldData)
+// struct FLinearColor            ObjectColor                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FName                   LogCategory                    (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bAddToMessageLog               (Parm, ZeroConstructor, IsPlainOldData)
 

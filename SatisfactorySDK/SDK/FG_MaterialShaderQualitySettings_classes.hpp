@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -31,12 +31,12 @@ public:
 
 
 // Class MaterialShaderQualitySettings.ShaderPlatformQualitySettings
-// 0x0018 (0x0040 - 0x0028)
+// 0x0028 (0x0050 - 0x0028)
 class UShaderPlatformQualitySettings : public UObject
 {
 public:
-	struct FMaterialQualityOverrides                   QualityOverrides[0x3];                                    // 0x0028(0x0007) (Edit, Config)
-	unsigned char                                      UnknownData00[0x3];                                       // 0x003D(0x0003) MISSED OFFSET
+	struct FMaterialQualityOverrides                   QualityOverrides[0x3];                                    // 0x0028(0x0008) (Edit, Config)
+	unsigned char                                      UnknownData00[0x10];                                      // 0x0040(0x0010) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,12 +15,12 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // Class SignificanceManager.SignificanceManager
-// 0x00D0 (0x00F8 - 0x0028)
+// 0x0108 (0x0130 - 0x0028)
 class USignificanceManager : public UObject
 {
 public:
-	unsigned char                                      UnknownData00[0xB8];                                      // 0x0028(0x00B8) MISSED OFFSET
-	struct FSoftClassPath                              SignificanceManagerClassName;                             // 0x00E0(0x0018) (Edit, Config, GlobalConfig, NoClear)
+	unsigned char                                      UnknownData00[0xF0];                                      // 0x0028(0x00F0) MISSED OFFSET
+	struct FSoftClassPath                              SignificanceManagerClassName;                             // 0x0118(0x0018) (Edit, ZeroConstructor, Config, GlobalConfig, NoClear)
 
 	static UClass* StaticClass()
 	{

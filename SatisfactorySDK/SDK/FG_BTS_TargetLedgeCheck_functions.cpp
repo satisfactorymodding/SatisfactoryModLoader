@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -16,7 +16,7 @@ namespace SDK
 // ()
 // Parameters:
 // struct FBlackboardKeySelector  Key                            (BlueprintVisible, BlueprintReadOnly, Parm)
-// struct FVector                 Location                       (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Location                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UBTS_TargetLedgeCheck_C::GetKeyLocation(const struct FBlackboardKeySelector& Key, struct FVector* Location)
 {

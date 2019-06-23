@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -22,7 +22,7 @@ struct AAttach_StunSpear_C_UserConstructionScript_Params
 // Function Attach_StunSpear.Attach_StunSpear_C.PlayUseEffect
 struct AAttach_StunSpear_C_PlayUseEffect_Params
 {
-	struct FVector*                                    UseLocation;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FVector*                                    UseLocation;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Attach_StunSpear.Attach_StunSpear_C.PlayAttachEffects3P

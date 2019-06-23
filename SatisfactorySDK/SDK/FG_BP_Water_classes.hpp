@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -28,13 +28,13 @@ public:
 	unsigned char                                      UnknownData00[0x4];                                       // 0x034C(0x0004) MISSED OFFSET
 	class UMaterialInstanceDynamic*                    Water_Material;                                           // 0x0350(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	float                                              Variation_Amount;                                         // 0x0358(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                Primary_Water_Color;                                      // 0x035C(0x0010) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
-	struct FLinearColor                                Secondary_Water_Color;                                    // 0x036C(0x0010) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
+	struct FLinearColor                                Primary_Water_Color;                                      // 0x035C(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FLinearColor                                Secondary_Water_Color;                                    // 0x036C(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	float                                              Base_Opacity;                                             // 0x037C(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              Shore_Depth;                                              // 0x0380(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              Depth_Scale;                                              // 0x0384(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                Deep_Water_Color;                                         // 0x0388(0x0010) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
-	struct FLinearColor                                Shallow_Water_Color;                                      // 0x0398(0x0010) (Edit, BlueprintVisible, DisableEditOnInstance, IsPlainOldData)
+	struct FLinearColor                                Deep_Water_Color;                                         // 0x0388(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FLinearColor                                Shallow_Water_Color;                                      // 0x0398(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	class UMaterialInterface*                          UnderWater;                                               // 0x03A8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	class UMaterialInstanceDynamic*                    UnderWater_Material;                                      // 0x03B0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 

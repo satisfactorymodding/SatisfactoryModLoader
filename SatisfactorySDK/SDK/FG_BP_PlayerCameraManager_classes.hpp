@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_PlayerCameraManager.BP_PlayerCameraManager_C
-// 0x0000 (0x25F0 - 0x25F0)
+// 0x0000 (0x2470 - 0x2470)
 class ABP_PlayerCameraManager_C : public APlayerCameraManager
 {
 public:

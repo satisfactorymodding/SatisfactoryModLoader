@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -36,7 +36,7 @@ class UAnalyticsService : public USaveGame
 {
 public:
 	unsigned char                                      UnknownData00[0x48];                                      // 0x0028(0x0048) MISSED OFFSET
-	struct FGuid                                       mClientId;                                                // 0x0070(0x0010) (IsPlainOldData)
+	struct FGuid                                       mClientId;                                                // 0x0070(0x0010) (ZeroConstructor, IsPlainOldData)
 	class UEOSMetrics*                                 mEOSMetricsHandle;                                        // 0x0080(0x0008) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x8];                                       // 0x0088(0x0008) MISSED OFFSET
 

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -41,9 +41,9 @@ void UWidget_ColorGun_ColorPicker_C::CompressValue(float Value, float MinValue, 
 // Function Widget_ColorGun_ColorPicker.Widget_ColorGun_ColorPicker_C.ConvertColorToPreviewColor
 // ()
 // Parameters:
-// struct FLinearColor            InputColor                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            InputColor                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // float                          MinValue                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            OutputColor                    (Parm, OutParm, IsPlainOldData)
+// struct FLinearColor            OutputColor                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_ColorGun_ColorPicker_C::ConvertColorToPreviewColor(const struct FLinearColor& InputColor, float MinValue, struct FLinearColor* OutputColor)
 {
@@ -232,8 +232,8 @@ void UWidget_ColorGun_ColorPicker_C::OnSlotEditClicked(class UWidget_ColorPicker
 // Function Widget_ColorGun_ColorPicker.Widget_ColorGun_ColorPicker_C.OnUpdatePreset
 // ()
 // Parameters:
-// struct FLinearColor            PrimaryColor                   (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FLinearColor            SecondaryColor                 (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            PrimaryColor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FLinearColor            SecondaryColor                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_ColorGun_ColorPicker_C::OnUpdatePreset(const struct FLinearColor& PrimaryColor, const struct FLinearColor& SecondaryColor)
 {

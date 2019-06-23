@@ -101,6 +101,8 @@ public:
 		// Use the placeholders namespace
 		using namespace std::placeholders;
 
+		SDK::InitSDK(); //Initialize the SDK in ExampleMod so the functions work properly
+
 		// More on namespaces:
 		// * The functions that will be of use to you are in the SML::Mods::Functions namespace. A tip is to type Functions:: and see what functions are available for you to use. 
 

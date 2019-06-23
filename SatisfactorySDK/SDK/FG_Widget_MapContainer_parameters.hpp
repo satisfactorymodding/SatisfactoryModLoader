@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -18,7 +18,7 @@ namespace SDK
 struct UWidget_MapContainer_C_NormalizedValueToZoomValue_Params
 {
 	float                                              NormalizedValue;                                          // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector2D                                   ZoomValue;                                                // (Parm, OutParm, IsPlainOldData)
+	struct FVector2D                                   ZoomValue;                                                // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_MapContainer.Widget_MapContainer_C.UpdateZoomSlider

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -173,7 +173,7 @@ struct UAkCheckBox_SetCheckedState_Params
 // Function AkAudio.AkCheckBox.SetAkItemId
 struct UAkCheckBox_SetAkItemId_Params
 {
-	struct FGuid                                       ItemId;                                                   // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FGuid                                       ItemId;                                                   // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 };
 
 // Function AkAudio.AkCheckBox.SetAkBoolProperty
@@ -209,7 +209,7 @@ struct UAkCheckBox_GetAkProperty_Params
 // Function AkAudio.AkCheckBox.GetAkItemId
 struct UAkCheckBox_GetAkItemId_Params
 {
-	struct FGuid                                       ReturnValue;                                              // (ConstParm, Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FGuid                                       ReturnValue;                                              // (ConstParm, Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function AkAudio.AkGameplayStatics.UseReverbVolumes
@@ -309,8 +309,8 @@ struct UAkGameplayStatics_SpawnAkComponentAtLocation_Params
 {
 	class UObject*                                     WorldContextObject;                                       // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAkAudioEvent*                               AkEvent;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     Location;                                                 // (Parm, IsPlainOldData)
-	struct FRotator                                    Orientation;                                              // (Parm, IsPlainOldData)
+	struct FVector                                     Location;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FRotator                                    Orientation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               AutoPost;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAkComponent*                                ReturnValue;                                              // (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
 };
@@ -328,6 +328,14 @@ struct UAkGameplayStatics_SetState_Params
 {
 	struct FName                                       StateGroup;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FName                                       State;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function AkAudio.AkGameplayStatics.SetSpeakerAngles
+struct UAkGameplayStatics_SetSpeakerAngles_Params
+{
+	TArray<float>                                      SpeakerAngles;                                            // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+	float                                              HeightAngle;                                              // (Parm, ZeroConstructor, IsPlainOldData)
+	class FString                                      DeviceShareset;                                           // (Parm, ZeroConstructor)
 };
 
 // Function AkAudio.AkGameplayStatics.SetPanningRule
@@ -419,8 +427,8 @@ struct UAkGameplayStatics_PostAkEventAtLocation_Params
 {
 	class UObject*                                     WorldContextObject;                                       // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAkAudioEvent*                               AkEvent;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FVector                                     Location;                                                 // (Parm, IsPlainOldData)
-	struct FRotator                                    Orientation;                                              // (Parm, IsPlainOldData)
+	struct FVector                                     Location;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FRotator                                    Orientation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	class UAkComponent*                                ReturnValue;                                              // (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
 };
 
@@ -478,6 +486,14 @@ struct UAkGameplayStatics_IsGame_Params
 struct UAkGameplayStatics_IsEditor_Params
 {
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function AkAudio.AkGameplayStatics.GetSpeakerAngles
+struct UAkGameplayStatics_GetSpeakerAngles_Params
+{
+	TArray<float>                                      SpeakerAngles;                                            // (Parm, OutParm, ZeroConstructor)
+	float                                              HeightAngle;                                              // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	class FString                                      DeviceShareset;                                           // (Parm, ZeroConstructor)
 };
 
 // Function AkAudio.AkGameplayStatics.GetOcclusionScalingFactor
@@ -682,13 +698,13 @@ struct UAkSlider_SetStepSize_Params
 // Function AkAudio.AkSlider.SetSliderHandleColor
 struct UAkSlider_SetSliderHandleColor_Params
 {
-	struct FLinearColor                                InValue;                                                  // (Parm, IsPlainOldData)
+	struct FLinearColor                                InValue;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function AkAudio.AkSlider.SetSliderBarColor
 struct UAkSlider_SetSliderBarColor_Params
 {
-	struct FLinearColor                                InValue;                                                  // (Parm, IsPlainOldData)
+	struct FLinearColor                                InValue;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function AkAudio.AkSlider.SetLocked
@@ -712,7 +728,7 @@ struct UAkSlider_SetAkSliderItemProperty_Params
 // Function AkAudio.AkSlider.SetAkSliderItemId
 struct UAkSlider_SetAkSliderItemId_Params
 {
-	struct FGuid                                       ItemId;                                                   // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+	struct FGuid                                       ItemId;                                                   // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 };
 
 // Function AkAudio.AkSlider.GetValue
@@ -730,7 +746,7 @@ struct UAkSlider_GetAkSliderItemProperty_Params
 // Function AkAudio.AkSlider.GetAkSliderItemId
 struct UAkSlider_GetAkSliderItemId_Params
 {
-	struct FGuid                                       ReturnValue;                                              // (ConstParm, Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FGuid                                       ReturnValue;                                              // (ConstParm, Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function AkAudio.AkSurfaceReflectorSetComponent.UpdateSurfaceReflectorSet

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -72,6 +72,13 @@ struct UAudioMixerBlueprintLibrary_SetBypassSourceEffectChainEntry_Params
 	bool                                               bBypassed;                                                // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function AudioMixer.AudioMixerBlueprintLibrary.ResumeRecordingOutput
+struct UAudioMixerBlueprintLibrary_ResumeRecordingOutput_Params
+{
+	class UObject*                                     WorldContextObject;                                       // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+	class USoundSubmix*                                SubmixToPause;                                            // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function AudioMixer.AudioMixerBlueprintLibrary.RemoveSourceEffectFromPresetChain
 struct UAudioMixerBlueprintLibrary_RemoveSourceEffectFromPresetChain_Params
 {
@@ -85,6 +92,13 @@ struct UAudioMixerBlueprintLibrary_RemoveMasterSubmixEffect_Params
 {
 	class UObject*                                     WorldContextObject;                                       // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	class USoundEffectSubmixPreset*                    SubmixEffectPreset;                                       // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function AudioMixer.AudioMixerBlueprintLibrary.PauseRecordingOutput
+struct UAudioMixerBlueprintLibrary_PauseRecordingOutput_Params
+{
+	class UObject*                                     WorldContextObject;                                       // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+	class USoundSubmix*                                SubmixToPause;                                            // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function AudioMixer.AudioMixerBlueprintLibrary.GetNumberOfEntriesInSourceEffectChain
@@ -106,7 +120,7 @@ struct UAudioMixerBlueprintLibrary_AddSourceEffectToPresetChain_Params
 {
 	class UObject*                                     WorldContextObject;                                       // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	class USoundEffectSourcePresetChain*               PresetChain;                                              // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FSourceEffectChainEntry                     Entry;                                                    // (Parm, IsPlainOldData)
+	struct FSourceEffectChainEntry                     Entry;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function AudioMixer.AudioMixerBlueprintLibrary.AddMasterSubmixEffect
@@ -133,6 +147,7 @@ struct USubmixEffectReverbPreset_SetSettingsWithReverbEffect_Params
 {
 	class UReverbEffect*                               InReverbEffect;                                           // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	float                                              WetLevel;                                                 // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+	float                                              DryLevel;                                                 // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function AudioMixer.SubmixEffectReverbPreset.SetSettings

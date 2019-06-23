@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -77,7 +77,7 @@ public:
 
 	inline void ProcessEvent(class UFunction* function, void* parms)
 	{
-		return GetVFunction<void(*)(UObject*, class UFunction*, void*)>(this, 65)(this, function, parms);
+		return GetVFunction<void(*)(UObject*, class UFunction*, void*)>(this, 64)(this, function, parms);
 	}
 
 
@@ -207,11 +207,11 @@ public:
 
 
 // Class CoreUObject.Class
-// 0x0170 (0x01F8 - 0x0088)
+// 0x0180 (0x0208 - 0x0088)
 class UClass : public UStruct
 {
 public:
-	unsigned char                                      UnknownData00[0x170];                                     // 0x0088(0x0170) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x180];                                     // 0x0088(0x0180) MISSED OFFSET
 
 	template<typename T>
 	inline T* CreateDefaultObject()
@@ -227,7 +227,7 @@ public:
 
 	inline UObject* CreateDefaultObject()
 	{
-		return GetVFunction<UObject*(*)(UClass*)>(this, 102)(this);
+		return GetVFunction<UObject*(*)(UClass*)>(this, 103)(this);
 	}
 
 };
@@ -273,11 +273,11 @@ public:
 
 
 // Class CoreUObject.DynamicClass
-// 0x0068 (0x0260 - 0x01F8)
+// 0x0068 (0x0270 - 0x0208)
 class UDynamicClass : public UClass
 {
 public:
-	unsigned char                                      UnknownData00[0x68];                                      // 0x01F8(0x0068) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x68];                                      // 0x0208(0x0068) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{
@@ -353,11 +353,11 @@ public:
 
 
 // Class CoreUObject.LinkerPlaceholderClass
-// 0x01B8 (0x03B0 - 0x01F8)
+// 0x01B8 (0x03C0 - 0x0208)
 class ULinkerPlaceholderClass : public UClass
 {
 public:
-	unsigned char                                      UnknownData00[0x1B8];                                     // 0x01F8(0x01B8) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x1B8];                                     // 0x0208(0x01B8) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

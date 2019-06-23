@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -57,14 +57,14 @@ struct FText UWidget_CostSlot_C::GetItemName()
 // Function Widget_CostSlot.Widget_CostSlot_C.SetCostSlot
 // ()
 // Parameters:
-// int                            slotIdx                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            SlotIdx                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_CostSlot_C::SetCostSlot(int slotIdx)
+void UWidget_CostSlot_C::SetCostSlot(int SlotIdx)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_CostSlot.Widget_CostSlot_C.SetCostSlot");
 
 	UWidget_CostSlot_C_SetCostSlot_Params params;
-	params.slotIdx = slotIdx;
+	params.SlotIdx = SlotIdx;
 
 	auto flags = fn->FunctionFlags;
 

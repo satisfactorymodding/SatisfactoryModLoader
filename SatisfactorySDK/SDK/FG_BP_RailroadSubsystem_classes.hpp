@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_RailroadSubsystem.BP_RailroadSubsystem_C
-// 0x0000 (0x0410 - 0x0410)
+// 0x0000 (0x03D8 - 0x03D8)
 class ABP_RailroadSubsystem_C : public AFGRailroadSubsystem
 {
 public:

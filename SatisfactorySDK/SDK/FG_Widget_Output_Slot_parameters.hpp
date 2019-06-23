@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_Output_Slot.Widget_Output_Slot_C.UpdateWasteSlotVisibility
+struct UWidget_Output_Slot_C_UpdateWasteSlotVisibility_Params
+{
+};
 
 // Function Widget_Output_Slot.Widget_Output_Slot_C.CreateEfficiencyToolTip
 struct UWidget_Output_Slot_C_CreateEfficiencyToolTip_Params
@@ -35,6 +40,12 @@ struct UWidget_Output_Slot_C_CreateCycleTimeTooltip_Params
 // Function Widget_Output_Slot.Widget_Output_Slot_C.Construct
 struct UWidget_Output_Slot_C_Construct_Params
 {
+};
+
+// Function Widget_Output_Slot.Widget_Output_Slot_C.PreConstruct
+struct UWidget_Output_Slot_C_PreConstruct_Params
+{
+	bool*                                              IsDesignTime;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Output_Slot.Widget_Output_Slot_C.ExecuteUbergraph_Widget_Output_Slot

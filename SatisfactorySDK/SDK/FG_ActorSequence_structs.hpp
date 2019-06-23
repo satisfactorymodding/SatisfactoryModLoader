@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -38,7 +38,7 @@ struct FActorSequenceObjectReference
 {
 	EActorSequenceObjectReferenceType                  Type;                                                     // 0x0000(0x0001) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x0001(0x0003) MISSED OFFSET
-	struct FGuid                                       ActorId;                                                  // 0x0004(0x0010) (IsPlainOldData)
+	struct FGuid                                       ActorId;                                                  // 0x0004(0x0010) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x4];                                       // 0x0014(0x0004) MISSED OFFSET
 	class FString                                      PathToComponent;                                          // 0x0018(0x0010) (ZeroConstructor)
 };

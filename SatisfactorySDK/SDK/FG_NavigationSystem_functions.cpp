@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -162,7 +162,7 @@ void UNavigationPath::EnableRecalculationOnInvalidation(TEnumAsByte<ENavigationO
 // ()
 // Parameters:
 // bool                           bShouldDrawDebugData           (Parm, ZeroConstructor, IsPlainOldData)
-// struct FLinearColor            PathColor                      (Parm, IsPlainOldData)
+// struct FLinearColor            PathColor                      (Parm, ZeroConstructor, IsPlainOldData)
 
 void UNavigationPath::EnableDebugDrawing(bool bShouldDrawDebugData, const struct FLinearColor& PathColor)
 {
@@ -204,7 +204,7 @@ void UNavigationSystemV1::UnregisterNavigationInvoker(class AActor* Invoker)
 // ()
 // Parameters:
 // class AController*             Controller                     (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Goal                           (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Goal                           (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 
 void UNavigationSystemV1::SimpleMoveToLocation(class AController* Controller, const struct FVector& Goal)
 {
@@ -329,11 +329,11 @@ void UNavigationSystemV1::RegisterNavigationInvoker(class AActor* Invoker, float
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Point                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Point                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 QueryExtent                    (ConstParm, Parm, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 QueryExtent                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UNavigationSystemV1::ProjectPointToNavigation(class UObject* WorldContextObject, const struct FVector& Point, class ANavigationData* NavData, class UClass* FilterClass, const struct FVector& QueryExtent)
 {
@@ -380,9 +380,9 @@ void UNavigationSystemV1::OnNavigationBoundsUpdated(class ANavMeshBoundsVolume* 
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 RayStart                       (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 RayEnd                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 HitLocation                    (Parm, OutParm, IsPlainOldData)
+// struct FVector                 RayStart                       (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 RayEnd                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 HitLocation                    (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
 // class AController*             querier                        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -415,11 +415,11 @@ bool UNavigationSystemV1::NavigationRaycast(class UObject* WorldContextObject, c
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Point                          (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 ProjectedLocation              (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Point                          (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 ProjectedLocation              (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 QueryExtent                    (ConstParm, Parm, IsPlainOldData)
+// struct FVector                 QueryExtent                    (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 bool UNavigationSystemV1::K2_ProjectPointToNavigation(class UObject* WorldContextObject, const struct FVector& Point, class ANavigationData* NavData, class UClass* FilterClass, const struct FVector& QueryExtent, struct FVector* ProjectedLocation)
@@ -450,8 +450,8 @@ bool UNavigationSystemV1::K2_ProjectPointToNavigation(class UObject* WorldContex
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 RandomLocation                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 RandomLocation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -485,8 +485,8 @@ bool UNavigationSystemV1::K2_GetRandomReachablePointInRadius(class UObject* Worl
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 RandomLocation                 (Parm, OutParm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 RandomLocation                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -566,11 +566,11 @@ bool UNavigationSystemV1::IsNavigationBeingBuilt(class UObject* WorldContextObje
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UNavigationSystemV1::GetRandomReachablePointInRadius(class UObject* WorldContextObject, const struct FVector& Origin, float Radius, class ANavigationData* NavData, class UClass* FilterClass)
 {
@@ -597,11 +597,11 @@ struct FVector UNavigationSystemV1::GetRandomReachablePointInRadius(class UObjec
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 Origin                         (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          Radius                         (Parm, ZeroConstructor, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FVector                 ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FVector UNavigationSystemV1::GetRandomPointInNavigableRadius(class UObject* WorldContextObject, const struct FVector& Origin, float Radius, class ANavigationData* NavData, class UClass* FilterClass)
 {
@@ -628,8 +628,8 @@ struct FVector UNavigationSystemV1::GetRandomPointInNavigableRadius(class UObjec
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 PathEnd                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 PathEnd                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          PathLength                     (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -663,8 +663,8 @@ TEnumAsByte<ENavigationQueryResult> UNavigationSystemV1::GetPathLength(class UOb
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 PathEnd                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 PathEnd                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // float                          PathCost                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 // class ANavigationData*         NavData                        (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
@@ -721,8 +721,8 @@ class UNavigationSystemV1* UNavigationSystemV1::GetNavigationSystem(class UObjec
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// struct FVector                 PathEnd                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
+// struct FVector                 PathEnd                        (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // class AActor*                  PathfindingContext             (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  FilterClass                    (Parm, ZeroConstructor, IsPlainOldData)
 // class UNavigationPath*         ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -752,7 +752,7 @@ class UNavigationPath* UNavigationSystemV1::FindPathToLocationSynchronously(clas
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// struct FVector                 PathStart                      (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // class AActor*                  GoalActor                      (Parm, ZeroConstructor, IsPlainOldData)
 // float                          TetherDistance                 (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  PathfindingContext             (Parm, ZeroConstructor, IsPlainOldData)

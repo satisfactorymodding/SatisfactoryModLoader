@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function Widget_ColorGunUI.Widget_ColorGunUI_C.OnPrimaryColorPicked
 // ()
 // Parameters:
-// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_ColorGunUI_C::OnPrimaryColorPicked(const struct FLinearColor& Color)
 {
@@ -52,7 +52,7 @@ void UWidget_ColorGunUI_C::BndEvt__Button_0_K2Node_ComponentBoundEvent_21_OnButt
 // Function Widget_ColorGunUI.Widget_ColorGunUI_C.OnSecondaryColorPicked
 // ()
 // Parameters:
-// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_ColorGunUI_C::OnSecondaryColorPicked(const struct FLinearColor& Color)
 {

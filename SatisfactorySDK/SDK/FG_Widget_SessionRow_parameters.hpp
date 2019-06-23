@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -73,13 +73,13 @@ struct UWidget_SessionRow_C_GetSaveTextColor_Params
 // Function Widget_SessionRow.Widget_SessionRow_C.GetIconColor
 struct UWidget_SessionRow_C_GetIconColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SessionRow.Widget_SessionRow_C.GetButtonHoverColor
 struct UWidget_SessionRow_C_GetButtonHoverColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SessionRow.Widget_SessionRow_C.BndEvt__mButton_K2Node_ComponentBoundEvent_120_OnButtonClickedEvent__DelegateSignature

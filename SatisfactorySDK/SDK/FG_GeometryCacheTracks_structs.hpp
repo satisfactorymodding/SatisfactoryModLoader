@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -20,7 +20,7 @@ namespace SDK
 // 0x0028
 struct FMovieSceneGeometryCacheParams
 {
-	struct FSoftObjectPath                             GeometryCache;                                            // 0x0000(0x0018) (Edit)
+	struct FSoftObjectPath                             GeometryCache;                                            // 0x0000(0x0018) (Edit, ZeroConstructor)
 	float                                              StartOffset;                                              // 0x0018(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              EndOffset;                                                // 0x001C(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
 	float                                              PlayRate;                                                 // 0x0020(0x0004) (Edit, ZeroConstructor, IsPlainOldData)

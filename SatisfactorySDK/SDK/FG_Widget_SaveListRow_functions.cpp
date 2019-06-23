@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -16,7 +16,7 @@ namespace SDK
 // ()
 // Parameters:
 // class UImage*                  ImageBG                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_SaveListRow_C::SetColorForImage(class UImage* ImageBG, const struct FLinearColor& Color)
 {
@@ -146,7 +146,7 @@ struct FSlateColor UWidget_SaveListRow_C::GetTextColor()
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetIconBGColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SaveListRow_C::GetIconBGColor()
 {
@@ -167,7 +167,7 @@ struct FLinearColor UWidget_SaveListRow_C::GetIconBGColor()
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetIconColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SaveListRow_C::GetIconColor()
 {
@@ -188,7 +188,7 @@ struct FLinearColor UWidget_SaveListRow_C::GetIconColor()
 // Function Widget_SaveListRow.Widget_SaveListRow_C.GetButtonColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_SaveListRow_C::GetButtonColor()
 {

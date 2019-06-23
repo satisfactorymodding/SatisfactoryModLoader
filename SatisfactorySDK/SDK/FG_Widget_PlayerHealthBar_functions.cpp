@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 // Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetHealthFillColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_PlayerHealthBar_C::GetHealthFillColor()
 {
@@ -76,16 +76,16 @@ ESlateVisibility UWidget_PlayerHealthBar_C::GetHealthbar()
 }
 
 
-// Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressbarPercent
+// Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressBarPercent
 // ()
 // Parameters:
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float UWidget_PlayerHealthBar_C::GetProgressbarPercent()
+float UWidget_PlayerHealthBar_C::GetProgressBarPercent()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressbarPercent");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressBarPercent");
 
-	UWidget_PlayerHealthBar_C_GetProgressbarPercent_Params params;
+	UWidget_PlayerHealthBar_C_GetProgressBarPercent_Params params;
 
 	auto flags = fn->FunctionFlags;
 

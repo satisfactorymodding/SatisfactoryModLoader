@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -55,8 +55,8 @@ struct UWidget_ColorPicker_EditPreset_C_ExecuteUbergraph_Widget_ColorPicker_Edit
 // Function Widget_ColorPicker_EditPreset.Widget_ColorPicker_EditPreset_C.OnAccept__DelegateSignature
 struct UWidget_ColorPicker_EditPreset_C_OnAccept__DelegateSignature_Params
 {
-	struct FLinearColor                                PrimaryColor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-	struct FLinearColor                                SecondaryColor;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FLinearColor                                PrimaryColor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FLinearColor                                SecondaryColor;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 }

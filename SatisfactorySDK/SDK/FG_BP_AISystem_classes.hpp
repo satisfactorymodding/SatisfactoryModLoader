@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_AISystem.BP_AISystem_C
-// 0x0000 (0x01C8 - 0x01C8)
+// 0x0000 (0x01D0 - 0x01D0)
 class UBP_AISystem_C : public UFGAISystem
 {
 public:

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetProgressBarBorderColor
 struct UWidget_ShoppingList_IngredientRow_C_GetProgressBarBorderColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetTextColor
@@ -29,7 +29,7 @@ struct UWidget_ShoppingList_IngredientRow_C_GetTextColor_Params
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetIconBGColor
 struct UWidget_ShoppingList_IngredientRow_C_GetIconBGColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetBorderVisibility
@@ -41,7 +41,7 @@ struct UWidget_ShoppingList_IngredientRow_C_GetBorderVisibility_Params
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetProgressBGColor
 struct UWidget_ShoppingList_IngredientRow_C_GetProgressBGColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetIconVisibility
@@ -59,7 +59,7 @@ struct UWidget_ShoppingList_IngredientRow_C_GetCheckboxVisibility_Params
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetProgressBarColor
 struct UWidget_ShoppingList_IngredientRow_C_GetProgressBarColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ShoppingList_IngredientRow.Widget_ShoppingList_IngredientRow_C.GetToDoListProgressBarPercentage

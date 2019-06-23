@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -205,6 +205,23 @@ void ABuild_LandingPad_C::ReceiveDestroyed()
 	static auto fn = UObject::FindObject<UFunction>("Function Build_LandingPad.Build_LandingPad_C.ReceiveDestroyed");
 
 	ABuild_LandingPad_C_ReceiveDestroyed_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Build_LandingPad.Build_LandingPad_C.ReceiveBeginPlay
+// ()
+
+void ABuild_LandingPad_C::ReceiveBeginPlay()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Build_LandingPad.Build_LandingPad_C.ReceiveBeginPlay");
+
+	ABuild_LandingPad_C_ReceiveBeginPlay_Params params;
 
 	auto flags = fn->FunctionFlags;
 

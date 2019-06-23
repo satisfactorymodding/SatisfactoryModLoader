@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_ObjectScannerMenuItem.Widget_ObjectScannerMenuItem_C.GetButtonFeedback
 struct UWidget_ObjectScannerMenuItem_C_GetButtonFeedback_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_ObjectScannerMenuItem.Widget_ObjectScannerMenuItem_C.GetTextColor

@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -11,6 +11,23 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Functions
 //---------------------------------------------------------------------------
+
+// Function Widget_Manufacturing.Widget_Manufacturing_C.ReconstructIOSlots
+// ()
+
+void UWidget_Manufacturing_C::ReconstructIOSlots()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Manufacturing.Widget_Manufacturing_C.ReconstructIOSlots");
+
+	UWidget_Manufacturing_C_ReconstructIOSlots_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
 
 // Function Widget_Manufacturing.Widget_Manufacturing_C.DropInventorySlotStack
 // ()
@@ -381,40 +398,6 @@ void UWidget_Manufacturing_C::OnNewRecipeSet(class UClass* newRecipe)
 }
 
 
-// Function Widget_Manufacturing.Widget_Manufacturing_C.OnRecipeButtonClicked
-// ()
-
-void UWidget_Manufacturing_C::OnRecipeButtonClicked()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_Manufacturing.Widget_Manufacturing_C.OnRecipeButtonClicked");
-
-	UWidget_Manufacturing_C_OnRecipeButtonClicked_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_Manufacturing.Widget_Manufacturing_C.OnInfoButtonClicked
-// ()
-
-void UWidget_Manufacturing_C::OnInfoButtonClicked()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_Manufacturing.Widget_Manufacturing_C.OnInfoButtonClicked");
-
-	UWidget_Manufacturing_C_OnInfoButtonClicked_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_Manufacturing.Widget_Manufacturing_C.BndEvt__Widget_StandbyButton_K2Node_ComponentBoundEvent_12_OnStandbyClicked__DelegateSignature
 // ()
 
@@ -513,6 +496,46 @@ void UWidget_Manufacturing_C::BndEvt__Widget_Window_DarkMode_K2Node_ComponentBou
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_Manufacturing.Widget_Manufacturing_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnClose__DelegateSignature");
 
 	UWidget_Manufacturing_C_BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_0_OnClose__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Manufacturing.Widget_Manufacturing_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_1_OnTabButtonClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            ButtonIndex                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Manufacturing_C::BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_1_OnTabButtonClicked__DelegateSignature(int ButtonIndex)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Manufacturing.Widget_Manufacturing_C.BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_1_OnTabButtonClicked__DelegateSignature");
+
+	UWidget_Manufacturing_C_BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_1_OnTabButtonClicked__DelegateSignature_Params params;
+	params.ButtonIndex = ButtonIndex;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Manufacturing.Widget_Manufacturing_C.OnReplicationDetailActorReplicated
+// ()
+// Parameters:
+// class AActor*                  replicationDetailActorOwner    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Manufacturing_C::OnReplicationDetailActorReplicated(class AActor* replicationDetailActorOwner)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Manufacturing.Widget_Manufacturing_C.OnReplicationDetailActorReplicated");
+
+	UWidget_Manufacturing_C_OnReplicationDetailActorReplicated_Params params;
+	params.replicationDetailActorOwner = replicationDetailActorOwner;
 
 	auto flags = fn->FunctionFlags;
 

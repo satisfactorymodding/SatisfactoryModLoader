@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -34,7 +34,7 @@ struct ABP_Tractor_C_GetEnemyTargetDesirability_Params
 // Function BP_Tractor.BP_Tractor_C.GetAttackLocation
 struct ABP_Tractor_C_GetAttackLocation_Params
 {
-	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FVector                                     ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function BP_Tractor.BP_Tractor_C.ShouldAutoregisterAsTargetable

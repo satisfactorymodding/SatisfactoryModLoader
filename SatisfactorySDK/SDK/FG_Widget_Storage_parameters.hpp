@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -13,6 +13,32 @@ namespace SDK
 //---------------------------------------------------------------------------
 //Parameters
 //---------------------------------------------------------------------------
+
+// Function Widget_Storage.Widget_Storage_C.SetInventoryComp
+struct UWidget_Storage_C_SetInventoryComp_Params
+{
+	class UFGInventoryComponent*                       InventoryComp;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+};
+
+// Function Widget_Storage.Widget_Storage_C.OnSortClicked
+struct UWidget_Storage_C_OnSortClicked_Params
+{
+};
+
+// Function Widget_Storage.Widget_Storage_C.OnDumpAllClicked
+struct UWidget_Storage_C_OnDumpAllClicked_Params
+{
+};
+
+// Function Widget_Storage.Widget_Storage_C.OnGrabAllClicked
+struct UWidget_Storage_C_OnGrabAllClicked_Params
+{
+};
+
+// Function Widget_Storage.Widget_Storage_C.BindStorageButtons
+struct UWidget_Storage_C_BindStorageButtons_Params
+{
+};
 
 // Function Widget_Storage.Widget_Storage_C.DropInventorySlotStack
 struct UWidget_Storage_C_DropInventorySlotStack_Params
@@ -54,6 +80,12 @@ struct UWidget_Storage_C_GrabAllFromStorage_Params
 // Function Widget_Storage.Widget_Storage_C.BndEvt__mSortButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature
 struct UWidget_Storage_C_BndEvt__mSortButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature_Params
 {
+};
+
+// Function Widget_Storage.Widget_Storage_C.OnInventoryComponentReplicated
+struct UWidget_Storage_C_OnInventoryComponentReplicated_Params
+{
+	class AActor*                                      replicationDetailActorOwner;                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_Storage.Widget_Storage_C.ExecuteUbergraph_Widget_Storage

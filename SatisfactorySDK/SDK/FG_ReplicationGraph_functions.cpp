@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -37,6 +37,28 @@ void AReplicationGraphDebugActor::ServerStartDebugging()
 	static auto fn = UObject::FindObject<UFunction>("Function ReplicationGraph.ReplicationGraphDebugActor.ServerStartDebugging");
 
 	AReplicationGraphDebugActor_ServerStartDebugging_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function ReplicationGraph.ReplicationGraphDebugActor.ServerSetPeriodFrameForClass
+// ()
+// Parameters:
+// class UClass*                  Class                          (Parm, ZeroConstructor, IsPlainOldData)
+// int                            PeriodFrame                    (Parm, ZeroConstructor, IsPlainOldData)
+
+void AReplicationGraphDebugActor::ServerSetPeriodFrameForClass(class UClass* Class, int PeriodFrame)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function ReplicationGraph.ReplicationGraphDebugActor.ServerSetPeriodFrameForClass");
+
+	AReplicationGraphDebugActor_ServerSetPeriodFrameForClass_Params params;
+	params.Class = Class;
+	params.PeriodFrame = PeriodFrame;
 
 	auto flags = fn->FunctionFlags;
 
@@ -128,8 +150,8 @@ void AReplicationGraphDebugActor::ServerCellInfo()
 // Function ReplicationGraph.ReplicationGraphDebugActor.ClientCellInfo
 // ()
 // Parameters:
-// struct FVector                 CellLocation                   (Parm, IsPlainOldData)
-// struct FVector                 CellExtent                     (Parm, IsPlainOldData)
+// struct FVector                 CellLocation                   (Parm, ZeroConstructor, IsPlainOldData)
+// struct FVector                 CellExtent                     (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          Actors                         (ConstParm, Parm, ZeroConstructor, ReferenceParm)
 
 void AReplicationGraphDebugActor::ClientCellInfo(const struct FVector& CellLocation, const struct FVector& CellExtent, TArray<class AActor*> Actors)

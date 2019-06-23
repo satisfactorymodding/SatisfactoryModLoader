@@ -1,4 +1,4 @@
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -36,17 +36,17 @@ ESlateVisibility UWidget_ColorPicker_C::GetResetButtonVisibility()
 // Function Widget_ColorPicker.Widget_ColorPicker_C.GetOneDimensionalIndex
 // ()
 // Parameters:
-// int                            colorIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// int                            ShadeIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            ColorIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            shadeIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // int                            Index                          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_ColorPicker_C::GetOneDimensionalIndex(int colorIndex, int ShadeIndex, int* Index)
+void UWidget_ColorPicker_C::GetOneDimensionalIndex(int ColorIndex, int shadeIndex, int* Index)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ColorPicker.Widget_ColorPicker_C.GetOneDimensionalIndex");
 
 	UWidget_ColorPicker_C_GetOneDimensionalIndex_Params params;
-	params.colorIndex = colorIndex;
-	params.ShadeIndex = ShadeIndex;
+	params.ColorIndex = ColorIndex;
+	params.shadeIndex = shadeIndex;
 
 	auto flags = fn->FunctionFlags;
 
@@ -62,17 +62,17 @@ void UWidget_ColorPicker_C::GetOneDimensionalIndex(int colorIndex, int ShadeInde
 // Function Widget_ColorPicker.Widget_ColorPicker_C.GetSavedColorFromIndexes
 // ()
 // Parameters:
-// int                            colorIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// int                            ShadeIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            ColorIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            shadeIndex                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FSlateColor             SavedColor                     (Parm, OutParm)
 
-void UWidget_ColorPicker_C::GetSavedColorFromIndexes(int colorIndex, int ShadeIndex, struct FSlateColor* SavedColor)
+void UWidget_ColorPicker_C::GetSavedColorFromIndexes(int ColorIndex, int shadeIndex, struct FSlateColor* SavedColor)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ColorPicker.Widget_ColorPicker_C.GetSavedColorFromIndexes");
 
 	UWidget_ColorPicker_C_GetSavedColorFromIndexes_Params params;
-	params.colorIndex = colorIndex;
-	params.ShadeIndex = ShadeIndex;
+	params.ColorIndex = ColorIndex;
+	params.shadeIndex = shadeIndex;
 
 	auto flags = fn->FunctionFlags;
 
@@ -156,7 +156,7 @@ void UWidget_ColorPicker_C::FirstTimeFillColors()
 // Function Widget_ColorPicker.Widget_ColorPicker_C.GetFinalColor
 // ()
 // Parameters:
-// struct FLinearColor            ReturnValue                    (Parm, OutParm, ReturnParm, IsPlainOldData)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
 struct FLinearColor UWidget_ColorPicker_C::GetFinalColor()
 {
@@ -406,7 +406,7 @@ void UWidget_ColorPicker_C::ExecuteUbergraph_Widget_ColorPicker(int EntryPoint)
 // Function Widget_ColorPicker.Widget_ColorPicker_C.mOnColorPicked__DelegateSignature
 // ()
 // Parameters:
-// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
 void UWidget_ColorPicker_C::mOnColorPicked__DelegateSignature(const struct FLinearColor& Color)
 {

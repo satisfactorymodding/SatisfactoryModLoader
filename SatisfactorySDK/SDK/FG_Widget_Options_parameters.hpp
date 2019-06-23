@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -161,11 +161,6 @@ struct UWidget_Options_C_PostProcessingPrevious_Params
 {
 };
 
-// Function Widget_Options.Widget_Options_C.FoliagePrevious
-struct UWidget_Options_C_FoliagePrevious_Params
-{
-};
-
 // Function Widget_Options.Widget_Options_C.ShadowQualityNext
 struct UWidget_Options_C_ShadowQualityNext_Params
 {
@@ -173,6 +168,11 @@ struct UWidget_Options_C_ShadowQualityNext_Params
 
 // Function Widget_Options.Widget_Options_C.ShadowQualityPrevious
 struct UWidget_Options_C_ShadowQualityPrevious_Params
+{
+};
+
+// Function Widget_Options.Widget_Options_C.FoliagePrevious
+struct UWidget_Options_C_FoliagePrevious_Params
 {
 };
 
@@ -336,6 +336,11 @@ struct UWidget_Options_C_CheckResolutionChanges_Params
 struct UWidget_Options_C_ResolutionChangedAccepted_Params
 {
 	bool                                               confirm;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Options.Widget_Options_C.OpenRequireRestartIfRequired
+struct UWidget_Options_C_OpenRequireRestartIfRequired_Params
+{
 };
 
 // Function Widget_Options.Widget_Options_C.Construct

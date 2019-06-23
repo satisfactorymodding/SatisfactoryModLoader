@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -22,7 +22,7 @@ struct UWidget_SchematicRewardItem_C_SetCategoryIconColor_Params
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetLockedIcon
 struct UWidget_SchematicRewardItem_C_GetLockedIcon_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.SetCategoryTexture
@@ -40,19 +40,19 @@ struct UWidget_SchematicRewardItem_C_GetCategoryIcon_Params
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetLinesColor
 struct UWidget_SchematicRewardItem_C_GetLinesColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetButtonColor
 struct UWidget_SchematicRewardItem_C_GetButtonColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetCategoryIconBackgroundColor
 struct UWidget_SchematicRewardItem_C_GetCategoryIconBackgroundColor_Params
 {
-	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ReturnParm, IsPlainOldData)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function Widget_SchematicRewardItem.Widget_SchematicRewardItem_C.GetHoverColor

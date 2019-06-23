@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -145,7 +145,7 @@ struct UBP_GameUI_C_AddMessageNotification_Params
 // Function BP_GameUI.BP_GameUI_C.GetItemDropLocation
 struct UBP_GameUI_C_GetItemDropLocation_Params
 {
-	struct FVector                                     dropLocation;                                             // (Parm, OutParm, IsPlainOldData)
+	struct FVector                                     dropLocation;                                             // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_GameUI.BP_GameUI_C.OnDrop
@@ -305,19 +305,36 @@ struct UBP_GameUI_C_OnChatMessageReceived_Params
 {
 };
 
-// Function BP_GameUI.BP_GameUI_C.ResetInput
-struct UBP_GameUI_C_ResetInput_Params
+// Function BP_GameUI.BP_GameUI_C.ClearHintOnTutorialStepCompleted
+struct UBP_GameUI_C_ClearHintOnTutorialStepCompleted_Params
 {
 };
 
-// Function BP_GameUI.BP_GameUI_C.ClearHintOnTutorialStepCompleted
-struct UBP_GameUI_C_ClearHintOnTutorialStepCompleted_Params
+// Function BP_GameUI.BP_GameUI_C.ResetInput
+struct UBP_GameUI_C_ResetInput_Params
 {
 };
 
 // Function BP_GameUI.BP_GameUI_C.ShowRespawnMessage
 struct UBP_GameUI_C_ShowRespawnMessage_Params
 {
+};
+
+// Function BP_GameUI.BP_GameUI_C.OnReceiveRadiationStart
+struct UBP_GameUI_C_OnReceiveRadiationStart_Params
+{
+};
+
+// Function BP_GameUI.BP_GameUI_C.OnReceiveRadiationStop
+struct UBP_GameUI_C_OnReceiveRadiationStop_Params
+{
+};
+
+// Function BP_GameUI.BP_GameUI_C.OnRadiationIntensityUpdated
+struct UBP_GameUI_C_OnRadiationIntensityUpdated_Params
+{
+	float*                                             radiationIntensity;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	float*                                             radiationImmunity;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_GameUI.BP_GameUI_C.ExecuteUbergraph_BP_GameUI

@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -184,7 +184,7 @@ struct FAttributesForEdge
 struct FVertexToMove
 {
 	struct FVertexID                                   VertexID;                                                 // 0x0000(0x0004) (BlueprintVisible)
-	struct FVector                                     NewVertexPosition;                                        // 0x0004(0x000C) (BlueprintVisible, IsPlainOldData)
+	struct FVector                                     NewVertexPosition;                                        // 0x0004(0x000C) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };
 
 // ScriptStruct EditableMesh.VertexAndAttributes
@@ -201,11 +201,11 @@ struct FVertexAndAttributes
 struct FSubdividedQuadVertex
 {
 	int                                                VertexPositionIndex;                                      // 0x0000(0x0004) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	struct FVector2D                                   TextureCoordinate0;                                       // 0x0004(0x0008) (BlueprintVisible, IsPlainOldData)
-	struct FVector2D                                   TextureCoordinate1;                                       // 0x000C(0x0008) (BlueprintVisible, IsPlainOldData)
-	struct FColor                                      VertexColor;                                              // 0x0014(0x0004) (BlueprintVisible, IsPlainOldData)
-	struct FVector                                     VertexNormal;                                             // 0x0018(0x000C) (BlueprintVisible, IsPlainOldData)
-	struct FVector                                     VertexTangent;                                            // 0x0024(0x000C) (BlueprintVisible, IsPlainOldData)
+	struct FVector2D                                   TextureCoordinate0;                                       // 0x0004(0x0008) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector2D                                   TextureCoordinate1;                                       // 0x000C(0x0008) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FColor                                      VertexColor;                                              // 0x0014(0x0004) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     VertexNormal;                                             // 0x0018(0x000C) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FVector                                     VertexTangent;                                            // 0x0024(0x000C) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              VertexBinormalSign;                                       // 0x0030(0x0004) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };
 

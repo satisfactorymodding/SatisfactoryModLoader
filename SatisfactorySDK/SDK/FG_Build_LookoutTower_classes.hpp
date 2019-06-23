@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,18 +15,16 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_LookoutTower.Build_LookoutTower_C
-// 0x0040 (0x0668 - 0x0628)
+// 0x0030 (0x0680 - 0x0650)
 class ABuild_LookoutTower_C : public AFGBuildableFactory
 {
 public:
-	class UFGFactoryLegsComponent*                     FGFactoryLegs;                                            // 0x0628(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UFGColoredInstanceMeshProxy*                 FGColoredInstanceMeshProxy;                               // 0x0630(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingPointLight_C*                    BP_BuildingPointLight1;                                   // 0x0638(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingPointLight_C*                    BP_BuildingPointLight;                                    // 0x0640(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight1;                                    // 0x0648(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight;                                     // 0x0650(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBP_LadderComponent_C*                       BP_LadderComponent;                                       // 0x0658(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
-	class UBoxComponent*                               Clearance;                                                // 0x0660(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGFactoryLegsComponent*                     FGFactoryLegs;                                            // 0x0650(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGColoredInstanceMeshProxy*                 FGColoredInstanceMeshProxy;                               // 0x0658(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight1;                                    // 0x0660(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UBP_BuildingSpotLight_C*                     BP_BuildingSpotLight;                                     // 0x0668(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UBP_LadderComponent_C*                       BP_LadderComponent;                                       // 0x0670(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UBoxComponent*                               Clearance;                                                // 0x0678(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

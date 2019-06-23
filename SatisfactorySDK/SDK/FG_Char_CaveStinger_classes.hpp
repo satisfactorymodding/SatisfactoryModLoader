@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Char_CaveStinger.Char_CaveStinger_C
-// 0x0000 (0x09A8 - 0x09A8)
+// 0x0000 (0x09B8 - 0x09B8)
 class AChar_CaveStinger_C : public AChar_Stinger_C
 {
 public:

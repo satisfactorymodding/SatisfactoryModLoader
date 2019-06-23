@@ -1,6 +1,6 @@
 #pragma once
 
-// Satisfactory SDK (V0.1.13 - Build 99427)
+// Satisfactory SDK
 
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
@@ -49,7 +49,7 @@ struct UHUDHelpers_C_GetNumItemsOwned_Params
 struct UHUDHelpers_C_GetFactoryGameLightBlue_Params
 {
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                Graphics;                                                 // (Parm, OutParm, IsPlainOldData)
+	struct FLinearColor                                Graphics;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 	struct FSlateColor                                 Text;                                                     // (Parm, OutParm)
 };
 
@@ -58,7 +58,7 @@ struct UHUDHelpers_C_GetFactoryGameLightGray_Params
 {
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FSlateColor                                 Text;                                                     // (Parm, OutParm)
-	struct FLinearColor                                Graphics;                                                 // (Parm, OutParm, IsPlainOldData)
+	struct FLinearColor                                Graphics;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function HUDHelpers.HUDHelpers_C.GetFactoryGameDarkGray
@@ -66,7 +66,7 @@ struct UHUDHelpers_C_GetFactoryGameDarkGray_Params
 {
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FSlateColor                                 Text;                                                     // (Parm, OutParm)
-	struct FLinearColor                                Graphics;                                                 // (Parm, OutParm, IsPlainOldData)
+	struct FLinearColor                                Graphics;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function HUDHelpers.HUDHelpers_C.SetSliderSteps
@@ -97,7 +97,7 @@ struct UHUDHelpers_C_ShowHideHUD_Params
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromInventory
 struct UHUDHelpers_C_GetNumItemsFromInventory_Params
 {
-	class UFGInventoryComponent*                       InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGInventoryComponent*                       inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UClass*                                      mItemClass;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                NumItems;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -107,7 +107,7 @@ struct UHUDHelpers_C_GetNumItemsFromInventory_Params
 struct UHUDHelpers_C_GetFactoryGameOrange_Params
 {
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FLinearColor                                Orange;                                                   // (Parm, OutParm, IsPlainOldData)
+	struct FLinearColor                                Orange;                                                   // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 	struct FSlateColor                                 OrangeText;                                               // (Parm, OutParm)
 };
 
@@ -116,7 +116,7 @@ struct UHUDHelpers_C_GetFactoryGameWhite_Params
 {
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FSlateColor                                 TextWhite;                                                // (Parm, OutParm)
-	struct FLinearColor                                GraphicsWhite;                                            // (Parm, OutParm, IsPlainOldData)
+	struct FLinearColor                                GraphicsWhite;                                            // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromPlayerInventory
