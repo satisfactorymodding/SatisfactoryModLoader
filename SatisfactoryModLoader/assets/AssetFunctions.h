@@ -42,12 +42,12 @@ namespace SML {
 			SML_API void* getWorld();
 
 			/**
-			* Get the player character
+			* Get the local player character
 			*/
 			SML_API SDK::AFGCharacterPlayer* getPlayerCharacter();
 
 			/**
-			* Get the player controller
+			* Get the local player controller
 			*/
 			SML_API SDK::AFGPlayerController* getPlayerController();
 

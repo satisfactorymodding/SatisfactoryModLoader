@@ -129,6 +129,7 @@ public:
 
 		// Tick functions are called every frame of the game. BE VERY CAREFUL WHEN USING THIS FUNCTION!!! Putting a lot of code in here will slow the game down to a crawl!
 		::subscribe<&UWorld::Tick>([this](Functions::ModReturns*, UWorld* world, ELevelTick tick, float delta) {
+			// If you abuse this, I will find you, and I will... uh... do something... and you won't like it
 			//LOG("test");
 		});
 		
