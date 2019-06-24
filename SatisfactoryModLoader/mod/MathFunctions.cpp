@@ -46,21 +46,21 @@ namespace SML {
 				rot.Yaw = yaw;
 				return rot;
 			}
-		}
-		SML_API SDK::FVector makeVector(float x, float y, float z) {
-			SDK::FVector vec = SDK::FVector();
-			vec.X = x;
-			vec.Y = y;
-			vec.Z = z;
-			return vec;
-		}
+			SML_API SDK::FVector makeVector(float x, float y, float z) {
+				SDK::FVector vec = SDK::FVector();
+				vec.X = x;
+				vec.Y = y;
+				vec.Z = z;
+				return vec;
+			}
 
-		SML_API SDK::FRotator makeRotator(float pitch, float roll, float yaw) {
-			SDK::FRotator rot = SDK::FRotator();
-			rot.Pitch = pitch;
-			rot.Roll = roll;
-			rot.Yaw = yaw;
-			return rot;
+			SML_API SDK::FRotator makeRotator(float pitch, float roll, float yaw) {
+				SDK::FRotator rot = SDK::FRotator();
+				rot.Pitch = pitch;
+				rot.Roll = roll;
+				rot.Yaw = yaw;
+				return rot;
+			}
 		}
 	}
 }
