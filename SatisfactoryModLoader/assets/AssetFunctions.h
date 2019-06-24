@@ -12,7 +12,12 @@ namespace SML {
 		/**
 		* Single player character
 		*/
-		SML_API extern SDK::AFGCharacterPlayer* SinglePlayerPawn;
+		SML_API extern SDK::AFGCharacterPlayer* SinglePlayerCharacter;
+
+		/**
+		* Single player controller
+		*/
+		SML_API extern SDK::AFGPlayerController* SinglePlayerController;
 	}
 	namespace Mod {
 		namespace Functions {
@@ -37,9 +42,14 @@ namespace SML {
 			SML_API void* getWorld();
 
 			/**
-			* Get the player pawn
+			* Get the player character
 			*/
-			SML_API SDK::AFGCharacterPlayer* getPlayerPawn();
+			SML_API SDK::AFGCharacterPlayer* getPlayerCharacter();
+
+			/**
+			* Get the player controller
+			*/
+			SML_API SDK::AFGPlayerController* getPlayerController();
 
 			/**
 			* Spawn an actor at the player, offset by the XYZ values provided.
@@ -80,6 +90,11 @@ namespace SML {
 			SML_API void addItemStackToPlayer(SDK::FInventoryStack stack);
 
 			/**
+			* Sends a chat message to the local player controller.
+			*/
+			SML_API void sendMessageToPlayer(std::string msg);
+
+			/**
 			* Registers an asset path for caching.
 			*
 			* This removes delays and sutters when loading an asset during gameplay.
@@ -95,7 +110,6 @@ namespace SML {
 			* Will crash if called before satisfactory is running or if the name isn't found in the cache!
 			*/
 			SML_API SDK::UObject* getAssetFromCache(const wchar_t* name);
-
 
 			/**
 			* Gets an item back from the cache with the specified id.

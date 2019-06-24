@@ -26,7 +26,7 @@ using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.0-pr4"
+#define SML_VERSION "1.0.0-pr5"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"
@@ -150,6 +150,7 @@ public:
 		LOG("Finished ExampleMod setup!");
 	}
 
+	//The postSetup function is where you do things based on other mods' setup functions
 	void postSetup() override {
 		// Write things to be done after other mods' setup functions
 		// Called after the post setup functions of mods that you depend on.

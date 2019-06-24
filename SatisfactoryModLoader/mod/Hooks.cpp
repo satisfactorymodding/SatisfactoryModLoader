@@ -18,7 +18,9 @@ namespace SML {
 		PVOID Hooks::chatFunc;
 		PVOID Hooks::worldFunc;
 		PVOID Hooks::playerAddedFunc;
+		PVOID Hooks::playerControllerAddedFunc;
 		PVOID Hooks::engineInitFunc;
+		PVOID Hooks::levelDestroyFunc;
 
 		void Hooks::hookFunctions() {
 			DetourTransactionBegin();
@@ -26,21 +28,43 @@ namespace SML {
 
 			// find the function by name
 			chatFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGPlayerController::EnterChatMessage");
-			DetourAttach(&(PVOID&)chatFunc, player_sent_message);
-			Utility::info("Hooked Command Registry!");
+			DetourAttach(&(PVOID&)chatFunc, playerSentMessage);
 
 			worldFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::PostLoad");
-			DetourAttach(&(PVOID&)worldFunc, get_world);
+			DetourAttach(&(PVOID&)worldFunc, getWorld);
 
 			playerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGGameState::NotifyPlayerAdded");
-			DetourAttach(&(PVOID&)playerAddedFunc, player_added);
+			DetourAttach(&(PVOID&)playerAddedFunc, playerAdded);
 
 			engineInitFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FEngineLoop::Init");
 			DetourAttach(&(PVOID&)engineInitFunc, engineInit);
 
-			//info("Hooked Paks!");
+			playerControllerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGPlayerController::PostLoad");
+			DetourAttach(&(PVOID&)playerControllerAddedFunc, playerControllerAdded);
+
+			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
+			DetourAttach(&(PVOID&)levelDestroyFunc, levelDestructor);
+
+			Utility::info("Installed hooks!");
 
 			DetourTransactionCommit();
+		}
+
+		void Hooks::playerControllerAdded(SDK::AFGPlayerController* controller) {
+			if (Assets::SinglePlayerController == nullptr) {
+				Assets::SinglePlayerController = controller;
+			}
+
+			auto pointer = (void(WINAPI*)(void*))playerControllerAddedFunc;
+			pointer(controller);
+		}
+
+		void Hooks::levelDestructor(SDK::ULevel* level) {
+
+			Assets::SinglePlayerController = nullptr;
+
+			auto pointer = (void(WINAPI*)(void*))levelDestroyFunc;
+			pointer(level);
 		}
 
 		void Hooks::engineInit(void* engine) {
@@ -54,27 +78,26 @@ namespace SML {
 			pointer(engine);
 		}
 
-		void Hooks::player_added(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {
+		void Hooks::playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {
 			auto pointer = (void(WINAPI*)(void*, void*))playerAddedFunc;
 			//Utility::info("Player Added: ", player->GetName(), " - Controlled: ", player->IsControlled(), " - IsLocallyControlled: ", player->IsLocallyControlled());
 			if (player->IsControlled() && player->IsLocallyControlled()) {
-				Assets::SinglePlayerPawn = player;
+				Assets::SinglePlayerCharacter = player;
 			}
 			pointer(gameState, player);
 		}
 
-		void Hooks::get_world(void* self) {
+		void Hooks::getWorld(void* self) {
 			auto pointer = (void(WINAPI*)(void*))worldFunc;
 			pointer(self);
 
 			PVOID getWorldRaw = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::GetWorld");
 			auto getWorld = (void*(WINAPI*)(void*))getWorldRaw;
 			Assets::CurrentWorld = getWorld(self);
-			Utility::info(Assets::CurrentWorld);
 		}
 
 		// parse commands when the player sends a message
-		void Hooks::player_sent_message(void* player, SML::Objects::FString* message) {
+		void Hooks::playerSentMessage(void* player, SML::Objects::FString* message) {
 
 			auto pointer = (void(WINAPI*)(void*, void*))chatFunc;
 
@@ -173,7 +196,8 @@ namespace SML {
 						}
 						else if (data.argv[1] == "obj") {
 							Utility::info("World:", Functions::getWorld());
-							Utility::info("Local Pawn:", Functions::getPlayerPawn());
+							Utility::info("Local Character:", Functions::getPlayerCharacter());
+							Utility::info("Local Controller: ", Functions::getPlayerController());
 						}
 						else {
 							Utility::info("Subcommand not recognized!");

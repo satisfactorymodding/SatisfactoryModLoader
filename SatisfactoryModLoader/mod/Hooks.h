@@ -14,17 +14,23 @@ namespace SML {
 			static PVOID chatFunc;
 			static PVOID worldFunc;
 			static PVOID playerAddedFunc;
+			static PVOID playerControllerAddedFunc;
 			static PVOID engineInitFunc;
+			static PVOID levelDestroyFunc;
 
 			static void hookFunctions();
 
 			static void engineInit(void* fEngine);
 
-			static void get_world(void* self);
+			static void getWorld(void* self);
 
-			static void player_added(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
+			static void playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
 
-			static void player_sent_message(void* player, SML::Objects::FString* message);
+			static void playerControllerAdded(SDK::AFGPlayerController* self);
+
+			static void levelDestructor(SDK::ULevel* level);
+
+			static void playerSentMessage(void* player, SML::Objects::FString* message);
 
 			static bool smlCommands(Functions::CommandData data);
 		};

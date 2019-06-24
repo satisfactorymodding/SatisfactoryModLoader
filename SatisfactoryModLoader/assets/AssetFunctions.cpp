@@ -1,5 +1,7 @@
 #include <stdafx.h>
 
+#include <game/Global.h>
+#include <HookLoaderInternal.h>
 #include <string>
 #include <Windows.h>
 #include <detours.h>
@@ -8,11 +10,13 @@
 #include "FObjectSpawnParameters.h"
 #include <SatisfactoryModLoader.h>
 #include <util/Utility.h>
+#include <util/FString.h>
 
 namespace SML {
 	namespace Assets {
-		SML_API void* CurrentWorld = NULL;
-		SML_API SDK::AFGCharacterPlayer* SinglePlayerPawn = nullptr;
+		SML_API void* CurrentWorld = nullptr;
+		SML_API SDK::AFGCharacterPlayer* SinglePlayerCharacter = nullptr;
+		SML_API SDK::AFGPlayerController* SinglePlayerController = nullptr;
 	}
 	namespace Mod {
 		namespace Functions {
@@ -30,13 +34,17 @@ namespace SML {
 				return Assets::CurrentWorld;
 			}
 
-			SML_API SDK::AFGCharacterPlayer* getPlayerPawn() {
-				return Assets::SinglePlayerPawn;
+			SML_API SDK::AFGCharacterPlayer* getPlayerCharacter() {
+				return Assets::SinglePlayerCharacter;
+			}
+
+			SML_API SDK::AFGPlayerController* getPlayerController() {
+				return Assets::SinglePlayerController;
 			}
 
 			SML_API void spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {
 				FActorSpawnParameters params = FActorSpawnParameters();
-				auto myPlayer = getPlayerPawn();
+				auto myPlayer = getPlayerCharacter();
 				auto buildingLocation = myPlayer->K2_GetActorLocation();
 				auto buildingRotation = myPlayer->K2_GetActorRotation();
 				buildingLocation.Z += z;
@@ -86,15 +94,24 @@ namespace SML {
 			}
 
 			SML_API void addItemStackToPlayer(SDK::FInventoryStack stack) {
-				auto player = getPlayerPawn();
+				auto player = getPlayerCharacter();
 				player->mInventory->AddStack(stack, true);
 			}
 
 			SML_API void addItemStackToPlayer(SDK::UObject* item, const int& amount) {
 				SDK::FInventoryStack stack = makeItemStack(static_cast<SDK::UClass*>(item), amount);
 
-				auto player = getPlayerPawn();
+				auto player = getPlayerCharacter();
 				player->mInventory->AddStack(stack, true);
+			}
+
+			SML_API void sendMessageToPlayer(std::string msg) {
+				std::wstring wstr = std::wstring(msg.begin(), msg.end());
+				const wchar_t* wmsg = wstr.c_str();
+				SDK::FString* fstring = &SDK::FString(wmsg);
+				PVOID hook = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGPlayerController::EnterChatMessage");
+				auto pointer = (void(WINAPI*)(void*, void*))hook;
+				pointer(getPlayerController(), fstring);
 			}
 
 			SML_API int registerAssetForCache(const wchar_t* name) {
@@ -151,25 +168,28 @@ namespace SML {
 					}
 				}
 			}
-		}
 
-		SML_API SDK::UObject* getAssetFromCacheWithID(int id) {
-			if (modHandler.assetIdRegistry.count(id) > 0) {
-				return modHandler.assetCache[modHandler.assetIdRegistry[id]];
-			} else {
-				std::string msg = "Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
-				MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-				abort();
+			//again, if you hardcode these ids, you are setting yourself up for disaster
+			SML_API SDK::UObject* getAssetFromCacheWithID(int id) {
+				if (modHandler.assetIdRegistry.count(id) > 0) {
+					return modHandler.assetCache[modHandler.assetIdRegistry[id]];
+				}
+				else {
+					std::string msg = "Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
+					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
+					abort();
+				}
 			}
-		}
 
-		SML_API const wchar_t* getAssetNameFromID(int id) {
-			if (modHandler.assetIdRegistry.count(id) > 0) {
-				return modHandler.assetIdRegistry[id];
-			} else {
-				std::string msg = "Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
-				MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-				abort();
+			SML_API const wchar_t* getAssetNameFromID(int id) {
+				if (modHandler.assetIdRegistry.count(id) > 0) {
+					return modHandler.assetIdRegistry[id];
+				}
+				else {
+					std::string msg = "Attempted to get cached asset name with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
+					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
+					abort();
+				}
 			}
 		}
 	}
