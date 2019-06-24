@@ -1,0 +1,13 @@
+How to update the SDK (In case I forget)
+1) delete everything in this folder except this file
+2) extract new SDK here
+3) go to SDK.hpp and add this to it:
+#include <Windows.h>
+#include <Psapi.h>
+4) go to each of the cpp files and add `#include <stdafx.h>` at the very top
+5) go to FG_core_uobject_classes.h
+6) find TSubclassOf and add this to it:
+TSubclassOf(UClass* clazz) {
+        this->Class = clazz;
+}
+7) done

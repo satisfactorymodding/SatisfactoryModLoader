@@ -5,19 +5,32 @@
 #include <HookLoader.h>
 #include <HookLoaderInternal.h>
 #include "ModFunctions.h"
+#include <assets/AssetFunctions.h>
 
 namespace SML {
 	namespace Mod {
 		class Hooks {
 		public:
 			static PVOID chatFunc;
-			static PVOID pakFunc;
+			static PVOID worldFunc;
+			static PVOID playerAddedFunc;
+			static PVOID playerControllerAddedFunc;
+			static PVOID engineInitFunc;
+			static PVOID levelDestroyFunc;
 
 			static void hookFunctions();
 
-			//void get_signing_keys(ModReturns* modReturns, void* outKeys);
+			static void engineInit(void* fEngine);
 
-			static void player_sent_message(void* player, SML::Objects::FString* message);
+			static void getWorld(void* self);
+
+			static void playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
+
+			static void playerControllerAdded(SDK::AFGPlayerController* self);
+
+			static void levelDestructor(SDK::ULevel* level);
+
+			static void playerSentMessage(void* player, SML::Objects::FString* message);
 
 			static bool smlCommands(Functions::CommandData data);
 		};

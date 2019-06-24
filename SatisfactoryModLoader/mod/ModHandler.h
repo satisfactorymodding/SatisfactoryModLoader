@@ -1,5 +1,6 @@
 #pragma once
 #include "Mod.h"
+#include <../SatisfactorySDK/SDK.hpp>
 #include "Registry.h"
 #include <string>
 #include <vector>
@@ -17,7 +18,9 @@ namespace SML {
 			SETUP,
 			//When the mods' post setup functions are being called
 			POST_SETUP,
-			//When SML has finished loading and Satisfactory has started running
+			//When SML has finished but assets haven't been loaded yet
+			INITIALIZING,
+			//When SML has finished loading and assets have started loading
 			RUN
 		};
 
@@ -31,17 +34,21 @@ namespace SML {
 
 			std::map<std::string, std::vector<PVOID>> eventRegistry;
 
+			std::map<const wchar_t*, SDK::UObject*> assetCache;
+
+			std::map<int, const wchar_t*> assetIdRegistry;
+
 			GameStage currentStage = GameStage::PRE_CONSTRUCT;
 
-			void load_mods(const char* startingPath);
-			void setup_mods();
-			void check_dependencies();
-			void post_setup_mods();
+			void loadMods(const char* startingPath);
+			void setupMods();
+			void checkDependencies();
+			void postSetupMods();
 		private:
 			std::vector<std::string> modNameDump;
-			void recursive_dependency_load(Mod& mod, int i);
-			void get_files(std::string path);
-			void find_mods(std::string path);
+			void recursiveDependencyLoad(Mod& mod, int i);
+			void getFiles(std::string path);
+			void findMods(std::string path);
 		};
 	}
 }

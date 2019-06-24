@@ -13,7 +13,7 @@ namespace SML {
 
 		void log(LogType type) {}
 
-		void draw_header(std::string header, LogType type) {
+		void writeHeader(std::string header, LogType type) {
 			std::string logType;
 
 			switch (type) {
@@ -35,24 +35,25 @@ namespace SML {
 			logFile << "[" + header + "::" + logType;
 
 			// cout line
-			set_console_color(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
+			setConsoleColor(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
 			std::cout << "[" << header << "] ";
 		}
 
-		void set_console_color(ConsoleColor color) {
+		void setConsoleColor(ConsoleColor color) {
 			HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 			// sets the console color
 			SetConsoleTextAttribute(hConsole, color + 1);
 		}
 
 		//target[0] = normal CL, target [1] = experimental CL
-		void check_version(const std::string target[2]) {
+		void checkVersion(const std::string target[2]) {
 			std::wstring satisVersion{ call<&Objects::BuildSettings::GetBuildVersion>() };
 			std::string str(satisVersion.begin(), satisVersion.end());
+			info(str);
 			if (str.substr(str.length() - 5, str.length()) == target[0]) {
 				info("Version check passed!");
 			}
-			else if (str.substr(str.length() - 5, str.length()) == target[1]) {
+			else if (str.substr(str.length() - 6, str.length()) == target[1]) {
 				warning("SML is running on the experimental branch, issues may occur!");
 			}
 			else {

@@ -5,7 +5,12 @@
 #include <mod/Mod.h>
 #include <HookLoaderInternal.h>
 #include <mod/ModFunctions.h>
+#include <mod/MathFunctions.h>
 #include <util/JsonConfig.h>
+#include <assets/AssetFunctions.h>
+#include <assets/FObjectSpawnParameters.h>
+#include "../Detours/src/detours.h"
+#include "../SatisfactorySDK/SDK.hpp"
 
 /*
 EXAMPLEMOD
@@ -13,7 +18,7 @@ EXAMPLEMOD
 ExampleMod is a documented mod that uses all the available features of SML and can help you mod.
 If you are confused about what to do, just type Functions:: and autocomplete will give you options on some functions that you can use.
 If you don't know how to do something/use something, simply hover over it to read the provided documentation. If you're still confused, come to the discord and ask in #sml-help about your issue.
-SuperCoder or Nomnom will help you with your problem.
+SuperCoder will help you with your problem.
 */
 
 // Use the namespaces so you have to type less stuff when adding on to your mod
@@ -21,13 +26,13 @@ using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.0-pr4"
+#define SML_VERSION "1.0.0-pr5"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"
 
 // Define a log macro to make outputting to the log easier
-#define LOG(msg) SML::Utility::info_mod(MOD_NAME, msg)
+#define LOG(msg) SML::Utility::infoMod(MOD_NAME, msg)
 
 // Config
 json config = SML::Utility::JsonConfig::load(MOD_NAME, {
@@ -42,9 +47,6 @@ AFGPlayerController* player;
 // CommandData has two things in it, the amount of parameters and a vector of the parameters.
 // The first item in the vector is always the command, so if someone did "/kill me" data.argc would be 2 and data.argv would be {"/kill", "me"}.
 void killPlayer(Functions::CommandData data) {
-	for (std::string s : data.argv) {
-		LOG(s);
-	}
 	LOG("Killed Player");
 	::call<&AFGPlayerController::Suicide>(player);
 }
@@ -99,6 +101,8 @@ public:
 		// Use the placeholders namespace
 		using namespace std::placeholders;
 
+		SDK::InitSDK(); //Initialize the SDK in ExampleMod so the functions work properly
+
 		// More on namespaces:
 		// * The functions that will be of use to you are in the SML::Mods::Functions namespace. A tip is to type Functions:: and see what functions are available for you to use. 
 
@@ -110,13 +114,22 @@ public:
 		::subscribe<&PlayerInput::InputKey>([this](Functions::ModReturns* modReturns, PlayerInput* playerInput, FKey key, InputEvent event, float amount, bool gamePad) {
 			if(GetAsyncKeyState('G')) {
 				LOG("G key pressed");
-				::call<&AFGPlayerController::Suicide>(player);
+				//::call<&AFGPlayerController::Suicide>(player);
+			}
+			if (GetAsyncKeyState('H')) {
+				//get this object back from the asset cache
+				//If an object is not found in the cache, it will automatically register it, causing a slowdown, so make sure that your assets are cached before calling retrieving them.
+				//If you call this function before satisfactory is done loading, it will also throw an error as assets cannot be loaded at the time due to unreal limitations.
+				SDK::UObject* obj = Functions::getAssetFromCache(L"FactoryGame\\Character\\Creature\\Wildlife\\SpaceRabbit\\Char_SpaceRabbit.Char_SpaceRabbit_C");
+				//spawn the object at the player's location and rotation
+				Functions::spawnActorAtPlayer(obj);
 			}
 			return false;
 		});
 
 		// Tick functions are called every frame of the game. BE VERY CAREFUL WHEN USING THIS FUNCTION!!! Putting a lot of code in here will slow the game down to a crawl!
 		::subscribe<&UWorld::Tick>([this](Functions::ModReturns*, UWorld* world, ELevelTick tick, float delta) {
+			// If you abuse this, I will find you, and I will... uh... do something... and you won't like it
 			//LOG("test");
 		});
 		
@@ -131,10 +144,15 @@ public:
 		//Register a custom event. This does not call the event, you have to do that with Functions::broadcastEvent.
 		Functions::registerEvent("ExampleMod_PostSetupComplete", postSetupComplete);
 
+		//cache this asset at loading to make sure that when it's spawned, slowdowns won't occur at runtime
+		//calling this function while in game will cache the asset immediately, causing a slowdown.
+		Functions::registerAssetForCache(L"FactoryGame\\Character\\Creature\\Wildlife\\SpaceRabbit\\Char_SpaceRabbit.Char_SpaceRabbit_C");
+
 		LOG("Finished ExampleMod setup!");
 	}
 
-	void post_setup() override {
+	//The postSetup function is where you do things based on other mods' setup functions
+	void postSetup() override {
 		// Write things to be done after other mods' setup functions
 		// Called after the post setup functions of mods that you depend on.
 

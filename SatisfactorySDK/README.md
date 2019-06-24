@@ -1,1 +1,1 @@
-## Satisfactory SDK (V0.1.6 - CL#98445)
+## Satisfactory SDK (v0.1.15 - Build 100979)

@@ -12,7 +12,7 @@ void subscribe(typename HookInvoker<decltype(HookableFunction), HookableFunction
 template <auto HookableFunction, typename... A>
 typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
 call(A... args) {
-	return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+	return HookInvoker<decltype(HookableFunction), HookableFunction>::getOriginal()(args...);
 }
 
 namespace SML {
@@ -24,7 +24,7 @@ namespace SML {
 	template <auto HookableFunction, typename... A>
 	typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
 		call(A... args) {
-		return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+		return HookInvoker<decltype(HookableFunction), HookableFunction>::getOriginal()(args...);
 	}
 }
 
@@ -38,7 +38,7 @@ namespace SML {
 		template <auto HookableFunction, typename... A>
 		typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
 			call(A... args) {
-			return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+			return HookInvoker<decltype(HookableFunction), HookableFunction>::getOriginal()(args...);
 		}
 	}
 }
@@ -53,7 +53,7 @@ namespace SML {
 		template <auto HookableFunction, typename... A>
 		typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
 			call(A... args) {
-			return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+			return HookInvoker<decltype(HookableFunction), HookableFunction>::getOriginal()(args...);
 		}
 	}
 }
@@ -68,7 +68,7 @@ namespace SML {
 		template <auto HookableFunction, typename... A>
 		typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
 			call(A... args) {
-			return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+			return HookInvoker<decltype(HookableFunction), HookableFunction>::getOriginal()(args...);
 		}
 	}
 }
@@ -82,6 +82,6 @@ namespace SDK {
 	template <auto HookableFunction, typename... A>
 	typename HookInvoker<decltype(HookableFunction), HookableFunction>::ReturnType
 		call(A... args) {
-		return HookInvoker<decltype(HookableFunction), HookableFunction>::get_original()(args...);
+		return HookInvoker<decltype(HookableFunction), HookableFunction>::getOriginal()(args...);
 	}
 }

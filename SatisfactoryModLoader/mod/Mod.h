@@ -12,7 +12,7 @@ namespace SML {
 	namespace Mod {
 		class Mod {
 		private:
-			bool post_setup_called;
+			bool postSetupCalled;
 
 		public:
 			struct Info {
@@ -27,16 +27,16 @@ namespace SML {
 			SML_API Mod(const Info& info);
 
 			virtual void SML_API setup();
-			virtual void SML_API post_setup();
+			virtual void SML_API postSetup();
 			virtual SML_API ~Mod();
 
 			// called by mod loader
-			void call_post_setup() {
-				if (post_setup_called)
+			void callPostSetup() {
+				if (postSetupCalled)
 					return;
 
-				post_setup_called = true;
-				post_setup();
+				postSetupCalled = true;
+				postSetup();
 			}
 
 			Info info;
