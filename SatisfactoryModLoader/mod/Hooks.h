@@ -17,12 +17,15 @@ namespace SML {
 			static PVOID playerControllerAddedFunc;
 			static PVOID engineInitFunc;
 			static PVOID levelDestroyFunc;
+			static PVOID sigCheckFunc;
 
 			static void hookFunctions();
 
 			static void engineInit(void* fEngine);
 
 			static void getWorld(void* self);
+
+			static void sigCheck(void* self, bool b, void* v);
 
 			static void playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
 
