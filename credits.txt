@@ -1,0 +1,22 @@
+=== SML Developers ===
+SuperCoder79
+Nomnom
+Anttirt
+Brabb3l
+Trxnce
+Crystalin
+Kronos
+Vilsol
+
+=== SML Collaborators ===
+TiaqoY0
+gallexme
+Csstform
+Turupawn
+
+=== Special Thanks ===
+Markus Rännare and the rest of the Satisfactory team :D
+
+=== Technologies used ===
+Microsoft/Detours
+nlohmann/json
