@@ -4,10 +4,17 @@
 #include <util/Reflection.h>
 #include <SatisfactoryModLoader.h>
 #include "ModHandler.h"
+#include <util/json.hpp>
+
+#include <cstdio>
+#include <ttvfs.h>
+#include <ttvfs_zip.h>
+
+#include "zip/MemoryModule.h"
 
 namespace SML {
 	namespace Mod {
-		// load all mods from the given path
+
 		void ModHandler::loadMods(const char* startingPath) {
 			this->currentStage = GameStage::CONSTRUCT;
 			// split the path
@@ -19,7 +26,6 @@ namespace SML {
 			ModHandler::findMods(path);
 		}
 
-		//call the setup function of every loaded mod
 		void ModHandler::setupMods() {
 			Utility::info("Starting mod Setup!");
 			this->currentStage = GameStage::SETUP;
@@ -28,7 +34,6 @@ namespace SML {
 			}
 		}
 
-		//call the post setup function of every mod through recursive calling, ensuring the post setups of mod dependencies loaded before the original mod's post setup
 		void ModHandler::postSetupMods() {
 			this->currentStage = GameStage::POST_SETUP;
 			Utility::info("Starting mod Post Setup!");
@@ -40,7 +45,6 @@ namespace SML {
 			}
 		}
 
-		//recustively load mod dependencies
 		void ModHandler::recursiveDependencyLoad(Mod& mod, int i) { // this code is a massive hack, TODO: refactor this mess
 			for (std::string name : mod.info.dependencies) {
 				if (name.substr(0, 1) == "*") {
@@ -63,7 +67,6 @@ namespace SML {
 			mod.callPostSetup();
 		}
 
-		// ensure that all dependencies of mods exist
 		void ModHandler::checkDependencies() {
 			std::vector<std::string> names;
 			for (auto&& mod : mods) {
@@ -92,85 +95,144 @@ namespace SML {
 			Utility::info("Verifyied dependencies");
 		}
 
-		//get the mod files and load them
+		bool ModHandler::createMod(Mod* (*modCreate)()) {
+			if (modCreate == nullptr) {
+				Utility::error("Mod is missing modCreate() function!");
+				return false;
+			}
+
+			std::unique_ptr<Mod> mod{ modCreate() };
+
+			if (mod == nullptr) {
+				Utility::error("Mod returned nullptr from modCreate()!");
+				return false;
+			}
+
+			// check if the mod has already been loaded
+			bool isDuplicate = false;
+			for (auto&& existingMod : mods) {
+				if (existingMod->info.name == mod->info.name) {
+					Utility::warning("Skipping duplicate mod [", existingMod->info.name, "]");
+					return false;
+				}
+			}
+
+			//check if modloader's version is the same as the mod's target version
+			size_t modTVOffset = mod->info.loaderVersion.find_last_of(".");
+			size_t SMLOffset = modLoaderVersion.find_last_of(".");
+			if (!(mod->info.loaderVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
+				std::string msg = "Mod " + mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
+				MessageBoxA(NULL, msg.c_str(), "Mod Loading Warning", MB_ICONWARNING);
+				return false;
+			}
+
+			Utility::debug("Loaded [", mod->info.name, "@", mod->info.version, "]");
+
+			ModHandler::mods.emplace_back(std::move(mod));
+
+			return true;
+		}
+
+		void ModHandler::loadDLL(LPCWSTR sw) {
+			HMODULE dll = LoadLibraryW(sw);
+
+			Mod* (*modCreate)() = (decltype(modCreate))GetProcAddress(dll, "ModCreate");
+
+			if (!createMod(modCreate)) {
+				FreeLibrary(dll);
+			}
+		}
+
+		void ModHandler::loadMemoryDLL(void *data, size_t size) {
+			HMEMORYMODULE dll = MemoryLoadLibrary(data, size);
+			
+			if (dll == NULL) {
+				Utility::error("Error loading library from memory: ", GetLastError());
+				return;
+			}
+
+			Mod* (*modCreate)() = (decltype(modCreate))MemoryGetProcAddress(dll, "ModCreate");
+
+			if (!createMod(modCreate)) {
+				// TODO Figure out why this crashes the game
+				MemoryFreeLibrary(dll);
+			}
+		}
+
 		void ModHandler::getFiles(std::string path) {
 			std::string pathExact = path + "\\";
 
 			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
 
-				if (!entry.path().has_extension()) {
+				if (std::filesystem::is_directory(entry.path().string())) {
 					getFiles(entry.path().string());
 					continue;
 				}
 
 				if (entry.path().extension().string() == ".dll") {
 					std::string file = pathExact + entry.path().filename().string();
+					Utility::debug("Attempting to load mod: ", file);
+
 					std::wstring stemp = std::wstring(file.begin(), file.end());
-					if (debugOutput) {
-						Utility::info("Attempting to load mod: ", file);
-					}
 
-					LPCWSTR sw = stemp.c_str();
+					loadDLL(stemp.c_str());
+				} else {
+					std::string archive = pathExact + entry.path().filename().string();
+					Utility::debug("Attempting to load mod: ", archive);
 
-					HMODULE dll = LoadLibraryW(sw);
+					ttvfs::Root vfs;
 
-					Mod* (*modCreate)();
+					vfs.AddLoader(new ttvfs::DiskLoader);
+					vfs.AddArchiveLoader(new ttvfs::VFSZipArchiveLoader);
 
-					modCreate = (decltype(modCreate))GetProcAddress(dll, "ModCreate");
+					auto modArchive = vfs.AddArchive(archive.c_str());
 
-					if (modCreate == nullptr) {
-						Utility::error("Mod DLL ", file, " does not have the required information!");
-						FreeLibrary(dll);
+					ttvfs::File *vf = modArchive->getFile("data.json");
+					if (!vf || !vf->open("r")) {
+						Utility::error("Failed loading mod data.json in ", archive);
 						continue;
 					}
 
-					std::unique_ptr<Mod> mod{ modCreate() };
+					std::vector<char> buffer(vf->size());
+					size_t bytes = vf->read(buffer.data(), vf->size());
+					vf->close();
 
-					if (mod == nullptr) {
-						Utility::error("Mod DLL ", file, " returned nullptr from modCreate()!");
-						FreeLibrary(dll);
-						continue;
+					nlohmann::json dataJson;
+
+					try {
+						dataJson = nlohmann::json::parse(buffer.data());
 					}
+					catch (...) {}
 
-					// check if the mod has already been loaded
-					bool isDuplicate = false;
-					for (auto&& existingMod : mods) {
-						if (existingMod->info.name == mod->info.name) {
-							Utility::warning("Skipping duplicate mod [", existingMod->info.name, "]");
-							FreeLibrary(dll);
-							isDuplicate = true;
-							break;
+					auto objects = dataJson["objects"];
+
+					for (auto it = objects.begin(); it != objects.end(); ++it) {
+						std::string objType = it.value()["type"].get<std::string>();
+						std::string objPath = it.value()["path"].get<std::string>();
+
+						Utility::debug("[", entry.path().filename(), "] ", "Loading \"", objType, "\" ", objPath);
+
+						if (objType == "sml_mod") {
+							auto obj = modArchive->getFile(objPath.c_str());
+
+							if (!obj || !obj->open("rb")) {
+								Utility::error("Failed loading object: ", objPath, " in ", archive);
+								continue;
+							}
+
+							void* result = (unsigned char *)malloc(obj->size());
+							size_t bytes = obj->read(result, obj->size());
+							obj->close();
+
+							loadMemoryDLL(result, obj->size());
+						} else {
+							Utility::error("Unkown object type: ", objType);
 						}
 					}
-
-					//continue if the mod is loaded already
-					if (isDuplicate) {
-						continue;
-					}
-
-					//check if modloader's version is the same as the mod's target version
-					size_t modTVOffset = mod->info.loaderVersion.find_last_of(".");
-					size_t SMLOffset = modLoaderVersion.find_last_of(".");
-					if (!(mod->info.loaderVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
-						std::string msg = "Mod " + mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
-						MessageBoxA(NULL, msg.c_str(), "Mod Loading Warning", MB_ICONWARNING);
-						FreeLibrary(dll);
-						continue;
-					}
-
-					std::string s = entry.path().filename().string();
-					size_t namePos = s.find_last_of('.');
-					std::string fileName = s.substr(0, namePos);
-
-					if (debugOutput) {
-						Utility::info("Loaded [", mod->info.name, "@", mod->info.version, "]");
-					}
-					ModHandler::mods.emplace_back(std::move(mod));
 				}
 			}
 		}
 
-		// find all valid mods
 		void ModHandler::findMods(std::string path) {
 			std::string pathExact = path + "\\";
 

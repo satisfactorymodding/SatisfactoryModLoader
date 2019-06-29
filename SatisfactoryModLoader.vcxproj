@@ -128,10 +128,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>false</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;$(MSBuildProjectDirectory)\..\SatisfactorySDK\SDK</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\SatisfactoryModLoader\zip\ttvfs_zip;$(MSBuildProjectDirectory)\SatisfactoryModLoader\zip\ttvfs;$(MSBuildProjectDirectory)\Detours\src;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;$(MSBuildProjectDirectory)\..\SatisfactorySDK\SDK</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
@@ -142,6 +142,7 @@
       <AssemblyDebug>true</AssemblyDebug>
       <ModuleDefinitionFile>$(ProjectDir)xinput1_3\xinput1_3.def</ModuleDefinitionFile>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <AdditionalDependencies>$(ProjectDir)SatisfactoryModLoader\ttvfs_zip.lib;$(ProjectDir)SatisfactoryModLoader\ttvfs.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Lib>
       <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -180,6 +181,7 @@
     <ClInclude Include="SatisfactoryModLoader\util\JsonConfig.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
+    <ClInclude Include="SatisfactoryModLoader\zip\MemoryModule.h" />
     <ClInclude Include="SatisfactorySDK\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -197,6 +199,7 @@
     <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\zip\MemoryModule.c" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_Basic.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_CoreUObject_functions.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_Engine_functions.cpp" />
@@ -213,6 +216,14 @@
   </ItemGroup>
   <ItemGroup>
     <MASM Include="xinput1_3\xinput1_3_asm.asm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="SatisfactoryModLoader\ttvfs.lib">
+      <DeploymentContent>true</DeploymentContent>
+    </Library>
+    <Library Include="SatisfactoryModLoader\ttvfs_zip.lib">
+      <DeploymentContent>true</DeploymentContent>
+    </Library>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

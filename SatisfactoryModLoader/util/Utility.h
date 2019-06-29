@@ -10,10 +10,14 @@ namespace SML {
 	namespace Utility {
 		static std::ofstream logFile; //
 
+		// TODO Proper log level control
+
 		enum LogType {
+			Debug,
 			Info,
 			Warning,
 			Error,
+			ModDebug,
 			ModInfo,
 			ModWarning,
 			ModError
@@ -50,10 +54,17 @@ namespace SML {
 		// logs a message of <T> with various modifiers
 		template<typename First, typename ...Args>
 		void log(LogType type, First&& arg0, Args&& ...args) {
-			setConsoleColor(
-				type == LogType::Info || type == LogType::ModInfo ? ConsoleColor::Green :
-				type == LogType::Warning || type == LogType::ModWarning ? ConsoleColor::Yellow :
-				ConsoleColor::Red);
+			auto color = ConsoleColor::Red;
+
+			if (type == LogType::Debug || type == LogType::ModDebug) {
+				color = ConsoleColor::Grey;
+			} else if (type == LogType::Info || type == LogType::ModInfo) {
+				color = ConsoleColor::Green;
+			} else if (type == LogType::Warning || type == LogType::ModWarning) {
+				color = ConsoleColor::Yellow;
+			}
+
+			setConsoleColor(color);
 
 			std::cout << std::forward<First>(arg0);
 			logFile << std::forward<First>(arg0);
@@ -66,6 +77,12 @@ namespace SML {
 				logFile.flush();
 				setConsoleColor(ConsoleColor::White);
 			}
+		}
+
+		template<typename First, typename ...Args>
+		void debug(First&& arg0, Args&& ...args) {
+			writeHeader("SML", LogType::Debug);
+			log(LogType::Debug, arg0, args...);
 		}
 
 		template<typename First, typename ...Args>
@@ -84,6 +101,12 @@ namespace SML {
 		void error(First&& arg0, Args&& ...args) {
 			writeHeader("SML", LogType::Error);
 			log(LogType::Error, arg0, args...);
+		}
+
+		template<typename First, typename ...Args>
+		void debugMod(std::string mod, First&& arg0, Args&& ...args) {
+			writeHeader(mod, LogType::ModDebug);
+			log(LogType::ModDebug, arg0, args...);
 		}
 
 		template<typename First, typename ...Args>

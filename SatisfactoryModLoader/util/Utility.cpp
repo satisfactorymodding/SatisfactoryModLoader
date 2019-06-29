@@ -17,6 +17,10 @@ namespace SML {
 			std::string logType;
 
 			switch (type) {
+			case Debug:
+			case ModDebug:
+				logType = "Debug]   ";
+				break;
 			case Info:
 			case ModInfo:
 				logType = "Info]    ";
