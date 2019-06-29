@@ -176,7 +176,7 @@ namespace SML {
 					std::wstring stemp = std::wstring(file.begin(), file.end());
 
 					loadDLL(stemp.c_str());
-				} else {
+				} else if(entry.path().extension().string() == ".zip") {
 					std::string archive = pathExact + entry.path().filename().string();
 					Utility::debug("Attempting to load mod: ", archive);
 
