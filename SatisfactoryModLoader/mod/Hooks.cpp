@@ -21,6 +21,7 @@ namespace SML {
 		PVOID Hooks::playerControllerAddedFunc;
 		PVOID Hooks::engineInitFunc;
 		PVOID Hooks::levelDestroyFunc;
+		PVOID Hooks::sigCheckFunc;
 
 		void Hooks::hookFunctions() {
 			DetourTransactionBegin();
@@ -45,9 +46,16 @@ namespace SML {
 			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
 			DetourAttach(&(PVOID&)levelDestroyFunc, levelDestructor);
 
+			sigCheckFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FPakPrecacher::DoSignatureCheck");
+			DetourAttach(&(PVOID&)sigCheckFunc, sigCheck);
+
 			Utility::info("Installed hooks!");
 
 			DetourTransactionCommit();
+		}
+
+		void Hooks::sigCheck(void* self, bool b, void* v) {
+
 		}
 
 		void Hooks::playerControllerAdded(SDK::AFGPlayerController* controller) {

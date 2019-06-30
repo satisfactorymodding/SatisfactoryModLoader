@@ -15,8 +15,14 @@ namespace SML {
 			*/
 			SML_API SDK::FRotator toEuler(const SDK::FQuat& quat);
 
+			/**
+			* Initialize an FVector
+			*/
 			SML_API SDK::FVector makeVector(float x, float y, float z);
 
+			/**
+			* Initialize an FRotator
+			*/
 			SML_API SDK::FRotator makeRotator(float pitch, float roll, float yaw);
 		}
 	}

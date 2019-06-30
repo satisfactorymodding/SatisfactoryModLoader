@@ -1,3 +1,4 @@
+[![Build Status](https://ci.ficsit.app/job/SatisfactoryModLoader/job/Development/badge/icon)](https://ci.ficsit.app/job/SatisfactoryModLoader/job/Development/)
 # SatisfactoryModLoader
 A tool used to load mods for the game Satisfactory. It's under development until Coffee Stain releases a proper Unreal modding API.
 
