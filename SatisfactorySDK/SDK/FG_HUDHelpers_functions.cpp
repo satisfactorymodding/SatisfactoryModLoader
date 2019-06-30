@@ -12,6 +12,32 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function HUDHelpers.HUDHelpers_C.GetDefaultRCO
+// ()
+// Parameters:
+// class APlayerController*       OwningPlayer                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UBP_RemoteCallObject_C*  RCO                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UHUDHelpers_C::GetDefaultRCO(class APlayerController* OwningPlayer, class UObject* __WorldContext, class UBP_RemoteCallObject_C** RCO)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function HUDHelpers.HUDHelpers_C.GetDefaultRCO");
+
+	UHUDHelpers_C_GetDefaultRCO_Params params;
+	params.OwningPlayer = OwningPlayer;
+	params.__WorldContext = __WorldContext;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (RCO != nullptr)
+		*RCO = params.RCO;
+}
+
+
 // Function HUDHelpers.HUDHelpers_C.IsInMainMenu
 // ()
 // Parameters:

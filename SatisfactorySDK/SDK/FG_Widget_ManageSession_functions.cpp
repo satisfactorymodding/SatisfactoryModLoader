@@ -29,17 +29,17 @@ void UWidget_ManageSession_C::ClearIngamePlayerList()
 }
 
 
-// Function Widget_ManageSession.Widget_ManageSession_C.isHost
+// Function Widget_ManageSession.Widget_ManageSession_C.IsHost
 // ()
 // Parameters:
 // class APlayerState*            State                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           isOurself                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_ManageSession_C::isHost(class APlayerState* State, bool* isOurself)
+void UWidget_ManageSession_C::IsHost(class APlayerState* State, bool* isOurself)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManageSession.Widget_ManageSession_C.isHost");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManageSession.Widget_ManageSession_C.IsHost");
 
-	UWidget_ManageSession_C_isHost_Params params;
+	UWidget_ManageSession_C_IsHost_Params params;
 	params.State = State;
 
 	auto flags = fn->FunctionFlags;

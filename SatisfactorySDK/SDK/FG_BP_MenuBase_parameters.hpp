@@ -34,7 +34,7 @@ struct UBP_MenuBase_C_PlayEnterAnimation_Params
 struct UBP_MenuBase_C_ShouldAnimateBackground_Params
 {
 	class UWidget*                                     prevMenu;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-	bool                                               animate;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	bool                                               Animate;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_MenuBase.BP_MenuBase_C.RestoreFocusOnPopupClosed

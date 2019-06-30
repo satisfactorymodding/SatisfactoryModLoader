@@ -573,17 +573,17 @@ public:
 	unsigned char                                      UnknownData06[0x25];                                      // 0x07EB(0x0025) MISSED OFFSET
 	struct FWorldPSCPool                               PSCPool;                                                  // 0x0810(0x0058)
 
+	static UWorld** GWorld;
+	static inline UWorld* GetWorld()
+	{
+		return *GWorld;
+	};
+
 	static UClass* StaticClass()
 	{
 		static auto ptr = UObject::FindClass("Class Engine.World");
 		return ptr;
 	}
-
-	static UWorld* GWorld;
-	static inline UWorld* GetWorld()
-	{
-		return GWorld;
-	};
 
 
 	void HandleTimelineScrubbed();
@@ -1946,88 +1946,89 @@ public:
 	class UAnimBlueprintGeneratedClass*                AnimBlueprintGeneratedClass;                              // 0x06C8(0x0008) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
 	class UClass*                                      AnimClass;                                                // 0x06D0(0x0008) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
 	class UAnimInstance*                               AnimScriptInstance;                                       // 0x06D8(0x0008) (ZeroConstructor, Transient, IsPlainOldData)
-	TArray<class UAnimInstance*>                       SubInstances;                                             // 0x06E0(0x0010) (ZeroConstructor, Transient)
-	class UAnimInstance*                               PostProcessAnimInstance;                                  // 0x06F0(0x0008) (ZeroConstructor, Transient, IsPlainOldData)
-	struct FSingleAnimationPlayData                    AnimationData;                                            // 0x06F8(0x0018) (Edit, BlueprintVisible)
-	unsigned char                                      UnknownData01[0x10];                                      // 0x0710(0x0010) MISSED OFFSET
-	struct FVector                                     RootBoneTranslation;                                      // 0x0720(0x000C) (ZeroConstructor, Transient, IsPlainOldData)
-	struct FVector                                     LineCheckBoundsScale;                                     // 0x072C(0x000C) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x20];                                      // 0x0738(0x0020) MISSED OFFSET
-	TArray<struct FTransform>                          CachedBoneSpaceTransforms;                                // 0x0758(0x0010) (ZeroConstructor, Transient)
-	TArray<struct FTransform>                          CachedComponentSpaceTransforms;                           // 0x0768(0x0010) (ZeroConstructor, Transient)
-	unsigned char                                      UnknownData03[0x20];                                      // 0x0778(0x0020) MISSED OFFSET
-	float                                              GlobalAnimRateScale;                                      // 0x0798(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	EDynamicActorScene                                 UseAsyncScene;                                            // 0x079C(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	TEnumAsByte<EKinematicBonesUpdateToPhysics>        KinematicBonesUpdateType;                                 // 0x079D(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	TEnumAsByte<EPhysicsTransformUpdateMode>           PhysicsTransformUpdateMode;                               // 0x079E(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData04[0x1];                                       // 0x079F(0x0001) MISSED OFFSET
-	TEnumAsByte<EAnimationMode>                        AnimationMode;                                            // 0x07A0(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData05[0x1];                                       // 0x07A1(0x0001) MISSED OFFSET
-	unsigned char                                      bDisablePostProcessBlueprint : 1;                         // 0x07A2(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      UnknownData06 : 1;                                        // 0x07A2(0x0001)
-	unsigned char                                      bUpdateOverlapsOnAnimationFinalize : 1;                   // 0x07A2(0x0001) (Edit)
-	unsigned char                                      UnknownData07 : 1;                                        // 0x07A2(0x0001)
-	unsigned char                                      bHasValidBodies : 1;                                      // 0x07A2(0x0001) (Transient)
-	unsigned char                                      UnknownData08 : 1;                                        // 0x07A2(0x0001)
-	unsigned char                                      bBlendPhysics : 1;                                        // 0x07A2(0x0001) (Transient)
-	unsigned char                                      bEnablePhysicsOnDedicatedServer : 1;                      // 0x07A2(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bUpdateJointsFromAnimation : 1;                           // 0x07A3(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bDisableClothSimulation : 1;                              // 0x07A3(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bAllowAnimCurveEvaluation : 1;                            // 0x07A3(0x0001) (Edit)
-	unsigned char                                      bDisableAnimCurves : 1;                                   // 0x07A3(0x0001) (Deprecated)
-	unsigned char                                      UnknownData09 : 3;                                        // 0x07A3(0x0001)
-	unsigned char                                      bCollideWithEnvironment : 1;                              // 0x07A3(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bCollideWithAttachedChildren : 1;                         // 0x07A4(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bLocalSpaceSimulation : 1;                                // 0x07A4(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bResetAfterTeleport : 1;                                  // 0x07A4(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      UnknownData10 : 1;                                        // 0x07A4(0x0001)
-	unsigned char                                      bNoSkeletonUpdate : 1;                                    // 0x07A4(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bPauseAnims : 1;                                          // 0x07A4(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bUseRefPoseOnInitAnim : 1;                                // 0x07A4(0x0001) (Edit)
-	unsigned char                                      bEnablePerPolyCollision : 1;                              // 0x07A4(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly)
-	unsigned char                                      bForceRefpose : 1;                                        // 0x07A5(0x0001)
-	unsigned char                                      bOnlyAllowAutonomousTickPose : 1;                         // 0x07A5(0x0001) (Transient)
-	unsigned char                                      bIsAutonomousTickPose : 1;                                // 0x07A5(0x0001) (Transient)
-	unsigned char                                      bOldForceRefPose : 1;                                     // 0x07A5(0x0001)
-	unsigned char                                      bShowPrePhysBones : 1;                                    // 0x07A5(0x0001)
-	unsigned char                                      bRequiredBonesUpToDate : 1;                               // 0x07A5(0x0001) (Transient)
-	unsigned char                                      bAnimTreeInitialised : 1;                                 // 0x07A5(0x0001) (Transient)
-	unsigned char                                      bIncludeComponentLocationIntoBounds : 1;                  // 0x07A5(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly)
-	unsigned char                                      bEnableLineCheckWithBounds : 1;                           // 0x07A6(0x0001)
-	unsigned char                                      bUseBendingElements : 1;                                  // 0x07A6(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bUseTetrahedralConstraints : 1;                           // 0x07A6(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bUseThinShellVolumeConstraints : 1;                       // 0x07A6(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bUseSelfCollisions : 1;                                   // 0x07A6(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      bUseContinuousCollisionDetection : 1;                     // 0x07A6(0x0001) (Edit, BlueprintVisible)
-	unsigned char                                      UnknownData11 : 1;                                        // 0x07A6(0x0001)
-	unsigned char                                      bNeedsQueuedAnimEventsDispatched : 1;                     // 0x07A6(0x0001) (Transient)
-	unsigned char                                      UnknownData12[0x1];                                       // 0x07A7(0x0001) MISSED OFFSET
-	uint16_t                                           CachedAnimCurveUidVersion;                                // 0x07A8(0x0002) (ZeroConstructor, Transient, IsPlainOldData)
-	unsigned char                                      UnknownData13[0x2];                                       // 0x07AA(0x0002) MISSED OFFSET
-	float                                              ClothBlendWeight;                                         // 0x07AC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	float                                              EdgeStiffness;                                            // 0x07B0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	float                                              BendingStiffness;                                         // 0x07B4(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	float                                              AreaStiffness;                                            // 0x07B8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	float                                              VolumeStiffness;                                          // 0x07BC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	float                                              StrainLimitingStiffness;                                  // 0x07C0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	float                                              ShapeTargetStiffness;                                     // 0x07C4(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	TArray<struct FName>                               DisallowedAnimCurves;                                     // 0x07C8(0x0010) (ZeroConstructor, Transient)
-	class UBodySetup*                                  BodySetup;                                                // 0x07D8(0x0008) (ZeroConstructor, Transient, IsPlainOldData)
-	unsigned char                                      UnknownData14[0x8];                                       // 0x07E0(0x0008) MISSED OFFSET
-	struct FScriptMulticastDelegate                    OnConstraintBroken;                                       // 0x07E8(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	class UClass*                                      ClothingSimulationFactory;                                // 0x07F8(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData15[0x10];                                      // 0x0800(0x0010) MISSED OFFSET
-	float                                              mFOV;                                                     // 0x0810(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData16[0xEC];                                      // 0x0814(0x00EC) MISSED OFFSET
+	unsigned char                                      UnknownData01[0x8];                                       // 0x06E0(0x0008) MISSED OFFSET
+	TArray<class UAnimInstance*>                       SubInstances;                                             // 0x06E8(0x0010) (ZeroConstructor, Transient)
+	class UAnimInstance*                               PostProcessAnimInstance;                                  // 0x06F8(0x0008) (ZeroConstructor, Transient, IsPlainOldData)
+	struct FSingleAnimationPlayData                    AnimationData;                                            // 0x0700(0x0018) (Edit, BlueprintVisible)
+	unsigned char                                      UnknownData02[0x10];                                      // 0x0718(0x0010) MISSED OFFSET
+	struct FVector                                     RootBoneTranslation;                                      // 0x0728(0x000C) (ZeroConstructor, Transient, IsPlainOldData)
+	struct FVector                                     LineCheckBoundsScale;                                     // 0x0734(0x000C) (ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData03[0x20];                                      // 0x0740(0x0020) MISSED OFFSET
+	TArray<struct FTransform>                          CachedBoneSpaceTransforms;                                // 0x0760(0x0010) (ZeroConstructor, Transient)
+	TArray<struct FTransform>                          CachedComponentSpaceTransforms;                           // 0x0770(0x0010) (ZeroConstructor, Transient)
+	unsigned char                                      UnknownData04[0x20];                                      // 0x0780(0x0020) MISSED OFFSET
+	float                                              GlobalAnimRateScale;                                      // 0x07A0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	EDynamicActorScene                                 UseAsyncScene;                                            // 0x07A4(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	TEnumAsByte<EKinematicBonesUpdateToPhysics>        KinematicBonesUpdateType;                                 // 0x07A5(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	TEnumAsByte<EPhysicsTransformUpdateMode>           PhysicsTransformUpdateMode;                               // 0x07A6(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData05[0x1];                                       // 0x07A7(0x0001) MISSED OFFSET
+	TEnumAsByte<EAnimationMode>                        AnimationMode;                                            // 0x07A8(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData06[0x1];                                       // 0x07A9(0x0001) MISSED OFFSET
+	unsigned char                                      bDisablePostProcessBlueprint : 1;                         // 0x07AA(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      UnknownData07 : 1;                                        // 0x07AA(0x0001)
+	unsigned char                                      bUpdateOverlapsOnAnimationFinalize : 1;                   // 0x07AA(0x0001) (Edit)
+	unsigned char                                      UnknownData08 : 1;                                        // 0x07AA(0x0001)
+	unsigned char                                      bHasValidBodies : 1;                                      // 0x07AA(0x0001) (Transient)
+	unsigned char                                      UnknownData09 : 1;                                        // 0x07AA(0x0001)
+	unsigned char                                      bBlendPhysics : 1;                                        // 0x07AA(0x0001) (Transient)
+	unsigned char                                      bEnablePhysicsOnDedicatedServer : 1;                      // 0x07AA(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bUpdateJointsFromAnimation : 1;                           // 0x07AB(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bDisableClothSimulation : 1;                              // 0x07AB(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bAllowAnimCurveEvaluation : 1;                            // 0x07AB(0x0001) (Edit)
+	unsigned char                                      bDisableAnimCurves : 1;                                   // 0x07AB(0x0001) (Deprecated)
+	unsigned char                                      UnknownData10 : 3;                                        // 0x07AB(0x0001)
+	unsigned char                                      bCollideWithEnvironment : 1;                              // 0x07AB(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bCollideWithAttachedChildren : 1;                         // 0x07AC(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bLocalSpaceSimulation : 1;                                // 0x07AC(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bResetAfterTeleport : 1;                                  // 0x07AC(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      UnknownData11 : 1;                                        // 0x07AC(0x0001)
+	unsigned char                                      bNoSkeletonUpdate : 1;                                    // 0x07AC(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bPauseAnims : 1;                                          // 0x07AC(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bUseRefPoseOnInitAnim : 1;                                // 0x07AC(0x0001) (Edit)
+	unsigned char                                      bEnablePerPolyCollision : 1;                              // 0x07AC(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly)
+	unsigned char                                      bForceRefpose : 1;                                        // 0x07AD(0x0001)
+	unsigned char                                      bOnlyAllowAutonomousTickPose : 1;                         // 0x07AD(0x0001) (Transient)
+	unsigned char                                      bIsAutonomousTickPose : 1;                                // 0x07AD(0x0001) (Transient)
+	unsigned char                                      bOldForceRefPose : 1;                                     // 0x07AD(0x0001)
+	unsigned char                                      bShowPrePhysBones : 1;                                    // 0x07AD(0x0001)
+	unsigned char                                      bRequiredBonesUpToDate : 1;                               // 0x07AD(0x0001) (Transient)
+	unsigned char                                      bAnimTreeInitialised : 1;                                 // 0x07AD(0x0001) (Transient)
+	unsigned char                                      bIncludeComponentLocationIntoBounds : 1;                  // 0x07AD(0x0001) (Edit, BlueprintVisible, BlueprintReadOnly)
+	unsigned char                                      bEnableLineCheckWithBounds : 1;                           // 0x07AE(0x0001)
+	unsigned char                                      bUseBendingElements : 1;                                  // 0x07AE(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bUseTetrahedralConstraints : 1;                           // 0x07AE(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bUseThinShellVolumeConstraints : 1;                       // 0x07AE(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bUseSelfCollisions : 1;                                   // 0x07AE(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      bUseContinuousCollisionDetection : 1;                     // 0x07AE(0x0001) (Edit, BlueprintVisible)
+	unsigned char                                      UnknownData12 : 1;                                        // 0x07AE(0x0001)
+	unsigned char                                      bNeedsQueuedAnimEventsDispatched : 1;                     // 0x07AE(0x0001) (Transient)
+	unsigned char                                      UnknownData13[0x1];                                       // 0x07AF(0x0001) MISSED OFFSET
+	uint16_t                                           CachedAnimCurveUidVersion;                                // 0x07B0(0x0002) (ZeroConstructor, Transient, IsPlainOldData)
+	unsigned char                                      UnknownData14[0x2];                                       // 0x07B2(0x0002) MISSED OFFSET
+	float                                              ClothBlendWeight;                                         // 0x07B4(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	float                                              EdgeStiffness;                                            // 0x07B8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	float                                              BendingStiffness;                                         // 0x07BC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	float                                              AreaStiffness;                                            // 0x07C0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	float                                              VolumeStiffness;                                          // 0x07C4(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	float                                              StrainLimitingStiffness;                                  // 0x07C8(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	float                                              ShapeTargetStiffness;                                     // 0x07CC(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	TArray<struct FName>                               DisallowedAnimCurves;                                     // 0x07D0(0x0010) (ZeroConstructor, Transient)
+	class UBodySetup*                                  BodySetup;                                                // 0x07E0(0x0008) (ZeroConstructor, Transient, IsPlainOldData)
+	unsigned char                                      UnknownData15[0x8];                                       // 0x07E8(0x0008) MISSED OFFSET
+	struct FScriptMulticastDelegate                    OnConstraintBroken;                                       // 0x07F0(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
+	class UClass*                                      ClothingSimulationFactory;                                // 0x0800(0x0008) (Edit, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData16[0x10];                                      // 0x0808(0x0010) MISSED OFFSET
+	float                                              mFOV;                                                     // 0x0818(0x0004) (Edit, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData17[0xE4];                                      // 0x081C(0x00E4) MISSED OFFSET
 	float                                              TeleportDistanceThreshold;                                // 0x0900(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              TeleportRotationThreshold;                                // 0x0904(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData17[0x8];                                       // 0x0908(0x0008) MISSED OFFSET
+	unsigned char                                      UnknownData18[0x8];                                       // 0x0908(0x0008) MISSED OFFSET
 	uint32_t                                           LastPoseTickFrame;                                        // 0x0910(0x0004) (ZeroConstructor, Transient, IsPlainOldData)
-	unsigned char                                      UnknownData18[0x5C];                                      // 0x0914(0x005C) MISSED OFFSET
+	unsigned char                                      UnknownData19[0x5C];                                      // 0x0914(0x005C) MISSED OFFSET
 	class UClothingSimulationInteractor*               ClothingInteractor;                                       // 0x0970(0x0008) (ZeroConstructor, Transient, IsPlainOldData)
-	unsigned char                                      UnknownData19[0xB8];                                      // 0x0978(0x00B8) MISSED OFFSET
+	unsigned char                                      UnknownData20[0xB8];                                      // 0x0978(0x00B8) MISSED OFFSET
 	struct FScriptMulticastDelegate                    OnAnimInitialized;                                        // 0x0A30(0x0010) (ZeroConstructor, InstancedReference, BlueprintAssignable)
-	unsigned char                                      UnknownData20[0x100];                                     // 0x0A40(0x0100) MISSED OFFSET
+	unsigned char                                      UnknownData21[0x100];                                     // 0x0A40(0x0100) MISSED OFFSET
 
 	static UClass* StaticClass()
 	{

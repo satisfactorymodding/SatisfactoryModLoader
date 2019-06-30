@@ -1103,6 +1103,23 @@ void UBP_GameUI_C::OnRadiationIntensityUpdated(float* radiationIntensity, float*
 }
 
 
+// Function BP_GameUI.BP_GameUI_C.ForceStopRadiationUI
+// ()
+
+void UBP_GameUI_C::ForceStopRadiationUI()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_GameUI.BP_GameUI_C.ForceStopRadiationUI");
+
+	UBP_GameUI_C_ForceStopRadiationUI_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function BP_GameUI.BP_GameUI_C.ExecuteUbergraph_BP_GameUI
 // ()
 // Parameters:

@@ -22,7 +22,7 @@ struct UWidget_Multiplayer_ListButton_C_UpdateNATWarningForClient_Params
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.GetHostingNATIsse
 struct UWidget_Multiplayer_ListButton_C_GetHostingNATIsse_Params
 {
-	ECachedNATType                                     hostNat;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECachedNATType                                     HostNAT;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     clientNat;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       ToolTip;                                                  // (Parm, OutParm)
 };
@@ -30,7 +30,7 @@ struct UWidget_Multiplayer_ListButton_C_GetHostingNATIsse_Params
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.GetConnectingNATIsse
 struct UWidget_Multiplayer_ListButton_C_GetConnectingNATIsse_Params
 {
-	ECachedNATType                                     hostNat;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECachedNATType                                     HostNAT;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     clientNat;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       ToolTip;                                                  // (Parm, OutParm)
 };
@@ -38,7 +38,7 @@ struct UWidget_Multiplayer_ListButton_C_GetConnectingNATIsse_Params
 // Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.IsNATIssue
 struct UWidget_Multiplayer_ListButton_C_IsNATIssue_Params
 {
-	ECachedNATType                                     hostNat;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECachedNATType                                     HostNAT;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     clientNat;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               isIssue;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
@@ -71,7 +71,7 @@ struct UWidget_Multiplayer_ListButton_C_Internal_UpdateButton_Params
 {
 	struct FText                                       Title;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm)
 	bool                                               IsOnline;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FText                                       additionalInfo;                                           // (BlueprintVisible, BlueprintReadOnly, Parm)
+	struct FText                                       AdditionalInfo;                                           // (BlueprintVisible, BlueprintReadOnly, Parm)
 	int                                                PlayersInSession;                                         // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               privateSession;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                TimePlayed;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
@@ -84,10 +84,10 @@ struct UWidget_Multiplayer_ListButton_C_Internal_UpdateButton_Params
 	struct FText                                       actionButtonTooltip;                                      // (BlueprintVisible, BlueprintReadOnly, Parm)
 	bool                                               inAGame;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FBlueprintSessionResult                     session;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm)
-	bool                                               isSelectable;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               IsSelectable;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               IsNonInteractable;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ECachedNATType                                     natType;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	bool                                               isHost;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               IsHost;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               careAboutNAT;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 

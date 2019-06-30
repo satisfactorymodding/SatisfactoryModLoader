@@ -76,16 +76,16 @@ ESlateVisibility UWidget_PlayerHealthBar_C::GetHealthbar()
 }
 
 
-// Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressBarPercent
+// Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressbarPercent
 // ()
 // Parameters:
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float UWidget_PlayerHealthBar_C::GetProgressBarPercent()
+float UWidget_PlayerHealthBar_C::GetProgressbarPercent()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressBarPercent");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHealthBar.Widget_PlayerHealthBar_C.GetProgressbarPercent");
 
-	UWidget_PlayerHealthBar_C_GetProgressBarPercent_Params params;
+	UWidget_PlayerHealthBar_C_GetProgressbarPercent_Params params;
 
 	auto flags = fn->FunctionFlags;
 

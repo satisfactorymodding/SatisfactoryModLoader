@@ -71,16 +71,16 @@ ESlateVisibility UWidget_TradingPost_TierButton_C::GetCheckVisibility()
 }
 
 
-// Function Widget_TradingPost_TierButton.Widget_TradingPost_TierButton_C.isSelectable
+// Function Widget_TradingPost_TierButton.Widget_TradingPost_TierButton_C.IsSelectable
 // ()
 // Parameters:
-// bool                           isSelectable                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// bool                           IsSelectable                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_TradingPost_TierButton_C::isSelectable(bool* isSelectable)
+void UWidget_TradingPost_TierButton_C::IsSelectable(bool* IsSelectable)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_TierButton.Widget_TradingPost_TierButton_C.isSelectable");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_TierButton.Widget_TradingPost_TierButton_C.IsSelectable");
 
-	UWidget_TradingPost_TierButton_C_isSelectable_Params params;
+	UWidget_TradingPost_TierButton_C_IsSelectable_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -88,8 +88,8 @@ void UWidget_TradingPost_TierButton_C::isSelectable(bool* isSelectable)
 
 	fn->FunctionFlags = flags;
 
-	if (isSelectable != nullptr)
-		*isSelectable = params.isSelectable;
+	if (IsSelectable != nullptr)
+		*IsSelectable = params.IsSelectable;
 }
 
 

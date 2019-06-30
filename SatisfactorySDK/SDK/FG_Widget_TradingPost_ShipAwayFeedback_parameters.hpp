@@ -20,8 +20,8 @@ struct UWidget_TradingPost_ShipAwayFeedback_C_GetProgressBarVisibility_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressBarPercent
-struct UWidget_TradingPost_ShipAwayFeedback_C_GetProgressBarPercent_Params
+// Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressbarPercent
+struct UWidget_TradingPost_ShipAwayFeedback_C_GetProgressbarPercent_Params
 {
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

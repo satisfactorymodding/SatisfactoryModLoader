@@ -14,7 +14,7 @@
 
 namespace SML {
 	namespace Assets {
-		SML_API void* CurrentWorld = nullptr;
+		SML_API SDK::UWorld** CurrentWorld = nullptr;
 		SML_API SDK::AFGCharacterPlayer* SinglePlayerCharacter = nullptr;
 		SML_API SDK::AFGPlayerController* SinglePlayerController = nullptr;
 	}
@@ -30,8 +30,8 @@ namespace SML {
 				return spawnActorFunc(UWorld, UClass, &FVector, &FRotator, &FActorSpawnParameters);
 			}
 
-			SML_API void* getWorld() {
-				return Assets::CurrentWorld;
+			SML_API SDK::UWorld* getWorld() {
+				return *Assets::CurrentWorld; //derefrence them pointers baby
 			}
 
 			SML_API SDK::AFGCharacterPlayer* getPlayerCharacter() {

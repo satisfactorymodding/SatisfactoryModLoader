@@ -176,6 +176,7 @@ public:
 	void SetStopWhenOwnerDestroyed(bool bStopWhenOwnerDestroyed);
 	void SetRTPCValue(const class FString& RTPC, float Value, int InterpolationTimeMs);
 	void SetOutputBusVolume(float BusVolume);
+	void SetMultiplePositions(TArray<struct FVector> Positions, EAkMultiPositionType MultiPositionType);
 	void SetListeners(TArray<class UAkComponent*> Listeners);
 	void SetAttenuationScalingFactor(float Value);
 	bool SeekOnEventBySeconds(class UAkAudioEvent* AkEvent, float Seconds, bool SeekToNearestMarker, int playingId);

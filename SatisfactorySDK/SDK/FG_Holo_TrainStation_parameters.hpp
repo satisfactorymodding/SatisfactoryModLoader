@@ -6,7 +6,7 @@
 	#pragma pack(push, 0x8)
 #endif
 
-#include "FG_BP_DebrisActor_01_classes.hpp"
+#include "FG_Holo_TrainStation_classes.hpp"
 
 namespace SDK
 {
@@ -14,8 +14,8 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
-// Function BP_DebrisActor_01.BP_DebrisActor_01_C.UserConstructionScript
-struct ABP_DebrisActor_01_C_UserConstructionScript_Params
+// Function Holo_TrainStation.Holo_TrainStation_C.UserConstructionScript
+struct AHolo_TrainStation_C_UserConstructionScript_Params
 {
 };
 

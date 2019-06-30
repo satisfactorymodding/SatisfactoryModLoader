@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_RailroadSubsystem.BP_RailroadSubsystem_C
-// 0x0000 (0x03D8 - 0x03D8)
+// 0x0000 (0x03E8 - 0x03E8)
 class ABP_RailroadSubsystem_C : public AFGRailroadSubsystem
 {
 public:

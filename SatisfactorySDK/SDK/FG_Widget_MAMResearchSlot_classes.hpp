@@ -43,7 +43,7 @@ public:
 	ESlateVisibility GetProgressBarVisibility();
 	struct FSlateColor GetPaidOffColorFeedback();
 	ESlateVisibility GetPaidOffFeedbackImage();
-	float GetProgressBarPercent();
+	float GetProgressbarPercent();
 	bool OnDrop(struct FGeometry* MyGeometry, struct FPointerEvent* PointerEvent, class UDragDropOperation** Operation);
 	struct FText GetItemQuotaText();
 	struct FText GetItemText();

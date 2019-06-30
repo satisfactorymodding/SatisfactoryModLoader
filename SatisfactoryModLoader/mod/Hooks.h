@@ -30,7 +30,7 @@ namespace SML {
 
 			static void levelDestructor(SDK::ULevel* level);
 
-			static void playerSentMessage(void* player, SML::Objects::FString* message);
+			static void playerSentMessage(void* player, SDK::FString* message);
 
 			static bool smlCommands(Functions::CommandData data);
 		};

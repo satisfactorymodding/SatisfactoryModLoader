@@ -47,7 +47,7 @@ public:
 	void SetLockedText();
 	ESlateVisibility GetTierNumVisibility();
 	ESlateVisibility GetCheckVisibility();
-	void isSelectable(bool* isSelectable);
+	void IsSelectable(bool* IsSelectable);
 	ESlateVisibility GetWidgetClickable();
 	struct FSlateColor GetTextHoverColor();
 	struct FLinearColor GetButtonColor();

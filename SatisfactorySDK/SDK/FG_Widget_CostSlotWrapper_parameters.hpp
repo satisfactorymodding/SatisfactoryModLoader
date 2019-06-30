@@ -20,8 +20,8 @@ struct UWidget_CostSlotWrapper_C_SetIconBrush_Params
 	class UTexture*                                    IconTexture;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressBarPercent
-struct UWidget_CostSlotWrapper_C_GetProgressBarPercent_Params
+// Function Widget_CostSlotWrapper.Widget_CostSlotWrapper_C.GetProgressbarPercent
+struct UWidget_CostSlotWrapper_C_GetProgressbarPercent_Params
 {
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

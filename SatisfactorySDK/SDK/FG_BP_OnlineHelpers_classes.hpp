@@ -29,7 +29,7 @@ public:
 
 	void InsertionAddButton(class UPanelWidget* NewParam, class UObject* __WorldContext);
 	void GetSessionFromFriendNetId(class UObject* WorldContext, const struct FUniqueNetIdRepl& friendNetId, class UObject* __WorldContext, struct FBlueprintSessionResult* session);
-	void isHost(class APlayerState* PlayerState, class APlayerController* OwningPlayer, class UObject* __WorldContext, bool* isOurself);
+	void IsHost(class APlayerState* PlayerState, class APlayerController* OwningPlayer, class UObject* __WorldContext, bool* isOurself);
 	void CanJoinInvite(class UObject* WorldContext, const struct FPendingInvite& invite, class UObject* __WorldContext, TEnumAsByte<ECanJoinInviteResult>* Result);
 	void IsInThisGame(class UObject* WorldContext, class UObject* __WorldContext, struct FFGOnlineFriend* onlineFriend, bool* inThisGame);
 	void CanSendInvite(class UObject* WorldContext, const struct FFGOnlineFriend& _friend, class UObject* __WorldContext, TEnumAsByte<ECantInviteResult>* canSend);

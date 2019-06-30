@@ -1,11 +1,10 @@
 // Satisfactory SDK
 
-#include <stdafx.h>
-
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
 #endif
 
+#include <stdafx.h>
 #include "FG_FactoryGame_parameters.hpp"
 
 namespace SDK
@@ -3429,6 +3428,26 @@ void UFGBlueprintFunctionLibrary::AddAmbientSoundSplineToSignificanceManager(cla
 }
 
 
+// Function FactoryGame.FGBoundedTextRenderComponent.AssignBoundingBox
+// ()
+// Parameters:
+// class UBoxComponent*           BoxComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UFGBoundedTextRenderComponent::AssignBoundingBox(class UBoxComponent* BoxComponent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBoundedTextRenderComponent.AssignBoundingBox");
+
+	UFGBoundedTextRenderComponent_AssignBoundingBox_Params params;
+	params.BoxComponent = BoxComponent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGBuildable.ShowHighlightEffect
 // ()
 
@@ -5989,6 +6008,23 @@ float AFGBuildableRailroadBridge::GetLength()
 }
 
 
+// Function FactoryGame.FGBuildableTrainPlatform.OnRep_UpdateDockingStatus
+// ()
+
+void AFGBuildableTrainPlatform::OnRep_UpdateDockingStatus()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableTrainPlatform.OnRep_UpdateDockingStatus");
+
+	AFGBuildableTrainPlatform_OnRep_UpdateDockingStatus_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGBuildableTrainPlatform.GetDockingStatus
 // ()
 // Parameters:
@@ -6010,26 +6046,6 @@ ETrainPlatformDockingStatus AFGBuildableTrainPlatform::GetDockingStatus()
 }
 
 
-// Function FactoryGame.FGBuildableRailroadStation.SetName
-// ()
-// Parameters:
-// struct FText                   Name                           (ConstParm, Parm, OutParm, ReferenceParm)
-
-void AFGBuildableRailroadStation::SetName(const struct FText& Name)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableRailroadStation.SetName");
-
-	AFGBuildableRailroadStation_SetName_Params params;
-	params.Name = Name;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function FactoryGame.FGBuildableRailroadStation.PerformIsDockedCheck
 // ()
 
@@ -6038,23 +6054,6 @@ void AFGBuildableRailroadStation::PerformIsDockedCheck()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableRailroadStation.PerformIsDockedCheck");
 
 	AFGBuildableRailroadStation_PerformIsDockedCheck_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function FactoryGame.FGBuildableRailroadStation.OnRep_Name
-// ()
-
-void AFGBuildableRailroadStation::OnRep_Name()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableRailroadStation.OnRep_Name");
-
-	AFGBuildableRailroadStation_OnRep_Name_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -6154,16 +6153,16 @@ void AFGBuildableRailroadStation::OnDockingColliderBeginOverlap(class UPrimitive
 }
 
 
-// Function FactoryGame.FGBuildableRailroadStation.GetName
+// Function FactoryGame.FGBuildableRailroadStation.GetStationIdentifier
 // ()
 // Parameters:
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
+// class AFGTrainStationIdentifier* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-struct FText AFGBuildableRailroadStation::GetName()
+class AFGTrainStationIdentifier* AFGBuildableRailroadStation::GetStationIdentifier()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableRailroadStation.GetName");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableRailroadStation.GetStationIdentifier");
 
-	AFGBuildableRailroadStation_GetName_Params params;
+	AFGBuildableRailroadStation_GetStationIdentifier_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -7221,6 +7220,26 @@ void AFGBuildableTrainPlatformCargo::OnTransferComplete()
 }
 
 
+// Function FactoryGame.FGBuildableTrainPlatformCargo.OnCargoPowerStateChanged
+// ()
+// Parameters:
+// bool                           HasPower                       (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGBuildableTrainPlatformCargo::OnCargoPowerStateChanged(bool HasPower)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableTrainPlatformCargo.OnCargoPowerStateChanged");
+
+	AFGBuildableTrainPlatformCargo_OnCargoPowerStateChanged_Params params;
+	params.HasPower = HasPower;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGBuildableTrainPlatformCargo.OnBeginUnloadSequence
 // ()
 
@@ -7307,6 +7326,27 @@ class UFGInventoryComponent* AFGBuildableTrainPlatformCargo::GetInventory()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableTrainPlatformCargo.GetInventory");
 
 	AFGBuildableTrainPlatformCargo_GetInventory_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGBuildableTrainPlatformCargo.GetDockedVehicleOffset
+// ()
+// Parameters:
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float AFGBuildableTrainPlatformCargo::GetDockedVehicleOffset()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableTrainPlatformCargo.GetDockedVehicleOffset");
+
+	AFGBuildableTrainPlatformCargo_GetDockedVehicleOffset_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -13545,6 +13585,23 @@ void UFGCheatManager::PurgeInactiveClientsFromSave(bool fetchInventories)
 
 	UFGCheatManager_PurgeInactiveClientsFromSave_Params params;
 	params.fetchInventories = fetchInventories;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.PurgeAllTrainState
+// ()
+
+void UFGCheatManager::PurgeAllTrainState()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.PurgeAllTrainState");
+
+	UFGCheatManager_PurgeAllTrainState_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -20513,6 +20570,67 @@ class AFGRailroadVehicle* AFGRailroadVehicle::GetCoupledVehicleAt(ERailroadVehic
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGFreightWagon.OnItemRemovedFromFreight
+// ()
+// Parameters:
+// class UClass*                  ItemClass                      (Parm, ZeroConstructor, IsPlainOldData)
+// int                            numRemoved                     (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGFreightWagon::OnItemRemovedFromFreight(class UClass* ItemClass, int numRemoved)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGFreightWagon.OnItemRemovedFromFreight");
+
+	AFGFreightWagon_OnItemRemovedFromFreight_Params params;
+	params.ItemClass = ItemClass;
+	params.numRemoved = numRemoved;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGFreightWagon.OnItemAddedToFreight
+// ()
+// Parameters:
+// class UClass*                  ItemClass                      (Parm, ZeroConstructor, IsPlainOldData)
+// int                            numAdded                       (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGFreightWagon::OnItemAddedToFreight(class UClass* ItemClass, int numAdded)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGFreightWagon.OnItemAddedToFreight");
+
+	AFGFreightWagon_OnItemAddedToFreight_Params params;
+	params.ItemClass = ItemClass;
+	params.numAdded = numAdded;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGFreightWagon.InitializeInventoryComponent
+// ()
+
+void AFGFreightWagon::InitializeInventoryComponent()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGFreightWagon.InitializeInventoryComponent");
+
+	AFGFreightWagon_InitializeInventoryComponent_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 }
 
 
@@ -27856,6 +27974,48 @@ float UFGRailroadVehicleMovementComponent::GetWheelsetOffset(int Index)
 
 	UFGRailroadVehicleMovementComponent_GetWheelsetOffset_Params params;
 	params.Index = Index;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGRailroadVehicleMovementComponent.GetWheelsetAngle
+// ()
+// Parameters:
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UFGRailroadVehicleMovementComponent::GetWheelsetAngle()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGRailroadVehicleMovementComponent.GetWheelsetAngle");
+
+	UFGRailroadVehicleMovementComponent_GetWheelsetAngle_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGRailroadVehicleMovementComponent.GetWheelRotation
+// ()
+// Parameters:
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UFGRailroadVehicleMovementComponent::GetWheelRotation()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGRailroadVehicleMovementComponent.GetWheelRotation");
+
+	UFGRailroadVehicleMovementComponent_GetWheelRotation_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -41590,6 +41750,26 @@ class AFGTimeOfDaySubsystem* AFGTimeOfDaySubsystem::Get(class UObject* WorldCont
 }
 
 
+// Function FactoryGame.FGTrain.SetTrainName
+// ()
+// Parameters:
+// struct FText                   Name                           (ConstParm, Parm, OutParm, ReferenceParm)
+
+void AFGTrain::SetTrainName(const struct FText& Name)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGTrain.SetTrainName");
+
+	AFGTrain_SetTrainName_Params params;
+	params.Name = Name;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGTrain.NewTimeTable
 // ()
 // Parameters:
@@ -41600,6 +41780,27 @@ class AFGRailroadTimeTable* AFGTrain::NewTimeTable()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGTrain.NewTimeTable");
 
 	AFGTrain_NewTimeTable_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGTrain.GetTrainName
+// ()
+// Parameters:
+// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FText AFGTrain::GetTrainName()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGTrain.GetTrainName");
+
+	AFGTrain_GetTrainName_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -41653,6 +41854,27 @@ class AFGRailroadTimeTable* AFGTrain::GetTimeTable()
 }
 
 
+// Function FactoryGame.FGTrain.GetSelfDrivingError
+// ()
+// Parameters:
+// ESelfDrivingLocomotiveError    ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ESelfDrivingLocomotiveError AFGTrain::GetSelfDrivingError()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGTrain.GetSelfDrivingError");
+
+	AFGTrain_GetSelfDrivingError_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGTrain.GetMaxAirBrakeDeceleration
 // ()
 // Parameters:
@@ -41695,6 +41917,27 @@ class AFGRailroadVehicle* AFGTrain::GetLastVehicle()
 }
 
 
+// Function FactoryGame.FGTrain.GetIsDocked
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool AFGTrain::GetIsDocked()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGTrain.GetIsDocked");
+
+	AFGTrain_GetIsDocked_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGTrain.GetFirstVehicle
 // ()
 // Parameters:
@@ -41713,6 +41956,43 @@ class AFGRailroadVehicle* AFGTrain::GetFirstVehicle()
 	fn->FunctionFlags = flags;
 
 	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGTrainStationIdentifier.SetStationName
+// ()
+// Parameters:
+// struct FText                   Text                           (ConstParm, Parm, OutParm, ReferenceParm)
+
+void AFGTrainStationIdentifier::SetStationName(const struct FText& Text)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGTrainStationIdentifier.SetStationName");
+
+	AFGTrainStationIdentifier_SetStationName_Params params;
+	params.Text = Text;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGTrainStationIdentifier.OnRep_StationName
+// ()
+
+void AFGTrainStationIdentifier::OnRep_StationName()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGTrainStationIdentifier.OnRep_StationName");
+
+	AFGTrainStationIdentifier_OnRep_StationName_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
 }
 
 

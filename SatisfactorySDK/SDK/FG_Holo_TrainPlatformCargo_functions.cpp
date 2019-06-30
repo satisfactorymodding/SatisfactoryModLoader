@@ -4,7 +4,7 @@
 	#pragma pack(push, 0x8)
 #endif
 
-#include "FG_BP_DebrisActor_01_parameters.hpp"
+#include "FG_Holo_TrainPlatformCargo_parameters.hpp"
 
 namespace SDK
 {
@@ -12,14 +12,14 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function BP_DebrisActor_01.BP_DebrisActor_01_C.UserConstructionScript
+// Function Holo_TrainPlatformCargo.Holo_TrainPlatformCargo_C.UserConstructionScript
 // ()
 
-void ABP_DebrisActor_01_C::UserConstructionScript()
+void AHolo_TrainPlatformCargo_C::UserConstructionScript()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_DebrisActor_01.BP_DebrisActor_01_C.UserConstructionScript");
+	static auto fn = UObject::FindObject<UFunction>("Function Holo_TrainPlatformCargo.Holo_TrainPlatformCargo_C.UserConstructionScript");
 
-	ABP_DebrisActor_01_C_UserConstructionScript_Params params;
+	AHolo_TrainPlatformCargo_C_UserConstructionScript_Params params;
 
 	auto flags = fn->FunctionFlags;
 

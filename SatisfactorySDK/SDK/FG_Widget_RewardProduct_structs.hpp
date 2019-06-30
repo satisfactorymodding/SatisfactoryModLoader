@@ -8,8 +8,8 @@
 
 #include "FG_Basic.hpp"
 #include "FG_SlateCore_classes.hpp"
-#include "FG_Engine_classes.hpp"
 #include "FG_Widget_SchematicRewardItem_classes.hpp"
+#include "FG_Engine_classes.hpp"
 #include "FG_FactoryGame_classes.hpp"
 
 namespace SDK

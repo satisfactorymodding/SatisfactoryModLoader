@@ -30,8 +30,8 @@ struct UBP_OnlineHelpers_C_GetSessionFromFriendNetId_Params
 	struct FBlueprintSessionResult                     session;                                                  // (Parm, OutParm)
 };
 
-// Function BP_OnlineHelpers.BP_OnlineHelpers_C.isHost
-struct UBP_OnlineHelpers_C_isHost_Params
+// Function BP_OnlineHelpers.BP_OnlineHelpers_C.IsHost
+struct UBP_OnlineHelpers_C_IsHost_Params
 {
 	class APlayerState*                                PlayerState;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class APlayerController*                           OwningPlayer;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)

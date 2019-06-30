@@ -90,24 +90,20 @@ namespace SML {
 		void Hooks::getWorld(void* self) {
 			auto pointer = (void(WINAPI*)(void*))worldFunc;
 			pointer(self);
-
+			/*
 			PVOID getWorldRaw = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::GetWorld");
 			auto getWorld = (void*(WINAPI*)(void*))getWorldRaw;
 			Assets::CurrentWorld = getWorld(self);
+			*/
+			Assets::CurrentWorld = SDK::UWorld::GWorld;
 		}
 
 		// parse commands when the player sends a message
-		void Hooks::playerSentMessage(void* player, SML::Objects::FString* message) {
+		void Hooks::playerSentMessage(void* player, SDK::FString* message) {
 
 			auto pointer = (void(WINAPI*)(void*, void*))chatFunc;
 
-			char* chars = new char[message->length];
-
-			for (size_t i = 0; i < message->length; i++) {
-				chars[i] = message->data[i];
-			}
-
-			std::string str(chars);
+			std::string str = message->ToString();
 			std::vector<std::string> arguments;
 			std::stringstream ss(str);
 			std::string temp;

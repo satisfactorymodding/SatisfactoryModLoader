@@ -60,7 +60,7 @@ public:
 
 
 	void InitTabs();
-	void SetInventoryVisibility(bool mShowInventory, bool animate);
+	void SetInventoryVisibility(bool mShowInventory, bool Animate);
 	ESlateVisibility GetDividerButtonSlotVisibility();
 	ESlateVisibility GetNavigationVisibiliy();
 	ESlateVisibility GetInventoryBodyVisibility();

@@ -33,14 +33,14 @@ ESlateVisibility UWidget_BuildMenu_InfoBox_C::GetStatsVisibility()
 }
 
 
-// Function Widget_BuildMenu_InfoBox.Widget_BuildMenu_InfoBox_C.AnimateCostSlots
+// Function Widget_BuildMenu_InfoBox.Widget_BuildMenu_InfoBox_C.AnimateCostslots
 // ()
 
-void UWidget_BuildMenu_InfoBox_C::AnimateCostSlots()
+void UWidget_BuildMenu_InfoBox_C::AnimateCostslots()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu_InfoBox.Widget_BuildMenu_InfoBox_C.AnimateCostSlots");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu_InfoBox.Widget_BuildMenu_InfoBox_C.AnimateCostslots");
 
-	UWidget_BuildMenu_InfoBox_C_AnimateCostSlots_Params params;
+	UWidget_BuildMenu_InfoBox_C_AnimateCostslots_Params params;
 
 	auto flags = fn->FunctionFlags;
 

@@ -512,6 +512,24 @@ class TLazyObjectPtr : FLazyObjectPtr
 {
 
 };
+
+class UClass;
+
+template<class TClass>
+class TSubclassOf
+{
+public:
+	TSubclassOf(UClass* Class) {
+		this->Class = Class;
+	}
+
+	inline UClass* GetClass()
+	{
+		return Class;
+	}
+private:
+	UClass* Class;
+};
 }
 
 #ifdef _MSC_VER

@@ -57,7 +57,7 @@ public:
 	void GetIndexInList(int* Index);
 	struct FSlateColor GetTextColor();
 	struct FLinearColor GetButtonBackground();
-	void UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility descVisibility, ESlateVisibility IconVisibility, const struct FText& additionalInfo);
+	void UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility descVisibility, ESlateVisibility IconVisibility, const struct FText& AdditionalInfo);
 	void BndEvt__mRecipeButton_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature();
 	void mSetDisabled();
 	void mSetEnabled();

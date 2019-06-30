@@ -19,13 +19,18 @@ struct ABuild_GeneratorNuclear_C_UserConstructionScript_Params
 {
 };
 
-// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.GainedSignificance
-struct ABuild_GeneratorNuclear_C_GainedSignificance_Params
+// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.LostSignificance
+struct ABuild_GeneratorNuclear_C_LostSignificance_Params
 {
 };
 
-// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.LostSignificance
-struct ABuild_GeneratorNuclear_C_LostSignificance_Params
+// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ReceiveBeginPlay
+struct ABuild_GeneratorNuclear_C_ReceiveBeginPlay_Params
+{
+};
+
+// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.GainedSignificance
+struct ABuild_GeneratorNuclear_C_GainedSignificance_Params
 {
 };
 
@@ -53,11 +58,6 @@ struct ABuild_GeneratorNuclear_C_StopIdlingLoopEffects_Params
 struct ABuild_GeneratorNuclear_C_ReceiveUpdateEffects_Params
 {
 	float*                                             DeltaSeconds;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-};
-
-// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ReceiveBeginPlay
-struct ABuild_GeneratorNuclear_C_ReceiveBeginPlay_Params
-{
 };
 
 // Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ExecuteUbergraph_Build_GeneratorNuclear

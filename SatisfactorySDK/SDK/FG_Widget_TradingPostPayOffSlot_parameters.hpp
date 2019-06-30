@@ -38,8 +38,8 @@ struct UWidget_TradingPostPayOffSlot_C_GetDarkGrayColor_Params
 	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressBarPercent
-struct UWidget_TradingPostPayOffSlot_C_GetProgressBarPercent_Params
+// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressbarPercent
+struct UWidget_TradingPostPayOffSlot_C_GetProgressbarPercent_Params
 {
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

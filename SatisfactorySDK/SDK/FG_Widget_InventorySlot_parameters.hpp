@@ -14,6 +14,12 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_InventorySlot.Widget_InventorySlot_C.CheckForNuclearWaste
+struct UWidget_InventorySlot_C_CheckForNuclearWaste_Params
+{
+	class UClass*                                      Object;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function Widget_InventorySlot.Widget_InventorySlot_C.QuickMoveInventory
 struct UWidget_InventorySlot_C_QuickMoveInventory_Params
 {
@@ -284,13 +290,6 @@ struct UWidget_InventorySlot_C_UpdateStyle_Params
 {
 };
 
-// Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter
-struct UWidget_InventorySlot_C_OnMouseEnter_Params
-{
-	struct FGeometry*                                  MyGeometry;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-	struct FPointerEvent*                              MouseEvent;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
-};
-
 // Function Widget_InventorySlot.Widget_InventorySlot_C.Destruct
 struct UWidget_InventorySlot_C_Destruct_Params
 {
@@ -299,6 +298,25 @@ struct UWidget_InventorySlot_C_Destruct_Params
 // Function Widget_InventorySlot.Widget_InventorySlot_C.Construct
 struct UWidget_InventorySlot_C_Construct_Params
 {
+};
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.Event CreateNuclearWastePopup
+struct UWidget_InventorySlot_C_Event_CreateNuclearWastePopup_Params
+{
+	bool                                               isNuclearWaste;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.CloseNuclearWastePopup
+struct UWidget_InventorySlot_C_CloseNuclearWastePopup_Params
+{
+	bool                                               ConfirmClicked;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter
+struct UWidget_InventorySlot_C_OnMouseEnter_Params
+{
+	struct FGeometry*                                  MyGeometry;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FPointerEvent*                              MouseEvent;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
 };
 
 // Function Widget_InventorySlot.Widget_InventorySlot_C.ExecuteUbergraph_Widget_InventorySlot

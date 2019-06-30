@@ -27,6 +27,7 @@ public:
 	}
 
 
+	void GetDefaultRCO(class APlayerController* OwningPlayer, class UObject* __WorldContext, class UBP_RemoteCallObject_C** RCO);
 	void IsInMainMenu(class UObject* WorldContext, class UObject* __WorldContext, bool* IsInMainMenu);
 	void GetFGGameUI(class AController* Controller, class UObject* __WorldContext, class UFGGameUI** gameUI);
 	void GetNumItemsFromCentralStorage(class APawn* owningPawn, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems);

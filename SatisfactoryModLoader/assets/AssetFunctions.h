@@ -5,9 +5,9 @@
 namespace SML {
 	namespace Assets {
 		/**
-		* Current UWorld object.
+		* Current UWorld pointer pointer
 		*/
-		SML_API extern void* CurrentWorld;
+		SML_API extern SDK::UWorld** CurrentWorld;
 
 		/**
 		* Single player character
@@ -39,7 +39,7 @@ namespace SML {
 			/**
 			* Get the current global world object.
 			*/
-			SML_API void* getWorld();
+			SML_API SDK::UWorld* getWorld();
 
 			/**
 			* Get the local player character

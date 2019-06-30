@@ -12,16 +12,16 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function Widget_TradingPost_LaunchButton.Widget_TradingPost_LaunchButton_C.test
+// Function Widget_TradingPost_LaunchButton.Widget_TradingPost_LaunchButton_C.Test
 // ()
 // Parameters:
 // bool                           NewParam                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_TradingPost_LaunchButton_C::test(bool* NewParam)
+void UWidget_TradingPost_LaunchButton_C::Test(bool* NewParam)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_LaunchButton.Widget_TradingPost_LaunchButton_C.test");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_LaunchButton.Widget_TradingPost_LaunchButton_C.Test");
 
-	UWidget_TradingPost_LaunchButton_C_test_Params params;
+	UWidget_TradingPost_LaunchButton_C_Test_Params params;
 
 	auto flags = fn->FunctionFlags;
 
