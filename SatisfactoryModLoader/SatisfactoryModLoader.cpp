@@ -15,6 +15,7 @@
 #include <util/Reflection.h>
 #include <util/JsonConfig.h>
 #include <mod/Hooks.h>
+#include <mod/Coremods.h>
 
 namespace SML {
 	static const char* logName = "SatisfactoryModLoader.log";
@@ -54,6 +55,9 @@ namespace SML {
 		// get path
 		char p[MAX_PATH];
 		GetModuleFileNameA(NULL, p, MAX_PATH);
+
+		//load coremods
+		Mod::startLoadingCoremods(p);
 
 		// load mods
 		modHandler.loadMods(p);
