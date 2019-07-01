@@ -120,7 +120,7 @@ public:
 				//get this object back from the asset cache
 				//If an object is not found in the cache, it will automatically register it, causing a slowdown, so make sure that your assets are cached before calling retrieving them.
 				//If you call this function before satisfactory is done loading, it will also throw an error as assets cannot be loaded at the time due to unreal limitations.
-				SDK::UObject* obj = Functions::getAssetFromCache(L"FactoryGame\\Character\\Creature\\Wildlife\\SpaceRabbit\\Char_SpaceRabbit.Char_SpaceRabbit_C");
+				SDK::UObject* obj = Functions::getAssetFromCache(L"Game\\FactoryGame\\Character\\Creature\\Wildlife\\SpaceRabbit\\Char_SpaceRabbit.Char_SpaceRabbit_C");
 				//spawn the object at the player's location and rotation
 				Functions::spawnActorAtPlayer(obj);
 			}
@@ -146,7 +146,7 @@ public:
 
 		//cache this asset at loading to make sure that when it's spawned, slowdowns won't occur at runtime
 		//calling this function while in game will cache the asset immediately, causing a slowdown.
-		Functions::registerAssetForCache(L"FactoryGame\\Character\\Creature\\Wildlife\\SpaceRabbit\\Char_SpaceRabbit.Char_SpaceRabbit_C");
+		Functions::registerAssetForCache(L"Game\\FactoryGame\\Character\\Creature\\Wildlife\\SpaceRabbit\\Char_SpaceRabbit.Char_SpaceRabbit_C");
 
 		LOG("Finished ExampleMod setup!");
 	}
