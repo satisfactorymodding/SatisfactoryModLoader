@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Release|x64">
@@ -164,6 +164,7 @@
     <ClInclude Include="SatisfactoryModLoader\HookLoader.h" />
     <ClInclude Include="SatisfactoryModLoader\HookLoaderInternal.h" />
     <ClInclude Include="SatisfactoryModLoader\Lib.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\Coremods.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Hooks.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\MathFunctions.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Mod.h" />
@@ -187,6 +188,7 @@
     <ClCompile Include="SatisfactoryModLoader\assets\AssetLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\mod\Coremods.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Hooks.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\MathFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Mod.cpp" />
