@@ -154,7 +154,6 @@ namespace SML {
 			Mod* (*modCreate)() = (decltype(modCreate))MemoryGetProcAddress(dll, "ModCreate");
 
 			if (!createMod(modCreate)) {
-				// TODO Figure out why this crashes the game
 				MemoryFreeLibrary(dll);
 			}
 		}
@@ -204,6 +203,11 @@ namespace SML {
 					}
 					catch (...) {}
 
+					if (!dataJson.contains("objects")) {
+						Utility::error("data.json missing objects in ", archive);
+						continue;
+					}
+
 					auto objects = dataJson["objects"];
 
 					for (auto it = objects.begin(); it != objects.end(); ++it) {
@@ -226,9 +230,11 @@ namespace SML {
 
 							loadMemoryDLL(result, obj->size());
 						} else {
-							Utility::error("Unkown object type: ", objType);
+							Utility::warning("Unkown object type: ", objType);
 						}
 					}
+				} else {
+					Utility::warning("Unkown mod file type: ", entry.path().filename().string());
 				}
 			}
 		}
