@@ -15,14 +15,14 @@ namespace SDK
 // Function Widget_SlidingTabs_Button.Widget_SlidingTabs_Button_C.SetBackgroundVisibility
 // ()
 // Parameters:
-// bool                           visible                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           Visible                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_SlidingTabs_Button_C::SetBackgroundVisibility(bool visible)
+void UWidget_SlidingTabs_Button_C::SetBackgroundVisibility(bool Visible)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_SlidingTabs_Button.Widget_SlidingTabs_Button_C.SetBackgroundVisibility");
 
 	UWidget_SlidingTabs_Button_C_SetBackgroundVisibility_Params params;
-	params.visible = visible;
+	params.Visible = Visible;
 
 	auto flags = fn->FunctionFlags;
 

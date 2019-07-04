@@ -32,10 +32,10 @@ public:
 
 
 	void DropInventoryStackOnInventoryWidget(class UWidget_InventorySlot_C* InventorySlot, class UWidget_Inventory_C* WidgetInventory, bool* Result);
-	void InitInventoryWidgetCallbacks(class UWidget_Inventory_C* inventoryComponent);
+	void InitInventoryWidgetCallbacks(class UWidget_Inventory_C* InventoryComponent);
 	void OnInventorySlotStackMove(class UWidget_InventorySlot_C* InventorySlot);
 	void DropInventorySlotStack(class UWidget_InventorySlot_C* InventorySlot, bool* WasStackMoved);
-	void SetInventoryVisibility(bool visible);
+	void SetInventoryVisibility(bool Visible);
 	void GetDefaultRCO(class UBP_RemoteCallObject_C** RCO);
 	void PreConstruct(bool* IsDesignTime);
 	void Construct();

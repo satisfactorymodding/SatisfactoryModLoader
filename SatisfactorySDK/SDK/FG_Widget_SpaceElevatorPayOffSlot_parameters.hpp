@@ -33,8 +33,8 @@ struct UWidget_SpaceElevatorPayOffSlot_C_GetPaidOffSlotVisibility_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressBarVisibility
-struct UWidget_SpaceElevatorPayOffSlot_C_GetProgressBarVisibility_Params
+// Function Widget_SpaceElevatorPayOffSlot.Widget_SpaceElevatorPayOffSlot_C.GetProgressbarVisibility
+struct UWidget_SpaceElevatorPayOffSlot_C_GetProgressbarVisibility_Params
 {
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

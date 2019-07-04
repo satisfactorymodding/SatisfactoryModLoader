@@ -46,7 +46,7 @@ struct UBP_RemoteCallObject_C_ServerSetBeaconTexture_Params
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SplitResource
 struct UBP_RemoteCallObject_C_Server_SplitResource_Params
 {
-	class UFGInventoryComponent*                       inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGInventoryComponent*                       InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	int                                                sourceIdx;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                numResourceToMove;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
@@ -113,7 +113,7 @@ struct UBP_RemoteCallObject_C_ServerPickUpBeacon_Params
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_DropItem
 struct UBP_RemoteCallObject_C_Server_DropItem_Params
 {
-	class UFGInventoryComponent*                       inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGInventoryComponent*                       InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	int                                                sourceIdx;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     SpawnLocation;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FRotator                                    spawnRotation;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
@@ -390,13 +390,13 @@ struct UBP_RemoteCallObject_C_Server_SetSignWallData_Params
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SortInventory
 struct UBP_RemoteCallObject_C_Server_SortInventory_Params
 {
-	class UFGInventoryComponent*                       inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGInventoryComponent*                       InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_DropItemIntoStack
 struct UBP_RemoteCallObject_C_Server_DropItemIntoStack_Params
 {
-	class UFGInventoryComponent*                       inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGInventoryComponent*                       InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	int                                                sourceIdx;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     SpawnLocation;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FRotator                                    spawnRotation;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)

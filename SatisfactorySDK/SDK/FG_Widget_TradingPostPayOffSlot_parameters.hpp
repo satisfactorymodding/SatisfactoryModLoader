@@ -61,8 +61,8 @@ struct UWidget_TradingPostPayOffSlot_C_GetPaidOffSlotVisibility_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressBarVisibility
-struct UWidget_TradingPostPayOffSlot_C_GetProgressBarVisibility_Params
+// Function Widget_TradingPostPayOffSlot.Widget_TradingPostPayOffSlot_C.GetProgressbarVisibility
+struct UWidget_TradingPostPayOffSlot_C_GetProgressbarVisibility_Params
 {
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

@@ -70,8 +70,8 @@ struct UWidget_TradingPost_RecipePreview_C_AnimateRewards_Params
 {
 };
 
-// Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostslots
-struct UWidget_TradingPost_RecipePreview_C_AnimateCostslots_Params
+// Function Widget_TradingPost_RecipePreview.Widget_TradingPost_RecipePreview_C.AnimateCostSlots
+struct UWidget_TradingPost_RecipePreview_C_AnimateCostSlots_Params
 {
 };
 

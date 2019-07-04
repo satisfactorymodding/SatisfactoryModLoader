@@ -31,15 +31,15 @@ namespace SML {
 			}
 
 			SML_API SDK::UWorld* getWorld() {
-				return *Assets::CurrentWorld; //derefrence them pointers baby
+				return SDK::UWorld::GetWorld();
 			}
 
 			SML_API SDK::AFGCharacterPlayer* getPlayerCharacter() {
-				return Assets::SinglePlayerCharacter;
+				return reinterpret_cast<SDK::AFGCharacterPlayer*>(SDK::UWorld::GetWorld()->OwningGameInstance->LocalPlayers[0]->PlayerController->Character);
 			}
 
 			SML_API SDK::AFGPlayerController* getPlayerController() {
-				return Assets::SinglePlayerController;
+				return reinterpret_cast<SDK::AFGPlayerController*>(SDK::UWorld::GetWorld()->OwningGameInstance->LocalPlayers[0]->PlayerController);
 			}
 
 			SML_API void spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {

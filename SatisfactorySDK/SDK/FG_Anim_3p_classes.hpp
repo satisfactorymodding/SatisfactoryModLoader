@@ -769,7 +769,7 @@ public:
 	TArray<int>                                        mListOfPlayedSounds;                                      // 0x199D0(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance)
 	int                                                mSoundToPlay;                                             // 0x199E0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	int                                                mNumSounds;                                               // 0x199E4(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	bool                                               mIsJetpackThrusting;                                      // 0x199E8(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	bool                                               mIsJetPackThrusting;                                      // 0x199E8(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mIsNinja;                                                 // 0x199E9(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mHasNobeliskAmmo;                                         // 0x199EA(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData20[0x5];                                       // 0x199EB(0x0005) MISSED OFFSET

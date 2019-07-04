@@ -42,7 +42,7 @@ public:
 	void DropOntoInventorySlot(class UWidget_InventorySlot_C* InventorySlot, bool* Result);
 	class UWidget* GetCustomTooltip();
 	ESlateVisibility GetPaidOffSlotVisibility();
-	ESlateVisibility GetProgressBarVisibility();
+	ESlateVisibility GetProgressbarVisibility();
 	struct FSlateColor GetPaidOffColorFeedback();
 	ESlateVisibility GetPaidOffFeedbackImage();
 	float GetProgressbarPercent();

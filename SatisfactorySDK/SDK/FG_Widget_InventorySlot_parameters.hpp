@@ -151,7 +151,7 @@ struct UWidget_InventorySlot_C_GetNumLabelVisibility_Params
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetFilterImageVisibility
 struct UWidget_InventorySlot_C_GetFilterImageVisibility_Params
 {
-	bool                                               visible;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	bool                                               Visible;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_InventorySlot.Widget_InventorySlot_C.CreateSplitSlider

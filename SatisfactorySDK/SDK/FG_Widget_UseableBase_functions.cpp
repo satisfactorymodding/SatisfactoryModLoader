@@ -41,14 +41,14 @@ void UWidget_UseableBase_C::DropInventoryStackOnInventoryWidget(class UWidget_In
 // Function Widget_UseableBase.Widget_UseableBase_C.InitInventoryWidgetCallbacks
 // ()
 // Parameters:
-// class UWidget_Inventory_C*     inventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UWidget_Inventory_C*     InventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_UseableBase_C::InitInventoryWidgetCallbacks(class UWidget_Inventory_C* inventoryComponent)
+void UWidget_UseableBase_C::InitInventoryWidgetCallbacks(class UWidget_Inventory_C* InventoryComponent)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_UseableBase.Widget_UseableBase_C.InitInventoryWidgetCallbacks");
 
 	UWidget_UseableBase_C_InitInventoryWidgetCallbacks_Params params;
-	params.inventoryComponent = inventoryComponent;
+	params.InventoryComponent = InventoryComponent;
 
 	auto flags = fn->FunctionFlags;
 
@@ -105,14 +105,14 @@ void UWidget_UseableBase_C::DropInventorySlotStack(class UWidget_InventorySlot_C
 // Function Widget_UseableBase.Widget_UseableBase_C.SetInventoryVisibility
 // ()
 // Parameters:
-// bool                           visible                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           Visible                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_UseableBase_C::SetInventoryVisibility(bool visible)
+void UWidget_UseableBase_C::SetInventoryVisibility(bool Visible)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_UseableBase.Widget_UseableBase_C.SetInventoryVisibility");
 
 	UWidget_UseableBase_C_SetInventoryVisibility_Params params;
-	params.visible = visible;
+	params.Visible = Visible;
 
 	auto flags = fn->FunctionFlags;
 

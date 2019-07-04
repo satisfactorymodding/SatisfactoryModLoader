@@ -41,7 +41,7 @@ public:
 
 
 	void OnInventorySlotMoveStack(class UWidget_InventorySlot_C* InventorySlotSender);
-	void SetInventoryComponents(class UFGInventoryComponent* inventoryComponent, class UFGInventoryComponent* Trash);
+	void SetInventoryComponents(class UFGInventoryComponent* InventoryComponent, class UFGInventoryComponent* Trash);
 	void Construct();
 	void SubscribeToParentWindow(class UWidget_Window_C* ParentWindow);
 	void BndEvt__mSortButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature();

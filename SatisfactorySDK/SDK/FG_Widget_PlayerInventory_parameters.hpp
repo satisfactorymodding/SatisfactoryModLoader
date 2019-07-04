@@ -68,7 +68,7 @@ struct UWidget_PlayerInventory_C_Cleanup_Params
 // Function Widget_PlayerInventory.Widget_PlayerInventory_C.SetInventoryComponents
 struct UWidget_PlayerInventory_C_SetInventoryComponents_Params
 {
-	class UFGInventoryComponent*                       inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGInventoryComponent*                       InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGInventoryComponent*                       arms;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGInventoryComponent*                       Back;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGInventoryComponent*                       head;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)

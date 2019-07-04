@@ -49,7 +49,7 @@ public:
 	}
 
 
-	void SetBackgroundVisibility(bool visible);
+	void SetBackgroundVisibility(bool Visible);
 	void SetIcon(class UTexture* Texture);
 	void SetTitle(const struct FText& mTitle);
 	void SetActive(bool IsActive);

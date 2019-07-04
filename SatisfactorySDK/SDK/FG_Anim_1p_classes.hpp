@@ -607,7 +607,7 @@ public:
 	unsigned char                                      UnknownData15[0x2];                                       // 0x14456(0x0002) MISSED OFFSET
 	struct FRotator                                    mAG_InvertedAimYawRotator;                                // 0x14458(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mAG_NothingEquipped;                                      // 0x14464(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	bool                                               mIsJetpackThrusting;                                      // 0x14465(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	bool                                               mIsJetPackThrusting;                                      // 0x14465(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mHasNobeliskAmmo;                                         // 0x14466(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()

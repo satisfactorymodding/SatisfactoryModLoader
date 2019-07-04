@@ -95,7 +95,7 @@ public:
 	struct FEventReply OnMouseDoubleClick(const struct FGeometry& MyGeometry, struct FPointerEvent* MouseEvent);
 	class UWidget* GetTooltipWidget();
 	ESlateVisibility GetNumLabelVisibility();
-	void GetFilterImageVisibility(bool* visible);
+	void GetFilterImageVisibility(bool* Visible);
 	class UWidget* CreateSplitSlider();
 	struct FText GetStackNumber();
 	struct FEventReply OnFocusReceived(struct FGeometry* MyGeometry, struct FFocusEvent* InFocusEvent);

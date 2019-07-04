@@ -50,7 +50,7 @@ namespace SML {
 			std::wstring satisVersion{ call<&Objects::BuildSettings::GetBuildVersion>() };
 			std::string str(satisVersion.begin(), satisVersion.end());
 			info(str);
-			if (str.substr(str.length() - 5, str.length()) == target[0]) {
+			if (str.substr(str.length() - 6, str.length()) == target[0]) {
 				info("Version check passed!");
 			}
 			else if (str.substr(str.length() - 6, str.length()) == target[1]) {

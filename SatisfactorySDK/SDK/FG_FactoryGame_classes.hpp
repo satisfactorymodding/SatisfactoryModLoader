@@ -8910,7 +8910,7 @@ public:
 
 
 // Class FactoryGame.FGRadiationSettings
-// 0x0028 (0x0060 - 0x0038)
+// 0x0078 (0x00B0 - 0x0038)
 class UFGRadiationSettings : public UDeveloperSettings
 {
 public:
@@ -8923,6 +8923,7 @@ public:
 	float                                              mMinRadiationThreshold;                                   // 0x0054(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	float                                              mRadiationFalloffByDistance;                              // 0x0058(0x0004) (Edit, ZeroConstructor, Config, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x005C(0x0004) MISSED OFFSET
+	TMap<TEnumAsByte<EResourcePurity>, int>            mNodeRadiationPurityAmounts;                              // 0x0060(0x0050) (Edit, ZeroConstructor, Config)
 
 	static UClass* StaticClass()
 	{

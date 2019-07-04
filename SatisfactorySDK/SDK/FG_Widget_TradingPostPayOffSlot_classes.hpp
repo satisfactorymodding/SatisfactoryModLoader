@@ -52,7 +52,7 @@ public:
 	void SetTextboxFormating();
 	class UWidget* GetCustomTooltip();
 	ESlateVisibility GetPaidOffSlotVisibility();
-	ESlateVisibility GetProgressBarVisibility();
+	ESlateVisibility GetProgressbarVisibility();
 	struct FSlateColor GetPaidOffColorFeedback();
 	ESlateVisibility GetPaidOffFeedbackImage();
 	bool OnDrop(struct FGeometry* MyGeometry, struct FPointerEvent* PointerEvent, class UDragDropOperation** Operation);

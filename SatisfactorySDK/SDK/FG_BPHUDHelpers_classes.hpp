@@ -27,7 +27,7 @@ public:
 	}
 
 
-	void ShowHideHUD(bool isMenuOpen, class APawn* owningPawn, class AController* Controller, class UObject* __WorldContext);
+	void ShowHideHUD(bool isMenuOpen, class APawn* OwningPawn, class AController* Controller, class UObject* __WorldContext);
 	void PopStackWidget(class AController* instigatingController, class UFGInteractWidget* Stack_Widget, class UObject* __WorldContext);
 	void PushStackWidget(class AController* instigatingController, class UFGInteractWidget* stackWidget, class UObject* __WorldContext);
 	void GetBPHUD(class AController* Controller, class UObject* __WorldContext, class ABP_HUD_C** outHUD);

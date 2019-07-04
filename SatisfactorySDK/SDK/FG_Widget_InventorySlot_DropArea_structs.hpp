@@ -7,8 +7,8 @@
 #endif
 
 #include "FG_Basic.hpp"
-#include "FG_SlateCore_classes.hpp"
 #include "FG_UMG_classes.hpp"
+#include "FG_SlateCore_classes.hpp"
 #include "FG_Inventory_DropArea_States_classes.hpp"
 
 namespace SDK

@@ -50,7 +50,7 @@ struct UWidget_ListButton_C_UpdateButton_Params
 	struct FText                                       Title;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm)
 	struct FText                                       Description;                                              // (BlueprintVisible, BlueprintReadOnly, Parm)
 	ESlateVisibility                                   descVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	ESlateVisibility                                   IconVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ESlateVisibility                                   iconVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       AdditionalInfo;                                           // (BlueprintVisible, BlueprintReadOnly, Parm)
 };
 

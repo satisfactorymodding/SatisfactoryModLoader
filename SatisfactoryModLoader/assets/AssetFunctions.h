@@ -5,16 +5,19 @@
 namespace SML {
 	namespace Assets {
 		/**
+		* DEPRECATED! USE Functions::getWorld() instead.
 		* Current UWorld pointer pointer
 		*/
 		SML_API extern SDK::UWorld** CurrentWorld;
 
 		/**
+		* DEPRECATED! USE Functions::getPlayerCharacter() instead.
 		* Single player character
 		*/
 		SML_API extern SDK::AFGCharacterPlayer* SinglePlayerCharacter;
 
 		/**
+		* DEPRECATED! USE Functions::getPlayerController() instead.
 		* Single player controller
 		*/
 		SML_API extern SDK::AFGPlayerController* SinglePlayerController;

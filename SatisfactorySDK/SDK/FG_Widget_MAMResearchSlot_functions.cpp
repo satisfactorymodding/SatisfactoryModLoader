@@ -78,16 +78,16 @@ ESlateVisibility UWidget_MAMResearchSlot_C::GetPaidOffSlotVisibility()
 }
 
 
-// Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressBarVisibility
+// Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressbarVisibility
 // ()
 // Parameters:
 // ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-ESlateVisibility UWidget_MAMResearchSlot_C::GetProgressBarVisibility()
+ESlateVisibility UWidget_MAMResearchSlot_C::GetProgressbarVisibility()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressBarVisibility");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressbarVisibility");
 
-	UWidget_MAMResearchSlot_C_GetProgressBarVisibility_Params params;
+	UWidget_MAMResearchSlot_C_GetProgressbarVisibility_Params params;
 
 	auto flags = fn->FunctionFlags;
 

@@ -7,8 +7,8 @@
 #endif
 
 #include "FG_Basic.hpp"
-#include "FG_CoreUObject_classes.hpp"
 #include "FG_MediaAssets_classes.hpp"
+#include "FG_CoreUObject_classes.hpp"
 #include "FG_Engine_classes.hpp"
 
 namespace SDK

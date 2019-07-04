@@ -36,7 +36,7 @@ public:
 
 
 	ESlateVisibility GetStatsVisibility();
-	void AnimateCostslots();
+	void AnimateCostSlots();
 	void ExecuteUbergraph_Widget_BuildMenu_InfoBox(int EntryPoint);
 };
 

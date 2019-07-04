@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_Locomotive.BP_Locomotive_C
-// 0x008A (0x061A - 0x0590)
+// 0x0098 (0x0628 - 0x0590)
 class ABP_Locomotive_C : public AFGLocomotive
 {
 public:
@@ -39,6 +39,8 @@ public:
 	class UCurveFloat*                                 mEngineCurve;                                             // 0x0610(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mAllowEndHonk;                                            // 0x0618(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mPlayHonkAlternative;                                     // 0x0619(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x6];                                       // 0x061A(0x0006) MISSED OFFSET
+	class UCurveFloat*                                 mBrakeCurve;                                              // 0x0620(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

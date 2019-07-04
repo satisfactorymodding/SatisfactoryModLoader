@@ -473,9 +473,9 @@ ESlateVisibility UWidget_InventorySlot_C::GetNumLabelVisibility()
 // Function Widget_InventorySlot.Widget_InventorySlot_C.GetFilterImageVisibility
 // ()
 // Parameters:
-// bool                           visible                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// bool                           Visible                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_InventorySlot_C::GetFilterImageVisibility(bool* visible)
+void UWidget_InventorySlot_C::GetFilterImageVisibility(bool* Visible)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.GetFilterImageVisibility");
 
@@ -487,8 +487,8 @@ void UWidget_InventorySlot_C::GetFilterImageVisibility(bool* visible)
 
 	fn->FunctionFlags = flags;
 
-	if (visible != nullptr)
-		*visible = params.visible;
+	if (Visible != nullptr)
+		*Visible = params.Visible;
 }
 
 

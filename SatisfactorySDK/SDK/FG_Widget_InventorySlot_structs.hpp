@@ -7,13 +7,13 @@
 #endif
 
 #include "FG_Basic.hpp"
-#include "FG_SlateCore_classes.hpp"
 #include "FG_UMG_classes.hpp"
-#include "FG_EDragNDropHoverState_classes.hpp"
+#include "FG_InputCore_classes.hpp"
 #include "FG_Engine_classes.hpp"
 #include "FG_FactoryGame_classes.hpp"
-#include "FG_InputCore_classes.hpp"
 #include "FG_CoreUObject_classes.hpp"
+#include "FG_SlateCore_classes.hpp"
+#include "FG_EDragNDropHoverState_classes.hpp"
 
 namespace SDK
 {

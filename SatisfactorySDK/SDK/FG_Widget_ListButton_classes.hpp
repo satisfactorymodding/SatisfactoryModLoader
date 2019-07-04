@@ -36,7 +36,7 @@ public:
 	struct FText                                       mTitle;                                                   // 0x0270(0x0028) (Edit, BlueprintVisible)
 	struct FText                                       mDescription;                                             // 0x0288(0x0028) (Edit, BlueprintVisible)
 	ESlateVisibility                                   descVisibility;                                           // 0x02A0(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
-	ESlateVisibility                                   IconVisibility;                                           // 0x02A1(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	ESlateVisibility                                   iconVisibility;                                           // 0x02A1(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData02[0x6];                                       // 0x02A2(0x0006) MISSED OFFSET
 	struct FText                                       mAdditionalInfo;                                          // 0x02A8(0x0028) (Edit, BlueprintVisible)
 	class UPanelWidget*                                mListWidget;                                              // 0x02C0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
@@ -57,7 +57,7 @@ public:
 	void GetIndexInList(int* Index);
 	struct FSlateColor GetTextColor();
 	struct FLinearColor GetButtonBackground();
-	void UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility descVisibility, ESlateVisibility IconVisibility, const struct FText& AdditionalInfo);
+	void UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility descVisibility, ESlateVisibility iconVisibility, const struct FText& AdditionalInfo);
 	void BndEvt__mRecipeButton_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature();
 	void mSetDisabled();
 	void mSetEnabled();

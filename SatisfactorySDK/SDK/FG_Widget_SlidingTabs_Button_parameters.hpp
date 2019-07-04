@@ -17,7 +17,7 @@ namespace SDK
 // Function Widget_SlidingTabs_Button.Widget_SlidingTabs_Button_C.SetBackgroundVisibility
 struct UWidget_SlidingTabs_Button_C_SetBackgroundVisibility_Params
 {
-	bool                                               visible;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               Visible;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_SlidingTabs_Button.Widget_SlidingTabs_Button_C.SetIcon
