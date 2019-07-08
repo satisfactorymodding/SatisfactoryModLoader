@@ -31,7 +31,11 @@ namespace SML {
 
 					Utility::warning("Warning: loading coremod ", entry.path().filename(), ". Please remove coremods before submitting bug reports!");
 
-					LoadLibraryW(stemp.c_str());
+					HMODULE lib = LoadLibraryW(stemp.c_str());
+					if (GetProcAddress(lib, "DELAYED_LOAD")) {
+						FreeLibrary(lib);
+						delayedCoremods.push_back(stemp.c_str());
+					}
 				}
 			}
 		}

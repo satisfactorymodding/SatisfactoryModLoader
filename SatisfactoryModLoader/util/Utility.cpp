@@ -33,6 +33,7 @@ namespace SML {
 
 			// log line
 			logFile << "[" + header + "::" + logType;
+			logFile.flush();
 
 			// cout line
 			setConsoleColor(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
@@ -68,6 +69,11 @@ namespace SML {
 					warning("SupressErrors set to true, continuing...");
 				}
 			}
+		}
+
+		void displayCrash(std::string crashText) {
+			MessageBoxA(NULL, crashText.c_str(), "SatisfactoryModLoader Crash", MB_ICONERROR);
+			abort();
 		}
 	}
 }

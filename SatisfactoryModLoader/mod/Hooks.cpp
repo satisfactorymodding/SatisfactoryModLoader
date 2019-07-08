@@ -10,6 +10,7 @@
 #include <mod/ModFunctions.h>
 #include "ModFunctions.h"
 #include <assets/AssetLoader.h>
+#include <mod/Coremods.h>
 
 using namespace std::placeholders;
 
@@ -80,6 +81,10 @@ namespace SML {
 			modHandler.currentStage = GameStage::RUN;
 			for (std::pair< const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
 				modHandler.assetCache[asset.first] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), asset.first);
+			}
+
+			for (const wchar_t* dll : delayedCoremods) {
+				LoadLibraryW(dll);
 			}
 
 			auto pointer = (void(WINAPI*)(void*))engineInitFunc;

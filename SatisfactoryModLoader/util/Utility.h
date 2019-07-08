@@ -37,6 +37,8 @@ namespace SML {
 			White
 		};
 
+		void displayCrash(std::string crashText);
+
 		void SML_API setConsoleColor(ConsoleColor color);
 
 		void SML_API checkVersion(const std::string target[2]);

@@ -175,9 +175,7 @@ namespace SML {
 					return modHandler.assetCache[modHandler.assetIdRegistry[id]];
 				}
 				else {
-					std::string msg = "Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
-					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-					abort();
+					Utility::displayCrash("Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.");
 				}
 			}
 
