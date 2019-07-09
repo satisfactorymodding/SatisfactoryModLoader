@@ -4,7 +4,7 @@
 
 namespace SML {
 	namespace Mod {
-		std::vector<const wchar_t*> delayedCoremods;
+		extern std::vector<const wchar_t*> delayedCoremods;
 
 		void startLoadingCoremods(const char* currentPath);
 

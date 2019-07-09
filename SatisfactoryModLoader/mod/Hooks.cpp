@@ -3,6 +3,7 @@
 #include <detours.h>
 #include <stdio.h> 
 #include <sstream>
+#include <vector>
 #include <functional>
 #include <SatisfactoryModLoader.h>
 #include <game/Global.h>

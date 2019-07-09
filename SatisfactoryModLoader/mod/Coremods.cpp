@@ -7,6 +7,8 @@
 
 namespace SML {
 	namespace Mod {
+		std::vector<const wchar_t*> delayedCoremods;
+
 		void startLoadingCoremods(const char* currentPath) {
 			std::string appPath(currentPath);
 			size_t pos = appPath.find_last_of('\\');
