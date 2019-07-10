@@ -76,7 +76,7 @@ namespace SML {
 
 			SML_API void addRecipe(SDK::UClass* recipe) {
 				PVOID addAvailableRecipeFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGRecipeManager::AddAvailableRecipe");
-				auto addAvailableRecipe = static_cast<SDK::AFGRecipeManager * (WINAPI*)(void*, void*)>(addAvailableRecipeFn);
+				auto addAvailableRecipe = static_cast<SDK::AFGRecipeManager* (WINAPI*)(void*, void*)>(addAvailableRecipeFn);
 				SDK::TSubclassOf<SDK::UFGRecipe> recipeClass(recipe);
 				addAvailableRecipe(static_cast<SDK::AFGGameState*>(reinterpret_cast<SDK::UWorld*>(getWorld())->GameState)->mRecipeManager, recipe);
 			}
@@ -152,8 +152,7 @@ namespace SML {
 			SML_API SDK::UObject* getAssetFromCache(const wchar_t* name) {
 				if (modHandler.currentStage != GameStage::RUN) {
 					std::wstring ws(name);
-					std::string msg = "Attempted to get cached asset\n" + std::string(ws.begin(), ws.end()) + "\n before it was cached! Press Ok to exit.";
-					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
+					Utility::displayCrash("Attempted to get cached asset\n" + std::string(ws.begin(), ws.end()) + "\n before it was cached!");
 					abort();
 				} else {
 					if (modHandler.assetCache.count(name) > 0) {
@@ -175,7 +174,7 @@ namespace SML {
 					return modHandler.assetCache[modHandler.assetIdRegistry[id]];
 				}
 				else {
-					Utility::displayCrash("Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.");
+					Utility::displayCrash("Attempted to get cached asset with id (" + std::to_string(id) + ") that doesn't exist!");
 				}
 			}
 
@@ -184,9 +183,7 @@ namespace SML {
 					return modHandler.assetIdRegistry[id];
 				}
 				else {
-					std::string msg = "Attempted to get cached asset name with id (" + std::to_string(id) + ") that doesn't exist!\nPress Ok to exit.";
-					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-					abort();
+					Utility::displayCrash("Attempted to get cached asset name with id (" + std::to_string(id) + ") that doesn't exist!");
 				}
 			}
 		}

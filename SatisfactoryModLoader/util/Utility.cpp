@@ -58,9 +58,9 @@ namespace SML {
 				warning("SML is running on the experimental branch, issues may occur!");
 			}
 			else {
-				error("FATAL: Version check failed");
+				error("WARNING: Version check failed");
 				if (!supressErrors) {
-					int ret = MessageBoxA(NULL, "The version of SML that you are using is not compatible with your version of Satisfactory!\nIf SML is not available for the latest version of satisfactory, please yell at SuperCoder to compile one.\nPress Ok to continue at your own discresion or cancel to stop the program.", "SatisfactoryModLoader Fatal Error", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONERROR);
+					int ret = MessageBoxA(NULL, "The version of SML that you are using is not compatible with your version of Satisfactory!\nIf SML is not available for the latest version of satisfactory, please yell at SuperCoder to compile one.\nPress Ok to continue at your own discresion or cancel to stop the program.", "SatisfactoryModLoader Warning", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONEXCLAMATION);
 					if (ret == IDCANCEL) {
 						exit(1);
 					}
@@ -72,7 +72,7 @@ namespace SML {
 		}
 
 		void displayCrash(std::string crashText) {
-			MessageBoxA(NULL, crashText.c_str(), "SatisfactoryModLoader Crash", MB_ICONERROR);
+			MessageBoxA(NULL, (crashText + "\nPress OK to exit.").c_str(), "SatisfactoryModLoader Crash", MB_ICONERROR);
 			abort();
 		}
 	}

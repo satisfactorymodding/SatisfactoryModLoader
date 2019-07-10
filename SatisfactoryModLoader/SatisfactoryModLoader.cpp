@@ -24,6 +24,7 @@ namespace SML {
 	// Main DLL for loading mod DLLs
 	void startSML() {
 		// launch the game's internal console and hook into it
+		Utility::logFile.clear();
 		Utility::logFile = std::ofstream(logName, std::ios_base::app);
 		AllocConsole();
 		ShowWindow(GetConsoleWindow(), SW_HIDE);

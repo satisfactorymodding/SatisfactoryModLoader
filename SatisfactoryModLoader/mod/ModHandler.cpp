@@ -82,9 +82,7 @@ namespace SML {
 						auto it = std::find(names.begin(), names.end(), dep);
 						if (it == names.end()) {
 							//quit if a required dependency isn't loaded
-							std::string msg = "Mod " + mod->info.name + " is missing dependency " + dep + "!\nPlease install " + dep + " or remove " + mod->info.name + ".\nPress Ok to exit.";
-							MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-							abort();
+							Utility::displayCrash("Mod " + mod->info.name + " is missing dependency " + dep + "!\nPlease install " + dep + " or remove " + mod->info.name + ".\nPress Ok to exit.");
 						}
 					}
 				}
@@ -97,11 +95,12 @@ namespace SML {
 			std::string pathExact = path + "\\";
 
 			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
-
+				/*
 				if (!entry.path().has_extension()) {
 					getFiles(entry.path().string());
 					continue;
 				}
+				*/
 
 				if (entry.path().extension().string() == ".dll") {
 					std::string file = pathExact + entry.path().filename().string();
@@ -153,7 +152,7 @@ namespace SML {
 					size_t SMLOffset = modLoaderVersion.find_last_of(".");
 					if (!(mod->info.loaderVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
 						std::string msg = "Mod " + mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
-						MessageBoxA(NULL, msg.c_str(), "Mod Loading Warning", MB_ICONWARNING);
+						MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Warning", MB_ICONWARNING);
 						FreeLibrary(dll);
 						continue;
 					}

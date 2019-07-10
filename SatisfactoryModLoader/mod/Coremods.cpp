@@ -7,6 +7,8 @@
 
 namespace SML {
 	namespace Mod {
+		std::vector<std::string> coremodList;
+
 		std::vector<const wchar_t*> delayedCoremods;
 
 		void startLoadingCoremods(const char* currentPath) {
@@ -22,16 +24,21 @@ namespace SML {
 			std::string pathExact = path + "\\";
 
 			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
+				/*
 				if (!entry.path().has_extension()) {
 					loadCoremodsInternal(entry.path().string());
 					continue;
 				}
+				*/
+
+				//screw u adam
 
 				if (entry.path().extension().string() == ".dll") {
 					std::string file = pathExact + entry.path().filename().string();
 					std::wstring stemp = std::wstring(file.begin(), file.end());
 
 					Utility::warning("Warning: loading coremod ", entry.path().filename(), ". Please remove coremods before submitting bug reports!");
+					coremodList.push_back(entry.path().filename().string());
 
 					HMODULE lib = LoadLibraryW(stemp.c_str());
 					if (GetProcAddress(lib, "DELAYED_LOAD")) {

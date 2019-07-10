@@ -8,7 +8,7 @@
 
 namespace SML {
 	namespace Utility {
-		static std::ofstream logFile; //
+		static std::ofstream logFile;
 
 		enum LogType {
 			Info,
