@@ -32,6 +32,8 @@ namespace SML {
 			std::vector<Registry> commandRegistry;
 			std::vector<Registry> APIRegistry;
 
+			std::map<std::string, std::vector<PVOID>> eventRegistry;
+
 			std::map<const wchar_t*, SDK::UObject*> assetCache;
 
 			std::map<int, const wchar_t*> assetIdRegistry;
