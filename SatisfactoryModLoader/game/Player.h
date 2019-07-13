@@ -12,8 +12,10 @@ namespace SML {
 		public:
 			void BeginPlay();
 			void GetHealthComponent(struct FFrame*, void* const);
+			void RagdollCharacter(bool ragdollState);
 		};
 
+		DEFINE_METHOD(AFGCharacterBase::RagdollCharacter);
 		DEFINE_METHOD(AFGCharacterBase::BeginPlay);
 		EXPORT_METHOD(AFGCharacterBase::GetHealthComponent);
 

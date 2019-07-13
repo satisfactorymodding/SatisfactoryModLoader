@@ -48,12 +48,7 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(FEngineLoop::Init);
-
-		class AFGCharacterBase {
-			void RagdollCharacter(bool ragdollState);
-		};
-
-		DEFINE_METHOD(AFGCharacterBase::RagdollCharacter);
+			
 
 		class UFGInventoryComponent {
 		public:
