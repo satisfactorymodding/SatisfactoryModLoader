@@ -1,4 +1,18 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+/*
+  ____  __  __ _
+ / ___||  \/  | |
+ \___ \| |\/| | |
+  ___) | |  | | |___
+ |____/|_|  |_|_____|
+
+ SatisfactoryModLoader is a tool to load dll mods into satisfactory.
+ To get started with modding, take a look at BaseMod/ExampleMod.cpp.
+ If you have any questions, please contact SuperCoder79 on the modding discord.
+
+ Known issues:
+ * Chat commands don't work
+ * Everything crashes 10000% more than it should
+*/
 #define WIN32_LEAN_AND_MEAN
 #include "../SatisfactorySdk/SDK.hpp"
 #include <stdafx.h>

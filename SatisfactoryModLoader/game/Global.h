@@ -42,6 +42,18 @@ namespace SML {
 		DEFINE_METHOD(AFGPlayerController::OnAttentionPingPressed);
 		DEFINE_METHOD(AFGPlayerController::Suicide);
 
+		class FEngineLoop {
+		public:
+			void Init();
+		};
+
+		DEFINE_METHOD(FEngineLoop::Init);
+
+		class AFGCharacterBase {
+			void RagdollCharacter(bool ragdollState);
+		};
+
+		DEFINE_METHOD(AFGCharacterBase::RagdollCharacter);
 
 		class UFGInventoryComponent {
 		public:

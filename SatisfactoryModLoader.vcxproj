@@ -187,6 +187,7 @@
     <ClCompile Include="SatisfactoryModLoader\assets\AssetFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\assets\AssetLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\game\Global.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Coremods.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Hooks.cpp" />

@@ -24,9 +24,9 @@ namespace SML {
 				return Assets::AssetLoader::loadObjectSimple(ObjectClass, InName);
 			}
 
-			SML_API void* spawnActor(void* UWorld, void* *UClass, void* *FVector, void* *FRotator, void* *FActorSpawnParameters) {
+			SML_API SDK::UClass* spawnActor(void* UWorld, void* *UClass, void* *FVector, void* *FRotator, void* *FActorSpawnParameters) {
 				PVOID spawnActorFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UWorld::SpawnActor");
-				auto spawnActorFunc = (SDK::UClass * (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
+				auto spawnActorFunc = (SDK::UClass* (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
 				return spawnActorFunc(UWorld, UClass, &FVector, &FRotator, &FActorSpawnParameters);
 			}
 
@@ -42,7 +42,7 @@ namespace SML {
 				return reinterpret_cast<SDK::AFGPlayerController*>(SDK::UWorld::GetWorld()->OwningGameInstance->LocalPlayers[0]->PlayerController);
 			}
 
-			SML_API void spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {
+			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {
 				FActorSpawnParameters params = FActorSpawnParameters();
 				auto myPlayer = getPlayerCharacter();
 				auto buildingLocation = myPlayer->K2_GetActorLocation();
@@ -51,15 +51,15 @@ namespace SML {
 				buildingLocation.X += x;
 				buildingLocation.Y += y;
 				PVOID spawnActorFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UWorld::SpawnActor");
-				auto spawnActor = (SDK::UClass * (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
-				spawnActor(getWorld(), obj, &buildingLocation, &buildingRotation, &params);
+				auto spawnActor = (SDK::UClass* (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
+				return spawnActor(getWorld(), obj, &buildingLocation, &buildingRotation, &params);
 			}
 
-			SML_API void spawnActorAtPlayer(SDK::UObject* obj) {
-				spawnActorAtPlayer(obj, 0, 0, 0);
+			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj) {
+				return spawnActorAtPlayer(obj, 0, 0, 0);
 			}
 
-			SML_API void spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw) {
+			SML_API SDK::UClass* spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw) {
 				FActorSpawnParameters params = FActorSpawnParameters();
 				SDK::FVector vec = SDK::FVector();
 				vec.X = x;
@@ -70,8 +70,8 @@ namespace SML {
 				rot.Roll = roll;
 				rot.Yaw = yaw;
 				PVOID spawnActorFn = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UWorld::SpawnActor");
-				auto spawnActor = (SDK::UClass * (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
-				spawnActor(getWorld(), obj, &vec, &rot, &params);
+				auto spawnActor = (SDK::UClass* (WINAPI*)(void*, void*, void*, void*, void*))spawnActorFn;
+				return spawnActor(getWorld(), obj, &vec, &rot, &params);
 			}
 
 			SML_API void addRecipe(SDK::UClass* recipe) {

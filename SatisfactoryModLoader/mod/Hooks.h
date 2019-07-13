@@ -6,6 +6,7 @@
 #include <HookLoaderInternal.h>
 #include "ModFunctions.h"
 #include <assets/AssetFunctions.h>
+#include <game/Global.h>
 
 namespace SML {
 	namespace Mod {
@@ -21,7 +22,8 @@ namespace SML {
 
 			static void hookFunctions();
 
-			static void engineInit(void* fEngine);
+			
+			static void engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* fEngine);
 
 			static void getWorld(void* self);
 
@@ -33,8 +35,9 @@ namespace SML {
 
 			static void levelDestructor(SDK::ULevel* level);
 
-			static void playerSentMessage(void* player, SDK::FString* message);
+			static void playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* message);
 
+			
 			static bool smlCommands(Functions::CommandData data);
 		};
 	}

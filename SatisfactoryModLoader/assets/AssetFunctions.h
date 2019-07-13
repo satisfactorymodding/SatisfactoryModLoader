@@ -37,7 +37,7 @@ namespace SML {
 			/**
 			* Spawns an actor at a given location, when given the world.
 			*/
-			SML_API void* spawnActor(void* UWorld, void* *UClass, void* *FVector, void* *FRotator, void* *FActorSpawnParameters);
+			SML_API SDK::UClass* spawnActor(void* UWorld, void* *UClass, void* *FVector, void* *FRotator, void* *FActorSpawnParameters);
 
 			/**
 			* Get the current global world object.
@@ -57,17 +57,17 @@ namespace SML {
 			/**
 			* Spawn an actor at the player, offset by the XYZ values provided.
 			*/
-			SML_API void spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z);
+			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z);
 
 			/**
 			* Spawn an actor at the player.
 			*/
-			SML_API void spawnActorAtPlayer(SDK::UObject* obj);
+			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj);
 
 			/**
 			* Spawn an actor at the provided location with the provided rotation.
 			*/
-			SML_API void spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw);
+			SML_API SDK::UClass* spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw);
 
 			/**
 			* Adds a UFGRecipe to the game.
