@@ -41,7 +41,7 @@ namespace SML {
 
 		void SML_API setConsoleColor(ConsoleColor color);
 
-		void SML_API checkVersion(const std::string target[2]);
+		void SML_API checkVersion(const int target);
 
 		void SML_API log();
 

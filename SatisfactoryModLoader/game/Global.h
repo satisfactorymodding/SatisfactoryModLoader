@@ -8,6 +8,11 @@
 
 namespace SML {
 	namespace Objects {
+
+		class IAsyncReadRequest {
+
+		};
+
 		class UWorld {
 		public:
 			void Tick(enum ELevelTick TickType, float DeltaSeconds);
@@ -63,6 +68,13 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(FPakPlatformFile::GetPakSigningKeys);
+
+		class FPakPrecacher {
+		public:
+			void DoSignatureCheck(bool b, IAsyncReadRequest* a, int i);
+		};
+
+		DEFINE_METHOD(FPakPrecacher::DoSignatureCheck);
 	}
 }
 

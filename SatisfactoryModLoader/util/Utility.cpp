@@ -47,20 +47,21 @@ namespace SML {
 		}
 
 		//target[0] = normal CL, target [1] = experimental CL
-		void checkVersion(const std::string target[2]) {
+		void checkVersion(const int target) {
 			std::wstring satisVersion{ call<&Objects::BuildSettings::GetBuildVersion>() };
 			std::string str(satisVersion.begin(), satisVersion.end());
 			info(str);
-			if (str.substr(str.length() - 6, str.length()) == target[0]) {
+			int version = std::atoi(str.substr(str.length() - 6, str.length()).c_str());
+			if (version == target) {
 				info("Version check passed!");
 			}
-			else if (str.substr(str.length() - 6, str.length()) == target[1]) {
-				warning("SML is running on the experimental branch, issues may occur!");
+			else if (version > target) {
+				warning("SML is out of date with the latest Satisfactory! Report any issues on the discord!");
 			}
-			else {
+			else if (version < target){
 				error("WARNING: Version check failed");
 				if (!supressErrors) {
-					int ret = MessageBoxA(NULL, "The version of SML that you are using is not compatible with your version of Satisfactory!\nIf SML is not available for the latest version of satisfactory, please yell at SuperCoder to compile one.\nPress Ok to continue at your own discresion or cancel to stop the program.", "SatisfactoryModLoader Warning", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONEXCLAMATION);
+					int ret = MessageBoxA(NULL, "The version of Satisfactory that you are running is too old for the current version of SML! Please update Satisfactory otherwise SML may run into errors. \nPress Ok to continue at your own discresion or cancel to stop the program.", "SatisfactoryModLoader Warning", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONEXCLAMATION);
 					if (ret == IDCANCEL) {
 						exit(1);
 					}

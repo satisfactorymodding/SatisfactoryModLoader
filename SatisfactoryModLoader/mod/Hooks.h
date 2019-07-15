@@ -22,16 +22,13 @@ namespace SML {
 
 			static void hookFunctions();
 
-			
 			static void engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* fEngine);
 
-			static void getWorld(void* self);
+			//static void getWorld(void* self);
 
-			static void sigCheck(void* self, bool b, void* v);
+			//static void playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
 
-			static void playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
-
-			static void playerControllerAdded(SDK::AFGPlayerController* self);
+			//static void playerControllerAdded(SDK::AFGPlayerController* self);
 
 			static void levelDestructor(SDK::ULevel* level);
 

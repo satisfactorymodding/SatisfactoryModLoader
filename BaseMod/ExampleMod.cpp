@@ -26,7 +26,7 @@ using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.0-pr5"
+#define SML_VERSION "1.0.0-pr6"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"
@@ -40,10 +40,10 @@ using namespace SML::Objects;
 #define INFO(msg) LOG(msg)
 
 //log a warning message to the console
-#define WARNING(msg) 
+#define WARN(msg) SML::Utility::warningMod(MOD_NAME, msg)
 
 //log an error message to the console
-#define ERROR(msg) SML::Utility::errorMod(MOD_NAME, msg);
+#define ERR(msg) SML::Utility::errorMod(MOD_NAME, msg)
 
 // Config
 json config = SML::Utility::JsonConfig::load(MOD_NAME, {
@@ -77,7 +77,7 @@ Mod::Info modInfo {
 	MOD_NAME,
 
 	// Version
-	"0.2",
+	"1.0.0",
 
 	// Description
 	"A basic mod created to showcase SML's functionality.",

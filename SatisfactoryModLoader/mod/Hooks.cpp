@@ -29,6 +29,10 @@ namespace SML {
 				::subscribe<&Objects::FEngineLoop::Init>([this](Functions::ModReturns* ret, Objects::FEngineLoop* engineLoop) {
 					Hooks::engineInit(ret, engineLoop);
 				});
+
+				::subscribe<&Objects::FPakPrecacher::DoSignatureCheck>([this](Functions::ModReturns* ret, Objects::FPakPrecacher* pak, bool b, Objects::IAsyncReadRequest* request, int i) {
+					ret->useOriginalFunction = false;
+				});
 			}
 		};
 
@@ -44,38 +48,17 @@ namespace SML {
 			DetourTransactionBegin();
 			DetourUpdateThread(GetCurrentThread());
 
-			// find the function by name
-			//chatFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGPlayerController::EnterChatMessage");
-			//DetourAttach(&(PVOID&)chatFunc, playerSentMessage);
-
-			//::subscribe<&Objects::AFGPlayerController::EnterChatMessage>(playerSentMessage);
-
 			LambdaFunctionHooks().hookLambdas();
-
-			playerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGGameState::NotifyPlayerAdded");
-			DetourAttach(&(PVOID&)playerAddedFunc, playerAdded);
-
-			//engineInitFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FEngineLoop::Init");
-			//DetourAttach(&(PVOID&)engineInitFunc, engineInit);
-
-			playerControllerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGPlayerController::PostLoad");
-			DetourAttach(&(PVOID&)playerControllerAddedFunc, playerControllerAdded);
 
 			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
 			DetourAttach(&(PVOID&)levelDestroyFunc, levelDestructor);
-
-			sigCheckFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FPakPrecacher::DoSignatureCheck");
-			DetourAttach(&(PVOID&)sigCheckFunc, sigCheck);
 
 			Utility::info("Installed hooks!");
 
 			DetourTransactionCommit();
 		}
 
-		void Hooks::sigCheck(void* self, bool b, void* v) {
-
-		}
-
+		/*
 		void Hooks::playerControllerAdded(SDK::AFGPlayerController* controller) {
 			if (Assets::SinglePlayerController == nullptr) {
 				Assets::SinglePlayerController = controller;
@@ -83,7 +66,7 @@ namespace SML {
 
 			auto pointer = (void(WINAPI*)(void*))playerControllerAddedFunc;
 			pointer(controller);
-		}
+		}*/
 
 		void Hooks::levelDestructor(SDK::ULevel* level) {
 
@@ -96,10 +79,11 @@ namespace SML {
 		void Hooks::engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* engine) {
 			//caching of assets
 			modHandler.currentStage = GameStage::RUN;
-			for (std::pair< const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
+			for (std::pair<const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
 				modHandler.assetCache[asset.first] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), asset.first);
 			}
 
+			//load delayed coremods
 			for (const wchar_t* dll : delayedCoremods) {
 				LoadLibraryW(dll);
 			}
@@ -107,6 +91,7 @@ namespace SML {
 			ret->useOriginalFunction = true;
 		}
 
+		/*
 		void Hooks::playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {
 			auto pointer = (void(WINAPI*)(void*, void*))playerAddedFunc;
 			//Utility::info("Player Added: ", player->GetName(), " - Controlled: ", player->IsControlled(), " - IsLocallyControlled: ", player->IsLocallyControlled());
@@ -115,6 +100,7 @@ namespace SML {
 			}
 			pointer(gameState, player);
 		}
+		*/
 
 		// parse commands when the player sends a message
 		void Hooks::playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* messageIn) {

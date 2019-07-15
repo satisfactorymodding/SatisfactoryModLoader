@@ -32,7 +32,17 @@ namespace SML {
 			* The asset name must be of the following format: \\Game\\FactoryGame\\Path\\To\\Asset\\AssetFile.AssetFile
 			* If you are loading a blueprint, the name must have a _C appended to the end.
 			*/
-			SML_API SDK::UObject* loadObjectFromPak(SDK::UClass *ObjectClass, const wchar_t *InName);
+			SML_API SDK::UObject* loadObjectFromPak(SDK::UClass *ObjectClass, const wchar_t* InName);
+
+			/**
+			* This function has been largely replaced by the asset caching system. To prevent slowdowns, use that instead!
+			* 
+			* Load an object from a pak file. Will crash if the pak is not installed.
+			*
+			* The asset name must be of the following format: \\Game\\FactoryGame\\Path\\To\\Asset\\AssetFile.AssetFile
+			* If you are loading a blueprint, the name must have a _C appended to the end.
+			*/
+			SML_API SDK::UObject* loadObjectFromPak(const wchar_t* InName);
 
 			/**
 			* Spawns an actor at a given location, when given the world.
@@ -70,6 +80,12 @@ namespace SML {
 			SML_API SDK::UClass* spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw);
 
 			/**
+			* Wrapper for addRecipe(SDK::UClass*) to do everything for you.
+			* Call this in beginPlay().
+			*/
+			SML_API void addRecipe(const wchar_t* recipeName);
+
+			/**
 			* Adds a UFGRecipe to the game.
 			* Code kindly provided by Trxnce.
 			*/
@@ -79,7 +95,7 @@ namespace SML {
 			* Returns an ItemStack from an item class and an item amount.
 			* Code kindly provided by Trxnce.
 			*/
-			SML_API SDK::FInventoryStack makeItemStack(SDK::UClass* clazz, const int& amount);
+			SML_API SDK::FInventoryStack makeItemStack(SDK::UClass* clazz, int amount);
 
 			/**
 			* Adds an item with an amount to the player's inventory.
