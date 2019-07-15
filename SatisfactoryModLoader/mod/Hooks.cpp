@@ -30,9 +30,9 @@ namespace SML {
 					Hooks::engineInit(ret, engineLoop);
 				});
 
-				::subscribe<&Objects::FPakPrecacher::DoSignatureCheck>([this](Functions::ModReturns* ret, Objects::FPakPrecacher* pak, bool b, Objects::IAsyncReadRequest* request, int i) {
-					ret->useOriginalFunction = false;
-				});
+				//::subscribe<&Objects::FPakPrecacher::DoSignatureCheck>([this](Functions::ModReturns* ret, Objects::FPakPrecacher* pak, bool b, Objects::IAsyncReadRequest* request, int i) {
+					//ret->useOriginalFunction = false;
+				//});
 			}
 		};
 
