@@ -126,7 +126,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
@@ -164,6 +164,8 @@
     <ClInclude Include="SatisfactoryModLoader\HookLoader.h" />
     <ClInclude Include="SatisfactoryModLoader\HookLoaderInternal.h" />
     <ClInclude Include="SatisfactoryModLoader\Lib.h" />
+    <ClInclude Include="SatisfactoryModLoader\memory\MemoryFunctions.h" />
+    <ClInclude Include="SatisfactoryModLoader\memory\ObjectMemoryRepresentation.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Coremods.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Hooks.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\MathFunctions.h" />
@@ -189,6 +191,8 @@
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\Global.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\memory\MemoryFunctions.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\memory\ObjectMemoryRepresentation.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Coremods.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Hooks.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\MathFunctions.cpp" />

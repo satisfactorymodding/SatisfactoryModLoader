@@ -87,7 +87,7 @@ namespace SML {
 					}
 				}
 			}
-			Utility::info("Verifyied dependencies");
+			Utility::info("Verified dependencies");
 		}
 
 		//get the mod files and load them
