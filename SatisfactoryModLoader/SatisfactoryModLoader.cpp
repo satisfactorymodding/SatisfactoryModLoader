@@ -38,15 +38,13 @@ namespace SML {
 	// Main DLL for loading mod DLLs
 	void startSML() {
 		// launch the game's internal console and hook into it
-		Utility::logFile.clear();
-		Utility::logFile = std::ofstream(logName, std::ios_base::app);
+		Utility::logFile.open(logName, std::ios_base::out | std::ios_base::app);
 		AllocConsole();
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
 		FILE* fp;
 		freopen_s(&fp, "CONOIN$", "r", stdin);
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
-		Utility::logFile.clear();
 
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 

@@ -9,6 +9,8 @@
 
 namespace SML {
 	namespace Utility {
+		std::ofstream logFile;
+
 		void log() {}
 
 		void log(LogType type) {}
