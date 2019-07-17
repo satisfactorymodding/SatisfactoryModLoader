@@ -189,7 +189,9 @@
     <ClCompile Include="SatisfactoryModLoader\assets\AssetFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\assets\AssetLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\game\Etc.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\Global.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\game\Player.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
     <ClCompile Include="SatisfactoryModLoader\memory\MemoryFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\memory\MemoryObject.cpp" />

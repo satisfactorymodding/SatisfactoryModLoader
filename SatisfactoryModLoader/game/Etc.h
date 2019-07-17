@@ -27,7 +27,10 @@ namespace SML {
 		public:
 			template <typename TComponent, typename TAllocator>
 			void GetComponents(TArray<TComponent*, TAllocator>* OutComponents, bool bIncludeFromChildActors);
+			bool Destroy(bool bNetForce, bool bShouldModifyLevel);
 		};
+
+		DEFINE_METHOD(AActor::Destroy);
 
 		class UFGInventoryComponent;
 		class FDefaultAllocator;

@@ -7,34 +7,18 @@
 #include <functional>
 #include <SatisfactoryModLoader.h>
 #include <game/Global.h>
+#include <game/Player.h>
 #include <util/Utility.h>
 #include <mod/ModFunctions.h>
 #include "ModFunctions.h"
 #include <assets/AssetLoader.h>
 #include <mod/Coremods.h>
+#include <filesystem>
 
 using namespace std::placeholders;
 
 namespace SML {
 	namespace Mod {
-
-		//Major major props to Brabb3l for helping me figure this peice of shit code out
-		class LambdaFunctionHooks {
-		public:
-			void hookLambdas() {
-				::subscribe<&Objects::AFGPlayerController::EnterChatMessage>([this](Functions::ModReturns* modReturns, Objects::AFGPlayerController* player, Objects::FString* message) {
-					Hooks::playerSentMessage(modReturns, player, message);
-				});
-
-				::subscribe<&Objects::FEngineLoop::Init>([this](Functions::ModReturns* ret, Objects::FEngineLoop* engineLoop) {
-					Hooks::engineInit(ret, engineLoop);
-				});
-
-				//::subscribe<&Objects::FPakPrecacher::DoSignatureCheck>([this](Functions::ModReturns* ret, Objects::FPakPrecacher* pak, bool b, Objects::IAsyncReadRequest* request, int i) {
-					//ret->useOriginalFunction = false;
-				//});
-			}
-		};
 
 		PVOID Hooks::chatFunc;
 		PVOID Hooks::worldFunc;
@@ -48,7 +32,74 @@ namespace SML {
 			DetourTransactionBegin();
 			DetourUpdateThread(GetCurrentThread());
 
-			LambdaFunctionHooks().hookLambdas();
+			//Major major props to Brabb3l for helping me figure this peice of shit code out
+
+			::subscribe<&Objects::AFGPlayerController::EnterChatMessage>([](Functions::ModReturns* modReturns, Objects::AFGPlayerController* player, Objects::FString* message) {
+				Hooks::playerSentMessage(modReturns, player, message);
+			});
+
+			::subscribe<&Objects::FEngineLoop::Init>([](Functions::ModReturns* ret, Objects::FEngineLoop* engineLoop) {
+				Hooks::engineInit(ret, engineLoop);
+			});
+
+			//::subscribe<&Objects::FPakPrecacher::DoSignatureCheck>([](Functions::ModReturns* ret, Objects::FPakPrecacher* pak, bool b, Objects::IAsyncReadRequest* request, int i) {
+				//ret->useOriginalFunction = false;
+			//});
+
+			/// Pak Loader Begin
+			::subscribe<&Objects::AFGCharacterPlayer::BeginPlay>([](Functions::ModReturns* ret, Objects::AFGCharacterPlayer* player) {
+				char path_c[MAX_PATH];
+				GetModuleFileNameA(NULL, path_c, MAX_PATH);
+
+				std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
+				path = path + "\\Content\\Paks";                 // ..\FactoryGame\Content\Paks
+
+				for (auto& entry : std::filesystem::directory_iterator(path)) {
+					if (entry.path().extension().string() == ".pak") { // check if extension is .pak
+						std::wstring filename = entry.path().filename().wstring();
+
+						if (filename != L"FactoryGame-WindowsNoEditor.pak") { // ignore the satisfactory pak file
+							std::wstring modNameW = filename.substr(0, filename.length() - 4); // remove the file extension from the file name
+
+							if (modNameW.substr(modNameW.length() - 2, 2) == L"_p") // check if file name ends with _p
+								modNameW = modNameW.substr(0, modNameW.length() - 2); // remove _p extension
+
+							const std::wstring bpPath = L"/Game/FactoryGame/" + modNameW + L"/InitMod.InitMod_C";
+							SDK::UObject* clazz = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), bpPath.c_str());
+
+							std::string modName;
+
+							for (char x : modNameW)
+								modName += x;
+
+							if (!clazz) {
+								Utility::warning("Failed to initialize \"", modName, "\"");
+								continue;
+							}
+
+							SDK::FVector position;
+							position.X = 0;
+							position.Y = 0;
+							position.Z = 0;
+
+							SDK::FRotator rotation;
+							rotation.Pitch = 0;
+							rotation.Yaw = 0;
+							rotation.Roll = 0;
+
+							FActorSpawnParameters spawnParams;
+
+							::call<&Objects::AActor::Destroy>(::call<&Objects::UWorld::SpawnActor>((Objects::UWorld*)*SDK::UWorld::GWorld, (SDK::UClass*)clazz, &position, &rotation, &spawnParams), false, true);
+
+							Utility::info("Successfully initialized \"", modName, "\"");
+						}
+					}
+				}
+			});
+			/// Pak Loader End
 
 			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
 			DetourAttach(&(PVOID&)levelDestroyFunc, levelDestructor);

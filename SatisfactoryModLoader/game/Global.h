@@ -2,6 +2,9 @@
 
 #include <HookLoader.h>
 #include <util/FString.h>
+#include "../SatisfactorySDK/SDK.hpp"
+#include "assets/FObjectSpawnParameters.h"
+#include "Etc.h"
 
 #pragma warning (push)
 #pragma warning (disable: 4667)
@@ -16,9 +19,11 @@ namespace SML {
 		class UWorld {
 		public:
 			void Tick(enum ELevelTick TickType, float DeltaSeconds);
+			AActor * SpawnActor(SDK::UClass *Class, SDK::FVector *Location, SDK::FRotator *Rotation, FActorSpawnParameters *SpawnParameters);
 		};
 
 		DEFINE_METHOD(UWorld::Tick);
+		DEFINE_METHOD(UWorld::SpawnActor);
 
 		class UGameInstance {
 		public:
