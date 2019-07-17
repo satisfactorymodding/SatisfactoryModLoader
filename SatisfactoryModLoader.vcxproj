@@ -165,7 +165,7 @@
     <ClInclude Include="SatisfactoryModLoader\HookLoaderInternal.h" />
     <ClInclude Include="SatisfactoryModLoader\Lib.h" />
     <ClInclude Include="SatisfactoryModLoader\memory\MemoryFunctions.h" />
-    <ClInclude Include="SatisfactoryModLoader\memory\ObjectMemory.h" />
+    <ClInclude Include="SatisfactoryModLoader\memory\MemoryObject.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Coremods.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Hooks.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\MathFunctions.h" />
@@ -192,7 +192,7 @@
     <ClCompile Include="SatisfactoryModLoader\game\Global.cpp" />
     <ClCompile Include="SatisfactoryModLoader\Lib.cpp" />
     <ClCompile Include="SatisfactoryModLoader\memory\MemoryFunctions.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\memory\ObjectMemory.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\memory\MemoryObject.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Coremods.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\Hooks.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\MathFunctions.cpp" />

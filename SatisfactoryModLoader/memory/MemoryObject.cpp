@@ -1,10 +1,10 @@
 #include <stdafx.h>
-#include "ObjectMemory.h"
+#include "MemoryObject.h"
 #include <util/Utility.h>
 #include <string>
 
 namespace SML {
-	ObjectMemory::ObjectMemory(SDK::UObject* obj) {
+	MemoryObject::MemoryObject(SDK::UObject* obj) {
 		this->object = obj;
 		this->size = sizeof(*obj);
 
@@ -18,19 +18,19 @@ namespace SML {
 		this->bytes = std::vector<BYTE>(std::begin(a), std::end(a));
 	}
 
-	std::vector<BYTE> ObjectMemory::returnBytes() {
+	std::vector<BYTE> MemoryObject::returnBytes() {
 		return this->bytes;
 	}
 
-	std::vector<char> ObjectMemory::returnBytesAsChars() {
+	std::vector<char> MemoryObject::returnBytesAsChars() {
 		return std::vector<char>(this->bytes.begin(), this->bytes.end());
 	}
 
-	int ObjectMemory::getSize() {
+	int MemoryObject::getSize() {
 		return this->size;
 	}
 
-	void ObjectMemory::replaceMemory(std::vector<BYTE> newBytes) {
+	void MemoryObject::replaceMemory(std::vector<BYTE> newBytes) {
 		if (newBytes.size() == this->size) {
 			this->bytes = newBytes;
 			HANDLE process = OpenProcess(PROCESS_VM_WRITE | PROCESS_VM_OPERATION, FALSE, GetCurrentProcessId());
@@ -43,7 +43,7 @@ namespace SML {
 		}
 	}
 
-	ObjectMemory::~ObjectMemory() {
+	MemoryObject::~MemoryObject() {
 
 	}
 }

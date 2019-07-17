@@ -11,6 +11,8 @@
 #include <assets/FObjectSpawnParameters.h>
 #include "../Detours/src/detours.h"
 #include "../SatisfactorySDK/SDK.hpp"
+#include <memory/MemoryObject.h>
+#include <memory/MemoryFunctions.h>
 
 /*
 EXAMPLEMOD

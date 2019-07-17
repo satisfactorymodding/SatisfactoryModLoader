@@ -5,12 +5,12 @@
 #include <Lib.h>
 
 namespace SML {
-	class SML_API ObjectMemory {
+	class SML_API MemoryObject {
 	public:
 		/**
 		* Initialize a representation of an object's memory.
 		*/
-		ObjectMemory(SDK::UObject* obj);
+		MemoryObject(SDK::UObject* obj);
 
 		/**
 		* Returns the object's memory as an editable byte array.
@@ -37,7 +37,7 @@ namespace SML {
 		/**
 		* Destructor
 		*/
-		~ObjectMemory();
+		~MemoryObject();
 	private:
 		SDK::UObject* object;
 		std::vector<BYTE> bytes;
