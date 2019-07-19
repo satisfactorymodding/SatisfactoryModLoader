@@ -150,9 +150,8 @@ namespace SML {
 
 			SDK::FString* message = reinterpret_cast<SDK::FString*>(messageIn);
 
-			if (std::wcslen(message->c_str()) < 1) { // check if the message is empty
-				ret->useOriginalFunction = true;
-				return; //prevent a crash if it is
+			if (!message->IsValid()) {
+				return;
 			}
 
 			std::string str = message->ToString();

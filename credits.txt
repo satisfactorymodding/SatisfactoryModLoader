@@ -8,6 +8,7 @@ VirtusModz
 Crystalin
 Kronos
 Vilsol
+Stinosko
 
 === SML Collaborators ===
 TiaqoY0
