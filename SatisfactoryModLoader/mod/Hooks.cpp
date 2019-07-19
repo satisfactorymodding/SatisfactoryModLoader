@@ -17,6 +17,12 @@
 
 using namespace std::placeholders;
 
+/*
+Quick warning before you proceed:
+This is probably the messiest part of the entire codebase.
+Please disregard any shit code in here as it's all a Work In Progress(TM)
+*/
+
 namespace SML {
 	namespace Mod {
 
@@ -41,10 +47,6 @@ namespace SML {
 			::subscribe<&Objects::FEngineLoop::Init>([](Functions::ModReturns* ret, Objects::FEngineLoop* engineLoop) {
 				Hooks::engineInit(ret, engineLoop);
 			});
-
-			//::subscribe<&Objects::FPakPrecacher::DoSignatureCheck>([](Functions::ModReturns* ret, Objects::FPakPrecacher* pak, bool b, Objects::IAsyncReadRequest* request, int i) {
-				//ret->useOriginalFunction = false;
-			//});
 
 			/// Pak Loader Begin
 			::subscribe<&Objects::AFGCharacterPlayer::BeginPlay>([](Functions::ModReturns* ret, Objects::AFGCharacterPlayer* player) {
@@ -109,16 +111,6 @@ namespace SML {
 			DetourTransactionCommit();
 		}
 
-		/*
-		void Hooks::playerControllerAdded(SDK::AFGPlayerController* controller) {
-			if (Assets::SinglePlayerController == nullptr) {
-				Assets::SinglePlayerController = controller;
-			}
-
-			auto pointer = (void(WINAPI*)(void*))playerControllerAddedFunc;
-			pointer(controller);
-		}*/
-
 		void Hooks::levelDestructor(SDK::ULevel* level) {
 
 			Assets::SinglePlayerController = nullptr;
@@ -157,6 +149,11 @@ namespace SML {
 		void Hooks::playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* messageIn) {
 
 			SDK::FString* message = reinterpret_cast<SDK::FString*>(messageIn);
+
+			if (std::wcslen(message->c_str()) < 1) { // check if the message is empty
+				ret->useOriginalFunction = true;
+				return; //prevent a crash if it is
+			}
 
 			std::string str = message->ToString();
 			Utility::info(str);
@@ -264,10 +261,5 @@ namespace SML {
 			}
 			return false;
 		}
-
-		//void get_signing_keys(ModReturns* modReturns, void* outKey) {
-		//	info("Test");
-		//	modReturns->use_original_function = false;
-		//}
 	}
 }

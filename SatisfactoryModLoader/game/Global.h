@@ -66,20 +66,6 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(UFGInventoryComponent::SortInventory);
-
-		class FPakPlatformFile {
-		public:
-			void GetPakSigningKeys(void* OutKey);
-		};
-
-		DEFINE_METHOD(FPakPlatformFile::GetPakSigningKeys);
-
-		class FPakPrecacher {
-		public:
-			void DoSignatureCheck(bool b, IAsyncReadRequest* a, int i);
-		};
-
-		DEFINE_METHOD(FPakPrecacher::DoSignatureCheck);
 	}
 }
 
