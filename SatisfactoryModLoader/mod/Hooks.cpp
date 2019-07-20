@@ -49,7 +49,7 @@ namespace SML {
 			});
 
 			/// Pak Loader Begin
-			::subscribe<&Objects::AFGCharacterPlayer::BeginPlay>([](Functions::ModReturns* ret, Objects::AFGCharacterPlayer* player) {
+			::subscribe<&Objects::AFGStorySubsystem::BeginPlay>([](Functions::ModReturns* ret, Objects::AFGStorySubsystem* storySubSystem) {
 				char path_c[MAX_PATH];
 				GetModuleFileNameA(NULL, path_c, MAX_PATH);
 

@@ -66,6 +66,13 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(UFGInventoryComponent::SortInventory);
+
+		class AFGStorySubsystem {
+		public:
+			void BeginPlay();
+		};
+
+		DEFINE_METHOD(AFGStorySubsystem::BeginPlay);
 	}
 }
 
