@@ -14,6 +14,7 @@
 #include <assets/AssetLoader.h>
 #include <mod/Coremods.h>
 #include <filesystem>
+#include "SatisfactoryPakLoader.h"
 
 using namespace std::placeholders;
 
@@ -49,58 +50,7 @@ namespace SML {
 			});
 
 			/// Pak Loader Begin
-			::subscribe<&Objects::AFGPlayerController::BeginPlay>([](Functions::ModReturns* ret, Objects::AFGPlayerController* player) {
-				char path_c[MAX_PATH];
-				GetModuleFileNameA(NULL, path_c, MAX_PATH);
-
-				std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
-				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
-				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
-				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
-				path = path + "\\Content\\Paks";                 // ..\FactoryGame\Content\Paks
-
-				for (auto& entry : std::filesystem::directory_iterator(path)) {
-					if (entry.path().extension().string() == ".pak") { // check if extension is .pak
-						std::wstring filename = entry.path().filename().wstring();
-
-						if (filename != L"FactoryGame-WindowsNoEditor.pak") { // ignore the satisfactory pak file
-							std::wstring modNameW = filename.substr(0, filename.length() - 4); // remove the file extension from the file name
-
-							if (modNameW.substr(modNameW.length() - 2, 2) == L"_p") // check if file name ends with _p
-								modNameW = modNameW.substr(0, modNameW.length() - 2); // remove _p extension
-
-							const std::wstring bpPath = L"/Game/FactoryGame/" + modNameW + L"/InitMod.InitMod_C";
-							SDK::UObject* clazz = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), bpPath.c_str());
-
-							std::string modName;
-
-							for (char x : modNameW)
-								modName += x;
-
-							if (!clazz) {
-								Utility::warning("Failed to initialize \"", modName, "\"");
-								continue;
-							}
-
-							SDK::FVector position;
-							position.X = 0;
-							position.Y = 0;
-							position.Z = 0;
-
-							SDK::FRotator rotation;
-							rotation.Pitch = 0;
-							rotation.Yaw = 0;
-							rotation.Roll = 0;
-
-							FActorSpawnParameters spawnParams;
-
-							::call<&Objects::AActor::Destroy>(::call<&Objects::UWorld::SpawnActor>((Objects::UWorld*)*SDK::UWorld::GWorld, (SDK::UClass*)clazz, &position, &rotation, &spawnParams), false, true);
-
-							Utility::info("Successfully initialized \"", modName, "\"");
-						}
-					}
-				}
-			});
+			SPL::Init();
 			/// Pak Loader End
 
 			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
