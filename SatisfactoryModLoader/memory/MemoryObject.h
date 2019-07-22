@@ -5,12 +5,13 @@
 #include <Lib.h>
 
 namespace SML {
+	template<class O>
 	class SML_API MemoryObject {
 	public:
 		/**
 		* Initialize a representation of an object's memory.
 		*/
-		MemoryObject(SDK::UObject* obj);
+		MemoryObject(O* obj);
 
 		/**
 		* Returns the object's memory as an editable byte array.
@@ -35,11 +36,11 @@ namespace SML {
 		void replaceMemory(std::vector<BYTE> newMemory);
 
 		/**
-		* Destructor
+		* Destroy this object safely (aka do nothing and let C++ take care of it)
 		*/
 		~MemoryObject();
 	private:
-		SDK::UObject* object;
+		O* object;
 		std::vector<BYTE> bytes;
 		int size;
 	};
