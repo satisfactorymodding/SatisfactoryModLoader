@@ -73,6 +73,19 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(AFGStorySubsystem::BeginPlay);
+
+		class FOutputDevice {
+		protected:
+			bool bSuppressEventTag;
+			bool bAutoEmitLineTerminator;
+		};
+
+		class UObject {
+		public:
+			bool CallFunctionByNameWithArguments(const wchar_t *Str, FOutputDevice *Ar, SDK::UObject *Executor, bool bForceCallWithNonExec);
+		};
+
+		DEFINE_METHOD(UObject::CallFunctionByNameWithArguments);
 	}
 }
 

@@ -15,3 +15,5 @@ void SML::Objects::FEngineLoop::Init() {}
 SML::Objects::AActor * SML::Objects::UWorld::SpawnActor(SDK::UClass *Class, SDK::FVector *Location, SDK::FRotator *Rotation, FActorSpawnParameters *SpawnParameters) { return nullptr; }
 
 void SML::Objects::AFGStorySubsystem::BeginPlay() { }
+
+bool SML::Objects::UObject::CallFunctionByNameWithArguments(const wchar_t * Str, FOutputDevice * Ar, SDK::UObject * Executor, bool bForceCallWithNonExec) { return false; }
