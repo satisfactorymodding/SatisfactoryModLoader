@@ -5,8 +5,8 @@
   ___) |  __/| |___
  |____/|_|   |_____|
 
-  SatisfactoryPakLoader is a tool to initialize pak-mods
-  Check out https://github.com/PXA-Renegade/Satisfactory-Pak-Modding for more information
+  SatisfactoryPakLoader is a tool to initialize pak mods at runtime.
+  For more information, check out https://github.com/PXA-Renegade/Satisfactory-Pak-Modding
 
 */
 
@@ -16,12 +16,13 @@
 #include <filesystem>
 #include <vector>
 
-#include "game/Global.h"
-#include "game/Player.h"
-#include "util/Utility.h"
-#include "mod/ModFunctions.h"
-#include "assets/AssetLoader.h"
-#include "HookLoaderInternal.h"
+#include <game/Global.h>
+#include <game/Player.h>
+#include <util/Utility.h>
+#include <mod/ModFunctions.h>
+#include <mod/MathFunctions.h>
+#include <assets/AssetLoader.h>
+#include <HookLoaderInternal.h>
 
 void SPL::Init() {
 	using namespace SML;
@@ -59,8 +60,9 @@ void SPL::Init() {
 					// Convert wstring to string D:
 					std::string modName;
 
-					for (char x : modNameW)
+					for (char x : modNameW) {
 						modName += x;
+					}
 
 					// Check if InitMod cannot be found
 					if (!clazz) {
@@ -69,15 +71,9 @@ void SPL::Init() {
 					}
 
 					// Spawn the actor somewhere
-					SDK::FVector position;
-					position.X = 0;
-					position.Y = 0;
-					position.Z = 0;
+					SDK::FVector position = Mod::Functions::makeVector(0, 0, 0);
 
-					SDK::FRotator rotation;
-					rotation.Pitch = 0;
-					rotation.Yaw = 0;
-					rotation.Roll = 0;
+					SDK::FRotator rotation = Mod::Functions::makeRotator(0, 0, 0);
 
 					FActorSpawnParameters spawnParams;
 

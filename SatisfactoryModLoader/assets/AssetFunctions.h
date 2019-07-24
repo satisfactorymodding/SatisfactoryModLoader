@@ -31,6 +31,8 @@ namespace SML {
 			*
 			* The asset name must be of the following format: \\Game\\FactoryGame\\Path\\To\\Asset\\AssetFile.AssetFile
 			* If you are loading a blueprint, the name must have a _C appended to the end.
+			*
+			* @author Brabb3l
 			*/
 			SML_API SDK::UObject* loadObjectFromPak(SDK::UClass *ObjectClass, const wchar_t* InName);
 
@@ -41,75 +43,100 @@ namespace SML {
 			*
 			* The asset name must be of the following format: \\Game\\FactoryGame\\Path\\To\\Asset\\AssetFile.AssetFile
 			* If you are loading a blueprint, the name must have a _C appended to the end.
+			*
+			* @author Brabb3l
 			*/
 			SML_API SDK::UObject* loadObjectFromPak(const wchar_t* InName);
 
 			/**
 			* Spawns an actor at a given location, when given the world.
+			*
+			* @author Crystallin
 			*/
 			SML_API SDK::UClass* spawnActor(void* UWorld, void* *UClass, void* *FVector, void* *FRotator, void* *FActorSpawnParameters);
 
 			/**
 			* Get the current global world object.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API SDK::UWorld* getWorld();
 
 			/**
 			* Get the local player character
+			*
+			* @author SuperCoder79
 			*/
 			SML_API SDK::AFGCharacterPlayer* getPlayerCharacter();
 
 			/**
 			* Get the local player controller
+			*
+			* @author SuperCoder79
 			*/
 			SML_API SDK::AFGPlayerController* getPlayerController();
 
 			/**
 			* Spawn an actor at the player, offset by the XYZ values provided.
+			*
+			* @author Crystallin
 			*/
 			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z);
 
 			/**
 			* Spawn an actor at the player.
+			*
+			* @author Crystallin
 			*/
 			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj);
 
 			/**
 			* Spawn an actor at the provided location with the provided rotation.
+			*
+			* @author Crystallin
 			*/
 			SML_API SDK::UClass* spawnActor(SDK::UObject* obj, float x, float y, float z, float pitch, float roll, float yaw);
 
 			/**
 			* Wrapper for addRecipe(SDK::UClass*) to do everything for you.
 			* Call this in beginPlay().
+			*
+			* @author Trxnce
 			*/
 			SML_API void addRecipe(const wchar_t* recipeName);
 
 			/**
 			* Adds a UFGRecipe to the game.
-			* Code kindly provided by Trxnce.
+			*
+			* @author Trxnce
 			*/
 			SML_API void addRecipe(SDK::UClass* recipe);
 
 			/**
 			* Returns an ItemStack from an item class and an item amount.
-			* Code kindly provided by Trxnce.
+			*
+			* @author Trxnce
 			*/
 			SML_API SDK::FInventoryStack makeItemStack(SDK::UClass* clazz, int amount);
 
 			/**
 			* Adds an item with an amount to the player's inventory.
-			* Code kindly provided by Trxnce.
+			*
+			* @author Trxnce
 			*/
 			SML_API void addItemStackToPlayer(SDK::UObject* item, const int& amount);
 
 			/**
 			* Adds a stack to the player's inventory.
+			*
+			* @author Trxnce
 			*/
 			SML_API void addItemStackToPlayer(SDK::FInventoryStack stack);
 
 			/**
 			* Sends a chat message to the local player controller.
+			*
+			* @author Brabb3l
 			*/
 			SML_API void sendMessageToPlayer(std::string msg);
 
@@ -120,6 +147,8 @@ namespace SML {
 			* Only call this during setup and post setup! calling it afterwards will just cache the object at the time it's called.
 			*
 			* This function returns an int id for ease of access when getting an item back from the cache.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API int registerAssetForCache(const wchar_t* name);
 
@@ -127,18 +156,24 @@ namespace SML {
 			* Returns the UObject pointer from the cache for spawning.
 			*
 			* Will crash if called before satisfactory is running or if the name isn't found in the cache!
+			*
+			* @author SuperCoder79
 			*/
 			SML_API SDK::UObject* getAssetFromCache(const wchar_t* name);
 
 			/**
 			* Gets an item back from the cache with the specified id.
 			* Will crash if the id isn't found.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API SDK::UObject* getAssetFromCacheWithID(int id);
 
 			/**
 			*  Get's an asset's name back from the cache with the name's id.
 			* Will crash if the id isn't found.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API const wchar_t* getAssetNameFromID(int id);
 		}
