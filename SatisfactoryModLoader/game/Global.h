@@ -19,11 +19,13 @@ namespace SML {
 		class UWorld {
 		public:
 			void Tick(enum ELevelTick TickType, float DeltaSeconds);
-			AActor * SpawnActor(SDK::UClass *Class, SDK::FVector *Location, SDK::FRotator *Rotation, FActorSpawnParameters *SpawnParameters);
+			AActor* SpawnActor(SDK::UClass *Class, SDK::FVector *Location, SDK::FRotator *Rotation, FActorSpawnParameters *SpawnParameters);
+			FString* GetMapName(FString* doesSomethingIThink);
 		};
 
 		DEFINE_METHOD(UWorld::Tick);
 		DEFINE_METHOD(UWorld::SpawnActor);
+		DEFINE_METHOD(UWorld::GetMapName);
 
 		class UGameInstance {
 		public:
@@ -86,6 +88,13 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(UObject::CallFunctionByNameWithArguments);
+
+		class AFGGameMode {
+		public:
+			void InitGameState();
+		};
+
+		DEFINE_METHOD(AFGGameMode::InitGameState);
 	}
 }
 

@@ -2,6 +2,7 @@
 #include <string>
 #include <game/Global.h>
 #include <game/Input.h>
+#include <game/SDKHooks.h>
 #include <mod/Mod.h>
 #include <HookLoaderInternal.h>
 #include <mod/ModFunctions.h>
@@ -146,8 +147,6 @@ public:
 			// If you abuse this, I will find you, and I will... uh... do something... and you won't like it
 			//LOG("test");
 		});
-
-		
 		
 		//Here, we do some registring. Registring must be done in setup to make sure that the registration will be available for later use.
 

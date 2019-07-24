@@ -159,6 +159,7 @@
     <ClInclude Include="SatisfactoryModLoader\game\Global.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Input.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Player.h" />
+    <ClInclude Include="SatisfactoryModLoader\game\SDKHooks.h" />
     <ClInclude Include="SatisfactoryModLoader\game\UI.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Utility.h" />
     <ClInclude Include="SatisfactoryModLoader\HookLoader.h" />

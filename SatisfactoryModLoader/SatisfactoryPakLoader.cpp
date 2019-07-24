@@ -22,12 +22,24 @@
 #include <mod/ModFunctions.h>
 #include <mod/MathFunctions.h>
 #include <assets/AssetLoader.h>
+#include <assets/AssetFunctions.h>
 #include <HookLoaderInternal.h>
 
-void SPL::Init() {
-	using namespace SML;
+using namespace SML;
+using namespace SML::Mod;
 
-	::subscribe<&Objects::AFGPlayerController::BeginPlay>([](Mod::Functions::ModReturns* ret, Objects::AFGPlayerController* player) {
+void SPL::Init() {
+	::subscribe<&Objects::AFGGameMode::InitGameState>([](Mod::Functions::ModReturns* ret, Objects::AFGGameMode* player) {
+		//check if we are in the menu
+		Objects::FString* mapname = ::call<&Objects::UWorld::GetMapName>((Objects::UWorld*)Functions::getWorld(), (Objects::FString*)&SDK::FString());
+		if (((SDK::FString*)mapname)->ToString() == "MenuScene_01") {
+			return;
+		} else {
+			Utility::info("Initializing Paks!");
+			mods.clear();
+			modNames = std::wstring();
+		}
+
 		// Get the execution path (\FactoryGame\Binaries\Win64\FactoryGame.exe)
 		char path_c[MAX_PATH];
 		GetModuleFileNameA(NULL, path_c, MAX_PATH);
@@ -38,9 +50,6 @@ void SPL::Init() {
 		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
 		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
 		path = path + "\\Content\\Paks";                 // ..\FactoryGame\Content\Paks
-
-		std::vector<Objects::UObject*> mods; // Contains all mod actors
-		std::wstring modNames; // Contains all mod names (seperated by a comma)
 
 		// Iterate all paks in the pak folder
 		for (auto& entry : std::filesystem::directory_iterator(path)) {
@@ -55,7 +64,7 @@ void SPL::Init() {
 
 					// Load the blueprint
 					const std::wstring bpPath = L"/Game/FactoryGame/" + modNameW + L"/InitMod.InitMod_C";
-					SDK::UObject* clazz = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), bpPath.c_str());
+					SDK::UObject* clazz = Functions::loadObjectFromPak(bpPath.c_str());
 
 					// Convert wstring to string D:
 					std::string modName;
@@ -89,23 +98,25 @@ void SPL::Init() {
 			modNames = modNames.substr(1); // remove the first letter (99.98% a comma)
 
 			// Iterate through all mods and call the preinit event
-			std::for_each(mods.begin(), mods.end(), [modNames](Objects::UObject* mod) {
+			for (Objects::UObject* mod : mods) {
 				Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lol
 				::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, L"PreInit", &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
-			});
+			};
 
 			// Iterate through all mods and call the init event
-			std::for_each(mods.begin(), mods.end(), [modNames](Objects::UObject* mod) {
+			for (Objects::UObject* mod : mods) {
 				Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lul
 				::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, (L"Init " + modNames).c_str(), &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
-			});
+			}
+		}
+	});
 
-			// Iterate through all mods and call the postinit event
-			std::for_each(mods.begin(), mods.end(), [modNames](Objects::UObject* mod) {
-				Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lel
-				::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, (L"PostInit " + modNames).c_str(), &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
-				::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
-			});
+	::subscribe<&Objects::AFGPlayerController::BeginPlay>([](Mod::Functions::ModReturns* ret, Objects::AFGPlayerController* player) {
+		// Iterate through all mods and call the postinit event
+		for (Objects::UObject* mod : mods) {
+			Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lel
+			::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, (L"PostInit " + modNames).c_str(), &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
+			::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
 		}
 	});
 }
