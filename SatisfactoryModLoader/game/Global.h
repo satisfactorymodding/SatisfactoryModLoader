@@ -66,6 +66,26 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(UFGInventoryComponent::SortInventory);
+
+		class AFGStorySubsystem {
+		public:
+			void BeginPlay();
+		};
+
+		DEFINE_METHOD(AFGStorySubsystem::BeginPlay);
+
+		class FOutputDevice {
+		protected:
+			bool bSuppressEventTag;
+			bool bAutoEmitLineTerminator;
+		};
+
+		class UObject {
+		public:
+			bool CallFunctionByNameWithArguments(const wchar_t *Str, FOutputDevice *Ar, SDK::UObject *Executor, bool bForceCallWithNonExec);
+		};
+
+		DEFINE_METHOD(UObject::CallFunctionByNameWithArguments);
 	}
 }
 
