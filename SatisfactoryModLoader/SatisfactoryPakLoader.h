@@ -1,16 +1,25 @@
-#pragma once
+/*
+  ____  ____  _
+ / ___||  _ \| |
+ \___ \| |_) | |
+  ___) |  __/| |___
+ |____/|_|   |_____|
 
-#include "../SatisfactorySDK/SDK.hpp"
+  SatisfactoryPakLoader is a tool to initialize pak mods at runtime.
+  For more information, check out https://github.com/PXA-Renegade/Satisfactory-Pak-Modding
+
+*/
+
+#pragma once
 
 #include <game/Global.h>
 
 namespace SPL {
+	namespace {
+		std::vector<SML::Objects::UObject*> mods; // Contains all mod actors
+		std::wstring modNames; // Contains all mod names (seperated by a comma)
+	}
 
-	static std::vector<SML::Objects::UObject*> mods; // Contains all mod actors
-	static std::wstring modNames; // Contains all mod names (seperated by a comma)
 	/** Initializes SPL */
 	void Init();
-
-	void CallPreInit();
-	void CallPostInit();
 }

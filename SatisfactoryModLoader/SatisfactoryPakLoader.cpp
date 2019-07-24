@@ -1,15 +1,3 @@
-/*
-  ____  ____  _
- / ___||  _ \| |
- \___ \| |_) | |
-  ___) |  __/| |___
- |____/|_|   |_____|
-
-  SatisfactoryPakLoader is a tool to initialize pak mods at runtime.
-  For more information, check out https://github.com/PXA-Renegade/Satisfactory-Pak-Modding
-
-*/
-
 #include "stdafx.h"
 #include "SatisfactoryPakLoader.h"
 
@@ -25,19 +13,21 @@
 #include <assets/AssetFunctions.h>
 #include <HookLoaderInternal.h>
 
-using namespace SML;
-using namespace SML::Mod;
+#include "../SatisfactorySDK/SDK.hpp"
 
 void SPL::Init() {
+	using namespace SML;
+	using namespace SML::Mod;
+
 	::subscribe<&Objects::AFGGameMode::InitGameState>([](Mod::Functions::ModReturns* ret, Objects::AFGGameMode* player) {
 		//check if we are in the menu
-		Objects::FString* mapname = ::call<&Objects::UWorld::GetMapName>((Objects::UWorld*)Functions::getWorld(), (Objects::FString*)&SDK::FString());
-		if (((SDK::FString*)mapname)->ToString() == "MenuScene_01") {
+		SDK::FString* mapname = (SDK::FString*)::call<&Objects::UWorld::GetMapName>((Objects::UWorld*)Functions::getWorld(), (Objects::FString*)&SDK::FString());
+		if (mapname->ToString() == "MenuScene_01") {
 			return;
 		} else {
 			Utility::info("Initializing Paks!");
 			mods.clear();
-			modNames = std::wstring();
+			modNames = L"";
 		}
 
 		// Get the execution path (\FactoryGame\Binaries\Win64\FactoryGame.exe)
