@@ -10,8 +10,9 @@
  If you have any questions, please contact SuperCoder79 on the modding discord.
 
  Known issues:
- * Chat commands don't work
  * Everything crashes 10000% more than it should
+ * SML 1.0.0 has been delayed by 2000 years
+ * People still can't install this properly (even though there's instructions everywhere ffs)
 */
 #define WIN32_LEAN_AND_MEAN
 #include "../SatisfactorySdk/SDK.hpp"

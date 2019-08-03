@@ -6,6 +6,7 @@
 //SC79: because it's an ugly hack and hooking in the mod works without it, so it should work in the SML source too :P
 //Brabb3l: hmmm...
 //SC79: we should also use namespaces at some point(tm)
+//SC79 wearing an alpaca mask: plz respond im lonely
 
 void SML::Objects::AFGPlayerController::BeginPlay() {}
 

@@ -23,11 +23,11 @@ void SPL::Init() {
 		//check if we are in the menu
 		SDK::FString* mapname = (SDK::FString*)::call<&Objects::UWorld::GetMapName>((Objects::UWorld*)Functions::getWorld(), (Objects::FString*)&SDK::FString());
 		if (mapname->ToString() == "MenuScene_01") {
-			return;
+			return; //skip loading mods in the menu because it leads to all sorts of weird shit
 		} else {
-			Utility::info("Initializing Paks!");
+			Utility::info("Initializing Paks!"); 
 			mods.clear();
-			modNames = L"";
+			modNames = L""; //clear pakmod list when loading a new map
 		}
 
 		// Get the execution path (\FactoryGame\Binaries\Win64\FactoryGame.exe)
@@ -101,6 +101,7 @@ void SPL::Init() {
 		}
 	});
 
+	//delay post init to later down the loading sequence
 	::subscribe<&Objects::AFGPlayerController::BeginPlay>([](Mod::Functions::ModReturns* ret, Objects::AFGPlayerController* player) {
 		// Iterate through all mods and call the postinit event
 		for (Objects::UObject* mod : mods) {
