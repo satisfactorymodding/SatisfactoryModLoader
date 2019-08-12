@@ -11,34 +11,34 @@ namespace SML {
 		/**
 		* Initialize a representation of an object's memory.
 		*/
-		MemoryObject(O* obj);
+		SML_API MemoryObject(O* obj);
 
 		/**
 		* Returns the object's memory as an editable byte array.
 		*/
-		std::vector<BYTE> returnBytes();
+		SML_API std::vector<BYTE> returnBytes();
 
 		/**
 		* Returns the object's memory as an array of chars.
 		*/
-		std::vector<char> returnBytesAsChars();
+		SML_API std::vector<char> returnBytesAsChars();
 
 		/**
 		* Returns the object's size.
 		*/
-		int getSize();
+		SML_API int getSize();
 
 		/**
 		* Replaces the object's memory with new memory
 		* The new memory vector MUST be the same size as the original memory vector, otherwise an error will be thrown.
 		* This function is relatively more time consuming than others.
 		*/
-		void replaceMemory(std::vector<BYTE> newMemory);
+		SML_API void replaceMemory(std::vector<BYTE> newMemory);
 
 		/**
 		* Destroy this object safely (aka do nothing and let C++ take care of it)
 		*/
-		~MemoryObject();
+		SML_API ~MemoryObject();
 	private:
 		O* object;
 		std::vector<BYTE> bytes;
