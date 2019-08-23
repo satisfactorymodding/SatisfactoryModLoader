@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Release|x64">
@@ -152,6 +152,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="SatisfactoryModLoader\BPInterface.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\AssetFunctions.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\AssetLoader.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\FObjectSpawnParameters.h" />
