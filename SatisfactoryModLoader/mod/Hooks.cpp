@@ -15,7 +15,7 @@
 #include <mod/Coremods.h>
 #include <filesystem>
 #include "SatisfactoryPakLoader.h"
-#include "BPInterface.h"
+#include "assets/BPInterface.h"
 
 using namespace std::placeholders;
 
@@ -55,7 +55,7 @@ namespace SML {
 			/// Pak Loader End
 
 			/// Init BPI Begin
-			BPI::Init();
+			Paks::initBPInterface();
 			/// Init BPI End
 
 			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");

@@ -189,6 +189,7 @@
     <ClInclude Include="SatisfactorySDK\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="SatisfactoryModLoader\assets\BPInterface.cpp" />
     <ClCompile Include="SatisfactoryModLoader\assets\AssetFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\assets\AssetLoader.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
