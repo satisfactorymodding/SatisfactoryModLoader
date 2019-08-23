@@ -50,6 +50,10 @@ public:
 		return i < Num();
 	}
 
+	inline void* GetData() const {
+		return Data;
+	}
+
 private:
 	T* Data;
 	int Count;
