@@ -49,12 +49,8 @@ namespace SML {
 				Hooks::engineInit(ret, engineLoop);
 			});
 
-			/// Pak Loader Begin
-			SPL::Init();
-			/// Pak Loader End
-
-			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
-			DetourAttach(&(PVOID&)levelDestroyFunc, levelDestructor);
+			// Initialize the Pakloader
+			Paks::initPakLoader();
 
 			Utility::info("Installed hooks!");
 

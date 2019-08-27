@@ -14,13 +14,13 @@
 
 #include <game/Global.h>
 namespace SML {
-	namespace SPL {
+	namespace Paks {
 		namespace {
 			std::vector<SML::Objects::UObject*> mods; // Contains all mod actors
 			std::wstring modNames; // Contains all mod names (seperated by a comma)
 		}
 
 		/** Initializes SPL */
-		void Init();
+		void initPakLoader();
 	}
 }

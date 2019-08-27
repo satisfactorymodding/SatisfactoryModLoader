@@ -94,7 +94,7 @@ namespace SML {
 		void ModHandler::getFiles(std::string path) {
 			std::string pathExact = path + "\\";
 
-			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
+			for (const auto &entry : std::experimental::filesystem::directory_iterator(path)) {
 				/*
 				if (!entry.path().has_extension()) {
 					getFiles(entry.path().string());

@@ -1797,5 +1797,12 @@ namespace SDK
 			"\x48\x8B\x1D\x00\x00\x00\x04\x48\x85\xDB\x74\x3B", "xxx???xxxxxx", 0);
 		auto GWorldOffset = *reinterpret_cast<uint32_t*>(GWorldAddress + 3);
 		UWorld::GWorld = reinterpret_cast<UWorld**>(GWorldAddress + 7 + GWorldOffset);
+
+		/*
+		auto GUseCrashReportClientAddress = FindPattern(BaseAddress, ModuleInfo.SizeOfImage,
+			"\x0F\xB6\x0D\x00\x00\x00\x04\x33", "xxx???xx", 0);
+		auto GUseCrashReportClientOffset = *reinterpret_cast<uint32_t*>(GUseCrashReportClientAddress + 3);
+		*reinterpret_cast<bool*>(GUseCrashReportClientAddress + 7 + GUseCrashReportClientOffset) = false;
+		*/
 	}
 }
