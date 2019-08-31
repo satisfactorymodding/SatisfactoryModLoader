@@ -29,6 +29,7 @@
 #include <util/Utility.h>
 #include <util/Reflection.h>
 #include <util/JsonConfig.h>
+#include <util/EnvironmentValidity.h>
 #include <mod/Hooks.h>
 #include <mod/Coremods.h>
 
@@ -53,6 +54,8 @@ namespace SML {
 
 		// load up all of the configuration information
 		readConfig();
+		Utility::info("Validating system files...");
+		Utility::checkForValidEnvironment();
 
 		//make sure that SML's target and satisfactory's versions are the same
 		Utility::checkVersion(targetVersion);
@@ -122,6 +125,14 @@ namespace SML {
 	//cleans up when the program is killed
 	void cleanup() {
 		modHandler.mods.clear();
+
+		char path_c[MAX_PATH];
+		GetModuleFileNameA(NULL, path_c, MAX_PATH);
+		std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
+		Utility::enableCrashReporter(path);
 
 		Utility::info("SML shutting down...");
 		Utility::logFile.flush();

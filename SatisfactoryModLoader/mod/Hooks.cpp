@@ -14,7 +14,7 @@
 #include <assets/AssetLoader.h>
 #include <mod/Coremods.h>
 #include <filesystem>
-#include "SatisfactoryPakLoader.h"
+#include <assets/SatisfactoryPakLoader.h>
 
 using namespace std::placeholders;
 

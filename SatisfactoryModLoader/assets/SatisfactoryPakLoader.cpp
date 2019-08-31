@@ -41,9 +41,9 @@ namespace SML {
 				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
 				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
 				path = path + "\\Content\\Paks";                 // ..\FactoryGame\Content\Paks
-
 				// Iterate all paks in the pak folder
-				for (auto& entry : std::filesystem::directory_iterator(path)) {
+				for (auto &entry : std::filesystem::directory_iterator(path)) {
+					Utility::info("test");
 					if (entry.path().extension().string() == ".pak") { // check if extension is .pak
 						std::wstring filename = entry.path().filename().wstring(); // Get the pak file name
 
