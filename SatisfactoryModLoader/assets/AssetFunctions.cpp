@@ -11,7 +11,7 @@
 #include <SatisfactoryModLoader.h>
 #include <mod/MathFunctions.h>
 #include <util/Utility.h>
-#include <util/FString.h>
+#include <util/Objects/FString.h>
 
 namespace SML {
 	namespace Assets {

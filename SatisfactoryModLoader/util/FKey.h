@@ -1,8 +1,10 @@
 #pragma once
 
 #include <cstdint>
-#include <util/FString.h>
+#include <util/Objects/FString.h>
 #include <HookLoader.h>
+
+#include "Objects/FName.h"
 
 namespace SML {
 	namespace Objects {
@@ -92,15 +94,6 @@ namespace SML {
 			char Padding_1[6];
 			TAttribute LongDisplayName;
 			TAttribute ShortDisplayName;
-		};
-
-		struct FName {
-			int comparisonIndex;
-			// int displayIndex;
-			unsigned number;
-
-			// TODO check that FString copy ctor works right
-			// FString GetPlainNameString() /* const */;
 		};
 
 		template <typename T>

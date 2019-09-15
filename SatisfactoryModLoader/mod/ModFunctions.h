@@ -2,7 +2,7 @@
 #include <Windows.h>
 #include <vector>
 #include <Lib.h>
-#include <util/FString.h>
+#include <util/Objects/FString.h>
 #include "Registry.h"
 
 namespace SML {

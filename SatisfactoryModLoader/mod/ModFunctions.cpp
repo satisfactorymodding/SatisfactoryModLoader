@@ -2,6 +2,7 @@
 #include "ModFunctions.h"
 #include <SatisfactoryModLoader.h>
 #include <assets/FObjectSpawnParameters.h>
+#include <Windows.h>
 #include <detours.h>
 #include <assets/AssetLoader.h>
 #include <assets/AssetFunctions.h>

@@ -7,6 +7,8 @@
 #include <game/Global.h>
 #include <game/Player.h>
 #include <util/Utility.h>
+#include <util/Objects/UObject.h>
+#include <util/Objects/UFunction.h>
 #include <mod/ModFunctions.h>
 #include <mod/MathFunctions.h>
 #include <assets/AssetLoader.h>
@@ -14,6 +16,7 @@
 #include <HookLoaderInternal.h>
 
 #include "../SatisfactorySDK/SDK.hpp"
+
 namespace SML {
 	void SPL::Init() {
 		using namespace SML;
@@ -90,14 +93,12 @@ namespace SML {
 
 				// Iterate through all mods and call the preinit event
 				for (Objects::UObject* mod : mods) {
-					Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lol
-					::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, L"PreInit", &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
+					mod->findFunction(L"PreInit")->invoke(mod); // Call the event
 				};
 
 				// Iterate through all mods and call the init event
 				for (Objects::UObject* mod : mods) {
-					Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lul
-					::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, (L"Init " + modNames).c_str(), &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
+					mod->findFunction(L"Init ")->invoke(mod); // Call the event
 				}
 			}
 		});
@@ -106,8 +107,7 @@ namespace SML {
 		::subscribe<&Objects::AFGPlayerController::BeginPlay>([](Mod::Functions::ModReturns* ret, Objects::AFGPlayerController* player) {
 			// Iterate through all mods and call the postinit event
 			for (Objects::UObject* mod : mods) {
-				Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lel
-				::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, (L"PostInit " + modNames).c_str(), &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
+				mod->findFunction(L"PostInit ")->invoke(mod); // Call the event
 				::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
 			}
 		});

@@ -60,8 +60,9 @@ namespace SML {
 			ShowWindow(GetConsoleWindow(), SW_SHOW);
 		}
 
-		// load sdk and assetloader
+		// load sdk, assetloader adn objects
 		SDK::InitSDK();
+		Objects::initObjects();
 		Assets::AssetLoader::init();
 		Utility::info("Initialized SDK");
 

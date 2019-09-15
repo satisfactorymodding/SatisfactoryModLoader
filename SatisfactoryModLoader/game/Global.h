@@ -1,7 +1,7 @@
 #pragma once
 
 #include <HookLoader.h>
-#include <util/FString.h>
+#include <util/Objects/FString.h>
 #include "../SatisfactorySDK/SDK.hpp"
 #include "assets/FObjectSpawnParameters.h"
 #include "Etc.h"
@@ -75,19 +75,6 @@ namespace SML {
 		};
 
 		DEFINE_METHOD(AFGStorySubsystem::BeginPlay);
-
-		class FOutputDevice {
-		protected:
-			bool bSuppressEventTag;
-			bool bAutoEmitLineTerminator;
-		};
-
-		class UObject {
-		public:
-			bool CallFunctionByNameWithArguments(const wchar_t *Str, FOutputDevice *Ar, SDK::UObject *Executor, bool bForceCallWithNonExec);
-		};
-
-		DEFINE_METHOD(UObject::CallFunctionByNameWithArguments);
 
 		class AFGGameMode {
 		public:

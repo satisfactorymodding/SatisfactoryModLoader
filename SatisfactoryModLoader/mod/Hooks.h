@@ -1,7 +1,7 @@
 #pragma once
 #include <Windows.h>
 #include <Lib.h>
-#include <util/FString.h>
+#include <util/Objects/FString.h>
 #include <HookLoader.h>
 #include <HookLoaderInternal.h>
 #include "ModFunctions.h"

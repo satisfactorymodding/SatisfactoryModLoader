@@ -1,7 +1,7 @@
 #pragma once
 
 #include <HookLoader.h>
-#include <util/FString.h>
+#include <util/Objects/FString.h>
 
 #pragma warning (push)
 #pragma warning (disable: 4667)
@@ -20,13 +20,13 @@ namespace SML {
 		DEFINE_CONSTRUCTOR(UFGItemDescriptor, Constructor);
 
 
-		template <typename TElement, typename TAllocator>
+		template <typename TElement>
 		struct TArray;
 
 		class AActor {
 		public:
 			template <typename TComponent, typename TAllocator>
-			void GetComponents(TArray<TComponent*, TAllocator>* OutComponents, bool bIncludeFromChildActors);
+			void GetComponents(TArray<TComponent*>* OutComponents, bool bIncludeFromChildActors);
 			bool Destroy(bool bNetForce, bool bShouldModifyLevel);
 			void BeginPlay();
 		};

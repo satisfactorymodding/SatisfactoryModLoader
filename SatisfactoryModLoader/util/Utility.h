@@ -7,8 +7,12 @@
 #include "../Lib.h"
 
 namespace SML {
+	namespace Objects {
+		SML_API void initObjects();
+	}
+
 	namespace Utility {
-		extern SML_API std::ofstream logFile;
+		SML_API extern std::ofstream logFile;
 
 		enum LogType {
 			Info,
@@ -37,7 +41,7 @@ namespace SML {
 			White
 		};
 
-		void displayCrash(std::string crashText);
+		SML_API void displayCrash(std::string crashText);
 
 		void SML_API setConsoleColor(ConsoleColor color);
 

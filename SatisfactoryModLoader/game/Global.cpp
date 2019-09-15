@@ -21,5 +21,3 @@ void SML::Objects::AFGStorySubsystem::BeginPlay() { }
 void SML::Objects::AFGGameMode::InitGameState() { }
 
 SML::Objects::FString* SML::Objects::UWorld::GetMapName(SML::Objects::FString* f) { return nullptr; }
-
-bool SML::Objects::UObject::CallFunctionByNameWithArguments(const wchar_t* Str, FOutputDevice* Ar, SDK::UObject* Executor, bool bForceCallWithNonExec) { return false; }
