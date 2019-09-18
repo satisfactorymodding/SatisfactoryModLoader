@@ -14,8 +14,6 @@ using namespace SML::Objects;
 
 namespace SML {
 	namespace Paks {
-		//std::map<void*, std::set<DelegateFunction>> registerdDispatchHandlers;
-
 		void(*delegateCallDetoured)(void*, void*);
 
 		// hooking function

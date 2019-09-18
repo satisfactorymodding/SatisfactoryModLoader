@@ -8,6 +8,11 @@
 
 namespace SML {
 	namespace Objects {
+		/**
+		* Register enum for proprtyFlag 
+		*
+		* @author Panakotta00
+		*/
 		SML_API enum EPropertyFlags : std::uint64_t {
 			Prop_None = 0,
 			Prop_Edit = 0x0000000000000001,
@@ -62,25 +67,40 @@ namespace SML {
 			Prop_SkipSerialization = 0x0080000000000000,
 		};
 
+		/**
+		* Representation of f.e. Varaibles of a UClass
+		*
+		* @author Panakotta00
+		*/
 		SML_API class UProperty : public UField {
 		public:
-			std::int32_t	dim;
-			std::int32_t	elemSize;
-			EPropertyFlags	propFlags;
-			std::uint16_t	repIndex;
-			std::uint8_t	BPReplicCond;
-			std::int32_t	internalOffset;
-			FName			repNFunc;
-			UProperty*		nextProp;
-			UProperty*		nextRef;
-			UProperty*		nextDestruct;
-			UProperty*		nextConstruct;
+			std::int32_t dim;
+			std::int32_t elemSize;
+			EPropertyFlags propFlags;
+			std::uint16_t repIndex;
+			std::uint8_t BPReplicCond;
+			std::int32_t internalOffset;
+			FName repNFunc;
+			UProperty* nextProp;
+			UProperty* nextRef;
+			UProperty* nextDestruct;
+			UProperty* nextConstruct;
 
+			/**
+			* Returns the pointer to the value of this property in the given instance
+			*
+			* @author Panakotta00
+			*/
 			template<typename T>
 			SML_API inline T* getValue(void* container) {
 				return (T*)((std::uint64_t)container + (std::uint64_t)internalOffset);
 			}
 
+			/**
+			* Returns the UClass of UProperty
+			*
+			* @author Panakotta00
+			*/
 			SML_API static UClass* staticClass();
 		};
 	}

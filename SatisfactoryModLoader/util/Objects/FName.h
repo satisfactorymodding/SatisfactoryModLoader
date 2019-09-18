@@ -6,6 +6,9 @@
 
 namespace SML {
 	namespace Objects {
+		/**
+		* Entry object in global names list
+		*/
 		SML_API class FNameEntry {
 		public:
 			int index;
@@ -17,6 +20,9 @@ namespace SML {
 			};
 		};
 
+		/**
+		* Container for global names list
+		*/
 		SML_API class TNameEntryArray {
 		public:
 			enum {
@@ -32,6 +38,9 @@ namespace SML {
 			FNameEntry const* const* getIPtr(int index) const;
 		};
 
+		/**
+		* Reference container for a global Name
+		*/
 		SML_API struct FName {
 		public:
 			int index;
@@ -43,15 +52,45 @@ namespace SML {
 				ReplNotSafe4Threads,
 			};
 
+			/**
+			* Constructs a empty FName
+			*/
 			SML_API FName();
+
+			/**
+			* Constructs a FName and sets its reference
+			*/
 			SML_API FName(int i);
+
+			/**
+			* Constructs a FName trys to find the global name by the given string or creates a new one
+			*/
 			SML_API FName(const wchar_t* nameToFind, EFindName FindType = Add);
 
+			/**
+			* !!! DO NOT TOUCH !!!
+			* FName constructor pointer
+			*/
 			SML_API static void(*fNameConstruct_f)(void*, const wchar_t*, EFindName);
+
+			/**
+			* Pointer to global names list
+			*/
 			SML_API static TNameEntryArray *names;
+
+			/**
+			* Returns a reference to the global names list
+			*/
 			SML_API static TNameEntryArray& getNames();
 
+			/**
+			* Returns the referenced name as string
+			*/
 			SML_API const char* getName() const;
+
+			/**
+			* Checks if both FNames reference the same name
+			*/
 			SML_API bool operator==(const FName &other) const;
 		};
 	}

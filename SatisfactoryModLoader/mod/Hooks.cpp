@@ -1,5 +1,6 @@
 #include <stdafx.h>
 #include "Hooks.h"
+#include <Windows.h>
 #include <detours.h>
 #include <stdio.h> 
 #include <sstream>
@@ -14,8 +15,9 @@
 #include <assets/AssetLoader.h>
 #include <mod/Coremods.h>
 #include <filesystem>
-#include "SatisfactoryPakLoader.h"
-#include "assets/BPInterface.h"
+#include <SatisfactoryPakLoader.h>
+#include <assets/BPInterface.h>
+#include <ModMenu.h>
 
 using namespace std::placeholders;
 
@@ -50,9 +52,8 @@ namespace SML {
 				Hooks::engineInit(ret, engineLoop);
 			});
 
-			/// Pak Loader Begin
 			SPL::Init();
-			/// Pak Loader End
+			Paks::initBPInterface();
 
 			/// Init BPI Begin
 			Paks::initBPInterface();

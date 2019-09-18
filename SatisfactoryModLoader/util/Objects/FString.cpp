@@ -51,7 +51,10 @@ namespace SML {
 		}
 
 		const wchar_t* FString::c_str() const {
-			return (wchar_t*)getData();
+			auto data = (wchar_t*)getData();
+			auto str = std::wstring(data);
+			FMemory::free(data);
+			return str.c_str();
 		}
 
 		std::string FString::toStr() const {
