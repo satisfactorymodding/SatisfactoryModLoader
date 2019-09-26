@@ -37,7 +37,6 @@ namespace SML {
 		void generateSigFiles(std::string pakfilepath, std::string originalSigPath) {
 			bool didGenerate = false;
 			for (auto &entry : std::filesystem::directory_iterator(std::filesystem::path(pakfilepath))) {
-				//info(entry.path().string());
 				if (entry.path().extension().string() == ".pak") {
 					std::string sigfile = entry.path().string();
 					sigfile.replace(sigfile.find(".pak"), 4, ".sig");
@@ -54,12 +53,12 @@ namespace SML {
 				}
 			}
 			if (didGenerate) {
-				warning("If satisfactory crashes, please reload it to make it run.");
+				warning("If satisfactory crashes after this message, please reload it to fix it.");
 			}
 		}
 
 		void disableCrashReporter(std::string rootPath) {
-			rootPath = rootPath.substr(0, rootPath.find_last_of("/\\")); // ../
+			rootPath = rootPath.substr(0, rootPath.find_last_of("/\\"));
 			rootPath = rootPath + "\\Engine\\Binaries\\Win64";
 			if (std::filesystem::exists(std::filesystem::path(rootPath + "\\CrashReportClient.exe"))) {
 				std::filesystem::rename(std::filesystem::path(rootPath + "\\CrashReportClient.exe"), std::filesystem::path(rootPath + "\\CrashReportClient-Disabled.exe"));
@@ -71,7 +70,7 @@ namespace SML {
 		}
 
 		void enableCrashReporter(std::string rootPath) {
-			rootPath = rootPath.substr(0, rootPath.find_last_of("/\\")); // ../
+			rootPath = rootPath.substr(0, rootPath.find_last_of("/\\"));
 			rootPath = rootPath + "\\Engine\\Binaries\\Win64";
 			if (std::filesystem::exists(std::filesystem::path(rootPath + "\\CrashReportClient-Disabled.exe"))) {
 				std::filesystem::rename(std::filesystem::path(rootPath + "\\CrashReportClient-Disabled.exe"), std::filesystem::path(rootPath + "\\CrashReportClient.exe"));

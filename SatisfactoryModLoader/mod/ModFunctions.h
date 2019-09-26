@@ -84,6 +84,14 @@ namespace SML {
 			* @author SuperCoder79
 			*/
 			SML_API void registerEvent(std::string name, PVOID func);
+
+			/**
+			* Ensures that the dll mod is loaded with a corresponding pak file.
+			* This is useful for when users forget to install the pak file, but remembered to install the dll (somehow)
+			* 
+			* @author SuperCoder79
+			*/
+			SML_API void setDependsOnPak(std::string name);
 		}
 	}
 }

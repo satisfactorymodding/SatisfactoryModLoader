@@ -56,15 +56,12 @@ namespace SML {
 			if (version == target) {
 				info("Version check passed!");
 			}
-			else if (version > target) {
-				warning("SML is out of date with the latest Satisfactory! Report any issues on the discord!");
-			}
 			else if (version < target){
 				error("WARNING: Version check failed");
 				if (!supressErrors) {
-					int ret = MessageBoxA(NULL, "The version of Satisfactory that you are running is too old for the current version of SML! Please update Satisfactory otherwise SML may run into errors. \nPress Ok to continue at your own discresion or cancel to stop the program.", "SatisfactoryModLoader Warning", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONEXCLAMATION);
+					int ret = MessageBoxA(NULL, "The version of Satisfactory that you are running is too old for the current version of SML! Please update Satisfactory otherwise SML may run into errors. \nPress Ok to continue at your own discresion or cancel to exit.", "SatisfactoryModLoader Warning", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONEXCLAMATION);
 					if (ret == IDCANCEL) {
-						exit(1);
+						abort();
 					}
 				}
 				else {
@@ -74,7 +71,7 @@ namespace SML {
 		}
 
 		void displayCrash(std::string crashText) {
-			MessageBoxA(NULL, (crashText + "\Click OK to exit.").c_str(), "SatisfactoryModLoader Crash", MB_ICONERROR);
+			MessageBoxA(NULL, (crashText + "\Click OK to exit.").c_str(), "SatisfactoryModLoader has crashed!", MB_ICONERROR);
 			abort();
 		}
 		void displayCrash(std::string header, std::string crashText) {
