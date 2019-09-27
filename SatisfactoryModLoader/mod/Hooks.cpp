@@ -73,8 +73,8 @@ namespace SML {
 			}
 
 			//load delayed coremods
-			for (const wchar_t* dll : delayedCoremods) {
-				LoadLibraryW(dll);
+			for (std::string libPath : delayedCoremods) {
+				LoadLibraryA(libPath.c_str());
 			}
 
 			ret->useOriginalFunction = true;

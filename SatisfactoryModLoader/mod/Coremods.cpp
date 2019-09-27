@@ -8,8 +8,7 @@
 namespace SML {
 	namespace Mod {
 		std::vector<std::string> coremodList;
-
-		std::vector<const wchar_t*> delayedCoremods;
+		std::vector<std::string> delayedCoremods;
 
 		void startLoadingCoremods(const char* currentPath) {
 			std::string appPath(currentPath);
@@ -21,30 +20,25 @@ namespace SML {
 		}
 
 		void loadCoremodsInternal(std::string path) {
-			std::string pathExact = path + "\\";
+			std::string rootPath = path + "\\";
 
 			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
-				/*
-				if (!entry.path().has_extension()) {
-					loadCoremodsInternal(entry.path().string());
-					continue;
-				}
-				*/
-
-				//screw u adam
-
 				if (entry.path().extension().string() == ".dll") {
-					std::string file = pathExact + entry.path().filename().string();
-					std::wstring stemp = std::wstring(file.begin(), file.end());
+					std::string libPath = rootPath + entry.path().filename().string();
+					HMODULE hLib = LoadLibraryExA(libPath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
 
-					Utility::warning("Warning: loading coremod ", entry.path().filename(), ". Please remove coremods before submitting bug reports!");
-					coremodList.push_back(entry.path().filename().string());
-
-					HMODULE lib = LoadLibraryW(stemp.c_str());
-					if (GetProcAddress(lib, "DELAYED_LOAD")) {
-						FreeLibrary(lib);
-						delayedCoremods.push_back(stemp.c_str());
+					if (GetProcAddress(hLib, "DELAYED_LOAD")) {
+						Utility::warning("Warning: Coremod loaded -> ", entry.path().filename(), " (DELAYED_LOAD). Please remove coremods before submitting bug reports!");
+						FreeLibrary(hLib);
+						delayedCoremods.push_back(libPath);
+						continue;
 					}
+
+					FreeLibrary(hLib);
+					LoadLibraryA(libPath.c_str());
+
+					Utility::warning("Warning: Coremod loaded -> ", entry.path().filename(), ". Please remove coremods before submitting bug reports!");
+					coremodList.push_back(entry.path().filename().string());
 				}
 			}
 		}
