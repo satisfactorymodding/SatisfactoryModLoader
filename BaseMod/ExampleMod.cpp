@@ -22,6 +22,8 @@ ExampleMod is a documented mod that uses all the available features of SML and c
 If you are confused about what to do, just type Functions:: and autocomplete will give you options on some functions that you can use.
 If you don't know how to do something/use something, simply hover over it to read the provided documentation. If you're still confused, come to the discord and ask in #sml-help about your issue.
 SuperCoder will help you with your problem.
+
+Note: Before releasing your mod, make sure to remove all of the Basemod stuff! Otherwise it may cause issues.
 */
 
 // Use the namespaces so you have to type less stuff when adding on to your mod
@@ -29,7 +31,7 @@ using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.0-pr7"
+#define SML_VERSION "1.0.0"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"

@@ -53,7 +53,7 @@ namespace SML {
 			std::wstring satisVersion{ call<&Objects::BuildSettings::GetBuildVersion>() };
 			std::string str(satisVersion.begin(), satisVersion.end());
 			int version = std::atoi(str.substr(str.length() - 6, str.length()).c_str());
-			if (version == target) {
+			if (version >= target) {
 				info("Version check passed!");
 			}
 			else if (version < target){

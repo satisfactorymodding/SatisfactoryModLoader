@@ -7,8 +7,8 @@
 #include <mod/ModHandler.h>
 
 namespace SML {
-	static const std::string modLoaderVersion = "1.0.0-pr7"; // SML's version
-	static const int targetVersion = 102736; //CL of Satisfactory
+	static const std::string modLoaderVersion = "1.0.0"; // SML's version
+	static const int targetVersion = 103400; //CL of Satisfactory
 	static bool loadConsole = true;
 	static bool debugOutput = false;
 	static bool supressErrors = false;
