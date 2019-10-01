@@ -9,8 +9,6 @@ namespace SML {
 	namespace Objects {
 		/**
 		* Representation of UStruct used by Unreal
-		*
-		* @author Panakotta00
 		*/
 		SML_API class UStruct : public UField {
 		public:
@@ -27,8 +25,6 @@ namespace SML {
 
 			/**
 			* returns the UClass of UStruct
-			*
-			* @author Panakotta00
 			*/
 			SML_API static UClass* staticClass() {
 				static auto ptr = UObject::findClass("Class CoreUObject.Struct");

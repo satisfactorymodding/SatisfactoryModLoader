@@ -5,12 +5,13 @@
 #include "UStruct.h"
 #include "UFunction.h"
 
+#include <Windows.h>
+#include <detours.h>
+
 namespace SML {
 	namespace Objects {
 		/**
 		* Register for classFlag
-		*
-		* @author Panakotta00
 		*/
 		SML_API enum EClassFlags {
 			CLASS_None = 0x00000000u,
@@ -50,8 +51,6 @@ namespace SML {
 
 		/**
 		* Register for castFlag to check in wich types the class is able to cast
-		*
-		* @author Panakotta00
 		*/
 		SML_API enum EClassCastFlags : std::uint64_t {
 			CAST_None = 0x0000000000000000,
@@ -106,23 +105,35 @@ namespace SML {
 			CAST_UEnumProperty = 0x0001000000000000,
 		};
 
+		class FVTableHelper;
+		struct FClassBaseChain {
+			std::uint8_t unknownData[10];
+		};
+
 		/**
 		* Representation of a class in the UObjectSystem (Unreals reflection system)
-		*
-		* @author Panakotta00
 		*/
-		SML_API class UClass : public UStruct {
+		SML_API class UClass : public UStruct, FClassBaseChain {
 		public:
 			static UFunction*(*findFunction_f)(UObject*, Objects::FName);
 
-			EClassFlags flags;
+			void(__fastcall *ClassConstructor)(void *);
+			UObject *(__fastcall *ClassVTableHelperCtorCaller)(void *);
+			void(__fastcall *ClassAddReferencedObjects)(void *, void *);
+			unsigned __int32 ClassUnique : 31;
+			unsigned __int32 bCooked : 1;
+			EClassFlags ClassFlags;
 			EClassCastFlags castFlags;
-			unsigned char unknownData[0x180 - 0x32 - sizeof(EClassFlags) - sizeof(EClassCastFlags)];
+			UClass *ClassWithin;
+			UObject *ClassGeneratedBy;
+			void* uberGraphFrame;
+			FName config;
+			TArray<void*> reps;
+			TArray<void*> netFields;
+			UObject* defaultObj;
 
 			/**
 			* Creates an instance based on this class
-			*
-			* @author Panakotta00
 			*/
 			template<typename T>
 			SML_API inline T* createDefObj() {
@@ -131,20 +142,15 @@ namespace SML {
 
 			/**
 			* returns the registers UClass instance
-			*
-			* @author Panakotta00
 			*/
 			SML_API static UClass* staticClass();
 
 			/**
 			* Creates an instance based on this class
-			*
-			* @author Panakotta00
 			*/
 			SML_API UObject* createDefObj();
 
 			/**
-			* 
 			* Trys to find a UField in this classed by the given name otherwise returns nullptr
 			*
 			* @author Panakotta00

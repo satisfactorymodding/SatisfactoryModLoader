@@ -68,7 +68,7 @@ namespace SML {
 		}
 
 		UClass* UObject::staticClass() {
-			static auto ptr = UObject::findClass("Class CoreUObject.Object");
+			static auto ptr = UObject::findClass("CoreUObject.Object");
 			return ptr;
 		}
 

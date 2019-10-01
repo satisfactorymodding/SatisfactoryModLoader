@@ -29,7 +29,7 @@ namespace SML {
 			UField* f = childs;
 			while (f) {
 				if ((f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty) && (f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty)) {
-					vars.push_back((UProperty*)f);
+					//vars.push_back((UProperty*)f);
 				}
 				vars.push_back((UProperty*)f);
 				f = f->next;

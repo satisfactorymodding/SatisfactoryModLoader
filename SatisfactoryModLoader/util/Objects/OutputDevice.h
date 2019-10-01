@@ -9,6 +9,7 @@ namespace SML {
 		*/
 		SML_API class OutputDevice {
 		public:
+			void* vtable;
 			bool bSuppressEventTag = false;
 			bool bAutoEmitLineTerminator = true;
 		};

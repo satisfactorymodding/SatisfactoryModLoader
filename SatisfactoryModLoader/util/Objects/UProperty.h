@@ -9,9 +9,43 @@
 namespace SML {
 	namespace Objects {
 		/**
-		* Register enum for proprtyFlag 
-		*
-		* @author Panakotta00
+		* Enum of available property types
+		**/
+		SML_API enum class EPropertyClass {
+			Byte,
+			Int8,
+			Int16,
+			Int,
+			Int64,
+			UInt16,
+			UInt32,
+			UInt64,
+			UnsizedInt,
+			UnsizedUInt,
+			Float,
+			Double,
+			Bool,
+			SoftClass,
+			WeakObject,
+			LazyObject,
+			SoftObject,
+			Class,
+			Object,
+			Interface,
+			Name,
+			Str,
+			Array,
+			Map,
+			Set,
+			Struct,
+			Delegate,
+			MulticastDelegate,
+			Text,
+			Enum,
+		};
+
+		/**
+		* Register enum for proprtyFlag
 		*/
 		SML_API enum EPropertyFlags : std::uint64_t {
 			Prop_None = 0,
@@ -69,8 +103,6 @@ namespace SML {
 
 		/**
 		* Representation of f.e. Varaibles of a UClass
-		*
-		* @author Panakotta00
 		*/
 		SML_API class UProperty : public UField {
 		public:
@@ -98,8 +130,6 @@ namespace SML {
 
 			/**
 			* Returns the UClass of UProperty
-			*
-			* @author Panakotta00
 			*/
 			SML_API static UClass* staticClass();
 		};
