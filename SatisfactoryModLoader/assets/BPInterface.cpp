@@ -14,6 +14,15 @@ using namespace SML::Objects;
 
 namespace SML {
 	namespace Paks {
+		// detour function cache //
+		void(*constructUFunction)(UFunction*&, FFunctionParams) = nullptr;
+		void(*registerFunction)(UClass*, const char*, void*) = nullptr;
+		void(*addFunctionToMap)(UClass*, const FClassFunctionLinkInfo*, std::uint32_t) = nullptr;
+		void(*objCompInDefer)(Objects::UClass*(*)(), Objects::UClass*(*)(), const TCHAR*, const TCHAR*, bool, const TCHAR*, void(*)()) = nullptr;
+		void(*processNewObjs)() = nullptr;
+		void(*constructUClass)(Objects::UClass*&, FClassParams) = nullptr;
+		void(*privateStaticClassBody)(const TCHAR*, const TCHAR*, Objects::UClass*&, void(*)(), std::uint32_t, Objects::EClassFlags, Objects::EClassCastFlags, const TCHAR*, void(*)(FObjectInitializer&), Objects::UObject*(*)(FVtableHelper&), void(*)(Objects::UObject*, FReferenceCollector&), Objects::UClass*(*)(), Objects::UClass*(*)(), bool);
+
 		int getVtableSize(void** vtable) {
 			if (vtable)
 				for (int i = 0;; i++)
@@ -61,6 +70,14 @@ namespace SML {
 			delegateCallDetoured = (void(WINAPI*)(void*, void*))DetourFindFunction("FactoryGame-Win64-Shipping.exe", "??$ProcessMulticastDelegate@VUObject@@@?$TMulticastScriptDelegate@UFWeakObjectPtr@@@@QEBAXPEAX@Z");
 			DetourAttach((void**)&delegateCallDetoured, &delegateCall);
 			DetourTransactionCommit();
+
+			constructUFunction = (void(*)(UFunction*&, FFunctionParams)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UE4CodeGen_Private::ConstructUFunction");
+			registerFunction = (void(*)(UClass*, const char*, void*)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FNativeFunctionRegistrar::RegisterFunction");
+			addFunctionToMap = (void(*)(UClass*, const FClassFunctionLinkInfo*, std::uint32_t)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UClass::CreateLinkAndAddChildFunctionsToMap");
+			objCompInDefer = (void(*)(Objects::UClass*(*)(), Objects::UClass*(*)(), const TCHAR*, const TCHAR*, bool, const TCHAR*, void(*)())) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UObjectCompiledInDefer");
+			processNewObjs = (void(*)()) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ProcessNewlyLoadedUObjects");
+			constructUClass = (void(*)(Objects::UClass*&, FClassParams)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UE4CodeGen_Private::ConstructUClass");
+			privateStaticClassBody = (void(*)(const TCHAR*, const TCHAR*, Objects::UClass*&, void(*)(), std::uint32_t, Objects::EClassFlags, Objects::EClassCastFlags, const TCHAR*, void(*)(FObjectInitializer&), Objects::UObject*(*)(FVtableHelper&), void(*)(Objects::UObject*, FReferenceCollector&), Objects::UClass*(*)(), Objects::UClass*(*)(), bool)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "GetPrivateStaticClassBody");
 		}
 
 		// --- PropertyBuilder --- //
@@ -240,7 +257,6 @@ namespace SML {
 			retVal = clazz;
 			params.func = retFunc;
 
-			auto constructUFunction = (void(*)(UFunction*&, FFunctionParams)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UE4CodeGen_Private::ConstructUFunction");
 			constructUFunction(constructed, params);
 
 			delete[] props;
@@ -251,8 +267,7 @@ namespace SML {
 		void FunctionBuilder::_registerFunc(UClass * clazz, void* func) {
 			if (func) this->func = func;
 			if (this->func) {
-				auto reg = (void(*)(UClass*, const char*, void*))DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FNativeFunctionRegistrar::RegisterFunction");
-				reg(clazz, fname.c_str(), this->func);
+				registerFunction(clazz, fname.c_str(), this->func);
 			}
 		}
 		
@@ -267,8 +282,7 @@ namespace SML {
 			retVal = _build(clazz, func);
 			links[0].func = (UFunction*(*)())&retFunc;
 			links[0].name = fname.c_str();
-			auto addFuncToMap = (void(*)(UClass*, const FClassFunctionLinkInfo*, std::uint32_t)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UClass::CreateLinkAndAddChildFunctionsToMap");
-			addFuncToMap((UClass*)clazz, links, 1);
+			addFunctionToMap((UClass*)clazz, links, 1);
 		}
 		
 		FunctionBuilder & FunctionBuilder::addObjFlags(EObjectFlags flags) {

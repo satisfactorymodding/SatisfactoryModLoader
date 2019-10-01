@@ -53,7 +53,6 @@ namespace SML {
 			*/
 			inline void step(UObject* obj, void* params) {
 				auto stepFunc = (void(*)(FFrame*, UObject*, void*))DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FFrame::Step");
-				Utility::warning("stepFunc: ", stepFunc);
 				stepFunc(this, obj, params);
 			}
 
@@ -64,7 +63,6 @@ namespace SML {
 			*/
 			inline void stepProp(void* params, UProperty* prop) {
 				auto stepFunc = (void(*)(FFrame*, void*, UProperty*))DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FFrame::StepExplicitProperty");
-				Utility::warning("stepPropFunc: ", stepFunc);
 				stepFunc(this, params, prop);
 			}
 

@@ -19,8 +19,23 @@
 
 namespace SML {
 	namespace Paks {
+		class FClassParams;
+		class FObjectInitializer;
+		class FReferenceCollector;
+		class FVtableHelper;
+
+		// detour cache
+		SML_API extern void(*processNewObjs)();
+		SML_API extern void(*constructUClass)(Objects::UClass*&, FClassParams);
+		SML_API extern void(*privateStaticClassBody)(const TCHAR*, const TCHAR*, Objects::UClass*&, void(*)(), std::uint32_t, Objects::EClassFlags, Objects::EClassCastFlags, const TCHAR*, void(*)(FObjectInitializer&), Objects::UObject*(*)(FVtableHelper&), void(*)(Objects::UObject*, FReferenceCollector&), Objects::UClass*(*)(), Objects::UClass*(*)(), bool);
+
+		/**
+		* Converts the given normal string into a wide one
+		* ! WARNING ! No good implementation, does not support utf8! (only ASCII)
+		*
+		* @author Panakotta00
+		*/
 		SML_API inline std::wstring stringToW(std::string str) {
-			// not good solution (no UTF-8 support)
 			return std::wstring(str.begin(), str.end());
 		}
 
@@ -291,7 +306,6 @@ namespace SML {
 
 			static Objects::UObject* retVal;
 			static Objects::UObject* retFunc() {
-				Utility::warning("f ret");
 				return retVal;
 			}
 
@@ -513,10 +527,9 @@ namespace SML {
 			class UHelper {
 			public:
 				virtual inline void dest(void* shit) {
-					Utility::warning("shit: ", shit);
 					auto o = (Objects::UObject*) this;
-					Utility::warning("Dest: ", this, " ", o->clazz, " ", o->clazz->getName(), " ", o->clazz->childs);
-					o->clazz->debug();
+					
+					// auto uprop destruct
 					Objects::UField* f = o->clazz->childs;
 					while (f) {
 						auto p = (Objects::UProperty*)f;
@@ -845,8 +858,7 @@ namespace SML {
 				auto objCompInDefer = (void(*)(Objects::UClass*(*)(), Objects::UClass*(*)(), const TCHAR*, const TCHAR*, bool, const TCHAR*, void(*)())) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UObjectCompiledInDefer");
 				objCompInDefer(getclassf, params.staticClass, stringToW(cname).c_str(), stringToW(pname).c_str(), false, nullptr, nullptr);
 
-				auto reg = (void(*)()) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ProcessNewlyLoadedUObjects");
-				reg();
+				processNewObjs();
 
 				return constructed;
 			}
@@ -888,16 +900,15 @@ namespace SML {
 					active.params.config = active.cconfig.c_str();
 
 					// construct
-					auto constructUClass = (void(*)(Objects::UClass*&, FClassParams)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UE4CodeGen_Private::ConstructUClass");
 					constructUClass(active.constructed, active.params);
 
 					// reset and delloc
-					//delete[] funcs;
-					/*delete[] props;
+					delete[] funcs;
+					delete[] props;
 					active.params.funcs = nullptr;
 					active.params.props = nullptr;
 					active.params.funcCount = 0;
-					active.params.propCount = 0;*/
+					active.params.propCount = 0;
 					active.funcI = 0;
 				}
 				return active.constructed;
@@ -910,8 +921,7 @@ namespace SML {
 			*/
 			static inline Objects::UClass* staticClass() {
 				if (!active.staticclass) {
-					auto gpscb = (void(*)(const TCHAR*, const TCHAR*, Objects::UClass*&, void(*)(), std::uint32_t, Objects::EClassFlags, Objects::EClassCastFlags, const TCHAR*, void(*)(FObjectInitializer&), Objects::UObject*(*)(FVtableHelper&), void(*)(Objects::UObject*, FReferenceCollector&), Objects::UClass*(*)(), Objects::UClass*(*)(), bool)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "GetPrivateStaticClassBody");
-					gpscb(stringToW(active.pname).c_str(), active.cnameni.c_str(), active.staticclass, active.regFuncsf, sizeof(T), (Objects::EClassFlags)active.params.flags, active.cast, stringToW(active.cconfig).c_str(), active.constructorf, active.vtablehelpf, active.refcolf, active.superf, active.outerf, false);
+					privateStaticClassBody(stringToW(active.pname).c_str(), active.cnameni.c_str(), active.staticclass, active.regFuncsf, sizeof(T), (Objects::EClassFlags)active.params.flags, active.cast, stringToW(active.cconfig).c_str(), active.constructorf, active.vtablehelpf, active.refcolf, active.superf, active.outerf, false);
 				}
 				return active.staticclass;
 			}
@@ -924,11 +934,11 @@ namespace SML {
 			static inline void construct(FObjectInitializer& objInit) {
 				((NativeConstructor)active.superf()->ClassConstructor)(objInit);
 				if (active.vfptr) {
-					Utility::warning("meep ");
 					(*(void***)objInit.obj) = active.vfptr;
 				}
 				objInit.obj->clazz = active.params.staticClass();
 
+				// auto uproperty init
 				Objects::UField* f = objInit.obj->clazz->childs;
 				while (f) {
 					auto p = (Objects::UProperty*)f;
@@ -941,6 +951,8 @@ namespace SML {
 					};
 					vptr = (*(size_t**)p)[0x5D];
 					//(p->*(init))((void*)(objInit.obj + p->internalOffset));
+
+					//*(FString*)(objInit.obj + p->internalOffset) = FString("nice");
 				}
 			}
 
