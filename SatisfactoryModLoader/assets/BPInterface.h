@@ -448,8 +448,9 @@ namespace SML {
 		class ClassBuilder {
 		public:
 			typedef Objects::UClass*(*NativeStaticClass)();
-			typedef void(*NativeConstructor)(FObjectInitializer&);
-			typedef void(*NativeDestructor)(T*);
+			typedef void(T::*NativeConstructor)();
+			typedef void(*NativeRealConstructor)(FObjectInitializer&);
+			typedef void(T::*NativeDestructor)();
 			typedef Objects::UObject*(*NativeVTHelp)(FVtableHelper&);
 			typedef void(*NativeRefCol)(Objects::UObject*, FReferenceCollector&);
 			typedef Objects::UClass*(*NativeSuper)();
@@ -474,6 +475,7 @@ namespace SML {
 			std::string cconfig = "Engine";
 			Objects::EClassCastFlags cast = CAST_None;
 			NativeConstructor constructorf = nullptr;
+			NativeRealConstructor realconstructorf = nullptr;
 			NativeDestructor destructorf = nullptr;
 			NativeVTHelp vtablehelpf = nullptr;
 			NativeRefCol refcolf = &refColNon;
@@ -530,25 +532,10 @@ namespace SML {
 
 			class UHelper {
 			public:
-				virtual inline void dest(void* shit) {
+				virtual inline void destructor() {
 					auto o = (Objects::UObject*) this;
-					
-					// auto uprop destruct
-					Objects::UField* f = o->clazz->childs;
-					while (f) {
-						auto p = (Objects::UProperty*)f;
-						f = p->next;
-						if (!(p->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty)) continue;
 
-						union {
-							size_t vptr;
-							void(Objects::UProperty::* dest)(void*);
-						};
-						vptr = (*(size_t**)p)[0x5C];
-						//(p->*(dest))((void*)reinterpret_cast<Objects::FString*>((size_t)o + (size_t)p->internalOffset));
-					}
-
-					if (active.destructorf) active.destructorf((T*) o);
+					if (active.destructorf) (((T*)o)->*(active.destructorf))();
 					if (active.superdestructorf) (this->*(active.superdestructorf))();
 				}
 			};
@@ -604,7 +591,17 @@ namespace SML {
 			}
 
 			/**
-			* sets the constructor function of the class
+			* sets the real class constructor function of the class
+			*
+			* @author Panakotta00
+			*/
+			inline ClassBuilder& realconstruct(NativeRealConstructor func) {
+				realconstructorf = func;
+				return *this;
+			}
+
+			/**
+			* sets custom class constructor function of the class
 			*
 			* @author Panakotta00
 			*/
@@ -753,6 +750,7 @@ namespace SML {
 				superdestructor((void(*)())(vfptr)[0]);
 				UHelper* h = new UHelper();
 				vfptr = (void**)memcpy(vfptr, *(void***)h, sizeof(void*));
+				delete h;
 				return *this;
 			}
 
@@ -769,6 +767,7 @@ namespace SML {
 				superdestructor((void(*)())(vfptr)[0]);
 				UHelper* h = new UHelper();
 				vfptr = (void**)memcpy(vfptr, *(void***)h, sizeof(void*));
+				delete h;
 				return *this;
 			}
 
@@ -924,7 +923,7 @@ namespace SML {
 			*/
 			static inline Objects::UClass* staticClass() {
 				if (!active.staticclass) {
-					privateStaticClassBody(stringToW(active.pname).c_str(), active.cnameni.c_str(), active.staticclass, active.regFuncsf, sizeof(T), (Objects::EClassFlags)active.params.flags, active.cast, stringToW(active.cconfig).c_str(), active.constructorf, active.vtablehelpf, active.refcolf, active.superf, active.outerf, false);
+					privateStaticClassBody(stringToW(active.pname).c_str(), active.cnameni.c_str(), active.staticclass, active.regFuncsf, sizeof(T), (Objects::EClassFlags)active.params.flags, active.cast, stringToW(active.cconfig).c_str(), active.realconstructorf, active.vtablehelpf, active.refcolf, active.superf, active.outerf, false);
 				}
 				return active.staticclass;
 			}
@@ -935,26 +934,13 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			static inline void construct(FObjectInitializer& objInit) {
-				((NativeConstructor)active.superf()->ClassConstructor)(objInit);
+				((NativeRealConstructor)active.superf()->ClassConstructor)(objInit);
 				if (active.vfptr) {
 					(*(void***)objInit.obj) = active.vfptr;
 				}
 				objInit.obj->clazz = active.params.staticClass();
 
-				// auto uproperty init
-				Objects::UField* f = objInit.obj->clazz->childs;
-				while (f) {
-					auto p = (Objects::UProperty*)f;
-					f = p->next;
-					if (!(p->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty)) continue;
-
-					union {
-						size_t vptr;
-						void(Objects::UProperty::* init)(void*);
-					};
-					vptr = (*(size_t**)p)[0x5D];
-					(p->*(init))((void*)reinterpret_cast<Objects::FString*>((size_t)objInit.obj + (size_t)p->internalOffset));
-				}
+				if (active.constructorf) (((T*)objInit.obj)->*(active.constructorf))();
 			}
 
 			/**
@@ -986,7 +972,7 @@ namespace SML {
 			inline static ClassBuilder& Basic() {
 				active.name(getClassName<T>());
 				active.staticClass(staticClass);
-				active.construct(construct);
+				active.realconstruct(construct);
 				active.getClass(getClass);
 				active.regFuncs(regFuncs);
 				active.constFunc(constFunc);

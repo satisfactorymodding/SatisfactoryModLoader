@@ -10,6 +10,8 @@
 #include <Windows.h>
 #include <detours.h>
 
+#include <../SatisfactorySDK/SDK.hpp>
+
 using namespace SML::Objects;
 
 namespace SML {
@@ -167,9 +169,9 @@ namespace SML {
 			case EPropertyClass::Class:
 				size = sizeof(UClass*);
 				break;
-				/*case EPropertyClass::Delegate:
+				case EPropertyClass::Delegate:
 				size = sizeof(SDK::FScriptDelegate);
-				break;*/
+				break;
 			case EPropertyClass::Double:
 				size = sizeof(double);
 				break;
@@ -191,18 +193,18 @@ namespace SML {
 			case EPropertyClass::Int8:
 				size = sizeof(std::int8_t);
 				break;
-				/*case EPropertyClass::Interface:
+			case EPropertyClass::Interface:
 				size = sizeof(SDK::UInterface*);
 				break;
-				case EPropertyClass::LazyObject:
+			case EPropertyClass::LazyObject:
 				size = sizeof(SDK::FLazyObjectPtr);
 				break;
-				case EPropertyClass::Map:
+			case EPropertyClass::Map:
 				size = sizeof(SDK::TMap<void, void>);
 				break;
-				case EPropertyClass::MulticastDelegate:
+			case EPropertyClass::MulticastDelegate:
 				size = sizeof(SDK::FScriptMulticastDelegate);
-				break;*/
+				break;
 			case EPropertyClass::Name:
 				size = sizeof(FName);
 				break;
@@ -215,7 +217,28 @@ namespace SML {
 			case EPropertyClass::Struct:
 				size = sizeof(void*);
 				break;
-			default: // missing set and all after struct
+			case EPropertyClass::Text:
+				size = sizeof(SDK::FText);
+				break;
+			case EPropertyClass::UInt16:
+				size = sizeof(std::uint16_t);
+				break;
+			case EPropertyClass::UInt32:
+				size = sizeof(std::uint32_t);
+				break;
+			case EPropertyClass::UInt64:
+				size = sizeof(std::uint64_t);
+				break;
+			case EPropertyClass::UnsizedInt:
+				size = sizeof(int);
+				break;
+			case EPropertyClass::UnsizedUInt:
+				size = sizeof(unsigned int);
+				break;
+			case EPropertyClass::WeakObject:
+				size = sizeof(SDK::FWeakObjectPtr);
+				break;
+			default: // missing set
 				throw std::exception("unsupported type");
 			}
 			return size;
