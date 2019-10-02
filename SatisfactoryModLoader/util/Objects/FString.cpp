@@ -58,6 +58,7 @@ namespace SML {
 		}
 
 		std::string FString::toStr() const {
+			if (!count || !data) return "";
 			const auto length = std::wcslen(data);
 
 			std::string str(length, '\0');

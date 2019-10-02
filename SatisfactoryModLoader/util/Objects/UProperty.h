@@ -11,7 +11,7 @@ namespace SML {
 		/**
 		* Enum of available property types
 		**/
-		SML_API enum class EPropertyClass {
+		enum class EPropertyClass {
 			Byte,
 			Int8,
 			Int16,
@@ -47,7 +47,7 @@ namespace SML {
 		/**
 		* Register enum for proprtyFlag
 		*/
-		SML_API enum EPropertyFlags : std::uint64_t {
+		enum EPropertyFlags : std::uint64_t {
 			Prop_None = 0,
 			Prop_Edit = 0x0000000000000001,
 			Prop_ConstParm = 0x0000000000000002,
@@ -104,7 +104,7 @@ namespace SML {
 		/**
 		* Representation of f.e. Varaibles of a UClass
 		*/
-		SML_API class UProperty : public UField {
+		class UProperty : public UField {
 		public:
 			std::int32_t dim;
 			std::int32_t elemSize;

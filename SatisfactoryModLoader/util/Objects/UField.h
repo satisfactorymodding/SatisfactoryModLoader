@@ -8,7 +8,7 @@ namespace SML {
 		* Representation of field in a UClass
 		* Nearly everything a UClass contains and stores information are UFields like Variables and Functions.
 		*/
-		SML_API class UField : public UObject {
+		class UField : public UObject {
 		public:
 			/**
 			* Points to the next UField in the field array of a UClass

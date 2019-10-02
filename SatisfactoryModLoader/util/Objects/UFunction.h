@@ -9,7 +9,7 @@ namespace SML {
 		/**
 		* Flag register for function specs
 		*/
-		SML_API enum EFunctionFlags : std::uint32_t {
+		enum EFunctionFlags : std::uint32_t {
 			FUNC_None = 0x00000000,
 			FUNC_Final = 0x00000001,
 			FUNC_RequiredAPI = 0x00000002,
@@ -47,7 +47,7 @@ namespace SML {
 		/**
 		* UField containg information about a function of a UClass like the function pointer it self
 		*/
-		SML_API class UFunction : public UStruct {
+		class UFunction : public UStruct {
 		public:
 			EFunctionFlags flags;
 			uint16_t repOff;

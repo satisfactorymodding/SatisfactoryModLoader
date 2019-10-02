@@ -18,7 +18,7 @@ namespace SML {
 		* Object that holds information about the current execution/stack/scope of the BP VM.
 		* Used f.e. for reading/writing data in UFunctions
 		*/
-		SML_API class FFrame : public OutputDevice {
+		class FFrame : public OutputDevice {
 		public:
 			UFunction* node;
 			UObject* obj;

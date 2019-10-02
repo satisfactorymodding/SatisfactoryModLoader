@@ -19,7 +19,7 @@
 
 namespace SML {
 	namespace Paks {
-		class FClassParams;
+		struct FClassParams;
 		class FObjectInitializer;
 		class FReferenceCollector;
 		class FVtableHelper;
@@ -116,7 +116,7 @@ namespace SML {
 		/**
 		* Describes a property before it gets constructed
 		*/
-		SML_API struct FGenericPropertyParams {
+		struct FGenericPropertyParams {
 			Objects::EPropertyClass type = (Objects::EPropertyClass)0;
 			const char* name = nullptr;
 			Objects::EObjectFlags objFlags = Objects::EObjectFlags::RF_NoFlags;
@@ -129,7 +129,7 @@ namespace SML {
 		/**
 		* Describes a function before it gets constructed
 		*/
-		SML_API struct FFunctionParams {
+		 struct FFunctionParams {
 			Objects::UObject* (*func)() = nullptr;
 			const char* name = "";
 			Objects::EObjectFlags objFlags = Objects::EObjectFlags::RF_NoFlags;
@@ -145,7 +145,7 @@ namespace SML {
 		/**
 		* Describes a connection of a function and class
 		*/
-		SML_API struct FClassFunctionLinkInfo {
+		struct FClassFunctionLinkInfo {
 			Objects::UFunction* (*func)() = nullptr;
 			const char* name = "";
 		};
@@ -153,14 +153,14 @@ namespace SML {
 		/**
 		* Holds information about the C++ class itself
 		*/
-		SML_API struct FCppClassTypeInfoStatic {
+		struct FCppClassTypeInfoStatic {
 			bool bIsAbstract = false;
 		};
 
 		/**
 		* Holds information about the interface implementation of a class
 		*/
-		SML_API struct FImplementedInterfaceParams {
+		struct FImplementedInterfaceParams {
 			Objects::UClass* (*ClassFunc)() = nullptr;
 			std::int32_t Offset = 0;
 			bool bImplementedByK2 = false;
@@ -169,7 +169,7 @@ namespace SML {
 		/**
 		* Describes a UClass before it gets constructed
 		*/
-		SML_API struct FClassParams {
+		struct FClassParams {
 			Objects::UClass* (*staticClass)() = nullptr;
 			Objects::UObject* (*const *deps)() = nullptr;
 			std::int32_t depsCount = 0;
@@ -194,7 +194,7 @@ namespace SML {
 		*
 		* @author Panakotta00
 		*/
-		SML_API class PropertyBuilder {
+		class PropertyBuilder {
 		private:
 			FGenericPropertyParams params;
 			std::string pname;
@@ -264,7 +264,7 @@ namespace SML {
 			*
 			* @author Panakotta00
 			*/
-			SML_API PropertyBuilder& addParamFlags(unsigned int flags);
+			SML_API PropertyBuilder& addParamFlags(std::uint64_t flags);
 
 			/**
 			* removes paramter flags
@@ -293,7 +293,7 @@ namespace SML {
 		*
 		* @author Panakotta00
 		*/
-		SML_API class FunctionBuilder {
+		class FunctionBuilder {
 			template <class T>
 			friend class ClassBuilder;
 
@@ -524,6 +524,10 @@ namespace SML {
 			}
 
 		public:
+			inline ~ClassBuilder() {
+				vtable(nullptr);
+			}
+
 			class UHelper {
 			public:
 				virtual inline void dest(void* shit) {
@@ -541,8 +545,7 @@ namespace SML {
 							void(Objects::UProperty::* dest)(void*);
 						};
 						vptr = (*(size_t**)p)[0x5C];
-						//auto dest = reinterpret_cast<void(Objects::UProperty::*)(void*)>(vptrf);
-						//(p->*(dest))((void*)(o + p->internalOffset));
+						//(p->*(dest))((void*)reinterpret_cast<Objects::FString*>((size_t)o + (size_t)p->internalOffset));
 					}
 
 					if (active.destructorf) active.destructorf((T*) o);
@@ -950,9 +953,7 @@ namespace SML {
 						void(Objects::UProperty::* init)(void*);
 					};
 					vptr = (*(size_t**)p)[0x5D];
-					//(p->*(init))((void*)(objInit.obj + p->internalOffset));
-
-					//*(FString*)(objInit.obj + p->internalOffset) = FString("nice");
+					(p->*(init))((void*)reinterpret_cast<Objects::FString*>((size_t)objInit.obj + (size_t)p->internalOffset));
 				}
 			}
 

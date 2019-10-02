@@ -13,7 +13,7 @@ namespace SML {
 		/**
 		* Flag register for object specs
 		*/
-		SML_API enum EObjectFlags : unsigned int {
+		enum EObjectFlags : unsigned int {
 			RF_NoFlags = 0x00000000,
 			RF_Public = 0x00000001,
 			RF_Standalone = 0x00000002,
@@ -56,7 +56,7 @@ namespace SML {
 		/**
 		* Currently we dont know what this is
 		*/
-		SML_API class FUObjectItem {
+		class FUObjectItem {
 		public:
 			UObject* obj;
 			EObjectFlags flags;
@@ -67,7 +67,7 @@ namespace SML {
 		/**
 		* Currently we dont know what this is
 		*/
-		SML_API class FChunkedFixedUObjectArray {
+		class FChunkedFixedUObjectArray {
 		public:
 			/**
 			* Returns the count of entrys
@@ -100,7 +100,7 @@ namespace SML {
 		/**
 		* Currently we dont know what this is
 		*/
-		SML_API class FUObjectArray {
+		class FUObjectArray {
 		public:
 			int objGCIndex;
 			int objNGCIndex;
@@ -112,7 +112,7 @@ namespace SML {
 		/**
 		* Base class of all Objects useable within the UObjectSystem from unreal
 		*/
-		SML_API class UObject {
+		class UObject {
 		private:
 			/**
 			* trys to find the UField by the given name in this UObject otherwise returns nullptr

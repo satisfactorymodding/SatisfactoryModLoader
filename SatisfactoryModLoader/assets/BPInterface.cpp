@@ -82,7 +82,7 @@ namespace SML {
 
 		// --- PropertyBuilder --- //
 
-		PropertyBuilder PropertyBuilder::retVal(EPropertyClass type, std::string name) {
+		PropertyBuilder PropertyBuilder::retVal(const EPropertyClass type, const std::string name) {
 			PropertyBuilder builder;
 			builder.params.type = type;
 			builder.params.dim = 1;
@@ -92,7 +92,7 @@ namespace SML {
 			return builder;
 		}
 
-		PropertyBuilder PropertyBuilder::param(EPropertyClass type, std::string name) {
+		PropertyBuilder PropertyBuilder::param(const EPropertyClass type, const std::string name) {
 			PropertyBuilder builder;
 			builder.params.type = type;
 			builder.params.dim = 1;
@@ -102,7 +102,7 @@ namespace SML {
 			return builder;
 		}
 
-		PropertyBuilder PropertyBuilder::attrib(EPropertyClass type, std::string name) {
+		PropertyBuilder PropertyBuilder::attrib(const EPropertyClass type, const std::string name) {
 			PropertyBuilder builder;
 			builder.params.type = type;
 			builder.params.dim = 1;
@@ -117,37 +117,37 @@ namespace SML {
 			return &params;
 		}
 
-		PropertyBuilder& PropertyBuilder::addObjFlags(EObjectFlags flags) {
+		PropertyBuilder& PropertyBuilder::addObjFlags(const EObjectFlags flags) {
 			params.objFlags = (EObjectFlags)(params.objFlags | flags);
 			return *this;
 		}
 
-		PropertyBuilder& PropertyBuilder::addObjFlags(unsigned int flags) {
+		PropertyBuilder& PropertyBuilder::addObjFlags(const unsigned int flags) {
 			params.objFlags = (EObjectFlags)(params.objFlags | flags);
 			return *this;
 		}
 
-		PropertyBuilder& PropertyBuilder::remObjFlags(EObjectFlags flags) {
+		PropertyBuilder& PropertyBuilder::remObjFlags(const EObjectFlags flags) {
 			params.objFlags = (EObjectFlags)(params.objFlags & ~flags);
 			return *this;
 		}
 
-		PropertyBuilder& PropertyBuilder::addParamFlags(EPropertyFlags flags) {
+		PropertyBuilder& PropertyBuilder::addParamFlags(const EPropertyFlags flags) {
 			params.propFlags = (EPropertyFlags)(params.propFlags | flags);
 			return *this;
 		}
 
-		PropertyBuilder& PropertyBuilder::addParamFlags(unsigned int flags) {
+		PropertyBuilder& PropertyBuilder::addParamFlags(const std::uint64_t flags) {
 			params.propFlags = (EPropertyFlags)(params.propFlags | flags);
 			return *this;
 		}
 
-		PropertyBuilder& PropertyBuilder::remParamFlags(EPropertyFlags flags) {
+		PropertyBuilder& PropertyBuilder::remParamFlags(const EPropertyFlags flags) {
 			params.propFlags = (EPropertyFlags)(params.propFlags & ~flags);
 			return *this;
 		}
 
-		PropertyBuilder& PropertyBuilder::name(std::string name) {
+		PropertyBuilder& PropertyBuilder::name(const std::string name) {
 			pname = name;
 			return *this;
 		}
@@ -246,11 +246,11 @@ namespace SML {
 			params.structSize = 0;
 			for (int i = 0; i < this->props.size(); ++i) {
 				props[i] = this->props[i].build();
-				props[i]->off = params.structSize;
+				props[i]->off = static_cast<int>(params.structSize);
 				params.structSize += this->props[i].getSize();
 			}
 			params.propArr = props;
-			params.propCount = this->props.size();
+			params.propCount = static_cast<std::int32_t>(this->props.size());
 
 			params.name = fname.c_str();
 

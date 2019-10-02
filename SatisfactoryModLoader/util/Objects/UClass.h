@@ -13,7 +13,7 @@ namespace SML {
 		/**
 		* Register for classFlag
 		*/
-		SML_API enum EClassFlags {
+		enum EClassFlags {
 			CLASS_None = 0x00000000u,
 			CLASS_Abstract = 0x00000001u,
 			CLASS_DefaultConfig = 0x00000002u,
@@ -52,7 +52,7 @@ namespace SML {
 		/**
 		* Register for castFlag to check in wich types the class is able to cast
 		*/
-		SML_API enum EClassCastFlags : std::uint64_t {
+		enum EClassCastFlags : std::uint64_t {
 			CAST_None = 0x0000000000000000,
 			CAST_UField = 0x0000000000000001,
 			CAST_UInt8Property = 0x0000000000000002,
@@ -113,7 +113,7 @@ namespace SML {
 		/**
 		* Representation of a class in the UObjectSystem (Unreals reflection system)
 		*/
-		SML_API class UClass : public UStruct, FClassBaseChain {
+		class UClass : public UStruct, FClassBaseChain {
 		public:
 			static UFunction*(*findFunction_f)(UObject*, Objects::FName);
 

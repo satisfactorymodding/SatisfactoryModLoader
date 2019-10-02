@@ -12,7 +12,7 @@ namespace SML {
 		*
 		* @author Panakotta00
 		*/
-		SML_API class FString : public TArray<wchar_t> {
+		class FString : public TArray<wchar_t> {
 		public:
 			/**
 			* Constructs a empty FString

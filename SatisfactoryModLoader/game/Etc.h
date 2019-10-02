@@ -19,10 +19,6 @@ namespace SML {
 
 		DEFINE_CONSTRUCTOR(UFGItemDescriptor, Constructor);
 
-
-		template <typename TElement>
-		struct TArray;
-
 		class AActor {
 		public:
 			template <typename TComponent, typename TAllocator>

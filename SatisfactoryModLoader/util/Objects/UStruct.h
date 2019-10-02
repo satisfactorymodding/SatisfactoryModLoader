@@ -10,7 +10,7 @@ namespace SML {
 		/**
 		* Representation of UStruct used by Unreal
 		*/
-		SML_API class UStruct : public UField {
+		class UStruct : public UField {
 		public:
 			class UStruct* super;
 			UField* childs;

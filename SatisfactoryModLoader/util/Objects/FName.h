@@ -9,7 +9,7 @@ namespace SML {
 		/**
 		* Entry object in global names list
 		*/
-		SML_API class FNameEntry {
+		class FNameEntry {
 		public:
 			int index;
 			FNameEntry* next;
@@ -23,7 +23,7 @@ namespace SML {
 		/**
 		* Container for global names list
 		*/
-		SML_API class TNameEntryArray {
+		class TNameEntryArray {
 		public:
 			enum {
 				elemsPerChunk = 16 * 1024,
@@ -41,7 +41,7 @@ namespace SML {
 		/**
 		* Reference container for a global Name
 		*/
-		SML_API struct FName {
+		struct FName {
 		public:
 			int index;
 			int count;
