@@ -7,12 +7,12 @@
 #endif
 
 #include "FG_Basic.hpp"
-#include "FG_OnlineSubsystemUtils_classes.hpp"
 #include "FG_BP_MenuBase_classes.hpp"
 #include "FG_Engine_classes.hpp"
-#include "FG_UMG_classes.hpp"
-#include "FG_FactoryGame_classes.hpp"
 #include "FG_CoreUObject_classes.hpp"
+#include "FG_UMG_classes.hpp"
+#include "FG_OnlineSubsystemUtils_classes.hpp"
+#include "FG_FactoryGame_classes.hpp"
 
 namespace SDK
 {

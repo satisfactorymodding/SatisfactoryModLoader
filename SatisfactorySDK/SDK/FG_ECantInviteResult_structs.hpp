@@ -19,8 +19,9 @@ enum class ECantInviteResult : uint8_t
 {
 	NewEnumerator0                 = 0,
 	NewEnumerator1                 = 1,
-	NewEnumerator2                 = 2,
-	ECantInviteResult_MAX          = 3
+	NewEnumerator3                 = 2,
+	NewEnumerator2                 = 3,
+	ECantInviteResult_MAX          = 4
 };
 
 

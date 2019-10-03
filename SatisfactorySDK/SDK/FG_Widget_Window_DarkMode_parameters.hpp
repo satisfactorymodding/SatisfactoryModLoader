@@ -14,6 +14,14 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.OnMouseButtonDown
+struct UWidget_Window_DarkMode_C_OnMouseButtonDown_Params
+{
+	struct FGeometry*                                  MyGeometry;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FPointerEvent*                              MouseEvent;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+	struct FEventReply                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
 // Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.InitTabs
 struct UWidget_Window_DarkMode_C_InitTabs_Params
 {

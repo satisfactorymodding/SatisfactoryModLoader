@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_ConveyorBeltMk1.Build_ConveyorBeltMk1_C
-// 0x0008 (0x0788 - 0x0780)
+// 0x0008 (0x0790 - 0x0788)
 class ABuild_ConveyorBeltMk1_C : public AFGBuildableConveyorBelt
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0780(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0788(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
 
 	static UClass* StaticClass()
 	{

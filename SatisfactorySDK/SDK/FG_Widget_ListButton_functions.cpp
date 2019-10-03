@@ -120,11 +120,11 @@ struct FLinearColor UWidget_ListButton_C::GetButtonBackground()
 // class UTexture*                Icon                           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   Title                          (BlueprintVisible, BlueprintReadOnly, Parm)
 // struct FText                   Description                    (BlueprintVisible, BlueprintReadOnly, Parm)
-// ESlateVisibility               descVisibility                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// ESlateVisibility               iconVisibility                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ESlateVisibility               DescVisibility                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ESlateVisibility               IconVisibility                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   AdditionalInfo                 (BlueprintVisible, BlueprintReadOnly, Parm)
 
-void UWidget_ListButton_C::UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility descVisibility, ESlateVisibility iconVisibility, const struct FText& AdditionalInfo)
+void UWidget_ListButton_C::UpdateButton(class UTexture* Icon, const struct FText& Title, const struct FText& Description, ESlateVisibility DescVisibility, ESlateVisibility IconVisibility, const struct FText& AdditionalInfo)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ListButton.Widget_ListButton_C.UpdateButton");
 
@@ -132,8 +132,8 @@ void UWidget_ListButton_C::UpdateButton(class UTexture* Icon, const struct FText
 	params.Icon = Icon;
 	params.Title = Title;
 	params.Description = Description;
-	params.descVisibility = descVisibility;
-	params.iconVisibility = iconVisibility;
+	params.DescVisibility = DescVisibility;
+	params.IconVisibility = IconVisibility;
 	params.AdditionalInfo = AdditionalInfo;
 
 	auto flags = fn->FunctionFlags;

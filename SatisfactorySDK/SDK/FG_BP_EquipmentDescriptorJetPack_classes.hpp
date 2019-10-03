@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_EquipmentDescriptorJetPack.BP_EquipmentDescriptorJetPack_C
-// 0x0000 (0x0130 - 0x0130)
+// 0x0000 (0x0138 - 0x0138)
 class UBP_EquipmentDescriptorJetPack_C : public UFGEquipmentDescriptor
 {
 public:

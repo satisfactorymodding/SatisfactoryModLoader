@@ -14,6 +14,12 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.SetTitle
+struct UWidget_FrontEnd_Button_C_SetTitle_Params
+{
+	struct FText                                       mDisplayName;                                             // (BlueprintVisible, BlueprintReadOnly, Parm)
+};
+
 // Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.SetActiveWidgetInSwitcher
 struct UWidget_FrontEnd_Button_C_SetActiveWidgetInSwitcher_Params
 {
@@ -97,10 +103,25 @@ struct UWidget_FrontEnd_Button_C_SetSelected_Params
 	bool                                               isSelected;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.BndEvt__mFrontEndButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature
+struct UWidget_FrontEnd_Button_C_BndEvt__mFrontEndButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature_Params
+{
+};
+
 // Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.ExecuteUbergraph_Widget_FrontEnd_Button
 struct UWidget_FrontEnd_Button_C_ExecuteUbergraph_Widget_FrontEnd_Button_Params
 {
 	int                                                EntryPoint;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.OnUnhovered__DelegateSignature
+struct UWidget_FrontEnd_Button_C_OnUnhovered__DelegateSignature_Params
+{
+};
+
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.OnHovered__DelegateSignature
+struct UWidget_FrontEnd_Button_C_OnHovered__DelegateSignature_Params
+{
 };
 
 // Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.OnClicked__DelegateSignature

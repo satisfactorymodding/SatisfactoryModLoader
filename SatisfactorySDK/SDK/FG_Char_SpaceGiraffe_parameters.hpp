@@ -80,6 +80,11 @@ struct AChar_SpaceGiraffe_C_UnregisterInteractingPlayer_Params
 	class AFGCharacterPlayer*                          Player;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveBeginPlay
+struct AChar_SpaceGiraffe_C_ReceiveBeginPlay_Params
+{
+};
+
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveTick
 struct AChar_SpaceGiraffe_C_ReceiveTick_Params
 {
@@ -89,11 +94,11 @@ struct AChar_SpaceGiraffe_C_ReceiveTick_Params
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.NotifyOnTakeDamage
 struct AChar_SpaceGiraffe_C_NotifyOnTakeDamage_Params
 {
-	class AActor**                                     damagedActor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AActor**                                     DamagedActor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	float*                                             damageAmount;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType**                                DamageType;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AController**                                instigatedBy;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor**                                     damageCauser;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AController**                                InstigatedBy;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AActor**                                     DamageCauser;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.StartRotationMovement
@@ -152,6 +157,22 @@ struct AChar_SpaceGiraffe_C_BndEvt__Capsule_K2Node_ComponentBoundEvent_0_Compone
 
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveDied
 struct AChar_SpaceGiraffe_C_ReceiveDied_Params
+{
+};
+
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveEndPlay
+struct AChar_SpaceGiraffe_C_ReceiveEndPlay_Params
+{
+	TEnumAsByte<EEndPlayReason>*                       EndPlayReason;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.GainedSignificance
+struct AChar_SpaceGiraffe_C_GainedSignificance_Params
+{
+};
+
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.LostSignificance
+struct AChar_SpaceGiraffe_C_LostSignificance_Params
 {
 };
 

@@ -1,10 +1,11 @@
 // Satisfactory SDK
 
+#include <stdafx.h>
+
 #ifdef _MSC_VER
 	#pragma pack(push, 0x8)
 #endif
 
-#include <stdafx.h>
 #include "FG_FactoryGame_parameters.hpp"
 
 namespace SDK
@@ -47,82 +48,14 @@ void UFGActorRepresentation::OnRep_ShouldShowInCompass()
 }
 
 
-// Function FactoryGame.FGActorRepresentation.OnRep_RepresentationTexture
+// Function FactoryGame.FGActorRepresentation.OnRep_ActorRepresentationUpdated
 // ()
 
-void UFGActorRepresentation::OnRep_RepresentationTexture()
+void UFGActorRepresentation::OnRep_ActorRepresentationUpdated()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentation.OnRep_RepresentationTexture");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentation.OnRep_ActorRepresentationUpdated");
 
-	UFGActorRepresentation_OnRep_RepresentationTexture_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function FactoryGame.FGActorRepresentation.OnRep_RepresentationText
-// ()
-
-void UFGActorRepresentation::OnRep_RepresentationText()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentation.OnRep_RepresentationText");
-
-	UFGActorRepresentation_OnRep_RepresentationText_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function FactoryGame.FGActorRepresentation.OnRep_RepresentationColor
-// ()
-
-void UFGActorRepresentation::OnRep_RepresentationColor()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentation.OnRep_RepresentationColor");
-
-	UFGActorRepresentation_OnRep_RepresentationColor_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function FactoryGame.FGActorRepresentation.OnRep_FogOfWarRevealType
-// ()
-
-void UFGActorRepresentation::OnRep_FogOfWarRevealType()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentation.OnRep_FogOfWarRevealType");
-
-	UFGActorRepresentation_OnRep_FogOfWarRevealType_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function FactoryGame.FGActorRepresentation.OnRep_FogOfWarRevealRadius
-// ()
-
-void UFGActorRepresentation::OnRep_FogOfWarRevealRadius()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentation.OnRep_FogOfWarRevealRadius");
-
-	UFGActorRepresentation_OnRep_FogOfWarRevealRadius_Params params;
+	UFGActorRepresentation_OnRep_ActorRepresentationUpdated_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -363,6 +296,27 @@ float UFGActorRepresentation::GetFogOfWarRevealRadius()
 }
 
 
+// Function FactoryGame.FGActorRepresentation.GetCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance UFGActorRepresentation::GetCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentation.GetCompassViewDistance");
+
+	UFGActorRepresentation_GetCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGActorRepresentation.GetActorRotation
 // ()
 // Parameters:
@@ -438,6 +392,29 @@ struct FText UFGActorRepresentationInterface::SetActorRepresentationText(const s
 
 	UFGActorRepresentationInterface_SetActorRepresentationText_Params params;
 	params.newText = newText;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGActorRepresentationInterface.SetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance UFGActorRepresentationInterface::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationInterface.SetActorCompassViewDistance");
+
+	UFGActorRepresentationInterface_SetActorCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
 
 	auto flags = fn->FunctionFlags;
 
@@ -701,6 +678,27 @@ float UFGActorRepresentationInterface::GetActorFogOfWarRevealRadius()
 }
 
 
+// Function FactoryGame.FGActorRepresentationInterface.GetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance UFGActorRepresentationInterface::GetActorCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationInterface.GetActorCompassViewDistance");
+
+	UFGActorRepresentationInterface_GetActorCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGActorRepresentationInterface.AddAsRepresentation
 // ()
 // Parameters:
@@ -747,6 +745,76 @@ bool AFGActorRepresentationManager::UpdateRepresentation(class AActor* realActor
 }
 
 
+// Function FactoryGame.FGActorRepresentationManager.SetMapRepresentationTypeFilter
+// ()
+// Parameters:
+// class APawn*                   owningPlayerPawn               (Parm, ZeroConstructor, IsPlainOldData)
+// ERepresentationType            Type                           (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGActorRepresentationManager::SetMapRepresentationTypeFilter(class APawn* owningPlayerPawn, ERepresentationType Type, bool visible)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationManager.SetMapRepresentationTypeFilter");
+
+	AFGActorRepresentationManager_SetMapRepresentationTypeFilter_Params params;
+	params.owningPlayerPawn = owningPlayerPawn;
+	params.Type = Type;
+	params.visible = visible;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGActorRepresentationManager.SetCompassViewDistanceForActorRepresentation
+// ()
+// Parameters:
+// class UFGActorRepresentation*  actorRepresentation            (Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           viewDistance                   (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGActorRepresentationManager::SetCompassViewDistanceForActorRepresentation(class UFGActorRepresentation* actorRepresentation, ECompassViewDistance viewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationManager.SetCompassViewDistanceForActorRepresentation");
+
+	AFGActorRepresentationManager_SetCompassViewDistanceForActorRepresentation_Params params;
+	params.actorRepresentation = actorRepresentation;
+	params.viewDistance = viewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGActorRepresentationManager.SetCompassRepresentationTypeFilter
+// ()
+// Parameters:
+// class APawn*                   owningPlayerPawn               (Parm, ZeroConstructor, IsPlainOldData)
+// ERepresentationType            Type                           (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGActorRepresentationManager::SetCompassRepresentationTypeFilter(class APawn* owningPlayerPawn, ERepresentationType Type, bool visible)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationManager.SetCompassRepresentationTypeFilter");
+
+	AFGActorRepresentationManager_SetCompassRepresentationTypeFilter_Params params;
+	params.owningPlayerPawn = owningPlayerPawn;
+	params.Type = Type;
+	params.visible = visible;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGActorRepresentationManager.RemoveRepresentationOfActor
 // ()
 // Parameters:
@@ -784,6 +852,79 @@ void AFGActorRepresentationManager::OnRep_ReplicatedRepresentations()
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGActorRepresentationManager.GetMapRepresentationTypeFilter
+// ()
+// Parameters:
+// class APawn*                   owningPlayerPawn               (Parm, ZeroConstructor, IsPlainOldData)
+// ERepresentationType            Type                           (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool AFGActorRepresentationManager::GetMapRepresentationTypeFilter(class APawn* owningPlayerPawn, ERepresentationType Type)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationManager.GetMapRepresentationTypeFilter");
+
+	AFGActorRepresentationManager_GetMapRepresentationTypeFilter_Params params;
+	params.owningPlayerPawn = owningPlayerPawn;
+	params.Type = Type;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGActorRepresentationManager.GetDistanceValueFromCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (Parm, ZeroConstructor, IsPlainOldData)
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float AFGActorRepresentationManager::GetDistanceValueFromCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationManager.GetDistanceValueFromCompassViewDistance");
+
+	AFGActorRepresentationManager_GetDistanceValueFromCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGActorRepresentationManager.GetCompassRepresentationTypeFilter
+// ()
+// Parameters:
+// class APawn*                   owningPlayerPawn               (Parm, ZeroConstructor, IsPlainOldData)
+// ERepresentationType            Type                           (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool AFGActorRepresentationManager::GetCompassRepresentationTypeFilter(class APawn* owningPlayerPawn, ERepresentationType Type)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGActorRepresentationManager.GetCompassRepresentationTypeFilter");
+
+	AFGActorRepresentationManager_GetCompassRepresentationTypeFilter_Params params;
+	params.owningPlayerPawn = owningPlayerPawn;
+	params.Type = Type;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -1607,6 +1748,330 @@ float UFGCharacterAnimInstance::GetAccelerationVectorLength()
 }
 
 
+// Function FactoryGame.FGItemDescriptor.GetStackSize
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+int UFGItemDescriptor::GetStackSize(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetStackSize");
+
+	UFGItemDescriptor_GetStackSize_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetSmallIcon
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// class UTexture2D*              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+class UTexture2D* UFGItemDescriptor::GetSmallIcon(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetSmallIcon");
+
+	UFGItemDescriptor_GetSmallIcon_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetRadioactiveDecay
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UFGItemDescriptor::GetRadioactiveDecay(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetRadioactiveDecay");
+
+	UFGItemDescriptor_GetRadioactiveDecay_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetPreviewView
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FItemView               out_previewView                (Parm, OutParm)
+
+void UFGItemDescriptor::GetPreviewView(class UClass* inClass, struct FItemView* out_previewView)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetPreviewView");
+
+	UFGItemDescriptor_GetPreviewView_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (out_previewView != nullptr)
+		*out_previewView = params.out_previewView;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetItemName
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FText UFGItemDescriptor::GetItemName(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemName");
+
+	UFGItemDescriptor_GetItemName_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetItemMesh
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// class UStaticMesh*             ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+class UStaticMesh* UFGItemDescriptor::GetItemMesh(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemMesh");
+
+	UFGItemDescriptor_GetItemMesh_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetItemIcon
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FSlateBrush             ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FSlateBrush UFGItemDescriptor::GetItemIcon(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemIcon");
+
+	UFGItemDescriptor_GetItemIcon_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetItemDescription
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FText UFGItemDescriptor::GetItemDescription(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemDescription");
+
+	UFGItemDescriptor_GetItemDescription_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetItemCategory
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// class UClass*                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+class UClass* UFGItemDescriptor::GetItemCategory(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemCategory");
+
+	UFGItemDescriptor_GetItemCategory_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetIconView
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FItemView               out_itemView                   (Parm, OutParm)
+
+void UFGItemDescriptor::GetIconView(class UClass* inClass, struct FItemView* out_itemView)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetIconView");
+
+	UFGItemDescriptor_GetIconView_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (out_itemView != nullptr)
+		*out_itemView = params.out_itemView;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetForm
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// EResourceForm                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+EResourceForm UFGItemDescriptor::GetForm(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetForm");
+
+	UFGItemDescriptor_GetForm_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetEnergyValue
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UFGItemDescriptor::GetEnergyValue(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetEnergyValue");
+
+	UFGItemDescriptor_GetEnergyValue_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.GetBigIcon
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// class UTexture2D*              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+class UTexture2D* UFGItemDescriptor::GetBigIcon(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetBigIcon");
+
+	UFGItemDescriptor_GetBigIcon_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGItemDescriptor.CanBeDiscarded
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGItemDescriptor::CanBeDiscarded(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.CanBeDiscarded");
+
+	UFGItemDescriptor_CanBeDiscarded_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGHologram.Server_SetSnapToGuideLines
 // ()
 // Parameters:
@@ -2092,14 +2557,14 @@ void AFGAttentionPingActor::SpawnAttentionPingEffects()
 }
 
 
-// Function FactoryGame.FGAttentionPingActor.OnRep_PlayerSlotIdx
+// Function FactoryGame.FGAttentionPingActor.OnRep_OwningPlayerState
 // ()
 
-void AFGAttentionPingActor::OnRep_PlayerSlotIdx()
+void AFGAttentionPingActor::OnRep_OwningPlayerState()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGAttentionPingActor.OnRep_PlayerSlotIdx");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGAttentionPingActor.OnRep_OwningPlayerState");
 
-	AFGAttentionPingActor_OnRep_PlayerSlotIdx_Params params;
+	AFGAttentionPingActor_OnRep_OwningPlayerState_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -2109,16 +2574,16 @@ void AFGAttentionPingActor::OnRep_PlayerSlotIdx()
 }
 
 
-// Function FactoryGame.FGAttentionPingActor.GetPlayerSlotIdx
+// Function FactoryGame.FGAttentionPingActor.GetOwningPlayerState
 // ()
 // Parameters:
-// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+// class AFGPlayerState*          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-int AFGAttentionPingActor::GetPlayerSlotIdx()
+class AFGPlayerState* AFGAttentionPingActor::GetOwningPlayerState()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGAttentionPingActor.GetPlayerSlotIdx");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGAttentionPingActor.GetOwningPlayerState");
 
-	AFGAttentionPingActor_GetPlayerSlotIdx_Params params;
+	AFGAttentionPingActor_GetOwningPlayerState_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -2451,6 +2916,31 @@ void UFGBlueprintFunctionLibrary::ShowOutline(class UPrimitiveComponent* comp, E
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGBlueprintFunctionLibrary.RoundFloatWithPrecision
+// ()
+// Parameters:
+// float                          Value                          (Parm, ZeroConstructor, IsPlainOldData)
+// int                            MaximumFractionalDigits        (Parm, ZeroConstructor, IsPlainOldData)
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UFGBlueprintFunctionLibrary::RoundFloatWithPrecision(float Value, int MaximumFractionalDigits)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBlueprintFunctionLibrary.RoundFloatWithPrecision");
+
+	UFGBlueprintFunctionLibrary_RoundFloatWithPrecision_Params params;
+	params.Value = Value;
+	params.MaximumFractionalDigits = MaximumFractionalDigits;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -2942,6 +3432,31 @@ struct FName UFGBlueprintFunctionLibrary::GetComponentFlagSoftLanding()
 }
 
 
+// Function FactoryGame.FGBlueprintFunctionLibrary.GetCategoriesWithAffordableRecipes
+// ()
+// Parameters:
+// class AFGCharacterPlayer*      playerPawn                     (Parm, ZeroConstructor, IsPlainOldData)
+// class UClass*                  forProducer                    (Parm, ZeroConstructor, IsPlainOldData)
+// TArray<class UClass*>          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+TArray<class UClass*> UFGBlueprintFunctionLibrary::GetCategoriesWithAffordableRecipes(class AFGCharacterPlayer* playerPawn, class UClass* forProducer)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBlueprintFunctionLibrary.GetCategoriesWithAffordableRecipes");
+
+	UFGBlueprintFunctionLibrary_GetCategoriesWithAffordableRecipes_Params params;
+	params.playerPawn = playerPawn;
+	params.forProducer = forProducer;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGBlueprintFunctionLibrary.GetAvailableSubCategoriesForCategory
 // ()
 // Parameters:
@@ -3043,6 +3558,31 @@ void UFGBlueprintFunctionLibrary::GetAllWidgetsOfClassInHierarchy(class UWidget*
 
 	if (FoundWidgets != nullptr)
 		*FoundWidgets = params.FoundWidgets;
+}
+
+
+// Function FactoryGame.FGBlueprintFunctionLibrary.GetAllItemsInCategory
+// ()
+// Parameters:
+// class UObject*                 WorldContext                   (Parm, ZeroConstructor, IsPlainOldData)
+// class UClass*                  itemCategory                   (Parm, ZeroConstructor, IsPlainOldData)
+// TArray<class UClass*>          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+TArray<class UClass*> UFGBlueprintFunctionLibrary::GetAllItemsInCategory(class UObject* WorldContext, class UClass* itemCategory)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBlueprintFunctionLibrary.GetAllItemsInCategory");
+
+	UFGBlueprintFunctionLibrary_GetAllItemsInCategory_Params params;
+	params.WorldContext = WorldContext;
+	params.itemCategory = itemCategory;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -4991,6 +5531,27 @@ void UFGConveyorRemoteCallObject::Server_OnUse(class AFGBuildableConveyorBelt* T
 }
 
 
+// Function FactoryGame.FGBuildableConveyorBase.GetIsSignificant
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool AFGBuildableConveyorBase::GetIsSignificant()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableConveyorBase.GetIsSignificant");
+
+	AFGBuildableConveyorBase_GetIsSignificant_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGBuildableConveyorBelt.OnRep_SplineData
 // ()
 
@@ -5060,27 +5621,6 @@ class UFGSplineComponent* AFGBuildableConveyorBelt::GetSplineComponent()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableConveyorBelt.GetSplineComponent");
 
 	AFGBuildableConveyorBelt_GetSplineComponent_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGBuildableConveyorBelt.GetIsSignificant
-// ()
-// Parameters:
-// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-bool AFGBuildableConveyorBelt::GetIsSignificant()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableConveyorBelt.GetIsSignificant");
-
-	AFGBuildableConveyorBelt_GetIsSignificant_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -5682,6 +6222,27 @@ float AFGBuildableGeneratorFuel::GetFuelAmount()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableGeneratorFuel.GetFuelAmount");
 
 	AFGBuildableGeneratorFuel_GetFuelAmount_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGBuildableGeneratorFuel.GetCurrentFuelClass
+// ()
+// Parameters:
+// class UClass*                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+class UClass* AFGBuildableGeneratorFuel::GetCurrentFuelClass()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableGeneratorFuel.GetCurrentFuelClass");
+
+	AFGBuildableGeneratorFuel_GetCurrentFuelClass_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -6898,17 +7459,17 @@ void AFGBuildableSubsystem::GetTypedBuildable(class UClass* inClass, TArray<clas
 }
 
 
-// Function FactoryGame.FGBuildableSubsystem.getColorSlotSecondaryLinear
+// Function FactoryGame.FGBuildableSubsystem.GetColorSlotSecondaryLinear
 // ()
 // Parameters:
 // unsigned char                  Index                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-struct FLinearColor AFGBuildableSubsystem::getColorSlotSecondaryLinear(unsigned char Index)
+struct FLinearColor AFGBuildableSubsystem::GetColorSlotSecondaryLinear(unsigned char Index)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableSubsystem.getColorSlotSecondaryLinear");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableSubsystem.GetColorSlotSecondaryLinear");
 
-	AFGBuildableSubsystem_getColorSlotSecondaryLinear_Params params;
+	AFGBuildableSubsystem_GetColorSlotSecondaryLinear_Params params;
 	params.Index = Index;
 
 	auto flags = fn->FunctionFlags;
@@ -6944,17 +7505,17 @@ struct FColor AFGBuildableSubsystem::getColorSlotSecondary(unsigned char Index)
 }
 
 
-// Function FactoryGame.FGBuildableSubsystem.getColorSlotPrimaryLinear
+// Function FactoryGame.FGBuildableSubsystem.GetColorSlotPrimaryLinear
 // ()
 // Parameters:
 // unsigned char                  Index                          (Parm, ZeroConstructor, IsPlainOldData)
 // struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-struct FLinearColor AFGBuildableSubsystem::getColorSlotPrimaryLinear(unsigned char Index)
+struct FLinearColor AFGBuildableSubsystem::GetColorSlotPrimaryLinear(unsigned char Index)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableSubsystem.getColorSlotPrimaryLinear");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildableSubsystem.GetColorSlotPrimaryLinear");
 
-	AFGBuildableSubsystem_getColorSlotPrimaryLinear_Params params;
+	AFGBuildableSubsystem_GetColorSlotPrimaryLinear_Params params;
 	params.Index = Index;
 
 	auto flags = fn->FunctionFlags;
@@ -7480,307 +8041,6 @@ struct FSlateBrush UFGBuildCategory::GetCategoryIcon(class UClass* inClass)
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGBuildCategory.GetCategoryIcon");
 
 	UFGBuildCategory_GetCategoryIcon_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetStackSize
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-int UFGItemDescriptor::GetStackSize(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetStackSize");
-
-	UFGItemDescriptor_GetStackSize_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetSmallIcon
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// class UTexture2D*              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-class UTexture2D* UFGItemDescriptor::GetSmallIcon(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetSmallIcon");
-
-	UFGItemDescriptor_GetSmallIcon_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetRadioactiveDecay
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-float UFGItemDescriptor::GetRadioactiveDecay(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetRadioactiveDecay");
-
-	UFGItemDescriptor_GetRadioactiveDecay_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetPreviewView
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FItemView               out_previewView                (Parm, OutParm)
-
-void UFGItemDescriptor::GetPreviewView(class UClass* inClass, struct FItemView* out_previewView)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetPreviewView");
-
-	UFGItemDescriptor_GetPreviewView_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	if (out_previewView != nullptr)
-		*out_previewView = params.out_previewView;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetItemName
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FText UFGItemDescriptor::GetItemName(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemName");
-
-	UFGItemDescriptor_GetItemName_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetItemMesh
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// class UStaticMesh*             ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-class UStaticMesh* UFGItemDescriptor::GetItemMesh(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemMesh");
-
-	UFGItemDescriptor_GetItemMesh_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetItemIcon
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FSlateBrush             ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FSlateBrush UFGItemDescriptor::GetItemIcon(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemIcon");
-
-	UFGItemDescriptor_GetItemIcon_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetItemDescription
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FText UFGItemDescriptor::GetItemDescription(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetItemDescription");
-
-	UFGItemDescriptor_GetItemDescription_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetIconView
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// struct FItemView               out_itemView                   (Parm, OutParm)
-
-void UFGItemDescriptor::GetIconView(class UClass* inClass, struct FItemView* out_itemView)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetIconView");
-
-	UFGItemDescriptor_GetIconView_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	if (out_itemView != nullptr)
-		*out_itemView = params.out_itemView;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetForm
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// EResourceForm                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-EResourceForm UFGItemDescriptor::GetForm(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetForm");
-
-	UFGItemDescriptor_GetForm_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetEnergyValue
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-float UFGItemDescriptor::GetEnergyValue(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetEnergyValue");
-
-	UFGItemDescriptor_GetEnergyValue_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.GetBigIcon
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// class UTexture2D*              ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-class UTexture2D* UFGItemDescriptor::GetBigIcon(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.GetBigIcon");
-
-	UFGItemDescriptor_GetBigIcon_Params params;
-	params.inClass = inClass;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function FactoryGame.FGItemDescriptor.CanBeDiscarded
-// ()
-// Parameters:
-// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
-// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-
-bool UFGItemDescriptor::CanBeDiscarded(class UClass* inClass)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemDescriptor.CanBeDiscarded");
-
-	UFGItemDescriptor_CanBeDiscarded_Params params;
 	params.inClass = inClass;
 
 	auto flags = fn->FunctionFlags;
@@ -8561,19 +8821,19 @@ bool AFGEquipment::CanAffordUse()
 // Parameters:
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float AFGEquipment::AdjustDamage(float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+float AFGEquipment::AdjustDamage(float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGEquipment.AdjustDamage");
 
 	AFGEquipment_AdjustDamage_Params params;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -10616,19 +10876,19 @@ void AFGCharacterBase::ReceiveDied()
 // Parameters:
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-int AFGCharacterBase::ReceivedAdjustDamage(float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+int AFGCharacterBase::ReceivedAdjustDamage(float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.ReceivedAdjustDamage");
 
 	AFGCharacterBase_ReceivedAdjustDamage_Params params;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -10707,26 +10967,26 @@ void AFGCharacterBase::PlayFootstepEffect(int footDown, bool PlaySound)
 // Function FactoryGame.FGCharacterBase.OnTakeRadialDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              HitInfo                        (Parm, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGCharacterBase::OnTakeRadialDamage(class AActor* damagedActor, float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FHitResult& HitInfo, class AController* instigatedBy, class AActor* damageCauser)
+void AFGCharacterBase::OnTakeRadialDamage(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FHitResult& HitInfo, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.OnTakeRadialDamage");
 
 	AFGCharacterBase_OnTakeRadialDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
 	params.DamageType = DamageType;
 	params.HitLocation = HitLocation;
 	params.HitInfo = HitInfo;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -10739,30 +10999,30 @@ void AFGCharacterBase::OnTakeRadialDamage(class AActor* damagedActor, float Dama
 // Function FactoryGame.FGCharacterBase.OnTakePointDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     HitComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 ShotFromDirection              (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGCharacterBase::OnTakePointDamage(class AActor* damagedActor, float Damage, class AController* instigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* damageCauser)
+void AFGCharacterBase::OnTakePointDamage(class AActor* DamagedActor, float Damage, class AController* InstigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.OnTakePointDamage");
 
 	AFGCharacterBase_OnTakePointDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
-	params.instigatedBy = instigatedBy;
+	params.InstigatedBy = InstigatedBy;
 	params.HitLocation = HitLocation;
 	params.HitComponent = HitComponent;
 	params.BoneName = BoneName;
 	params.ShotFromDirection = ShotFromDirection;
 	params.DamageType = DamageType;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -10775,22 +11035,22 @@ void AFGCharacterBase::OnTakePointDamage(class AActor* damagedActor, float Damag
 // Function FactoryGame.FGCharacterBase.OnTakeDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGCharacterBase::OnTakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AFGCharacterBase::OnTakeDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.OnTakeDamage");
 
 	AFGCharacterBase_OnTakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -10837,22 +11097,22 @@ void AFGCharacterBase::NotifyOnWeakspotHit()
 // Function FactoryGame.FGCharacterBase.NotifyOnTakeRadialDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGCharacterBase::NotifyOnTakeRadialDamage(class AActor* damagedActor, float Damage, class AController* instigatedBy, class UDamageType* DamageType, class AActor* damageCauser)
+void AFGCharacterBase::NotifyOnTakeRadialDamage(class AActor* DamagedActor, float Damage, class AController* InstigatedBy, class UDamageType* DamageType, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.NotifyOnTakeRadialDamage");
 
 	AFGCharacterBase_NotifyOnTakeRadialDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
-	params.instigatedBy = instigatedBy;
+	params.InstigatedBy = InstigatedBy;
 	params.DamageType = DamageType;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -10865,30 +11125,30 @@ void AFGCharacterBase::NotifyOnTakeRadialDamage(class AActor* damagedActor, floa
 // Function FactoryGame.FGCharacterBase.NotifyOnTakePointDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     HitComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 ShotFromDirection              (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGCharacterBase::NotifyOnTakePointDamage(class AActor* damagedActor, float Damage, class AController* instigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* damageCauser)
+void AFGCharacterBase::NotifyOnTakePointDamage(class AActor* DamagedActor, float Damage, class AController* InstigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.NotifyOnTakePointDamage");
 
 	AFGCharacterBase_NotifyOnTakePointDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
-	params.instigatedBy = instigatedBy;
+	params.InstigatedBy = InstigatedBy;
 	params.HitLocation = HitLocation;
 	params.HitComponent = HitComponent;
 	params.BoneName = BoneName;
 	params.ShotFromDirection = ShotFromDirection;
 	params.DamageType = DamageType;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -10901,22 +11161,22 @@ void AFGCharacterBase::NotifyOnTakePointDamage(class AActor* damagedActor, float
 // Function FactoryGame.FGCharacterBase.NotifyOnTakeDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGCharacterBase::NotifyOnTakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AFGCharacterBase::NotifyOnTakeDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.NotifyOnTakeDamage");
 
 	AFGCharacterBase_NotifyOnTakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -11157,23 +11417,23 @@ int AFGCharacterBase::CalculateFallDamage(float zSpeed)
 // Function FactoryGame.FGCharacterBase.AdjustDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float AFGCharacterBase::AdjustDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+float AFGCharacterBase::AdjustDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCharacterBase.AdjustDamage");
 
 	AFGCharacterBase_AdjustDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -13052,6 +13312,27 @@ void UFGCheatManager::UpdateSessionToOSS()
 }
 
 
+// Function FactoryGame.FGCheatManager.TurboMode_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::TurboMode_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.TurboMode_Get");
+
+	UFGCheatManager_TurboMode_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGCheatManager.TurboMode
 // ()
 // Parameters:
@@ -13191,6 +13472,27 @@ void UFGCheatManager::ShowSequenceList()
 }
 
 
+// Function FactoryGame.FGCheatManager.ShowFactoryOnly_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::ShowFactoryOnly_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.ShowFactoryOnly_Get");
+
+	UFGCheatManager_ShowFactoryOnly_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGCheatManager.ShowFactoryOnly
 // ()
 // Parameters:
@@ -13248,6 +13550,48 @@ void UFGCheatManager::SetTimeSpeedMultiplier(float Speed)
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.SetTimeOfDay_minute_Get
+// ()
+// Parameters:
+// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+int UFGCheatManager::SetTimeOfDay_minute_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.SetTimeOfDay_minute_Get");
+
+	UFGCheatManager_SetTimeOfDay_minute_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGCheatManager.SetTimeOfDay_hour_Get
+// ()
+// Parameters:
+// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+int UFGCheatManager::SetTimeOfDay_hour_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.SetTimeOfDay_hour_Get");
+
+	UFGCheatManager_SetTimeOfDay_hour_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -13327,6 +13671,27 @@ void UFGCheatManager::SetGamePhase(TEnumAsByte<EGamePhase> phase)
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.SetFactoryDetailReplication_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::SetFactoryDetailReplication_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.SetFactoryDetailReplication_Get");
+
+	UFGCheatManager_SetFactoryDetailReplication_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -13466,6 +13831,23 @@ void UFGCheatManager::ResetSchematics()
 }
 
 
+// Function FactoryGame.FGCheatManager.ResetRecipes
+// ()
+
+void UFGCheatManager::ResetRecipes()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.ResetRecipes");
+
+	UFGCheatManager_ResetRecipes_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGCheatManager.ResetHubTutorial
 // ()
 
@@ -13491,6 +13873,26 @@ void UFGCheatManager::ResetFuses()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.ResetFuses");
 
 	UFGCheatManager_ResetFuses_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.ResetAllFactoryLegsToZero
+// ()
+// Parameters:
+// bool                           repopulateEmptyLegs            (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCheatManager::ResetAllFactoryLegsToZero(bool repopulateEmptyLegs)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.ResetAllFactoryLegsToZero");
+
+	UFGCheatManager_ResetAllFactoryLegsToZero_Params params;
+	params.repopulateEmptyLegs = repopulateEmptyLegs;
 
 	auto flags = fn->FunctionFlags;
 
@@ -13545,6 +13947,23 @@ void UFGCheatManager::RebuildPowerCircuits()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.RebuildPowerCircuits");
 
 	UFGCheatManager_RebuildPowerCircuits_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.RebuildFactoryLegsOneTileAroundPlayer
+// ()
+
+void UFGCheatManager::RebuildFactoryLegsOneTileAroundPlayer()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.RebuildFactoryLegsOneTileAroundPlayer");
+
+	UFGCheatManager_RebuildFactoryLegsOneTileAroundPlayer_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -13628,6 +14047,27 @@ void UFGCheatManager::PurgeAllBeaconsFromSave()
 }
 
 
+// Function FactoryGame.FGCheatManager.PumpiMode_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::PumpiMode_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.PumpiMode_Get");
+
+	UFGCheatManager_PumpiMode_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGCheatManager.PumpiMode
 // ()
 // Parameters:
@@ -13656,6 +14096,88 @@ void UFGCheatManager::PrintStatichMeshesHirarchy()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.PrintStatichMeshesHirarchy");
 
 	UFGCheatManager_PrintStatichMeshesHirarchy_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.PlayerNoClipModeOnFly_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::PlayerNoClipModeOnFly_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.PlayerNoClipModeOnFly_Get");
+
+	UFGCheatManager_PlayerNoClipModeOnFly_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGCheatManager.PlayerNoClipModeOnFly
+// ()
+// Parameters:
+// bool                           gohstMode                      (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCheatManager::PlayerNoClipModeOnFly(bool gohstMode)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.PlayerNoClipModeOnFly");
+
+	UFGCheatManager_PlayerNoClipModeOnFly_Params params;
+	params.gohstMode = gohstMode;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.PlayerFly_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::PlayerFly_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.PlayerFly_Get");
+
+	UFGCheatManager_PlayerFly_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGCheatManager.PlayerFly
+// ()
+// Parameters:
+// bool                           flyModeEnabled                 (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCheatManager::PlayerFly(bool flyModeEnabled)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.PlayerFly");
+
+	UFGCheatManager_PlayerFly_Params params;
+	params.flyModeEnabled = flyModeEnabled;
 
 	auto flags = fn->FunctionFlags;
 
@@ -13699,6 +14221,27 @@ void UFGCheatManager::OpenModMap()
 }
 
 
+// Function FactoryGame.FGCheatManager.NoPower_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::NoPower_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.NoPower_Get");
+
+	UFGCheatManager_NoPower_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGCheatManager.NoPower
 // ()
 // Parameters:
@@ -13716,6 +14259,68 @@ void UFGCheatManager::NoPower(bool Enabled)
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.NoMessages_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::NoMessages_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.NoMessages_Get");
+
+	UFGCheatManager_NoMessages_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGCheatManager.NoMessages
+// ()
+// Parameters:
+// bool                           Enabled                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCheatManager::NoMessages(bool Enabled)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.NoMessages");
+
+	UFGCheatManager_NoMessages_Params params;
+	params.Enabled = Enabled;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.NoCost_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::NoCost_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.NoCost_Get");
+
+	UFGCheatManager_NoCost_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -13942,6 +14547,27 @@ void UFGCheatManager::ListDebugStartingPoint()
 }
 
 
+// Function FactoryGame.FGCheatManager.HideFactoryOnly_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::HideFactoryOnly_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.HideFactoryOnly_Get");
+
+	UFGCheatManager_HideFactoryOnly_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGCheatManager.HideFactoryOnly
 // ()
 // Parameters:
@@ -13959,6 +14585,27 @@ void UFGCheatManager::HideFactoryOnly(bool factoryHidden)
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.HideAllBuildings_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::HideAllBuildings_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.HideAllBuildings_Get");
+
+	UFGCheatManager_HideAllBuildings_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
 }
 
 
@@ -13982,19 +14629,41 @@ void UFGCheatManager::HideAllBuildings(bool InVisibility)
 }
 
 
-// Function FactoryGame.FGCheatManager.GiveItem
+// Function FactoryGame.FGCheatManager.GiveItemStacks
 // ()
 // Parameters:
 // class UClass*                  Resource                       (Parm, ZeroConstructor, IsPlainOldData)
-// int                            amount                         (Parm, ZeroConstructor, IsPlainOldData)
+// int                            NumberOfStacks                 (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGCheatManager::GiveItem(class UClass* Resource, int amount)
+void UFGCheatManager::GiveItemStacks(class UClass* Resource, int NumberOfStacks)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.GiveItem");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.GiveItemStacks");
 
-	UFGCheatManager_GiveItem_Params params;
+	UFGCheatManager_GiveItemStacks_Params params;
 	params.Resource = Resource;
-	params.amount = amount;
+	params.NumberOfStacks = NumberOfStacks;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.GiveItemsSingle
+// ()
+// Parameters:
+// class UClass*                  Resource                       (Parm, ZeroConstructor, IsPlainOldData)
+// int                            NumberOfItems                  (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCheatManager::GiveItemsSingle(class UClass* Resource, int NumberOfItems)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.GiveItemsSingle");
+
+	UFGCheatManager_GiveItemsSingle_Params params;
+	params.Resource = Resource;
+	params.NumberOfItems = NumberOfItems;
 
 	auto flags = fn->FunctionFlags;
 
@@ -14197,6 +14866,27 @@ void UFGCheatManager::FixupBuiltByRecipeInOldSave(bool reapplyRecipeIfBetterMatc
 }
 
 
+// Function FactoryGame.FGCheatManager.EnablePlayerFOV_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::EnablePlayerFOV_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.EnablePlayerFOV_Get");
+
+	UFGCheatManager_EnablePlayerFOV_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGCheatManager.EnablePlayerFOV
 // ()
 // Parameters:
@@ -14237,6 +14927,27 @@ void UFGCheatManager::EnableInstancingOnFactory(bool Enabled)
 }
 
 
+// Function FactoryGame.FGCheatManager.EnableBuildableTick_Get
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGCheatManager::EnableBuildableTick_Get()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.EnableBuildableTick_Get");
+
+	UFGCheatManager_EnableBuildableTick_Get_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGCheatManager.EnableBuildableTick
 // ()
 // Parameters:
@@ -14257,6 +14968,26 @@ void UFGCheatManager::EnableBuildableTick(bool enable)
 }
 
 
+// Function FactoryGame.FGCheatManager.EnableAudioDebug
+// ()
+// Parameters:
+// bool                           IsEnabled                      (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCheatManager::EnableAudioDebug(bool IsEnabled)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.EnableAudioDebug");
+
+	UFGCheatManager_EnableAudioDebug_Params params;
+	params.IsEnabled = IsEnabled;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGCheatManager.DumpTicking
 // ()
 // Parameters:
@@ -14268,6 +14999,23 @@ void UFGCheatManager::DumpTicking(bool detailed)
 
 	UFGCheatManager_DumpTicking_Params params;
 	params.detailed = detailed;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCheatManager.DumpSignificanceManagedObjects
+// ()
+
+void UFGCheatManager::DumpSignificanceManagedObjects()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCheatManager.DumpSignificanceManagedObjects");
+
+	UFGCheatManager_DumpSignificanceManagedObjects_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -15399,15 +16147,15 @@ bool UFGColorInterface::GetCanBeColored()
 // Function FactoryGame.FGCombatFunctionLibrary.TryGetCharacterFromDamageCauser
 // ()
 // Parameters:
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AFGCharacterBase*        ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-class AFGCharacterBase* UFGCombatFunctionLibrary::TryGetCharacterFromDamageCauser(class AActor* damageCauser)
+class AFGCharacterBase* UFGCombatFunctionLibrary::TryGetCharacterFromDamageCauser(class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCombatFunctionLibrary.TryGetCharacterFromDamageCauser");
 
 	UFGCombatFunctionLibrary_TryGetCharacterFromDamageCauser_Params params;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -15494,6 +16242,26 @@ void UFGCombatFunctionLibrary::DoRadialDamageWithinCollision(class AController* 
 	params.DamageType = DamageType;
 	params.Damage = Damage;
 	params.Radius = Radius;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCompassObjectWidget.SetCompassObjectVisbility
+// ()
+// Parameters:
+// bool                           visibile                       (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCompassObjectWidget::SetCompassObjectVisbility(bool visibile)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCompassObjectWidget.SetCompassObjectVisbility");
+
+	UFGCompassObjectWidget_SetCompassObjectVisbility_Params params;
+	params.visibile = visibile;
 
 	auto flags = fn->FunctionFlags;
 
@@ -15798,6 +16566,28 @@ void UFGCompassWidget::OnActorRepresentationRemoved(class UFGActorRepresentation
 
 	UFGCompassWidget_OnActorRepresentationRemoved_Params params;
 	params.actorRepresentation = actorRepresentation;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGCompassWidget.OnActorRepresentationFiltered
+// ()
+// Parameters:
+// ERepresentationType            Type                           (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGCompassWidget::OnActorRepresentationFiltered(ERepresentationType Type, bool visible)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGCompassWidget.OnActorRepresentationFiltered");
+
+	UFGCompassWidget_OnActorRepresentationFiltered_Params params;
+	params.Type = Type;
+	params.visible = visible;
 
 	auto flags = fn->FunctionFlags;
 
@@ -18739,22 +19529,22 @@ void AFGEnemyController::RemoveInvalidAggroTargets()
 // Function FactoryGame.FGEnemyController.OnPawnTakeDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGEnemyController::OnPawnTakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AFGEnemyController::OnPawnTakeDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGEnemyController.OnPawnTakeDamage");
 
 	AFGEnemyController_OnPawnTakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -20148,22 +20938,22 @@ void AFGVehicle::ReceiveDied(class AActor* thisActor)
 // Function FactoryGame.FGVehicle.OnTakeDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGVehicle::OnTakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AFGVehicle::OnTakeDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGVehicle.OnTakeDamage");
 
 	AFGVehicle_OnTakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -20210,22 +21000,22 @@ void AFGVehicle::OnRep_PrimaryColor()
 // Function FactoryGame.FGVehicle.NotifyOnTakeDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AFGVehicle::NotifyOnTakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AFGVehicle::NotifyOnTakeDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGVehicle.NotifyOnTakeDamage");
 
 	AFGVehicle_NotifyOnTakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -20738,6 +21528,27 @@ void UFGGameInstance::PushError(class UObject* WorldContext, class UClass* error
 }
 
 
+// Function FactoryGame.FGGameInstance.PopLatestNetworkError
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGGameInstance::PopLatestNetworkError()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameInstance.PopLatestNetworkError");
+
+	UFGGameInstance_PopLatestNetworkError_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGGameInstance.PeekNextError
 // ()
 // Parameters:
@@ -20821,6 +21632,31 @@ class UFGErrorMessage* UFGGameInstance::GetNextError(class UObject* WorldContext
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGGameInstance.GetLatestNetworkError
+// ()
+// Parameters:
+// struct FFGGameNetworkErrorMsg  Msg                            (Parm, OutParm)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGGameInstance::GetLatestNetworkError(struct FFGGameNetworkErrorMsg* Msg)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameInstance.GetLatestNetworkError");
+
+	UFGGameInstance_GetLatestNetworkError_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (Msg != nullptr)
+		*Msg = params.Msg;
 
 	return params.ReturnValue;
 }
@@ -22598,6 +23434,26 @@ void UFGGameUserSettings::UpdatePostProcessSettings()
 }
 
 
+// Function FactoryGame.FGGameUserSettings.SetShowBreakNotification
+// ()
+// Parameters:
+// bool                           Enabled                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGGameUserSettings::SetShowBreakNotification(bool Enabled)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.SetShowBreakNotification");
+
+	UFGGameUserSettings_SetShowBreakNotification_Params params;
+	params.Enabled = Enabled;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGGameUserSettings.SetNeworkQuality
 // ()
 // Parameters:
@@ -22649,6 +23505,26 @@ void UFGGameUserSettings::SetInvertedLook(bool newInvertLook)
 
 	UFGGameUserSettings_SetInvertedLook_Params params;
 	params.newInvertLook = newInvertLook;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGGameUserSettings.SetHZBOEnabled
+// ()
+// Parameters:
+// bool                           enable                         (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGGameUserSettings::SetHZBOEnabled(bool enable)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.SetHZBOEnabled");
+
+	UFGGameUserSettings_SetHZBOEnabled_Params params;
+	params.enable = enable;
 
 	auto flags = fn->FunctionFlags;
 
@@ -22729,6 +23605,26 @@ void UFGGameUserSettings::SetAutoSortInventory(bool shouldAutoSort)
 
 	UFGGameUserSettings_SetAutoSortInventory_Params params;
 	params.shouldAutoSort = shouldAutoSort;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGGameUserSettings.SetAutosaveInterval
+// ()
+// Parameters:
+// int                            newInterval                    (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGGameUserSettings::SetAutosaveInterval(int newInterval)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.SetAutosaveInterval");
+
+	UFGGameUserSettings_SetAutosaveInterval_Params params;
+	params.newInterval = newInterval;
 
 	auto flags = fn->FunctionFlags;
 
@@ -22911,6 +23807,48 @@ bool UFGGameUserSettings::IsMotionBlurDirty()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.IsMotionBlurDirty");
 
 	UFGGameUserSettings_IsMotionBlurDirty_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGGameUserSettings.IsHZBOEnabled
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGGameUserSettings::IsHZBOEnabled()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.IsHZBOEnabled");
+
+	UFGGameUserSettings_IsHZBOEnabled_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGGameUserSettings.GetShowBreakNotification
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGGameUserSettings::GetShowBreakNotification()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.GetShowBreakNotification");
+
+	UFGGameUserSettings_GetShowBreakNotification_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -23123,6 +24061,27 @@ bool UFGGameUserSettings::GetAutoSortInventory()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.GetAutoSortInventory");
 
 	UFGGameUserSettings_GetAutoSortInventory_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGGameUserSettings.GetAutosaveInterval
+// ()
+// Parameters:
+// int                            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+int UFGGameUserSettings::GetAutosaveInterval()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGGameUserSettings.GetAutosaveInterval");
+
+	UFGGameUserSettings_GetAutosaveInterval_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -23412,26 +24371,26 @@ TArray<struct FResearchRecipeReward> UFGHardDriveSettings::GetResearchRewardPack
 // Function FactoryGame.FGHealthComponent.TakeRadialDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              HitInfo                        (Parm, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGHealthComponent::TakeRadialDamage(class AActor* damagedActor, float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FHitResult& HitInfo, class AController* instigatedBy, class AActor* damageCauser)
+void UFGHealthComponent::TakeRadialDamage(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FHitResult& HitInfo, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGHealthComponent.TakeRadialDamage");
 
 	UFGHealthComponent_TakeRadialDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
 	params.DamageType = DamageType;
 	params.HitLocation = HitLocation;
 	params.HitInfo = HitInfo;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -23444,30 +24403,30 @@ void UFGHealthComponent::TakeRadialDamage(class AActor* damagedActor, float Dama
 // Function FactoryGame.FGHealthComponent.TakePointDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     HitComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 ShotFromDirection              (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGHealthComponent::TakePointDamage(class AActor* damagedActor, float Damage, class AController* instigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* damageCauser)
+void UFGHealthComponent::TakePointDamage(class AActor* DamagedActor, float Damage, class AController* InstigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGHealthComponent.TakePointDamage");
 
 	UFGHealthComponent_TakePointDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
-	params.instigatedBy = instigatedBy;
+	params.InstigatedBy = InstigatedBy;
 	params.HitLocation = HitLocation;
 	params.HitComponent = HitComponent;
 	params.BoneName = BoneName;
 	params.ShotFromDirection = ShotFromDirection;
 	params.DamageType = DamageType;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -23480,22 +24439,22 @@ void UFGHealthComponent::TakePointDamage(class AActor* damagedActor, float Damag
 // Function FactoryGame.FGHealthComponent.TakeDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGHealthComponent::TakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void UFGHealthComponent::TakeDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGHealthComponent.TakeDamage");
 
 	UFGHealthComponent_TakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -23679,26 +24638,26 @@ float UFGHealthComponent::GetCurrentHealth()
 // Function FactoryGame.FGHealthComponent.Client_TakeRadialDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              HitInfo                        (Parm, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGHealthComponent::Client_TakeRadialDamage(class AActor* damagedActor, float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FHitResult& HitInfo, class AController* instigatedBy, class AActor* damageCauser)
+void UFGHealthComponent::Client_TakeRadialDamage(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FHitResult& HitInfo, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGHealthComponent.Client_TakeRadialDamage");
 
 	UFGHealthComponent_Client_TakeRadialDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
 	params.DamageType = DamageType;
 	params.HitLocation = HitLocation;
 	params.HitInfo = HitInfo;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -23711,30 +24670,30 @@ void UFGHealthComponent::Client_TakeRadialDamage(class AActor* damagedActor, flo
 // Function FactoryGame.FGHealthComponent.Client_TakePointDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent*     HitComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 ShotFromDirection              (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGHealthComponent::Client_TakePointDamage(class AActor* damagedActor, float Damage, class AController* instigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* damageCauser)
+void UFGHealthComponent::Client_TakePointDamage(class AActor* DamagedActor, float Damage, class AController* InstigatedBy, const struct FVector& HitLocation, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class UDamageType* DamageType, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGHealthComponent.Client_TakePointDamage");
 
 	UFGHealthComponent_Client_TakePointDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
-	params.instigatedBy = instigatedBy;
+	params.InstigatedBy = InstigatedBy;
 	params.HitLocation = HitLocation;
 	params.HitComponent = HitComponent;
 	params.BoneName = BoneName;
 	params.ShotFromDirection = ShotFromDirection;
 	params.DamageType = DamageType;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -23747,22 +24706,22 @@ void UFGHealthComponent::Client_TakePointDamage(class AActor* damagedActor, floa
 // Function FactoryGame.FGHealthComponent.Client_TakeDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGHealthComponent::Client_TakeDamage(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void UFGHealthComponent::Client_TakeDamage(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGHealthComponent.Client_TakeDamage");
 
 	UFGHealthComponent_Client_TakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -26555,6 +27514,29 @@ void UFGInventoryLibrary::BreakInventoryItem(const struct FInventoryItem& Item, 
 }
 
 
+// Function FactoryGame.FGItemCategory.GetCategoryName
+// ()
+// Parameters:
+// class UClass*                  inClass                        (Parm, ZeroConstructor, IsPlainOldData)
+// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FText UFGItemCategory::GetCategoryName(class UClass* inClass)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGItemCategory.GetCategoryName");
+
+	UFGItemCategory_GetCategoryName_Params params;
+	params.inClass = inClass;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGItemDescriptorNuclearFuel.GetSpentFuelClass
 // ()
 // Parameters:
@@ -27647,6 +28629,23 @@ void AFGLocomotive::OnRep_ReplicatedMovementTransform()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGLocomotive.OnRep_ReplicatedMovementTransform");
 
 	AFGLocomotive_OnRep_ReplicatedMovementTransform_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGLocomotive.OnNameChanged
+// ()
+
+void AFGLocomotive::OnNameChanged()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGLocomotive.OnNameChanged");
+
+	AFGLocomotive_OnNameChanged_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -29102,14 +30101,14 @@ void UFGMapObjectWidget::OnObjectMoved(const struct FVector2D& normalizedLocatio
 // Function FactoryGame.FGMapObjectWidget.OnObjectFiltered
 // ()
 // Parameters:
-// bool                           FilteredIn                     (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, ZeroConstructor, IsPlainOldData)
 
-void UFGMapObjectWidget::OnObjectFiltered(bool FilteredIn)
+void UFGMapObjectWidget::OnObjectFiltered(bool visible)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGMapObjectWidget.OnObjectFiltered");
 
 	UFGMapObjectWidget_OnObjectFiltered_Params params;
-	params.FilteredIn = FilteredIn;
+	params.visible = visible;
 
 	auto flags = fn->FunctionFlags;
 
@@ -29127,6 +30126,28 @@ void UFGMapObjectWidget::OnActorRepresentationUpdated()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGMapObjectWidget.OnActorRepresentationUpdated");
 
 	UFGMapObjectWidget_OnActorRepresentationUpdated_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGMapObjectWidget.OnActorRepresentationFiltered
+// ()
+// Parameters:
+// ERepresentationType            representationType             (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void UFGMapObjectWidget::OnActorRepresentationFiltered(ERepresentationType representationType, bool visible)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGMapObjectWidget.OnActorRepresentationFiltered");
+
+	UFGMapObjectWidget_OnActorRepresentationFiltered_Params params;
+	params.representationType = representationType;
+	params.visible = visible;
 
 	auto flags = fn->FunctionFlags;
 
@@ -30480,6 +31501,29 @@ int UFGSessionLibrary::GetMaxNumberOfPlayers(const struct FBlueprintSessionResul
 }
 
 
+// Function FactoryGame.FGSessionLibrary.CheckIsCompatibleVersion
+// ()
+// Parameters:
+// struct FFGOnlineSessionSettings session                        (ConstParm, Parm, OutParm, ReferenceParm)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGSessionLibrary::CheckIsCompatibleVersion(const struct FFGOnlineSessionSettings& session)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGSessionLibrary.CheckIsCompatibleVersion");
+
+	UFGSessionLibrary_CheckIsCompatibleVersion_Params params;
+	params.session = session;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGInviteLibrary.SendInviteToFriend
 // ()
 // Parameters:
@@ -30784,6 +31828,27 @@ bool UFGNetworkLibrary::GetNameFromUniqueNetId(class ULocalPlayer* querier, cons
 }
 
 
+// Function FactoryGame.FGNetworkLibrary.GetLocalBuildVersion
+// ()
+// Parameters:
+// class FString                  ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+class FString UFGNetworkLibrary::GetLocalBuildVersion()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGNetworkLibrary.GetLocalBuildVersion");
+
+	UFGNetworkLibrary_GetLocalBuildVersion_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGNetworkLibrary.GetCachedNATType
 // ()
 // Parameters:
@@ -30821,6 +31886,29 @@ bool UFGNetworkLibrary::EqualEqual_NetIdNetId(const struct FUniqueNetIdRepl& A, 
 	UFGNetworkLibrary_EqualEqual_NetIdNetId_Params params;
 	params.A = A;
 	params.B = B;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGNetworkLibrary.CheckIsCompatibleVersion
+// ()
+// Parameters:
+// struct FFGOnlineSessionSettings session                        (ConstParm, Parm, OutParm, ReferenceParm)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGNetworkLibrary::CheckIsCompatibleVersion(const struct FFGOnlineSessionSettings& session)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGNetworkLibrary.CheckIsCompatibleVersion");
+
+	UFGNetworkLibrary_CheckIsCompatibleVersion_Params params;
+	params.session = session;
 
 	auto flags = fn->FunctionFlags;
 
@@ -33384,6 +34472,134 @@ void AFGPlayerController::CheckPawnMapArea()
 }
 
 
+// Function FactoryGame.FGPlayerState.SetOnlyShowAffordableRecipes
+// ()
+// Parameters:
+// bool                           Enabled                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGPlayerState::SetOnlyShowAffordableRecipes(bool Enabled)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.SetOnlyShowAffordableRecipes");
+
+	AFGPlayerState_SetOnlyShowAffordableRecipes_Params params;
+	params.Enabled = Enabled;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGPlayerState.SetItemCategoryCollapsed
+// ()
+// Parameters:
+// class UClass*                  itemCategory                   (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           collapsed                      (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGPlayerState::SetItemCategoryCollapsed(class UClass* itemCategory, bool collapsed)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.SetItemCategoryCollapsed");
+
+	AFGPlayerState_SetItemCategoryCollapsed_Params params;
+	params.itemCategory = itemCategory;
+	params.collapsed = collapsed;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGPlayerState.Server_SetOnlyShowAffordableRecipes
+// ()
+// Parameters:
+// bool                           Enabled                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGPlayerState::Server_SetOnlyShowAffordableRecipes(bool Enabled)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.Server_SetOnlyShowAffordableRecipes");
+
+	AFGPlayerState_Server_SetOnlyShowAffordableRecipes_Params params;
+	params.Enabled = Enabled;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGPlayerState.Server_SetMapFilter
+// ()
+// Parameters:
+// ERepresentationType            representationType             (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGPlayerState::Server_SetMapFilter(ERepresentationType representationType, bool visible)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.Server_SetMapFilter");
+
+	AFGPlayerState_Server_SetMapFilter_Params params;
+	params.representationType = representationType;
+	params.visible = visible;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGPlayerState.Server_SetItemCategoryCollapsed
+// ()
+// Parameters:
+// class UClass*                  itemCategory                   (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           collapsed                      (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGPlayerState::Server_SetItemCategoryCollapsed(class UClass* itemCategory, bool collapsed)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.Server_SetItemCategoryCollapsed");
+
+	AFGPlayerState_Server_SetItemCategoryCollapsed_Params params;
+	params.itemCategory = itemCategory;
+	params.collapsed = collapsed;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function FactoryGame.FGPlayerState.Server_SetCompassFilter
+// ()
+// Parameters:
+// ERepresentationType            representationType             (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (Parm, ZeroConstructor, IsPlainOldData)
+
+void AFGPlayerState::Server_SetCompassFilter(ERepresentationType representationType, bool visible)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.Server_SetCompassFilter");
+
+	AFGPlayerState_Server_SetCompassFilter_Params params;
+	params.representationType = representationType;
+	params.visible = visible;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function FactoryGame.FGPlayerState.Server_RemoveRecipe
 // ()
 // Parameters:
@@ -33607,16 +34823,37 @@ int AFGPlayerState::GetSlotNum()
 }
 
 
-// Function FactoryGame.FGPlayerState.GetSlotData
+// Function FactoryGame.FGPlayerState.GetPingColor
 // ()
 // Parameters:
-// TArray<struct FSlotData>       ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-TArray<struct FSlotData> AFGPlayerState::GetSlotData()
+struct FLinearColor AFGPlayerState::GetPingColor()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.GetSlotData");
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.GetPingColor");
 
-	AFGPlayerState_GetSlotData_Params params;
+	AFGPlayerState_GetPingColor_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGPlayerState.GetOnlyShowAffordableRecipes
+// ()
+// Parameters:
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool AFGPlayerState::GetOnlyShowAffordableRecipes()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.GetOnlyShowAffordableRecipes");
+
+	AFGPlayerState_GetOnlyShowAffordableRecipes_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -33638,6 +34875,48 @@ int AFGPlayerState::GetNumArmSlots()
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.GetNumArmSlots");
 
 	AFGPlayerState_GetNumArmSlots_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGPlayerState.GetNametagColor
+// ()
+// Parameters:
+// struct FLinearColor            ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+struct FLinearColor AFGPlayerState::GetNametagColor()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.GetNametagColor");
+
+	AFGPlayerState_GetNametagColor_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function FactoryGame.FGPlayerState.GetCollapsedItemCategories
+// ()
+// Parameters:
+// TArray<class UClass*>          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm)
+
+TArray<class UClass*> AFGPlayerState::GetCollapsedItemCategories()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGPlayerState.GetCollapsedItemCategories");
+
+	AFGPlayerState_GetCollapsedItemCategories_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -35552,6 +36831,31 @@ void UFGRecipe::SortByName(TArray<class UClass*>* recipes)
 }
 
 
+// Function FactoryGame.FGRecipe.IsRecipeAffordable
+// ()
+// Parameters:
+// class AFGCharacterPlayer*      Player                         (Parm, ZeroConstructor, IsPlainOldData)
+// class UClass*                  Recipe                         (Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+bool UFGRecipe::IsRecipeAffordable(class AFGCharacterPlayer* Player, class UClass* Recipe)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGRecipe.IsRecipeAffordable");
+
+	UFGRecipe_IsRecipeAffordable_Params params;
+	params.Player = Player;
+	params.Recipe = Recipe;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function FactoryGame.FGRecipe.GetRewardedRecipes
 // ()
 // Parameters:
@@ -35749,6 +37053,32 @@ void AFGRecipeManager::GetAllAvailableRecipes(TArray<class UClass*>* out_recipes
 	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGRecipeManager.GetAllAvailableRecipes");
 
 	AFGRecipeManager_GetAllAvailableRecipes_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (out_recipes != nullptr)
+		*out_recipes = params.out_recipes;
+}
+
+
+// Function FactoryGame.FGRecipeManager.GetAffordableRecipesForProducer
+// ()
+// Parameters:
+// class AFGCharacterPlayer*      Player                         (Parm, ZeroConstructor, IsPlainOldData)
+// class UClass*                  forProducer                    (Parm, ZeroConstructor, IsPlainOldData)
+// TArray<class UClass*>          out_recipes                    (Parm, OutParm, ZeroConstructor)
+
+void AFGRecipeManager::GetAffordableRecipesForProducer(class AFGCharacterPlayer* Player, class UClass* forProducer, TArray<class UClass*>* out_recipes)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function FactoryGame.FGRecipeManager.GetAffordableRecipesForProducer");
+
+	AFGRecipeManager_GetAffordableRecipesForProducer_Params params;
+	params.Player = Player;
+	params.forProducer = forProducer;
 
 	auto flags = fn->FunctionFlags;
 

@@ -25,10 +25,10 @@ struct ABP_StarfishSingle_01_C_Burrow_Params
 {
 };
 
-// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.CanMove
-struct ABP_StarfishSingle_01_C_CanMove_Params
+// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.canMove
+struct ABP_StarfishSingle_01_C_canMove_Params
 {
-	bool                                               CanMove;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	bool                                               canMove;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.MoveStarFish

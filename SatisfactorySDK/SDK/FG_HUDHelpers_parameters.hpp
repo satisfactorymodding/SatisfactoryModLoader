@@ -105,7 +105,7 @@ struct UHUDHelpers_C_ShowHideHUD_Params
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromInventory
 struct UHUDHelpers_C_GetNumItemsFromInventory_Params
 {
-	class UFGInventoryComponent*                       InventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+	class UFGInventoryComponent*                       inventoryComponent;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UClass*                                      mItemClass;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                NumItems;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)

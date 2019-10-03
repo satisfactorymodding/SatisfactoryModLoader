@@ -14,6 +14,19 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Build_RadarTower.Build_RadarTower_C.GetActorCompassViewDistance
+struct ABuild_RadarTower_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function Build_RadarTower.Build_RadarTower_C.SetActorCompassViewDistance
+struct ABuild_RadarTower_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function Build_RadarTower.Build_RadarTower_C.SetActorRepresentationText
 struct ABuild_RadarTower_C_SetActorRepresentationText_Params
 {

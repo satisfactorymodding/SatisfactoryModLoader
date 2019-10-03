@@ -12,6 +12,95 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnMouseButtonDown
+// ()
+// Parameters:
+// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+// struct FEventReply             ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FEventReply UWidget_ManualManufacturing_C::OnMouseButtonDown(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnMouseButtonDown");
+
+	UWidget_ManualManufacturing_C_OnMouseButtonDown_Params params;
+	params.MyGeometry = MyGeometry;
+	params.MouseEvent = MouseEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.UpdateAffordableCategories
+// ()
+
+void UWidget_ManualManufacturing_C::UpdateAffordableCategories()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.UpdateAffordableCategories");
+
+	UWidget_ManualManufacturing_C_UpdateAffordableCategories_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetCategoryWidgetFromRecipe
+// ()
+// Parameters:
+// class UClass*                  Recipe                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_CraftBench_Category_C* ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
+
+class UWidget_CraftBench_Category_C* UWidget_ManualManufacturing_C::GetCategoryWidgetFromRecipe(class UClass* Recipe)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetCategoryWidgetFromRecipe");
+
+	UWidget_ManualManufacturing_C_GetCategoryWidgetFromRecipe_Params params;
+	params.Recipe = Recipe;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.AddUniqueRecipe
+// ()
+// Parameters:
+// TArray<struct FItemCategoryRecipeStruct> CategorizedRecipes             (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm)
+// class UClass*                  Recipe                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_ManualManufacturing_C::AddUniqueRecipe(class UClass* Recipe, TArray<struct FItemCategoryRecipeStruct>* CategorizedRecipes)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.AddUniqueRecipe");
+
+	UWidget_ManualManufacturing_C_AddUniqueRecipe_Params params;
+	params.Recipe = Recipe;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (CategorizedRecipes != nullptr)
+		*CategorizedRecipes = params.CategorizedRecipes;
+}
+
+
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ClearAndHideSearchResults
 // ()
 
@@ -133,20 +222,26 @@ struct FEventReply UWidget_ManualManufacturing_C::OnPreviewKeyDown(struct FGeome
 // Parameters:
 // class UPanelWidget*            InScrollbox                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FText                   Name                           (BlueprintVisible, BlueprintReadOnly, Parm)
+// bool                           mIsCollapsed                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_CraftBench_Category_C* Category_Widget                (Parm, OutParm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_ManualManufacturing_C::CreateCategoryHeader(class UPanelWidget* InScrollbox, const struct FText& Name)
+void UWidget_ManualManufacturing_C::CreateCategoryHeader(class UPanelWidget* InScrollbox, const struct FText& Name, bool mIsCollapsed, class UWidget_CraftBench_Category_C** Category_Widget)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.CreateCategoryHeader");
 
 	UWidget_ManualManufacturing_C_CreateCategoryHeader_Params params;
 	params.InScrollbox = InScrollbox;
 	params.Name = Name;
+	params.mIsCollapsed = mIsCollapsed;
 
 	auto flags = fn->FunctionFlags;
 
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+
+	if (Category_Widget != nullptr)
+		*Category_Widget = params.Category_Widget;
 }
 
 
@@ -906,6 +1001,43 @@ void UWidget_ManualManufacturing_C::BndEvt__mSearchbar_K2Node_ComponentBoundEven
 
 	UWidget_ManualManufacturing_C_BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature_Params params;
 	params.Text = Text;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitOnlyShowAffordable
+// ()
+
+void UWidget_ManualManufacturing_C::InitOnlyShowAffordable()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitOnlyShowAffordable");
+
+	UWidget_ManualManufacturing_C_InitOnlyShowAffordable_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnCategoryClicked
+// ()
+// Parameters:
+// class UWidget_CraftBench_Category_C* Instigator                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_ManualManufacturing_C::OnCategoryClicked(class UWidget_CraftBench_Category_C* Instigator)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnCategoryClicked");
+
+	UWidget_ManualManufacturing_C_OnCategoryClicked_Params params;
+	params.Instigator = Instigator;
 
 	auto flags = fn->FunctionFlags;
 

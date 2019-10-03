@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_ConveyorBeltMk5.Build_ConveyorBeltMk5_C
-// 0x0000 (0x0788 - 0x0788)
+// 0x0000 (0x0790 - 0x0790)
 class ABuild_ConveyorBeltMk5_C : public ABuild_ConveyorBeltMk1_C
 {
 public:

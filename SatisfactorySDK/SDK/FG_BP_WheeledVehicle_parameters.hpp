@@ -14,6 +14,19 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function BP_WheeledVehicle.BP_WheeledVehicle_C.GetActorCompassViewDistance
+struct ABP_WheeledVehicle_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function BP_WheeledVehicle.BP_WheeledVehicle_C.SetActorCompassViewDistance
+struct ABP_WheeledVehicle_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function BP_WheeledVehicle.BP_WheeledVehicle_C.SetActorRepresentationText
 struct ABP_WheeledVehicle_C_SetActorRepresentationText_Params
 {
@@ -159,10 +172,10 @@ struct ABP_WheeledVehicle_C_StopVehicle_Params
 {
 };
 
-// Function BP_WheeledVehicle.BP_WheeledVehicle_C.CanMove
-struct ABP_WheeledVehicle_C_CanMove_Params
+// Function BP_WheeledVehicle.BP_WheeledVehicle_C.canMove
+struct ABP_WheeledVehicle_C_canMove_Params
 {
-	bool                                               CanMove;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	bool                                               canMove;                                                  // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_WheeledVehicle.BP_WheeledVehicle_C.UpdateEngineLoadSound

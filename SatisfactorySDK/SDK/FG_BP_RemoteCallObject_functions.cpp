@@ -38,28 +38,6 @@ void UBP_RemoteCallObject_C::GetRemainingCostForSchematic(class UClass* Schemati
 }
 
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetWorkingAtBench
-// ()
-// Parameters:
-// class AFGPlayerController*     PlayerWorking                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class UFGWorkBench*            ResearchMachine                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
-
-void UBP_RemoteCallObject_C::ServerSetWorkingAtBench(class AFGPlayerController* PlayerWorking, class UFGWorkBench* ResearchMachine)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetWorkingAtBench");
-
-	UBP_RemoteCallObject_C_ServerSetWorkingAtBench_Params params;
-	params.PlayerWorking = PlayerWorking;
-	params.ResearchMachine = ResearchMachine;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetRecipeOnManufacturingProxy
 // ()
 // Parameters:
@@ -73,6 +51,28 @@ void UBP_RemoteCallObject_C::Server_SetRecipeOnManufacturingProxy(class AFGBuild
 	UBP_RemoteCallObject_C_Server_SetRecipeOnManufacturingProxy_Params params;
 	params.Manufacturer = Manufacturer;
 	params.Recipe = Recipe;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetWorkingAtBench
+// ()
+// Parameters:
+// class AFGPlayerController*     PlayerWorking                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UFGWorkBench*            ResearchMachine                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UBP_RemoteCallObject_C::ServerSetWorkingAtBench(class AFGPlayerController* PlayerWorking, class UFGWorkBench* ResearchMachine)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetWorkingAtBench");
+
+	UBP_RemoteCallObject_C_ServerSetWorkingAtBench_Params params;
+	params.PlayerWorking = PlayerWorking;
+	params.ResearchMachine = ResearchMachine;
 
 	auto flags = fn->FunctionFlags;
 
@@ -107,16 +107,16 @@ void UBP_RemoteCallObject_C::ServerSetBeaconTexture(class UTexture2D* Texture, c
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SplitResource
 // ()
 // Parameters:
-// class UFGInventoryComponent*   InventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UFGInventoryComponent*   inventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // int                            sourceIdx                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // int                            numResourceToMove              (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::Server_SplitResource(class UFGInventoryComponent* InventoryComponent, int sourceIdx, int numResourceToMove)
+void UBP_RemoteCallObject_C::Server_SplitResource(class UFGInventoryComponent* inventoryComponent, int sourceIdx, int numResourceToMove)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SplitResource");
 
 	UBP_RemoteCallObject_C_Server_SplitResource_Params params;
-	params.InventoryComponent = InventoryComponent;
+	params.inventoryComponent = inventoryComponent;
 	params.sourceIdx = sourceIdx;
 	params.numResourceToMove = numResourceToMove;
 
@@ -313,17 +313,17 @@ void UBP_RemoteCallObject_C::ServerPickUpBeacon(class ABP_Beacon_C* Beacon, clas
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_DropItem
 // ()
 // Parameters:
-// class UFGInventoryComponent*   InventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UFGInventoryComponent*   inventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // int                            sourceIdx                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 SpawnLocation                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FRotator                spawnRotation                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::Server_DropItem(class UFGInventoryComponent* InventoryComponent, int sourceIdx, const struct FVector& SpawnLocation, const struct FRotator& spawnRotation)
+void UBP_RemoteCallObject_C::Server_DropItem(class UFGInventoryComponent* inventoryComponent, int sourceIdx, const struct FVector& SpawnLocation, const struct FRotator& spawnRotation)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_DropItem");
 
 	UBP_RemoteCallObject_C_Server_DropItem_Params params;
-	params.InventoryComponent = InventoryComponent;
+	params.inventoryComponent = inventoryComponent;
 	params.sourceIdx = sourceIdx;
 	params.SpawnLocation = SpawnLocation;
 	params.spawnRotation = spawnRotation;
@@ -373,26 +373,6 @@ void UBP_RemoteCallObject_C::ServerSetPendingPotentialOnFactory(class AFGBuildab
 	UBP_RemoteCallObject_C_ServerSetPendingPotentialOnFactory_Params params;
 	params.FACTORY = FACTORY;
 	params.newPotential = newPotential;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerDismantlePortableMiner
-// ()
-// Parameters:
-// class ABP_PortableMiner_C*     inPortableMiner                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-
-void UBP_RemoteCallObject_C::ServerDismantlePortableMiner(class ABP_PortableMiner_C* inPortableMiner)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerDismantlePortableMiner");
-
-	UBP_RemoteCallObject_C_ServerDismantlePortableMiner_Params params;
-	params.inPortableMiner = inPortableMiner;
 
 	auto flags = fn->FunctionFlags;
 
@@ -516,19 +496,17 @@ void UBP_RemoteCallObject_C::Server_PayOffOnSchematic(class UClass* Schematic, c
 }
 
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetSpeedLimit
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerDismantlePortableMiner
 // ()
 // Parameters:
-// class ABuild_SpeedRoadSign_C*  speedRoadSignProxy             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// int                            NewLimit                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class ABP_PortableMiner_C*     inPortableMiner                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::ServerSetSpeedLimit(class ABuild_SpeedRoadSign_C* speedRoadSignProxy, int NewLimit)
+void UBP_RemoteCallObject_C::ServerDismantlePortableMiner(class ABP_PortableMiner_C* inPortableMiner)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetSpeedLimit");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerDismantlePortableMiner");
 
-	UBP_RemoteCallObject_C_ServerSetSpeedLimit_Params params;
-	params.speedRoadSignProxy = speedRoadSignProxy;
-	params.NewLimit = NewLimit;
+	UBP_RemoteCallObject_C_ServerDismantlePortableMiner_Params params;
+	params.inPortableMiner = inPortableMiner;
 
 	auto flags = fn->FunctionFlags;
 
@@ -546,28 +524,6 @@ void UBP_RemoteCallObject_C::Server_LaunchShip()
 	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_LaunchShip");
 
 	UBP_RemoteCallObject_C_Server_LaunchShip_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerCloseVehicleTrunk
-// ()
-// Parameters:
-// class ABP_WheeledVehicle_C*    inVehicle                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AFGCharacterPlayer*      inPlayer                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-
-void UBP_RemoteCallObject_C::ServerCloseVehicleTrunk(class ABP_WheeledVehicle_C* inVehicle, class AFGCharacterPlayer* inPlayer)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerCloseVehicleTrunk");
-
-	UBP_RemoteCallObject_C_ServerCloseVehicleTrunk_Params params;
-	params.inVehicle = inVehicle;
-	params.inPlayer = inPlayer;
 
 	auto flags = fn->FunctionFlags;
 
@@ -665,19 +621,19 @@ void UBP_RemoteCallObject_C::Server_PayOffTowTruckUpgrade(class AFGBuildableSpac
 }
 
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveSortRule
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetSpeedLimit
 // ()
 // Parameters:
-// class AFGBuildableSplitterSmart* Splitter_Smart                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class ABuild_SpeedRoadSign_C*  speedRoadSignProxy             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            NewLimit                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::Server_RemoveSortRule(class AFGBuildableSplitterSmart* Splitter_Smart, int Index)
+void UBP_RemoteCallObject_C::ServerSetSpeedLimit(class ABuild_SpeedRoadSign_C* speedRoadSignProxy, int NewLimit)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveSortRule");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetSpeedLimit");
 
-	UBP_RemoteCallObject_C_Server_RemoveSortRule_Params params;
-	params.Splitter_Smart = Splitter_Smart;
-	params.Index = Index;
+	UBP_RemoteCallObject_C_ServerSetSpeedLimit_Params params;
+	params.speedRoadSignProxy = speedRoadSignProxy;
+	params.NewLimit = NewLimit;
 
 	auto flags = fn->FunctionFlags;
 
@@ -709,21 +665,19 @@ void UBP_RemoteCallObject_C::Server_SetTrainStationName(class AFGTrainStationIde
 }
 
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_UpdateSortRule
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerCloseVehicleTrunk
 // ()
 // Parameters:
-// class AFGBuildableSplitterSmart* SplitterSmart                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FSplitterSortRule       Rule                           (BlueprintVisible, BlueprintReadOnly, Parm)
+// class ABP_WheeledVehicle_C*    inVehicle                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AFGCharacterPlayer*      inPlayer                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::Server_UpdateSortRule(class AFGBuildableSplitterSmart* SplitterSmart, int Index, const struct FSplitterSortRule& Rule)
+void UBP_RemoteCallObject_C::ServerCloseVehicleTrunk(class ABP_WheeledVehicle_C* inVehicle, class AFGCharacterPlayer* inPlayer)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_UpdateSortRule");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerCloseVehicleTrunk");
 
-	UBP_RemoteCallObject_C_Server_UpdateSortRule_Params params;
-	params.SplitterSmart = SplitterSmart;
-	params.Index = Index;
-	params.Rule = Rule;
+	UBP_RemoteCallObject_C_ServerCloseVehicleTrunk_Params params;
+	params.inVehicle = inVehicle;
+	params.inPlayer = inPlayer;
 
 	auto flags = fn->FunctionFlags;
 
@@ -779,19 +733,19 @@ void UBP_RemoteCallObject_C::Server_RepairDropPod(class ABP_DropPod_C* DropPod, 
 }
 
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_AddSortRule
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveSortRule
 // ()
 // Parameters:
-// class AFGBuildableSplitterSmart* SplitterSmart                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// struct FSplitterSortRule       Rule                           (BlueprintVisible, BlueprintReadOnly, Parm)
+// class AFGBuildableSplitterSmart* Splitter_Smart                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::Server_AddSortRule(class AFGBuildableSplitterSmart* SplitterSmart, const struct FSplitterSortRule& Rule)
+void UBP_RemoteCallObject_C::Server_RemoveSortRule(class AFGBuildableSplitterSmart* Splitter_Smart, int Index)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_AddSortRule");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveSortRule");
 
-	UBP_RemoteCallObject_C_Server_AddSortRule_Params params;
-	params.SplitterSmart = SplitterSmart;
-	params.Rule = Rule;
+	UBP_RemoteCallObject_C_Server_RemoveSortRule_Params params;
+	params.Splitter_Smart = Splitter_Smart;
+	params.Index = Index;
 
 	auto flags = fn->FunctionFlags;
 
@@ -823,17 +777,21 @@ void UBP_RemoteCallObject_C::Server_SetLoadModeOnDockingStation(class AFGBuildab
 }
 
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetActiveSchematic
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_UpdateSortRule
 // ()
 // Parameters:
-// class UClass*                  newActiveSchematic             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AFGBuildableSplitterSmart* SplitterSmart                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FSplitterSortRule       Rule                           (BlueprintVisible, BlueprintReadOnly, Parm)
 
-void UBP_RemoteCallObject_C::ServerSetActiveSchematic(class UClass* newActiveSchematic)
+void UBP_RemoteCallObject_C::Server_UpdateSortRule(class AFGBuildableSplitterSmart* SplitterSmart, int Index, const struct FSplitterSortRule& Rule)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetActiveSchematic");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_UpdateSortRule");
 
-	UBP_RemoteCallObject_C_ServerSetActiveSchematic_Params params;
-	params.newActiveSchematic = newActiveSchematic;
+	UBP_RemoteCallObject_C_Server_UpdateSortRule_Params params;
+	params.SplitterSmart = SplitterSmart;
+	params.Index = Index;
+	params.Rule = Rule;
 
 	auto flags = fn->FunctionFlags;
 
@@ -856,6 +814,28 @@ void UBP_RemoteCallObject_C::Server_SetIsProductionPausedOnFactory(class AFGBuil
 	UBP_RemoteCallObject_C_Server_SetIsProductionPausedOnFactory_Params params;
 	params.FACTORY = FACTORY;
 	params.IsProductionPaused = IsProductionPaused;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_AddSortRule
+// ()
+// Parameters:
+// class AFGBuildableSplitterSmart* SplitterSmart                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FSplitterSortRule       Rule                           (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UBP_RemoteCallObject_C::Server_AddSortRule(class AFGBuildableSplitterSmart* SplitterSmart, const struct FSplitterSortRule& Rule)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_AddSortRule");
+
+	UBP_RemoteCallObject_C_Server_AddSortRule_Params params;
+	params.SplitterSmart = SplitterSmart;
+	params.Rule = Rule;
 
 	auto flags = fn->FunctionFlags;
 
@@ -895,6 +875,26 @@ void UBP_RemoteCallObject_C::Client_AddPawnHUD(class UClass* HUDClass, class APa
 	UBP_RemoteCallObject_C_Client_AddPawnHUD_Params params;
 	params.HUDClass = HUDClass;
 	params.Pawn = Pawn;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetActiveSchematic
+// ()
+// Parameters:
+// class UClass*                  newActiveSchematic             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UBP_RemoteCallObject_C::ServerSetActiveSchematic(class UClass* newActiveSchematic)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetActiveSchematic");
+
+	UBP_RemoteCallObject_C_ServerSetActiveSchematic_Params params;
+	params.newActiveSchematic = newActiveSchematic;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1177,14 +1177,14 @@ void UBP_RemoteCallObject_C::Server_SetSignWallData(class AFGBuildableSignWall* 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SortInventory
 // ()
 // Parameters:
-// class UFGInventoryComponent*   InventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UFGInventoryComponent*   inventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::Server_SortInventory(class UFGInventoryComponent* InventoryComponent)
+void UBP_RemoteCallObject_C::Server_SortInventory(class UFGInventoryComponent* inventoryComponent)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SortInventory");
 
 	UBP_RemoteCallObject_C_Server_SortInventory_Params params;
-	params.InventoryComponent = InventoryComponent;
+	params.inventoryComponent = inventoryComponent;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1197,17 +1197,17 @@ void UBP_RemoteCallObject_C::Server_SortInventory(class UFGInventoryComponent* I
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_DropItemIntoStack
 // ()
 // Parameters:
-// class UFGInventoryComponent*   InventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UFGInventoryComponent*   inventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // int                            sourceIdx                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 SpawnLocation                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FRotator                spawnRotation                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBP_RemoteCallObject_C::Server_DropItemIntoStack(class UFGInventoryComponent* InventoryComponent, int sourceIdx, const struct FVector& SpawnLocation, const struct FRotator& spawnRotation)
+void UBP_RemoteCallObject_C::Server_DropItemIntoStack(class UFGInventoryComponent* inventoryComponent, int sourceIdx, const struct FVector& SpawnLocation, const struct FRotator& spawnRotation)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_DropItemIntoStack");
 
 	UBP_RemoteCallObject_C_Server_DropItemIntoStack_Params params;
-	params.InventoryComponent = InventoryComponent;
+	params.inventoryComponent = inventoryComponent;
 	params.sourceIdx = sourceIdx;
 	params.SpawnLocation = SpawnLocation;
 	params.spawnRotation = spawnRotation;
@@ -1277,6 +1277,94 @@ void UBP_RemoteCallObject_C::Server_SetTimeTableCurrentStop(class AFGRailroadTim
 	UBP_RemoteCallObject_C_Server_SetTimeTableCurrentStop_Params params;
 	params.TimeTable = TimeTable;
 	params.Index = Index;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetActorCompassViewDistance
+// ()
+// Parameters:
+// class AActor*                  Actor                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UBP_RemoteCallObject_C::Server_SetActorCompassViewDistance(class AActor* Actor, ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetActorCompassViewDistance");
+
+	UBP_RemoteCallObject_C_Server_SetActorCompassViewDistance_Params params;
+	params.Actor = Actor;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Internal_Server_SetActorRepresentationCompassViewDistance
+// ()
+// Parameters:
+// class UFGActorRepresentation*  actorRepresentation            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UBP_RemoteCallObject_C::Internal_Server_SetActorRepresentationCompassViewDistance(class UFGActorRepresentation* actorRepresentation, ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Internal_Server_SetActorRepresentationCompassViewDistance");
+
+	UBP_RemoteCallObject_C_Internal_Server_SetActorRepresentationCompassViewDistance_Params params;
+	params.actorRepresentation = actorRepresentation;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.SetActorRepresentationCompassViewDistance
+// ()
+// Parameters:
+// class UFGActorRepresentation*  actorRepresentation            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UBP_RemoteCallObject_C::SetActorRepresentationCompassViewDistance(class UFGActorRepresentation* actorRepresentation, ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.SetActorRepresentationCompassViewDistance");
+
+	UBP_RemoteCallObject_C_SetActorRepresentationCompassViewDistance_Params params;
+	params.actorRepresentation = actorRepresentation;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetTrainName
+// ()
+// Parameters:
+// class AFGTrain*                Train                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// struct FText                   Name                           (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UBP_RemoteCallObject_C::Server_SetTrainName(class AFGTrain* Train, const struct FText& Name)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetTrainName");
+
+	UBP_RemoteCallObject_C_Server_SetTrainName_Params params;
+	params.Train = Train;
+	params.Name = Name;
 
 	auto flags = fn->FunctionFlags;
 

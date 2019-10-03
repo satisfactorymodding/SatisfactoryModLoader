@@ -12,6 +12,50 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function BP_Locomotive.BP_Locomotive_C.GetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_Locomotive_C::GetActorCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Locomotive.BP_Locomotive_C.GetActorCompassViewDistance");
+
+	ABP_Locomotive_C_GetActorCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function BP_Locomotive.BP_Locomotive_C.SetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_Locomotive_C::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Locomotive.BP_Locomotive_C.SetActorCompassViewDistance");
+
+	ABP_Locomotive_C_SetActorCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function BP_Locomotive.BP_Locomotive_C.SetActorRepresentationText
 // ()
 // Parameters:
@@ -841,6 +885,40 @@ void ABP_Locomotive_C::Server_Horn_02_Stop()
 	static auto fn = UObject::FindObject<UFunction>("Function BP_Locomotive.BP_Locomotive_C.Server_Horn_02_Stop");
 
 	ABP_Locomotive_C_Server_Horn_02_Stop_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_Locomotive.BP_Locomotive_C.OnNameChanged
+// ()
+
+void ABP_Locomotive_C::OnNameChanged()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Locomotive.BP_Locomotive_C.OnNameChanged");
+
+	ABP_Locomotive_C_OnNameChanged_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_Locomotive.BP_Locomotive_C.UpdateTrainName
+// ()
+
+void ABP_Locomotive_C::UpdateTrainName()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Locomotive.BP_Locomotive_C.UpdateTrainName");
+
+	ABP_Locomotive_C_UpdateTrainName_Params params;
 
 	auto flags = fn->FunctionFlags;
 

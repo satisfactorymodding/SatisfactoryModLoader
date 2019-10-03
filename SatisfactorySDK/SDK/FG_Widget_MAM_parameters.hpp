@@ -21,6 +21,14 @@ struct UWidget_MAM_C_WidgetFactory_Params
 	TArray<class UUserWidget*>                         out_widgets;                                              // (Parm, OutParm, ZeroConstructor)
 };
 
+// Function Widget_MAM.Widget_MAM_C.OnMouseButtonDown
+struct UWidget_MAM_C_OnMouseButtonDown_Params
+{
+	struct FGeometry*                                  MyGeometry;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FPointerEvent*                              MouseEvent;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+	struct FEventReply                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
 // Function Widget_MAM.Widget_MAM_C.IsValidResearchReward
 struct UWidget_MAM_C_IsValidResearchReward_Params
 {
@@ -149,11 +157,6 @@ struct UWidget_MAM_C_InitRecipeList_Params
 {
 };
 
-// Function Widget_MAM.Widget_MAM_C.Construct
-struct UWidget_MAM_C_Construct_Params
-{
-};
-
 // Function Widget_MAM.Widget_MAM_C.Tick
 struct UWidget_MAM_C_Tick_Params
 {
@@ -168,11 +171,6 @@ struct UWidget_MAM_C_OnButtonClicked_Params
 
 // Function Widget_MAM.Widget_MAM_C.Destruct
 struct UWidget_MAM_C_Destruct_Params
-{
-};
-
-// Function Widget_MAM.Widget_MAM_C.Init
-struct UWidget_MAM_C_Init_Params
 {
 };
 
@@ -194,10 +192,14 @@ struct UWidget_MAM_C_OnAnalyseAnimStart_Params
 {
 };
 
-// Function Widget_MAM.Widget_MAM_C.OnNewRecipeSet
-struct UWidget_MAM_C_OnNewRecipeSet_Params
+// Function Widget_MAM.Widget_MAM_C.Construct
+struct UWidget_MAM_C_Construct_Params
 {
-	class UClass*                                      mNewRecipe;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_MAM.Widget_MAM_C.Init
+struct UWidget_MAM_C_Init_Params
+{
 };
 
 // Function Widget_MAM.Widget_MAM_C.NotifyPopupClosed
@@ -205,6 +207,12 @@ struct UWidget_MAM_C_NotifyPopupClosed_Params
 {
 	class UClass*                                      PopupClass;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                exitCode;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_MAM.Widget_MAM_C.OnNewRecipeSet
+struct UWidget_MAM_C_OnNewRecipeSet_Params
+{
+	class UClass*                                      mNewRecipe;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_MAM.Widget_MAM_C.ExecuteUbergraph_Widget_MAM

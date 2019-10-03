@@ -68,10 +68,10 @@ public:
 	void StopIsLookedAt(class AFGCharacterPlayer* byCharacter, const struct FUseState& State);
 	void UnregisterInteractingPlayer(class AFGCharacterPlayer* Player);
 	void ReceiveTick(float* DeltaSeconds);
-	void NotifyOnTakeDamage(class AActor** damagedActor, float* damageAmount, class UDamageType** DamageType, class AController** instigatedBy, class AActor** damageCauser);
+	void NotifyOnTakeDamage(class AActor** DamagedActor, float* damageAmount, class UDamageType** DamageType, class AController** InstigatedBy, class AActor** DamageCauser);
 	void ReceiveDied();
-	void NotifyOnTakePointDamage(class AActor** damagedActor, float* Damage, class AController** instigatedBy, struct FVector* HitLocation, class UPrimitiveComponent** HitComponent, struct FName* BoneName, struct FVector* ShotFromDirection, class UDamageType** DamageType, class AActor** damageCauser);
-	void NotifyOnTakeRadialDamage(class AActor** damagedActor, float* Damage, class AController** instigatedBy, class UDamageType** DamageType, class AActor** damageCauser);
+	void NotifyOnTakePointDamage(class AActor** DamagedActor, float* Damage, class AController** InstigatedBy, struct FVector* HitLocation, class UPrimitiveComponent** HitComponent, struct FName* BoneName, struct FVector* ShotFromDirection, class UDamageType** DamageType, class AActor** DamageCauser);
+	void NotifyOnTakeRadialDamage(class AActor** DamagedActor, float* Damage, class AController** InstigatedBy, class UDamageType** DamageType, class AActor** DamageCauser);
 	void ReceiveBeginPlay();
 	void PlayConsumeItemEffect(class UClass** itemDescriptor, int* amount);
 	void OnUse(class AFGCharacterPlayer* byCharacter, const struct FUseState& State);

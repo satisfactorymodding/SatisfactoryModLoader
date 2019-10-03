@@ -14,13 +14,13 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
-// Function Widget_BuildMenu.Widget_BuildMenu_C.HideSearchbar
-struct UWidget_BuildMenu_C_HideSearchbar_Params
+// Function Widget_BuildMenu.Widget_BuildMenu_C.SetSearchbarUnfocused
+struct UWidget_BuildMenu_C_SetSearchbarUnfocused_Params
 {
 };
 
-// Function Widget_BuildMenu.Widget_BuildMenu_C.ShowSearchbar
-struct UWidget_BuildMenu_C_ShowSearchbar_Params
+// Function Widget_BuildMenu.Widget_BuildMenu_C.SetSearchbarFocused
+struct UWidget_BuildMenu_C_SetSearchbarFocused_Params
 {
 };
 

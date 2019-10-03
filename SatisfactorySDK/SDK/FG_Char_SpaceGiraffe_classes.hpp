@@ -51,8 +51,9 @@ public:
 	void StartIsLookedAt(class AFGCharacterPlayer* byCharacter, const struct FUseState& State);
 	void StopIsLookedAt(class AFGCharacterPlayer* byCharacter, const struct FUseState& State);
 	void UnregisterInteractingPlayer(class AFGCharacterPlayer* Player);
+	void ReceiveBeginPlay();
 	void ReceiveTick(float* DeltaSeconds);
-	void NotifyOnTakeDamage(class AActor** damagedActor, float* damageAmount, class UDamageType** DamageType, class AController** instigatedBy, class AActor** damageCauser);
+	void NotifyOnTakeDamage(class AActor** DamagedActor, float* damageAmount, class UDamageType** DamageType, class AController** InstigatedBy, class AActor** DamageCauser);
 	void StartRotationMovement(struct FRotator* TargetRotation);
 	void InpAxisEvt_MoveForward_K2Node_InputAxisEvent_1(float AxisValue);
 	void InpAxisEvt_MoveRight_K2Node_InputAxisEvent_10(float AxisValue);
@@ -62,6 +63,9 @@ public:
 	void OnUse(class AFGCharacterPlayer* byCharacter, const struct FUseState& State);
 	void BndEvt__Capsule_K2Node_ComponentBoundEvent_0_ComponentBeginOverlapSignature__DelegateSignature(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const struct FHitResult& SweepResult);
 	void ReceiveDied();
+	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason);
+	void GainedSignificance();
+	void LostSignificance();
 	void ExecuteUbergraph_Char_SpaceGiraffe(int EntryPoint);
 };
 

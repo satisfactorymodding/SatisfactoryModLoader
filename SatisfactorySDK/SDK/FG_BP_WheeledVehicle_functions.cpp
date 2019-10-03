@@ -12,6 +12,50 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function BP_WheeledVehicle.BP_WheeledVehicle_C.GetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_WheeledVehicle_C::GetActorCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_WheeledVehicle.BP_WheeledVehicle_C.GetActorCompassViewDistance");
+
+	ABP_WheeledVehicle_C_GetActorCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function BP_WheeledVehicle.BP_WheeledVehicle_C.SetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_WheeledVehicle_C::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_WheeledVehicle.BP_WheeledVehicle_C.SetActorCompassViewDistance");
+
+	ABP_WheeledVehicle_C_SetActorCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function BP_WheeledVehicle.BP_WheeledVehicle_C.SetActorRepresentationText
 // ()
 // Parameters:
@@ -515,16 +559,16 @@ void ABP_WheeledVehicle_C::StopVehicle()
 }
 
 
-// Function BP_WheeledVehicle.BP_WheeledVehicle_C.CanMove
+// Function BP_WheeledVehicle.BP_WheeledVehicle_C.canMove
 // ()
 // Parameters:
-// bool                           CanMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// bool                           canMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void ABP_WheeledVehicle_C::CanMove(bool* CanMove)
+void ABP_WheeledVehicle_C::canMove(bool* canMove)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_WheeledVehicle.BP_WheeledVehicle_C.CanMove");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_WheeledVehicle.BP_WheeledVehicle_C.canMove");
 
-	ABP_WheeledVehicle_C_CanMove_Params params;
+	ABP_WheeledVehicle_C_canMove_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -532,8 +576,8 @@ void ABP_WheeledVehicle_C::CanMove(bool* CanMove)
 
 	fn->FunctionFlags = flags;
 
-	if (CanMove != nullptr)
-		*CanMove = params.CanMove;
+	if (canMove != nullptr)
+		*canMove = params.canMove;
 }
 
 

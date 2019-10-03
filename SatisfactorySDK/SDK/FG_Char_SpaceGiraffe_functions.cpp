@@ -226,6 +226,23 @@ void AChar_SpaceGiraffe_C::UnregisterInteractingPlayer(class AFGCharacterPlayer*
 }
 
 
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveBeginPlay
+// ()
+
+void AChar_SpaceGiraffe_C::ReceiveBeginPlay()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveBeginPlay");
+
+	AChar_SpaceGiraffe_C_ReceiveBeginPlay_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveTick
 // ()
 // Parameters:
@@ -249,22 +266,22 @@ void AChar_SpaceGiraffe_C::ReceiveTick(float* DeltaSeconds)
 // Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.NotifyOnTakeDamage
 // ()
 // Parameters:
-// class AActor**                 damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // float*                         damageAmount                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType**            DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController**            instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor**                 damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AController**            InstigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_SpaceGiraffe_C::NotifyOnTakeDamage(class AActor** damagedActor, float* damageAmount, class UDamageType** DamageType, class AController** instigatedBy, class AActor** damageCauser)
+void AChar_SpaceGiraffe_C::NotifyOnTakeDamage(class AActor** DamagedActor, float* damageAmount, class UDamageType** DamageType, class AController** InstigatedBy, class AActor** DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.NotifyOnTakeDamage");
 
 	AChar_SpaceGiraffe_C_NotifyOnTakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -454,6 +471,60 @@ void AChar_SpaceGiraffe_C::ReceiveDied()
 	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveDied");
 
 	AChar_SpaceGiraffe_C_ReceiveDied_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveEndPlay
+// ()
+// Parameters:
+// TEnumAsByte<EEndPlayReason>*   EndPlayReason                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_SpaceGiraffe_C::ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.ReceiveEndPlay");
+
+	AChar_SpaceGiraffe_C_ReceiveEndPlay_Params params;
+	params.EndPlayReason = EndPlayReason;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.GainedSignificance
+// ()
+
+void AChar_SpaceGiraffe_C::GainedSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.GainedSignificance");
+
+	AChar_SpaceGiraffe_C_GainedSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.LostSignificance
+// ()
+
+void AChar_SpaceGiraffe_C::LostSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceGiraffe.Char_SpaceGiraffe_C.LostSignificance");
+
+	AChar_SpaceGiraffe_C_LostSignificance_Params params;
 
 	auto flags = fn->FunctionFlags;
 

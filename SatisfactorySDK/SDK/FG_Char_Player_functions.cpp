@@ -12,6 +12,50 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Char_Player.Char_Player_C.GetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance AChar_Player_C::GetActorCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.GetActorCompassViewDistance");
+
+	AChar_Player_C_GetActorCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Char_Player.Char_Player_C.SetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance AChar_Player_C::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.SetActorCompassViewDistance");
+
+	AChar_Player_C_SetActorCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Char_Player.Char_Player_C.SetActorRepresentationText
 // ()
 // Parameters:
@@ -816,6 +860,23 @@ void AChar_Player_C::InpActEvt_EmoteWheel_K2Node_InputActionEvent_1(const struct
 }
 
 
+// Function Char_Player.Char_Player_C.CameraTick
+// ()
+
+void AChar_Player_C::CameraTick()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.CameraTick");
+
+	AChar_Player_C_CameraTick_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Char_Player.Char_Player_C.SetFirstPersonMode
 // ()
 
@@ -969,14 +1030,17 @@ void AChar_Player_C::ReceiveDied()
 }
 
 
-// Function Char_Player.Char_Player_C.CameraTick
+// Function Char_Player.Char_Player_C.OnLanded
 // ()
+// Parameters:
+// struct FHitResult*             Hit                            (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
 
-void AChar_Player_C::CameraTick()
+void AChar_Player_C::OnLanded(struct FHitResult* Hit)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.CameraTick");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnLanded");
 
-	AChar_Player_C_CameraTick_Params params;
+	AChar_Player_C_OnLanded_Params params;
+	params.Hit = Hit;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1037,17 +1101,17 @@ void AChar_Player_C::OnReviveComplete()
 }
 
 
-// Function Char_Player.Char_Player_C.OnLanded
+// Function Char_Player.Char_Player_C.ReceivePossessed
 // ()
 // Parameters:
-// struct FHitResult*             Hit                            (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
+// class AController**            NewController                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_Player_C::OnLanded(struct FHitResult* Hit)
+void AChar_Player_C::ReceivePossessed(class AController** NewController)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.OnLanded");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.ReceivePossessed");
 
-	AChar_Player_C_OnLanded_Params params;
-	params.Hit = Hit;
+	AChar_Player_C_ReceivePossessed_Params params;
+	params.NewController = NewController;
 
 	auto flags = fn->FunctionFlags;
 
@@ -1131,26 +1195,6 @@ void AChar_Player_C::OnReceiveRadiationStop()
 }
 
 
-// Function Char_Player.Char_Player_C.ReceivePossessed
-// ()
-// Parameters:
-// class AController**            NewController                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-
-void AChar_Player_C::ReceivePossessed(class AController** NewController)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.ReceivePossessed");
-
-	AChar_Player_C_ReceivePossessed_Params params;
-	params.NewController = NewController;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Char_Player.Char_Player_C.ReceiveDestroyed
 // ()
 
@@ -1171,22 +1215,22 @@ void AChar_Player_C::ReceiveDestroyed()
 // Function Char_Player.Char_Player_C.TakeDamageEvent
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_Player_C::TakeDamageEvent(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AChar_Player_C::TakeDamageEvent(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Char_Player.Char_Player_C.TakeDamageEvent");
 
 	AChar_Player_C_TakeDamageEvent_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 

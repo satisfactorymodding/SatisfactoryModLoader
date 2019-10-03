@@ -67,6 +67,27 @@ struct AChar_Spitter_C_BndEvt__Capsule_K2Node_ComponentBoundEvent_0_ComponentBeg
 	struct FHitResult                                  SweepResult;                                              // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm, IsPlainOldData)
 };
 
+// Function Char_Spitter.Char_Spitter_C.ReceiveBeginPlay
+struct AChar_Spitter_C_ReceiveBeginPlay_Params
+{
+};
+
+// Function Char_Spitter.Char_Spitter_C.ReceiveEndPlay
+struct AChar_Spitter_C_ReceiveEndPlay_Params
+{
+	TEnumAsByte<EEndPlayReason>*                       EndPlayReason;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Char_Spitter.Char_Spitter_C.GainedSignificance
+struct AChar_Spitter_C_GainedSignificance_Params
+{
+};
+
+// Function Char_Spitter.Char_Spitter_C.LostSignificance
+struct AChar_Spitter_C_LostSignificance_Params
+{
+};
+
 // Function Char_Spitter.Char_Spitter_C.ExecuteUbergraph_Char_Spitter
 struct AChar_Spitter_C_ExecuteUbergraph_Char_Spitter_Params
 {

@@ -83,14 +83,14 @@ void UWidget_ChatWindow_C::OnChatMessageReceived()
 // Function Widget_ChatWindow.Widget_ChatWindow_C.SetInputWindowVisibility
 // ()
 // Parameters:
-// bool                           Visible                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           visible                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_ChatWindow_C::SetInputWindowVisibility(bool Visible)
+void UWidget_ChatWindow_C::SetInputWindowVisibility(bool visible)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_ChatWindow.Widget_ChatWindow_C.SetInputWindowVisibility");
 
 	UWidget_ChatWindow_C_SetInputWindowVisibility_Params params;
-	params.Visible = Visible;
+	params.visible = visible;
 
 	auto flags = fn->FunctionFlags;
 

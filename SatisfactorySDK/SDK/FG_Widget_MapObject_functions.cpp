@@ -12,6 +12,77 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_MapObject.Widget_MapObject_C.HideViewDistanceIndicator
+// ()
+
+void UWidget_MapObject_C::HideViewDistanceIndicator()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MapObject.Widget_MapObject_C.HideViewDistanceIndicator");
+
+	UWidget_MapObject_C_HideViewDistanceIndicator_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_MapObject.Widget_MapObject_C.ShowViewDistanceIndicator
+// ()
+// Parameters:
+// ECompassViewDistance           viewDistance                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_MapObject_C::ShowViewDistanceIndicator(ECompassViewDistance viewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MapObject.Widget_MapObject_C.ShowViewDistanceIndicator");
+
+	UWidget_MapObject_C_ShowViewDistanceIndicator_Params params;
+	params.viewDistance = viewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_MapObject.Widget_MapObject_C.UnhighlightOnMap
+// ()
+
+void UWidget_MapObject_C::UnhighlightOnMap()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MapObject.Widget_MapObject_C.UnhighlightOnMap");
+
+	UWidget_MapObject_C_UnhighlightOnMap_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_MapObject.Widget_MapObject_C.HighlightOnMap
+// ()
+
+void UWidget_MapObject_C::HighlightOnMap()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MapObject.Widget_MapObject_C.HighlightOnMap");
+
+	UWidget_MapObject_C_HighlightOnMap_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_MapObject.Widget_MapObject_C.mShowActorDetails
 // ()
 
@@ -54,14 +125,14 @@ void UWidget_MapObject_C::Tick(struct FGeometry* MyGeometry, float* InDeltaTime)
 // Function Widget_MapObject.Widget_MapObject_C.OnObjectFiltered
 // ()
 // Parameters:
-// bool*                          FilteredIn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// bool*                          visible                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_MapObject_C::OnObjectFiltered(bool* FilteredIn)
+void UWidget_MapObject_C::OnObjectFiltered(bool* visible)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_MapObject.Widget_MapObject_C.OnObjectFiltered");
 
 	UWidget_MapObject_C_OnObjectFiltered_Params params;
-	params.FilteredIn = FilteredIn;
+	params.visible = visible;
 
 	auto flags = fn->FunctionFlags;
 

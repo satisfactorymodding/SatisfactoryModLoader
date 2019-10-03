@@ -12,6 +12,30 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function BP_ProfileSpline.BP_ProfileSpline_C.GetConsoleVariableByName
+// ()
+// Parameters:
+// class FString                  VariableName                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor)
+// class FString                  VariableInput                  (Parm, OutParm, ZeroConstructor)
+
+void ABP_ProfileSpline_C::GetConsoleVariableByName(const class FString& VariableName, class FString* VariableInput)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_ProfileSpline.BP_ProfileSpline_C.GetConsoleVariableByName");
+
+	ABP_ProfileSpline_C_GetConsoleVariableByName_Params params;
+	params.VariableName = VariableName;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (VariableInput != nullptr)
+		*VariableInput = params.VariableInput;
+}
+
+
 // Function BP_ProfileSpline.BP_ProfileSpline_C.CheckDoneRespawning
 // ()
 // Parameters:
@@ -76,6 +100,23 @@ void ABP_ProfileSpline_C::UserConstructionScript()
 }
 
 
+// Function BP_ProfileSpline.BP_ProfileSpline_C.StartProfile
+// ()
+
+void ABP_ProfileSpline_C::StartProfile()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_ProfileSpline.BP_ProfileSpline_C.StartProfile");
+
+	ABP_ProfileSpline_C_StartProfile_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function BP_ProfileSpline.BP_ProfileSpline_C.ReceiveTick
 // ()
 // Parameters:
@@ -113,14 +154,14 @@ void ABP_ProfileSpline_C::FetchPlayerPawn()
 }
 
 
-// Function BP_ProfileSpline.BP_ProfileSpline_C.StartProfile
+// Function BP_ProfileSpline.BP_ProfileSpline_C.EnsurePlayerDoneSpawning
 // ()
 
-void ABP_ProfileSpline_C::StartProfile()
+void ABP_ProfileSpline_C::EnsurePlayerDoneSpawning()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_ProfileSpline.BP_ProfileSpline_C.StartProfile");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_ProfileSpline.BP_ProfileSpline_C.EnsurePlayerDoneSpawning");
 
-	ABP_ProfileSpline_C_StartProfile_Params params;
+	ABP_ProfileSpline_C_EnsurePlayerDoneSpawning_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -130,14 +171,14 @@ void ABP_ProfileSpline_C::StartProfile()
 }
 
 
-// Function BP_ProfileSpline.BP_ProfileSpline_C.EnsurePlayerDoneSpawning
+// Function BP_ProfileSpline.BP_ProfileSpline_C.DebugStart
 // ()
 
-void ABP_ProfileSpline_C::EnsurePlayerDoneSpawning()
+void ABP_ProfileSpline_C::DebugStart()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_ProfileSpline.BP_ProfileSpline_C.EnsurePlayerDoneSpawning");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_ProfileSpline.BP_ProfileSpline_C.DebugStart");
 
-	ABP_ProfileSpline_C_EnsurePlayerDoneSpawning_Params params;
+	ABP_ProfileSpline_C_DebugStart_Params params;
 
 	auto flags = fn->FunctionFlags;
 

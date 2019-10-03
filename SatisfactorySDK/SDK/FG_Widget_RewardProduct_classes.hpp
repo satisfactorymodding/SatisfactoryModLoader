@@ -15,13 +15,13 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_RewardProduct.Widget_RewardProduct_C
-// 0x0020 (0x0350 - 0x0330)
+// 0x0020 (0x0358 - 0x0338)
 class UWidget_RewardProduct_C : public UWidget_SchematicRewardItem_C
 {
 public:
-	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0330(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
-	struct FItemAmount                                 mProduct;                                                 // 0x0338(0x0010) (Edit, BlueprintVisible)
-	class UTexture*                                    mForcedCategoryIcon;                                      // 0x0348(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	struct FPointerToUberGraphFrame                    UberGraphFrame;                                           // 0x0338(0x0008) (ZeroConstructor, Transient, DuplicateTransient)
+	struct FItemAmount                                 mProduct;                                                 // 0x0340(0x0010) (Edit, BlueprintVisible)
+	class UTexture*                                    mForcedCategoryIcon;                                      // 0x0350(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

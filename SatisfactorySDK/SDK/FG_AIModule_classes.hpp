@@ -520,7 +520,7 @@ public:
 	}
 
 
-	void ReportDamageEvent(class UObject* WorldContextObject, class AActor* damagedActor, class AActor* Instigator, float damageAmount, const struct FVector& EventLocation, const struct FVector& HitLocation);
+	void ReportDamageEvent(class UObject* WorldContextObject, class AActor* DamagedActor, class AActor* Instigator, float damageAmount, const struct FVector& EventLocation, const struct FVector& HitLocation);
 };
 
 

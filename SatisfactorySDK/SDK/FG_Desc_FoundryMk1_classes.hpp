@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_FoundryMk1.Desc_FoundryMk1_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_FoundryMk1_C : public UFGBuildingDescriptor
 {
 public:

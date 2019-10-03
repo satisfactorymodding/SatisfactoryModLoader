@@ -14,6 +14,17 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.SetContinueButtonVisibility
+struct UBP_MainMenuWidget_C_SetContinueButtonVisibility_Params
+{
+	struct FSaveHeader                                 recentSave;                                               // (BlueprintVisible, BlueprintReadOnly, Parm)
+};
+
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetMostRecentSaveName
+struct UBP_MainMenuWidget_C_GetMostRecentSaveName_Params
+{
+};
+
 // Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetExperimentalVisibility
 struct UBP_MainMenuWidget_C_GetExperimentalVisibility_Params
 {
@@ -32,6 +43,7 @@ struct UBP_MainMenuWidget_C_UpdateVersionString_Params
 // Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetMostRecentSave
 struct UBP_MainMenuWidget_C_GetMostRecentSave_Params
 {
+	struct FSaveHeader                                 recentSave;                                               // (Parm, OutParm)
 };
 
 // Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetVersionString
@@ -93,6 +105,16 @@ struct UBP_MainMenuWidget_C_LoginStateChanged_Params
 {
 	TEnumAsByte<ELoginState>                           oldState;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	TEnumAsByte<ELoginState>                           newState;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_1_OnHovered__DelegateSignature
+struct UBP_MainMenuWidget_C_BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_1_OnHovered__DelegateSignature_Params
+{
+};
+
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_2_OnUnhovered__DelegateSignature
+struct UBP_MainMenuWidget_C_BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_2_OnUnhovered__DelegateSignature_Params
+{
 };
 
 // Function BP_MainMenuWidget.BP_MainMenuWidget_C.ExecuteUbergraph_BP_MainMenuWidget

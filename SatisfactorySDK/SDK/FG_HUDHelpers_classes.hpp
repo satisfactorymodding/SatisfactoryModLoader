@@ -38,7 +38,7 @@ public:
 	void SetSliderSteps(class USlider* mSlider, int mSteps, class UObject* __WorldContext);
 	void GetScanningObjectName(class APawn* OwningPawn, class UObject* __WorldContext, struct FText* Object_Name);
 	void ShowHideHUD(bool isMenuOpen, class APawn* OwningPawn, class AController* Controller, class UObject* __WorldContext);
-	void GetNumItemsFromInventory(class UFGInventoryComponent* InventoryComponent, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems);
+	void GetNumItemsFromInventory(class UFGInventoryComponent* inventoryComponent, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems);
 	void GetFactoryGameOrange(class UObject* __WorldContext, struct FLinearColor* Orange, struct FSlateColor* OrangeText);
 	void GetFactoryGameWhite(class UObject* __WorldContext, struct FSlateColor* TextWhite, struct FLinearColor* GraphicsWhite);
 	void GetNumItemsFromPlayerInventory(class APawn* OwningPawn, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems);

@@ -37,11 +37,14 @@ public:
 	void SpawnTimer();
 	void PlaySpawnEffects();
 	void UserConstructionScript();
+	void Damaged(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser);
 	void ReceiveBeginPlay();
-	void Damaged(class AActor* damagedActor, float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser);
 	void SpawnCrabs();
 	void StartExpanding();
 	void ReceiveActorBeginOverlap(class AActor** OtherActor);
+	void GainedSignificance();
+	void LostSignificance();
+	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason);
 	void ExecuteUbergraph_Char_CrabHatcher(int EntryPoint);
 };
 

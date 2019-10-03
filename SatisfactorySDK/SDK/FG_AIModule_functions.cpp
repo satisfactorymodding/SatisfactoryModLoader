@@ -1432,19 +1432,19 @@ void UAISense_Blueprint::GetAllListenerActors(TArray<class AActor*>* ListenerAct
 // ()
 // Parameters:
 // class UObject*                 WorldContextObject             (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AActor*                  Instigator                     (Parm, ZeroConstructor, IsPlainOldData)
 // float                          damageAmount                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 EventLocation                  (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitLocation                    (Parm, ZeroConstructor, IsPlainOldData)
 
-void UAISense_Damage::ReportDamageEvent(class UObject* WorldContextObject, class AActor* damagedActor, class AActor* Instigator, float damageAmount, const struct FVector& EventLocation, const struct FVector& HitLocation)
+void UAISense_Damage::ReportDamageEvent(class UObject* WorldContextObject, class AActor* DamagedActor, class AActor* Instigator, float damageAmount, const struct FVector& EventLocation, const struct FVector& HitLocation)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function AIModule.AISense_Damage.ReportDamageEvent");
 
 	UAISense_Damage_ReportDamageEvent_Params params;
 	params.WorldContextObject = WorldContextObject;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Instigator = Instigator;
 	params.damageAmount = damageAmount;
 	params.EventLocation = EventLocation;

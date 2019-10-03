@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_EquipmentDescriptorRifle.BP_EquipmentDescriptorRifle_C
-// 0x0000 (0x0130 - 0x0130)
+// 0x0000 (0x0138 - 0x0138)
 class UBP_EquipmentDescriptorRifle_C : public UFGEquipmentDescriptor
 {
 public:

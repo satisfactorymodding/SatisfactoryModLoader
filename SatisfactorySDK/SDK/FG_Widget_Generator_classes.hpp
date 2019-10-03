@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_Generator.Widget_Generator_C
-// 0x00D4 (0x034C - 0x0278)
+// 0x00E0 (0x0358 - 0x0278)
 class UWidget_Generator_C : public UWidget_UseableBase_C
 {
 public:
@@ -46,6 +46,8 @@ public:
 	class UWidget_InventorySlot_C*                     mWasteSlot;                                               // 0x0338(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
 	struct FTimerHandle                                SmokeTimer;                                               // 0x0340(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
 	float                                              PreviousEffiency;                                         // 0x0348(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x4];                                       // 0x034C(0x0004) MISSED OFFSET
+	struct FTimerHandle                                UpdateSlotStatsTimer;                                     // 0x0350(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
 
 	static UClass* StaticClass()
 	{

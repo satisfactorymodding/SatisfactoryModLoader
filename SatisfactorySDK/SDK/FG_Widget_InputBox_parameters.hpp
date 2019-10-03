@@ -14,6 +14,17 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_InputBox.Widget_InputBox_C.CheckSearchbarLength
+struct UWidget_InputBox_C_CheckSearchbarLength_Params
+{
+	bool                                               SearchbarContainsText;                                    // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_InputBox.Widget_InputBox_C.SetSearchbarStyle
+struct UWidget_InputBox_C_SetSearchbarStyle_Params
+{
+};
+
 // Function Widget_InputBox.Widget_InputBox_C.SetInputboxStyle
 struct UWidget_InputBox_C_SetInputboxStyle_Params
 {
@@ -60,10 +71,26 @@ struct UWidget_InputBox_C_BndEvt__mHover_K2Node_ComponentBoundEvent_2_OnButtonHo
 {
 };
 
+// Function Widget_InputBox.Widget_InputBox_C.PreConstruct
+struct UWidget_InputBox_C_PreConstruct_Params
+{
+	bool*                                              IsDesignTime;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_InputBox.Widget_InputBox_C.BndEvt__mSearchButton_K2Node_ComponentBoundEvent_5_OnButtonClickedEvent__DelegateSignature
+struct UWidget_InputBox_C_BndEvt__mSearchButton_K2Node_ComponentBoundEvent_5_OnButtonClickedEvent__DelegateSignature_Params
+{
+};
+
 // Function Widget_InputBox.Widget_InputBox_C.ExecuteUbergraph_Widget_InputBox
 struct UWidget_InputBox_C_ExecuteUbergraph_Widget_InputBox_Params
 {
 	int                                                EntryPoint;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_InputBox.Widget_InputBox_C.OnClearTextClicked__DelegateSignature
+struct UWidget_InputBox_C_OnClearTextClicked__DelegateSignature_Params
+{
 };
 
 // Function Widget_InputBox.Widget_InputBox_C.OnTextComitted__DelegateSignature

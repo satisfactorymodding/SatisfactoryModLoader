@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_Graph.Widget_Graph_C
-// 0x0038 (0x0240 - 0x0208)
+// 0x003C (0x0244 - 0x0208)
 class UWidget_Graph_C : public UUserWidget
 {
 public:
@@ -25,6 +25,7 @@ public:
 	struct FVector2D                                   mAxisMax;                                                 // 0x0228(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	struct FVector2D                                   mCanvasSize;                                              // 0x0230(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	struct FVector2D                                   mScaler;                                                  // 0x0238(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	int                                                mLineThickness;                                           // 0x0240(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

@@ -14,6 +14,14 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_TradingPost_LanuchButtonPlatform.Widget_TradingPost_LanuchButtonPlatform_C.OnMouseButtonDown
+struct UWidget_TradingPost_LanuchButtonPlatform_C_OnMouseButtonDown_Params
+{
+	struct FGeometry*                                  MyGeometry;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FPointerEvent*                              MouseEvent;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+	struct FEventReply                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
 // Function Widget_TradingPost_LanuchButtonPlatform.Widget_TradingPost_LanuchButtonPlatform_C.GetVisibility_1
 struct UWidget_TradingPost_LanuchButtonPlatform_C_GetVisibility_1_Params
 {

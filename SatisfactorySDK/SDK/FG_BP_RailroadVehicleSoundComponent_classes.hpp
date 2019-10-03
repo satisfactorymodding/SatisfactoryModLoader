@@ -39,8 +39,8 @@ public:
 	void OnDynamicBrakesReleased();
 	void OnThrottleReleased();
 	void OnThrottleApplied();
-	void OnStoppedMovingRelay();
 	void ReceiveBeginPlay();
+	void OnStoppedMovingRelay();
 	void ExecuteUbergraph_BP_RailroadVehicleSoundComponent(int EntryPoint);
 };
 
