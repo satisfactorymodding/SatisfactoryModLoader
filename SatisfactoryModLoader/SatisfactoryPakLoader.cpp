@@ -93,12 +93,14 @@ namespace SML {
 
 				// Iterate through all mods and call the preinit event
 				for (Objects::UObject* mod : mods) {
-					mod->findFunction(L"PreInit")->invoke(mod); // Call the event
+					auto f = mod->findFunction(L"PreInit");
+					if (f) f->invoke(mod); // Call the event
 				};
 
 				// Iterate through all mods and call the init event
 				for (Objects::UObject* mod : mods) {
-					mod->findFunction(L"Init ")->invoke(mod); // Call the event
+					auto f = mod->findFunction(L"Init ");
+					if (f) f->invoke(mod); // Call the event
 				}
 			}
 		});
@@ -107,7 +109,8 @@ namespace SML {
 		::subscribe<&Objects::AFGPlayerController::BeginPlay>([](Mod::Functions::ModReturns* ret, Objects::AFGPlayerController* player) {
 			// Iterate through all mods and call the postinit event
 			for (Objects::UObject* mod : mods) {
-				mod->findFunction(L"PostInit ")->invoke(mod); // Call the event
+				auto f = mod->findFunction(L"PostInit ");
+				if (f) f->invoke(mod); // Call the event
 				::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
 			}
 		});
