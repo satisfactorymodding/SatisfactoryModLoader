@@ -22,6 +22,10 @@ namespace SML {
 		using namespace SML;
 		using namespace SML::Mod;
 
+		struct InitParams {
+			Objects::TArray<Objects::FString> mods;
+		};
+
 		::subscribe<&Objects::AFGGameMode::InitGameState>([](Mod::Functions::ModReturns* ret, Objects::AFGGameMode* player) {
 			//check if we are in the menu
 			SDK::FString* mapname = (SDK::FString*)::call<&Objects::UWorld::GetMapName>((Objects::UWorld*)Functions::getWorld(), (Objects::FString*)&SDK::FString());
@@ -32,6 +36,7 @@ namespace SML {
 				Utility::info("Initializing Paks!");
 				mods.clear();
 				modNames = L""; //clear pakmod list when loading a new map
+				modNamesArray.clear();
 			}
 
 			// Get the execution path (\FactoryGame\Binaries\Win64\FactoryGame.exe)
@@ -83,6 +88,7 @@ namespace SML {
 						Objects::UObject* modActor = (Objects::UObject*)::call<&Objects::UWorld::SpawnActor>((Objects::UWorld*)*SDK::UWorld::GWorld, (SDK::UClass*)clazz, &position, &rotation, &spawnParams);
 						mods.push_back(modActor); // Add the mod actor to the mods list
 						modNames += L"," + modNameW; // Append the mod name to the modNames string
+						modNamesArray.add(Objects::FString(modNameW.c_str()));
 					}
 				}
 			}
@@ -94,13 +100,17 @@ namespace SML {
 				// Iterate through all mods and call the preinit event
 				for (Objects::UObject* mod : mods) {
 					auto f = mod->findFunction(L"PreInit");
-					if (f) f->invoke(mod); // Call the event
+					InitParams initParams;
+					initParams.mods = modNamesArray;
+					if (f) f->invoke(mod, &initParams); // Call the event
 				};
 
 				// Iterate through all mods and call the init event
 				for (Objects::UObject* mod : mods) {
 					auto f = mod->findFunction(L"Init");
-					if (f) f->invoke(mod); // Call the event
+					InitParams initParams;
+					initParams.mods = modNamesArray;
+					if (f) f->invoke(mod, &initParams); // Call the event
 				}
 			}
 		});
@@ -110,7 +120,9 @@ namespace SML {
 			// Iterate through all mods and call the postinit event
 			for (Objects::UObject* mod : mods) {
 				auto f = mod->findFunction(L"PostInit");
-				if (f) f->invoke(mod); // Call the event
+				InitParams initParams;
+				initParams.mods = modNamesArray;
+				if (f) f->invoke(mod, &initParams); // Call the event
 				::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
 			}
 		});

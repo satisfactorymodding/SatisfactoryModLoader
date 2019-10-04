@@ -13,11 +13,14 @@
 #pragma once
 
 #include <game/Global.h>
+#include <util/Objects/TArray.h>
+
 namespace SML {
 	namespace SPL {
 		namespace {
 			std::vector<SML::Objects::UObject*> mods; // Contains all mod actors
 			std::wstring modNames; // Contains all mod names (seperated by a comma)
+			Objects::TArray<Objects::FString> modNamesArray;
 		}
 
 		/** Initializes SPL */
