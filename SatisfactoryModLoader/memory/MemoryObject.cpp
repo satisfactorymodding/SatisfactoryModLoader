@@ -5,7 +5,7 @@
 
 namespace SML {
 	template<class O>
-	MemoryObject<O>::MemoryObject(O* obj) {
+	SML_API MemoryObject<O>::MemoryObject(O* obj) {
 		this->object = obj;
 		this->size = sizeof(*obj);
 
@@ -20,22 +20,22 @@ namespace SML {
 	}
 
 	template<class O>
-	std::vector<BYTE> MemoryObject<O>::returnBytes() {
+	SML_API std::vector<BYTE> MemoryObject<O>::returnBytes() {
 		return this->bytes;
 	}
 
 	template<class O>
-	std::vector<char> MemoryObject<O>::returnBytesAsChars() {
+	SML_API std::vector<char> MemoryObject<O>::returnBytesAsChars() {
 		return std::vector<char>(this->bytes.begin(), this->bytes.end());
 	}
 
 	template<class O>
-	int MemoryObject<O>::getSize() {
+	SML_API int MemoryObject<O>::getSize() {
 		return this->size;
 	}
 
 	template<class O>
-	void MemoryObject<O>::replaceMemory(std::vector<BYTE> newBytes) {
+	SML_API void MemoryObject<O>::replaceMemory(std::vector<BYTE> newBytes) {
 		if (newBytes.size() == this->size) {
 			this->bytes = newBytes;
 			HANDLE process = OpenProcess(PROCESS_VM_WRITE | PROCESS_VM_OPERATION, FALSE, GetCurrentProcessId());
@@ -49,7 +49,7 @@ namespace SML {
 	}
 
 	template<class O>
-	MemoryObject<O>::~MemoryObject() {
+	SML_API MemoryObject<O>::~MemoryObject() {
 
 	}
 }
