@@ -22,9 +22,11 @@ namespace SML {
 			inline TArray(const TArray<T>& other) {
 				if (other.max) {
 					data = (T*)FMemory::malloc(other.max * sizeof(T));
-					data = (T*)std::memcpy(data, other.data, other.count * sizeof(T));
 					max = other.max;
 					count = other.count;
+					for (int i = 0; i < count; ++i) {
+						new (&data[i]) T(other.data[i]);
+					}
 				} else {
 					data = nullptr;
 					count = max = 0;
@@ -45,6 +47,9 @@ namespace SML {
 			}
 
 			inline ~TArray() {
+				for (int i = 0; i < count; ++i) {
+					((T&) data[i]).~T();
+				}
 				if (max) FMemory::free(data);
 			}
 
@@ -52,9 +57,12 @@ namespace SML {
 				if (max) {
 					if (other.max) {
 						data = (T*)FMemory::realloc(data, other.max * sizeof(T));
-						data = (T*)std::memcpy(data, other.data, other.count * sizeof(T));
+						data = (T*)std::memset(data, 0, other.count * sizeof(T));
 						count = other.count;
 						max = other.max;
+						for (int i = 0; i < count; ++i) {
+							new (&data[i]) T(other.data[i]);
+						}
 					} else {
 						FMemory::free(data);
 						data = nullptr;
@@ -63,9 +71,11 @@ namespace SML {
 				} else {
 					if (other.max) {
 						data = (T*)FMemory::malloc(other.max * sizeof(T));
-						data = (T*)std::memcpy(data, other.data, other.count * sizeof(T));
 						count = other.count;
 						max = other.max;
+						for (int i = 0; i < count; ++i) {
+							new (&data[i]) T(other.data[i]);
+						}
 					} else {
 						data = nullptr;
 						max = count = 0;
@@ -110,6 +120,25 @@ namespace SML {
 
 			inline void* getData() const {
 				return data;
+			}
+
+			inline void add(const T& item) {
+				if (!max) {
+					data = (T*) FMemory::malloc(1);
+					count = 0;
+					max = 1;
+				} else if (count + 1 > max) {
+					max = count + 1;
+					data = (T*) FMemory::realloc(data, max * sizeof(T));
+				}
+				++count;
+				new (&data[count - 1]) T(item);
+			}
+
+			inline void clear() {
+				this->~TArray();
+				count = max = 0;
+				data = nullptr;
 			}
 
 			/* TODO: 
