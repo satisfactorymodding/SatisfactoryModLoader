@@ -23,6 +23,8 @@ namespace SML {
 		class FObjectInitializer;
 		class FReferenceCollector;
 		class FVtableHelper;
+		class UEnum;
+		class UScriptStruct;
 
 		// detour cache
 		SML_API extern void(*processNewObjs)();
@@ -95,6 +97,31 @@ namespace SML {
 
 
 
+		// --- Enums --- //
+		
+		enum class ENativeBool {
+			NotNative,
+			Native
+		};
+
+		enum EPropStructParamsType {
+			None,
+			WithOff,
+			Generic,
+			Byte,
+			Bool,
+			Object,
+			Class,
+			SoftClass,
+			Interface,
+			Struct,
+			Delegate,
+			MulticastDelegate,
+			Enum
+		};
+		
+
+
 		// --- Structs --- //
 
 
@@ -113,17 +140,146 @@ namespace SML {
 		class FVtableHelper;
 		class FReferenceCollector;
 
-		/**
-		* Describes a property before it gets constructed
-		*/
+		struct FPropertyParamsBase {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+		};
+
+		struct FPropertyParamsBaseWithOffset {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+		};
+
 		struct FGenericPropertyParams {
-			Objects::EPropertyClass type = (Objects::EPropertyClass)0;
-			const char* name = nullptr;
-			Objects::EObjectFlags objFlags = Objects::EObjectFlags::RF_NoFlags;
-			Objects::EPropertyFlags propFlags = Objects::EPropertyFlags::Prop_None;
-			std::int32_t dim = 0;
-			const char* repNotStr = nullptr;
-			std::int32_t off = 0;
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+		};
+
+		struct FBytePropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+			UEnum* (*enumFunc)();
+		};
+
+		struct FBoolPropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::uint32_t size;
+			ENativeBool nativeBool;
+			SIZE_T outerSize;
+			void(*setBitFunc)(void*);
+		};
+
+		struct FObjectPropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+			Objects::UClass* (*classFunc)();
+		};
+
+		struct FClassPropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+			Objects::UClass* (*metaClassFunc)();
+			Objects::UClass* (*classFunc)();
+		};
+
+		struct FSoftClassPropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notifyFunc;
+			std::int32_t off;
+			Objects::UClass* (*metaClassFunc)();
+		};
+
+		struct FInterfacePropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+			Objects::UClass* (*interfaceClassFunc)();
+		};
+
+		struct FStructPropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+			UScriptStruct* (*scriptStructFunc)();
+		};
+
+		struct FDelegatePropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+			Objects::UFunction* (*sigFunctionFunc)();
+		};
+
+		struct FMulticastDelegatePropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t off;
+			Objects::UFunction* (*sigFunctionFunc)();
+		};
+
+		struct FEnumPropertyParams {
+			Objects::EPropertyClass type;
+			const char* name;
+			Objects::EObjectFlags objFlags;
+			Objects::EPropertyFlags propFlags;
+			std::int32_t dim;
+			const char* notify;
+			std::int32_t offset;
+			UEnum* (*enumFunc)();
 		};
 
 		/**
@@ -136,7 +292,7 @@ namespace SML {
 			Objects::UFunction* (*sFunc)() = nullptr;
 			Objects::EFunctionFlags funcFlags = Objects::EFunctionFlags::FUNC_None;
 			SIZE_T structSize = 0;
-			const FGenericPropertyParams* const* propArr = nullptr;
+			const FPropertyParamsBase* const* propArr = nullptr;
 			std::int32_t propCount = 0;
 			std::uint16_t rpcId = 0;
 			std::uint16_t rpcRespId = 0;
@@ -176,7 +332,7 @@ namespace SML {
 			std::uint32_t flags = 0;
 			const FClassFunctionLinkInfo* funcs = nullptr;
 			std::int32_t funcCount = 0;
-			const FGenericPropertyParams* const* props = nullptr;
+			const FPropertyParamsBase* const* props = nullptr;
 			std::int32_t propCount = 0;
 			const char* config = "";
 			const FCppClassTypeInfoStatic* info = nullptr;
@@ -196,12 +352,50 @@ namespace SML {
 		*/
 		class PropertyBuilder {
 		private:
-			FGenericPropertyParams params;
+			EPropStructParamsType structType = EPropStructParamsType::Generic;
+			FPropertyParamsBase* params = nullptr;
 			std::string pname;
+			std::string notify;
 
-			PropertyBuilder() {};
+			inline PropertyBuilder() {};
+
+			SML_API size_t createStructFromType(const Objects::EPropertyClass type);
 
 		public:
+			SML_API inline PropertyBuilder(const PropertyBuilder& other) {
+				structType = other.structType;
+				params = (FPropertyParamsBase*) std::memcpy(params, other.params, createStructFromType(other.params->type));
+				pname = other.pname;
+				notify = other.notify;
+			}
+
+			SML_API inline PropertyBuilder(const PropertyBuilder&& other) {
+				structType = other.structType;
+				params = other.params;
+				pname = other.pname;
+				notify = other.notify;
+			}
+
+			SML_API inline PropertyBuilder& operator=(const PropertyBuilder& other) {
+				structType = other.structType;
+				params = (FPropertyParamsBase*)std::memcpy(params, other.params, createStructFromType(other.params->type));
+				pname = other.pname;
+				notify = other.notify;
+				return *this;
+			}
+
+			SML_API inline PropertyBuilder& operator=(const PropertyBuilder&& other) {
+				structType = other.structType;
+				params = other.params;
+				pname = other.pname;
+				notify = other.notify;
+				return *this;
+			}
+
+			SML_API inline ~PropertyBuilder() {
+				if (params) delete params;
+			}
+
 			/**
 			* Creates a PropertyBuilder with a default setup for return values of functions
 			*
@@ -229,7 +423,7 @@ namespace SML {
 			*
 			* @author Panakotta00
 			*/
-			SML_API FGenericPropertyParams* build();
+			SML_API FPropertyParamsBase* build();
 
 			/**
 			* adds object flags
@@ -281,11 +475,54 @@ namespace SML {
 			SML_API PropertyBuilder& name(std::string name);
 
 			/**
+			* if the type hase an offset, it will get set to the given value
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& off(int offset);
+
+			/**
+			* sets the referenced uclass/interface return function (staticClass) when type needs it
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& classFunc(Objects::UClass*(*func)());
+
+			/**
+			* sets the "setBitFunc" of bool property
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& setBitFunc(void(*func)(void*));
+
+			/**
+			* sets the metaClassRetFunc of class property
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& setMetaClassFunc(Objects::UClass*(*func)());
+
+			/**
+			* sets the enumRetFunc for the referenced enum
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& setEnumFunc(void*(*func)());
+
+			/**
+			* sets the funcRetFunc for the referenced function
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& setFuncFunc(void*(*)());
+
+			/**
 			* returns the size of a property type (EPropertyClass)
 			*
 			* @author Panakotta00
 			*/
 			SML_API size_t getSize();
+			SML_API static size_t getSize(Objects::EPropertyClass type);
 		};
 
 		/**
@@ -886,13 +1123,13 @@ namespace SML {
 					active.params.funcCount = i;
 
 					// get props
-					FGenericPropertyParams** props = new FGenericPropertyParams*[active.props.size()];
+					FPropertyParamsBase** props = new FPropertyParamsBase*[active.props.size()];
 					i = 0;
 					size_t size = active.paramOff;
 					for (auto& p : active.props) {
+						p.off(size);
 						auto pr = p.build();
-						pr->off = size;
-						size += pr->dim;
+						size += p.getSize();
 						props[i++] = pr;
 					}
 					active.params.props = props;

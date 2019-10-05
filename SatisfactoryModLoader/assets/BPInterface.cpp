@@ -84,10 +84,78 @@ namespace SML {
 
 		// --- PropertyBuilder --- //
 
+		size_t PropertyBuilder::createStructFromType(const EPropertyClass type) {
+			FPropertyParamsBase* p = nullptr;
+			size_t size = 0;
+			switch (type) {
+			case EPropertyClass::Bool:
+				p = (FPropertyParamsBase*) new FBoolPropertyParams();
+				structType = EPropStructParamsType::Bool;
+				size = sizeof(FBoolPropertyParams);
+				break;
+			case EPropertyClass::Byte:
+				p = (FPropertyParamsBase*) new FBytePropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::Byte | EPropStructParamsType::WithOff);
+				size = sizeof(FBytePropertyParams);
+				break;
+			case EPropertyClass::Class:
+				p = (FPropertyParamsBase*) new FClassPropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::Class);
+				size = sizeof(FClassPropertyParams);
+				break;
+			case EPropertyClass::Delegate:
+				p = (FPropertyParamsBase*) new FDelegatePropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::Delegate);
+				size = sizeof(FDelegatePropertyParams);
+				break;
+			case EPropertyClass::Enum:
+				p = (FPropertyParamsBase*) new FEnumPropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::Enum);
+				size = sizeof(FEnumPropertyParams);
+				break;
+			case EPropertyClass::Interface:
+				p = (FPropertyParamsBase*) new FInterfacePropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::Interface);
+				size = sizeof(FInterfacePropertyParams);
+				break;
+			case EPropertyClass::Object:
+			case EPropertyClass::LazyObject:
+			case EPropertyClass::SoftObject:
+			case EPropertyClass::WeakObject:
+				p = (FPropertyParamsBase*) new FObjectPropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::Object);
+				size = sizeof(FObjectPropertyParams);
+				break;
+			case EPropertyClass::MulticastDelegate:
+				p = (FPropertyParamsBase*) new FMulticastDelegatePropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::MulticastDelegate);
+				size = sizeof(FMulticastDelegatePropertyParams);
+				break;
+			case EPropertyClass::SoftClass:
+				p = (FPropertyParamsBase*) new FSoftClassPropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::SoftClass);
+				size = sizeof(FSoftClassPropertyParams);
+				break;
+			case EPropertyClass::Struct:
+				p = (FPropertyParamsBase*) new FStructPropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::Struct);
+				size = sizeof(FStructPropertyParams);
+				break;
+			default:
+				p = (FPropertyParamsBase*) new FGenericPropertyParams();
+				structType = (EPropStructParamsType)(EPropStructParamsType::WithOff | EPropStructParamsType::Generic);
+				size = sizeof(FGenericPropertyParams);
+				break;
+			}
+			p->type = type;
+			p->dim = 1;
+			params = p;
+			return size;
+		}
+
 		PropertyBuilder PropertyBuilder::retVal(const EPropertyClass type, const std::string name) {
 			PropertyBuilder builder;
-			builder.params.type = type;
-			builder.params.dim = 1;
+			builder.createStructFromType(type);
 			builder.name(name);
 			builder.addObjFlags(RF_MarkAsNative | RF_Transient | RF_Public);
 			builder.addParamFlags(Prop_SkipSerialization | Prop_Parm | Prop_OutParm);
@@ -96,8 +164,7 @@ namespace SML {
 
 		PropertyBuilder PropertyBuilder::param(const EPropertyClass type, const std::string name) {
 			PropertyBuilder builder;
-			builder.params.type = type;
-			builder.params.dim = 1;
+			builder.createStructFromType(type);
 			builder.name(name);
 			builder.addObjFlags(RF_MarkAsNative | RF_Transient | RF_Public);
 			builder.addParamFlags(Prop_SkipSerialization | Prop_Parm);
@@ -106,46 +173,47 @@ namespace SML {
 
 		PropertyBuilder PropertyBuilder::attrib(const EPropertyClass type, const std::string name) {
 			PropertyBuilder builder;
-			builder.params.type = type;
-			builder.params.dim = 1;
+			builder.createStructFromType(type);
 			builder.name(name);
 			builder.addObjFlags(RF_MarkAsNative | RF_Transient | RF_Public);
 			builder.addParamFlags(Prop_SkipSerialization | Prop_BlueprintVisible);
 			return builder;
 		}
 
-		FGenericPropertyParams* PropertyBuilder::build() {
-			params.name = pname.c_str();
-			return &params;
+		FPropertyParamsBase* PropertyBuilder::build() {
+			params->name = pname.c_str();
+			params->notify = notify.c_str();
+			params->notify = nullptr;
+			return params;
 		}
 
 		PropertyBuilder& PropertyBuilder::addObjFlags(const EObjectFlags flags) {
-			params.objFlags = (EObjectFlags)(params.objFlags | flags);
+			params->objFlags = (EObjectFlags)(params->objFlags | flags);
 			return *this;
 		}
 
 		PropertyBuilder& PropertyBuilder::addObjFlags(const unsigned int flags) {
-			params.objFlags = (EObjectFlags)(params.objFlags | flags);
+			params->objFlags = (EObjectFlags)(params->objFlags | flags);
 			return *this;
 		}
 
 		PropertyBuilder& PropertyBuilder::remObjFlags(const EObjectFlags flags) {
-			params.objFlags = (EObjectFlags)(params.objFlags & ~flags);
+			params->objFlags = (EObjectFlags)(params->objFlags & ~flags);
 			return *this;
 		}
 
 		PropertyBuilder& PropertyBuilder::addParamFlags(const EPropertyFlags flags) {
-			params.propFlags = (EPropertyFlags)(params.propFlags | flags);
+			params->propFlags = (EPropertyFlags)(params->propFlags | flags);
 			return *this;
 		}
 
 		PropertyBuilder& PropertyBuilder::addParamFlags(const std::uint64_t flags) {
-			params.propFlags = (EPropertyFlags)(params.propFlags | flags);
+			params->propFlags = (EPropertyFlags)(params->propFlags | flags);
 			return *this;
 		}
 
 		PropertyBuilder& PropertyBuilder::remParamFlags(const EPropertyFlags flags) {
-			params.propFlags = (EPropertyFlags)(params.propFlags & ~flags);
+			params->propFlags = (EPropertyFlags)(params->propFlags & ~flags);
 			return *this;
 		}
 
@@ -154,9 +222,76 @@ namespace SML {
 			return *this;
 		}
 
+		PropertyBuilder& PropertyBuilder::off(int offset) {
+			if (params && (structType & EPropStructParamsType::WithOff)) ((FPropertyParamsBaseWithOffset*)params)->off = offset;
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::classFunc(UClass *(*func)()) {
+			switch (structType) {
+			case Object:
+				((FObjectPropertyParams*)params)->classFunc = func;
+				break;
+			case Class:
+				((FClassPropertyParams*)params)->classFunc = func;
+				break;
+			case SoftClass:
+				((FSoftClassPropertyParams*)params)->metaClassFunc = func;
+				break;
+			case Interface:
+				((FInterfacePropertyParams*)params)->interfaceClassFunc = func;
+				break;
+			}
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::setBitFunc(void(*func)(void *)) {
+			switch (structType) {
+			case Bool:
+				((FBoolPropertyParams*)params)->setBitFunc = func;
+			}
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::setMetaClassFunc(UClass *(*func)()) {
+			switch (structType) {
+			case Class:
+				((FClassPropertyParams*)params)->metaClassFunc = func;
+			}
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::setEnumFunc(void *(*func)()) {
+			switch (structType) {
+			case Enum:
+				((FEnumPropertyParams*)params)->enumFunc = (UEnum*(*)()) func;
+				break;
+			case Byte:
+				((FBytePropertyParams*)params)->enumFunc = (UEnum*(*)()) func;
+				break;
+			}
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::setFuncFunc(void *(*func)()) {
+			switch (structType) {
+			case Delegate:
+				((FDelegatePropertyParams*)params)->sigFunctionFunc = (UFunction*(*)()) func;
+				break;
+			case MulticastDelegate:
+				((FDelegatePropertyParams*)params)->sigFunctionFunc = (UFunction*(*)()) func;
+				break;
+			}
+			return *this;
+		}
+
 		size_t PropertyBuilder::getSize() {
+			return getSize(params->type);
+		}
+
+		size_t PropertyBuilder::getSize(EPropertyClass type) {
 			size_t size;
-			switch (params.type) {
+			switch (type) {
 			case EPropertyClass::Bool:
 				size = sizeof(bool);
 				break;
@@ -182,7 +317,7 @@ namespace SML {
 				size = sizeof(float);
 				break;
 			case EPropertyClass::Int:
-				size = sizeof(int);
+				size = sizeof(std::int32_t);
 				break;
 			case EPropertyClass::Int16:
 				size = sizeof(std::int16_t);
@@ -265,11 +400,11 @@ namespace SML {
 		UFunction * FunctionBuilder::construct(UClass * clazz) {
 			if (constructed) return constructed;
 
-			FGenericPropertyParams** props = new FGenericPropertyParams*[this->props.size()];
+			FPropertyParamsBase** props = new FPropertyParamsBase*[this->props.size()];
 			params.structSize = 0;
 			for (int i = 0; i < this->props.size(); ++i) {
+				this->props[i].off(static_cast<int>(params.structSize));
 				props[i] = this->props[i].build();
-				props[i]->off = static_cast<int>(params.structSize);
 				params.structSize += this->props[i].getSize();
 			}
 			params.propArr = props;

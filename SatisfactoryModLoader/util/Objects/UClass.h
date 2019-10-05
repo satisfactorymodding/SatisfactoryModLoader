@@ -156,7 +156,7 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			template<typename T>
-			SML_API inline T* findField(const std::string& name) {
+			inline T* findField(const std::string& name) {
 				auto field = this->childs;
 				while (field) {
 					if (field->getName() == name) {

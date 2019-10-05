@@ -124,7 +124,7 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			template<typename T>
-			SML_API inline T* getValue(void* container) {
+			inline T* getValue(void* container) {
 				return (T*)((std::uint64_t)container + (std::uint64_t)internalOffset);
 			}
 

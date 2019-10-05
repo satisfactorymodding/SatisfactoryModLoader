@@ -168,7 +168,7 @@ namespace SML {
 			SML_API static UClass* findClass(const std::string& name);
 
 			/**
-			* trys to fins a UObject by the given anem and cast it to the given type otherwise returns nullptr
+			* trys to fins a UObject by the given index and cast it to the given type otherwise returns nullptr
 			*/
 			template<typename T>
 			SML_API static inline T* getObjCasted(std::size_t index) {
