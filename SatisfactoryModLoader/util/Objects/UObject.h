@@ -45,6 +45,24 @@ namespace SML {
 		};
 
 		/**
+		* Flag enum for internal usage
+		*/
+		enum class EInternalObjectFlags : std::int32_t {
+			None = 0,
+			ReachableInCluster = 1 << 23,
+			ClusterRoot = 1 << 24,
+			Native = 1 << 25,
+			Async = 1 << 26,
+			AsyncLoading = 1 << 27,
+			Unreachable = 1 << 28,
+			PendingKill = 1 << 29,
+			RootSet = 1 << 30,
+			HadReferenceKilled = 1 << 31,
+			GarbageCollectionKeepFlags = Native | Async | AsyncLoading,
+			AllFlags = ReachableInCluster | ClusterRoot | Native | Async | AsyncLoading | Unreachable | PendingKill | RootSet | HadReferenceKilled
+		};
+
+		/**
 		* Returns the function pointer by the given index from the given vtable pointer
 		*/
 		template<typename Fn>
@@ -203,6 +221,27 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			SML_API UFunction* findFunction(const FName& name);
+
+			/**
+			* returns if object is pending for kill
+			*
+			* @author Panakotta00
+			*/
+			SML_API bool isPendingKill();
+
+			/**
+			* checks if the given object is valid
+			*
+			* @author Panakotta00
+			*/
+			SML_API static bool isValid(UObject* obj);
+
+			/**
+			* checks if it self is valid (if this pointer is valid)
+			*
+			* @author Panakotta00
+			*/
+			SML_API bool isValid();
 		};
 	}
 }

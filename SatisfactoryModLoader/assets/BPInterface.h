@@ -17,6 +17,10 @@
 #include <util/Objects/UFunction.h>
 #include <util/Objects/FFrame.h>
 
+namespace SDK {
+	class UClass;
+}
+
 namespace SML {
 	namespace Paks {
 		struct FClassParams;
@@ -317,9 +321,14 @@ namespace SML {
 		* Holds information about the interface implementation of a class
 		*/
 		struct FImplementedInterfaceParams {
-			Objects::UClass* (*ClassFunc)() = nullptr;
-			std::int32_t Offset = 0;
-			bool bImplementedByK2 = false;
+			Objects::UClass* (*classFunc)() = nullptr;
+			std::int32_t off = 0;
+			bool implementedBy2K = false;
+
+			inline FImplementedInterfaceParams(Objects::UClass*(*classFunc)() = nullptr, std::int32_t off = 0, bool implementedBy2K = false)
+			:	classFunc(classFunc),
+				off(off),
+				implementedBy2K(implementedBy2K) {}
 		};
 
 		/**
@@ -346,12 +355,19 @@ namespace SML {
 		// --- Builders --- //
 
 		/**
-		* Helps to construct generic property parameters
+		* Helps to construct property parameters
 		*
 		* @author Panakotta00
 		*/
 		class PropertyBuilder {
 		private:
+			template<typename T, bool T::* Ptr>
+			struct TBitSetFunc {
+				static inline void bitSet(void* out) {
+					((T*)out)->*Ptr = true;
+				}
+			};
+
 			EPropStructParamsType structType = EPropStructParamsType::Generic;
 			FPropertyParamsBase* params = nullptr;
 			std::string pname;
@@ -487,34 +503,69 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			SML_API PropertyBuilder& classFunc(Objects::UClass*(*func)());
+			SML_API PropertyBuilder& classFunc(SDK::UClass*(*func)());
 
 			/**
 			* sets the "setBitFunc" of bool property
 			*
 			* @author Panakotta00
 			*/
-			SML_API PropertyBuilder& setBitFunc(void(*func)(void*));
+			SML_API PropertyBuilder& bitFunc(void(*func)(void*));
+
+			/**
+			* sets the size of the outer
+			*
+			* @auhtor Panakotta00
+			*/
+			SML_API PropertyBuilder& outerSize(size_t size);
+
+			/**
+			* other bool property data
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& boolData(size_t size = sizeof(bool), ENativeBool native = ENativeBool::Native);
+
+			/**
+			* Helps to setup bool property
+			*
+			* @author Panakotta00
+			*/
+			template<class T, bool T::* ptr>
+			inline PropertyBuilder& helpBool() {
+				boolData();
+				outerSize(sizeof(T));
+				bitFunc(TBitSetFunc<T, ptr>::bitSet);
+				return *this;
+			}
 
 			/**
 			* sets the metaClassRetFunc of class property
 			*
 			* @author Panakotta00
 			*/
-			SML_API PropertyBuilder& setMetaClassFunc(Objects::UClass*(*func)());
+			SML_API PropertyBuilder& metaClassFunc(Objects::UClass*(*func)());
 
 			/**
 			* sets the enumRetFunc for the referenced enum
 			*
 			* @author Panakotta00
 			*/
-			SML_API PropertyBuilder& setEnumFunc(void*(*func)());
+			SML_API PropertyBuilder& enumFunc(void*(*func)());
 
 			/**
 			* sets the funcRetFunc for the referenced function
 			*
 			* @author Panakotta00
 			*/
-			SML_API PropertyBuilder& setFuncFunc(void*(*)());
+			SML_API PropertyBuilder& funcFunc(void*(*)());
+
+			/**
+			* sets the structRetFunc for the referenced structure
+			*
+			* @author Panakotta00
+			*/
+			SML_API PropertyBuilder& structFunc(void*(*)());
 
 			/**
 			* returns the size of a property type (EPropertyClass)
@@ -710,7 +761,7 @@ namespace SML {
 			std::wstring cnameni;
 			std::string pname = "/Script/FactoryGame";
 			std::string cconfig = "Engine";
-			Objects::EClassCastFlags cast = CAST_None;
+			Objects::EClassCastFlags cast = Objects::EClassCastFlags::CAST_None;
 			NativeConstructor constructorf = nullptr;
 			NativeRealConstructor realconstructorf = nullptr;
 			NativeDestructor destructorf = nullptr;
@@ -731,6 +782,7 @@ namespace SML {
 
 			std::vector<FunctionBuilder> funcs;
 			std::vector<PropertyBuilder> props;
+			std::vector<FImplementedInterfaceParams> interfaces;
 			size_t paramOff = 0;
 
 			// helper params
@@ -1029,6 +1081,16 @@ namespace SML {
 			}
 
 			/**
+			* add the given interface implementation description to the class
+			*
+			* @author Panakotta00
+			*/
+			inline ClassBuilder& interfaceImpl(const FImplementedInterfaceParams&& params) {
+				interfaces.push_back(params);
+				return *this;
+			}
+
+			/**
 			* adds the given class flags
 			*
 			* @author Panakotta00
@@ -1134,6 +1196,9 @@ namespace SML {
 					}
 					active.params.props = props;
 					active.params.propCount = i;
+
+					active.params.interfaces = active.interfaces.data();
+					active.params.interfaceCount = active.interfaces.size();
 
 					// set config
 					active.params.config = active.cconfig.c_str();

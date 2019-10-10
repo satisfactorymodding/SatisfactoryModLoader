@@ -83,5 +83,17 @@ namespace SML {
 		UFunction * UObject::findFunction(const FName & name) {
 			return (UFunction*)UClass::findFunction_f(this, name);
 		}
+
+		bool UObject::isPendingKill() {
+			return !!(UObject::getObjs().get(this->indexInternal).flags  & std::int32_t(EInternalObjectFlags::PendingKill));
+		}
+
+		bool UObject::isValid(UObject* ptr) {
+			return ptr && !ptr->isPendingKill();
+		}
+
+		bool UObject::isValid() {
+			return isValid(this);
+		}
 	}
 }

@@ -29,9 +29,9 @@ namespace SML {
 			UField* f = childs;
 			while (f) {
 				if ((f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty) && (f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty)) {
-					//vars.push_back((UProperty*)f);
+					vars.push_back((UProperty*)f);
 				}
-				vars.push_back((UProperty*)f);
+				//vars.push_back((UProperty*)f);
 				f = f->next;
 			}
 
@@ -39,8 +39,8 @@ namespace SML {
 			str << "\n" << std::endl;
 			str << "### Class - '" << getName() << "' ###" << std::endl;
 
-			str << " Variables (Name, Offset):" << std::endl;
-			for (auto v : vars) str << " " << v->getName() << " " << v->internalOffset << std::endl;
+			str << " Variables (Name, Offset, property_flags):" << std::endl;
+			for (auto v : vars) str << " " << v->getName() << " " << v->internalOffset << " " << v->propFlags << std::endl;
 			str << std::endl;
 
 			str << std::string(13 + getName().length() + 5, '#') << std::endl;

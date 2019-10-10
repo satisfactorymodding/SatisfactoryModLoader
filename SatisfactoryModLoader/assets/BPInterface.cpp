@@ -245,7 +245,12 @@ namespace SML {
 			return *this;
 		}
 
-		PropertyBuilder & PropertyBuilder::setBitFunc(void(*func)(void *)) {
+		PropertyBuilder & PropertyBuilder::classFunc(SDK::UClass *(*func)()) {
+			classFunc((UClass*(*)())func);
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::bitFunc(void(*func)(void *)) {
 			switch (structType) {
 			case Bool:
 				((FBoolPropertyParams*)params)->setBitFunc = func;
@@ -253,7 +258,24 @@ namespace SML {
 			return *this;
 		}
 
-		PropertyBuilder & PropertyBuilder::setMetaClassFunc(UClass *(*func)()) {
+		PropertyBuilder & PropertyBuilder::outerSize(size_t size) {
+			switch (structType) {
+			case Bool:
+				((FBoolPropertyParams*)params)->outerSize = size;
+			}
+			return *this;
+		}
+
+		SML_API PropertyBuilder & PropertyBuilder::boolData(size_t size, ENativeBool native) {
+			switch (structType) {
+			case Bool:
+				((FBoolPropertyParams*)params)->size = size;
+				((FBoolPropertyParams*)params)->nativeBool = native;
+			}
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::metaClassFunc(UClass *(*func)()) {
 			switch (structType) {
 			case Class:
 				((FClassPropertyParams*)params)->metaClassFunc = func;
@@ -261,7 +283,7 @@ namespace SML {
 			return *this;
 		}
 
-		PropertyBuilder & PropertyBuilder::setEnumFunc(void *(*func)()) {
+		PropertyBuilder & PropertyBuilder::enumFunc(void *(*func)()) {
 			switch (structType) {
 			case Enum:
 				((FEnumPropertyParams*)params)->enumFunc = (UEnum*(*)()) func;
@@ -273,13 +295,22 @@ namespace SML {
 			return *this;
 		}
 
-		PropertyBuilder & PropertyBuilder::setFuncFunc(void *(*func)()) {
+		PropertyBuilder & PropertyBuilder::funcFunc(void *(*func)()) {
 			switch (structType) {
 			case Delegate:
 				((FDelegatePropertyParams*)params)->sigFunctionFunc = (UFunction*(*)()) func;
 				break;
 			case MulticastDelegate:
 				((FDelegatePropertyParams*)params)->sigFunctionFunc = (UFunction*(*)()) func;
+				break;
+			}
+			return *this;
+		}
+
+		PropertyBuilder & PropertyBuilder::structFunc(void *(*func)()) {
+			switch (structType) {
+			case Struct:
+				((FStructPropertyParams*)params)->scriptStructFunc = (UScriptStruct*(*)()) func;
 				break;
 			}
 			return *this;
