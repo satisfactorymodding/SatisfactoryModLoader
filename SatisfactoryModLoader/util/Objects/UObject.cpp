@@ -95,5 +95,18 @@ namespace SML {
 		bool UObject::isValid() {
 			return isValid(this);
 		}
+
+		UObject* UObject::createDefaultSubobject(FName name, UClass* type, UClass* retType, bool required, bool abstract, bool transient) {
+			static UObject*(*cdso)(UObject*, FName, UClass*, UClass*, bool, bool abstract, bool) = nullptr;
+			if (!cdso) cdso = (UObject*(*)(UObject*, FName, UClass*, UClass*, bool, bool abstract, bool)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UObject::CreateDefaultSubobject");
+
+			return cdso(this, name, type, retType, required, abstract, transient);
+		}
+
+		UObject* UObject::getTransientPackage() {
+			static UObject*(*gtp)() = nullptr;
+			if (!gtp) gtp = (UObject*(*)()) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "GetTransientPackage");
+			return gtp();
+		}
 	}
 }

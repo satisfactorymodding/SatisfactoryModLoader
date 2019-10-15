@@ -8,6 +8,12 @@
 #include <Windows.h>
 #include <detours.h>
 
+#include <mod/ModFunctions.h>
+
+namespace SDK {
+	class UClass;
+}
+
 namespace SML {
 	namespace Objects {
 		/**
@@ -174,6 +180,22 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			SML_API void debug();
+
+			/**
+			* constructs a new UObject
+			*
+			* @auhtor Pankotta00
+			*/
+			SML_API UObject* constructObject(UObject* outer, FName name, EObjectFlags flags = EObjectFlags::RF_NoFlags, EInternalObjectFlags internalFlags = EInternalObjectFlags::None, UObject* templ = nullptr, bool cpyTransient = false, void* instanceGraph = nullptr, bool templIsArche = false);
+		
+			/**
+			* constructs a new UObject with basic settings
+			*
+			* @author Panakotta00
+			*/
+			inline UObject* newObj(UObject* outer = getTransientPackage()) {
+				return constructObject(outer, FName());
+			}
 		};
 	}
 }

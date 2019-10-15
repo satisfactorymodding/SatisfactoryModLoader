@@ -7,6 +7,31 @@
 namespace SML {
 	namespace Objects {
 		template<class T>
+		class TArray;
+
+		template<class T>
+		struct TArrayIterator {
+			TArray<T>* arr;
+			size_t current;
+
+			inline TArrayIterator(TArray<T>* arr, size_t start = 0) : arr(arr) {
+				current = start;
+			}
+
+			inline bool operator!=(const TArrayIterator<T>& other) {
+				return current != other.current || arr != other.arr;
+			}
+
+			inline void operator++() {
+				++current;
+			}
+
+			inline T& operator*() {
+				return (*arr)[current];
+			}
+		};
+
+		template<class T>
 		class TArray {
 		protected:
 			T* data;
@@ -139,6 +164,14 @@ namespace SML {
 				this->~TArray();
 				count = max = 0;
 				data = nullptr;
+			}
+
+			inline TArrayIterator<T> begin() {
+				return TArrayIterator<T>(this);
+			}
+
+			inline TArrayIterator<T> end() {
+				return TArrayIterator<T>(this, count);
 			}
 
 			/* TODO: 

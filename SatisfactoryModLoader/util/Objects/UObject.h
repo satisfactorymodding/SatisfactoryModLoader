@@ -242,6 +242,40 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			SML_API bool isValid();
+
+			/**
+			* creates and adds a new subobject to the object
+			*
+			* @author Panakotta00
+			*/
+			SML_API UObject* createDefaultSubobject(FName name, UClass* type, UClass* retType, bool required = false, bool abstract = false, bool transient = false);
+
+			/**
+			* creates and adds a new subobject of given template type to the object
+			*
+			* @author Panakotta00
+			*/
+			template<class T>
+			inline T* createDefaultSubobject(FName name, bool require = false, bool abstract = false, bool transient = false) {
+				return (T*) createDefaultSubobject(name, T::staticClass(), T::staticClass(), require, abstract, transient);
+			}
+
+			/**
+			* creates and adds a new subobject of given sdk template type
+			*
+			* @author Panakotta00
+			*/
+			template<class sdkT>
+			inline sdkT* createDefaultSubobjectSDK(FName name, bool require = false, bool abstract = false, bool transient = false) {
+				return (sdkT*) createDefaultSubobject(name, (UClass*) sdkT::StaticClass(), (UClass*) sdkT::StaticClass(), require, abstract, transient);
+			}
+
+			/**
+			* returns the transient package
+			*
+			* @author Panakotta00
+			*/
+			SML_API static UObject* getTransientPackage();
 		};
 	}
 }

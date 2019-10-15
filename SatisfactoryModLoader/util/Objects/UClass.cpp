@@ -47,5 +47,12 @@ namespace SML {
 
 			SML::Utility::warning(str.str());
 		}
+
+		UObject* UClass::constructObject(UObject* outer, FName name, EObjectFlags flags, EInternalObjectFlags internalFlags, UObject* templ, bool cpyTransient, void* instanceGraph, bool templIsArche) {
+			static UObject*(*consObj)(UClass*, UObject*, FName, EObjectFlags, EInternalObjectFlags, UObject*, bool, void*, bool) = nullptr;
+			if (!consObj) consObj = (UObject*(*)(UClass*, UObject*, FName, EObjectFlags, EInternalObjectFlags, UObject*, bool, void*, bool)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "StaticConstructObject_Internal");
+
+			return consObj(this, outer, name, flags, internalFlags, templ, cpyTransient, instanceGraph, templIsArche);
+		}
 	}
 }

@@ -2,11 +2,30 @@
 
 #include <Lib.h>
 
-#include "UField.h"
+#include "UProperty.h"
 #include "TArray.h"
 
 namespace SML {
 	namespace Objects {
+		class UStruct;
+
+		struct FieldIterator {
+			const UStruct* obj;
+			UField* field;
+
+			bool useSuperCoder79;
+			bool searchForProp = false;
+
+			SML_API FieldIterator(const UStruct* obj, bool searchForProp = false, bool useSuperCoder79 = true);
+
+			SML_API bool operator!=(const FieldIterator& other) const;
+			SML_API UField* operator*() const;
+			SML_API void operator++();
+
+		private:
+			SML_API void iterateToNext();
+		};
+
 		/**
 		* Representation of UStruct used by Unreal
 		*/
@@ -30,6 +49,9 @@ namespace SML {
 				static auto ptr = UObject::findClass("Class CoreUObject.Struct");
 				return ptr;
 			}
+
+			SML_API FieldIterator begin() const;
+			SML_API FieldIterator end() const;
 		};
 	}
 }
