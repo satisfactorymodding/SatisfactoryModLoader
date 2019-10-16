@@ -32,6 +32,7 @@
 #include <util/EnvironmentValidity.h>
 #include <mod/Hooks.h>
 #include <mod/Coremods.h>
+#include <mod/ModFunctions.h>
 
 namespace SML {
 	static const char* logName = "SatisfactoryModLoader.log";
@@ -81,7 +82,9 @@ namespace SML {
 		modHandler.setupMods();
 		modHandler.checkDependencies();
 		modHandler.postSetupMods();
+		Mod::Functions::broadcastEvent("beforeHooks");
 		Mod::Hooks::hookFunctions();
+		Mod::Functions::broadcastEvent("afterHooks");
 		modHandler.currentStage = Mod::GameStage::INITIALIZING;
 			
 		// log mod size

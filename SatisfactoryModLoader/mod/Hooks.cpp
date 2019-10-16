@@ -52,7 +52,7 @@ namespace SML {
 			// Initialize the Pakloader
 			Paks::initPakLoader();
 
-			Utility::info("Installed hooks!");
+			Utility::info("Registered hooks!");
 
 			DetourTransactionCommit();
 		}
@@ -67,6 +67,7 @@ namespace SML {
 
 		void Hooks::engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* engine) {
 			//caching of assets
+			Functions::broadcastEvent("beforeEngineInit");
 			modHandler.currentStage = GameStage::RUN;
 			for (std::pair<const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
 				modHandler.assetCache[asset.first] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), asset.first);
@@ -79,17 +80,6 @@ namespace SML {
 
 			ret->useOriginalFunction = true;
 		}
-
-		/*
-		void Hooks::playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {
-			auto pointer = (void(WINAPI*)(void*, void*))playerAddedFunc;
-			//Utility::info("Player Added: ", player->GetName(), " - Controlled: ", player->IsControlled(), " - IsLocallyControlled: ", player->IsLocallyControlled());
-			if (player->IsControlled() && player->IsLocallyControlled()) {
-				Assets::SinglePlayerCharacter = player;
-			}
-			pointer(gameState, player);
-		}
-		*/
 
 		// parse commands when the player sends a message
 		void Hooks::playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* messageIn) {

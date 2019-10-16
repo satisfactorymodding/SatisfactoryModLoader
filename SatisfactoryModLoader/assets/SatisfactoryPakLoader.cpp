@@ -87,30 +87,33 @@ namespace SML {
 				// Check if any mods got loaded
 				if (modNames.length() > 0) {
 					modNames = modNames.substr(1); // remove the first letter (99.98% a comma)
-
+					Mod::Functions::broadcastEvent("beforePakPreInit");
 					// Iterate through all mods and call the preinit event
 					for (Objects::UObject* mod : mods) {
 						Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lol
 						::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, L"PreInit", &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
 					};
-
+					Mod::Functions::broadcastEvent("afterPakPreInit");
+					Mod::Functions::broadcastEvent("beforePakInit");
 					// Iterate through all mods and call the init event
 					for (Objects::UObject* mod : mods) {
 						Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lul
 						::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, (L"Init " + modNames).c_str(), &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
 					}
+					Mod::Functions::broadcastEvent("afterPakInit");
 				}
 			});
 
 			//delay post init to later down the loading sequence
 			::subscribe<&Objects::AFGPlayerController::BeginPlay>([](Mod::Functions::ModReturns* ret, Objects::AFGPlayerController* player) {
 				// Iterate through all mods and call the postinit event
+				Mod::Functions::broadcastEvent("beforePakPostInit");
 				for (Objects::UObject* mod : mods) {
 					Objects::FOutputDevice IDontEvenKnowWhatThisIs; // lel
 					::call<&Objects::UObject::CallFunctionByNameWithArguments>(mod, (L"PostInit " + modNames).c_str(), &IDontEvenKnowWhatThisIs, (SDK::UObject*)NULL, true); // Call the event
 					::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
 				}
-
+				Mod::Functions::broadcastEvent("afterPakPostInit");
 			});
 		}
 	};

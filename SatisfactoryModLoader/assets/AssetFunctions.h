@@ -5,19 +5,19 @@
 namespace SML {
 	namespace Assets {
 		/**
-		* DEPRECATED! USE Functions::getWorld() instead.
+		* DEPRECATED! Use Functions::getWorld() instead.
 		* Current UWorld pointer pointer
 		*/
 		SML_API extern SDK::UWorld** CurrentWorld;
 
 		/**
-		* DEPRECATED! USE Functions::getPlayerCharacter() instead.
+		* DEPRECATED! Use Functions::getPlayerCharacter() instead.
 		* Single player character
 		*/
 		SML_API extern SDK::AFGCharacterPlayer* SinglePlayerCharacter;
 
 		/**
-		* DEPRECATED! USE Functions::getPlayerController() instead.
+		* DEPRECATED! Use Functions::getPlayerController() instead.
 		* Single player controller
 		*/
 		SML_API extern SDK::AFGPlayerController* SinglePlayerController;
@@ -170,7 +170,7 @@ namespace SML {
 			SML_API SDK::UObject* getAssetFromCacheWithID(int id);
 
 			/**
-			*  Get's an asset's name back from the cache with the name's id.
+			* Get's an asset's name back from the cache with the name's id.
 			* Will crash if the id isn't found.
 			*
 			* @author SuperCoder79
