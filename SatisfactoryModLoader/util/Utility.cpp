@@ -71,11 +71,11 @@ namespace SML {
 		}
 
 		void displayCrash(std::string crashText) {
-			MessageBoxA(NULL, (crashText + "\Click OK to exit.").c_str(), "SatisfactoryModLoader has crashed!", MB_ICONERROR);
+			MessageBoxA(NULL, (crashText + "\nClick OK to exit.").c_str(), "SatisfactoryModLoader has crashed!", MB_ICONERROR);
 			abort();
 		}
 		void displayCrash(std::string header, std::string crashText) {
-			MessageBoxA(NULL, (crashText + "\Click OK to exit.").c_str(), header.c_str(), MB_ICONERROR);
+			MessageBoxA(NULL, (crashText + "\nClick OK to exit.").c_str(), header.c_str(), MB_ICONERROR);
 			abort();
 		}
 	}

@@ -9,11 +9,11 @@
 namespace SML {
 	static const std::string modLoaderVersion = "1.0.0"; // SML's version
 	static const int targetVersion = 103400; //CL of Satisfactory
-	static bool loadConsole = true;
-	static bool debugOutput = false;
-	static bool supressErrors = false;
-	static bool chatCommands = true;
-	static bool crashReporter = true;
+	extern bool loadConsole;
+	extern bool debugOutput;
+	extern bool supressErrors;
+	extern bool chatCommands;
+	extern bool crashReporter;
 
 	extern Mod::ModHandler modHandler;
 

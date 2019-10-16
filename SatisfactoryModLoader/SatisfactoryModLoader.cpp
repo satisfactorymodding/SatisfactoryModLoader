@@ -37,6 +37,11 @@
 namespace SML {
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
+	bool loadConsole = true;
+	bool debugOutput = false;
+	bool supressErrors = false;
+	bool chatCommands = true;
+	bool crashReporter = true;
 
 	// Main DLL for loading mod DLLs
 	void startSML() {
