@@ -41,15 +41,13 @@ namespace SML {
 	// Main DLL for loading mod DLLs
 	void startSML() {
 		// launch the game's internal console and hook into it
-		Utility::logFile.open(logName, std::ios_base::out | std::ios_base::app);
+		Utility::logFile.open(logName, std::ios_base::out);
 		AllocConsole();
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
 		FILE* fp;
 		freopen_s(&fp, "CONOIN$", "r", stdin);
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
-
-		ShowWindow(GetConsoleWindow(), SW_SHOW);
 
 		Utility::info("Attached SatisfactoryModLoader to Satisfactory");
 
@@ -60,6 +58,7 @@ namespace SML {
 
 		//make sure that SML's target and satisfactory's versions are the same
 		Utility::checkVersion(targetVersion);
+		//load the console if enabled by the config
 		if (loadConsole) {
 			ShowWindow(GetConsoleWindow(), SW_SHOW);
 		}
@@ -79,22 +78,26 @@ namespace SML {
 
 		// load mods
 		modHandler.loadMods(p);
-		modHandler.setupMods();
-		modHandler.checkDependencies();
-		modHandler.postSetupMods();
+		if (modHandler.mods.size() != 0) {
+			modHandler.setupMods();
+			modHandler.checkDependencies();
+			modHandler.postSetupMods();
+		}
 		Mod::Functions::broadcastEvent("beforeHooks");
 		Mod::Hooks::hookFunctions();
 		Mod::Functions::broadcastEvent("afterHooks");
 		modHandler.currentStage = Mod::GameStage::INITIALIZING;
 			
-		// log mod size
+		// log mod list size
 		size_t listSize = modHandler.mods.size();
 		Utility::info("Loaded ", listSize, " mod", (listSize > 1 || listSize == 0 ? "s" : ""));
 
 		//Display info about registries
-		Utility::info("Registered ", modHandler.commandRegistry.size(), " Command", (modHandler.commandRegistry.size() > 1 || modHandler.commandRegistry.size() == 0 ? "s" : ""));
-		Utility::info("Registered ", modHandler.APIRegistry.size(), " API function", (modHandler.APIRegistry.size() > 1 || modHandler.APIRegistry.size() == 0 ? "s" : ""));
-		Utility::info("Registered ", modHandler.eventRegistry.size(), " Custom event", (modHandler.eventRegistry.size() > 1 || modHandler.eventRegistry.size() == 0 ? "s" : ""));
+		if (debugOutput) {
+			Utility::info("Registered ", modHandler.commandRegistry.size(), " Command", (modHandler.commandRegistry.size() > 1 || modHandler.commandRegistry.size() == 0 ? "s" : ""));
+			Utility::info("Registered ", modHandler.APIRegistry.size(), " API function", (modHandler.APIRegistry.size() > 1 || modHandler.APIRegistry.size() == 0 ? "s" : ""));
+			Utility::info("Registered ", modHandler.eventRegistry.size(), " Custom event", (modHandler.eventRegistry.size() > 1 || modHandler.eventRegistry.size() == 0 ? "s" : ""));
+		}
 
 		//display condensed form of mod information
 		std::string modList = "[";
@@ -106,7 +109,7 @@ namespace SML {
 			Utility::info("Loaded mods: ", modList.substr(0, modList.length() - 2), "]");
 		}
 
-		Utility::info("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
+		Utility::info("SatisfactoryModLoader initialization complete. Launching Satisfactory...");
 	}
 
 	//read the config file
@@ -116,13 +119,15 @@ namespace SML {
 			{"Console", true},
 			{"Debug" , false},
 			{"Supress Errors", false},
-			{"Chat Commands", true}
+			{"Chat Commands", true},
+			{"Disable Crash Reporter", true}
 		}, false);
 
 		loadConsole = config["Console"].get<bool>();
 		debugOutput = config["Debug"].get<bool>();
 		supressErrors = config["Supress Errors"].get<bool>();
 		chatCommands = config["Chat Commands"].get<bool>();
+		crashReporter = config["Disable Crash Reporter"].get<bool>();
 	}
 
 	//cleans up when the program is killed

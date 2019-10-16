@@ -13,6 +13,7 @@ namespace SML {
 	static bool debugOutput = false;
 	static bool supressErrors = false;
 	static bool chatCommands = true;
+	static bool crashReporter = true;
 
 	extern Mod::ModHandler modHandler;
 

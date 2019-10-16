@@ -1,4 +1,5 @@
 #include <stdafx.h>
+#include <SatisfactoryModLoader.h>
 #include "EnvironmentValidity.h"
 #include <string>
 #include <Windows.h>
@@ -19,7 +20,6 @@ namespace SML {
 			std::string rootpath = path;
 			path = path + "\\Content\\Paks";
 			std::string pakfilepath = path;
-			info(path);
 			std::string originalSigLoc = path.append("\\FactoryGame-WindowsNoEditor.sig");
 			std::filesystem::path originalSigPath(originalSigLoc);
 			if (std::filesystem::exists(originalSigPath)) {
@@ -31,7 +31,9 @@ namespace SML {
 			//generate the sig
 			generateSigFiles(pakfilepath, originalSigLoc);
 			//disable the crashreporter
-			disableCrashReporter(rootpath);
+			if (crashReporter) {
+				disableCrashReporter(rootpath);
+			}
 		}
 
 		void generateSigFiles(std::string pakfilepath, std::string originalSigPath) {
@@ -44,7 +46,9 @@ namespace SML {
 						continue; //skip sigfiles that exist
 					}
 					else {
-						info("Making sig: ", sigfile);
+						if (debugOutput) {
+							info("Making sig: ", sigfile);
+						}
 						std::filesystem::path newSigPath(sigfile);
 						std::filesystem::path originalSig(originalSigPath);
 						std::filesystem::copy_file(originalSig, newSigPath); //copy original sig to the new sig
@@ -53,7 +57,7 @@ namespace SML {
 				}
 			}
 			if (didGenerate) {
-				warning("If satisfactory crashes after this message, please reload it to fix it.");
+				warning("If satisfactory crashes after this message, please relaunch it to fix it.");
 			}
 		}
 
