@@ -33,8 +33,8 @@ struct UWidget_MAMResearchSlot_C_GetPaidOffSlotVisibility_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressBarVisibility
-struct UWidget_MAMResearchSlot_C_GetProgressBarVisibility_Params
+// Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressbarVisibility
+struct UWidget_MAMResearchSlot_C_GetProgressbarVisibility_Params
 {
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
@@ -51,8 +51,8 @@ struct UWidget_MAMResearchSlot_C_GetPaidOffFeedbackImage_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressBarPercent
-struct UWidget_MAMResearchSlot_C_GetProgressBarPercent_Params
+// Function Widget_MAMResearchSlot.Widget_MAMResearchSlot_C.GetProgressbarPercent
+struct UWidget_MAMResearchSlot_C_GetProgressbarPercent_Params
 {
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

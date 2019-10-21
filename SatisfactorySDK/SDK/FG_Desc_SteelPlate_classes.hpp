@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_SteelPlate.Desc_SteelPlate_C
-// 0x0000 (0x0128 - 0x0128)
+// 0x0000 (0x0130 - 0x0130)
 class UDesc_SteelPlate_C : public UFGItemDescriptor
 {
 public:

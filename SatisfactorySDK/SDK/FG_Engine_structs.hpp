@@ -8,11 +8,11 @@
 
 #include "FG_Basic.hpp"
 #include "FG_CoreUObject_classes.hpp"
-#include "FG_AudioPlatformConfiguration_classes.hpp"
 #include "FG_InputCore_classes.hpp"
+#include "FG_AudioPlatformConfiguration_classes.hpp"
+#include "FG_PacketHandler_classes.hpp"
 #include "FG_SlateCore_classes.hpp"
 #include "FG_Slate_classes.hpp"
-#include "FG_PacketHandler_classes.hpp"
 
 namespace SDK
 {

@@ -44,6 +44,8 @@ public:
 	void GatherDependencies(TArray<class UObject*>* out_dependentObjects);
 	bool NeedTransform();
 	bool ShouldSave();
+	ECompassViewDistance GetActorCompassViewDistance();
+	ECompassViewDistance SetActorCompassViewDistance(ECompassViewDistance compassViewDistance);
 	struct FText SetActorRepresentationText(const struct FText& newText);
 	bool UpdateRepresentation();
 	float GetActorFogOfWarRevealRadius();

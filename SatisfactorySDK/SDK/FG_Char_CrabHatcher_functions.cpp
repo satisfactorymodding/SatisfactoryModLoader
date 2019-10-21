@@ -63,14 +63,25 @@ void AChar_CrabHatcher_C::UserConstructionScript()
 }
 
 
-// Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveBeginPlay
+// Function Char_CrabHatcher.Char_CrabHatcher_C.Damaged
 // ()
+// Parameters:
+// class AActor*                  DamagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// float                          Damage                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UDamageType*             DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_CrabHatcher_C::ReceiveBeginPlay()
+void AChar_CrabHatcher_C::Damaged(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveBeginPlay");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_CrabHatcher.Char_CrabHatcher_C.Damaged");
 
-	AChar_CrabHatcher_C_ReceiveBeginPlay_Params params;
+	AChar_CrabHatcher_C_Damaged_Params params;
+	params.DamagedActor = DamagedActor;
+	params.Damage = Damage;
+	params.DamageType = DamageType;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -80,25 +91,14 @@ void AChar_CrabHatcher_C::ReceiveBeginPlay()
 }
 
 
-// Function Char_CrabHatcher.Char_CrabHatcher_C.Damaged
+// Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveBeginPlay
 // ()
-// Parameters:
-// class AActor*                  damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// float                          Damage                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class UDamageType*             DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_CrabHatcher_C::Damaged(class AActor* damagedActor, float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AChar_CrabHatcher_C::ReceiveBeginPlay()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Char_CrabHatcher.Char_CrabHatcher_C.Damaged");
+	static auto fn = UObject::FindObject<UFunction>("Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveBeginPlay");
 
-	AChar_CrabHatcher_C_Damaged_Params params;
-	params.damagedActor = damagedActor;
-	params.Damage = Damage;
-	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	AChar_CrabHatcher_C_ReceiveBeginPlay_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -153,6 +153,60 @@ void AChar_CrabHatcher_C::ReceiveActorBeginOverlap(class AActor** OtherActor)
 
 	AChar_CrabHatcher_C_ReceiveActorBeginOverlap_Params params;
 	params.OtherActor = OtherActor;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_CrabHatcher.Char_CrabHatcher_C.GainedSignificance
+// ()
+
+void AChar_CrabHatcher_C::GainedSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_CrabHatcher.Char_CrabHatcher_C.GainedSignificance");
+
+	AChar_CrabHatcher_C_GainedSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_CrabHatcher.Char_CrabHatcher_C.LostSignificance
+// ()
+
+void AChar_CrabHatcher_C::LostSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_CrabHatcher.Char_CrabHatcher_C.LostSignificance");
+
+	AChar_CrabHatcher_C_LostSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveEndPlay
+// ()
+// Parameters:
+// TEnumAsByte<EEndPlayReason>*   EndPlayReason                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_CrabHatcher_C::ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveEndPlay");
+
+	AChar_CrabHatcher_C_ReceiveEndPlay_Params params;
+	params.EndPlayReason = EndPlayReason;
 
 	auto flags = fn->FunctionFlags;
 

@@ -130,8 +130,9 @@ void UWidget_Map_C::OnIconHover(class UWidget_MapObject_C* MapObject)
 // ()
 // Parameters:
 // class UFGActorRepresentation*  actorRepresentation            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_MapObject_C*     WidgetMapObject                (Parm, OutParm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_Map_C::AddObjectToMap(class UFGActorRepresentation* actorRepresentation)
+void UWidget_Map_C::AddObjectToMap(class UFGActorRepresentation* actorRepresentation, class UWidget_MapObject_C** WidgetMapObject)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_Map.Widget_Map_C.AddObjectToMap");
 
@@ -143,6 +144,9 @@ void UWidget_Map_C::AddObjectToMap(class UFGActorRepresentation* actorRepresenta
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+
+	if (WidgetMapObject != nullptr)
+		*WidgetMapObject = params.WidgetMapObject;
 }
 
 
@@ -487,6 +491,68 @@ void UWidget_Map_C::ExecuteUbergraph_Widget_Map(int EntryPoint)
 
 	UWidget_Map_C_ExecuteUbergraph_Widget_Map_Params params;
 	params.EntryPoint = EntryPoint;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Map.Widget_Map_C.OnObjectRemovedFromMapDispatch__DelegateSignature
+// ()
+// Parameters:
+// class UFGActorRepresentation*  ActorRespresentation           (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Map_C::OnObjectRemovedFromMapDispatch__DelegateSignature(class UFGActorRepresentation* ActorRespresentation)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Map.Widget_Map_C.OnObjectRemovedFromMapDispatch__DelegateSignature");
+
+	UWidget_Map_C_OnObjectRemovedFromMapDispatch__DelegateSignature_Params params;
+	params.ActorRespresentation = ActorRespresentation;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Map.Widget_Map_C.OnObjectUpdatedOnMapDispatch__DelegateSignature
+// ()
+// Parameters:
+// class UFGActorRepresentation*  actorRepresentation            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Map_C::OnObjectUpdatedOnMapDispatch__DelegateSignature(class UFGActorRepresentation* actorRepresentation)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Map.Widget_Map_C.OnObjectUpdatedOnMapDispatch__DelegateSignature");
+
+	UWidget_Map_C_OnObjectUpdatedOnMapDispatch__DelegateSignature_Params params;
+	params.actorRepresentation = actorRepresentation;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Map.Widget_Map_C.OnObjectAddedToMapDispatch__DelegateSignature
+// ()
+// Parameters:
+// class UFGActorRepresentation*  actorRepresentation            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_MapObject_C*     WidgetMapObject                (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_Map_C::OnObjectAddedToMapDispatch__DelegateSignature(class UFGActorRepresentation* actorRepresentation, class UWidget_MapObject_C* WidgetMapObject)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Map.Widget_Map_C.OnObjectAddedToMapDispatch__DelegateSignature");
+
+	UWidget_Map_C_OnObjectAddedToMapDispatch__DelegateSignature_Params params;
+	params.actorRepresentation = actorRepresentation;
+	params.WidgetMapObject = WidgetMapObject;
 
 	auto flags = fn->FunctionFlags;
 

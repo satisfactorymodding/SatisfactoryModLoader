@@ -14,6 +14,19 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function BP_Crate.BP_Crate_C.GetActorCompassViewDistance
+struct ABP_Crate_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function BP_Crate.BP_Crate_C.SetActorCompassViewDistance
+struct ABP_Crate_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function BP_Crate.BP_Crate_C.SetActorRepresentationText
 struct ABP_Crate_C_SetActorRepresentationText_Params
 {

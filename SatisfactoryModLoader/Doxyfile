@@ -1,7 +1,9 @@
 PROJECT_NAME           = Satisfactory Mod Loader
 INPUT                  = assets/AssetFunctions.h \
                          mod/ModFunctions.h \
-                         mod/MathFunctions.h
+                         mod/MathFunctions.h \
+						 memory/ObjectMemory.h \
+						 memory/MemoryFunctions.h
 OUTPUT_DIRECTORY       = html
 WARNINGS               = YES
 SEARCHENGINE           = YES

@@ -14,6 +14,19 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Build_TradingPost.Build_TradingPost_C.GetActorCompassViewDistance
+struct ABuild_TradingPost_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function Build_TradingPost.Build_TradingPost_C.SetActorCompassViewDistance
+struct ABuild_TradingPost_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function Build_TradingPost.Build_TradingPost_C.SetActorRepresentationText
 struct ABuild_TradingPost_C_SetActorRepresentationText_Params
 {

@@ -12,6 +12,86 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.SetHasAffordableRecipes
+// ()
+// Parameters:
+// bool                           mHasAffordableRecipes          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_CraftBench_Category_C::SetHasAffordableRecipes(bool mHasAffordableRecipes)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.SetHasAffordableRecipes");
+
+	UWidget_CraftBench_Category_C_SetHasAffordableRecipes_Params params;
+	params.mHasAffordableRecipes = mHasAffordableRecipes;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.SetIsCollapsed
+// ()
+// Parameters:
+// bool                           mIsCollapsed                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_CraftBench_Category_C::SetIsCollapsed(bool mIsCollapsed)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.SetIsCollapsed");
+
+	UWidget_CraftBench_Category_C_SetIsCollapsed_Params params;
+	params.mIsCollapsed = mIsCollapsed;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.UpdateButtonColor
+// ()
+// Parameters:
+// struct FLinearColor            Color                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_CraftBench_Category_C::UpdateButtonColor(const struct FLinearColor& Color)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.UpdateButtonColor");
+
+	UWidget_CraftBench_Category_C_UpdateButtonColor_Params params;
+	params.Color = Color;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.AddChildToContent
+// ()
+// Parameters:
+// class UWidget*                 Child                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_CraftBench_Category_C::AddChildToContent(class UWidget* Child)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.AddChildToContent");
+
+	UWidget_CraftBench_Category_C_AddChildToContent_Params params;
+	params.Child = Child;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.BndEvt__Button_26_K2Node_ComponentBoundEvent_100_OnButtonClickedEvent__DelegateSignature
 // ()
 
@@ -190,12 +270,15 @@ void UWidget_CraftBench_Category_C::OnPressed__DelegateSignature()
 
 // Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.OnClicked__DelegateSignature
 // ()
+// Parameters:
+// class UWidget_CraftBench_Category_C* Instigator                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 
-void UWidget_CraftBench_Category_C::OnClicked__DelegateSignature()
+void UWidget_CraftBench_Category_C::OnClicked__DelegateSignature(class UWidget_CraftBench_Category_C* Instigator)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.OnClicked__DelegateSignature");
 
 	UWidget_CraftBench_Category_C_OnClicked__DelegateSignature_Params params;
+	params.Instigator = Instigator;
 
 	auto flags = fn->FunctionFlags;
 

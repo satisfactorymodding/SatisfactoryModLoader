@@ -72,6 +72,27 @@ struct AChar_Stinger_C_ReceiveTick_Params
 	float*                                             DeltaSeconds;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function Char_Stinger.Char_Stinger_C.ReceiveBeginPlay
+struct AChar_Stinger_C_ReceiveBeginPlay_Params
+{
+};
+
+// Function Char_Stinger.Char_Stinger_C.ReceiveEndPlay
+struct AChar_Stinger_C_ReceiveEndPlay_Params
+{
+	TEnumAsByte<EEndPlayReason>*                       EndPlayReason;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Char_Stinger.Char_Stinger_C.GainedSignificance
+struct AChar_Stinger_C_GainedSignificance_Params
+{
+};
+
+// Function Char_Stinger.Char_Stinger_C.LostSignificance
+struct AChar_Stinger_C_LostSignificance_Params
+{
+};
+
 // Function Char_Stinger.Char_Stinger_C.ExecuteUbergraph_Char_Stinger
 struct AChar_Stinger_C_ExecuteUbergraph_Char_Stinger_Params
 {

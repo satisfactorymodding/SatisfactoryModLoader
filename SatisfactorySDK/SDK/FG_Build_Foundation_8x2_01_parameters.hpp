@@ -14,11 +14,6 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
-// Function Build_Foundation_8x2_01.Build_Foundation_8x2_01_C.UserConstructionScript
-struct ABuild_Foundation_8x2_01_C_UserConstructionScript_Params
-{
-};
-
 }
 
 #ifdef _MSC_VER

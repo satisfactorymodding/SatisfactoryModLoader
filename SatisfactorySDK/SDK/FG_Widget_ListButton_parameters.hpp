@@ -49,9 +49,9 @@ struct UWidget_ListButton_C_UpdateButton_Params
 	class UTexture*                                    Icon;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       Title;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm)
 	struct FText                                       Description;                                              // (BlueprintVisible, BlueprintReadOnly, Parm)
-	ESlateVisibility                                   descVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ESlateVisibility                                   DescVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	ESlateVisibility                                   IconVisibility;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FText                                       additionalInfo;                                           // (BlueprintVisible, BlueprintReadOnly, Parm)
+	struct FText                                       AdditionalInfo;                                           // (BlueprintVisible, BlueprintReadOnly, Parm)
 };
 
 // Function Widget_ListButton.Widget_ListButton_C.BndEvt__mRecipeButton_K2Node_ComponentBoundEvent_0_OnButtonClickedEvent__DelegateSignature

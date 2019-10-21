@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_Stone.Desc_Stone_C
-// 0x0000 (0x0190 - 0x0190)
+// 0x0000 (0x0198 - 0x0198)
 class UDesc_Stone_C : public UFGResourceDescriptor
 {
 public:

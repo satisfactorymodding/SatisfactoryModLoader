@@ -14,10 +14,10 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
-// Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetPercent
-struct UWidget_OptionsSlider_C_GetPercent_Params
+// Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetDisplayValue
+struct UWidget_OptionsSlider_C_GetDisplayValue_Params
 {
-	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+	float                                              DisplayValue;                                             // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_OptionsSlider.Widget_OptionsSlider_C.SetNormalizedValue
@@ -29,8 +29,7 @@ struct UWidget_OptionsSlider_C_SetNormalizedValue_Params
 // Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetAdjustedValue
 struct UWidget_OptionsSlider_C_GetAdjustedValue_Params
 {
-	float                                              Normalized_Value;                                         // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	float                                              Adjusted_Value;                                           // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	float                                              AdjustedValue;                                            // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_OptionsSlider.Widget_OptionsSlider_C.SetProgressBarPercentage
@@ -76,7 +75,7 @@ struct UWidget_OptionsSlider_C_ExecuteUbergraph_Widget_OptionsSlider_Params
 // Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetNewValue__DelegateSignature
 struct UWidget_OptionsSlider_C_GetNewValue__DelegateSignature_Params
 {
-	float                                              VolumeLevel;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	float                                              NewValue;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 }

@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_Ramp_8x1_01.Desc_Ramp_8x1_01_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_Ramp_8x1_01_C : public UFGBuildingDescriptor
 {
 public:

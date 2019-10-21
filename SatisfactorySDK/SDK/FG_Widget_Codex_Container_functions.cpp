@@ -470,6 +470,28 @@ void UWidget_Codex_Container_C::BndEvt__Widget_ListButton_C_1_K2Node_ComponentBo
 }
 
 
+// Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__mCategoryVehicles_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature
+// ()
+// Parameters:
+// int                            Index                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UWidget_ListButton_C*    ListButton                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+
+void UWidget_Codex_Container_C::BndEvt__mCategoryVehicles_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature(int Index, class UWidget_ListButton_C* ListButton)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Codex_Container.Widget_Codex_Container_C.BndEvt__mCategoryVehicles_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature");
+
+	UWidget_Codex_Container_C_BndEvt__mCategoryVehicles_K2Node_ComponentBoundEvent_5_OnClicked__DelegateSignature_Params params;
+	params.Index = Index;
+	params.ListButton = ListButton;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_Codex_Container.Widget_Codex_Container_C.ExecuteUbergraph_Widget_Codex_Container
 // ()
 // Parameters:

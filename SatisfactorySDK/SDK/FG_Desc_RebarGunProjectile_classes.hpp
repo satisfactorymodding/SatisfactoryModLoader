@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_RebarGunProjectile.Desc_RebarGunProjectile_C
-// 0x0000 (0x0130 - 0x0130)
+// 0x0000 (0x0138 - 0x0138)
 class UDesc_RebarGunProjectile_C : public UFGEquipmentDescriptor
 {
 public:

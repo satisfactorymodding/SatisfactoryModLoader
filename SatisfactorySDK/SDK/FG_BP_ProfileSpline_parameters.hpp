@@ -14,6 +14,13 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function BP_ProfileSpline.BP_ProfileSpline_C.GetConsoleVariableByName
+struct ABP_ProfileSpline_C_GetConsoleVariableByName_Params
+{
+	class FString                                      VariableName;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor)
+	class FString                                      VariableInput;                                            // (Parm, OutParm, ZeroConstructor)
+};
+
 // Function BP_ProfileSpline.BP_ProfileSpline_C.CheckDoneRespawning
 struct ABP_ProfileSpline_C_CheckDoneRespawning_Params
 {
@@ -32,6 +39,11 @@ struct ABP_ProfileSpline_C_UserConstructionScript_Params
 {
 };
 
+// Function BP_ProfileSpline.BP_ProfileSpline_C.StartProfile
+struct ABP_ProfileSpline_C_StartProfile_Params
+{
+};
+
 // Function BP_ProfileSpline.BP_ProfileSpline_C.ReceiveTick
 struct ABP_ProfileSpline_C_ReceiveTick_Params
 {
@@ -43,13 +55,13 @@ struct ABP_ProfileSpline_C_FetchPlayerPawn_Params
 {
 };
 
-// Function BP_ProfileSpline.BP_ProfileSpline_C.StartProfile
-struct ABP_ProfileSpline_C_StartProfile_Params
+// Function BP_ProfileSpline.BP_ProfileSpline_C.EnsurePlayerDoneSpawning
+struct ABP_ProfileSpline_C_EnsurePlayerDoneSpawning_Params
 {
 };
 
-// Function BP_ProfileSpline.BP_ProfileSpline_C.EnsurePlayerDoneSpawning
-struct ABP_ProfileSpline_C_EnsurePlayerDoneSpawning_Params
+// Function BP_ProfileSpline.BP_ProfileSpline_C.DebugStart
+struct ABP_ProfileSpline_C_DebugStart_Params
 {
 };
 

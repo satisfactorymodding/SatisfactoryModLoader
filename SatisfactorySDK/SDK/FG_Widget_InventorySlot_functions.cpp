@@ -12,6 +12,26 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_InventorySlot.Widget_InventorySlot_C.CheckForNuclearWaste
+// ()
+// Parameters:
+// class UClass*                  Object                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_InventorySlot_C::CheckForNuclearWaste(class UClass* Object)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.CheckForNuclearWaste");
+
+	UWidget_InventorySlot_C_CheckForNuclearWaste_Params params;
+	params.Object = Object;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_InventorySlot.Widget_InventorySlot_C.QuickMoveInventory
 // ()
 
@@ -921,28 +941,6 @@ void UWidget_InventorySlot_C::UpdateStyle()
 }
 
 
-// Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter
-// ()
-// Parameters:
-// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
-// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
-
-void UWidget_InventorySlot_C::OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter");
-
-	UWidget_InventorySlot_C_OnMouseEnter_Params params;
-	params.MyGeometry = MyGeometry;
-	params.MouseEvent = MouseEvent;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_InventorySlot.Widget_InventorySlot_C.Destruct
 // ()
 
@@ -968,6 +966,68 @@ void UWidget_InventorySlot_C::Construct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.Construct");
 
 	UWidget_InventorySlot_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.Event CreateNuclearWastePopup
+// ()
+// Parameters:
+// bool                           isNuclearWaste                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_InventorySlot_C::Event_CreateNuclearWastePopup(bool isNuclearWaste)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.Event CreateNuclearWastePopup");
+
+	UWidget_InventorySlot_C_Event_CreateNuclearWastePopup_Params params;
+	params.isNuclearWaste = isNuclearWaste;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.CloseNuclearWastePopup
+// ()
+// Parameters:
+// bool                           ConfirmClicked                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_InventorySlot_C::CloseNuclearWastePopup(bool ConfirmClicked)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.CloseNuclearWastePopup");
+
+	UWidget_InventorySlot_C_CloseNuclearWastePopup_Params params;
+	params.ConfirmClicked = ConfirmClicked;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter
+// ()
+// Parameters:
+// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+
+void UWidget_InventorySlot_C::OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InventorySlot.Widget_InventorySlot_C.OnMouseEnter");
+
+	UWidget_InventorySlot_C_OnMouseEnter_Params params;
+	params.MyGeometry = MyGeometry;
+	params.MouseEvent = MouseEvent;
 
 	auto flags = fn->FunctionFlags;
 

@@ -12,6 +12,48 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_PlayerHUD.Widget_PlayerHUD_C.GetNobeliskBarVisibility
+// ()
+// Parameters:
+// ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ESlateVisibility UWidget_PlayerHUD_C::GetNobeliskBarVisibility()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHUD.Widget_PlayerHUD_C.GetNobeliskBarVisibility");
+
+	UWidget_PlayerHUD_C_GetNobeliskBarVisibility_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Widget_PlayerHUD.Widget_PlayerHUD_C.GetNobeliskBarPercent
+// ()
+// Parameters:
+// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+float UWidget_PlayerHUD_C::GetNobeliskBarPercent()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHUD.Widget_PlayerHUD_C.GetNobeliskBarPercent");
+
+	UWidget_PlayerHUD_C_GetNobeliskBarPercent_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Widget_PlayerHUD.Widget_PlayerHUD_C.Get_mCollectBar_Percent
 // ()
 // Parameters:
@@ -285,6 +327,23 @@ void UWidget_PlayerHUD_C::Construct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHUD.Widget_PlayerHUD_C.Construct");
 
 	UWidget_PlayerHUD_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_PlayerHUD.Widget_PlayerHUD_C.CreateTimeWarning
+// ()
+
+void UWidget_PlayerHUD_C::CreateTimeWarning()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PlayerHUD.Widget_PlayerHUD_C.CreateTimeWarning");
+
+	UWidget_PlayerHUD_C_CreateTimeWarning_Params params;
 
 	auto flags = fn->FunctionFlags;
 

@@ -1,4 +1,19 @@
-// dllmain.cpp : Defines the entry point for the DLL application.
+/*
+  ____  __  __ _
+ / ___||  \/  | |
+ \___ \| |\/| | |
+  ___) | |  | | |___
+ |____/|_|  |_|_____|
+
+ SatisfactoryModLoader is a tool to load dll mods into satisfactory.
+ To get started with modding, take a look at BaseMod/ExampleMod.cpp.
+ If you have any questions, please contact SuperCoder79 on the modding discord.
+
+ Known issues:
+ * Everything crashes 10000% more than it should
+ * SML 1.0.0 has been delayed by 2000 years
+ * People still can't install this properly (even though there's instructions everywhere ffs)
+*/
 #define WIN32_LEAN_AND_MEAN
 #include "../SatisfactorySdk/SDK.hpp"
 #include <stdafx.h>
@@ -14,7 +29,9 @@
 #include <util/Utility.h>
 #include <util/Reflection.h>
 #include <util/JsonConfig.h>
+#include <util/EnvironmentValidity.h>
 #include <mod/Hooks.h>
+#include <mod/Coremods.h>
 
 namespace SML {
 	static const char* logName = "SatisfactoryModLoader.log";
@@ -23,14 +40,13 @@ namespace SML {
 	// Main DLL for loading mod DLLs
 	void startSML() {
 		// launch the game's internal console and hook into it
-		Utility::logFile = std::ofstream(logName, std::ios_base::app);
+		Utility::logFile.open(logName, std::ios_base::out | std::ios_base::app);
 		AllocConsole();
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
 		FILE* fp;
 		freopen_s(&fp, "CONOIN$", "r", stdin);
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
-		Utility::logFile.clear();
 
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 
@@ -38,6 +54,8 @@ namespace SML {
 
 		// load up all of the configuration information
 		readConfig();
+		Utility::info("Validating system files...");
+		Utility::checkForValidEnvironment();
 
 		//make sure that SML's target and satisfactory's versions are the same
 		Utility::checkVersion(targetVersion);
@@ -54,6 +72,9 @@ namespace SML {
 		// get path
 		char p[MAX_PATH];
 		GetModuleFileNameA(NULL, p, MAX_PATH);
+
+		//load coremods
+		Mod::startLoadingCoremods(p);
 
 		// load mods
 		modHandler.loadMods(p);
@@ -104,6 +125,14 @@ namespace SML {
 	//cleans up when the program is killed
 	void cleanup() {
 		modHandler.mods.clear();
+
+		char path_c[MAX_PATH];
+		GetModuleFileNameA(NULL, path_c, MAX_PATH);
+		std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
+		Utility::enableCrashReporter(path);
 
 		Utility::info("SML shutting down...");
 		Utility::logFile.flush();

@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_NuclearWaste.Desc_NuclearWaste_C
-// 0x0000 (0x0128 - 0x0128)
+// 0x0000 (0x0130 - 0x0130)
 class UDesc_NuclearWaste_C : public UFGItemDescriptor
 {
 public:

@@ -38,7 +38,7 @@ public:
 	void UserConstructionScript();
 	void ReceiveBeginPlay();
 	void SpawnGas();
-	void OnTakeAnyDamage_Event_1(class AActor* damagedActor, float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser);
+	void OnTakeAnyDamage_Event_1(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser);
 	void ExecuteUbergraph_Char_EliteStinger(int EntryPoint);
 };
 

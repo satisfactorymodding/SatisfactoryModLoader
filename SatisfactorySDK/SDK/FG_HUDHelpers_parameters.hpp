@@ -14,6 +14,14 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function HUDHelpers.HUDHelpers_C.GetDefaultRCO
+struct UHUDHelpers_C_GetDefaultRCO_Params
+{
+	class APlayerController*                           OwningPlayer;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UBP_RemoteCallObject_C*                      RCO;                                                      // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function HUDHelpers.HUDHelpers_C.IsInMainMenu
 struct UHUDHelpers_C_IsInMainMenu_Params
 {
@@ -33,7 +41,7 @@ struct UHUDHelpers_C_GetFGGameUI_Params
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromCentralStorage
 struct UHUDHelpers_C_GetNumItemsFromCentralStorage_Params
 {
-	class APawn*                                       owningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class APawn*                                       OwningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UClass*                                      mItemClass;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                NumItems;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
@@ -80,7 +88,7 @@ struct UHUDHelpers_C_SetSliderSteps_Params
 // Function HUDHelpers.HUDHelpers_C.GetScanningObjectName
 struct UHUDHelpers_C_GetScanningObjectName_Params
 {
-	class APawn*                                       owningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class APawn*                                       OwningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       Object_Name;                                              // (Parm, OutParm)
 };
@@ -89,7 +97,7 @@ struct UHUDHelpers_C_GetScanningObjectName_Params
 struct UHUDHelpers_C_ShowHideHUD_Params
 {
 	bool                                               isMenuOpen;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class APawn*                                       owningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class APawn*                                       OwningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class AController*                                 Controller;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
@@ -122,7 +130,7 @@ struct UHUDHelpers_C_GetFactoryGameWhite_Params
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromPlayerInventory
 struct UHUDHelpers_C_GetNumItemsFromPlayerInventory_Params
 {
-	class APawn*                                       owningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class APawn*                                       OwningPawn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UClass*                                      mItemClass;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UObject*                                     __WorldContext;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                NumItems;                                                 // (Parm, OutParm, ZeroConstructor, IsPlainOldData)

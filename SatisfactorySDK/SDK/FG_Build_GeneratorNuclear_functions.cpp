@@ -29,6 +29,23 @@ void ABuild_GeneratorNuclear_C::UserConstructionScript()
 }
 
 
+// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ReceiveBeginPlay
+// ()
+
+void ABuild_GeneratorNuclear_C::ReceiveBeginPlay()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ReceiveBeginPlay");
+
+	ABuild_GeneratorNuclear_C_ReceiveBeginPlay_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.GainedSignificance
 // ()
 
@@ -142,23 +159,6 @@ void ABuild_GeneratorNuclear_C::ReceiveUpdateEffects(float* DeltaSeconds)
 
 	ABuild_GeneratorNuclear_C_ReceiveUpdateEffects_Params params;
 	params.DeltaSeconds = DeltaSeconds;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ReceiveBeginPlay
-// ()
-
-void ABuild_GeneratorNuclear_C::ReceiveBeginPlay()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ReceiveBeginPlay");
-
-	ABuild_GeneratorNuclear_C_ReceiveBeginPlay_Params params;
 
 	auto flags = fn->FunctionFlags;
 

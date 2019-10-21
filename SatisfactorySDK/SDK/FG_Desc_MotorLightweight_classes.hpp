@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_MotorLightweight.Desc_MotorLightweight_C
-// 0x0000 (0x0128 - 0x0128)
+// 0x0000 (0x0130 - 0x0130)
 class UDesc_MotorLightweight_C : public UFGItemDescriptor
 {
 public:

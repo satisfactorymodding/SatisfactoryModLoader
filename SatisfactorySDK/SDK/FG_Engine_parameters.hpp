@@ -141,8 +141,8 @@ struct AActor_ReceiveRadialDamage_Params
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     Origin;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FHitResult                                  HitInfo;                                                  // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Engine.Actor.ReceivePointDamage
@@ -155,8 +155,8 @@ struct AActor_ReceivePointDamage_Params
 	class UPrimitiveComponent*                         HitComponent;                                             // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FName                                       BoneName;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     ShotFromDirection;                                        // (Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FHitResult                                  HitInfo;                                                  // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 };
 
@@ -194,8 +194,8 @@ struct AActor_ReceiveAnyDamage_Params
 {
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Engine.Actor.ReceiveActorOnReleased
@@ -5511,8 +5511,8 @@ struct AController_ReceiveInstigatedAnyDamage_Params
 {
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Engine.Controller.Possess
@@ -10877,7 +10877,7 @@ struct UGameplayStatics_ApplyRadialDamageWithFalloff_Params
 	float                                              DamageFalloff;                                            // (Parm, ZeroConstructor, IsPlainOldData)
 	class UClass*                                      DamageTypeClass;                                          // (Parm, ZeroConstructor, IsPlainOldData)
 	TArray<class AActor*>                              IgnoreActors;                                             // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class AController*                                 InstigatedByController;                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	TEnumAsByte<ECollisionChannel>                     DamagePreventionChannel;                                  // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -10892,7 +10892,7 @@ struct UGameplayStatics_ApplyRadialDamage_Params
 	float                                              DamageRadius;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UClass*                                      DamageTypeClass;                                          // (Parm, ZeroConstructor, IsPlainOldData)
 	TArray<class AActor*>                              IgnoreActors;                                             // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class AController*                                 InstigatedByController;                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               bDoFullDamage;                                            // (Parm, ZeroConstructor, IsPlainOldData)
 	TEnumAsByte<ECollisionChannel>                     DamagePreventionChannel;                                  // (Parm, ZeroConstructor, IsPlainOldData)
@@ -10902,12 +10902,12 @@ struct UGameplayStatics_ApplyRadialDamage_Params
 // Function Engine.GameplayStatics.ApplyPointDamage
 struct UGameplayStatics_ApplyPointDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              BaseDamage;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitFromDirection;                                         // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 	struct FHitResult                                  HitInfo;                                                  // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 	class AController*                                 EventInstigator;                                          // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UClass*                                      DamageTypeClass;                                          // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
@@ -10915,10 +10915,10 @@ struct UGameplayStatics_ApplyPointDamage_Params
 // Function Engine.GameplayStatics.ApplyDamage
 struct UGameplayStatics_ApplyDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              BaseDamage;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	class AController*                                 EventInstigator;                                          // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UClass*                                      DamageTypeClass;                                          // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };

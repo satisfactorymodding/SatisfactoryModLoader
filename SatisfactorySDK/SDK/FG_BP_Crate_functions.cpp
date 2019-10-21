@@ -12,6 +12,50 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function BP_Crate.BP_Crate_C.GetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_Crate_C::GetActorCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Crate.BP_Crate_C.GetActorCompassViewDistance");
+
+	ABP_Crate_C_GetActorCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function BP_Crate.BP_Crate_C.SetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_Crate_C::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Crate.BP_Crate_C.SetActorCompassViewDistance");
+
+	ABP_Crate_C_SetActorCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function BP_Crate.BP_Crate_C.SetActorRepresentationText
 // ()
 // Parameters:

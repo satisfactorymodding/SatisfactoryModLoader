@@ -150,6 +150,50 @@ void ABP_Beacon_C::UpdateUseState(class AFGCharacterPlayer* byCharacter, const s
 }
 
 
+// Function BP_Beacon.BP_Beacon_C.GetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_Beacon_C::GetActorCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Beacon.BP_Beacon_C.GetActorCompassViewDistance");
+
+	ABP_Beacon_C_GetActorCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function BP_Beacon.BP_Beacon_C.SetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABP_Beacon_C::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_Beacon.BP_Beacon_C.SetActorCompassViewDistance");
+
+	ABP_Beacon_C_SetActorCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function BP_Beacon.BP_Beacon_C.SetActorRepresentationText
 // ()
 // Parameters:

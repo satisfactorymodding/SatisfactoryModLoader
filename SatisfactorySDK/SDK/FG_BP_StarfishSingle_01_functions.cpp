@@ -51,16 +51,16 @@ void ABP_StarfishSingle_01_C::Burrow()
 }
 
 
-// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.CanMove
+// Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.canMove
 // ()
 // Parameters:
-// bool                           CanMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// bool                           canMove                        (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void ABP_StarfishSingle_01_C::CanMove(bool* CanMove)
+void ABP_StarfishSingle_01_C::canMove(bool* canMove)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.CanMove");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_StarfishSingle_01.BP_StarfishSingle_01_C.canMove");
 
-	ABP_StarfishSingle_01_C_CanMove_Params params;
+	ABP_StarfishSingle_01_C_canMove_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -68,8 +68,8 @@ void ABP_StarfishSingle_01_C::CanMove(bool* CanMove)
 
 	fn->FunctionFlags = flags;
 
-	if (CanMove != nullptr)
-		*CanMove = params.CanMove;
+	if (canMove != nullptr)
+		*canMove = params.canMove;
 }
 
 

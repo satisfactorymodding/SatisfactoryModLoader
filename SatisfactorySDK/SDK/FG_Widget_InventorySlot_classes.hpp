@@ -74,6 +74,7 @@ public:
 	}
 
 
+	void CheckForNuclearWaste(class UClass* Object);
 	void QuickMoveInventory();
 	void SetSlotSize(bool SmallSlot, bool BigSlot);
 	void DropOntoInventorySlot(class UWidget_InventorySlot_C* OtherInventorySlot, bool* Result);
@@ -116,9 +117,11 @@ public:
 	void SubscribeToParentWindow(class UWidget_Window_C* ParentWindow);
 	void PreConstruct(bool* IsDesignTime);
 	void UpdateStyle();
-	void OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent);
 	void Destruct();
 	void Construct();
+	void Event_CreateNuclearWastePopup(bool isNuclearWaste);
+	void CloseNuclearWastePopup(bool ConfirmClicked);
+	void OnMouseEnter(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent);
 	void ExecuteUbergraph_Widget_InventorySlot(int EntryPoint);
 	void OnMoveStack__DelegateSignature(class UWidget_InventorySlot_C* Sender);
 	void OnSlotHovered__DelegateSignature(class UWidget_InventorySlot_C* SelfInventorySlot);

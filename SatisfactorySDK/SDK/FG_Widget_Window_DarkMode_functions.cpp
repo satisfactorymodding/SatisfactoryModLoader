@@ -12,6 +12,31 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.OnMouseButtonDown
+// ()
+// Parameters:
+// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+// struct FEventReply             ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FEventReply UWidget_Window_DarkMode_C::OnMouseButtonDown(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.OnMouseButtonDown");
+
+	UWidget_Window_DarkMode_C_OnMouseButtonDown_Params params;
+	params.MyGeometry = MyGeometry;
+	params.MouseEvent = MouseEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.InitTabs
 // ()
 
@@ -33,15 +58,15 @@ void UWidget_Window_DarkMode_C::InitTabs()
 // ()
 // Parameters:
 // bool                           mShowInventory                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// bool                           animate                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           Animate                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_Window_DarkMode_C::SetInventoryVisibility(bool mShowInventory, bool animate)
+void UWidget_Window_DarkMode_C::SetInventoryVisibility(bool mShowInventory, bool Animate)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_Window_DarkMode.Widget_Window_DarkMode_C.SetInventoryVisibility");
 
 	UWidget_Window_DarkMode_C_SetInventoryVisibility_Params params;
 	params.mShowInventory = mShowInventory;
-	params.animate = animate;
+	params.Animate = Animate;
 
 	auto flags = fn->FunctionFlags;
 

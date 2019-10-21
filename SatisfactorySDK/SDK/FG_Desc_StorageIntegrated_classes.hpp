@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_StorageIntegrated.Desc_StorageIntegrated_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_StorageIntegrated_C : public UFGBuildingDescriptor
 {
 public:

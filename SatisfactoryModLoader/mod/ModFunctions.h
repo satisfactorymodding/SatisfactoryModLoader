@@ -34,6 +34,8 @@ namespace SML {
 			* Registers a command to be called when player does /[commandname] in Satisfactory's chat.
 			*
 			* The function *MUST* return void and have a Functions::CommandData in the parameters, with nothing else.
+			*
+			* @author Nomnom
 			*/
 			SML_API void registerCommand(std::string name, PVOID func);
 
@@ -41,6 +43,8 @@ namespace SML {
 			* Registers an API function that can be called by other mods.
 			*
 			* Throws an error if a function of the same name is already registered.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API void registerAPIFunction(std::string name, PVOID func);
 
@@ -50,6 +54,8 @@ namespace SML {
 			* If a function is not found, it throws an error.
 			* The returned function must be cast to a true function pointer before it's able to be used.
 			* It is best used in conjunction to isModLoaded().
+			*
+			* @author SuperCoder79
 			*/
 			SML_API PVOID getAPIFunction(std::string name);
 
@@ -57,7 +63,9 @@ namespace SML {
 			* Checks if a mod is loaded.
 			*
 			* Returns true if it is, false if it's not.
-			* Sidenote: If you depend on something done in a mod's setup function, place that code in post__setup, because postInit is called in respect to mod dependencies, while setup is not.
+			* Sidenote: If you depend on something done in a mod's setup function, place that code in postSetup, because postSetup is called in respect to mod dependencies, while setup is not.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API bool isModLoaded(std::string name);
 
@@ -65,13 +73,25 @@ namespace SML {
 			* Broadcasts an event to all the handlers registered under name to all the mods.
 			*
 			* Does nothing if a mod doesn't have a handler for the function.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API void broadcastEvent(std::string name);
 
 			/**
 			* Register a handler for a custom event that is called when broadcastEvent is called with the same function name.
+			*
+			* @author SuperCoder79
 			*/
 			SML_API void registerEvent(std::string name, PVOID func);
+
+			/**
+			* Ensures that the dll mod is loaded with a corresponding pak file.
+			* This is useful for when users forget to install the pak file, but remembered to install the dll (somehow)
+			* 
+			* @author SuperCoder79
+			*/
+			SML_API void setDependsOnPak(std::string name);
 		}
 	}
 }

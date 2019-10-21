@@ -12,6 +12,50 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Build_SpaceElevator.Build_SpaceElevator_C.GetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABuild_SpaceElevator_C::GetActorCompassViewDistance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Build_SpaceElevator.Build_SpaceElevator_C.GetActorCompassViewDistance");
+
+	ABuild_SpaceElevator_C_GetActorCompassViewDistance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
+// Function Build_SpaceElevator.Build_SpaceElevator_C.SetActorCompassViewDistance
+// ()
+// Parameters:
+// ECompassViewDistance           compassViewDistance            (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// ECompassViewDistance           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+
+ECompassViewDistance ABuild_SpaceElevator_C::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Build_SpaceElevator.Build_SpaceElevator_C.SetActorCompassViewDistance");
+
+	ABuild_SpaceElevator_C_SetActorCompassViewDistance_Params params;
+	params.compassViewDistance = compassViewDistance;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Build_SpaceElevator.Build_SpaceElevator_C.SetActorRepresentationText
 // ()
 // Parameters:

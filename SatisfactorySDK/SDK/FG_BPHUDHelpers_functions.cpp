@@ -16,17 +16,17 @@ namespace SDK
 // ()
 // Parameters:
 // bool                           isMenuOpen                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class APawn*                   owningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class APawn*                   OwningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class AController*             Controller                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UBPHUDHelpers_C::ShowHideHUD(bool isMenuOpen, class APawn* owningPawn, class AController* Controller, class UObject* __WorldContext)
+void UBPHUDHelpers_C::ShowHideHUD(bool isMenuOpen, class APawn* OwningPawn, class AController* Controller, class UObject* __WorldContext)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function BPHUDHelpers.BPHUDHelpers_C.ShowHideHUD");
 
 	UBPHUDHelpers_C_ShowHideHUD_Params params;
 	params.isMenuOpen = isMenuOpen;
-	params.owningPawn = owningPawn;
+	params.OwningPawn = OwningPawn;
 	params.Controller = Controller;
 	params.__WorldContext = __WorldContext;
 

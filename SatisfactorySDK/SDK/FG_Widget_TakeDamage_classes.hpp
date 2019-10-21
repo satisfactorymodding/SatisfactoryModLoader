@@ -45,7 +45,7 @@ public:
 
 	void GetIsHealthCritical(bool* IsHealthCritical);
 	void Construct();
-	void SpawnPointer(class AActor* damagedActor, float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser);
+	void SpawnPointer(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser);
 	void OnRadiationDamage();
 	void SetPlayerPawn();
 	void ShowWarningMessage();

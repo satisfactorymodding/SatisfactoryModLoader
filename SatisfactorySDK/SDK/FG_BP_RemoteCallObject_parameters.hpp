@@ -22,6 +22,13 @@ struct UBP_RemoteCallObject_C_GetRemainingCostForSchematic_Params
 	int                                                Cost;                                                     // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetRecipeOnManufacturingProxy
+struct UBP_RemoteCallObject_C_Server_SetRecipeOnManufacturingProxy_Params
+{
+	class AFGBuildableManufacturer*                    Manufacturer;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UClass*                                      Recipe;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetWorkingAtBench
 struct UBP_RemoteCallObject_C_ServerSetWorkingAtBench_Params
 {
@@ -34,13 +41,6 @@ struct UBP_RemoteCallObject_C_ServerSetBeaconTexture_Params
 {
 	class UTexture2D*                                  Texture;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class ABP_Beacon_C*                                Beacon;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-};
-
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetRecipeOnManufacturingProxy
-struct UBP_RemoteCallObject_C_Server_SetRecipeOnManufacturingProxy_Params
-{
-	class AFGBuildableManufacturer*                    Manufacturer;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class UClass*                                      Recipe;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SplitResource
@@ -80,12 +80,6 @@ struct UBP_RemoteCallObject_C_ServerExtractResourceToPlayer_Params
 	class AFGResourceNode*                             resourceNode;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class AChar_Player_C*                              Player;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	int                                                amount;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-};
-
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerDismantlePortableMiner
-struct UBP_RemoteCallObject_C_ServerDismantlePortableMiner_Params
-{
-	class ABP_PortableMiner_C*                         inPortableMiner;                                          // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveAllFromIndex
@@ -161,13 +155,6 @@ struct UBP_RemoteCallObject_C_ServerUnregisterInteractingPlayerOnUseInterface_Pa
 	class AFGCharacterPlayer*                          Player;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetSpeedLimit
-struct UBP_RemoteCallObject_C_ServerSetSpeedLimit_Params
-{
-	class ABuild_SpeedRoadSign_C*                      speedRoadSignProxy;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	int                                                NewLimit;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-};
-
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveNumFromIndex
 struct UBP_RemoteCallObject_C_Server_RemoveNumFromIndex_Params
 {
@@ -184,23 +171,15 @@ struct UBP_RemoteCallObject_C_Server_PayOffOnSchematic_Params
 	int                                                idx;                                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerCloseVehicleTrunk
-struct UBP_RemoteCallObject_C_ServerCloseVehicleTrunk_Params
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerDismantlePortableMiner
+struct UBP_RemoteCallObject_C_ServerDismantlePortableMiner_Params
 {
-	class ABP_WheeledVehicle_C*                        inVehicle;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AFGCharacterPlayer*                          inPlayer;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class ABP_PortableMiner_C*                         inPortableMiner;                                          // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_LaunchShip
 struct UBP_RemoteCallObject_C_Server_LaunchShip_Params
 {
-};
-
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveSortRule
-struct UBP_RemoteCallObject_C_Server_RemoveSortRule_Params
-{
-	class AFGBuildableSplitterSmart*                   Splitter_Smart;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_ResetFuse
@@ -231,26 +210,25 @@ struct UBP_RemoteCallObject_C_Server_PayOffTowTruckUpgrade_Params
 	int                                                inventorySlotIndex;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_UpdateSortRule
-struct UBP_RemoteCallObject_C_Server_UpdateSortRule_Params
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetSpeedLimit
+struct UBP_RemoteCallObject_C_ServerSetSpeedLimit_Params
 {
-	class AFGBuildableSplitterSmart*                   SplitterSmart;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FSplitterSortRule                           Rule;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+	class ABuild_SpeedRoadSign_C*                      speedRoadSignProxy;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                NewLimit;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetTrainStationName
 struct UBP_RemoteCallObject_C_Server_SetTrainStationName_Params
 {
-	class AFGBuildableRailroadStation*                 Station;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AFGTrainStationIdentifier*                   Station;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	struct FText                                       Name;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
 };
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_AddSortRule
-struct UBP_RemoteCallObject_C_Server_AddSortRule_Params
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerCloseVehicleTrunk
+struct UBP_RemoteCallObject_C_ServerCloseVehicleTrunk_Params
 {
-	class AFGBuildableSplitterSmart*                   SplitterSmart;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	struct FSplitterSortRule                           Rule;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+	class ABP_WheeledVehicle_C*                        inVehicle;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AFGCharacterPlayer*                          inPlayer;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_GrabAllItemsFromInventory
@@ -268,10 +246,11 @@ struct UBP_RemoteCallObject_C_Server_RepairDropPod_Params
 	class AFGCharacterPlayer*                          byCharacter;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetActiveSchematic
-struct UBP_RemoteCallObject_C_ServerSetActiveSchematic_Params
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_RemoveSortRule
+struct UBP_RemoteCallObject_C_Server_RemoveSortRule_Params
 {
-	class UClass*                                      newActiveSchematic;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AFGBuildableSplitterSmart*                   Splitter_Smart;                                           // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetLoadModeOnDockingStation
@@ -281,11 +260,26 @@ struct UBP_RemoteCallObject_C_Server_SetLoadModeOnDockingStation_Params
 	bool                                               isInLoadMode;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_UpdateSortRule
+struct UBP_RemoteCallObject_C_Server_UpdateSortRule_Params
+{
+	class AFGBuildableSplitterSmart*                   SplitterSmart;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FSplitterSortRule                           Rule;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+};
+
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetIsProductionPausedOnFactory
 struct UBP_RemoteCallObject_C_Server_SetIsProductionPausedOnFactory_Params
 {
 	class AFGBuildableFactory*                         FACTORY;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               IsProductionPaused;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_AddSortRule
+struct UBP_RemoteCallObject_C_Server_AddSortRule_Params
+{
+	class AFGBuildableSplitterSmart*                   SplitterSmart;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FSplitterSortRule                           Rule;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Client_RemovePawnHUD
@@ -298,6 +292,12 @@ struct UBP_RemoteCallObject_C_Client_AddPawnHUD_Params
 {
 	class UClass*                                      HUDClass;                                                 // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class APawn*                                       Pawn;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.ServerSetActiveSchematic
+struct UBP_RemoteCallObject_C_ServerSetActiveSchematic_Params
+{
+	class UClass*                                      newActiveSchematic;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SpaceElevatorUpgradePressed
@@ -407,6 +407,48 @@ struct UBP_RemoteCallObject_C_Server_SetLoadModeOnTrainCargoPlatform_Params
 {
 	class AFGBuildableTrainPlatformCargo*              CargoPlatform;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	bool                                               isInLoadMode;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetTimeTableStops
+struct UBP_RemoteCallObject_C_Server_SetTimeTableStops_Params
+{
+	class AFGRailroadTimeTable*                        TimeTable;                                                // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	TArray<struct FTimeTableStop>                      stops;                                                    // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetTimeTableCurrentStop
+struct UBP_RemoteCallObject_C_Server_SetTimeTableCurrentStop_Params
+{
+	class AFGRailroadTimeTable*                        TimeTable;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetActorCompassViewDistance
+struct UBP_RemoteCallObject_C_Server_SetActorCompassViewDistance_Params
+{
+	class AActor*                                      Actor;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Internal_Server_SetActorRepresentationCompassViewDistance
+struct UBP_RemoteCallObject_C_Internal_Server_SetActorRepresentationCompassViewDistance_Params
+{
+	class UFGActorRepresentation*                      actorRepresentation;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.SetActorRepresentationCompassViewDistance
+struct UBP_RemoteCallObject_C_SetActorRepresentationCompassViewDistance_Params
+{
+	class UFGActorRepresentation*                      actorRepresentation;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function BP_RemoteCallObject.BP_RemoteCallObject_C.Server_SetTrainName
+struct UBP_RemoteCallObject_C_Server_SetTrainName_Params
+{
+	class AFGTrain*                                    Train;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	struct FText                                       Name;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
 };
 
 // Function BP_RemoteCallObject.BP_RemoteCallObject_C.ExecuteUbergraph_BP_RemoteCallObject

@@ -14,6 +14,33 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnMouseButtonDown
+struct UWidget_ManualManufacturing_C_OnMouseButtonDown_Params
+{
+	struct FGeometry*                                  MyGeometry;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FPointerEvent*                              MouseEvent;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+	struct FEventReply                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.UpdateAffordableCategories
+struct UWidget_ManualManufacturing_C_UpdateAffordableCategories_Params
+{
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.GetCategoryWidgetFromRecipe
+struct UWidget_ManualManufacturing_C_GetCategoryWidgetFromRecipe_Params
+{
+	class UClass*                                      Recipe;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_CraftBench_Category_C*               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.AddUniqueRecipe
+struct UWidget_ManualManufacturing_C_AddUniqueRecipe_Params
+{
+	TArray<struct FItemCategoryRecipeStruct>           CategorizedRecipes;                                       // (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ZeroConstructor, ReferenceParm)
+	class UClass*                                      Recipe;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ClearAndHideSearchResults
 struct UWidget_ManualManufacturing_C_ClearAndHideSearchResults_Params
 {
@@ -54,6 +81,8 @@ struct UWidget_ManualManufacturing_C_CreateCategoryHeader_Params
 {
 	class UPanelWidget*                                InScrollbox;                                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FText                                       Name;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+	bool                                               mIsCollapsed;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_CraftBench_Category_C*               Category_Widget;                                          // (Parm, OutParm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.UpdateLeds
@@ -279,6 +308,17 @@ struct UWidget_ManualManufacturing_C_BndEvt__mOnlyShowAffordableCheckbox_K2Node_
 struct UWidget_ManualManufacturing_C_BndEvt__mSearchbar_K2Node_ComponentBoundEvent_4_OnTextChanged__DelegateSignature_Params
 {
 	struct FText                                       Text;                                                     // (BlueprintVisible, BlueprintReadOnly, Parm)
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.InitOnlyShowAffordable
+struct UWidget_ManualManufacturing_C_InitOnlyShowAffordable_Params
+{
+};
+
+// Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.OnCategoryClicked
+struct UWidget_ManualManufacturing_C_OnCategoryClicked_Params
+{
+	class UWidget_CraftBench_Category_C*               Instigator;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_ManualManufacturing.Widget_ManualManufacturing_C.ExecuteUbergraph_Widget_ManualManufacturing

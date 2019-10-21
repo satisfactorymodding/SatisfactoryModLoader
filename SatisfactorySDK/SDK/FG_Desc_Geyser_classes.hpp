@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_Geyser.Desc_Geyser_C
-// 0x0000 (0x0190 - 0x0190)
+// 0x0000 (0x0198 - 0x0198)
 class UDesc_Geyser_C : public UFGResourceDescriptorGeyser
 {
 public:

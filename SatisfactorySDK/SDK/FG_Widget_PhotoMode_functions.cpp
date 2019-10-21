@@ -12,6 +12,57 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateHiResToggle
+// ()
+
+void UWidget_PhotoMode_C::UpdateHiResToggle()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateHiResToggle");
+
+	UWidget_PhotoMode_C_UpdateHiResToggle_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateFOVSlider
+// ()
+
+void UWidget_PhotoMode_C::UpdateFOVSlider()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateFOVSlider");
+
+	UWidget_PhotoMode_C_UpdateFOVSlider_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_PhotoMode.Widget_PhotoMode_C.SetInputKeyTexts
+// ()
+
+void UWidget_PhotoMode_C::SetInputKeyTexts()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_PhotoMode.Widget_PhotoMode_C.SetInputKeyTexts");
+
+	UWidget_PhotoMode_C_SetInputKeyTexts_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_PhotoMode.Widget_PhotoMode_C.ToggleVisibility
 // ()
 
@@ -63,48 +114,6 @@ void UWidget_PhotoMode_C::PhotoTaken()
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateHiResMode
-// ()
-// Parameters:
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FText UWidget_PhotoMode_C::UpdateHiResMode()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateHiResMode");
-
-	UWidget_PhotoMode_C_UpdateHiResMode_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
-}
-
-
-// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateFOV
-// ()
-// Parameters:
-// struct FText                   ReturnValue                    (Parm, OutParm, ReturnParm)
-
-struct FText UWidget_PhotoMode_C::UpdateFOV()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateFOV");
-
-	UWidget_PhotoMode_C_UpdateFOV_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-
-	return params.ReturnValue;
 }
 
 

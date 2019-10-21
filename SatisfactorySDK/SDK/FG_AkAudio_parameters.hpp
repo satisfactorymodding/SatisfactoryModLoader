@@ -89,6 +89,13 @@ struct UAkComponent_SetOutputBusVolume_Params
 	float                                              BusVolume;                                                // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function AkAudio.AkComponent.SetMultiplePositions
+struct UAkComponent_SetMultiplePositions_Params
+{
+	TArray<struct FVector>                             Positions;                                                // (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
+	EAkMultiPositionType                               MultiPositionType;                                        // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function AkAudio.AkComponent.SetListeners
 struct UAkComponent_SetListeners_Params
 {

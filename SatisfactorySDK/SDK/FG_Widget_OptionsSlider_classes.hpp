@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_OptionsSlider.Widget_OptionsSlider_C
-// 0x005C (0x028C - 0x0230)
+// 0x005D (0x028D - 0x0230)
 class UWidget_OptionsSlider_C : public UWidget_OptionValueController_C
 {
 public:
@@ -34,6 +34,7 @@ public:
 	float                                              mMinDisplayVal;                                           // 0x0280(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	float                                              mMaxDisplayVal;                                           // 0x0284(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	int                                                MaxFractionalDigitsToDisplay;                             // 0x0288(0x0004) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	bool                                               mShowZeroAsOff;                                           // 0x028C(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -42,9 +43,9 @@ public:
 	}
 
 
-	float GetPercent();
+	void GetDisplayValue(float* DisplayValue);
 	void SetNormalizedValue(float CurrentUnadjustedValue);
-	void GetAdjustedValue(float Normalized_Value, float* Adjusted_Value);
+	void GetAdjustedValue(float* AdjustedValue);
 	void SetProgressBarPercentage(float Percent);
 	float GetProgressBarPercentage();
 	struct FText GetValueText();
@@ -52,7 +53,7 @@ public:
 	void OnRowHovered();
 	void OnRowUnhovered();
 	void ExecuteUbergraph_Widget_OptionsSlider(int EntryPoint);
-	void GetNewValue__DelegateSignature(float VolumeLevel);
+	void GetNewValue__DelegateSignature(float NewValue);
 };
 
 

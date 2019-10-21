@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_Foundation_8x2_01.Desc_Foundation_8x2_01_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_Foundation_8x2_01_C : public UFGBuildingDescriptor
 {
 public:

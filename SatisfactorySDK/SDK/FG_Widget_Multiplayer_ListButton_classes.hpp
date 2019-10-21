@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C
-// 0x0215 (0x0435 - 0x0220)
+// 0x0216 (0x0436 - 0x0220)
 class UWidget_Multiplayer_ListButton_C : public UFGWidgetMultiplayer
 {
 public:
@@ -67,6 +67,7 @@ public:
 	ECachedNATType                                     mNatType;                                                 // 0x0432(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mIsHost;                                                  // 0x0433(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	bool                                               mCareAboutNAT;                                            // 0x0434(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	bool                                               mShowWarning;                                             // 0x0435(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -76,14 +77,14 @@ public:
 
 
 	void UpdateNATWarningForClient();
-	void GetHostingNATIsse(ECachedNATType hostNat, ECachedNATType clientNat, struct FText* ToolTip);
-	void GetConnectingNATIsse(ECachedNATType hostNat, ECachedNATType clientNat, struct FText* ToolTip);
-	void IsNATIssue(ECachedNATType hostNat, ECachedNATType clientNat, bool* isIssue);
+	void GetHostingNATIsse(ECachedNATType HostNAT, ECachedNATType clientNat, struct FText* ToolTip);
+	void GetConnectingNATIsse(ECachedNATType HostNAT, ECachedNATType clientNat, struct FText* ToolTip);
+	void IsNATIssue(ECachedNATType HostNAT, ECachedNATType clientNat, bool* isIssue);
 	void UpdateNATWarningForHost();
 	void SetupForManagePlayers(class AFGPlayerState* PlayerState);
 	void SetupForJoinInvite(struct FPendingInvite* invite);
 	void SetupForSendInvite(struct FFGOnlineFriend* _friend);
-	void Internal_UpdateButton(const struct FText& Title, bool IsOnline, const struct FText& additionalInfo, int PlayersInSession, bool privateSession, int TimePlayed, const struct FText& ActionButtonText, bool hideSessionInfo, bool isPlayingSatisfactory, bool hideActionButton, bool hideSecondaryActionButton, bool disableActionButton, const struct FText& actionButtonTooltip, bool inAGame, const struct FBlueprintSessionResult& session, bool isSelectable, bool IsNonInteractable, ECachedNATType natType, bool isHost, bool careAboutNAT);
+	void Internal_UpdateButton(const struct FText& Title, bool IsOnline, const struct FText& AdditionalInfo, int PlayersInSession, bool privateSession, int TimePlayed, const struct FText& ActionButtonText, bool hideSessionInfo, bool isPlayingSatisfactory, bool hideActionButton, bool hideSecondaryActionButton, bool disableActionButton, const struct FText& actionButtonTooltip, bool inAGame, const struct FBlueprintSessionResult& session, bool IsSelectable, bool IsNonInteractable, ECachedNATType natType, bool IsHost, bool careAboutNAT, bool ShowWarning);
 	void SetupForJoinGame(struct FFGOnlineFriend* _friend);
 	void SetButtonColor(const struct FLinearColor& Color);
 	void ClearListSelection();

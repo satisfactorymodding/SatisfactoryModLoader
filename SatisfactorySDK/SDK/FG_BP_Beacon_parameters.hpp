@@ -55,6 +55,19 @@ struct ABP_Beacon_C_UpdateUseState_Params
 	struct FUseState                                   out_useState;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
 };
 
+// Function BP_Beacon.BP_Beacon_C.GetActorCompassViewDistance
+struct ABP_Beacon_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function BP_Beacon.BP_Beacon_C.SetActorCompassViewDistance
+struct ABP_Beacon_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function BP_Beacon.BP_Beacon_C.SetActorRepresentationText
 struct ABP_Beacon_C_SetActorRepresentationText_Params
 {

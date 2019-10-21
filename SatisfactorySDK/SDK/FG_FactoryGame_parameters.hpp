@@ -24,28 +24,8 @@ struct UFGActorRepresentation_OnRep_ShouldShowInCompass_Params
 {
 };
 
-// Function FactoryGame.FGActorRepresentation.OnRep_RepresentationTexture
-struct UFGActorRepresentation_OnRep_RepresentationTexture_Params
-{
-};
-
-// Function FactoryGame.FGActorRepresentation.OnRep_RepresentationText
-struct UFGActorRepresentation_OnRep_RepresentationText_Params
-{
-};
-
-// Function FactoryGame.FGActorRepresentation.OnRep_RepresentationColor
-struct UFGActorRepresentation_OnRep_RepresentationColor_Params
-{
-};
-
-// Function FactoryGame.FGActorRepresentation.OnRep_FogOfWarRevealType
-struct UFGActorRepresentation_OnRep_FogOfWarRevealType_Params
-{
-};
-
-// Function FactoryGame.FGActorRepresentation.OnRep_FogOfWarRevealRadius
-struct UFGActorRepresentation_OnRep_FogOfWarRevealRadius_Params
+// Function FactoryGame.FGActorRepresentation.OnRep_ActorRepresentationUpdated
+struct UFGActorRepresentation_OnRep_ActorRepresentationUpdated_Params
 {
 };
 
@@ -115,6 +95,12 @@ struct UFGActorRepresentation_GetFogOfWarRevealRadius_Params
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGActorRepresentation.GetCompassViewDistance
+struct UFGActorRepresentation_GetCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGActorRepresentation.GetActorRotation
 struct UFGActorRepresentation_GetActorRotation_Params
 {
@@ -138,6 +124,13 @@ struct UFGActorRepresentationInterface_SetActorRepresentationText_Params
 {
 	struct FText                                       newText;                                                  // (ConstParm, Parm, OutParm, ReferenceParm)
 	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
+// Function FactoryGame.FGActorRepresentationInterface.SetActorCompassViewDistance
+struct UFGActorRepresentationInterface_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGActorRepresentationInterface.RemoveAsRepresentation
@@ -212,6 +205,12 @@ struct UFGActorRepresentationInterface_GetActorFogOfWarRevealRadius_Params
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGActorRepresentationInterface.GetActorCompassViewDistance
+struct UFGActorRepresentationInterface_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGActorRepresentationInterface.AddAsRepresentation
 struct UFGActorRepresentationInterface_AddAsRepresentation_Params
 {
@@ -226,6 +225,29 @@ struct AFGActorRepresentationManager_UpdateRepresentation_Params
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGActorRepresentationManager.SetMapRepresentationTypeFilter
+struct AFGActorRepresentationManager_SetMapRepresentationTypeFilter_Params
+{
+	class APawn*                                       owningPlayerPawn;                                         // (Parm, ZeroConstructor, IsPlainOldData)
+	ERepresentationType                                Type;                                                     // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGActorRepresentationManager.SetCompassViewDistanceForActorRepresentation
+struct AFGActorRepresentationManager_SetCompassViewDistanceForActorRepresentation_Params
+{
+	class UFGActorRepresentation*                      actorRepresentation;                                      // (Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               viewDistance;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGActorRepresentationManager.SetCompassRepresentationTypeFilter
+struct AFGActorRepresentationManager_SetCompassRepresentationTypeFilter_Params
+{
+	class APawn*                                       owningPlayerPawn;                                         // (Parm, ZeroConstructor, IsPlainOldData)
+	ERepresentationType                                Type;                                                     // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function FactoryGame.FGActorRepresentationManager.RemoveRepresentationOfActor
 struct AFGActorRepresentationManager_RemoveRepresentationOfActor_Params
 {
@@ -236,6 +258,29 @@ struct AFGActorRepresentationManager_RemoveRepresentationOfActor_Params
 // Function FactoryGame.FGActorRepresentationManager.OnRep_ReplicatedRepresentations
 struct AFGActorRepresentationManager_OnRep_ReplicatedRepresentations_Params
 {
+};
+
+// Function FactoryGame.FGActorRepresentationManager.GetMapRepresentationTypeFilter
+struct AFGActorRepresentationManager_GetMapRepresentationTypeFilter_Params
+{
+	class APawn*                                       owningPlayerPawn;                                         // (Parm, ZeroConstructor, IsPlainOldData)
+	ERepresentationType                                Type;                                                     // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGActorRepresentationManager.GetDistanceValueFromCompassViewDistance
+struct AFGActorRepresentationManager_GetDistanceValueFromCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGActorRepresentationManager.GetCompassRepresentationTypeFilter
+struct AFGActorRepresentationManager_GetCompassRepresentationTypeFilter_Params
+{
+	class APawn*                                       owningPlayerPawn;                                         // (Parm, ZeroConstructor, IsPlainOldData)
+	ERepresentationType                                Type;                                                     // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGActorRepresentationManager.GetAllActorRepresentations
@@ -482,6 +527,104 @@ struct UFGCharacterAnimInstance_GetAccelerationVectorLength_Params
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGItemDescriptor.GetStackSize
+struct UFGItemDescriptor_GetStackSize_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetSmallIcon
+struct UFGItemDescriptor_GetSmallIcon_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	class UTexture2D*                                  ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetRadioactiveDecay
+struct UFGItemDescriptor_GetRadioactiveDecay_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetPreviewView
+struct UFGItemDescriptor_GetPreviewView_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FItemView                                   out_previewView;                                          // (Parm, OutParm)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetItemName
+struct UFGItemDescriptor_GetItemName_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetItemMesh
+struct UFGItemDescriptor_GetItemMesh_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	class UStaticMesh*                                 ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetItemIcon
+struct UFGItemDescriptor_GetItemIcon_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FSlateBrush                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetItemDescription
+struct UFGItemDescriptor_GetItemDescription_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetItemCategory
+struct UFGItemDescriptor_GetItemCategory_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	class UClass*                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetIconView
+struct UFGItemDescriptor_GetIconView_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FItemView                                   out_itemView;                                             // (Parm, OutParm)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetForm
+struct UFGItemDescriptor_GetForm_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	EResourceForm                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetEnergyValue
+struct UFGItemDescriptor_GetEnergyValue_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.GetBigIcon
+struct UFGItemDescriptor_GetBigIcon_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	class UTexture2D*                                  ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGItemDescriptor.CanBeDiscarded
+struct UFGItemDescriptor_CanBeDiscarded_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGHologram.Server_SetSnapToGuideLines
 struct AFGHologram_Server_SetSnapToGuideLines_Params
 {
@@ -627,15 +770,15 @@ struct AFGAttentionPingActor_SpawnAttentionPingEffects_Params
 {
 };
 
-// Function FactoryGame.FGAttentionPingActor.OnRep_PlayerSlotIdx
-struct AFGAttentionPingActor_OnRep_PlayerSlotIdx_Params
+// Function FactoryGame.FGAttentionPingActor.OnRep_OwningPlayerState
+struct AFGAttentionPingActor_OnRep_OwningPlayerState_Params
 {
 };
 
-// Function FactoryGame.FGAttentionPingActor.GetPlayerSlotIdx
-struct AFGAttentionPingActor_GetPlayerSlotIdx_Params
+// Function FactoryGame.FGAttentionPingActor.GetOwningPlayerState
+struct AFGAttentionPingActor_GetOwningPlayerState_Params
 {
-	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+	class AFGPlayerState*                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGMessageBase.GetMessageDefaultObject
@@ -734,6 +877,14 @@ struct UFGBlueprintFunctionLibrary_ShowOutline_Params
 {
 	class UPrimitiveComponent*                         comp;                                                     // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	EOutlineColor                                      Color;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGBlueprintFunctionLibrary.RoundFloatWithPrecision
+struct UFGBlueprintFunctionLibrary_RoundFloatWithPrecision_Params
+{
+	float                                              Value;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+	int                                                MaximumFractionalDigits;                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGBlueprintFunctionLibrary.RemoveGenericTickObjectFromSignificanceManager
@@ -889,6 +1040,14 @@ struct UFGBlueprintFunctionLibrary_GetComponentFlagSoftLanding_Params
 	struct FName                                       ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGBlueprintFunctionLibrary.GetCategoriesWithAffordableRecipes
+struct UFGBlueprintFunctionLibrary_GetCategoriesWithAffordableRecipes_Params
+{
+	class AFGCharacterPlayer*                          playerPawn;                                               // (Parm, ZeroConstructor, IsPlainOldData)
+	class UClass*                                      forProducer;                                              // (Parm, ZeroConstructor, IsPlainOldData)
+	TArray<class UClass*>                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
+};
+
 // Function FactoryGame.FGBlueprintFunctionLibrary.GetAvailableSubCategoriesForCategory
 struct UFGBlueprintFunctionLibrary_GetAvailableSubCategoriesForCategory_Params
 {
@@ -919,6 +1078,14 @@ struct UFGBlueprintFunctionLibrary_GetAllWidgetsOfClassInHierarchy_Params
 	class UWidget*                                     hierarchyContext;                                         // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UClass*                                      WidgetClass;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	TArray<class UWidget*>                             FoundWidgets;                                             // (Parm, OutParm, ZeroConstructor)
+};
+
+// Function FactoryGame.FGBlueprintFunctionLibrary.GetAllItemsInCategory
+struct UFGBlueprintFunctionLibrary_GetAllItemsInCategory_Params
+{
+	class UObject*                                     WorldContext;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class UClass*                                      itemCategory;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	TArray<class UClass*>                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
 };
 
 // Function FactoryGame.FGBlueprintFunctionLibrary.GetAllDescriptorsSorted
@@ -1042,6 +1209,12 @@ struct UFGBlueprintFunctionLibrary_AddAmbientSoundSplineToSignificanceManager_Pa
 {
 	class UObject*                                     WorldContextObject;                                       // (Parm, ZeroConstructor, IsPlainOldData)
 	class UObject*                                     Obj;                                                      // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGBoundedTextRenderComponent.AssignBoundingBox
+struct UFGBoundedTextRenderComponent_AssignBoundingBox_Params
+{
+	class UBoxComponent*                               BoxComponent;                                             // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function FactoryGame.FGBuildable.ShowHighlightEffect
@@ -1497,6 +1670,12 @@ struct UFGConveyorRemoteCallObject_Server_OnUse_Params
 	int8_t                                             repVersion;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function FactoryGame.FGBuildableConveyorBase.GetIsSignificant
+struct AFGBuildableConveyorBase_GetIsSignificant_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGBuildableConveyorBelt.OnRep_SplineData
 struct AFGBuildableConveyorBelt_OnRep_SplineData_Params
 {
@@ -1518,12 +1697,6 @@ struct AFGBuildableConveyorBelt_GetSplineData_Params
 struct AFGBuildableConveyorBelt_GetSplineComponent_Params
 {
 	class UFGSplineComponent*                          ReturnValue;                                              // (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
-};
-
-// Function FactoryGame.FGBuildableConveyorBelt.GetIsSignificant
-struct AFGBuildableConveyorBelt_GetIsSignificant_Params
-{
-	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGBuildableConveyorLift.OnRep_TopTransform
@@ -1702,6 +1875,12 @@ struct AFGBuildableGeneratorFuel_GetFuelAmount_Params
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGBuildableGeneratorFuel.GetCurrentFuelClass
+struct AFGBuildableGeneratorFuel_GetCurrentFuelClass_Params
+{
+	class UClass*                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGBuildableGeneratorFuel.FilterFuelClasses
 struct AFGBuildableGeneratorFuel_FilterFuelClasses_Params
 {
@@ -1793,25 +1972,19 @@ struct AFGBuildableRailroadBridge_GetLength_Params
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGBuildableTrainPlatform.OnRep_UpdateDockingStatus
+struct AFGBuildableTrainPlatform_OnRep_UpdateDockingStatus_Params
+{
+};
+
 // Function FactoryGame.FGBuildableTrainPlatform.GetDockingStatus
 struct AFGBuildableTrainPlatform_GetDockingStatus_Params
 {
 	ETrainPlatformDockingStatus                        ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function FactoryGame.FGBuildableRailroadStation.SetName
-struct AFGBuildableRailroadStation_SetName_Params
-{
-	struct FText                                       Name;                                                     // (ConstParm, Parm, OutParm, ReferenceParm)
-};
-
 // Function FactoryGame.FGBuildableRailroadStation.PerformIsDockedCheck
 struct AFGBuildableRailroadStation_PerformIsDockedCheck_Params
-{
-};
-
-// Function FactoryGame.FGBuildableRailroadStation.OnRep_Name
-struct AFGBuildableRailroadStation_OnRep_Name_Params
 {
 };
 
@@ -1845,10 +2018,10 @@ struct AFGBuildableRailroadStation_OnDockingColliderBeginOverlap_Params
 	struct FHitResult                                  SweepResult;                                              // (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 };
 
-// Function FactoryGame.FGBuildableRailroadStation.GetName
-struct AFGBuildableRailroadStation_GetName_Params
+// Function FactoryGame.FGBuildableRailroadStation.GetStationIdentifier
+struct AFGBuildableRailroadStation_GetStationIdentifier_Params
 {
-	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+	class AFGTrainStationIdentifier*                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGBuildableRailroadSwitchControl.GetSwitchPosition
@@ -2064,8 +2237,8 @@ struct AFGBuildableSubsystem_GetTypedBuildable_Params
 	TArray<class AFGBuildable*>                        out_buildables;                                           // (Parm, OutParm, ZeroConstructor)
 };
 
-// Function FactoryGame.FGBuildableSubsystem.getColorSlotSecondaryLinear
-struct AFGBuildableSubsystem_getColorSlotSecondaryLinear_Params
+// Function FactoryGame.FGBuildableSubsystem.GetColorSlotSecondaryLinear
+struct AFGBuildableSubsystem_GetColorSlotSecondaryLinear_Params
 {
 	unsigned char                                      Index;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -2078,8 +2251,8 @@ struct AFGBuildableSubsystem_getColorSlotSecondary_Params
 	struct FColor                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function FactoryGame.FGBuildableSubsystem.getColorSlotPrimaryLinear
-struct AFGBuildableSubsystem_getColorSlotPrimaryLinear_Params
+// Function FactoryGame.FGBuildableSubsystem.GetColorSlotPrimaryLinear
+struct AFGBuildableSubsystem_GetColorSlotPrimaryLinear_Params
 {
 	unsigned char                                      Index;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
@@ -2160,6 +2333,12 @@ struct AFGBuildableTrainPlatformCargo_OnTransferComplete_Params
 {
 };
 
+// Function FactoryGame.FGBuildableTrainPlatformCargo.OnCargoPowerStateChanged
+struct AFGBuildableTrainPlatformCargo_OnCargoPowerStateChanged_Params
+{
+	bool                                               HasPower;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function FactoryGame.FGBuildableTrainPlatformCargo.OnBeginUnloadSequence
 struct AFGBuildableTrainPlatformCargo_OnBeginUnloadSequence_Params
 {
@@ -2186,6 +2365,12 @@ struct AFGBuildableTrainPlatformCargo_GetIsInLoadMode_Params
 struct AFGBuildableTrainPlatformCargo_GetInventory_Params
 {
 	class UFGInventoryComponent*                       ReturnValue;                                              // (ExportObject, Parm, OutParm, ZeroConstructor, ReturnParm, InstancedReference, IsPlainOldData)
+};
+
+// Function FactoryGame.FGBuildableTrainPlatformCargo.GetDockedVehicleOffset
+struct AFGBuildableTrainPlatformCargo_GetDockedVehicleOffset_Params
+{
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGBuildableTrainPlatformCargo.GetDockedActor
@@ -2226,97 +2411,6 @@ struct UFGBuildCategory_GetCategoryIcon_Params
 {
 	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FSlateBrush                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetStackSize
-struct UFGItemDescriptor_GetStackSize_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetSmallIcon
-struct UFGItemDescriptor_GetSmallIcon_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	class UTexture2D*                                  ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetRadioactiveDecay
-struct UFGItemDescriptor_GetRadioactiveDecay_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetPreviewView
-struct UFGItemDescriptor_GetPreviewView_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FItemView                                   out_previewView;                                          // (Parm, OutParm)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetItemName
-struct UFGItemDescriptor_GetItemName_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetItemMesh
-struct UFGItemDescriptor_GetItemMesh_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	class UStaticMesh*                                 ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetItemIcon
-struct UFGItemDescriptor_GetItemIcon_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FSlateBrush                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetItemDescription
-struct UFGItemDescriptor_GetItemDescription_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetIconView
-struct UFGItemDescriptor_GetIconView_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	struct FItemView                                   out_itemView;                                             // (Parm, OutParm)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetForm
-struct UFGItemDescriptor_GetForm_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	EResourceForm                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetEnergyValue
-struct UFGItemDescriptor_GetEnergyValue_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function FactoryGame.FGItemDescriptor.GetBigIcon
-struct UFGItemDescriptor_GetBigIcon_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	class UTexture2D*                                  ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
-};
-
-// Function FactoryGame.FGItemDescriptor.CanBeDiscarded
-struct UFGItemDescriptor_CanBeDiscarded_Params
-{
-	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
-	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGBuildDescriptor.GetSubCategories
@@ -2548,8 +2642,8 @@ struct AFGEquipment_AdjustDamage_Params
 {
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -3157,8 +3251,8 @@ struct AFGCharacterBase_ReceivedAdjustDamage_Params
 {
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -3185,37 +3279,37 @@ struct AFGCharacterBase_PlayFootstepEffect_Params
 // Function FactoryGame.FGCharacterBase.OnTakeRadialDamage
 struct AFGCharacterBase_OnTakeRadialDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FHitResult                                  HitInfo;                                                  // (Parm, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCharacterBase.OnTakePointDamage
 struct AFGCharacterBase_OnTakePointDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	class UPrimitiveComponent*                         HitComponent;                                             // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FName                                       BoneName;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     ShotFromDirection;                                        // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCharacterBase.OnTakeDamage
 struct AFGCharacterBase_OnTakeDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCharacterBase.OnRep_IsRagdolled
@@ -3231,35 +3325,35 @@ struct AFGCharacterBase_NotifyOnWeakspotHit_Params
 // Function FactoryGame.FGCharacterBase.NotifyOnTakeRadialDamage
 struct AFGCharacterBase_NotifyOnTakeRadialDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCharacterBase.NotifyOnTakePointDamage
 struct AFGCharacterBase_NotifyOnTakePointDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	class UPrimitiveComponent*                         HitComponent;                                             // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FName                                       BoneName;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     ShotFromDirection;                                        // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCharacterBase.NotifyOnTakeDamage
 struct AFGCharacterBase_NotifyOnTakeDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCharacterBase.IsRagdolled
@@ -3331,11 +3425,11 @@ struct AFGCharacterBase_CalculateFallDamage_Params
 // Function FactoryGame.FGCharacterBase.AdjustDamage
 struct AFGCharacterBase_AdjustDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -3887,6 +3981,12 @@ struct UFGCheatManager_UpdateSessionToOSS_Params
 {
 };
 
+// Function FactoryGame.FGCheatManager.TurboMode_Get
+struct UFGCheatManager_TurboMode_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.TurboMode
 struct UFGCheatManager_TurboMode_Params
 {
@@ -3928,6 +4028,12 @@ struct UFGCheatManager_ShowSequenceList_Params
 {
 };
 
+// Function FactoryGame.FGCheatManager.ShowFactoryOnly_Get
+struct UFGCheatManager_ShowFactoryOnly_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.ShowFactoryOnly
 struct UFGCheatManager_ShowFactoryOnly_Params
 {
@@ -3944,6 +4050,18 @@ struct UFGCheatManager_SetTradingPostLevel_Params
 struct UFGCheatManager_SetTimeSpeedMultiplier_Params
 {
 	float                                              Speed;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.SetTimeOfDay_minute_Get
+struct UFGCheatManager_SetTimeOfDay_minute_Get_Params
+{
+	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.SetTimeOfDay_hour_Get
+struct UFGCheatManager_SetTimeOfDay_hour_Get_Params
+{
+	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCheatManager.SetTimeOfDay
@@ -3968,6 +4086,12 @@ struct UFGCheatManager_SetRandomDebugStartingPoint_Params
 struct UFGCheatManager_SetGamePhase_Params
 {
 	TEnumAsByte<EGamePhase>                            phase;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.SetFactoryDetailReplication_Get
+struct UFGCheatManager_SetFactoryDetailReplication_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCheatManager.SetFactoryDetailReplication
@@ -4011,6 +4135,11 @@ struct UFGCheatManager_ResetSchematics_Params
 {
 };
 
+// Function FactoryGame.FGCheatManager.ResetRecipes
+struct UFGCheatManager_ResetRecipes_Params
+{
+};
+
 // Function FactoryGame.FGCheatManager.ResetHubTutorial
 struct UFGCheatManager_ResetHubTutorial_Params
 {
@@ -4019,6 +4148,12 @@ struct UFGCheatManager_ResetHubTutorial_Params
 // Function FactoryGame.FGCheatManager.ResetFuses
 struct UFGCheatManager_ResetFuses_Params
 {
+};
+
+// Function FactoryGame.FGCheatManager.ResetAllFactoryLegsToZero
+struct UFGCheatManager_ResetAllFactoryLegsToZero_Params
+{
+	bool                                               repopulateEmptyLegs;                                      // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCheatManager.ReplayBuildingEffects
@@ -4037,6 +4172,11 @@ struct UFGCheatManager_RebuildPowerCircuits_Params
 {
 };
 
+// Function FactoryGame.FGCheatManager.RebuildFactoryLegsOneTileAroundPlayer
+struct UFGCheatManager_RebuildFactoryLegsOneTileAroundPlayer_Params
+{
+};
+
 // Function FactoryGame.FGCheatManager.RandomizeBuildingsColorSlot
 struct UFGCheatManager_RandomizeBuildingsColorSlot_Params
 {
@@ -4049,9 +4189,20 @@ struct UFGCheatManager_PurgeInactiveClientsFromSave_Params
 	bool                                               fetchInventories;                                         // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function FactoryGame.FGCheatManager.PurgeAllTrainState
+struct UFGCheatManager_PurgeAllTrainState_Params
+{
+};
+
 // Function FactoryGame.FGCheatManager.PurgeAllBeaconsFromSave
 struct UFGCheatManager_PurgeAllBeaconsFromSave_Params
 {
+};
+
+// Function FactoryGame.FGCheatManager.PumpiMode_Get
+struct UFGCheatManager_PumpiMode_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCheatManager.PumpiMode
@@ -4065,6 +4216,30 @@ struct UFGCheatManager_PrintStatichMeshesHirarchy_Params
 {
 };
 
+// Function FactoryGame.FGCheatManager.PlayerNoClipModeOnFly_Get
+struct UFGCheatManager_PlayerNoClipModeOnFly_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.PlayerNoClipModeOnFly
+struct UFGCheatManager_PlayerNoClipModeOnFly_Params
+{
+	bool                                               gohstMode;                                                // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.PlayerFly_Get
+struct UFGCheatManager_PlayerFly_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.PlayerFly
+struct UFGCheatManager_PlayerFly_Params
+{
+	bool                                               flyModeEnabled;                                           // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.PardonAllPlayers
 struct UFGCheatManager_PardonAllPlayers_Params
 {
@@ -4075,10 +4250,34 @@ struct UFGCheatManager_OpenModMap_Params
 {
 };
 
+// Function FactoryGame.FGCheatManager.NoPower_Get
+struct UFGCheatManager_NoPower_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.NoPower
 struct UFGCheatManager_NoPower_Params
 {
 	bool                                               Enabled;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.NoMessages_Get
+struct UFGCheatManager_NoMessages_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.NoMessages
+struct UFGCheatManager_NoMessages_Params
+{
+	bool                                               Enabled;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.NoCost_Get
+struct UFGCheatManager_NoCost_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCheatManager.NoCost
@@ -4148,10 +4347,22 @@ struct UFGCheatManager_ListDebugStartingPoint_Params
 {
 };
 
+// Function FactoryGame.FGCheatManager.HideFactoryOnly_Get
+struct UFGCheatManager_HideFactoryOnly_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.HideFactoryOnly
 struct UFGCheatManager_HideFactoryOnly_Params
 {
 	bool                                               factoryHidden;                                            // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.HideAllBuildings_Get
+struct UFGCheatManager_HideAllBuildings_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCheatManager.HideAllBuildings
@@ -4160,11 +4371,18 @@ struct UFGCheatManager_HideAllBuildings_Params
 	bool                                               InVisibility;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
-// Function FactoryGame.FGCheatManager.GiveItem
-struct UFGCheatManager_GiveItem_Params
+// Function FactoryGame.FGCheatManager.GiveItemStacks
+struct UFGCheatManager_GiveItemStacks_Params
 {
 	class UClass*                                      Resource;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
-	int                                                amount;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
+	int                                                NumberOfStacks;                                           // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.GiveItemsSingle
+struct UFGCheatManager_GiveItemsSingle_Params
+{
+	class UClass*                                      Resource;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
+	int                                                NumberOfItems;                                            // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCheatManager.GiefStorySchematics
@@ -4224,6 +4442,12 @@ struct UFGCheatManager_FixupBuiltByRecipeInOldSave_Params
 	bool                                               reapplyRecipeIfBetterMatchFound;                          // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function FactoryGame.FGCheatManager.EnablePlayerFOV_Get
+struct UFGCheatManager_EnablePlayerFOV_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.EnablePlayerFOV
 struct UFGCheatManager_EnablePlayerFOV_Params
 {
@@ -4236,16 +4460,33 @@ struct UFGCheatManager_EnableInstancingOnFactory_Params
 	bool                                               Enabled;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function FactoryGame.FGCheatManager.EnableBuildableTick_Get
+struct UFGCheatManager_EnableBuildableTick_Get_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.EnableBuildableTick
 struct UFGCheatManager_EnableBuildableTick_Params
 {
 	bool                                               enable;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function FactoryGame.FGCheatManager.EnableAudioDebug
+struct UFGCheatManager_EnableAudioDebug_Params
+{
+	bool                                               IsEnabled;                                                // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function FactoryGame.FGCheatManager.DumpTicking
 struct UFGCheatManager_DumpTicking_Params
 {
 	bool                                               detailed;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCheatManager.DumpSignificanceManagedObjects
+struct UFGCheatManager_DumpSignificanceManagedObjects_Params
+{
 };
 
 // Function FactoryGame.FGCheatManager.DumpSchematics
@@ -4582,7 +4823,7 @@ struct UFGColorInterface_GetCanBeColored_Params
 // Function FactoryGame.FGCombatFunctionLibrary.TryGetCharacterFromDamageCauser
 struct UFGCombatFunctionLibrary_TryGetCharacterFromDamageCauser_Params
 {
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class AFGCharacterBase*                            ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -4613,6 +4854,12 @@ struct UFGCombatFunctionLibrary_DoRadialDamageWithinCollision_Params
 	class UClass*                                      DamageType;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Radius;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCompassObjectWidget.SetCompassObjectVisbility
+struct UFGCompassObjectWidget_SetCompassObjectVisbility_Params
+{
+	bool                                               visibile;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCompassObjectWidget.SetAsStaticDirection
@@ -4703,6 +4950,13 @@ struct UFGCompassWidget_OnActorRepresentationUpdated_Params
 struct UFGCompassWidget_OnActorRepresentationRemoved_Params
 {
 	class UFGActorRepresentation*                      actorRepresentation;                                      // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGCompassWidget.OnActorRepresentationFiltered
+struct UFGCompassWidget_OnActorRepresentationFiltered_Params
+{
+	ERepresentationType                                Type;                                                     // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGCompassWidget.OnActorRepresentationAdded
@@ -5586,11 +5840,11 @@ struct AFGEnemyController_RemoveInvalidAggroTargets_Params
 // Function FactoryGame.FGEnemyController.OnPawnTakeDamage
 struct AFGEnemyController_OnPawnTakeDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGEnemyController.OnAggroTargetUpdated
@@ -6013,11 +6267,11 @@ struct AFGVehicle_ReceiveDied_Params
 // Function FactoryGame.FGVehicle.OnTakeDamage
 struct AFGVehicle_OnTakeDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGVehicle.OnRep_SecondaryColor
@@ -6033,11 +6287,11 @@ struct AFGVehicle_OnRep_PrimaryColor_Params
 // Function FactoryGame.FGVehicle.NotifyOnTakeDamage
 struct AFGVehicle_NotifyOnTakeDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGVehicle.KickAllPlayers
@@ -6138,6 +6392,25 @@ struct AFGRailroadVehicle_GetCoupledVehicleAt_Params
 	class AFGRailroadVehicle*                          ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGFreightWagon.OnItemRemovedFromFreight
+struct AFGFreightWagon_OnItemRemovedFromFreight_Params
+{
+	class UClass*                                      ItemClass;                                                // (Parm, ZeroConstructor, IsPlainOldData)
+	int                                                numRemoved;                                               // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGFreightWagon.OnItemAddedToFreight
+struct AFGFreightWagon_OnItemAddedToFreight_Params
+{
+	class UClass*                                      ItemClass;                                                // (Parm, ZeroConstructor, IsPlainOldData)
+	int                                                numAdded;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGFreightWagon.InitializeInventoryComponent
+struct AFGFreightWagon_InitializeInventoryComponent_Params
+{
+};
+
 // Function FactoryGame.FGFreightWagon.GetFreightInventoryFilledPercent
 struct AFGFreightWagon_GetFreightInventoryFilledPercent_Params
 {
@@ -6169,6 +6442,12 @@ struct UFGGameInstance_PushError_Params
 	class UClass*                                      errorMessage;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function FactoryGame.FGGameInstance.PopLatestNetworkError
+struct UFGGameInstance_PopLatestNetworkError_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGGameInstance.PeekNextError
 struct UFGGameInstance_PeekNextError_Params
 {
@@ -6193,6 +6472,13 @@ struct UFGGameInstance_GetNextError_Params
 {
 	class UObject*                                     WorldContext;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UFGErrorMessage*                             ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGGameInstance.GetLatestNetworkError
+struct UFGGameInstance_GetLatestNetworkError_Params
+{
+	struct FFGGameNetworkErrorMsg                      Msg;                                                      // (Parm, OutParm)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGGameInstance.GetGameAnalyticsService
@@ -6723,6 +7009,12 @@ struct UFGGameUserSettings_UpdatePostProcessSettings_Params
 {
 };
 
+// Function FactoryGame.FGGameUserSettings.SetShowBreakNotification
+struct UFGGameUserSettings_SetShowBreakNotification_Params
+{
+	bool                                               Enabled;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function FactoryGame.FGGameUserSettings.SetNeworkQuality
 struct UFGGameUserSettings_SetNeworkQuality_Params
 {
@@ -6739,6 +7031,12 @@ struct UFGGameUserSettings_SetMotionBlurEnabled_Params
 struct UFGGameUserSettings_SetInvertedLook_Params
 {
 	bool                                               newInvertLook;                                            // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGGameUserSettings.SetHZBOEnabled
+struct UFGGameUserSettings_SetHZBOEnabled_Params
+{
+	bool                                               enable;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGGameUserSettings.SetHoldToSprint
@@ -6763,6 +7061,12 @@ struct UFGGameUserSettings_SetFOV_Params
 struct UFGGameUserSettings_SetAutoSortInventory_Params
 {
 	bool                                               shouldAutoSort;                                           // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGGameUserSettings.SetAutosaveInterval
+struct UFGGameUserSettings_SetAutosaveInterval_Params
+{
+	int                                                newInterval;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGGameUserSettings.SetAudioVolume
@@ -6816,6 +7120,18 @@ struct UFGGameUserSettings_IsMotionBlurEnabled_Params
 
 // Function FactoryGame.FGGameUserSettings.IsMotionBlurDirty
 struct UFGGameUserSettings_IsMotionBlurDirty_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGGameUserSettings.IsHZBOEnabled
+struct UFGGameUserSettings_IsHZBOEnabled_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGGameUserSettings.GetShowBreakNotification
+struct UFGGameUserSettings_GetShowBreakNotification_Params
 {
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
@@ -6879,6 +7195,12 @@ struct UFGGameUserSettings_GetDefaultQualitySetting_Params
 struct UFGGameUserSettings_GetAutoSortInventory_Params
 {
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGGameUserSettings.GetAutosaveInterval
+struct UFGGameUserSettings_GetAutosaveInterval_Params
+{
+	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGGameUserSettings.GetAudioVolume
@@ -6964,37 +7286,37 @@ struct UFGHardDriveSettings_GetResearchRewardPackages_Params
 // Function FactoryGame.FGHealthComponent.TakeRadialDamage
 struct UFGHealthComponent_TakeRadialDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FHitResult                                  HitInfo;                                                  // (Parm, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGHealthComponent.TakePointDamage
 struct UFGHealthComponent_TakePointDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	class UPrimitiveComponent*                         HitComponent;                                             // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FName                                       BoneName;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     ShotFromDirection;                                        // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGHealthComponent.TakeDamage
 struct UFGHealthComponent_TakeDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGHealthComponent.ReviveResetHealth
@@ -7050,37 +7372,37 @@ struct UFGHealthComponent_GetCurrentHealth_Params
 // Function FactoryGame.FGHealthComponent.Client_TakeRadialDamage
 struct UFGHealthComponent_Client_TakeRadialDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FHitResult                                  HitInfo;                                                  // (Parm, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGHealthComponent.Client_TakePointDamage
 struct UFGHealthComponent_Client_TakePointDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	class UPrimitiveComponent*                         HitComponent;                                             // (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FName                                       BoneName;                                                 // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     ShotFromDirection;                                        // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGHealthComponent.Client_TakeDamage
 struct UFGHealthComponent_Client_TakeDamage_Params
 {
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGHealthComponent.Client_Heal
@@ -7930,6 +8252,13 @@ struct UFGInventoryLibrary_BreakInventoryItem_Params
 	class AActor*                                      out_itemState;                                            // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function FactoryGame.FGItemCategory.GetCategoryName
+struct UFGItemCategory_GetCategoryName_Params
+{
+	class UClass*                                      inClass;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
 // Function FactoryGame.FGItemDescriptorNuclearFuel.GetSpentFuelClass
 struct UFGItemDescriptorNuclearFuel_GetSpentFuelClass_Params
 {
@@ -8265,6 +8594,11 @@ struct AFGLocomotive_OnRep_ReplicatedMovementTransform_Params
 {
 };
 
+// Function FactoryGame.FGLocomotive.OnNameChanged
+struct AFGLocomotive_OnNameChanged_Params
+{
+};
+
 // Function FactoryGame.FGLocomotive.IsSelfDrivingEnabled
 struct AFGLocomotive_IsSelfDrivingEnabled_Params
 {
@@ -8357,6 +8691,18 @@ struct UFGRailroadVehicleMovementComponent_GetWheelsetRotation_Params
 struct UFGRailroadVehicleMovementComponent_GetWheelsetOffset_Params
 {
 	int                                                Index;                                                    // (Parm, ZeroConstructor, IsPlainOldData)
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGRailroadVehicleMovementComponent.GetWheelsetAngle
+struct UFGRailroadVehicleMovementComponent_GetWheelsetAngle_Params
+{
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGRailroadVehicleMovementComponent.GetWheelRotation
+struct UFGRailroadVehicleMovementComponent_GetWheelRotation_Params
+{
 	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -8681,12 +9027,19 @@ struct UFGMapObjectWidget_OnObjectMoved_Params
 // Function FactoryGame.FGMapObjectWidget.OnObjectFiltered
 struct UFGMapObjectWidget_OnObjectFiltered_Params
 {
-	bool                                               FilteredIn;                                               // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGMapObjectWidget.OnActorRepresentationUpdated
 struct UFGMapObjectWidget_OnActorRepresentationUpdated_Params
 {
+};
+
+// Function FactoryGame.FGMapObjectWidget.OnActorRepresentationFiltered
+struct UFGMapObjectWidget_OnActorRepresentationFiltered_Params
+{
+	ERepresentationType                                representationType;                                       // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function FactoryGame.FGMapWidget.OnObjectUpdatedOnMap
@@ -9098,6 +9451,13 @@ struct UFGSessionLibrary_GetMaxNumberOfPlayers_Params
 	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGSessionLibrary.CheckIsCompatibleVersion
+struct UFGSessionLibrary_CheckIsCompatibleVersion_Params
+{
+	struct FFGOnlineSessionSettings                    session;                                                  // (ConstParm, Parm, OutParm, ReferenceParm)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGInviteLibrary.SendInviteToFriend
 struct UFGInviteLibrary_SendInviteToFriend_Params
 {
@@ -9192,6 +9552,12 @@ struct UFGNetworkLibrary_GetNameFromUniqueNetId_Params
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGNetworkLibrary.GetLocalBuildVersion
+struct UFGNetworkLibrary_GetLocalBuildVersion_Params
+{
+	class FString                                      ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
+};
+
 // Function FactoryGame.FGNetworkLibrary.GetCachedNATType
 struct UFGNetworkLibrary_GetCachedNATType_Params
 {
@@ -9204,6 +9570,13 @@ struct UFGNetworkLibrary_EqualEqual_NetIdNetId_Params
 {
 	struct FUniqueNetIdRepl                            A;                                                        // (ConstParm, Parm, OutParm, ReferenceParm)
 	struct FUniqueNetIdRepl                            B;                                                        // (ConstParm, Parm, OutParm, ReferenceParm)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGNetworkLibrary.CheckIsCompatibleVersion
+struct UFGNetworkLibrary_CheckIsCompatibleVersion_Params
+{
+	struct FFGOnlineSessionSettings                    session;                                                  // (ConstParm, Parm, OutParm, ReferenceParm)
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
@@ -9968,6 +10341,46 @@ struct AFGPlayerController_CheckPawnMapArea_Params
 {
 };
 
+// Function FactoryGame.FGPlayerState.SetOnlyShowAffordableRecipes
+struct AFGPlayerState_SetOnlyShowAffordableRecipes_Params
+{
+	bool                                               Enabled;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.SetItemCategoryCollapsed
+struct AFGPlayerState_SetItemCategoryCollapsed_Params
+{
+	class UClass*                                      itemCategory;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               collapsed;                                                // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.Server_SetOnlyShowAffordableRecipes
+struct AFGPlayerState_Server_SetOnlyShowAffordableRecipes_Params
+{
+	bool                                               Enabled;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.Server_SetMapFilter
+struct AFGPlayerState_Server_SetMapFilter_Params
+{
+	ERepresentationType                                representationType;                                       // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.Server_SetItemCategoryCollapsed
+struct AFGPlayerState_Server_SetItemCategoryCollapsed_Params
+{
+	class UClass*                                      itemCategory;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               collapsed;                                                // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.Server_SetCompassFilter
+struct AFGPlayerState_Server_SetCompassFilter_Params
+{
+	ERepresentationType                                representationType;                                       // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               visible;                                                  // (Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function FactoryGame.FGPlayerState.Server_RemoveRecipe
 struct AFGPlayerState_Server_RemoveRecipe_Params
 {
@@ -10033,16 +10446,34 @@ struct AFGPlayerState_GetSlotNum_Params
 	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function FactoryGame.FGPlayerState.GetSlotData
-struct AFGPlayerState_GetSlotData_Params
+// Function FactoryGame.FGPlayerState.GetPingColor
+struct AFGPlayerState_GetPingColor_Params
 {
-	TArray<struct FSlotData>                           ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.GetOnlyShowAffordableRecipes
+struct AFGPlayerState_GetOnlyShowAffordableRecipes_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
 // Function FactoryGame.FGPlayerState.GetNumArmSlots
 struct AFGPlayerState_GetNumArmSlots_Params
 {
 	int                                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.GetNametagColor
+struct AFGPlayerState_GetNametagColor_Params
+{
+	struct FLinearColor                                ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGPlayerState.GetCollapsedItemCategories
+struct AFGPlayerState_GetCollapsedItemCategories_Params
+{
+	TArray<class UClass*>                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm)
 };
 
 // Function FactoryGame.FGPlayerState.GetAllMessages
@@ -10608,6 +11039,14 @@ struct UFGRecipe_SortByName_Params
 	TArray<class UClass*>                              recipes;                                                  // (Parm, OutParm, ZeroConstructor, ReferenceParm)
 };
 
+// Function FactoryGame.FGRecipe.IsRecipeAffordable
+struct UFGRecipe_IsRecipeAffordable_Params
+{
+	class AFGCharacterPlayer*                          Player;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
+	class UClass*                                      Recipe;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGRecipe.GetRewardedRecipes
 struct UFGRecipe_GetRewardedRecipes_Params
 {
@@ -10668,6 +11107,14 @@ struct AFGRecipeManager_GetAvailableRecipesForProducer_Params
 // Function FactoryGame.FGRecipeManager.GetAllAvailableRecipes
 struct AFGRecipeManager_GetAllAvailableRecipes_Params
 {
+	TArray<class UClass*>                              out_recipes;                                              // (Parm, OutParm, ZeroConstructor)
+};
+
+// Function FactoryGame.FGRecipeManager.GetAffordableRecipesForProducer
+struct AFGRecipeManager_GetAffordableRecipesForProducer_Params
+{
+	class AFGCharacterPlayer*                          Player;                                                   // (Parm, ZeroConstructor, IsPlainOldData)
+	class UClass*                                      forProducer;                                              // (Parm, ZeroConstructor, IsPlainOldData)
 	TArray<class UClass*>                              out_recipes;                                              // (Parm, OutParm, ZeroConstructor)
 };
 
@@ -12450,10 +12897,22 @@ struct AFGTimeOfDaySubsystem_Get_Params
 	class AFGTimeOfDaySubsystem*                       ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGTrain.SetTrainName
+struct AFGTrain_SetTrainName_Params
+{
+	struct FText                                       Name;                                                     // (ConstParm, Parm, OutParm, ReferenceParm)
+};
+
 // Function FactoryGame.FGTrain.NewTimeTable
 struct AFGTrain_NewTimeTable_Params
 {
 	class AFGRailroadTimeTable*                        ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGTrain.GetTrainName
+struct AFGTrain_GetTrainName_Params
+{
+	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
 };
 
 // Function FactoryGame.FGTrain.GetTrackGraphID
@@ -12468,6 +12927,12 @@ struct AFGTrain_GetTimeTable_Params
 	class AFGRailroadTimeTable*                        ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGTrain.GetSelfDrivingError
+struct AFGTrain_GetSelfDrivingError_Params
+{
+	ESelfDrivingLocomotiveError                        ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGTrain.GetMaxAirBrakeDeceleration
 struct AFGTrain_GetMaxAirBrakeDeceleration_Params
 {
@@ -12480,10 +12945,27 @@ struct AFGTrain_GetLastVehicle_Params
 	class AFGRailroadVehicle*                          ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function FactoryGame.FGTrain.GetIsDocked
+struct AFGTrain_GetIsDocked_Params
+{
+	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function FactoryGame.FGTrain.GetFirstVehicle
 struct AFGTrain_GetFirstVehicle_Params
 {
 	class AFGRailroadVehicle*                          ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function FactoryGame.FGTrainStationIdentifier.SetStationName
+struct AFGTrainStationIdentifier_SetStationName_Params
+{
+	struct FText                                       Text;                                                     // (ConstParm, Parm, OutParm, ReferenceParm)
+};
+
+// Function FactoryGame.FGTrainStationIdentifier.OnRep_StationName
+struct AFGTrainStationIdentifier_OnRep_StationName_Params
+{
 };
 
 // Function FactoryGame.FGTrainStationIdentifier.GetTrackGraphID

@@ -32,6 +32,19 @@ struct ABP_StartingPod_C_ShouldSave_Params
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function BP_StartingPod.BP_StartingPod_C.GetActorCompassViewDistance
+struct ABP_StartingPod_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function BP_StartingPod.BP_StartingPod_C.SetActorCompassViewDistance
+struct ABP_StartingPod_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function BP_StartingPod.BP_StartingPod_C.SetActorRepresentationText
 struct ABP_StartingPod_C_SetActorRepresentationText_Params
 {

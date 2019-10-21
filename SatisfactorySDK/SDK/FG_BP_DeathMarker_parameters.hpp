@@ -32,6 +32,19 @@ struct ABP_DeathMarker_C_NeedTransform_Params
 	bool                                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
+// Function BP_DeathMarker.BP_DeathMarker_C.GetActorCompassViewDistance
+struct ABP_DeathMarker_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function BP_DeathMarker.BP_DeathMarker_C.SetActorCompassViewDistance
+struct ABP_DeathMarker_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function BP_DeathMarker.BP_DeathMarker_C.SetActorRepresentationText
 struct ABP_DeathMarker_C_SetActorRepresentationText_Params
 {

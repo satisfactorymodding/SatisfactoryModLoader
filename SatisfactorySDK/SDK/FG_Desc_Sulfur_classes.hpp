@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_Sulfur.Desc_Sulfur_C
-// 0x0000 (0x0190 - 0x0190)
+// 0x0000 (0x0198 - 0x0198)
 class UDesc_Sulfur_C : public UFGResourceDescriptor
 {
 public:

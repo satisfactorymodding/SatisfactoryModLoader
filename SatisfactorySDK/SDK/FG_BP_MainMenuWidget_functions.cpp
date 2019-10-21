@@ -12,6 +12,43 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.SetContinueButtonVisibility
+// ()
+// Parameters:
+// struct FSaveHeader             recentSave                     (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UBP_MainMenuWidget_C::SetContinueButtonVisibility(const struct FSaveHeader& recentSave)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_MainMenuWidget.BP_MainMenuWidget_C.SetContinueButtonVisibility");
+
+	UBP_MainMenuWidget_C_SetContinueButtonVisibility_Params params;
+	params.recentSave = recentSave;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetMostRecentSaveName
+// ()
+
+void UBP_MainMenuWidget_C::GetMostRecentSaveName()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetMostRecentSaveName");
+
+	UBP_MainMenuWidget_C_GetMostRecentSaveName_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetExperimentalVisibility
 // ()
 
@@ -65,8 +102,10 @@ void UBP_MainMenuWidget_C::UpdateVersionString()
 
 // Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetMostRecentSave
 // ()
+// Parameters:
+// struct FSaveHeader             recentSave                     (Parm, OutParm)
 
-void UBP_MainMenuWidget_C::GetMostRecentSave()
+void UBP_MainMenuWidget_C::GetMostRecentSave(struct FSaveHeader* recentSave)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function BP_MainMenuWidget.BP_MainMenuWidget_C.GetMostRecentSave");
 
@@ -77,6 +116,9 @@ void UBP_MainMenuWidget_C::GetMostRecentSave()
 	UObject::ProcessEvent(fn, &params);
 
 	fn->FunctionFlags = flags;
+
+	if (recentSave != nullptr)
+		*recentSave = params.recentSave;
 }
 
 
@@ -276,6 +318,40 @@ void UBP_MainMenuWidget_C::LoginStateChanged(TEnumAsByte<ELoginState> oldState, 
 	UBP_MainMenuWidget_C_LoginStateChanged_Params params;
 	params.oldState = oldState;
 	params.newState = newState;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_1_OnHovered__DelegateSignature
+// ()
+
+void UBP_MainMenuWidget_C::BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_1_OnHovered__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_MainMenuWidget.BP_MainMenuWidget_C.BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_1_OnHovered__DelegateSignature");
+
+	UBP_MainMenuWidget_C_BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_1_OnHovered__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function BP_MainMenuWidget.BP_MainMenuWidget_C.BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_2_OnUnhovered__DelegateSignature
+// ()
+
+void UBP_MainMenuWidget_C::BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_2_OnUnhovered__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function BP_MainMenuWidget.BP_MainMenuWidget_C.BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_2_OnUnhovered__DelegateSignature");
+
+	UBP_MainMenuWidget_C_BndEvt__mButtonContinue_K2Node_ComponentBoundEvent_2_OnUnhovered__DelegateSignature_Params params;
 
 	auto flags = fn->FunctionFlags;
 

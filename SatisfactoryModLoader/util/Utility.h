@@ -8,7 +8,7 @@
 
 namespace SML {
 	namespace Utility {
-		static std::ofstream logFile; //
+		extern SML_API std::ofstream logFile;
 
 		// TODO Proper log level control
 
@@ -41,9 +41,13 @@ namespace SML {
 			White
 		};
 
+		void displayCrash(std::string crashText);
+
+		void displayCrash(std::string header, std::string crashText);
+
 		void SML_API setConsoleColor(ConsoleColor color);
 
-		void SML_API checkVersion(const std::string target[2]);
+		void SML_API checkVersion(const int target);
 
 		void SML_API log();
 

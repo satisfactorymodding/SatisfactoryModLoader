@@ -12,16 +12,16 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressBarVisibility
+// Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressbarVisibility
 // ()
 // Parameters:
 // ESlateVisibility               ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-ESlateVisibility UWidget_TradingPost_ShipAwayFeedback_C::GetProgressBarVisibility()
+ESlateVisibility UWidget_TradingPost_ShipAwayFeedback_C::GetProgressbarVisibility()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressBarVisibility");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressbarVisibility");
 
-	UWidget_TradingPost_ShipAwayFeedback_C_GetProgressBarVisibility_Params params;
+	UWidget_TradingPost_ShipAwayFeedback_C_GetProgressbarVisibility_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -33,16 +33,16 @@ ESlateVisibility UWidget_TradingPost_ShipAwayFeedback_C::GetProgressBarVisibilit
 }
 
 
-// Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressBarPercent
+// Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressbarPercent
 // ()
 // Parameters:
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float UWidget_TradingPost_ShipAwayFeedback_C::GetProgressBarPercent()
+float UWidget_TradingPost_ShipAwayFeedback_C::GetProgressbarPercent()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressBarPercent");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TradingPost_ShipAwayFeedback.Widget_TradingPost_ShipAwayFeedback_C.GetProgressbarPercent");
 
-	UWidget_TradingPost_ShipAwayFeedback_C_GetProgressBarPercent_Params params;
+	UWidget_TradingPost_ShipAwayFeedback_C_GetProgressbarPercent_Params params;
 
 	auto flags = fn->FunctionFlags;
 

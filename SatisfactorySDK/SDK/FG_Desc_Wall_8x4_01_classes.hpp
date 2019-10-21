@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_Wall_8x4_01.Desc_Wall_8x4_01_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_Wall_8x4_01_C : public UFGBuildingDescriptor
 {
 public:

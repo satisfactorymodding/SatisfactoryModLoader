@@ -185,6 +185,77 @@ void AChar_Spitter_C::BndEvt__Capsule_K2Node_ComponentBoundEvent_0_ComponentBegi
 }
 
 
+// Function Char_Spitter.Char_Spitter_C.ReceiveBeginPlay
+// ()
+
+void AChar_Spitter_C::ReceiveBeginPlay()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Spitter.Char_Spitter_C.ReceiveBeginPlay");
+
+	AChar_Spitter_C_ReceiveBeginPlay_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Spitter.Char_Spitter_C.ReceiveEndPlay
+// ()
+// Parameters:
+// TEnumAsByte<EEndPlayReason>*   EndPlayReason                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_Spitter_C::ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Spitter.Char_Spitter_C.ReceiveEndPlay");
+
+	AChar_Spitter_C_ReceiveEndPlay_Params params;
+	params.EndPlayReason = EndPlayReason;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Spitter.Char_Spitter_C.GainedSignificance
+// ()
+
+void AChar_Spitter_C::GainedSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Spitter.Char_Spitter_C.GainedSignificance");
+
+	AChar_Spitter_C_GainedSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Spitter.Char_Spitter_C.LostSignificance
+// ()
+
+void AChar_Spitter_C::LostSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Spitter.Char_Spitter_C.LostSignificance");
+
+	AChar_Spitter_C_LostSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Char_Spitter.Char_Spitter_C.ExecuteUbergraph_Char_Spitter
 // ()
 // Parameters:

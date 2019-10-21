@@ -337,6 +337,11 @@ struct UBP_GameUI_C_OnRadiationIntensityUpdated_Params
 	float*                                             radiationImmunity;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
+// Function BP_GameUI.BP_GameUI_C.ForceStopRadiationUI
+struct UBP_GameUI_C_ForceStopRadiationUI_Params
+{
+};
+
 // Function BP_GameUI.BP_GameUI_C.ExecuteUbergraph_BP_GameUI
 struct UBP_GameUI_C_ExecuteUbergraph_BP_GameUI_Params
 {

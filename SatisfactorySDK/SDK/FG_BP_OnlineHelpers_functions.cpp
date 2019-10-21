@@ -62,7 +62,7 @@ void UBP_OnlineHelpers_C::GetSessionFromFriendNetId(class UObject* WorldContext,
 }
 
 
-// Function BP_OnlineHelpers.BP_OnlineHelpers_C.isHost
+// Function BP_OnlineHelpers.BP_OnlineHelpers_C.IsHost
 // ()
 // Parameters:
 // class APlayerState*            PlayerState                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
@@ -70,11 +70,11 @@ void UBP_OnlineHelpers_C::GetSessionFromFriendNetId(class UObject* WorldContext,
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           isOurself                      (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UBP_OnlineHelpers_C::isHost(class APlayerState* PlayerState, class APlayerController* OwningPlayer, class UObject* __WorldContext, bool* isOurself)
+void UBP_OnlineHelpers_C::IsHost(class APlayerState* PlayerState, class APlayerController* OwningPlayer, class UObject* __WorldContext, bool* isOurself)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function BP_OnlineHelpers.BP_OnlineHelpers_C.isHost");
+	static auto fn = UObject::FindObject<UFunction>("Function BP_OnlineHelpers.BP_OnlineHelpers_C.IsHost");
 
-	UBP_OnlineHelpers_C_isHost_Params params;
+	UBP_OnlineHelpers_C_IsHost_Params params;
 	params.PlayerState = PlayerState;
 	params.OwningPlayer = OwningPlayer;
 	params.__WorldContext = __WorldContext;

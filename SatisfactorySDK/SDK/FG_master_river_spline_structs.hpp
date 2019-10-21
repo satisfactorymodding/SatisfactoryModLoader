@@ -8,9 +8,9 @@
 
 #include "FG_Basic.hpp"
 #include "FG_FactoryGame_classes.hpp"
+#include "FG_River_Scale_Data_classes.hpp"
 #include "FG_Engine_classes.hpp"
 #include "FG_CoreUObject_classes.hpp"
-#include "FG_River_Scale_Data_classes.hpp"
 
 namespace SDK
 {

@@ -9,9 +9,9 @@
 #include "FG_Basic.hpp"
 #include "FG_GameplayTags_classes.hpp"
 #include "FG_Engine_classes.hpp"
-#include "FG_NavigationSystem_classes.hpp"
-#include "FG_CoreUObject_classes.hpp"
 #include "FG_GameplayTasks_classes.hpp"
+#include "FG_CoreUObject_classes.hpp"
+#include "FG_NavigationSystem_classes.hpp"
 
 namespace SDK
 {
@@ -664,7 +664,7 @@ struct FAIDamageEvent
 	struct FVector                                     Location;                                                 // 0x0004(0x000C) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     HitLocation;                                              // 0x0010(0x000C) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x001C(0x0004) MISSED OFFSET
-	class AActor*                                      damagedActor;                                             // 0x0020(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // 0x0020(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 	class AActor*                                      Instigator;                                               // 0x0028(0x0008) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 };
 

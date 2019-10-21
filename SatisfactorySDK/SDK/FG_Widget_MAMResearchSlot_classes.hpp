@@ -40,10 +40,10 @@ public:
 	void DropOntoInventorySlot(class UWidget_InventorySlot_C* InventorySlot, bool* Result);
 	class UWidget* GetCustomTooltip();
 	ESlateVisibility GetPaidOffSlotVisibility();
-	ESlateVisibility GetProgressBarVisibility();
+	ESlateVisibility GetProgressbarVisibility();
 	struct FSlateColor GetPaidOffColorFeedback();
 	ESlateVisibility GetPaidOffFeedbackImage();
-	float GetProgressBarPercent();
+	float GetProgressbarPercent();
 	bool OnDrop(struct FGeometry* MyGeometry, struct FPointerEvent* PointerEvent, class UDragDropOperation** Operation);
 	struct FText GetItemQuotaText();
 	struct FText GetItemText();

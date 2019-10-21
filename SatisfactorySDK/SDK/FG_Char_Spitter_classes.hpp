@@ -44,6 +44,10 @@ public:
 	void ReceiveTick(float* DeltaSeconds);
 	void OnCurrentAggroTargetReplicated();
 	void BndEvt__Capsule_K2Node_ComponentBoundEvent_0_ComponentBeginOverlapSignature__DelegateSignature(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const struct FHitResult& SweepResult);
+	void ReceiveBeginPlay();
+	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason);
+	void GainedSignificance();
+	void LostSignificance();
 	void ExecuteUbergraph_Char_Spitter(int EntryPoint);
 	void OnStrafeEnded__DelegateSignature();
 };

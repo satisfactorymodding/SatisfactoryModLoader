@@ -12,6 +12,32 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function HUDHelpers.HUDHelpers_C.GetDefaultRCO
+// ()
+// Parameters:
+// class APlayerController*       OwningPlayer                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class UBP_RemoteCallObject_C*  RCO                            (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UHUDHelpers_C::GetDefaultRCO(class APlayerController* OwningPlayer, class UObject* __WorldContext, class UBP_RemoteCallObject_C** RCO)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function HUDHelpers.HUDHelpers_C.GetDefaultRCO");
+
+	UHUDHelpers_C_GetDefaultRCO_Params params;
+	params.OwningPlayer = OwningPlayer;
+	params.__WorldContext = __WorldContext;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (RCO != nullptr)
+		*RCO = params.RCO;
+}
+
+
 // Function HUDHelpers.HUDHelpers_C.IsInMainMenu
 // ()
 // Parameters:
@@ -67,17 +93,17 @@ void UHUDHelpers_C::GetFGGameUI(class AController* Controller, class UObject* __
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromCentralStorage
 // ()
 // Parameters:
-// class APawn*                   owningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class APawn*                   OwningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  mItemClass                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumItems                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UHUDHelpers_C::GetNumItemsFromCentralStorage(class APawn* owningPawn, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems)
+void UHUDHelpers_C::GetNumItemsFromCentralStorage(class APawn* OwningPawn, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function HUDHelpers.HUDHelpers_C.GetNumItemsFromCentralStorage");
 
 	UHUDHelpers_C_GetNumItemsFromCentralStorage_Params params;
-	params.owningPawn = owningPawn;
+	params.OwningPawn = OwningPawn;
 	params.mItemClass = mItemClass;
 	params.__WorldContext = __WorldContext;
 
@@ -220,16 +246,16 @@ void UHUDHelpers_C::SetSliderSteps(class USlider* mSlider, int mSteps, class UOb
 // Function HUDHelpers.HUDHelpers_C.GetScanningObjectName
 // ()
 // Parameters:
-// class APawn*                   owningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class APawn*                   OwningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FText                   Object_Name                    (Parm, OutParm)
 
-void UHUDHelpers_C::GetScanningObjectName(class APawn* owningPawn, class UObject* __WorldContext, struct FText* Object_Name)
+void UHUDHelpers_C::GetScanningObjectName(class APawn* OwningPawn, class UObject* __WorldContext, struct FText* Object_Name)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function HUDHelpers.HUDHelpers_C.GetScanningObjectName");
 
 	UHUDHelpers_C_GetScanningObjectName_Params params;
-	params.owningPawn = owningPawn;
+	params.OwningPawn = OwningPawn;
 	params.__WorldContext = __WorldContext;
 
 	auto flags = fn->FunctionFlags;
@@ -247,17 +273,17 @@ void UHUDHelpers_C::GetScanningObjectName(class APawn* owningPawn, class UObject
 // ()
 // Parameters:
 // bool                           isMenuOpen                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class APawn*                   owningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class APawn*                   OwningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class AController*             Controller                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UHUDHelpers_C::ShowHideHUD(bool isMenuOpen, class APawn* owningPawn, class AController* Controller, class UObject* __WorldContext)
+void UHUDHelpers_C::ShowHideHUD(bool isMenuOpen, class APawn* OwningPawn, class AController* Controller, class UObject* __WorldContext)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function HUDHelpers.HUDHelpers_C.ShowHideHUD");
 
 	UHUDHelpers_C_ShowHideHUD_Params params;
 	params.isMenuOpen = isMenuOpen;
-	params.owningPawn = owningPawn;
+	params.OwningPawn = OwningPawn;
 	params.Controller = Controller;
 	params.__WorldContext = __WorldContext;
 
@@ -354,17 +380,17 @@ void UHUDHelpers_C::GetFactoryGameWhite(class UObject* __WorldContext, struct FS
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromPlayerInventory
 // ()
 // Parameters:
-// class APawn*                   owningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class APawn*                   OwningPawn                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  mItemClass                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumItems                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UHUDHelpers_C::GetNumItemsFromPlayerInventory(class APawn* owningPawn, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems)
+void UHUDHelpers_C::GetNumItemsFromPlayerInventory(class APawn* OwningPawn, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function HUDHelpers.HUDHelpers_C.GetNumItemsFromPlayerInventory");
 
 	UHUDHelpers_C_GetNumItemsFromPlayerInventory_Params params;
-	params.owningPawn = owningPawn;
+	params.OwningPawn = OwningPawn;
 	params.mItemClass = mItemClass;
 	params.__WorldContext = __WorldContext;
 

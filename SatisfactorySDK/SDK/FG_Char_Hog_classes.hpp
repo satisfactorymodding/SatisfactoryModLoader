@@ -65,12 +65,16 @@ public:
 	void UserConstructionScript();
 	void ReceiveTick(float* DeltaSeconds);
 	void ReceiveHit(class UPrimitiveComponent** MyComp, class AActor** Other, class UPrimitiveComponent** OtherComp, bool* bSelfMoved, struct FVector* HitLocation, struct FVector* HitNormal, struct FVector* NormalImpulse, struct FHitResult* Hit);
-	void NotifyOnTakeDamage(class AActor** damagedActor, float* damageAmount, class UDamageType** DamageType, class AController** instigatedBy, class AActor** damageCauser);
+	void NotifyOnTakeDamage(class AActor** DamagedActor, float* damageAmount, class UDamageType** DamageType, class AController** InstigatedBy, class AActor** DamageCauser);
 	void CheckTargetHeight();
 	void circle();
 	void StartCircling(class UBTT_CircleMove_C* BTTCircleMove);
 	void StopCircling();
 	void ReceiveDied();
+	void ReceiveBeginPlay();
+	void GainedSignificance();
+	void LostSignificance();
+	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason);
 	void ExecuteUbergraph_Char_Hog(int EntryPoint);
 	void OnChargeMovementStopped__DelegateSignature();
 };

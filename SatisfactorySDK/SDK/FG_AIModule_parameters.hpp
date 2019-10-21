@@ -457,7 +457,7 @@ struct UAISense_Blueprint_GetAllListenerActors_Params
 struct UAISense_Damage_ReportDamageEvent_Params
 {
 	class UObject*                                     WorldContextObject;                                       // (Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	class AActor*                                      Instigator;                                               // (Parm, ZeroConstructor, IsPlainOldData)
 	float                                              damageAmount;                                             // (Parm, ZeroConstructor, IsPlainOldData)
 	struct FVector                                     EventLocation;                                            // (Parm, ZeroConstructor, IsPlainOldData)

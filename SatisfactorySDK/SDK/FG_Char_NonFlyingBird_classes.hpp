@@ -33,11 +33,15 @@ public:
 	void OnRep_mIsLuring();
 	void SetLuring(bool isLuring);
 	void UserConstructionScript();
+	void ReceiveBeginPlay();
 	void ReceiveTick(float* DeltaSeconds);
 	void TryToJump();
 	void OnLanded(struct FHitResult* Hit);
 	void ReceiveDied();
-	void NotifyOnTakeDamage(class AActor** damagedActor, float* damageAmount, class UDamageType** DamageType, class AController** instigatedBy, class AActor** damageCauser);
+	void NotifyOnTakeDamage(class AActor** DamagedActor, float* damageAmount, class UDamageType** DamageType, class AController** InstigatedBy, class AActor** DamageCauser);
+	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason);
+	void GainedSignificance();
+	void LostSignificance();
 	void ExecuteUbergraph_Char_NonFlyingBird(int EntryPoint);
 	void OnLandedDelegate__DelegateSignature(class AChar_NonFlyingBird_C* selfPawn);
 };

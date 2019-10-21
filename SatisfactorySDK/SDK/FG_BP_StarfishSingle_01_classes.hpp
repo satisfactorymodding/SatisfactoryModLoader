@@ -54,7 +54,7 @@ public:
 
 	void IsTooClose(bool* IsTooClose);
 	void Burrow();
-	void CanMove(bool* CanMove);
+	void canMove(bool* canMove);
 	void MoveStarFish();
 	void UpdateMesh(float Position, class UStaticMeshComponent* Mesh);
 	void UserConstructionScript();

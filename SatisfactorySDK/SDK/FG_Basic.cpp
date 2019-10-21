@@ -13,7 +13,7 @@ namespace SDK
 {
 TNameEntryArray* FName::GNames = nullptr;
 FUObjectArray* UObject::GObjects = nullptr;
-UWorld* UWorld::GWorld = nullptr;
+UWorld** UWorld::GWorld = nullptr;
 }
 
 #ifdef _MSC_VER

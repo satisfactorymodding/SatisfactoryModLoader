@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Char_Player.Char_Player_C
-// 0x01D8 (0x0CD8 - 0x0B00)
+// 0x01E4 (0x0CE4 - 0x0B00)
 class AChar_Player_C : public AFGCharacterPlayer
 {
 public:
@@ -78,17 +78,18 @@ public:
 	class ABP_InteractablesMarker_C*                   mInteractableMarker;                                      // 0x0C68(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, IsPlainOldData)
 	struct FName                                       mMineSection;                                             // 0x0C70(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	class UFGCameraModifierLimitLook*                  mLookModifier;                                            // 0x0C78(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	struct FLinearColor                                mSavedCompassColor;                                       // 0x0C80(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	bool                                               mDidGetCompassColor;                                      // 0x0C90(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	unsigned char                                      UnknownData02[0x3];                                       // 0x0C91(0x0003) MISSED OFFSET
-	struct FDisabledInputGate                          mLandingInputGate;                                        // 0x0C94(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	class USkeletalMeshComponent*                      mEmoteBuildgun;                                           // 0x0C98(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	struct FTimerHandle                                mEmoteTimer;                                              // 0x0CA0(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
-	class UWidget_EmoteMenu_C*                         mEmoteMenu;                                               // 0x0CA8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
-	bool                                               mPossessed;                                               // 0x0CB0(0x0001) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	unsigned char                                      UnknownData03[0x7];                                       // 0x0CB1(0x0007) MISSED OFFSET
-	struct FText                                       mMapText;                                                 // 0x0CB8(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
-	class UMaterialInstanceDynamic*                    mRadiationNoise;                                          // 0x0CD0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FDisabledInputGate                          mLandingInputGate;                                        // 0x0C80(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData02[0x4];                                       // 0x0C84(0x0004) MISSED OFFSET
+	class USkeletalMeshComponent*                      mEmoteBuildgun;                                           // 0x0C88(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	struct FTimerHandle                                mEmoteTimer;                                              // 0x0C90(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
+	class UWidget_EmoteMenu_C*                         mEmoteMenu;                                               // 0x0C98(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	bool                                               mPossessed;                                               // 0x0CA0(0x0001) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData03[0x7];                                       // 0x0CA1(0x0007) MISSED OFFSET
+	struct FText                                       mMapText;                                                 // 0x0CA8(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
+	class UMaterialInstanceDynamic*                    mRadiationNoise;                                          // 0x0CC0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FTimerHandle                                mWarningPopupTimer;                                       // 0x0CC8(0x0008) (Edit, BlueprintVisible, DisableEditOnInstance)
+	TArray<struct FText>                               mPlaytimeWarningMessages;                                 // 0x0CD0(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance)
+	int                                                mPlaytimeWarningMessageIndex;                             // 0x0CE0(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -97,6 +98,8 @@ public:
 	}
 
 
+	ECompassViewDistance GetActorCompassViewDistance();
+	ECompassViewDistance SetActorCompassViewDistance(ECompassViewDistance compassViewDistance);
 	struct FText SetActorRepresentationText(const struct FText& newText);
 	bool UpdateRepresentation();
 	struct FLinearColor GetActorRepresentationColor();
@@ -138,6 +141,7 @@ public:
 	void InpActEvt_Inventory_K2Node_InputActionEvent_3(const struct FKey& Key);
 	void InpActEvt_EmoteWheel_K2Node_InputActionEvent_2(const struct FKey& Key);
 	void InpActEvt_EmoteWheel_K2Node_InputActionEvent_1(const struct FKey& Key);
+	void CameraTick();
 	void SetFirstPersonMode();
 	void SetThirdPersonMode();
 	void StartFocusAim();
@@ -147,18 +151,17 @@ public:
 	void CameraZoomOut();
 	void CameraZoomIn();
 	void ReceiveDied();
-	void CameraTick();
+	void OnLanded(struct FHitResult* Hit);
 	void PlayPickupEffects();
 	void SnapSpringArmToDesiredLocation();
 	void OnReviveComplete();
-	void OnLanded(struct FHitResult* Hit);
+	void ReceivePossessed(class AController** NewController);
 	void ClientSetupPlayerHUD(class AController* InController);
 	void ReceiveUnpossessed(class AController** OldController);
 	void OnReceiveRadiationStart();
 	void OnReceiveRadiationStop();
-	void ReceivePossessed(class AController** NewController);
 	void ReceiveDestroyed();
-	void TakeDamageEvent(class AActor* damagedActor, float damageAmount, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser);
+	void TakeDamageEvent(class AActor* DamagedActor, float damageAmount, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser);
 	void ReceiveBeginPlay();
 	void ReceiveTick(float* DeltaSeconds);
 	void Server_PlayClap();

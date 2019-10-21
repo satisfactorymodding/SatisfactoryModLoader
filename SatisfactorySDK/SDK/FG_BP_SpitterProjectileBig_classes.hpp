@@ -48,7 +48,7 @@ public:
 	void ReceiveTick(float* DeltaSeconds);
 	void BndEvt__mProjectileMovement_K2Node_ComponentBoundEvent_0_ActorComponentActivatedSignature__DelegateSignature(class UActorComponent* component, bool bReset);
 	void PlayExplosionEffects();
-	void OnTakeAnyDamage_Event_1(class AActor* damagedActor, float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser);
+	void OnTakeAnyDamage_Event_1(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser);
 	void SpitterDied(class AActor* DeadActor);
 	void DestroySelf();
 	void ExecuteUbergraph_BP_SpitterProjectileBig(int EntryPoint);

@@ -3,18 +3,30 @@
 #include <detours.h>
 #include <stdio.h> 
 #include <sstream>
+#include <vector>
 #include <functional>
 #include <SatisfactoryModLoader.h>
 #include <game/Global.h>
+#include <game/Player.h>
 #include <util/Utility.h>
 #include <mod/ModFunctions.h>
 #include "ModFunctions.h"
 #include <assets/AssetLoader.h>
+#include <mod/Coremods.h>
+#include <filesystem>
+#include <assets/SatisfactoryPakLoader.h>
 
 using namespace std::placeholders;
 
+/*
+Quick warning before you proceed:
+This is probably the messiest part of the entire codebase.
+Please disregard any shit code in here as it's all a Work In Progress(TM)
+*/
+
 namespace SML {
 	namespace Mod {
+
 		PVOID Hooks::chatFunc;
 		PVOID Hooks::worldFunc;
 		PVOID Hooks::playerAddedFunc;
@@ -27,44 +39,22 @@ namespace SML {
 			DetourTransactionBegin();
 			DetourUpdateThread(GetCurrentThread());
 
-			// find the function by name
-			chatFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGPlayerController::EnterChatMessage");
-			DetourAttach(&(PVOID&)chatFunc, playerSentMessage);
+			//Major major props to Brabb3l for helping me figure this peice of shit code out
 
-			worldFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::PostLoad");
-			DetourAttach(&(PVOID&)worldFunc, getWorld);
+			::subscribe<&Objects::AFGPlayerController::EnterChatMessage>([](Functions::ModReturns* modReturns, Objects::AFGPlayerController* player, Objects::FString* message) {
+				Hooks::playerSentMessage(modReturns, player, message);
+			});
 
-			playerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGGameState::NotifyPlayerAdded");
-			DetourAttach(&(PVOID&)playerAddedFunc, playerAdded);
+			::subscribe<&Objects::FEngineLoop::Init>([](Functions::ModReturns* ret, Objects::FEngineLoop* engineLoop) {
+				Hooks::engineInit(ret, engineLoop);
+			});
 
-			engineInitFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FEngineLoop::Init");
-			DetourAttach(&(PVOID&)engineInitFunc, engineInit);
-
-			playerControllerAddedFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "AFGPlayerController::PostLoad");
-			DetourAttach(&(PVOID&)playerControllerAddedFunc, playerControllerAdded);
-
-			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
-			DetourAttach(&(PVOID&)levelDestroyFunc, levelDestructor);
-
-			sigCheckFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FPakPrecacher::DoSignatureCheck");
-			DetourAttach(&(PVOID&)sigCheckFunc, sigCheck);
+			// Initialize the Pakloader
+			Paks::initPakLoader();
 
 			Utility::info("Installed hooks!");
 
 			DetourTransactionCommit();
-		}
-
-		void Hooks::sigCheck(void* self, bool b, void* v) {
-
-		}
-
-		void Hooks::playerControllerAdded(SDK::AFGPlayerController* controller) {
-			if (Assets::SinglePlayerController == nullptr) {
-				Assets::SinglePlayerController = controller;
-			}
-
-			auto pointer = (void(WINAPI*)(void*))playerControllerAddedFunc;
-			pointer(controller);
 		}
 
 		void Hooks::levelDestructor(SDK::ULevel* level) {
@@ -75,17 +65,22 @@ namespace SML {
 			pointer(level);
 		}
 
-		void Hooks::engineInit(void* engine) {
+		void Hooks::engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* engine) {
 			//caching of assets
 			modHandler.currentStage = GameStage::RUN;
-			for (std::pair< const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
+			for (std::pair<const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
 				modHandler.assetCache[asset.first] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), asset.first);
 			}
 
-			auto pointer = (void(WINAPI*)(void*))engineInitFunc;
-			pointer(engine);
+			//load delayed coremods
+			for (std::string libPath : delayedCoremods) {
+				LoadLibraryA(libPath.c_str());
+			}
+
+			ret->useOriginalFunction = true;
 		}
 
+		/*
 		void Hooks::playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {
 			auto pointer = (void(WINAPI*)(void*, void*))playerAddedFunc;
 			//Utility::info("Player Added: ", player->GetName(), " - Controlled: ", player->IsControlled(), " - IsLocallyControlled: ", player->IsLocallyControlled());
@@ -94,28 +89,19 @@ namespace SML {
 			}
 			pointer(gameState, player);
 		}
-
-		void Hooks::getWorld(void* self) {
-			auto pointer = (void(WINAPI*)(void*))worldFunc;
-			pointer(self);
-
-			PVOID getWorldRaw = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::GetWorld");
-			auto getWorld = (void*(WINAPI*)(void*))getWorldRaw;
-			Assets::CurrentWorld = getWorld(self);
-		}
+		*/
 
 		// parse commands when the player sends a message
-		void Hooks::playerSentMessage(void* player, SML::Objects::FString* message) {
+		void Hooks::playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* messageIn) {
 
-			auto pointer = (void(WINAPI*)(void*, void*))chatFunc;
+			SDK::FString* message = reinterpret_cast<SDK::FString*>(messageIn);
 
-			char* chars = new char[message->length];
-
-			for (size_t i = 0; i < message->length; i++) {
-				chars[i] = message->data[i];
+			if (!message->IsValid()) {
+				return;
 			}
 
-			std::string str(chars);
+			std::string str = message->ToString();
+			Utility::info(str);
 			std::vector<std::string> arguments;
 			std::stringstream ss(str);
 			std::string temp;
@@ -126,6 +112,10 @@ namespace SML {
 				while (getline(ss, temp, ' ')) {
 					arguments.push_back(temp);
 				}
+			}
+
+			for (std::string s : arguments) {
+				Utility::info(s);
 			}
 
 			bool found = false;
@@ -141,10 +131,7 @@ namespace SML {
 					found = true;
 				}
 			}
-			if (!found) {
-				pointer(player, message);
-			}
-
+			ret->useOriginalFunction = !found;
 		}
 
 		bool Hooks::smlCommands(Functions::CommandData data) {
@@ -219,10 +206,5 @@ namespace SML {
 			}
 			return false;
 		}
-
-		//void get_signing_keys(ModReturns* modReturns, void* outKey) {
-		//	info("Test");
-		//	modReturns->use_original_function = false;
-		//}
 	}
 }

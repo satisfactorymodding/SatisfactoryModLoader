@@ -29,19 +29,19 @@ struct AChar_CrabHatcher_C_UserConstructionScript_Params
 {
 };
 
-// Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveBeginPlay
-struct AChar_CrabHatcher_C_ReceiveBeginPlay_Params
-{
-};
-
 // Function Char_CrabHatcher.Char_CrabHatcher_C.Damaged
 struct AChar_CrabHatcher_C_Damaged_Params
 {
-	class AActor*                                      damagedActor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamagedActor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	float                                              Damage;                                                   // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType*                                 DamageType;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AController*                                 instigatedBy;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor*                                      damageCauser;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AController*                                 InstigatedBy;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AActor*                                      DamageCauser;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveBeginPlay
+struct AChar_CrabHatcher_C_ReceiveBeginPlay_Params
+{
 };
 
 // Function Char_CrabHatcher.Char_CrabHatcher_C.SpawnCrabs
@@ -58,6 +58,22 @@ struct AChar_CrabHatcher_C_StartExpanding_Params
 struct AChar_CrabHatcher_C_ReceiveActorBeginOverlap_Params
 {
 	class AActor**                                     OtherActor;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Char_CrabHatcher.Char_CrabHatcher_C.GainedSignificance
+struct AChar_CrabHatcher_C_GainedSignificance_Params
+{
+};
+
+// Function Char_CrabHatcher.Char_CrabHatcher_C.LostSignificance
+struct AChar_CrabHatcher_C_LostSignificance_Params
+{
+};
+
+// Function Char_CrabHatcher.Char_CrabHatcher_C.ReceiveEndPlay
+struct AChar_CrabHatcher_C_ReceiveEndPlay_Params
+{
+	TEnumAsByte<EEndPlayReason>*                       EndPlayReason;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Char_CrabHatcher.Char_CrabHatcher_C.ExecuteUbergraph_Char_CrabHatcher

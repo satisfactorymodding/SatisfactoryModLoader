@@ -10,9 +10,9 @@
 #include "FG_CoreUObject_classes.hpp"
 #include "FG_UMG_classes.hpp"
 #include "FG_KeyBindData_classes.hpp"
-#include "FG_SlateCore_classes.hpp"
-#include "FG_Engine_classes.hpp"
 #include "FG_InputCore_classes.hpp"
+#include "FG_Engine_classes.hpp"
+#include "FG_SlateCore_classes.hpp"
 #include "FG_FactoryGame_classes.hpp"
 
 namespace SDK

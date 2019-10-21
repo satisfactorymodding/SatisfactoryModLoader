@@ -8,3 +8,4 @@
 #include <game/UI.h>
 #include <game/Etc.h>
 #include <util/FKey.h>
+#include <game/SDKHooks.h>

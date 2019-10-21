@@ -28,7 +28,7 @@ struct UWidget_SlidingTabs_C_SetupIndexOffset_Params
 struct UWidget_SlidingTabs_C_SetActiveIndex_Params
 {
 	int                                                Index;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	bool                                               animate;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool                                               Animate;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_SlidingTabs.Widget_SlidingTabs_C.Construct

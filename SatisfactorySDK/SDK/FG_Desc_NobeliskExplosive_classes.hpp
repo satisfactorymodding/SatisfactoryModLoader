@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_NobeliskExplosive.Desc_NobeliskExplosive_C
-// 0x0000 (0x0128 - 0x0128)
+// 0x0000 (0x0130 - 0x0130)
 class UDesc_NobeliskExplosive_C : public UFGItemDescriptor
 {
 public:

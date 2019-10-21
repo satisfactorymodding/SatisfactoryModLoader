@@ -420,10 +420,10 @@ void AActor::ReceiveTick(float DeltaSeconds)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 Origin                         (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              HitInfo                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AActor::ReceiveRadialDamage(float DamageReceived, class UDamageType* DamageType, const struct FVector& Origin, const struct FHitResult& HitInfo, class AController* instigatedBy, class AActor* damageCauser)
+void AActor::ReceiveRadialDamage(float DamageReceived, class UDamageType* DamageType, const struct FVector& Origin, const struct FHitResult& HitInfo, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.Actor.ReceiveRadialDamage");
 
@@ -432,8 +432,8 @@ void AActor::ReceiveRadialDamage(float DamageReceived, class UDamageType* Damage
 	params.DamageType = DamageType;
 	params.Origin = Origin;
 	params.HitInfo = HitInfo;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -453,11 +453,11 @@ void AActor::ReceiveRadialDamage(float DamageReceived, class UDamageType* Damage
 // class UPrimitiveComponent*     HitComponent                   (Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName                   BoneName                       (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 ShotFromDirection              (Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // struct FHitResult              HitInfo                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 
-void AActor::ReceivePointDamage(float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FVector& HitNormal, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class AController* instigatedBy, class AActor* damageCauser, const struct FHitResult& HitInfo)
+void AActor::ReceivePointDamage(float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FVector& HitNormal, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class AController* InstigatedBy, class AActor* DamageCauser, const struct FHitResult& HitInfo)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.Actor.ReceivePointDamage");
 
@@ -469,8 +469,8 @@ void AActor::ReceivePointDamage(float Damage, class UDamageType* DamageType, con
 	params.HitComponent = HitComponent;
 	params.BoneName = BoneName;
 	params.ShotFromDirection = ShotFromDirection;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 	params.HitInfo = HitInfo;
 
 	auto flags = fn->FunctionFlags;
@@ -574,18 +574,18 @@ void AActor::ReceiveBeginPlay()
 // Parameters:
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AController*             instigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AController*             InstigatedBy                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AActor::ReceiveAnyDamage(float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser)
+void AActor::ReceiveAnyDamage(float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.Actor.ReceiveAnyDamage");
 
 	AActor_ReceiveAnyDamage_Params params;
 	params.Damage = Damage;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -17769,18 +17769,18 @@ void AController::ResetIgnoreInputFlags()
 // Parameters:
 // float                          Damage                         (Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType*             DamageType                     (ConstParm, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 
-void AController::ReceiveInstigatedAnyDamage(float Damage, class UDamageType* DamageType, class AActor* damagedActor, class AActor* damageCauser)
+void AController::ReceiveInstigatedAnyDamage(float Damage, class UDamageType* DamageType, class AActor* DamagedActor, class AActor* DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.Controller.ReceiveInstigatedAnyDamage");
 
 	AController_ReceiveInstigatedAnyDamage_Params params;
 	params.Damage = Damage;
 	params.DamageType = DamageType;
-	params.damagedActor = damagedActor;
-	params.damageCauser = damageCauser;
+	params.DamagedActor = DamagedActor;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -34916,12 +34916,12 @@ bool UGameplayStatics::AreAnyListenersWithinRange(class UObject* WorldContextObj
 // float                          DamageFalloff                  (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  DamageTypeClass                (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          IgnoreActors                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AController*             InstigatedByController         (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ECollisionChannel> DamagePreventionChannel        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-bool UGameplayStatics::ApplyRadialDamageWithFalloff(class UObject* WorldContextObject, float BaseDamage, float MinimumDamage, const struct FVector& Origin, float DamageInnerRadius, float DamageOuterRadius, float DamageFalloff, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* damageCauser, class AController* InstigatedByController, TEnumAsByte<ECollisionChannel> DamagePreventionChannel)
+bool UGameplayStatics::ApplyRadialDamageWithFalloff(class UObject* WorldContextObject, float BaseDamage, float MinimumDamage, const struct FVector& Origin, float DamageInnerRadius, float DamageOuterRadius, float DamageFalloff, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* DamageCauser, class AController* InstigatedByController, TEnumAsByte<ECollisionChannel> DamagePreventionChannel)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.GameplayStatics.ApplyRadialDamageWithFalloff");
 
@@ -34935,7 +34935,7 @@ bool UGameplayStatics::ApplyRadialDamageWithFalloff(class UObject* WorldContextO
 	params.DamageFalloff = DamageFalloff;
 	params.DamageTypeClass = DamageTypeClass;
 	params.IgnoreActors = IgnoreActors;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 	params.InstigatedByController = InstigatedByController;
 	params.DamagePreventionChannel = DamagePreventionChannel;
 
@@ -34958,13 +34958,13 @@ bool UGameplayStatics::ApplyRadialDamageWithFalloff(class UObject* WorldContextO
 // float                          DamageRadius                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  DamageTypeClass                (Parm, ZeroConstructor, IsPlainOldData)
 // TArray<class AActor*>          IgnoreActors                   (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // class AController*             InstigatedByController         (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           bDoFullDamage                  (Parm, ZeroConstructor, IsPlainOldData)
 // TEnumAsByte<ECollisionChannel> DamagePreventionChannel        (Parm, ZeroConstructor, IsPlainOldData)
 // bool                           ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-bool UGameplayStatics::ApplyRadialDamage(class UObject* WorldContextObject, float BaseDamage, const struct FVector& Origin, float DamageRadius, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* damageCauser, class AController* InstigatedByController, bool bDoFullDamage, TEnumAsByte<ECollisionChannel> DamagePreventionChannel)
+bool UGameplayStatics::ApplyRadialDamage(class UObject* WorldContextObject, float BaseDamage, const struct FVector& Origin, float DamageRadius, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* DamageCauser, class AController* InstigatedByController, bool bDoFullDamage, TEnumAsByte<ECollisionChannel> DamagePreventionChannel)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.GameplayStatics.ApplyRadialDamage");
 
@@ -34975,7 +34975,7 @@ bool UGameplayStatics::ApplyRadialDamage(class UObject* WorldContextObject, floa
 	params.DamageRadius = DamageRadius;
 	params.DamageTypeClass = DamageTypeClass;
 	params.IgnoreActors = IgnoreActors;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 	params.InstigatedByController = InstigatedByController;
 	params.bDoFullDamage = bDoFullDamage;
 	params.DamagePreventionChannel = DamagePreventionChannel;
@@ -34993,26 +34993,26 @@ bool UGameplayStatics::ApplyRadialDamage(class UObject* WorldContextObject, floa
 // Function Engine.GameplayStatics.ApplyPointDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          BaseDamage                     (Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector                 HitFromDirection               (ConstParm, Parm, OutParm, ZeroConstructor, ReferenceParm, IsPlainOldData)
 // struct FHitResult              HitInfo                        (ConstParm, Parm, OutParm, ReferenceParm, IsPlainOldData)
 // class AController*             EventInstigator                (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  DamageTypeClass                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float UGameplayStatics::ApplyPointDamage(class AActor* damagedActor, float BaseDamage, const struct FVector& HitFromDirection, const struct FHitResult& HitInfo, class AController* EventInstigator, class AActor* damageCauser, class UClass* DamageTypeClass)
+float UGameplayStatics::ApplyPointDamage(class AActor* DamagedActor, float BaseDamage, const struct FVector& HitFromDirection, const struct FHitResult& HitInfo, class AController* EventInstigator, class AActor* DamageCauser, class UClass* DamageTypeClass)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.GameplayStatics.ApplyPointDamage");
 
 	UGameplayStatics_ApplyPointDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.BaseDamage = BaseDamage;
 	params.HitFromDirection = HitFromDirection;
 	params.HitInfo = HitInfo;
 	params.EventInstigator = EventInstigator;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 	params.DamageTypeClass = DamageTypeClass;
 
 	auto flags = fn->FunctionFlags;
@@ -35028,22 +35028,22 @@ float UGameplayStatics::ApplyPointDamage(class AActor* damagedActor, float BaseD
 // Function Engine.GameplayStatics.ApplyDamage
 // ()
 // Parameters:
-// class AActor*                  damagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamagedActor                   (Parm, ZeroConstructor, IsPlainOldData)
 // float                          BaseDamage                     (Parm, ZeroConstructor, IsPlainOldData)
 // class AController*             EventInstigator                (Parm, ZeroConstructor, IsPlainOldData)
-// class AActor*                  damageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
+// class AActor*                  DamageCauser                   (Parm, ZeroConstructor, IsPlainOldData)
 // class UClass*                  DamageTypeClass                (Parm, ZeroConstructor, IsPlainOldData)
 // float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 
-float UGameplayStatics::ApplyDamage(class AActor* damagedActor, float BaseDamage, class AController* EventInstigator, class AActor* damageCauser, class UClass* DamageTypeClass)
+float UGameplayStatics::ApplyDamage(class AActor* DamagedActor, float BaseDamage, class AController* EventInstigator, class AActor* DamageCauser, class UClass* DamageTypeClass)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Engine.GameplayStatics.ApplyDamage");
 
 	UGameplayStatics_ApplyDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.BaseDamage = BaseDamage;
 	params.EventInstigator = EventInstigator;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 	params.DamageTypeClass = DamageTypeClass;
 
 	auto flags = fn->FunctionFlags;

@@ -52,6 +52,7 @@ struct UWidget_Map_C_OnIconHover_Params
 struct UWidget_Map_C_AddObjectToMap_Params
 {
 	class UFGActorRepresentation*                      actorRepresentation;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_MapObject_C*                         WidgetMapObject;                                          // (Parm, OutParm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_Map.Widget_Map_C.RemoveObjectFromMap
@@ -159,6 +160,25 @@ struct UWidget_Map_C_OnMapCentered_Params
 struct UWidget_Map_C_ExecuteUbergraph_Widget_Map_Params
 {
 	int                                                EntryPoint;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Map.Widget_Map_C.OnObjectRemovedFromMapDispatch__DelegateSignature
+struct UWidget_Map_C_OnObjectRemovedFromMapDispatch__DelegateSignature_Params
+{
+	class UFGActorRepresentation*                      ActorRespresentation;                                     // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Map.Widget_Map_C.OnObjectUpdatedOnMapDispatch__DelegateSignature
+struct UWidget_Map_C_OnObjectUpdatedOnMapDispatch__DelegateSignature_Params
+{
+	class UFGActorRepresentation*                      actorRepresentation;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_Map.Widget_Map_C.OnObjectAddedToMapDispatch__DelegateSignature
+struct UWidget_Map_C_OnObjectAddedToMapDispatch__DelegateSignature_Params
+{
+	class UFGActorRepresentation*                      actorRepresentation;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class UWidget_MapObject_C*                         WidgetMapObject;                                          // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 // Function Widget_Map.Widget_Map_C.ZoomChanged__DelegateSignature

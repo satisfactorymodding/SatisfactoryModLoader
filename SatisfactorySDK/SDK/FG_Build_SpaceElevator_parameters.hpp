@@ -14,6 +14,19 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Build_SpaceElevator.Build_SpaceElevator_C.GetActorCompassViewDistance
+struct ABuild_SpaceElevator_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function Build_SpaceElevator.Build_SpaceElevator_C.SetActorCompassViewDistance
+struct ABuild_SpaceElevator_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function Build_SpaceElevator.Build_SpaceElevator_C.SetActorRepresentationText
 struct ABuild_SpaceElevator_C_SetActorRepresentationText_Params
 {

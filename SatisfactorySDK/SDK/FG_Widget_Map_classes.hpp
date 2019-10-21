@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_Map.Widget_Map_C
-// 0x0068 (0x0290 - 0x0228)
+// 0x0098 (0x02C0 - 0x0228)
 class UWidget_Map_C : public UFGMapWidget
 {
 public:
@@ -34,6 +34,9 @@ public:
 	float                                              mMinZoom;                                                 // 0x0278(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x4];                                       // 0x027C(0x0004) MISSED OFFSET
 	struct FScriptMulticastDelegate                    ZoomChanged;                                              // 0x0280(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
+	struct FScriptMulticastDelegate                    OnObjectAddedToMapDispatch;                               // 0x0290(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
+	struct FScriptMulticastDelegate                    OnObjectUpdatedOnMapDispatch;                             // 0x02A0(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
+	struct FScriptMulticastDelegate                    OnObjectRemovedFromMapDispatch;                           // 0x02B0(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
 
 	static UClass* StaticClass()
 	{
@@ -48,7 +51,7 @@ public:
 	void CenterMapOnPlayer(const struct FVector2D& normalizedWorldLocation);
 	void OnIconUnhover(class UWidget_MapObject_C* MapObject);
 	void OnIconHover(class UWidget_MapObject_C* MapObject);
-	void AddObjectToMap(class UFGActorRepresentation* actorRepresentation);
+	void AddObjectToMap(class UFGActorRepresentation* actorRepresentation, class UWidget_MapObject_C** WidgetMapObject);
 	void RemoveObjectFromMap(class UFGActorRepresentation* ActorRepresentationToRemove);
 	void ClearScrollMap();
 	struct FEventReply OnMouseButtonUp(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent);
@@ -66,6 +69,9 @@ public:
 	void OnObjectUpdatedOnMap(class UFGActorRepresentation** actorRepresentation);
 	void OnMapCentered(struct FVector2D* normalizedWorldLocation);
 	void ExecuteUbergraph_Widget_Map(int EntryPoint);
+	void OnObjectRemovedFromMapDispatch__DelegateSignature(class UFGActorRepresentation* ActorRespresentation);
+	void OnObjectUpdatedOnMapDispatch__DelegateSignature(class UFGActorRepresentation* actorRepresentation);
+	void OnObjectAddedToMapDispatch__DelegateSignature(class UFGActorRepresentation* actorRepresentation, class UWidget_MapObject_C* WidgetMapObject);
 	void ZoomChanged__DelegateSignature();
 };
 

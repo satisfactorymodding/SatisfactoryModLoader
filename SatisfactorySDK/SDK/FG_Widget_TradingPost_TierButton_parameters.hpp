@@ -31,10 +31,10 @@ struct UWidget_TradingPost_TierButton_C_GetCheckVisibility_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TradingPost_TierButton.Widget_TradingPost_TierButton_C.isSelectable
-struct UWidget_TradingPost_TierButton_C_isSelectable_Params
+// Function Widget_TradingPost_TierButton.Widget_TradingPost_TierButton_C.IsSelectable
+struct UWidget_TradingPost_TierButton_C_IsSelectable_Params
 {
-	bool                                               isSelectable;                                             // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+	bool                                               IsSelectable;                                             // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_TradingPost_TierButton.Widget_TradingPost_TierButton_C.GetWidgetClickable

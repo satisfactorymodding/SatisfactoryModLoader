@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_EquipmentDescriptorStunSpear.BP_EquipmentDescriptorStunSpear_C
-// 0x0000 (0x0130 - 0x0130)
+// 0x0000 (0x0138 - 0x0138)
 class UBP_EquipmentDescriptorStunSpear_C : public UFGEquipmentDescriptor
 {
 public:

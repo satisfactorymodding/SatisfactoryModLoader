@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_SpaceElevator.Desc_SpaceElevator_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_SpaceElevator_C : public UFGBuildingDescriptor
 {
 public:

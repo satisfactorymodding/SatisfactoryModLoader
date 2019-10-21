@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_ConveyorBeltMk2.Desc_ConveyorBeltMk2_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_ConveyorBeltMk2_C : public UFGBuildingDescriptor
 {
 public:

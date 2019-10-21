@@ -12,6 +12,31 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_Overclock.Widget_Overclock_C.OnMouseButtonDown
+// ()
+// Parameters:
+// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+// struct FEventReply             ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FEventReply UWidget_Overclock_C::OnMouseButtonDown(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Overclock.Widget_Overclock_C.OnMouseButtonDown");
+
+	UWidget_Overclock_C_OnMouseButtonDown_Params params;
+	params.MyGeometry = MyGeometry;
+	params.MouseEvent = MouseEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Widget_Overclock.Widget_Overclock_C.UpdateDropArea
 // ()
 // Parameters:

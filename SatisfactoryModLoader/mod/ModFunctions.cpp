@@ -30,9 +30,7 @@ namespace SML {
 				}
 				for (Registry reg : modHandler.APIRegistry) {
 					if (reg.name == name) {
-						std::string msg = "Duplicate API function " + name + " registered!\nPress Ok to exit.";
-						MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-						abort();
+						Utility::displayCrash("Duplicate API function " + name + " registered!\nPress Ok to exit.");
 					}
 				}
 				Registry r = {
@@ -53,9 +51,7 @@ namespace SML {
 					}
 				}
 				if (!found) {
-					std::string msg = "Requested API function " + name + " not found!\nMake sure that the mod that provides this function is installed or added as a dependency to your mod.\nPress Ok to exit.";
-					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-					abort();
+					Utility::displayCrash("Requested API function " + name + " not found!\nMake sure that the mod that provides this function is installed or added as a dependency to your mod.\nPress Ok to exit.");
 				}
 				return func;
 			}
@@ -98,6 +94,25 @@ namespace SML {
 					modHandler.eventRegistry.insert(std::pair<std::string, std::vector<PVOID>>(name, v));
 				} else {
 					modHandler.eventRegistry[name].push_back(func);
+				}
+			}
+
+			//Makes sure a pak file of this name exists
+			SML_API void setDependsOnPak(std::string name) {
+				char path_c[MAX_PATH];
+				GetModuleFileNameA(NULL, path_c, MAX_PATH);
+				std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
+				path = path + "\\Content\\Paks";
+				if (name.find(".pak") == std::string::npos) {
+					name.append(".pak");
+				}
+				std::string pakLoc = path.append("\\" + name);
+				std::filesystem::path pakPath(pakLoc);
+				if (!std::filesystem::exists(pakPath)) {
+					Utility::displayCrash("You are missing " + name + " from your install!\nMake sure you installed your mods properly!\n");
 				}
 			}
 		}

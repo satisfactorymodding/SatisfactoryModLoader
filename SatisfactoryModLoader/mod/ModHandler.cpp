@@ -85,14 +85,12 @@ namespace SML {
 						auto it = std::find(names.begin(), names.end(), dep);
 						if (it == names.end()) {
 							//quit if a required dependency isn't loaded
-							std::string msg = "Mod " + mod->info.name + " is missing dependency " + dep + "!\nPlease install " + dep + " or remove " + mod->info.name + ".\nPress Ok to exit.";
-							MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-							abort();
+							Utility::displayCrash("Mod " + mod->info.name + " is missing dependency " + dep + "!\nPlease install " + dep + " or remove " + mod->info.name + ".\nPress Ok to exit.");
 						}
 					}
 				}
 			}
-			Utility::info("Verifyied dependencies");
+			Utility::info("Verified dependencies");
 		}
 
 		bool ModHandler::createMod(Mod* (*modCreate)()) {
@@ -161,7 +159,7 @@ namespace SML {
 		void ModHandler::getFiles(std::string path) {
 			std::string pathExact = path + "\\";
 
-			for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
+			for (const auto &entry : std::experimental::filesystem::directory_iterator(path)) {
 
 				if (std::filesystem::is_directory(entry.path().string())) {
 					getFiles(entry.path().string());

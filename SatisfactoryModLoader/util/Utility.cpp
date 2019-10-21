@@ -9,6 +9,8 @@
 
 namespace SML {
 	namespace Utility {
+		std::ofstream logFile;
+
 		void log() {}
 
 		void log(LogType type) {}
@@ -37,6 +39,7 @@ namespace SML {
 
 			// log line
 			logFile << "[" + header + "::" + logType;
+			logFile.flush();
 
 			// cout line
 			setConsoleColor(type > 2 && type <= 5 ? ConsoleColor::Cyan : ConsoleColor::White);
@@ -50,28 +53,34 @@ namespace SML {
 		}
 
 		//target[0] = normal CL, target [1] = experimental CL
-		void checkVersion(const std::string target[2]) {
+		void checkVersion(const int target) {
 			std::wstring satisVersion{ call<&Objects::BuildSettings::GetBuildVersion>() };
 			std::string str(satisVersion.begin(), satisVersion.end());
-			info(str);
-			if (str.substr(str.length() - 5, str.length()) == target[0]) {
+			int version = std::atoi(str.substr(str.length() - 6, str.length()).c_str());
+			if (version >= target) {
 				info("Version check passed!");
 			}
-			else if (str.substr(str.length() - 6, str.length()) == target[1]) {
-				warning("SML is running on the experimental branch, issues may occur!");
-			}
-			else {
-				error("FATAL: Version check failed");
+			else if (version < target){
+				error("WARNING: Version check failed");
 				if (!supressErrors) {
-					int ret = MessageBoxA(NULL, "The version of SML that you are using is not compatible with your version of Satisfactory!\nIf SML is not available for the latest version of satisfactory, please yell at SuperCoder to compile one.\nPress Ok to continue at your own discresion or cancel to stop the program.", "SatisfactoryModLoader Fatal Error", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONERROR);
+					int ret = MessageBoxA(NULL, "The version of Satisfactory that you are running is too old for the current version of SML! Please update Satisfactory otherwise SML may run into errors. \nPress Ok to continue at your own discresion or cancel to exit.", "SatisfactoryModLoader Warning", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONEXCLAMATION);
 					if (ret == IDCANCEL) {
-						exit(1);
+						abort();
 					}
 				}
 				else {
 					warning("SupressErrors set to true, continuing...");
 				}
 			}
+		}
+
+		void displayCrash(std::string crashText) {
+			MessageBoxA(NULL, (crashText + "\Click OK to exit.").c_str(), "SatisfactoryModLoader has crashed!", MB_ICONERROR);
+			abort();
+		}
+		void displayCrash(std::string header, std::string crashText) {
+			MessageBoxA(NULL, (crashText + "\Click OK to exit.").c_str(), header.c_str(), MB_ICONERROR);
+			abort();
 		}
 	}
 }

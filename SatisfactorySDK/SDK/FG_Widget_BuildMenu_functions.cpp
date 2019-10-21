@@ -12,14 +12,14 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function Widget_BuildMenu.Widget_BuildMenu_C.HideSearchbar
+// Function Widget_BuildMenu.Widget_BuildMenu_C.SetSearchbarUnfocused
 // ()
 
-void UWidget_BuildMenu_C::HideSearchbar()
+void UWidget_BuildMenu_C::SetSearchbarUnfocused()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.HideSearchbar");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.SetSearchbarUnfocused");
 
-	UWidget_BuildMenu_C_HideSearchbar_Params params;
+	UWidget_BuildMenu_C_SetSearchbarUnfocused_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -29,14 +29,14 @@ void UWidget_BuildMenu_C::HideSearchbar()
 }
 
 
-// Function Widget_BuildMenu.Widget_BuildMenu_C.ShowSearchbar
+// Function Widget_BuildMenu.Widget_BuildMenu_C.SetSearchbarFocused
 // ()
 
-void UWidget_BuildMenu_C::ShowSearchbar()
+void UWidget_BuildMenu_C::SetSearchbarFocused()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.ShowSearchbar");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_BuildMenu.Widget_BuildMenu_C.SetSearchbarFocused");
 
-	UWidget_BuildMenu_C_ShowSearchbar_Params params;
+	UWidget_BuildMenu_C_SetSearchbarFocused_Params params;
 
 	auto flags = fn->FunctionFlags;
 

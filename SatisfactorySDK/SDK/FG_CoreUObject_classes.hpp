@@ -878,21 +878,6 @@ public:
 
 };
 
-template<class TClass>
-class TSubclassOf
-{
-public:
-	TSubclassOf(UClass* clazz) {
-		this->Class = clazz;
-	}
-	inline UClass* GetClass()
-	{
-		return Class;
-	}
-private:
-	UClass* Class;
-};
-
 
 }
 
