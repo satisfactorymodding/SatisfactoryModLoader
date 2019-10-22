@@ -6,6 +6,7 @@
 #include "Utility.h"
 #include <game/Utility.h>
 #include <windows.h>
+#include <util/EnvironmentValidity.h>
 
 namespace SML {
 	namespace Utility {
@@ -81,6 +82,71 @@ namespace SML {
 		void displayCrash(std::string header, std::string crashText) {
 			MessageBoxA(NULL, (crashText + "\Click OK to exit.").c_str(), header.c_str(), MB_ICONERROR);
 			abort();
+		}
+
+		std::string getPakPath() {
+			return Utility::getRootPath() + "\\Content\\Paks";
+		}
+
+		std::string getModPath() {
+			auto path = Utility::getRootPath() + "\\Binaries\\Win64\\mods";;
+			createDirectory(path, false);
+			return path;
+		}
+
+		std::string getCoreModPath() {
+			auto path = Utility::getRootPath() + "\\Binaries\\Win64\\coremods";;
+			createDirectory(path, false);
+			return path;
+		}
+
+		std::string getHiddenModPath() {
+			auto path = Utility::getRootPath() + "\\Binaries\\Win64\\hiddenmods";;
+			createDirectory(path, true);
+			return path;
+		}
+
+		std::string getHiddenCoreModPath() {
+			auto path = Utility::getRootPath() + "\\Binaries\\Win64\\hiddencoremods";;
+			createDirectory(path, true);
+			return path;
+		}
+
+		void cleanupHiddenDirectories() {
+			Utility::debug("Deleting previous hidden directories");
+			deleteDirectoryRecursive(getHiddenModPath());
+			deleteDirectoryRecursive(getHiddenCoreModPath());
+		}
+
+		void deleteDirectoryRecursive(std::string path) {
+			for (const auto &entry : std::experimental::filesystem::directory_iterator(path)) {
+				if (std::filesystem::is_directory(entry.path().string())) {
+					deleteDirectoryRecursive(entry.path().string());
+					continue;
+				}
+
+				Utility::debug("Deleting: ", entry.path().string());
+				if (!DeleteFileA(entry.path().string().c_str())) {
+					auto errorCode = GetLastError();
+					Utility::error("Failed to delete: ", entry.path().string());
+					Utility::error("Error: ", errorCode);
+				}
+			}
+
+			Utility::debug("Deleting: ", path);
+			if (!RemoveDirectoryA(path.c_str())) {
+				auto errorCode = GetLastError();
+				Utility::error("Failed to delete: ", path);
+				Utility::error("Error: ", errorCode);
+			}
+		}
+
+		void createDirectory(std::string path, bool hidden) {
+			CreateDirectoryA(path.c_str(), NULL);
+
+			if (hidden) {
+				SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+			}
 		}
 	}
 }

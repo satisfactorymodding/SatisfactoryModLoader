@@ -274,87 +274,8 @@ namespace SML {
 					std::wstring stemp = std::wstring(file.begin(), file.end());
 
 					loadDLL(stemp.c_str());
-				} else if(entry.path().extension().string() == ".zip") {
-					// Disable zip processing
-					continue;
-
-					std::string archive = pathExact + entry.path().filename().string();
-					Utility::debug("Attempting to load mod: ", archive);
-
-					ttvfs::Root vfs;
-
-					vfs.AddLoader(new ttvfs::DiskLoader);
-					vfs.AddArchiveLoader(new ttvfs::VFSZipArchiveLoader);
-
-					auto modArchive = vfs.AddArchive(archive.c_str());
-
-					ttvfs::File *vf = modArchive->getFile("data.json");
-					if (!vf || !vf->open("r")) {
-						Utility::error("Failed loading mod data.json in ", archive);
-						continue;
-					}
-
-					std::vector<char> buffer(vf->size());
-					size_t bytes = vf->read(buffer.data(), vf->size());
-					vf->close();
-
-					nlohmann::json dataJson;
-
-					try {
-						dataJson = nlohmann::json::parse(buffer.data());
-					}
-					catch (...) {}
-
-					if (!dataJson.contains("objects")) {
-						Utility::error("data.json missing objects in ", archive);
-						continue;
-					}
-
-					auto objects = dataJson["objects"];
-
-					for (auto it = objects.begin(); it != objects.end(); ++it) {
-						std::string objType = it.value()["type"].get<std::string>();
-						std::string objPath = it.value()["path"].get<std::string>();
-
-						Utility::debug("[", entry.path().filename(), "] ", "Loading \"", objType, "\" ", objPath);
-
-						if (objType == "sml_mod") {
-							/*
-							auto obj = modArchive->getFile(objPath.c_str());
-
-							if (!obj || !obj->open("rb")) {
-								Utility::error("Failed loading object: ", objPath, " in ", archive);
-								continue;
-							}
-
-							void* result = (unsigned char *)malloc(obj->size());
-							size_t bytes = obj->read(result, obj->size());
-							obj->close();
-
-							loadMemoryDLL(result, obj->size());
-							*/
-						} else if (objType == "core_mod") {
-							// SHIT BROKEN
-							/*
-							auto obj = modArchive->getFile(objPath.c_str());
-
-							if (!obj || !obj->open("rb")) {
-								Utility::error("Failed loading object: ", objPath, " in ", archive);
-								continue;
-							}
-
-							void* result = (unsigned char *)malloc(obj->size());
-							size_t bytes = obj->read(result, obj->size());
-							obj->close();
-
-							loadMemoryCoreMod(result, obj->size(), objPath)
-							*/
-						} else if (objType == "pak") {
-							// Do nothing
-						} else {
-							Utility::warning("Unkown object type: ", objType);
-						}
-					}
+				} else if (entry.path().extension().string() == ".zip") {
+					// Ignore without warning
 				} else {
 					Utility::warning("Unkown mod file type: ", entry.path().filename().string());
 				}
