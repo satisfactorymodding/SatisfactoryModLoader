@@ -16,6 +16,8 @@ namespace SML {
 
 	extern Mod::ModHandler modHandler;
 
+	void initializeConsole();
+	void extractZips();
 	void startSML();
 	void readConfig();
 	void cleanup();

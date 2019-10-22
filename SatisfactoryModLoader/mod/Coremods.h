@@ -8,9 +8,10 @@ namespace SML {
 
 		extern std::vector<std::string> delayedCoremods;
 
-		void startLoadingCoremods(const char* currentPath);
+		void startLoadingCoremods();
 
 		void loadCoremodsInternal(std::string path);
 
+		void loadMemoryCoreMod(void *data, size_t size, std::string name);
 	};
 };

@@ -33,12 +33,14 @@
 #include <mod/Hooks.h>
 #include <mod/Coremods.h>
 
+#include <chrono>
+#include <thread>
+
 namespace SML {
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
 
-	// Main DLL for loading mod DLLs
-	void startSML() {
+	void initializeConsole() {
 		// launch the game's internal console and hook into it
 		Utility::logFile.open(logName, std::ios_base::out | std::ios_base::app);
 		AllocConsole();
@@ -51,7 +53,16 @@ namespace SML {
 		ShowWindow(GetConsoleWindow(), SW_SHOW);
 
 		Utility::info("Attached SatisfactoryModLoader to Satisfactory");
+	}
 
+	// Extract zip files before the engine has started
+	// DO NOT ADD ANY EXTRA LOGIC HERE!!!
+	void extractZips() {
+		modHandler.extractZips();
+	}
+
+	// Main DLL for loading mod DLLs
+	void startSML() {
 		// load up all of the configuration information
 		readConfig();
 		Utility::info("Validating system files...");
@@ -68,16 +79,11 @@ namespace SML {
 		Assets::AssetLoader::init();
 		Utility::info("Initialized SDK");
 
-
-		// get path
-		char p[MAX_PATH];
-		GetModuleFileNameA(NULL, p, MAX_PATH);
-
 		//load coremods
-		Mod::startLoadingCoremods(p);
+		Mod::startLoadingCoremods();
 
 		// load mods
-		modHandler.loadMods(p);
+		modHandler.loadMods();
 		modHandler.setupMods();
 		modHandler.checkDependencies();
 		modHandler.postSetupMods();
@@ -124,7 +130,12 @@ namespace SML {
 
 	//cleans up when the program is killed
 	void cleanup() {
-		modHandler.mods.clear();
+		Utility::debug("Starting SML Cleanup...");
+
+		// Sleep to wait for UE4 pak hooks to expire
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+		modHandler.destroy();
 
 		char path_c[MAX_PATH];
 		GetModuleFileNameA(NULL, path_c, MAX_PATH);

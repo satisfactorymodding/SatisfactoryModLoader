@@ -8,7 +8,7 @@
 
 namespace SML {
 	namespace Utility {
-		void checkForValidEnvironment() {
+		std::string getRootPath() {
 			// Get the execution path (\FactoryGame\Binaries\Win64\FactoryGame.exe)
 			char path_c[MAX_PATH];
 			GetModuleFileNameA(NULL, path_c, MAX_PATH);
@@ -16,11 +16,79 @@ namespace SML {
 			path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
 			path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
 			path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
-			std::string rootpath = path;
-			path = path + "\\Content\\Paks";
-			std::string pakfilepath = path;
-			info(path);
-			std::string originalSigLoc = path.append("\\FactoryGame-WindowsNoEditor.sig");
+			return path;
+		}
+
+		std::string getPakPath() {
+			return getRootPath() + "\\Content\\Paks";
+		}
+
+		std::string getModPath() {
+			auto path = getRootPath() + "\\Binaries\\Win64\\mods";;
+			createDirectory(path, false);
+			return path;
+		}
+
+		std::string getCoreModPath() {
+			auto path = getRootPath() + "\\Binaries\\Win64\\coremods";;
+			createDirectory(path, false);
+			return path;
+		}
+
+		std::string getHiddenModPath() {
+			auto path = getRootPath() + "\\Binaries\\Win64\\hiddenmods";;
+			createDirectory(path, true);
+			return path;
+		}
+
+		std::string getHiddenCoreModPath() {
+			auto path = getRootPath() + "\\Binaries\\Win64\\hiddencoremods";;
+			createDirectory(path, true);
+			return path;
+		}
+
+		void cleanupHiddenDirectories() {
+			Utility::debug("Deleting previous hidden directories");
+			deleteDirectoryRecursive(getHiddenModPath());
+			deleteDirectoryRecursive(getHiddenCoreModPath());
+		}
+
+		void deleteDirectoryRecursive(std::string path) {
+			for (const auto &entry : std::experimental::filesystem::directory_iterator(path)) {
+				if (std::filesystem::is_directory(entry.path().string())) {
+					deleteDirectoryRecursive(entry.path().string());
+					continue;
+				}
+
+				Utility::debug("Deleting: ", entry.path().string());
+				if (!DeleteFileA(entry.path().string().c_str())) {
+					auto errorCode = GetLastError();
+					Utility::error("Failed to delete: ", entry.path().string());
+					Utility::error("Error: ", errorCode);
+				}
+			}
+
+			Utility::debug("Deleting: ", path);
+			if (!RemoveDirectoryA(path.c_str())) {
+				auto errorCode = GetLastError();
+				Utility::error("Failed to delete: ", path);
+				Utility::error("Error: ", errorCode);
+			}
+		}
+
+		void createDirectory(std::string path, bool hidden) {
+			CreateDirectoryA(path.c_str(), NULL);
+
+			if (hidden) {
+				SetFileAttributesA(path.c_str(), FILE_ATTRIBUTE_HIDDEN);
+			}
+		}
+
+		void checkForValidEnvironment() {
+			std::string rootpath = getRootPath();
+			std::string pakDirPath = getPakPath();
+			info(pakDirPath);
+			std::string originalSigLoc = pakDirPath + "\\FactoryGame-WindowsNoEditor.sig";
 			std::filesystem::path originalSigPath(originalSigLoc);
 			if (std::filesystem::exists(originalSigPath)) {
 				info("Sig file in place!");
@@ -28,8 +96,9 @@ namespace SML {
 			else {
 				displayCrash("Satisfactory Install Error", "SatisfactoryModLoader has detected an error with your Satisfactory installation.\nPlease click 'verify' in the Epic Games Launcher and reinstall Satisfactory.");
 			}
+
 			//generate the sig
-			generateSigFiles(pakfilepath, originalSigLoc);
+			generateSigFiles(pakDirPath, originalSigLoc);
 			//disable the crashreporter
 			disableCrashReporter(rootpath);
 		}

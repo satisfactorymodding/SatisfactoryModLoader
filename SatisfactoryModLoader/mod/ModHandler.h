@@ -6,6 +6,8 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <ttvfs.h>
+#include <ttvfs_zip.h>
 
 namespace SML {
 	namespace Mod {
@@ -31,6 +33,8 @@ namespace SML {
 		class ModHandler {
 		public:
 			std::vector<std::unique_ptr<Mod>> mods;
+			std::vector<HMODULE> dlls;
+			std::vector<std::string> cleanupPaths;
 
 			std::vector<Registry> commandRegistry;
 			std::vector<Registry> APIRegistry;
@@ -44,9 +48,15 @@ namespace SML {
 			GameStage currentStage = GameStage::PRE_CONSTRUCT;
 
 			/**
+			* Extract zip files before the engine has started
+			* DO NOT ADD ANY EXTRA LOGIC HERE!!!
+			*/
+			void extractZips();
+
+			/**
 			* Load all mods from the given path.
 			*/
-			void loadMods(const char* startingPath);
+			void loadMods();
 
 			/**
 			* Call the setup function of every loaded mod.
@@ -63,6 +73,11 @@ namespace SML {
 			* the post setups of mod dependencies loaded before the original mod's post setup.
 			*/
 			void postSetupMods();
+
+			/**
+			* Cleanup and destroy
+			*/
+			void destroy();
 		private:
 			std::vector<std::string> modNameDump;
 
@@ -97,6 +112,11 @@ namespace SML {
 			* Find all valid mods
 			*/
 			void findMods(std::string path);
+
+			/**
+			* Extract file from archive
+			*/
+			void extractFile(ttvfs::Dir* modArchive, std::string objPath, std::string outFilePath, std::string archive, bool cleanup);
 		};
 	}
 }

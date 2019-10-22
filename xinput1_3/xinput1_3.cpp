@@ -8,7 +8,8 @@ extern "C" UINT_PTR mProcs[12] = {0};
 
 void load_original_dll();
 
-static bool hooked = false;
+static bool processHooked = false;
+static bool threadHooked = false;
 
 LPCSTR mImportNames[] = {"DllMain", "XInputEnable", "XInputGetBatteryInformation", "XInputGetCapabilities", "XInputGetDSoundAudioDeviceGuids", "XInputGetKeystroke", "XInputGetState", "XInputSetState", (LPCSTR)100, (LPCSTR)101, (LPCSTR)102, (LPCSTR)103};
 BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
@@ -22,15 +23,19 @@ BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 	else if (fdwReason == DLL_PROCESS_DETACH) {
 		SML::cleanup();
 		FreeLibrary(mHinstDLL);
-	} 
-	
-	if (hooked) {
-		return ( TRUE );
 	}
-	if ( fdwReason == DLL_THREAD_ATTACH) {
-		hooked = true;
+
+	if (!processHooked && fdwReason == DLL_PROCESS_ATTACH) {
+		processHooked = true;
+		SML::initializeConsole();
+		SML::extractZips();
+	}
+
+	if (!threadHooked && fdwReason == DLL_THREAD_ATTACH) {
+		threadHooked = true;
 		SML::startSML();
 	}
+
 	return ( TRUE );
 }
 
