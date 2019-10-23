@@ -280,8 +280,6 @@ namespace SML {
 					Utility::warning("Unkown mod file type: ", entry.path().filename().string());
 				}
 			}
-
-			Utility::checkForValidEnvironment();
 		}
 
 		void ModHandler::findMods(std::string path) {
