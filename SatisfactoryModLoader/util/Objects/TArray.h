@@ -2,6 +2,7 @@
 
 #include <stdexcept>
 #include <Lib.h>
+#include "../SatisfactorySDK/SDK.hpp"
 #include "FMemory.h"
 
 namespace SML {
@@ -69,6 +70,13 @@ namespace SML {
 					data = nullptr;
 					count = max = 0;
 				}
+			}
+
+			inline TArray(const SDK::TArray<T>& other) {
+				auto o = (TArray<T>*) &other;
+				data = o->data;
+				max = o->max;
+				count = o->count;
 			}
 
 			inline ~TArray() {

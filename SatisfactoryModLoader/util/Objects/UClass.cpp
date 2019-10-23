@@ -21,6 +21,15 @@ namespace SML {
 			return getVFunc<UObject*(*)(UClass*)>(this, 103)(this);
 		}
 
+		bool UClass::isChild(UClass* super) {
+			auto s = this;
+			while (s) {
+				if (s == super) return true;
+				s = (UClass*)s->super;
+			}
+			return false;
+		}
+
 		void UClass::debug() {
 			std::vector<UProperty*> vars;
 
@@ -29,9 +38,9 @@ namespace SML {
 			UField* f = childs;
 			while (f) {
 				if ((f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty) && (f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty)) {
-					vars.push_back((UProperty*)f);
+					//vars.push_back((UProperty*)f);
 				}
-				//vars.push_back((UProperty*)f);
+				vars.push_back((UProperty*)f);
 				f = f->next;
 			}
 

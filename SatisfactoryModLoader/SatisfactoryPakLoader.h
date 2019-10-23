@@ -14,6 +14,7 @@
 
 #include <game/Global.h>
 #include <util/Objects/TArray.h>
+#include <util/Objects/UFunction.h>
 
 namespace SML {
 	namespace SPL {
@@ -22,6 +23,9 @@ namespace SML {
 			std::wstring modNames; // Contains all mod names (seperated by a comma)
 			Objects::TArray<Objects::FString> modNamesArray;
 		}
+
+		/** Invokes given init func */
+		void invokeInitFunc(Objects::UObject* mod, Objects::UFunction* func);
 
 		/** Initializes SPL */
 		void Init();

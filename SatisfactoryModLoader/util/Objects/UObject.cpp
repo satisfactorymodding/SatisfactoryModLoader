@@ -15,6 +15,7 @@ namespace SML {
 		}
 
 		FUObjectItem const* FChunkedFixedUObjectArray::getObjPtr(int index) const {
+			if (count() <= index) return nullptr;
 			auto cIndex = index / elemsPerChunk;
 			auto inChunk = index % elemsPerChunk;
 			auto chunk = objs[cIndex];

@@ -9,6 +9,7 @@
 #include <util/Utility.h>
 #include <util/Objects/UObject.h>
 #include <util/Objects/UFunction.h>
+#include <util/Objects/UClass.h>
 #include <mod/ModFunctions.h>
 #include <mod/MathFunctions.h>
 #include <assets/AssetLoader.h>
@@ -18,13 +19,44 @@
 #include "../SatisfactorySDK/SDK.hpp"
 
 namespace SML {
+	void SPL::invokeInitFunc(Objects::UObject* mod, Objects::UFunction* func) {
+		using namespace SML;
+		using namespace SML::Mod;
+		using namespace SML::Objects;
+
+		struct InitParamsString {
+			Objects::FString mods;
+		};
+
+		struct InitParamsArray {
+			Objects::TArray<Objects::FString> mods;
+		};
+
+		if (!func) return;
+		auto p = (UProperty*)func->childs;
+		bool failed = false;
+		if (p && p->next) {
+		} else if (!p) {
+			func->invoke(mod, nullptr);
+			return;
+		} else if (p->clazz->castFlags & EClassCastFlags::CAST_UArrayProperty) {
+			InitParamsArray ip;
+			ip.mods = modNamesArray;
+			func->invoke(mod, &ip);
+			return;
+		} else if (p->clazz->castFlags & EClassCastFlags::CAST_UStrProperty) {
+			InitParamsString ip;
+			ip.mods = Objects::FString(modNames.c_str());
+			func->invoke(mod, &ip);
+			return;
+		}
+		
+		Utility::warning("Failed to invoke \"" + func->getFullName() + "\"! No allowed decalaration!");
+	}
+
 	void SPL::Init() {
 		using namespace SML;
 		using namespace SML::Mod;
-
-		struct InitParams {
-			Objects::TArray<Objects::FString> mods;
-		};
 
 		::subscribe<&Objects::AFGGameMode::InitGameState>([](Mod::Functions::ModReturns* ret, Objects::AFGGameMode* player) {
 			//check if we are in the menu
@@ -100,17 +132,13 @@ namespace SML {
 				// Iterate through all mods and call the preinit event
 				for (Objects::UObject* mod : mods) {
 					auto f = mod->findFunction(L"PreInit");
-					InitParams initParams;
-					initParams.mods = modNamesArray;
-					if (f) f->invoke(mod, &initParams); // Call the event
+					invokeInitFunc(mod, f); // Call the event
 				};
 
 				// Iterate through all mods and call the init event
 				for (Objects::UObject* mod : mods) {
 					auto f = mod->findFunction(L"Init");
-					InitParams initParams;
-					initParams.mods = modNamesArray;
-					if (f) f->invoke(mod, &initParams); // Call the event
+					invokeInitFunc(mod, f); // Call the event
 				}
 			}
 		});
@@ -120,9 +148,7 @@ namespace SML {
 			// Iterate through all mods and call the postinit event
 			for (Objects::UObject* mod : mods) {
 				auto f = mod->findFunction(L"PostInit");
-				InitParams initParams;
-				initParams.mods = modNamesArray;
-				if (f) f->invoke(mod, &initParams); // Call the event
+				invokeInitFunc(mod, f); // Call the event
 				::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
 			}
 		});

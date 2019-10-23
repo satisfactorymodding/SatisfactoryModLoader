@@ -6,7 +6,7 @@
 struct FActorSpawnParameters
 {
 	FActorSpawnParameters()
-		: Name("")
+		: Name()
 		, Template(NULL)
 		, Owner(NULL)
 		, Instigator(NULL)

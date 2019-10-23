@@ -223,8 +223,19 @@ namespace SML {
 		}
 
 		PropertyBuilder& PropertyBuilder::off(int offset) {
-			if (params && (structType & EPropStructParamsType::WithOff)) ((FPropertyParamsBaseWithOffset*)params)->off = offset;
+			if (params && (structType & EPropStructParamsType::WithOff)) {
+				manualOff = true;
+				((FPropertyParamsBaseWithOffset*)params)->off = offset;
+			}
 			return *this;
+		}
+
+		std::int32_t PropertyBuilder::getOff() {
+			if (params && (structType & EPropStructParamsType::WithOff)) {
+				if (manualOff) return ((FPropertyParamsBaseWithOffset*)params)->off;
+				else return -1;
+			}
+			return -2;
 		}
 
 		PropertyBuilder & PropertyBuilder::classFunc(UClass *(*func)()) {

@@ -361,6 +361,7 @@ namespace SML {
 		*/
 		class PropertyBuilder {
 		private:
+
 			template<typename T, bool T::* Ptr>
 			struct TBitSetFunc {
 				static inline void bitSet(void* out) {
@@ -372,6 +373,7 @@ namespace SML {
 			FPropertyParamsBase* params = nullptr;
 			std::string pname;
 			std::string notify;
+			bool manualOff = false;
 
 			inline PropertyBuilder() {};
 
@@ -383,6 +385,7 @@ namespace SML {
 				params = (FPropertyParamsBase*) std::memcpy(params, other.params, createStructFromType(other.params->type));
 				pname = other.pname;
 				notify = other.notify;
+				manualOff = other.manualOff;
 			}
 
 			SML_API inline PropertyBuilder(const PropertyBuilder&& other) {
@@ -390,6 +393,7 @@ namespace SML {
 				params = other.params;
 				pname = other.pname;
 				notify = other.notify;
+				manualOff = other.manualOff;
 			}
 
 			SML_API inline PropertyBuilder& operator=(const PropertyBuilder& other) {
@@ -397,6 +401,7 @@ namespace SML {
 				params = (FPropertyParamsBase*)std::memcpy(params, other.params, createStructFromType(other.params->type));
 				pname = other.pname;
 				notify = other.notify;
+				manualOff = other.manualOff;
 				return *this;
 			}
 
@@ -405,6 +410,7 @@ namespace SML {
 				params = other.params;
 				pname = other.pname;
 				notify = other.notify;
+				manualOff = other.manualOff;
 				return *this;
 			}
 
@@ -495,7 +501,16 @@ namespace SML {
 			*
 			* @author Panakotta00
 			*/
-			SML_API PropertyBuilder& off(int offset);
+			SML_API PropertyBuilder& off(int offset = -1);
+
+			/**
+			* returns the offset of property
+			* if property has no offset returns -2
+			* if offset is not set returns -1
+			*
+			* @author Panakotta00
+			*/
+			SML_API std::int32_t getOff();
 
 			/**
 			* sets the referenced uclass/interface return function (staticClass) when type needs it
@@ -1188,10 +1203,18 @@ namespace SML {
 					FPropertyParamsBase** props = new FPropertyParamsBase*[active.props.size()];
 					i = 0;
 					size_t size = active.paramOff;
+					int nextOff = active.paramOff;
 					for (auto& p : active.props) {
-						p.off(size);
+						auto noff = p.getOff();
+						auto nsize = p.getSize();
+						if (noff >= 0) nextOff = noff + nsize;
+						else {
+							if (noff == -1) p.off(nextOff);
+							nextOff += nsize;
+						}
+						
 						auto pr = p.build();
-						size += p.getSize();
+						size += nsize;
 						props[i++] = pr;
 					}
 					active.params.props = props;
