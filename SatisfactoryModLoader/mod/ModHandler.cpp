@@ -59,6 +59,10 @@ namespace SML {
 
 					if (!dataJson.contains("objects")) {
 						Utility::error("data.json missing objects in ", archive);
+						Utility::displayCrash("Invalid zip mod: " + entry.path().filename().string(),
+							"Mod '" + entry.path().filename().string() + "' is not a valid zip mod."
+							"\n\nPlease make sure you are using the most up to date mod version."
+							"\n\nIf you are on the latest version, please notify the mod author that they are missing 'objects' in 'data.json'");
 						continue;
 					}
 
