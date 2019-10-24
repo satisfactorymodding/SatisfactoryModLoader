@@ -150,11 +150,13 @@ namespace SML {
 					//check if modloader's version is the same as the mod's target version
 					size_t modTVOffset = mod->info.loaderVersion.find_last_of(".");
 					size_t SMLOffset = modLoaderVersion.find_last_of(".");
-					if (!(mod->info.loaderVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
-						std::string msg = "Mod " + mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
-						MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Warning", MB_ICONWARNING);
-						FreeLibrary(dll);
-						continue;
+					if (!supressErrors) {
+						if (!(mod->info.loaderVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
+							std::string msg = mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
+							MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Warning", MB_ICONWARNING);
+							FreeLibrary(dll);
+							continue;
+						}
 					}
 
 					std::string s = entry.path().filename().string();
