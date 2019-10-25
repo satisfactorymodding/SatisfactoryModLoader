@@ -5,10 +5,11 @@
 #include <filesystem>
 #include <Windows.h>
 #include <mod/ModHandler.h>
+#include <Lib.h>
 
 namespace SML {
-	static const std::string modLoaderVersion = "1.0.1"; // SML's version
-	static const int targetVersion = 106504; //CL of Satisfactory
+	SML_API extern const std::string modLoaderVersion;
+	SML_API extern const int targetVersion;
 	extern bool loadConsole;
 	extern bool debugOutput;
 	extern bool supressErrors;

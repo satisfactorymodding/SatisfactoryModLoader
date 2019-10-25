@@ -34,6 +34,8 @@
 #include <mod/ModFunctions.h>
 
 namespace SML {
+	const std::string modLoaderVersion = "1.0.1"; // SML's version
+	const int targetVersion = 106504; //CL of Satisfactory
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
 	bool loadConsole = true;
