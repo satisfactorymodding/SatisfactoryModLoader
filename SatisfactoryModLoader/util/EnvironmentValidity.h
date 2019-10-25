@@ -5,7 +5,7 @@
 namespace SML {
 	namespace Utility {
 		//This bool checks if an environment is valid for crash reporting: no coremods, no memory editing, and no unsafe mode
-		SML_API bool isEnvironmentValid = true;
+		SML_API extern bool isEnvironmentValid;
 
 		//Sets the isEnvironmentValid variable to false.
 		void invalidateEnvironment();

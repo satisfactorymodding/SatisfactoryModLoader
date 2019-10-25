@@ -9,6 +9,8 @@
 
 namespace SML {
 	namespace Utility {
+		bool isEnvironmentValid = true;
+
 		void invalidateEnvironment() {
 			isEnvironmentValid = false;
 		}
