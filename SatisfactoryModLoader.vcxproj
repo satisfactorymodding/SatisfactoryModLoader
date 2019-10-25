@@ -183,7 +183,6 @@
     <ClInclude Include="SatisfactoryModLoader\util\FString.h" />
     <ClInclude Include="SatisfactoryModLoader\util\json.hpp" />
     <ClInclude Include="SatisfactoryModLoader\util\JsonConfig.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\SatisfactoryPakLoader.h" />
     <ClInclude Include="SatisfactorySDK\SDK.hpp" />
@@ -208,7 +207,6 @@
     <ClCompile Include="SatisfactoryModLoader\stdafx.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\EnvironmentValidity.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
     <ClCompile Include="SatisfactoryModLoader\assets\SatisfactoryPakLoader.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_Basic.cpp" />

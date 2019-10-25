@@ -11,6 +11,5 @@ namespace SML {
 		void startLoadingCoremods(const char* currentPath);
 
 		void loadCoremodsInternal(std::string path);
-
 	};
 };

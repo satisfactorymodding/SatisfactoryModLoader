@@ -27,7 +27,6 @@
 #include <thread>
 #include <assets/AssetLoader.h>
 #include <util/Utility.h>
-#include <util/Reflection.h>
 #include <util/JsonConfig.h>
 #include <util/EnvironmentValidity.h>
 #include <mod/Hooks.h>
