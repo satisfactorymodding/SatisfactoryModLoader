@@ -1,8 +1,15 @@
 #pragma once
 #include <string>
+#include <Lib.h>
 
 namespace SML {
 	namespace Utility {
+		//This bool checks if an environment is valid for crash reporting: no coremods, no memory editing, and no unsafe mode
+		SML_API bool isEnvironmentValid = true;
+
+		//Sets the isEnvironmentValid variable to false.
+		void invalidateEnvironment();
+
 		//Checks to make sure that the sig and crash report client are in place
 		void checkForValidEnvironment();
 

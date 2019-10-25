@@ -9,6 +9,10 @@
 
 namespace SML {
 	namespace Utility {
+		void invalidateEnvironment() {
+			isEnvironmentValid = false;
+		}
+
 		void checkForValidEnvironment() {
 			// Get the execution path (\FactoryGame\Binaries\Win64\FactoryGame.exe)
 			char path_c[MAX_PATH];

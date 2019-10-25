@@ -1,6 +1,7 @@
 #include <stdafx.h>
 #include "MemoryObject.h"
 #include <util/Utility.h>
+#include <util/EnvironmentValidity.h>
 #include <string>
 
 namespace SML {
@@ -17,6 +18,8 @@ namespace SML {
 			ReadProcessMemory(process, reinterpret_cast<void*>(obj), &a, sizeof(a), 0);
 		}
 		this->bytes = std::vector<BYTE>(std::begin(a), std::end(a));
+
+		Utility::invalidateEnvironment();
 	}
 
 	template<class O>

@@ -72,7 +72,7 @@ namespace SML {
 									continue;
 								} else {
 									if (debugOutput) {
-										Utility::warning("Running InitMenu for \"", modName, "\"");
+										Utility::info("Running InitMenu for \"", modName, "\"");
 									}
 								}
 
@@ -108,7 +108,7 @@ namespace SML {
 									continue;
 								} else {
 									if (debugOutput) {
-										Utility::warning("Running InitMod for \"", modName, "\"");
+										Utility::info("Running InitMod for \"", modName, "\"");
 									}
 								}
 

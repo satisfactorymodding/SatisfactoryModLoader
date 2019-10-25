@@ -14,6 +14,7 @@ namespace SML {
 	extern bool supressErrors;
 	extern bool chatCommands;
 	extern bool crashReporter;
+	extern bool unsafeMode;
 
 	extern Mod::ModHandler modHandler;
 

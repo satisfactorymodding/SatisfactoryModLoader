@@ -42,6 +42,7 @@ namespace SML {
 	bool supressErrors = false;
 	bool chatCommands = true;
 	bool crashReporter = true;
+	bool unsafeMode = false;
 
 	// Main DLL for loading mod DLLs
 	void startSML() {
@@ -58,6 +59,9 @@ namespace SML {
 
 		// load up all of the configuration information
 		readConfig();
+		if (unsafeMode) {
+			Utility::invalidateEnvironment();
+		}
 		Utility::info("Validating system files...");
 		Utility::checkForValidEnvironment();
 
@@ -125,7 +129,8 @@ namespace SML {
 			{"Debug" , false},
 			{"Supress Errors", false},
 			{"Chat Commands", true},
-			{"Disable Crash Reporter", true}
+			{"Disable Crash Reporter", true},
+			{"Enable Unsafe Mode", false}
 		}, false);
 
 		loadConsole = config["Console"].get<bool>();
@@ -133,6 +138,7 @@ namespace SML {
 		supressErrors = config["Supress Errors"].get<bool>();
 		chatCommands = config["Chat Commands"].get<bool>();
 		crashReporter = config["Disable Crash Reporter"].get<bool>();
+		unsafeMode = config["Enable Unsafe Mode"].get<bool>();
 	}
 
 	//cleans up when the program is killed
@@ -146,6 +152,10 @@ namespace SML {
 		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
 		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
 		Utility::enableCrashReporter(path);
+
+		if (!Utility::isEnvironmentValid) {
+			Utility::error("This log is not valid for bug reports because you have installed coremods, a mod does memory editing, or unsafe mode is enabled in the config. Fix these issues before submitting a crash report!");
+		}
 
 		Utility::info("SML shutting down...");
 		Utility::logFile.flush();
