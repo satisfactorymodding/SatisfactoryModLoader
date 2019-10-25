@@ -59,11 +59,12 @@ namespace SML {
 
 		// load up all of the configuration information
 		readConfig();
-		if (unsafeMode) {
-			Utility::invalidateEnvironment();
-		}
 		Utility::info("Validating system files...");
 		Utility::checkForValidEnvironment();
+		if (unsafeMode) {
+			Utility::invalidateEnvironment();
+			Utility::warning("Unsafe mode enabled! SML will do things that are generally not allowed, so you can't report bugs!");
+		}
 
 		//make sure that SML's target and satisfactory's versions are the same
 		Utility::checkVersion(targetVersion);

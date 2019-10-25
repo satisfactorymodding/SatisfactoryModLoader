@@ -21,7 +21,7 @@ namespace SML {
 
 		//call the setup function of every loaded mod
 		void ModHandler::setupMods() {
-			Utility::info("Starting mod Setup!");
+			Utility::info("Starting mod setup!");
 			this->currentStage = GameStage::SETUP;
 			for (auto&& mod : mods) {
 				mod->setup();
@@ -31,7 +31,7 @@ namespace SML {
 		//call the post setup function of every mod through recursive calling, ensuring the post setups of mod dependencies loaded before the original mod's post setup
 		void ModHandler::postSetupMods() {
 			this->currentStage = GameStage::POST_SETUP;
-			Utility::info("Starting mod Post Setup!");
+			Utility::info("Starting mod post setup!");
 			for (int i = 0; i < mods.size(); i++) {
 				modNameDump.push_back(mods[i]->info.name);
 			}
@@ -87,7 +87,7 @@ namespace SML {
 					}
 				}
 			}
-			Utility::info("Verified dependencies");
+			Utility::info("Dependencies verified!");
 		}
 
 		//get the mod files and load them
@@ -95,12 +95,6 @@ namespace SML {
 			std::string pathExact = path + "\\";
 
 			for (const auto &entry : std::experimental::filesystem::directory_iterator(path)) {
-				/*
-				if (!entry.path().has_extension()) {
-					getFiles(entry.path().string());
-					continue;
-				}
-				*/
 
 				if (entry.path().extension().string() == ".dll") {
 					std::string file = pathExact + entry.path().filename().string();
@@ -119,7 +113,9 @@ namespace SML {
 
 					if (modCreate == nullptr) {
 						Utility::error("Mod DLL ", file, " does not have the required information!");
-						FreeLibrary(dll);
+						if (unsafeMode) {
+							FreeLibrary(dll);
+						}
 						continue;
 					}
 
@@ -127,7 +123,9 @@ namespace SML {
 
 					if (mod == nullptr) {
 						Utility::error("Mod DLL ", file, " returned nullptr from modCreate()!");
-						FreeLibrary(dll);
+						if (unsafeMode) {
+							FreeLibrary(dll);
+						}
 						continue;
 					}
 
@@ -136,7 +134,9 @@ namespace SML {
 					for (auto&& existingMod : mods) {
 						if (existingMod->info.name == mod->info.name) {
 							Utility::warning("Skipping duplicate mod [", existingMod->info.name, "]");
-							FreeLibrary(dll);
+							if (unsafeMode) {
+								FreeLibrary(dll);
+							}
 							isDuplicate = true;
 							break;
 						}
