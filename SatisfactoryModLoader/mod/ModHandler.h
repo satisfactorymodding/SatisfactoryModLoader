@@ -6,8 +6,6 @@
 #include <vector>
 #include <map>
 #include <memory>
-#include <ttvfs.h>
-#include <ttvfs_zip.h>
 
 namespace SML {
 	namespace Mod {

@@ -10,9 +10,6 @@
 #include <detours.h>
 
 #include <cstdio>
-#include <ttvfs.h>
-#include <ttvfs_zip.h>
-
 #include "zip/MemoryModule.h"
 
 namespace SML {

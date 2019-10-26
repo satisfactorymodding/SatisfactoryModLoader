@@ -1,7 +1,7 @@
 #ifndef VFS_ZIP_ARCHIVE_LOADER_H
 #define VFS_ZIP_ARCHIVE_LOADER_H
 
-#include "VFSArchiveLoader.h"
+#include "zip/ttvfs/VFSArchiveLoader.h"
 
 VFS_NAMESPACE_START
 
