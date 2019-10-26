@@ -185,9 +185,10 @@
     <ClInclude Include="SatisfactoryModLoader\util\FString.h" />
     <ClInclude Include="SatisfactoryModLoader\util\json.hpp" />
     <ClInclude Include="SatisfactoryModLoader\util\JsonConfig.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Logging.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
-    <ClInclude Include="SatisfactoryModLoader\zip\MemoryModule.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\SatisfactoryPakLoader.h" />
+	<ClInclude Include="SatisfactoryModLoader\zip\MemoryModule.h" />
     <ClInclude Include="SatisfactorySDK\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
@@ -210,9 +211,10 @@
     <ClCompile Include="SatisfactoryModLoader\stdafx.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\EnvironmentValidity.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Logging.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\ZipHandler.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\zip\MemoryModule.c" />
+	<ClCompile Include="SatisfactoryModLoader\zip\MemoryModule.c" />
     <ClCompile Include="SatisfactoryModLoader\assets\SatisfactoryPakLoader.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_Basic.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_CoreUObject_functions.cpp" />
