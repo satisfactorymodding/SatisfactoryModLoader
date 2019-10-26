@@ -57,11 +57,11 @@ namespace SML {
 			}
 
 			SML_API SDK::ULevel* getLevel() {
-				return reinterpret_cast<SDK::AFGGameState*>(SDK::UWorld::GetWorld()->CurrentLevel);
+				return reinterpret_cast<SDK::ULevel*>(SDK::UWorld::GetWorld()->CurrentLevel);
 			}
 
 			SML_API SDK::UNetDriver* getNetDriver() {
-				return reinterpret_cast<SDK::AFGGameState*>(SDK::UWorld::GetWorld()->NetDriver);
+				return reinterpret_cast<SDK::UNetDriver*>(SDK::UWorld::GetWorld()->NetDriver);
 			}
 
 			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {
