@@ -145,6 +145,9 @@ namespace SML {
 		// Get the coremod path
 		std::string getCoreModPath();
 
+		// Get the hidden pak path
+		std::string getHiddenPakPath();
+
 		// Get the hidden mod path
 		std::string getHiddenModPath();
 

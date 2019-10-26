@@ -99,14 +99,13 @@ namespace SML {
 								pakName = pakName.substr(lastSlash + 1);
 							}
 
-							extractFile(modArchive, objPath, Utility::getPakPath() + "\\" + pakName, archive, true);
+							extractFile(modArchive, objPath, Utility::getHiddenPakPath() + "\\" + pakName, archive, false);
 
 							auto sigName = pakName;
 							auto extension = sigName.find_last_of(".");
 							if (extension != std::string::npos) {
 								sigName = sigName.substr(0, extension);
 							}
-							cleanupPaths.push_back(Utility::getPakPath() + "\\" + sigName + ".sig");
 						}
 						else {
 							Utility::warning("Unkown object type: ", objType);
@@ -175,7 +174,7 @@ namespace SML {
 
 			auto buffer_size = 4096;
 			char* buf = new char[buffer_size];
-			auto total = 0;
+			size_t total = 0;
 			do {
 				size_t bytes = obj->read(buf, buffer_size);
 				outFile.write(buf, bytes);

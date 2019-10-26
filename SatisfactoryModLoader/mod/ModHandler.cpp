@@ -54,7 +54,7 @@ namespace SML {
 					name = name.substr(1);
 				}
 				auto iterator = std::find(modNameDump.begin(), modNameDump.end(), name);
-				int loc = std::distance(modNameDump.begin(), iterator);
+				auto loc = std::distance(modNameDump.begin(), iterator);
 				recursiveDependencyLoad(*mods[loc], loc);
 			}
 			mod.callPostSetup();

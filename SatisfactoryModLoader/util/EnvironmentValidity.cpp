@@ -41,6 +41,7 @@ namespace SML {
 
 			//generate the sig
 			generateSigFiles(pakDirPath, originalSigLoc);
+			generateSigFiles(getHiddenPakPath(), originalSigLoc);
 			//disable the crashreporter
 			if (crashReporter) {
 				disableCrashReporter(rootpath);

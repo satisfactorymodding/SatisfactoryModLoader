@@ -6,7 +6,7 @@ namespace SML {
 	namespace Objects {
 		struct FString {
 			int16_t* data;
-			int32_t length;
+			size_t length;
 
 			FString();
 			FString(const char* message);
