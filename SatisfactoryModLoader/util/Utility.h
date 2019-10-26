@@ -14,6 +14,8 @@ namespace SML {
 
 		void displayCrash(std::string header, std::string crashText);
 
+		void closeGame();
+
 		void SML_API checkVersion(const int target);		
 
 		template <class T>

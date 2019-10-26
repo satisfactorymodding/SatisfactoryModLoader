@@ -67,7 +67,7 @@ namespace SML {
 								// Check if InitMenu cannot be found
 								if (!clazz) {
 									if (debugOutput) {
-										Utility::warning("No InitMenu was found for ", modName);
+										Utility::debug("No InitMenu was found for ", modName);
 									}
 									continue;
 								} else {

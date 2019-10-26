@@ -24,7 +24,7 @@ namespace SML {
 				if (!supressErrors) {
 					int ret = MessageBoxA(NULL, "The version of Satisfactory that you are running is too old for the current version of SML! Please update Satisfactory otherwise SML may run into errors. \nPress Ok to continue at your own discresion or cancel to exit.", "SatisfactoryModLoader Warning", MB_OKCANCEL | MB_DEFBUTTON2 | MB_ICONEXCLAMATION);
 					if (ret == IDCANCEL) {
-						abort();
+						closeGame();
 					}
 				}
 				else {
@@ -40,8 +40,13 @@ namespace SML {
 		void displayCrash(std::string header, std::string crashText) {
 			MessageBoxA(NULL, (crashText + "\nClick OK to exit.").c_str(), header.c_str(), MB_ICONERROR);
 			if (!unsafeMode) {
-				abort();
+				closeGame();
 			}
+		}
+
+		void closeGame() {
+			cleanup();
+			abort();
 		}
 
 		std::string getPakPath() {

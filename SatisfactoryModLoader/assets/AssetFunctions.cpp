@@ -160,7 +160,6 @@ namespace SML {
 				if (modHandler.currentStage != GameStage::RUN) {
 					std::wstring ws(name);
 					Utility::displayCrash("Attempted to get cached asset\n" + std::string(ws.begin(), ws.end()) + "\n before it was cached!");
-					abort();
 				} else {
 					if (modHandler.assetCache.count(name) > 0) {
 						return modHandler.assetCache[name];
