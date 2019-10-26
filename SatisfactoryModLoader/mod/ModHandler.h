@@ -6,6 +6,8 @@
 #include <vector>
 #include <map>
 #include <memory>
+#include <ttvfs.h>
+#include <ttvfs_zip.h>
 
 namespace SML {
 	namespace Mod {
@@ -24,10 +26,14 @@ namespace SML {
 			RUN
 		};
 
-		// holds important information about the loaded mods. It should never be accessed by mods directly.
+		/**
+		* Holds important information about the loaded mods.
+		* It should never be accessed by mods directly.
+		*/
 		class ModHandler {
 		public:
 			std::vector<std::unique_ptr<Mod>> mods;
+			std::vector<HMODULE> dlls;
 
 			std::vector<Registry> commandRegistry;
 			std::vector<Registry> APIRegistry;
@@ -40,14 +46,59 @@ namespace SML {
 
 			GameStage currentStage = GameStage::PRE_CONSTRUCT;
 
-			void loadMods(const char* startingPath);
+			/**
+			* Load all mods from the given path.
+			*/
+			void loadMods();
+
+			/**
+			* Call the setup function of every loaded mod.
+			*/
 			void setupMods();
+
+			/**
+			* Ensure that all dependencies of mods exist.
+			*/
 			void checkDependencies();
+
+			/**
+			* Call the post setup function of every mod through recursive calling, ensuring 
+			* the post setups of mod dependencies loaded before the original mod's post setup.
+			*/
 			void postSetupMods();
+
+			/**
+			* Create mod instance and check for validity.
+			*
+			* Returns true if mod is valid.
+			*/
+			bool createMod(Mod* (*modCreate)(), std::string file);
+
+			/**
+			* Cleanup and destroy
+			*/
+			void destroy();
 		private:
 			std::vector<std::string> modNameDump;
+
+			/**
+			* Recustively load mod dependencies
+			*/
 			void recursiveDependencyLoad(Mod& mod, int i);
+
+			/**
+			* Load mod DLL from given path
+			*/
+			void loadDLL(LPCWSTR sw);
+
+			/**
+			* Get the mod files and load them
+			*/
 			void getFiles(std::string path);
+
+			/**
+			* Find all valid mods
+			*/
 			void findMods(std::string path);
 		};
 	}

@@ -33,11 +33,15 @@
 #include <mod/Coremods.h>
 #include <mod/ModFunctions.h>
 
+#include <chrono>
+#include <thread>
+
 namespace SML {
 	extern "C" const SML_API char SML::smlVersion[] = "1.0.2";
 	const int targetVersion = 106504; //CL of Satisfactory
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
+	Mod::ZipHandler zipHandler;
 	bool loadConsole = true;
 	bool debugOutput = false;
 	bool supressErrors = false;
@@ -45,8 +49,7 @@ namespace SML {
 	bool crashReporter = true;
 	bool unsafeMode = false;
 
-	// Main DLL for loading mod DLLs
-	void startSML() {
+	void initializeConsole() {
 		// launch the game's internal console and hook into it
 		Utility::logFile.open(logName, std::ios_base::out);
 		AllocConsole();
@@ -57,7 +60,16 @@ namespace SML {
 		freopen_s(&fp, "CONOUT$", "w", stderr);
 
 		Utility::info("Attached SatisfactoryModLoader v", modLoaderVersion, " to Satisfactory");
+	}
 
+	// Extract zip files before the engine has started
+	// DO NOT ADD ANY EXTRA LOGIC HERE!!!
+	void extractZips() {
+		zipHandler.extractZips();
+	}
+
+	// Main DLL for loading mod DLLs
+	void startSML() {
 		// load up all of the configuration information
 		readConfig();
 		Utility::info("Validating system files...");
@@ -79,16 +91,11 @@ namespace SML {
 		Assets::AssetLoader::init();
 		Utility::info("Initialized SDK");
 
-
-		// get path
-		char p[MAX_PATH];
-		GetModuleFileNameA(NULL, p, MAX_PATH);
-
 		//load coremods
-		Mod::startLoadingCoremods(p);
+		Mod::startLoadingCoremods();
 
 		// load mods
-		modHandler.loadMods(p);
+		modHandler.loadMods();
 		if (modHandler.mods.size() != 0) {
 			modHandler.setupMods();
 			modHandler.checkDependencies();
@@ -145,7 +152,13 @@ namespace SML {
 
 	//cleans up when the program is killed
 	void cleanup() {
-		modHandler.mods.clear();
+		Utility::debug("Starting SML Cleanup...");
+
+		// Sleep to wait for UE4 pak hooks to expire
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+		modHandler.destroy();
+		zipHandler.destroy();
 
 		char path_c[MAX_PATH];
 		GetModuleFileNameA(NULL, path_c, MAX_PATH);

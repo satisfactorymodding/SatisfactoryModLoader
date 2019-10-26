@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <Windows.h>
 #include <mod/ModHandler.h>
+#include <mod/ZipHandler.h>
 #include <Lib.h>
 
 namespace SML {
@@ -19,7 +20,10 @@ namespace SML {
 	extern bool unsafeMode;
 
 	extern Mod::ModHandler modHandler;
+	extern Mod::ZipHandler zipHandler;
 
+	void initializeConsole();
+	void extractZips();
 	void startSML();
 	void readConfig();
 	void cleanup();

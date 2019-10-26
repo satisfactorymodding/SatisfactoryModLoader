@@ -4,6 +4,7 @@
 #include <string>
 #include <filesystem>
 #include <util/Utility.h>
+#include "zip/MemoryModule.h"
 #include <util/EnvironmentValidity.h>
 
 namespace SML {
@@ -11,13 +12,9 @@ namespace SML {
 		std::vector<std::string> coremodList;
 		std::vector<std::string> delayedCoremods;
 
-		void startLoadingCoremods(const char* currentPath) {
-			std::string appPath(currentPath);
-			size_t pos = appPath.find_last_of('\\');
-			CreateDirectoryA((appPath.substr(0, pos) + "\\coremods").c_str(), NULL); //create the directory if it doesn't exist
-			std::string path = appPath.substr(0, pos) + "\\coremods";
-
-			loadCoremodsInternal(path);
+		void startLoadingCoremods() {
+			loadCoremodsInternal(Utility::getCoreModPath());
+			loadCoremodsInternal(Utility::getHiddenCoreModPath());
 		}
 
 		void loadCoremodsInternal(std::string path) {

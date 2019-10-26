@@ -15,7 +15,7 @@ namespace SML {
 			isEnvironmentValid = false;
 		}
 
-		void checkForValidEnvironment() {
+		std::string getRootPath() {
 			// Get the execution path (\FactoryGame\Binaries\Win64\FactoryGame.exe)
 			char path_c[MAX_PATH];
 			GetModuleFileNameA(NULL, path_c, MAX_PATH);
@@ -23,10 +23,14 @@ namespace SML {
 			path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
 			path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
 			path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
-			std::string rootpath = path;
-			path = path + "\\Content\\Paks";
-			std::string pakfilepath = path;
-			std::string originalSigLoc = path.append("\\FactoryGame-WindowsNoEditor.sig");
+			return path;
+		}
+
+		void checkForValidEnvironment() {
+			std::string rootpath = getRootPath();
+			std::string pakDirPath = getPakPath();
+			info(pakDirPath);
+			std::string originalSigLoc = pakDirPath + "\\FactoryGame-WindowsNoEditor.sig";
 			std::filesystem::path originalSigPath(originalSigLoc);
 			if (std::filesystem::exists(originalSigPath)) {
 				info("Sig file in place!");
@@ -34,8 +38,9 @@ namespace SML {
 			else {
 				displayCrash("Satisfactory Install Error", "SatisfactoryModLoader has detected an error with your Satisfactory installation.\nPlease click 'verify' in the Epic Games Launcher and reinstall Satisfactory.");
 			}
+
 			//generate the sig
-			generateSigFiles(pakfilepath, originalSigLoc);
+			generateSigFiles(pakDirPath, originalSigLoc);
 			//disable the crashreporter
 			if (crashReporter) {
 				disableCrashReporter(rootpath);

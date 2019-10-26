@@ -4,6 +4,9 @@
 
 namespace SML {
 	namespace Utility {
+		// Get the root game path
+		std::string getRootPath();
+
 		//This bool checks if an environment is valid for crash reporting: no coremods, no memory editing, and no unsafe mode
 		SML_API extern bool isEnvironmentValid;
 
