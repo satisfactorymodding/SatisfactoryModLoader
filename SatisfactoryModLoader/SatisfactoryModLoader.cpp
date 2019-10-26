@@ -42,12 +42,6 @@ namespace SML {
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
 	Mod::ZipHandler zipHandler;
-	bool loadConsole = true;
-	bool debugOutput = false;
-	bool supressErrors = false;
-	bool chatCommands = true;
-	bool crashReporter = true;
-	bool unsafeMode = false;
 
 	void initializeConsole() {
 		// launch the game's internal console and hook into it

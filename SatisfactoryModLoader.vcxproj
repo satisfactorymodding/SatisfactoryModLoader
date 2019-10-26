@@ -156,6 +156,7 @@
     <ClInclude Include="SatisfactoryModLoader\assets\AssetFunctions.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\AssetLoader.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\FObjectSpawnParameters.h" />
+    <ClInclude Include="SatisfactoryModLoader\Configs.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Etc.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Global.h" />
     <ClInclude Include="SatisfactoryModLoader\game\Input.h" />
@@ -188,12 +189,13 @@
     <ClInclude Include="SatisfactoryModLoader\util\Logging.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
     <ClInclude Include="SatisfactoryModLoader\assets\SatisfactoryPakLoader.h" />
-	<ClInclude Include="SatisfactoryModLoader\zip\MemoryModule.h" />
+    <ClInclude Include="SatisfactoryModLoader\zip\MemoryModule.h" />
     <ClInclude Include="SatisfactorySDK\SDK.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SatisfactoryModLoader\assets\AssetFunctions.cpp" />
     <ClCompile Include="SatisfactoryModLoader\assets\AssetLoader.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\Configs.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\API.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\Etc.cpp" />
     <ClCompile Include="SatisfactoryModLoader\game\Global.cpp" />
@@ -214,7 +216,7 @@
     <ClCompile Include="SatisfactoryModLoader\util\Logging.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\ZipHandler.cpp" />
-	<ClCompile Include="SatisfactoryModLoader\zip\MemoryModule.c" />
+    <ClCompile Include="SatisfactoryModLoader\zip\MemoryModule.c" />
     <ClCompile Include="SatisfactoryModLoader\assets\SatisfactoryPakLoader.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_Basic.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_CoreUObject_functions.cpp" />
