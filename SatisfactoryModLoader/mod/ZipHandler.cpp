@@ -112,9 +112,6 @@ namespace SML {
 						}
 					}
 				}
-				else {
-					Utility::warning("Unkown mod file type: ", entry.path().filename().string());
-				}
 			}
 		}
 
