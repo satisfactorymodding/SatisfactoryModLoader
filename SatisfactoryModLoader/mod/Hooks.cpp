@@ -168,7 +168,7 @@ namespace SML {
 						}
 						else if (data.argv[1] == "die") {
 							Utility::info("Hard shutdown requested!");
-							closeGame();
+							Utility::closeGame();
 						}
 						else if (data.argv[1] == "commands") {
 							for (Registry r : modHandler.commandRegistry) {
