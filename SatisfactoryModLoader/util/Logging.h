@@ -2,6 +2,7 @@
 #include <Lib.h>
 #include <fstream>
 #include <iostream>
+#include <Configs.h>
 
 namespace SML {
 	namespace Utility {
@@ -76,8 +77,10 @@ namespace SML {
 
 		template<typename First, typename ...Args>
 		void debug(First&& arg0, Args&& ...args) {
-			writeHeader("SML", LogType::Debug);
-			log(LogType::Debug, arg0, args...);
+			if (debugOutput) {
+				writeHeader("SML", LogType::Debug);
+				log(LogType::Debug, arg0, args...);
+			}
 		}
 
 		template<typename First, typename ...Args>
@@ -100,8 +103,10 @@ namespace SML {
 
 		template<typename First, typename ...Args>
 		void debugMod(std::string mod, First&& arg0, Args&& ...args) {
-			writeHeader(mod, LogType::ModDebug);
-			log(LogType::ModDebug, arg0, args...);
+			if (debugOutput) {
+				writeHeader(mod, LogType::ModDebug);
+				log(LogType::ModDebug, arg0, args...);
+			}
 		}
 
 		template<typename First, typename ...Args>

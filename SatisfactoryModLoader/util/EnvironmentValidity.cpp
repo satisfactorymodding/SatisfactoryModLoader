@@ -58,9 +58,7 @@ namespace SML {
 						continue; //skip sigfiles that exist
 					}
 					else {
-						if (debugOutput) {
-							info("Making sig: ", sigfile);
-						}
+						debug("Making sig: ", sigfile);
 						std::filesystem::path newSigPath(sigfile);
 						std::filesystem::path originalSig(originalSigPath);
 						std::filesystem::copy_file(originalSig, newSigPath); //copy original sig to the new sig

@@ -71,9 +71,7 @@ namespace SML {
 									}
 									continue;
 								} else {
-									if (debugOutput) {
-										Utility::info("Running InitMenu for \"", modName, "\"");
-									}
+									Utility::debug("Running InitMenu for ", modName, "");
 								}
 
 								// Spawn the actor somewhere
@@ -101,15 +99,13 @@ namespace SML {
 
 								// Check if InitMod cannot be found
 								if (!clazz) {
-									Utility::warning("No InitMod was found for \"", modName, "\"");
+									Utility::warning("No InitMod was found for ", modName, "");
 									if (debugOutput) {
 										Utility::warning("Your InitMod actor MUST be in this path: /Content/FactoryGame/", modName, " and called InitMod (no spaces) and it must inherit from actor.");
 									}
 									continue;
 								} else {
-									if (debugOutput) {
-										Utility::info("Running InitMod for \"", modName, "\"");
-									}
+									Utility::debug("Running InitMod for ", modName, "");
 								}
 
 								// Spawn the actor somewhere
