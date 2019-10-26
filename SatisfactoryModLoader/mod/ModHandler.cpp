@@ -156,8 +156,8 @@ namespace SML {
 						}
 						if (!unsafeMode) {
 							FreeLibrary(dll);
+							continue;
 						}
-						continue;
 					}
 
 					std::string s = entry.path().filename().string();
