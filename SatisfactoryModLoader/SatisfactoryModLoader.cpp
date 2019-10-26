@@ -34,7 +34,7 @@
 #include <mod/ModFunctions.h>
 
 namespace SML {
-	extern "C" const SML_API char SML::smlVersion[] = "1.0.0";
+	extern "C" const SML_API char SML::smlVersion[] = "1.0.2";
 	const int targetVersion = 106504; //CL of Satisfactory
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
