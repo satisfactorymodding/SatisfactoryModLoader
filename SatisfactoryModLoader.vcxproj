@@ -175,6 +175,7 @@
     <ClInclude Include="SatisfactoryModLoader\mod\ModFunctions.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\ModHandler.h" />
     <ClInclude Include="SatisfactoryModLoader\mod\Registry.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\ZipHandler.h" />
     <ClInclude Include="SatisfactoryModLoader\SatisfactoryModLoader.h" />
     <ClInclude Include="SatisfactoryModLoader\stdafx.h" />
     <ClInclude Include="SatisfactoryModLoader\targetver.h" />
@@ -210,6 +211,7 @@
     <ClCompile Include="SatisfactoryModLoader\util\EnvironmentValidity.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\mod\ZipHandler.cpp" />
     <ClCompile Include="SatisfactoryModLoader\zip\MemoryModule.c" />
     <ClCompile Include="SatisfactoryModLoader\assets\SatisfactoryPakLoader.cpp" />
     <ClCompile Include="SatisfactorySDK\SDK\FG_Basic.cpp" />

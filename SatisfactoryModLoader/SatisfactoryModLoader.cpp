@@ -39,6 +39,7 @@
 namespace SML {
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
+	Mod::ZipHandler zipHandler;
 	bool loadConsole = true;
 	bool debugOutput = false;
 	bool supressErrors = false;
@@ -62,7 +63,7 @@ namespace SML {
 	// Extract zip files before the engine has started
 	// DO NOT ADD ANY EXTRA LOGIC HERE!!!
 	void extractZips() {
-		modHandler.extractZips();
+		zipHandler.extractZips();
 	}
 
 	// Main DLL for loading mod DLLs
@@ -155,6 +156,7 @@ namespace SML {
 		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 
 		modHandler.destroy();
+		zipHandler.destroy();
 
 		char path_c[MAX_PATH];
 		GetModuleFileNameA(NULL, path_c, MAX_PATH);

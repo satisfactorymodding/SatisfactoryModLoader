@@ -34,7 +34,6 @@ namespace SML {
 		public:
 			std::vector<std::unique_ptr<Mod>> mods;
 			std::vector<HMODULE> dlls;
-			std::vector<std::string> cleanupPaths;
 
 			std::vector<Registry> commandRegistry;
 			std::vector<Registry> APIRegistry;
@@ -46,12 +45,6 @@ namespace SML {
 			std::map<int, const wchar_t*> assetIdRegistry;
 
 			GameStage currentStage = GameStage::PRE_CONSTRUCT;
-
-			/**
-			* Extract zip files before the engine has started
-			* DO NOT ADD ANY EXTRA LOGIC HERE!!!
-			*/
-			void extractZips();
 
 			/**
 			* Load all mods from the given path.
@@ -75,6 +68,13 @@ namespace SML {
 			void postSetupMods();
 
 			/**
+			* Create mod instance and check for validity.
+			*
+			* Returns true if mod is valid.
+			*/
+			bool createMod(Mod* (*modCreate)(), std::string file);
+
+			/**
 			* Cleanup and destroy
 			*/
 			void destroy();
@@ -87,21 +87,9 @@ namespace SML {
 			void recursiveDependencyLoad(Mod& mod, int i);
 
 			/**
-			* Create mod instance and check for validity.
-			*
-			* Returns true if mod is valid.
-			*/
-			bool createMod(Mod* (*modCreate)());
-
-			/**
 			* Load mod DLL from given path
 			*/
 			void loadDLL(LPCWSTR sw);
-
-			/**
-			* Load mod DLL from memory
-			*/
-			void loadMemoryDLL(void *data, size_t size);
 
 			/**
 			* Get the mod files and load them
@@ -112,11 +100,6 @@ namespace SML {
 			* Find all valid mods
 			*/
 			void findMods(std::string path);
-
-			/**
-			* Extract file from archive
-			*/
-			void extractFile(ttvfs::Dir* modArchive, std::string objPath, std::string outFilePath, std::string archive, bool cleanup);
 		};
 	}
 }

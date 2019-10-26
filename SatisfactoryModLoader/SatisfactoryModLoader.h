@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <Windows.h>
 #include <mod/ModHandler.h>
+#include <mod/ZipHandler.h>
 
 namespace SML {
 	static const std::string modLoaderVersion = "1.0.1"; // SML's version
@@ -17,6 +18,7 @@ namespace SML {
 	extern bool unsafeMode;
 
 	extern Mod::ModHandler modHandler;
+	extern Mod::ZipHandler zipHandler;
 
 	void initializeConsole();
 	void extractZips();
