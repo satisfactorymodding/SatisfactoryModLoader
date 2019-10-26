@@ -26,12 +26,15 @@ SuperCoder will help you with your problem.
 Note: Before releasing your mod, make sure to remove all of the Basemod stuff! Otherwise it may cause issues.
 */
 
+//don't mess with this unless you want compile errors
+bool SML::debugOutput = false;
+
 // Use the namespaces so you have to type less stuff when adding on to your mod
 using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.1"
+#define SML_VERSION "1.0.2"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"

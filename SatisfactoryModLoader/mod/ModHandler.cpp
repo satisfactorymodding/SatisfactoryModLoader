@@ -119,7 +119,9 @@ namespace SML {
 					std::string msg = mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
 					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Warning", MB_ICONWARNING);
 				}
-				return false;
+				if (!unsafeMode) {
+					return false;
+				}
 			}
 
 			Utility::debug("Loaded [", mod->info.name, "@", mod->info.version, "]");
