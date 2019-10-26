@@ -150,7 +150,7 @@ namespace SML {
 			*
 			* @author SuperCoder79
 			*/
-			SML_API int registerAssetForCache(const wchar_t* name);
+			SML_API size_t registerAssetForCache(const wchar_t* name);
 
 			/**
 			* Returns the UObject pointer from the cache for spawning.

@@ -121,8 +121,8 @@ namespace SML {
 				pointer(getPlayerController(), fstring);
 			}
 
-			SML_API int registerAssetForCache(const wchar_t* name) {
-				int id = 0;
+			SML_API size_t registerAssetForCache(const wchar_t* name) {
+				size_t id = 0;
 				if (modHandler.currentStage == GameStage::SETUP || modHandler.currentStage == GameStage::POST_SETUP) {
 					if (modHandler.assetCache.count(name) > 0) {
 						Utility::warning("Skipping cache registration of existing asset ", name);
@@ -166,7 +166,7 @@ namespace SML {
 						return modHandler.assetCache[name];
 					}
 					else {
-						int id = modHandler.assetCache.size();
+						size_t id = modHandler.assetCache.size();
 						modHandler.assetCache.emplace(name, nullptr);
 						modHandler.assetCache[name] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), name);
 						modHandler.assetIdRegistry.emplace(id, name);

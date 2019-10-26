@@ -60,6 +60,12 @@ namespace SML {
 			return path;
 		}
 
+		std::string getHiddenPakPath() {
+			auto path = Utility::getRootPath() + "\\Content\\Paks\\hiddenpaks";;
+			createDirectory(path, true);
+			return path;
+		}
+
 		std::string getHiddenModPath() {
 			auto path = Utility::getRootPath() + "\\Binaries\\Win64\\hiddenmods";;
 			createDirectory(path, true);
@@ -76,6 +82,7 @@ namespace SML {
 			Utility::debug("Deleting previous hidden directories");
 			deleteDirectoryRecursive(getHiddenModPath());
 			deleteDirectoryRecursive(getHiddenCoreModPath());
+			deleteDirectoryRecursive(getHiddenPakPath());
 		}
 
 		void deleteDirectoryRecursive(std::string path) {
