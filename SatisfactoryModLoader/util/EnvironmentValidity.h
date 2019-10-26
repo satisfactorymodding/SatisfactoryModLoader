@@ -1,10 +1,17 @@
 #pragma once
 #include <string>
+#include <Lib.h>
 
 namespace SML {
 	namespace Utility {
 		// Get the root game path
 		std::string getRootPath();
+
+		//This bool checks if an environment is valid for crash reporting: no coremods, no memory editing, and no unsafe mode
+		SML_API extern bool isEnvironmentValid;
+
+		//Sets the isEnvironmentValid variable to false.
+		void invalidateEnvironment();
 
 		//Checks to make sure that the sig and crash report client are in place
 		void checkForValidEnvironment();

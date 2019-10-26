@@ -78,9 +78,12 @@ namespace SML {
 		void displayCrash(std::string crashText) {
 			displayCrash(crashText, "SatisfactoryModLoader has crashed!");
 		}
+
 		void displayCrash(std::string header, std::string crashText) {
-			MessageBoxA(NULL, (crashText + "\n\nClick OK to exit.").c_str(), header.c_str(), MB_ICONERROR);
-			abort();
+			MessageBoxA(NULL, (crashText + "\nClick OK to exit.").c_str(), header.c_str(), MB_ICONERROR);
+			if (!unsafeMode) {
+				abort();
+			}
 		}
 
 		std::string getPakPath() {

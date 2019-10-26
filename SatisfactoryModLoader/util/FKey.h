@@ -8,8 +8,7 @@ namespace SML {
 	namespace Objects {
 		struct ITextData {
 		public:
-			virtual ~ITextData()
-			{
+			virtual ~ITextData() {
 			}
 
 			/**

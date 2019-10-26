@@ -24,6 +24,7 @@ namespace SML {
 				if (entry.path().extension().string() == ".dll") {
 					std::string libPath = rootPath + entry.path().filename().string();
 					HMODULE hLib = LoadLibraryExA(libPath.c_str(), NULL, DONT_RESOLVE_DLL_REFERENCES);
+					Utility::invalidateEnvironment();
 
 					if (GetProcAddress(hLib, "DELAYED_LOAD")) {
 						Utility::warning("Warning: Coremod loaded -> ", entry.path().filename(), " (DELAYED_LOAD). Please remove coremods before submitting bug reports!");

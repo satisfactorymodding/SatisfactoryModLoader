@@ -86,6 +86,14 @@ namespace SML {
 			SML_API void registerEvent(std::string name, PVOID func);
 
 			/**
+			* Checks if a pak file exists in the system.
+			* Internally, this just does a simple file system check.
+			*
+			* @author SuperCoder79
+			*/
+			SML_API bool doesPakExist(std::string name);
+
+			/**
 			* Ensures that the dll mod is loaded with a corresponding pak file.
 			* This is useful for when users forget to install the pak file, but remembered to install the dll (somehow)
 			* 

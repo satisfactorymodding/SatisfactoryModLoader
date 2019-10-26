@@ -4,6 +4,7 @@
 #include <fstream>
 #include <util/json.hpp>
 #include <direct.h>
+#include <SatisfactoryModLoader.h>
 
 using json = nlohmann::json;
 
@@ -12,7 +13,9 @@ namespace SML {
 		class JsonConfig {
 		public:
 			static void save(const std::string& name, const json& data, bool useDefaultPath = true) {
-				//info("Saving: " + name);
+				if (debugOutput) {
+					info("Saving config: " + name);
+				}
 
 				if (useDefaultPath) {
 					std::string stringpath = defaultPath;
@@ -36,7 +39,9 @@ namespace SML {
 				out.close();
 			}
 			static json load(const std::string& name, const json& defaultValues, bool useDefaultPath = true) {
-				//info("Loading: " + name);
+				if (debugOutput) {
+					info("Loading config: " + name);
+				}
 
 				if (!exists(name, useDefaultPath)) {
 					save(name, defaultValues, useDefaultPath);

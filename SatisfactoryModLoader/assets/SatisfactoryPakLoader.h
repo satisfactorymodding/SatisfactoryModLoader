@@ -18,6 +18,7 @@ namespace SML {
 		namespace {
 			std::vector<SML::Objects::UObject*> mods; // Contains all mod actors
 			std::wstring modNames; // Contains all mod names (seperated by a comma)
+			Objects::FOutputDevice output;
 		}
 
 		/** Initializes SPL */

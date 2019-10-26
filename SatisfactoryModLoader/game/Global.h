@@ -44,6 +44,7 @@ namespace SML {
 		class AFGPlayerController {
 		public:
 			void BeginPlay();
+			void EndPlay();
 			void EnterChatMessage(FString *inMessage);
 			void OnAttentionPingPressed();
 			void Suicide();
@@ -53,6 +54,7 @@ namespace SML {
 		DEFINE_METHOD(AFGPlayerController::EnterChatMessage);
 		DEFINE_METHOD(AFGPlayerController::OnAttentionPingPressed);
 		DEFINE_METHOD(AFGPlayerController::Suicide);
+		DEFINE_METHOD(AFGPlayerController::EndPlay);
 
 		class FEngineLoop {
 		public:

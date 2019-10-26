@@ -31,7 +31,7 @@ using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.0"
+#define SML_VERSION "1.0.1"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"

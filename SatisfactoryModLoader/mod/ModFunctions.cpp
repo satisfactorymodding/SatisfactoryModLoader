@@ -97,8 +97,8 @@ namespace SML {
 				}
 			}
 
-			//Makes sure a pak file of this name exists
-			SML_API void setDependsOnPak(std::string name) {
+			//checks if a pak exists
+			SML_API bool doesPakExist(std::string name) {
 				char path_c[MAX_PATH];
 				GetModuleFileNameA(NULL, path_c, MAX_PATH);
 				std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
@@ -112,6 +112,14 @@ namespace SML {
 				std::string pakLoc = path.append("\\" + name);
 				std::filesystem::path pakPath(pakLoc);
 				if (!std::filesystem::exists(pakPath)) {
+					return false;
+				}
+				return true;
+			}
+
+			//raises an error if a pak doesn't exist
+			SML_API void setDependsOnPak(std::string name) {
+				if (!doesPakExist(name)) {
 					Utility::displayCrash("You are missing " + name + " from your install!\nMake sure you installed your mods properly!\n");
 				}
 			}

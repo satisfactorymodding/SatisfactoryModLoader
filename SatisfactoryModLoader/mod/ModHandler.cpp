@@ -1,7 +1,6 @@
 #include <stdafx.h>
 #include <filesystem>
 #include <util/Utility.h>
-#include <util/Reflection.h>
 #include <SatisfactoryModLoader.h>
 #include "ModHandler.h"
 #include <util/json.hpp>
@@ -129,7 +128,7 @@ namespace SML {
 		}
 
 		void ModHandler::setupMods() {
-			Utility::info("Starting mod Setup!");
+			Utility::info("Starting mod setup!");
 			this->currentStage = GameStage::SETUP;
 			for (auto&& mod : mods) {
 				mod->setup();
@@ -138,7 +137,7 @@ namespace SML {
 
 		void ModHandler::postSetupMods() {
 			this->currentStage = GameStage::POST_SETUP;
-			Utility::info("Starting mod Post Setup!");
+			Utility::info("Starting mod post setup!");
 			for (int i = 0; i < mods.size(); i++) {
 				modNameDump.push_back(mods[i]->info.name);
 			}
@@ -192,24 +191,29 @@ namespace SML {
 					}
 				}
 			}
-			Utility::info("Verified dependencies");
+			Utility::info("Dependencies verified!");
 		}
 
 		bool ModHandler::createMod(Mod* (*modCreate)()) {
-			if (modCreate == nullptr) {
-				Utility::error("Mod is missing modCreate() function!");
-				return false;
-			}
+      if (modCreate == nullptr) {
+        Utility::error("Mod DLL ", file, " does not have the required information!");
+        if (unsafeMode) {
+          FreeLibrary(dll);
+        }
+        continue;
+      }
 
 			std::unique_ptr<Mod> mod{ modCreate() };
-
-			if (mod == nullptr) {
-				Utility::error("Mod returned nullptr from modCreate()!");
-				return false;
-			}
+      
+      if (mod == nullptr) {
+        Utility::error("Mod DLL ", file, " returned nullptr from modCreate()!");
+        if (unsafeMode) {
+          FreeLibrary(dll);
+        }
+        continue;
+      }
 
 			// check if the mod has already been loaded
-			bool isDuplicate = false;
 			for (auto&& existingMod : mods) {
 				if (existingMod->info.name == mod->info.name) {
 					Utility::warning("Skipping duplicate mod [", existingMod->info.name, "]");
@@ -217,14 +221,19 @@ namespace SML {
 				}
 			}
 
-			//check if modloader's version is the same as the mod's target version
-			size_t modTVOffset = mod->info.loaderVersion.find_last_of(".");
-			size_t SMLOffset = modLoaderVersion.find_last_of(".");
-			if (!(mod->info.loaderVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
-				std::string msg = "Mod " + mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
-				MessageBoxA(NULL, msg.c_str(), "Mod Loading Warning", MB_ICONWARNING);
-				return false;
-			}
+      //check if modloader's version is the same as the mod's target version
+      size_t modTVOffset = mod->info.loaderVersion.find_last_of(".");
+      size_t SMLOffset = modLoaderVersion.find_last_of(".");
+      if (!(mod->info.loaderVersion.substr(0, modTVOffset) == modLoaderVersion.substr(0, SMLOffset))) {
+        if (!supressErrors) {
+          std::string msg = mod->info.name + " does not match SML's version! Please ask the mod developer (" + mod->info.authors + ") to update their mod. Press OK to continue mod loading.";
+          MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Warning", MB_ICONWARNING);
+        }
+        if (!unsafeMode) {
+          FreeLibrary(dll);
+        }
+        return false;
+      }
 
 			Utility::debug("Loaded [", mod->info.name, "@", mod->info.version, "]");
 
@@ -265,9 +274,7 @@ namespace SML {
 			std::string pathExact = path + "\\";
 
 			for (const auto &entry : std::experimental::filesystem::directory_iterator(path)) {
-
 				if (std::filesystem::is_directory(entry.path().string())) {
-					getFiles(entry.path().string());
 					continue;
 				}
 
@@ -307,6 +314,7 @@ namespace SML {
 					Utility::error("Failed to free library: ", GetLastError());
 				}
 			}
+
 
 			dlls.clear();
 
