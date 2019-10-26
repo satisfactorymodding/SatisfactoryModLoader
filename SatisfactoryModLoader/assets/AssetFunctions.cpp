@@ -15,6 +15,7 @@
 
 namespace SML {
 	namespace Assets {
+		//If you use these, i'll deconstruct a power pole somewhere in your factory >:)
 		SML_API SDK::UWorld** CurrentWorld = nullptr;
 		SML_API SDK::AFGCharacterPlayer* SinglePlayerCharacter = nullptr;
 		SML_API SDK::AFGPlayerController* SinglePlayerController = nullptr;
@@ -45,6 +46,22 @@ namespace SML {
 
 			SML_API SDK::AFGPlayerController* getPlayerController() {
 				return reinterpret_cast<SDK::AFGPlayerController*>(SDK::UWorld::GetWorld()->OwningGameInstance->LocalPlayers[0]->PlayerController);
+			}
+
+			SML_API SDK::UFGGameInstance* getGameInstance() {
+				return reinterpret_cast<SDK::UFGGameInstance*>(SDK::UWorld::GetWorld()->OwningGameInstance);
+			}
+
+			SML_API SDK::AFGGameState* getGameState() {
+				return reinterpret_cast<SDK::AFGGameState*>(SDK::UWorld::GetWorld()->GameState);
+			}
+
+			SML_API SDK::ULevel* getLevel() {
+				return reinterpret_cast<SDK::AFGGameState*>(SDK::UWorld::GetWorld()->CurrentLevel);
+			}
+
+			SML_API SDK::UNetDriver* getNetDriver() {
+				return reinterpret_cast<SDK::AFGGameState*>(SDK::UWorld::GetWorld()->NetDriver);
 			}
 
 			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {

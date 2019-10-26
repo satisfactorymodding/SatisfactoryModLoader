@@ -77,6 +77,34 @@ namespace SML {
 			SML_API SDK::AFGPlayerController* getPlayerController();
 
 			/**
+			* Get the game instance
+			* 
+			* @author SuperCoder79
+			*/
+			SML_API SDK::UFGGameInstance* getGameInstance();
+
+			/**
+			* Get the game state
+			*
+			* @author SuperCoder79
+			*/
+			SML_API SDK::AFGGameState* getGameState();
+
+			/**
+			* Get the game level
+			* 
+			* @author SuperCoder79
+			*/
+			SML_API SDK::ULevel* getLevel();
+
+			/**
+			* Get the game's net driver. No idea if this actually works!
+			*
+			* @author SuperCoder79
+			*/
+			SML_API SDK::UNetDriver* getNetDriver();
+
+			/**
 			* Spawn an actor at the player, offset by the XYZ values provided.
 			*
 			* @author Crystallin
