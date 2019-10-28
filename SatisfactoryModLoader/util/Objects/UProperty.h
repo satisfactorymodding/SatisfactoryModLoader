@@ -133,5 +133,21 @@ namespace SML {
 			*/
 			SML_API static UClass* staticClass();
 		};
+
+		/**
+		* Representation of a UObject* attribute of a UClass
+		*/
+		class UObjectProperty : public UProperty {
+		public:
+			UClass* objClass;
+		};
+
+		/**
+		* Representation of a MulticastDelegate attribute of a UClass
+		*/
+		class UMulticastDelegateProperty : public UProperty {
+		public:
+			UFunction* sigFunc;
+		};
 	}
 }

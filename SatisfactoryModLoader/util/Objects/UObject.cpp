@@ -14,7 +14,7 @@ namespace SML {
 			return countElems;
 		}
 
-		FUObjectItem const* FChunkedFixedUObjectArray::getObjPtr(int index) const {
+		FUObjectItem* FChunkedFixedUObjectArray::getObjPtr(int index) const {
 			if (count() <= index) return nullptr;
 			auto cIndex = index / elemsPerChunk;
 			auto inChunk = index % elemsPerChunk;
@@ -22,8 +22,14 @@ namespace SML {
 			return chunk + inChunk;
 		}
 
-		FUObjectItem const& FChunkedFixedUObjectArray::get(int index) const {
+		FUObjectItem& FChunkedFixedUObjectArray::get(int index) const {
 			return *getObjPtr(index);
+		}
+
+		int FUObjectArray::allocSerialnum(int index) {
+			static int(*alloc)(FUObjectArray*, int) = nullptr;
+			if (!alloc) alloc = (int(*)(FUObjectArray*, int)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FUObjectArray::AllocateSerialNumber");
+			return (index) ? alloc(this, index) : 0;
 		}
 
 		/* UObject */
@@ -95,6 +101,16 @@ namespace SML {
 
 		bool UObject::isValid() {
 			return isValid(this);
+		}
+
+		bool UObject::isA(UClass* clazz) {
+			if (!this || !clazz) return false;
+			UStruct* super = this->clazz;
+			while (super) {
+				if (super == clazz) return true;
+				super = super->super;
+			}
+			return false;
 		}
 
 		UObject* UObject::createDefaultSubobject(FName name, UClass* type, UClass* retType, bool required, bool abstract, bool transient) {

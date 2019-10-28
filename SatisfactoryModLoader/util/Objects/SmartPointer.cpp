@@ -6,49 +6,48 @@
 
 namespace SML {
 	namespace Objects {
-		WeakPtr::WeakPtr(UObject * o) {
-			index = o->indexInternal;
-			serial = UObject::getObjs().get(index).serNum;
+		FWeakObjectPtr::FWeakObjectPtr(UObject * o) {
+			(*this) = o;
 		}
 		
-		bool WeakPtr::isValid() {
+		bool FWeakObjectPtr::isValid() {
 			auto p = get();
 			return p;
 		}
 
-		UObject* WeakPtr::operator*() {
+		UObject* FWeakObjectPtr::operator*() {
 			auto p = get();
 			if (!p) throw std::exception("weakpointer is not valid, can't dereference");
 			return p;
 		}
 
-		UObject* WeakPtr::operator->() {
+		UObject* FWeakObjectPtr::operator->() {
 			auto p = get();
 			if (!p) throw std::exception("access invalid weakpointer");
 			return p;
 		}
 
-		bool WeakPtr::operator==(const WeakPtr & o) const {
+		bool FWeakObjectPtr::operator==(const FWeakObjectPtr & o) const {
 			return o.index == index && o.serial == serial;
 		}
 
-		void WeakPtr::operator=(const WeakPtr & o) {
+		void FWeakObjectPtr::operator=(const FWeakObjectPtr & o) {
 			index = o.index;
 			serial = o.serial;
 		}
 
-		void WeakPtr::operator=(UObject * o) {
+		void FWeakObjectPtr::operator=(UObject * o) {
 			index = o->indexInternal;
-			serial = UObject::getObjs().get(index).serNum;
+			serial = UObject::getObjs().get(index).serNum = UObject::objs->allocSerialnum(index);
 		}
 
-		bool WeakPtr::operator<(const WeakPtr & o) const {
+		bool FWeakObjectPtr::operator<(const FWeakObjectPtr & o) const {
 			if (index < o.index) return true;
 			if (index > o.index) return true;
 			return serial < o.serial;
 		}
 
-		UObject* WeakPtr::get() {
+		UObject* FWeakObjectPtr::get() {
 			auto oi = UObject::getObjs().getObjPtr(index);
 			if (!oi || (oi->serNum != serial) || !oi->obj->isValid()) return nullptr;
 			return oi->obj;

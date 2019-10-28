@@ -4,22 +4,20 @@
 
 namespace SML {
 	namespace Objects {
-		class WeakPtr {
-		private:
-			int serial;
-			int index;
+		struct FWeakObjectPtr {
+			std::int32_t index;
+			std::int32_t serial;
 
-		public:
-			SML_API WeakPtr(UObject* o);
+			SML_API FWeakObjectPtr(UObject* o);
 
 			SML_API bool isValid();
 			SML_API UObject* get();
 			SML_API UObject* operator*();
 			SML_API UObject* operator->();
-			SML_API bool operator==(const WeakPtr& o) const;
-			SML_API void operator=(const WeakPtr& o);
+			SML_API bool operator==(const FWeakObjectPtr& o) const;
+			SML_API void operator=(const FWeakObjectPtr& o);
 			SML_API void operator=(UObject* o);
-			SML_API bool operator<(const WeakPtr& o) const;
+			SML_API bool operator<(const FWeakObjectPtr& o) const;
 		};
 	}
 }

@@ -328,6 +328,10 @@ namespace SML {
 		}
 
 		size_t PropertyBuilder::getSize() {
+			switch (structType) {
+			case Struct:
+				return ((SDK::UScriptStruct*)((FStructPropertyParams*)params)->scriptStructFunc())->PropertySize;
+			}
 			return getSize(params->type);
 		}
 
@@ -390,9 +394,6 @@ namespace SML {
 				break;
 			case EPropertyClass::Str:
 				size = sizeof(FString);
-				break;
-			case EPropertyClass::Struct:
-				size = sizeof(void*);
 				break;
 			case EPropertyClass::Text:
 				size = sizeof(SDK::FText);

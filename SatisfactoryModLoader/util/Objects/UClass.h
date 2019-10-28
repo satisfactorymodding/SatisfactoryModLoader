@@ -4,6 +4,7 @@
 
 #include "UStruct.h"
 #include "UFunction.h"
+#include "FFrame.h"
 
 #include <Windows.h>
 #include <detours.h>
@@ -116,6 +117,35 @@ namespace SML {
 			std::uint8_t unknownData[10];
 		};
 
+		struct FImplementedInterface {
+			UClass* clazz;
+			int off;
+			bool byK2;
+		};
+
+		struct FGCReferenceTokenStream {
+			TArray<std::uint32_t> tokens;
+		};
+
+		struct FWindowsRWLock {
+			_RTL_SRWLOCK Mutex;
+		};
+
+		struct CRITICAL_SECTION {
+			void *o1[1];
+			int o2[2];
+			void *o3[3];
+		};
+
+		struct FWindowsCriticalSection {
+			CRITICAL_SECTION section;
+		};
+
+		struct FNativeFunctionLookup {
+			FName name;
+			void(__fastcall *ptr)(UObject *, FFrame *, void *const);
+		};
+
 		/**
 		* Representation of a class in the UObjectSystem (Unreals reflection system)
 		*/
@@ -123,20 +153,27 @@ namespace SML {
 		public:
 			static UFunction*(*findFunction_f)(UObject*, Objects::FName);
 
-			void(__fastcall *ClassConstructor)(void *);
-			UObject *(__fastcall *ClassVTableHelperCtorCaller)(void *);
-			void(__fastcall *ClassAddReferencedObjects)(void *, void *);
-			unsigned __int32 ClassUnique : 31;
-			unsigned __int32 bCooked : 1;
-			EClassFlags ClassFlags;
+			void(__fastcall *classConstructor)(void *);
+			UObject *(__fastcall *vtableHelp)(void *);
+			void(__fastcall *addRefObjs)(void *, void *);
+			unsigned __int32 unique : 31;
+			unsigned __int32 cooked : 1;
+			EClassFlags classFlags;
 			EClassCastFlags castFlags;
-			UClass *ClassWithin;
-			UObject *ClassGeneratedBy;
+			UClass* within;
+			UObject* generatedBy;
 			void* uberGraphFrame;
 			FName config;
 			TArray<void*> reps;
 			TArray<void*> netFields;
 			UObject* defaultObj;
+			SDK::TMap<FName, UFunction*> funcs;
+			SDK::TMap<FName, UFunction*> superFuncs;
+			FWindowsRWLock SuperFuncMapLock;
+			TArray<FImplementedInterface> interfaces;
+			FGCReferenceTokenStream refTokenStream;
+			FWindowsCriticalSection refTokenStreamCrit;
+			TArray<FNativeFunctionLookup> nativeFuncLookupT;
 
 			/**
 			* Creates an instance based on this class
@@ -163,12 +200,9 @@ namespace SML {
 			*/
 			template<typename T>
 			inline T* findField(const std::string& name) {
-				auto field = this->childs;
-				while (field) {
+				for (auto field : *this) {
 					if (field->getName() == name) {
 						return (T*)field;
-					} else {
-						field = field->next;
 					}
 				}
 				return nullptr;
@@ -194,6 +228,13 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			SML_API bool isChild(UClass* super);
+
+			/**
+			* checks if this contains given interface
+			*
+			* @author Pankotta00
+			*/
+			SML_API bool implements(UClass* i);
 
 			/**
 			* constructs a new UObject with basic settings

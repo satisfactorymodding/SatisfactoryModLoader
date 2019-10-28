@@ -33,15 +33,11 @@ namespace SML {
 		void UClass::debug() {
 			std::vector<UProperty*> vars;
 
-			Utility::warning((std::uint64_t)&castFlags - (std::uint64_t)this);
-
-			UField* f = childs;
-			while (f) {
+			for (auto f : *this) {
 				if ((f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty) && (f->clazz->castFlags & Objects::EClassCastFlags::CAST_UProperty)) {
 					//vars.push_back((UProperty*)f);
 				}
 				vars.push_back((UProperty*)f);
-				f = f->next;
 			}
 
 			std::stringstream str;
@@ -62,6 +58,18 @@ namespace SML {
 			if (!consObj) consObj = (UObject*(*)(UClass*, UObject*, FName, EObjectFlags, EInternalObjectFlags, UObject*, bool, void*, bool)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "StaticConstructObject_Internal");
 
 			return consObj(this, outer, name, flags, internalFlags, templ, cpyTransient, instanceGraph, templIsArche);
+		}
+
+		bool UClass::implements(UClass* i) {
+			if (!this || !i || !(i->classFlags & EClassFlags::CLASS_Interface) || i == (UClass*)SDK::UInterface::StaticClass()) return false;
+			auto super = this;
+			while (super) {
+				for (FImplementedInterface si : super->interfaces) {
+					if (si.clazz && si.clazz->isChild(i)) return true;
+				}
+				super = (UClass*)super->super;
+			}
+			return false;
 		}
 	}
 }

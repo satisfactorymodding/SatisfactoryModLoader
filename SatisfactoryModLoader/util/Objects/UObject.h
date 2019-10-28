@@ -74,7 +74,7 @@ namespace SML {
 		/**
 		* Currently we dont know what this is
 		*/
-		class FUObjectItem {
+		class __declspec(align(8)) FUObjectItem {
 		public:
 			UObject* obj;
 			EObjectFlags flags;
@@ -99,12 +99,12 @@ namespace SML {
 			/**
 			* returns the object pointer by the given index
 			*/
-			SML_API FUObjectItem const* getObjPtr(int index) const;
+			SML_API FUObjectItem* getObjPtr(int index) const;
 
 			/**
 			* returns the FUObjectItem by the given index
 			*/
-			SML_API FUObjectItem const& get(int index) const;
+			SML_API FUObjectItem& get(int index) const;
 
 		private:
 			FUObjectItem** objs;
@@ -125,6 +125,11 @@ namespace SML {
 			int maxObjsNConsideredByGC;
 			bool open4Disreg4GC;
 			FChunkedFixedUObjectArray objs;
+
+			/**
+			* returns a new serial number
+			*/
+			SML_API int allocSerialnum(int index);
 		};
 
 		/**
@@ -242,6 +247,14 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			SML_API bool isValid();
+
+			/**
+			* checks if self is instance of given uclass
+			*
+			* @author Panakotta00
+			*/
+			SML_API bool isA(UClass* clazz);
+
 
 			/**
 			* creates and adds a new subobject to the object

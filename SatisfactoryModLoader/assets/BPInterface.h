@@ -1259,7 +1259,7 @@ namespace SML {
 			* @author Panakotta00
 			*/
 			static inline void construct(FObjectInitializer& objInit) {
-				((NativeRealConstructor)active.superf()->ClassConstructor)(objInit);
+				((NativeRealConstructor)active.superf()->classConstructor)(objInit);
 				if (active.vfptr) {
 					(*(void***)objInit.obj) = active.vfptr;
 				}
@@ -1303,6 +1303,18 @@ namespace SML {
 				active.constFunc(constFunc);
 				active.addFlags(0x001000A0u);
 
+				return active;
+			}
+
+			/**
+			* init of class builder for a UInterface
+			*
+			* @author Panakotta00
+			*/
+			inline static ClassBuilder& Interface() {
+				Basic();
+				active.extendSDK<SDK::UInterface>();
+				active.addFlags(EClassFlags::CLASS_Abstract | EClassFlags::CLASS_Interface);
 				return active;
 			}
 		};
