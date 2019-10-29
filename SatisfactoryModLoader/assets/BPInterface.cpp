@@ -294,13 +294,13 @@ namespace SML {
 			return *this;
 		}
 
-		PropertyBuilder & PropertyBuilder::enumFunc(void *(*func)()) {
+		PropertyBuilder & PropertyBuilder::enumFunc(Objects::UEnum *(*func)()) {
 			switch (structType) {
 			case Enum:
-				((FEnumPropertyParams*)params)->enumFunc = (UEnum*(*)()) func;
+				((FEnumPropertyParams*)params)->enumFunc = func;
 				break;
 			case Byte:
-				((FBytePropertyParams*)params)->enumFunc = (UEnum*(*)()) func;
+				((FBytePropertyParams*)params)->enumFunc = func;
 				break;
 			}
 			return *this;

@@ -16,6 +16,7 @@
 #include <util/Objects/UProperty.h>
 #include <util/Objects/UFunction.h>
 #include <util/Objects/FFrame.h>
+#include <util/Objects/UEnum.h>
 
 namespace SDK {
 	class UClass;
@@ -123,6 +124,12 @@ namespace SML {
 			MulticastDelegate,
 			Enum
 		};
+
+		enum EDynamicType {
+			notDyn,
+			dyn,
+		};
+
 		
 
 
@@ -181,7 +188,7 @@ namespace SML {
 			std::int32_t dim;
 			const char* notify;
 			std::int32_t off;
-			UEnum* (*enumFunc)();
+			Objects::UEnum* (*enumFunc)();
 		};
 
 		struct FBoolPropertyParams {
@@ -283,7 +290,7 @@ namespace SML {
 			std::int32_t dim;
 			const char* notify;
 			std::int32_t offset;
-			UEnum* (*enumFunc)();
+			Objects::UEnum* (*enumFunc)();
 		};
 
 		/**
@@ -348,11 +355,178 @@ namespace SML {
 			const FImplementedInterfaceParams* interfaces = nullptr;
 			std::int32_t interfaceCount = 0;
 		};
+		
+		struct FEnumeratorParam {
+			const char* name;
+			std::int64_t val;
+		};
 
+		/**
+		* Describes a UEnum before it gets constructed
+		*/
+		struct __declspec(align(8)) FEnumParams {
+			Objects::UObject *(*outerFunc)();
+			EDynamicType dynamic;
+			const char* name;
+			Objects::EObjectFlags flags;
+			SDK::FText *(*displayNameFunc)(SDK::FText *result, int);
+			char form;
+			const char* typeUTF8;
+			FEnumeratorParam* enumParams;
+			int num;
+		};
 
 
 
 		// --- Builders --- //
+
+		/**
+		* Helps to construct custom uenums
+		*
+		* @author Panakotta00
+		*/
+		template<typename T>
+		class EnumBuilder {
+		public:
+			typedef Objects::UObject*(*outerFunc_f)();
+		private:
+			static EnumBuilder<T> singelton;
+
+			static inline Objects::UObject* getOuter() {
+				return UClass::staticClass();
+			}
+
+			std::map<std::string, std::int64_t> eparams;
+			std::string ename;
+			std::string packageName = "/Script/FactoryGame";
+			FEnumParams params;
+
+			inline EnumBuilder() {
+				name(getEnumName<T>());
+				outer(getOuter);
+				dynamic(EDynamicType::notDyn);
+				form(Objects::UEnum::ECppForm::Regular);
+				params.displayNameFunc = nullptr;
+			};
+
+			template<class C>
+			static std::string getEnumName() {
+				std::string n = typeid(C).name();
+				n = n.substr(n.find_last_of(' ') + 1);
+				return n.substr(n.find_last_of(':') + 1);
+			}
+
+		public:
+			static inline EnumBuilder& get() {
+				return singelton;
+			}
+
+			inline EnumBuilder<T>& dynamic(EDynamicType dyn) {
+				params.dynamic = dyn;
+				return *this;
+			}
+
+			inline EnumBuilder<T>& name(std::string name) {
+				ename = name;
+				params.typeUTF8 = ename.c_str();
+				return *this;
+			}
+
+			inline EnumBuilder<T>& package(std::string name) {
+				packageName = name;
+				return *this;
+			}
+
+			inline EnumBuilder<T>& outer(outerFunc_f outer) {
+				params.outerFunc = outer;
+				return *this;
+			}
+
+			inline EnumBuilder<T>& form(Objects::UEnum::ECppForm form) {
+				params.form = form;
+				return *this;
+			}
+
+			/**
+			* adds the given obj flags
+			*
+			* @author Panakotta00
+			*/
+			inline EnumBuilder& addFlags(Objects::EObjectFlags flags) {
+				params.flags = (Objects::EObjectFlags)(params.flags | flags);
+				return *this;
+			}
+
+			/**
+			* adds the given class flags
+			*
+			* @author Panakotta00
+			*/
+			inline EnumBuilder& addFlags(std::uint64_t flags) {
+				params.flags = (Objects::EObjectFlags)(params.flags | flags);
+				return *this;
+			}
+
+			/**
+			* removes the given class flags
+			*
+			* @author Panakotta00
+			*/
+			inline EnumBuilder& remFlags(Objects::EObjectFlags flags) {
+				params.flags = (Objects::EObjectFlags)(params.flags & ~flags);
+				return *this;
+			}
+
+			/**
+			* adds/set a new/existing enumeration to/in the UEnum
+			*
+			* @author Panakotta00
+			*/
+			inline EnumBuilder& param(std::string name, std::int64_t value) {
+				eparams[name] = value;
+				return *this;
+			}
+
+			static inline Objects::UEnum* getEnum() {
+				static Objects::UEnum* e = nullptr;
+				if (!e) {
+					static void(*constEnum)(Objects::UEnum**,FEnumParams*) = nullptr;
+					if (!constEnum) constEnum = (void(*)(Objects::UEnum**,FEnumParams*)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UE4CodeGen_Private::ConstructUEnum");
+					
+					int i = 0;
+					singelton.params.enumParams = new FEnumeratorParam[singelton.eparams.size()];
+					for (auto& e : singelton.eparams) {
+						singelton.params.enumParams[i++] = {e.first.c_str(), e.second};
+					}
+					singelton.params.num = i;
+					
+					constEnum(&e, &singelton.params);
+				}
+				return e;
+			}
+
+			inline void build() {
+				static void(*compIn)(Objects::UEnum*(*)(), const wchar_t*, const wchar_t*, bool, const wchar_t*) = nullptr;
+				if (!compIn) compIn = (void(*)(Objects::UEnum*(*)(), const wchar_t*, const wchar_t*, bool, const wchar_t*)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UObjectCompiledInDeferEnum");
+				auto name = stringToW(ename);
+				auto pkgName = stringToW(packageName);
+				compIn(staticEnum, pkgName.c_str(), name.c_str(), false, nullptr);
+			}
+
+			static inline Objects::UEnum* staticEnum() {
+				static Objects::UEnum*(*getUEnum)(Objects::UEnum*(*)(), Objects::UObject*, const wchar_t*) = nullptr;
+				if (!getUEnum) getUEnum = (Objects::UEnum*(*)(Objects::UEnum*(*)(), Objects::UObject*, const wchar_t*)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "GetStaticEnum");
+				
+				static Objects::UEnum* e = nullptr;
+				if (!e) {
+					auto name = stringToW(singelton.ename);
+					e = getUEnum(getEnum, singelton.params.outerFunc(), name.c_str());
+				}
+				return e;
+			}
+		};
+		template<typename T>
+		EnumBuilder<T> EnumBuilder<T>::singelton;
 
 		/**
 		* Helps to construct property parameters
@@ -566,7 +740,7 @@ namespace SML {
 			*
 			* @author Panakotta00
 			*/
-			SML_API PropertyBuilder& enumFunc(void*(*func)());
+			SML_API PropertyBuilder& enumFunc(Objects::UEnum*(*func)());
 
 			/**
 			* sets the funcRetFunc for the referenced function
