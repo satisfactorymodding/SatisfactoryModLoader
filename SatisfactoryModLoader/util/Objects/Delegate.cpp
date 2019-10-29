@@ -11,11 +11,29 @@ namespace SML {
 		}
 		
 		void FMulticastScriptDelegate::invoke(void * params) {
-			for (auto d : delegates) {
-				if (!d.obj.isValid()) continue; // TODO: unbind
+			for (int i = 0; i < delegates.num(); ++i) {
+				auto d = delegates[i];
+				if (!d.obj.isValid()) {
+					delegates.remove(i);
+					--i;
+					continue;
+				}
 				auto f = d.obj->findFunction(d.funcName);
-				if (!f) continue; // TODO: unbind
+				if (!f) {
+					delegates.remove(i);
+					--i;
+					continue;
+				}
 				f->invoke(d.obj.get(), params);
+			}
+		}
+
+		void FMulticastScriptDelegate::unbind(UObject* obj, FName func) {
+			for (int i = 0; i < delegates.num(); ++i) {
+				auto d = delegates[i];
+				if (d.funcName == func && d.obj.get() == obj) {
+					delegates.remove(i);
+				}
 			}
 		}
 	}

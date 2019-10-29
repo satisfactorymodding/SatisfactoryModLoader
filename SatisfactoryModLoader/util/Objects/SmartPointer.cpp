@@ -10,18 +10,18 @@ namespace SML {
 			(*this) = o;
 		}
 		
-		bool FWeakObjectPtr::isValid() {
+		bool FWeakObjectPtr::isValid() const {
 			auto p = get();
 			return p;
 		}
 
-		UObject* FWeakObjectPtr::operator*() {
+		UObject* FWeakObjectPtr::operator*() const {
 			auto p = get();
 			if (!p) throw std::exception("weakpointer is not valid, can't dereference");
 			return p;
 		}
 
-		UObject* FWeakObjectPtr::operator->() {
+		UObject* FWeakObjectPtr::operator->() const {
 			auto p = get();
 			if (!p) throw std::exception("access invalid weakpointer");
 			return p;
@@ -47,7 +47,7 @@ namespace SML {
 			return serial < o.serial;
 		}
 
-		UObject* FWeakObjectPtr::get() {
+		UObject* FWeakObjectPtr::get() const {
 			auto oi = UObject::getObjs().getObjPtr(index);
 			if (!oi || (oi->serNum != serial) || !oi->obj->isValid()) return nullptr;
 			return oi->obj;

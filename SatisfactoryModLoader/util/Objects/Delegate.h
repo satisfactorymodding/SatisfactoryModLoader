@@ -16,7 +16,7 @@ namespace SML {
 
 			SML_API void bind(UObject* obj, FName func);
 			SML_API void invoke(void* params);
-			// TODO: Unbind
+			SML_API void unbind(UObject* obj, FName func);
 		};
 	}
 }

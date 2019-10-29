@@ -10,10 +10,10 @@ namespace SML {
 
 			SML_API FWeakObjectPtr(UObject* o);
 
-			SML_API bool isValid();
-			SML_API UObject* get();
-			SML_API UObject* operator*();
-			SML_API UObject* operator->();
+			SML_API bool isValid() const;
+			SML_API UObject* get() const;
+			SML_API UObject* operator*() const;
+			SML_API UObject* operator->() const;
 			SML_API bool operator==(const FWeakObjectPtr& o) const;
 			SML_API void operator=(const FWeakObjectPtr& o);
 			SML_API void operator=(UObject* o);

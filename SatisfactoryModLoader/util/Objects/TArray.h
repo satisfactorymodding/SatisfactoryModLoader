@@ -168,6 +168,18 @@ namespace SML {
 				new (&data[count - 1]) T(item);
 			}
 
+			inline void remove(int i) {
+				if (i < 0 || i >= max) throw std::out_of_range("index is not valid");
+				--max;
+				--count;
+				auto n = (T*) FMemory::malloc(max * sizeof(T));
+				memcpy(n, data, i * sizeof(T));
+				Utility::warning((void*)((size_t)n + i * sizeof(T)), " ", (void*)((size_t)data + (i + 1) * sizeof(T)), " ", (max - i - 1) * sizeof(T));
+				memcpy((void*)((size_t)n + i*sizeof(T)), (void*)((size_t)data + (i + 1)*sizeof(T)), (max - i) * sizeof(T));
+				FMemory::free(data);
+				data = n;
+			}
+
 			inline void clear() {
 				this->~TArray();
 				count = max = 0;
@@ -184,7 +196,6 @@ namespace SML {
 
 			/* TODO: 
 			- Add reallocation on subscript operator access
-			- Add insert and erase functions
 			*/
 		};
 	}

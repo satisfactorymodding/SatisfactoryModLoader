@@ -417,31 +417,61 @@ namespace SML {
 			}
 
 		public:
+			/**
+			* returns a reference to the sigelton
+			*
+			* @author Panakotta00
+			*/
 			static inline EnumBuilder& get() {
 				return singelton;
 			}
 
+			/**
+			* sets the dynamic type of the enum
+			*
+			* @author Panakotta00
+			*/
 			inline EnumBuilder<T>& dynamic(EDynamicType dyn) {
 				params.dynamic = dyn;
 				return *this;
 			}
 
+			/**
+			* sets the name of the enum
+			*
+			* @author Panakotta00
+			*/
 			inline EnumBuilder<T>& name(std::string name) {
 				ename = name;
 				params.typeUTF8 = ename.c_str();
 				return *this;
 			}
 
+			/**
+			* sets the name of the containing package
+			*
+			* @author Panakotta00
+			*/
 			inline EnumBuilder<T>& package(std::string name) {
 				packageName = name;
 				return *this;
 			}
 
+			/**
+			* sets the containing object return function
+			*
+			* @author Panakotta00
+			*/
 			inline EnumBuilder<T>& outer(outerFunc_f outer) {
 				params.outerFunc = outer;
 				return *this;
 			}
 
+			/**
+			* sets the enum form
+			*
+			* @author Panakotta00
+			*/
 			inline EnumBuilder<T>& form(Objects::UEnum::ECppForm form) {
 				params.form = form;
 				return *this;
@@ -487,6 +517,11 @@ namespace SML {
 				return *this;
 			}
 
+			/**
+			* constructs the UEnum internal
+			*
+			* @author Panakotta00
+			*/
 			static inline Objects::UEnum* getEnum() {
 				static Objects::UEnum* e = nullptr;
 				if (!e) {
@@ -505,6 +540,11 @@ namespace SML {
 				return e;
 			}
 
+			/**
+			* builds and registers the uenum
+			*
+			* @author Panakotta00
+			*/
 			inline void build() {
 				static void(*compIn)(Objects::UEnum*(*)(), const wchar_t*, const wchar_t*, bool, const wchar_t*) = nullptr;
 				if (!compIn) compIn = (void(*)(Objects::UEnum*(*)(), const wchar_t*, const wchar_t*, bool, const wchar_t*)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UObjectCompiledInDeferEnum");
@@ -513,6 +553,11 @@ namespace SML {
 				compIn(staticEnum, pkgName.c_str(), name.c_str(), false, nullptr);
 			}
 
+			/**
+			* returns the static-UEnum
+			*
+			* @author Panakotta00
+			*/
 			static inline Objects::UEnum* staticEnum() {
 				static Objects::UEnum*(*getUEnum)(Objects::UEnum*(*)(), Objects::UObject*, const wchar_t*) = nullptr;
 				if (!getUEnum) getUEnum = (Objects::UEnum*(*)(Objects::UEnum*(*)(), Objects::UObject*, const wchar_t*)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "GetStaticEnum");
