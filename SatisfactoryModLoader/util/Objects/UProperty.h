@@ -149,5 +149,19 @@ namespace SML {
 		public:
 			UFunction* sigFunc;
 		};
+
+		/**
+		* Representation of a Bool attribute of a UClass
+		*/
+		class __declspec(align(8)) UBoolProperty : public UProperty {
+		public:
+			char fSize;
+			char bOff;
+			char bMask;
+			char fMask;
+
+			SML_API bool isSet(void* container);
+		};
+
 	}
 }

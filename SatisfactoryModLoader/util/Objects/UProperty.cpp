@@ -8,5 +8,9 @@ namespace SML {
 			static auto ptr = UObject::findClass("Class CoreUObject.Field");
 			return ptr;
 		}
+
+		bool UBoolProperty::isSet(void* container) {
+			return *getValue<char>(container) & bMask;
+		}
 	}
 }

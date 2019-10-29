@@ -444,11 +444,21 @@ namespace SML {
 			if (constructed) return constructed;
 
 			FPropertyParamsBase** props = new FPropertyParamsBase*[this->props.size()];
+			int nextOff = 0;
 			params.structSize = 0;
-			for (int i = 0; i < this->props.size(); ++i) {
-				this->props[i].off(static_cast<int>(params.structSize));
-				props[i] = this->props[i].build();
-				params.structSize += this->props[i].getSize();
+			for (int i = this->props.size() - 1; i >= 0; --i) {
+				auto& p = this->props[i];
+				auto noff = p.getOff();
+				auto nsize = p.getSize();
+				if (noff >= 0) nextOff = noff + nsize;
+				else {
+					if (noff == -1) p.off(nextOff);
+					nextOff += nsize;
+				}
+
+				params.structSize += nsize;
+				auto pr = p.build();
+				props[i] = pr;
 			}
 			params.propArr = props;
 			params.propCount = static_cast<std::int32_t>(this->props.size());

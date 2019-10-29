@@ -50,13 +50,14 @@ namespace SML {
 		class UFunction : public UStruct {
 		public:
 			EFunctionFlags flags;
-			uint16_t repOff;
 			uint8_t parmNum;
 			uint16_t parmsSize;
 			uint16_t retValOff;
 			uint16_t RPCId;
 			uint16_t RPCRespID;
 			class UProperty* prop2int;
+			void* eGraphFunc;
+			uint16_t eGraphCallOff;
 			void* func;
 
 			/**
