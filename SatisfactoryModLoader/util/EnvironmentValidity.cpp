@@ -84,13 +84,15 @@ namespace SML {
 		}
 
 		void enableCrashReporter(std::string rootPath) {
-			rootPath = rootPath.substr(0, rootPath.find_last_of("/\\"));
-			rootPath = rootPath + "\\Engine\\Binaries\\Win64";
-			if (std::filesystem::exists(std::filesystem::path(rootPath + "\\CrashReportClient-Disabled.exe"))) {
-				std::filesystem::rename(std::filesystem::path(rootPath + "\\CrashReportClient-Disabled.exe"), std::filesystem::path(rootPath + "\\CrashReportClient.exe"));
-			}
-			else {
-				displayCrash("Satisfactory Install Error", "SatisfactoryModLoader has detected an error with your Satisfactory installation.\nPlease click 'verify' in the Epic Games Launcher and reinstall Satisfactory.");
+			if (crashReporter) {
+				rootPath = rootPath.substr(0, rootPath.find_last_of("/\\"));
+				rootPath = rootPath + "\\Engine\\Binaries\\Win64";
+				if (std::filesystem::exists(std::filesystem::path(rootPath + "\\CrashReportClient-Disabled.exe"))) {
+					std::filesystem::rename(std::filesystem::path(rootPath + "\\CrashReportClient-Disabled.exe"), std::filesystem::path(rootPath + "\\CrashReportClient.exe"));
+				}
+				else {
+					displayCrash("Satisfactory Install Error", "SatisfactoryModLoader has detected an error with your Satisfactory installation.\nPlease click 'verify' in the Epic Games Launcher and reinstall Satisfactory.");
+				}
 			}
 		}
 	};
