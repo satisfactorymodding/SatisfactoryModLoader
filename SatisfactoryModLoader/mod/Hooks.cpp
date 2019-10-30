@@ -195,6 +195,10 @@ namespace SML {
 							Utility::info("World:", Functions::getWorld());
 							Utility::info("Local Character:", Functions::getPlayerCharacter());
 							Utility::info("Local Controller: ", Functions::getPlayerController());
+							Utility::info("Game Instance: ", Functions::getGameInstance());
+							Utility::info("Game State: ", Functions::getGameState());
+							Utility::info("Level: ", Functions::getLevel());
+							Utility::info("Net Driver: ", Functions::getNetDriver());
 						}
 						else {
 							Utility::info("Subcommand not recognized!");

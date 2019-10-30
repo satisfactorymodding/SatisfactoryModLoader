@@ -37,7 +37,7 @@
 #include <thread>
 
 namespace SML {
-	extern "C" const SML_API char SML::smlVersion[] = "1.0.2";
+	extern "C" const SML_API char SML::smlVersion[] = "1.1.0";
 	const int targetVersion = 106504; //CL of Satisfactory
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;

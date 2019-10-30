@@ -34,7 +34,7 @@ using namespace SML::Mod;
 using namespace SML::Objects;
 
 // Version of SML that this mod was compiled for.
-#define SML_VERSION "1.0.2"
+#define SML_VERSION "1.1.0"
 
 // define the mod name for easy changing and simple use
 #define MOD_NAME "ExampleMod"
@@ -143,6 +143,11 @@ public:
 				SDK::UObject* obj = Functions::getAssetFromCache(L"\\Game\\FactoryGame\\Character\\Creature\\Wildlife\\SpaceRabbit\\Char_SpaceRabbit.Char_SpaceRabbit_C");
 				//spawn the object at the player's location and rotation
 				Functions::spawnActorAtPlayer(obj);
+
+				//Here we are going to invoke an sml chat command through code.
+				//This command will print out the adresses of commonly used pointers.
+				LOG("Printing the adresses of pointers!");
+				Functions::runCommand("/sml obj");
 			}
 			return false;
 		});

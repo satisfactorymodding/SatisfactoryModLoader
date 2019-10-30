@@ -67,7 +67,7 @@ namespace SML {
 			}
 			for (auto&& mod : mods) {
 				for (std::string dep : mod->info.dependencies) {
-					Utility::info("Parsing dependency " + dep);
+					Utility::debug("Parsing dependency " + dep);
 					if (dep.substr(0, 1) == "*") {
 						auto it = std::find(names.begin(), names.end(), dep.substr(1));
 						if (it == names.end()) {
@@ -171,7 +171,7 @@ namespace SML {
 
 			Utility::info("Looking for mods in: ", path);
 
-			ModHandler::mods.clear();
+			//ModHandler::mods.clear();
 
 			getFiles(path);
 		}
