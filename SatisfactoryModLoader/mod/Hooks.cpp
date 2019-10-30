@@ -26,15 +26,6 @@ Please disregard any shit code in here as it's all a Work In Progress(TM)
 
 namespace SML {
 	namespace Mod {
-
-		PVOID Hooks::chatFunc;
-		PVOID Hooks::worldFunc;
-		PVOID Hooks::playerAddedFunc;
-		PVOID Hooks::playerControllerAddedFunc;
-		PVOID Hooks::engineInitFunc;
-		PVOID Hooks::levelDestroyFunc;
-		PVOID Hooks::sigCheckFunc;
-
 		void Hooks::hookFunctions() {
 			DetourTransactionBegin();
 			DetourUpdateThread(GetCurrentThread());
@@ -55,14 +46,6 @@ namespace SML {
 			Utility::info("Registered hooks!");
 
 			DetourTransactionCommit();
-		}
-
-		void Hooks::levelDestructor(SDK::ULevel* level) {
-
-			Assets::SinglePlayerController = nullptr;
-
-			auto pointer = (void(WINAPI*)(void*))levelDestroyFunc;
-			pointer(level);
 		}
 
 		void Hooks::engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* engine) {

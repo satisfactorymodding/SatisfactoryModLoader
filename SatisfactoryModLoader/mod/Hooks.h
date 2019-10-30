@@ -12,19 +12,9 @@ namespace SML {
 	namespace Mod {
 		class Hooks {
 		public:
-			static PVOID chatFunc;
-			static PVOID worldFunc;
-			static PVOID playerAddedFunc;
-			static PVOID playerControllerAddedFunc;
-			static PVOID engineInitFunc;
-			static PVOID levelDestroyFunc;
-			static PVOID sigCheckFunc;
-
 			static void hookFunctions();
 
 			static void engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* fEngine);
-
-			static void levelDestructor(SDK::ULevel* level);
 
 			static void playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* message);
 
