@@ -24,17 +24,10 @@ namespace SML {
 
 			static void engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* fEngine);
 
-			//static void getWorld(void* self);
-
-			//static void playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player);
-
-			//static void playerControllerAdded(SDK::AFGPlayerController* self);
-
 			static void levelDestructor(SDK::ULevel* level);
 
 			static void playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* message);
 
-			
 			static bool smlCommands(Functions::CommandData data);
 		};
 	}

@@ -4,6 +4,7 @@
 #include <Lib.h>
 #include <util/FString.h>
 #include "Registry.h"
+#include <../SatisfactorySDK/SDK.hpp>
 
 namespace SML {
 	namespace Mod {
@@ -28,6 +29,13 @@ namespace SML {
 				* Always has the command and the following arguments seperated by a space.
 				*/
 				std::vector<std::string> argv;
+
+				/**
+				* The player that executed this command.
+				*  
+				* Will be nullptr if executed by runCommand.
+				*/
+				SDK::AFGPlayerController* player;
 			};
 
 			/**
@@ -38,6 +46,14 @@ namespace SML {
 			* @author Nomnom
 			*/
 			SML_API void registerCommand(std::string name, PVOID func);
+
+			/**
+			* Runs a command directly from code without a user having to type it into chat.
+			* Does nothing if a command isn't found.
+			*
+			* @author SuperCoder79
+			*/
+			SML_API void runCommand(std::string name);
 
 			/**
 			* Registers an API function that can be called by other mods.

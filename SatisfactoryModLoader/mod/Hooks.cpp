@@ -105,7 +105,8 @@ namespace SML {
 			bool found = false;
 			SML::Mod::Functions::CommandData data = {
 				arguments.size(),
-				arguments
+				arguments,
+				reinterpret_cast<SDK::AFGPlayerController*>(player)
 			};
 			found = smlCommands(data); //run SML's commands
 			for (Registry r : modHandler.commandRegistry) {

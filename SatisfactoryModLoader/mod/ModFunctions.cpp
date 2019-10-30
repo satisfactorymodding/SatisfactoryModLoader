@@ -6,6 +6,8 @@
 #include <assets/AssetLoader.h>
 #include <assets/AssetFunctions.h>
 #include <memory>
+#include <sstream>
+#include <mod/Hooks.h>
 
 namespace SML {
 	namespace Mod {
@@ -21,6 +23,33 @@ namespace SML {
 					func
 				};
 				modHandler.commandRegistry.push_back(r);
+			}
+
+			//runs a command directly
+			SML_API void runCommand(std::string name) {
+				std::vector<std::string> arguments;
+				std::stringstream ss(name);
+				std::string temp;
+				if (name.find(' ') == std::string::npos) {
+					arguments.push_back(name);
+				}
+				else {
+					while (getline(ss, temp, ' ')) {
+						arguments.push_back(temp);
+					}
+				}
+				SML::Mod::Functions::CommandData data = {
+					arguments.size(),
+					arguments,
+					nullptr
+				};
+				Hooks::smlCommands(data); //run SML's commands
+				for (Registry r : modHandler.commandRegistry) {
+					if (arguments[0] == "/" + r.name) {
+						auto commandFunc = (void(WINAPI*)(SML::Mod::Functions::CommandData))r.func;
+						commandFunc(data);
+					}
+				}
 			}
 
 			// registers an API function to the mod handler
