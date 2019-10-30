@@ -174,7 +174,6 @@ namespace SML {
 				--count;
 				auto n = (T*) FMemory::malloc(max * sizeof(T));
 				memcpy(n, data, i * sizeof(T));
-				Utility::warning((void*)((size_t)n + i * sizeof(T)), " ", (void*)((size_t)data + (i + 1) * sizeof(T)), " ", (max - i - 1) * sizeof(T));
 				memcpy((void*)((size_t)n + i*sizeof(T)), (void*)((size_t)data + (i + 1)*sizeof(T)), (max - i) * sizeof(T));
 				FMemory::free(data);
 				data = n;
