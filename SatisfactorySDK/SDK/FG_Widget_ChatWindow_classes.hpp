@@ -43,7 +43,7 @@ public:
 	void OnPlayerBeginTypeMessage();
 	void UpdateVisibility();
 	void OnChatMessageReceived();
-	void SetInputWindowVisibility(bool Visible);
+	void SetInputWindowVisibility(bool visible);
 	bool GetInputWindowVisibility();
 	void CacheChatMessages();
 	void IsLastMessageFresh(bool* IsFresh);

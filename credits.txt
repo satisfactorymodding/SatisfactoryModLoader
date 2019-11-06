@@ -2,12 +2,13 @@
 SuperCoder79
 Nomnom
 Anttirt
+Vilsol
+Panakotta00
 Brabb3l
 Trxnce
 VirtusModz
 Crystalin
 Kronos
-Vilsol
 Stinosko
 Panakotta00
 
@@ -23,3 +24,5 @@ Markus Rännare and the rest of the Satisfactory team :D
 === Technologies used ===
 Microsoft/Detours
 nlohmann/json
+fgenesis/ttvfs
+polivilas/UnrealEngineSDKGenerator

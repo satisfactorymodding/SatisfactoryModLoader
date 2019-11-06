@@ -12,16 +12,16 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
-// Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetPercent
+// Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetDisplayValue
 // ()
 // Parameters:
-// float                          ReturnValue                    (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+// float                          DisplayValue                   (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-float UWidget_OptionsSlider_C::GetPercent()
+void UWidget_OptionsSlider_C::GetDisplayValue(float* DisplayValue)
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetPercent");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetDisplayValue");
 
-	UWidget_OptionsSlider_C_GetPercent_Params params;
+	UWidget_OptionsSlider_C_GetDisplayValue_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -29,7 +29,8 @@ float UWidget_OptionsSlider_C::GetPercent()
 
 	fn->FunctionFlags = flags;
 
-	return params.ReturnValue;
+	if (DisplayValue != nullptr)
+		*DisplayValue = params.DisplayValue;
 }
 
 
@@ -56,15 +57,13 @@ void UWidget_OptionsSlider_C::SetNormalizedValue(float CurrentUnadjustedValue)
 // Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetAdjustedValue
 // ()
 // Parameters:
-// float                          Normalized_Value               (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// float                          Adjusted_Value                 (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+// float                          AdjustedValue                  (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_OptionsSlider_C::GetAdjustedValue(float Normalized_Value, float* Adjusted_Value)
+void UWidget_OptionsSlider_C::GetAdjustedValue(float* AdjustedValue)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetAdjustedValue");
 
 	UWidget_OptionsSlider_C_GetAdjustedValue_Params params;
-	params.Normalized_Value = Normalized_Value;
 
 	auto flags = fn->FunctionFlags;
 
@@ -72,8 +71,8 @@ void UWidget_OptionsSlider_C::GetAdjustedValue(float Normalized_Value, float* Ad
 
 	fn->FunctionFlags = flags;
 
-	if (Adjusted_Value != nullptr)
-		*Adjusted_Value = params.Adjusted_Value;
+	if (AdjustedValue != nullptr)
+		*AdjustedValue = params.AdjustedValue;
 }
 
 
@@ -216,14 +215,14 @@ void UWidget_OptionsSlider_C::ExecuteUbergraph_Widget_OptionsSlider(int EntryPoi
 // Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetNewValue__DelegateSignature
 // ()
 // Parameters:
-// float                          VolumeLevel                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// float                          NewValue                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_OptionsSlider_C::GetNewValue__DelegateSignature(float VolumeLevel)
+void UWidget_OptionsSlider_C::GetNewValue__DelegateSignature(float NewValue)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_OptionsSlider.Widget_OptionsSlider_C.GetNewValue__DelegateSignature");
 
 	UWidget_OptionsSlider_C_GetNewValue__DelegateSignature_Params params;
-	params.VolumeLevel = VolumeLevel;
+	params.NewValue = NewValue;
 
 	auto flags = fn->FunctionFlags;
 

@@ -14,6 +14,21 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateHiResToggle
+struct UWidget_PhotoMode_C_UpdateHiResToggle_Params
+{
+};
+
+// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateFOVSlider
+struct UWidget_PhotoMode_C_UpdateFOVSlider_Params
+{
+};
+
+// Function Widget_PhotoMode.Widget_PhotoMode_C.SetInputKeyTexts
+struct UWidget_PhotoMode_C_SetInputKeyTexts_Params
+{
+};
+
 // Function Widget_PhotoMode.Widget_PhotoMode_C.ToggleVisibility
 struct UWidget_PhotoMode_C_ToggleVisibility_Params
 {
@@ -28,18 +43,6 @@ struct UWidget_PhotoMode_C_FadePhotoTakenText_Params
 // Function Widget_PhotoMode.Widget_PhotoMode_C.PhotoTaken
 struct UWidget_PhotoMode_C_PhotoTaken_Params
 {
-};
-
-// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateHiResMode
-struct UWidget_PhotoMode_C_UpdateHiResMode_Params
-{
-	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
-};
-
-// Function Widget_PhotoMode.Widget_PhotoMode_C.UpdateFOV
-struct UWidget_PhotoMode_C_UpdateFOV_Params
-{
-	struct FText                                       ReturnValue;                                              // (Parm, OutParm, ReturnParm)
 };
 
 // Function Widget_PhotoMode.Widget_PhotoMode_C.Construct

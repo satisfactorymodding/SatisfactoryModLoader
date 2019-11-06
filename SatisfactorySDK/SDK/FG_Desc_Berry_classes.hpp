@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_Berry.Desc_Berry_C
-// 0x0000 (0x016C - 0x016C)
+// 0x0000 (0x0174 - 0x0174)
 class UDesc_Berry_C : public UBP_HealthGainDescriptor_C
 {
 public:

@@ -14,6 +14,19 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function BP_Locomotive.BP_Locomotive_C.GetActorCompassViewDistance
+struct ABP_Locomotive_C_GetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function BP_Locomotive.BP_Locomotive_C.SetActorCompassViewDistance
+struct ABP_Locomotive_C_SetActorCompassViewDistance_Params
+{
+	ECompassViewDistance                               compassViewDistance;                                      // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	ECompassViewDistance                               ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function BP_Locomotive.BP_Locomotive_C.SetActorRepresentationText
 struct ABP_Locomotive_C_SetActorRepresentationText_Params
 {
@@ -257,6 +270,16 @@ struct ABP_Locomotive_C_Server_Horn_02_Params
 
 // Function BP_Locomotive.BP_Locomotive_C.Server_Horn_02_Stop
 struct ABP_Locomotive_C_Server_Horn_02_Stop_Params
+{
+};
+
+// Function BP_Locomotive.BP_Locomotive_C.OnNameChanged
+struct ABP_Locomotive_C_OnNameChanged_Params
+{
+};
+
+// Function BP_Locomotive.BP_Locomotive_C.UpdateTrainName
+struct ABP_Locomotive_C_UpdateTrainName_Params
 {
 };
 

@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // AnimBlueprintGeneratedClass BP_LocomotiveAnim.BP_LocomotiveAnim_C
-// 0x2F18 (0x3278 - 0x0360)
+// 0x2F30 (0x3290 - 0x0360)
 class UBP_LocomotiveAnim_C : public UAnimInstance
 {
 public:
@@ -150,6 +150,13 @@ public:
 	bool                                               mAG_HandBrakeStop;                                        // 0x326A(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData03[0x1];                                       // 0x326B(0x0001) MISSED OFFSET
 	struct FRotator                                    WheelRotation;                                            // 0x326C(0x000C) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	class UMaterialInstanceDynamic*                    mTrainMaterial;                                           // 0x3278(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	bool                                               mStartBrakeBoost;                                         // 0x3280(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData04[0x3];                                       // 0x3281(0x0003) MISSED OFFSET
+	float                                              mBrakeboostadd;                                           // 0x3284(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	bool                                               mEndBrakeBoost;                                           // 0x3288(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	unsigned char                                      UnknownData05[0x3];                                       // 0x3289(0x0003) MISSED OFFSET
+	float                                              mBrakeboost;                                              // 0x328C(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

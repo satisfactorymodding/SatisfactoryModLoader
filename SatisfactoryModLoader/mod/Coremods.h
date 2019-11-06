@@ -6,11 +6,10 @@ namespace SML {
 	namespace Mod {
 		extern std::vector<std::string> coremodList;
 
-		extern std::vector<const wchar_t*> delayedCoremods;
+		extern std::vector<std::string> delayedCoremods;
 
-		void startLoadingCoremods(const char* currentPath);
+		void startLoadingCoremods();
 
 		void loadCoremodsInternal(std::string path);
-
 	};
 };

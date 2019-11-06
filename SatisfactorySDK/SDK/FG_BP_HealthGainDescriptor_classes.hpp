@@ -15,11 +15,11 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_HealthGainDescriptor.BP_HealthGainDescriptor_C
-// 0x0004 (0x016C - 0x0168)
+// 0x0004 (0x0174 - 0x0170)
 class UBP_HealthGainDescriptor_C : public UFGConsumableDescriptor
 {
 public:
-	float                                              mHealthGain;                                              // 0x0168(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	float                                              mHealthGain;                                              // 0x0170(0x0004) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

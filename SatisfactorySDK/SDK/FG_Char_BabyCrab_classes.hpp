@@ -45,7 +45,7 @@ public:
 
 
 	void UserConstructionScript();
-	void Got_Damaged(class AActor* damagedActor, float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser);
+	void Got_Damaged(class AActor* DamagedActor, float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser);
 	void ReceiveTick(float* DeltaSeconds);
 	void ReceiveDied();
 	void ReceiveBeginPlay();

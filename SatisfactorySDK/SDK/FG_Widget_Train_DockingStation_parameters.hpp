@@ -85,6 +85,12 @@ struct UWidget_Train_DockingStation_C_BndEvt__mSortButton_K2Node_ComponentBoundE
 {
 };
 
+// Function Widget_Train_DockingStation.Widget_Train_DockingStation_C.OnReplicationDetailActorReplicated
+struct UWidget_Train_DockingStation_C_OnReplicationDetailActorReplicated_Params
+{
+	class AActor*                                      replicationDetailActorOwner;                              // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function Widget_Train_DockingStation.Widget_Train_DockingStation_C.ExecuteUbergraph_Widget_Train_DockingStation
 struct UWidget_Train_DockingStation_C_ExecuteUbergraph_Widget_Train_DockingStation_Params
 {

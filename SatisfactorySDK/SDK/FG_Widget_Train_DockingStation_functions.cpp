@@ -251,6 +251,26 @@ void UWidget_Train_DockingStation_C::BndEvt__mSortButton_K2Node_ComponentBoundEv
 }
 
 
+// Function Widget_Train_DockingStation.Widget_Train_DockingStation_C.OnReplicationDetailActorReplicated
+// ()
+// Parameters:
+// class AActor*                  replicationDetailActorOwner    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_Train_DockingStation_C::OnReplicationDetailActorReplicated(class AActor* replicationDetailActorOwner)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Train_DockingStation.Widget_Train_DockingStation_C.OnReplicationDetailActorReplicated");
+
+	UWidget_Train_DockingStation_C_OnReplicationDetailActorReplicated_Params params;
+	params.replicationDetailActorOwner = replicationDetailActorOwner;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_Train_DockingStation.Widget_Train_DockingStation_C.ExecuteUbergraph_Widget_Train_DockingStation
 // ()
 // Parameters:

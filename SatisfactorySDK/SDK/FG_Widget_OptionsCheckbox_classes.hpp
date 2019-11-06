@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_OptionsCheckbox.Widget_OptionsCheckbox_C
-// 0x0370 (0x05A0 - 0x0230)
+// 0x0371 (0x05A1 - 0x0230)
 class UWidget_OptionsCheckbox_C : public UWidget_OptionValueController_C
 {
 public:
@@ -33,6 +33,7 @@ public:
 	bool                                               mIsChecked;                                               // 0x0588(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x7];                                       // 0x0589(0x0007) MISSED OFFSET
 	struct FScriptMulticastDelegate                    OnCheckChanged;                                           // 0x0590(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, BlueprintAssignable)
+	bool                                               mForceShouldCheckOnConstruct;                             // 0x05A0(0x0001) (Edit, BlueprintVisible, ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

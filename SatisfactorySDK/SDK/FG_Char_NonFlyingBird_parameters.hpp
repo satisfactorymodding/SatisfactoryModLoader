@@ -30,6 +30,11 @@ struct AChar_NonFlyingBird_C_UserConstructionScript_Params
 {
 };
 
+// Function Char_NonFlyingBird.Char_NonFlyingBird_C.ReceiveBeginPlay
+struct AChar_NonFlyingBird_C_ReceiveBeginPlay_Params
+{
+};
+
 // Function Char_NonFlyingBird.Char_NonFlyingBird_C.ReceiveTick
 struct AChar_NonFlyingBird_C_ReceiveTick_Params
 {
@@ -55,11 +60,27 @@ struct AChar_NonFlyingBird_C_ReceiveDied_Params
 // Function Char_NonFlyingBird.Char_NonFlyingBird_C.NotifyOnTakeDamage
 struct AChar_NonFlyingBird_C_NotifyOnTakeDamage_Params
 {
-	class AActor**                                     damagedActor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AActor**                                     DamagedActor;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	float*                                             damageAmount;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 	class UDamageType**                                DamageType;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AController**                                instigatedBy;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-	class AActor**                                     damageCauser;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AController**                                InstigatedBy;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	class AActor**                                     DamageCauser;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Char_NonFlyingBird.Char_NonFlyingBird_C.ReceiveEndPlay
+struct AChar_NonFlyingBird_C_ReceiveEndPlay_Params
+{
+	TEnumAsByte<EEndPlayReason>*                       EndPlayReason;                                            // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Char_NonFlyingBird.Char_NonFlyingBird_C.GainedSignificance
+struct AChar_NonFlyingBird_C_GainedSignificance_Params
+{
+};
+
+// Function Char_NonFlyingBird.Char_NonFlyingBird_C.LostSignificance
+struct AChar_NonFlyingBird_C_LostSignificance_Params
+{
 };
 
 // Function Char_NonFlyingBird.Char_NonFlyingBird_C.ExecuteUbergraph_Char_NonFlyingBird

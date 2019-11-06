@@ -14,6 +14,16 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_Options.Widget_Options_C.ApplyVideoSettings
+struct UWidget_Options_C_ApplyVideoSettings_Params
+{
+};
+
+// Function Widget_Options.Widget_Options_C.SetCurrentShowBreakNotifications
+struct UWidget_Options_C_SetCurrentShowBreakNotifications_Params
+{
+};
+
 // Function Widget_Options.Widget_Options_C.BindEventsForGameplayOptions
 struct UWidget_Options_C_BindEventsForGameplayOptions_Params
 {

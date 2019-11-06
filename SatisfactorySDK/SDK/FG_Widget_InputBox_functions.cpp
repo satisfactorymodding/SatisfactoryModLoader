@@ -12,6 +12,45 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_InputBox.Widget_InputBox_C.CheckSearchbarLength
+// ()
+// Parameters:
+// bool                           SearchbarContainsText          (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_InputBox_C::CheckSearchbarLength(bool* SearchbarContainsText)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InputBox.Widget_InputBox_C.CheckSearchbarLength");
+
+	UWidget_InputBox_C_CheckSearchbarLength_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (SearchbarContainsText != nullptr)
+		*SearchbarContainsText = params.SearchbarContainsText;
+}
+
+
+// Function Widget_InputBox.Widget_InputBox_C.SetSearchbarStyle
+// ()
+
+void UWidget_InputBox_C::SetSearchbarStyle()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InputBox.Widget_InputBox_C.SetSearchbarStyle");
+
+	UWidget_InputBox_C_SetSearchbarStyle_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_InputBox.Widget_InputBox_C.SetInputboxStyle
 // ()
 // Parameters:
@@ -164,6 +203,43 @@ void UWidget_InputBox_C::BndEvt__mHover_K2Node_ComponentBoundEvent_2_OnButtonHov
 }
 
 
+// Function Widget_InputBox.Widget_InputBox_C.PreConstruct
+// ()
+// Parameters:
+// bool*                          IsDesignTime                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_InputBox_C::PreConstruct(bool* IsDesignTime)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InputBox.Widget_InputBox_C.PreConstruct");
+
+	UWidget_InputBox_C_PreConstruct_Params params;
+	params.IsDesignTime = IsDesignTime;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InputBox.Widget_InputBox_C.BndEvt__mSearchButton_K2Node_ComponentBoundEvent_5_OnButtonClickedEvent__DelegateSignature
+// ()
+
+void UWidget_InputBox_C::BndEvt__mSearchButton_K2Node_ComponentBoundEvent_5_OnButtonClickedEvent__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InputBox.Widget_InputBox_C.BndEvt__mSearchButton_K2Node_ComponentBoundEvent_5_OnButtonClickedEvent__DelegateSignature");
+
+	UWidget_InputBox_C_BndEvt__mSearchButton_K2Node_ComponentBoundEvent_5_OnButtonClickedEvent__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_InputBox.Widget_InputBox_C.ExecuteUbergraph_Widget_InputBox
 // ()
 // Parameters:
@@ -175,6 +251,23 @@ void UWidget_InputBox_C::ExecuteUbergraph_Widget_InputBox(int EntryPoint)
 
 	UWidget_InputBox_C_ExecuteUbergraph_Widget_InputBox_Params params;
 	params.EntryPoint = EntryPoint;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_InputBox.Widget_InputBox_C.OnClearTextClicked__DelegateSignature
+// ()
+
+void UWidget_InputBox_C::OnClearTextClicked__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_InputBox.Widget_InputBox_C.OnClearTextClicked__DelegateSignature");
+
+	UWidget_InputBox_C_OnClearTextClicked__DelegateSignature_Params params;
 
 	auto flags = fn->FunctionFlags;
 

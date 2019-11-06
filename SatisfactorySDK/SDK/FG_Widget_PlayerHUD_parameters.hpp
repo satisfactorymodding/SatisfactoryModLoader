@@ -14,6 +14,18 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_PlayerHUD.Widget_PlayerHUD_C.GetNobeliskBarVisibility
+struct UWidget_PlayerHUD_C_GetNobeliskBarVisibility_Params
+{
+	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
+// Function Widget_PlayerHUD.Widget_PlayerHUD_C.GetNobeliskBarPercent
+struct UWidget_PlayerHUD_C_GetNobeliskBarPercent_Params
+{
+	float                                              ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
+};
+
 // Function Widget_PlayerHUD.Widget_PlayerHUD_C.Get_mCollectBar_Percent
 struct UWidget_PlayerHUD_C_Get_mCollectBar_Percent_Params
 {
@@ -94,6 +106,11 @@ struct UWidget_PlayerHUD_C_StopRadiationAnimation_Params
 
 // Function Widget_PlayerHUD.Widget_PlayerHUD_C.Construct
 struct UWidget_PlayerHUD_C_Construct_Params
+{
+};
+
+// Function Widget_PlayerHUD.Widget_PlayerHUD_C.CreateTimeWarning
+struct UWidget_PlayerHUD_C_CreateTimeWarning_Params
 {
 };
 

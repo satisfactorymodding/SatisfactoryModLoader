@@ -298,17 +298,17 @@ void UHUDHelpers_C::ShowHideHUD(bool isMenuOpen, class APawn* OwningPawn, class 
 // Function HUDHelpers.HUDHelpers_C.GetNumItemsFromInventory
 // ()
 // Parameters:
-// class UFGInventoryComponent*   InventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+// class UFGInventoryComponent*   inventoryComponent             (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // class UClass*                  mItemClass                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UObject*                 __WorldContext                 (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // int                            NumItems                       (Parm, OutParm, ZeroConstructor, IsPlainOldData)
 
-void UHUDHelpers_C::GetNumItemsFromInventory(class UFGInventoryComponent* InventoryComponent, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems)
+void UHUDHelpers_C::GetNumItemsFromInventory(class UFGInventoryComponent* inventoryComponent, class UClass* mItemClass, class UObject* __WorldContext, int* NumItems)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function HUDHelpers.HUDHelpers_C.GetNumItemsFromInventory");
 
 	UHUDHelpers_C_GetNumItemsFromInventory_Params params;
-	params.InventoryComponent = InventoryComponent;
+	params.inventoryComponent = inventoryComponent;
 	params.mItemClass = mItemClass;
 	params.__WorldContext = __WorldContext;
 

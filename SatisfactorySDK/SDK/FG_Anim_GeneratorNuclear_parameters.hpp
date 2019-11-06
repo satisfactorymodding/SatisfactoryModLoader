@@ -49,11 +49,6 @@ struct UAnim_GeneratorNuclear_C_AnimNotify_GenNuclearLeftProducing_Params
 {
 };
 
-// Function Anim_GeneratorNuclear.Anim_GeneratorNuclear_C.AnimNotify_PlayWatersplashvfx_notify
-struct UAnim_GeneratorNuclear_C_AnimNotify_PlayWatersplashvfx_notify_Params
-{
-};
-
 // Function Anim_GeneratorNuclear.Anim_GeneratorNuclear_C.ExecuteUbergraph_Anim_GeneratorNuclear
 struct UAnim_GeneratorNuclear_C_ExecuteUbergraph_Anim_GeneratorNuclear_Params
 {

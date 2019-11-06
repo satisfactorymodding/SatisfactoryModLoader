@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_TrainPlatformEmpty.Desc_TrainPlatformEmpty_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_TrainPlatformEmpty_C : public UFGBuildingDescriptor
 {
 public:

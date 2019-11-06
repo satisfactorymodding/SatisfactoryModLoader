@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_TruckStation.Build_TruckStation_C
-// 0x0090 (0x0738 - 0x06A8)
+// 0x00A8 (0x0750 - 0x06A8)
 class ABuild_TruckStation_C : public AFGBuildableDockingStation
 {
 public:
@@ -37,6 +37,7 @@ public:
 	class UFGFactoryConnectionComponent*               Output0;                                                  // 0x0720(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGFactoryConnectionComponent*               Input1;                                                   // 0x0728(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGFactoryConnectionComponent*               Input0;                                                   // 0x0730(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	struct FText                                       mMapText;                                                 // 0x0738(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
 
 	static UClass* StaticClass()
 	{
@@ -45,9 +46,28 @@ public:
 	}
 
 
+	ECompassViewDistance GetActorCompassViewDistance();
+	ECompassViewDistance SetActorCompassViewDistance(ECompassViewDistance compassViewDistance);
+	bool AddAsRepresentation();
+	float GetActorFogOfWarRevealRadius();
+	EFogOfWarRevealType GetActorFogOfWarRevealType();
+	struct FLinearColor GetActorRepresentationColor();
+	struct FText GetActorRepresentationText();
+	class UTexture2D* GetActorRepresentationTexture();
+	ERepresentationType GetActorRepresentationType();
+	bool GetActorShouldShowInCompass();
+	bool GetActorShouldShowOnMap();
+	struct FVector GetRealActorLocation();
+	struct FRotator GetRealActorRotation();
+	bool IsActorStatic();
+	bool RemoveAsRepresentation();
+	struct FText SetActorRepresentationText(const struct FText& newText);
+	bool UpdateRepresentation();
 	void UserConstructionScript();
 	void BndEvt__Box_K2Node_ComponentBoundEvent_0_ComponentBeginOverlapSignature__DelegateSignature(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int OtherBodyIndex, bool bFromSweep, const struct FHitResult& SweepResult);
 	void BndEvt__Box_K2Node_ComponentBoundEvent_1_ComponentEndOverlapSignature__DelegateSignature(class UPrimitiveComponent* OverlappedComponent, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int OtherBodyIndex);
+	void ReceiveBeginPlay();
+	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason);
 	void ExecuteUbergraph_Build_TruckStation(int EntryPoint);
 };
 

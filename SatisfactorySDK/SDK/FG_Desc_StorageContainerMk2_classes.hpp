@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_StorageContainerMk2.Desc_StorageContainerMk2_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_StorageContainerMk2_C : public UFGBuildingDescriptor
 {
 public:

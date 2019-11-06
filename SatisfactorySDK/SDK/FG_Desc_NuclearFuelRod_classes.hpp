@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_NuclearFuelRod.Desc_NuclearFuelRod_C
-// 0x0000 (0x0138 - 0x0138)
+// 0x0000 (0x0140 - 0x0140)
 class UDesc_NuclearFuelRod_C : public UFGItemDescriptorNuclearFuel
 {
 public:

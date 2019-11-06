@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_EquipmentDescriptorBeacon.BP_EquipmentDescriptorBeacon_C
-// 0x0000 (0x0168 - 0x0168)
+// 0x0000 (0x0170 - 0x0170)
 class UBP_EquipmentDescriptorBeacon_C : public UFGConsumableDescriptor
 {
 public:

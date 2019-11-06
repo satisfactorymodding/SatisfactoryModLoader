@@ -49,6 +49,8 @@ public:
 	}
 
 
+	ECompassViewDistance GetActorCompassViewDistance();
+	ECompassViewDistance SetActorCompassViewDistance(ECompassViewDistance compassViewDistance);
 	struct FText SetActorRepresentationText(const struct FText& newText);
 	bool UpdateRepresentation();
 	struct FLinearColor GetActorRepresentationColor();

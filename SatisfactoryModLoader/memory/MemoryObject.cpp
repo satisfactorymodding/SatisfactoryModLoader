@@ -1,11 +1,12 @@
 #include <stdafx.h>
 #include "MemoryObject.h"
 #include <util/Utility.h>
+#include <util/EnvironmentValidity.h>
 #include <string>
 
 namespace SML {
 	template<class O>
-	SML_API MemoryObject<O>::MemoryObject(O* obj) {
+	MemoryObject<O>::MemoryObject(O* obj) {
 		this->object = obj;
 		this->size = sizeof(*obj);
 
@@ -17,25 +18,27 @@ namespace SML {
 			ReadProcessMemory(process, reinterpret_cast<void*>(obj), &a, sizeof(a), 0);
 		}
 		this->bytes = std::vector<BYTE>(std::begin(a), std::end(a));
+
+		Utility::invalidateEnvironment();
 	}
 
 	template<class O>
-	SML_API std::vector<BYTE> MemoryObject<O>::returnBytes() {
+	std::vector<BYTE> MemoryObject<O>::returnBytes() {
 		return this->bytes;
 	}
 
 	template<class O>
-	SML_API std::vector<char> MemoryObject<O>::returnBytesAsChars() {
+	std::vector<char> MemoryObject<O>::returnBytesAsChars() {
 		return std::vector<char>(this->bytes.begin(), this->bytes.end());
 	}
 
 	template<class O>
-	SML_API int MemoryObject<O>::getSize() {
+	int MemoryObject<O>::getSize() {
 		return this->size;
 	}
 
 	template<class O>
-	SML_API void MemoryObject<O>::replaceMemory(std::vector<BYTE> newBytes) {
+	void MemoryObject<O>::replaceMemory(std::vector<BYTE> newBytes) {
 		if (newBytes.size() == this->size) {
 			this->bytes = newBytes;
 			HANDLE process = OpenProcess(PROCESS_VM_WRITE | PROCESS_VM_OPERATION, FALSE, GetCurrentProcessId());
@@ -49,7 +52,7 @@ namespace SML {
 	}
 
 	template<class O>
-	SML_API MemoryObject<O>::~MemoryObject() {
+	MemoryObject<O>::~MemoryObject() {
 
 	}
 }

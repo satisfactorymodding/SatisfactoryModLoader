@@ -20,8 +20,9 @@ enum class ECanJoinInviteResult : uint8_t
 	NewEnumerator0                 = 0,
 	NewEnumerator3                 = 1,
 	NewEnumerator2                 = 2,
-	NewEnumerator1                 = 3,
-	ECanJoinInviteResult_MAX       = 4
+	NewEnumerator4                 = 3,
+	NewEnumerator1                 = 4,
+	ECanJoinInviteResult_MAX       = 5
 };
 
 

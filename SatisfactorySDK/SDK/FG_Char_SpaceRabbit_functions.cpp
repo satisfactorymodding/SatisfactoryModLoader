@@ -371,22 +371,22 @@ void AChar_SpaceRabbit_C::ReceiveTick(float* DeltaSeconds)
 // Function Char_SpaceRabbit.Char_SpaceRabbit_C.NotifyOnTakeDamage
 // ()
 // Parameters:
-// class AActor**                 damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // float*                         damageAmount                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType**            DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController**            instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor**                 damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AController**            InstigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_SpaceRabbit_C::NotifyOnTakeDamage(class AActor** damagedActor, float* damageAmount, class UDamageType** DamageType, class AController** instigatedBy, class AActor** damageCauser)
+void AChar_SpaceRabbit_C::NotifyOnTakeDamage(class AActor** DamagedActor, float* damageAmount, class UDamageType** DamageType, class AController** InstigatedBy, class AActor** DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceRabbit.Char_SpaceRabbit_C.NotifyOnTakeDamage");
 
 	AChar_SpaceRabbit_C_NotifyOnTakeDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.damageAmount = damageAmount;
 	params.DamageType = DamageType;
-	params.instigatedBy = instigatedBy;
-	params.damageCauser = damageCauser;
+	params.InstigatedBy = InstigatedBy;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -416,30 +416,30 @@ void AChar_SpaceRabbit_C::ReceiveDied()
 // Function Char_SpaceRabbit.Char_SpaceRabbit_C.NotifyOnTakePointDamage
 // ()
 // Parameters:
-// class AActor**                 damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // float*                         Damage                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController**            instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AController**            InstigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector*                HitLocation                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UPrimitiveComponent**    HitComponent                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 // struct FName*                  BoneName                       (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // struct FVector*                ShotFromDirection              (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType**            DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor**                 damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_SpaceRabbit_C::NotifyOnTakePointDamage(class AActor** damagedActor, float* Damage, class AController** instigatedBy, struct FVector* HitLocation, class UPrimitiveComponent** HitComponent, struct FName* BoneName, struct FVector* ShotFromDirection, class UDamageType** DamageType, class AActor** damageCauser)
+void AChar_SpaceRabbit_C::NotifyOnTakePointDamage(class AActor** DamagedActor, float* Damage, class AController** InstigatedBy, struct FVector* HitLocation, class UPrimitiveComponent** HitComponent, struct FName* BoneName, struct FVector* ShotFromDirection, class UDamageType** DamageType, class AActor** DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceRabbit.Char_SpaceRabbit_C.NotifyOnTakePointDamage");
 
 	AChar_SpaceRabbit_C_NotifyOnTakePointDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
-	params.instigatedBy = instigatedBy;
+	params.InstigatedBy = InstigatedBy;
 	params.HitLocation = HitLocation;
 	params.HitComponent = HitComponent;
 	params.BoneName = BoneName;
 	params.ShotFromDirection = ShotFromDirection;
 	params.DamageType = DamageType;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 
@@ -452,22 +452,22 @@ void AChar_SpaceRabbit_C::NotifyOnTakePointDamage(class AActor** damagedActor, f
 // Function Char_SpaceRabbit.Char_SpaceRabbit_C.NotifyOnTakeRadialDamage
 // ()
 // Parameters:
-// class AActor**                 damagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamagedActor                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // float*                         Damage                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AController**            instigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AController**            InstigatedBy                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // class UDamageType**            DamageType                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
-// class AActor**                 damageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// class AActor**                 DamageCauser                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void AChar_SpaceRabbit_C::NotifyOnTakeRadialDamage(class AActor** damagedActor, float* Damage, class AController** instigatedBy, class UDamageType** DamageType, class AActor** damageCauser)
+void AChar_SpaceRabbit_C::NotifyOnTakeRadialDamage(class AActor** DamagedActor, float* Damage, class AController** InstigatedBy, class UDamageType** DamageType, class AActor** DamageCauser)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Char_SpaceRabbit.Char_SpaceRabbit_C.NotifyOnTakeRadialDamage");
 
 	AChar_SpaceRabbit_C_NotifyOnTakeRadialDamage_Params params;
-	params.damagedActor = damagedActor;
+	params.DamagedActor = DamagedActor;
 	params.Damage = Damage;
-	params.instigatedBy = instigatedBy;
+	params.InstigatedBy = InstigatedBy;
 	params.DamageType = DamageType;
-	params.damageCauser = damageCauser;
+	params.DamageCauser = DamageCauser;
 
 	auto flags = fn->FunctionFlags;
 

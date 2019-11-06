@@ -12,6 +12,66 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_ProgressBar.Widget_ProgressBar_C.SetUseIconContainer
+// ()
+// Parameters:
+// bool                           mUseIconContainer              (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_ProgressBar_C::SetUseIconContainer(bool mUseIconContainer)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ProgressBar.Widget_ProgressBar_C.SetUseIconContainer");
+
+	UWidget_ProgressBar_C_SetUseIconContainer_Params params;
+	params.mUseIconContainer = mUseIconContainer;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ProgressBar.Widget_ProgressBar_C.SetShowIcon
+// ()
+// Parameters:
+// bool                           mShowIcon                      (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_ProgressBar_C::SetShowIcon(bool mShowIcon)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ProgressBar.Widget_ProgressBar_C.SetShowIcon");
+
+	UWidget_ProgressBar_C_SetShowIcon_Params params;
+	params.mShowIcon = mShowIcon;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_ProgressBar.Widget_ProgressBar_C.SetIcon
+// ()
+// Parameters:
+// class UTexture*                mIcon                          (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_ProgressBar_C::SetIcon(class UTexture* mIcon)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_ProgressBar.Widget_ProgressBar_C.SetIcon");
+
+	UWidget_ProgressBar_C_SetIcon_Params params;
+	params.mIcon = mIcon;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_ProgressBar.Widget_ProgressBar_C.GetCurveType
 // ()
 // Parameters:

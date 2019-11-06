@@ -14,6 +14,24 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_ProgressBar.Widget_ProgressBar_C.SetUseIconContainer
+struct UWidget_ProgressBar_C_SetUseIconContainer_Params
+{
+	bool                                               mUseIconContainer;                                        // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_ProgressBar.Widget_ProgressBar_C.SetShowIcon
+struct UWidget_ProgressBar_C_SetShowIcon_Params
+{
+	bool                                               mShowIcon;                                                // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_ProgressBar.Widget_ProgressBar_C.SetIcon
+struct UWidget_ProgressBar_C_SetIcon_Params
+{
+	class UTexture*                                    mIcon;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
 // Function Widget_ProgressBar.Widget_ProgressBar_C.GetCurveType
 struct UWidget_ProgressBar_C_GetCurveType_Params
 {

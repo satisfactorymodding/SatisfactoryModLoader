@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Build_TrainStation.Build_TrainStation_C
-// 0x0058 (0x0760 - 0x0708)
+// 0x0070 (0x0778 - 0x0708)
 class ABuild_TrainStation_C : public AFGBuildableRailroadStation
 {
 public:
@@ -30,6 +30,7 @@ public:
 	class UBoxComponent*                               Clearance;                                                // 0x0748(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UFGPowerConnectionComponent*                 PowerConnection;                                          // 0x0750(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
 	class UTextRenderComponent*                        Name;                                                     // 0x0758(0x0008) (BlueprintVisible, ZeroConstructor, InstancedReference, IsPlainOldData)
+	struct FText                                       mMapText;                                                 // 0x0760(0x0028) (Edit, BlueprintVisible, Net, DisableEditOnInstance)
 
 	static UClass* StaticClass()
 	{
@@ -38,8 +39,27 @@ public:
 	}
 
 
+	ECompassViewDistance GetActorCompassViewDistance();
+	ECompassViewDistance SetActorCompassViewDistance(ECompassViewDistance compassViewDistance);
+	bool AddAsRepresentation();
+	float GetActorFogOfWarRevealRadius();
+	EFogOfWarRevealType GetActorFogOfWarRevealType();
+	struct FLinearColor GetActorRepresentationColor();
+	struct FText GetActorRepresentationText();
+	class UTexture2D* GetActorRepresentationTexture();
+	ERepresentationType GetActorRepresentationType();
+	bool GetActorShouldShowInCompass();
+	bool GetActorShouldShowOnMap();
+	struct FVector GetRealActorLocation();
+	struct FRotator GetRealActorRotation();
+	bool IsActorStatic();
+	bool RemoveAsRepresentation();
+	struct FText SetActorRepresentationText(const struct FText& newText);
+	bool UpdateRepresentation();
 	void UserConstructionScript();
 	void OnNameChanged();
+	void ReceiveBeginPlay();
+	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason);
 	void ExecuteUbergraph_Build_TrainStation(int EntryPoint);
 };
 

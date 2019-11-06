@@ -7,6 +7,8 @@
 #include <assets/AssetLoader.h>
 #include <assets/AssetFunctions.h>
 #include <memory>
+#include <sstream>
+#include <mod/Hooks.h>
 
 namespace SML {
 	namespace Mod {
@@ -24,6 +26,33 @@ namespace SML {
 				modHandler.commandRegistry.push_back(r);
 			}
 
+			//runs a command directly
+			SML_API void runCommand(std::string name) {
+				std::vector<std::string> arguments;
+				std::stringstream ss(name);
+				std::string temp;
+				if (name.find(' ') == std::string::npos) {
+					arguments.push_back(name);
+				}
+				else {
+					while (getline(ss, temp, ' ')) {
+						arguments.push_back(temp);
+					}
+				}
+				SML::Mod::Functions::CommandData data = {
+					arguments.size(),
+					arguments,
+					nullptr
+				};
+				Hooks::smlCommands(data); //run SML's commands
+				for (Registry r : modHandler.commandRegistry) {
+					if (arguments[0] == "/" + r.name) {
+						auto commandFunc = (void(WINAPI*)(SML::Mod::Functions::CommandData))r.func;
+						commandFunc(data);
+					}
+				}
+			}
+
 			// registers an API function to the mod handler
 			SML_API void registerAPIFunction(std::string name, PVOID func) {
 				if (modHandler.currentStage != GameStage::SETUP) {
@@ -31,9 +60,7 @@ namespace SML {
 				}
 				for (Registry reg : modHandler.APIRegistry) {
 					if (reg.name == name) {
-						std::string msg = "Duplicate API function " + name + " registered!\nPress Ok to exit.";
-						MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-						abort();
+						Utility::displayCrash("Duplicate API function " + name + " registered!\nPress Ok to exit.");
 					}
 				}
 				Registry r = {
@@ -54,9 +81,7 @@ namespace SML {
 					}
 				}
 				if (!found) {
-					std::string msg = "Requested API function " + name + " not found!\nMake sure that the mod that provides this function is installed or added as a dependency to your mod.\nPress Ok to exit.";
-					MessageBoxA(NULL, msg.c_str(), "SatisfactoryModLoader Fatal Error", MB_ICONERROR);
-					abort();
+					Utility::displayCrash("Requested API function " + name + " not found!\nMake sure that the mod that provides this function is installed or added as a dependency to your mod.\nPress Ok to exit.");
 				}
 				return func;
 			}
@@ -99,6 +124,33 @@ namespace SML {
 					modHandler.eventRegistry.insert(std::pair<std::string, std::vector<PVOID>>(name, v));
 				} else {
 					modHandler.eventRegistry[name].push_back(func);
+				}
+			}
+
+			//checks if a pak exists
+			SML_API bool doesPakExist(std::string name) {
+				char path_c[MAX_PATH];
+				GetModuleFileNameA(NULL, path_c, MAX_PATH);
+				std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
+				path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
+				path = path + "\\Content\\Paks";
+				if (name.find(".pak") == std::string::npos) {
+					name.append(".pak");
+				}
+				std::string pakLoc = path.append("\\" + name);
+				std::filesystem::path pakPath(pakLoc);
+				if (!std::filesystem::exists(pakPath)) {
+					return false;
+				}
+				return true;
+			}
+
+			//raises an error if a pak doesn't exist
+			SML_API void setDependsOnPak(std::string name) {
+				if (!doesPakExist(name)) {
+					Utility::displayCrash("You are missing " + name + " from your install!\nMake sure you installed your mods properly!\n");
 				}
 			}
 		}

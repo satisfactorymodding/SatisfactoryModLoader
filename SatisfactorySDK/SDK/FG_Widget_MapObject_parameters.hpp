@@ -14,6 +14,27 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_MapObject.Widget_MapObject_C.HideViewDistanceIndicator
+struct UWidget_MapObject_C_HideViewDistanceIndicator_Params
+{
+};
+
+// Function Widget_MapObject.Widget_MapObject_C.ShowViewDistanceIndicator
+struct UWidget_MapObject_C_ShowViewDistanceIndicator_Params
+{
+	ECompassViewDistance                               viewDistance;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_MapObject.Widget_MapObject_C.UnhighlightOnMap
+struct UWidget_MapObject_C_UnhighlightOnMap_Params
+{
+};
+
+// Function Widget_MapObject.Widget_MapObject_C.HighlightOnMap
+struct UWidget_MapObject_C_HighlightOnMap_Params
+{
+};
+
 // Function Widget_MapObject.Widget_MapObject_C.mShowActorDetails
 struct UWidget_MapObject_C_mShowActorDetails_Params
 {
@@ -29,7 +50,7 @@ struct UWidget_MapObject_C_Tick_Params
 // Function Widget_MapObject.Widget_MapObject_C.OnObjectFiltered
 struct UWidget_MapObject_C_OnObjectFiltered_Params
 {
-	bool*                                              FilteredIn;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+	bool*                                              visible;                                                  // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 };
 
 // Function Widget_MapObject.Widget_MapObject_C.OnObjectMoved

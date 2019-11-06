@@ -15,6 +15,7 @@
 
 namespace SML {
 	namespace Assets {
+		//If you use these, i'll deconstruct a power pole somewhere in your factory >:)
 		SML_API SDK::UWorld** CurrentWorld = nullptr;
 		SML_API SDK::AFGCharacterPlayer* SinglePlayerCharacter = nullptr;
 		SML_API SDK::AFGPlayerController* SinglePlayerController = nullptr;
@@ -45,6 +46,22 @@ namespace SML {
 
 			SML_API SDK::AFGPlayerController* getPlayerController() {
 				return reinterpret_cast<SDK::AFGPlayerController*>(SDK::UWorld::GetWorld()->OwningGameInstance->LocalPlayers[0]->PlayerController);
+			}
+
+			SML_API SDK::UFGGameInstance* getGameInstance() {
+				return reinterpret_cast<SDK::UFGGameInstance*>(SDK::UWorld::GetWorld()->OwningGameInstance);
+			}
+
+			SML_API SDK::AFGGameState* getGameState() {
+				return reinterpret_cast<SDK::AFGGameState*>(SDK::UWorld::GetWorld()->GameState);
+			}
+
+			SML_API SDK::ULevel* getLevel() {
+				return reinterpret_cast<SDK::ULevel*>(SDK::UWorld::GetWorld()->CurrentLevel);
+			}
+
+			SML_API SDK::UNetDriver* getNetDriver() {
+				return reinterpret_cast<SDK::UNetDriver*>(SDK::UWorld::GetWorld()->NetDriver);
 			}
 
 			SML_API SDK::UClass* spawnActorAtPlayer(SDK::UObject* obj, float x, float y, float z) {
@@ -121,8 +138,8 @@ namespace SML {
 				pointer(getPlayerController(), fstring);
 			}
 
-			SML_API int registerAssetForCache(const wchar_t* name) {
-				int id = 0;
+			SML_API size_t registerAssetForCache(const wchar_t* name) {
+				size_t id = 0;
 				if (modHandler.currentStage == GameStage::SETUP || modHandler.currentStage == GameStage::POST_SETUP) {
 					if (modHandler.assetCache.count(name) > 0) {
 						Utility::warning("Skipping cache registration of existing asset ", name);
@@ -160,13 +177,12 @@ namespace SML {
 				if (modHandler.currentStage != GameStage::RUN) {
 					std::wstring ws(name);
 					Utility::displayCrash("Attempted to get cached asset\n" + std::string(ws.begin(), ws.end()) + "\n before it was cached!");
-					abort();
 				} else {
 					if (modHandler.assetCache.count(name) > 0) {
 						return modHandler.assetCache[name];
 					}
 					else {
-						int id = modHandler.assetCache.size();
+						size_t id = modHandler.assetCache.size();
 						modHandler.assetCache.emplace(name, nullptr);
 						modHandler.assetCache[name] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), name);
 						modHandler.assetIdRegistry.emplace(id, name);

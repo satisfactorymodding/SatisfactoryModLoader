@@ -7,20 +7,20 @@
 #endif
 
 #include "FG_Basic.hpp"
-#include "FG_SlateCore_classes.hpp"
+#include "FG_GameplayTasks_classes.hpp"
+#include "FG_UMG_classes.hpp"
 #include "FG_CoreUObject_classes.hpp"
 #include "FG_InputCore_classes.hpp"
 #include "FG_Engine_classes.hpp"
-#include "FG_GameplayTasks_classes.hpp"
-#include "FG_UMG_classes.hpp"
 #include "FG_AIModule_classes.hpp"
+#include "FG_SlateCore_classes.hpp"
 #include "FG_Slate_classes.hpp"
 #include "FG_ApexDestruction_classes.hpp"
 #include "FG_NavigationSystem_classes.hpp"
-#include "FG_SignificanceManager_classes.hpp"
 #include "FG_OnlineSubsystemUtils_classes.hpp"
 #include "FG_ReplicationGraph_classes.hpp"
 #include "FG_AssetRegistry_classes.hpp"
+#include "FG_SignificanceManager_classes.hpp"
 #include "FG_AkAudio_classes.hpp"
 #include "FG_PhysXVehicles_classes.hpp"
 
@@ -51,6 +51,27 @@ enum class EGamePhase : uint8_t
 	EGP_FoodCourt                  = 4,
 	EGP_Victory                    = 5,
 	EGP_MAX                        = 6
+};
+
+
+// Enum FactoryGame.ERepresentationType
+enum class ERepresentationType : uint8_t
+{
+	RT_Default                     = 0,
+	RT_Beacon                      = 1,
+	RT_Crate                       = 2,
+	RT_Hub                         = 3,
+	RT_Ping                        = 4,
+	RT_Player                      = 5,
+	RT_RadarTower                  = 6,
+	RT_Resource                    = 7,
+	RT_SpaceElevator               = 8,
+	RT_StartingPod                 = 9,
+	RT_Train                       = 10,
+	RT_TrainStation                = 11,
+	RT_Vehicle                     = 12,
+	RT_VehicleDockingStation       = 13,
+	RT_MAX                         = 14
 };
 
 
@@ -107,6 +128,18 @@ enum class EArmEquipment : uint8_t
 };
 
 
+// Enum FactoryGame.ECompassViewDistance
+enum class ECompassViewDistance : uint8_t
+{
+	CVD_Off                        = 0,
+	CVD_Near                       = 1,
+	CVD_Mid                        = 2,
+	CVD_Far                        = 3,
+	CVD_Always                     = 4,
+	CVD_MAX                        = 5
+};
+
+
 // Enum FactoryGame.EFogOfWarRevealType
 enum class EFogOfWarRevealType : uint8_t
 {
@@ -115,24 +148,6 @@ enum class EFogOfWarRevealType : uint8_t
 	FOWRT_Intermittent             = 2,
 	FOWRT_Dynamic                  = 3,
 	FOWRT_MAX                      = 4
-};
-
-
-// Enum FactoryGame.ERepresentationType
-enum class ERepresentationType : uint8_t
-{
-	RT_Default                     = 0,
-	RT_Beacon                      = 1,
-	RT_Crate                       = 2,
-	RT_Hub                         = 3,
-	RT_Ping                        = 4,
-	RT_Player                      = 5,
-	RT_RadarTower                  = 6,
-	RT_Resource                    = 7,
-	RT_SpaceElevator               = 8,
-	RT_StartingPod                 = 9,
-	RT_Vehicle                     = 10,
-	RT_MAX                         = 11
 };
 
 
@@ -647,6 +662,15 @@ enum class EUndefinedBool : uint8_t
 //Script Structs
 //---------------------------------------------------------------------------
 
+// ScriptStruct FactoryGame.ItemView
+// 0x0014
+struct FItemView
+{
+	float                                              Distance;                                                 // 0x0000(0x0004) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	struct FVector                                     FocalOffset;                                              // 0x0004(0x000C) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+	float                                              CameraPitch;                                              // 0x0010(0x0004) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
+};
+
 // ScriptStruct FactoryGame.AudioSubtitlePair
 // 0x0028
 struct FAudioSubtitlePair
@@ -728,15 +752,14 @@ struct FConnectionItemStruct
 {
 	class UFGFactoryConnectionComponent*               Connection;                                               // 0x0000(0x0008) (ExportObject, ZeroConstructor, InstancedReference, IsPlainOldData)
 	struct FInventoryItem                              Item;                                                     // 0x0008(0x0018)
-	float                                              OffsetBeyond;                                             // 0x0020(0x0004) (ZeroConstructor, IsPlainOldData)
-	unsigned char                                      UnknownData00[0x4];                                       // 0x0024(0x0004) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x8];                                       // 0x0020(0x0008) MISSED OFFSET
 };
 
 // ScriptStruct FactoryGame.ConveyorBeltItems
-// 0x0170
+// 0x0178
 struct FConveyorBeltItems
 {
-	unsigned char                                      UnknownData00[0x170];                                     // 0x0000(0x0170) MISSED OFFSET
+	unsigned char                                      UnknownData00[0x178];                                     // 0x0000(0x0178) MISSED OFFSET
 };
 
 // ScriptStruct FactoryGame.FoundationSideSelectionFlags
@@ -811,15 +834,6 @@ struct FDistanceBasedTickRate
 {
 	float                                              Distance;                                                 // 0x0000(0x0004) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	float                                              TickRate;                                                 // 0x0004(0x0004) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-};
-
-// ScriptStruct FactoryGame.ItemView
-// 0x0014
-struct FItemView
-{
-	float                                              Distance;                                                 // 0x0000(0x0004) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	struct FVector                                     FocalOffset;                                              // 0x0004(0x000C) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
-	float                                              CameraPitch;                                              // 0x0010(0x0004) (Edit, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 };
 
 // ScriptStruct FactoryGame.ConnectionRepresentation
@@ -992,8 +1006,7 @@ struct FFeetOffset
 	unsigned char                                      FeetIndex;                                                // 0x0000(0x0001) (ZeroConstructor, SaveGame, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x3];                                       // 0x0001(0x0003) MISSED OFFSET
 	float                                              OffsetZ;                                                  // 0x0004(0x0004) (ZeroConstructor, SaveGame, IsPlainOldData)
-	unsigned char                                      ShouldShow : 1;                                           // 0x0008(0x0001) (SaveGame)
-	unsigned char                                      IsValidOffset : 1;                                        // 0x0008(0x0001)
+	bool                                               IsValidOffset;                                            // 0x0008(0x0001) (ZeroConstructor, IsPlainOldData, RepSkip, RepNotify, Interp, NonTransactional, EditorOnly, NoDestructor, AutoWeak, ContainsInstancedReference, AssetRegistrySearchable, SimpleDisplay, AdvancedDisplay, Protected, BlueprintCallable, BlueprintAuthorityOnly, TextExportTransient, NonPIEDuplicateTransient, ExposeOnSpawn, PersistentInstance, UObjectWrapper, HasGetValueTypeHash, NativeAccessSpecifierPublic, NativeAccessSpecifierProtected, NativeAccessSpecifierPrivate)
 	unsigned char                                      UnknownData01[0x3];                                       // 0x0009(0x0003) MISSED OFFSET
 };
 
@@ -1092,6 +1105,15 @@ struct FFGModPackage
 	class FString                                      Author;                                                   // 0x0010(0x0010) (BlueprintVisible, ZeroConstructor)
 	class FString                                      Version;                                                  // 0x0020(0x0010) (BlueprintVisible, ZeroConstructor)
 	class FString                                      Description;                                              // 0x0030(0x0010) (BlueprintVisible, ZeroConstructor)
+};
+
+// ScriptStruct FactoryGame.FGGameNetworkErrorMsg
+// 0x0018
+struct FFGGameNetworkErrorMsg
+{
+	TEnumAsByte<ENetworkFailure>                       errorType;                                                // 0x0000(0x0001) (BlueprintVisible, ZeroConstructor, IsPlainOldData)
+	unsigned char                                      UnknownData00[0x7];                                       // 0x0001(0x0007) MISSED OFFSET
+	class FString                                      errorMsg;                                                 // 0x0008(0x0010) (BlueprintVisible, ZeroConstructor)
 };
 
 // ScriptStruct FactoryGame.PhaseTierInfo
@@ -1297,7 +1319,7 @@ struct FFGOnlineSessionSettings
 	int                                                NumConnectedPlayers;                                      // 0x003C(0x0004) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
 	int                                                PlayDuration;                                             // 0x0040(0x0004) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData00[0x4];                                       // 0x0044(0x0004) MISSED OFFSET
-	class FString                                      BuildVersion;                                             // 0x0048(0x0010) (ZeroConstructor)
+	class FString                                      BuildVersion;                                             // 0x0048(0x0010) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
 	class FString                                      SessionName;                                              // 0x0058(0x0010) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor)
 	ECachedNATType                                     natType;                                                  // 0x0068(0x0001) (BlueprintVisible, BlueprintReadOnly, ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData01[0x7];                                       // 0x0069(0x0007) MISSED OFFSET

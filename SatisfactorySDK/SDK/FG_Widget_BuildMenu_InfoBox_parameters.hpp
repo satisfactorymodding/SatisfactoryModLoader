@@ -20,8 +20,8 @@ struct UWidget_BuildMenu_InfoBox_C_GetStatsVisibility_Params
 	ESlateVisibility                                   ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_BuildMenu_InfoBox.Widget_BuildMenu_InfoBox_C.AnimateCostSlots
-struct UWidget_BuildMenu_InfoBox_C_AnimateCostSlots_Params
+// Function Widget_BuildMenu_InfoBox.Widget_BuildMenu_InfoBox_C.AnimateCostslots
+struct UWidget_BuildMenu_InfoBox_C_AnimateCostslots_Params
 {
 };
 

@@ -27,19 +27,25 @@
 #include <thread>
 #include <assets/AssetLoader.h>
 #include <util/Utility.h>
-#include <util/Reflection.h>
 #include <util/JsonConfig.h>
+#include <util/EnvironmentValidity.h>
 #include <mod/Hooks.h>
 #include <mod/Coremods.h>
+#include <mod/ModFunctions.h>
+
+#include <chrono>
+#include <thread>
 
 namespace SML {
+	extern "C" const SML_API char SML::smlVersion[] = "1.1.0";
+	const int targetVersion = 106504; //CL of Satisfactory
 	static const char* logName = "SatisfactoryModLoader.log";
 	Mod::ModHandler modHandler;
+	Mod::ZipHandler zipHandler;
 
-	// Main DLL for loading mod DLLs
-	void startSML() {
+	void initializeConsole() {
 		// launch the game's internal console and hook into it
-		Utility::logFile.open(logName, std::ios_base::out | std::ios_base::app);
+		Utility::logFile.open(logName, std::ios_base::out);
 		AllocConsole();
 		ShowWindow(GetConsoleWindow(), SW_HIDE);
 		FILE* fp;
@@ -47,15 +53,29 @@ namespace SML {
 		freopen_s(&fp, "CONOUT$", "w", stdout);
 		freopen_s(&fp, "CONOUT$", "w", stderr);
 
-		ShowWindow(GetConsoleWindow(), SW_SHOW);
+		Utility::info("Attached SatisfactoryModLoader v", modLoaderVersion, " to Satisfactory");
+	}
 
-		Utility::info("Attached SatisfactoryModLoader to Satisfactory");
+	// Extract zip files before the engine has started
+	// DO NOT ADD ANY EXTRA LOGIC HERE!!!
+	void extractZips() {
+		zipHandler.extractZips();
+	}
 
+	// Main DLL for loading mod DLLs
+	void startSML() {
 		// load up all of the configuration information
 		readConfig();
+		Utility::info("Validating system files...");
+		Utility::checkForValidEnvironment();
+		if (unsafeMode) {
+			Utility::invalidateEnvironment();
+			Utility::warning("Unsafe mode enabled! SML will do things that are generally not allowed, so you can't report bugs!");
+		}
 
 		//make sure that SML's target and satisfactory's versions are the same
 		Utility::checkVersion(targetVersion);
+		//load the console if enabled by the config
 		if (loadConsole) {
 			ShowWindow(GetConsoleWindow(), SW_SHOW);
 		}
@@ -66,30 +86,29 @@ namespace SML {
 		Assets::AssetLoader::init();
 		Utility::info("Initialized SDK");
 
-
-		// get path
-		char p[MAX_PATH];
-		GetModuleFileNameA(NULL, p, MAX_PATH);
-
 		//load coremods
-		Mod::startLoadingCoremods(p);
+		Mod::startLoadingCoremods();
 
 		// load mods
-		modHandler.loadMods(p);
-		modHandler.setupMods();
-		modHandler.checkDependencies();
-		modHandler.postSetupMods();
+		modHandler.loadMods();
+		if (modHandler.mods.size() != 0) {
+			modHandler.setupMods();
+			modHandler.checkDependencies();
+			modHandler.postSetupMods();
+		}
+		Mod::Functions::broadcastEvent("beforeHooks");
 		Mod::Hooks::hookFunctions();
+		Mod::Functions::broadcastEvent("afterHooks");
 		modHandler.currentStage = Mod::GameStage::INITIALIZING;
 			
-		// log mod size
+		// log mod list size
 		size_t listSize = modHandler.mods.size();
 		Utility::info("Loaded ", listSize, " mod", (listSize > 1 || listSize == 0 ? "s" : ""));
 
 		//Display info about registries
-		Utility::info("Registered ", modHandler.commandRegistry.size(), " Command", (modHandler.commandRegistry.size() > 1 || modHandler.commandRegistry.size() == 0 ? "s" : ""));
-		Utility::info("Registered ", modHandler.APIRegistry.size(), " API function", (modHandler.APIRegistry.size() > 1 || modHandler.APIRegistry.size() == 0 ? "s" : ""));
-		Utility::info("Registered ", modHandler.eventRegistry.size(), " Custom event", (modHandler.eventRegistry.size() > 1 || modHandler.eventRegistry.size() == 0 ? "s" : ""));
+			Utility::debug("Registered ", modHandler.commandRegistry.size(), " Command", (modHandler.commandRegistry.size() > 1 || modHandler.commandRegistry.size() == 0 ? "s" : ""));
+			Utility::debug("Registered ", modHandler.APIRegistry.size(), " API function", (modHandler.APIRegistry.size() > 1 || modHandler.APIRegistry.size() == 0 ? "s" : ""));
+			Utility::debug("Registered ", modHandler.eventRegistry.size(), " Custom event", (modHandler.eventRegistry.size() > 1 || modHandler.eventRegistry.size() == 0 ? "s" : ""));
 
 		//display condensed form of mod information
 		std::string modList = "[";
@@ -101,7 +120,7 @@ namespace SML {
 			Utility::info("Loaded mods: ", modList.substr(0, modList.length() - 2), "]");
 		}
 
-		Utility::info("SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
+		Utility::info("SatisfactoryModLoader initialization complete. Launching Satisfactory...");
 	}
 
 	//read the config file
@@ -111,18 +130,40 @@ namespace SML {
 			{"Console", true},
 			{"Debug" , false},
 			{"Supress Errors", false},
-			{"Chat Commands", true}
+			{"Chat Commands", true},
+			{"Disable Crash Reporter", true},
+			{"Enable Unsafe Mode", false}
 		}, false);
 
 		loadConsole = config["Console"].get<bool>();
 		debugOutput = config["Debug"].get<bool>();
 		supressErrors = config["Supress Errors"].get<bool>();
 		chatCommands = config["Chat Commands"].get<bool>();
+		crashReporter = config["Disable Crash Reporter"].get<bool>();
+		unsafeMode = config["Enable Unsafe Mode"].get<bool>();
 	}
 
 	//cleans up when the program is killed
 	void cleanup() {
-		modHandler.mods.clear();
+		Utility::debug("Starting SML Cleanup...");
+
+		// Sleep to wait for UE4 pak hooks to expire
+		std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+		modHandler.destroy();
+		zipHandler.destroy();
+
+		char path_c[MAX_PATH];
+		GetModuleFileNameA(NULL, path_c, MAX_PATH);
+		std::string path = std::string(path_c);			 // ..\FactoryGame\Binaries\Win64\.exe
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries\Win64
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame\Binaries
+		path = path.substr(0, path.find_last_of("/\\")); // ..\FactoryGame
+		Utility::enableCrashReporter(path);
+
+		if (!Utility::isEnvironmentValid) {
+			Utility::error("This log is not valid for bug reports because you have installed coremods, a mod does memory editing, or unsafe mode is enabled in the config. Fix these issues before submitting a crash report!");
+		}
 
 		Utility::info("SML shutting down...");
 		Utility::logFile.flush();

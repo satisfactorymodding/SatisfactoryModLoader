@@ -11,6 +11,7 @@ namespace SML {
 		class AFGCharacterBase {
 		public:
 			void BeginPlay();
+			void EndPlay();
 			void GetHealthComponent(struct FFrame*, void* const);
 			void RagdollCharacter(bool ragdollState);
 		};
@@ -18,6 +19,7 @@ namespace SML {
 		DEFINE_METHOD(AFGCharacterBase::RagdollCharacter);
 		DEFINE_METHOD(AFGCharacterBase::BeginPlay);
 		EXPORT_METHOD(AFGCharacterBase::GetHealthComponent);
+		DEFINE_METHOD(AFGCharacterBase::EndPlay);
 
 		// manually override name
 		template <>
@@ -29,6 +31,7 @@ namespace SML {
 		{
 		public:
 			void BeginPlay();
+			void EndPlay();
 			void HotKeyDismantle();
 			void OnUsePressed();
 			void SprintPressed();
@@ -38,6 +41,7 @@ namespace SML {
 		DEFINE_METHOD(AFGCharacterPlayer::HotKeyDismantle);
 		DEFINE_METHOD(AFGCharacterPlayer::OnUsePressed);
 		DEFINE_METHOD(AFGCharacterPlayer::SprintPressed);
+		DEFINE_METHOD(AFGCharacterPlayer::EndPlay);
 
 		class HealthComponent {
 		public:

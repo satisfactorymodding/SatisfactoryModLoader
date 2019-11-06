@@ -14,6 +14,14 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_Overclock.Widget_Overclock_C.OnMouseButtonDown
+struct UWidget_Overclock_C_OnMouseButtonDown_Params
+{
+	struct FGeometry*                                  MyGeometry;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+	struct FPointerEvent*                              MouseEvent;                                               // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+	struct FEventReply                                 ReturnValue;                                              // (Parm, OutParm, ReturnParm)
+};
+
 // Function Widget_Overclock.Widget_Overclock_C.UpdateDropArea
 struct UWidget_Overclock_C_UpdateDropArea_Params
 {

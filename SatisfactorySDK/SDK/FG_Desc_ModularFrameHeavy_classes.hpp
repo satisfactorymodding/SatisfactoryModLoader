@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_ModularFrameHeavy.Desc_ModularFrameHeavy_C
-// 0x0000 (0x0128 - 0x0128)
+// 0x0000 (0x0130 - 0x0130)
 class UDesc_ModularFrameHeavy_C : public UFGItemDescriptor
 {
 public:

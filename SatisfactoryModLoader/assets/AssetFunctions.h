@@ -5,19 +5,19 @@
 namespace SML {
 	namespace Assets {
 		/**
-		* DEPRECATED! USE Functions::getWorld() instead.
+		* DEPRECATED! Use Functions::getWorld() instead.
 		* Current UWorld pointer pointer
 		*/
 		SML_API extern SDK::UWorld** CurrentWorld;
 
 		/**
-		* DEPRECATED! USE Functions::getPlayerCharacter() instead.
+		* DEPRECATED! Use Functions::getPlayerCharacter() instead.
 		* Single player character
 		*/
 		SML_API extern SDK::AFGCharacterPlayer* SinglePlayerCharacter;
 
 		/**
-		* DEPRECATED! USE Functions::getPlayerController() instead.
+		* DEPRECATED! Use Functions::getPlayerController() instead.
 		* Single player controller
 		*/
 		SML_API extern SDK::AFGPlayerController* SinglePlayerController;
@@ -75,6 +75,34 @@ namespace SML {
 			* @author SuperCoder79
 			*/
 			SML_API SDK::AFGPlayerController* getPlayerController();
+
+			/**
+			* Get the game instance
+			* 
+			* @author SuperCoder79
+			*/
+			SML_API SDK::UFGGameInstance* getGameInstance();
+
+			/**
+			* Get the game state
+			*
+			* @author SuperCoder79
+			*/
+			SML_API SDK::AFGGameState* getGameState();
+
+			/**
+			* Get the game level
+			* 
+			* @author SuperCoder79
+			*/
+			SML_API SDK::ULevel* getLevel();
+
+			/**
+			* Get the game's net driver. No idea if this actually works!
+			*
+			* @author SuperCoder79
+			*/
+			SML_API SDK::UNetDriver* getNetDriver();
 
 			/**
 			* Spawn an actor at the player, offset by the XYZ values provided.
@@ -150,7 +178,7 @@ namespace SML {
 			*
 			* @author SuperCoder79
 			*/
-			SML_API int registerAssetForCache(const wchar_t* name);
+			SML_API size_t registerAssetForCache(const wchar_t* name);
 
 			/**
 			* Returns the UObject pointer from the cache for spawning.
@@ -170,7 +198,7 @@ namespace SML {
 			SML_API SDK::UObject* getAssetFromCacheWithID(int id);
 
 			/**
-			*  Get's an asset's name back from the cache with the name's id.
+			* Get's an asset's name back from the cache with the name's id.
 			* Will crash if the id isn't found.
 			*
 			* @author SuperCoder79

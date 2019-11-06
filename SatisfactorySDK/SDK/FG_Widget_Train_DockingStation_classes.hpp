@@ -55,6 +55,7 @@ public:
 	void Tick(struct FGeometry* MyGeometry, float* InDeltaTime);
 	void BndEvt__Widget_Window_DarkMode_K2Node_ComponentBoundEvent_2_OnClose__DelegateSignature();
 	void BndEvt__mSortButton_K2Node_ComponentBoundEvent_0_OnClicked__DelegateSignature();
+	void OnReplicationDetailActorReplicated(class AActor* replicationDetailActorOwner);
 	void ExecuteUbergraph_Widget_Train_DockingStation(int EntryPoint);
 };
 

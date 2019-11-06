@@ -36,6 +36,31 @@ void UWidget_MAM_C::WidgetFactory(class UClass* PopupClass, TArray<class UUserWi
 }
 
 
+// Function Widget_MAM.Widget_MAM_C.OnMouseButtonDown
+// ()
+// Parameters:
+// struct FGeometry*              MyGeometry                     (BlueprintVisible, BlueprintReadOnly, Parm, IsPlainOldData)
+// struct FPointerEvent*          MouseEvent                     (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+// struct FEventReply             ReturnValue                    (Parm, OutParm, ReturnParm)
+
+struct FEventReply UWidget_MAM_C::OnMouseButtonDown(struct FGeometry* MyGeometry, struct FPointerEvent* MouseEvent)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.OnMouseButtonDown");
+
+	UWidget_MAM_C_OnMouseButtonDown_Params params;
+	params.MyGeometry = MyGeometry;
+	params.MouseEvent = MouseEvent;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	return params.ReturnValue;
+}
+
+
 // Function Widget_MAM.Widget_MAM_C.IsValidResearchReward
 // ()
 // Parameters:
@@ -475,23 +500,6 @@ void UWidget_MAM_C::InitRecipeList()
 }
 
 
-// Function Widget_MAM.Widget_MAM_C.Construct
-// ()
-
-void UWidget_MAM_C::Construct()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.Construct");
-
-	UWidget_MAM_C_Construct_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_MAM.Widget_MAM_C.Tick
 // ()
 // Parameters:
@@ -539,23 +547,6 @@ void UWidget_MAM_C::Destruct()
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.Destruct");
 
 	UWidget_MAM_C_Destruct_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_MAM.Widget_MAM_C.Init
-// ()
-
-void UWidget_MAM_C::Init()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.Init");
-
-	UWidget_MAM_C_Init_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -624,17 +615,31 @@ void UWidget_MAM_C::OnAnalyseAnimStart()
 }
 
 
-// Function Widget_MAM.Widget_MAM_C.OnNewRecipeSet
+// Function Widget_MAM.Widget_MAM_C.Construct
 // ()
-// Parameters:
-// class UClass*                  mNewRecipe                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_MAM_C::OnNewRecipeSet(class UClass* mNewRecipe)
+void UWidget_MAM_C::Construct()
 {
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.OnNewRecipeSet");
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.Construct");
 
-	UWidget_MAM_C_OnNewRecipeSet_Params params;
-	params.mNewRecipe = mNewRecipe;
+	UWidget_MAM_C_Construct_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_MAM.Widget_MAM_C.Init
+// ()
+
+void UWidget_MAM_C::Init()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.Init");
+
+	UWidget_MAM_C_Init_Params params;
 
 	auto flags = fn->FunctionFlags;
 
@@ -657,6 +662,26 @@ void UWidget_MAM_C::NotifyPopupClosed(class UClass* PopupClass, int exitCode)
 	UWidget_MAM_C_NotifyPopupClosed_Params params;
 	params.PopupClass = PopupClass;
 	params.exitCode = exitCode;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_MAM.Widget_MAM_C.OnNewRecipeSet
+// ()
+// Parameters:
+// class UClass*                  mNewRecipe                     (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_MAM_C::OnNewRecipeSet(class UClass* mNewRecipe)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_MAM.Widget_MAM_C.OnNewRecipeSet");
+
+	UWidget_MAM_C_OnNewRecipeSet_Params params;
+	params.mNewRecipe = mNewRecipe;
 
 	auto flags = fn->FunctionFlags;
 

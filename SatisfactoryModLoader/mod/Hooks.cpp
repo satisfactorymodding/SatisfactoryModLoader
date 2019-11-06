@@ -15,8 +15,8 @@
 #include <assets/AssetLoader.h>
 #include <mod/Coremods.h>
 #include <filesystem>
-#include <SatisfactoryPakLoader.h>
 #include <assets/BPInterface.h>
+#include <assets/SatisfactoryPakLoader.h>
 
 using namespace std::placeholders;
 
@@ -28,15 +28,6 @@ Please disregard any shit code in here as it's all a Work In Progress(TM)
 
 namespace SML {
 	namespace Mod {
-
-		PVOID Hooks::chatFunc;
-		PVOID Hooks::worldFunc;
-		PVOID Hooks::playerAddedFunc;
-		PVOID Hooks::playerControllerAddedFunc;
-		PVOID Hooks::engineInitFunc;
-		PVOID Hooks::levelDestroyFunc;
-		PVOID Hooks::sigCheckFunc;
-
 		void Hooks::hookFunctions() {
 			DetourTransactionBegin();
 			DetourUpdateThread(GetCurrentThread());
@@ -51,54 +42,33 @@ namespace SML {
 				Hooks::engineInit(ret, engineLoop);
 			});
 
-			SPL::Init();
+			// Initialize the Pakloader
+			Paks::initPakLoader();
 			Paks::initBPInterface();
 
-			levelDestroyFunc = DetourFindFunction("FactoryGame-Win64-Shipping.exe", "ULevel::~ULevel");
-			DetourAttach(&(PVOID&)levelDestroyFunc, levelDestructor);
-
-			Utility::info("Installed hooks!");
+			Utility::info("Registered hooks!");
 
 			DetourTransactionCommit();
 		}
 
-		void Hooks::levelDestructor(SDK::ULevel* level) {
-
-			Assets::SinglePlayerController = nullptr;
-
-			auto pointer = (void(WINAPI*)(void*))levelDestroyFunc;
-			pointer(level);
-		}
-
 		void Hooks::engineInit(Functions::ModReturns* ret, Objects::FEngineLoop* engine) {
 			//caching of assets
+			Functions::broadcastEvent("beforeEngineInit");
 			modHandler.currentStage = GameStage::RUN;
 			for (std::pair<const wchar_t*, SDK::UObject*> asset : modHandler.assetCache) {
 				modHandler.assetCache[asset.first] = Assets::AssetLoader::loadObjectSimple(SDK::UClass::StaticClass(), asset.first);
 			}
 
 			//load delayed coremods
-			for (const wchar_t* dll : delayedCoremods) {
-				LoadLibraryW(dll);
+			for (std::string libPath : delayedCoremods) {
+				LoadLibraryA(libPath.c_str());
 			}
 
 			ret->useOriginalFunction = true;
 		}
 
-		/*
-		void Hooks::playerAdded(SDK::AFGGameState* gameState, SDK::AFGCharacterPlayer* player) {
-			auto pointer = (void(WINAPI*)(void*, void*))playerAddedFunc;
-			//Utility::info("Player Added: ", player->GetName(), " - Controlled: ", player->IsControlled(), " - IsLocallyControlled: ", player->IsLocallyControlled());
-			if (player->IsControlled() && player->IsLocallyControlled()) {
-				Assets::SinglePlayerCharacter = player;
-			}
-			pointer(gameState, player);
-		}
-		*/
-
 		// parse commands when the player sends a message
 		void Hooks::playerSentMessage(Functions::ModReturns* ret, Objects::AFGPlayerController* player, Objects::FString* messageIn) {
-
 			SDK::FString* message = reinterpret_cast<SDK::FString*>(messageIn);
 
 			if (!message->IsValid()) {
@@ -106,7 +76,6 @@ namespace SML {
 			}
 
 			std::string str = message->ToString();
-			Utility::info(str);
 			std::vector<std::string> arguments;
 			std::stringstream ss(str);
 			std::string temp;
@@ -119,14 +88,11 @@ namespace SML {
 				}
 			}
 
-			for (std::string s : arguments) {
-				Utility::info(s);
-			}
-
 			bool found = false;
 			SML::Mod::Functions::CommandData data = {
-						arguments.size(),
-						arguments
+				arguments.size(),
+				arguments,
+				reinterpret_cast<SDK::AFGPlayerController*>(player)
 			};
 			found = smlCommands(data); //run SML's commands
 			for (Registry r : modHandler.commandRegistry) {
@@ -156,23 +122,40 @@ namespace SML {
 							Utility::info("/sml events   -> Lists all the custom events in the registry");
 						}
 						else if (data.argv[1] == "modlist") {
-							for (auto&& m : modHandler.mods) {
-								Utility::info(m->info.name);
-								Utility::info(m->info.version);
-								Utility::info(m->info.loaderVersion);
-								Utility::info(m->info.description);
-								Utility::info(m->info.authors);
-								Utility::info("Dependencies: ");
-								for (std::string s : m->info.dependencies) {
-									Utility::info(s);
+							if (modHandler.mods.size() > 0) {
+								Utility::info("Mod list: ");
+								for (auto&& m : modHandler.mods) {
+									Utility::info("=======================");
+									Utility::info(m->info.name);
+									Utility::info(m->info.version);
+									Utility::info(m->info.loaderVersion);
+									Utility::info(m->info.description);
+									Utility::info(m->info.authors);
+									if (m->info.dependencies.size() > 0) {
+										Utility::info("Dependencies: ");
+										for (std::string s : m->info.dependencies) {
+											Utility::info(s);
+										}
+									}
 								}
 								Utility::info("=======================");
+							}
+							if (coremodList.size() > 0) {
+								Utility::info("Coremod list: ");
+								for (std::string cm : coremodList) {
+									Utility::info(cm);
+								}
+							}
+							if (delayedCoremods.size() > 0) {
+								Utility::info("Delayed Coremod list: ");
+								for (std::string cm : delayedCoremods) {
+									Utility::info(cm);
+								}
 							}
 						}
 						else if (data.argv[1] == "die") {
 							Utility::info("Hard shutdown requested!");
-							SML::cleanup();
-							abort();
+							Utility::closeGame();
 						}
 						else if (data.argv[1] == "commands") {
 							for (Registry r : modHandler.commandRegistry) {
@@ -198,6 +181,10 @@ namespace SML {
 							Utility::info("World:", Functions::getWorld());
 							Utility::info("Local Character:", Functions::getPlayerCharacter());
 							Utility::info("Local Controller: ", Functions::getPlayerController());
+							Utility::info("Game Instance: ", Functions::getGameInstance());
+							Utility::info("Game State: ", Functions::getGameState());
+							Utility::info("Level: ", Functions::getLevel());
+							Utility::info("Net Driver: ", Functions::getNetDriver());
 						}
 						else {
 							Utility::info("Subcommand not recognized!");

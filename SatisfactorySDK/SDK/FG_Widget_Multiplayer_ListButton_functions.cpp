@@ -211,8 +211,9 @@ void UWidget_Multiplayer_ListButton_C::SetupForSendInvite(struct FFGOnlineFriend
 // ECachedNATType                 natType                        (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           IsHost                         (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 // bool                           careAboutNAT                   (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+// bool                           ShowWarning                    (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
 
-void UWidget_Multiplayer_ListButton_C::Internal_UpdateButton(const struct FText& Title, bool IsOnline, const struct FText& AdditionalInfo, int PlayersInSession, bool privateSession, int TimePlayed, const struct FText& ActionButtonText, bool hideSessionInfo, bool isPlayingSatisfactory, bool hideActionButton, bool hideSecondaryActionButton, bool disableActionButton, const struct FText& actionButtonTooltip, bool inAGame, const struct FBlueprintSessionResult& session, bool IsSelectable, bool IsNonInteractable, ECachedNATType natType, bool IsHost, bool careAboutNAT)
+void UWidget_Multiplayer_ListButton_C::Internal_UpdateButton(const struct FText& Title, bool IsOnline, const struct FText& AdditionalInfo, int PlayersInSession, bool privateSession, int TimePlayed, const struct FText& ActionButtonText, bool hideSessionInfo, bool isPlayingSatisfactory, bool hideActionButton, bool hideSecondaryActionButton, bool disableActionButton, const struct FText& actionButtonTooltip, bool inAGame, const struct FBlueprintSessionResult& session, bool IsSelectable, bool IsNonInteractable, ECachedNATType natType, bool IsHost, bool careAboutNAT, bool ShowWarning)
 {
 	static auto fn = UObject::FindObject<UFunction>("Function Widget_Multiplayer_ListButton.Widget_Multiplayer_ListButton_C.Internal_UpdateButton");
 
@@ -237,6 +238,7 @@ void UWidget_Multiplayer_ListButton_C::Internal_UpdateButton(const struct FText&
 	params.natType = natType;
 	params.IsHost = IsHost;
 	params.careAboutNAT = careAboutNAT;
+	params.ShowWarning = ShowWarning;
 
 	auto flags = fn->FunctionFlags;
 

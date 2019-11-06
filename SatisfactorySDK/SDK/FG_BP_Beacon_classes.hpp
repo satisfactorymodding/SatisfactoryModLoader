@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_Beacon.BP_Beacon_C
-// 0x0050 (0x0378 - 0x0328)
+// 0x0051 (0x0379 - 0x0328)
 class ABP_Beacon_C : public AFGBeacon
 {
 public:
@@ -26,6 +26,7 @@ public:
 	struct FText                                       mCompassText;                                             // 0x0348(0x0028) (Edit, BlueprintVisible, Net, DisableEditOnInstance, SaveGame)
 	class UWidget_Beacon_C*                            mWidget;                                                  // 0x0360(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
 	struct FLinearColor                                mCompassColor;                                            // 0x0368(0x0010) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, SaveGame, IsPlainOldData)
+	ECompassViewDistance                               compassViewDistance;                                      // 0x0378(0x0001) (Edit, BlueprintVisible, Net, ZeroConstructor, DisableEditOnInstance, SaveGame, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -40,6 +41,8 @@ public:
 	struct FText GetLookAtDecription(class AFGCharacterPlayer* byCharacter, const struct FUseState& State);
 	bool IsUseable();
 	void UpdateUseState(class AFGCharacterPlayer* byCharacter, const struct FVector& atLocation, class UPrimitiveComponent* componentHit, struct FUseState* out_useState);
+	ECompassViewDistance GetActorCompassViewDistance();
+	ECompassViewDistance SetActorCompassViewDistance(ECompassViewDistance compassViewDistance);
 	struct FText SetActorRepresentationText(const struct FText& newText);
 	bool UpdateRepresentation();
 	float GetActorFogOfWarRevealRadius();

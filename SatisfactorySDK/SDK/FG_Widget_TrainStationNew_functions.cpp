@@ -12,6 +12,45 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.CheckStationNameLengthAndValidity
+// ()
+// Parameters:
+// bool                           StationNameIsValid             (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+
+void UWidget_TrainStationNew_C::CheckStationNameLengthAndValidity(bool* StationNameIsValid)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TrainStationNew.Widget_TrainStationNew_C.CheckStationNameLengthAndValidity");
+
+	UWidget_TrainStationNew_C_CheckStationNameLengthAndValidity_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+
+	if (StationNameIsValid != nullptr)
+		*StationNameIsValid = params.StationNameIsValid;
+}
+
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.SetRandomInfoMessage
+// ()
+
+void UWidget_TrainStationNew_C::SetRandomInfoMessage()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TrainStationNew.Widget_TrainStationNew_C.SetRandomInfoMessage");
+
+	UWidget_TrainStationNew_C_SetRandomInfoMessage_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_TrainStationNew.Widget_TrainStationNew_C.UpdatePowerStatus
 // ()
 
@@ -129,40 +168,6 @@ class UFGPowerCircuit* UWidget_TrainStationNew_C::OnGetPowerCircuit()
 }
 
 
-// Function Widget_TrainStationNew.Widget_TrainStationNew_C.Construct
-// ()
-
-void UWidget_TrainStationNew_C::Construct()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TrainStationNew.Widget_TrainStationNew_C.Construct");
-
-	UWidget_TrainStationNew_C_Construct_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
-// Function Widget_TrainStationNew.Widget_TrainStationNew_C.OnEscapePressed
-// ()
-
-void UWidget_TrainStationNew_C::OnEscapePressed()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Widget_TrainStationNew.Widget_TrainStationNew_C.OnEscapePressed");
-
-	UWidget_TrainStationNew_C_OnEscapePressed_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Widget_TrainStationNew.Widget_TrainStationNew_C.BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_0_OnEditableTextCommittedEvent__DelegateSignature
 // ()
 // Parameters:
@@ -250,6 +255,60 @@ void UWidget_TrainStationNew_C::OnPowerChanged(bool State)
 
 	UWidget_TrainStationNew_C_OnPowerChanged_Params params;
 	params.State = State;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_1_OnEditableTextChangedEvent__DelegateSignature
+// ()
+// Parameters:
+// struct FText                   Text                           (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+
+void UWidget_TrainStationNew_C::BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_1_OnEditableTextChangedEvent__DelegateSignature(const struct FText& Text)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TrainStationNew.Widget_TrainStationNew_C.BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_1_OnEditableTextChangedEvent__DelegateSignature");
+
+	UWidget_TrainStationNew_C_BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_1_OnEditableTextChangedEvent__DelegateSignature_Params params;
+	params.Text = Text;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.AutoScrollInfoMessage
+// ()
+
+void UWidget_TrainStationNew_C::AutoScrollInfoMessage()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TrainStationNew.Widget_TrainStationNew_C.AutoScrollInfoMessage");
+
+	UWidget_TrainStationNew_C_AutoScrollInfoMessage_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.Construct
+// ()
+
+void UWidget_TrainStationNew_C::Construct()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_TrainStationNew.Widget_TrainStationNew_C.Construct");
+
+	UWidget_TrainStationNew_C_Construct_Params params;
 
 	auto flags = fn->FunctionFlags;
 

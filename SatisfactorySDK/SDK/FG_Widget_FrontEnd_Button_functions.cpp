@@ -12,6 +12,26 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.SetTitle
+// ()
+// Parameters:
+// struct FText                   mDisplayName                   (BlueprintVisible, BlueprintReadOnly, Parm)
+
+void UWidget_FrontEnd_Button_C::SetTitle(const struct FText& mDisplayName)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.SetTitle");
+
+	UWidget_FrontEnd_Button_C_SetTitle_Params params;
+	params.mDisplayName = mDisplayName;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.SetActiveWidgetInSwitcher
 // ()
 
@@ -293,6 +313,23 @@ void UWidget_FrontEnd_Button_C::SetSelected(bool isSelected)
 }
 
 
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.BndEvt__mFrontEndButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature
+// ()
+
+void UWidget_FrontEnd_Button_C::BndEvt__mFrontEndButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.BndEvt__mFrontEndButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature");
+
+	UWidget_FrontEnd_Button_C_BndEvt__mFrontEndButton_K2Node_ComponentBoundEvent_2_OnButtonHoverEvent__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.ExecuteUbergraph_Widget_FrontEnd_Button
 // ()
 // Parameters:
@@ -304,6 +341,40 @@ void UWidget_FrontEnd_Button_C::ExecuteUbergraph_Widget_FrontEnd_Button(int Entr
 
 	UWidget_FrontEnd_Button_C_ExecuteUbergraph_Widget_FrontEnd_Button_Params params;
 	params.EntryPoint = EntryPoint;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.OnUnhovered__DelegateSignature
+// ()
+
+void UWidget_FrontEnd_Button_C::OnUnhovered__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.OnUnhovered__DelegateSignature");
+
+	UWidget_FrontEnd_Button_C_OnUnhovered__DelegateSignature_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.OnHovered__DelegateSignature
+// ()
+
+void UWidget_FrontEnd_Button_C::OnHovered__DelegateSignature()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_FrontEnd_Button.Widget_FrontEnd_Button_C.OnHovered__DelegateSignature");
+
+	UWidget_FrontEnd_Button_C_OnHovered__DelegateSignature_Params params;
 
 	auto flags = fn->FunctionFlags;
 

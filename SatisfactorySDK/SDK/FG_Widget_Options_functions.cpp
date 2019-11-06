@@ -12,6 +12,40 @@ namespace SDK
 //Functions
 //---------------------------------------------------------------------------
 
+// Function Widget_Options.Widget_Options_C.ApplyVideoSettings
+// ()
+
+void UWidget_Options_C::ApplyVideoSettings()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Options.Widget_Options_C.ApplyVideoSettings");
+
+	UWidget_Options_C_ApplyVideoSettings_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Widget_Options.Widget_Options_C.SetCurrentShowBreakNotifications
+// ()
+
+void UWidget_Options_C::SetCurrentShowBreakNotifications()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Widget_Options.Widget_Options_C.SetCurrentShowBreakNotifications");
+
+	UWidget_Options_C_SetCurrentShowBreakNotifications_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Widget_Options.Widget_Options_C.BindEventsForGameplayOptions
 // ()
 

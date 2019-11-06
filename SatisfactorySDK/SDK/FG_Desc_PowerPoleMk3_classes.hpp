@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_PowerPoleMk3.Desc_PowerPoleMk3_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_PowerPoleMk3_C : public UFGBuildingDescriptor
 {
 public:

@@ -14,6 +14,30 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.SetHasAffordableRecipes
+struct UWidget_CraftBench_Category_C_SetHasAffordableRecipes_Params
+{
+	bool                                               mHasAffordableRecipes;                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.SetIsCollapsed
+struct UWidget_CraftBench_Category_C_SetIsCollapsed_Params
+{
+	bool                                               mIsCollapsed;                                             // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.UpdateButtonColor
+struct UWidget_CraftBench_Category_C_UpdateButtonColor_Params
+{
+	struct FLinearColor                                Color;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.AddChildToContent
+struct UWidget_CraftBench_Category_C_AddChildToContent_Params
+{
+	class UWidget*                                     Child;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
+};
+
 // Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.BndEvt__Button_26_K2Node_ComponentBoundEvent_100_OnButtonClickedEvent__DelegateSignature
 struct UWidget_CraftBench_Category_C_BndEvt__Button_26_K2Node_ComponentBoundEvent_100_OnButtonClickedEvent__DelegateSignature_Params
 {
@@ -69,6 +93,7 @@ struct UWidget_CraftBench_Category_C_OnPressed__DelegateSignature_Params
 // Function Widget_CraftBench_Category.Widget_CraftBench_Category_C.OnClicked__DelegateSignature
 struct UWidget_CraftBench_Category_C_OnClicked__DelegateSignature_Params
 {
+	class UWidget_CraftBench_Category_C*               Instigator;                                               // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, InstancedReference, IsPlainOldData)
 };
 
 }

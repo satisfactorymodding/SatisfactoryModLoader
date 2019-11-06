@@ -101,6 +101,8 @@ public:
 	}
 
 
+	ECompassViewDistance GetActorCompassViewDistance();
+	ECompassViewDistance SetActorCompassViewDistance(ECompassViewDistance compassViewDistance);
 	struct FText SetActorRepresentationText(const struct FText& newText);
 	bool UpdateRepresentation();
 	struct FLinearColor GetActorRepresentationColor();
@@ -126,7 +128,7 @@ public:
 	void TickSimulationMovement();
 	void CalculateReverseSteering();
 	void StopVehicle();
-	void CanMove(bool* CanMove);
+	void canMove(bool* canMove);
 	void UpdateEngineLoadSound(float dt);
 	void UpdateAccelerationSound();
 	void UpdateThrottleState();

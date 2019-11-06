@@ -131,23 +131,6 @@ void UAnim_GeneratorNuclear_C::AnimNotify_GenNuclearLeftProducing()
 }
 
 
-// Function Anim_GeneratorNuclear.Anim_GeneratorNuclear_C.AnimNotify_PlayWatersplashvfx_notify
-// ()
-
-void UAnim_GeneratorNuclear_C::AnimNotify_PlayWatersplashvfx_notify()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Anim_GeneratorNuclear.Anim_GeneratorNuclear_C.AnimNotify_PlayWatersplashvfx_notify");
-
-	UAnim_GeneratorNuclear_C_AnimNotify_PlayWatersplashvfx_notify_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Anim_GeneratorNuclear.Anim_GeneratorNuclear_C.ExecuteUbergraph_Anim_GeneratorNuclear
 // ()
 // Parameters:

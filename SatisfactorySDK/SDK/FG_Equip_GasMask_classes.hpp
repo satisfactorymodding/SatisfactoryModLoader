@@ -39,7 +39,7 @@ public:
 
 
 	void EnablePostProcessing(bool mEnabled);
-	float AdjustDamage(float* damageAmount, class UDamageType** DamageType, class AController** instigatedBy, class AActor** damageCauser);
+	float AdjustDamage(float* damageAmount, class UDamageType** DamageType, class AController** InstigatedBy, class AActor** DamageCauser);
 	void UserConstructionScript();
 	void WasUnEquipped();
 	void ReceiveTick(float* DeltaSeconds);

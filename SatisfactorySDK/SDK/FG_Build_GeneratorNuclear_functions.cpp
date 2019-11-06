@@ -29,23 +29,6 @@ void ABuild_GeneratorNuclear_C::UserConstructionScript()
 }
 
 
-// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.LostSignificance
-// ()
-
-void ABuild_GeneratorNuclear_C::LostSignificance()
-{
-	static auto fn = UObject::FindObject<UFunction>("Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.LostSignificance");
-
-	ABuild_GeneratorNuclear_C_LostSignificance_Params params;
-
-	auto flags = fn->FunctionFlags;
-
-	UObject::ProcessEvent(fn, &params);
-
-	fn->FunctionFlags = flags;
-}
-
-
 // Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.ReceiveBeginPlay
 // ()
 
@@ -71,6 +54,23 @@ void ABuild_GeneratorNuclear_C::GainedSignificance()
 	static auto fn = UObject::FindObject<UFunction>("Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.GainedSignificance");
 
 	ABuild_GeneratorNuclear_C_GainedSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.LostSignificance
+// ()
+
+void ABuild_GeneratorNuclear_C::LostSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Build_GeneratorNuclear.Build_GeneratorNuclear_C.LostSignificance");
+
+	ABuild_GeneratorNuclear_C_LostSignificance_Params params;
 
 	auto flags = fn->FunctionFlags;
 

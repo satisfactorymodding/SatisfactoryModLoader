@@ -182,6 +182,77 @@ void AChar_Stinger_C::ReceiveTick(float* DeltaSeconds)
 }
 
 
+// Function Char_Stinger.Char_Stinger_C.ReceiveBeginPlay
+// ()
+
+void AChar_Stinger_C::ReceiveBeginPlay()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Stinger.Char_Stinger_C.ReceiveBeginPlay");
+
+	AChar_Stinger_C_ReceiveBeginPlay_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Stinger.Char_Stinger_C.ReceiveEndPlay
+// ()
+// Parameters:
+// TEnumAsByte<EEndPlayReason>*   EndPlayReason                  (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+
+void AChar_Stinger_C::ReceiveEndPlay(TEnumAsByte<EEndPlayReason>* EndPlayReason)
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Stinger.Char_Stinger_C.ReceiveEndPlay");
+
+	AChar_Stinger_C_ReceiveEndPlay_Params params;
+	params.EndPlayReason = EndPlayReason;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Stinger.Char_Stinger_C.GainedSignificance
+// ()
+
+void AChar_Stinger_C::GainedSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Stinger.Char_Stinger_C.GainedSignificance");
+
+	AChar_Stinger_C_GainedSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
+// Function Char_Stinger.Char_Stinger_C.LostSignificance
+// ()
+
+void AChar_Stinger_C::LostSignificance()
+{
+	static auto fn = UObject::FindObject<UFunction>("Function Char_Stinger.Char_Stinger_C.LostSignificance");
+
+	AChar_Stinger_C_LostSignificance_Params params;
+
+	auto flags = fn->FunctionFlags;
+
+	UObject::ProcessEvent(fn, &params);
+
+	fn->FunctionFlags = flags;
+}
+
+
 // Function Char_Stinger.Char_Stinger_C.ExecuteUbergraph_Char_Stinger
 // ()
 // Parameters:

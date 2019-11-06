@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // WidgetBlueprintGeneratedClass Widget_TrainStationNew.Widget_TrainStationNew_C
-// 0x0078 (0x02F0 - 0x0278)
+// 0x00A1 (0x0319 - 0x0278)
 class UWidget_TrainStationNew_C : public UWidget_UseableBase_C
 {
 public:
@@ -33,6 +33,9 @@ public:
 	class AFGBuildableRailroadStation*                 RailroadStation;                                          // 0x02D0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, IsPlainOldData)
 	TArray<struct FText>                               mInfoTextMessages;                                        // 0x02D8(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance)
 	class UWidget_TrainButton_C*                       mActiveTrainButton;                                       // 0x02E8(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, InstancedReference, IsPlainOldData)
+	TArray<class FString>                              mInvalidTrainStationNames;                                // 0x02F0(0x0010) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance)
+	struct FText                                       mStationNameText;                                         // 0x0300(0x0028) (Edit, BlueprintVisible, DisableEditOnInstance)
+	TEnumAsByte<ETextCommit>                           mInputMethod;                                             // 0x0318(0x0001) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{
@@ -41,19 +44,22 @@ public:
 	}
 
 
+	void CheckStationNameLengthAndValidity(bool* StationNameIsValid);
+	void SetRandomInfoMessage();
 	void UpdatePowerStatus();
 	void ShowLocomotiveMenu(class AFGTrain* mTrain);
 	void GenerateTrainList();
 	void GetStationName(struct FText* Name);
 	void SetStationName(const struct FText& Name);
 	class UFGPowerCircuit* OnGetPowerCircuit();
-	void Construct();
-	void OnEscapePressed();
 	void BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_0_OnEditableTextCommittedEvent__DelegateSignature(const struct FText& Text, TEnumAsByte<ETextCommit> CommitMethod);
 	void OnTrainButtonClicked(class UWidget_TrainButton_C* Button);
 	void OnLocomotiveMenuClosed();
 	void OnTrainNameChanged();
 	void OnPowerChanged(bool State);
+	void BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_1_OnEditableTextChangedEvent__DelegateSignature(const struct FText& Text);
+	void AutoScrollInfoMessage();
+	void Construct();
 	void ExecuteUbergraph_Widget_TrainStationNew(int EntryPoint);
 };
 

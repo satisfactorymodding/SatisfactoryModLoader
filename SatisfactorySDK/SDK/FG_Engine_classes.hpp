@@ -158,13 +158,13 @@ public:
 	void RemoveTickPrerequisiteComponent(class UActorComponent* PrerequisiteComponent);
 	void RemoveTickPrerequisiteActor(class AActor* PrerequisiteActor);
 	void ReceiveTick(float DeltaSeconds);
-	void ReceiveRadialDamage(float DamageReceived, class UDamageType* DamageType, const struct FVector& Origin, const struct FHitResult& HitInfo, class AController* instigatedBy, class AActor* damageCauser);
-	void ReceivePointDamage(float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FVector& HitNormal, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class AController* instigatedBy, class AActor* damageCauser, const struct FHitResult& HitInfo);
+	void ReceiveRadialDamage(float DamageReceived, class UDamageType* DamageType, const struct FVector& Origin, const struct FHitResult& HitInfo, class AController* InstigatedBy, class AActor* DamageCauser);
+	void ReceivePointDamage(float Damage, class UDamageType* DamageType, const struct FVector& HitLocation, const struct FVector& HitNormal, class UPrimitiveComponent* HitComponent, const struct FName& BoneName, const struct FVector& ShotFromDirection, class AController* InstigatedBy, class AActor* DamageCauser, const struct FHitResult& HitInfo);
 	void ReceiveHit(class UPrimitiveComponent* MyComp, class AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, const struct FVector& HitLocation, const struct FVector& HitNormal, const struct FVector& NormalImpulse, const struct FHitResult& Hit);
 	void ReceiveEndPlay(TEnumAsByte<EEndPlayReason> EndPlayReason);
 	void ReceiveDestroyed();
 	void ReceiveBeginPlay();
-	void ReceiveAnyDamage(float Damage, class UDamageType* DamageType, class AController* instigatedBy, class AActor* damageCauser);
+	void ReceiveAnyDamage(float Damage, class UDamageType* DamageType, class AController* InstigatedBy, class AActor* DamageCauser);
 	void ReceiveActorOnReleased(const struct FKey& ButtonReleased);
 	void ReceiveActorOnInputTouchLeave(TEnumAsByte<ETouchIndex> FingerIndex);
 	void ReceiveActorOnInputTouchEnter(TEnumAsByte<ETouchIndex> FingerIndex);
@@ -2558,7 +2558,7 @@ public:
 	void ResetIgnoreMoveInput();
 	void ResetIgnoreLookInput();
 	void ResetIgnoreInputFlags();
-	void ReceiveInstigatedAnyDamage(float Damage, class UDamageType* DamageType, class AActor* damagedActor, class AActor* damageCauser);
+	void ReceiveInstigatedAnyDamage(float Damage, class UDamageType* DamageType, class AActor* DamagedActor, class AActor* DamageCauser);
 	void Possess(class APawn* InPawn);
 	void OnRep_PlayerState();
 	void OnRep_Pawn();
@@ -8092,9 +8092,9 @@ public:
 	unsigned char                                      bCommentBubbleMakeVisible : 1;                            // 0x005C(0x0001) (Transient)
 	unsigned char                                      UnknownData05[0x3];                                       // 0x005D(0x0003) MISSED OFFSET
 	class FString                                      NodeComment;                                              // 0x0060(0x0010) (ZeroConstructor)
-	int                                                ErrorType;                                                // 0x0070(0x0004) (ZeroConstructor, IsPlainOldData)
+	int                                                errorType;                                                // 0x0070(0x0004) (ZeroConstructor, IsPlainOldData)
 	unsigned char                                      UnknownData06[0x4];                                       // 0x0074(0x0004) MISSED OFFSET
-	class FString                                      ErrorMsg;                                                 // 0x0078(0x0010) (ZeroConstructor)
+	class FString                                      errorMsg;                                                 // 0x0078(0x0010) (ZeroConstructor)
 	struct FGuid                                       NodeGuid;                                                 // 0x0088(0x0010) (ZeroConstructor, IsPlainOldData)
 
 	static UClass* StaticClass()
@@ -8751,10 +8751,10 @@ public:
 	class AActor* BeginDeferredActorSpawnFromClass(class UObject* WorldContextObject, class UClass* ActorClass, const struct FTransform& SpawnTransform, ESpawnActorCollisionHandlingMethod CollisionHandlingOverride, class AActor* Owner);
 	bool AreSubtitlesEnabled();
 	bool AreAnyListenersWithinRange(class UObject* WorldContextObject, const struct FVector& Location, float MaximumRange);
-	bool ApplyRadialDamageWithFalloff(class UObject* WorldContextObject, float BaseDamage, float MinimumDamage, const struct FVector& Origin, float DamageInnerRadius, float DamageOuterRadius, float DamageFalloff, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* damageCauser, class AController* InstigatedByController, TEnumAsByte<ECollisionChannel> DamagePreventionChannel);
-	bool ApplyRadialDamage(class UObject* WorldContextObject, float BaseDamage, const struct FVector& Origin, float DamageRadius, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* damageCauser, class AController* InstigatedByController, bool bDoFullDamage, TEnumAsByte<ECollisionChannel> DamagePreventionChannel);
-	float ApplyPointDamage(class AActor* damagedActor, float BaseDamage, const struct FVector& HitFromDirection, const struct FHitResult& HitInfo, class AController* EventInstigator, class AActor* damageCauser, class UClass* DamageTypeClass);
-	float ApplyDamage(class AActor* damagedActor, float BaseDamage, class AController* EventInstigator, class AActor* damageCauser, class UClass* DamageTypeClass);
+	bool ApplyRadialDamageWithFalloff(class UObject* WorldContextObject, float BaseDamage, float MinimumDamage, const struct FVector& Origin, float DamageInnerRadius, float DamageOuterRadius, float DamageFalloff, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* DamageCauser, class AController* InstigatedByController, TEnumAsByte<ECollisionChannel> DamagePreventionChannel);
+	bool ApplyRadialDamage(class UObject* WorldContextObject, float BaseDamage, const struct FVector& Origin, float DamageRadius, class UClass* DamageTypeClass, TArray<class AActor*> IgnoreActors, class AActor* DamageCauser, class AController* InstigatedByController, bool bDoFullDamage, TEnumAsByte<ECollisionChannel> DamagePreventionChannel);
+	float ApplyPointDamage(class AActor* DamagedActor, float BaseDamage, const struct FVector& HitFromDirection, const struct FHitResult& HitInfo, class AController* EventInstigator, class AActor* DamageCauser, class UClass* DamageTypeClass);
+	float ApplyDamage(class AActor* DamagedActor, float BaseDamage, class AController* EventInstigator, class AActor* DamageCauser, class UClass* DamageTypeClass);
 	void ActivateReverbEffect(class UObject* WorldContextObject, class UReverbEffect* ReverbEffect, const struct FName& TagName, float Priority, float Volume, float FadeTime);
 };
 

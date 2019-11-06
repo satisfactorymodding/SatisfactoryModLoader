@@ -14,6 +14,17 @@ namespace SDK
 //Parameters
 //---------------------------------------------------------------------------
 
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.CheckStationNameLengthAndValidity
+struct UWidget_TrainStationNew_C_CheckStationNameLengthAndValidity_Params
+{
+	bool                                               StationNameIsValid;                                       // (Parm, OutParm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.SetRandomInfoMessage
+struct UWidget_TrainStationNew_C_SetRandomInfoMessage_Params
+{
+};
+
 // Function Widget_TrainStationNew.Widget_TrainStationNew_C.UpdatePowerStatus
 struct UWidget_TrainStationNew_C_UpdatePowerStatus_Params
 {
@@ -48,16 +59,6 @@ struct UWidget_TrainStationNew_C_OnGetPowerCircuit_Params
 	class UFGPowerCircuit*                             ReturnValue;                                              // (Parm, OutParm, ZeroConstructor, ReturnParm, IsPlainOldData)
 };
 
-// Function Widget_TrainStationNew.Widget_TrainStationNew_C.Construct
-struct UWidget_TrainStationNew_C_Construct_Params
-{
-};
-
-// Function Widget_TrainStationNew.Widget_TrainStationNew_C.OnEscapePressed
-struct UWidget_TrainStationNew_C_OnEscapePressed_Params
-{
-};
-
 // Function Widget_TrainStationNew.Widget_TrainStationNew_C.BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_0_OnEditableTextCommittedEvent__DelegateSignature
 struct UWidget_TrainStationNew_C_BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_0_OnEditableTextCommittedEvent__DelegateSignature_Params
 {
@@ -85,6 +86,22 @@ struct UWidget_TrainStationNew_C_OnTrainNameChanged_Params
 struct UWidget_TrainStationNew_C_OnPowerChanged_Params
 {
 	bool                                               State;                                                    // (BlueprintVisible, BlueprintReadOnly, Parm, ZeroConstructor, IsPlainOldData)
+};
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_1_OnEditableTextChangedEvent__DelegateSignature
+struct UWidget_TrainStationNew_C_BndEvt__mStationNameInput_K2Node_ComponentBoundEvent_1_OnEditableTextChangedEvent__DelegateSignature_Params
+{
+	struct FText                                       Text;                                                     // (ConstParm, BlueprintVisible, BlueprintReadOnly, Parm, OutParm, ReferenceParm)
+};
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.AutoScrollInfoMessage
+struct UWidget_TrainStationNew_C_AutoScrollInfoMessage_Params
+{
+};
+
+// Function Widget_TrainStationNew.Widget_TrainStationNew_C.Construct
+struct UWidget_TrainStationNew_C_Construct_Params
+{
 };
 
 // Function Widget_TrainStationNew.Widget_TrainStationNew_C.ExecuteUbergraph_Widget_TrainStationNew

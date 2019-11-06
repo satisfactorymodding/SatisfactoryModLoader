@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BP_EquipmentDescriptorHazmatSuit.BP_EquipmentDescriptorHazmatSuit_C
-// 0x0000 (0x0130 - 0x0130)
+// 0x0000 (0x0138 - 0x0138)
 class UBP_EquipmentDescriptorHazmatSuit_C : public UFGEquipmentDescriptor
 {
 public:

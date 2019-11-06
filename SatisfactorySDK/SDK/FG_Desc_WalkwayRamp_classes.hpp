@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_WalkwayRamp.Desc_WalkwayRamp_C
-// 0x0000 (0x0150 - 0x0150)
+// 0x0000 (0x0158 - 0x0158)
 class UDesc_WalkwayRamp_C : public UFGBuildingDescriptor
 {
 public:

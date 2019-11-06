@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass BTT_SetNextStop.BTT_SetNextStop_C
-// 0x0040 (0x00E0 - 0x00A0)
+// 0x0048 (0x00E8 - 0x00A0)
 class UBTT_SetNextStop_C : public UBTTask_BlueprintBase
 {
 public:
@@ -24,6 +24,7 @@ public:
 	unsigned char                                      UnknownData00[0x4];                                       // 0x00AC(0x0004) MISSED OFFSET
 	class AFGRailroadTimeTable*                        mTimeTable;                                               // 0x00B0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnInstance, IsPlainOldData)
 	struct FBlackboardKeySelector                      mNextStopIndexKey;                                        // 0x00B8(0x0028) (Edit, BlueprintVisible)
+	class AFGLocomotive*                               mLocomotive;                                              // 0x00E0(0x0008) (Edit, BlueprintVisible, ZeroConstructor, DisableEditOnTemplate, DisableEditOnInstance, IsPlainOldData)
 
 	static UClass* StaticClass()
 	{

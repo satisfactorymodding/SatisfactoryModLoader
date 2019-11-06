@@ -15,7 +15,7 @@ namespace SDK
 //---------------------------------------------------------------------------
 
 // BlueprintGeneratedClass Desc_CompactedCoal.Desc_CompactedCoal_C
-// 0x0000 (0x0190 - 0x0190)
+// 0x0000 (0x0198 - 0x0198)
 class UDesc_CompactedCoal_C : public UFGResourceDescriptor
 {
 public:
