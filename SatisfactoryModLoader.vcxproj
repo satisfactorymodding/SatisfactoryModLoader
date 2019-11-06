@@ -199,7 +199,6 @@
     <ClInclude Include="SatisfactoryModLoader\util\Objects\OutputDevice.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\SmartPointer.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\UEnum.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\TArray.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\UClass.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\UField.h" />
@@ -240,7 +239,6 @@
     <ClCompile Include="SatisfactoryModLoader\util\Objects\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\SmartPointer.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UStruct.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\TArray.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UClass.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UField.cpp" />
@@ -248,7 +246,6 @@
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UObject.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UProperty.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\EnvironmentValidity.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\util\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Logging.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
     <ClCompile Include="SatisfactoryModLoader\mod\ZipHandler.cpp" />
