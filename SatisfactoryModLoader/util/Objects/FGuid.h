@@ -1,7 +1,7 @@
 #pragma once
 
 #include <stdint.h>
-
+#include <Lib.h>
 #include "../SatisfactorySDK/SDK.hpp"
 
 namespace SML {
