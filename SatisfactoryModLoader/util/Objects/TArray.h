@@ -122,7 +122,7 @@ namespace SML {
 				if (data) FMemory::free(data);
 				data = nullptr;
 				count = max = 0;
-				if (other.Max) {
+				if (other.max) {
 					data = other.data;
 					other.data = nullptr;
 					max = other.max;

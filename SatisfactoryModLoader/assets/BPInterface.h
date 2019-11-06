@@ -822,6 +822,8 @@ namespace SML {
 		public:
 			template<typename T>
 			using NativeFunc = void(*)(T*, Objects::FFrame&, void*);
+			template<typename T>
+			using NativeFuncM = void(T::*)(Objects::FFrame&, void*);
 
 		private:
 			FunctionBuilder() {};
@@ -901,6 +903,22 @@ namespace SML {
 			template<typename T>
 			inline FunctionBuilder& native(NativeFunc<T> func) {
 				this->func = func;
+				return *this;
+			}
+
+			/**
+			* Sets the native function
+			*
+			* @author Panakotta00
+			*/
+			template<typename T>
+			inline FunctionBuilder& native(NativeFuncM<T> func) {
+				union {
+					NativeFuncM<T> fm;
+					NativeFunc<T> f;
+				};
+				fm = func;
+				this->func = (NativeFunc<T>) f;
 				return *this;
 			}
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UObject.h"
+#include "../SatisfactorySDK/SDK.hpp"
 
 namespace SML {
 	namespace Objects {
@@ -9,6 +10,10 @@ namespace SML {
 			std::int32_t serial;
 
 			SML_API FWeakObjectPtr(UObject* o);
+			template<typename T1>
+			SML_API inline FWeakObjectPtr(const SDK::TWeakObjectPtr<T1, SDK::FWeakObjectPtr>& o) {
+				(*this) = *((FWeakObjectPtr*)&o);
+			}
 
 			SML_API bool isValid() const;
 			SML_API UObject* get() const;

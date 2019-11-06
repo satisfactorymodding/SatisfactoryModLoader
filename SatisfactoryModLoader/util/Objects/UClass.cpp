@@ -61,15 +61,22 @@ namespace SML {
 		}
 
 		bool UClass::implements(UClass* i) {
-			if (!this || !i || !(i->classFlags & EClassFlags::CLASS_Interface) || i == (UClass*)SDK::UInterface::StaticClass()) return false;
+			try {
+				getImplementation(i);
+				return true;
+			} catch (...) { return false; }
+		}
+
+		FImplementedInterface UClass::getImplementation(UClass* i) {
+			if (!this || !i || !(i->classFlags & EClassFlags::CLASS_Interface) || i == (UClass*)SDK::UInterface::StaticClass()) std::exception("no interface class provided");;
 			auto super = this;
 			while (super) {
 				for (FImplementedInterface si : super->interfaces) {
-					if (si.clazz && si.clazz->isChild(i)) return true;
+					if (si.clazz && si.clazz->isChild(i)) return si;
 				}
 				super = (UClass*)super->super;
 			}
-			return false;
+			throw std::exception("interface not found");
 		}
 	}
 }

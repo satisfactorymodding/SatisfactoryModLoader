@@ -237,6 +237,13 @@ namespace SML {
 			SML_API bool implements(UClass* i);
 
 			/**
+			* returns interface implementation
+			*
+			* @author Panakotta00
+			*/
+			SML_API FImplementedInterface getImplementation(UClass* i);
+
+			/**
 			* constructs a new UObject with basic settings
 			*
 			* @author Panakotta00
