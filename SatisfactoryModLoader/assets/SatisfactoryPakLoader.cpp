@@ -101,12 +101,12 @@ namespace SML {
 								Objects::UObject* modActor = (Objects::UObject*)::call<&Objects::UWorld::SpawnActor>((Objects::UWorld*)*SDK::UWorld::GWorld, (SDK::UClass*)clazz, &position, &rotation, &spawnParams);
 								//Propogate data to initmenu
 								if (debugOutput) {
-								//	::call<&Objects::UObject::CallFunctionByNameWithArguments>(modActor, L"DebugModeEnabled", &output, (SDK::UObject*)NULL, true); // Call the event
+									invokeInitFunc(modActor, modActor->findFunction(L"DebugModeEnabled")); // Call the event
 								}
 								if (firstMenuLoad) {
-								//	::call<&Objects::UObject::CallFunctionByNameWithArguments>(modActor, L"FirstMenuLoad", &output, (SDK::UObject*)NULL, true);
+									invokeInitFunc(modActor, modActor->findFunction(L"FirstMenuLoad")); // Call the event
 								}
-								//::call<&Objects::UObject::CallFunctionByNameWithArguments>(modActor, L"Init", &output, (SDK::UObject*)NULL, true);
+								invokeInitFunc(modActor, modActor->findFunction(L"Init")); // Call the event
 							} else {
 								// Load the blueprint
 								const std::wstring bpPath = L"/Game/FactoryGame/" + modNameW + L"/InitMod.InitMod_C";
@@ -144,15 +144,13 @@ namespace SML {
 				// Iterate through all mods and call the preinit event
 				for (Objects::UObject* mod : mods) {
 					//Propogate data to initmod
-					auto f = mod->findFunction(L"PreInit");
-					invokeInitFunc(mod, f); // Call the event
+					invokeInitFunc(mod, mod->findFunction(L"PreInit")); // Call the event
 				};
 				Functions::broadcastEvent("afterPakPreInit");
 				Functions::broadcastEvent("beforePakInit");
 				// Iterate through all mods and call the init event
 				for (Objects::UObject* mod : mods) {
-					auto f = mod->findFunction(L"Init");
-					invokeInitFunc(mod, f); // Call the event
+					invokeInitFunc(mod, mod->findFunction(L"Init")); // Call the event
 				}
 				Functions::broadcastEvent("afterPakInit");
 			});
@@ -162,8 +160,7 @@ namespace SML {
 				// Iterate through all mods and call the postinit event
 				Functions::broadcastEvent("beforePakPostInit");
 				for (Objects::UObject* mod : mods) {
-					auto f = mod->findFunction(L"PostInit");
-					invokeInitFunc(mod, f); // Call the event
+					invokeInitFunc(mod, mod->findFunction(L"PostInit")); // Call the event
 					::call<&Objects::AActor::Destroy>((Objects::AActor*)mod, false, true);
 				}
 				Functions::broadcastEvent("afterPakPostInit");

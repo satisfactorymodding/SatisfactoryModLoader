@@ -26,53 +26,18 @@ namespace SML {
 		void(*privateStaticClassBody)(const TCHAR*, const TCHAR*, Objects::UClass*&, void(*)(), std::uint32_t, Objects::EClassFlags, Objects::EClassCastFlags, const TCHAR*, void(*)(FObjectInitializer&), Objects::UObject*(*)(FVtableHelper&), void(*)(Objects::UObject*, FReferenceCollector&), Objects::UClass*(*)(), Objects::UClass*(*)(), bool);
 
 		int getVtableSize(void** vtable) {
-			if (vtable)
-				for (int i = 0;; i++)
-					if (!vtable[i])
+			if (vtable) {
+				for (int i = 0;; i++) {
+					if (!vtable[i]) {
 						return i;
+					}
+				}
+			}
 
 			return 0;
 		}
 
-		void(*delegateCallDetoured)(void*, void*);
-
-		// hooking function
-		void delegateCall(void* self, void* params) {
-			try {
-				auto& functions = registerdDispatchHandlers.at(self);
-				for (DelegateFunction func : functions) {
-					if (func) func(self, params);
-				}
-			} catch (std::out_of_range e) {}
-
-			delegateCallDetoured(self, params);
-		}
-
-		void registerDelegateHandler(void* delegate, DelegateFunction function) {
-			registerdDispatchHandlers[delegate].insert(function);
-		}
-
-		void* registerDelegateHandler(UObject* obj, const std::string& name, DelegateFunction function) {
-			auto del = obj->findField<UProperty>(name);
-			if (del) {
-				registerDelegateHandler(del->getValue<void>(obj), function);
-				return del->getValue<void>(obj);
-			}
-			return nullptr;
-		}
-
-		void unregisterDelegateHandler(void* delegate, DelegateFunction function) {
-			registerdDispatchHandlers[delegate].erase(function);
-		}
-
 		void initBPInterface() {
-			if (delegateCallDetoured) return;
-
-			DetourTransactionBegin();
-			delegateCallDetoured = (void(WINAPI*)(void*, void*))DetourFindFunction("FactoryGame-Win64-Shipping.exe", "??$ProcessMulticastDelegate@VUObject@@@?$TMulticastScriptDelegate@UFWeakObjectPtr@@@@QEBAXPEAX@Z");
-			DetourAttach((void**)&delegateCallDetoured, &delegateCall);
-			DetourTransactionCommit();
-
 			constructUFunction = (void(*)(UFunction*&, FFunctionParams)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UE4CodeGen_Private::ConstructUFunction");
 			registerFunction = (void(*)(UClass*, const char*, void*)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "FNativeFunctionRegistrar::RegisterFunction");
 			addFunctionToMap = (void(*)(UClass*, const FClassFunctionLinkInfo*, std::uint32_t)) DetourFindFunction("FactoryGame-Win64-Shipping.exe", "UClass::CreateLinkAndAddChildFunctionsToMap");

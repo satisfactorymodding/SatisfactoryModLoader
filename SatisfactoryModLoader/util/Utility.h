@@ -9,6 +9,9 @@
 
 namespace SML {
 	namespace Objects {
+		/*
+		* initializes the BPI Objects
+		*/
 		SML_API void initObjects();
 	}
 
