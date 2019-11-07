@@ -196,7 +196,7 @@
     <ClInclude Include="SatisfactoryModLoader\util\JsonConfig.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\FTransform.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\FVector.h" />
-    <ClInclude Include="SatisfactoryModLoader\util\Objects\OutputDevice.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Objects\FOutputDevice.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\SmartPointer.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\UEnum.h" />
     <ClInclude Include="SatisfactoryModLoader\util\Objects\TArray.h" />
@@ -239,7 +239,6 @@
     <ClCompile Include="SatisfactoryModLoader\util\Objects\FString.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\SmartPointer.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UStruct.cpp" />
-    <ClCompile Include="SatisfactoryModLoader\util\Objects\TArray.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UClass.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UField.cpp" />
     <ClCompile Include="SatisfactoryModLoader\util\Objects\UFunction.cpp" />

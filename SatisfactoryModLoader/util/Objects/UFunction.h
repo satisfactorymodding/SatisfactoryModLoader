@@ -70,13 +70,14 @@ namespace SML {
 
 			/**
 			* prints useful information about this UFunction
+			* used for debuging
 			*
 			* @author Panakotta00
 			*/
 			SML_API void debug();
 
 			/**
-			* Executes the referd UFunction on the given object with the given parameter/return structure.
+			* Executes the referred UFunction on the given object with the given parameter/return structure.
 			*
 			* @author Panakotta00
 			*/

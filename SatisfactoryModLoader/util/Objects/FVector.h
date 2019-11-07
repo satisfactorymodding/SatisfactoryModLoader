@@ -20,7 +20,7 @@ namespace SML {
 			}
 
 			inline FVector operator+(const FVector& o) {
-				return FVector{
+				return FVector {
 					X + o.X,
 					Y + o.Y,
 					Z + o.Z,
@@ -28,7 +28,7 @@ namespace SML {
 			}
 
 			inline FVector operator-(const FVector& o) {
-				return FVector{
+				return FVector {
 					X - o.X,
 					Y - o.Y,
 					Z - o.Z,
@@ -36,7 +36,7 @@ namespace SML {
 			}
 
 			inline FVector operator*(const FVector& o) {
-				return FVector{
+				return FVector {
 					X * o.X,
 					Y * o.Y,
 					Z * o.Z
@@ -44,7 +44,7 @@ namespace SML {
 			}
 
 			inline FVector operator/(const FVector& o) {
-				return FVector{
+				return FVector {
 					X / o.X,
 					Y / o.Y,
 					Z / o.Z

@@ -7,7 +7,7 @@
 
 #include <util/Utility.h>
 
-#include "OutputDevice.h"
+#include "FOutputDevice.h"
 #include "UProperty.h"
 #include "UFunction.h"
 #include "FStack.h"
@@ -18,7 +18,7 @@ namespace SML {
 		* Object that holds information about the current execution/stack/scope of the BP VM.
 		* Used f.e. for reading/writing data in UFunctions
 		*/
-		class FFrame : public OutputDevice {
+		class FFrame : public FOutputDevice {
 		public:
 			UFunction* node;
 			UObject* obj;

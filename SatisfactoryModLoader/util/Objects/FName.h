@@ -68,10 +68,9 @@ namespace SML {
 			SML_API FName(const wchar_t* nameToFind, EFindName FindType = Add);
 
 			/**
-			* !!! DO NOT TOUCH !!!
 			* FName constructor pointer
 			*/
-			SML_API static void(*fNameConstruct_f)(void*, const wchar_t*, EFindName);
+			static void(*fNameConstruct_f)(void*, const wchar_t*, EFindName);
 
 			/**
 			* Pointer to global names list

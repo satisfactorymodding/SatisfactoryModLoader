@@ -128,6 +128,8 @@ namespace SML {
 
 			/**
 			* returns a new serial number
+			*
+			* @author Panakotta00
 			*/
 			SML_API int allocSerialnum(int index);
 		};

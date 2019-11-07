@@ -12,18 +12,9 @@ namespace SML {
 			};
 
 		private:
-			/**
-			* !!!DO NOT USE!!!
-			*/
-			SML_API static void*(*malloc_f)(std::uint64_t, std::int32_t);
-			/**
-			* !!!DO NOT USE!!!
-			*/
-			SML_API static void*(*realloc_f)(void*, std::uint64_t, std::int32_t);
-			/**
-			* !!!DO NOT USE!!!
-			*/
-			SML_API static void(*free_f)(void*);
+			static void*(*malloc_f)(std::uint64_t, std::int32_t);
+			static void*(*realloc_f)(void*, std::uint64_t, std::int32_t);
+			static void(*free_f)(void*);
 
 		public:
 			/**

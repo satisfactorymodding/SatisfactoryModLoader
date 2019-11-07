@@ -7,7 +7,7 @@ namespace SML {
 		/**
 		* Currently we dont know what it does
 		*/
-		class OutputDevice {
+		class FOutputDevice {
 		public:
 			void* vtable;
 			bool bSuppressEventTag = false;

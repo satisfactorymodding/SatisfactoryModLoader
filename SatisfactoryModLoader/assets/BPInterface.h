@@ -1,8 +1,5 @@
 #pragma once
 
-#ifndef BPINTERFACE_H
-#define BPINTERFACE_H
-
 #include <Lib.h>
 #include <util/Utility.h>
 
@@ -1520,5 +1517,3 @@ namespace SML {
 		ClassBuilder<T> ClassBuilder<T>::active;
 	}
 }
-
-#endif
