@@ -1,0 +1,9 @@
+{
+	"BuildId": "6ad6b154-649f-4cf9-a628-2297c448bd64",
+	"Modules": 
+	{
+		"ExampleMod": "UE4Editor-ExampleMod.dll",
+		"FactoryGame": "UE4Editor-FactoryGame.dll",
+		"SML": "UE4Editor-SML.dll"
+	}
+}

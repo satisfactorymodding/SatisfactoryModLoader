@@ -1,0 +1,98 @@
+#pragma once
+#include <mod/ModHandler.h>
+#include <filesystem>
+
+using namespace std::experimental::filesystem;
+
+/**
+ * Methods for converting widechar text to multibyte text
+ * and vice-versa. While technically most C++ constructors can do
+ * conversion automatically, they don't handle multi-byte
+ * characters properly as experience shows
+ */
+std::string convertStr(const TCHAR* string);
+std::wstring convertStr(const char* string);
+
+namespace SML {
+	struct FSMLConfiguration {
+		/**
+		 * Whenever SML should register it's chat commands
+		 * They are mostly used for obtaining information about the environment,
+		 * you can disable them if you don't want to have them
+		 * Note that this setting **does not** affect commands registered by other mods
+		 */
+		bool enableSMLChatCommands;
+		
+		/**
+		 * Whenever satisfactory crash reporter should be enabled
+		 * Can only be active in clean environment without development mode enabled
+		 * and target version of CL matching game's actual version
+		 */
+		bool enableCrashReporter;
+		
+		/**
+		 * Development mode is the mode in which SML will load
+		 * mods which are considered unsafe in normal environment
+		 * Most notable, it will be able to load raw .dll or .pak mods, which
+		 * is handy for development process because you avoid packing stuff every time you want to test it
+		 * Note that such mods CANNOT have dependencies or dependents, and are always loaded in the last order
+		 * Environment with enabled development mode is invalid for submitting bug reports
+		 */
+		bool developmentMode;
+		
+		//toggles debug output in the log
+		bool debugLogOutput;
+	};
+};
+
+namespace SML {
+	/**
+	 * Version of the SML mod loader
+	 * Can be also investigated via getting ModInfo of the mod with ModID "SML"
+	 * You can depend on the specific SML version in your data.json to be able
+	 * to use features which appeared in some later version
+	 */
+	SML_API extern const SML::Versioning::FVersion& getModLoaderVersion();
+	
+
+	/**
+	 * Returns output stream used for global SML log
+	 * throws std::invalid_argument if called too early in the initialization process
+	 */
+	SML_API extern std::wofstream& getLogFile();
+
+	/**
+	 * Retrieves mod handler global object
+	 * It manages mod loading and can be used to retrieve information
+	 * about loading progress and active mods
+	 * Use it to enable optional features depending on the mods installed
+	 */
+	SML_API extern Mod::FModHandler& getModHandler();
+
+	/**
+	 * Retrieves active SML configuration object
+	 * throws std::invalid_argument if called too early in the initialization process
+	 * thread-safe to call as it is immutable
+	 */
+	SML_API extern const SML::FSMLConfiguration& getSMLConfig();
+
+	/**
+	 * Retrieves path to the mods directory used by the mod handler to locate mods
+	 */
+	SML_API extern path getModDirectory();
+
+	/**
+	 * Retrieves path used for storing configuration information related to SML
+	 * and active mods. You don't have to use it directly, instead, you can use
+	 * ready configuration module which will locate proper config automatically
+	 */
+	SML_API extern path getConfigDirectory();
+
+	/**
+	 * Retrieves path to the directory used for caching resources unpacked from mod zips
+	 * to avoid polluting actual game folders
+	 * It can be invalidated in any time, so it's not safe to use it for persistent storage
+	 * for configuration, use getConfigDirectory()
+	 */
+	SML_API extern path getCacheDirectory();
+};
