@@ -4,6 +4,7 @@
 #include "util/Utility.h"
 #include "SatisfactoryModLoader.h"
 #include "CoreTypes.h"
+#include "Logging/LogMacros.h"
 
 namespace SML {
 	namespace Logging
@@ -15,8 +16,19 @@ namespace SML {
 			Error,
 			Fatal
 		};
+
+		ELogVerbosity::Type logTypeToVerbosity(LogType logType) {
+			switch (logType) {
+			case Debug: return ELogVerbosity::Verbose;
+			case Info: return ELogVerbosity::Log;
+			case Warning: return ELogVerbosity::Warning;
+			case Error: return ELogVerbosity::Error;
+			case Fatal: return ELogVerbosity::Fatal;
+			default: return ELogVerbosity::Log;
+			}
+		}
 		
-		constexpr const TCHAR* getLogTypeStr(LogType type);
+		const TCHAR* getLogTypeStr(LogType type);
 		
 		// logs a message of <T> with various modifiers
 		template<typename First, typename ...Args>
@@ -25,13 +37,15 @@ namespace SML {
 			const std::wstring result = formatStr("[", getLogTypeStr(type), "] ", message);
 			std::wcout << result << std::endl;
 			getLogFile() << result << std::endl;
+			const ELogVerbosity::Type verbosity = logTypeToVerbosity(type);
+			FMsg::Logf(nullptr, 0, FName("SatisfactoryModLoader"), verbosity, TEXT("%s"), message.c_str());
 		}
 
 		template<typename First, typename ...Args>
 		void debug(First &&arg0, Args &&...args) {
-			if (debugOutput) {
+			//if (debugOutput) {
 				log(LogType::Debug, arg0, args...);
-			}
+			//}
 		}
 
 		template<typename First, typename ...Args>
@@ -54,7 +68,7 @@ namespace SML {
 			log(LogType::Fatal, arg0, args...);
 		}
 
-		constexpr const TCHAR* getLogTypeStr(LogType type) {
+		inline const TCHAR* getLogTypeStr(LogType type) {
 			switch (type) {
 			case Debug: return TEXT("DEBUG");
 			case Info: return TEXT("INFO");

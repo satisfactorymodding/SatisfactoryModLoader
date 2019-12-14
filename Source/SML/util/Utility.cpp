@@ -5,9 +5,7 @@
 
 namespace SML {
 	nlohmann::json parseJsonLenient(const std::wstring& input) {
-		static std::wregex stripCommentsRegex(TEXT("/\\*([^*]|[\r\n]|(\\*+([^*/]|[\r\n])))*\\*+/"), std::regex::optimize | std::regex::extended);
-		std::wstring result = std::regex_replace(input, stripCommentsRegex, TEXT(""));
-		return nlohmann::json::parse(result);
+		return nlohmann::json::parse(input);
 	}
 	
 	path getModConfigFilePath(std::wstring modid) {

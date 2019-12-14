@@ -95,4 +95,6 @@ namespace SML {
 	 * for configuration, use getConfigDirectory()
 	 */
 	SML_API extern path getCacheDirectory();
+
+	void* ResolveGameSymbol(const char* symbolName);
 };

@@ -10,6 +10,8 @@
 # Don't commit PDB files for now because they take too much space
 *.pdb
 
+!Library/*
+
 # Precompiled Headers
 *.gch
 *.pch
@@ -18,9 +20,6 @@
 *.so
 *.dylib
 # *.dll
-
-!*.pdb
-
 # Fortran module files
 *.mod
 

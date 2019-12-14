@@ -30,22 +30,6 @@
 #ifndef FUNCHOOK_H
 #define FUNCHOOK_H 1
 
-/*
- * Only functions with FUNCHOOK_EXPORT are visible from outside of funchook.dll
- * or libfunchook.so. Others are invisible.
- */
-#ifdef WIN32
-#ifdef FUNCHOOK_EXPORTS
-#define FUNCHOOK_EXPORT __declspec(dllexport)
-#else /* FUNCHOOK_EXPORTS */
-#define FUNCHOOK_EXPORT __declspec(dllimport)
-#endif /* FUNCHOOK_EXPORTS */
-#elif defined(__GNUC__)
-#define FUNCHOOK_EXPORT __attribute__((visibility("default")))
-#else
-#define FUNCHOOK_EXPORT
-#endif /* WIN32 */
-
 typedef struct funchook funchook_t;
 
 #define FUNCHOOK_ERROR_INTERNAL_ERROR         -1
@@ -61,63 +45,64 @@ typedef struct funchook funchook_t;
 #define FUNCHOOK_ERROR_MEMORY_FUNCTION         9 /* other memory function errors */
 #define FUNCHOOK_ERROR_NOT_INSTALLED          10
 
-/**
- * Create a funchook handle
- *
- * @return allocated funchook handle. NULL when out-of-memory.
- */
-FUNCHOOK_EXPORT funchook_t *funchook_create(void);
+extern "C" {
+	/**
+	 * Create a funchook handle
+	 *
+	 * @return allocated funchook handle. NULL when out-of-memory.
+	 */
+	funchook_t *funchook_create(void);
 
-/**
- * Prepare hooking
- *
- * @param funchook     a funchook handle created by funchook_create()
- * @param target_func  function pointer to be intercepted. The pointer to trampoline function is set on success.
- * @param hook_func    function pointer which is called istead of target_func
- * @return             error code. one of FUNCHOOK_ERROR_*.
- */
-FUNCHOOK_EXPORT int funchook_prepare(funchook_t *funchook, void **target_func, void *hook_func);
+	/**
+	 * Prepare hooking
+	 *
+	 * @param funchook     a funchook handle created by funchook_create()
+	 * @param target_func  function pointer to be intercepted. The pointer to trampoline function is set on success.
+	 * @param hook_func    function pointer which is called istead of target_func
+	 * @return             error code. one of FUNCHOOK_ERROR_*.
+	 */
+	int funchook_prepare(funchook_t *funchook, void **target_func, void *hook_func);
 
-/**
- * Install hooks prepared by funchook_prepare().
- *
- * @param funchook     a funchook handle created by funchook_create()
- * @param flags        reserved. Set zero.
- * @return             error code. one of FUNCHOOK_ERROR_*.
- */
-FUNCHOOK_EXPORT int funchook_install(funchook_t *funchook, int flags);
+	/**
+	 * Install hooks prepared by funchook_prepare().
+	 *
+	 * @param funchook     a funchook handle created by funchook_create()
+	 * @param flags        reserved. Set zero.
+	 * @return             error code. one of FUNCHOOK_ERROR_*.
+	 */
+	int funchook_install(funchook_t *funchook, int flags);
 
-/**
- * Uninstall hooks installed by funchook_install().
- *
- * @param funchook     a funchook handle created by funchook_create()
- * @param flags        reserved. Set zero.
- * @return             error code. one of FUNCHOOK_ERROR_*.
- */
-FUNCHOOK_EXPORT int funchook_uninstall(funchook_t *funchook, int flags);
+	/**
+	 * Uninstall hooks installed by funchook_install().
+	 *
+	 * @param funchook     a funchook handle created by funchook_create()
+	 * @param flags        reserved. Set zero.
+	 * @return             error code. one of FUNCHOOK_ERROR_*.
+	 */
+	int funchook_uninstall(funchook_t *funchook, int flags);
 
-/**
- * Destroy a funchook handle
- *
- * @param funchook     a funchook handle created by funchook_create()
- * @return             error code. one of FUNCHOOK_ERROR_*.
- */
-FUNCHOOK_EXPORT int funchook_destroy(funchook_t *funchook);
+	/**
+	 * Destroy a funchook handle
+	 *
+	 * @param funchook     a funchook handle created by funchook_create()
+	 * @return             error code. one of FUNCHOOK_ERROR_*.
+	 */
+	int funchook_destroy(funchook_t *funchook);
 
-/**
- * Get error message
- *
- * @param funchook     a funchook handle created by funchook_create()
- * @return             pointer to buffer containing error message
- */
-FUNCHOOK_EXPORT const char *funchook_error_message(const funchook_t *funchook);
+	/**
+	 * Get error message
+	 *
+	 * @param funchook     a funchook handle created by funchook_create()
+	 * @return             pointer to buffer containing error message
+	 */
+	const char *funchook_error_message(const funchook_t *funchook);
 
-/**
- * Set log file name to debug funchook itself.
- *
- * @param name         log file name
- * @return             error code. one of FUNCHOOK_ERROR_*.
- */
-FUNCHOOK_EXPORT int funchook_set_debug_file(const char *name);
-
+	/**
+	 * Set log file name to debug funchook itself.
+	 *
+	 * @param name         log file name
+	 * @return             error code. one of FUNCHOOK_ERROR_*.
+	 */
+	int funchook_set_debug_file(const char *name);
+}
 #endif

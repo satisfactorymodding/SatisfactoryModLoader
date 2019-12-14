@@ -16,7 +16,7 @@ namespace SML {
 			std::wstring name;
 			FVersion version;
 			std::wstring description;
-			std::vector<std::wstring> authors;
+			std::wstring authors;
 			std::unordered_map<std::wstring, FVersionRange> dependencies;
 			std::unordered_map<std::wstring, FVersionRange> optionalDependencies;
 

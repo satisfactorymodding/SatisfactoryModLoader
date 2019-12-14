@@ -10,14 +10,21 @@
 
 using namespace std::experimental::filesystem;
 
+std::string createModuleNameFromModId(const std::wstring& modId);
+
 namespace SML {
 	namespace Mod {
+		struct FModPakFileEntry {
+			std::wstring pakFilePath;
+			int32 loadingPriority;
+		};
+		
 		struct FModLoadingEntry {
 			bool isValid;
 			FModInfo modInfo;
 			std::wstring virtualModFilePath;
 			std::wstring dllFilePath;
-			std::vector<std::wstring> pakFilePaths;
+			std::vector<FModPakFileEntry> pakFiles;
 			bool isRawMod = false;
 		};
 
@@ -88,6 +95,8 @@ namespace SML {
 			* Loads the mods into the game
 			*/
 			void loadMods(const BootstrapAccessors& accessors);
+
+			static void attachLoadingHooks();
 
 			void onGameModePostLoad(UWorld* world, bool isMenuWorld);
 		};

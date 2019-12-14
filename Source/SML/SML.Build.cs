@@ -40,7 +40,7 @@ public class SML : ModuleRules
         PublicAdditionalLibraries.AddRange(new string[] {
             Path.Combine(fullLibPath, "ttvfs.lib"),
             Path.Combine(fullLibPath, "ttvfs_zip.lib"),
-            Path.Combine(fullLibPath, "funchook.lib") });
+			Path.Combine(fullLibPath, "funchook.lib") });
         bEnableExceptions = true;
     }
 }

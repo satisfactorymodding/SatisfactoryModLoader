@@ -1,12 +1,13 @@
 #include "mod/ModInfo.h"
 #include "SatisfactoryModLoader.h"
+#include "util/Logging.h"
 
 using ModInfo = SML::Mod::FModInfo;
 
 void readDependencies(std::unordered_map<std::wstring, FVersionRange>& result, json& dependencies) {
 	if (!dependencies.is_null()) {
 		for (auto& dependency : dependencies.items()) {
-			FVersionRange version(dependency.value().get<std::wstring>());
+			FVersionRange version(convertStr(dependency.value().get<std::string>().c_str()));
 			result.insert({ convertStr(dependency.key().c_str()), version });
 		}
 	}
@@ -14,11 +15,11 @@ void readDependencies(std::unordered_map<std::wstring, FVersionRange>& result, j
 
 ModInfo ModInfo::createFromJson(json& object) {
 	FModInfo modInfo = FModInfo{
-		object["mod_reference"].get<std::wstring>(),
-		object["name"].get<std::wstring>(),
-		FVersion(object["version"].get<std::wstring>()),
-		object["description"].get<std::wstring>(),
-		object["authors"].get<std::vector<std::wstring>>()
+		convertStr(object["mod_reference"].get<std::string>().c_str()),
+		convertStr(object["name"].get<std::string>().c_str()),
+		FVersion(convertStr(object["version"].get<std::string>().c_str())),
+		convertStr(object["description"].get<std::string>().c_str()),
+		convertStr(object["authors"].get<std::string>().c_str())
 	};
 	readDependencies(modInfo.dependencies, object["dependencies"]);
 	readDependencies(modInfo.optionalDependencies, object["optional_dependencies"]);
@@ -30,7 +31,7 @@ ModInfo ModInfo::createDummyInfo(const std::wstring& modid) {
 		modid, modid,
 		FVersion(TEXT("1.0.0")),
 		TEXT("No description provided"),
-		{TEXT("Unknown")}
+		TEXT("Unknown")
 	};
 };
 

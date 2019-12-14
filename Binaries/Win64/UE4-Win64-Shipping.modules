@@ -1,9 +1,0 @@
-{
-	"BuildId": "e875902b-4357-49b5-86c0-1d60c62a6010",
-	"Modules": 
-	{
-		"ExampleMod": "UE4-ExampleMod-Win64-Shipping.dll",
-		"FactoryGame": "UE4-FactoryGame-Win64-Shipping.dll",
-		"SML": "UE4-SML-Win64-Shipping.dll"
-	}
-}

@@ -14,7 +14,11 @@
 #include "Engine/World.h"
 #include "SMLModule.h"
 #include "Stack.h"
+#include "PlatformFilemanager.h"
 #include "IPlatformFilePak.h"
+#include "FGGameMode.h"
+#include "CoreDelegates.h"
+#include "hooking.h"
 
 using namespace SML;
 using namespace SML::Mod;
@@ -25,18 +29,37 @@ std::wstring getModIdFromFile(const path& filePath) {
 	std::wstring modId = filePath.filename().generic_wstring();
 	//remove extension from file name
 	modId.erase(modId.find_last_of(TEXT('.')));
-	if (filePath.extension() == ".dll") {
-		//FactoryGame-Win64-Shipping.dll, Mod ID is the first piece - name of the module
-		return modId.substr(0, modId.find('-'));
-	}
-	if (filePath.extension() == ".pak") {
-		//FactoryGame_p.pak, clean priority suffix if it is there
-		if (modId.find_last_of(TEXT("_p")) == modId.size() - 2) {
-			modId.erase(modId.find_last_of(TEXT("_p")));
+	if (filePath.extension() == TEXT(".dll")) {
+		//UE4-SML-Win64-Shipping, Mod ID is the second piece - name of the module
+		if (modId.find(TEXT("UE4-")) == 0 && modId.find(TEXT("-Win64-Shipping")) == modId.size() - 15) {
+			return modId.substr(4, modId.size() - 15);
 		}
+		//otherwise load it straight with the same name as file name
+		return modId;
+	}
+	if (filePath.extension() == TEXT(".pak")) {
+		//FactoryGame_p.pak, clean priority suffix if it is there
+		if (modId.find_last_of(TEXT("_P")) == modId.size() - 2 ||
+			modId.find_last_of(TEXT("_p")) == modId.size() - 2) {
+			return modId.substr(0, modId.size() - 2);
+		}
+		//return normal mod id if it doesn't contain suffix
 		return modId;
 	}
 	return modId;
+}
+
+//creates module name from file name
+//these names should equal the names used in linking phase in UnrealBuildTool
+//for cross-mod DLL references to work
+//For example, if mod ExampleMod has dependency of FooBarMod,
+//linker generates import entries in UE4-ExampleMod-Win64-Shipping.dll from UE4-FooBarMod-Win64-Shipping.dll
+//so for importing to succeed, bootstrapper should have module named UE4-ExampleMod-Win64-Shipping.dll loaded
+//into the memory and associated with that module name
+std::string createModuleNameFromModId(const std::wstring& modId) {
+	//TODO platform-independent way
+	//linker uses names with the following schema during linkage
+	return convertStr(formatStr(TEXT("UE4-"), modId, TEXT("-Win64-Shipping.dll")).c_str());
 }
 
 FileHash hashFileContents(const path& path) {
@@ -46,43 +69,55 @@ FileHash hashFileContents(const path& path) {
 	return picosha2::bytes_to_hex_string(hash);
 }
 
-path generateTempFilePath(const FileHash& fileHash) {
+path generateTempFilePath(const FileHash& fileHash, const char* extension) {
 	path result = SML::getCacheDirectory();
-	return result / fileHash;
+	return path(result / fileHash).replace_extension(extension);
 }
 
 bool extractArchiveFile(path& outFilePath, ttvfs::File* obj) {
 	std::ofstream outFile(outFilePath, std::ofstream::binary);
 	auto buffer_size = 4096;
+	if (!obj->open("rb")) {
+		throw std::invalid_argument("Failed opening archive object");
+	}
 	char* buf = new char[buffer_size];
 	do {
 		size_t bytes = obj->read(buf, buffer_size);
 		outFile.write(buf, bytes);
 	} while (obj->getpos() < obj->size());
 	outFile.close();
+	obj->close();
 	return true;
 }
 
 nlohmann::json readArchiveJson(ttvfs::File* obj) {
+	if (!obj->open("rb")) {
+		throw std::invalid_argument("Failed opening archive object");
+	}
 	std::vector<char> buffer(obj->size());
 	obj->read(buffer.data(), obj->size());
+	obj->close();
 	const std::wstring string(buffer.begin(), buffer.end());
 	return parseJsonLenient(string);
 }
 
 FileHash hashArchiveFileContents(ttvfs::File* obj) {
+	if (!obj->open("rb")) {
+		throw std::invalid_argument("Failed opening archive object");
+	}
 	std::vector<char> buffer(obj->size());
 	obj->read(buffer.data(), obj->size());
+	obj->close();
 
 	std::vector<unsigned char> hash(picosha2::k_digest_size);
 	picosha2::hash256(buffer.begin(), buffer.end(), hash.begin(), hash.end());
 	return picosha2::bytes_to_hex_string(hash);
 }
 
-void extractArchiveObject(ttvfs::Root& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry) {
-	ttvfs::File* objectFile = root.GetFile(archivePath.c_str());
+void extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const json& metadata) {
+	ttvfs::File* objectFile = root.getFile(archivePath.c_str());
 	if (objectFile == nullptr) {
-		throw std::invalid_argument("object specified in data.json is missing in zip");
+		throw std::invalid_argument("object specified in data.json is missing in zip file");
 	}
 
 	//extract configuration
@@ -97,9 +132,9 @@ void extractArchiveObject(ttvfs::Root& root, const std::string& objectType, cons
 	}
 
 	//extract other files into caches folder
-	FileHash fileHash = hashArchiveFileContents(objectFile);
+	const FileHash fileHash = hashArchiveFileContents(objectFile);
 	
-	path filePath = generateTempFilePath(fileHash);
+	path filePath = generateTempFilePath(fileHash, objectType.c_str());
 	//if cached file doesn't exist, or file hashes don't match, unpack file and copy it
 	if (!exists(filePath) || fileHash != hashFileContents(filePath)) {
 		//in case of broken cache file, remove old file
@@ -108,7 +143,12 @@ void extractArchiveObject(ttvfs::Root& root, const std::string& objectType, cons
 		extractArchiveFile(filePath, objectFile);
 	}
 	if (objectType == "pak") {
-		loadingEntry.pakFilePaths.push_back(filePath.generic_wstring());
+		int32 loadingPriority = 0;
+		if (metadata.is_object()) {
+			metadata["loading_priority"].get_to(loadingPriority);
+		}
+		const std::wstring pakFilePath = filePath.generic_wstring();
+		loadingEntry.pakFiles.push_back(FModPakFileEntry{ pakFilePath, loadingPriority });
 	} else if (objectType == "sml_mod") {
 		if (!loadingEntry.dllFilePath.empty())
 			throw std::invalid_argument("mod can only have one DLL module at a time");
@@ -120,7 +160,7 @@ void extractArchiveObject(ttvfs::Root& root, const std::string& objectType, cons
 	}
 }
 
-void extractArchiveObjects(ttvfs::Root& root, const nlohmann::json& dataJson, SML::Mod::FModLoadingEntry& loadingEntry) {
+void extractArchiveObjects(ttvfs::Dir& root, const nlohmann::json& dataJson, SML::Mod::FModLoadingEntry& loadingEntry) {
 	const nlohmann::json& objects = dataJson["objects"];
 	if (!objects.is_array()) {
 		throw std::invalid_argument("missing `objects` array in data.json");
@@ -134,7 +174,7 @@ void extractArchiveObjects(ttvfs::Root& root, const nlohmann::json& dataJson, SM
 		}
 		std::string objType = object["type"].get<std::string>();
 		std::string path = object["path"].get<std::string>();
-		extractArchiveObject(root, objType, path, loadingEntry);
+		extractArchiveObject(root, objType, path, loadingEntry, object["metadata"]);
 	}
 }
 
@@ -193,7 +233,7 @@ FModLoadingEntry createSMLLoadingEntry() {
 	entry.modInfo.name = TEXT("Satisfactory Mod Loader");
 	entry.modInfo.version = getModLoaderVersion();
 	entry.modInfo.description = TEXT("Mod Loading & Compatibility layer for Satisfactory");
-	entry.modInfo.authors = { TEXT("TODO") };
+	entry.modInfo.authors = TEXT("TODO");
 	return entry;
 }
 
@@ -252,7 +292,8 @@ namespace SML {
 				const std::wstring& modid = loadingEntry.modInfo.modid;
 				if (!loadingEntry.dllFilePath.empty()) {
 					try {
-						HLOADEDMODULE module = accessors.LoadModule(loadingEntry.dllFilePath.c_str());
+						std::string moduleName = createModuleNameFromModId(loadingEntry.modInfo.modid);
+						HLOADEDMODULE module = accessors.LoadModule(moduleName.c_str(), loadingEntry.dllFilePath.c_str());
 						if (module == nullptr) throw std::invalid_argument("Module not loaded");
 						loadedModuleDlls.insert({ modid, module });
 					} catch (std::exception& ex) {
@@ -308,13 +349,26 @@ namespace SML {
 				loadedModsModIDs.push_back(loadingEntry.modInfo.modid);
 			}
 
+			FPakPlatformFile* pakPlatformFile = static_cast<FPakPlatformFile*>(FPlatformFileManager::Get().FindPlatformFile(TEXT("PakFile")));
+			TArray<FString> mountedPakNames;
+			pakPlatformFile->GetMountedPakFilenames(mountedPakNames);
+			path platformPakFileName = GetData(mountedPakNames[0]);
+			path pakSignatureFilePath = platformPakFileName.replace_extension(".sig");
+
 			SML::Logging::info("Mounting mod paks...");
 			for (auto& loadingEntry : sortedModLoadList) {
-				for (auto& pakFilePath : loadingEntry.pakFilePaths) {
-					FString filePathString(pakFilePath.c_str());
-					FCoreDelegates::OnMountPak.Execute(filePathString, 0, nullptr);
+				for (auto& pakFileDef : loadingEntry.pakFiles) {
+					std::wstring pakFilePathStr = pakFileDef.pakFilePath;
+					path pakFileSystemPath(pakFilePathStr);
+					path pakFileSignaturePath = pakFileSystemPath.replace_extension(".sig");
+					//make sure we have signature file in place before mounting pak
+					if (!exists(pakFileSignaturePath)) {
+						copy_file(pakSignatureFilePath, pakFileSignaturePath);
+					}
+					FString filePathString(pakFilePathStr.c_str());
+					FCoreDelegates::OnMountPak.Execute(filePathString, pakFileDef.loadingPriority, nullptr);
 				}
-				if (!loadingEntry.pakFilePaths.empty()) {
+				if (!loadingEntry.pakFiles.empty()) {
 					//L"/Game/FactoryGame/" + modNameW + L"/InitMenu.InitMenu_C";
 					const std::wstring baseInitPath = formatStr(TEXT("/Game/FactoryGame/"), loadingEntry.modInfo.modid);
 					const std::wstring modInitPath = formatStr(baseInitPath, TEXT("/InitMod.InitMod_C"));
@@ -324,10 +378,20 @@ namespace SML {
 					if (modInitializerClass != nullptr || menuInitializerClass != nullptr) {
 						//push our loader entry to the initializers list which will be called later
 						modPakInitializers.push_back(FModPakLoadEntry{ loadingEntry.modInfo.modid, modInitializerClass, menuInitializerClass });
+						SML::Logging::debug(TEXT("Pak initializers for "), loadingEntry.modInfo.modid, TEXT(": Mod: "), modInitializerClass, ", Menu: ", menuInitializerClass);
 					}
 				}
 			}
 			checkStageErrors(TEXT("mod initialization"));
+		}
+
+		void FModHandler::attachLoadingHooks() {
+			SUBSCRIBE_METHOD(AFGGameMode::PostActorsInitialized, [](CallResult<void>, AFGGameMode* gameMode, const UWorld::FActorsInitializedParams&) {
+				SML::Logging::info(TEXT("GameMode initialization triggered!"));
+				SML::Logging::info(TEXT("Calling pak callbacks..."));
+				SML::Logging::info(TEXT("Local Player: "), gameMode->GetWorld()->GetFirstPlayerController());
+				SML::getModHandler().onGameModePostLoad(gameMode->GetWorld(), gameMode->IsMainMenuGameMode());
+			});
 		}
 
 		void FModHandler::onGameModePostLoad(UWorld* world, bool isMenuWorld) {
@@ -419,9 +483,15 @@ namespace SML {
 		};
 
 		void FModHandler::constructZipMod(const path& filePath) {
+			SML::Logging::debug(TEXT("Constructing zip mod from "), filePath);
 			ttvfs::Root vfs;
+			vfs.AddLoader(new ttvfs::DiskLoader);
 			vfs.AddArchiveLoader(new ttvfs::VFSZipArchiveLoader);
 			auto modArchive = vfs.AddArchive(filePath.generic_string().c_str());
+			if (modArchive == nullptr) {
+				reportBrokenZipMod(filePath, TEXT("corrupted zip file"));
+				return;
+			}
 			ttvfs::File* dataJson = modArchive->getFile("data.json");
 			if (dataJson == nullptr) {
 				reportBrokenZipMod(filePath, TEXT("data.json entry is missing in zip"));
@@ -440,7 +510,7 @@ namespace SML {
 			FModLoadingEntry& loadingEntry = createLoadingEntry(modInfo, filePath);
 			if (!loadingEntry.isValid) return;
 			try {
-				extractArchiveObjects(vfs, dataJsonObj, loadingEntry);
+				extractArchiveObjects(*modArchive, dataJsonObj, loadingEntry);
 			} catch (std::exception& ex) {
 				std::wstring message = formatStr(TEXT("Failed to extract data objects: "), convertStr(ex.what()));
 				reportBrokenZipMod(filePath, message.c_str());
@@ -460,7 +530,7 @@ namespace SML {
 			auto modId = getModIdFromFile(filePath);
 			auto& loadingEntry = createRawModLoadingEntry(modId, filePath);
 			if (!loadingEntry.isValid) return;
-			loadingEntry.pakFilePaths.push_back(filePath.generic_wstring());
+			loadingEntry.pakFiles.push_back(FModPakFileEntry{ filePath.generic_wstring(), 0 });
 		}
 
 		void FModHandler::checkStageErrors(const TCHAR* stageName) {

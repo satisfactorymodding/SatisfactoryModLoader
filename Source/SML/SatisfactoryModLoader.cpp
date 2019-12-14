@@ -47,7 +47,7 @@ bool checkGameVersion(const long targetVersion) {
 	std::string str = convertStr(FApp::GetBuildVersion());
 	const long version = std::atoi(str.substr(str.find_last_of('-') + 1).c_str());
 	if (targetVersion > version) {
-		SML::Logging::fatal("Version check failed: Satisfactory version CL-", version, " is outdated, loader requires at least CL-", targetVersion, ". Things are not going to work.");
+		SML::Logging::fatal("Version check failed: Satisfactory version CL-", version, " is outdated. SML requires at least CL-", targetVersion, ". Things are not going to work.");
 		return false;
 	}
 	if (targetVersion < version) {
@@ -96,6 +96,10 @@ namespace SML {
 	//path to the root of the game
 	static path* rootGamePath;
 
+	void* ResolveGameSymbol(const char* symbolName) {
+		return bootstrapAccessors->ResolveGameSymbol(symbolName);
+	}
+
 	void postInitializeSML();
 
 	//called by a bootstrapper off the engine thread during process initialization
@@ -113,35 +117,30 @@ namespace SML {
 		rootGamePath = new path(accessors.gameRootDirectory);
 		SML::Logging::info(TEXT("Game root directory: "), rootGamePath->generic_wstring());
 
-		try {
-	
-			create_directories(getModDirectory());
-			create_directories(getConfigDirectory());
-			create_directories(getCacheDirectory());
+		create_directories(getModDirectory());
+		create_directories(getConfigDirectory());
+		create_directories(getCacheDirectory());
 
-			if (!checkGameVersion(targetGameVersion)) {
-				SML::shutdownEngine(TEXT("Game version check failed."));
-			}
-
-			nlohmann::json configJson = readModConfig(TEXT("SML"));
-			activeConfiguration = new FSMLConfiguration{ true, true, false, false };
-			if (!configJson.is_null()) {
-				parseConfig(configJson, *activeConfiguration);
-			}
-
-			modHandlerPtr = new Mod::FModHandler();
-			SML::Logging::info(TEXT("Performing mod discovery"));
-			modHandlerPtr->discoverMods();
-			SML::Logging::info(TEXT("Resolving mod dependencies"));
-			modHandlerPtr->checkDependencies();
-		} catch (std::exception& ex) {
-			*logOutputStream << convertStr(ex.what()) << std::endl;
-			SML::Logging::fatal("Failed to initialize SML: ", convertStr(ex.what()));
-			exit(1);
+		if (!checkGameVersion(targetGameVersion)) {
+			SML::shutdownEngine(TEXT("Game version check failed."));
 		}
-		
+
+		nlohmann::json configJson = readModConfig(TEXT("SML"));
+		activeConfiguration = new FSMLConfiguration{ true, true, false, false };
+		if (!configJson.is_null()) {
+			parseConfig(configJson, *activeConfiguration);
+		}
+
+		modHandlerPtr = new Mod::FModHandler();
+		SML::Logging::info(TEXT("Performing mod discovery"));
+		modHandlerPtr->discoverMods();
+		SML::Logging::info(TEXT("Resolving mod dependencies"));
+		modHandlerPtr->checkDependencies();
+
+		modHandlerPtr->attachLoadingHooks();
+
 		SML::Logging::info(TEXT("Construction phase finished!"));
-		
+
 		FCoreDelegates::OnPostEngineInit.AddStatic(postInitializeSML);
 	}
 
@@ -185,4 +184,10 @@ namespace SML {
 
 extern "C" SML_API void BootstrapModule(BootstrapAccessors& accessors) {
 	return SML::bootstrapSML(accessors);
+}
+
+static const std::string LINKAGE_MODULE_NAME = createModuleNameFromModId(TEXT("SML"));
+
+extern "C" SML_API const char* GetLinkageModuleName() {
+	return LINKAGE_MODULE_NAME.c_str();
 }
