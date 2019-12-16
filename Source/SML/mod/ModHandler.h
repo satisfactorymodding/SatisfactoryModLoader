@@ -6,7 +6,10 @@
 #include <filesystem>
 #include <unordered_map>
 #include "mod/ModInfo.h"
-#include "util/bootstrapper_exports.h"
+
+class UModInitializerComponent;
+class AFGGameMode;
+struct BootstrapAccessors;
 
 using namespace std::experimental::filesystem;
 
@@ -98,7 +101,7 @@ namespace SML {
 
 			static void attachLoadingHooks();
 
-			void onGameModePostLoad(UWorld* world, bool isMenuWorld);
+			void onGameModePostLoad(AFGGameMode* gameMode, UModInitializerComponent* component);
 		};
 	};
 };

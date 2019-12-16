@@ -2,15 +2,18 @@
 
 #include <vector>
 #include <functional>
+#include <string>
 
-SML_API void* getHandlerListInternal(const char* identifier);
+SML_API void* getHandlerListInternal(const std::string& symbolName);
 
-SML_API void setHandlerListInstanceInternal(const char* identifier, void* handlerList);
+SML_API void setHandlerListInstanceInternal(const std::string& symbolName, void* handlerList);
 
-SML_API void* registerHookFunction(const char* functionName, void* hookFunction);
+SML_API void* registerHookFunction(const std::string& symbolName, void* hookFunction);
+
+SML_API std::string decorateSymbolName(const char* functionName, const char* symbolType);
 
 template <typename F>
-std::vector<std::function<F>>* createHandlerList(const char* identifier) {
+std::vector<std::function<F>>* createHandlerList(const std::string& identifier) {
 	void* handlerListRaw = getHandlerListInternal(identifier);
 	if (handlerListRaw == nullptr) {
 		handlerListRaw = new std::vector<std::function<F>>();
@@ -110,16 +113,17 @@ private:
 		return getApplyRef(std::is_same<R, void>{});
 	}
 
-	static void installHook(const char* methodName) {
+	static void installHook(const std::string& symbolName) {
 		if (handlers == nullptr) {
-			handlers = createHandlerList<HandlerSignature>(methodName);
-			functionPtr = registerHookFunction(methodName, static_cast<void*>(getApplyCall()));
+			handlers = createHandlerList<HandlerSignature>(symbolName);
+			functionPtr = registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
 		}
 	}
 
 public:
 	static void addHandler(const char* methodName, Handler handler) {
-		installHook(methodName);
+		const std::string symbolName = decorateSymbolName(methodName, typeid(PMF).name());
+		installHook(symbolName);
 		handlers->push_back(handler);
 	}
 };
@@ -127,5 +131,13 @@ public:
 template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
 std::vector<std::function<void(CallResult<R>&, C*, A...)>>* HookInvoker<R(C::*)(A...), PMF>::handlers = nullptr;
 
+template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
+void* HookInvoker<R(C::*)(A...), PMF>::functionPtr = nullptr;
+
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference>::addHandler("MethodReference", Handler);
+HookInvoker<decltype(&MethodReference), &MethodReference>::addHandler(#MethodReference, Handler);
+
+//performs manual subscription to method via specified name and prototype
+//prototype and method signature match is on developer's responsibility
+#define __SUBSCRIBE_METHOD_MANUAL(MethodName, MethodPrototype, Handler) \
+HookInvoker<decltype(&MethodPrototype), &MethodPrototype>::addHandler(#MethodName, Handler);

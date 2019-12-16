@@ -1,6 +1,8 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+Binaries/
+
 # Compiled Object files
 *.slo
 *.lo

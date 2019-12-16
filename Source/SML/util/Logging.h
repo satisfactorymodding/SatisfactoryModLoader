@@ -4,7 +4,7 @@
 #include "util/Utility.h"
 #include "SatisfactoryModLoader.h"
 #include "CoreTypes.h"
-#include "Logging/LogMacros.h"
+#include <fstream>
 
 namespace SML {
 	namespace Logging
@@ -17,7 +17,7 @@ namespace SML {
 			Fatal
 		};
 
-		ELogVerbosity::Type logTypeToVerbosity(LogType logType) {
+		inline ELogVerbosity::Type logTypeToVerbosity(LogType logType) {
 			switch (logType) {
 			case Debug: return ELogVerbosity::Verbose;
 			case Info: return ELogVerbosity::Log;
@@ -38,7 +38,7 @@ namespace SML {
 			std::wcout << result << std::endl;
 			getLogFile() << result << std::endl;
 			const ELogVerbosity::Type verbosity = logTypeToVerbosity(type);
-			FMsg::Logf(nullptr, 0, FName("SatisfactoryModLoader"), verbosity, TEXT("%s"), message.c_str());
+			FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), verbosity, TEXT("%s"), message.c_str());
 		}
 
 		template<typename First, typename ...Args>

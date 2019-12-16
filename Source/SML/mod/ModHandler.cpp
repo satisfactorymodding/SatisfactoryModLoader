@@ -10,15 +10,15 @@
 #include <algorithm>
 #include "util/Internal.h"
 #include "util/bootstrapper_exports.h"
-#include "Object.h"
 #include "Engine/World.h"
 #include "SMLModule.h"
-#include "Stack.h"
 #include "PlatformFilemanager.h"
 #include "IPlatformFilePak.h"
 #include "FGGameMode.h"
 #include "CoreDelegates.h"
 #include "hooking.h"
+#include "component/ModInitializerComponent.h"
+#include "FGPlayerController.h"
 
 using namespace SML;
 using namespace SML::Mod;
@@ -378,40 +378,65 @@ namespace SML {
 					if (modInitializerClass != nullptr || menuInitializerClass != nullptr) {
 						//push our loader entry to the initializers list which will be called later
 						modPakInitializers.push_back(FModPakLoadEntry{ loadingEntry.modInfo.modid, modInitializerClass, menuInitializerClass });
-						SML::Logging::debug(TEXT("Pak initializers for "), loadingEntry.modInfo.modid, TEXT(": Mod: "), modInitializerClass, ", Menu: ", menuInitializerClass);
 					}
 				}
 			}
 			checkStageErrors(TEXT("mod initialization"));
 		}
 
+		UModInitializerComponent* GetOrCreateComponent(AFGGameMode* gameMode) {
+			auto components = gameMode->GetComponentsByClass(UActorComponent::StaticClass());
+			UActorComponent** firstComponent = components.GetData();
+			uint64 arraySize = components.Num();
+			for (uint64 i = 0; i < arraySize; i++) {
+				UActorComponent* otherComponent = firstComponent[i];
+				if (otherComponent->IsA<UModInitializerComponent>()) {
+					SML::Logging::info(TEXT("Mod initializer found at "), (void*)otherComponent);
+					return static_cast<UModInitializerComponent*>(otherComponent);
+				}
+			}
+			UModInitializerComponent* component = static_cast<UModInitializerComponent*>(StaticAllocateObject(UModInitializerComponent::StaticClass(), gameMode, NAME_None, EObjectFlags::RF_Transient));
+			gameMode->AddInstanceComponent(component);
+			component->RegisterComponent();
+			SML::Logging::info(TEXT("Created mod initializer at "), (void*)component);
+			return component;
+		}
+
 		void FModHandler::attachLoadingHooks() {
-			SUBSCRIBE_METHOD(AFGGameMode::PostActorsInitialized, [](CallResult<void>, AFGGameMode* gameMode, const UWorld::FActorsInitializedParams&) {
-				SML::Logging::info(TEXT("GameMode initialization triggered!"));
-				SML::Logging::info(TEXT("Calling pak callbacks..."));
-				SML::Logging::info(TEXT("Local Player: "), gameMode->GetWorld()->GetFirstPlayerController());
-				SML::getModHandler().onGameModePostLoad(gameMode->GetWorld(), gameMode->IsMainMenuGameMode());
+			SUBSCRIBE_METHOD(AFGGameMode::InitGameState, [](CallResult<void>, AFGGameMode* gameMode) {
+				//only call initializers on host worlds
+				SML::Logging::info(TEXT("GAME MODE IDENTIFIER "), static_cast<void*>(gameMode), TEXT(" MAP NAME "), GetData(gameMode->GetWorld()->GetMapName()));
+				if (gameMode->HasAuthority()) {
+					UModInitializerComponent* component = GetOrCreateComponent(gameMode);
+					SML::Logging::info(TEXT("Awesome component: "), (void*)component);
+					//SML::getModHandler().onGameModePostLoad(gameMode, component);
+					component->InitializeModActors();
+					SML::Logging::info(TEXT("FINISHED"));
+				}
+			});
+			SUBSCRIBE_METHOD(AFGPlayerController::BeginPlay, [](CallResult<void>, AFGPlayerController* controller) {
+				SML::Logging::info(TEXT("ControllerBeginPlay "), GetData(controller->GetWorld()->GetMapName()));
+				//only call initializers on host worlds
+				AFGGameMode* gameMode = static_cast<AFGGameMode*>(controller->GetWorld()->GetGameState<AGameStateBase>()->AuthorityGameMode);
+				if (gameMode != nullptr && gameMode->HasAuthority()) {
+					UModInitializerComponent* component = GetOrCreateComponent(gameMode);
+					SML::Logging::info(TEXT("COMPONENT 2: "), (void*)component);
+					component->PostInitializeModActors();
+				}
 			});
 		}
 
-		void FModHandler::onGameModePostLoad(UWorld* world, bool isMenuWorld) {
+		void FModHandler::onGameModePostLoad(AFGGameMode* gameMode, UModInitializerComponent* component) {
+			UWorld* world = gameMode->GetWorld();
+			const bool isMenuWorld = gameMode->IsMainMenuGameMode();
 			for (auto& initializer : modPakInitializers) {
 				UClass* targetClass = isMenuWorld ? initializer.menuInitClass : initializer.modInitClass;
 				if (targetClass != nullptr) {
-					AActor* actor = world->SpawnActor(initializer.menuInitClass);
-					UFunction* function = actor->FindFunction(FName("PostInit"));
-					if (function == nullptr) {
-						SML::Logging::warning("No PostInit function is found in mod initialization actor for mod ", initializer.modid);
-					} else {
-						FFrame* frame = new FFrame(actor, function, nullptr);
-						try {
-							actor->CallFunction(*frame, nullptr, function);
-						} catch (std::exception& ex) {
-							SML::Logging::error("Failed to call PostInit on mod initializer: ", initializer.modid, ": ", ex.what());
-						}
-						delete frame;
-					}
-					actor->Destroy();
+					FVector position = FVector::ZeroVector;
+					FRotator rotation = FRotator::ZeroRotator;
+					FActorSpawnParameters spawnParams{};
+					//AActor* actor = world->SpawnActor(targetClass, &position, &rotation, spawnParams);
+					//component->ModInitializerActorList.Add(actor);
 				}
 			}
 		}

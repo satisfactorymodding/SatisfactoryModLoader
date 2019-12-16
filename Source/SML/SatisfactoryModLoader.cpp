@@ -24,6 +24,8 @@
 #include "util/Internal.h"
 #include "CoreDelegates.h"
 #include "FGGameMode.h"
+#include "mod/hooking.h"
+#include "MallocBinned2.h"
 
 std::string convertStr(const TCHAR* string) {
 	size_t arraySize;
@@ -152,6 +154,10 @@ namespace SML {
 		modHandlerPtr->loadMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Post Initialization finished!"));
 	}
+
+	class FFreeBlockPrototype {
+	public: void CanaryFailPrototype() {};
+	};
 
 	SML_API path getModDirectory() {
 		return *rootGamePath / TEXT("mods");

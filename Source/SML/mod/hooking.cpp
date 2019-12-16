@@ -14,31 +14,37 @@ static std::unordered_map<std::string, void*> registeredListenerMap;
 //to have exactly one hook installed for each function
 static std::unordered_map<std::string, void*> installedHookMap;
 
-void* getHandlerListInternal(const char* identifier) {
+void* getHandlerListInternal(const std::string& identifier) {
 	return registeredListenerMap[identifier];
 }
 
-void setHandlerListInstanceInternal(const char* identifier, void* handlerList) {
+void setHandlerListInstanceInternal(const std::string& identifier, void* handlerList) {
 	registeredListenerMap[identifier] = handlerList;
 }
 
-#define CHECK_FUNCHOOK_ERR(arg, message) \
-	if (arg != FUNCHOOK_ERROR_SUCCESS) SML::shutdownEngine(SML::formatStr(message, convertStr(functionName), TEXT(": "), funchook_error_message(funchook)));
+std::string decorateSymbolName(const char* functionName, const char* symbolType) {
+	//TODO support hooking different C++ function overloads (bootstrapper supports it)
+	//SML::Logging::info(TEXT("Function signature: "), symbolType);
+	//SML::Logging::info(TEXT("Function name: "), functionName);
+	return std::string("void ").append(functionName).append("()");
+}
 
-void* registerHookFunction(const char* functionName, void* hookFunction) {
-	const std::string functionNameStr = functionName;
+#define CHECK_FUNCHOOK_ERR(arg, message) \
+	if (arg != FUNCHOOK_ERROR_SUCCESS) SML::shutdownEngine(SML::formatStr(message, convertStr(functionNameStr.c_str()), TEXT(": "), convertStr(funchook_error_message(funchook))));
+
+void* registerHookFunction(const std::string& functionNameStr, void* hookFunction) {
 	if (installedHookMap[functionNameStr] == nullptr) {
 		funchook* funchook = funchook_create();
 		if (funchook == nullptr) {
 			SML::shutdownEngine(TEXT("funchook_create() returned NULL"));
 		}
-		void* gameFunctionPtr = ResolveGameSymbol(functionName);
+		void* gameFunctionPtr = SML::ResolveGameSymbol(functionNameStr.c_str());
 		if (gameFunctionPtr == nullptr) {
-			SML::shutdownEngine(SML::formatStr(TEXT("Hook target function not found: "), convertStr(functionName)));
+			SML::shutdownEngine(SML::formatStr(TEXT("Hook target function not found: "), convertStr(functionNameStr.c_str())));
 		}
 		CHECK_FUNCHOOK_ERR(funchook_prepare(funchook, &gameFunctionPtr, hookFunction), TEXT("funchook_prepare returned error: "));
 		CHECK_FUNCHOOK_ERR(funchook_install(funchook, 0), TEXT("funchook_install returned error:"));
-
+		
 		installedHookMap[functionNameStr] = gameFunctionPtr;
 		return gameFunctionPtr;
 	}
