@@ -63,6 +63,73 @@ public:
 	}
 };
 
+//Hook invoker for global functions
+template <typename R, typename... A, R(*PMF)(A...)>
+struct HookInvoker<R(*)(A...), PMF> {
+public:
+	// mod handler function
+	typedef void HandlerSignature(CallResult<R>&, A...);
+	typedef R HookType(A...);
+	typedef R ReturnType;
+
+	// support arbitrary context for handlers
+	typedef std::function<HandlerSignature> Handler;
+private:
+	static std::vector<Handler>* handlers;
+	static void* functionPtr;
+public:
+	static R applyCall(A... args) {
+		CallResult<R> callResult;
+		for (Handler& handler : *handlers) {
+			handler(callResult, args...);
+			if (!callResult.shouldForwardCall()) break;
+		}
+		if (callResult.shouldForwardCall()) {
+			return ((HookType*)functionPtr)(args...);
+		}
+		return callResult.getResult();
+	}
+
+	static void applyCallVoid(A... args) {
+		CallResult<R> callResult;
+		for (Handler& handler : *handlers) {
+			handler(callResult, args...);
+			if (!callResult.shouldForwardCall()) break;
+		}
+		if (callResult.shouldForwardCall()) {
+			((HookType*)functionPtr)(args...);
+		}
+	}
+
+private:
+	static HookType* getApplyRef(std::true_type) {
+		return &applyCallVoid;
+	}
+
+	static HookType* getApplyRef(std::false_type) {
+		return &applyCall;
+	}
+
+	static HookType* getApplyCall() {
+		return getApplyRef(std::is_same<R, void>{});
+	}
+
+	static void installHook(const std::string& symbolName) {
+		if (handlers == nullptr) {
+			handlers = createHandlerList<HandlerSignature>(symbolName);
+			functionPtr = registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
+		}
+	}
+
+public:
+	static void addHandler(const char* methodName, Handler handler) {
+		const std::string symbolName = decorateSymbolName(methodName, typeid(PMF).name());
+		installHook(symbolName);
+		handlers->push_back(handler);
+	}
+};
+
+//Hook invoker for member functions
 template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
 struct HookInvoker<R(C::*)(A...), PMF> {
 public:
@@ -133,6 +200,12 @@ std::vector<std::function<void(CallResult<R>&, C*, A...)>>* HookInvoker<R(C::*)(
 
 template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
 void* HookInvoker<R(C::*)(A...), PMF>::functionPtr = nullptr;
+
+template <typename R, typename... A, R(*PMF)(A...)>
+std::vector<std::function<void(CallResult<R>&, A...)>>* HookInvoker<R(*)(A...), PMF>::handlers = nullptr;
+
+template <typename R, typename... A, R(*PMF)(A...)>
+void* HookInvoker<R(*)(A...), PMF>::functionPtr = nullptr;
 
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
 HookInvoker<decltype(&MethodReference), &MethodReference>::addHandler(#MethodReference, Handler);

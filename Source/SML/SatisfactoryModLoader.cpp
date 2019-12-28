@@ -26,6 +26,10 @@
 #include "FGGameMode.h"
 #include "mod/hooking.h"
 #include "MallocBinned2.h"
+#include <experimental/filesystem>
+#include "MOD/ModHandler.h"
+
+using namespace std::experimental::filesystem;
 
 std::string convertStr(const TCHAR* string) {
 	size_t arraySize;
@@ -119,7 +123,7 @@ namespace SML {
 		rootGamePath = new path(accessors.gameRootDirectory);
 		SML::Logging::info(TEXT("Game root directory: "), rootGamePath->generic_wstring());
 
-		create_directories(getModDirectory());
+		std::experimental::filesystem::create_directories(getModDirectory());
 		create_directories(getConfigDirectory());
 		create_directories(getCacheDirectory());
 

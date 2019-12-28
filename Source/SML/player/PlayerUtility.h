@@ -1,8 +1,7 @@
 #pragma once
 
 #include "FGCharacterPlayer.h"
-#include "SatisfactoryModLoader.h"
-
+#include <vector>
 
 namespace SML {
     SML_API AFGCharacterPlayer* getPlayerCharacter(const UPlayer* player);

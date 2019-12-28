@@ -1,5 +1,6 @@
 ﻿=== SML Developers ===
 SuperCoder79
+Archengius
 Nomnom
 Anttirt
 Brabb3l
@@ -20,5 +21,9 @@ Turupawn
 Markus Rännare and the rest of the Satisfactory team :D
 
 === Technologies used ===
-Microsoft/Detours
+kubo/funchook
+ttvfs/ttvfs
 nlohmann/json
+Archengius/SatisfactoryModBootstrapper
+Unreal Engine 4
+

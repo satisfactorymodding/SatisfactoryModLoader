@@ -1,5 +1,7 @@
 #pragma once
-#include <mod/ModHandler.h>
+#include <string>
+#include "mod/version.h"
+#include "mod/ModHandler.h"
 #include <filesystem>
 
 using namespace std::experimental::filesystem;
@@ -10,7 +12,7 @@ using namespace std::experimental::filesystem;
  * conversion automatically, they don't handle multi-byte
  * characters properly as experience shows
  */
-std::string convertStr(const TCHAR* string);
+std::string convertStr(const wchar_t* string);
 std::wstring convertStr(const char* string);
 
 namespace SML {
@@ -22,14 +24,14 @@ namespace SML {
 		 * Note that this setting **does not** affect commands registered by other mods
 		 */
 		bool enableSMLChatCommands;
-		
+
 		/**
 		 * Whenever satisfactory crash reporter should be enabled
 		 * Can only be active in clean environment without development mode enabled
 		 * and target version of CL matching game's actual version
 		 */
 		bool enableCrashReporter;
-		
+
 		/**
 		 * Development mode is the mode in which SML will load
 		 * mods which are considered unsafe in normal environment
@@ -39,7 +41,7 @@ namespace SML {
 		 * Environment with enabled development mode is invalid for submitting bug reports
 		 */
 		bool developmentMode;
-		
+
 		//toggles debug output in the log
 		bool debugLogOutput;
 	};
@@ -53,7 +55,7 @@ namespace SML {
 	 * to use features which appeared in some later version
 	 */
 	SML_API extern const SML::Versioning::FVersion& getModLoaderVersion();
-	
+
 
 	/**
 	 * Returns output stream used for global SML log

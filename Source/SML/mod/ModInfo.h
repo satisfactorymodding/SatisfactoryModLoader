@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
 #include <unordered_map>
 #include "mod/version.h"
 #include "util/json.hpp"

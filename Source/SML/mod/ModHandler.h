@@ -1,13 +1,14 @@
 #pragma once
 
-#include "Modules/ModuleManager.h"
 #include <string>
 #include <vector>
 #include <filesystem>
 #include <unordered_map>
 #include "mod/ModInfo.h"
+#include "CoreTypes.h"
 
-class UModInitializerComponent;
+class UClass;
+class IModuleInterface;
 class AFGGameMode;
 struct BootstrapAccessors;
 
@@ -82,7 +83,10 @@ namespace SML {
 			void constructZipMod(const path& filePath);
 			void constructPakMod(const path& filePath);
 			void constructDllMod(const path& filePath);
-			
+
+			void MountModPaks();
+			void LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules);
+			void PopulateModList(const std::map<std::wstring, IModuleInterface*>& loadedModules);
 		public:
 			/**
 			* Load all mods from the given path.
@@ -101,7 +105,7 @@ namespace SML {
 
 			static void attachLoadingHooks();
 
-			void onGameModePostLoad(AFGGameMode* gameMode, UModInitializerComponent* component);
+			void onGameModePostLoad(AFGGameMode* gameMode);
 		};
 	};
 };
