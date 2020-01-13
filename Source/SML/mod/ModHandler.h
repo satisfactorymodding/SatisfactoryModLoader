@@ -57,6 +57,7 @@ namespace SML {
 			std::unordered_map<std::wstring, FModContainer*> loadedMods;
 			std::vector<FModContainer*> loadedModsList;
 			std::vector<std::wstring> loadedModsModIDs;
+			std::vector<AActor*> modInitializerActorList;
 		public:
 			FModHandler();
 			
@@ -87,6 +88,9 @@ namespace SML {
 			void MountModPaks();
 			void LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules);
 			void PopulateModList(const std::map<std::wstring, IModuleInterface*>& loadedModules);
+
+			void initializeModActors();
+			void postInitializeModActors();
 		public:
 			/**
 			* Load all mods from the given path.

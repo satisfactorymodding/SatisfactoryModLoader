@@ -162,7 +162,7 @@ void FModHandler::attachLoadingHooks() {
 		SML::Logging::info(TEXT("GAME MODE IDENTIFIER "), static_cast<void*>(gameMode), TEXT(" MAP NAME "), GetData(gameMode->GetWorld()->GetMapName()));
 		if (gameMode->HasAuthority()) {
 			SML::getModHandler().onGameModePostLoad(gameMode);
-			//component->InitializeModActors();
+			SML::getModHandler().initializeModActors();
 			SML::Logging::info(TEXT("FINISHED"));
 		}
 	});
@@ -171,7 +171,7 @@ void FModHandler::attachLoadingHooks() {
 		//only call initializers on host worlds
 		AFGGameMode* gameMode = static_cast<AFGGameMode*>(controller->GetWorld()->GetGameState<AGameStateBase>()->AuthorityGameMode);
 		if (gameMode != nullptr && gameMode->HasAuthority()) {
-			//component->PostInitializeModActors();
+			SML::getModHandler().postInitializeModActors();
 		}
 	});
 }
@@ -184,6 +184,7 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 	shouldLogAssetFinds = true;
 	UWorld* world = gameMode->GetWorld();
 	const bool isMenuWorld = gameMode->IsMainMenuGameMode();
+	modInitializerActorList.clear();
 	for (auto& initializer : modPakInitializers) {
 		SML::Logging::info(TEXT("MENU INIT "), initializer.menuInitClass, TEXT(" MOD INIT "), initializer.modInitClass, TEXT(" IS MENU WORLD "), isMenuWorld);
 		UClass* targetClass = GetActiveLoadClass(initializer, isMenuWorld);
@@ -193,13 +194,51 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 		FVector position = FVector::ZeroVector;
 		FRotator rotation = FRotator::ZeroRotator;
 		FActorSpawnParameters spawnParams{};
-		SML::Logging::info(TEXT("ACTOR CLASS "), GetData(targetClass->GetName()), TEXT(" IS AACTOR "), targetClass->IsChildOf(AActor::StaticClass()));
+		SML::Logging::info(TEXT("ACTOR CLASS "), GetData(targetClass->GetPathName()), TEXT(" IS AACTOR "), targetClass->IsChildOf(AActor::StaticClass()));
 		AActor* actor = world->SpawnActor(targetClass, &position, &rotation, spawnParams);
 		if (actor != nullptr) {
 			SML::Logging::info(TEXT("SPAWNED ACTOR "), GetData(actor->GetFullName()));
 		}
-		//component->ModInitializerActorList.Add(actor);
+		modInitializerActorList.push_back(actor);
 	}
+}
+
+struct ModInitializerParams {
+	FString Mods;
+};
+
+bool CallActorFunction(AActor* actor, const FName& functionName) {
+	UFunction* function = actor->FindFunction(functionName);
+	if (function == nullptr) {
+		return false;
+	}
+	ModInitializerParams params;
+	actor->ProcessEvent(function, &params);
+	return true;
+}
+
+void FModHandler::initializeModActors() {
+	SML::Logging::info(TEXT("Initializing mod content packages..."));
+	for (AActor* actor : this->modInitializerActorList) {
+		if (actor != nullptr) {
+			SML::Logging::info(TEXT("Initializing mod "), *actor->GetClass()->GetPathName());
+			CallActorFunction(actor, FName(TEXT("Init")));
+			SML::Logging::info(TEXT("Done initializing mod "), *actor->GetClass()->GetPathName());
+		}
+	}
+	SML::Logging::info(TEXT("Done initializing mod content packages"));
+}
+
+void FModHandler::postInitializeModActors() {
+	SML::Logging::info(TEXT("Post-initializing mod content packages..."));
+	for (AActor* actor : this->modInitializerActorList) {
+		if (actor != nullptr) {
+			SML::Logging::info(TEXT("Post-initializing mod "), *actor->GetClass()->GetPathName());
+			CallActorFunction(actor, FName(TEXT("PostInit")));
+			SML::Logging::info(TEXT("Done post-initializing mod "), *actor->GetClass()->GetPathName());
+		}
+	}
+	SML::Logging::info(TEXT("Done post-initializing mod content packages"));
 }
 
 void FModHandler::checkDependencies() {
@@ -295,7 +334,6 @@ void FModHandler::constructZipMod(const path& filePath) {
 	}
 	FModLoadingEntry& loadingEntry = createLoadingEntry(modInfo, filePath);
 	if (!loadingEntry.isValid) return;
-	SML::Logging::debug(TEXT("TEXT 1"));
 	try {
 		extractArchiveObjects(*modArchive, dataJsonObj, loadingEntry);
 	} catch (std::exception& ex) {
