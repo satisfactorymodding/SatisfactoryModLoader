@@ -11,7 +11,7 @@
 
  Known issues:
  * Everything crashes 10000% more than it should
- * SML 1.0.0 has been delayed by 2000 years
+ * SML 2.0.0 has been delayed by 2000 years
  * People still can't install this properly (even though there's instructions everywhere ffs)
 */
 #include "SatisfactoryModLoader.h"
