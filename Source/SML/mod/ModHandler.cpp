@@ -37,7 +37,16 @@ public:
 		ModuleInfoRef moduleInfo(new FModuleInfo());
 		moduleInfo->Module = TUniquePtr<IModuleInterface>(moduleInitializer());
 		moduleInfo->Module->StartupModule();
-		moduleManager.AddModuleToModulesList(moduleName, moduleInfo);
+		{
+			FScopeLock Lock(&moduleManager.ModulesCriticalSection);
+
+			// Update hash table
+			moduleManager.Modules.Add(moduleName, moduleInfo);
+		}
+
+		//TODO: this is AddModuleToModulesList. Not sure if exported, not sure if needed
+		//FModuleManager::Get().ModulesChangedEvent.Broadcast(InModuleName, EModuleChangeReason::PluginDirectoryChanged);
+		
 		//TODO: this one is not exported in PDB; not sure if it is needed
 		//moduleManager.OnModulesChanged().Broadcast(moduleName, EModuleChangeReason::ModuleLoaded);
 		return moduleInfo->Module.Get();
@@ -204,7 +213,7 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 }
 
 struct ModInitializerParams {
-	FString Mods;
+	FString Mods = FString(TEXT("")); // default constructor is not in the exe
 };
 
 bool CallActorFunction(AActor* actor, const FName& functionName) {

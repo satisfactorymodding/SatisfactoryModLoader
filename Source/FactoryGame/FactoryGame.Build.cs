@@ -8,7 +8,7 @@ public class FactoryGame : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		  PublicDependencyModuleNames.AddRange(new string[] {
+       PublicDependencyModuleNames.AddRange(new string[] {
             "Core", "CoreUObject",
             "Engine",
             "InputCore",
@@ -22,12 +22,14 @@ public class FactoryGame : ModuleRules
             "NavigationSystem",
             "AssetRegistry",
             "GameplayTasks",
-            "AnimGraphRuntime",
-            "Slate", "SlateCore"});
-			
-		if (Target.Type == TargetRules.TargetType.Editor) {
-			PublicDependencyModuleNames.AddRange(new string[] {"OnlineBlueprintSupport", "AnimGraph"});
-		}
+			"AnimGraphRuntime",
+            "Slate", "SlateCore"
+			});
+
+        if (Target.Type == TargetRules.TargetType.Editor)
+        {
+            PublicDependencyModuleNames.AddRange(new string[] { "OnlineBlueprintSupport", "AnimGraph" });
+        }
 
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
