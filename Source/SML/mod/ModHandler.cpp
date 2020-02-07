@@ -55,9 +55,9 @@ public:
 
 FModHandler::FModHandler() {}
 
-void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules) {
-	std::map<std::wstring, HLOADEDMODULE> loadedModuleDlls;
+std::map<std::wstring, HLOADEDMODULE> loadedModuleDlls;
 
+void FModHandler::loadDllMods(const BootstrapAccessors& accessors) {
 	for (auto& loadingEntry : sortedModLoadList) {
 		const std::wstring& modid = loadingEntry.modInfo.modid;
 		if (!loadingEntry.dllFilePath.empty()) {
@@ -66,13 +66,17 @@ void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, std::map
 				HLOADEDMODULE module = accessors.LoadModule(moduleName.c_str(), loadingEntry.dllFilePath.c_str());
 				if (module == nullptr) throw std::invalid_argument("Module not loaded");
 				loadedModuleDlls.insert({ modid, module });
-			} catch (std::exception& ex) {
+			}
+			catch (std::exception& ex) {
 				std::wstring message = formatStr(TEXT("Failed to load module "), modid, ": ", convertStr(ex.what()));
 				SML::Logging::error(message);
 				loadingProblems.push_back(message);
 			}
 		}
 	}
+}
+
+void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules) {
 	std::map<std::wstring, FName> registeredModules;
 	
 	//register SML module manually as it is already loaded into the process

@@ -107,6 +107,11 @@ namespace SML {
 			*/
 			void loadMods(const BootstrapAccessors& accessors);
 
+			/**
+			* Loads the dll mods into memory
+			*/
+			void loadDllMods(const BootstrapAccessors& accessors);
+
 			static void attachLoadingHooks();
 
 			void onGameModePostLoad(AFGGameMode* gameMode);

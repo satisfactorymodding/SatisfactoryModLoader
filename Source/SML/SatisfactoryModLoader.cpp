@@ -145,8 +145,10 @@ namespace SML {
 
 		modHandlerPtr->attachLoadingHooks();
 
-		SML::Logging::info(TEXT("Construction phase finished!"));
+		modHandlerPtr->loadDllMods(*bootstrapAccessors);
 
+		SML::Logging::info(TEXT("Construction phase finished!"));
+		
 		FCoreDelegates::OnPostEngineInit.AddStatic(postInitializeSML);
 	}
 
