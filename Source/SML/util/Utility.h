@@ -20,6 +20,15 @@ namespace SML {
 	 * It also supports comments in mod configs
 	 */
 	SML_API nlohmann::json readModConfig(std::wstring modid);
+
+	/*
+	 * Dumps the given mod configuration json to the mod config file with the given modid.
+	 * Completely overwrites the file with the given json.
+	 *
+	 * @param[in]	modid	the id of the mod you want to save the config from
+	 * @param[in]	config	the coniguration you want to overwrite the file with
+	 */
+	SML_API void writeModConfig(std::wstring modid, const nlohmann::json& config);
 	
 	template<typename First, typename ...Args>
 	std::wstring formatStr(First &&arg0, Args &&...args) {

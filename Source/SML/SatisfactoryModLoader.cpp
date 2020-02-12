@@ -28,6 +28,7 @@
 #include "MallocBinned2.h"
 #include <experimental/filesystem>
 #include "MOD/ModHandler.h"
+#include "util/Console.h"
 
 using namespace std::experimental::filesystem;
 
@@ -69,9 +70,20 @@ void parseConfig(nlohmann::json& json, SML::FSMLConfiguration& config) {
 		json.at("enableCrashReporter").get_to(config.enableCrashReporter);
 		json.at("developmentMode").get_to(config.developmentMode);
 		json.at("debug").get_to(config.debugLogOutput);
+		json.at("consoleWindow").get_to(config.consoleWindow);
 	} catch (std::exception& ex) {
 		SML::Logging::error("Failed to parse SML configuration SML.cfg: ", convertStr(ex.what()));
 	}
+}
+
+nlohmann::json dumpConfig(SML::FSMLConfiguration& config) {
+	return nlohmann::json{
+		{"enableSMLCommands",		config.enableSMLChatCommands},
+		{"enableCrashReporter",		config.enableCrashReporter},
+		{"developmentMode",			config.developmentMode},
+		{"debug",					config.debugLogOutput},
+		{"consoleWindow",			config.consoleWindow}
+	};
 }
 
 namespace SML {
@@ -135,7 +147,12 @@ namespace SML {
 		activeConfiguration = new FSMLConfiguration{ true, true, false, false };
 		if (!configJson.is_null()) {
 			parseConfig(configJson, *activeConfiguration);
+		} else {
+			configJson = dumpConfig(*activeConfiguration);
+			writeModConfig(TEXT("SML"), configJson);
 		}
+
+		initConsole();
 
 		modHandlerPtr = new Mod::FModHandler();
 		SML::Logging::info(TEXT("Performing mod discovery"));

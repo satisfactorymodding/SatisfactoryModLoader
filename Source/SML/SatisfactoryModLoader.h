@@ -44,6 +44,12 @@ namespace SML {
 
 		//toggles debug output in the log
 		bool debugLogOutput;
+
+		/**
+		* Opens a console window wich outputs all standard output streams
+		* for allowing you to better debug the runtime
+		*/
+		bool consoleWindow;
 	};
 };
 

@@ -29,4 +29,15 @@ namespace SML {
 			return nlohmann::json(nullptr);
 		}
 	}
+
+	void writeModConfig(std::wstring modid, const nlohmann::json& config) {
+		path configPath = getModConfigFilePath(modid);
+		std::wofstream fileStream(configPath, std::ios::out);
+		try {
+			fileStream << config.dump();
+			fileStream.close();
+		} catch (std::exception& ex) {
+			SML::Logging::warning("Failed to write mod ", modid, " configuration: ", convertStr(ex.what()));
+		}
+	}
 }
