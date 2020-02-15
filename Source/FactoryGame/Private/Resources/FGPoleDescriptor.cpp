@@ -7,3 +7,4 @@ FPoleHeightMesh UFGPoleDescriptor::FindBestHeightMesh( TSubclassOf< UFGPoleDescr
 int32 UFGPoleDescriptor::NumHeightMeshes( TSubclassOf< UFGPoleDescriptor > inClass){ return int32(); }
 FName UFGPoleDescriptor::mPoleMeshComponentTag = FName();
 FName UFGPoleDescriptor::mPoleHeightComponentTag = FName();
+FName UFGPoleDescriptor::mPoleTopMeshComponentTag = FName();

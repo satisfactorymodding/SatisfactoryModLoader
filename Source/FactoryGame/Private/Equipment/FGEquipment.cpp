@@ -15,6 +15,11 @@ bool AFGEquipment::NeedTransform_Implementation(){ return bool(); }
 bool AFGEquipment::ShouldSave_Implementation() const{ return bool(); }
 void AFGEquipment::Equip(  AFGCharacterPlayer* character){ }
 void AFGEquipment::UnEquip(){ }
+void AFGEquipment::OnDefaultPrimaryFirePressed(){ }
+void AFGEquipment::Server_DefaultPrimaryFire_Implementation(){ }
+bool AFGEquipment::Server_DefaultPrimaryFire_Validate(){ return bool(); }
+void AFGEquipment::DoDefaultPrimaryFire_Native(){ }
+bool AFGEquipment::CanDoDefaultPrimaryFire_Implementation(){ return bool(); }
 AFGCharacterPlayer* AFGEquipment::GetInstigatorCharacter() const{ return nullptr; }
 bool AFGEquipment::IsLocalInstigator() const{ return bool(); }
 bool AFGEquipment::ShouldSaveState() const{ return bool(); }

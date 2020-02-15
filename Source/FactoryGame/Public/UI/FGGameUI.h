@@ -9,6 +9,8 @@
 #include "FGBaseUI.h"
 #include "FGGameUI.generated.h"
 
+class UFGInteractWidget;
+
 /** Delegate for when mouse button is pressed in Game UI. 
 This should be handle by a proper focus/UI system and this is a temporary workaround */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnMouseButtonDown, const FGeometry&, InGeometry, const FPointerEvent&, InMouseEvent );
@@ -137,17 +139,32 @@ public:
 	void StopSubtitle(AActor* Instigator);
 
 	/** Called when we start receiving radiation. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Radiation" )
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Radiation" )
 	void OnReceiveRadiationStart();
 
 	/** Called when we stop receiving radiation. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Radiation" )
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Radiation" )
 	void OnReceiveRadiationStop();
 
 	/** Called when we have updated radiation intensity. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Radiation" )
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Radiation" )
 	void OnRadiationIntensityUpdated( float radiationIntensity, float radiationImmunity );
 
+	/** Play a audio message in the UI */
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category ="FactoryGame|Message")
+	void PlayAudioMessage( TSubclassOf<UFGAudioMessage> messageClass );
+
+	/** Finds a widget in the interact widget stack, returns null if not found */
+	UFUNCTION( BlueprintPure, Category="FactoryGame|UI")
+	UFGInteractWidget* FindWidgetByClass( TSubclassOf<UFGInteractWidget> widgetClass );
+
+	/** Call this to setup the hud for resuming the game */
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|HUD")
+	void ResumeGame();
+
+	/** Blueprint event called when resuming the game */
+	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|HUD")
+	void OnResumeGame();
 protected:
 	// Begin UUserwidget interface
 	virtual FReply NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;

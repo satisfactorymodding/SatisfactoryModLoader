@@ -9,7 +9,6 @@
 #include "FGBuildableFactory.h"
 #include "FGBuildableTrainPlatform.h"
 #include "../FGTrainPlatformConnection.h"
-#include "../FGRailroadInterface.h"
 #include "FGBuildableRailroadTrack.h"
 #include "FGBuildableRailroadStation.generated.h"
 

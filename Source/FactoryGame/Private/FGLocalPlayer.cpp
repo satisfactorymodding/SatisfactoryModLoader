@@ -10,6 +10,7 @@ FFGOnlineFriend::FFGOnlineFriend( TSharedRef<FOnlineFriend> onlineFriend){ }
 void FSessionInformation::Init( const FString& InMapName, const FString& InOptions, const FString& InSessionName, ESessionVisibility InVisibility){ }
 void FSessionInformation::SendAnalytics( UWorld* world){ }
 void FSessionInformation::MarkAsOffline(){ }
+void FSessionInformation::SetState( ECreateSessionState newState, FOnCreateSessionStateChanged& createSessionChanged){ }
 UFGLocalPlayer::UFGLocalPlayer(){ }
 void UFGLocalPlayer::PlayerAdded(  UGameViewportClient* inViewportClient, int32 inControllerID){ }
 void UFGLocalPlayer::PlayerRemoved(){ }
@@ -21,6 +22,8 @@ void UFGLocalPlayer::CopySessionPresence( const TSharedRef<FOnlineUserPresence>&
 void UFGLocalPlayer::UpdatePresence(){ }
 void UFGLocalPlayer::OnInviteReceived( const FPendingInvite& invite){ }
 void UFGLocalPlayer::RefreshRecentRegisteredEpicIdLogin(){ }
+bool UFGLocalPlayer::HasReceivedProductUserId() const{ return bool(); }
+TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerId() const{ return TSharedPtr<const FUniqueNetId>(); }
 void UFGLocalPlayer::OnLoginStatusChanged( int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId){ }
 void UFGLocalPlayer::OnLoginComplete( int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error){ }
 void UFGLocalPlayer::OnAutoLoginComplete( int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error){ }
@@ -32,13 +35,18 @@ void UFGLocalPlayer::OnPresenceReceived( const  FUniqueNetId& userId, const TSha
 void UFGLocalPlayer::OnSessionCleanup_SetupServer( FName sessionName, bool wasSuccessful){ }
 void UFGLocalPlayer::OnSessionCreated_SetupServer( FName sessionName, bool wasSuccessful){ }
 void UFGLocalPlayer::OnPresenceUpdated_SetupServer( const  FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence){ }
+void UFGLocalPlayer::OnLoginFailed_OpenMap( bool confirmClicked){ }
+void UFGLocalPlayer::OnPresenceFailedToUpdate_OpenMap( bool confirmClicked){ }
 void UFGLocalPlayer::UpdateLoginState(){ }
 void UFGLocalPlayer::CreateOfflineSession_SetupServer( bool startOffline){ }
 bool UFGLocalPlayer::CanAutoLogin() const{ return bool(); }
 FString UFGLocalPlayer::GetPresenceString() const{ return FString(); }
 ELoginState UFGLocalPlayer::FromLoginStatus( ELoginStatus::Type from) const{ return ELoginState(); }
-void UFGLocalPlayer::OpenMap_SetupServer(){ }
-TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerId() const{ return TSharedPtr<const FUniqueNetId>(); }
+void UFGLocalPlayer::OpenMap_WaitForPresence(){ }
+void UFGLocalPlayer::OpenMap_WaitForProductUserId(){ }
+void UFGLocalPlayer::OpenMap(){ }
+ECreateSessionState UFGLocalPlayer::GetCurrentCreateSessionState() const{ return ECreateSessionState(); }
+void UFGLocalPlayer::OnLoggedIn(){ }
 void UFGLocalPlayer::SetLoginState( ELoginState newLoginState){ }
 void UFGLocalPlayer::GetUsersWithNoData( TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData){ }
 bool UFGLocalPlayer::PresenceHasSessionId() const{ return bool(); }

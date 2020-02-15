@@ -21,5 +21,18 @@ public:
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void CheckValidFloor() override;
 	virtual void CheckClearance() override;
+	virtual int32 GetRotationStep() const override;
 	// End AFGHologram interface
+private:
+	/** Are you allowed to rotate this attachment on the walls surface. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	bool mIsRotationAllowed;
+
+	/** The rotation step for when rotating, if 0 then use the default granularity. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	int32 mRotationStep;
+
+	/** Snapping offset of this attachment on the walls surface. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	FVector2D mSnapOffset;
 };

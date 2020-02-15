@@ -23,7 +23,8 @@ public class FactoryGame : ModuleRules
             "AssetRegistry",
             "GameplayTasks",
 			"AnimGraphRuntime",
-            "Slate", "SlateCore"
+            "Slate", "SlateCore",
+            "InstancedSplines"
 			});
 
         if (Target.Type == TargetRules.TargetType.Editor)

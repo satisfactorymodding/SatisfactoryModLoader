@@ -23,6 +23,13 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor Interface
 
+	// Begin Buildable interface
+	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	// End Buildable interface
+
+	/** Get the height for this lift. */
+	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
+
 protected:
 	// Begin AFGBuildableConveyorBase interface
 	virtual void TickItemTransforms( float dt ) override;
@@ -83,8 +90,6 @@ private:
 	 * If the input and output is reversed so the input is at the top, the reverse flag is set.
 	 * From this the mesh and connection transform is calculated.
 	 */
-
-
 	UFUNCTION()
 	void OnRep_TopTransform();
 

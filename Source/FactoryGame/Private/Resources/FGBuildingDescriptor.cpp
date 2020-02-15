@@ -5,6 +5,7 @@
 #if WITH_EDITOR
 void UFGBuildingDescriptor::SetupStage(){ }
 FVector UFGBuildingDescriptor::GetCenterOfCollision(){ return FVector(); }
+void UFGBuildingDescriptor::SetBuildableClass( TSubclassOf< UFGBuildingDescriptor > inClass, TSubclassOf<  AFGBuildable > buildableClass){ }
 #endif 
 UFGBuildingDescriptor::UFGBuildingDescriptor(){ }
 void UFGBuildingDescriptor::PostLoad(){ Super::PostLoad(); }
@@ -13,4 +14,6 @@ float UFGBuildingDescriptor::GetPowerConsumption( TSubclassOf< UFGBuildingDescri
 float UFGBuildingDescriptor::GetPowerProduction( TSubclassOf< UFGBuildingDescriptor > inClass){ return float(); }
 FText UFGBuildingDescriptor::GetItemNameInternal() const{ return FText(); }
 FText UFGBuildingDescriptor::GetItemDescriptionInternal() const{ return FText(); }
+TSubclassOf< class AFGHologram > UFGBuildingDescriptor::GetHologramClassInternal() const{ return TSubclassOf<class AFGHologram>(); }
+TSubclassOf< AActor > UFGBuildingDescriptor::GetBuildClassInternal() const{ return TSubclassOf<AActor>(); }
 FText UFGBuildingDescriptor::mOverrideDisplayNameAndDescription = FText();

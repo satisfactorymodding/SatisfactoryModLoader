@@ -11,4 +11,6 @@ bool UFGGameUI::CanReceiveMessage_Implementation( TSubclassOf<  UFGMessageBase >
 void UFGGameUI::CancelPressed(){ }
 void UFGGameUI::RemoveAudioMessage_Implementation(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
+UFGInteractWidget* UFGGameUI::FindWidgetByClass( TSubclassOf<UFGInteractWidget> widgetClass){ return nullptr; }
+void UFGGameUI::ResumeGame(){ }
 FReply UFGGameUI::NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }

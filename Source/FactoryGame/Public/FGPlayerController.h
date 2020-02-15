@@ -6,8 +6,8 @@
 #include "UObject/Class.h"
 
 #include "FGPlayerControllerBase.h"
-#include "FGGameState.h"
 #include "FGChatManager.h"
+#include "FGCharacterPlayer.h"
 #include "FGPlayerController.generated.h"
 
 
@@ -26,10 +26,16 @@ class FACTORYGAME_API AFGPlayerController : public AFGPlayerControllerBase
 public:
 	AFGPlayerController(); 
 
+	// Begin UObject interface
+	virtual bool ProcessConsoleExec( const TCHAR* cmd, FOutputDevice& ar, UObject* executor ) override;
+	// End UObject interface
+
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
+	virtual void PostInitializeComponents() override;
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 	// End AActor interface
 
 	// Begin AController interface
@@ -170,13 +176,6 @@ public:
 
 	FORCEINLINE class UFGMapAreaTexture* GetMapAreaTexture() const { return mCachedMapAreaTexture; }
 
-	/** Exec to perform a MFA analysis. */
-	UFUNCTION( Exec )
-	void MaterialFlowAnalysis( FString recipeName );
-	/** Exec to perform a Material Lookup. */
-	UFUNCTION( Exec )
-	void MaterialLookup( FString itemName );
-
 	/** 
 	* Disables the ability to use certain aspects connected to input in the game. 
 	* When struct is changed, mDisabledInputGateChanged will broadcast to signal value changes. 
@@ -197,7 +196,8 @@ public:
 	FORCEINLINE bool IsInTutorialMode() { return mInTutorialMode; }
 	
 	/** Set when a player is added to the TutorialManager */
-	FORCEINLINE void SetTutorialMode( bool active ) { mInTutorialMode = active; }
+	UFUNCTION( BlueprintCallable, Category = "Input" )
+	void SetTutorialMode( bool active ) { mInTutorialMode = active; }
 
 	/** Deals the damage on an impact from a projectile fired by a weapon */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -216,23 +216,13 @@ public:
 
 	virtual bool DestroyNetworkActorHandled() override;
 
-
 	virtual void AcknowledgePossession( class APawn* P ) override;
 
+	/** Getter for proximity subsystem */
+	FORCEINLINE class AFGProximitySubsystem* GetProximitySubsystem() const { return mProximitySubsystem; }
 protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
-
-	/** SERVER ONLY: Mostly for the saves that have gotten a nulled out session name */
-	UFUNCTION(exec)
-	void SetSessionName( FString newSessionName );
-
-	UFUNCTION( exec )
-	void TrackAkComponents( bool byClass = true );
-	UFUNCTION( exec )
-	void TrackAkMemoryPools();
-	UFUNCTION( exec )
-	void TrackAkComponentsWithNoPositionOrOwner();
 
 	/** Get the character we are controlling (if we are in vehicles, this finds our pawn in the vehicle), can return null if we don't control any character */
 	class AFGCharacterBase* GetControlledCharacter() const;
@@ -251,7 +241,6 @@ protected:
 	*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Respawn" )
 	void OnFinishRespawn();
-
 
 	/**
 	* Called on start of a local client player. Reutrn the component that should handle the wind for the player
@@ -274,6 +263,10 @@ protected:
 	/** Temp Nativized event to reduce refernces in RCO.*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Portable Miner")
 	void OnDismantlePortableMiner(class AFGPortableMiner* PortableMiner);
+
+	/** Temp Nativized event to reduce refernces in RCO.*/
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "GolfCart" )
+	void OnDismantleGolfCart( class AFGWheeledVehicle* inGolfCart );
 
 	/** Function that checks which map area our pawn is in */
 	UFUNCTION()
@@ -359,14 +352,18 @@ private:
 
 	void OnShortcutsReplicated();
 
-	static void testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, APlayerState* PlayerState, AFGGameState* fgGameState );
-public:
-	
+	static void testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, class APlayerState* PlayerState, class AFGGameState* fgGameState );
 
+public:
 	/** Indicates if this playercontroller should trigger sound volumes */
 	UPROPERTY( EditDefaultsOnly, Category = "Sound" )
 	bool mCanAffectAudioVolumes;
+
 protected:
+	/** Object that manages non-cheat commands. Instantiated in shipping builds. */
+	UPROPERTY( Transient )
+	class UFGConsoleCommandManager* mConsoleCommandManager;
+
 	/** The array of all remote call objects this player controller has */
 	UPROPERTY( Replicated )
 	TArray< UFGRemoteCallObject* > mRemoteCallObjects;

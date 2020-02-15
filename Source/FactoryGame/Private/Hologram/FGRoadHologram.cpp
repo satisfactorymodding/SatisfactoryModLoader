@@ -6,7 +6,7 @@ AFGRoadHologram::AFGRoadHologram(){ }
 void AFGRoadHologram::BeginPlay(){ }
 USceneComponent* AFGRoadHologram::SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 void AFGRoadHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
-bool AFGRoadHologram::MultiStepPlacement(){ return bool(); }
+bool AFGRoadHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGRoadHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
 void AFGRoadHologram::ConfigureComponents(  AFGBuildable* inBuildable) const{ }
 void AFGRoadHologram::CheckValidFloor(){ }

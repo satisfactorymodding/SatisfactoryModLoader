@@ -6,5 +6,5 @@ void AFGRailroadVehicleHologram::BeginPlay(){ }
 void AFGRailroadVehicleHologram::ScrollRotate( int32 delta, int32 step){ }
 void AFGRailroadVehicleHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
 void AFGRailroadVehicleHologram::CheckValidPlacement(){ }
-AFGVehicle* AFGRailroadVehicleHologram::ConstructVehicle() const{ return nullptr; }
+AFGVehicle* AFGRailroadVehicleHologram::ConstructVehicle( FNetConstructionID netConstructionID) const{ return nullptr; }
 AFGRailroadVehicle* AFGRailroadVehicleHologram::OverlapRailroadVehicle( const FTransform& boxTransform, const FVector& boxExtent) const{ return nullptr; }

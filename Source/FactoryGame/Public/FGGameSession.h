@@ -1,6 +1,7 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "Array.h"
 #include "Engine/World.h"
 #include "UnrealString.h"
 #include "GameFramework/Actor.h"
@@ -34,16 +35,22 @@ public:
 
 
 	//~Begin AGameSession interface
-	virtual void InitOptions( const FString& options );
+	virtual void InitOptions( const FString& options ) override;
 	virtual void OnStartSessionComplete( FName inSessionName, bool wasSuccessful ) override;
 	virtual void OnEndSessionComplete( FName InSessionName, bool bWasSuccessful ) override;
-	virtual void PostLogin(APlayerController* NewPlayer) override;
+	virtual void PostLogin(APlayerController* newPlayer) override;
 	virtual void NotifyLogout(const APlayerController* PC) override;
 	virtual void HandleMatchHasStarted() override;
 	virtual void HandleMatchHasEnded() override;
 	virtual bool KickPlayer(APlayerController* kickedPlayer, const FText& kickReason) override;
+	virtual void AddAdmin(APlayerController* AdminPlayer) override;
+	virtual void RemoveAdmin(APlayerController* AdminPlayer) override;
 	//~End AGameSession interface
 	
+	/** Returns true if the player is classified as admin */
+	bool IsPlayerAdmin( const class APlayerController* player ) const;
+
+	void AdminLogin( class APlayerController* player, const FString& hashedPassword );
 	/**
 	 * Get session settings from the specified world
 	 */
@@ -54,14 +61,26 @@ public:
 
 	/** Get the visibility of the current session */
 	FORCEINLINE ESessionVisibility GetSessionVisibility() const{ return mSessionVisibility; }
+
+	/** Admin password option that's parsed from commandline */
+	static const TCHAR* AdminPasswordOption;
 protected:
 	/** Make sure we have a tutorial intro managere */
 	UFUNCTION()
 	void ListenForIntroSequenceUpdated();
 
+	/** @return true if we allow login attempts from the specified PC, if he/she/it failed too many times in a row, then we might lock them out */
+	bool AllowsLoginAttempts( const class APlayerController* PC ) const;
+
+	/** Clear all failed login attempts of the user */
+	void ClearFailTracking( const class APlayerController* PC );
+
 	/** Game can become public after this, and the current visibility is applied */
 	UFUNCTION()
 	void IntroSequenceUpdated();
+
+	/** Set a random admin password */
+	void SetRandomAdminPassword();
 
 	int32 GetNumPrivateConnections() const;
 	int32 GetNumPublicConnections() const;
@@ -79,4 +98,19 @@ private:
 
 	/** Handle for updating sessions */
 	FDelegateHandle mOnUpdateSessionCompleteDelegate;
+
+	/** Hashed admin password */
+	FString mHashedAdminPassword;
+
+	/** Used to keep track of players when they last tried to login and failed to detect brute force logins */
+	UPROPERTY()
+	TMap<class APlayerController*, double> mLastLoginFailTime;
+
+	/** Used to keep track of how many times a player has failed to login in a row */
+	UPROPERTY()
+	TMap<class APlayerController*, int32> mFailedLoginCount;
+
+	/** List of logged in admins */
+	UPROPERTY()
+	TArray<class APlayerController*> mLoggedInAdmins;
 };

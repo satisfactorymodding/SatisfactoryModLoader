@@ -31,6 +31,8 @@ void AFGTrain::TickAtc( float dt){ }
 void AFGTrain::TickSelfDriving( float dt){ }
 void AFGTrain::GainedSignificance_Implementation(){ }
 void AFGTrain::LostSignificance_Implementation(){ }
+void AFGTrain::GainedSignificance_Native(){ }
+void AFGTrain::LostSignificance_Native(){ }
 float AFGTrain::GetSignificanceRange(){ return float(); }
 void AFGTrain::SetTrainName( const FText& name){ }
 bool AFGTrain::IsPlayerDriven() const{ return bool(); }

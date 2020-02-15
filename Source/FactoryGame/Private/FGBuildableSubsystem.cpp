@@ -40,6 +40,11 @@ FLinearColor AFGBuildableSubsystem::GetColorSlotSecondaryLinear( uint8 index){ r
 void AFGBuildableSubsystem::DisplayDebug(  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildableSubsystem::DebugEnableInstancing( bool enabled){ }
 void AFGBuildableSubsystem::DebugGetFactoryActors( TArray< AActor* >& out_actors){ }
+FNetConstructionID AFGBuildableSubsystem::GetNewNetConstructionID(){ return FNetConstructionID(); }
+void AFGBuildableSubsystem::GetNewNetConstructionID( FNetConstructionID& clientConstructionID){ }
+void AFGBuildableSubsystem::SpawnPendingConstructionHologram( FNetConstructionID netConstructionID,  AFGHologram* templateHologram,  AFGBuildGun* instigatingBuildGun){ }
+void AFGBuildableSubsystem::AddPendingConstructionHologram( FNetConstructionID netConstructionID,  AFGHologram* hologram){ }
+void AFGBuildableSubsystem::RemovePendingConstructionHologram( FNetConstructionID netConstructionID){ }
 AFGPlayerController* AFGBuildableSubsystem::GetLocalPlayerController() const{ return nullptr; }
 float AFGBuildableSubsystem::GetDistanceSqToBoundingBox( const FVector& point,  AFGBuildable* buildable) const{ return float(); }
 void AFGBuildableSubsystem::RegisterFactoryTickFunction( bool shouldRegister){ }
@@ -48,6 +53,7 @@ void AFGBuildableSubsystem::UpdateReplayEffects( float dt){ }
 void AFGBuildableSubsystem::AddBuildableMeshInstances(  AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::UpdateBuildableMaterialInstances( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::TickFactoryActors( float dt){ }
+bool AFGBuildableSubsystem::IsServerSubSystem() const{ return bool(); }
 void AFGBuildableSubsystem::DumpFixedFactoryTickValues() const{ }
 UFGColoredInstanceManager* AFGBuildableSubsystem::GetColoredInstanceManager(  UFGColoredInstanceMeshProxy* proxy){ return nullptr; }
 bool AFGBuildableSubsystem::IsBasedOn( const UMaterialInterface* instance, const UMaterial* base){ return bool(); }

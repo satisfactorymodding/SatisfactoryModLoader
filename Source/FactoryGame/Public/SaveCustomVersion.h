@@ -77,6 +77,10 @@ struct FACTORYGAME_API FSaveCustomVersion
 		// 2019-08-28 The large portion of the save file is now compressed. The header is still intact at the start of the file but after that it is compressed with ZLIB.
 		SaveFileIsCompressed,
 
+		// 2020-02-09: This is so we can check if a save is older than BU3 and do certain migrations. 
+		// For example save old number of inventory and arm slots to new system
+		BU3SaveCompatibility,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

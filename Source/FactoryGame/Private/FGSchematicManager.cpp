@@ -19,9 +19,11 @@ void AFGSchematicManager::GatherDependencies_Implementation( TArray< UObject* >&
 bool AFGSchematicManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGSchematicManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGSchematicManager::GetAvailableSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
-void AFGSchematicManager::GetPurchasedSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+void AFGSchematicManager::GetPurchasedSchematicsOfTypes( TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+void AFGSchematicManager::GetAllPurchasedSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematics(TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematicsOfType( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+void AFGSchematicManager::GetAllSchematicsOfTypeFilteredOnDependency( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 bool AFGSchematicManager::IsSchematicPurchased( TSubclassOf< UFGSchematic > schematicClass) const{ return bool(); }
 void AFGSchematicManager::GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, bool accessedViaCheats ){ }
 void AFGSchematicManager::AddAvailableSchematic( TSubclassOf< UFGSchematic > schematicClassToAdd){ }
@@ -39,6 +41,7 @@ int32 AFGSchematicManager::GetHighestAvailableTechTier(){ return int32(); }
 int32 AFGSchematicManager::GetDefaultMaxAllowedTechTier(){ return int32(); }
 int32 AFGSchematicManager::GetMaxAllowedTechTier() const{ return int32(); }
 void AFGSchematicManager::ResetSchematicsOfType( ESchematicType type){ }
+TSubclassOf< class UFGRecipe > AFGSchematicManager::FixupSave_FindBuiltByRecipe( AActor* forActor){ return TSubclassOf<class UFGRecipe>(); }
 void AFGSchematicManager::Debug_DumpStateToLog() const{ }
 TArray< TSubclassOf< class UFGRecipe > > AFGSchematicManager::Debug_GetAllRecipes() const{ return TArray<TSubclassOf<class UFGRecipe> >(); }
 void AFGSchematicManager::PopulateSchematicsLists(){ }

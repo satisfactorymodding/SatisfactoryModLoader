@@ -7,7 +7,6 @@
 
 #include "FGBuildable.h"
 #include "Components/SplineComponent.h"
-#include "../FSplinePointData.h"
 #include "../FGSplineComponent.h"
 #include "FGBuildableRoad.generated.h"
 

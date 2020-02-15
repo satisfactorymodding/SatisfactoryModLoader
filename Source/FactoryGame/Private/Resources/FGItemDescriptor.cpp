@@ -40,7 +40,14 @@ UTexture2D* UFGItemDescriptor::GetSmallIcon( TSubclassOf< UFGItemDescriptor > in
 UTexture2D* UFGItemDescriptor::GetBigIcon( TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 UStaticMesh* UFGItemDescriptor::GetItemMesh( TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 int32 UFGItemDescriptor::GetStackSize( TSubclassOf< UFGItemDescriptor > inClass){ return int32(); }
+float UFGItemDescriptor::GetStackSizeConverted( TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
 bool UFGItemDescriptor::CanBeDiscarded( TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
+bool UFGItemDescriptor::RememberPickUp( TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
 TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory( TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<UFGItemCategory>(); }
+float UFGItemDescriptor::GetFluidDensity( TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
+float UFGItemDescriptor::GetFluidViscosity( TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
+float UFGItemDescriptor::GetFluidFriction( TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
+FColor UFGItemDescriptor::GetFluidColor( TSubclassOf< UFGItemDescriptor > inClass){ return FColor(); }
+FLinearColor UFGItemDescriptor::GetFluidColorLinear( TSubclassOf< UFGItemDescriptor > inClass){ return FLinearColor(); }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }

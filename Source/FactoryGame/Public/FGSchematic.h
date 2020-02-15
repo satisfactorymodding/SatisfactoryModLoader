@@ -8,7 +8,6 @@
 #include "Object.h"
 #include "ItemAmount.h"
 #include "AssetBundleData.h"
-#include "FGGameState.h"
 #include "IncludeInBuild.h"
 #include "Styling/SlateBrush.h"
 #include "FGSchematic.generated.h"
@@ -30,11 +29,12 @@ enum class ESchematicType :uint8
 	EST_Custom				UMETA( DisplayName = "Custom" ),
 	EST_Cheat				UMETA( DisplayName = "Cheat" ),
 	EST_Tutorial			UMETA( DisplayName = "Tutorial" ),
-	EST_Research			UMETA( DisplayName = "Research" ),
+	EST_Milestone			UMETA( DisplayName = "Milestone" ),
 	EST_Alternate			UMETA( DisplayName = "Alternate" ),
 	EST_Story				UMETA( DisplayName = "Story" ),
-	EST_TradingPostUpgrade	UMETA( DisplayName = "Hub upgrade" ),
-	EST_MAM					UMETA( DisplayName = "MAM unlocked" )
+	EST_MAM					UMETA( DisplayName = "MAM" ),
+	EST_ResourceSink		UMETA( DisplayName = "Resource Sink" ),
+	EST_HardDrive			UMETA( DisplayName = "Hard Drive" )
 };
 
 /** Holds info about a schematic cost. */
@@ -69,15 +69,15 @@ public:
 
 	/** Returns the category of this schematic */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static ESchematicCategory GetSchematicCategory( TSubclassOf< UFGSchematic > inClass );
+	static TSubclassOf< class UFGSchematicCategory > GetSchematicCategory( TSubclassOf< UFGSchematic > inClass );
+
+	/** Returns the sub categories of this schematic */
+	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+	static void GetSubCategories( TSubclassOf< UFGSchematic > inClass, UPARAM( ref ) TArray< TSubclassOf< class UFGSchematicCategory > >& out_subCategories );
 
 	/** Returns the cost of this schematic*/
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static TArray< FItemAmount > GetCost( TSubclassOf< UFGSchematic > inClass );
-
-	/** Returns the recipes granted by this schematic */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static TArray< TSubclassOf< class UFGRecipe > > GetRecipes( TSubclassOf< UFGSchematic > inClass );
 
 	/** Returns the unlocks granted by this schematic */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -91,38 +91,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static float GetShipTravelTimeAfterPurchase( TSubclassOf< UFGSchematic > inClass );
 	
-	/** Returns mResourcesToAddToScanner */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static TArray< TSubclassOf< class UFGResourceDescriptor > > GetResourceToAddToScanner( TSubclassOf< UFGSchematic > inClass );
-
-	/** Does this schematic unlock the map */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static bool GetUnlocksMap( TSubclassOf< UFGSchematic > inClass );
-
-	/** Does this schematic unlock any inventory slots */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static bool GetUnlocksInventorySlots( TSubclassOf< UFGSchematic > inClass );
-
-	/** How many inventory slots are unlocked by schematic */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static int32 GetNumInventorySlotsUnlocked( TSubclassOf< UFGSchematic > inClass );
-
-	/** Does this schematic unlock any arm equipment slots */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static bool GetUnlocksArmEquipmentSlots( TSubclassOf< UFGSchematic > inClass );
-
-	/** How many arm equipment slots are unlocked by schematic */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static int32 GetNumArmEquipmentSlotsUnlocked( TSubclassOf< UFGSchematic > inClass );
-
-	/** Does this schematic unlock the build efficiency display */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static bool GetUnlocksBuildEfficiencyDisplay( TSubclassOf< UFGSchematic > inClass );
-
-	/** Does this schematic unlock the build overclock system */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static bool GetUnlocksBuildOverclock( TSubclassOf< UFGSchematic > inClass );	
-
 	/** The icon to be used in UI. */
 	UFUNCTION( BlueprintPure, Category = "Item" )
 	static FSlateBrush GetItemIcon( TSubclassOf< UFGSchematic > inClass );
@@ -134,6 +102,10 @@ public:
 	/**Gets an additional array of dependencies for this schematic to be available */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static TArray< TSubclassOf< UFGSchematic > > GetAdditionalSchematicDependencies( TSubclassOf< UFGSchematic > inClass );
+
+	/** Returns true if this schematic is allowed to be purchased more than once */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static bool IsRepeatPurchasesAllowed( TSubclassOf< UFGSchematic > inClass );
 
 	// Return true if we should include this schematic in the current build
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -148,7 +120,9 @@ public:
 	// End UObject interface
 
 #if WITH_EDITOR
-	
+	/** Add a recipe to this schematic. Only for editor use */
+	UFUNCTION( BlueprintCallable, Category = "Editor|Schematic" )
+	static void AddRecipe( TSubclassOf< UFGSchematic > inClass, TSubclassOf< class UFGRecipe > recipe );
 #endif
 
 	//~ Begin AssetInterface
@@ -160,8 +134,8 @@ public:
 	//~ End AssetInterface
 
 #if WITH_EDITORONLY_DATA
-	/** This uses all the old unlock data to create new FGUnlock objects for the new system */
-	void MigrateDataToNewUnlockSystem();
+	/** This uses the old schematic category enum to add the new object based type category */
+	void MigrateDataToNewSchematicCategory();
 #endif
 
 protected:
@@ -175,7 +149,11 @@ protected:
 
 	/** The category this schematic belongs to. */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
-	ESchematicCategory mSchematicCategory;
+	TSubclassOf< class UFGSchematicCategory > mSchematicCategory;
+
+	/** The sub categories this schematic belongs to. */
+	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	TArray< TSubclassOf< class UFGSchematicCategory > > mSubCategories;
 
 	/** The tech tier that this Schematic belongs to. [0...N]*/
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic", AssetRegistrySearchable )
@@ -193,34 +171,6 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Unlocks" )
 	TArray< class UFGUnlock* > mUnlocks;
 
-	/** The recipes you get when purchasing */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Unlocks" )
-	TArray< TSubclassOf< UFGRecipe > > mRecipes;
-
-	/**  These are the resources that are scannable */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Unlocks" )
-	TArray< TSubclassOf< UFGResourceDescriptor > > mResourcesToAddToScanner;
-
-	/** Does this schematic unlock the map? */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Unlocks" )
-	bool mUnlocksMap;
-
-	/** Does this schematic unlock the build efficiency display? */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Unlocks" )
-	bool mUnlocksBuildEfficiency;
-
-	/** Does this schematic unlock the build overclock functionality? */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Unlocks" )
-	bool mUnlocksBuildOverclock;
-
-	/** Number of inventory slots this schematic adds to the players inventory */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Unlocks" )
-	int32 mNumInventorySlotsToUnlock;
-
-	/** Number of arm equipment slots this schematic adds to the players inventory */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Unlocks" )
-	int32 mNumArmEquipmentSlotsToUnlock;
-
 	/** Icon used when displaying this schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic", meta = (NoAutoJson = true) )
 	FSlateBrush mSchematicIcon;
@@ -232,6 +182,13 @@ protected:
 	/** Additional list of schematics for more specific dependency checking */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	TArray< TSubclassOf< UFGSchematic > > mAdditionalSchematicDependencies;
+	
+	// Begin Deprecated
+	/** The category this schematic belongs to. */
+	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated - To be removed", meta = ( DeprecatedProperty, DeprecationMessage = "Use new schematic category object instead" ) )
+	ESchematicCategory mSchematicCategoryDeprecated;
+	// End Deprecated
+
 private:
 	/** Asset Bundle data computed at save time. In cooked builds this is accessible from AssetRegistry */
 	UPROPERTY()

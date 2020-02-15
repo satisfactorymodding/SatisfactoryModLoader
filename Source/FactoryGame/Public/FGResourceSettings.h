@@ -98,6 +98,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "ResourceDepositPackage" )
 	static const FResourceDepositPackage& GetResourceDepositDataFromClass( TSubclassOf< class UFGResourceDescriptor > desiredResourceClass, int32& out_resourceDepositPackageIdx, AActor* worldContext );
 
+	/** Gets the size of a Given Stack Size enum from the stack size TMap */
+	UFUNCTION( BlueprintPure, Category = "Resources" )
+	int32 GetStackSizeFromEnum( EStackSize stackSize ) const;
+
 	/** List of all available resource deposit packages */
 	UPROPERTY( EditAnywhere, Category = "ResourceDepositPackage" )
 	TArray< FResourceDepositPackage > mResourceDepositTable;
@@ -109,6 +113,9 @@ public:
 	/** Index 0 is poor amount, 1 is normal and 2 is rich */
 	UPROPERTY( EditDefaultsOnly, EditFixedSize, Category = "Resources" )
 	TArray< float > mPurityMultiplier;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
+	TSubclassOf< class UFGResourceDescriptor > mWaterResourceDescriptor; 
 
 	/** Mesh used on items that do not have their own specified. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )

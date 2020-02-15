@@ -40,6 +40,7 @@ public:
 	/** Do this track graph need to be rebuilt, e.g. tracks have been removed. */
 	uint8 NeedFullRebuild:1;
 
+	//@todotrains Signaling, consider if this and mHasTrackGraphsChanged is needed.
 	/** Has this track graph changed, tracks connected, rolling stock added or removed. */
 	uint8 HasChanged:1;
 };
@@ -393,7 +394,7 @@ private:
 	UPROPERTY()
 	TMap< int32, FTrackGraph > mTrackGraphs;
 
-	/** If the subsystem needs to do a complete update. */
+	/** If the track graphs has changed and dependent data needs an update. */
 	bool mHasTrackGraphsChanged;
 
 	/** All station identifiers in the world. */

@@ -28,10 +28,24 @@ public:
 	// Begin AFGHologram Interface
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	virtual bool MultiStepPlacement() override;
+	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual AActor* GetUpgradedActor() const override;
+	virtual int32 GetBaseCostMultiplier() const override;
+	virtual void CheckClearance() override;
 	// End AFGHologram Interface
+
+	// Begin FGConstructionMessageInterface
+	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	//virtual void ClientPreConstructMessageSerialization() override;
+	virtual void ServerPostConstructMessageDeserialization() override;
+	// End FGConstructionMessageInterface
+
+	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
+
+	/** Get the current height for this lift hologram. */
+	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
+
 
 protected:
 	// Begin AFGBuildableHologram Interface
@@ -44,9 +58,7 @@ protected:
 	virtual int32 GetRotationStep() const override;
 	// End of AFGHologram interface
 
-	// Begin AFGSplineHologram Interface
-	virtual int32 GetNumCostSections() const override;
-	// End AFGSplineHologram Interface
+	FTransform GetTopTransform() const { return mTopTransform; }
 
 private:
 	UFUNCTION()
@@ -56,6 +68,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_ArrowDirection();
+
+	bool CanConnectToConnection( UFGFactoryConnectionComponent* from, UFGFactoryConnectionComponent* to ) const;
 
 protected:
 	//@todonow Max height etc.
@@ -67,9 +81,6 @@ protected:
 	TMap<class UObject*, class AFGBuildGuide*> mGuideLineBuildings;
 
 private:
-	/** Index of the currently moved point. */
-	int32 mActivePointIdx;
-
 	/** The two connection components for this conveyor. */
 	UPROPERTY()
 	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
@@ -82,8 +93,8 @@ private:
 	UPROPERTY()
 	class AFGBuildableConveyorLift* mUpgradedConveyorLift;
 
-	/** Transform of the top part of the lift. */
-	UPROPERTY( ReplicatedUsing = OnRep_TopTransform )
+	/** Transform of the top part of the lift, in actor local space. */
+	UPROPERTY( ReplicatedUsing = OnRep_TopTransform /*, CustomSerialization*/ )
 	FTransform mTopTransform;
 
 	/** Some snap and height restrictions */

@@ -22,15 +22,18 @@ void AFGGameMode::PostLogin( APlayerController* newPlayer){ }
 void AFGGameMode::Logout( AController* exiting){ }
 void AFGGameMode::PostActorsInitialized( const UWorld::FActorsInitializedParams& inParams){ }
 uint8 AFGGameMode::GenerateNextAutosaveId(){ return uint8(); }
-void AFGGameMode::KickPlayer( APlayerState* ps){ }
 void AFGGameMode::SetSaveSessionName( SessionNameType name){ }
 bool AFGGameMode::ShouldSetupSave() const{ return bool(); }
 bool AFGGameMode::GetDefaultPlayerCapsuleSize( UWorld* world, float& out_capsuleRadius, float& out_capsuleHalfHeight){ return bool(); }
 bool AFGGameMode::RegisterRemoteCallObjectClass( TSubclassOf< UFGRemoteCallObject > inClass){ return bool(); }
 void AFGGameMode::RegisterCallObjectOnAllCurrentPlayers( TSubclassOf<UFGRemoteCallObject> inClass){ }
+void AFGGameMode::RebootSession(){ }
+void AFGGameMode::SetServerRestartWorldTime( float worldTime){ }
 void AFGGameMode::TriggerWorldSave( FString saveGameName){ }
 void AFGGameMode::TriggerBundledWorldSave( FString saveGameName){ }
 bool AFGGameMode::IsValidPawnToReclaim( APawn* pawn) const{ return bool(); }
+void AFGGameMode::GetRestartSessionSaveName( FString& out_sessionName) const{ }
+void AFGGameMode::BuildRestartSessionURL( const FString& saveName, FString& out_sessionUrl) const{ }
 APlayerStart* AFGGameMode::CachePlayerStarts( TMap< FName, TArray<  APlayerStart* > >& out_playerStarts){ return nullptr; }
 void AFGGameMode::PartitionPlayerStartsByOccupancy(
 		const TArray<  APlayerStart* >& playerStarts,

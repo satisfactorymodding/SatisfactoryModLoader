@@ -6,7 +6,6 @@
 
 #include "CoreMinimal.h"
 #include "FGBuildable.h"
-#include "../FSplinePointData.h"
 #include "Components/SplineComponent.h"
 #include "../FGSplineComponent.h"
 #include "FGBuildableRailroadBridge.generated.h"

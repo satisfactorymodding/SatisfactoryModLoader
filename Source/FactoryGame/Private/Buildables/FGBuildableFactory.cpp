@@ -13,10 +13,14 @@ void AFGBuildableFactory::PreSaveGame_Implementation( int32 saveVersion, int32 g
 void AFGBuildableFactory::GainedSignificance_Implementation(){ }
 void AFGBuildableFactory::LostSignificance_Implementation(){ }
 float AFGBuildableFactory::GetSignificanceBias(){ return float(); }
+void AFGBuildableFactory::GainedSignificance_Native(){ }
+void AFGBuildableFactory::LostSignificance_Native(){ }
+void AFGBuildableFactory::SetupForSignificance(){ }
 void AFGBuildableFactory::Factory_Tick( float dt){ }
 void AFGBuildableFactory::GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund) const{ }
 void AFGBuildableFactory::OnBuildableReplicationDetailStateChange( bool newStateIsActive){ }
 void AFGBuildableFactory::OnReplicationDetailActorCreated(){ }
+bool AFGBuildableFactory::ShouldSkipBuildEffect(){ return bool(); }
 TArray< UFGFactoryConnectionComponent* > AFGBuildableFactory::GetConnectionComponents() const{ return TArray<UFGFactoryConnectionComponent*>(); }
 bool AFGBuildableFactory::HasPower() const{ return bool(); }
 bool AFGBuildableFactory::RunsOnPower() const{ return bool(); }
@@ -38,9 +42,17 @@ float AFGBuildableFactory::GetProductivity(){ return float(); }
 void AFGBuildableFactory::SetPendingPotential( float newPendingPotential){ }
 float AFGBuildableFactory::GetCurrentMaxPotential() const{ return float(); }
 float AFGBuildableFactory::GetMaxPossiblePotential() const{ return float(); }
+void AFGBuildableFactory::TryStopIdlingLoopEffects( bool didLosePower){ }
+void AFGBuildableFactory::TryStartIdlingLoopEffects( bool didGainPower){ }
+void AFGBuildableFactory::TryStartProductionLoopEffects( bool didStartProducing){ }
+void AFGBuildableFactory::TryStopProductionLoopEffects( bool didStopProducing){ }
+void AFGBuildableFactory::OnIsProducingChanged_Native( bool newIsProducing){ }
+void AFGBuildableFactory::OnHasPowerChanged_Native( bool newHasPower){ }
 void AFGBuildableFactory::OnReplicatingDetailsChanged(){ }
 void AFGBuildableFactory::Factory_ProductionCycleCompleted( float overProductionRate){ }
 void AFGBuildableFactory::Factory_CollectInput_Implementation(){ }
+void AFGBuildableFactory::Factory_PullPipeInput_Implementation( float dt){ }
+void AFGBuildableFactory::Factory_PushPipeOutput_Implementation( float dt){ }
 void AFGBuildableFactory::Factory_StartProducing(){ }
 void AFGBuildableFactory::Factory_TickProducing( float dt){ }
 void AFGBuildableFactory::Factory_TickProductivity( float dt){ }

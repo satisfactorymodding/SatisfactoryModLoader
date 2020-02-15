@@ -7,9 +7,16 @@
 
 #include "GameFramework/Actor.h"
 #include "../ItemAmount.h"
+#include "../FGBuildableSubsystem.h"
+#include "../FGConstructionMessageInterface.h"
+#include "HologramSplinePathMode.h"
+#include "Script.h"
+#include "../ItemAmount.h"
 #include "Components/MeshComponent.h"
 #include "FGHologram.generated.h"
 
+//For UE4 Profiler ~ Stat Group
+DECLARE_STATS_GROUP( TEXT( "Hologram" ), STATGROUP_Hologram, STATCAT_Advanced );
 
 /**
  * Enum for different scroll modes a hologram can implement.
@@ -17,10 +24,11 @@
 UENUM( BlueprintType )
 enum class EHologramScrollMode : uint8
 {
-	HSM_NONE = 0			UMETA( DisplayName = "None" ),
-	HSM_ROTATE = 1			UMETA( DisplayName = "Rotate" ),
-	HSM_RAISE_LOWER = 2		UMETA( DisplayName = "Raise/Lower" ),
-	HSM_MAX					UMETA( Hidden )
+	HSM_NONE = 0					UMETA( DisplayName = "None" ),
+	HSM_ROTATE = 1					UMETA( DisplayName = "Rotate" ),
+	HSM_RAISE_LOWER = 2				UMETA( DisplayName = "Raise/Lower" ),
+	HSM_SPLINE_PATH_MODE = 3		UMETA( DisplayName = "Spline Mode" ),
+	HSM_MAX							UMETA( Hidden )
 };
 
 /**
@@ -29,20 +37,29 @@ enum class EHologramScrollMode : uint8
  *
  * Note : Do not use SetActorLocation(), SetActorRotation() etc to move a hologram.
  *       Use SetHologramLocationAndRotation() instead as this handles snapping etc.
+ *
+ *
  */
 UCLASS( hidecategories = ( "Actor", "Input", "Replication", "Rendering", "Actor Tick" ) )
-class FACTORYGAME_API AFGHologram : public AActor
+class FACTORYGAME_API AFGHologram : public AActor, public IFGConstructionMessageInterface
 {
 	GENERATED_BODY()
-	
-public:	
-	/** Ctor */
+public:
 	AFGHologram();
 
 	/** Replication */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual bool IsNetRelevantFor( const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation ) const override;
 
-	/** Set the item descriptor for this hologram, called before BeginPlay. */
+	/** Spawns a hologram from recipe */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Hologram" )
+	static AFGHologram* SpawnHologramFromRecipe( TSubclassOf< class UFGRecipe > inRecipe, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator = nullptr );
+
+	/** Spawns a hologram from recipe and sets is as child to specified parent */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Hologram" )
+	static AFGHologram* SpawnChildHologramFromRecipe( AFGHologram* parent, TSubclassOf< UFGRecipe > recipe, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator = nullptr );
+
+	/** Set the item descriptor for this hologram, called when setting up the hologram, before BeginPlay. */
 	void SetRecipe( TSubclassOf< class UFGRecipe > recipe );
 
 	/** Get the item descriptor for the building being built. */
@@ -52,16 +69,30 @@ public:
 	void SetConstructionInstigator( APawn* instigator ) { mConstructionInstigator = instigator; }
 	FORCEINLINE APawn* GetConstructionInstigator() const { return mConstructionInstigator; }
 
+	/** Applies the hologram's net data serailization needed to send a valid constructHologramMessage */
+	void SerializeOntoConstructHologramMessage( FConstructHologramMessage& message );
+
+	/** Deserializes hologram data and applies it to the hologram. This will also run hologram validation. */
+	void DeserializeFromConstructHologramMessage( FConstructHologramMessage& message, class AFGBuildGun* buildGun );
+
+	/** Net Construction Messages */
+	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void ClientPreConstructMessageSerialization() override;
+	virtual void ServerPostConstructMessageDeserialization() override;
+	virtual void OnConstructMessagedDeserialized_Implementation() override;
+
 	/**
 	 * Do all custom initialization here.
 	 */
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 	virtual void SetActorHiddenInGame( bool newHidden ) override;
+	// End Actor interface
 
 	/**
 	 * Let the hologram check if the hit result is valid.
-	 *
+	 *Indicates to build gun if the placement logic an updating should continue or not. If hit is not valid, no location updating will be set, and the hologram will be hidden.
+
 	 * @return true if the hit result is invalid for SetLocationAndRotation, this causes the hologram to be hidden and updating to be skipped.
 	 */
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const;
@@ -73,51 +104,74 @@ public:
 	virtual bool TryUpgrade( const FHitResult& hitResult );
 
 	/**
-	 * Adjust the placement for the ground, this should be the last step in the placement
+	 * Adjust the placement for the ground, this should be the last step in the placement. Usually for things such as updating legs on buildings and such.
 	 */
 	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation );
 
 	/**
-	 * See if we can snap to the hit actor.
+	 * See if we can snap to the hit actor. Used for holograms snapping on top of ex resource nodes, other buildings like stackable poles and similar.
+	   If returning true, we assume location and snapping is applied, and no further location and rotation will be updated this frame by the build gun.
 	 * @return true if we can snap; false if not.
 	 */
 	virtual bool TrySnapToActor( const FHitResult& hitResult );
 
 	/**
-	 * Update the holograms location and rotation. Snaps if possible.
+	 * Update the holograms location and rotation. Can preform it's own logics, like snapping and various other things in here. 
+	 Will only be called if we have a valid hit result and did not snap.
 	 *
 	 * @param hitResult - the hit result from the trace preformed in BuildGun
 	 */
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult );
 
 	/**
-	 * Notify that the hologram hit result is invalid and that the hologram is potentially hidden. E.g. Aiming up in the sky.
+	 * Notify that the hologram hit result is NOT valid and that the hologram is sett to hidden in game. Will usually trigger when E.g. Aiming up in the sky. 
+	 (Called when the IsValidHitResult returns false.)
 	 */
 	virtual void OnInvalidHitResult();
 
 	/**
-	 * Checks placement and cost.
+	 * Checks placement and cost. Default behavior is to call functions, CheckCanAfford, consider placement if the actor is visible and not an upgrade. Also responsible for applying the valid/invalid render materials with the SetMaterial function. Will do the same on all active child holograms.
 	 */
 	void ValidatePlacementAndCost( class UFGInventoryComponent* inventory );
 	
 	/**
-	 * Place parts of the hologram for each call to this function.
-	 * For objects built in multiple steps call this methods for each step in the build process.
-	 * When it returns true, then Construct can be called to construct the actor.
+	 * Place parts of the hologram/performs a step in the build process for each call to this function.
+	 * For everu build execute input this function is called till it returns true to indicate that it's done.
+	 * When it returns true, Construct can be called to construct the actor.
+	 *
+	 *There are two modes on the build gun. 
+	 * One mode where each placement requires a primary fire execution, 
+	 * but also one where a step is executed on press and release.
+	 * 
+	 * //[DavalliusA:Wed/20-11-2019] might not need this. We might simply block other function calls during the initial time in these cases... or we can have problem relying on "ValidatePlacementAndCost" based on input, and then executing with this varaible true....
+	 * @param useDefaultValueINsteadOfInput - will be true if the hold mode is executed very quickly, as it's likely a user didn't intend to change the input. Enabling quick placement of the default settings.
 	 *
 	 * @return - true if placement is finished and Construct can be called; false if placement is not finished.
 	 */
-	virtual bool MultiStepPlacement();
+	virtual bool DoMultiStepPlacement(bool isInputFromARelease);
 
 	/**
-	 * Use scroll on the hologram.
+	 * Update scroll input on the hologram. Default is to branch on mScrollMode and call ScrollRotate() or change the mScrollRaiseLowerValue with the input.
 	 * @param delta	The scroll direction and amount, negative is down and positive is up.
 	 */
 	virtual void Scroll( int32 delta );
 
+	///**
+	// * Used to update build input based on directional input from mouse/control pad right stick. Only called for holograms that returns true for "hasDirectionalInput". When it's called depends on the hold/press to continue method used.
+	// //[DavalliusA:Tue/19-11-2019] we should probably do this based on input here, instead of view angle, as we would probably like it to require the same amount of input no matter the distance to the pole/perspective? Or would we actually want this to change? If so, how do we handle input when from pretty much straight above?
+	// */
+	//virtual void UpdateBuildDirectionInput( FVector2D delta );
+
+	///**
+	// * Use scroll on the hologram.
+	// * @param delta	The scroll direction and amount, negative is down and positive is up.
+	// */
+	//virtual void UpdateBuildDirectionInput( int32 delta );
+
 	//@todoscroll Cleanup or use old scroll with modes, there are some problems with how it was implemented before -G2
 	virtual void ScrollRotate( int32 delta, int32 step );
 	int32 GetScrollRotateValue() const { return mScrollRotation; }
+	void SetScrollRotateValue(int32 rotValue)  { mScrollRotation = rotValue; }
 
 	/**
 	 * Set the initial scroll value that has been saved in the BuildGun.
@@ -156,11 +210,26 @@ public:
 	 */
 	virtual void GetSupportedScrollModes( TArray< EHologramScrollMode >* out_modes ) const;
 
+
+	/**
+	* Get the target spline path modes implemented for spline based holograms
+	* @param out_splineModes	 Array with all supported spline pathing modes
+	*/
+	UFUNCTION( BlueprintNativeEvent, Category = "Hologram" )
+	 void GetSupportedSplineModes( TArray< EHologramSplinePathMode >& out_splineModes ) const;
+
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	EHologramSplinePathMode GetSplineMode();
+
+	UFUNCTION( BlueprintCallable, Category = "Hologram" )
+	void SetSplineMode(EHologramSplinePathMode  mode);
+
+
 	/** Set the no snap mode. @see mNoSnapMode */
 	void SetNoSnapMode( bool isEnabled ) { mNoSnapMode = isEnabled; }
 
 	/** Set hologram to snap to guide lines */
-	void SetSnapToGuideLines( bool isEnabled );
+	virtual void SetSnapToGuideLines( bool isEnabled );
 
 	/** Set hologram to snap to guide lines on server */
 	UFUNCTION( Server, Reliable, WithValidation )
@@ -189,7 +258,7 @@ public:
 	FORCEINLINE bool IsUpgrade() const { return GetUpgradedActor() != nullptr; }
 
 	/**
-	 * @return The actor to replace when upgrading; if any.
+	 * @return The actor to replace when upgrading; if any. AKA, the target for the upgrade.
 	 */
 	virtual AActor* GetUpgradedActor() const;
 
@@ -199,25 +268,43 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	bool CanConstruct() const;
 
+
+	virtual bool CanTakeNextBuildStep() const;
+
+
 	/**
 	 * Construct the real deal.
 	 * @param out_children All children constructed, if any.
 	 * @return The constructed actor; nullptr on failure.
 	 */
-	virtual AActor* Construct( TArray< AActor* >& out_children );
+	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID constructionID );
+
+	/** Even on if this hologram was constructed as a pending hologram */
+	UFUNCTION( BlueprintNativeEvent, Category = "Hologram" )
+	void OnPendingConstructionHologramCreated( class AFGHologram* fromHologram );
+	void OnHologramTimeout();
+	FTimerHandle mHologramTimeoutTimerHandler;
 
 	/** The base cost for this hologram. */
 	TArray< FItemAmount > GetBaseCost() const;
+
+	/** Get the multiplier for the base cost, e.g. if this hologram cost per length unit. */
+	virtual int32 GetBaseCostMultiplier() const;
 
 	/**
 	 * Returns the cost of this hologram.
 	 * @param includeChildren Include child holograms cost in the cost.
 	 * @note DO NOT expose this to blueprint, use the provided functions in the build guns build state.
 	 */
-	virtual TArray< FItemAmount > GetCost( bool includeChildren ) const;
+	TArray< FItemAmount > GetCost( bool includeChildren ) const;
 
 	/** Can be null if the building has no clearance */
 	class UBoxComponent* GetClearanceDetector() const{ return mClearanceDetector; }
+
+	TSubclassOf< class UFGRecipe > GetRecipe() const { return mRecipe; }
+
+	/** Can be null if the building has no clearance */
+	inline bool HasClearance() const{ return mClearanceDetector != nullptr; }
 
 	/** Disable this hologram. */
 	void SetDisabled( bool disabled  );
@@ -230,7 +317,7 @@ public:
 	 * @param state The build gun state responsible for spawning the states.
 	 *              Use state->SpawnChildHologram( ... )
 	 */
-	virtual void SpawnChildren( class UFGBuildGunStateBuild* state );
+	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator );
 
 	/**
 	 * Add a child hologram
@@ -247,13 +334,44 @@ public:
 	/** Empty the array of construct disqualifiers */
 	void ResetConstructDisqualifiers();
 
-	bool CanBuildingSnap(){
-		return mCanBuildingSnapp;
+	/**Returns true if this building want to snap to other buildings clearances with it's own clearance when receiving invalid placements due to overlapping clearances*/
+	bool UsesBuildClearanceOverlapSnapping(){
+		return mUseBuildClearanceOverlapSnapp;
 	}
 
+	//Set how the mUseBuildClearanceOverlapSnapp should be applied when enabled
+	void SetUseAutomaticBuildClearanceOverlapSnapp( bool newValue )
+	{
+		mUseAutomaticBuildClearanceOverlapSnapp = newValue;
+	}
+
+	/** Returns whether or not this hologram is representing a construction event for client that is waiting for a server response. */
+	bool GetIsPendingToBeConstructed() const { return mIsPendingToBeConstructed; }
+
+	FORCEINLINE void SetIsPendingToBeConstructed( bool value ){ mIsPendingToBeConstructed = value; }
+
+	/**Take the current transform and apply it to the scroll rotation value. */
+	virtual void UpdateRotationValuesFromTransform();
+
+	/** Adds a local construction ID associated with this hologram. Only used if this hologram is pending construction */
+	void SetLocalPendingConstructionID( FNetConstructionID localNetConstructionId ) { mLocalNetConstructionID = localNetConstructionId; }
+	FORCEINLINE FNetConstructionID GetLocalPendingConstructionID() const { return mLocalNetConstructionID; }
+
+	/***/
+	FORCEINLINE TArray<class AFGHologram*> GetHologramChildren() const { return mChildren; }
+
+	/** Set the build class for this hologram, called before BeginPlay. */
+	void SetBuildClass( TSubclassOf< class AActor > buildClass );
+
 protected:
-	/** Setup clearance if possible and needed */
+	/**
+	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
+	* Called for every boxComponent in the actor.
+	*Setup clearance if possible and needed
+	*Default is to assign the mClearanceDetector by making a copy. This will happen and override the existing detector if called multiple times...*/
 	virtual void SetupClearance( class UBoxComponent* boxComponent );
+
+	void SetupClearanceDetector( class UBoxComponent* boxComponent );
 
 	/** Duplicate component for the hologram */
 	template<typename T>
@@ -291,9 +409,10 @@ protected:
 	 * Get the actor this build gun constructs
 	 */
 	//@todo This has the same name as a deprecated function in Actor, rename.
-	virtual TSubclassOf< AActor > GetActorClass() const;
+	TSubclassOf< AActor > GetActorClass() const;
 
 	/**
+	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
 	 * Setup a component from the buildable template.
 	 * @param attachParent - Set the new component's AttachParent to this.
 	 * @param componentTemplate - Create the component using this template.
@@ -302,7 +421,9 @@ protected:
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
 
 	/**
+	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
 	 * Setup a custom depth component for each mesh.
+	 * Default it's called for every mush when setting up components.
 	 * @note Hax to get custom depth to work with translucent materials.
 	 * @note This does not work well with animated skeletal meshes, so do not add animations to holograms.
 	 * @todo FIXME when custom depth works with translucent materials.
@@ -333,9 +454,10 @@ protected:
 	 */
 	float ApplyScrollRotationTo( float base, bool onlyUseBaseForAlignment = false ) const;
 
-
 private:
 	/**
+	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
+	* This initiate all the component copying and other setup calls. Called in early begin play.
 	 * Setup the components from the buildable, meshes, collisions, connections etc.
 	 */
 	void SetupComponents();
@@ -366,9 +488,9 @@ protected:
 	UPROPERTY()
 	class UAkComponent* mLoopSound;
 
-	/** Clearance detector box */
+	/** Clearance detector box. Used to detect nearby clearances an display them during the build steps */
 	UPROPERTY()
-	class UBoxComponent* mClearanceDetector;
+	class UBoxComponent* mClearanceDetector = nullptr;
 
 	/** No enforced snapping, foundations use this for now. */
 	bool mNoSnapMode;
@@ -384,6 +506,9 @@ protected:
 
 	/** Current scroll value of the raise/lower. How this is interpreted as a height is up to the hologram placement code. */
 	int32 mScrollRaiseLowerValue;
+
+	/** Current scroll value of the Spline path enum. How this enum is used depends on individual spline based hologram implementation */
+	EHologramSplinePathMode mSplineMode;
 
 	/** Can we construct the building, updated by SetCanConstruct from the build gun. */
 	UPROPERTY( ReplicatedUsing = OnRep_PlacementMaterial )
@@ -417,30 +542,49 @@ protected:
 	/** Should we use the simplified material for valid placement? */
 	bool mUseSimplifiedHologramMaterial;
 
+	/** Used to identify buildables on client once server has spawned the building */
+	FNetConstructionID mLocalNetConstructionID;
 
+	/** The class for the build actor this hologram wants to construct. Set on spawn. */
+	UPROPERTY( Replicated )
+	TSubclassOf< AActor > mBuildClass;
 
-	bool mCanBuildingSnapp = false;
+	UPROPERTY( EditDefaultsOnly )
+	bool mUseBuildClearanceOverlapSnapp = false
+		;
+	bool mUseAutomaticBuildClearanceOverlapSnapp = true;
+
+	/** The reason why we couldn't construct this hologram, if it's empty then we can construct it */
+	TArray< TSubclassOf< class UFGConstructDisqualifier > > mConstructDisqualifiers;
 
 private:
 	/** Who is building */
-	UPROPERTY( Replicated )
+	UPROPERTY( Replicated /*, CustomSerialization*/ )
 	APawn* mConstructionInstigator;
 
 	/** If this hologram is disabled and should not be visible or constructed. */
-	UPROPERTY()
+	UPROPERTY( /*CustomSerialization*/ )
 	bool mIsDisabled;
 
 	/** If the hologram has changed, i.e. multi step placement or rotation. */
 	UPROPERTY( Replicated )
 	bool mIsChanged;
 
-
-	/** The reason why we couldn't construct this hologram, if it's empty then we can construct it */
-	TArray< TSubclassOf< class UFGConstructDisqualifier > > mConstructDisqualifiers;
-
 	/** The client needs to know the initial saved scroll mode value from the BuildGun. */
 	UPROPERTY( ReplicatedUsing = OnRep_InitialScrollModeValue )
 	int32 mInitialScrollModeValue;
+
+	/** This hologram is marked to be constructed, will not disappear if the build gun is unequipped for client */
+	bool mIsPendingToBeConstructed = false;
+
+	/** Temp memory holders for when holograms are serialized for construction messages (replication) */
+	UPROPERTY( /*CustomSerialization*/ )
+	FVector mConstructionPosition;
+
+	/** Temp memory holders for when holograms are serialized for construction messages (replication) */
+	UPROPERTY( /*CustomSerialization*/ )
+	FRotator mConstructionRotation;
+public:
 };
 
 template<typename T>

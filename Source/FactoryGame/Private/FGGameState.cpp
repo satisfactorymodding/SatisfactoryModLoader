@@ -5,6 +5,7 @@
 AFGGameState::AFGGameState(){ }
 void AFGGameState::Serialize( FArchive& ar){ Super::Serialize(ar ); }
 void AFGGameState::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGGameState::Tick( float delta){ }
 void AFGGameState::PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
@@ -16,6 +17,7 @@ void AFGGameState::HandleMatchIsWaitingToStart(){ }
 void AFGGameState::HandleMatchHasStarted(){ }
 void AFGGameState::AddPlayerState(  APlayerState* playerState){ }
 void AFGGameState::Init(){ }
+bool AFGGameState::AreClientSubsystemsValid(){ return bool(); }
 int32 AFGGameState::FindFreeSlot(  AFGPlayerState* playerState){ return int32(); }
 bool AFGGameState::IsTradingPostBuilt() const{ return bool(); }
 bool AFGGameState::HasInitalTradingPostLandAnimPlayed() const{ return bool(); }
@@ -34,6 +36,11 @@ void AFGGameState::SetAndReplicateBuildingColorInSlot_Implementation( uint8 slot
 bool AFGGameState::SetAndReplicateBuildingColorInSlot_Validate( uint8 slot, FColor pColor, FColor sColor){ return bool(); }
 FColor AFGGameState::GetBuildingColorPrimary( uint8 slot){ return FColor(); }
 FColor AFGGameState::GetBuildingColorSecondary( uint8 slot){ return FColor(); }
+uint8 AFGGameState::GetNbColorSlotsExposedToPlayers(){ return uint8(); }
 void AFGGameState::OnRep_BuildingColorSlot(){ }
-void AFGGameState::ClaimPlayerColor( AFGPlayerState* playerState){ }
-void AFGGameState::ReleasePlayerColor( AFGPlayerState* playerState){ }
+void AFGGameState::ClaimPlayerColor(  AFGPlayerState* playerState){ }
+void AFGGameState::ReleasePlayerColor(  AFGPlayerState* playerState){ }
+void AFGGameState::ItemPickedUp( TSubclassOf<  UFGItemDescriptor > itemClass){ }
+void AFGGameState::SetPlannedServerRestartWorldTime( float worldTimeSeconds){ }
+void AFGGameState::CheckRestartTime(){ }
+void AFGGameState::OnRep_PlannedRestartTime(){ }

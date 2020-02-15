@@ -17,7 +17,7 @@ public:
 
 	// Begin AFGHologram interface
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	virtual bool MultiStepPlacement() override;
+	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	// End AFGHologram interface
 
 	// Begin AFGBuildableHologram interface

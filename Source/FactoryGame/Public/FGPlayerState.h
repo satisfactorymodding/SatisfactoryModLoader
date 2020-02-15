@@ -112,7 +112,7 @@ public:
 	FORCEINLINE void MarkAsReceivedInitialItems(){ mHasReceivedInitialItems = true; }
 
 	/** Get the slot the player has claimed */
-	UFUNCTION(BlueprintPure, Category = "Slots" )
+	UFUNCTION(BlueprintPure, Category = "FactoryGame|Slots" )
 	FORCEINLINE int32 GetSlotNum() const{ return mSlotNum; }
 
 	/** Set the slot number of this player */
@@ -125,15 +125,15 @@ public:
 	FORCEINLINE FSlotData GetSlotData() const { return mSlotData; }
 
 	/** Get the unique ID of the user from the online subsystem */
-	UFUNCTION( BlueprintPure, Category="Networking" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Networking" )
 	FString GetUserName();
 
 	/** Get the unique ID of the user from the online subsystem */
-	UFUNCTION( BlueprintPure, Category="Networking" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Networking" )
 	FString GetUserID();
 
 	/** Get the unique ID of the user from the online subsystem */
-	UFUNCTION( BlueprintPure, Category="Networking" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Networking" )
 	FUniqueNetIdRepl GetUniqeNetId();
 
 	/** @returns string representation of users SteamID */
@@ -145,19 +145,19 @@ public:
 	void CreateTutorialSubsystem();
 
 	/** Gets the subsystem for BP usage */
-	UFUNCTION( BlueprintPure, Category = "Tutorial" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Tutorial" )
 	FORCEINLINE class UFGTutorialSubsystem* GetTutorialSubsystem(){ return mTutorialSubsystem; }
 
 	/** Gets all messages we have received */
-	UFUNCTION( BlueprintPure, Category = "Message" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Message" )
 	TArray< TSubclassOf< class UFGMessageBase > > GetAllMessages( EMessageType messageType = EMessageType::MT_UNDEFINED );
 
 	/** Gets all messagedata from messages we have received */
-	UFUNCTION( BlueprintPure, Category = "Message" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Message" )
 	FORCEINLINE TArray< FMessageData > GetAllMessageData() { return mMessageData; }
 
 	/** Change read status of a message */
-	UFUNCTION( BlueprintCallable, Category = "Message" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Message" )
 	void ReadMessage( TSubclassOf< class UFGMessageBase > inMessage );
 
 	UFUNCTION()
@@ -198,7 +198,7 @@ public:
 	void AddNewRecipe( TSubclassOf< UFGRecipe > recipe );
 
 	/** Removes a recipe from the list of new recipes. This is only for UI feedback and doesn't remove the players ability to use the recipe */
-	UFUNCTION( BlueprintCallable, Category = "Recipes" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipes" )
 	void RemoveRecipe( TSubclassOf< UFGRecipe > recipe );
 
 	/** Lets the server remove a recipe from the list of new recipes */
@@ -206,35 +206,35 @@ public:
 	void Server_RemoveRecipe( TSubclassOf< UFGRecipe > recipe );
 
 	/** Gets number of slots for arm equipment */
-	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Equipment" )
 	FORCEINLINE int32 GetNumArmSlots() { return mNumArmSlots; }
 
 	/** Adds more arm slots ( can also be a negative number to decrease number of slots ) */
-	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Equipment" )
 	void AddArmSlots( int32 slotsToAdd );
 
 	/** Get if we only should show affordable recipes in manufacturing widgets */
-	UFUNCTION( BlueprintPure, Category = "Recipes" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipes" )
 	FORCEINLINE bool GetOnlyShowAffordableRecipes() { return mOnlyShowAffordableRecipes; }
 
 	/** Set if we only should show affordable recipes in manufacturing widgets */
-	UFUNCTION( BlueprintCallable, Category = "Recipes" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipes" )
 	void SetOnlyShowAffordableRecipes( bool enabled );
 
 	/** Let server set if we only should show affordable recipes in manufacturing widgets */
-	UFUNCTION( Server, Reliable, WithValidation, Category = "Recipes" )
+	UFUNCTION( Server, Reliable, WithValidation, Category = "FactoryGame|Recipes" )
 	void Server_SetOnlyShowAffordableRecipes( bool enabled );
 
 	/** Get the item categories that the user have collapsed in manufacturing widgets  */
-	UFUNCTION( BlueprintPure, Category = "ItemCategory" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|ItemCategory" )
 	FORCEINLINE TArray< TSubclassOf< class UFGItemCategory > > GetCollapsedItemCategories() { return mCollapsedItemCategories; }
 
 	/** Set if an item category is collapsed in manufacturing widgets  */
-	UFUNCTION( BlueprintCallable, Category = "ItemCategory" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|ItemCategory" )
 	void SetItemCategoryCollapsed( TSubclassOf< class UFGItemCategory > itemCategory, bool collapsed );
 
 	/** Let server set if an item category is collapsed in manufacturing widgets  */
-	UFUNCTION( Server, Reliable, WithValidation, Category = "ItemCategory" )
+	UFUNCTION( Server, Reliable, WithValidation, Category = "FactoryGame|ItemCategory" )
 	void Server_SetItemCategoryCollapsed( TSubclassOf< class UFGItemCategory > itemCategory, bool collapsed );
 	
 	/** Gets the filter for map representations */
@@ -247,23 +247,33 @@ public:
 	void SetMapFilter( ERepresentationType representationType, bool visible );
 
 	/** Let server set the map filter visibility for the given representation */
-	UFUNCTION( Server, Reliable, WithValidation, Category = "Representation" )
+	UFUNCTION( Server, Reliable, WithValidation, Category = "FactoryGame|Representation" )
 	void Server_SetMapFilter( ERepresentationType representationType, bool visible );
 
 	/** Sets the compass filter visibility for the given representation */
 	void SetCompassFilter( ERepresentationType representationType, bool visible );
 	
 	/** Let server set the compass filter visibility for the given representation */
-	UFUNCTION( Server, Reliable, WithValidation, Category = "Representation" )
+	UFUNCTION( Server, Reliable, WithValidation, Category = "FactoryGame|Representation" )
 	void Server_SetCompassFilter( ERepresentationType representationType, bool visible );
 
-	UFUNCTION( BlueprintPure, Category = "Color" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Color" )
 	FORCEINLINE FLinearColor GetPingColor() const { return mSlotData.PingColor; }
 	
-	UFUNCTION( BlueprintPure, Category = "Color" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Color" )
 	FORCEINLINE FLinearColor GetNametagColor() const { return mSlotData.NametagColor; }
 
 	void UpdateOwningPawnActorRepresentation() const;
+
+	FORCEINLINE void SetIsServerAdmin( bool isAdmin ){ mIsServerAdmin = isAdmin; }
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Admin" )
+	FORCEINLINE bool IsServerAdmin() const{ return mIsServerAdmin; }
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Schematic" )
+	FORCEINLINE TSubclassOf<UFGSchematicCategory> GetLastSelectedResourceSinkShopCategory() const { return mLastSelectedResourceSinkShopCategory; }
+	
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Schematic" )
+	void SetLastSelectedResourceSinkShopCategory( TSubclassOf<UFGSchematicCategory> selectedCategory ) { mLastSelectedResourceSinkShopCategory = selectedCategory; }
 
 protected:
 	// Client get notified that the hotbar has changed
@@ -308,6 +318,10 @@ protected:
 	/** Set to true after we have setup our initial shortcuts */
 	UPROPERTY( SaveGame )
 	uint8 mHasSetupDefaultShortcuts : 1;
+
+	/** If true, then we are server admin */
+	UPROPERTY( Replicated )
+	uint8 mIsServerAdmin : 1;
 private:
 	/** Each local player has their own tutorial subsystem */
 	UPROPERTY( SaveGame )
@@ -343,4 +357,7 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	TArray< ERepresentationType > mFilteredOutCompassTypes;
 
+	/** The last selected category in the resource sink shop so we can open the shop at the same category later */
+	UPROPERTY( Transient )
+	TSubclassOf< UFGSchematicCategory > mLastSelectedResourceSinkShopCategory;
 };

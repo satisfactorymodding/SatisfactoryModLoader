@@ -120,6 +120,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
 	FORCEINLINE int32 GetCircuitID() const { return mCircuitID; }
 
+	/** Tracks replication changes to mCircuitID */
+	UFUNCTION()
+	void OnRep_CircuitIDChanged();
+
 	/** Callback when connection was removed or added */
 	FConnectionChanged OnConnectionChanged;
 
@@ -166,6 +170,6 @@ private:
 	 * The circuit this connection is connected to. INDEX_NONE if not connected.
 	 * @note - This ID may change at any time when changes occurs in the circuitry. Do not save copies of it!
 	 */
-	UPROPERTY( VisibleAnywhere, Replicated, SaveGame, Category = "Connection" )
+	UPROPERTY( VisibleAnywhere, ReplicatedUsing=OnRep_CircuitIDChanged, SaveGame, Category = "Connection" )
 	int32 mCircuitID;
 };

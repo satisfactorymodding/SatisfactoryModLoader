@@ -31,12 +31,12 @@ public:
 	// End AActor interface
 
 	// Begin AFGHologram Interface
-	virtual AActor* Construct( TArray< AActor* >& out_children ) override;
-	virtual TArray< FItemAmount > GetCost( bool includeChildren ) const override;
-	virtual bool MultiStepPlacement() override;
+	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
+	virtual int32 GetBaseCostMultiplier() const override;
+	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
-	virtual void SpawnChildren( class UFGBuildGunStateBuild* state ) override;
+	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	// End AFGHologram Interface
 

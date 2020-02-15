@@ -19,8 +19,14 @@ void UFGCharacterMovementComponent::StartClimbLadder(  UFGLadderComponent* ladde
 void UFGCharacterMovementComponent::StopClimbLadder(){ }
 void UFGCharacterMovementComponent::JumpOffLadder(){ }
 UFGLadderComponent* UFGCharacterMovementComponent::GetOnLadder() const{ return nullptr; }
+bool UFGCharacterMovementComponent::EnterPipeHyper(  AFGBuildablePipeHyperPart* pipe){ return bool(); }
+FVector UFGCharacterMovementComponent::GetPipeTravelDirectionWorld(){ return FVector(); }
+FRotator UFGCharacterMovementComponent::GetPipeCharacterTransform(FVector cameraForwardAxis){ return FRotator(); }
+void UFGCharacterMovementComponent::PipeHyperForceExit(){ }
 void UFGCharacterMovementComponent::UpdateWantsToSlide(){ }
 void UFGCharacterMovementComponent::UpdateSlideStatus(){ }
+bool UFGCharacterMovementComponent::SetTravelingPipeHyperActor( AActor* hyperPipeInterfaceActor){ return bool(); }
+const USceneComponent* UFGCharacterMovementComponent::GetUpdateComponent() const{ return nullptr; }
 void UFGCharacterMovementComponent::UpdateFromCompressedFlags(uint8 flags){ }
 void UFGCharacterMovementComponent::OnMovementUpdated(float deltaSeconds, const FVector & oldLocation, const FVector & oldVelocity){ }
 void UFGCharacterMovementComponent::OnMovementModeChanged( EMovementMode PreviousMovementMode, uint8 PreviousCustomMode){ }
@@ -28,6 +34,7 @@ void UFGCharacterMovementComponent::PhysCustom( float deltaTime, int32 Iteration
 void UFGCharacterMovementComponent::SetOnLadder(  UFGLadderComponent* ladder){ }
 void UFGCharacterMovementComponent::PhysFlying( float deltaTime, int32 Iterations){ }
 void UFGCharacterMovementComponent::PhysLadder( float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysPipe( float deltaTime, int32 iterations){ }
 void UFGCharacterMovementComponent::UpdateJetPack( float deltaSeconds){ }
 void UFGCharacterMovementComponent::UpdateHookshot( float deltaSeconds, FVector oldLocation){ }
 void UFGCharacterMovementComponent::UpdateSprintStatus(){ }

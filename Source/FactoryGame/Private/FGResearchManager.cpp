@@ -8,39 +8,29 @@ void AFGResearchManager::PreInitializeComponents(){ }
 AFGResearchManager* AFGResearchManager::Get(  UWorld* world){ return nullptr; }
 AFGResearchManager* AFGResearchManager::Get(  UObject* worldContext){ return nullptr; }
 void AFGResearchManager::PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void AFGResearchManager::PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void AFGResearchManager::PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
 void AFGResearchManager::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void AFGResearchManager::GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects){ }
 bool AFGResearchManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGResearchManager::ShouldSave_Implementation() const{ return bool(); }
-void AFGResearchManager::UnlockResearchWithItem( TSubclassOf<class UFGItemDescriptor> itemClass){ }
-int32 AFGResearchManager::PayOffOnResearch( FItemAmount payOff, TSubclassOf<class UFGResearchRecipe> researchRecipe){ return int32(); }
-int32 AFGResearchManager::PayOffFromInventory( TSubclassOf<class UFGResearchRecipe> researchRecipe, UFGInventoryComponent* inventory, int32 inventorySlotIndex){ return int32(); }
-void AFGResearchManager::GetPayOffBalanceForResearch( TSubclassOf<class UFGResearchRecipe> researchRecipe, TArray<FItemAmount>& out_cost){ }
-void AFGResearchManager::GetAllResearchRecipes( TArray<TSubclassOf<class UFGResearchRecipe>>& out_ResearchRecipes) const{ }
-void AFGResearchManager::GetAllAccessibleResearch( TArray<TSubclassOf<class UFGResearchRecipe>>& out_ResearchRecipes) const{ }
-void AFGResearchManager::GetAllCompletedAndClaimedResearch( TArray<TSubclassOf<class UFGResearchRecipe>>& out_ResearchRecipes) const{ }
-void AFGResearchManager::GiveAccessToResearch( TSubclassOf<class UFGResearchRecipe> researchRecipeClass, bool accessedViaCheats ){ }
-bool AFGResearchManager::CanResearchBeInitiated( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return bool(); }
-bool AFGResearchManager::IsResearchRecipeAccessible( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return bool(); }
-bool AFGResearchManager::IsResearchAccessibleAndPaidOff( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return bool(); }
-bool AFGResearchManager::IsResearchBeingConducted( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return bool(); }
-bool AFGResearchManager::IsResearchComplete( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return bool(); }
-bool AFGResearchManager::ContainsAnyCompletedButUnclaimedResearch() const{ return bool(); }
-float AFGResearchManager::GetOngoingResearchTimeLeft( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return float(); }
-TSubclassOf< class UFGResearchRecipe > AFGResearchManager::GetResearchBeingConducted() const{ return TSubclassOf<class UFGResearchRecipe>(); }
-bool AFGResearchManager::IsCompletedResearchResultSelectable( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return bool(); }
-bool AFGResearchManager::ClaimResearchResults(  AFGCharacterPlayer* instigatorPlayer, TSubclassOf<class UFGResearchRecipe> completedResearch, int32 selectedRewardIndex){ return bool(); }
-const FCompletedResearch AFGResearchManager::GetCompletedResearchRewardByRecipe( TSubclassOf<class UFGResearchRecipe> completedResearch){ return FCompletedResearch(); }
-void AFGResearchManager::SetSelectedRewardIndexByRecipe( TSubclassOf<class UFGResearchRecipe> completedResearch, int32 selectedIndex){ }
-const TArray<FResearchRecipeReward> AFGResearchManager::GetRewardsFromCompletedResearch( FCompletedResearch completedResearch){ return TArray<FResearchRecipeReward>(); }
-bool AFGResearchManager::CanResearchRewardBeClaimed( TSubclassOf<class UFGResearchRecipe> researchRecipe) const{ return bool(); }
-bool AFGResearchManager::InitiateResearch( TSubclassOf<class UFGResearchRecipe> researchRecipe){ return bool(); }
-int32 AFGResearchManager::ConsumeDecorPoints( int32 amount){ return int32(); }
-int32 AFGResearchManager::ConsumeStructurePoints( int32 amount){ return int32(); }
-void AFGResearchManager::PopulateResearchLists(){ }
-void AFGResearchManager::GiveAccessToDefaultResearch(){ }
-void AFGResearchManager::StartResearch( TSubclassOf<class UFGResearchRecipe> researchRecipe, float researchTime){ }
-void AFGResearchManager::GeneratePendingReward( FCompletedResearch& completedResearch){ }
-void AFGResearchManager::OnResearchTimerComplete( TSubclassOf<class UFGResearchRecipe> researchRecipe){ }
+void AFGResearchManager::GetAllResearchTrees( TArray<TSubclassOf<class UFGResearchTree>>& out_ResearchTrees) const{ }
+bool AFGResearchManager::InitiateResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic, TSubclassOf<class UFGResearchTree> initiatingResearchTree){ return bool(); }
+bool AFGResearchManager::CanResearchBeInitiated( TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
+bool AFGResearchManager::IsResearchBeingConducted( TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
+bool AFGResearchManager::IsResearchComplete( TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
+bool AFGResearchManager::ContainsAnyCompletedResearch() const{ return bool(); }
+void AFGResearchManager::GetAllCompletedResearch( TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+float AFGResearchManager::GetOngoingResearchTimeLeft( TSubclassOf<class UFGSchematic> schematic) const{ return float(); }
+TSubclassOf< class UFGSchematic > AFGResearchManager::GetResearchBeingConducted() const{ return TSubclassOf<class UFGSchematic>(); }
+bool AFGResearchManager::ClaimResearchResults(  AFGCharacterPlayer* instigatorPlayer, TSubclassOf<class UFGSchematic> schematic, int32 selectedRewardIndex){ return bool(); }
+bool AFGResearchManager::CanAffordResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
+TSubclassOf<class UFGResearchTree> AFGResearchManager::GetInitiatingResearchTree( TSubclassOf<class UFGSchematic> schematic) const{ return TSubclassOf<class UFGResearchTree>(); }
+void AFGResearchManager::GetPendingRewards( TSubclassOf<class UFGSchematic> schematic, TArray< TSubclassOf< UFGSchematic > >& out_rewards) const{ }
+void AFGResearchManager::UpdateUnlockedResearchTrees(){ }
+void AFGResearchManager::UnlockResearchTree( TSubclassOf<class UFGResearchTree> researchTree){ }
+void AFGResearchManager::OnRep_OngoingResearch(){ }
+void AFGResearchManager::Client_NewResearchStarted_Implementation( TSubclassOf<  UFGSchematic > research){ }
+void AFGResearchManager::PopulateResearchTreeList(){ }
+void AFGResearchManager::StartResearch( TSubclassOf<class UFGSchematic> schematic, TSubclassOf<  UFGResearchTree> initiatingResearchTree){ }
+void AFGResearchManager::GeneratePendingReward( FResearchData& researchData){ }
+void AFGResearchManager::OnResearchTimerComplete( TSubclassOf<class UFGSchematic> schematic){ }
+bool AFGResearchManager::PayForResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
+void AFGResearchManager::ClaimPendingRewards( AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex){ }

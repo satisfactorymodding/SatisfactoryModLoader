@@ -28,6 +28,7 @@ void AFGTutorialIntroManager::CompleteTutorial(){ }
 void AFGTutorialIntroManager::IntroDone(){ }
 void AFGTutorialIntroManager::ResetHubTutorial(){ }
 void AFGTutorialIntroManager::SetCanSkipTutorialIntro( bool canSkip){ }
+void AFGTutorialIntroManager::GiveTutorialResources(  AFGCharacterPlayer* inPlayer){ }
 void AFGTutorialIntroManager::BeginPlay(){ }
 void AFGTutorialIntroManager::OnBuildingBuiltGlobal(  AFGBuildable* buildable){ }
 void AFGTutorialIntroManager::OnSchematicPurchased( TSubclassOf< UFGSchematic > newSchematic){ }

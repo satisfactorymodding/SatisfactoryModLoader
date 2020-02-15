@@ -7,7 +7,6 @@
 #include "UObject/Class.h"
 
 #include "Tickable.h"
-#include "FGAggroTargetInterface.h"
 #include "AISystem.h"
 #include "FGAISystem.generated.h"
 
@@ -135,7 +134,7 @@ protected:
 	bool mDisablePawnMovement;
 
 	/** Cached list of all aggro targets, not guaranteed to have the same order */
-	TArray< class TScriptInterface< IFGAggroTargetInterface > > mAllAggroTargets;
+	TArray< class TScriptInterface< class IFGAggroTargetInterface > > mAllAggroTargets;
 
 	/** Cached list of all enemies, used for optimizing enemies depending on distance */
 	TArray< class AFGCreature* > mAllCreatures;

@@ -5,6 +5,13 @@
 AFGSplineHologram::AFGSplineHologram(){ }
 void AFGSplineHologram::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGSplineHologram::BeginPlay(){ }
-TArray< FItemAmount > AFGSplineHologram::GetCost( bool includeChildren) const{ return TArray<FItemAmount>(); }
+void AFGSplineHologram::SerializeConstructMessage( FArchive& ar){ }
+void AFGSplineHologram::ClientPreConstructMessageSerialization(){ }
+void AFGSplineHologram::ServerPostConstructMessageDeserialization(){ }
+void AFGSplineHologram::OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram){ }
+bool AFGSplineHologram::IsConnectionSnapped( bool lastConnection){ return bool(); }
+void AFGSplineHologram::GetLastSplineData( FSplinePointData& data){ }
+void AFGSplineHologram::ResetBuildSteps(){ }
+bool AFGSplineHologram::CheckClearanceForShapeIgnoreStructure( FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params){ return bool(); }
 void AFGSplineHologram::OnRep_SplineData(){ }
-int32 AFGSplineHologram::GetNumCostSections() const{ return int32(); }
+void AFGSplineHologram::UpdateSplineComponent(){ }

@@ -167,7 +167,7 @@ protected:
 
 	/** Height fog properties that's controlled from camera */
 	UPROPERTY()
-	class UFGDynamicHeightFogUpdater* HeightFogUpdater;
+	class UFGAtmosphereUpdater* HeightFogUpdater;
 private:
 #if STATS
 	/** The current stats collectors, @note: Threadcontext StatsThread */

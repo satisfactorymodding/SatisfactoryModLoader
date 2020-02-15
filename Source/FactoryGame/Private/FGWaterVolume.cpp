@@ -14,6 +14,8 @@ void AFGWaterVolume::EndPlay( const EEndPlayReason::Type endPlayReason){ }
 bool AFGWaterVolume::IsOverlapInVolume( const  USceneComponent& testComponent) const{ return bool(); }
 void AFGWaterVolume::GainedSignificance_Implementation(){ }
 void AFGWaterVolume::LostSignificance_Implementation(){ }
+void AFGWaterVolume::GainedSignificance_Native(){ }
+void AFGWaterVolume::LostSignificance_Native(){ }
 float AFGWaterVolume::GetSignificanceRange(){ return float(); }
 void AFGWaterVolume::SetCameraIsInside( bool cameraInside, FVector cameraLocation,  AFGPlayerController* PC){ }
 const UFGWaterAudio* AFGWaterVolume::GetAudioSettings() const{ return nullptr; }
@@ -24,6 +26,15 @@ void AFGWaterVolume::PostRegisterAllComponents(){ }
 void AFGWaterVolume::GetNavigationData( FNavigationRelevantData& Data) const{ }
 FBox AFGWaterVolume::GetNavigationBounds() const{ return FBox(); }
 void AFGWaterVolume::RebuildNavigationData(){ }
+void AFGWaterVolume::SetIsOccupied_Implementation( bool occupied){ }
+bool AFGWaterVolume::IsOccupied_Implementation() const{ return bool(); }
+bool AFGWaterVolume::CanBecomeOccupied_Implementation() const{ return bool(); }
+bool AFGWaterVolume::HasAnyResources_Implementation() const{ return bool(); }
+TSubclassOf<class UFGResourceDescriptor> AFGWaterVolume::GetResourceClass_Implementation() const{ return TSubclassOf<class UFGResourceDescriptor>(); }
+int32 AFGWaterVolume::ExtractResource_Implementation( int32 amount){ return int32(); }
+float AFGWaterVolume::GetExtractionSpeedMultiplier_Implementation() const{ return float(); }
+FVector AFGWaterVolume::GetPlacementLocation_Implementation( const FVector& hitLocation) const{ return FVector(); }
+bool AFGWaterVolume::CanPlaceResourceExtractor_Implementation() const{ return bool(); }
 void AFGWaterVolume::OnPrimitiveComponentEntered( UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult){ }
 void AFGWaterVolume::OnPrimitiveComponentExited( UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex){ }
 void AFGWaterVolume::OnPawnEntered( APawn* pawn, const FHitResult& enterInfo){ }

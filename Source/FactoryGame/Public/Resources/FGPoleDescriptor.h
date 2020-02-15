@@ -52,6 +52,7 @@ public:
 	/** Read only accessors */
 	static FORCEINLINE const FName& GetPoleMeshComponentTag(){ return mPoleMeshComponentTag; }
 	static FORCEINLINE const FName& GetPoleHeightComponentTag(){ return mPoleHeightComponentTag; }
+	static FORCEINLINE const FName& GetPoleTopMeshComponentTag(){ return mPoleTopMeshComponentTag; } //[DavalliusA:Wed/27-11-2019] used for when the top part of the pole is separate from the bottom
 protected:
 	/** Array with meshes and their heights for the pole. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pole", Meta = (NoAutoJSON = true) )
@@ -62,4 +63,7 @@ private:
 
 	/** Helper to find the pole mesh component. */
 	static FName mPoleHeightComponentTag;
+
+	/** Helper to find the pole top mesh component. */
+	static FName mPoleTopMeshComponentTag;
 };

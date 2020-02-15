@@ -5,7 +5,6 @@
 AFGBuildableTradingPost::AFGBuildableTradingPost(){ }
 void AFGBuildableTradingPost::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableTradingPost::BeginPlay(){ }
-void AFGBuildableTradingPost::GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns) const{ }
 void AFGBuildableTradingPost::Dismantle_Implementation(){ }
 void AFGBuildableTradingPost::GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund) const{ }
 void AFGBuildableTradingPost::StartIsLookedAtForDismantle_Implementation(  AFGCharacterPlayer* byCharacter){ }
@@ -17,7 +16,7 @@ void AFGBuildableTradingPost::UpdateMAMVisibility(){ }
 int32 AFGBuildableTradingPost::GetTradingPostLevel() const{ return int32(); }
 void AFGBuildableTradingPost::PlayBuildEffects( AActor* inInstigator){ }
 void AFGBuildableTradingPost::ExecutePlayBuildEffects(){ }
-void AFGBuildableTradingPost::PlayBuildEffectsOnAllClients(AActor* instigator ){ }
+void AFGBuildableTradingPost::PlayBuildEffectsOnAllClients( AActor* instigator ){ }
 bool AFGBuildableTradingPost::AreChildBuildingsLoaded(){ return bool(); }
 void AFGBuildableTradingPost::OnBuildEffectFinished(){ }
 void AFGBuildableTradingPost::TogglePendingDismantleMaterial( bool enabled){ }

@@ -19,8 +19,8 @@ enum class EArmEquipment : uint8
 	AE_StunSpear,
 	AE_ShockShank,
 	AE_ResourceCollector,
-	AE_Vanity1Hand,
-	AE_Vanity2Hand
+	AE_Generic1Hand,
+	AE_Generic2Hand
 };
 
 

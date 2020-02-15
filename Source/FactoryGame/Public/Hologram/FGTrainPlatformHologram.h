@@ -30,8 +30,8 @@ public:
 
 	// Begin AFGHologram interface
 	void ScrollRotate( int32 delta, int32 step ) override;
-	virtual void SpawnChildren( class UFGBuildGunStateBuild* state ) override;
-	virtual AActor* Construct( TArray< AActor* >& out_children ) override;
+	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
+	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
 	// End AFGHologram interface
 
 protected:

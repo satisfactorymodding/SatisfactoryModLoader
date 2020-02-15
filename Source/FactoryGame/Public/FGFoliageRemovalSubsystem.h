@@ -252,11 +252,11 @@ protected:
 		}
 
 		// Need this pair to identify the level actor
-		class UFoliageType* Foliage;
+		class UFoliageType* Foliage; // @todogc: Verify that this is safe have without UPROPERTY
 		FName LevelName;
 
 		// Component we should assign to the actor when it becomes relevant
-		class UHierarchicalInstancedStaticMeshComponent* Component;
+		class UHierarchicalInstancedStaticMeshComponent* Component; // @todogc: Verify that this is safe have without UPROPERTY
 
 	};
 	
@@ -264,11 +264,11 @@ protected:
 	TArray< FPendingLevelData > mDataForNonRelevantFoliageRemovals;
 
 	/** Keep track of what foliage removal actors is in each level (FName is the name of the level) */
-	TMultiMap< FName, class AFGFoliageRemoval* > mFoliageRemovalsInLevels;
+	TMultiMap< FName, class AFGFoliageRemoval* > mFoliageRemovalsInLevels; // @todogc: Verify that this is safe have without UPROPERTY
 
 	/** Keep track of what maps has spawned their foliage removals */
 	TArray< FName > mMapsWithSpawnedFoliageRemovals;
 
 	/** All foliage mesh components that have potential for contain instances to remove */
-	TArray<class UHierarchicalInstancedStaticMeshComponent*> mFoilageMeshComponents;
+	TArray<class UHierarchicalInstancedStaticMeshComponent*> mFoilageMeshComponents; // @todogc: Verify that this is safe have without UPROPERTY
 };

@@ -79,7 +79,19 @@ public:
 
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void PrimaryFireRelease();
+
+	/** Redirected from the build gun. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void SecondaryFire();
+
+	/** Redirected from the build gun. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void ModeSelectPressed();
+
+		/** Redirected from the build gun. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void ModeSelectRelease();
 
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
@@ -191,8 +203,6 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "BuildGun|Recipe" )
 	void GetAvailableRecipes( TArray< TSubclassOf< class UFGRecipe > >& out_recipes ) const;
 
-	TSubclassOf< class UFGItemDescriptor > GetDescriptorForRecipe( TSubclassOf< class UFGRecipe > recipe ) const;
-	
 	/** Convenience function to get the cost for a recipe. */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun|Recipe" )
 	TArray< FItemAmount > GetCostForRecipe( TSubclassOf< class UFGRecipe > recipe ) const;
@@ -226,9 +236,11 @@ public:
 	 * Simulations may be sounds and the brrrrrrrring progress bar when selling.
 	 *****************************************************************************/
 	void OnPrimaryFirePressed();
-	void OnSecondaryFirePressed();
 	void OnPrimaryFireReleased();
+	void OnSecondaryFirePressed();
 	void OnSecondaryFireReleased();
+	void OnModeSelectPressed();
+	void OnModeSelectReleased();
 	void OnScrollDownPressed();
 	void OnScrollUpPressed();
 	void OnScrollModePressed();
@@ -271,7 +283,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
 	void GotoDismantleState();
 
-	void SetAllowCleranceHit( bool allow );
+	void SetAllowRayCleranceHit( bool allow );
 protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
@@ -377,6 +389,8 @@ private:
 
 	/** wait for primary fire release event before re-initiating another build gun fire. Does not affect click+hold. */
 	bool mWaitingForPrimaryFireRelease;
+
+	bool mHasHookedUpBuildStateUserSettings = false; //[DavalliusA:Thu/23-01-2020] not happy with this, but didn't find a function that is only called once and where we know we have a local instagator or not 
 };
 
 /**

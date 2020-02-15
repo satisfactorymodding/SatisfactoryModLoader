@@ -6,33 +6,27 @@
 void UFGSchematic::PreSave( const  ITargetPlatform* targetPlatform){ }
 #endif 
 #if WITH_EDITOR
+void UFGSchematic::AddRecipe( TSubclassOf< UFGSchematic > inClass, TSubclassOf<  UFGRecipe > recipe){ }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }
 #endif 
 #if WITH_EDITORONLY_DATA
-void UFGSchematic::MigrateDataToNewUnlockSystem(){ }
+void UFGSchematic::MigrateDataToNewSchematicCategory(){ }
 #endif 
 UFGSchematic::UFGSchematic(){ }
 ESchematicType UFGSchematic::GetType( TSubclassOf< UFGSchematic > inClass){ return ESchematicType(); }
 FText UFGSchematic::GetSchematicDisplayName( TSubclassOf< UFGSchematic > inClass){ return FText(); }
-ESchematicCategory UFGSchematic::GetSchematicCategory( TSubclassOf< UFGSchematic > inClass){ return ESchematicCategory(); }
+TSubclassOf< class UFGSchematicCategory > UFGSchematic::GetSchematicCategory( TSubclassOf< UFGSchematic > inClass){ return TSubclassOf<class UFGSchematicCategory>(); }
+void UFGSchematic::GetSubCategories( TSubclassOf< UFGSchematic > inClass, UPARAM( ref ) TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ }
 TArray< FItemAmount > UFGSchematic::GetCost( TSubclassOf< UFGSchematic > inClass){ return TArray<FItemAmount>(); }
-TArray< TSubclassOf< class UFGRecipe > > UFGSchematic::GetRecipes( TSubclassOf< UFGSchematic > inClass){ return TArray<TSubclassOf<class UFGRecipe> >(); }
 TArray< UFGUnlock* > UFGSchematic::GetUnlocks( TSubclassOf< UFGSchematic > inClass){ return TArray<UFGUnlock*>(); }
 int32 UFGSchematic::GetTechTier( TSubclassOf< UFGSchematic > inClass){ return int32(); }
 float UFGSchematic::GetShipTravelTimeAfterPurchase( TSubclassOf< UFGSchematic > inClass){ return float(); }
-TArray< TSubclassOf< class UFGResourceDescriptor > > UFGSchematic::GetResourceToAddToScanner( TSubclassOf< UFGSchematic > inClass){ return TArray<TSubclassOf<class UFGResourceDescriptor> >(); }
-bool UFGSchematic::GetUnlocksMap( TSubclassOf< UFGSchematic > inClass){ return bool(); }
-bool UFGSchematic::GetUnlocksInventorySlots( TSubclassOf< UFGSchematic > inClass){ return bool(); }
-int32 UFGSchematic::GetNumInventorySlotsUnlocked( TSubclassOf< UFGSchematic > inClass){ return int32(); }
-bool UFGSchematic::GetUnlocksArmEquipmentSlots( TSubclassOf< UFGSchematic > inClass){ return bool(); }
-int32 UFGSchematic::GetNumArmEquipmentSlotsUnlocked( TSubclassOf< UFGSchematic > inClass){ return int32(); }
-bool UFGSchematic::GetUnlocksBuildEfficiencyDisplay( TSubclassOf< UFGSchematic > inClass){ return bool(); }
-bool UFGSchematic::GetUnlocksBuildOverclock( TSubclassOf< UFGSchematic > inClass){ return bool(); }
 FSlateBrush UFGSchematic::GetItemIcon( TSubclassOf< UFGSchematic > inClass){ return FSlateBrush(); }
 TSubclassOf< UFGSchematic > UFGSchematic::GetDependentOnSchematic( TSubclassOf< UFGSchematic > inClass){ return TSubclassOf<UFGSchematic>(); }
 TArray< TSubclassOf< UFGSchematic > > UFGSchematic::GetAdditionalSchematicDependencies( TSubclassOf< UFGSchematic > inClass){ return TArray<TSubclassOf<UFGSchematic> >(); }
+bool UFGSchematic::IsRepeatPurchasesAllowed( TSubclassOf< UFGSchematic > inClass){ return bool(); }
 bool UFGSchematic::IsIncludedInBuild( TSubclassOf< UFGSchematic > inClass){ return bool(); }
 void UFGSchematic::PostLoad(){ Super::PostLoad(); }
 void UFGSchematic::Serialize( FArchive& ar){ Super::Serialize(ar ); }

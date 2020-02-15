@@ -4,4 +4,4 @@
 
 #if WITH_EDITORONLY_DATA
 #endif 
-void UFGUnlockArmEquipmentSlot::Unlock(  AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockArmEquipmentSlot::Apply(  AFGUnlockSubsystem* unlockSubssytem){ }

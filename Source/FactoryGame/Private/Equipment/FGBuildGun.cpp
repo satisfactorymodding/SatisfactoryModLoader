@@ -12,7 +12,10 @@ void UFGBuildGunState::BeginState_Implementation(){ }
 void UFGBuildGunState::EndState_Implementation(){ }
 void UFGBuildGunState::TickState_Implementation( float deltaTime){ }
 void UFGBuildGunState::PrimaryFire_Implementation(){ }
+void UFGBuildGunState::PrimaryFireRelease_Implementation(){ }
 void UFGBuildGunState::SecondaryFire_Implementation(){ }
+void UFGBuildGunState::ModeSelectPressed_Implementation(){ }
+void UFGBuildGunState::ModeSelectRelease_Implementation(){ }
 void UFGBuildGunState::ScrollDown_Implementation(){ }
 void UFGBuildGunState::ScrollUp_Implementation(){ }
 void UFGBuildGunState::ChangeScrollMode_Implementation(){ }
@@ -33,7 +36,6 @@ bool AFGBuildGun::ShouldSaveState() const{ return bool(); }
 void AFGBuildGun::Equip(  AFGCharacterPlayer* character){ }
 void AFGBuildGun::UnEquip(){ }
 void AFGBuildGun::GetAvailableRecipes( TArray< TSubclassOf<  UFGRecipe > >& out_recipes) const{ }
-TSubclassOf< class UFGItemDescriptor > AFGBuildGun::GetDescriptorForRecipe( TSubclassOf<  UFGRecipe > recipe) const{ return TSubclassOf<class UFGItemDescriptor>(); }
 TArray< FItemAmount > AFGBuildGun::GetCostForRecipe( TSubclassOf<  UFGRecipe > recipe) const{ return TArray<FItemAmount>(); }
 UFGInventoryComponent* AFGBuildGun::GetInventory() const{ return nullptr; }
 float AFGBuildGun::GetCurrentBuildGunDelayPercentage() const{ return float(); }
@@ -41,9 +43,11 @@ FText AFGBuildGun::GetCurrentBuildGunDelayMessage() const{ return FText(); }
 bool AFGBuildGun::CompareActiveRecipeTo( TSubclassOf<  UFGRecipe > recipe){ return bool(); }
 bool AFGBuildGun::IsInState( EBuildGunState inState){ return bool(); }
 void AFGBuildGun::OnPrimaryFirePressed(){ }
-void AFGBuildGun::OnSecondaryFirePressed(){ }
 void AFGBuildGun::OnPrimaryFireReleased(){ }
+void AFGBuildGun::OnSecondaryFirePressed(){ }
 void AFGBuildGun::OnSecondaryFireReleased(){ }
+void AFGBuildGun::OnModeSelectPressed(){ }
+void AFGBuildGun::OnModeSelectReleased(){ }
 void AFGBuildGun::OnScrollDownPressed(){ }
 void AFGBuildGun::OnScrollUpPressed(){ }
 void AFGBuildGun::OnScrollModePressed(){ }
@@ -55,7 +59,7 @@ void AFGBuildGun::OnDismantleToggleMultiSelectStateReleased(){ }
 void AFGBuildGun::GotoMenuState(){ }
 void AFGBuildGun::GotoBuildState( TSubclassOf<  UFGRecipe > recipe){ }
 void AFGBuildGun::GotoDismantleState(){ }
-void AFGBuildGun::SetAllowCleranceHit( bool allow){ }
+void AFGBuildGun::SetAllowRayCleranceHit( bool allow){ }
 void AFGBuildGun::AddEquipmentActionBindings(){ }
 void AFGBuildGun::Server_PrimaryFire_Implementation(){ }
 bool AFGBuildGun::Server_PrimaryFire_Validate(){ return bool(); }

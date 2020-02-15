@@ -27,12 +27,13 @@ public:
 	// End AActor interface
 
 	// Begin AFGHologram interface
-	virtual bool MultiStepPlacement() override;
+	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 
 	virtual void CheckClearance() override;
+	virtual void ResetBuildSteps();
 
 	/** Helper */
 	bool CheckClearanceForBuildingMesh( UStaticMeshComponent* mesh, const FComponentQueryParams& params = FComponentQueryParams::DefaultComponentQueryParams );
@@ -40,6 +41,16 @@ public:
 
 	/** Set the height of the pole, useful for parent holograms. */
 	void SetPoleHeight( float height );
+
+	// Begin IFGConstructionMessageInterface
+	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void ServerPostConstructMessageDeserialization() override;
+	virtual void OnConstructMessagedDeserialized_Implementation() override;
+	// End IFGConstructionMessageInterface
+
+	virtual void OnPendingConstructionHologramCreated_Implementation( class AFGHologram* fromHologram ) override;
+
+	FORCEINLINE float GetPoleHeight() const { return mPoleHeight; }
 
 protected:
 	// Begin AFGBuildableHologram interface
@@ -77,4 +88,7 @@ private:
 	/** The scene component for adjusting the height of the pole. */
 	UPROPERTY()
 	class USceneComponent* mPoleHeightComponent;
+
+	UPROPERTY( /*CustomSerialization*/ )
+	float mPoleHeight;
 };

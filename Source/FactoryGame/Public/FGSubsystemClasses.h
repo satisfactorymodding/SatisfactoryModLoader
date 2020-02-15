@@ -15,6 +15,8 @@ class FACTORYGAME_API UFGSubsystemClasses : public UFGSettings
 {
 	GENERATED_BODY()
 public:
+	UFGSubsystemClasses();
+	
 	static UFGSubsystemClasses* Get();
 public:
 	/** The collection containing the world bounds*/
@@ -66,4 +68,11 @@ public:
 	/** Subsystem responsible for handling unlocks */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGUnlockSubsystem > mUnlockSubsystem;
+	/** Subsystem that handles the resource sink system */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGResourceSinkSubsystem > mResourceSinkSubsystemClass;
+	/** Handles administration task of servers */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGAdminInterface > mAdminInterfaceClass;
+
 };

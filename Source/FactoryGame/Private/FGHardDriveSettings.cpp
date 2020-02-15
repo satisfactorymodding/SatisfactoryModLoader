@@ -3,7 +3,8 @@
 #include "FGHardDriveSettings.h"
 
 TSubclassOf<class UFGSchematic> FHardDriveSchematicDrop::GetSchematic() const{ return TSubclassOf<class UFGSchematic>(); }
-const TArray<FResearchRecipeReward> UFGHardDriveSettings::GetResearchRewardPackages(  UWorld* world, TSubclassOf<class UFGResearchRecipe> calledByResearch){ return TArray<FResearchRecipeReward>(); }
+const TArray<TSubclassOf<UFGSchematic>> UFGHardDriveSettings::GetResearchRewardPackages(  UWorld* world){ return TArray<TSubclassOf<UFGSchematic>>(); }
+TSubclassOf<UFGSchematic> UFGHardDriveSettings::GetHardDriveResearchSchematic(){ return TSubclassOf<UFGSchematic>(); }
 int32 UFGHardDriveSettings::GetTotalSchematicDropProbability( const TArray<FHardDriveSchematicDrop>& schematicDrops) const{ return int32(); }
 FResearchRecipeReward UFGHardDriveSettings::ResearchRecipeRewardFactory( TSubclassOf<class UFGSchematic> schematic, TSubclassOf<class UFGResearchRecipe> calledByResearch) const{ return FResearchRecipeReward(); }
 void UFGHardDriveSettings::GetValidSchematicRewardDrops(  AFGSchematicManager* schematicManager, TArray<FHardDriveSchematicDrop>& out_validSchematics) const{ }

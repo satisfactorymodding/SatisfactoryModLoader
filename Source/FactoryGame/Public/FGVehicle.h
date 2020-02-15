@@ -16,6 +16,7 @@
 #include "FGBlueprintFunctionLibrary.h"
 #include "FGDockableInterface.h"
 #include "FGColorInterface.h"
+#include "FGBuildableSubsystem.h"
 #include "FGVehicle.generated.h"
 
 class FDebugDisplayInfo;
@@ -206,8 +207,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle|Significance" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
 
-	/** Set the dismantle refund for this vehicle when built. */
-	FORCEINLINE void SetDismantleRefund( TArray< FItemAmount > refundableCost ){ mDismantleRefund = refundableCost; }
+	/** Called in Construct from the hologram. */
+	void SetBuiltWithRecipe( TSubclassOf< class UFGRecipe > recipe ) { mBuiltWithRecipe = recipe; }
+	/** Getter for the built with recipe. */
+	FORCEINLINE TSubclassOf< class UFGRecipe > GetBuiltWithRecipe() const { return mBuiltWithRecipe; }
 
 	/** Skel mesh for this vehicle **/
 	class USkeletalMeshComponent* GetMesh() const;
@@ -259,6 +262,10 @@ public:
 	void Stat_Cost( TArray< FItemAmount >& out_amount ) const;
 	void Stat_StockInventory( TArray< FItemAmount >& out_amount ) const;
 	// End FFactoryStatHelpers Functions
+
+	/** Getter and setter for the construction ID issued by server used to identify buildables when constructed on client */
+	FORCEINLINE void SetNetConstructionID( FNetConstructionID netConstructionID ) { mNetConstructionID = netConstructionID; }
+	FNetConstructionID GetNetConstructionID() const { return mNetConstructionID; }
 
 protected:
 	/** Notifies from our health component */
@@ -329,11 +336,11 @@ public:
 
 	/** Hologram to build this class with. */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
-	TSubclassOf< class AFGVehicleHologram > mHologramClass;
+	TSubclassOf< class AFGHologram > mHologramClass;
 
 protected:
 	/** The main skeletal mesh associated with this Vehicle */
-	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Vehicle", meta = ( AllowPrivateAccess = "true" ) )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Vehicle", meta = ( AllowPrivateAccess = "true" ) )
 	class USkeletalMeshComponent* mMesh;
 
 	/** Keeps track of our current health */
@@ -350,10 +357,14 @@ protected:
 	/** Flag to indicate whether the dismantle material should be active */
 	uint8 mPendingDismantleHighlighted : 1;
 
+	/** ID given from server when constructed. Has not been assigned a value by server if 0. */
+	UPROPERTY( transient, replicated )
+	FNetConstructionID mNetConstructionID;
+
 private:
-	/** How much did we pay when building this. */
-	UPROPERTY( SaveGame )
-	TArray< FItemAmount > mDismantleRefund;
+	/** Recipe this vehicle was built with, e.g. used for refunds and stats. */
+	UPROPERTY( SaveGame, Replicated )
+	TSubclassOf< class UFGRecipe > mBuiltWithRecipe;
 
 	/** The primary color of this buildable */
 	UPROPERTY( SaveGame )

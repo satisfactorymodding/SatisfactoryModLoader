@@ -621,12 +621,15 @@ public:
 	// Begin AFGBuildableFactory interface
 	virtual void Factory_Tick( float deltaTime ) override;
 	virtual uint8 MaxNumGrab( float dt ) const override;
-	virtual uint8 EstimatedMaxNumGrab_ThreadSafe( float dt ) const override;
+	virtual uint8 EstimatedMaxNumGrab_Threadsafe( float estimatedDeltaTime ) const override;
 	// End AFGBuildableFactory interface
 
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
+	virtual void GainedSignificance_Native() override;
+	virtual void LostSignificance_Native() override;
+	virtual	void SetupForSignificance() override;
 
 	UFUNCTION( BlueprintPure, Category = "Significance" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
@@ -649,6 +652,12 @@ public:
 	void SetConveyorBucketID( int32 ID );
 
 	FORCEINLINE int32 GetConveyorBucketID() const { return mConveyorBucketID; }
+
+	/** Returns how much room there currently is on the belt. If the belt is empty it will return the length of the belt */
+	float GetAvailableSpace() const;
+
+	/** Returns how much room there was on the belt after the last factory tick. If the belt is empty it will return the length of the belt */
+	float GetCachedAvailableSpace_Threadsafe() const;
 
 protected:
 	// Begin Factory_ interface

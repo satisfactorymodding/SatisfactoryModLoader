@@ -38,7 +38,7 @@ public:
 
 	UPROPERTY( EditDefaultsOnly )
 	bool mCanBecolored = true;
-	UPROPERTY( BlueprintReadWrite )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	bool mBlockInstancing = false;
 
 	void SetInstanced( bool setToInstanced );

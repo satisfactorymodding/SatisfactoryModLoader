@@ -19,6 +19,8 @@ void AFGBuildableManufacturer::GetAvailableRecipes( TArray< TSubclassOf<  UFGRec
 void AFGBuildableManufacturer::SetRecipe( TSubclassOf<  UFGRecipe > recipe){ }
 bool AFGBuildableManufacturer::CanProduce_Implementation() const{ return bool(); }
 void AFGBuildableManufacturer::Factory_CollectInput_Implementation(){ }
+void AFGBuildableManufacturer::Factory_PullPipeInput_Implementation( float dt){ }
+void AFGBuildableManufacturer::Factory_PushPipeOutput_Implementation( float dt){ }
 void AFGBuildableManufacturer::Factory_TickProducing( float dt){ }
 void AFGBuildableManufacturer::CreateInventories(){ }
 void AFGBuildableManufacturer::OnRep_CurrentRecipe(){ }
@@ -28,5 +30,7 @@ void AFGBuildableManufacturer::ClearInputInventoryItems(){ }
 void AFGBuildableManufacturer::GetOutputInventoryItems( TArray< FInventoryStack >& out_items){ }
 void AFGBuildableManufacturer::ClearOutputInventoryItems(){ }
 void AFGBuildableManufacturer::SetUpInventoryFilters(){ }
+bool AFGBuildableManufacturer::AssignInputAccessIndices( TSubclassOf< UFGRecipe > recipe){ return bool(); }
+bool AFGBuildableManufacturer::AssignOutputAccessIndices( TSubclassOf< UFGRecipe > recipe){ return bool(); }
 void AFGBuildableManufacturer::Factory_ConsumeIngredients(){ }
 bool AFGBuildableManufacturer::HasRequiredIngredients() const{ return bool(); }

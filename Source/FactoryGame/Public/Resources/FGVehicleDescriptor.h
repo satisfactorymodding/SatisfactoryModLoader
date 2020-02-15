@@ -1,6 +1,7 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "GameFramework/Actor.h"
 #include "SubclassOf.h"
 #include "UObject/Class.h"
 
@@ -29,6 +30,9 @@ public:
 protected:
 	virtual FText GetItemNameInternal() const override;
 	virtual FText GetItemDescriptionInternal() const override;
+
+	virtual TSubclassOf< class AFGHologram > GetHologramClassInternal() const override;
+	virtual TSubclassOf< AActor > GetBuildClassInternal() const override;
 
 #if WITH_EDITOR
 	virtual void SetupStage() override;

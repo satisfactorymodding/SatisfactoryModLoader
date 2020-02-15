@@ -2,4 +2,4 @@
 
 #include "FGUnlockBuildOverclock.h"
 
-void UFGUnlockBuildOverclock::Unlock(  AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockBuildOverclock::Apply(  AFGUnlockSubsystem* unlockSubssytem){ }

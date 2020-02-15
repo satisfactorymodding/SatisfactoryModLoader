@@ -23,11 +23,7 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
-	// End AActor interfacee
-
-	// Begin AFGBuildable interface
-	virtual void GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns ) const override;
-	// End AFGBuildable interface
+	// End AActor interface
 
 	//~ Begin IFGDismantleInterface
 	virtual void Dismantle_Implementation() override;
@@ -64,14 +60,11 @@ public:
 	virtual void PlayBuildEffects( AActor* inInstigator ) override;
 	virtual void ExecutePlayBuildEffects() override;
 
-
-
-	void PlayBuildEffectsOnAllClients(AActor* instigator = nullptr);
+	void PlayBuildEffectsOnAllClients( AActor* instigator = nullptr );
 
 	/** Checks if all child buildings are created so that we can use them */
 	UFUNCTION( BlueprintPure, Category = "Trading Post" )
 	bool AreChildBuildingsLoaded();
-
 
 protected:
 	virtual void OnBuildEffectFinished() override;

@@ -19,6 +19,7 @@ void AFGBuildableRailroadTrack::BeginPlay(){ }
 void AFGBuildableRailroadTrack::Destroyed(){ }
 void AFGBuildableRailroadTrack::Dismantle_Implementation(){ }
 bool AFGBuildableRailroadTrack::CanDismantle_Implementation() const{ return bool(); }
+int32 AFGBuildableRailroadTrack::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 FRailroadTrackPosition AFGBuildableRailroadTrack::FindTrackPositionClosestToWorldLocation( const FVector& worldLocation){ return FRailroadTrackPosition(); }
 void AFGBuildableRailroadTrack::GetWorldLocationAndDirectionAtPosition( const  FRailroadTrackPosition& position, FVector& out_location, FVector& out_direction) const{ }
 void AFGBuildableRailroadTrack::BuildSplineCollisions(

@@ -68,35 +68,35 @@ class FACTORYGAME_API UFGPresenceLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 public:
 	/** Return true if the presence is online, false if the presence isn't valid */
-	UFUNCTION( BlueprintPure, Category="Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
 	static bool IsOnline( const FOnlinePresence& presence );
 
 	/** Get the presence of a friend */
-	UFUNCTION( BlueprintPure, Category="Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
 	static FOnlinePresence GetPresenceFromNetId( UObject* worldContext, const FUniqueNetIdRepl& netId );
 
 	/** Get the presence of a friend */
-	UFUNCTION( BlueprintPure, Category="Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
 	static bool NetIdHasValidPresence( UObject* worldContext, const FUniqueNetIdRepl& netId );
 
 	/** Get the presence string */
-	UFUNCTION( BlueprintPure, Category="Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence", Meta = ( DefaultToSelf = "worldContext" ) )
 	static FString GetPresenceString( const FOnlinePresence& presence );
 
 	/** @return true if the user is playing satisfactory */
-	UFUNCTION( BlueprintPure, Category="Online|Presence" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence" )
 	static bool IsPlayingThisGame( const FOnlinePresence& presence );
 
 	/** @return true if the user is playing another game */
-	UFUNCTION( BlueprintPure, Category="Online|Presence" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence" )
 	static bool IsPlayingOtherGame( const FOnlinePresence& presence );
 
 	/** Get the a session for the players presence */
-	UFUNCTION( BlueprintPure, Category="Online|Presence" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence" )
 	static FBlueprintSessionResult GetSessionFromPresence( const FOnlinePresence& presence );
 
 	/** Returns true if a OnlinePresence is valid */
-	UFUNCTION( BlueprintPure, Category="Online", meta=(DisplayName = "Valid (OnlinePresence)", CompactNodeTitle = "Is Valid", Keywords = "valid presence"))
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "Valid (OnlinePresence)", CompactNodeTitle = "Is Valid", Keywords = "valid presence"))
 	static bool IsValid_OnlinePresence( const FOnlinePresence& a );
 };
 
@@ -115,27 +115,27 @@ public:
 	static bool EqualEqual_FriendFriend( const FFGOnlineFriend& A, const FFGOnlineFriend& B );
 
 	/** Get the session the current friend is in */
-	UFUNCTION( BlueprintPure, Category="Online|Friends" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends" )
 	static FUniqueNetIdRepl GetFriendUniqueNetId( const FFGOnlineFriend& onlineFriend );
 
 	/** Get a friend from a net id */
-	UFUNCTION( BlueprintPure, Category="Online|Friends" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends" )
 	static FFGOnlineFriend GetFriendFromNetId( ULocalPlayer* friendOf, const FUniqueNetIdRepl& netId );
 		
 	/** Is the friend joinable publicly **/
-	UFUNCTION( BlueprintPure, Category="Online|Friends" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends" )
 	static TEnumAsByte<ECantJoinReason> IsFriendJoinable( ULocalPlayer* friendOf, const FFGOnlineFriend& onlineFriend );
 
 	/** @return Get the name of the friend */
-	UFUNCTION( BlueprintPure, Category="Online|Friends" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends" )
 	static bool GetFriendName( ULocalPlayer* friendOf,  const FFGOnlineFriend& onlineFriend, FString& out_displayName );
 	
 	/** @return true if the friend is waiting for data, true is bad data is passed in */
-	UFUNCTION( BlueprintPure, Category="Online|Friends" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends" )
 	static bool IsWaitingForData( ULocalPlayer* friendOf, const FFGOnlineFriend& onlineFriend );
 
 	/** Returns true if a OnlinePresence is valid */
-	UFUNCTION( BlueprintPure, Category="Online|Friends", meta=(DisplayName = "Valid (FGOnlineFriend)", CompactNodeTitle = "Is Valid", Keywords = "valid friend"))
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends", meta=(DisplayName = "Valid (FGOnlineFriend)", CompactNodeTitle = "Is Valid", Keywords = "valid friend"))
 	static bool IsValid_Friend( const FFGOnlineFriend& a );
 };
 
@@ -145,43 +145,44 @@ class FACTORYGAME_API UFGSessionLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 public:
 	/** Get the settings from a session **/
-	UFUNCTION( BlueprintPure, Category="Online|Session" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static FFGOnlineSessionSettings GetSessionSettings( const FBlueprintSessionResult& session );
 
 	/** Get the settings from a session **/
-	UFUNCTION( BlueprintPure, Category="Online|Session" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static TEnumAsByte<ESessionVisibility> GetSessionVisibility( const FBlueprintSessionResult& session );
 
 	/** @SERVER: Sets the current visibility of the session */
-	UFUNCTION( BlueprintCallable, Category="Online|Session", Meta = ( DefaultToSelf = "worldContext" ) )
+	UE_DEPRECATED(4.22, "Please use UFGAdminInterface::SetSessionVisibility instead")
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Session", Meta = ( DefaultToSelf = "worldContext" ), meta=(DeprecatedFunction, DeprecationMessage="Please use FGAdminInterface::SetSessionVisibility instead") )
 	static void SetSessionVisibility( UObject* worldContext, TEnumAsByte<ESessionVisibility> visibility );
 
 	/** Get the session information about my session */
-	UFUNCTION( BlueprintPure, Category="Online|Session" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static FBlueprintSessionResult GetMySession( ULocalPlayer* localPlayer );
 
 	/** Check if a local player is in a game session */
-	UFUNCTION( BlueprintPure, Category="Online|Session" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static bool IsInGameSession( ULocalPlayer* localPlayer );
 	
 	/** return true if the session is valid */
-	UFUNCTION( BlueprintPure, Category="Online|Session", meta=(DisplayName = "Valid (FBlueprintSessionResult)", CompactNodeTitle = "Is Valid", Keywords = "valid session") )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session", meta=(DisplayName = "Valid (FBlueprintSessionResult)", CompactNodeTitle = "Is Valid", Keywords = "valid session") )
 	static bool IsSessionValid( FBlueprintSessionResult session );
 
 	/** Check if a local player is in a game session */
-	UFUNCTION( BlueprintPure, Category="Online|Session", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session", Meta = ( DefaultToSelf = "worldContext" ) )
 	static bool InOnlineSession( UObject* worldContext, const FUniqueNetIdRepl& playerId );
 
 	/** Join a session gracefully */
-	UFUNCTION( BlueprintCallable, Category="Online|Session", Meta = ( DefaultToSelf = "worldContext" )  )
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Session", Meta = ( DefaultToSelf = "worldContext" )  )
 	static void JoinSession( UObject* worldContext, const FBlueprintSessionResult& session );
 
 	/** Get the max number of players in a session */
-	UFUNCTION( BlueprintPure, Category="Online|Session" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static int32 GetMaxNumberOfPlayers( const FBlueprintSessionResult& session );
 
 
-	UFUNCTION( BlueprintPure, Category = "Online" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online" )
 	static bool CheckIsCompatibleVersion( const FFGOnlineSessionSettings& session );
 
 public:
@@ -196,27 +197,27 @@ class FACTORYGAME_API UFGInviteLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 public:
 	/** Get net id of a invite */
-	UFUNCTION( BlueprintPure, Category="Online|Invite" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Invite" )
 	static FUniqueNetIdRepl GetInviteSenderUniqueNetId( const FPendingInvite& invite );
 
 	/** Get invites that's not accepted or rejected */
-	UFUNCTION( BlueprintCallable, Category="Online|Invite", Meta = ( DefaultToSelf = "worldContext" ))
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Invite", Meta = ( DefaultToSelf = "worldContext" ))
 	static void GetPendingInvites( UObject* worldContext, TArray<FPendingInvite>& out_invites );
 
 	/** Get invites from a sender */
-	UFUNCTION( BlueprintPure, Category="Online|Invite", Meta = ( DefaultToSelf = "worldContext" ))
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Invite", Meta = ( DefaultToSelf = "worldContext" ))
 	static FPendingInvite GetInviteFromSender( UObject* worldContext, const FUniqueNetIdRepl& sender );
 
 	/** Sends a invite to a friend */
-	UFUNCTION( BlueprintCallable, Category="Online|Invite")
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Invite")
 	static void SendInviteToFriend( ULocalPlayer* fromPlayer, const FFGOnlineFriend& toFriend );
 
 	/** Join a pending invite */
-	UFUNCTION( BlueprintCallable, Category="Online|Invite")
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Invite")
 	static void JoinInvite( UObject* worldContext, const FPendingInvite& invite );
 
 	/** Discard a pending invite */
-	UFUNCTION( BlueprintCallable, Category="Online|Invite")
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Invite")
 	static void DiscardInvite( UObject* worldContext, const FPendingInvite& invite );
 };
 
@@ -230,7 +231,7 @@ public:
 	 * @param worldContext - a object that we can get the world from
 	 */
 	UE_DEPRECATED( 4.22, "Is duplicate of UKismetSystemLibrary::IsServer, please use that function instead")
-	UFUNCTION( BlueprintPure, Category="Network", Meta = ( DefaultToSelf = "worldContext", DeprecatedFunction, DeprecationMessage = "UFGNetworkLibrary::IsServer is deprecated as it's a duplicate of UKismetSystemLibrary::IsServer, please use that function instead" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Network", Meta = ( DefaultToSelf = "worldContext", DeprecatedFunction, DeprecationMessage = "UFGNetworkLibrary::IsServer is deprecated as it's a duplicate of UKismetSystemLibrary::IsServer, please use that function instead" ) )
 	static bool IsServer( class UObject* worldContext );
 	
 	/** 
@@ -239,39 +240,40 @@ public:
 	 * @note: DO NOT INCLUDE HTTP:// IN THE URL.
 	 * @return returns true if it succeeds.
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Network" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Browser" )
 	static bool OpenWebURL( const FString& Url );
 
-	UFUNCTION( BlueprintCallable, Category = "Network" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Feedback" )
 	static bool SubmitFeedback( FUserFeedbackFrontEndData frontEndFeedbackData, class APlayerController* playerController );
 	
 	/** Get the name from a unique net id */
-	UFUNCTION( BlueprintPure, Category="Online", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", Meta = ( DefaultToSelf = "worldContext" ) )
 	static bool GetNameFromUniqueNetId( const ULocalPlayer* querier, const FUniqueNetIdRepl& netId, FString& out_name );
 	
 	/** Compare two net ids */
-	UFUNCTION( BlueprintPure, Category="Online", meta=(DisplayName = "Equal (UniqueNetIdRepl)", CompactNodeTitle = "==", Keywords = "== equal"))
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "Equal (UniqueNetIdRepl)", CompactNodeTitle = "==", Keywords = "== equal"))
 	static bool EqualEqual_NetIdNetId( const FUniqueNetIdRepl& a, const FUniqueNetIdRepl& b );
 	
 	/** Returns true if a UniqueNetId is valid */
-	UFUNCTION( BlueprintPure, Category="Online", meta=(DisplayName = "Valid (UniqueNetIdRepl)", CompactNodeTitle = "Is Valid", Keywords = "valid uniquenetid"))
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "Valid (UniqueNetIdRepl)", CompactNodeTitle = "Is Valid", Keywords = "valid uniquenetid"))
 	static bool IsValid_UniqueNetId( const FUniqueNetIdRepl& a );
 
 	/** Query our current NAT-type */
-	UFUNCTION( BlueprintCallable, Category="Online", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online", Meta = ( DefaultToSelf = "worldContext" ) )
 	static void QueryNATType( UObject* worldContext );
 
 	/** Get the last cached value of our NAT-type */
-	UFUNCTION( BlueprintPure, Category="Online", Meta = ( DefaultToSelf = "worldContext" ) )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", Meta = ( DefaultToSelf = "worldContext" ) )
 	static ECachedNATType GetCachedNATType( UObject* worldContext );
 
-	UFUNCTION( BlueprintPure, Category="Online", meta=(DisplayName = "ToText (ECachedNATType)", CompactNodeTitle = "ToText", Keywords = "NAT ToText") )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "ToText (ECachedNATType)", CompactNodeTitle = "ToText", Keywords = "NAT ToText") )
 	static FText NATTypeToText( ECachedNATType NatType );
 
 
-	UFUNCTION( BlueprintPure, Category="Online" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online" )
 	static FString GetLocalBuildVersion();
 
-	UFUNCTION( BlueprintPure, Category = "Online" )
+	UE_DEPRECATED(4.22, "Please use UFGSessionLibrary::CheckIsCompatibleVersion instead")
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online", meta=(DeprecatedFunction, DeprecationMessage="Please use FGSessionLibrary::CheckIsCompatibleVersion instead") )
 	static bool CheckIsCompatibleVersion( const FFGOnlineSessionSettings& session);
 };

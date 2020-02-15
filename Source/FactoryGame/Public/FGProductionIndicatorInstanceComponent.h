@@ -1,6 +1,7 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "GameFramework/Actor.h"
 #include "Engine/StaticMesh.h"
 #include "UObject/Class.h"
 
@@ -11,8 +12,8 @@
 
 
 /**
-*
-*/
+ * Instanced production indicator, used on factories instead of the old non instanced variant.
+ */
 UCLASS( Blueprintable, ClassGroup = ( FactoryGame ), meta = ( BlueprintSpawnableComponent ) )
 class FACTORYGAME_API UFGProductionIndicatorInstanceComponent : public UStaticMeshComponent
 {
@@ -20,38 +21,34 @@ class FACTORYGAME_API UFGProductionIndicatorInstanceComponent : public UStaticMe
 public:
 	UFGProductionIndicatorInstanceComponent();
 
-		
-	void OnProductionStatusChanged( EProductionStatus status );
+	//Begin AActor
+	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	//End AActor
 
-	/** This sets the cacehd status to IS_NONE so that an update is forced next frame */
+	void SetInstanceManager( UFGProductionIndicatorInstanceManager* manager );
+	void SetInstanced( bool isInstanced );
+
+	/** Called when the buildings indicator status changes. */
+	void OnProductionStatusChanged( EProductionStatus newStatus );
+
+	/** This sets the cached status to IS_NONE so that an update is forced next frame */
 	void ResetIndicatorStatus();
 
-
-	/** Only used for holding info about where the instance is located, for quicker changes.*/
-	UFGProductionIndicatorInstanceManager::InstanceHandle mInstanceHandle;
-
-	/*Dont'n eed to be a UPROPERTY as it's only meant as a shortcut to an object that is already managed elsewhere and guaranteed to live longer than this component*/
-	UFGProductionIndicatorInstanceManager* mInstanceManager = nullptr;
-
-	/** Save the state of the factory so that we don't change material excessively. */
-	EProductionStatus mCachedIndicatorStatus = EProductionStatus::IS_MAX;
-
-
-	virtual void BeginPlay() override;
-
-
-	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
-
-
-
-	void SetInstanced( bool setToInstanced );
+protected:
+	// Begin SceneComponent interface
+	virtual void OnHiddenInGameChanged() override;
+	// End SceneComponent interface
 
 private:
 	/** The outer factory we should display the state for. */
 	class AFGBuildableFactory* mOuterFactory;
 
+	/** Save the state of the factory so that we don't change material excessively. */
+	EProductionStatus mCachedIndicatorStatus;
+	
+	/** Only used for holding info about where the instance is located, for quicker changes.*/
+	UFGProductionIndicatorInstanceManager::InstanceHandle mInstanceHandle;
 
-
-	virtual void OnHiddenInGameChanged() override;
-
+	/* Don't need to be a UPROPERTY as it's only meant as a shortcut to an object that is already managed elsewhere and guaranteed to live longer than this component. */
+	UFGProductionIndicatorInstanceManager* mInstanceManager;
 };

@@ -3,6 +3,7 @@
 #include "FGSaveSystem.h"
 
 FSaveHeader::FSaveHeader(){ }
+bool FSaveHeader::NetSerialize( FArchive& ar,  UPackageMap* map, bool& out_success){ return bool(); }
 const FGuid FSaveHeader::GUID = FGuid();
 void UFGSaveSystem::Init(){ }
 FString UFGSaveSystem::GetSaveDirectoryPath(){ return FString(); }
@@ -11,14 +12,17 @@ FString UFGSaveSystem::GetCommonSaveDirectoryPath(){ return FString(); }
 void UFGSaveSystem::GetSourceSaveDirectoriesPaths( const UWorld* world, TArray<FString>& out_sourceSaves){ }
 UFGSaveSystem* UFGSaveSystem::Get(  UWorld* world){ return nullptr; }
 UFGSaveSystem* UFGSaveSystem::Get(  UObject* worldContext){ return nullptr; }
-void UFGSaveSystem::FindSaveGames( TArray<FSaveHeader>& out_saveGames, bool newestFirst){ }
-void UFGSaveSystem::GetAllSavesPerSession( TArray< FSessionSaveStruct >& out_sessions){ }
+void UFGSaveSystem::EnumerateSaveGames( FOnEnumerateSaveGamesComplete onCompleteDelegate, void* userData){ }
+void UFGSaveSystem::GroupSavesPerSession( const TArray< FSaveHeader >& saves, TArray< FSessionSaveStruct >& out_groupedBySession){ }
+void UFGSaveSystem::SortSessions( UPARAM(ref) TArray< FSessionSaveStruct >& sessions, ESaveSortMode sortMode, ESaveSortDirection sortDirection){ }
+void UFGSaveSystem::SortSaves( UPARAM(ref) TArray< FSaveHeader >& saves, ESaveSortMode sortMode, ESaveSortDirection sortDirection){ }
+ESaveState UFGSaveSystem::GetSaveState( const FSaveHeader& saveGame){ return ESaveState(); }
 bool UFGSaveSystem::IsSessionNameUsed( FString sessionName) const{ return bool(); }
 void UFGSaveSystem::AddSessionNameToUsed( FString sessionName){ }
 bool UFGSaveSystem::IsValidSaveName( FString saveName){ return bool(); }
-bool UFGSaveSystem::SaveGameExists( FString saveName){ return bool(); }
-ESaveExists UFGSaveSystem::GetSaveExists( const FString& saveName, const FString& currentSessionName){ return ESaveExists(); }
-bool UFGSaveSystem::DeleteSave( FString saveName){ return bool(); }
+bool UFGSaveSystem::SaveGameExistsSync( FString saveName){ return bool(); }
+ESaveExists UFGSaveSystem::GetCachedSaveExists( const TArray<FSaveHeader>& cachedSaves, const FString& saveName, const FString& currentSessionName){ return ESaveExists(); }
+void UFGSaveSystem::DeleteSaveFiles( const TArray<FString>& saveNames, FOnDeleteSaveGameComplete completeDelegate, void* userData){ }
 bool UFGSaveSystem::GetAbsolutePathForSaveGame( const UWorld* world, const FString& saveName, FString& out_absoluteSaveGame){ return bool(); }
 FString UFGSaveSystem::CreateAbsolutePath( const UWorld* world, const FString& saveName, bool saveInCommonDir){ return FString(); }
 FString UFGSaveSystem::SanitizeMapName( const FString& mapName){ return FString(); }

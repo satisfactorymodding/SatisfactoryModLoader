@@ -15,5 +15,5 @@ class FACTORYGAME_API UFGAttackCustomRadial : public UFGAttack
 {
 	GENERATED_BODY()
 public:
-	virtual void PerformAttack( TScriptInterface< IFGAggroTargetInterface >	aggroTarget, class AFGEnemy* sourceActor ) override;
+	virtual void PerformAttack( TScriptInterface< class IFGAggroTargetInterface >	aggroTarget, class AFGEnemy* sourceActor ) override;
 };

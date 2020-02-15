@@ -15,8 +15,41 @@ struct FACTORYGAME_API FAnimInstanceProxyRailRoadVehicle : public FAnimInstanceP
 {
 	GENERATED_BODY()
 
-	FAnimInstanceProxyRailRoadVehicle() : FAnimInstanceProxy()
-	{}
+	FAnimInstanceProxyRailRoadVehicle() : FAnimInstanceProxy(),
+		mDeltaTime(0),
+		mFrontBogieRotation(EForceInit::ForceInitToZero),
+		mBackBogieRotation(EForceInit::ForceInitToZero),
+		mWheelRotation(EForceInit::ForceInitToZero),
+		mFrontConnectorRotation(EForceInit::ForceInitToZero),
+		mFrontConnectorTranslation(EForceInit::ForceInitToZero),
+		mBackConnectorRotation(EForceInit::ForceInitToZero),
+		mBackConnectorTranslation(EForceInit::ForceInitToZero),
+		mTrackCurvature(EForceInit::ForceInitToZero),
+		mForwardSpeed(0),
+		mTractiveForce(0),
+		mHandBrakeForce(0),
+		mThrottle(0),
+		mBrakeForce(0),
+		mHandBrakeForceSpeed(0),
+		mHandBrakeGlow(0),
+		mHandBrakeVfxSpawn(0),
+		mAGBrakePlayRate(0),
+		mIsMoving(false),
+		mIsUsingHandBrake(false),
+		mIsLocomotive(false),
+		mHasPower(false),
+		mAGThrottleZero(false),
+		mAGThrottlePositive(false),
+		mAGStartToRunningTransition(false),
+		mAGHandBrakeTransition01(false),
+		mAGHandBrakeTransition02(false),
+		mAGBrakeForcePositive(false),
+		mAGBrakeToRunningTransition(false),
+		mAGHandBrakeReset01(false),
+		mAGHandBrakeReset02(false),
+		mAGHandBrakeStop(false)
+	{
+	}
 
 	FAnimInstanceProxyRailRoadVehicle( UAnimInstance* Instance ) : FAnimInstanceProxy( Instance )
 	{
@@ -241,7 +274,7 @@ private:
 
 	/** Sound for when braking stops and steam occurs */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
-	UAkAudioEvent* mBrakeSound;
+	class UAkAudioEvent* mBrakeSound;
 
 	/** Template for brake effect */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )

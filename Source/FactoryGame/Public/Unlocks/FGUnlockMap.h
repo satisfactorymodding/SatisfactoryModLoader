@@ -17,6 +17,6 @@ class FACTORYGAME_API UFGUnlockMap : public UFGUnlock
 
 public:
 	// Begin FGUnlock interface
-	virtual void Unlock( class AFGUnlockSubsystem* unlockSubssytem ) override;
+	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 };

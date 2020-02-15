@@ -2,4 +2,5 @@
 
 #include "FGSubsystemClasses.h"
 
+UFGSubsystemClasses::UFGSubsystemClasses(){ }
 UFGSubsystemClasses* UFGSubsystemClasses::Get(){ return nullptr; }

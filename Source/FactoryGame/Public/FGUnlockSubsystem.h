@@ -23,6 +23,8 @@ class FACTORYGAME_API AFGUnlockSubsystem : public AFGSubsystem, public IFGSaveIn
 	GENERATED_BODY()
 
 public:
+	AFGUnlockSubsystem();
+
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	// End AActor interface
@@ -61,18 +63,18 @@ public:
 	FORCEINLINE bool GetIsBuildingEfficiencyUnlocked() const { return mIsBuildingEfficiencyUnlocked; }
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	FORCEINLINE bool GetIsBuildingOverclockUnlocked() const { return mIsBuildingOverclockUnlocked; }
-	UFUNCTION( BlueprintPure, Category = "Unlocks" )
-	FORCEINLINE int32 GetNumInventorySlotsUnlocked() const { return mNumAdditionalInventorySlots; }
-	UFUNCTION( BlueprintPure, Category = "Unlocks" )
-	FORCEINLINE int32 GetNumArmEquipmentSlotsUnlocked() const { return mNumAdditionalArmEquipmentSlots; }
-
+	
 	UFUNCTION( BlueprintCallable, Category = "Resource Scanner" )
 	void RemoveAllScannableResources() { mScannableResources.Empty(); }
 
-protected:
-	/** Function that will be fired from the PurchasedSchematicDelegate in FGSchematicManager */
 	UFUNCTION()
 	void OnSchematicPurchased( TSubclassOf< class UFGSchematic > newSchematic );
+
+	void SetTotalNumInventorySlots( int32 totalNumSlots );
+	void SetTotalNumArmEquipmentSlots( int32 totalNumSlots );
+
+	int32 GetNumTotalInventorySlots() const { return mNumTotalInventorySlots; }
+	int32 GetNumTotalArmEquipmentSlots() const { return mNumTotalArmEquipmentSlots; }
 
 private:
 	void SetNumOfAdditionalInventorySlots( int32 newNumSlots );
@@ -128,10 +130,17 @@ private:
 	bool mIsBuildingOverclockUnlocked;
 
 	/** How many additional inventory slots have been unlocked for the players */
-	UPROPERTY( Replicated )
 	int32 mNumAdditionalInventorySlots;
 
+	/** The highest total number of inventory slots that any player have ever had, saved for save compatibility and rebalancing */
+	UPROPERTY( Savegame, Replicated )
+	int32 mNumTotalInventorySlots;
+
 	/** How many additional arm equipment slots have been unlocked for the players */
-	UPROPERTY( Replicated )
 	int32 mNumAdditionalArmEquipmentSlots;
+
+	/** The highest total number of arm equipment slots that any player have ever had, saved for save compatibility and rebalancing */
+	UPROPERTY( Savegame, Replicated )
+	int32 mNumTotalArmEquipmentSlots;
+
 };

@@ -82,8 +82,17 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE bool GetSupportsStacking() { return mSupportsStacking; }
 
+	/** Custom tick event for updating UI that needs frequent updates. If custom tick rate <= 0.f this event will not trigger */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Custom Tick" )
+	void OnCustomTick( float UpdateTime );
+
+	/** Get the rate for the timer that triggers the custom tick */
+	UFUNCTION( BlueprintPure, Category = "Custom Tick" )
+	FORCEINLINE float GetCustomTickRate() const { return mCustomTickRate; }
+
 protected: 
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 	virtual void NativeOnRemovedFromFocusPath( const FFocusEvent& InFocusEvent ) override;
 	// Requirement check to verify before calling blueprint Init
 	virtual bool NativeCanCallInit();
@@ -138,6 +147,17 @@ protected:
 	/** Should gamepad act as cursor when using this widget? */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
 	bool mUseGamepadCursor;
+
+	/** The rate for the timer that triggers the custom tick. If <= 0.f no timer will be started */
+	UPROPERTY( EditDefaultsOnly, Category = "Custom Tick" )
+	float mCustomTickRate;
+
+	/** True if the custom tick event be called on construct. If <= 0.f no event will be triggered */
+	UPROPERTY( EditDefaultsOnly, Category = "Custom Tick" )
+	bool mCallCustomTickOnConstruct;
+
+	/** The timer handle for the custom tick event */
+	FTimerHandle mCustomTickTimerHandle;
 
 	/** Used to give focus to an object when nothing else has focus */
 	UPROPERTY()

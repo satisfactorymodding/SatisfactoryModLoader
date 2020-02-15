@@ -23,6 +23,10 @@ void UFGReplicationGraph::OnFactoryProductionStatusChanged(  AFGBuildable* build
 EClassRepPolicy UFGReplicationGraph::GetMappingPolicy( UClass* inClass){ return EClassRepPolicy(); }
 void UFGReplicationGraph::LogCurrentActorDependencyList( FGlobalActorReplicationInfo& actorInfo, FString& logMarker){ }
 UReplicationGraphNode_AlwaysRelevant_ForConnection* UFGReplicationGraph::GetAlwaysRelevantNodeForConnection( UNetConnection* Connection){ return nullptr; }
+void UFGReplicationGraphNode_ConditionallyAlwaysRelevant::GatherActorListsForConnection( const FConnectionGatherActorListParameters& Params){ }
+void UFGReplicationGraphNode_ConditionallyAlwaysRelevant::NotifyAddNetworkActor( const FNewReplicatedActorInfo& ActorInfo){ }
+bool UFGReplicationGraphNode_ConditionallyAlwaysRelevant::NotifyRemoveNetworkActor( const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound ){ return bool(); }
+void UFGReplicationGraphNode_ConditionallyAlwaysRelevant::NotifyResetAllNetworkActors(){ }
 void UFGReplicationGraphNode_AlwaysRelevant_ForConnection::GatherActorListsForConnection( const FConnectionGatherActorListParameters& Params){ }
 void UFGReplicationGraphNode_AlwaysRelevant_ForConnection::OnLevelVisibilityAdd( FName levelName, UWorld* world){ }
 void UFGReplicationGraphNode_AlwaysRelevant_ForConnection::OnLevelVisibilityRemove( FName levelName){ }

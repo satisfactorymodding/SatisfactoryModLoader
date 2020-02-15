@@ -2,4 +2,4 @@
 
 #include "FGUnlockMap.h"
 
-void UFGUnlockMap::Unlock(  AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockMap::Apply(  AFGUnlockSubsystem* unlockSubssytem){ }

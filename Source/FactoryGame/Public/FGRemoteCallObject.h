@@ -1,9 +1,11 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "GameFramework/Actor.h"
 #include "UObject/Class.h"
 
 #include "UObject/NoExportTypes.h"
+#include "FGConstructionMessageInterface.h"
 #include "FGRemoteCallObject.generated.h"
 
 /**
@@ -27,6 +29,11 @@ public:
 	/** Helper function to get the game state. Can't be done in BluePrint since the GetGameState function hides it world context pin */
 	UFUNCTION( BlueprintPure, Category = "Game State" )
 	class AFGGameState* GetGameState();
+
+	void SendHologramConstructMessage( class AFGBuildGun* buildGun, class AFGHologram* hologram, AActor* upgradedActor = nullptr );
+
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_ConstructHologram( FNetConstructionID netConstructionID, FConstructHologramMessage message );
 protected:
 
 	/** Returns the cast outer as a FGPlayerControlelr */

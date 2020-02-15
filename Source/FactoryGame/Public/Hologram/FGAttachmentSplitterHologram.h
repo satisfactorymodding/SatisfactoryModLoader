@@ -21,7 +21,7 @@ public:
 
 	// Begin AFGHologram Interface
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
-	virtual bool MultiStepPlacement() override;
+	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	virtual AActor* GetUpgradedActor() const override;
 	// End AFGHologram Interface
 

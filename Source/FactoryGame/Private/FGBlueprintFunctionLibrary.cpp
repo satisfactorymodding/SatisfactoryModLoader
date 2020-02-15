@@ -4,6 +4,8 @@
 
 AActor* UFGBlueprintFunctionLibrary::GetOuterActor( const UObject* obj){ return nullptr; }
 void UFGBlueprintFunctionLibrary::ShowOutline(  UPrimitiveComponent* comp, EOutlineColor color){ }
+void UFGBlueprintFunctionLibrary::OccludeOutlineByComponent(  UPrimitiveComponent* comp, bool occlude){ }
+void UFGBlueprintFunctionLibrary::OccludeOutlineByActor(  AActor* actor, bool occlude){ }
 void UFGBlueprintFunctionLibrary::HideOutline(  UPrimitiveComponent* comp){ }
 void UFGBlueprintFunctionLibrary::UpdateUseState( UPARAM( ref ) FUseState& state, TSubclassOf< UFGUseState > newState){ }
 void UFGBlueprintFunctionLibrary::Cheat_GetAllDescriptors( TArray< TSubclassOf<  UFGItemDescriptor > >& out_descriptors){ }
@@ -23,6 +25,8 @@ void UFGBlueprintFunctionLibrary::AddFactoryObjectToSignificanceManager( UObject
 void UFGBlueprintFunctionLibrary::RemoveFactoryObjectFromSignificanceManager( UObject* WorldContextObject, UObject* obj){ }
 void UFGBlueprintFunctionLibrary::AddConveyorBeltToSignificanceManager( UObject* WorldContextObject, UObject* obj){ }
 void UFGBlueprintFunctionLibrary::RemoveConveyorBeltFromSignificanceManager( UObject* WorldContextObject, UObject* obj){ }
+void UFGBlueprintFunctionLibrary::AddPipelineToSignificanceManager( UObject* WorldContextObject, UObject* obj){ }
+void UFGBlueprintFunctionLibrary::RemoveFromSignificanceManagerGeneric( UObject* WorldContextObject, UObject* obj){ }
 void UFGBlueprintFunctionLibrary::AddGainSignificanceObjectToSignificanceManager( UObject* WorldContextObject, UObject* obj, float desiredGainDistance){ }
 void UFGBlueprintFunctionLibrary::RemoveGainSignificanceObjectFromSignificanceManager( UObject* WorldContextObject, UObject* obj){ }
 void UFGBlueprintFunctionLibrary::AddAudioVolumeToSignificanceManager( UObject* WorldContextObject, UObject* obj){ }
@@ -41,6 +45,7 @@ void UFGBlueprintFunctionLibrary::GetAllBuildCategories( UObject* worldContext, 
 void UFGBlueprintFunctionLibrary::GetAvailableRecipesInCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
 void UFGBlueprintFunctionLibrary::GetAvailableRecipesInSubCategory( UObject* worldContext, TSubclassOf< UFGBuildSubCategory > subCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
 void UFGBlueprintFunctionLibrary::GetAvailableSubCategoriesForCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGBuildSubCategory > >& out_subCategories){ }
+void UFGBlueprintFunctionLibrary::GetSubCategoriesForSchematicCategory( UObject* worldContext, TSubclassOf< UFGSchematicCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ }
 void UFGBlueprintFunctionLibrary::GetAllWidgetsOfClassInHierarchy( UWidget* hierarchyContext, TSubclassOf< UWidget > widgetClass, TArray< UWidget* >& foundWidgets){ }
 TArray< TSubclassOf< class UFGItemDescriptor > > UFGBlueprintFunctionLibrary::GetAllItemsInCategory( UObject* worldContext, TSubclassOf< UFGItemCategory > itemCategory){ return TArray<TSubclassOf<class UFGItemDescriptor> >(); }
 TArray< TSubclassOf< class UFGItemCategory > > UFGBlueprintFunctionLibrary::GetCategoriesWithAffordableRecipes( AFGCharacterPlayer* playerPawn, TSubclassOf< UObject > forProducer){ return TArray<TSubclassOf<class UFGItemCategory> >(); }
@@ -52,3 +57,4 @@ FString UFGBlueprintFunctionLibrary::LinearColorToHex( FLinearColor inColor){ re
 void UFGBlueprintFunctionLibrary::AddPopup( APlayerController* controller, FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass , UObject* popupInstigator ){ }
 void UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass , UObject* popupInstigator ){ }
 void UFGBlueprintFunctionLibrary::ClosePopup( APlayerController* controller){ }
+AFGPlayerController* UFGBlueprintFunctionLibrary::GetLocalPlayerController( const UObject* worldContext){ return nullptr; }

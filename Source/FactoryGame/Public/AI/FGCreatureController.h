@@ -5,7 +5,7 @@
 #include "UObject/Class.h"
 
 #include "AIController.h"
-#include "Perception/AIPerceptionComponent.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "FGCreatureController.generated.h"
 
 /**

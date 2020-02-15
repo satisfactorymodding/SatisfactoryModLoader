@@ -57,7 +57,10 @@ struct FACTORYGAME_API FRemoveEmitterID
 {
 	GENERATED_BODY()
 public:
-	FRemoveEmitterID(){}
+	FRemoveEmitterID() :
+		Owner(nullptr)
+	{
+	}
 
 	FRemoveEmitterID( UObject* owner, int32 UID ) :
 		Owner( owner ),
@@ -76,7 +79,11 @@ struct FACTORYGAME_API FSetEmitterID
 {
 	GENERATED_BODY()
 public:
-	FSetEmitterID(){}
+	FSetEmitterID() :
+		Owner(nullptr),
+		AttachRoot(nullptr)
+	{
+	}
 
 	FSetEmitterID( UObject* owner,
 				   USceneComponent* attachRoot,

@@ -2,6 +2,8 @@
 
 #include "FGMapAreaTexture.h"
 
+#if WITH_EDITORONLY_DATA
+#endif 
 #if WITH_EDITOR
 void UFGMapAreaTexture::PostEditChangeProperty(  FPropertyChangedEvent& propertyChangedEvent){ }
 void UFGMapAreaTexture::GenerateAreaData( bool reopenAssetEditor, TArray<UPackage*>& out_modifiedAddedPackages){ }

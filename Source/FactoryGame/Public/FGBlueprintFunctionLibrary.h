@@ -13,6 +13,7 @@
 #include "FGInventoryComponent.h"
 #include "UI/FGPopupWidget.h"
 #include "FGOnlineSessionSettings.h"
+#include "FGRecipe.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
 
 UENUM( BlueprintType )
@@ -36,6 +37,14 @@ public:
 	/** Show a outline for the following primitive component */
 	UFUNCTION( BlueprintCallable, Category = "Useable" )
 	static void ShowOutline( class UPrimitiveComponent* comp, EOutlineColor color );
+
+	/** Let a component occlude the outline */
+	UFUNCTION( BlueprintCallable, Category = "Useable" )
+	static void OccludeOutlineByComponent( class UPrimitiveComponent* comp, bool occlude );
+
+	/** Let a actor occlude the outline */
+	UFUNCTION( BlueprintCallable, Category = "Useable" )
+	static void OccludeOutlineByActor( class AActor* actor, bool occlude );
 
 	/** hide the outline for the following primitive component */
 	UFUNCTION( BlueprintCallable, Category = "Useable" )
@@ -115,8 +124,16 @@ public:
 	static void AddConveyorBeltToSignificanceManager( UObject* WorldContextObject, UObject* obj );
 
 	/** Removes conveyor belt be handled by significance manager */
-	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
+	UFUNCTION( BlueprintCallable, Category = "Game", meta = (WorldContext = "WorldContextObject") )
 	static void RemoveConveyorBeltFromSignificanceManager( UObject* WorldContextObject, UObject* obj );
+
+	/** Adds pipeline to be handled by significance manager */
+	UFUNCTION( BlueprintCallable, Category = "Game", meta = (WorldContext = "WorldContextObject") )
+	static void AddPipelineToSignificanceManager( UObject* WorldContextObject, UObject* obj );
+
+	/** Generic removal function for objects in significance manager. Use this if you don't need to do any special operations when removing from significance manager */
+	UFUNCTION( BlueprintCallable, Category = "Game", meta = (WorldContext = "WorldContextObject") )
+	static void RemoveFromSignificanceManagerGeneric( UObject* WorldContextObject, UObject* obj );
 
 	/** Adds an object that should gain/lose significance on distance */
 	UFUNCTION( BlueprintCallable, Category = "Game", meta = ( WorldContext = "WorldContextObject" ) )
@@ -219,6 +236,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Build Category" )
 	static void GetAvailableSubCategoriesForCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGBuildSubCategory > >& out_subCategories );
 
+	/** Returns all sub categories for a schematic category */
+	UFUNCTION( BlueprintCallable, Category = "Build Category" )
+	static void GetSubCategoriesForSchematicCategory( UObject* worldContext, TSubclassOf< UFGSchematicCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGSchematicCategory > >& out_subCategories );
+
 	/** Finds a widget of a certain class in the hierarchy of the passed widget. Does a breadth-first search of the tree.*/
 	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "hierarchyContext", DeterminesOutputType = "widgetClass", DynamicOutputParam = "foundWidgets" ), Category = "Widget" )
 	static void GetAllWidgetsOfClassInHierarchy( UWidget* hierarchyContext, TSubclassOf< UWidget > widgetClass, TArray< UWidget* >& foundWidgets );
@@ -259,15 +280,19 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Factory" )
 	static FString LinearColorToHex( FLinearColor inColor );
 
-	/** Adds a popup to the qu� */
+	/** Adds a popup to the queue */
+	UE_DEPRECATED(4.21, "Please use AddPopupWithCloseDelegate instead")
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "ConfirmClickDelegate", DeprecatedFunction, DeprecationMessage="Please use AddPopupWithCloseDelegate instead" ) )
 	static void AddPopup( APlayerController* controller, FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID = PID_OK, TSubclassOf< UUserWidget > popupClass = nullptr, UObject* popupInstigator = nullptr );
 
-	/** Adds a popup to the qu� */
+	/** Adds a popup to the queue */
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "CloseDelegate" ) )
 	static void AddPopupWithCloseDelegate( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, EPopupId PopupID = PID_OK, TSubclassOf< UUserWidget > popupClass = nullptr, UObject* popupInstigator = nullptr );
 
 	/** Close the popup that is currently showing. If no popup is showing, don't do anything */	
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void ClosePopup( APlayerController* controller );
+
+	// Find and return a local player
+	static class AFGPlayerController* GetLocalPlayerController( const UObject* worldContext );
 };

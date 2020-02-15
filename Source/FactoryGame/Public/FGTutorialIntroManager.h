@@ -26,11 +26,26 @@ enum class EIntroTutorialSteps :uint8
 	ITS_IRON_ORE		UMETA( DisplayName = "Pick up iron ore" ),
 	ITS_HUB				UMETA( DisplayName = "Build a hub" ),
 	ITS_HUB_LVL1		UMETA( DisplayName = "Upgrade Hub to lvl 1" ),
+	ITS_HUB_LVL1_5		UMETA( DisplayName = "Upgrade Hub to lvl 1.5" ),
 	ITS_HUB_LVL2		UMETA( DisplayName = "Upgrade Hub to lvl 2" ),
 	ITS_HUB_LVL3		UMETA( DisplayName = "Upgrade Hub to lvl 3" ),
 	ITS_HUB_LVL4		UMETA( DisplayName = "Upgrade Hub to lvl 4" ),
 	ITS_HUB_LVL5		UMETA( DisplayName = "Upgrade Hub to lvl 5" ),
 	ITS_DONE			UMETA( DisplayName = "Done with intro" )
+};
+
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FRecipeAmountPair
+{
+	GENERATED_BODY()
+
+	/** Recipe to give player */
+	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
+	TSubclassOf< class UFGRecipe > Recipe;
+
+	/** How many of given recipe */
+	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
+	int32 Amount;
 };
 
 USTRUCT( BlueprintType )
@@ -117,7 +132,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Tutorial" )
 	void SetInputGatesFromTutorialLevel( class AFGPlayerController* playerController );
 
-	struct FDisabledInputGate* GetInputGatesFromTutorialLevel();
+	struct FDisabledInputGate GetInputGatesFromTutorialLevel();
 
 	/** Spawns and sets up necessary stuff for the drop pod sequence */
 	void SetupDropPod( class AFGCharacterPlayer* forPlayer );
@@ -157,7 +172,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Tutorial" )
 	FORCEINLINE bool GetCanSkipTutorial() const { return mCanIntroBeSkipped; }
 
-
+	/** Gives resoures to player that they need to build things they should have built playing the tutorial */
+	void GiveTutorialResources( class AFGCharacterPlayer* inPlayer );
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -233,7 +249,7 @@ private:
 	bool mHasCompletedIntroTutorial;
 
 	/** Indicates that the introduction sequence is done (right now, drop pod sequence) */
-	UPROPERTY( SaveGame )
+	UPROPERTY( Replicated, SaveGame )
 	bool mHasCompletedIntroSequence;
 
 	/** The class of the trading post */
@@ -279,6 +295,14 @@ private:
 	UPROPERTY( SaveGame )
 	bool mDidStep1Upgrade;
 
+	/** Reference to the class step 1.5 tutorial schematic */
+	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
+	TSubclassOf< class UFGSchematic > mStep1_5UpgradeSchematic;
+
+	/** Bool for the step 1.5 schematic */
+	UPROPERTY( SaveGame )
+	bool mDidStep1_5Upgrade;
+
 	/** Reference to the class step 2 tutorial schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
 	TSubclassOf< class UFGSchematic > mStep2UpgradeSchematic;
@@ -319,10 +343,6 @@ private:
 	UPROPERTY( Replicated )
 	class AFGStartingPod* mStartingPod;
 
-	/** Override for skipping the tutorial when playing in PIE */
-	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" ) 
-	bool mSkipTutorialInPIE;
-
 	/** The upgrade level we have on our trading post */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_TradingPostLevel )
 	int32 mTradingPostLevel;
@@ -346,4 +366,8 @@ private:
 	float mCurrentStepWaitTime;
 
 	uint8 mStartupFrameCounter = 0; //[DavalliusA:Wed/03-04-2019] a way to stop initilization of the start value to trigger effect from changes
+
+	/** List of recipes that player should get the items of if the player chooses to skip the tutorial */
+	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
+	TArray< FRecipeAmountPair > mRecipesToGivePlayersSkippingTutorial;
 };

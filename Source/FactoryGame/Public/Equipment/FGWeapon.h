@@ -11,7 +11,6 @@
 #include "FGEquipmentAttachment.h"
 #include "FGWeapon.generated.h"
 
-static const FName ReloadAction( TEXT( "Reload" ) );
 
 /**
  * Base class for a weapon in the game, this provides basic firing logic only and does not specify if it's a instant hit or projectile weapon.

@@ -8,17 +8,16 @@ void UFGSaveSession::Init( bool willLoad){ }
 UFGSaveSession* UFGSaveSession::Get(  UWorld* world){ return nullptr; }
 UFGSaveSession* UFGSaveSession::Get(  UObject* worldContext){ return nullptr; }
 void UFGSaveSession::RoutePostLoadGame(){ }
-bool UFGSaveSession::SaveGame( FString fileName){ return bool(); }
-bool UFGSaveSession::ReadRawSaveGameData( FString saveGameName, TArray< uint8 >& out_rawSaveData) const{ return bool(); }
-bool UFGSaveSession::LoadGame( FString saveName){ return bool(); }
+void UFGSaveSession::SaveGame( const FString& fileName, FOnSaveGameComplete completeDelegate, void* userData){ }
+bool UFGSaveSession::ReadRawSaveGameData( const FString& saveGameName, TArray< uint8 >& out_rawSaveData) const{ return bool(); }
+bool UFGSaveSession::LoadGame( const FString& saveName){ return bool(); }
 bool UFGSaveSession::SerializeHeader( FArchive& Ar, FSaveHeader& saveHeader){ return bool(); }
 FString UFGSaveSession::SaveNameToFileName( const FString& saveName){ return FString(); }
 void UFGSaveSession::SharedInventoryPtrLoaded(  FSharedInventoryStatePtr& ptr){ }
 void UFGSaveSession::Autosave(){ }
 void UFGSaveSession::SetAutosaveInterval( int32 newInterval){ }
-void UFGSaveSession::DeleteSave( FString sessionName, int32 autosaveNum){ }
 UWorld* UFGSaveSession::GetWorld() const{ return nullptr; }
-FString UFGSaveSession::GenerateAutosaveName( int32& out_autosaveNum, FString sessionName){ return FString(); }
+FString UFGSaveSession::GenerateAutosaveName( int32& out_autosaveNum, const FString& sessionName){ return FString(); }
 FString UFGSaveSession::GetFullMapName() const{ return FString(); }
 void UFGSaveSession::SetupAutosave(){ }
 void UFGSaveSession::SortObjectsByDependency( TArray< UObject* >& io_objectsToSerialize){ }
@@ -28,7 +27,8 @@ void UFGSaveSession::GenerateRootSet( TArray<UObject*>& out_rootSet){ }
 void UFGSaveSession::LoadDestroyActors(){ }
 void UFGSaveSession::PrepareLevelActors( bool prepareForLoad){ }
 void UFGSaveSession::OnActorDestroyed( AActor* destroyedActor){ }
-void UFGSaveSession::SaveWorldImplementation( FString gameName){ }
+void UFGSaveSession::SaveWorldEndOfFrame(  UWorld* world, ELevelTick, float){ }
+void UFGSaveSession::SaveWorldImplementation( const FString& gameName){ }
 bool UFGSaveSession::SaveToDiskWithCompression(const FString& fullFilePath, FBufferArchive& memArchive, FSaveHeader& saveHeader){ return bool(); }
 bool UFGSaveSession::LoadCompressedFileFromDisk( const FString& saveGameName){ return bool(); }
 bool UFGSaveSession::LoadDeprecatedFileFromDisk( const FString& saveGameName){ return bool(); }

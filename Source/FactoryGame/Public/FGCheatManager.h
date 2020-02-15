@@ -7,7 +7,7 @@
 #include "UObject/Class.h"
 
 #include "GameFramework/CheatManager.h"
-#include "FGGameState.h"
+#include "FGGamePhaseManager.h"
 #include "Interfaces/OnlineSharedCloudInterface.h"
 #include "FGCheatManager.generated.h"
 
@@ -19,9 +19,17 @@ class FACTORYGAME_API UFGCheatManager : public UCheatManager
 public:
 	virtual void InitCheatManager() override;
 
+	// Begin UObject interface
+	virtual bool IsSupportedForNetworking() const override;
+	virtual int32 GetFunctionCallspace( UFunction* Function, void* Parameters, FFrame* Stack ) override;
+	virtual bool CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack ) override;
+	// End UObject interface
+
+	// For networking support
+	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags);
+
 	UFUNCTION( exec, Category = "Resources" )
 	virtual void NoCost( bool enabled );
-
 	UFUNCTION( exec )
 	virtual bool NoCost_Get();
 
@@ -54,6 +62,10 @@ public:
 
 	UFUNCTION( exec, Category = "Resources:-1", meta = ( ToolTip="Give the number of items specified." ))
 	virtual void GiveItemsSingle( TSubclassOf< class UFGItemDescriptor > resource, int32 NumberOfItems );
+
+	UFUNCTION( exec, Category = "Resources", meta = ( ToolTip = "Give the number of coupons specified" ) )
+	virtual void GiveResourceSinkCoupons( int32 NumCoupons );
+
 	UFUNCTION( exec, Category = "Player/Camera" )
 	virtual void PlayerFly( bool flyModeEnabled );
 	UFUNCTION( exec, Category = "Player/Camera" )
@@ -178,9 +190,6 @@ public:
 	UFUNCTION( exec, category = "Player/Camera" )
 	void ToggleCameraMode();
 
-	UFUNCTION( exec, category = "Log" )
-	void DumpFactoryStatsToLog();
-
 	UFUNCTION( exec, category = "Research" )
 	void GiveSchematicsOfTier( int32 tier );
 
@@ -264,9 +273,6 @@ public:
 	UFUNCTION( exec, category = "Log" )
 	void ListUnlockedRecipesAndSchematics();
 
-	UFUNCTION( exec, category = "Save/Load" )
-	void SaveWithNewSessionName( const FString& saveName, const FString& sessionName );
-
 	UFUNCTION( exec, category = "Log" )
 	void GetVehicleInfo();
 
@@ -319,10 +325,7 @@ public:
 	void DumpSchematics();
 
 	UFUNCTION( exec )
-	void FixupBuiltByRecipeInOldSave( bool reapplyRecipeIfBetterMatchFound = false );
-
-	UFUNCTION( exec )
-	void PrintStatichMeshesHirarchy();
+	void PrintStaticMeshesHierarchy();
 
 	UFUNCTION( exec )
 	void FlipVehicle();
@@ -356,6 +359,18 @@ public:
 
 	UFUNCTION( exec )
 	void ToggleTrainSelfDriving();
+
+	UFUNCTION( exec )
+	void FillFirstPipeInEachNetwork();
+
+	UFUNCTION( exec )
+	void EmptyAllPipes();
+
+	UFUNCTION( exec )
+	void ResetAllPipes();
+
+	UFUNCTION( exec )
+	void ToggleDebuggingOnPipe();
 
 public:
 	/** This is used to make picking the same classes in the cheat board easier */

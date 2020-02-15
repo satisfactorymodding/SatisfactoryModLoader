@@ -11,6 +11,8 @@
 #include "Curves/CurveFloat.h"
 #include "FGEnemyController.generated.h"
 
+class FGAggroTargetInterface;
+
 UENUM( BlueprintType )
 enum class EIgnore : uint8
 {

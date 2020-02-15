@@ -35,6 +35,25 @@ struct FACTORYGAME_API FCategory
 	FSlateBrush Icon;
 };
 
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FViscosityToPuddlePair
+{
+	GENERATED_BODY()
+	
+	FViscosityToPuddlePair() :
+		Viscosity( 0.f ),
+		Puddle( 0.f )
+	{}
+
+	/** Viscosity for this entry */
+	UPROPERTY( EditDefaultsOnly, meta=(ClampMin="0.0", ClampMax="100.0" ) )
+	float Viscosity;
+
+	/** Required puddle amount before this fluid viscosity can be moved from a fluid box [ 0 , 1 ] normalized fill amount */
+	UPROPERTY( EditDefaultsOnly, meta = ( ClampMin = "0.0", ClampMax = "1.0" ) )
+	float Puddle;
+};
+
 /**
  * Common settings for the factory buildings and their holograms.
  */
@@ -52,6 +71,9 @@ public:
 	/** Get a random dismantle sound to play. */
 	UFUNCTION( BlueprintPure, Category = "Buildable" )
 	static class UAkAudioEvent* GetRandomDismantleSound();
+
+	/** Get the puddle requirement for the given viscosity, see where it is used for more info about the puddeling. */
+	static float GetPuddleRequirementForViscosity( float viscosity );
 
 	/** Quick accessor to get the singleton instance */
 	static class UFGFactorySettings* Get();
@@ -77,6 +99,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
 	class UMaterialInstance* mDefaultOutputConnectionMaterial;
 
+	/** Material on hologram for directionally neutral connections. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
+	class UMaterialInstance* mDefaultNeutralConnectionMaterial;
+
 	/** Material on hologram for power connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
 	class UMaterialInstance* mDefaultPowerConnectionMaterial;
@@ -88,6 +114,14 @@ public:
 	/** Mesh used to visualize input or output connections direction. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
 	class UStaticMesh* mDefaultConveyorConnectionArrowMesh;
+
+	/** Mesh used to visualize pipeline connections location  @note Do not set in Code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
+	class UStaticMesh* mDefaultPipeConnectionFrameMesh;
+
+	/** Mesh used to visualize pipeline connections direction (Consumer / Producer) @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
+	class UStaticMesh* mDefaultPipeConnectionArrowMesh;
 
 	/** Mesh used to visualize power connections. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
@@ -180,4 +214,24 @@ public:
 	/** Names if the input actions that defines the shortcuts. This maps directly to their index (so first entry here should mean that it should call ExecuteShortcut 0) */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TArray< FName > mShortcutMap;
+
+	// Default rate of converting FluidBox content into inventory stacks. Measured in Liters / Second
+	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
+	int32 mFluidToInventoryStackRate;
+
+	// Default rate of converting Inventory stacks in to Fluid for FluidBox content. Measured in Liters / Second
+	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
+	int32 mInventoryStackToFluidRate;
+
+	/**	Pressure to add to all buildables with a PipeConnection output Fluid Box. This acts as a default pressure as if there was a pump inside every producing buildable.
+	*	This can be disabled per connection on the PipeConnectionFactory component
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
+	float mAddedPipeProductionPressure;
+
+	/** Float to float pairing the required normalized fill amount [ 0 , 1 ] a pipe must be before it can transfer liquid out for a given viscosity
+	*	Higher viscosities should require more significant puddling to get the feel of sluggishness through pipe segments. Intermediate values will be lerped to.
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
+	TArray< FViscosityToPuddlePair > mViscosityToPuddlePairs;
 };

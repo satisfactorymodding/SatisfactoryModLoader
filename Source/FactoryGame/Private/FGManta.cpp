@@ -5,6 +5,8 @@
 AFGManta::AFGManta(){ }
 void AFGManta::GainedSignificance_Implementation(){ }
 void AFGManta::LostSignificance_Implementation(){ }
+void AFGManta::GainedSignificance_Native(){ }
+void AFGManta::LostSignificance_Native(){ }
 float AFGManta::GetSignificanceRange(){ return float(); }
 void AFGManta::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGManta::BeginPlay(){ }

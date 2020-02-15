@@ -107,6 +107,8 @@ struct FACTORYGAME_API TStructOpsTypeTraits<FInventoryStack> : public TStructOps
 /** Others can hook up to this to allow/disallow items */
 DECLARE_DELEGATE_RetVal_TwoParams( bool, FItemFilter, TSubclassOf< UObject >, int32 );
 
+DECLARE_DELEGATE_RetVal_TwoParams( bool, FFormFilter, TSubclassOf< UFGItemDescriptor >, int32 );
+
 DECLARE_DYNAMIC_DELEGATE_RetVal_TwoParams( FVector, FGetItemDropLocation, const UFGInventoryComponent*, component, FInventoryStack, stack );
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnItemAdded, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numAdded );
@@ -180,8 +182,26 @@ public:
 
 	//@todoinventory REFACTOR we need to consider state here somehow.
 	/** @return true if the item is allowed in this inventory */
-	UFUNCTION( BlueprintPure, Category = "Inventory" )
+	UFUNCTION( BlueprintPure, CustomThunk, Category = "Inventory" )
 	bool IsItemAllowed( TSubclassOf< UFGItemDescriptor > item, const int32 idx = -1 ) const; //INDEX_NONE
+
+	//[FreiholtzK:Mon/16-12-2019] Temporary debug code that should be removed after we have managed to find what passes in a null item descriptor here
+	DECLARE_FUNCTION( execIsItemAllowed )
+	{
+		P_GET_OBJECT( UClass, Z_Param_item );
+		P_GET_PROPERTY( UIntProperty, Z_Param_idx );
+		P_FINISH;
+		static bool hasCaughtNullpeter = false;
+		if( Z_Param_item == nullptr && !hasCaughtNullpeter )
+		{
+			hasCaughtNullpeter = true;
+			const FString Trace = Stack.GetStackTrace();
+			UE_LOG( LogBlueprintUserMessages, Log, TEXT( "\nUFGInventoryComponent::IsItemAllowed is called with nullpeter from BP:\n%s" ), *Trace );
+		}
+		P_NATIVE_BEGIN;
+		*( bool* )Z_Param__Result = P_THIS->IsItemAllowed( Z_Param_item, Z_Param_idx );
+		P_NATIVE_END;
+	}
 
 	/**
 	 * @return true if the index is a valid index.
@@ -370,6 +390,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Slot Size" )
 	void AddArbitrarySlotSize( int32 index, int32 arbitrarySlotSize );
 
+	/** Removes an Arbitrary size for a slot. */
+	UFUNCTION( BlueprintCallable, Category = "Slot Size" )
+	void RemoveArbitrarySlotSize( int32 index );
+
 	/** This returns the arbitrary slot size if one is set, otherwise the stack size */
 	UFUNCTION( BlueprintPure, Category = "Slot Size" )
 	int32 GetSlotSize( int32 index, TSubclassOf< UFGItemDescriptor > itemDesc = nullptr ) const;
@@ -444,6 +468,9 @@ private:
 public:
 	/** Set this to filter out what items are allowed and not allowed in the inventory */
 	FItemFilter mItemFilter;
+
+	/** Set this to filter out items by EResourceForm */
+	FFormFilter mFormFilter;
 
 protected:
 	/** When we make an inventory by adding the component to an actor we use this to specify its size */

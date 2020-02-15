@@ -7,10 +7,16 @@
 
 #include "FGBuildableHologram.h"
 #include "Components/SplineComponent.h"
-#include "../FSplinePointData.h"
 #include "FGSplineHologram.generated.h"
 
-//@todo This is only used by the roads for now, use this for the conveyors/tracks as well.
+UENUM()
+enum class ESplineHologramBuildStep : uint8
+{
+	SHBS_FindStart,
+	SHBS_PlacePoleOrSnapEnding,
+	SHBS_AdjustPole
+};
+
 /**
  * Base hologram for all spline type holograms.
  */
@@ -26,17 +32,40 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor Interface
 
-	// Begin AFGHologram Interface
-	virtual TArray< FItemAmount > GetCost( bool includeChildren ) const override;
-	// End AFGHologram Interface
+	// Begin FGConstructionMessageInterface
+	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void ClientPreConstructMessageSerialization() override;
+	virtual void ServerPostConstructMessageDeserialization() override;
+	// End FGConstructionMessageInterface
 
+	// Handles the pending hologram state copy
+	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
+
+	/** Set point index directly */
+	//void SetActivePointIndex( int32 newIndex ){ mActivePointIdx = newIndex; }
+
+	/** Checks if we have snapped to any connection */
+	virtual bool IsConnectionSnapped( bool lastConnection );
+
+	/** Returns reference to spline point data */
+	void GetLastSplineData( FSplinePointData& data );
+
+	virtual void ResetBuildSteps();
+
+	FORCEINLINE ESplineHologramBuildStep GetCurrentBuildStep() { return mBuildStep; }
+
+	//shape test used for spline hologram clerance tests
+	bool CheckClearanceForShapeIgnoreStructure( FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params /*= FComponentQueryParams::DefaultComponentQueryParams */ );
 protected:
+	FORCEINLINE TArray<FSplinePointData> GetSplineData() const { return mSplineData; }
+
 	/** Update the spline on the client. */
 	UFUNCTION()
-	virtual void OnRep_SplineData();
+	void OnRep_SplineData();
 
-	/** Override this to return how many segments to pay for. Defaults to 1. */
-	virtual int32 GetNumCostSections() const;
+
+	/** Let children update their spline. */
+	virtual void UpdateSplineComponent();
 
 protected:
 	/** The spline component we're placing. */
@@ -44,6 +73,16 @@ protected:
 	class USplineComponent* mSplineComponent;
 
 	/** This is the data needed to create the spline component (local space). */
-	UPROPERTY( ReplicatedUsing = OnRep_SplineData )
+	UPROPERTY( ReplicatedUsing = OnRep_SplineData /*, CustomSerialization*/ )
 	TArray< FSplinePointData > mSplineData;
+
+	/** Used in the construction message to determine if this has snapped to an existing connection or not */
+	UPROPERTY( /*CustomSerialization*/ )
+	uint8 mIsConnectionSnappedOnConstruction;
+
+	UPROPERTY( Replicated )
+	ESplineHologramBuildStep mBuildStep = ESplineHologramBuildStep::SHBS_FindStart;
+
+	/** Index of the currently moved point. */
+	int32 mActivePointIdx;
 };

@@ -38,6 +38,7 @@ enum class EStackSize : uint8
 	SS_MEDIUM		UMETA( DisplayName = "Medium" ),
 	SS_BIG			UMETA( DisplayName = "Big" ),
 	SS_HUGE			UMETA( DisplayName = "Huge" ),
+	SS_FLUID		UMETA( DisplayName = "Fluid" ),
 	SS_LAST_ENUM	UMETA( Hidden )
 };
 
@@ -131,13 +132,44 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static int32 GetStackSize( TSubclassOf< UFGItemDescriptor > inClass );
 
+	/** 
+	* Returns the number of items of a certain type we can stack in one inventory slot converted by its resource form to match a unit specification
+	* eg. Liquid Descriptors will divided by 1000 to switch from liters to m^3
+	*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static float GetStackSizeConverted( TSubclassOf< UFGItemDescriptor > inClass );
+
 	/** Returns if this item can be discarded */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static bool CanBeDiscarded( TSubclassOf< UFGItemDescriptor > inClass );
 
+	/** Returns if we should store if this item ever has been picked up  */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static bool RememberPickUp( TSubclassOf< UFGItemDescriptor > inClass );
+
 	/** Returns the item category */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static TSubclassOf< UFGItemCategory > GetItemCategory( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the density if this is a fluid. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
+	static float GetFluidDensity( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the viscosity if this is a fluid. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
+	static float GetFluidViscosity( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the friction of this fluid. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
+	static float GetFluidFriction( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the color of this is a fluid. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
+	static FColor GetFluidColor( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the color of this fluid ( if it is one ) as type FLinearColor */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
+	static FLinearColor GetFluidColorLinear( TSubclassOf< UFGItemDescriptor > inClass );
 
 #if WITH_EDITOR
 	/** Delete all icons in the game that's referenced by a FGItemDescriptor */
@@ -217,6 +249,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	bool mCanBeDiscarded;
 
+	/** Do we want to know if this item ever has been picked up  */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	bool mRememberPickUp;
+
 	/** Energy value for this resource if used as fuel. In megawatt seconds (MWs), a.k.a. mega joule (MJ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	float mEnergyValue;
@@ -228,6 +264,10 @@ protected:
 	 */
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( ClampMin=0, UIMin=0, UIMax=1 ) )
 	float mRadioactiveDecay;
+
+	/** How many points you get from this item when consuming it in the resource sink */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	int32 mResourceSinkPoints;
 
 	/** The state of this resource (cannot change during it's lifetime). */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
@@ -288,6 +328,32 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Icon", meta=( ShowOnlyInnerProperties, NoAutoJSON = true) )
 	FItemView mIconView;
 #endif
+
+	// NOTE: Ideally we want a fluid descriptor but some fluids are already a raw resource so we cannot do multiple inheritance, so either we need refactor how descriptors work or we put them here for now.
+	/**
+	 * Density for this fluid.
+	 * Form must be liquid or gas for this to be useful.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
+	float mFluidDensity;
+	/**
+	 * Friction for this fluid, this is the friction inside the fluid itself.
+	 * Form must be liquid or gas for this to be useful.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
+	float mFluidViscosity;
+	/**
+	 * Friction for this fluid, this is the friction between the fluid and the pipe.
+	 * Form must be liquid or gas for this to be useful.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
+	float mFluidFriction;
+	/**
+	 * Color for this fluid, RGB is the color and A is the transparency of the fluid.
+	 * Form must be liquid or gas for this to be useful.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
+	FColor mFluidColor;
 
 private:
 	friend class FItemDescriptorDetails;

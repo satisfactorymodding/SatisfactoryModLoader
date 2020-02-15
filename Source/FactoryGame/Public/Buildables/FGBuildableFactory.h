@@ -66,6 +66,10 @@ public:
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
 	virtual	float GetSignificanceBias() override;
+	virtual float GetSignificanceRange() override { return mSignificanceRange; }
+	virtual void GainedSignificance_Native() override;
+	virtual void LostSignificance_Native() override;
+	virtual	void SetupForSignificance() override;
 	//End IFGSignificanceInterface
 
 	// Begin Factory_ interface
@@ -82,6 +86,10 @@ public:
 	virtual void OnReplicationDetailActorCreated() override;
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_BuildableFactory::StaticClass(); };
 	// End IFGReplicationDetailActorOwnerInterface
+
+	// Begin FGBuildable
+	virtual bool ShouldSkipBuildEffect() override;
+	// End FGBuildable
 
 	/** Get the connections to this factory. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Factory" )
@@ -217,28 +225,64 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Productivity" )
 	FORCEINLINE bool GetCanChangePotential() const { return mCanChangePotential; }
 
+	/** Get the stack size scalar for fluid types on this buildable ( this is only relevant to fluid inventories ) */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Inventory" )
+	FORCEINLINE float GetFluidInventoryStackSizeScalar() const { return mFluidStackSizeMultiplier; }
+
+	/** Get the override stack size scaled for fluid types. Specified in class / BP defaults */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Inventory" )
+	FORCEINLINE int32 GetScaledFluidStackSize( ) const { return mCachedFluidStackSize * mFluidStackSizeMultiplier; }
+
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Significance" )
-	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
+	FORCEINLINE bool GetIsSignificant() { return mIsSignificant || !mAddToSignificanceManager; }
 
 	/** Called when we want the looping SFX/VFX for production to start
 	  * @param didStartProducing - true if factory just started producing
 	  */
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Effects" )
 	void StartProductionLoopEffects( bool didStartProducing );
 
 	/** Called when we want the looping SFX/VFX for production to stop 
 	  * @param didStopProducing - true if the production stopped 
 	  */
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Effects" )
 	void StopProductionLoopEffects( bool didStopProducing );
 
-	/** Called when we want the looping SFX/VFX for idling ( power but no production ) to start */
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
-	void StartIdlingLoopEffects();
+	/** Called when we want the looping SFX/VFX for idling ( power but no production ) to start 
+	 * @param didGainPower - true if factory just got power
+	  */
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Effects" )
+	void StartIdlingLoopEffects( bool didGainPower );
 
-	/** Called when we want the looping SFX/VFX for idling ( power but no production ) to stop */
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
-	void StopIdlingLoopEffects();
+	/** Called when we want the looping SFX/VFX for idling ( power but no production ) to stop 
+	 * @param didLosePower - true if factory just lost power
+	  */
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Effects" )
+	void StopIdlingLoopEffects( bool didLosePower );
+
+	/** Called when we want the looping SFX/VFX for idling ( power but no production ) to stop. Will prevent StopIdlingLoopEffects to be called twice in a row 
+	 * @param didLosePower - true if factory just got power
+	  */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
+	void TryStopIdlingLoopEffects( bool didLosePower );
+
+	/** Called when we want the looping SFX/VFX for idling ( power but no production ) to start. Will prevent StartIdlingLoopEffects to be called twice in a row 
+	 * @param didGainPower - true if factory just got power
+	  */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
+	void TryStartIdlingLoopEffects( bool didGainPower );
+
+	/** Called when we want the looping SFX/VFX for production to stop. Will prevent StartProductionLoopEffects to be called twice in a row
+	  * @param didStopProducing - true if the production stopped
+	  */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
+	void TryStartProductionLoopEffects( bool didStartProducing );
+
+	/** Called when we want the looping SFX/VFX for production to stop. Will prevent StopProductionLoopEffects to be called twice in a row
+	  * @param didStopProducing - true if the production stopped
+	  */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
+	void TryStopProductionLoopEffects( bool didStopProducing );
 protected:
 	/** Called whenever HasPower has changed, exposed here for cleaner/more optimized ways of changing state when the factory has power */
 	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|Factory|Power")
@@ -247,6 +291,14 @@ protected:
 	/** Called whenever IsProducing has changed, exposed here for cleaner/more optimized ways of changing state when the factory is producing */
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Production" )
 	void OnIsProducingChanged( bool newIsProducing );
+
+	/** Native version of OnIsProducingChanged */
+	UFUNCTION( )
+	void OnIsProducingChanged_Native( bool newIsProducing );
+
+	/** Native version of OnHasPowerChanged */
+	UFUNCTION()
+	void OnHasPowerChanged_Native( bool newHasPower );
 
 	// Begin AFGBuildable interface
 	virtual void OnReplicatingDetailsChanged() override;
@@ -258,6 +310,17 @@ protected:
 	/** Try to collect input from connected buildings. */
 	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Factory|Production" )
 	void Factory_CollectInput();
+
+	/** Try to collect input from connected pipes */
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Factory|Production" )
+	void Factory_PullPipeInput( float dt );
+
+	/** Try to push fluid inventory to connected pipes 
+	*	This is contrary to always pulling like FactoryConnections. Pipes are handled very differently from buildings
+	*	so a push occurs so that each pipe doesn't need to differentiate between objects its connected to.
+	*/
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Factory|Production" )
+	void Factory_PushPipeOutput( float dt );
 
 	/** Start the production, client get this call replicated after the server. You must call Super if overriding this. */
 	virtual void Factory_StartProducing();
@@ -401,6 +464,14 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Productivity" )
 	float mMaxPotentialIncreasePerCrystal;
 
+	/** Item stack size Enum to use as base for how much fluid a Liquid / Gas Item descriptor can be stored on an index in an inventory */
+	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
+	EStackSize mFluidStackSizeDefault;
+
+	/** Scalar for multiplying the default Stack Size for Fluid Inventory Slots ( 1 is default. 2 == 2 * FluidStackSize )*/
+	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
+	int32 mFluidStackSizeMultiplier;
+
 	/** The player is able to toggle if production should be paused or not */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	bool mIsProductionPaused;
@@ -430,6 +501,9 @@ private:
 	/** Accumulator for the effect update interval */
 	float mEffectUpdateAccumulator;
 
+	/** Cached value of Fluid Resource Stack Size ( set in begin play from the default stack enum ) */
+	int32 mCachedFluidStackSize;
+
 	/** A replicated compressed version of the productivity */
 	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
 	uint8 mCurrentProductivity;
@@ -454,6 +528,12 @@ private:
 	/** if true, then blueprint has implemented Factory_CollectInput */
 	uint8 mHasFactory_CollectInput:1;
 
+	/** if true, then the blueprint has implemented Factory_PullPipeInput */
+	uint8 mHasFactory_PullPipeInput : 1;
+
+	/** if true, then the blueprint has implemented Factory_PushPipeOutput */
+	uint8 mHasFactory_PushPipeOutput : 1;
+
 	/** if true, then blueprint has implemented OnHasPowerChanged */
 	uint8 mHasOnHasPowerChanged :1;
 
@@ -474,8 +554,18 @@ private:
 
 	/** Indicates if the factory is within significance distance */
 	uint8 mIsSignificant : 1;
+
+	/** Indicates if we have already started the idling effects */
+	uint8 mDidStartIdlingEffects : 1;
+
+	/** Indicates if we have already started the production effects effects */
+	uint8 mDidStartProductionEffects : 1;
 protected:
 	/** Indicates if the factory should be handled by significance manager */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	uint8 mAddToSignificanceManager : 1;
+
+	/** The range to keep the factory in significance */
+	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
+	float mSignificanceRange;
 };

@@ -16,7 +16,7 @@ class FACTORYGAME_API AFGRailroadVehicleHologram : public AFGVehicleHologram
 	GENERATED_BODY()
 	
 public:
-	/** Do all custom initialization from mVehicleClass here. */
+	/** Do all custom initialization from mBuildClass here. */
 	virtual void BeginPlay() override;
 
 	// Begin AFGHologram interface
@@ -30,7 +30,7 @@ protected:
 	// End of AFGHologram interface
 
 	/** @copydoc AFGVehicleHologram::ConstructVehicle */
-	virtual class AFGVehicle* ConstructVehicle() const override;
+	virtual class AFGVehicle* ConstructVehicle( FNetConstructionID netConstructionID ) const override;
 	
 private:
 	/** Find overlapping railroad vehicles/tracks. */

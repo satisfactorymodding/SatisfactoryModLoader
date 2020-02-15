@@ -3,6 +3,7 @@
 #include "FGManufacturingButton.h"
 
 void UFGManufacturingButton::SetButton(  UButton* inButton){ }
+void UFGManufacturingButton::SetHoldTime( float inHoldTime){ }
 void UFGManufacturingButton::OnPressedButton(){ }
 void UFGManufacturingButton::OnReleasedButton(){ }
 void UFGManufacturingButton::NativeTick( const FGeometry& MyGeometry, float InDeltaTime){ }

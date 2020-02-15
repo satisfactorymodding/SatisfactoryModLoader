@@ -4,11 +4,15 @@
 
 UFGSignificanceManager::UFGSignificanceManager(){ }
 void UFGSignificanceManager::RegisterSignificanceObject( UObject* Object, EFGSignificanceType SignificanceType){ }
+void UFGSignificanceManager::RegisterObject(UObject* Object, FName Tag, FManagedObjectSignificanceFunction SignificanceFunction, EPostSignificanceType InPostSignificanceType , FManagedObjectPostSignificanceFunction InPostSignificanceFunction ){ }
+void UFGSignificanceManager::UnregisterObject(UObject* Object){ }
 void UFGSignificanceManager::Update( TArrayView<const FTransform> Viewpoints){ }
 FGainSignificanceData UFGSignificanceManager::GetClosestGainSignificanceData( UObject* inObject, float desiredDistance){ return FGainSignificanceData(); }
 void UFGSignificanceManager::DumpSignificanceManagedObjects(){ }
 void UFGSignificanceManager::UpdateConveyorBelts(){ }
 void UFGSignificanceManager::UpdateFactories(){ }
+void UFGSignificanceManager::UpdatePipelines(){ }
+void UFGSignificanceManager::UpdateSignificanceStatus( float oldSignificance, float newSignificance, UObject* inObject){ }
 FName UFGSignificanceManager::GetTagFromTagEnum( EFGSignificanceType InType){ return FName(); }
 void UFGSignificanceManager::OnComponentActivationChange( UParticleSystemComponent* PSC, bool bActivated){ }
 float UFGSignificanceManager::GenericTickSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint){ return float(); }
@@ -19,6 +23,8 @@ float UFGSignificanceManager::FactorySignificance( FManagedObjectInfo* Object, c
 void UFGSignificanceManager::FactoryPostSignificance( FManagedObjectInfo* ObjectInfo, float OldSignificance, float NewSignificance, bool bFinal){ }
 float UFGSignificanceManager::ConveyorBeltSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint){ return float(); }
 void UFGSignificanceManager::ConveyorBeltPostSignificance( FManagedObjectInfo* ObjectInfo, float OldSignificance, float NewSignificance, bool bFinal){ }
+float UFGSignificanceManager::PipelineSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint){ return float(); }
+void UFGSignificanceManager::PipelinePostSignificance( FManagedObjectInfo* ObjectInfo, float OldSignificance, float NewSignificance, bool bFinal){ }
 float UFGSignificanceManager::LowDistanceSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint){ return float(); }
 float UFGSignificanceManager::MidDistanceSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint){ return float(); }
 float UFGSignificanceManager::HighDistanceSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint){ return float(); }

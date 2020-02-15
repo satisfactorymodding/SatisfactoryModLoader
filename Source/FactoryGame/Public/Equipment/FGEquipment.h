@@ -60,6 +60,29 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	virtual void UnEquip();
 
+	/** Called on the owner, client or server but not both. */
+	void OnDefaultPrimaryFirePressed();
+
+	/** Only server implementation of primary fire */
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_DefaultPrimaryFire();
+
+	/** BP hook for implementing what should actually happen when pressing fire */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Equipment" )
+	void DoDefaultPrimaryFire();
+
+	/** Plays effects when using default primary fire */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Equipment" )
+	void DoDefaultPrimaryFireEffects();
+
+	/** Native only function that does default stuff needed for the default primary fire event */
+	UFUNCTION()
+	void DoDefaultPrimaryFire_Native();
+
+	/** Native only function that does default stuff needed for the default primary fire event */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	bool CanDoDefaultPrimaryFire();
+
 	/**
 	 * Is this equipment equipped.
 	 * @return - true if equiped; otherwise false.
@@ -155,6 +178,13 @@ public:
 	/** Sets if this is the first time this was equipped */
 	void SetFirstTimeEquipped( bool firstTime ) { mFirstTimeEquipped = firstTime; }
 
+	/** @return idle pose animation, can be NULL */
+	UFUNCTION( BlueprintPure, Category = "Driveable" )
+	class UAnimSequence* GetIdlePoseAnimation() const { return mIdlePoseAnimation; }
+
+	/** @return idle pose animation for 3p, can be NULL */
+	UFUNCTION( BlueprintPure, Category = "Driveable" )
+	class UAnimSequence* GetIdlePoseAnimation3p() const { return mIdlePoseAnimation3p; }
 protected:
 	/** Was the equipment equipped. */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
@@ -282,4 +312,16 @@ private:
 
 	/** Was this the first time equipping this */
 	uint8 mFirstTimeEquipped : 1;
+
+	/** Idle animation to play when equipped. Can be null if we don't want to play any special animation */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	class UAnimSequence* mIdlePoseAnimation;
+
+	/** Idle animation to play when equipped in 3p. Can be null if we don't want to play any special animation */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	class UAnimSequence* mIdlePoseAnimation3p;
+
+	/** Should we use the default primary fire implementation */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	bool mUseDefaultPrimaryFire;
 };

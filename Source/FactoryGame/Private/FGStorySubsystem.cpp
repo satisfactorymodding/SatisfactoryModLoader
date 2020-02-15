@@ -13,8 +13,7 @@ void AFGStorySubsystem::BeginPlay(){ }
 void AFGStorySubsystem::OnSchematicPurchased( TSubclassOf< UFGSchematic > newSchematic){ }
 void AFGStorySubsystem::AddPlayer(  AFGCharacterPlayer* inPlayer){ }
 void AFGStorySubsystem::OnPlayerAddedItemToInventory( TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
-void AFGStorySubsystem::OnResearchRecipeTimerComplete( TSubclassOf<class UFGResearchRecipe> researchRecipe){ }
-void AFGStorySubsystem::OnNewResearchRecipeAvailable( TSubclassOf<class UFGResearchRecipe> researchRecipe){ }
-void AFGStorySubsystem::OnResearchRewardClaimed( TSubclassOf<UFGResearchRecipe> researchRecipe){ }
+void AFGStorySubsystem::OnResearchRecipeTimerComplete( TSubclassOf<class UFGSchematic> schematic){ }
+void AFGStorySubsystem::OnResearchTreeUnlocked( TSubclassOf<UFGResearchTree> researchTree){ }
 void AFGStorySubsystem::OnMapAreaVisited( TSubclassOf<  UFGMapArea > mapArea){ }
 void AFGStorySubsystem::SetupDelegates(){ }

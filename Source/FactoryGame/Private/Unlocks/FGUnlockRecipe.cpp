@@ -5,3 +5,4 @@
 #if WITH_EDITORONLY_DATA
 #endif 
 void UFGUnlockRecipe::Unlock(  AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockRecipe::Apply(  AFGUnlockSubsystem* unlockSubssytem){ }

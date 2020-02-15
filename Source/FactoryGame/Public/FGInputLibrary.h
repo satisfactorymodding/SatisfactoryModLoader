@@ -16,7 +16,10 @@ struct FACTORYGAME_API FFGKeyMapping
 {
 	GENERATED_BODY()
 
-	FFGKeyMapping(){}
+	FFGKeyMapping() : 
+		IsAxisMapping( false )
+	{
+	}
 	
 	UPROPERTY( BlueprintReadOnly, Category = "Input" )
 	FInputActionKeyMapping ActionKeyMapping;

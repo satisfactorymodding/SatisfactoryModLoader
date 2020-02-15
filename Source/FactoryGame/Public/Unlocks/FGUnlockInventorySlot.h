@@ -17,12 +17,15 @@ class FACTORYGAME_API UFGUnlockInventorySlot : public UFGUnlock
 
 public:
 	// Begin FGUnlock interface
-	virtual void Unlock( class AFGUnlockSubsystem* unlockSubssytem ) override;
+	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 
 #if WITH_EDITORONLY_DATA
 	void Init( int32 numInventorySlotsToUnlock ) { mNumInventorySlotsToUnlock = numInventorySlotsToUnlock; }
 #endif
+
+	UFUNCTION( BlueprintPure, Category = Unlocks )
+	int32 GetNumInventorySlotsToUnlock() const { return mNumInventorySlotsToUnlock; }
 
 protected:
 	/** Number of inventory slots this unlock adds to the players inventory */

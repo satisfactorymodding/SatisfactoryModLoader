@@ -20,6 +20,12 @@ public:
 	/** Sets our internal button that will be used for focus handling */
 	UFUNCTION( BlueprintCallable, Category = "Manufacturing Button" )
 	void SetButton( class UButton* inButton );
+
+	/** Sets how long one produce cycle should take */
+	void SetHoldTime( float inHoldTime );
+
+	/** Are we holding the button */
+	FORCEINLINE bool IsButtonHeld(){ return mIsHolding; }
 protected: 
 	/** Internal button was pressed */
 	UFUNCTION()
@@ -35,10 +41,6 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Manufacturing Button" )
 	FManufacturePressed OnManufacturePressed;
 protected:
-	/** Minimum time between button presses to register a manufacture event */
-	UPROPERTY( EditDefaultsOnly, Category = "Manufacturing Button" )
-	float mMinTimeBetweenPress;
-
 	/** Saving when we last pressed button */
 	float mLastPressTime;
 
@@ -46,12 +48,7 @@ protected:
 	bool mIsHolding;
 
 	/** How long to hold for a manufacture to be called */
-	UPROPERTY( EditDefaultsOnly, Category = "Manufacturing Button" )
 	float mHoldTimeMax;
-
-	/** produce speed when holding the button */
-	UPROPERTY( EditDefaultsOnly, Category = "Manufacturing Button" )
-	float mHoldProduceSpeed;
 
 	/** How long has the button been held? */
 	float mHoldTime;

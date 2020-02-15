@@ -7,6 +7,9 @@ void AFGBuildable::CheckForErrors(){ }
 #endif 
 #if STATS
 #endif 
+#if WITH_EDITOR
+void AFGBuildable::SetBuildableDisplayName( TSubclassOf< AFGBuildable > inClass, FText displayName){ }
+#endif 
 void AFGBuildable::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildable::PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 AFGBuildable::AFGBuildable(){ 
@@ -26,6 +29,7 @@ bool AFGBuildable::NeedTransform_Implementation(){ return bool(); }
 bool AFGBuildable::ShouldSave_Implementation() const{ return bool(); }
 void AFGBuildable::SetColorSlot_Implementation( uint8 newColor){ }
 uint8 AFGBuildable::GetColorSlot_Implementation(){ return uint8(); }
+void AFGBuildable::SetColorSlot_PreBeginPlay( uint8 newColor){ }
 FLinearColor AFGBuildable::GetPrimaryColor_Implementation(){ return FLinearColor(); }
 FLinearColor AFGBuildable::GetSecondaryColor_Implementation(){ return FLinearColor(); }
 bool AFGBuildable::GetCanBeColored_Implementation(){ return bool(); }
@@ -53,7 +57,6 @@ void AFGBuildable::StartIsLookedAtForDismantle_Implementation(  AFGCharacterPlay
 void AFGBuildable::StopIsLookedAtForDismantle_Implementation(  AFGCharacterPlayer* byCharacter){ }
 void AFGBuildable::StartIsLookedAtForConnection(  AFGCharacterPlayer* byCharacter){ }
 void AFGBuildable::StopIsLookedAtForConnection(  AFGCharacterPlayer* byCharacter){ }
-void AFGBuildable::SetDismantleRefund( const TArray< FItemAmount >& refundableCost){ }
 TSubclassOf< class UFGItemDescriptor > AFGBuildable::GetBuiltWithDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 void AFGBuildable::TurnOffAndDestroy(){ }
 const TArray< class UMeshComponent* >& AFGBuildable::GetMainMeshes(){ return *(new TArray< class UMeshComponent* >); }
@@ -78,9 +81,11 @@ void AFGBuildable::OnReplicatingDetailsChanged(){ }
 bool AFGBuildable::Factory_PeekOutput_Implementation( const  UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type) const{ return bool(); }
 bool AFGBuildable::Factory_GrabOutput_Implementation(  UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 uint8 AFGBuildable::MaxNumGrab( float delta) const{ return uint8(); }
-uint8 AFGBuildable::EstimatedMaxNumGrab_ThreadSafe( float delta) const{ return uint8(); }
+uint8 AFGBuildable::EstimatedMaxNumGrab_Threadsafe( float estimatedDeltaTime) const{ return uint8(); }
 bool AFGBuildable::VerifyDefaults( FString& out_message){ return bool(); }
+int32 AFGBuildable::GetCostMultiplierForLength( float totalLength, float costSegmentLength){ return int32(); }
 void AFGBuildable::GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns) const{ }
+int32 AFGBuildable::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildable::GetDismantleInventoryReturns( TArray< FInventoryStack >& out_returns) const{ }
 void AFGBuildable::TogglePendingDismantleMaterial( bool enabled){ }
 void AFGBuildable::ReapplyColorSlot(){ }

@@ -75,7 +75,6 @@ public:
 
 	/** Get the back animation to play on the player */
 	FORCEINLINE EBackEquipment GetBackAnimation() const{ return mBackAnimation; }
-
 protected:
 	/** @return character this is attached to; nullptr if not attached. */
 	UFUNCTION( BlueprintPure, Category = "Equipment|Attachment" )

@@ -2,7 +2,6 @@
 #include "SubclassOf.h"
 #include "UObject/Class.h"
 
-#include "FGAggroTargetInterface.h"
 #include "FGAttack.generated.h"
 
 
@@ -17,7 +16,7 @@ public:
 	/**
 	/ Handles the attack logic, differs depending on type of attack ( ex melee, ranged etc )                                                                   
 	*/
-	virtual void PerformAttack( TScriptInterface< IFGAggroTargetInterface >	aggroTarget, class AFGEnemy* sourceActor ) PURE_VIRTUAL( UFGAttack::PerformAttack, );
+	virtual void PerformAttack( TScriptInterface< class IFGAggroTargetInterface >	aggroTarget, class AFGEnemy* sourceActor ) PURE_VIRTUAL( UFGAttack::PerformAttack, );
 
 	/** Get attack range */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Enemy|Attack" )

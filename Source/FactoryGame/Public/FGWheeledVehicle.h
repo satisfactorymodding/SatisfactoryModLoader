@@ -334,6 +334,9 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Vehicle" )
 	void OpenVehicleTrunk( class AFGCharacterPlayer* player );
 
+	/** Returns the cached surface material */
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	FORCEINLINE UPhysicalMaterial* GetCachedSurfaceMaterial() { return mCachedSurfaceMaterial; }
 protected:
 	// Begin AFGVehicle interface
 	virtual void Died( AActor* thisActor ) override;
@@ -362,7 +365,7 @@ protected:
 	void UpdateAssistedVelocitiesState();
 
 	/** Pass current state to server */
-	UFUNCTION( Reliable, Server, WithValidation )
+	UFUNCTION( Unreliable, Server, WithValidation )
 	void ServerUpdateAssistedVelocitiesState( bool inDrifting, float inInputYaw, float inInputPitch );
 
 	/** Update the clients state from the replicated state */
@@ -718,4 +721,12 @@ private:
 
 	/* Saved velocity while no wheels are touching the ground */
 	float mLandVelocityZ;
+
+	/** Cached surface material under the first tire */
+	UPROPERTY( )
+	UPhysicalMaterial* mCachedSurfaceMaterial;
+
+	/** Do we need fuel to drive */
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	bool mNeedsFuelToDrive;
 };

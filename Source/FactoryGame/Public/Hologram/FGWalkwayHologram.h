@@ -25,6 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
+	/** Defaults from the default buildable. */
 	float mSize;
 	float mElevation;
 	FFoundationSideSelectionFlags mDisableSnapOn;

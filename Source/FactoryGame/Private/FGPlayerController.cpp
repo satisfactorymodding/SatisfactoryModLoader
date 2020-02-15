@@ -3,9 +3,12 @@
 #include "FGPlayerController.h"
 
 AFGPlayerController::AFGPlayerController(){ }
+bool AFGPlayerController::ProcessConsoleExec( const TCHAR* cmd, FOutputDevice& ar, UObject* executor){ return bool(); }
 void AFGPlayerController::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 bool AFGPlayerController::ReplicateSubobjects(  UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
+void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGPlayerController::BeginPlay(){ }
+void AFGPlayerController::Destroyed(){ }
 void AFGPlayerController::OnRep_PlayerState(){ }
 void AFGPlayerController::SetPawn( APawn* inPawn){ }
 void AFGPlayerController::PawnLeavingGame(){ }
@@ -37,8 +40,6 @@ float AFGPlayerController::GetObjectScreenRadius( AActor* actor, float boundingR
 float AFGPlayerController::GetScreenBasedObjectRadius( AActor* actor, float screenRadius){ return float(); }
 void AFGPlayerController::Client_AddMessage_Implementation( TSubclassOf<  UFGMessageBase > newMessage){ }
 bool AFGPlayerController::GetPlayerHasMessage( TSubclassOf<  UFGMessageBase > newMessage){ return bool(); }
-void AFGPlayerController::MaterialFlowAnalysis( FString recipeName){ }
-void AFGPlayerController::MaterialLookup( FString itemName){ }
 void AFGPlayerController::SetDisabledInputGate( FDisabledInputGate newDisabledInputGate){ }
 void AFGPlayerController::Server_DealImpactDamage_Implementation( const FHitResult& impact, FVector forwardVector, float damage, TSubclassOf< UDamageType > damageType, AActor* inInstigator){ }
 bool AFGPlayerController::Server_DealImpactDamage_Validate( const FHitResult& impact, FVector forwardVector, float damage, TSubclassOf< UDamageType > damageType, AActor* inInstigator){ return bool(); }
@@ -48,10 +49,6 @@ FString AFGPlayerController::GetScreenshotPath( bool isHighRes){ return FString(
 bool AFGPlayerController::DestroyNetworkActorHandled(){ return bool(); }
 void AFGPlayerController::AcknowledgePossession(  APawn* P){ }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
-void AFGPlayerController::SetSessionName( FString newSessionName){ }
-void AFGPlayerController::TrackAkComponents( bool byClass ){ }
-void AFGPlayerController::TrackAkMemoryPools(){ }
-void AFGPlayerController::TrackAkComponentsWithNoPositionOrOwner(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
 void AFGPlayerController::OnPrimaryFire(){ }
@@ -59,6 +56,7 @@ void AFGPlayerController::SetupInputComponent(){ }
 void AFGPlayerController::BuildInputStack( TArray< UInputComponent* >& inputStack){ }
 void AFGPlayerController::OnAttentionPingPressed(){ }
 void AFGPlayerController::OnDismantlePortableMiner_Implementation( AFGPortableMiner* PortableMiner){ }
+void AFGPlayerController::OnDismantleGolfCart_Implementation(  AFGWheeledVehicle* inGolfCart){ }
 void AFGPlayerController::CheckPawnMapArea(){ }
 bool AFGPlayerController::InitMapAreaCheckFunction(){ return bool(); }
 TSubclassOf< UFGMapArea > AFGPlayerController::GetCurrentMapArea() const{ return TSubclassOf<UFGMapArea>(); }
@@ -90,4 +88,4 @@ void AFGPlayerController::Client_WaitForLevelStreaming_Implementation(){ }
 void AFGPlayerController::OnRep_IsRespawning(){ }
 void AFGPlayerController::DisablePawnMovement( bool isDisabled){ }
 void AFGPlayerController::OnShortcutsReplicated(){ }
-void AFGPlayerController::testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, APlayerState* PlayerState, AFGGameState* fgGameState){ }
+void AFGPlayerController::testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds,  APlayerState* PlayerState,  AFGGameState* fgGameState){ }

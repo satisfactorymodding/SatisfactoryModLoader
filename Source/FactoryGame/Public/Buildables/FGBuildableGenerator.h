@@ -55,16 +55,15 @@ public:
 
 	virtual void SetActorHiddenInGame( bool bNewHidden ) override;
 
+	/** Called to check if power production can be started. */
+	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "Generator" )
+	bool CanStartPowerProduction() const;
 protected:
 	// Begin AFGBuildableFactory interface
 	virtual void Factory_TickProducing( float dt ) override;
 	virtual void Factory_StartProducing() override;
 	virtual void Factory_StopProducing() override;
 	// End AFGBuildableFactory interface
-
-	/** Called to check if power production can be started. */
-	UFUNCTION( BlueprintNativeEvent, BlueprintPure, Category = "Generator" )
-	bool CanStartPowerProduction() const;
 
 	/** Called when we start producing fuel. */
 	UFUNCTION( BlueprintNativeEvent, Category = "Generator" )

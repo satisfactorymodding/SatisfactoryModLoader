@@ -6,7 +6,6 @@
 
 #include "FGConnectionComponent.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
-#include "FGRailroadInterface.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
 #include "FGRailroadTrackConnectionComponent.generated.h"
 

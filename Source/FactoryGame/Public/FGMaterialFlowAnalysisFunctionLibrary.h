@@ -8,9 +8,9 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SharedPointer.h"
-#include "FGRecipe.h"
 #include "FGMaterialFlowAnalysisFunctionLibrary.generated.h"
 
+class UFGRecipe;
 
 /**
  * The resulting DAG from a flow analysis.
@@ -30,7 +30,7 @@ private:
 	friend class UFGMaterialFlowAnalysisFunctionLibrary;
 
 	struct FMaterialFlowNode* CreateNodeFromRecipe( TSubclassOf< UFGRecipe > recipe, int32 depth );
-	struct FMaterialFlowNode* CreateNodeFromOutput( TSubclassOf< UFGItemDescriptor > descriptor, int32 depth );
+	struct FMaterialFlowNode* CreateNodeFromOutput( TSubclassOf< class UFGItemDescriptor > descriptor, int32 depth );
 
 	/** Sort nodes by depth. */
 	void SortNodes();
@@ -109,6 +109,10 @@ class FACTORYGAME_API UFGMaterialFlowAnalysisFunctionLibrary : public UBlueprint
 {
 	GENERATED_BODY()
 public:
+
+	/** Perform a material flow analysis on the given recipe. */
+	static FMaterialFlowGraph PerformMaterialFlowAnalysis( TArray< TSubclassOf< UFGRecipe > > recipes, const TArray< TSubclassOf< UFGRecipe > >& availableRecipes );
+
 	/** Perform a material flow analysis on the given recipe. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|MaterialFlow" )
 	static FMaterialFlowGraph PerformMaterialFlowAnalysis( TArray< TSubclassOf< UFGRecipe > > recipes, class AFGRecipeManager* recipeManager );

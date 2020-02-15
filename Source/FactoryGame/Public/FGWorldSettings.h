@@ -14,7 +14,7 @@
 #endif
 
 #include "FGSaveInterface.h"
-#include "FGExponentialHeightFog.h"
+#include "FGAtmosphereVolume.h"
 #include "GameFramework/WorldSettings.h"
 #include "FGSubsystem.h"
 #include "FGWorldSettings.generated.h"
@@ -130,7 +130,7 @@ public:
 	// @todo: Verify that this really is ALL volumes, if we stream one volume in, is it really added to the same array
 	/** All the fog volumes currently streamed in, sorted in ascending order of priority. */
 	UPROPERTY(transient)
-	TArray< class AFGDynamicExponentialFogVolume* > mFogVolumes;
+	TArray< class AFGAtmosphereVolume* > mFogVolumes;
 
 	// @todo: Verify that this really is ALL volumes, if we stream one volume in, is it really added to the same array
 	/** All the ambient volumes currently streamed in */

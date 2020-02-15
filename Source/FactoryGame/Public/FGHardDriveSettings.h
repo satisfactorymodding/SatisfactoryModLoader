@@ -44,13 +44,19 @@ class FACTORYGAME_API UFGHardDriveSettings : public UFGSettings
 	
 public:
 	/*
-	* Called to fill in an array of research reward packages for storage and access from the MAM.
+	* Called to fill in an array of research schematics for storage and access from the MAM.
 	* @note The research is assumed repeatable because of its inherent nature, thus the calledByResearch parameter is added back as a reward
 	*/
 	UFUNCTION( )
-	static const TArray<FResearchRecipeReward> GetResearchRewardPackages( class UWorld* world, TSubclassOf<class UFGResearchRecipe> calledByResearch);
+	static const TArray<TSubclassOf<UFGSchematic>> GetResearchRewardPackages( class UWorld* world );
 
+	/** Get what we return back if we don't have any rewards to give for researching a hard drive */
+	UFUNCTION( BlueprintPure, Category = "HardDrive" )
 	FORCEINLINE FItemAmount GetFallbackReturnItem() const { return mFallbackReturnItem; }
+
+	/** Get the schematic that is associated with hard drive research */
+	UFUNCTION( BlueprintPure, Category = "HardDrive" )
+	static TSubclassOf<UFGSchematic> GetHardDriveResearchSchematic();
 
 protected:
 	//** Gets the total sum of all potential drops */
@@ -74,6 +80,10 @@ protected:
 	/** Fallback for returning hard drive if no research was available */
 	UPROPERTY( EditAnywhere, Category = "HardDrive" )
 	FItemAmount mFallbackReturnItem;
+
+	/** The schematic which is used to research hard drives */
+	UPROPERTY( EditAnywhere, Category = "HardDrive" )
+	TSubclassOf<class UFGSchematic> mHardDriveResearchSchematic;
 
 private:
 	/** Called by GetResearchRewardPackages to get only relevant schematics from the drop list */

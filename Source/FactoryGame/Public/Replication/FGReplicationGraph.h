@@ -15,7 +15,8 @@
 enum class EClassRepPolicy : uint8
 {
 	CRP_NotRouted,						// Doesn't map to any node. Used for special case actors that handled by special case nodes (UShooterReplicationGraphNode_PlayerStateFrequencyLimiter)
-	CRP_RelevantAllConnections,			// Routes to an mAlwaysRelevantNode or mAlwaysRelevantStreamingLevelNode node
+	CRP_RelevantAllConnections,			// Routes to mAlwaysRelevantNode or mAlwaysRelevantStreamingLevelNode node
+	CRP_ConditionalRelevant,			// Routes to mConditionalRelevantNode that runs IsNetRelevantFor() on each actor. Expects each actor to be relevant for all connections 
 	
 	// Spatialized routes into the grid node
 	CRP_Spatialize_Static,				// Routes to mGridNode: these actors don't move and don't need to be updated every frame.
@@ -86,6 +87,9 @@ public:
 	UReplicationGraphNode_ActorList* mAlwaysRelevantNode;
 
 	UPROPERTY()
+	UFGReplicationGraphNode_ConditionallyAlwaysRelevant* mConditionalRelevancyNode;
+
+	UPROPERTY()
 	TArray<FConnectionAlwaysRelevant_NodePair> mAlwaysRelevantForConnectionList;
 
 	/** Maps the actors that need to be always relevant across streaming levels */
@@ -154,6 +158,24 @@ private:
 	void LogCurrentActorDependencyList( FGlobalActorReplicationInfo& actorInfo, FString& logMarker );
 
 	UReplicationGraphNode_AlwaysRelevant_ForConnection* GetAlwaysRelevantNodeForConnection( UNetConnection* Connection );
+};
+
+UCLASS()
+class FACTORYGAME_API UFGReplicationGraphNode_ConditionallyAlwaysRelevant : public UReplicationGraphNode_ActorList
+{
+public:
+	GENERATED_BODY()
+
+	// ~ begin UReplicationGraphNode_AlwaysRelevant_ForConnection implementation
+	virtual void GatherActorListsForConnection( const FConnectionGatherActorListParameters& Params ) override;
+	virtual void NotifyAddNetworkActor( const FNewReplicatedActorInfo& ActorInfo ) override;
+	virtual bool NotifyRemoveNetworkActor( const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound = true ) override;
+	virtual void NotifyResetAllNetworkActors() override;
+	// ~ end UReplicationGraphNode_AlwaysRelevant_ForConnection implementation
+
+
+private:
+	FActorRepListRefView mAllReplicationActors;
 };
 
 UCLASS()

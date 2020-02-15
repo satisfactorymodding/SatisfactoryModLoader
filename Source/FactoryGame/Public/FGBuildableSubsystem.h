@@ -21,6 +21,39 @@ class UFGProductionIndicatorInstanceManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedGlobal, AFGBuildable*, buildable );
 
+/** Used to track constructed (spawned) buildables matched with their holograms between client and server */
+USTRUCT()
+struct FACTORYGAME_API FNetConstructionID
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	int8 NetPlayerID;
+
+	UPROPERTY()
+	uint16 Server_ID;
+
+	UPROPERTY()
+	uint16 Client_ID;
+
+	FNetConstructionID() : 
+		NetPlayerID(-1), 
+		Server_ID(0), 
+		Client_ID(0)
+	{ }
+
+	FString ToString()
+	{
+		return FString::Printf( TEXT( "{player ID: %d, Server: %d, Client: %d}" ), NetPlayerID, Server_ID, Client_ID );
+	}
+
+	// Check whether this net construction ID has has a complete ACK by travel from client -> server -> client
+	bool HasCompleteACK()
+	{
+		return NetPlayerID >= 0 && Server_ID > 0 && Client_ID > 0;
+	}
+};
+
 /** Distances where we switch tick rate */
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FDistanceBasedTickRate
@@ -189,6 +222,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
 	FLinearColor GetColorSlotSecondaryLinear( uint8 index );
 
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
+	uint8 GetNbColorSlotsExposedToPlayers() { return mNbPlayerExposedSlots; }
+
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 	void DebugEnableInstancing( bool enabled );
@@ -216,6 +252,17 @@ public:
 		return mDefaultFactoryMaterial;
 	}
 
+	/** Generates a new NetConstructionID for buildables. Can be used from client to identify buildings that were constructed from server. */
+	FNetConstructionID GetNewNetConstructionID();
+
+	/** Populates a given client construction ID with server side ACKs */
+	void GetNewNetConstructionID( FNetConstructionID& clientConstructionID );
+
+	void SpawnPendingConstructionHologram( FNetConstructionID netConstructionID, class AFGHologram* templateHologram, class AFGBuildGun* instigatingBuildGun );
+
+	void AddPendingConstructionHologram( FNetConstructionID netConstructionID, class AFGHologram* hologram );
+	void RemovePendingConstructionHologram( FNetConstructionID netConstructionID );
+
 protected:
 	// Find and return a local player
 	class AFGPlayerController* GetLocalPlayerController() const;
@@ -242,6 +289,8 @@ private:
 	/* Tick all factory buildings, conveyors and conveyor attachments */
 	void TickFactoryActors( float dt );
 
+	bool IsServerSubSystem() const;
+
 public:
 	/** Distance used when calculating if a location is near a base */
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
@@ -264,6 +313,10 @@ public:
 	class UFGColoredInstanceManager* GetColoredInstanceManager( class UFGColoredInstanceMeshProxy* proxy );
 
 private:
+
+	/** last used net construction ID. Used to identify pending constructions over network. Will increase ID every constructed building. */
+	FNetConstructionID mLastServerNetConstructionID;
+
 	/** List of all buildables. */
 	UPROPERTY()
 	TArray< class AFGBuildable* > mBuildables;
@@ -331,6 +384,9 @@ private:
 	FColor mColorSlotsSecondary[ BUILDABLE_COLORS_MAX_SLOTS ];
 
 	uint8 mColorSlotDirty[ BUILDABLE_COLORS_MAX_SLOTS ];
+
+	UPROPERTY( EditDefaultsOnly, Category = "Customization" )
+	uint8 mNbPlayerExposedSlots = 16;
 
 	// Map of all Factory materials that are referenced by Factory buildings. Maps the materials name (and all dynamic instance mat names) to a manager class holding corresponding colored instances
 	// This is also used for non-colored materials, for example, the conveyor belt materials so that the same instance can be applied to many different belts
@@ -414,6 +470,8 @@ private:
 	/** Factory Stat id of this object, 0 if nobody asked for it yet */
 	STAT( mutable TStatId mFactoryStatID; )
 
+	/** Holograms simulated on client to indicate any pending constructions from server */
+	TMap<int16, class AFGHologram*> mPendingConstructionHolograms;
 };
 
 template< typename T >

@@ -1,10 +1,97 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "GameFramework/Actor.h"
 #include "UObject/Class.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "FGCharacterMovementComponent.generated.h"
+
+class AFGBuildablePipeBase;
+
+
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FPlayerPipeHyperData
+{
+	GENERATED_BODY()
+	/** The pipe we are currently traveling in */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Hyper Tube" )
+	AActor* mTravelingPipeHyper;
+	AActor* mTravelingPipeHyperLast;
+	float mTravelingPipeHyperLastLength; //used for faster position calc if needed. If negative, it means we moved ot through it's start
+
+	/**The spline progress in the pipe we are currently in*/
+	float mPipeProgressReal;
+	/**The velocity we are currently traveling in along the spline of the pipe*/
+	float mPipeVelocityReal;
+	float mPipeCurrentLength;
+
+	/**The spline progress in the pipe we are currently in*/
+	float mPipeProgressLast;
+	/**The velocity we are currently traveling in along the spline of the pipe*/
+	float mPipeVelocityLast;
+
+	float mTimeInterpreter;
+
+	/**The spline progress in the pipe we are currently in */
+	float mPipeProgress;
+
+	/**The velocity we are currently traveling in along the spline of the pipe*/
+	float mPipeVelocity;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
+	float mMinPipeSpeed = 300;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
+	float mPipeGravityStrength = 1500.0f;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
+	float mPipeFriction = 0.05f;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
+	float mPipeConstantAcceleration = 110.0f;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Hyper Tube" )
+	float mPipeCurveDamping = 0.4f;;
+
+	/**World space direction of pipe last frame.*/
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	FVector mPipeDirectionLast;
+
+	/**World space direction of pipe in current location.*/
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	FVector mPipeDirection;
+
+	/**Distance to the end of the whole pipe chain, but maximum of 2000 (To save time on calculating it on update)*/
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	float mDistanceToEndOfPipe;
+	
+	/** maximum of 2000 (To save time on calculating it on update)*/
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	float mCombinedLengthTillEndOfPipesINcludingCurrent;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	float mMaxCurveDiffThisFrame;
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	float mMaxCurveDiffSmooth;
+
+
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	float mPipeTempMinSpeed; //used so we can reduce even further due to curves, but not have the pipes too slow in upwards slopes
+
+
+	/**World space position of the end of the pipe chain.. Only guaranteed to be accurate if the end is within 2000 units.*/
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	FVector mFulPipeEndPoint;
+	/**World space direction of the end of the pipe chain.. Only guaranteed to be accurate if the end is within 2000 units.*/
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Transient, Category = "Hyper Tube" )
+	FVector mFulPipeEndDir;
+
+	FVector mSoftVelocity;
+	FVector mCameraPush;
+	float mCamFovMod;
+};
 
 /**
  * Custom states we can be in
@@ -13,9 +100,18 @@ UENUM( BlueprintType )
 enum class ECustomMovementMode : uint8
 {
 	CMM_None = 0		UMETA( DisplayName = "None" ),
-	CMM_Ladder			UMETA( DisplayName = "Ladder" )
+	CMM_Ladder			UMETA( DisplayName = "Ladder" ),
+	CMM_PipeHyper			UMETA( DisplayName = "Hyper Pipe" ),
 };
+inline bool operator==(const uint8 a, const ECustomMovementMode b)
+{
+	return a == (uint8 )b;
+}
 
+inline bool operator==(const ECustomMovementMode b , const uint8 a)
+{
+	return a == (uint8 )b;
+}
 
 UCLASS()
 class FACTORYGAME_API UFGCharacterMovementComponent : public UCharacterMovementComponent
@@ -80,17 +176,41 @@ public:
 	/** Setter for the chute */
 	FORCEINLINE void SetCachedJumpingStilts( class AFGJumpingStilts* inJumpingStilts ) { mCachedJumpingStilts = inJumpingStilts; }
 
-	/** Ladder functions */
+	//////////////////Ladder functions//////////////////
 	bool CanGrabLadder( class UFGLadderComponent* ladder ) const;
 	void StartClimbLadder( class UFGLadderComponent* ladder );
 	void StopClimbLadder();
-	bool IsClimbingOnLadder() const { return CustomMovementMode == ( uint8 )ECustomMovementMode::CMM_Ladder; }
+	bool IsClimbingOnLadder() const { return CustomMovementMode == (uint8 )ECustomMovementMode::CMM_Ladder; }
 	void JumpOffLadder();
 
 	/** @return The ladder we're climbing on; nullptr if not climbing. */
 	UFUNCTION( BlueprintPure, Category = "Ladder" )
 	class UFGLadderComponent* GetOnLadder() const;
 
+
+	//////////////////Hyper Pipe Functions///////////////////////
+	
+	/** IsInHyperPipe
+	 * @return	bool - returns true if we are currently moving in a hyper tube
+	 */
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	 bool IsInHyperPipe() const { return CustomMovementMode == (uint8 )ECustomMovementMode::CMM_PipeHyper; }
+
+	/** EnterHyperPipe
+	 * Enter a pipe and change movement mode to custom pipe movement. You can not enter pipes directly. You always need a part as an entracne. That is how it's designed atm. Only start parts as well. But we'll see how that changes.
+	 * @param	pipe - the pipe start we want to enter
+	 * @return	bool - returns true if we could enter.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Hyper Tube" )
+	bool EnterPipeHyper( class AFGBuildablePipeHyperPart* pipe );
+
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	FVector GetPipeTravelDirectionWorld();
+
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	FRotator GetPipeCharacterTransform(FVector cameraForwardAxis);
+
+	void PipeHyperForceExit();
 	/** updates if the player wants to slide*/
 	void UpdateWantsToSlide();
 
@@ -99,6 +219,49 @@ public:
 
 	/** Checks if we still can slide */
 	void UpdateSlideStatus();
+
+	inline void SetPipeTempMinSpeed( float speed )
+	{
+		mPipeData.mPipeTempMinSpeed = speed;
+	}
+	bool SetTravelingPipeHyperActor( AActor* hyperPipeInterfaceActor );
+	inline void SetPipeProgress( float distnace )
+	{
+		mPipeData.mPipeProgress = distnace;
+	}
+	inline void SetPipeVelocity( float speed )
+	{
+		mPipeData.mPipeVelocity = speed;
+	}
+	inline void SetGeneralVelocity( FVector vel)
+	{
+		Velocity = vel;
+	}
+	inline void SetPipeDirectionLast( FVector dir )
+	{
+		mPipeData.mPipeDirectionLast = dir;
+	}
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	inline float GetPipeVelocity() const{ return mPipeData.mPipeVelocity; }
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	inline float GetPipeMinSpeed() const{ return mPipeData.mMinPipeSpeed; }
+	inline float GetPipeTempMinSpeed() const{ return mPipeData.mPipeTempMinSpeed; }
+	inline float GetPipeProgress() const{ return mPipeData.mPipeProgress; }
+	inline float GetPipeConstantAcceleration() const{ return mPipeData.mPipeConstantAcceleration; }
+	inline float GetPipeGravityStrength() const{ return mPipeData.mPipeGravityStrength; }
+	inline float GetPipeCurveDamping() const{ return mPipeData.mPipeCurveDamping; }
+	inline float GetPipeFriction() const{ return mPipeData.mPipeFriction; }
+	inline FVector GetVelocity() const{ return Velocity; }
+	inline FVector GetPipeDirectionLast() const{ return mPipeData.mPipeDirectionLast; }
+	inline AActor* GetTravelingPipeHyperActor() const{ return mPipeData.mTravelingPipeHyper; }
+	UFUNCTION( BlueprintPure, Category = "Hyper Tube" )
+	inline FPlayerPipeHyperData& GetPipeHyperDataRef() { return mPipeData; }
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Hyper Tube" )
+	void OnNewTravelPipeSection();
+
+	const USceneComponent* GetUpdateComponent() const;
+
 protected:
 	// Begin UCharacterMovementComponent
 	virtual void UpdateFromCompressedFlags(uint8 flags) override;
@@ -113,6 +276,10 @@ protected:
 private:
 	/** Apply ladder climb physics */
 	void PhysLadder( float deltaTime, int32 iterations );
+
+	/** Apply Hyper Tube physics */
+	void PhysPipe( float deltaTime, int32 iterations );
+
 
 	/** Updates everything that has to do with JetPack */
 	void UpdateJetPack( float deltaSeconds );
@@ -217,6 +384,9 @@ private:
 	/** The ladder we're climbing; null if not climbing. */
 	UPROPERTY()
 	UFGLadderComponent* mOnLadder;
+
+	UPROPERTY(EditAnywhere, meta = ( ShowOnlyInnerProperties ) )
+	FPlayerPipeHyperData mPipeData;
 
 	/** Get velocity from curve when sliding */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )

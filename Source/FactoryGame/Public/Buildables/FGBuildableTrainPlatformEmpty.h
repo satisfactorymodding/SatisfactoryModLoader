@@ -6,7 +6,6 @@
 #include "CoreMinimal.h"
 #include "FGBuildableTrainPlatform.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "../FGRailroadInterface.h"
 #include "FGBuildableFactory.h"
 #include "FGBuildableTrainPlatformEmpty.generated.h"
 

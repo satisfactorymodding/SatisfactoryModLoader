@@ -28,6 +28,10 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Significance" )
 	void LostSignificance();
 
+	/** Call before adding object to significance in order to prepare it. ( Set up bounds and stuff ) */
+	UFUNCTION()
+	virtual void SetupForSignificance();
+
 	/** Defaults to 0.0f */
 	UFUNCTION()
 	virtual float GetSignificanceBias();
@@ -35,6 +39,12 @@ public:
 	/** Defaults to 10000.0ff */
 	UFUNCTION()
 	virtual float GetSignificanceRange();
+
+	UFUNCTION()
+	virtual void GainedSignificance_Native();
+
+	UFUNCTION()
+	virtual void LostSignificance_Native();
 public:
 	
 	

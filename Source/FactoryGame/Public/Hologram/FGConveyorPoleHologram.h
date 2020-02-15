@@ -15,6 +15,7 @@ class FACTORYGAME_API AFGConveyorPoleHologram : public AFGPoleHologram
 {
 	GENERATED_BODY()
 public:
+	AFGConveyorPoleHologram();
 	virtual void BeginPlay() override;
 
 	/** Get the connections the conveyors snap to. */
@@ -23,6 +24,7 @@ public:
 	/** Snap this pole's snap connection to to the given connection. */
 	void SnapToConnection( UFGFactoryConnectionComponent* connection, class AFGConveyorBeltHologram* parentConveyor );
 
+	void SetSnappBuilding( class AFGBuildable* snappedBuilding );
 private:
 	/** The connection conveyors snap to, used when placing a pole automatically. */
 	UPROPERTY( )

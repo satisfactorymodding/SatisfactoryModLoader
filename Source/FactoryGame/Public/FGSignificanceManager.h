@@ -22,6 +22,7 @@ enum class EFGSignificanceType : uint8
 	CustomDistanceGainSignificance,
 	ParticleSignificance,
 	TrainSignificance,
+	PipelineSignificance,
 	MAX
 };
 
@@ -47,6 +48,9 @@ public:
 	//This is the function that users call as a replacement for the virtual RegisterObject which exposes only the significance type so it can be looked up
 	void RegisterSignificanceObject( UObject* Object, EFGSignificanceType SignificanceType );
 
+	virtual void RegisterObject(UObject* Object, FName Tag, FManagedObjectSignificanceFunction SignificanceFunction, EPostSignificanceType InPostSignificanceType = EPostSignificanceType::None, FManagedObjectPostSignificanceFunction InPostSignificanceFunction = nullptr) override;
+	virtual void UnregisterObject(UObject* Object) override;
+
 	virtual void Update( TArrayView<const FTransform> Viewpoints ) override;
 
 	FGainSignificanceData GetClosestGainSignificanceData( UObject* inObject, float desiredDistance );
@@ -65,6 +69,12 @@ protected:
 
 	/** Keeps the list of factories sorted and sets the closest ones to significant */
 	void UpdateFactories();
+
+	/** Keeps the list of pipelines sorted and sets the closest ones to significant */
+	void UpdatePipelines();
+
+	/** Sets significance status */
+	static void UpdateSignificanceStatus( float oldSignificance, float newSignificance, UObject* inObject );
 private:
 	static FName GetTagFromTagEnum( EFGSignificanceType InType );
 
@@ -85,6 +95,10 @@ private:
 	//ConveyorBelt Significance functions
 	static float ConveyorBeltSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint );
 	static void ConveyorBeltPostSignificance( FManagedObjectInfo* ObjectInfo, float OldSignificance, float NewSignificance, bool bFinal );
+
+	//Pipeline Significance functions
+	static float PipelineSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint );
+	static void PipelinePostSignificance( FManagedObjectInfo* ObjectInfo, float OldSignificance, float NewSignificance, bool bFinal );
 
 	//Gain Significance on low distance functions
 	static float LowDistanceSignificance( FManagedObjectInfo* Object, const FTransform& Viewpoint );
@@ -131,6 +145,10 @@ private:
 	/** List of conveyor bases (belts and lifts) that were significant last time we checked */
 	UPROPERTY()
 	TArray< class AFGBuildableConveyorBase* > mPreviousSignificantConveyorBases;
+
+	/** List of pipelines that were significant last time we checked */
+	UPROPERTY()
+	TArray< class AFGBuildablePipeBase* > mPreviousSignificantPipelines;
 
 	/** How often we should sort the factories/conveyors */
 	float mSortTimerTime;

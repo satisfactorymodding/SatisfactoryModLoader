@@ -19,9 +19,13 @@ public:
 	// Begin AActor interface
 	virtual void Destroyed() override;
 	// End AActor interface 
-	
-	/** Set the resource node for this generator */
-	void SetResourceNode( class AFGResourceNode* resourceNode );
+
+	// Begin Save Interface
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	// End Save Interface
+
+	/** Set the extractable resource interface for this generator */
+	void SetExtractableResource( TScriptInterface< class IFGExtractableResourceInterface > extractableResource );
 
 protected:
 	// Begin AFGBuildableGenerator interface
@@ -31,7 +35,13 @@ protected:
 	// End AFGBuildableGenerator interface
 
 private:
-	/** This is the geyser this generator is placed on */
+	/** DEPRICATED - Use mExtractableResource instead. This exists for save functionality
+	*	This is the geyser this generator is placed on
+	*/
 	UPROPERTY( SaveGame )
-	AFGResourceNode* mExtractResourceNode;
+	class AFGResourceNode* mExtractResourceNode;
+
+	/** Saved interface to the object we are extracting resrouces from */
+	UPROPERTY( SaveGame )
+	TScriptInterface< class IFGExtractableResourceInterface > mExtractableResource;
 };

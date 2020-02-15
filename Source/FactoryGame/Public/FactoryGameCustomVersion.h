@@ -49,6 +49,15 @@ struct FACTORYGAME_API FFactoryGameCustomVersion
 		// 2019-10-02: Refactored unlock system and migrated schematic data to new unlock system
 		RefactoredUnlockSystem,
 
+		// 2019-11-13: Refactored schematic category type from enum based to object based
+		RefactoredSchematicCategoryType,
+
+		// 2019-11-18: Renamed members of FGExponentialHeightFog
+		RenamedPostProcessMembersOfHeightFog,
+
+		// 2020-02-06: Meant to be in save custom version but misplaced it and now assets have been saved with it so don't want to remove it. 
+		MisplacedVersion,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

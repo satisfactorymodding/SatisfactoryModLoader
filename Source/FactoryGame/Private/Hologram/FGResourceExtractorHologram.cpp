@@ -2,8 +2,11 @@
 
 #include "FGResourceExtractorHologram.h"
 
+AFGResourceExtractorHologram::AFGResourceExtractorHologram(){ }
 void AFGResourceExtractorHologram::BeginPlay(){ }
 bool AFGResourceExtractorHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
+void AFGResourceExtractorHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
 void AFGResourceExtractorHologram::CheckValidPlacement(){ }
 void AFGResourceExtractorHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
 void AFGResourceExtractorHologram::CheckResourcesAvailable(){ }
+void AFGResourceExtractorHologram::CheckMinimumDepth(){ }

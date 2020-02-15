@@ -33,7 +33,20 @@ struct FACTORYGAME_API FOptionRowData
 	GENERATED_BODY()
 
 public:
-	FOptionRowData(){}
+	FOptionRowData() :
+		OptionType(EOptionType::OT_Checkbox),
+		DefaultCheckBoxValue(false),
+		MinValue(0),
+		MaxValue(0),
+		MinDisplayValue(0),
+		MaxDisplayValue(0),
+		MaxFractionalDigits(0),
+		ShowZeroAsOff(false),
+		DefaultSliderValue(0),
+		UpdateInstantly(false),
+		RequireRestart(false)
+	{
+	}
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	FString OptionName;

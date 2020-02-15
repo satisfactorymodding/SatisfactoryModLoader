@@ -19,14 +19,13 @@ class FACTORYGAME_API UFGUnlockScannableResource : public UFGUnlock
 
 public:
 	// Begin FGUnlock interface
-	virtual void Unlock( class AFGUnlockSubsystem* unlockSubssytem ) override;
+	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 
 #if WITH_EDITORONLY_DATA
 	void Init( TArray< TSubclassOf< class UFGResourceDescriptor > > resources ) { mResourcesToAddToScanner = resources; }
 #endif
 
-protected:
 	UFUNCTION( BlueprintPure, Category=Unlocks )
 	FORCEINLINE TArray< TSubclassOf< class UFGResourceDescriptor > > GetResourcesToAddToScanner() const { return mResourcesToAddToScanner; }
 

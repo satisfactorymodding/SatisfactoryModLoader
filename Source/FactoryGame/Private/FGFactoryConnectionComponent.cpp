@@ -9,6 +9,7 @@ void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister(); }
 void UFGFactoryConnectionComponent::OnUnregister(){ Super::OnUnregister(); }
 void UFGFactoryConnectionComponent::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
 void UFGFactoryConnectionComponent::SetInventory(  UFGInventoryComponent* inventory){ }
+void UFGFactoryConnectionComponent::SetInventoryAccessIndex( int32 index){ }
 void UFGFactoryConnectionComponent::SetConnection(  UFGFactoryConnectionComponent* toComponent){ }
 void UFGFactoryConnectionComponent::ClearConnection(){ }
 bool UFGFactoryConnectionComponent::IsConnected() const{ return bool(); }
@@ -23,14 +24,13 @@ bool UFGFactoryConnectionComponent::Factory_Internal_GrabOutputInventory( FInven
 void UFGFactoryConnectionComponent::DisplayDebug( int32 connectionIndex,  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void UFGFactoryConnectionComponent::SortComponentList( TInlineComponentArray<UFGFactoryConnectionComponent*>& io_components){ }
 uint8 UFGFactoryConnectionComponent::MaxNumGrab( float delta) const{ return uint8(); }
-uint8 UFGFactoryConnectionComponent::EstimatedMaxNumGrab_ThreadSafe( float delta) const{ return uint8(); }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindCompatibleOverlappingConnections(
 		 UFGFactoryConnectionComponent* component,
 		const FVector& location,
-		float radius){ return nullptr; }
+		float radius, UFGFactoryConnectionComponent* lowPrioConnection ){ return nullptr; }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingConnections(
 		UWorld* world,
 		const FVector& location,
 		float radius,
 		EFactoryConnectionConnector connector,
-		EFactoryConnectionDirection direction){ return nullptr; }
+		EFactoryConnectionDirection direction, UFGFactoryConnectionComponent* lowPrioConnection ){ return nullptr; }

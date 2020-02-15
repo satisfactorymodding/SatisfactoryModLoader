@@ -27,6 +27,10 @@ public:
 	virtual void Destroyed() override;
 	// End AActor interface
 
+	// Begin Buildable interface
+	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	// End Buildable interface
+
 	/** @return The distance between the points the wire connects. */
 	UFUNCTION( BlueprintPure, Category = "Buildable|Wire" )
 	FORCEINLINE float GetLength() const { return FVector::Distance( mLocations[ 0 ], mLocations[ 1 ] ); }

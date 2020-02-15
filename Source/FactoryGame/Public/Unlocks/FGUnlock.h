@@ -11,16 +11,29 @@
 /**
  * Base class for unlocks that you get when purchasing/research a schematic
  */
-UCLASS( DefaultToInstanced, abstract, editinlinenew )
+UCLASS( Blueprintable, DefaultToInstanced, abstract, editinlinenew )
 class FACTORYGAME_API UFGUnlock : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UFUNCTION( BlueprintImplementableEvent, Category=Unlocks )
+	/** Unlock is only called when you unlock this unlock the first time */
+	UFUNCTION( BlueprintImplementableEvent, Category = Unlocks )
 	void OnUnlock( class AFGUnlockSubsystem* unlockSubssytem );
 
+	/** Unlock is only called when you unlock this unlock the first time */
 	virtual void Unlock( class AFGUnlockSubsystem* unlockSubssytem );
+
+	/** Apply is called when you unlock this unlock the first time and every time the unlock is reapplied when a game is loaded */
+	UFUNCTION( BlueprintImplementableEvent, Category = Unlocks )
+	void OnApply( class AFGUnlockSubsystem* unlockSubssytem );
+
+	/** Apply is called when you unlock this unlock the first time and every time the unlock is reapplied when a game is loaded */
+	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem );
+
+	/** Returns true if this unlock is allowed to be purchased more than once */
+	UFUNCTION( BlueprintNativeEvent, Category = Unlocks )
+	bool IsRepeatPurchasesAllowed() const;
 
 	/** 
 	*	To allow the unlock classes to spawn widgets we need to implement GetWorld even if it returns a nullptr 

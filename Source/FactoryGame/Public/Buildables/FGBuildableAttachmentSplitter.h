@@ -10,6 +10,28 @@
 #include "FGBuildableConveyorAttachment.h"
 #include "FGBuildableAttachmentSplitter.generated.h"
 
+USTRUCT()
+struct FACTORYGAME_API FConveyorSpaceData
+{
+	GENERATED_BODY()
+public:
+	FConveyorSpaceData() :
+		AvailableSpace( 0.f ),
+		HasNewItem( false )
+	{}
+
+	FConveyorSpaceData( float availableSpace ) :
+		AvailableSpace( availableSpace ),
+		HasNewItem( false )
+	{}
+
+	// The last cached available space on the belt
+	float AvailableSpace;
+
+	// if the conveyor has a new item on it.
+	bool HasNewItem;
+};
+
 /**
  * 
  */
@@ -42,6 +64,9 @@ protected:
 	// Populate the elements of the distribution table. The algorithm vaires between normal splitters and smart splitters. 
 	// The goal is to get all possible items assigned to an output while maintaining throughput and evenly splitting items between belts
 	virtual void FillDistributionTable();
+	
+	/** Returns an estimate of how many items the conveyor connected to the given component can grab. If no conveyor is connected it returns 0  */
+	uint8 EstimatedMaxNumGrabFromConveyor( UFGFactoryConnectionComponent* factoryConnection, float dt );
 
 protected:
 
@@ -58,5 +83,9 @@ protected:
 
 private:
 	friend class AFGAttachmentSplitterHologram;
+
+	/** Store last cached available space and if an item have been grabbed by the connected components  */
+	UPROPERTY( Transient )
+	TMap<UFGFactoryConnectionComponent*, FConveyorSpaceData> mConveyorSpaceData;
 
 };

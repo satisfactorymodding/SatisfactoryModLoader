@@ -312,6 +312,8 @@ public:
 	// Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
+	virtual void GainedSignificance_Native() override;
+	virtual void LostSignificance_Native() override;
 	virtual float GetSignificanceRange() override;
 	// Significance helpers
 	FORCEINLINE bool IsSignificant() const { return mIsSignificant; }

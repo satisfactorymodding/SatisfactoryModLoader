@@ -5,6 +5,7 @@
 AFGBuildableConveyorLift::AFGBuildableConveyorLift(){ }
 void AFGBuildableConveyorLift::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildableConveyorLift::BeginPlay(){ }
+int32 AFGBuildableConveyorLift::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableConveyorLift::TickItemTransforms( float dt){ }
 FBoxCenterAndExtent AFGBuildableConveyorLift::FitClearance(
 		float transformZ,

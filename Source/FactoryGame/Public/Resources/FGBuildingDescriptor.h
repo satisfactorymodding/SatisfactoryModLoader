@@ -1,6 +1,7 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "GameFramework/Actor.h"
 #include "SubclassOf.h"
 #include "UObject/Class.h"
 
@@ -37,9 +38,16 @@ protected:
 	virtual FText GetItemNameInternal() const override;
 	virtual FText GetItemDescriptionInternal() const override;
 
+	virtual TSubclassOf< class AFGHologram > GetHologramClassInternal() const override;
+	virtual TSubclassOf< AActor > GetBuildClassInternal() const override;
+
 #if WITH_EDITOR
 	virtual void SetupStage() override;
 	virtual FVector GetCenterOfCollision() override;
+
+	/** Sets the class this buidling descriptor builds. Only for editor use */
+	UFUNCTION( BlueprintCallable, Category = "Editor|Descriptor|Building" )
+	static void SetBuildableClass( TSubclassOf< UFGBuildingDescriptor > inClass, TSubclassOf< class AFGBuildable > buildableClass );
 #endif
 
 protected:

@@ -15,7 +15,8 @@
 #include "Engine/EngineTypes.h"
 #include "FGSaveSession.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FSaveWorldImplementationSignature, bool, wasSuccessful, FText, errorMessage );
+// @todosave: Change the FText to a Enum, so server and client can have different localizations
+DECLARE_DELEGATE_ThreeParams( FOnSaveGameComplete, bool, const FText&, void* );
 
 /**
  * Handles serialization for save and load functionality
@@ -29,15 +30,15 @@ public:
 	~UFGSaveSession();
 
 	/** Get the save version of a header */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE int32 GetVersion( UPARAM(ref) FSaveHeader& header ){ return header.SaveVersion; }
 
 	/** Get the build version this save was saved with */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE int32 GetBuildVersion( UPARAM( ref ) FSaveHeader& header ) { return header.BuildVersion; }
 
 	/** Get the map that this save was saved with */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE FString GetMapName( UPARAM( ref ) FSaveHeader& header ) { return header.MapName; }
 
 	/** Get the options that this save was saved with */
@@ -45,37 +46,37 @@ public:
 	static FORCEINLINE FString GetMapOptions( UPARAM( ref ) FSaveHeader& header ) { return header.MapOptions; }
 
 	/** The name of the save game */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE FString GetName( UPARAM( ref ) FSaveHeader& header ) { return header.SaveName; }
 
 	/** The session ID of the save game */
 	UE_DEPRECATED( 4.20, "Use GetSessionName instead" )
-	UFUNCTION( BlueprintPure, Category = "Save", meta = (DeprecatedFunction, DeprecationMessage = "Use GetSessionName instead") )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save", meta = (DeprecatedFunction, DeprecationMessage = "Use GetSessionName instead") )
 	static FORCEINLINE FString GetSessionID( UPARAM( ref ) FSaveHeader& header ) { return header.SessionName; }
 
 	/** The session name of the save game */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE FString GetSessionName( UPARAM( ref ) FSaveHeader& header ) { return header.SessionName; }
 
 	/** The name of the save game */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE int32 GetPlayDurationSeconds( UPARAM( ref ) FSaveHeader& header ) { return header.PlayDurationSeconds; }
 
 	/** The time this was saved */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static FORCEINLINE FDateTime GetSaveDateTime( UPARAM( ref ) FSaveHeader& header ) { return header.SaveDateTime; }
 
 	/** Returns saved visibility of the session */
-	UFUNCTION( BlueprintPure, Category = "Save Session" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
 	static FORCEINLINE TEnumAsByte<ESessionVisibility> GetSaveSessionVisibility( UPARAM( ref ) FSaveHeader& header ) { return header.SessionVisibility; }
 
 	/** Returns the name of this session */
 	UE_DEPRECATED( 4.20, "Use GetSaveSessionName instead" )
-	UFUNCTION( BlueprintPure, Category = "Save Session", meta = (DeprecatedFunction, DeprecationMessage = "Use GetSaveSessionName instead")  )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session", meta = (DeprecatedFunction, DeprecationMessage = "Use GetSaveSessionName instead")  )
 	static FORCEINLINE FString GetSaveSessionID( UPARAM( ref ) FSessionSaveStruct& session ) { return session.SessionName; }
 
 	/** Returns the name of this session */
-	UFUNCTION( BlueprintPure, Category = "Save Session" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save Session" )
 	static FORCEINLINE FString GetSaveSessionName( UPARAM( ref ) FSessionSaveStruct& session ) { return session.SessionName; }
 
 	/**
@@ -89,7 +90,7 @@ public:
 	static class UFGSaveSession* Get( class UWorld* world );
 
 	/** Get the save system from a world */
-	UFUNCTION( BlueprintPure, Category = "Save", meta = (DisplayName = "GetSaveSession") )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save", meta = (DisplayName = "GetSaveSession") )
 	static class UFGSaveSession* Get( class UObject* worldContext );
 
 	/** Run post load on all loaded objects */
@@ -102,9 +103,7 @@ public:
 	 * @param fileName - a valid filename that we want to save the game to
 	 * @param return true if the file name is a valid file name
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Save" )
-	bool SaveGame( FString fileName );
-
+	void SaveGame( const FString& fileName, FOnSaveGameComplete completeDelegate, void* userData );
 	
 	/**
 	 * Reads the raw save game data that can the be used for example in a load.
@@ -113,7 +112,7 @@ public:
 	 * @param out_rawSaveData - the data that was read.
 	 * @return true if the data was read successfully
 	 */
-	bool ReadRawSaveGameData( FString saveGameName, TArray< uint8 >& out_rawSaveData ) const;
+	bool ReadRawSaveGameData( const FString& saveGameName, TArray< uint8 >& out_rawSaveData ) const;
 
 	/**
 	 * Starts loading a game
@@ -121,8 +120,7 @@ public:
 	 * @param saveName - the save file's name without extension
 	 * @return true if a save game with that name exists and load happend successfully
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Save" )
-	bool LoadGame( FString saveName );
+	bool LoadGame( const FString& saveName );
 
 	/** Get the number of rotating autosaves */
 	FORCEINLINE uint8 GetNumRotatingAutosaves() const{ return mNumRotatingAutosaves; }
@@ -147,10 +145,6 @@ public:
 	 */
 	static void SharedInventoryPtrLoaded( struct FSharedInventoryStatePtr& ptr );
 
-	/** Delegate to listen for the result of the SaveWorldImpelementation */
-	UPROPERTY( BlueprintAssignable, Category = "Save" )
-	FSaveWorldImplementationSignature mOnSaveWorld;
-
 	/** Called every time by timer to trigger a autosave. Can be called manually if we want to trigger a autosave for key events */
 	UFUNCTION()
 	void Autosave();
@@ -162,18 +156,11 @@ public:
 	void SetAutosaveInterval( int32 newInterval );
 
 protected:
-	/** 
-	 * Deletes a existing save of the session id that has that autosave number
-	 * @param sessionName - the session we want to delete
-	 * @param autosaveNum - the autosave number of that save session to delete
-	 */
-	void DeleteSave( FString sessionName, int32 autosaveNum );
-
 	/** Make sure we can get a world easily */
 	class UWorld* GetWorld() const override;
 
 	/** Generate the next autosave name, calling this twice will give you different results */
-	FString GenerateAutosaveName( int32& out_autosaveNum, FString sessionName );
+	FString GenerateAutosaveName( int32& out_autosaveNum, const FString& sessionName );
 
 	/** Get the full map name */
 	FString GetFullMapName() const;
@@ -234,6 +221,12 @@ protected:
 	/** Timer holding the autosave timer */
 	FTimerHandle mAutosaveHandle;
 
+	/** Delegate that listens for when the save is done */
+	FOnSaveGameComplete mOnSaveCompleteDelegate;
+
+	/** User data to pass to on save complete delegate */
+	void* mSaveCompleteUserData = nullptr;
+
 	/** How often in seconds to autosave, a value of < 0 means disabled */
 	UPROPERTY( Transient )
 	float mAutosaveInterval;
@@ -241,11 +234,19 @@ protected:
 	/** The number of autosaves to rotate */
 	UPROPERTY( Config )
 	int32 mNumRotatingAutosaves;
+
+	/** Name of the save that will be saved at end of frame */
+	FString mPendingSaveName;
+	
+	/** Callback to end of frame to be removed after save */
+	FDelegateHandle mPendingSaveWorldHandle;
 private:
 	// We want the game state to be able to trigger save games properly without exposing the nitty gritty details to the interface
 	friend class AFGGameMode;
 
-	void SaveWorldImplementation( FString gameName );
+	/** Called after actor ticking so we can save when all actors have been saved */
+	void SaveWorldEndOfFrame( class UWorld* world, ELevelTick, float );
+	void SaveWorldImplementation( const FString& gameName );
 
 	/** SaveToDiskWithCompression
 	 * Saves the current session at the given absolute file location. The file's contents will be compressed

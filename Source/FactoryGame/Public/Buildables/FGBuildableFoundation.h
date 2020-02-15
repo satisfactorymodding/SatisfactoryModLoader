@@ -25,6 +25,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
 	float mHeight;
 
+	/** Elevation of this foundation if ramp, assumes the ramp to go down towards a positive X. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
+	float mElevation;
+
 	/** Disable snapping on specific sides. */
 	UPROPERTY( EditDefaultsOnly, Category = "Foundation" )
 	FFoundationSideSelectionFlags mDisableSnapOn;

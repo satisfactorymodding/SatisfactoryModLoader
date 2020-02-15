@@ -22,7 +22,7 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Walkway" )
 	float mSize;
 
-	/** Height of this walkway if ramp, assumes -x to be lower and +x to be higher. */
+	/** Elevation of this walkway if ramp, assumes the ramp to go up towards a positive X. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Walkway" )
 	float mElevation;
 

@@ -11,7 +11,9 @@
 #include "Net/DataReplication.h"
 #include "Engine/ActorChannel.h"
 
-DECLARE_STATS_GROUP( TEXT( "DynamicHeightFog" ), STATGROUP_DynamicHeightFog, STATCAT_Advanced );
+#include "UnitHelpers.h"
+
+DECLARE_STATS_GROUP( TEXT( "AtmosphereUpdater" ), STATGROUP_AtmosphereUpdater, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advanced );
 
 
@@ -37,8 +39,10 @@ static const FName SHOWDEBUG_TRAINCOUPLERS( TEXT( "TRAINCOUPLERS" ) );
 static const FName SHOWDEBUG_FOUNDATIONS( TEXT( "FOUNDATIONS" ) );
 static const FName SHOWDEBUG_RADIATION( TEXT( "RADIATION" ) );
 static const FName SHOWDEBUG_RADIATIONSPHERES( TEXT( "RADIATIONSPHERES" ) );
+static const FName SHOWDEBUG_RESOURCESINK( TEXT( "RESOURCESINK" ) );
 static const FName SHOWDEBUG_AKAUDIOSOURCES( TEXT( "AKAUDIOSOURCES" ) );
 static const FName SHOWDEBUG_AKAUDIOSOURCEATTENUATIONS( TEXT( "AKAUDIOSOURCEATTENUATIONS" ) );
+static const FName SHOWDEBUG_PIPES( TEXT( "PIPES" ) );
 
 /** Common show debug colors */
 static const FLinearColor DEBUG_TEXTWHITE( 0.9f, 0.9f, 0.9f );
@@ -69,6 +73,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, Warning );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, All );
 #endif
+DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Verbose, All ); //@todoPipes - These should be dialed back to only warnings before going on EA. We want it verbose on EX for now.
 
 
 /** Helpers when using interfaces */
@@ -131,12 +136,13 @@ static const ECollisionChannel OC_VehicleWheelQuery( ECC_GameTraceChannel7 );
 /** Input Actions */
 static const FName PrimaryFireAction( TEXT( "PrimaryFire" ) );
 static const FName SecondaryFireAction( TEXT( "SecondaryFire" ) );
+static const FName  ReloadAction( TEXT( "Reload" ) );
 static const FName BuildGunScrollDownAction( TEXT( "BuildGunScrollDown_PhotoModeFOVDown" ) );
 static const FName BuildGunScrollUpAction( TEXT( "BuildGunScrollUp_PhotoModeFOVUp" ) );
 static const FName BuildGunScrollModeAction( TEXT( "BuildGunScrollMode" ) );
 static const FName BuildGunNoSnapModeAction( TEXT( "ToggleMap_BuildGunNoSnapMode" ) );
 static const FName BuildGunSnapToGuideLinesAction( TEXT( "BuildGunSnapToGuideLines" ) );
-static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT("BuildGunDismantle_ToggleMultiSelectState") );
+static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT( "BuildGunDismantle_ToggleMultiSelectState" ) );
 
 /** Color Parameters */
 static const FName PrimaryColor( TEXT( "PrimaryPaintedMetal_Color" ) );
@@ -157,35 +163,14 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 -----------------------------------------------------------------------------*/
 #define SHOWVAR( x ) *FString::Printf( TEXT( "%s = %s" ), TEXT( #x ), *VarToFString( x ) )
 
-#define QUICKLOG( x, ... ) UE_LOG( LogTemp, Log, TEXT( x ), __VA_ARGS__ );
-
-//[DavalliusA:Wed/03-04-2019] Uses the HasAuthority() to add a C: or S: infront of the log print. S = has athority/server, C = has not athority/client. Even if this is not really what athority means... it's the shortest easy to understand printing we can add. Might change it later if we find it unclear.
-#define QUICKLOG_ATHORITY_MARKING( x, ...) if(HasAuthority()){UE_LOG( LogTemp, Log, TEXT("S: %s") ,*FString::Printf(TEXT( x ), __VA_ARGS__ )); }else{UE_LOG( LogTemp, Log, TEXT("C: %s") ,*FString::Printf(TEXT( x ), __VA_ARGS__) ); }
-//[DavalliusA:Wed/03-04-2019] Added function name in the quick show. Makes it undeniably distinct if same variable are in different objects or functions. Even considering adding line number... but should be clear enough without.
-//Also added captial SHOW to make it easier to locate in the log.
-#define QUICKSHOW( x ) UE_LOG( LogTemp, Log, TEXT( "SHOW: %s:    %s" ), TEXT( __FUNCTION__ ), SHOWVAR( x ) ); 
-#define QUICKSHOWENUM( name, x ) UE_LOG( LogTemp, Log, TEXT("%s"), SHOWENUM( name, x ) );
-#define QUICKSHOWARRAY( x ) UE_LOG( LogTemp, Log, TEXT( "%s" ), SHOWARRAY( x ) );
-
-#define LOGARRAY( category, verbosity, x ) \
-	{ \
-		UE_LOG( category, verbosity, TEXT( "%s (%i):" ), TEXT( #x ), x.Num() ); \
-		for( int32 i = 0; i < x.Num(); ++i ) \
-		{ \
-			UE_LOG( category, verbosity, TEXT( "[%i]\t%s" ), i, *VarToFString( x[ i ] ) ); \
-		} \
-	}
-
-#define UE_LOG_PINK( category, verbosity, format, ... ) \
-	SET_WARN_COLOR( COLOR_PURPLE ); \
-	UE_LOG( category, verbosity, format, __VA_ARGS__ ); \
-	CLEAR_WARN_COLOR();
-
 // Enums are just integer values and need a special case.
 // You also need to provide the enum's type name as we can't get that using code.
 #define SHOWENUM( name, x ) *FString::Printf( TEXT( "%s = %s" ), TEXT( #x ), *EnumToFString( FString( #name ), ( int32 )x ) )
 
 #define ENUM_TO_FSTRING( name, x ) EnumToFString( FString( #name ), ( uint32 )x )
+
+//Appends NetMode on quicklog macro
+#define QUICKLOG_NETMODE( x, ... ) UE_LOG( LogTemp, Log, TEXT("(%s) %s"), NETMODE_STRING, *FString::Printf(x), __VA_ARGS__ );
 
 #define ENUM_TO_DISPLAYNAME( name, x ) EnumToDisplayNameFString( FString( #name ), ( int32 )x )
 
@@ -195,29 +180,48 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 
 #define SHOWMAP( x ) *FString::Printf( TEXT( "%s \n%s" ), TEXT( #x ), *MapToFString< decltype( x ) >( x ) )
 
+/** Use this to log larger arrays, SHOWARRAY might not show the entire array. */
+#define LOGARRAY( category, verbosity, x ) \
+	{ \
+		UE_LOG( category, verbosity, TEXT( "%s (%i):" ), TEXT( #x ), x.Num() ); \
+		for( int32 i = 0; i < x.Num(); ++i ) \
+		{ \
+			UE_LOG( category, verbosity, TEXT( "[%i]\t%s" ), i, *VarToFString( x[ i ] ) ); \
+		} \
+	}
+
+/** Use for easy debugging, note that logs in the temp category should not be submitted, they should be categorized. */
+#define QUICKLOG( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: %s" ), TEXT( x ), __VA_ARGS__ );
+
+/** QUICKLOG that marks output with authority/remote depending on the actors role. Note that this is not always synonymous with server/client, use the net mode in that case. */
+#define QUICKLOG_AUTHORITY_MARKING( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: [%s] %s" ) ,*FString::Printf( TEXT( x ), HasAuthority() ? TEXT( "Authority" ) : TEXT( "Remote" ), __VA_ARGS__ ) );
+
+/** Similar to QUICKLOG but for single variables. */
+#define QUICKSHOW( x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), SHOWVAR( x ) ); 
+#define QUICKSHOWENUM( name, x ) UE_LOG( LogTemp, Log, TEXT("QUICKSHOW (%s)   %s"), TEXT( __FUNCTION__ ), SHOWENUM( name, x ) );
+#define QUICKSHOWARRAY( x ) LOGARRAY( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), x );
+
 inline FString NetmodeToString( ENetMode NM )
 {
 	switch( NM )
 	{
 	case NM_Standalone:
-		return TEXT("Standalone");
+		return TEXT( "Standalone" );
 	case NM_DedicatedServer:
-		return TEXT("DedicatedServer");
+		return TEXT( "DedicatedServer" );
 	case NM_ListenServer:
-		return TEXT("ListenServer");
+		return TEXT( "ListenServer" );
 	case NM_Client:
-		return FString::Printf( TEXT("Client %d"), GPlayInEditorID - 1 );
+		return FString::Printf( TEXT( "Client %d" ), GPlayInEditorID - 1 );
 	case NM_MAX:
-		return TEXT("MAX");
+		return TEXT( "MAX" );
 	default:
-		return TEXT("BadValue");
+		return TEXT( "BadValue" );
 	}
 }
 
-
 #define NETMODE_STRING ( NETMODE_STRING_WORLD( GetWorld() ) )
 #define NETMODE_STRING_WORLD( world ) ( (world) ? *NetmodeToString( (world)->GetNetMode() ) : TEXT("Unknown NetMode") )
-
 	
 #define NETMODE_STRING_CONTEXT( context ) ( NETMODE_STRING_WORLD( (context)->GetWorld() )
 #define QUICKNETMODE UE_LOG( LogTemp, Log, TEXT( "%s %s" ), *GetName(), NETMODE_STRING );

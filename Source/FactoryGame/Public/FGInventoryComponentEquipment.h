@@ -9,6 +9,8 @@
 #include "Equipment/FGEquipment.h"
 #include "FGInventoryComponentEquipment.generated.h"
 
+class AFGEquipment;
+
 UCLASS()
 class FACTORYGAME_API UFGInventoryComponentEquipment : public UFGInventoryComponent
 {

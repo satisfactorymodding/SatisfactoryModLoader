@@ -27,7 +27,7 @@ public:
 	// Begin AFGHologram interface
 	virtual class USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	virtual bool MultiStepPlacement() override;
+	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	// End AFGHologram interface
 
 	// Begin AFGBuildableHologram interface

@@ -29,6 +29,15 @@ enum class ESaveExists : uint8
 	SE_ExistsInOtherSession UMETA( DisplayName="ExistsInOtherSession" )
 };
 
+UENUM( BlueprintType )
+enum class ESaveState : uint8
+{
+	SS_Unsupported	UMETA( DisplayName="Unsupported" ),
+	SS_Volatile		UMETA( DisplayName="Volatile" ),
+	SS_Supported	UMETA( DisplayName="Supported"),
+	SS_Newer		UMETA( DisplayName="Newer" )
+};
+
 typedef FString SessionNameType;
 
 /** The header with information about a save game */
@@ -58,7 +67,7 @@ struct FACTORYGAME_API FSaveHeader
 		// @2019-01-15 Added session visibility to the header so we can set it up with the same visibility
 		AddedSessionVisibility,
 
-		// @2019-06-19 This was put in the wrong save version thingy and is now on experimental so cant remnove it.
+		// @2019-06-19 This was put in the wrong save version thingy and is now on experimental so can't remove it.
 		LookAtTheComment,
 
 		// -----<new versions can be added above this line>-----
@@ -113,8 +122,36 @@ struct FACTORYGAME_API FSaveHeader
 	/** Store / load data */
 	friend FArchive& operator<< ( FArchive& ar, FSaveHeader& header );
 
+	/** Send/Receive over network */
+	bool NetSerialize( FArchive& ar, class UPackageMap* map, bool& out_success );
+
 	// The GUID for this custom version number
 	const static FGuid GUID;
+};
+
+/** Enable custom net delta serialization for the above struct. */
+template<>
+struct FACTORYGAME_API TStructOpsTypeTraits< FSaveHeader > : public TStructOpsTypeTraitsBase2< FSaveHeader >
+{
+	enum
+	{
+		WithNetSerializer = true
+	};
+};
+
+
+UENUM()
+enum class ESaveSortMode : uint8
+{
+	SSM_Name UMETA(DisplayName=Name),
+	SSM_Time UMETA(DisplayName=Time)
+};
+
+UENUM()
+enum class ESaveSortDirection : uint8
+{
+	SSD_Ascending UMETA(DisplayName=Ascending),
+	SSD_Descending UMETA(DisplayName=Descending)
 };
 
 /**
@@ -133,6 +170,9 @@ struct FACTORYGAME_API FMapRedirector
 	UPROPERTY()
 	FString NewMapName;
 };
+
+DECLARE_DELEGATE_ThreeParams( FOnEnumerateSaveGamesComplete, bool, const TArray<FSaveHeader>&, void* );
+DECLARE_DELEGATE_TwoParams( FOnDeleteSaveGameComplete, bool, void* );
 
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FSessionSaveStruct
@@ -181,7 +221,7 @@ public:
 	static class UFGSaveSystem* Get( class UWorld* world );
 
 	/** Get the save system from a world */
-	UFUNCTION( BlueprintPure, Category = "Save", meta = (DisplayName = "GetSaveSystem") )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save", meta = (DisplayName = "GetSaveSystem") )
 	static class UFGSaveSystem* Get( class UObject* worldContext );
 
 	/**
@@ -189,42 +229,62 @@ public:
 	 *
 	 * @param out_saveGames a list with the available save games
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Save" )
-	void FindSaveGames( TArray<FSaveHeader>& out_saveGames, bool newestFirst );
+	void EnumerateSaveGames( FOnEnumerateSaveGamesComplete onCompleteDelegate, void* userData );
 
 	/**
-	* Loops through all save games and group them by session
-	* and sorts the saves by dates and then session by last save date
-	*/
-	UFUNCTION( BlueprintCallable, Category = "Save" )
-	void GetAllSavesPerSession( TArray< FSessionSaveStruct >& out_sessions );
+	 * Groups a save list by their corresponding session
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Save" )
+	static void GroupSavesPerSession( const TArray< FSaveHeader >& saves, TArray< FSessionSaveStruct >& out_groupedBySession );
 
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	/**
+	 * Sort sessions
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Save" )
+	static void SortSessions( UPARAM(ref) TArray< FSessionSaveStruct >& sessions, ESaveSortMode sortMode, ESaveSortDirection sortDirection );
+
+	/**
+	 * Sort saves
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Save" )
+	static void SortSaves( UPARAM(ref) TArray< FSaveHeader >& saves, ESaveSortMode sortMode, ESaveSortDirection sortDirection );
+
+	/**
+	 * Get the state we consider the save so we can warn if a save is potentially dangerous to load
+	 */
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Save" )
+	static ESaveState GetSaveState( const FSaveHeader& saveGame );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	bool IsSessionNameUsed( FString sessionName ) const;
 
-	// @todo: Move Widget_PlayMenuAlpha::CheckSessionNameForError to native, so we can verify the error natively too
+	// @todosave: Move Widget_PlayMenuAlpha::CheckSessionNameForError to native, so we can verify the error natively too
 	
 	void AddSessionNameToUsed( FString sessionName );
 
 	/** Helper, used to verify if the save game name is valid */
-	UFUNCTION( BlueprintPure, Category = "Save" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
 	static bool IsValidSaveName( FString saveName );
 
-	/** Return true if a save gave with the given name exists */
-	bool SaveGameExists( FString saveName );
-	
-	/** Check if a save game exists, if you don't care about session name, pass in empty currentSessionName and check != ESaveExists::SE_DoesntExist */
-	UFUNCTION( BlueprintPure, Category = "Save" )
-	ESaveExists GetSaveExists( const FString& saveName, const FString& currentSessionName );
+	/** Checks on file system if the save file exists */
+	bool SaveGameExistsSync( FString saveName );
+
+	/** Check if a save game exists in the list of saves. if you don't care about session name, pass in empty currentSessionName and check != ESaveExists::SE_DoesntExist */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Save" )
+	static ESaveExists GetCachedSaveExists( const TArray<FSaveHeader>& cachedSaves, const FString& saveName, const FString& currentSessionName );
+
+	/** Get the last result of EnumerateSaves */
+	//UFUNCTION( BlueprintPure, Category="FactoryGame|Save")
+	FORCEINLINE const TArray<FSaveHeader>& GetCachedSaves() const { return mCachedSaves; }
 
 	/**
-	 * Delete a save game
+	 * Deletes a list of saves, just calls DeleteSaveFile
 	 *
-	 * @param saveName - the save file's name without extension
-	 * @return true if we managed to delete the save
+	 * @param saveNames - list of the save files without extension
+	 * @param completeDelegate - triggers when the file deletion is complete with the result
+	 * @param userData - data you want passed to the complete delegate
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Save" )
-	bool DeleteSave( FString saveName );
+	void DeleteSaveFiles( const TArray<FString>& saveNames, FOnDeleteSaveGameComplete completeDelegate, void* userData );
 
 	/**
 	 * Converts a save name to a absolute path for a existing save game
@@ -313,6 +373,9 @@ protected:
 protected:
 	/** The session id's that used */
 	TArray<SessionNameType> mUsedSessionNames;
+	
+	/** Last result of EnumerateSaves */
+	TArray<FSaveHeader> mCachedSaves;
 
 	/** Redirects for the maps when someone renames a map */
 	UPROPERTY( GlobalConfig )

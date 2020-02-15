@@ -20,18 +20,20 @@ public:
 	AFGPlayerControllerBase();
 
 	// Begin AActor interface
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
-	virtual void Destroyed() override;
+	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags) override;
 	// End AActor interface
 
 	// Begin APlayerController interface
 	virtual void ClientRestart_Implementation( APawn* newPawn ) override;
+	virtual void AddCheats( bool force = false ) override;
 	// End APlayerController interface
 
-	UFUNCTION( BlueprintPure, Category = "Input" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	FORCEINLINE bool GetIsUsingGamepad(){ return mIsUsingGamepad; }
 
-	UFUNCTION( BlueprintCallable, Category = "Input" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )
 	void SetIsUsingGamepad( bool newIsUsingGamepad );
 
 	/**
@@ -53,55 +55,55 @@ public:
 	FOnInputChanged OnInputChanged;
 
 	/** Exposing flushPressedKeys to BP */
-	UFUNCTION( BlueprintCallable, Category = "Input" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )
 	void FlushPressedKeys();
 
 	/** Used for rebinding keys */
-	UFUNCTION( BlueprintCallable, Category = "Input" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )
 	bool RebindActionKey( FFGKeyMapping newKeyMapping );
 
 	/** Removes custom bindings and restores to default */
-	UFUNCTION( BlueprintCallable, Category = "Input" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )
 	void ResetInputBindings();
 
 	/** Inject the input that was rebinded and remove old default */
 	void UpdatePlayerInput();
 
 	/** Sets mouse sensitivity */
-	UFUNCTION( BlueprintCallable, Category = "Input" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )
 	void SetMouseSensitivity( float newSense );
 
 	/** Get current sensitivity */
 	UE_DEPRECATED(4.21, "Use GetMouseSensitivityX/GetMouseSensitivityY instead")
-	UFUNCTION( BlueprintPure, Category = "Input", meta=(DeprecatedFunction,DeprecationMessage = "Use GetMouseSensitivityX/GetMouseSensitivityY instead") )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input", meta=(DeprecatedFunction,DeprecationMessage = "Use GetMouseSensitivityX/GetMouseSensitivityY instead") )
 	float GetMouseSensitivity();
 
 	/** Get current sensitivity in X axis */
-	UFUNCTION( BlueprintPure, Category = "Input" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	float GetMouseSensitivityX();
 
 	/** Get current sensitivity in X axis*/
-	UFUNCTION( BlueprintPure, Category = "Input" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	float GetMouseSensitivityY();
 
 	/** Get default value for mouse sensitivity */
 	UE_DEPRECATED(4.21, "Use GetDefaultMouseSensitivityX/GetDefaultMouseSensitivityY instead")
-	UFUNCTION( BlueprintPure, Category = "Input", meta=(DeprecatedFunction,DeprecationMessage = "Use GetDefaultMouseSensitivityX/GetDefaultMouseSensitivityY instead") )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input", meta=(DeprecatedFunction,DeprecationMessage = "Use GetDefaultMouseSensitivityX/GetDefaultMouseSensitivityY instead") )
 	float GetDefaultMouseSensitivity();
 
 	/** Get default value for mouse sensitivity in X axis*/
-	UFUNCTION( BlueprintPure, Category = "Input" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	float GetDefaultMouseSensitivityX();
 
 	/** Get default value for mouse sensitivity in Y axis*/
-	UFUNCTION( BlueprintPure, Category = "Input" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	float GetDefaultMouseSensitivityY();
 
 	/** Returns readable name for an action */
-	UFUNCTION( BlueprintPure, Category = "Input" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Input" )
 	FText GetKeyNameForAction( FName inAction, bool getGamepadKey );
 
-	UFUNCTION( BlueprintNativeEvent, Category="Online|Presence") 
+	UFUNCTION( BlueprintNativeEvent, Category="FactoryGame|Online|Presence") 
 	FString GetPresenceString() const;
 
 	/** Set CurrentNetSpeed to the lower of its current value and Cap, can update during the game to the new value if server updates it's bandwith due to options */
@@ -112,6 +114,29 @@ public:
 	UFUNCTION(Reliable, Server, WithValidation)
 	void Server_UpdateCappedBandwidth(int32 cap);
 
+	UFUNCTION(exec)
+	void AdminLogin( FString password );
+
+	/** Login a player controller with a password, response comes later */
+	UFUNCTION(Reliable, Server, WithValidation)
+	void Server_AdminLogin( const FString& hashedPassword );
+
+	/** Setup additional things if we have been granted admin access */
+	void OnAdminRightsGranted();
+
+	/** Logged out as admin */
+	void OnAdminRightsRevoked();
+
+	/** Try to run a command on the server, require admin rights */
+	UFUNCTION(exec)
+	void Admin( const FString& command );
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerAdmin( const FString& command );
+
+	/** @return the admin interface if we are logged in as server admin */
+	UFUNCTION(BlueprintPure, Category="FactoryGame|Online|Admin")
+	FORCEINLINE class AFGAdminInterface* GetAdminInterface() const { return mAdminInterface; }
 protected:
 	/** Used to discard any input when we are dead */
 	UFUNCTION()
@@ -132,6 +157,14 @@ private:
 	void InitDeathInput();
 
 private:
+	/** Admin interface if we have one available */
+	UPROPERTY(Replicated)
+	class AFGAdminInterface* mAdminInterface;
+
+	/** If we are allowed to cheat, then we replicate the cheat manager */
+	UPROPERTY(Replicated)
+	class UFGCheatManager* mReplicatedCheatManager;
+
 	/** The input component used when we want to disable our input */
 	UPROPERTY()
 	class UInputComponent* mDisableInputComponent;

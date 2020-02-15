@@ -17,15 +17,18 @@ void AFGBuildableTrainPlatformCargo::UpdateDockingSequence(){ }
 void AFGBuildableTrainPlatformCargo::UpdatePowerConnectionFromTrack(){ }
 void AFGBuildableTrainPlatformCargo::Factory_Tick( float dt){ }
 void AFGBuildableTrainPlatformCargo::Factory_CollectInput_Implementation(){ }
+void AFGBuildableTrainPlatformCargo::Factory_PullPipeInput_Implementation( float dt){ }
+void AFGBuildableTrainPlatformCargo::Factory_PushPipeOutput_Implementation( float dt){ }
 bool AFGBuildableTrainPlatformCargo::CanProduce_Implementation() const{ return bool(); }
 void AFGBuildableTrainPlatformCargo::OnRep_ReplicationDetailActor(){ }
 void AFGBuildableTrainPlatformCargo::OnRep_UpdateDockingStatus(){ }
-int32 AFGBuildableTrainPlatformCargo::GetFirstIndexWithItem( UFGInventoryComponent* inventory){ return int32(); }
+bool AFGBuildableTrainPlatformCargo::FilterResourceForms( TSubclassOf< UFGItemDescriptor > itemDesc, int32 idx) const{ return bool(); }
+int32 AFGBuildableTrainPlatformCargo::GetFirstIndexWithItem( UFGInventoryComponent* inventory) const{ return int32(); }
 void AFGBuildableTrainPlatformCargo::TransferInventoryToTrain(){ }
 void AFGBuildableTrainPlatformCargo::TransferInventoryToPlatform(){ }
 void AFGBuildableTrainPlatformCargo::LoadUnloadVehicleComplete(){ }
-void AFGBuildableTrainPlatformCargo::CheckCanPerformFullUnload(){ }
-void AFGBuildableTrainPlatformCargo::CheckCanPerformFullLoad(){ }
+void AFGBuildableTrainPlatformCargo::UpdateUnloadSettings(){ }
+void AFGBuildableTrainPlatformCargo::UpdateLoadSettings(){ }
 void AFGBuildableTrainPlatformCargo::SwapCargoContainerVisibility(){ }
 void AFGBuildableTrainPlatformCargo::HidePlatformCargoContainer(){ }
 void AFGBuildableTrainPlatformCargo::ShowPlatformCargoContainer(){ }

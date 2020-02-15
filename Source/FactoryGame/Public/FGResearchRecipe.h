@@ -7,11 +7,12 @@
 #include "UObject/Class.h"
 
 #include "CoreMinimal.h"
+#include "FGRecipe.h"
+#include "Resources/FGItemDescriptor.h"
 #include "Resources/FGItemDescriptor.h"
 #include "UObject/NoExportTypes.h"
 #include "AssetBundleData.h"
 #include "IncludeInBuild.h"
-#include "FGRecipe.h"
 #include "FGResearchRecipe.generated.h"
 
 USTRUCT(Blueprintable)

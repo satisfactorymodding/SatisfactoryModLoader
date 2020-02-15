@@ -44,10 +44,10 @@ public:
 	void SetResearchMeshCurveScale( UCurveFloat* curveScale );
 
 	UFUNCTION( )
-	void OnResearchStarted( TSubclassOf<class UFGResearchRecipe> researchRecipe );
+	void OnResearchStarted( TSubclassOf<class UFGSchematic> schematic );
 	
 	UFUNCTION( )
-	void OnResearchConcluded( TSubclassOf<class UFGResearchRecipe> researchRecipe );
+	void OnResearchConcluded( TSubclassOf<class UFGSchematic> schematic );
 
 	UFUNCTION( BlueprintCallable, Category = "Research" )
 	void SetMachineUser( class AFGCharacterPlayer* player );

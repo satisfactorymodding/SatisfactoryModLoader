@@ -3,6 +3,7 @@
 #include "Curves/CurveFloat.h"
 #include "UObject/Class.h"
 
+#include "FGSchematic.h"
 #include "FGActorRepresentation.h"
 #include "Engine/DeveloperSettings.h"
 #include "FGDeveloperSettings.generated.h"
@@ -36,4 +37,7 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Unlock Classes For Migrating To New Unlock System" )
 	TSubclassOf< class UFGUnlockArmEquipmentSlot > mUnlockArmEquipmentClass;
+
+	UPROPERTY( EditAnywhere, config, Category = "Schematic category classes for migrating from old enum to new object based type" )
+	TMap< ESchematicCategory, TSubclassOf< class UFGSchematicCategory > > mSchematicCategoryMigrationData;
 };

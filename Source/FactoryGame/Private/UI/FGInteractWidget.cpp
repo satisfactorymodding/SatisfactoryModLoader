@@ -12,6 +12,7 @@ void UFGInteractWidget::OnConsume(){ }
 void UFGInteractWidget::SetDefaultFocusWidget( UWidget* focusWidget){ }
 void UFGInteractWidget::SetupDefaultFocus_Implementation(){ }
 void UFGInteractWidget::NativeConstruct(){ }
+void UFGInteractWidget::NativeDestruct(){ }
 void UFGInteractWidget::NativeOnRemovedFromFocusPath( const FFocusEvent& InFocusEvent){ }
 bool UFGInteractWidget::NativeCanCallInit(){ return bool(); }
 void UFGInteractWidget::NativeTestAndQueueInit(){ }

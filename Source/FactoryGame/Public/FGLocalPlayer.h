@@ -58,6 +58,18 @@ enum ELoginState
 	LS_FailedToLogin	UMETA(DisplayName="FailedToLogin")
 };
 
+UENUM(BlueprintType)
+enum class ECreateSessionState : uint8
+{
+	CSS_NotCreateingSession,
+	CSS_CreatingSession,
+	CSS_DestroyingOldSession,
+	CSS_UpdatingPresence,
+	CSS_WaitingForPresenceToUpdate,
+	CSS_WaitingForLogin
+	
+};
+
 USTRUCT(BlueprintType)
 struct FACTORYGAME_API FFGOnlineFriend
 {
@@ -102,6 +114,8 @@ FORCEINLINE uint32 GetTypeHash( const FFGOnlineFriend& onlineFriend )
 	return 0;
 }
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreateSessionStateChanged, ECreateSessionState, newState );
+
 struct FACTORYGAME_API FSessionInformation
 {
 	FSessionInformation() :
@@ -122,24 +136,34 @@ struct FACTORYGAME_API FSessionInformation
 	{
 		IsSessionCreationInFlight = false;
 	}
+
+	void SetState( ECreateSessionState newState, FOnCreateSessionStateChanged& createSessionChanged );
+
+	ECreateSessionState GetState() const { return State; }
 	
 	/** Map we want to travel to */
 	FString MapName;
+	
 	/** Options when starting map */
 	FString Options;
+	
 	/** Name of the session */
 	FString SessionName;
+	
 	/** Session visibility */
 	ESessionVisibility Visibility;
 
 	/** The name of the visiblity string passed */
 	static const TCHAR* VisibilityOptionName;
+	static const TCHAR* IpSocketString;
 
 	/** If true, we are creating a session and won't try to create any other at the same time */
 	bool IsSessionCreationInFlight;
 
 	/** If true, then we are creating a offline game */
 	bool IsOfflineGame;
+private:
+	ECreateSessionState State;
 };
 
 // Workaround as it seems like you can't have a TArray<FFGOnlineFriends> exposed to a Dynamic multicast delegate
@@ -217,6 +241,12 @@ public:
 
 	/** Checks if last logged in user id matches the current logged in user and if not updates the cached value */
 	void RefreshRecentRegisteredEpicIdLogin();
+
+	// Return true if we have received the Product User Id needed for hosting the game
+	bool HasReceivedProductUserId() const;
+
+	// Get the unique net id of the current local player
+	TSharedPtr<const FUniqueNetId> GetPlayerId() const;
 protected:
 	//~Begin Online Delegates
 	//~Begin OnlineIdentity delegates
@@ -243,6 +273,10 @@ protected:
 	void OnSessionCleanup_SetupServer( FName sessionName, bool wasSuccessful );
 	void OnSessionCreated_SetupServer( FName sessionName, bool wasSuccessful );
 	void OnPresenceUpdated_SetupServer( const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence );
+	UFUNCTION()
+	void OnLoginFailed_OpenMap( bool confirmClicked );
+	UFUNCTION()
+	void OnPresenceFailedToUpdate_OpenMap( bool confirmClicked );
 
 	void UpdateLoginState();
 
@@ -260,15 +294,28 @@ protected:
 	/** Convert a login status to a login state */
 	ELoginState FromLoginStatus( ELoginStatus::Type from ) const;
 
-	/** Called on end of SetupServer-chain, opening the map */
+	/** Called on end of SetupServer-chain, waiting for presence to be properly updated */
 	UFUNCTION()
-	void OpenMap_SetupServer();
+	void OpenMap_WaitForPresence();
 
-	// Get the unique net id of the current local player
-	TSharedPtr<const FUniqueNetId> GetPlayerId() const;
+	/** Called on end of SetupServer-chain, waiting for presence to be properly updated */
+	UFUNCTION()
+	void OpenMap_WaitForProductUserId();
+
+	/** the map that's setup in progress */
+	void OpenMap();
+
+	/** Pulls the current state of creating a session */
+	UFUNCTION(BlueprintPure,Category="FactoryGame|Session")
+	ECreateSessionState GetCurrentCreateSessionState() const;
 protected:
+	// Called whenever we get logged in
+	void OnLoggedIn();
+	
+	// Set the login state of the local player and broadcast it
 	void SetLoginState( ELoginState newLoginState );
 
+	// Get friends that we don't have any presence data or similar for
 	void GetUsersWithNoData( TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData );
 private:
 	// Return true if our presence has session id set
@@ -306,23 +353,23 @@ protected:
 	// The status of our logins
 	ELoginState mLoginState;
 
-	UPROPERTY(BlueprintAssignable,Category="Online")
+	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
 	FOnLoginStateChanged mOnLoginStateChanged;
 
 	/** Called when the friendslist has been updated (that is, a user is has added/removed you as a friend) */
-	UPROPERTY(BlueprintAssignable,Category="Online")
+	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
 	FOnFriendsListUpdated mOnFriendsListUpdated;
-
-	/** Called when the friendslist has been updated (that is, a user is has added/removed you as a friend) */
-	//UPROPERTY(BlueprintAssignable)
-//	FOnFriendsUpdated mOnFriendsUpdated;
+	
+	/** Called when the session state has changed when creating a online game */
+	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
+	FOnCreateSessionStateChanged mOnCreateSessionStateChanged;
 
 	/** Called a friends presence is updated */
-	UPROPERTY(BlueprintAssignable,Category="Online")
+	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
 	FOnFriendPresenceUpdated mOnFriendsPresenceUpdated;
 
 	/** Called a friends presence is updated */
-	UPROPERTY(BlueprintAssignable,Category="Online")
+	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
 	FOnGameInviteReceived mOnInviteReceived;
 
 	/** Current state of the friends list */

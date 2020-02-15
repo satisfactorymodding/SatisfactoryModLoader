@@ -3,7 +3,7 @@
 #include "FGBuildableConveyorBelt.h"
 
 AFGBuildableConveyorBelt::AFGBuildableConveyorBelt(){ 
-	mSplineComponent = CreateDefaultSubobject<UFGSplineComponent>(TEXT("SplineComponent"));
+	mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 
     mSplineComponent->SetupAttachment(RootComponent);
 }
@@ -19,9 +19,10 @@ void AFGBuildableConveyorBelt::StopIsLookedAt_Implementation(  AFGCharacterPlaye
 FText AFGBuildableConveyorBelt::GetLookAtDecription_Implementation(  AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGBuildableConveyorBelt::GainedSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::LostSignificance_Implementation(){ }
+void AFGBuildableConveyorBelt::SetupForSignificance(){ }
+int32 AFGBuildableConveyorBelt::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 float AFGBuildableConveyorBelt::FindOffsetClosestToLocation( const FVector& location) const{ return float(); }
 void AFGBuildableConveyorBelt::GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction) const{ }
-void AFGBuildableConveyorBelt::TogglePendingDismantleMaterial( bool enabled){ }
 FVector AFGBuildableConveyorBelt::GetVelocityForBase(  AActor* basedActor,  UPrimitiveComponent* baseComponent) const{ return FVector(); }
 FVector AFGBuildableConveyorBelt::GetRefundSpawnLocationAndArea_Implementation( const FVector& aimHitLocation, float& out_radius) const{ return FVector(); }
 void AFGBuildableConveyorBelt::Upgrade_Implementation( AActor* newActor){ }
@@ -33,4 +34,3 @@ bool AFGBuildableConveyorBelt::VerifyDefaults( FString& out_message){ return boo
 void AFGBuildableConveyorBelt::TickItemTransforms( float dt){ }
 void AFGBuildableConveyorBelt::UpdateItemTransformTick( const FConveyorBeltItem& item, TMap<FName, int32>& instanceCounts,  AFGRadioactivitySubsystem* radioactiveSubsystem){ }
 void AFGBuildableConveyorBelt::GetConveyorMaterials( TArray<UMaterialInterface*, TInlineAllocator<4>>& out_materials){ }
-void AFGBuildableConveyorBelt::OnRep_SplineData(){ }

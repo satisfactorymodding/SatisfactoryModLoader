@@ -3,6 +3,10 @@
 #include "FGCheatManager.h"
 
 void UFGCheatManager::InitCheatManager(){ }
+bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
+int32 UFGCheatManager::GetFunctionCallspace( UFunction* Function, void* Parameters, FFrame* Stack){ return int32(); }
+bool UFGCheatManager::CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
+bool UFGCheatManager::ReplicateSubobjects( UActorChannel *Channel,  FOutBunch *Bunch, FReplicationFlags *RepFlags){ return bool(); }
 void UFGCheatManager::NoCost( bool enabled){ }
 bool UFGCheatManager::NoCost_Get(){ return bool(); }
 void UFGCheatManager::NoPower( bool enabled){ }
@@ -15,6 +19,7 @@ void UFGCheatManager::TurboProductionMode( bool enabled){ }
 bool UFGCheatManager::TurboMode_Get(){ return bool(); }
 void UFGCheatManager::GiveItemStacks( TSubclassOf<  UFGItemDescriptor > resource, int32 NumberOfStacks){ }
 void UFGCheatManager::GiveItemsSingle( TSubclassOf<  UFGItemDescriptor > resource, int32 NumberOfItems){ }
+void UFGCheatManager::GiveResourceSinkCoupons( int32 NumCoupons){ }
 void UFGCheatManager::PlayerFly( bool flyModeEnabled){ }
 bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
 void UFGCheatManager::PlayerNoClipModeOnFly( bool gohstMode){ }
@@ -56,7 +61,6 @@ void UFGCheatManager::SetFactoryDetailReplication( bool enable){ }
 bool UFGCheatManager::SetFactoryDetailReplication_Get(){ return bool(); }
 void UFGCheatManager::ResetFuses(){ }
 void UFGCheatManager::ToggleCameraMode(){ }
-void UFGCheatManager::DumpFactoryStatsToLog(){ }
 void UFGCheatManager::GiveSchematicsOfTier( int32 tier){ }
 void UFGCheatManager::SetGamePhase( EGamePhase phase){ }
 void UFGCheatManager::TestSharedInventoryPtr(){ }
@@ -83,7 +87,6 @@ void UFGCheatManager::PurgeAllBeaconsFromSave(){ }
 void UFGCheatManager::ListItemPickups(){ }
 void UFGCheatManager::SetTradingPostLevel( int32 inLevel){ }
 void UFGCheatManager::ListUnlockedRecipesAndSchematics(){ }
-void UFGCheatManager::SaveWithNewSessionName( const FString& saveName, const FString& sessionName){ }
 void UFGCheatManager::GetVehicleInfo(){ }
 void UFGCheatManager::RunDebugMetric(){ }
 void UFGCheatManager::MCP_Login( FString username, FString password){ }
@@ -101,8 +104,7 @@ void UFGCheatManager::ResetHubTutorial(){ }
 void UFGCheatManager::ResetSchematics(){ }
 void UFGCheatManager::ResetRecipes(){ }
 void UFGCheatManager::DumpSchematics(){ }
-void UFGCheatManager::FixupBuiltByRecipeInOldSave( bool reapplyRecipeIfBetterMatchFound ){ }
-void UFGCheatManager::PrintStatichMeshesHirarchy(){ }
+void UFGCheatManager::PrintStaticMeshesHierarchy(){ }
 void UFGCheatManager::FlipVehicle(){ }
 void UFGCheatManager::ListDebugStartingPoint(){ }
 void UFGCheatManager::SetDebugStartingPoint( FName startingPoint){ }
@@ -114,3 +116,7 @@ void UFGCheatManager::RebuildFactoryLegsOneTileAroundPlayer(){ }
 void UFGCheatManager::ResetGamePhases(){ }
 void UFGCheatManager::DumpGamePhases(){ }
 void UFGCheatManager::ToggleTrainSelfDriving(){ }
+void UFGCheatManager::FillFirstPipeInEachNetwork(){ }
+void UFGCheatManager::EmptyAllPipes(){ }
+void UFGCheatManager::ResetAllPipes(){ }
+void UFGCheatManager::ToggleDebuggingOnPipe(){ }

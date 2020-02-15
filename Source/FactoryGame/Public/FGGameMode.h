@@ -36,11 +36,11 @@ public:
 	// End IFSaveInterface
 
 	// Begin AFGGameModeBase interface
-	virtual void FinishRestartPlayer( AController* NewPlayer, const FRotator& StartRotation );
+	virtual void FinishRestartPlayer( AController* NewPlayer, const FRotator& StartRotation ) override;
 	virtual void InitGame( const FString& mapName, const FString& options, FString& out_errorMessage ) override;
 	virtual APawn* SpawnDefaultPawnAtTransform_Implementation( AController* newPlayer, const FTransform& spawnTransform ) override;
 	virtual void InitGameState() override;
-	virtual bool AllowCheats( APlayerController* p );
+	virtual bool AllowCheats( APlayerController* p ) override;
 	virtual AActor* ChoosePlayerStart_Implementation( AController* player ) override;
 	virtual void RestartPlayer( AController* newPlayer ) override;
 	virtual void PostLogin( APlayerController* newPlayer ) override;
@@ -58,10 +58,6 @@ public:
 
 	/** Get the session id of our current session */
 	FORCEINLINE SessionNameType GetSaveSessionName() const{ return mSaveSessionName; }
-
-	/** Kick a player from the game */
-	UFUNCTION(BlueprintCallable, Category="Online")
-	void KickPlayer( APlayerState* ps );
 
 	/** Set the session id of our current session */
 	void SetSaveSessionName( SessionNameType name );
@@ -101,10 +97,20 @@ public:
 
 	void RegisterCallObjectOnAllCurrentPlayers( TSubclassOf<UFGRemoteCallObject> inClass );
 
+	/** Saves the game, and then restarts from the load */
+	UFUNCTION()
+	void RebootSession();
+
 public:
 	/** Name of the start location option that is parsed */
 	static const TCHAR* StartLocationOption;
+
+	/** Name of the load game option that is parsed */
+	static const TCHAR* LoadGameOption;
 protected:
+	/** Set the desired world time we want to restart the server */
+	void SetServerRestartWorldTime( float worldTime );
+
 	/** Trigger a save to save the world */
 	UFUNCTION( exec )
 	void TriggerWorldSave( FString saveGameName );
@@ -119,6 +125,14 @@ protected:
 	 */
 	bool IsValidPawnToReclaim( APawn* pawn ) const;
 private:
+	/**
+	 * Get the name of the save that we want to create when rebooting the session due to long server uptimes
+	 */
+	void GetRestartSessionSaveName( FString& out_sessionName ) const;
+
+	/** Build the URL for restarting the session */
+	void BuildRestartSessionURL( const FString& saveName, FString& out_sessionUrl ) const;
+
 	/**
 	 * Caches the player starts by PlayerStartTag as the key.
 	 * @return Play from here player start, if found; otherwise nullptr.
@@ -176,12 +190,24 @@ private:
 	UPROPERTY()
 	FName mDebugStartingPointTagName;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Default" )
-	bool mIsMainMenu;
-
-	/** These are the default Remote Call Objects for this PlayerController, should be put in config? */
+	/** Config property to reference remote call objects for player controllers */
 	UPROPERTY( Config )
 	TArray< FSoftClassPath > mDefaultRemoteCallObjectsClassNames;
 
+	/** These are the default Remote Call Objects for this PlayerController */
 	TArray< TSubclassOf< UFGRemoteCallObject > > mRemoteCallObjectsClassNames;
+
+	/** After how many hours should the server restart itself */
+	UPROPERTY( Config )
+	float mServerRestartTimeHours;
+
+	/** Handle to server restart timer */
+	FTimerHandle mServerRestartHandle;
+
+	/** Skips the tutorial step if we play in PIE */
+	UPROPERTY( EditDefaultsOnly )
+	bool mSkipTutorialInPIE;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Default" )
+	bool mIsMainMenu;
 };

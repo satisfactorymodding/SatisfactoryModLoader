@@ -34,13 +34,14 @@ bool AFGCharacterBase::TraceForGround( FVector traceStart, FVector traceEnd, FHi
 const FFootstepEffect& AFGCharacterBase::GetFootstepEffect( const FHitResult& hitResult) const{ return *(new FFootstepEffect); }
 void AFGCharacterBase::RagdollCharacter( bool newRagdoll){ }
 USkeletalMeshComponent* AFGCharacterBase::GetMesh3P() const{ return nullptr; }
+USkeletalMeshComponent* AFGCharacterBase::GetMainMesh() const{ return nullptr; }
 void AFGCharacterBase::CheckFallDamage( float zSpeed){ }
 void AFGCharacterBase::SetLocallyPossessed( bool inPossessed){ }
 UAkAudioEvent* AFGCharacterBase::GetFootstepEvent( int32 footDown) const{ return nullptr; }
 float AFGCharacterBase::AdjustDamage( AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
 void AFGCharacterBase::PlayFootstepAudio( int32 footIndex, const FHitResult& hitInfo, float waterDepth){ }
 void AFGCharacterBase::PlayFootstepParticle( const FHitResult& hitInfo, const FFootstepEffect& precalculatedEffect, FRotator socketRotation){ }
-void AFGCharacterBase::PlaceFootstepDecal( const FHitResult& hitInfo, const FFootstepEffect& precalculatedEffect, FRotator socketRotation){ }
+void AFGCharacterBase::PlaceFootstepDecal( const FHitResult& hitInfo, const FFootstepEffect& precalculatedEffect, FRotator socketRotation, int32 footDown){ }
 bool AFGCharacterBase::GetWaterFootstepEffect( const TArray< FFootstepEffectWater >& waterEffects, float waterDepth, FFootstepEffect& out_footstepEffect) const{ return bool(); }
 void AFGCharacterBase::CheckIfShouldDestroy(){ }
 void AFGCharacterBase::DoRagdoll_Internal(){ }

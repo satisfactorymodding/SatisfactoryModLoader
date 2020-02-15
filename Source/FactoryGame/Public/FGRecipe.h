@@ -6,6 +6,7 @@
 #include "UObject/Class.h"
 
 #include "ItemAmount.h"
+#include "Hologram/HologramSplinePathMode.h"
 #include "FGRecipe.generated.h"
 
 
@@ -16,61 +17,61 @@ UCLASS( Blueprintable, Meta=(AutoJSON=true) )
 class FACTORYGAME_API UFGRecipe : public UObject
 {
 	GENERATED_BODY()
-
 public:
-	UFGRecipe() :
-		mDisplayNameOverride( false ),
-		mManufactoringDuration( 1.0f )
-	{
-	}
+	UFGRecipe();
 
-	/** Used to get the recipe name in blueprint. */
-	UFUNCTION( BlueprintPure, Category = "Recipe" )
+	/** Get the display name for this recipe. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	static FText GetRecipeName( TSubclassOf< UFGRecipe > inClass );
 
-	/** Used to get the ingredients in blueprint. @todo: Make return value a out value instead */
-	UFUNCTION( BlueprintPure, Category = "Recipe" )
+	/** Get the ingredients for this recipe. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	static TArray< FItemAmount > GetIngredients( TSubclassOf< UFGRecipe > inClass );
 
-	/** Used to get the products in blueprint. @todo: Make return value a out value instead, @todo remove unused allowChildRecipes. */
-	UFUNCTION( BlueprintPure, Category = "Recipe" )
+	/** Get the products for this recipe. @todo remove unused allowChildRecipes. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	static TArray< FItemAmount > GetProducts( TSubclassOf< UFGRecipe > inClass, bool allowChildRecipes = false );
 
-	/** Used to get the manufacturing duration in blueprint. */
-	UFUNCTION( BlueprintPure, Category = "Recipe" )
+	/** Get the base manufacturing duration for this recipe. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	static float GetManufacturingDuration( TSubclassOf< UFGRecipe > inClass );
 
-	/** @todo: change return value to out variable. Used to get the produced in buildings in blueprint. */
-	UFUNCTION( BlueprintPure, Category = "Recipe" )
+	/** Get the manual manufacturing duration. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+	static float GetManualManufacturingDuration( TSubclassOf< UFGRecipe > inClass );
+
+	/** Get which buildings/or build gun this recipe can be used in. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	static TArray< TSubclassOf< UObject > > GetProducedIn( TSubclassOf< UFGRecipe > inClass );
 
-	/** Sort a array dependent on their names */
-	UFUNCTION( BlueprintCallable, Category = "Recipe" )
-	static void SortByName( UPARAM(ref) TArray< TSubclassOf< UFGRecipe > >& recipes );
-
-	/** Accessor to get the products that this recipe produces */
-	FORCEINLINE const TArray<FItemAmount>& GetProducts() const { return mProduct; }
-
-	/** Accessor to get the ingredients to this recipe */
-	FORCEINLINE const TArray<FItemAmount>& GetIngredients() const { return mIngredients; }
-
-	/** Accessor to get the where this recipe is produced in */
-	void GetProducedIn( TArray< TSubclassOf< UObject > >& out_producedIn ) const;
-
-	/** Accessor to get how long time this recipes takes to manufacture */
-	FORCEINLINE float GetManufacturingDuration() const { return mManufactoringDuration; }
-
-	/** Accessor to get the displayname of the recipe */
-	virtual FText GetDisplayName() const;
-
-	/** Used to get the products in blueprint. @todo Deprecated since 2018-10-23, but have been unused since MAM refactor. */
-	UFUNCTION( BlueprintPure, Category = "Recipe", meta = ( DeprecatedFunction, DeprecationMessage = "MAM is rewritten, use the new system instead!" ) )
-	static TArray< TSubclassOf< UFGRecipe > > GetRewardedRecipes( TSubclassOf< UFGRecipe > inClass ){ return TArray< TSubclassOf< UFGRecipe > >(); }
-
-	/** Can the given player afford the recipe */
-	UFUNCTION( BlueprintCallable, Category = "Recipe" )
+	/** Can the given player afford the recipe. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	static bool IsRecipeAffordable( class AFGCharacterPlayer* player, TSubclassOf< class UFGRecipe > recipe );
 
+	/** Sort an array dependent on their name. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
+	static void SortByName( UPARAM(ref) TArray< TSubclassOf< UFGRecipe > >& recipes );
+
+	/** Get descriptor for recipe specified */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
+	static TSubclassOf< class UFGItemDescriptor > GetDescriptorForRecipe( TSubclassOf< class UFGRecipe > recipe );
+
+	/** Native accessors. */
+	virtual FText GetDisplayName() const;
+	void GetProducedIn( TArray< TSubclassOf< UObject > >& out_producedIn ) const;
+	FORCEINLINE const TArray<FItemAmount>& GetProducts() const { return mProduct; }
+	FORCEINLINE const TArray<FItemAmount>& GetIngredients() const { return mIngredients; }
+	FORCEINLINE float GetManufacturingDuration() const { return mManufactoringDuration; }
+	FORCEINLINE float GetManualManufacturingDuration() const { return mManufactoringDuration * mManualManufacturingMultiplier; }
+
+#if WITH_EDITOR
+	/** Sets the products produced from this recipe. Only for editor use */
+	UFUNCTION( BlueprintCallable, Category = "Editor|Recipe" )
+	static void SetProduct( TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product );
+#endif
+
+	EHologramSplinePathMode GetLastSplineMode();
+	void SetLastSplineMode( EHologramSplinePathMode mode );
 protected:
 	friend class FRecipeDetails;
 
@@ -82,17 +83,23 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe", meta = ( EditCondition = mDisplayNameOverride ) )
 	FText mDisplayName;
 
+	EHologramSplinePathMode mLastSplineMode;
+
 	/** Ingredients needed to produce the products. */
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
 	TArray< FItemAmount > mIngredients;
 	
 	/** The products produced from this recipe. */
-	UPROPERTY( EditDefaultsOnly, Category = "Rewards" )
+	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
 	TArray< FItemAmount > mProduct;
 
 	/** The time it takes to produce the output. */
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
 	float mManufactoringDuration;
+
+	/** The time it takes to produce the output. */
+	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
+	float mManualManufacturingMultiplier;
 
 	/** Defines where this recipe can be produced */
 	UPROPERTY( EditDefaultsOnly, Meta = ( MustImplement = "FGRecipeProducerInterface", Category = "Recipe" ) )

@@ -6,12 +6,12 @@ AFGWireHologram::AFGWireHologram(){ }
 void AFGWireHologram::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGWireHologram::BeginPlay(){ }
 void AFGWireHologram::Tick( float dt){ }
-AActor* AFGWireHologram::Construct( TArray< AActor* >& out_children){ return nullptr; }
-TArray< FItemAmount > AFGWireHologram::GetCost( bool includeChildren) const{ return TArray<FItemAmount>(); }
-bool AFGWireHologram::MultiStepPlacement(){ return bool(); }
+AActor* AFGWireHologram::Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
+int32 AFGWireHologram::GetBaseCostMultiplier() const{ return int32(); }
+bool AFGWireHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGWireHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
 void AFGWireHologram::OnInvalidHitResult(){ }
-void AFGWireHologram::SpawnChildren(  UFGBuildGunStateBuild* state){ }
+void AFGWireHologram::SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 void AFGWireHologram::ScrollRotate( int32 delta, int32 step){ }
 void AFGWireHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
 void AFGWireHologram::Destroyed(){ }

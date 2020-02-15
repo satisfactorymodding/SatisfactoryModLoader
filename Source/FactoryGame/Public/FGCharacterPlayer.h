@@ -38,30 +38,48 @@ struct FACTORYGAME_API FDisabledInputGate
 	GENERATED_USTRUCT_BODY()
 
 public:
+	FDisabledInputGate() : FDisabledInputGate( false )
+	{}
+
+	FDisabledInputGate( bool disabled ) :
+		mBuildGun( disabled ),
+		mDismantle( disabled ),
+		mFlashLight( disabled ),
+		mResourceScanner( disabled ),
+		mOpenCodex( disabled ),
+		mInventory( disabled ),
+		mToggleMap( disabled ),
+		mHotbar( disabled ),
+		mJump( disabled ),
+		mChat( disabled ),
+		mUse( disabled ),
+		mVehicleRecording( disabled )
+	{}
+
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mBuildGun : 1;
+	uint8 mBuildGun : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mDismantle : 1;
+	uint8 mDismantle : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mFlashLight : 1;
+	uint8 mFlashLight : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mResourceScanner : 1;
+	uint8 mResourceScanner : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mOpenCodex : 1;
+	uint8 mOpenCodex : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mInventory : 1;
+	uint8 mInventory : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mToggleMap : 1;
+	uint8 mToggleMap : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mHotbar : 1;
+	uint8 mHotbar : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mJump : 1;
+	uint8 mJump : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mChat : 1;
+	uint8 mChat : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mUse : 1;
+	uint8 mUse : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
-	uint32 mVehicleRecording : 1;
+	uint8 mVehicleRecording : 1;
 };
 
 /**
@@ -117,6 +135,8 @@ public:
 	virtual void AddControllerPitchInput( float Val ) override;
 	virtual void Jump() override;
 	virtual void OnJumped_Implementation()override;
+
+	virtual bool CanJumpInternal_Implementation() const;
 	// End Pawn Interface
 
 	// Begin ACharacter Interface
@@ -130,7 +150,7 @@ public:
 	// End AFGCharacterBase interface
 
 	// Begin ACharacter interface
-	virtual bool CanJumpInternal_Implementation() const override;
+	virtual void OnMovementModeChanged( EMovementMode PrevMovementMode, uint8 PreviousCustomMode = 0 ) override;
 	// End ACharacter interface
 
 	// Begin IFGUseableInterface
@@ -241,6 +261,9 @@ public:
 
 	/** Returns Mesh3P subobject */
 	virtual USkeletalMeshComponent* GetMesh3P() const override;
+
+	/** Returns 1p or 3p mesh */
+	virtual USkeletalMeshComponent* GetMainMesh() const override;
 
 	/** Switches between camera modes */
 	UFUNCTION()
@@ -378,6 +401,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	FORCEINLINE class AFGResourceMiner* GetResourceMiner() const { return mResourceMiner; }
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Character" )
+	FORCEINLINE class USkeletalMeshComponent* Get3PMesh() const{ return mMesh3P; }
+
 	/** @todo This should move to the replicator object... Toggles the switch on the server. */
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_ToggleSwitchControl( class AFGBuildableRailroadSwitchControl* switchControl );
@@ -463,6 +489,21 @@ public:
 	/** Called when a slide has ended, local only*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Movment" )
 	void OnSlideEndLocal();
+
+	/** Called when a slide has ended, simulated proxies only */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "FactoryGame|Movment" )
+	void OnSlideEndSimulated();
+
+	/** Called when a slide has started, simulated proxies only */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "FactoryGame|Movment" )
+	void OnSlideStartSimulated();
+
+	UFUNCTION( Unreliable, NetMulticast )
+	void Multicast_PlayJumpEffects( bool boostJump );
+
+	/** Called when a slide has started, simulated proxies only */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "FactoryGame|Movment" )
+	void PlayJumpEffects( bool boostJump );
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent( class UInputComponent* InputComponent ) override;
@@ -654,7 +695,7 @@ public:
 
 	/** Gets sliding status */
 	UFUNCTION( BlueprintPure, Category = "Use" )
-	bool IsSliding();
+	bool IsSliding() const;
 
 	/** Gets mTryToUnSlide */
 	inline bool IsTryingToUnslide(){ return mTryToUnSlide; }
@@ -730,6 +771,10 @@ private:
 	void OnRep_RadiationIntensity();
 	UFUNCTION()
 	void OnRep_IsSliding();
+	
+	/** Migrate number of inventory and arm equipment slots saved before BU3 to unlock subsystem */
+	void MigrateNumSavedSlots();
+
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera )
@@ -739,15 +784,15 @@ public:
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Camera )
 	float mBaseLookUpRate;
 
-	/** Pawn mesh: 3rd person view */
-	UPROPERTY( VisibleDefaultsOnly, Category = Mesh )
-	class USkeletalMeshComponent* mMesh3P;
-
 	/** The default arms animation when we're idle. */
 	UPROPERTY( EditDefaultsOnly, Category = Mesh )
 	TSubclassOf< class UAnimInstance > mMesh1PAnimClass;
 
 protected:
+	/** Pawn mesh: 3rd person view */
+	UPROPERTY( VisibleDefaultsOnly, Category = Mesh )
+	class USkeletalMeshComponent* mMesh3P;
+
 	/** As we have no foliage actor to actually put pickup code in, we use this actor as a proxy */
 	UPROPERTY( EditDefaultsOnly, Category = "Use" )
 	TSubclassOf< class AFGFoliagePickup > mFoliagePickupProxyClass;
@@ -841,10 +886,18 @@ protected:
 	UPROPERTY( SaveGame )
 	int32 mLastSafeGroundPositionLoopHead = 0;
 private:
+	/** Bound to mItemFilter to filter what items can be used in the inventory slots. */
+	UFUNCTION()
+	bool FilterInventoryClasses( TSubclassOf< UObject > object, int32 idx ) const;
+
 	void InitializePreferredCameraMode();
 
 	/** Character can unslide, no collision is blocking */
 	void DoUnSlide();
+
+
+	UFUNCTION()
+	void OnUserSettingsUpdated();
 private:
 	friend class AFGPlayerController;
 	friend class UFGInventoryComponentEquipment;
@@ -884,6 +937,10 @@ private:
 	/** The players inventory. */
 	UPROPERTY( SaveGame, Replicated )
 	class UFGInventoryComponent* mInventory;
+
+	/** The resource forms that are allowed in players inventory. */
+	UPROPERTY( EditDefaultsOnly )
+	TArray<EResourceForm> mAllowedResourceFormsInInventory;
 
 	/** The belt slot inventory. */
 	UPROPERTY( SaveGame, Replicated )
@@ -1019,6 +1076,16 @@ private:
 	/* Old offset we are interpolating from */
 	float mOldCameraRelativeOffset;
 
+	float mSpringArmOffsetX; //Feched during begin play from the spring arm, and used to be able to restore it's valu later on
+
+	/** New offset that we want to have */
+	float mCurrentCameraPipeOffset = 0;
+
+
+	/** Reprecentation of user setting */
+	float mCameraMoveFeedback = 0;
+
+
 	/** How fast the blend is for crouch and slide */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Movement|Crouch" )
 	float mCrouchSpeed;
@@ -1036,6 +1103,9 @@ private:
 
 	/** We are trying to raise capsule collision to default size after a slide has ended */
 	bool mTryToUnSlide;
+
+	/** If enable th einput vector will use the look direction as the forward vector */
+	bool mIsUsingFull3DInput = false;
 public:
 	UPROPERTY( BlueprintReadWrite, Category = "FactoryGame|Movement|Crouch" )
 	bool mNoUpdate;

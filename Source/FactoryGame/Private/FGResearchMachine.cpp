@@ -9,8 +9,8 @@ void UFGResearchMachine::SetResearchRecipe( TSubclassOf<class UFGResearchRecipe>
 UStaticMeshComponent* UFGResearchMachine::GetResearchMeshComponent(){ return nullptr; }
 void UFGResearchMachine::SetResearchMeshComponent( UStaticMeshComponent* staticMeshComponent){ }
 void UFGResearchMachine::SetResearchMeshCurveScale( UCurveFloat* curveScale){ }
-void UFGResearchMachine::OnResearchStarted( TSubclassOf<class UFGResearchRecipe> researchRecipe){ }
-void UFGResearchMachine::OnResearchConcluded( TSubclassOf<class UFGResearchRecipe> researchRecipe){ }
+void UFGResearchMachine::OnResearchStarted( TSubclassOf<class UFGSchematic> schematic){ }
+void UFGResearchMachine::OnResearchConcluded( TSubclassOf<class UFGSchematic> schematic){ }
 void UFGResearchMachine::SetMachineUser(  AFGCharacterPlayer* player){ }
 void UFGResearchMachine::BeginPlay(){ }
 void UFGResearchMachine::OnRep_ResearchMesh(){ }

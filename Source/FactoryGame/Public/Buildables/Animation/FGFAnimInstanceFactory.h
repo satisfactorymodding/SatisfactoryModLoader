@@ -13,7 +13,28 @@ struct FACTORYGAME_API FAnimInstanceProxyFactory : public FAnimInstanceProxy
 {
 	GENERATED_BODY()
 
-	FAnimInstanceProxyFactory() : FAnimInstanceProxy()
+	FAnimInstanceProxyFactory() : FAnimInstanceProxy(),
+		mDeltaTime( 0 ),
+		mProductionProgress( 0 ),
+		mProductionCycleTime( 0 ),
+		mAnimPlayRate( 0 ),
+		mRampUpTime( 0 ),
+		mTimeNotProducing( 0 ),
+		mRampDownTime( 0 ),
+		mLastProductionProgress( 0 ),
+		mRecipePlayRate( 0 ),
+		mCycleTime( 0 ),
+		mDefaultCycleTime( 0 ),
+		mStartFrame( 0 ),
+		mLoadPercentage( 0 ),
+		mHasFuel( false ),
+		mHasPower( false ),
+		mIsProducing( false ),
+		mIsActivated( false ),
+		mCycleComplete( false ),
+		mUseRampUp( false ),
+		mIsGenerator( false ),
+		mIsFuelGeneratorOnline( false )
 	{}
 
 	FAnimInstanceProxyFactory( UAnimInstance* Instance ) : FAnimInstanceProxy( Instance ) 

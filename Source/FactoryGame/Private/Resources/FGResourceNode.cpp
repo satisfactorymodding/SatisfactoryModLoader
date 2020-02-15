@@ -28,18 +28,21 @@ bool AFGResourceNode::IsUseable_Implementation() const{ return bool(); }
 void AFGResourceNode::StartIsLookedAt_Implementation(  AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGResourceNode::GetLookAtDecription_Implementation(  AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGResourceNode::StopIsLookedAt_Implementation(  AFGCharacterPlayer* byCharacter, const FUseState& state){ }
+void AFGResourceNode::SetIsOccupied_Implementation( bool occupied){ }
+bool AFGResourceNode::IsOccupied_Implementation() const{ return bool(); }
+bool AFGResourceNode::CanBecomeOccupied_Implementation() const{ return bool(); }
+bool AFGResourceNode::HasAnyResources_Implementation() const{ return bool(); }
+TSubclassOf< UFGResourceDescriptor > AFGResourceNode::GetResourceClass_Implementation() const{ return TSubclassOf<UFGResourceDescriptor>(); }
+int32 AFGResourceNode::ExtractResource_Implementation( int32 amount){ return int32(); }
+float AFGResourceNode::GetExtractionSpeedMultiplier_Implementation() const{ return float(); }
+FVector AFGResourceNode::GetPlacementLocation_Implementation( const FVector& hitLocation) const{ return FVector(); }
+bool AFGResourceNode::CanPlaceResourceExtractor_Implementation() const{ return bool(); }
 FText AFGResourceNode::GetResourceName() const{ return FText(); }
 EResourceForm AFGResourceNode::GetResourceForm() const{ return EResourceForm(); }
 void AFGResourceNode::InitResource( TSubclassOf<UFGResourceDescriptor> resourceClass, EResourceAmount amount, EResourcePurity purity){ }
 FText AFGResourceNode::GetResoucesLeftText() const{ return FText(); }
 FText AFGResourceNode::GetResoucePurityText() const{ return FText(); }
-TSubclassOf<UFGResourceDescriptor> AFGResourceNode::GetResourceClass() const{ return TSubclassOf<UFGResourceDescriptor>(); }
-float AFGResourceNode::GetExtractionSpeedMultiplier() const{ return float(); }
-int32 AFGResourceNode::ExtractResource( int32 amount){ return int32(); }
-bool AFGResourceNode::HasAnyResources() const{ return bool(); }
-void AFGResourceNode::SetIsOccupied( bool occupied){ }
 void AFGResourceNode::OnRep_IsOccupied(){ }
-bool AFGResourceNode::IsOccupied() const{ return bool(); }
 const FInt32Interval& AFGResourceNode::GetResourceAmount( EResourceAmount amount) const{ return *(new FInt32Interval); }
 int32 AFGResourceNode::GetRandomResourceAmount( EResourceAmount amount) const{ return int32(); }
 void AFGResourceNode::ExtractResourceAndGiveToPlayer( AFGCharacterPlayer* toPlayer, int32 amount ){ }

@@ -31,12 +31,13 @@ public:
 	// End AFGBuildableHologram interface
 
 protected:
-	/** Size of the foundation, from the default buildable. */
+	/** Defaults from the default buildable. */
 	float mSize;
-
-	/** Height of the foundation, from the default buildable. */
 	float mHeight;
-
-	/** Disable snapping on specific sides. */
+	float mElevation;
 	FFoundationSideSelectionFlags mDisableSnapOn;
+
+	/** Ratios for the snapping zones, how much of the wall to hit for snap to either direction. */
+	float mSnapVerticalHitZoneRatio = 0.25f;
+	float mSnapCenterHitZoneRatio = 0.33f; // This ratio is measured from the center.
 };

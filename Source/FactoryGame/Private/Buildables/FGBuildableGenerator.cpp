@@ -12,10 +12,10 @@ float AFGBuildableGenerator::GetPowerProductionCapacity() const{ return float();
 float AFGBuildableGenerator::GetDefaultPowerProductionCapacity() const{ return float(); }
 float AFGBuildableGenerator::CalcPowerProductionCapacityForPotential( float potential) const{ return float(); }
 void AFGBuildableGenerator::SetActorHiddenInGame( bool bNewHidden){ }
+bool AFGBuildableGenerator::CanStartPowerProduction_Implementation() const{ return bool(); }
 void AFGBuildableGenerator::Factory_TickProducing( float dt){ }
 void AFGBuildableGenerator::Factory_StartProducing(){ }
 void AFGBuildableGenerator::Factory_StopProducing(){ }
-bool AFGBuildableGenerator::CanStartPowerProduction_Implementation() const{ return bool(); }
 void AFGBuildableGenerator::Factory_StartPowerProduction_Implementation(){ }
 void AFGBuildableGenerator::Factory_StopPowerProduction_Implementation(){ }
 void AFGBuildableGenerator::Factory_TickPowerProduction_Implementation( float dt){ }

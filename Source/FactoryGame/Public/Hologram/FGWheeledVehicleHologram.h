@@ -25,5 +25,5 @@ protected:
 	// End of AFGHologram interface
 
 	/** @copydoc AFGVehicleHologram::ConstructVehicle */
-	virtual class AFGVehicle* ConstructVehicle() const override;
+	virtual class AFGVehicle* ConstructVehicle( FNetConstructionID netConstructionID ) const override;
 };

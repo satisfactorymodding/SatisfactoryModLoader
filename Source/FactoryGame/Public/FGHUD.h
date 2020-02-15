@@ -51,18 +51,18 @@ public:
 	virtual void DrawHUD() override;
 
 	/** Adds a HUD of the widget class for the provided pawn. Needs a valid pawn */
-	UFUNCTION( BlueprintCallable, Category = "UI" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
 	void AddPawnHUD( TSubclassOf<class UUserWidget> widgetClass, APawn* pawn );
 
-	UFUNCTION( BlueprintCallable, Category = "UI" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
 	void ShowRespawnUI();
 
 	/** Closes the respawn UI and enables the GameUI if not already enabled. */
-	UFUNCTION( BlueprintCallable, Category = "UI" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
 	void CloseRespawnUI();
 
 	/** All widgets that inherits from UFGInteractWidget can be opened by calling this */
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|UI" )
 	void OpenInteractUI( TSubclassOf< UFGInteractWidget > widgetClass, UObject* interactObject );
 
 	/** Pointer to the cheat board widget */
@@ -73,111 +73,110 @@ public:
 	/** ShowDebug is back! */
 	virtual void ShowDebugInfo( float& YL, float& YPos ) override;
 
-	UFUNCTION( BlueprintPure, Category = "UI" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|UI" )
 	UFGGameUI* GetGameUI() const { return mGameUI; }
 
 	/** Set the actor class to preview in a rendertarget */
-	UFUNCTION( BlueprintCallable, Category="ActorPreview" )
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|ActorPreview" )
 	void SetPreviewActorClass( TSubclassOf<AActor> actorClass );
 
 	/** Set the distance we preview the actor from */
 	UE_DEPRECATED( 4.16, "SetPreviewDistance is deprecated, use SetPreviewView instead" )
-	UFUNCTION( BlueprintCallable, Category="ActorPreview", meta = ( DeprecatedFunction, DeprecationMessage = "SetPreviewDistance is deprecated, use SetPreviewView instead" ) )
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|ActorPreview", meta = ( DeprecatedFunction, DeprecationMessage = "SetPreviewDistance is deprecated, use SetPreviewView instead" ) )
 	void SetPreviewDistance( float previewDistance );
 
 	/** Set the view we preview the actor from  */
-	UFUNCTION( BlueprintCallable, Category = "ActorPreview" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|ActorPreview" )
 	void SetPreviewView( const FItemView& view );
 
 	/** Get the texture that we use to preview the actor */
-	UFUNCTION( BlueprintPure, Category="ActorPreview" )
+	UFUNCTION( BlueprintPure, Category="FactoryGame|ActorPreview" )
 	class UTextureRenderTarget2D* GetPreviewTexture() const;
 	
 	/** Start rendering the preview actor */
-	UFUNCTION( BlueprintCallable, Category="ActorPreview" )
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|ActorPreview" )
 	void BeginPreviewActor();
 
 	/** stop rendering the preview actor */
-	UFUNCTION( BlueprintCallable, Category = "ActorPreview" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|ActorPreview" )
 	void EndPreviewActor();
 
 	/** Getter */
-	UFUNCTION( BlueprintPure, Category = "HUD" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE bool GetShowCrosshair() { return !mForceCrossHairHidden && mShowCrosshair; }
 
 	/** Setter */
-	UFUNCTION( BlueprintCallable, Category = "HUD" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetShowCrossHair( bool showCrosshair ) { mShowCrosshair = showCrosshair; }
 
 	/** Setter */
-	UFUNCTION( BlueprintCallable, Category = "HUD" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetForceHideCrossHair( bool forceHide ) { mForceCrossHairHidden = forceHide; }
 
 	/** HUD visibility */
-	UFUNCTION( BlueprintPure, Category = "HUD" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	bool GetPumpiMode() { return mForceHideHUD; }
 
 	/** HUD visibility */
-	UFUNCTION( BlueprintPure, Category = "HUD" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	bool GetPartialPumpiMode() { return mPartialForceHideHUD; }
 
 	/** Hides all HUD including crosshair */
-	UFUNCTION( BlueprintCallable, Category = "HUD" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetPumpiMode( bool hideHUD );
 
 	/** Hides all HUD including crosshair */
-	UFUNCTION( BlueprintCallable, Category = "HUD" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetPartialPumpiMode( bool hideHUD );
 
 	/** Getter */
-	UFUNCTION( BlueprintPure, Category = "HUD" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE bool GetHUDVisibility() { return mHUDVisibility; }
 
 	/** Setter */
-	UFUNCTION( BlueprintCallable, Category = "HUD" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetHUDVisibility( bool hudVisibility ) { mHUDVisibility = hudVisibility; }
 
 	/** Getter for Crosshair State */
-	UFUNCTION( BlueprintPure, Category = "HUD" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE ECrosshairState GetCrosshairState() { return mActiveCrosshairState; }
 
 	/** Setter for Crosshair State */
-	UFUNCTION( BlueprintCallable, Category = "HUD" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetCrosshairState( ECrosshairState crosshairState ) { mActiveCrosshairState = crosshairState; }
 
 	/**
 	* Updates the crosshair to match set the proper CrosshairState
 	*/
-	UFUNCTION( BlueprintNativeEvent, Category = "HUD" )
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|HUD" )
 	void UpdateCrosshairState( class AFGCharacterPlayer* player );
 
 	/**
 	* Updates the crosshair color for weapons
 	*/
-	UFUNCTION( BlueprintNativeEvent, Category = "HUD" )
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|HUD" )
 	void UpdateCrosshairColorState( const FLinearColor& newColor );
 
 	/**
 	* Updates the crosshair to match set the proper CrosshairState
 	*/
-	UFUNCTION( BlueprintNativeEvent, Category = "HUD" )
+	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|HUD" )
 	void SetCrustomCrosshairTexture( UTexture2D* newTexture);
 
 	/** Called when we want to add HUD for equipment 
 	 * @param widgetClass - class to use for widget 
 	 * @param slot - which slot the equipment is using
 	 */
-	UFUNCTION( BlueprintImplementableEvent, Category = "HUD" )
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|HUD" )
 	void AddEquipmentHUD( TSubclassOf< UUserWidget > widgetClass, EEquipmentSlot slot );
 
 	/** Removes all equipment HUD from a certain slot */
-	UFUNCTION( BlueprintImplementableEvent, Category = "HUD" )
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|HUD" )
 	void RemoveEquipmentHUD( EEquipmentSlot slot );
 
 	/** Returns the latest created pawn HUD widget. Can return nullptr */
-	UFUNCTION( BlueprintPure, Category = "HUD" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE UUserWidget* GetPawnHUD() { return mPawnHUD; }
-
 private:
 	/** Setup our preview for a building/vehicle from our current set preview class */
 	void SetupActorPreview();
@@ -244,6 +243,10 @@ private:
 
 	/* my commenting sucks */
 	bool mHUDVisibility;
+
+	/** Input component for blocking input during respawn */
+	UPROPERTY()
+	class UInputComponent* mRespawnInputComponent;
 
 	UPROPERTY( transient )
 	class UUserWidget* mRespawnUI;

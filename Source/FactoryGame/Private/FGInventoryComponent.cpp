@@ -51,6 +51,7 @@ int32 UFGInventoryComponent::GetFullestStackIndex(){ return int32(); }
 void UFGInventoryComponent::GetInventoryStacks( TArray< FInventoryStack >& out_stacks) const{ }
 TArray<int32> UFGInventoryComponent::GetRelevantStackIndexes( TArray< TSubclassOf<  UFGItemDescriptor > > relevantClasses, int32 stackLimit){ return TArray<int32>(); }
 void UFGInventoryComponent::AddArbitrarySlotSize( int32 index, int32 arbitrarySlotSize){ }
+void UFGInventoryComponent::RemoveArbitrarySlotSize( int32 index){ }
 int32 UFGInventoryComponent::GetSlotSize( int32 index, TSubclassOf< UFGItemDescriptor > itemDesc ) const{ return int32(); }
 TSubclassOf< UFGItemDescriptor > UFGInventoryComponent::GetAllowedItemOnIndex( int32 idx){ return TSubclassOf<UFGItemDescriptor>(); }
 void UFGInventoryComponent::SetAllowedItemOnIndex( int32 idx, TSubclassOf< UFGItemDescriptor > allowedItemClass){ }

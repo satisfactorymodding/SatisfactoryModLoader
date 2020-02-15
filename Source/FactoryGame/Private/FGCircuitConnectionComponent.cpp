@@ -14,6 +14,7 @@ void UFGCircuitConnectionComponent::RemoveConnection(  AFGBuildableWire* wire){ 
 void UFGCircuitConnectionComponent::AddHiddenConnection(  UFGCircuitConnectionComponent* other){ }
 void UFGCircuitConnectionComponent::RemoveHiddenConnection(  UFGCircuitConnectionComponent* other){ }
 void UFGCircuitConnectionComponent::ClearHiddenConnections(){ }
+void UFGCircuitConnectionComponent::OnRep_CircuitIDChanged(){ }
 void UFGCircuitConnectionComponent::DisplayDebug(  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void UFGCircuitConnectionComponent::OnCircuitIDChanged(){ }
 void UFGCircuitConnectionComponent::SetCircuitID( int32 circuitID){ }

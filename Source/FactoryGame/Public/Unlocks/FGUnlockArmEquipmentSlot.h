@@ -17,12 +17,15 @@ class FACTORYGAME_API UFGUnlockArmEquipmentSlot : public UFGUnlock
 
 public:
 	// Begin FGUnlock interface
-	virtual void Unlock( class AFGUnlockSubsystem* unlockSubssytem ) override;
+	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 
 #if WITH_EDITORONLY_DATA
 	void Init( int32 numArmEquipmentSlotsToUnlock ) { mNumArmEquipmentSlotsToUnlock = numArmEquipmentSlotsToUnlock; }
 #endif
+
+	UFUNCTION( BlueprintPure, Category = Unlocks )
+	int32 GetNumArmEquipmentSlotsToUnlock() const { return mNumArmEquipmentSlotsToUnlock; }
 
 protected:
 	/** Number of arm equipment slots this unlock adds to the players inventory */

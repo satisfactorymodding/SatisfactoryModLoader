@@ -1,12 +1,15 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "SubclassOf.h"
 #include "UObject/CoreNet.h"
 #include "Array.h"
 #include "GameFramework/Actor.h"
 #include "UObject/Class.h"
 
 #include "FGBuildableFactory.h"
+#include "Resources/FGExtractableResourceInterface.h"
+#include "Resources/FGResourceDescriptor.h"
 #include "../Resources/FGItemDescriptor.h"
 #include "FGBuildableResourceExtractor.generated.h"
 
@@ -38,19 +41,44 @@ public:
 	virtual float CalcProductionCycleTimeForPotential( float potential ) const override;
 	// End AFGBuildableFactory interface
 
-	/** Get the resource node this miner is mining from. */
-	UFUNCTION( BlueprintPure, Category = "Resource" )
+	// Begin Save Interface
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	// End Save Interface
+
+	/** [DEPRECATED] - Use GetExtractableResource() instead.
+	*	Get the resource node this miner is mining from. */
 	FORCEINLINE class AFGResourceNode* GetResourceNode() const{ return mExtractResourceNode; }
+
+	/** Get the extractable resource interface this miner is extracting from */
+	UFUNCTION( BlueprintPure, Category = "Resource" )
+	FORCEINLINE TScriptInterface< IFGExtractableResourceInterface > GetExtractableResource() const { return mExtractableResource; }
 
 	/** Get the inventory we output the extracted resources to */
 	UFUNCTION( BlueprintPure, Category = "Resource" )
 	class UFGInventoryComponent* GetOutputInventory() const{ return mOutputInventory; }
+
+	/** Get the quantity of items mined each production cycle */
+	UFUNCTION( BlueprintPure, Category = "Extraction" )
+	FORCEINLINE int32 GetNumExtractedItemsPerCycle() const { return mItemsPerCycle; }
+
+	/** Get the quantity of items extracted each cycle converted for displaying in the UI */
+	UFUNCTION( BlueprintPure, Category = "Extraction" )
+	float GetNumExtractedItemsPerCycleConverted() const;
+
+	/** Set the extractable resource interface this miner is extracting from */
+	void SetExtractableResource( TScriptInterface< IFGExtractableResourceInterface > extractableInterface );
 
 	/** Set this resource node as our current, also claiming it */
 	void SetResourceNode( class AFGResourceNode* resourceNode );
 
 	/** Get all the allowed resource forms that this resource extractor is allowed to extract */
 	FORCEINLINE void GetAllowedResourceForms( TArray<EResourceForm>& out_allowedForms ){ out_allowedForms.Append( mAllowedResourceForms ); }
+
+	/** Does this Miner specify only certain resources to be gathered? */
+	FORCEINLINE bool OnlyAllowSpecifiedResources() const { return mOnlyAllowCertainResources; }
+
+	/** Get all resources that are allowed to be mined / pumped. Only relevant if mOnlyAllowCertainResources is marked true. */
+	FORCEINLINE void GetAllowedResources( TArray< TSubclassOf< UFGResourceDescriptor > >& out_allowedResources ) { out_allowedResources.Append( mAllowedResources ); }
 
 	/** Gets particle for mining */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
@@ -59,13 +87,25 @@ public:
 	/** Are we done with startup animation */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
 	bool IsStartupComplete();
+
+	/** Get the smoothed flow rate out of the extractor in m^3/s. Only valid for Liquid or Gas extractors */
+	UFUNCTION( BlueprintPure, Category = "Pipes" )
+	float GetFlowRateSmoothed() const { return mReplicatedFlowRate; }
+
+	/** Return the maximum out flow from inventory to pipeline conversion in m^3/s */
+	UFUNCTION( BlueprintPure, Category = "Pipes" )
+	float GetMaxFlowRate() const;
+
 protected:
 	// Begin Factory_ Interface
 	virtual void Factory_StartProducing() override;
 	virtual void Factory_TickProducing( float dt ) override;
+	virtual void Factory_PushPipeOutput_Implementation( float dt ) override;
 	// End Factory_ Interface
 
 protected:
+	friend class AFGResourceExtractorHologram;
+
 	/** Power up time for the extraction process, e.g. the time it takes for a drill to start spinning. */
 	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Extraction" )
 	float mExtractStartupTime;
@@ -74,22 +114,83 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction", meta = (ClampMin = "0.0001") )
 	float mExtractCycleTime;
 
+	/** How many items are extracted per cycle */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
+	int32 mItemsPerCycle;
+	
 	/** Can we mine solids, liquids, gases or many of the types. */
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	TArray< EResourceForm > mAllowedResourceForms;
 
+	/** (For Hologram) Minimum depth to collision this extractor requires to be placed ( tex. Water Pumps need to be at least X distance above floor ) */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
+	float mMinimumDepthForPlacement;
+
+	/** (For Hologram) Require resource at minimum depth checks? 
+	 * If true, this will ensure placement is only allowed where a minimum depth trace collides 
+	 * with the resource class this extractor is snapped to. Will only execute if mMinimumDepthForPlacement is > 0.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
+	bool mRequireResourceAtMinimumDepthChecks;
+	
+	/** Should this extractor only allow extracting from specified resources? 
+	* @note - mAllowedResourceForms will still affect placement validation.*/
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
+	bool mOnlyAllowCertainResources;
+	
+	/** List of acceptable resources this extractor can mine / pump */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction", meta=( EditCondition="mOnlyAllowCertainResources" ) )
+	TArray< TSubclassOf< UFGResourceDescriptor > > mAllowedResources;
+
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	FVector mExtractionOffset;
 
-	/** The resource node we want to extract from */
+	/** Class disqualifier to use when this resource extractor is not placed on a matching resource node ( used in the hologram ) */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
+	TSubclassOf< class UFGConstructDisqualifier > mMustPlaceOnResourceDisqualifier;
+	
+	/** Cached property indicating that this Extractor is extracting a non-solid resource. This is used as a replication condition so FlowRate is not included for all extractors */
+	bool mIsLiquidOrGasType;
+
+	/** DEPRICATED - Only used for old save support. Use mExtractableResource instead.
+	*   The resource node we want to extract from.
+	*/
 	UPROPERTY( SaveGame, Replicated )
 	class AFGResourceNode* mExtractResourceNode;
+
+	UPROPERTY( SaveGame, Replicated )
+	AActor* mExtractableResource;
 
 	/** Current extract progress in the range [0, 1] */
 	UPROPERTY( Replicated, SaveGame, Meta = (NoAutoJson = true) )
 	float mCurrentExtractProgress;
 
+	/** Cached pipe output connections */
+	UPROPERTY()
+	TArray< class UFGPipeConnectionComponent* > mPipeOutputConnections;
+
 	/** Our output inventory, */
 	UPROPERTY( SaveGame, Replicated )
 	class UFGInventoryComponent* mOutputInventory;
+
+	//******* Begin Pipe Flow Output params *******/
+	
+	/** Last content value when updating flow rate */
+	int32 mFluidMovedLastProducingTick;
+
+	/** Current smoothed flow rate */
+	float mSmoothedFlowRate;
+
+	/** How frequently to update flow rate ( both clients and server will use the replicated value in the UI )*/
+	float mUpdateReplicatedFlowFrequency;
+
+	/** How long since the last replicated flow assignment */
+	float mTimeSinceLastFlowUpdate;
+
+	/** Replicated smoothed flow rate */
+	UPROPERTY( Replicated )
+	float mReplicatedFlowRate;
+
+	/******** End Pipe Flow Output Params ********/
+
 };

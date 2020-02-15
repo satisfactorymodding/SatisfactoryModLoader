@@ -9,6 +9,8 @@ void AFGGasPillar::PostUnregisterAllComponents( void){ }
 void AFGGasPillar::PostRegisterAllComponents(){ }
 void AFGGasPillar::GainedSignificance_Implementation(){ }
 void AFGGasPillar::LostSignificance_Implementation(){ }
+void AFGGasPillar::GainedSignificance_Native(){ }
+void AFGGasPillar::LostSignificance_Native(){ }
 float AFGGasPillar::GetSignificanceRange(){ return float(); }
 bool AFGGasPillar::EncompassesPoint( FVector point, float sphereRadius , float* out_distanceToPoint ){ return bool(); }
 FPostProcessVolumeProperties AFGGasPillar::GetProperties() const{ return FPostProcessVolumeProperties(); }

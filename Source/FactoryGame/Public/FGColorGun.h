@@ -40,6 +40,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Color Gun" )
 	uint8 GetMaxNumColorSlots();
 
+	UFUNCTION( BlueprintPure, Category = "Color Gun" )
+	uint8 GetNumColorSlotsExposedToPlayers();
+
 	/** Set the secondary color for a given slot*/
 	UFUNCTION( BlueprintCallable, Category = "Color Gun" )
 	void SetPrimaryColorForSlot( uint8 slotIndex, FLinearColor newColor );

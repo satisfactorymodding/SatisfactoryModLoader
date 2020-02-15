@@ -2,4 +2,4 @@
 
 #include "FGAttackCustomRadial.h"
 
-void UFGAttackCustomRadial::PerformAttack( TScriptInterface< IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }
+void UFGAttackCustomRadial::PerformAttack( TScriptInterface<  IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }

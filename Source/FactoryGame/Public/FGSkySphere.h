@@ -23,21 +23,36 @@ struct FACTORYGAME_API FSkySphereSettings
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
 	FLinearColor CloudColor;
 
+	// Color of the clouds after blending the skysphere curve with all volumes curves
+	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
+	FLinearColor SunLightColor;
+
+	// Color of the clouds after blending the skysphere curve with all volumes curves
+	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
+	float SunIntensity;
+
+	// Color of the clouds after blending the skysphere curve with all volumes curves
+	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
+	FLinearColor MoonLightColor;
+
+	// Color of the clouds after blending the skysphere curve with all volumes curves
+	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
+	float MoonIntensity;
+
 	// opacity of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
 	float CloudOpacity;
 
-	UPROPERTY()
 	bool OverrideHorizonColor;
-
-	UPROPERTY()
 	bool OverrideZenithColor;
-
-	UPROPERTY()
 	bool OverrideCloudColor;
-
-	UPROPERTY()
 	bool OverrideCloudOpacity;
+	bool OverrideSunLightColor;
+	bool OverrideSunIntensity;
+	bool OverrideMoonLightColor;
+	bool OverrideMoonIntensity;
+
+
 };
 
 UCLASS(HideCategories=(Input,Rendering))
@@ -147,7 +162,7 @@ protected:
 	//FRuntimeCurveLinearColor mCloudColorCurve;
 
 	/** How the opakeness of the clouds change during the day */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere", DisplayName="Cloudiness" )
 	FRuntimeFloatCurve mCloudOpacity;
 
 	/** How does the stars brightness change during the day */

@@ -84,17 +84,25 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAvailableSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
+	/** Returns the schematics the players have purchased of the given types. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
+	void GetPurchasedSchematicsOfTypes( TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
+
 	/** Returns all schematics the players have purchased. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
-	void GetPurchasedSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
+	void GetAllPurchasedSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
 	/** Returns every possible schematic that is in the game. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAllSchematics(TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
-	/** Returns the all schematics of a type. */
+	/** Returns all schematics of a type. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAllSchematicsOfType( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
+
+	/** Returns all schematics of a type that have any of their dependencies met. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
+	void GetAllSchematicsOfTypeFilteredOnDependency( ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
 	/** returns true if the passed schematic has been purchased */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
@@ -163,6 +171,9 @@ public:
 
 	/** Resets schematics to their defaults. Used for resetting specific progressions for testing. */
 	void ResetSchematicsOfType( ESchematicType type );
+
+	/** Used to fix up old saves that are missing the built with recipe. */
+	TSubclassOf< class UFGRecipe > FixupSave_FindBuiltByRecipe( AActor* forActor );
 
 	/** Debug stuff */
 	void Debug_DumpStateToLog() const;

@@ -67,7 +67,7 @@ public:
 	virtual float GetProductionProgress() const override;
 
 	/** Checks whether or not this manufacturer contains any inputs. If false, this shouldn't contain an input component. Will be null on client. */
-	FORCEINLINE bool HasAnyInputConnetions() const { return mInputConnections.Num() > 0; }
+	FORCEINLINE bool HasAnyInputConnetions() const { return mFactoryInputConnections.Num() > 0 || mPipeInputConnections.Num() > 0; }
 
 	/**
 	 * Gets all the recipes that can be produced.
@@ -106,6 +106,8 @@ protected:
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
 	virtual void Factory_CollectInput_Implementation() override;
+	virtual void Factory_PullPipeInput_Implementation( float dt ) override;
+	virtual void Factory_PushPipeOutput_Implementation( float dt ) override;
 	virtual void Factory_TickProducing( float dt ) override;
 	// End AFGBuildableFactory interface
 
@@ -130,22 +132,29 @@ protected:
 	/** Clear the items in the Output inventory. */
 	void ClearOutputInventoryItems();
 
-	/** This function sets the filters on the input output inventories. */
+	/** This function sets the filters on the input and output inventories. */
 	virtual void SetUpInventoryFilters();
+
+	/** This function assigns an inventory index to each input connection to add ingredients to
+	 *  @return - True if the ingredients did not exceed the availble connections possible. False otherwise. The Recipe should not be set if this fails.
+	 */
+	virtual bool AssignInputAccessIndices( TSubclassOf< UFGRecipe > recipe );
+
+	/** This function assigns an inventory index to each output connection to pull from */
+	virtual bool AssignOutputAccessIndices( TSubclassOf< UFGRecipe > recipe );
 
 	/** 
 	 * Helper function that actually removes ingredients from the manufacturers input. 
-	 * This can differ between buildings (eg. Converters), so override if you need something special. 
+	 * This can differ between buildings (e.g. Converters), so override if you need something special. 
 	 * @note this function assumes the available ingredients are there and have been checked with CanProduce()
 	 */
 	virtual void Factory_ConsumeIngredients();
 
 	/**
 	 * Returns true if the required ingredients are in the input slots.
-	 * How this is checked can differ between buildings (eg. Converters), so override if you need something special. 
+	 * How this is checked can differ between buildings (e.g. Converters), so override if you need something special. 
 	 */
 	virtual bool HasRequiredIngredients() const;
-
 
 protected:
 	friend class AFGReplicationDetailActor_Manufacturing;
@@ -169,8 +178,21 @@ protected:
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mInputInventory;
 
-	/** Cached input connections (No need for UPROPERTY as they are referenced in component array) */
-	TArray<class UFGFactoryConnectionComponent*> mInputConnections;
+	/** Cached factory input connections */
+	UPROPERTY()
+	TArray<class UFGFactoryConnectionComponent*> mFactoryInputConnections;
+
+	/** Cached input pipe connections */
+	UPROPERTY()
+	TArray< class UFGPipeConnectionComponent* > mPipeInputConnections;
+
+	/** Cached factory output connections */
+	UPROPERTY()
+	TArray<class UFGFactoryConnectionComponent*> mFactoryOutputConnections;
+
+	/** Cached output pipe connections */
+	UPROPERTY()
+	TArray< class UFGPipeConnectionComponent* > mPipeOutputConnections;
 
 	/** Our output inventory, shared for all output connections. */
 	UPROPERTY( SaveGame )

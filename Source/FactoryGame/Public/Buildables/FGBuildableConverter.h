@@ -24,7 +24,7 @@ public:
 	//@todo Converter can maybe use a recipe with the wildcard resource so the UI does not need to cast and take different path depending on if it's a converter or manufacturer, or move this to base.
 	//Get number of input connections
 	UFUNCTION( BlueprintCallable, Category = "Converter" )
-	FORCEINLINE int32 GetNumberOfInputs() const { return mInputConnections.Num(); }
+	FORCEINLINE int32 GetNumberOfInputs() const { return mFactoryInputConnections.Num(); }
 
 protected:
 	// Begin AFGBuildableFactory interface
