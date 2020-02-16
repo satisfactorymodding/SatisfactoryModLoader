@@ -140,6 +140,7 @@ TSharedRef<SWidget> SAlpakaWidget::AsWidget()
 
 FReply SAlpakaWidget::Pakit()
 {
+	Settings->SaveConfig();
 	AlpakitButton.Get()->SetEnabled(false);
 	CookContent();
 	return FReply::Handled();
@@ -255,7 +256,6 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 
 			UE_LOG(LogTemp, Log, TEXT("Packed %s"), *mod.Name);
 		}
-		AlpakitButton.Get()->SetEnabled(true);
 		if (Settings->StartGame)
 		{
 			FString gamePath = FString::Printf(TEXT("\"%s\""), *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.ToString() / L"FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe").Replace(L"/", L"\\"));
@@ -271,6 +271,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 	}
 	else
 		UE_LOG(LogTemp, Error, TEXT("Error while running Aplakit. Cooking returned: %s"), *result);
+	AlpakitButton.Get()->SetEnabled(true);
 }
 
 // https://answers.unrealengine.com/questions/500324/how-create-folder-when-my-game-is-running.html
