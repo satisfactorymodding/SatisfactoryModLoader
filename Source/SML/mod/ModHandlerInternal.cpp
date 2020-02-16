@@ -5,6 +5,8 @@
 #include "util/Logging.h"
 #include "util/picosha2.h"
 #include "GameFramework/Actor.h"
+#include "actor/InitMod.h"
+#include "actor/InitMenu.h"
 
 void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
 	std::unordered_map<std::wstring, uint64_t>& modIndices,
@@ -56,8 +58,8 @@ FModPakLoadEntry CreatePakLoadEntry(const std::wstring& modid) {
 	const std::wstring baseInitPath = formatStr(TEXT("/Game/FactoryGame/"), modid);
 	const std::wstring modInitPath = formatStr(baseInitPath, TEXT("/InitMod.InitMod_C"));
 	const std::wstring menuInitPath = formatStr(baseInitPath, TEXT("/InitMenu.InitMenu_C"));
-	UClass* modInitializerClass = LoadClass<AActor>(nullptr, modInitPath.c_str());
-	UClass* menuInitializerClass = LoadClass<AActor>(nullptr, menuInitPath.c_str());
+	TSubclassOf<AInitMod> modInitializerClass = LoadClass<AInitMod>(nullptr, modInitPath.c_str());
+	TSubclassOf<AInitMenu> menuInitializerClass = LoadClass<AInitMenu>(nullptr, menuInitPath.c_str());
 
 	FModPakLoadEntry pakEntry{modid};
 	if (modInitializerClass != nullptr) {

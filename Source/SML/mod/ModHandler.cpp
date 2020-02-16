@@ -190,7 +190,7 @@ void FModHandler::attachLoadingHooks() {
 }
 
 UClass* GetActiveLoadClass(const FModPakLoadEntry& entry, bool isMenuWorld) {
-	return isMenuWorld ? entry.menuInitClass : entry.modInitClass;
+	return isMenuWorld ? (UClass*)entry.menuInitClass : (UClass*)entry.modInitClass;
 }
 
 void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
@@ -230,13 +230,31 @@ bool CallActorFunction(AActor* actor, const FName& functionName) {
 	return true;
 }
 
+void FModHandler::initializeMenuActors() {
+	SML::Logging::info(TEXT("Initializing mod content packages..."));
+	for (AActor* actor : this->modInitializerActorList) {
+		if (actor != nullptr) {
+			AInitMenu* initMenu = Cast<AInitMenu>(actor);
+			if (initMenu) {
+				SML::Logging::info(TEXT("Initializing menu of mod "), *actor->GetClass()->GetPathName());
+				initMenu->Init();
+				SML::Logging::info(TEXT("Done initializing menu of mod "), *actor->GetClass()->GetPathName());
+			}
+		}
+	}
+	SML::Logging::info(TEXT("Done initializing mod content packages"));
+}
+
 void FModHandler::initializeModActors() {
 	SML::Logging::info(TEXT("Initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			SML::Logging::info(TEXT("Initializing mod "), *actor->GetClass()->GetPathName());
-			CallActorFunction(actor, FName(TEXT("Init")));
-			SML::Logging::info(TEXT("Done initializing mod "), *actor->GetClass()->GetPathName());
+			AInitMod* initMod = Cast<AInitMod>(actor);
+			if (initMod) {
+				SML::Logging::info(TEXT("Initializing mod "), *actor->GetClass()->GetPathName());
+				initMod->Init();
+				SML::Logging::info(TEXT("Done initializing mod "), *actor->GetClass()->GetPathName());
+			}
 		}
 	}
 	SML::Logging::info(TEXT("Done initializing mod content packages"));
@@ -246,9 +264,13 @@ void FModHandler::postInitializeModActors() {
 	SML::Logging::info(TEXT("Post-initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			SML::Logging::info(TEXT("Post-initializing mod "), *actor->GetClass()->GetPathName());
-			CallActorFunction(actor, FName(TEXT("PostInit")));
-			SML::Logging::info(TEXT("Done post-initializing mod "), *actor->GetClass()->GetPathName());
+			AInitMod* initMod = Cast<AInitMod>(actor);
+			if (initMod) {
+				SML::Logging::info(TEXT("Post-initializing mod "), *actor->GetClass()->GetPathName());
+				initMod->LoadSchematics();
+				initMod->PostInit();
+				SML::Logging::info(TEXT("Done post-initializing mod "), *actor->GetClass()->GetPathName());
+			}
 		}
 	}
 	SML::Logging::info(TEXT("Done post-initializing mod content packages"));

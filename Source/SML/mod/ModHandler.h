@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include "mod/ModInfo.h"
 #include "CoreTypes.h"
+#include "actor/InitMod.h"
+#include "actor/InitMenu.h"
 
 class UClass;
 class IModuleInterface;
@@ -39,8 +41,8 @@ namespace SML {
 
 		struct FModPakLoadEntry {
 			std::wstring modid;
-			UClass* modInitClass;
-			UClass* menuInitClass;
+			TSubclassOf<AInitMod> modInitClass;
+			TSubclassOf<AInitMenu> menuInitClass;
 		};
 		
 		/**
@@ -89,6 +91,7 @@ namespace SML {
 			void LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules);
 			void PopulateModList(const std::map<std::wstring, IModuleInterface*>& loadedModules);
 
+			void initializeMenuActors();
 			void initializeModActors();
 			void postInitializeModActors();
 		public:
