@@ -33,6 +33,9 @@ std::string decorateSymbolName(const char* functionName, const char* symbolType)
 	if (arg != FUNCHOOK_ERROR_SUCCESS) SML::shutdownEngine(SML::formatStr(message, convertStr(functionNameStr.c_str()), TEXT(": "), convertStr(funchook_error_message(funchook))));
 
 void* registerHookFunction(const std::string& functionNameStr, void* hookFunction) {
+#if WITH_EDITOR
+	return nullptr; // We can't run the game in editor anyway
+#else
 	if (installedHookMap[functionNameStr] == nullptr) {
 		funchook* funchook = funchook_create();
 		if (funchook == nullptr) {
@@ -49,6 +52,7 @@ void* registerHookFunction(const std::string& functionNameStr, void* hookFunctio
 		return gameFunctionPtr;
 	}
 	return installedHookMap[functionNameStr];
+#endif
 }
 
 
