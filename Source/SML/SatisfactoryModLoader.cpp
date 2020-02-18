@@ -71,6 +71,7 @@ void parseConfig(nlohmann::json& json, SML::FSMLConfiguration& config) {
 		json.at("developmentMode").get_to(config.developmentMode);
 		json.at("debug").get_to(config.debugLogOutput);
 		json.at("consoleWindow").get_to(config.consoleWindow);
+		json.at("fullLog").get_to(config.fullLog);
 	} catch (std::exception& ex) {
 		SML::Logging::error("Failed to parse SML configuration SML.cfg: ", convertStr(ex.what()));
 	}
@@ -82,7 +83,8 @@ nlohmann::json dumpConfig(SML::FSMLConfiguration& config) {
 		{"enableCrashReporter",		config.enableCrashReporter},
 		{"developmentMode",			config.developmentMode},
 		{"debug",					config.debugLogOutput},
-		{"consoleWindow",			config.consoleWindow}
+		{"consoleWindow",			config.consoleWindow},
+		{"fullLog",					config.fullLog},
 	};
 }
 
@@ -144,7 +146,7 @@ namespace SML {
 		}
 
 		nlohmann::json configJson = readModConfig(TEXT("SML"));
-		activeConfiguration = new FSMLConfiguration{ true, true, false, false };
+		activeConfiguration = new FSMLConfiguration{ true, true, false, false, false };
 		if (!configJson.is_null()) {
 			parseConfig(configJson, *activeConfiguration);
 		} else {

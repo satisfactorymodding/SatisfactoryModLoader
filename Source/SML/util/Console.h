@@ -21,4 +21,10 @@ namespace SML {
 	* All standard output streams will get cloned to the console.
 	*/
 	void enableConsole();
+
+	/**
+	* Enables the full log which basically writes all of the standard output streams to one file.
+	* This allows for better debugging and crash analyzes.
+	*/
+	void enableFullLog();
 }

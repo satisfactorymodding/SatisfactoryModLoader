@@ -50,6 +50,12 @@ namespace SML {
 		* for allowing you to better debug the runtime
 		*/
 		bool consoleWindow;
+
+		/**
+		* Redirects all standard output streams to file.
+		* Allowing for better debugging
+		*/
+		bool fullLog;
 	};
 };
 
