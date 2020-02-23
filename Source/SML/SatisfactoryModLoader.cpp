@@ -68,16 +68,12 @@ bool checkGameVersion(const long targetVersion) {
 }
 
 void parseConfig(nlohmann::json& json, SML::FSMLConfiguration& config) {
-	try {
-		json.at("enableSMLCommands").get_to(config.enableSMLChatCommands);
-		json.at("enableCrashReporter").get_to(config.enableCrashReporter);
-		json.at("developmentMode").get_to(config.developmentMode);
-		json.at("debug").get_to(config.debugLogOutput);
-		json.at("consoleWindow").get_to(config.consoleWindow);
-		json.at("fullLog").get_to(config.fullLog);
-	} catch (std::exception& ex) {
-		SML::Logging::error("Failed to parse SML configuration SML.cfg: ", convertStr(ex.what()));
-	}
+	json.at("enableSMLCommands").get_to(config.enableSMLChatCommands);
+	json.at("enableCrashReporter").get_to(config.enableCrashReporter);
+	json.at("developmentMode").get_to(config.developmentMode);
+	json.at("debug").get_to(config.debugLogOutput);
+	json.at("consoleWindow").get_to(config.consoleWindow);
+	json.at("fullLog").get_to(config.fullLog);
 }
 
 nlohmann::json dumpConfig(SML::FSMLConfiguration& config) {
@@ -148,14 +144,16 @@ namespace SML {
 			SML::shutdownEngine(TEXT("Game version check failed."));
 		}
 
-		nlohmann::json configJson = readModConfig(TEXT("SML"));
-		activeConfiguration = new FSMLConfiguration{ true, true, false, false, false };
-		if (!configJson.is_null()) {
-			parseConfig(configJson, *activeConfiguration);
-		} else {
-			configJson = dumpConfig(*activeConfiguration);
-			writeModConfig(TEXT("SML"), configJson);
-		}
+		nlohmann::json configJson = readModConfig(TEXT("SML"), { 
+			{"enableSMLCommands", true}, 
+			{"enableCrashReporter", false}, 
+			{"developmentMode", false}, 
+			{"debug", false}, 
+			{"consoleWindow", false}, 
+			{"fullLog", false}
+		});
+		activeConfiguration = new FSMLConfiguration;
+		parseConfig(configJson, *activeConfiguration);
 
 		initConsole();
 

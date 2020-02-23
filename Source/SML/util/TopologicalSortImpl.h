@@ -64,7 +64,8 @@ void explore(const T& node, const SML::TopologicalSort::DirectedGraph<T>& g, std
 		 * and therefore is part of a cycle.  In that case, we should report an error.
 		 */
 		if (expanded.find(node) != expanded.end()) return;
-		throw SML::TopologicalSort::cycle_detected<T>("Cycle dependency detected in a input graph", node);
+		//throw SML::TopologicalSort::cycle_detected<T>("Cycle dependency detected in a input graph", node);
+		SML::shutdownEngine(TEXT("Cycle dependency detected in a input graph"));
 	}
 	/* Mark that we've been here */
 	visited.insert(node);
@@ -108,7 +109,8 @@ template<typename T>
 void SML::TopologicalSort::DirectedGraph<T>::addEdge(const T& src, const T& dest) {
 	if (nodes.find(src) == nodes.end() ||
 		nodes.find(dest) == nodes.end()) {
-		throw std::invalid_argument("src/dst node is not contained in graph");
+		//throw std::invalid_argument("src/dst node is not contained in graph");
+		SML::shutdownEngine(TEXT("src/dst node is not contained in graph"));
 	}
 	this->nodes.find(src)->second->insert(dest);
 }
@@ -116,7 +118,8 @@ void SML::TopologicalSort::DirectedGraph<T>::addEdge(const T& src, const T& dest
 template<typename T>
 const std::unordered_set<T>& SML::TopologicalSort::DirectedGraph<T>::edgesFrom(const T& node) const {
 	if (nodes.find(node) == nodes.end()) {
-		throw std::invalid_argument("src node is not in graph");
+		//throw std::invalid_argument("src node is not in graph");
+		SML::shutdownEngine(TEXT("src node is not in graph"));
 	}
 	auto fuck = this->nodes.find(node);
 	return *fuck->second;

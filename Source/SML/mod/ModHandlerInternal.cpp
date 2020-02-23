@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "actor/InitMod.h"
 #include "actor/InitMenu.h"
+#include "util/Internal.h"
 
 void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
 	std::unordered_map<std::wstring, uint64_t>& modIndices,
@@ -121,7 +122,7 @@ bool extractArchiveFile(path& outFilePath, ttvfs::File* obj) {
 	std::ofstream outFile(outFilePath, std::ofstream::binary);
 	auto buffer_size = 4096;
 	if (!obj->open("rb")) {
-		throw std::invalid_argument("Failed opening archive object");
+		SML::shutdownEngine(TEXT("Failed opening archive object"));
 	}
 	char* buf = new char[buffer_size];
 	do {
@@ -135,7 +136,7 @@ bool extractArchiveFile(path& outFilePath, ttvfs::File* obj) {
 
 nlohmann::json readArchiveJson(ttvfs::File* obj) {
 	if (!obj->open("rb")) {
-		throw std::invalid_argument("Failed opening archive object");
+		SML::shutdownEngine(TEXT("Failed opening archive object"));
 	}
 	std::vector<char> buffer(obj->size());
 	obj->read(buffer.data(), obj->size());
@@ -146,7 +147,7 @@ nlohmann::json readArchiveJson(ttvfs::File* obj) {
 
 FileHash hashArchiveFileContents(ttvfs::File* obj) {
 	if (!obj->open("rb")) {
-		throw std::invalid_argument("Failed opening archive object");
+		SML::shutdownEngine(TEXT("Failed opening archive object"));
 	}
 	std::vector<char> buffer(obj->size());
 	obj->read(buffer.data(), obj->size());
@@ -157,10 +158,11 @@ FileHash hashArchiveFileContents(ttvfs::File* obj) {
 	return picosha2::bytes_to_hex_string(hash);
 }
 
-void extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const json& metadata) {
+bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const json& metadata) {
 	ttvfs::File* objectFile = root.getFile(archivePath.c_str());
 	if (objectFile == nullptr) {
-		throw std::invalid_argument("object specified in data.json is missing in zip file");
+		SML::Logging::error("object specified in data.json is missing in zip file");
+		return false;
 	}
 
 	//extract configuration
@@ -171,7 +173,7 @@ void extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 			//only extract it if it doesn't exist already
 			extractArchiveFile(configFilePath, objectFile);
 		}
-		return;
+		return false;
 	}
 
 	//extract other files into caches folder
@@ -196,32 +198,41 @@ void extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 		const std::wstring pakFilePath = filePath.generic_wstring();
 		loadingEntry.pakFiles.push_back(FModPakFileEntry{ pakFilePath, loadingPriority });
 	} else if (objectType == "sml_mod") {
-		if (!loadingEntry.dllFilePath.empty())
-			throw std::invalid_argument("mod can only have one DLL module at a time");
+		if (!loadingEntry.dllFilePath.empty()) {
+			SML::Logging::error("mod can only have one DLL module at a time");
+			return false;
+		}
 		loadingEntry.dllFilePath = filePath.generic_wstring();
 	} else if (objectType == "core_mod") {
-		throw std::invalid_argument("core mods are not supported by this version of SML");
+		SML::Logging::error("core mods are not supported by this version of SML");
+		return false;
 	} else {
-		throw std::invalid_argument("Unknown archive object type encountered");
+		SML::Logging::error("Unknown archive object type encountered: ", objectType);
+		return false;
 	}
+	return true;
 }
 
-void extractArchiveObjects(ttvfs::Dir& root, const nlohmann::json& dataJson, SML::Mod::FModLoadingEntry& loadingEntry) {
+bool extractArchiveObjects(ttvfs::Dir& root, const nlohmann::json& dataJson, SML::Mod::FModLoadingEntry& loadingEntry) {
 	const nlohmann::json& objects = dataJson["objects"];
 	if (!objects.is_array()) {
-		throw std::invalid_argument("missing `objects` array in data.json");
+		SML::Logging::error("missing `objects` array in data.json");
+		return false;
 	}
 	for (auto& value : objects.items()) {
 		const nlohmann::json object = value.value();
 		if (!object.is_object() ||
 			!object["type"].is_string() ||
 			!object["path"].is_string()) {
-			throw std::invalid_argument("one of object entries in data.json has invalid format");
+			SML::Logging::error("one of object entries in data.json has invalid format");
+			return false;
 		}
 		std::string objType = object["type"].get<std::string>();
 		std::string path = object["path"].get<std::string>();
-		extractArchiveObject(root, objType, path, loadingEntry, object["metadata"]);
+		if (!extractArchiveObject(root, objType, path, loadingEntry, object["metadata"]))
+			return false;
 	}
+	return true;
 }
 
 void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,

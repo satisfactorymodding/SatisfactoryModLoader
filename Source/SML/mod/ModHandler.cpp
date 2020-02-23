@@ -61,17 +61,10 @@ void FModHandler::loadDllMods(const BootstrapAccessors& accessors) {
 	for (auto& loadingEntry : sortedModLoadList) {
 		const std::wstring& modid = loadingEntry.modInfo.modid;
 		if (!loadingEntry.dllFilePath.empty()) {
-			try {
-				std::string moduleName = createModuleNameFromModId(loadingEntry.modInfo.modid);
-				HLOADEDMODULE module = accessors.LoadModule(moduleName.c_str(), loadingEntry.dllFilePath.c_str());
-				if (module == nullptr) throw std::invalid_argument("Module not loaded");
-				loadedModuleDlls.insert({ modid, module });
-			}
-			catch (std::exception& ex) {
-				std::wstring message = formatStr(TEXT("Failed to load module "), modid, ": ", convertStr(ex.what()));
-				SML::Logging::error(message);
-				loadingProblems.push_back(message);
-			}
+			std::string moduleName = createModuleNameFromModId(loadingEntry.modInfo.modid);
+			HLOADEDMODULE module = accessors.LoadModule(moduleName.c_str(), loadingEntry.dllFilePath.c_str());
+			if (module == nullptr) SML::shutdownEngine(formatStr(TEXT("Module failed to load: "), moduleName));
+			loadedModuleDlls.insert({ modid, module });
 		}
 	}
 }
@@ -172,7 +165,7 @@ static bool shouldLogAssetFinds = false;
 void FModHandler::attachLoadingHooks() {
 	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](CallResult<void>&, AFGGameMode* gameMode) {
 		//only call initializers on host worlds
-		SML::Logging::info(TEXT("GAME MODE IDENTIFIER "), static_cast<void*>(gameMode), TEXT(" MAP NAME "), GetData(gameMode->GetWorld()->GetMapName()));
+		SML::Logging::debug(TEXT("GAME MODE IDENTIFIER "), static_cast<void*>(gameMode), TEXT(" MAP NAME "), GetData(gameMode->GetWorld()->GetMapName()));
 		if (gameMode->HasAuthority()) {
 			SML::getModHandler().onGameModePostLoad(gameMode);
 			SML::getModHandler().initializeModActors();
@@ -180,7 +173,7 @@ void FModHandler::attachLoadingHooks() {
 		}
 	});
 	SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](CallResult<void>&, AFGPlayerController* controller) {
-		SML::Logging::info(TEXT("ControllerBeginPlay "), GetData(controller->GetWorld()->GetMapName()));
+		SML::Logging::debug(TEXT("ControllerBeginPlay "), GetData(controller->GetWorld()->GetMapName()));
 		//only call initializers on host worlds
 		AFGGameMode* gameMode = static_cast<AFGGameMode*>(controller->GetWorld()->GetGameState<AGameStateBase>()->AuthorityGameMode);
 		if (gameMode != nullptr && gameMode->HasAuthority()) {
@@ -199,7 +192,7 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 	const bool isMenuWorld = gameMode->IsMainMenuGameMode();
 	modInitializerActorList.clear();
 	for (auto& initializer : modPakInitializers) {
-		SML::Logging::info(TEXT("MENU INIT "), initializer.menuInitClass, TEXT(" MOD INIT "), initializer.modInitClass, TEXT(" IS MENU WORLD "), isMenuWorld);
+		SML::Logging::debug(TEXT("MENU INIT "), initializer.menuInitClass, TEXT(" MOD INIT "), initializer.modInitClass, TEXT(" IS MENU WORLD "), isMenuWorld);
 		UClass* targetClass = GetActiveLoadClass(initializer, isMenuWorld);
 		if (targetClass == nullptr) {
 			continue;
@@ -207,10 +200,10 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 		FVector position = FVector::ZeroVector;
 		FRotator rotation = FRotator::ZeroRotator;
 		FActorSpawnParameters spawnParams{};
-		SML::Logging::info(TEXT("ACTOR CLASS "), GetData(targetClass->GetPathName()), TEXT(" IS AACTOR "), targetClass->IsChildOf(AActor::StaticClass()));
+		SML::Logging::debug(TEXT("ACTOR CLASS "), GetData(targetClass->GetPathName()), TEXT(" IS AACTOR "), targetClass->IsChildOf(AActor::StaticClass()));
 		AActor* actor = world->SpawnActor(targetClass, &position, &rotation, spawnParams);
 		if (actor != nullptr) {
-			SML::Logging::info(TEXT("SPAWNED ACTOR "), GetData(actor->GetFullName()));
+			SML::Logging::debug(TEXT("SPAWNED ACTOR "), GetData(actor->GetFullName()));
 		}
 		modInitializerActorList.push_back(actor);
 	}
@@ -238,11 +231,11 @@ void FModHandler::initializeMenuActors() {
 			if (initMenu) {
 				SML::Logging::info(TEXT("Initializing menu of mod "), *actor->GetClass()->GetPathName());
 				initMenu->Init();
-				SML::Logging::info(TEXT("Done initializing menu of mod "), *actor->GetClass()->GetPathName());
+				SML::Logging::debug(TEXT("Done initializing menu of mod "), *actor->GetClass()->GetPathName());
 			}
 		}
 	}
-	SML::Logging::info(TEXT("Done initializing mod content packages"));
+	SML::Logging::debug(TEXT("Done initializing mod content packages"));
 }
 
 void FModHandler::initializeModActors() {
@@ -253,11 +246,11 @@ void FModHandler::initializeModActors() {
 			if (initMod) {
 				SML::Logging::info(TEXT("Initializing mod "), *actor->GetClass()->GetPathName());
 				initMod->Init();
-				SML::Logging::info(TEXT("Done initializing mod "), *actor->GetClass()->GetPathName());
+				SML::Logging::debug(TEXT("Done initializing mod "), *actor->GetClass()->GetPathName());
 			}
 		}
 	}
-	SML::Logging::info(TEXT("Done initializing mod content packages"));
+	SML::Logging::debug(TEXT("Done initializing mod content packages"));
 }
 
 void FModHandler::postInitializeModActors() {
@@ -269,11 +262,11 @@ void FModHandler::postInitializeModActors() {
 				SML::Logging::info(TEXT("Post-initializing mod "), *actor->GetClass()->GetPathName());
 				initMod->LoadSchematics();
 				initMod->PostInit();
-				SML::Logging::info(TEXT("Done post-initializing mod "), *actor->GetClass()->GetPathName());
+				SML::Logging::debug(TEXT("Done post-initializing mod "), *actor->GetClass()->GetPathName());
 			}
 		}
 	}
-	SML::Logging::info(TEXT("Done post-initializing mod content packages"));
+	SML::Logging::debug(TEXT("Done post-initializing mod content packages"));
 }
 
 void FModHandler::checkDependencies() {
@@ -301,23 +294,24 @@ void FModHandler::checkDependencies() {
 	//check for missing dependencies
 	if (!missingDependencies.empty()) {
 		loadingProblems.push_back(TEXT("Found missing dependencies:"));
-		SML::Logging::fatal(TEXT("Found missing dependencies:"));
+		SML::Logging::error(TEXT("Found missing dependencies:"));
 		for (auto& dependencyLine : missingDependencies) {
 			loadingProblems.push_back(dependencyLine);
-			SML::Logging::fatal(dependencyLine);
+			SML::Logging::error(dependencyLine);
 		}
+		SML::shutdownEngine(TEXT("Cannot continue loading without dependencies"));
 		return;
 	}
 	//perform initial dependency sorting
 	std::vector<uint64_t> sortedIndices;
-	try {
+	/*try {*/
 		sortedIndices = SML::TopologicalSort::topologicalSort(sortGraph);
-	} catch (SML::TopologicalSort::cycle_detected<uint64_t>& ex) {
+	/*} catch (SML::TopologicalSort::cycle_detected<uint64_t>& ex) {
 		std::wstring message = formatStr(TEXT("Cycle dependency found in sorting graph at modid: "), modByIndex[ex.cycleNode]);
 		loadingProblems.push_back(message);
 		SML::Logging::error(message);
 		return;
-	}
+	}*/
 	finalizeSortingResults(modByIndex, loadingEntries, sortedIndices);
 	populateSortedModList(modByIndex, loadingEntries, sortedIndices, sortedModLoadList);
 	loadingEntries.clear();
@@ -359,20 +353,16 @@ void FModHandler::constructZipMod(const path& filePath) {
 	}
 	FModInfo modInfo;
 	nlohmann::json dataJsonObj;
-	try {
-		dataJsonObj = readArchiveJson(dataJson);
-		modInfo = FModInfo::createFromJson(dataJsonObj);
-	} catch (std::exception& ex) {
-		const std::wstring message = formatStr(TEXT("couldn't parse data.json: "), convertStr(ex.what()));
-		reportBrokenZipMod(filePath, message);
+	dataJsonObj = readArchiveJson(dataJson);
+	if (!FModInfo::isValid(dataJsonObj, filePath)) {
+		reportBrokenZipMod(filePath, TEXT("Invalid data.json"));
 		return;
 	}
+	modInfo = FModInfo::createFromJson(dataJsonObj);
 	FModLoadingEntry& loadingEntry = createLoadingEntry(modInfo, filePath);
 	if (!loadingEntry.isValid) return;
-	try {
-		extractArchiveObjects(*modArchive, dataJsonObj, loadingEntry);
-	} catch (std::exception& ex) {
-		std::wstring message = formatStr(TEXT("Failed to extract data objects: "), convertStr(ex.what()));
+	if (!extractArchiveObjects(*modArchive, dataJsonObj, loadingEntry)) {
+		std::wstring message = formatStr(TEXT("Failed to extract data objects"));
 		reportBrokenZipMod(filePath, message.c_str());
 	}
 }
@@ -404,7 +394,7 @@ bool FModHandler::isModLoaded(const std::wstring& modId) const {
 const FModContainer& FModHandler::getLoadedMod(const std::wstring& modId) const {
 	const auto loadedModWrapped = loadedMods.find(modId);
 	if (loadedModWrapped == loadedMods.end()) {
-		throw std::invalid_argument("Mod with provided ID is not loaded");
+		SML::shutdownEngine(formatStr(TEXT("Mod with provided ID is not loaded: "), modId));
 	}
 	return *loadedModWrapped->second;
 }
@@ -412,17 +402,16 @@ const FModContainer& FModHandler::getLoadedMod(const std::wstring& modId) const 
 void FModHandler::checkStageErrors(const TCHAR* stageName) {
 	if (!loadingProblems.empty()) {
 		std::wstring message = formatStr(TEXT("Errors occurred during mod loading stage '"), stageName, TEXT("'. Loading cannot continue:\n"));
-		for (auto& message : loadingProblems)
-			message.append(message).append(TEXT("\n"));
-		SML::Logging::fatal(message);
+		for (auto& problem : loadingProblems)
+			message.append(problem).append(TEXT("\n"));
 		SML::shutdownEngine(message);
 		loadingProblems.clear();
 	}
 }
 
 void FModHandler::reportBrokenZipMod(const path& filePath, const std::wstring& reason) {
-	std::wstring message = formatStr(TEXT("Failed to load zip mod from "), filePath.generic_wstring(), reason);
-	SML::Logging::fatal(message);
+	std::wstring message = formatStr(TEXT("Failed to load zip mod from "), filePath.generic_wstring(), TEXT(" ("), reason, TEXT(")"));
+	SML::Logging::error(message);
 	loadingProblems.push_back(message);
 }
 
