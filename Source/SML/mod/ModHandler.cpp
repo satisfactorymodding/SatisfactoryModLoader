@@ -170,7 +170,7 @@ public: const FString* Find(const FName&) { return nullptr; }
 static bool shouldLogAssetFinds = false;
 
 void FModHandler::attachLoadingHooks() {
-	SUBSCRIBE_METHOD(AFGGameMode::InitGameState, [](CallResult<void>&, AFGGameMode* gameMode) {
+	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](CallResult<void>&, AFGGameMode* gameMode) {
 		//only call initializers on host worlds
 		SML::Logging::info(TEXT("GAME MODE IDENTIFIER "), static_cast<void*>(gameMode), TEXT(" MAP NAME "), GetData(gameMode->GetWorld()->GetMapName()));
 		if (gameMode->HasAuthority()) {
@@ -179,7 +179,7 @@ void FModHandler::attachLoadingHooks() {
 			SML::Logging::info(TEXT("FINISHED"));
 		}
 	});
-	SUBSCRIBE_METHOD(AFGPlayerController::BeginPlay, [](CallResult<void>&, AFGPlayerController* controller) {
+	SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](CallResult<void>&, AFGPlayerController* controller) {
 		SML::Logging::info(TEXT("ControllerBeginPlay "), GetData(controller->GetWorld()->GetMapName()));
 		//only call initializers on host worlds
 		AFGGameMode* gameMode = static_cast<AFGGameMode*>(controller->GetWorld()->GetGameState<AGameStateBase>()->AuthorityGameMode);

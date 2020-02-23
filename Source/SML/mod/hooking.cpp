@@ -25,8 +25,8 @@ void setHandlerListInstanceInternal(const std::string& identifier, void* handler
 std::string decorateSymbolName(const char* functionName, const char* symbolType) {
 	//TODO support hooking different C++ function overloads (bootstrapper supports it)
 	//SML::Logging::info(TEXT("Function signature: "), symbolType);
-	//SML::Logging::info(TEXT("Function name: "), functionName);
-	return std::string("void ").append(functionName).append("()");
+	SML::Logging::info(TEXT("Function name: "), functionName);
+	return std::string(functionName);
 }
 
 #define CHECK_FUNCHOOK_ERR(arg, message) \

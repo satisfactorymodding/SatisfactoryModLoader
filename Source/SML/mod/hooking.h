@@ -207,10 +207,5 @@ std::vector<std::function<void(CallResult<R>&, A...)>>* HookInvoker<R(*)(A...), 
 template <typename R, typename... A, R(*PMF)(A...)>
 void* HookInvoker<R(*)(A...), PMF>::functionPtr = nullptr;
 
-#define SUBSCRIBE_METHOD(MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference>::addHandler(#MethodReference, Handler);
-
-//performs manual subscription to method via specified name and prototype
-//prototype and method signature match is on developer's responsibility
-#define __SUBSCRIBE_METHOD_MANUAL(MethodName, MethodPrototype, Handler) \
-HookInvoker<decltype(&MethodPrototype), &MethodPrototype>::addHandler(#MethodName, Handler);
+#define SUBSCRIBE_METHOD(MethodName, MethodReference, Handler) \
+HookInvoker<decltype(&MethodReference), &MethodReference>::addHandler(MethodName, Handler);
