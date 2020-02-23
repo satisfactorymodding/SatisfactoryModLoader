@@ -19,7 +19,7 @@ namespace SML {
 	 * returns json.null() if config file is missing, unreadable or corrupted
 	 * It also supports comments in mod configs
 	 */
-	SML_API nlohmann::json readModConfig(std::wstring modid);
+	SML_API nlohmann::json readModConfig(std::wstring modid, const json& defaultValues);
 
 	/*
 	 * Dumps the given mod configuration json to the mod config file with the given modid.
@@ -29,6 +29,19 @@ namespace SML {
 	 * @param[in]	config	the coniguration you want to overwrite the file with
 	 */
 	SML_API void writeModConfig(std::wstring modid, const nlohmann::json& config);
+
+	/*
+	 * Checks if the 
+	 */
+	template<typename T>
+	T safe_get(nlohmann::json j, std::string key) {
+		if (j.find(key) != j.end()) {
+			return j.at(key).get<T>();
+		}
+		return T();
+	}
+
+	nlohmann::json setDefaultValues(nlohmann::json j, const nlohmann::json & defaultValues);
 	
 	template<typename First, typename ...Args>
 	std::wstring formatStr(First &&arg0, Args &&...args) {

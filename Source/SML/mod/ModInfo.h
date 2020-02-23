@@ -4,6 +4,9 @@
 #include <unordered_map>
 #include "mod/version.h"
 #include "util/json.hpp"
+#include <filesystem>
+
+using namespace std::experimental::filesystem;
 
 using json = nlohmann::json;
 using namespace SML::Versioning;
@@ -19,6 +22,7 @@ namespace SML {
 			std::unordered_map<std::wstring, FVersionRange> dependencies;
 			std::unordered_map<std::wstring, FVersionRange> optionalDependencies;
 
+			static bool isValid(json& object, const path& filePath);
 			static FModInfo createFromJson(json& object);
 			static FModInfo createDummyInfo(const std::wstring& modid);
 		};

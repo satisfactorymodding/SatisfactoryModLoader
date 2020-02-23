@@ -43,9 +43,9 @@ namespace SML {
 
 		template<typename First, typename ...Args>
 		void debug(First &&arg0, Args &&...args) {
-			//if (debugOutput) {
+			if (getSMLConfig().debugLogOutput) {
 				log(LogType::Debug, arg0, args...);
-			//}
+			}
 		}
 
 		template<typename First, typename ...Args>

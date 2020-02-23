@@ -2,6 +2,7 @@
 #include "version.h"
 #include <regex>
 #include "util/Utility.h"
+#include "util/Logging.h"
 
 using namespace SML::Versioning;
 
@@ -38,7 +39,7 @@ FVersion::FVersion(const std::wstring& string) {
 	std::wstring compareOp;
 	parseVersion(string, *this, &compareOp);
 	if (!compareOp.empty()) {
-		throw std::invalid_argument("Unexpected comparison on version declaration");
+		SML::Logging::error(TEXT("Unexpected comparison on version declaration"));
 	}
 }
 
@@ -65,7 +66,7 @@ void parseVersion(const std::wstring& string, FVersion& version, std::wstring* c
 	std::wsmatch match;
 	std::regex_match(string, match, versionRegex);
 	if (match.empty()) {
-		throw std::invalid_argument("Version string doesn't match the pattern");
+		SML::Logging::error("Version string \"", version.string(), "\" doesn't match the pattern");
 	}
 	if (compareOp != nullptr)
 		*compareOp = match[1];
