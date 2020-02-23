@@ -32,6 +32,8 @@ public:
 
 	FChatMessageStruct();
 	FChatMessageStruct( FString messageString, class AFGPlayerState* sender, float serverTimeStamp );
+	//MODDING EDIT: default destructor is empty and doesn't exist in game EXE, so we should force inline it.
+	__forceinline ~FChatMessageStruct() = default;
 
 	/** The message that was sent */
 	UPROPERTY( BlueprintReadWrite )
@@ -61,17 +63,17 @@ public:
  * Manages the chat in the game.
  */
 UCLASS( Blueprintable, abstract )
-class FACTORYGAME_API AFGChatManager : public AFGSubsystem
-{
+class FACTORYGAME_API AFGChatManager : public AFGSubsystem {
 	GENERATED_BODY()
 public:
 	/** Called when you get a new local message */
-	UPROPERTY( BlueprintAssignable, Category = "Chat" )
-	FChatMessageAdded OnChatMessageAdded;
+	UPROPERTY(BlueprintAssignable, Category = "Chat")
+		FChatMessageAdded OnChatMessageAdded;
 
 public:
 	/** Get the chat manager, this should always return something unless you call it really early. */
-	static AFGChatManager* Get( UWorld* world );
+	//MODDING EDIT: doesn't exist in executable, so forceinline to use version below
+	__forceinline static AFGChatManager* Get(UWorld* world) { return Get(static_cast<UObject*>(world)); }
 
 	/** Get the chat manager from a world context, this should always return something unless you call it really early. */
 	UFUNCTION( BlueprintPure, Category = "Schematic", DisplayName = "GetChatManager", Meta = ( DefaultToSelf = "worldContext" ) )

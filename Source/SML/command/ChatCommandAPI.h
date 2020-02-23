@@ -1,11 +1,24 @@
 #pragma once
 
-#include <vector>
 #include "FGPlayerController.h"
-#include "SatisfactoryModLoader.h"
+#include <functional>
 
 namespace SML {
 	namespace ChatCommand {
+
+		/**
+		 * Describes command execution result status
+		 */
+		enum class EExecutionStatus {
+			/** command executed successfully */
+			COMPLETED,
+			/** command not executed, or had no effect */
+			UNCOMPLETED,
+			/** command not executed, user permissions are too low */
+			INSUFFICIENT_PERMISSIONS,
+			/** command failed due to user providing invalid arguments */
+			BAD_ARGUMENTS
+		};
 
 		/**
 		* Holds information about a command and it's arguments.
@@ -16,17 +29,11 @@ namespace SML {
 		*/
 		struct FCommandData {
 			/**
-			* The amount of arguments.
-			*
-			* The minimum value is 1.
-			*/
-			int argc;
-			/**
 			* The arguments in a string array.
 			*
 			* Always has the command and the following arguments seperated by a space.
 			*/
-			std::vector<std::wstring> argv;
+			const TArray<FString>& argv;
 
 			/**
 			* The player that executed this command.
@@ -38,10 +45,8 @@ namespace SML {
 
 		/**
 		 * Command Handler function prototype.
-		 * Return true if command actually did something,
-		 * false otherwise (e.g bad arguments)
 		 */
-		typedef bool(*CommandHandler)(FCommandData* commandData);
+		typedef std::function<EExecutionStatus(const FCommandData&)> CommandHandler;
 		
 		struct FCommandRegistrarEntry {
 			/**
@@ -49,47 +54,52 @@ namespace SML {
 			 * Be sure to pass actual modid of your mod here, because
 			 * it will be checked and verified
 			 */
-			std::wstring modid;
+			const FString modid;
 			/**
 			 * Name of the command
 			 * Not limited in any way, but consider using only ASCII chars there
 			 */
-			std::wstring commandName;
+			const FString commandName;
+
+			/**
+			 * List of the additional names command can be referenced by
+			 */
+			const TArray<FString> aliases;
 			/**
 			 * Usage of the command
 			 * Example:
 			 * msg <username> <message>
 			 * give <username> <item> [amount] [extra_data]
 			 */
-			std::wstring usage;
+			const FString usage;
 			/**
 			 * Pointer to a command handler function to be called
 			 * when command is executed
 			 */
-			CommandHandler commandHandler;
+			const CommandHandler* commandHandler;
 		};
 
-		const std::vector<FCommandRegistrarEntry>& getRegisteredCommands();
+		TOptional<FCommandRegistrarEntry> getCommandByName(const FString& name);
+
+		const TArray<FCommandRegistrarEntry>& getRegisteredCommands();
 
 		/**
 		* Registers a chat command to be called
-		* throws std::illegal_argument if specified modid is invalid or doesn't belong to the caller
-		* throws std::illegal_argument if command with specified name is already registered
 		*/
 		SML_API void registerCommand(const FCommandRegistrarEntry& commandEntry);
 
 		/**
 		* Parses command line and executes given command
 		* Characters enclosed in "" are considered a single argument
-		* returns true if command is found and executed successfully, false otherwise
+		* If command is not found, returns bad_arguments
 		*/
-		SML_API bool runChatCommand(const std::wstring& commandLine, AFGPlayerController* player);
+		SML_API EExecutionStatus runChatCommand(const FString& commandLine, AFGPlayerController* player);
 
 		/**
 		 * Parses given player name, returning all players matching
 		 * for now it just returns player with a matching username, or the player who called the command in case of @self
 		 * it will be improved in future to support different use-cases
 		 */
-		SML_API std::vector<AFGPlayerController*> parsePlayerName(AFGPlayerController* caller, const std::wstring& name);
+		SML_API TArray<AFGPlayerController*> parsePlayerName(AFGPlayerController* caller, const FString& name);
 	}
 }

@@ -2,61 +2,100 @@
 #include "FGChatManager.h"
 #include "util/Utility.h"
 #include "player/PlayerUtility.h"
-#include <algorithm>
+#include "FGRadioactivitySubsystem.h"
+#include "player/component/SMLPlayerComponent.h"
+#include "mod/hooking.h"
+#include "util/Logging.h"
+
+template <typename T>
+inline TArray<T> singleElement(T element) {
+	if (element == nullptr) {
+		return TArray<T>();
+	}
+	return TArrayBuilder<T>().Add(element).Build();
+}
+
+class FunctionProto {
+public: void SendChatMessage(const FChatMessageStruct&) {}
+};
 
 namespace SML {
 	namespace ChatCommand {
-		class CharacterPlayerAccessor : AFGPlayerController {
-			typedef void (AFGPlayerController::*EnterChatMessageType)(const FString& inMessage);
-			static EnterChatMessageType EnterChatMessagePtr() { return &AFGPlayerController::EnterChatMessage; }
-		};
-		
 		//holds the mapping of the command name/alias to the command registrar entry
-		static std::map<std::wstring, FCommandRegistrarEntry> registeredCommands;
+		static TMap<FString, FCommandRegistrarEntry> registeredCommands;
 		//holds the list of all registered commands
-		static std::vector<FCommandRegistrarEntry> registeredCommandsList;
+		static TArray<FCommandRegistrarEntry> registeredCommandsList;
 
+		TOptional<FCommandRegistrarEntry> getCommandByName(const FString& name) {
+			if (!registeredCommands.Contains(name)) {
+				return TOptional<FCommandRegistrarEntry>();
+			}
+			return TOptional<FCommandRegistrarEntry>(registeredCommands[name]);
+		}
+		
 		//returns the list of all registered commands
-		const std::vector<FCommandRegistrarEntry>& getRegisteredCommands() {
+		const TArray<FCommandRegistrarEntry>& getRegisteredCommands() {
 			return registeredCommandsList;
 		}
 
 		void registerCommand(const FCommandRegistrarEntry& commandEntry) {
-			std::wstring fqCommandName = formatStr(commandEntry.modid, TEXT(":"), commandEntry.commandName);
-			//register short command name
-			registeredCommands.insert({ commandEntry.commandName, commandEntry });
-			//register fully qualified command name
-			registeredCommands.insert({ fqCommandName, commandEntry });
+			TArray<FString> allCommandNames = TArray<FString>(commandEntry.aliases);
+			allCommandNames.AddUnique(commandEntry.commandName);
+			//register all command aliases
+			for (const FString& commandAlias : allCommandNames) {
+				const FString fqCommandName = FString::Printf(TEXT("%s:%s"), *commandEntry.modid, *commandAlias);
+				//register short command name
+				registeredCommands.Add(commandAlias, commandEntry);
+				//register fully qualified command name
+				registeredCommands.Add(fqCommandName, commandEntry);
+			}
 			//register command entry
-			registeredCommandsList.push_back(commandEntry);
+			registeredCommandsList.Add(commandEntry);
 		}
 
 		void printCommandNotFound(AFGPlayerController* player) {
-			//AFGCharacterPlayer* character = getPlayerCharacter(player->Player);
-			//AFGChatManager* chatManager = AFGChatManager::Get(player->GetWorld());
-			//TODO need to work with replication to send message to only that player
+			USMLPlayerComponent* component = USMLPlayerComponent::Get(player);
+			component->SendChatMessage(TEXT("Unknown command. Type /help for a list of commands."), FLinearColor::Red);
 		}
 
-		bool runChatCommand(std::wstring commandLine, AFGPlayerController* player) {
-			if (commandLine.empty()) {
+		FString parseArgument(const FString& line, size_t& off);
+
+		EExecutionStatus runChatCommand(const FString& commandLine, AFGPlayerController* player) {
+			if (commandLine.IsEmpty()) {
 				printCommandNotFound(player);
-				return false;
+				return EExecutionStatus::BAD_ARGUMENTS;
 			}
-			if (commandLine[0] == TEXT('/')) {
-				commandLine.erase(0, 1);
+			TArray<FString> resultArgArray;
+			size_t offset = 0;
+			while (commandLine.Len() > offset) {
+				FString resultArg = parseArgument(commandLine, offset);
+				resultArgArray.Add(std::move(resultArg));
+				offset++; //skip argument separator
 			}
-			//TODO not really relevant until replication is working
-			return false;
+			const FString& commandName = resultArgArray[0];
+			if (!registeredCommands.Contains(commandName)) {
+				printCommandNotFound(player);
+				return EExecutionStatus::BAD_ARGUMENTS;
+			}
+			const FCommandRegistrarEntry& commandEntry = registeredCommands[commandName];
+			const FCommandData commandData{ resultArgArray, player };
+			const EExecutionStatus resultStatus = (*commandEntry.commandHandler)(commandData);
+			return resultStatus;
 		}
 
-		std::wstring parseArgument(const std::wstring& line, size_t& off) {
+		FString parseArgument(const FString& line, size_t& off) {
+			if (off >= line.Len()) return TEXT("");
 			wchar_t escapeChar = TEXT('\\');
-			bool previousCharIsEscape = line[off] == escapeChar;
-			bool isQuoted = line[off++] == TEXT('"');
+			wchar_t firstChar = line[off++];
+			bool previousCharIsEscape = firstChar == escapeChar;
+			bool isQuoted = firstChar == TEXT('"');
 			wchar_t breakCharacter = isQuoted ? TEXT('"') : TEXT(' ');
-			std::wstring result;
-			while (line.size() > off) {
-				wchar_t character = line[off];
+			FString result;
+			//if first char is not a quote, append it too!
+			if (!isQuoted && !previousCharIsEscape) 
+				result.AppendChar(firstChar);
+			while (line.Len() > off) {
+				const wchar_t character = line[off];
 				if (!previousCharIsEscape) {
 					//break on the control character
 					if (character == breakCharacter) break;
@@ -68,28 +107,25 @@ namespace SML {
 						continue; 
 					}
 				}
-				result += character;
+				result.AppendChar(character);
 				previousCharIsEscape = false;
 				off++;
 			}
 			return result;
 		}
 
-		std::vector<AFGPlayerController*> parsePlayerName(AFGPlayerController* caller, const std::wstring& name) {
+		TArray<AFGPlayerController*> parsePlayerName(AFGPlayerController* caller, const FString& name) {
 			UWorld* world = caller != nullptr ? caller->GetWorld() : GWorld;
 			if (name == TEXT("@s")) {
 				//check if caller is null, then return empty vector
-				if (caller == nullptr) return {};
-				return { caller };
+				return singleElement(caller);
 			} else if (name == TEXT("@a")) {
 				//give priority to the caller's world, if caller is null, use global world instance
 				return getConnectedPlayers(world);
 			} else {
 				//try to fetch player by name
-				const FString playerName = name.c_str();
-				AFGPlayerController* controller = GetPlayerByName(world, playerName);
-				if (controller == nullptr) return {};
-				return { controller };
+				AFGPlayerController* controller = GetPlayerByName(world, name);
+				return singleElement(controller);
 			}
 		}
 	};

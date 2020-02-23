@@ -29,6 +29,9 @@
 #include <experimental/filesystem>
 #include "MOD/ModHandler.h"
 #include "util/Console.h"
+#include "player/PlayerUtility.h"
+#include "command/ChatCommandAPI.h"
+#include "command/SMLChatCommands.h"
 
 using namespace std::experimental::filesystem;
 
@@ -163,6 +166,11 @@ namespace SML {
 		modHandlerPtr->checkDependencies();
 
 		modHandlerPtr->attachLoadingHooks();
+		initializePlayerComponent();
+		if (getSMLConfig().enableSMLChatCommands) {
+			SML::Logging::info(TEXT("Registering SML chat commands"));
+			SML::ChatCommand::registerSMLChatCommands();
+		}
 
 		modHandlerPtr->loadDllMods(*bootstrapAccessors);
 

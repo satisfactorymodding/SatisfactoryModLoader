@@ -401,7 +401,7 @@ bool FModHandler::isModLoaded(const std::wstring& modId) const {
 	return loadedMods.find(modId) != loadedMods.end();
 }
 
-const FModContainer& FModHandler::GetLoadedMod(const std::wstring& modId) const {
+const FModContainer& FModHandler::getLoadedMod(const std::wstring& modId) const {
 	const auto loadedModWrapped = loadedMods.find(modId);
 	if (loadedModWrapped == loadedMods.end()) {
 		throw std::invalid_argument("Mod with provided ID is not loaded");

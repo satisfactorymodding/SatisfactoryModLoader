@@ -4,7 +4,6 @@
 
 FChatMessageStruct::FChatMessageStruct(){ }
 FChatMessageStruct::FChatMessageStruct( FString messageString,  AFGPlayerState* sender, float serverTimeStamp){ }
-AFGChatManager* AFGChatManager::Get( UWorld* world){ return nullptr; }
 AFGChatManager* AFGChatManager::Get( UObject* worldContext){ return nullptr; }
 AFGChatManager::AFGChatManager(){ }
 FString AFGChatManager::GetChatMessageName( const FChatMessageStruct& inMessage){ return FString(); }

@@ -69,7 +69,7 @@ namespace SML {
 			* Returns a module definition for the specified modid
 			* Throws std::invalid_argument if mod with specified ID is not loaded
 			*/
-			const FModContainer& GetLoadedMod(const std::wstring& modId) const;
+			const FModContainer& getLoadedMod(const std::wstring& modId) const;
 
 			/**
 			* Returns a map of all loaded mod ids
