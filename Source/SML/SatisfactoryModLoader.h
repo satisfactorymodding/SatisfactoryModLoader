@@ -68,6 +68,11 @@ namespace SML {
 	 */
 	SML_API extern const SML::Versioning::FVersion& getModLoaderVersion();
 
+	/**
+	 * Version of the bootstrapper running mod linkage and symbol resolution.
+	 * Here just for informational purposes
+	 */
+	SML_API extern const SML::Versioning::FVersion& getBootstrapperVersion();
 
 	/**
 	 * Returns output stream used for global SML log

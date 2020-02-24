@@ -31,6 +31,7 @@ void SML::ChatCommand::registerSMLChatCommands() {
 	REGISTER_COMMAND("info", "/info - Information about environment", {"version"}, [](const FCommandData& data) {
 		USMLPlayerComponent* component = USMLPlayerComponent::Get(data.player);
 		component->SendChatMessage(FString("Running SML v.") += SML::getModLoaderVersion().string().c_str());
+		component->SendChatMessage(FString("Powered by Bootstrapper v.") += SML::getBootstrapperVersion().string().c_str());
 		Mod::FModHandler& modHandler = SML::getModHandler();
 		auto loadedModsVector = modHandler.getLoadedMods();
 		TArray<FString> loadedMods;

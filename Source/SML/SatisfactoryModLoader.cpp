@@ -55,14 +55,22 @@ std::wstring convertStr(const char* string) {
 
 bool checkGameVersion(const long targetVersion) {
 	std::string str = convertStr(FApp::GetBuildVersion());
-	const long version = std::atoi(str.substr(str.find_last_of('-') + 1).c_str());
+	const long version = std::atol(str.substr(str.find_last_of('-') + 1).c_str());
 	if (targetVersion > version) {
-		SML::Logging::fatal("Version check failed: Satisfactory version CL-", version, " is outdated. SML requires at least CL-", targetVersion, ". Things are not going to work.");
+		SML::Logging::fatal(TEXT("Version check failed: Satisfactory version CL-"), version, TEXT(" is outdated. SML requires at least CL-"), targetVersion, TEXT(". Things are not going to work."));
 		return false;
 	}
 	if (targetVersion < version) {
-		SML::Logging::warning("Detected game version newer than one SML was built for. Things can break or work in unexpected way. Proceed with caution.");
+		SML::Logging::warning(TEXT("Detected game version newer than one SML was built for. Things can break or work in unexpected way. Proceed with caution."));
 		return true;
+	}
+	return true;
+}
+
+bool checkBootstrapperVersion(SML::Versioning::FVersion target, SML::Versioning::FVersion actual) {
+	if (actual.compare(target) < 0) {
+		SML::Logging::fatal(TEXT("Bootstrapper version check failed: Bootstrapper version "), actual.string().c_str(), TEXT(" is outdated. SML requires at least "), target.string().c_str());
+		return false;
 	}
 	return true;
 }
@@ -88,15 +96,25 @@ nlohmann::json dumpConfig(SML::FSMLConfiguration& config) {
 }
 
 namespace SML {
+	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.0.0");
+	
 	//version of the SML mod loader, as specified in the SML.h
-	static SML::Versioning::FVersion* modLoaderVersion;
+	static SML::Versioning::FVersion* modLoaderVersion = new SML::Versioning::FVersion(modLoaderVersionString);
 
+	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.2");
+
+	//target (minimum) version of the bootstrapper we are capable running on
+	static SML::Versioning::FVersion* targetBootstrapperVersion = new SML::Versioning::FVersion(targetBootstrapperVersionString);
+
+	//version of the bootstrapper we are running on
+	static SML::Versioning::FVersion* bootstrapperVersion;
+	
 	//name of the file which will be used for logging purposes
 	static const TCHAR* logFileName = TEXT("SatisfactoryModLoader.log");
 	
 	//CL of Satisfactory we want to target
 	//SML will be unable to load in production mode if it doesn't match actual game version
-	const int targetGameVersion = 106027; //106504;
+	extern "C" DLLEXPORT const long targetGameVersion = 115191;
 	
 	//Pointer to the active mod handler object
 	//Initialized early during the process attach
@@ -129,10 +147,9 @@ namespace SML {
 		logOutputStream->open(path(accessors.gameRootDirectory) / logFileName, std::ios_base::out | std::ios_base::trunc);
 
 		SML::Logging::info(TEXT("Log System Initialized!"));
-
-		modLoaderVersion = new SML::Versioning::FVersion(TEXT("2.0.0"));
 		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), modLoaderVersion->string());
-
+		bootstrapperVersion = new SML::Versioning::FVersion(accessors.version);
+		
 		rootGamePath = new path(accessors.gameRootDirectory);
 		SML::Logging::info(TEXT("Game root directory: "), rootGamePath->generic_wstring());
 
@@ -140,10 +157,13 @@ namespace SML {
 		create_directories(getConfigDirectory());
 		create_directories(getCacheDirectory());
 
+		if (!checkBootstrapperVersion(*targetBootstrapperVersion, *bootstrapperVersion)) {
+			SML::shutdownEngine(TEXT("Incompatible bootstrapper version."));
+		}
 		if (!checkGameVersion(targetGameVersion)) {
 			SML::shutdownEngine(TEXT("Game version check failed."));
 		}
-
+		
 		nlohmann::json configJson = readModConfig(TEXT("SML"), { 
 			{"enableSMLCommands", true}, 
 			{"enableCrashReporter", false}, 
@@ -186,10 +206,6 @@ namespace SML {
 		SML::Logging::info(TEXT("Post Initialization finished!"));
 	}
 
-	class FFreeBlockPrototype {
-	public: void CanaryFailPrototype() {};
-	};
-
 	SML_API path getModDirectory() {
 		return *rootGamePath / TEXT("mods");
 	}
@@ -216,6 +232,10 @@ namespace SML {
 
 	SML_API const SML::Versioning::FVersion& getModLoaderVersion() {
 		return *modLoaderVersion;
+	}
+
+	SML_API const SML::Versioning::FVersion& getBootstrapperVersion() {
+		return *bootstrapperVersion;
 	}
 }
 
