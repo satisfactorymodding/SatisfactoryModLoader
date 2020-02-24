@@ -35,7 +35,7 @@ namespace SML {
 	 */
 	template<typename T>
 	T safe_get(nlohmann::json j, std::string key) {
-		if (j.find(key) != j.end()) {
+		if (j.is_object() && j.find(key) != j.end()) {
 			return j.at(key).get<T>();
 		}
 		return T();

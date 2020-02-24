@@ -9,13 +9,13 @@ using namespace SML::ChatCommand;
 #define REGISTER_COMMAND(name, usage, aliases, handler, ...) registerCommand(FCommandRegistrarEntry{TEXT("SML"), TEXT(name), TArray<FString>(aliases), TEXT(usage), new CommandHandler(handler) });
 
 void SML::ChatCommand::registerSMLChatCommands() {
-	REGISTER_COMMAND("help", "/help - Command help", {"?"}, [](const FCommandData& data) {
+	REGISTER_COMMAND("help", "/help - Command help", {TEXT("?")}, [](const FCommandData& data) {
 		USMLPlayerComponent* component = USMLPlayerComponent::Get(data.player);
 		if (data.argv.Num() >= 2) {
 			const FString& commandName = data.argv[1];
 			const TOptional<FCommandRegistrarEntry>& commandEntry = getCommandByName(commandName);
 			if (!commandEntry.IsSet()) {
-				component->SendChatMessage(FString("Command not found: ") += commandName, FLinearColor::Red);
+				component->SendChatMessage(FString(TEXT("Command not found: ")) += commandName, FLinearColor::Red);
 				return EExecutionStatus::BAD_ARGUMENTS;
 			}
 			component->SendChatMessage(commandEntry.GetValue().usage);
@@ -28,10 +28,10 @@ void SML::ChatCommand::registerSMLChatCommands() {
 		return EExecutionStatus::COMPLETED;
 	});
 	
-	REGISTER_COMMAND("info", "/info - Information about environment", {"version"}, [](const FCommandData& data) {
+	REGISTER_COMMAND("info", "/info - Information about environment", {TEXT("version")}, [](const FCommandData& data) {
 		USMLPlayerComponent* component = USMLPlayerComponent::Get(data.player);
-		component->SendChatMessage(FString("Running SML v.") += SML::getModLoaderVersion().string().c_str());
-		component->SendChatMessage(FString("Powered by Bootstrapper v.") += SML::getBootstrapperVersion().string().c_str());
+		component->SendChatMessage(FString(TEXT("Running SML v.")) += SML::getModLoaderVersion().string().c_str());
+		component->SendChatMessage(FString(TEXT("Powered by Bootstrapper v.")) += SML::getBootstrapperVersion().string().c_str());
 		Mod::FModHandler& modHandler = SML::getModHandler();
 		auto loadedModsVector = modHandler.getLoadedMods();
 		TArray<FString> loadedMods;
@@ -39,18 +39,18 @@ void SML::ChatCommand::registerSMLChatCommands() {
 			const Mod::FModContainer& modContainer = modHandler.getLoadedMod(loadedModId);
 			loadedMods.Add(modContainer.modInfo.name.c_str());
 		}
-		component->SendChatMessage(FString("Loaded Mods: ") += FString::Join(loadedMods, TEXT(", ")));
+		component->SendChatMessage(FString(TEXT("Loaded Mods: ")) += FString::Join(loadedMods, TEXT(", ")));
 		return EExecutionStatus::COMPLETED;
 	});
 	
-	REGISTER_COMMAND("list", "/list - List players online", {"players"}, [](const FCommandData& data) {
+	REGISTER_COMMAND("list", "/list - List players online", {TEXT("players")}, [](const FCommandData& data) {
 		USMLPlayerComponent* component = USMLPlayerComponent::Get(data.player);
 		TArray<FString> playersList;
 		UWorld* world = data.player->GetWorld();
 		for (AFGPlayerController* controller : getConnectedPlayers(world)) {
 			playersList.Add(controller->PlayerState->GetPlayerName());
 		}
-		component->SendChatMessage(FString("Players Online: ") += FString::Join(playersList, TEXT(", ")));
+		component->SendChatMessage(FString(TEXT("Players Online: ")) += FString::Join(playersList, TEXT(", ")));
 		return EExecutionStatus::COMPLETED;
 	});
 }

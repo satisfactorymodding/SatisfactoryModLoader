@@ -32,6 +32,7 @@
 #include "player/PlayerUtility.h"
 #include "command/ChatCommandAPI.h"
 #include "command/SMLChatCommands.h"
+#include "player/VersionCheck.h"
 
 using namespace std::experimental::filesystem;
 
@@ -185,6 +186,7 @@ namespace SML {
 
 		modHandlerPtr->attachLoadingHooks();
 		initializePlayerComponent();
+		registerVersionCheckHooks();
 		if (getSMLConfig().enableSMLChatCommands) {
 			SML::Logging::info(TEXT("Registering SML chat commands"));
 			SML::ChatCommand::registerSMLChatCommands();
