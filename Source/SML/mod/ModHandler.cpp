@@ -227,7 +227,7 @@ void FModHandler::initializeMenuActors() {
 	SML::Logging::info(TEXT("Initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			AInitMenu* initMenu = Cast<AInitMenu>(actor);
+			ASMLInitMenu* initMenu = Cast<ASMLInitMenu>(actor);
 			if (initMenu) {
 				SML::Logging::info(TEXT("Initializing menu of mod "), *actor->GetClass()->GetPathName());
 				initMenu->Init();
@@ -242,7 +242,7 @@ void FModHandler::initializeModActors() {
 	SML::Logging::info(TEXT("Initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			AInitMod* initMod = Cast<AInitMod>(actor);
+			ASMLInitMod* initMod = Cast<ASMLInitMod>(actor);
 			if (initMod) {
 				SML::Logging::info(TEXT("Initializing mod "), *actor->GetClass()->GetPathName());
 				initMod->Init();
@@ -257,7 +257,7 @@ void FModHandler::postInitializeModActors() {
 	SML::Logging::info(TEXT("Post-initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			AInitMod* initMod = Cast<AInitMod>(actor);
+			ASMLInitMod* initMod = Cast<ASMLInitMod>(actor);
 			if (initMod) {
 				SML::Logging::info(TEXT("Post-initializing mod "), *actor->GetClass()->GetPathName());
 				initMod->LoadSchematics();

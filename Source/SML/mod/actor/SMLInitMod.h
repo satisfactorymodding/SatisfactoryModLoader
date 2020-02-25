@@ -4,10 +4,10 @@
 #include "CoreUObject.h"
 #include "GameFramework/Actor.h"
 #include "FGSchematic.h"
-#include "InitMod.generated.h"
+#include "SMLInitMod.generated.h"
 
 UCLASS(Blueprintable, HideCategories = ("Actor Tick", Rendering, Replication, Input, Actor, Collision, LOD, Cooking))
-class SML_API AInitMod : public AActor {
+class SML_API ASMLInitMod : public AActor {
 	GENERATED_BODY()
 public:
 	/** Called before anything in the game has been loaded */
@@ -21,7 +21,8 @@ public:
 	void PostInit();
 
 	void LoadSchematics();
-private:
-	UPROPERTY(EditDefaultsOnly)
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSubclassOf<UFGSchematic>> mSchematics;
 };

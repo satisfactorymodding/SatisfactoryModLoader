@@ -1,8 +1,8 @@
-#include "InitMod.h"
+#include "SMLInitMod.h"
 #include "FGSchematicManager.h"
 #include "SML/util/Logging.h"
 
-void AInitMod::LoadSchematics() {
+void ASMLInitMod::LoadSchematics() {
 	AFGSchematicManager* schematicManager = AFGSchematicManager::Get(this);
 	for (TSubclassOf<UFGSchematic> schematic : mSchematics) {
 		TArray<TSubclassOf<UFGSchematic>> availableSchematics;
