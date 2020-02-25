@@ -246,13 +246,15 @@ void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loa
 	for (auto& pair : dependencies) {
 		FModLoadingEntry& dependencyEntry = loadingEntries[pair.first];
 		FModInfo& depInfo = dependencyEntry.modInfo;
-		if (!dependencyEntry.isValid || !pair.second.matches(depInfo.version)) {
-			const std::wstring reason = dependencyEntry.isValid ? formatStr(TEXT("unsupported version: "), depInfo.version.string()) : TEXT("not installed");
-			const std::wstring message = formatStr(selfInfo.modid, " requires ", pair.first, "(", pair.second.string(), "): ", reason);
-			if (!optional) missingDependencies.push_back(message);
-			continue;
+		if (pair.first != "@ORDER:LAST") {
+			if (!dependencyEntry.isValid || !pair.second.matches(depInfo.version)) {
+				const std::wstring reason = dependencyEntry.isValid ? formatStr(TEXT("unsupported version: "), depInfo.version.string()) : TEXT("not installed");
+				const std::wstring message = formatStr(selfInfo.modid, " requires ", pair.first, "(", pair.second.string(), "): ", reason);
+				if (!optional) missingDependencies.push_back(message);
+				continue;
+			}
+			sortGraph.addEdge(modIndices[selfInfo.modid], modIndices[depInfo.modid]);
 		}
-		sortGraph.addEdge(modIndices[selfInfo.modid], modIndices[depInfo.modid]);
 	}
 }
 

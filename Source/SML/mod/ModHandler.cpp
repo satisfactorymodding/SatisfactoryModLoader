@@ -416,7 +416,7 @@ void FModHandler::reportBrokenZipMod(const path& filePath, const std::wstring& r
 }
 
 bool FModHandler::checkAndNotifyRawMod(const path& filePath) {
-	if (!SML::getSMLConfig().debugLogOutput) {
+	if (!SML::getSMLConfig().developmentMode) {
 		SML::Logging::error(TEXT("Found raw mod in mods directory: "), filePath.generic_wstring());
 		SML::Logging::error(TEXT("Raw mods are not supported in production mode and can be used only for development"));
 		this->loadingProblems.push_back(formatStr(TEXT("Found unsupported raw mod file: "), filePath.generic_wstring()));
