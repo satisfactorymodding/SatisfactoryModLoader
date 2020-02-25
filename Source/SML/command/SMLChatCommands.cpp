@@ -1,5 +1,5 @@
-#include "ChatCommandAPI.h"
 #include "SMLChatCommands.h"
+#include "ChatCommandAPI.h"
 #include "player/component/SMLPlayerComponent.h"
 #include "SatisfactoryModLoader.h"
 #include "player/PlayerUtility.h"
