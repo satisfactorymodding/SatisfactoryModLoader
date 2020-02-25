@@ -7,6 +7,7 @@ typedef HLOADEDMODULE(*LoadModuleFunc)(const char* moduleName, const wchar_t* fi
 typedef FUNCTION_PTR(*GetModuleProcAddress)(HLOADEDMODULE module, const char* symbolName);
 typedef bool(*IsLoaderModuleLoaded)(const char* moduleName);
 typedef FUNCTION_PTR(*ResolveGameSymbolPtr)(const char* symbolName);
+typedef void(*FlushDebugSymbolsFunc)();
 
 struct BootstrapAccessors {
 	const wchar_t* gameRootDirectory;
@@ -15,6 +16,7 @@ struct BootstrapAccessors {
 	IsLoaderModuleLoaded IsLoaderModuleLoaded;
 	ResolveGameSymbolPtr ResolveGameSymbol;
 	const wchar_t* version;
+	FlushDebugSymbolsFunc FlushDebugSymbols;
 };
 
 typedef void(*BootstrapModuleFunc)(BootstrapAccessors& accessors);

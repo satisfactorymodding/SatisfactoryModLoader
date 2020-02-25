@@ -165,15 +165,15 @@ static bool shouldLogAssetFinds = false;
 void FModHandler::attachLoadingHooks() {
 	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](CallResult<void>&, AFGGameMode* gameMode) {
 		//only call initializers on host worlds
-		SML::Logging::debug(TEXT("GAME MODE IDENTIFIER "), static_cast<void*>(gameMode), TEXT(" MAP NAME "), GetData(gameMode->GetWorld()->GetMapName()));
+		SML::Logging::debug(TEXT("AFGGameMode::InitGameState on map "), *gameMode->GetWorld()->GetMapName());
 		if (gameMode->HasAuthority()) {
 			SML::getModHandler().onGameModePostLoad(gameMode);
 			SML::getModHandler().initializeModActors();
-			SML::Logging::info(TEXT("FINISHED"));
+			SML::Logging::info(TEXT("Finished initializing mod actors"));
 		}
 	});
 	SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](CallResult<void>&, AFGPlayerController* controller) {
-		SML::Logging::debug(TEXT("ControllerBeginPlay "), GetData(controller->GetWorld()->GetMapName()));
+		SML::Logging::debug(TEXT("AFGPlayerController::BeginPlay on "), GetData(controller->GetWorld()->GetMapName()));
 		//only call initializers on host worlds
 		AFGGameMode* gameMode = static_cast<AFGGameMode*>(controller->GetWorld()->GetGameState<AGameStateBase>()->AuthorityGameMode);
 		if (gameMode != nullptr && gameMode->HasAuthority()) {

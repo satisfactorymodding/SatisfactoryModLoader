@@ -8,7 +8,6 @@
 #include "util/json.hpp"
 #include "Base64.h"
 #include "GameFramework/GameSession.h"
-#include "util/Utility.h"
 #include "Object.h"
 
 UKickReasonAttachment* UKickReasonAttachment::Get(AGameModeBase* actor) {

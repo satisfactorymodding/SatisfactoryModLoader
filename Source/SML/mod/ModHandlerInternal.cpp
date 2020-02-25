@@ -118,7 +118,7 @@ path generateTempFilePath(const FileHash& fileHash, const char* extension) {
 	return path(result / fileHash).replace_extension(extension);
 }
 
-bool extractArchiveFile(path& outFilePath, ttvfs::File* obj) {
+bool extractArchiveFile(const path& outFilePath, ttvfs::File* obj) {
 	std::ofstream outFile(outFilePath, std::ofstream::binary);
 	auto buffer_size = 4096;
 	if (!obj->open("rb")) {
@@ -158,6 +158,38 @@ FileHash hashArchiveFileContents(ttvfs::File* obj) {
 	return picosha2::bytes_to_hex_string(hash);
 }
 
+bool stringEndsWith(const std::string& fullString, const std::string& ending) {
+	if (fullString.length() >= ending.length()) {
+		return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+	} else {
+		return false;
+	}
+}
+
+void extractFixedNameFileInternal(ttvfs::File* objectFile, const path& filePath) {
+	const FileHash& fileHash = hashArchiveFileContents(objectFile);
+	//if cached file doesn't exist, or file hashes don't match, unpack file and copy it
+	if (!exists(filePath) || fileHash != hashFileContents(filePath)) {
+		//in case of broken cache file, remove old file
+		remove(filePath);
+		//unpack file in the temporary directory
+		extractArchiveFile(filePath, objectFile);
+	}
+}
+
+path extractTempFileInternal(ttvfs::File* objectFile, const std::string& objectType) {
+	const FileHash& fileHash = hashArchiveFileContents(objectFile);
+	const path& filePath = generateTempFilePath(fileHash, objectType.c_str());
+	//if cached file doesn't exist, or file hashes don't match, unpack file and copy it
+	if (!exists(filePath) || fileHash != hashFileContents(filePath)) {
+		//in case of broken cache file, remove old file
+		remove(filePath);
+		//unpack file in the temporary directory
+		extractArchiveFile(filePath, objectFile);
+	}
+	return filePath;
+}
+
 bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const json& metadata) {
 	ttvfs::File* objectFile = root.getFile(archivePath.c_str());
 	if (objectFile == nullptr) {
@@ -175,18 +207,22 @@ bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 		}
 		return false;
 	}
+	//extract archive file now into the temporary directory
+	path filePath = extractTempFileInternal(objectFile, objectType);
 
-	//extract other files into caches folder
-	const FileHash fileHash = hashArchiveFileContents(objectFile);
-
-	path filePath = generateTempFilePath(fileHash, objectType.c_str());
-	//if cached file doesn't exist, or file hashes don't match, unpack file and copy it
-	if (!exists(filePath) || fileHash != hashFileContents(filePath)) {
-		//in case of broken cache file, remove old file
-		remove(filePath);
-		//unpack file in the temporary directory
-		extractArchiveFile(filePath, objectFile);
+	//try to also extract PDB files for archive dll files
+	if (stringEndsWith(archivePath, ".dll")) {
+		//replace last 4 characters (.dll) with new extension (.pdb)
+		std::string archivePdbFilePath = archivePath;
+		archivePdbFilePath.replace(archivePdbFilePath.length() - 4, 4, ".pdb");
+		path pdbFilePath = filePath.replace_extension("pdb");
+		ttvfs::File* pdbObjectFile = root.getFile(archivePdbFilePath.c_str());
+		if (pdbObjectFile != nullptr) {
+			//extract pdb file with the same name now
+			extractFixedNameFileInternal(pdbObjectFile, pdbFilePath);
+		}
 	}
+	
 	if (objectType == "pak") {
 		int32 loadingPriority = 0;
 		if (!metadata.is_null()) {

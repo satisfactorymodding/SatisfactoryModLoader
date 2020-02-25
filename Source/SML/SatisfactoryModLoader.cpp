@@ -33,6 +33,7 @@
 #include "command/ChatCommandAPI.h"
 #include "command/SMLChatCommands.h"
 #include "player/VersionCheck.h"
+#include "player/MainMenuMixin.h"
 
 using namespace std::experimental::filesystem;
 
@@ -102,7 +103,7 @@ namespace SML {
 	//version of the SML mod loader, as specified in the SML.h
 	static SML::Versioning::FVersion* modLoaderVersion = new SML::Versioning::FVersion(modLoaderVersionString);
 
-	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.2");
+	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.3");
 
 	//target (minimum) version of the bootstrapper we are capable running on
 	static SML::Versioning::FVersion* targetBootstrapperVersion = new SML::Versioning::FVersion(targetBootstrapperVersionString);
@@ -187,6 +188,7 @@ namespace SML {
 		modHandlerPtr->attachLoadingHooks();
 		initializePlayerComponent();
 		registerVersionCheckHooks();
+		//registerMainMenuHooks();
 		if (getSMLConfig().enableSMLChatCommands) {
 			SML::Logging::info(TEXT("Registering SML chat commands"));
 			SML::ChatCommand::registerSMLChatCommands();
@@ -199,6 +201,15 @@ namespace SML {
 		FCoreDelegates::OnPostEngineInit.AddStatic(postInitializeSML);
 	}
 
+	void flushDebugSymbols() {
+		//ensure StackWalker is initialized before flushing symbols
+		ANSICHAR tmpBuffer[100];
+		FGenericPlatformStackWalk::StackWalkAndDump(tmpBuffer, 100, 0);
+		//flush bootstrapper cached symbols
+		SML::Logging::info(TEXT("Flushing debug symbols"));
+		bootstrapAccessors->FlushDebugSymbols();
+	}
+	
 	//called after primary engine initialization, it is safe
 	//to load modules, mount paks and access most of the engine systems here
 	//however note that level could still be not loaded at that moment
@@ -206,6 +217,7 @@ namespace SML {
 		SML::Logging::info(TEXT("Loading Mods..."));
 		modHandlerPtr->loadMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Post Initialization finished!"));
+		flushDebugSymbols();
 	}
 
 	SML_API path getModDirectory() {
