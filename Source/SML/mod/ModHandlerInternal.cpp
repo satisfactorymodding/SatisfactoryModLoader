@@ -5,8 +5,8 @@
 #include "util/Logging.h"
 #include "util/picosha2.h"
 #include "GameFramework/Actor.h"
-#include "actor/InitMod.h"
-#include "actor/InitMenu.h"
+#include "actor/SMLInitMod.h"
+#include "actor/SMLInitMenu.h"
 #include "util/Internal.h"
 
 void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
@@ -59,8 +59,8 @@ FModPakLoadEntry CreatePakLoadEntry(const std::wstring& modid) {
 	const std::wstring baseInitPath = formatStr(TEXT("/Game/FactoryGame/"), modid);
 	const std::wstring modInitPath = formatStr(baseInitPath, TEXT("/InitMod.InitMod_C"));
 	const std::wstring menuInitPath = formatStr(baseInitPath, TEXT("/InitMenu.InitMenu_C"));
-	TSubclassOf<AInitMod> modInitializerClass = LoadClass<AInitMod>(nullptr, modInitPath.c_str());
-	TSubclassOf<AInitMenu> menuInitializerClass = LoadClass<AInitMenu>(nullptr, menuInitPath.c_str());
+	TSubclassOf<ASMLInitMod> modInitializerClass = LoadClass<ASMLInitMod>(nullptr, modInitPath.c_str());
+	TSubclassOf<ASMLInitMenu> menuInitializerClass = LoadClass<ASMLInitMenu>(nullptr, menuInitPath.c_str());
 
 	FModPakLoadEntry pakEntry{modid};
 	if (modInitializerClass != nullptr) {
@@ -282,13 +282,15 @@ void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loa
 	for (auto& pair : dependencies) {
 		FModLoadingEntry& dependencyEntry = loadingEntries[pair.first];
 		FModInfo& depInfo = dependencyEntry.modInfo;
-		if (!dependencyEntry.isValid || !pair.second.matches(depInfo.version)) {
-			const std::wstring reason = dependencyEntry.isValid ? formatStr(TEXT("unsupported version: "), depInfo.version.string()) : TEXT("not installed");
-			const std::wstring message = formatStr(selfInfo.modid, " requires ", pair.first, "(", pair.second.string(), "): ", reason);
-			if (!optional) missingDependencies.push_back(message);
-			continue;
+		if (pair.first != "@ORDER:LAST") {
+			if (!dependencyEntry.isValid || !pair.second.matches(depInfo.version)) {
+				const std::wstring reason = dependencyEntry.isValid ? formatStr(TEXT("unsupported version: "), depInfo.version.string()) : TEXT("not installed");
+				const std::wstring message = formatStr(selfInfo.modid, " requires ", pair.first, "(", pair.second.string(), "): ", reason);
+				if (!optional) missingDependencies.push_back(message);
+				continue;
+			}
+			sortGraph.addEdge(modIndices[selfInfo.modid], modIndices[depInfo.modid]);
 		}
-		sortGraph.addEdge(modIndices[selfInfo.modid], modIndices[depInfo.modid]);
 	}
 }
 

@@ -87,9 +87,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static int32 GetTechTier( TSubclassOf< UFGSchematic > inClass );
 
-	/** Returns mShipTravelTimeAfterPurchase */
+	/** Returns how long this schematics takes to complete its actions when we acquire it */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static float GetShipTravelTimeAfterPurchase( TSubclassOf< UFGSchematic > inClass );
+	static float GetTimeToComplete( TSubclassOf< UFGSchematic > inClass );
 	
 	/** The icon to be used in UI. */
 	UFUNCTION( BlueprintPure, Category = "Item" )
@@ -163,9 +163,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Cost" )
 	TArray< FItemAmount > mCost;
 
-	/** When we purchase this schematic how long does it take the ship to come back? */
-	UPROPERTY( EditDefaultsOnly, Category = "Cost" )
-	float mShipTravelTimeAfterPurchase;
+	/** When we acquire this schematic how long does it take for it to complete its actions */
+	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	float mTimeToComplete;
 
 	/** The unlocks you get when purchasing */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Unlocks" )

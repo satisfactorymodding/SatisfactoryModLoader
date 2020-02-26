@@ -43,7 +43,7 @@ bool UFGBlueprintFunctionLibrary::IsAlphaBuild(){ return bool(); }
 bool UFGBlueprintFunctionLibrary::CanBeOnConveyor( TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
 void UFGBlueprintFunctionLibrary::GetAllBuildCategories( UObject* worldContext, UPARAM( ref ) TArray< TSubclassOf<  UFGBuildCategory > >& out_buildCategories){ }
 void UFGBlueprintFunctionLibrary::GetAvailableRecipesInCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
-void UFGBlueprintFunctionLibrary::GetAvailableRecipesInSubCategory( UObject* worldContext, TSubclassOf< UFGBuildSubCategory > subCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
+void UFGBlueprintFunctionLibrary::GetAvailableRecipesInSubCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, TSubclassOf< UFGBuildSubCategory > subCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
 void UFGBlueprintFunctionLibrary::GetAvailableSubCategoriesForCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGBuildSubCategory > >& out_subCategories){ }
 void UFGBlueprintFunctionLibrary::GetSubCategoriesForSchematicCategory( UObject* worldContext, TSubclassOf< UFGSchematicCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ }
 void UFGBlueprintFunctionLibrary::GetAllWidgetsOfClassInHierarchy( UWidget* hierarchyContext, TSubclassOf< UWidget > widgetClass, TArray< UWidget* >& foundWidgets){ }

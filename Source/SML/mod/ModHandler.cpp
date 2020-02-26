@@ -227,7 +227,7 @@ void FModHandler::initializeMenuActors() {
 	SML::Logging::info(TEXT("Initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			AInitMenu* initMenu = Cast<AInitMenu>(actor);
+			ASMLInitMenu* initMenu = Cast<ASMLInitMenu>(actor);
 			if (initMenu) {
 				SML::Logging::info(TEXT("Initializing menu of mod "), *actor->GetClass()->GetPathName());
 				initMenu->Init();
@@ -242,7 +242,7 @@ void FModHandler::initializeModActors() {
 	SML::Logging::info(TEXT("Initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			AInitMod* initMod = Cast<AInitMod>(actor);
+			ASMLInitMod* initMod = Cast<ASMLInitMod>(actor);
 			if (initMod) {
 				SML::Logging::info(TEXT("Initializing mod "), *actor->GetClass()->GetPathName());
 				initMod->Init();
@@ -257,7 +257,7 @@ void FModHandler::postInitializeModActors() {
 	SML::Logging::info(TEXT("Post-initializing mod content packages..."));
 	for (AActor* actor : this->modInitializerActorList) {
 		if (actor != nullptr) {
-			AInitMod* initMod = Cast<AInitMod>(actor);
+			ASMLInitMod* initMod = Cast<ASMLInitMod>(actor);
 			if (initMod) {
 				SML::Logging::info(TEXT("Post-initializing mod "), *actor->GetClass()->GetPathName());
 				initMod->LoadSchematics();
@@ -416,7 +416,7 @@ void FModHandler::reportBrokenZipMod(const path& filePath, const std::wstring& r
 }
 
 bool FModHandler::checkAndNotifyRawMod(const path& filePath) {
-	if (!SML::getSMLConfig().debugLogOutput) {
+	if (!SML::getSMLConfig().developmentMode) {
 		SML::Logging::error(TEXT("Found raw mod in mods directory: "), filePath.generic_wstring());
 		SML::Logging::error(TEXT("Raw mods are not supported in production mode and can be used only for development"));
 		this->loadingProblems.push_back(formatStr(TEXT("Found unsupported raw mod file: "), filePath.generic_wstring()));

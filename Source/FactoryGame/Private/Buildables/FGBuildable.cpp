@@ -68,11 +68,16 @@ void AFGBuildable::ExecutePlayBuildEffects(){ }
 void AFGBuildable::OnBuildEffectFinished(){ }
 void AFGBuildable::PlayDismantleEffects_Implementation(){ }
 void AFGBuildable::OnDismantleEffectFinished(){ }
+bool AFGBuildable::CanBeSampled_Implementation() const{ return bool(); }
 void AFGBuildable::ShowHighlightEffect(){ }
 void AFGBuildable::RemoveHighlightEffect(){ }
 void AFGBuildable::SetHiddenIngameAndHideInstancedMeshes( bool hide ){ }
 TSubclassOf< AFGBuildable > AFGBuildable::GetBuildableClassFromRecipe( TSubclassOf<  UFGRecipe > inRecipe){ return TSubclassOf<AFGBuildable>(); }
 UShapeComponent* AFGBuildable::GetClearanceComponent(){ return nullptr; }
+uint8 AFGBuildable::GetNumPowerConnections() const{ return uint8(); }
+uint8 AFGBuildable::GetNumFactoryConnections() const{ return uint8(); }
+uint8 AFGBuildable::GetNumFactoryOuputConnections() const{ return uint8(); }
+bool AFGBuildable::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildable::PlayConstructSound_Implementation(){ }
 void AFGBuildable::PlayDismantleSound_Implementation(){ }
 void AFGBuildable::RegisterInteractingPlayerWithCircuit(  AFGCharacterPlayer* player){ }
@@ -97,8 +102,5 @@ void AFGBuildable::SetReplicateDetails( bool replicateDetails){ }
 bool AFGBuildable::CheckFactoryConnectionComponents( FString& out_message){ return bool(); }
 void AFGBuildable::OnRep_ColorSlot(){ }
 void AFGBuildable::OnRep_DidFirstTimeUse(){ }
-uint8 AFGBuildable::GetNumPowerConnections() const{ return uint8(); }
-uint8 AFGBuildable::GetNumFactoryConnections() const{ return uint8(); }
-uint8 AFGBuildable::GetNumFactoryOuputConnections() const{ return uint8(); }
 FOnReplicationDetailActorStateChange AFGBuildable::OnBuildableReplicationDetailActorStateChange = FOnReplicationDetailActorStateChange();
 FOnRegisteredPlayerChanged AFGBuildable::OnRegisterPlayerChange = FOnRegisteredPlayerChanged();

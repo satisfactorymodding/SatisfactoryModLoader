@@ -222,10 +222,10 @@ private:
 	TMap< UObject*, FRadioactiveSource > mSources;
 
 	/** Thread safe queue for storing emitters that shall be removed */
-	TQueue< FRemoveEmitterID > mEmittersToRemove;
+	TQueue< FRemoveEmitterID, EQueueMode::Mpsc > mEmittersToRemove;
 
 	/** Thread safe queue for storing emitters that shall be set */
-	TQueue< FSetEmitterID > mEmittersToSet;
+	TQueue< FSetEmitterID, EQueueMode::Mpsc > mEmittersToSet;
 
 	/** All actors that can take damage from radiation. */
 	UPROPERTY()

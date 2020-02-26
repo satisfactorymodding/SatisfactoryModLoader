@@ -136,6 +136,9 @@ protected:
 
 	/** Check through usedLocations so that location isn't overlapping another location (using mCreatureClass radius) */
 	bool IsLocationNonOverlapping( const FVector2D& location, const TArray< FVector2D >& usedLocations ) const;
+
+	/** Remove entries that were added dynamically and now has WasKilled status */
+	void CleanupCreatureList();
 protected:
 	/** For showing a preview of what will happen in the editor */
 	UPROPERTY()
@@ -174,6 +177,9 @@ protected:
 	/** Path splines that enemies in this spawner should set to follow */
 	UPROPERTY( EditAnywhere, Category = "Spawning" )
 	TArray< class AFGSplinePath* > mSplines;
+
+	/** cached value to see if spawner is near a base */
+	bool mCachedIsNearBase;
 private:
 	UPROPERTY( SaveGame )
 	int32 mRandomSeed;

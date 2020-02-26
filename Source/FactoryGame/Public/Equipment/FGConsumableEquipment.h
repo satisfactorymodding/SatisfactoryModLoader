@@ -19,7 +19,12 @@ public:
 	// End
 
 	/** Called on the owner, client or server but not both. */
-	void OnPrimaryFirePressed();
+	UFUNCTION( BlueprintCallable, Category = "Consumeable" )
+	void OnPrimaryFire();
+
+	/** Called on the owner, client or server but not both. */
+	UFUNCTION( BlueprintCallable, Category = "Consumeable" )
+	void OnConsumePressed();
 
 	/** Get the consumeable currently in hands */
 	UFUNCTION( BlueprintPure, Category = "Consumeable" )

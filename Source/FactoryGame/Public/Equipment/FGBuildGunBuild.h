@@ -105,6 +105,9 @@ public:
 	virtual void ChangeScrollMode_Implementation() override;
 	virtual void ChangeNoSnapMode_Implementation() override;
 	virtual void ChangeGuideLinesSnapMode_Implementation( bool enabled ) override;
+	virtual void BuildSampleRelease_Implementation() override;
+	virtual bool IsValidBuildingSample( class AFGBuildable* buildable ) const override;
+	virtual void OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe ) override;
 	// End UFGBuildGunState
 
 	/**
@@ -155,6 +158,7 @@ public:
 
 
 	void HookUpUserSettings();
+
 protected:
 
 	

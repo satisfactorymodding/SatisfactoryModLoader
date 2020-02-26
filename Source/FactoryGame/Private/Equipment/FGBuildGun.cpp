@@ -2,6 +2,7 @@
 
 #include "FGBuildGun.h"
 
+UFGBuildGunState::UFGBuildGunState(){ }
 bool UFGBuildGunState::ReplicateSubobjects(  UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 bool UFGBuildGunState::IsSupportedForNetworking() const{ return bool(); }
 int32 UFGBuildGunState::GetFunctionCallspace( UFunction* Function, void* Parameters, FFrame* Stack){ return int32(); }
@@ -16,6 +17,10 @@ void UFGBuildGunState::PrimaryFireRelease_Implementation(){ }
 void UFGBuildGunState::SecondaryFire_Implementation(){ }
 void UFGBuildGunState::ModeSelectPressed_Implementation(){ }
 void UFGBuildGunState::ModeSelectRelease_Implementation(){ }
+void UFGBuildGunState::BuildSamplePressed_Implementation(){ }
+bool UFGBuildGunState::IsValidBuildingSample(  AFGBuildable* buildable) const{ return bool(); }
+void UFGBuildGunState::OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe){ }
+void UFGBuildGunState::BuildSampleRelease_Implementation(){ }
 void UFGBuildGunState::ScrollDown_Implementation(){ }
 void UFGBuildGunState::ScrollUp_Implementation(){ }
 void UFGBuildGunState::ChangeScrollMode_Implementation(){ }
@@ -56,6 +61,8 @@ void AFGBuildGun::OnSnapToGuideLinesPressed(){ }
 void AFGBuildGun::OnSnapToGuideLinesReleased(){ }
 void AFGBuildGun::OnDismantleToggleMultiSelectStatePressed(){ }
 void AFGBuildGun::OnDismantleToggleMultiSelectStateReleased(){ }
+void AFGBuildGun::OnBuildSamplePressed(){ }
+void AFGBuildGun::OnBuildSampleReleased(){ }
 void AFGBuildGun::GotoMenuState(){ }
 void AFGBuildGun::GotoBuildState( TSubclassOf<  UFGRecipe > recipe){ }
 void AFGBuildGun::GotoDismantleState(){ }

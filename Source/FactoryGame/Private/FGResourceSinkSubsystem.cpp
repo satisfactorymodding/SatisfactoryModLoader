@@ -6,6 +6,7 @@ AFGResourceSinkSubsystem::AFGResourceSinkSubsystem(){ }
 void AFGResourceSinkSubsystem::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGResourceSinkSubsystem::BeginPlay(){ }
 void AFGResourceSinkSubsystem::Tick( float DeltaSeconds){ }
+void AFGResourceSinkSubsystem::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
 AFGResourceSinkSubsystem* AFGResourceSinkSubsystem::Get( UWorld* world){ return nullptr; }
 AFGResourceSinkSubsystem* AFGResourceSinkSubsystem::Get( UObject* worldContext){ return nullptr; }
 void AFGResourceSinkSubsystem::DisplayDebug(  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }

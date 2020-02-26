@@ -12,6 +12,7 @@
 #include "../FGRemoteCallObject.h"
 #include "../FGSignificanceInterface.h"
 #include "../FGRemoteCallObject.h"
+#include "../FGFactoryConnectionComponent.h"
 #include "FGBuildableConveyorBase.generated.h"
 
 

@@ -2,12 +2,14 @@
 
 #include "FGBuildGunDismantle.h"
 
+UFGBuildGunStateDismantle::UFGBuildGunStateDismantle(){ }
 void UFGBuildGunStateDismantle::GetLifetimeReplicatedProps( TArray<  FLifetimeProperty > & OutLifetimeProps) const{ }
 void UFGBuildGunStateDismantle::BeginState_Implementation(){ }
 void UFGBuildGunStateDismantle::EndState_Implementation(){ }
 void UFGBuildGunStateDismantle::TickState_Implementation( float deltaTime){ }
 void UFGBuildGunStateDismantle::PrimaryFire_Implementation(){ }
 void UFGBuildGunStateDismantle::SecondaryFire_Implementation(){ }
+void UFGBuildGunStateDismantle::OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe){ }
 AActor* UFGBuildGunStateDismantle::GetSelectedActor() const{ return nullptr; }
 TArray<FInventoryStack> UFGBuildGunStateDismantle::GetPeekDismantleRefund() const{ return TArray<FInventoryStack>(); }
 bool UFGBuildGunStateDismantle::CanDismantle() const{ return bool(); }

@@ -9,6 +9,7 @@
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
+#include "Buildables/FGBuildablePoleBase.h"
 #include "FGBuildablePipelineSupport.generated.h"
 
 class UFGPipeConnectionComponentBase;
@@ -16,7 +17,7 @@ class UFGPipeConnectionComponentBase;
  * Base class for variable length pipe supports
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildablePipelineSupport : public AFGBuildable
+class FACTORYGAME_API AFGBuildablePipelineSupport : public AFGBuildablePoleBase
 {
 	GENERATED_BODY()
 public:
@@ -26,6 +27,13 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	// End AActor interface
+
+
+	virtual float GetStackHeight() override
+	{
+		float baseOffset = mUseStaticHeight ? 0 : mLength;
+		return baseOffset + mStackHeight;
+	}
 
 	/** Set the pole's height. */
 	void SetSupportLength( float length );
@@ -61,13 +69,6 @@ public:
 	UPROPERTY( SaveGame, Replicated )
 	float mVerticalAngle = 0.0f;
 
-	/** Can this support stack. */
-	UPROPERTY( EditDefaultsOnly, Category = "Pipe Support" )
-	bool mCanStack;
-
-	/** Height between two stacked supports excluding the poles height. */
-	UPROPERTY( EditDefaultsOnly, Category = "Pipe Support" )
-	float mStackHeight;
 
 	/** The component we want to use with the support */
 	UPROPERTY( EditAnywhere, Category = "Pipe Support" )

@@ -75,8 +75,8 @@ private:
 	bool mCanAdjustHeight;
 
 	/** Can this pole be stacked. */
-	bool mCanStack;
-	float mStackHeight;
+	bool mCanStack = false;
+	float mStackHeight = 200;
 
 	/** Used to determine whether the relative offset needs to be updated for the pole mesh */
 	bool mPoleHeightMarkedDirty : 1;

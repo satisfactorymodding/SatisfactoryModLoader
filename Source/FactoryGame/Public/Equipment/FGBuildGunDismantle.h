@@ -1,6 +1,7 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "SubclassOf.h"
 #include "Array.h"
 #include "GameFramework/Actor.h"
 #include "UObject/Class.h"
@@ -43,6 +44,8 @@ class FACTORYGAME_API UFGBuildGunStateDismantle : public UFGBuildGunState
 	GENERATED_BODY()
 
 public:
+	UFGBuildGunStateDismantle();
+
 	virtual void GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const override;
 
 	// Begin UFGBuildGunState
@@ -51,6 +54,7 @@ public:
 	virtual void TickState_Implementation( float deltaTime ) override;
 	virtual void PrimaryFire_Implementation() override;
 	virtual void SecondaryFire_Implementation() override;
+	virtual void OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe ) override;
 	// End UFGBuildGunState
 
 	/** Toggle between whether the multi select should be in effect as actors are being highlighted */
@@ -100,7 +104,6 @@ public:
 	/** Give blueprint a chance to do effect when starting dismantle */
 	UFUNCTION( BlueprintImplementableEvent, Category = "BuildGunState" )
 	void OnStartDismantle();
-
 public:
 	/** Delegate for when the refunds used to preview dismantle refunds have been updated on local machine */
 	UPROPERTY( BlueprintAssignable, Category = "BuildGunState|Dismantle" )

@@ -143,6 +143,8 @@ static const FName BuildGunScrollModeAction( TEXT( "BuildGunScrollMode" ) );
 static const FName BuildGunNoSnapModeAction( TEXT( "ToggleMap_BuildGunNoSnapMode" ) );
 static const FName BuildGunSnapToGuideLinesAction( TEXT( "BuildGunSnapToGuideLines" ) );
 static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT( "BuildGunDismantle_ToggleMultiSelectState" ) );
+static const FName AttentionPingAction( TEXT( "AttentionPing" ) );
+static const FName BuildingSampleAction( TEXT( "BuildingSample" ) );
 
 /** Color Parameters */
 static const FName PrimaryColor( TEXT( "PrimaryPaintedMetal_Color" ) );

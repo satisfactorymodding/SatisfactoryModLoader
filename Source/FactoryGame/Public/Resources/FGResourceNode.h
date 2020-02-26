@@ -252,10 +252,6 @@ protected:
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TEnumAsByte<EResourceAmount> mAmount;
 
-	/** The mesh we use for displaying the resource if it has a ground mesh */
-	UPROPERTY( BlueprintReadOnly, VisibleDefaultsOnly, Category = "Resources")
-	UStaticMeshComponent* mStaticMeshComponent;
-
 	/** the decal that used for displaying the resource */
 	UPROPERTY( BlueprintReadOnly, VisibleDefaultsOnly, Category = "Resources" )
 	UDecalComponent* mDecalComponent;
@@ -284,20 +280,16 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
 	bool mCanPlaceResourceExtractor;
 
-	/** is this node a geyser node? */
-	bool mIsGeyserNode;
-
 	/** Multiplier that is applied in the end of extraction calculations. Is used for making deposits extract more than regular nodes */
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
 	int32 mExtractMultiplier;
 
-	/** Should we display the default mesh? */
-	UPROPERTY( EditAnywhere, Category = "Resources" )
-	bool mUseDefaultMesh;
-
 	/** Text mapped to resource purity */
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
 	TArray< FPurityTextPair > mPurityTextArray;
+
+	/** Last frame we flushed net dormancy */
+	uint64 mLastFlushFrame;
 public:
 	/** Can this resource node be used for placing portable miners on */
 	bool mCanPlacePortableMiner;
@@ -313,6 +305,4 @@ public:
 	/** Bool for is we should spawn particle */
 	UPROPERTY( Replicated, EditDefaultsOnly, SaveGame, Category = "Resources" ) 
 	bool mDoSpawnParticle;
-
-	
 };

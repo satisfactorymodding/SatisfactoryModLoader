@@ -76,6 +76,7 @@ public:
 	/** Default height above ground level for pipes */
 	static constexpr float DEFAULT_PIPE_HEIGHT = 175.f;
 
+	const static float PIPE_COST_LENGTH_MULTIPLIER;
 protected:
 	/** Mesh to use for his conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )

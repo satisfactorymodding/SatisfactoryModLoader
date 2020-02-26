@@ -6,8 +6,8 @@
 #include <unordered_map>
 #include "mod/ModInfo.h"
 #include "CoreTypes.h"
-#include "actor/InitMod.h"
-#include "actor/InitMenu.h"
+#include "actor/SMLInitMod.h"
+#include "actor/SMLInitMenu.h"
 
 class UClass;
 class IModuleInterface;
@@ -41,8 +41,8 @@ namespace SML {
 
 		struct FModPakLoadEntry {
 			std::wstring modid;
-			TSubclassOf<AInitMod> modInitClass;
-			TSubclassOf<AInitMenu> menuInitClass;
+			TSubclassOf<ASMLInitMod> modInitClass;
+			TSubclassOf<ASMLInitMenu> menuInitClass;
 		};
 		
 		/**

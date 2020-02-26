@@ -7,11 +7,7 @@ void UFGResourceDescriptor::PostEditChangeProperty(  FPropertyChangedEvent& prop
 #endif 
 UFGResourceDescriptor::UFGResourceDescriptor(){ }
 bool UFGResourceDescriptor::CanBeHandMined( TSubclassOf< UFGResourceDescriptor > inClass){ return bool(); }
-UStaticMesh* UFGResourceDescriptor::GetGroundMesh( TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
-UStaticMesh* UFGResourceDescriptor::GetDepositMesh( TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
-UMaterialInstance* UFGResourceDescriptor::GetMeshOverrideMaterial( TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
 UMaterial* UFGResourceDescriptor::GetDecalMaterial( TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
-UMaterialInstance* UFGResourceDescriptor::GetDepositMaterial( TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
 float UFGResourceDescriptor::GetDecalSize( TSubclassOf< UFGResourceDescriptor > inClass){ return float(); }
 FLinearColor UFGResourceDescriptor::GetPingColor( TSubclassOf< UFGResourceDescriptor > inClass){ return FLinearColor(); }
 float UFGResourceDescriptor::GetCollectSpeedMultiplier( TSubclassOf< UFGResourceDescriptor > inClass){ return float(); }

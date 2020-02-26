@@ -27,6 +27,7 @@ void AFGBuildableSubsystem::RemoveConveyor( AFGBuildableConveyorBase* conveyor){
 void AFGBuildableSubsystem::RemoveConveyorFromBucket( AFGBuildableConveyorBase* conveyorToRemove){ }
 void AFGBuildableSubsystem::RearrangeConveyorBuckets( int32 emptiedBucketID){ }
 void AFGBuildableSubsystem::RemoveAndSplitConveyorBucket( AFGBuildableConveyorBase* conveyorToRemove){ }
+bool AFGBuildableSubsystem::IsServerSubSystem() const{ return bool(); }
 void AFGBuildableSubsystem::GetTypedBuildable( TSubclassOf<  AFGBuildable > inClass, TArray<  AFGBuildable* >& out_buildables) const{ }
 void AFGBuildableSubsystem::ReplayBuildingEffects(){ }
 bool AFGBuildableSubsystem::HasMaterialInstanceManagerForMaterialInterface( UMaterialInterface* materialInterface){ return bool(); }
@@ -53,7 +54,6 @@ void AFGBuildableSubsystem::UpdateReplayEffects( float dt){ }
 void AFGBuildableSubsystem::AddBuildableMeshInstances(  AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::UpdateBuildableMaterialInstances( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::TickFactoryActors( float dt){ }
-bool AFGBuildableSubsystem::IsServerSubSystem() const{ return bool(); }
 void AFGBuildableSubsystem::DumpFixedFactoryTickValues() const{ }
 UFGColoredInstanceManager* AFGBuildableSubsystem::GetColoredInstanceManager(  UFGColoredInstanceMeshProxy* proxy){ return nullptr; }
 bool AFGBuildableSubsystem::IsBasedOn( const UMaterialInterface* instance, const UMaterial* base){ return bool(); }

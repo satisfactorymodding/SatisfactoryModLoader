@@ -124,7 +124,7 @@ FHologramAStarNode::FHologramAStarNode( FHologramPathingPoint* pathingPoint){ }
 FHologramAStarNode::FHologramAStarNode( const FHologramAStarNode& pathingNode){ }
 int32 FHolgramAStarHelper::GetNeighbourCount( const FHologramAStarNode& nodeRef) const{ return int32(); }
 bool FHolgramAStarHelper::IsValidRef( const FHologramAStarNode& nodeRef) const{ return bool(); }
-FHologramAStarNode FHolgramAStarHelper::GetNeighbour( const FHologramAStarNode& nodeRef, const int32 neighbourIndex) const{ return FHologramAStarNode(0); }
+FHologramAStarNode FHolgramAStarHelper::GetNeighbour( const FHologramAStarNode& nodeRef, const int32 neighbourIndex) const{ return FHologramAStarNode(); }
 FVector FHolgramAStarHelper::GetDirectionNormal( const FHologramAStarNode& nodeA, const FHologramAStarNode& nodeB) const{ return FVector(); }
 FHologramAStarFilter::FHologramAStarFilter(){ }
 float FHologramAStarFilter::GetHeuristicScale() const{ return float(); }

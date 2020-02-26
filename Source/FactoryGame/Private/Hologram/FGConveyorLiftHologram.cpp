@@ -20,6 +20,7 @@ void AFGConveyorLiftHologram::CheckValidFloor(){ }
 void AFGConveyorLiftHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
 void AFGConveyorLiftHologram::ConfigureComponents(  AFGBuildable* inBuildable) const{ }
 int32 AFGConveyorLiftHologram::GetRotationStep() const{ return int32(); }
+void AFGConveyorLiftHologram::CheckValidPlacement(){ }
 void AFGConveyorLiftHologram::OnRep_TopTransform(){ }
 void AFGConveyorLiftHologram::UpdateClearance(){ }
 void AFGConveyorLiftHologram::OnRep_ArrowDirection(){ }

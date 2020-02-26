@@ -22,25 +22,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
 	static bool CanBeHandMined( TSubclassOf< UFGResourceDescriptor > inClass );
 
-	/** The static mesh we want the ResourceNode to use when it has this class selected */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
-	static class UStaticMesh* GetGroundMesh( TSubclassOf< UFGResourceDescriptor > inClass );
-
-	/** The static mesh we want the Resource Deposit to use when it has this class selected */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
-	static class UStaticMesh* GetDepositMesh( TSubclassOf< UFGResourceDescriptor > inClass );
-
-	/** If this is non-null, then we will use this material instead of the material specified in the mGroundMesh */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
-	static class UMaterialInstance* GetMeshOverrideMaterial( TSubclassOf< UFGResourceDescriptor > inClass );
-
 	/** Returns the decal this resource use (if any) */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
 	static UMaterial* GetDecalMaterial( TSubclassOf< UFGResourceDescriptor > inClass );
-
-	/** Returns the material this resource deposit use (if any) */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
-	static UMaterialInstance* GetDepositMaterial( TSubclassOf< UFGResourceDescriptor > inClass );
 
 	/** If we are using a decal, then this returns how big that decal should be */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
@@ -81,22 +65,6 @@ public:
 #endif
 	
 protected:
-	/** The static mesh we want the ResourceNode to use when it has this class selected */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|World", meta = ( EditCondition="!mUseMaterialDecal" ) )
-	class UStaticMesh* mGroundMesh;
-
-	/** The static mesh we want the Resource Deposit to use when it has this class selected */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|World", meta = (EditCondition = "!mUseMaterialDecal") )
-	class UStaticMesh* mDepositMesh;
-
-	/** The material this resource deposit use (if any) */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|World" )
-	class UMaterialInstance* mDepositMaterial;
-
-	/** If this is non-null, then we will use this material instead of the material specified in the mGroundMesh */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|World" )
-	class UMaterialInstance* mGroundMeshMaterialOverride;
-
 	/** The decal this resource use (if any) */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|World" )
 	class UMaterial* mDecalMaterial;

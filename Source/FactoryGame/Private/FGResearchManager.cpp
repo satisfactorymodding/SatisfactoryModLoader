@@ -12,6 +12,7 @@ void AFGResearchManager::PostLoadGame_Implementation( int32 saveVersion, int32 g
 bool AFGResearchManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGResearchManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGResearchManager::GetAllResearchTrees( TArray<TSubclassOf<class UFGResearchTree>>& out_ResearchTrees) const{ }
+bool AFGResearchManager::IsResesearchTreeUnlocked( TSubclassOf<class UFGResearchTree> researchTree) const{ return bool(); }
 bool AFGResearchManager::InitiateResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic, TSubclassOf<class UFGResearchTree> initiatingResearchTree){ return bool(); }
 bool AFGResearchManager::CanResearchBeInitiated( TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 bool AFGResearchManager::IsResearchBeingConducted( TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
@@ -34,3 +35,4 @@ void AFGResearchManager::GeneratePendingReward( FResearchData& researchData){ }
 void AFGResearchManager::OnResearchTimerComplete( TSubclassOf<class UFGSchematic> schematic){ }
 bool AFGResearchManager::PayForResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 void AFGResearchManager::ClaimPendingRewards( AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex){ }
+bool AFGResearchManager::AreResearchTreeUnlockDependeciesMet( TSubclassOf <UFGResearchTree> inClass){ return bool(); }

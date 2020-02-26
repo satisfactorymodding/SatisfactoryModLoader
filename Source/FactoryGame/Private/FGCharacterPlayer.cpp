@@ -95,6 +95,7 @@ void AFGCharacterPlayer::TickHealthGeneration( float delta){ }
 UFGLadderComponent* AFGCharacterPlayer::GetCurrentLadderComponent(){ return nullptr; }
 TSubclassOf< class UCameraShake > AFGCharacterPlayer::GetDesiredSprintHeadBobShake(){ return TSubclassOf<class UCameraShake>(); }
 TSubclassOf< class UCameraShake > AFGCharacterPlayer::GetDesiredWalkHeadBobShake(){ return TSubclassOf<class UCameraShake>(); }
+UFGCharacterMovementComponent* AFGCharacterPlayer::GetFGMovementComponent(){ return nullptr; }
 void AFGCharacterPlayer::SetWantSprintBobbing( bool wantBobbing){ }
 FVector AFGCharacterPlayer::GetInventoryDropLocation_Implementation( const  UFGInventoryComponent* component, FInventoryStack stack){ return FVector(); }
 void AFGCharacterPlayer::AddRadiationImmunity( float toAdd){ }

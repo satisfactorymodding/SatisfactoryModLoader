@@ -228,9 +228,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Build Category" )
 	static void GetAvailableRecipesInCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
 
-	/** Returns all recipes with product of a certain sub category */
+	/** Returns all recipes with product of a certain sub category of a certain build category */
 	UFUNCTION( BlueprintCallable, Category = "Build Category" )
-	static void GetAvailableRecipesInSubCategory( UObject* worldContext, TSubclassOf< UFGBuildSubCategory > subCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
+	static void GetAvailableRecipesInSubCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, TSubclassOf< UFGBuildSubCategory > subCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
 
 	/** Returns all sub categories with product of a certain category */
 	UFUNCTION( BlueprintCallable, Category = "Build Category" )

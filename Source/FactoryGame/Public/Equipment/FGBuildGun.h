@@ -38,6 +38,8 @@ class FACTORYGAME_API UFGBuildGunState : public UObject
 	GENERATED_BODY()
 
 public:
+	UFGBuildGunState();
+
 	/** For replicating more complicated objects. */
 	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags );
 
@@ -92,6 +94,24 @@ public:
 		/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void ModeSelectRelease();
+
+
+	/** Redirected from the build gun. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void BuildSamplePressed();
+
+	/** If true, then the building is valid to sample in this state */
+	virtual bool IsValidBuildingSample( class AFGBuildable* buildable ) const;
+
+	/**
+	 * We have sampled a new recipe
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState|Build" )
+	void OnRecipeSampled( TSubclassOf<class UFGRecipe> recipe );
+
+	/** Redirected from the build gun. */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
+	void BuildSampleRelease();
 
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
@@ -153,11 +173,10 @@ public:
 	/** @return true if there is an delay on this state. */
 	UFUNCTION( Category = "BuildGunState" )
 	bool HasBuildGunDelay();
-
+protected:
+	/** If true, then we can sample buildings in this state */
+	bool mCanSampleBuildingsInState;
 private:
-	/** Is this state active? */
-	bool mIsActive;
-
 	/** Time (in seconds) it takes for the action (eg. Build, dismantle) */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGunState" )
 	float mActionDelay;
@@ -168,6 +187,9 @@ private:
 	/** Text to show while action is in progress */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGunState" )
 	FText mActionMessage;
+
+	/** Is this state active? */
+	bool mIsActive;
 };
 
 /**
@@ -249,6 +271,8 @@ public:
 	void OnSnapToGuideLinesReleased();
 	void OnDismantleToggleMultiSelectStatePressed();
 	void OnDismantleToggleMultiSelectStateReleased();
+	void OnBuildSamplePressed();
+	void OnBuildSampleReleased();
 
 	/**
 	 * Only the client handles categories, recipes.

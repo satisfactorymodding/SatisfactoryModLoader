@@ -27,7 +27,11 @@ public:
 
 	// Begin AFGHologram Interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
+	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
+	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual AActor* GetUpgradedActor() const override;
 	// End AFGHologram Interface
 
 protected:
@@ -37,6 +41,7 @@ protected:
 
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
+	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
 
 	/**
@@ -69,13 +74,19 @@ protected:
 	UPROPERTY()
 	TScriptInterface< class IFGExtractableResourceInterface > mSnappedExtractableResource;
 
+	UPROPERTY( )
+	class AFGBuildableResourceExtractor* mUpgradeTarget = nullptr;
+
+	/** name used to mathc types of extractros for compatiblility when upgrading */
+	FName mExtractorTypeName = "";
+
 	/** Minimum depth for placement assigned from the Buildable */
 	float mMinimumDepthForPlacement;
 
 	/** Require collision with the resource class at all minimum depth points? Assigned from the buildable */
 	bool mRequireResourceAtMinimumDepthChecks;
 
-	/** Array of points in local space to use for minimum depth trace testing downward */
-	UPROPERTY()
-	TArray<FVector> mMinimumDepthPoints;
+	/** Origin Offset when performing minimum depth traces. Assigned from the buildable */
+	FVector mDepthTraceOriginOffset;
+
 };

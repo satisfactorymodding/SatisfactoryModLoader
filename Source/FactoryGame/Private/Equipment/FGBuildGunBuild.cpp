@@ -18,6 +18,9 @@ void UFGBuildGunStateBuild::ScrollUp_Implementation(){ }
 void UFGBuildGunStateBuild::ChangeScrollMode_Implementation(){ }
 void UFGBuildGunStateBuild::ChangeNoSnapMode_Implementation(){ }
 void UFGBuildGunStateBuild::ChangeGuideLinesSnapMode_Implementation( bool enabled){ }
+void UFGBuildGunStateBuild::BuildSampleRelease_Implementation(){ }
+bool UFGBuildGunStateBuild::IsValidBuildingSample(  AFGBuildable* buildable) const{ return bool(); }
+void UFGBuildGunStateBuild::OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe){ }
 void UFGBuildGunStateBuild::SetActiveRecipe( TSubclassOf<  UFGRecipe > recipe){ }
 TSubclassOf< class UFGItemDescriptor > UFGBuildGunStateBuild::GetDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 TArray< FItemAmount > UFGBuildGunStateBuild::GetHologramCost() const{ return TArray<FItemAmount>(); }

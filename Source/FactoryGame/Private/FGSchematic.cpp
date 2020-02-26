@@ -22,7 +22,7 @@ void UFGSchematic::GetSubCategories( TSubclassOf< UFGSchematic > inClass, UPARAM
 TArray< FItemAmount > UFGSchematic::GetCost( TSubclassOf< UFGSchematic > inClass){ return TArray<FItemAmount>(); }
 TArray< UFGUnlock* > UFGSchematic::GetUnlocks( TSubclassOf< UFGSchematic > inClass){ return TArray<UFGUnlock*>(); }
 int32 UFGSchematic::GetTechTier( TSubclassOf< UFGSchematic > inClass){ return int32(); }
-float UFGSchematic::GetShipTravelTimeAfterPurchase( TSubclassOf< UFGSchematic > inClass){ return float(); }
+float UFGSchematic::GetTimeToComplete( TSubclassOf< UFGSchematic > inClass){ return float(); }
 FSlateBrush UFGSchematic::GetItemIcon( TSubclassOf< UFGSchematic > inClass){ return FSlateBrush(); }
 TSubclassOf< UFGSchematic > UFGSchematic::GetDependentOnSchematic( TSubclassOf< UFGSchematic > inClass){ return TSubclassOf<UFGSchematic>(); }
 TArray< TSubclassOf< UFGSchematic > > UFGSchematic::GetAdditionalSchematicDependencies( TSubclassOf< UFGSchematic > inClass){ return TArray<TSubclassOf<UFGSchematic> >(); }

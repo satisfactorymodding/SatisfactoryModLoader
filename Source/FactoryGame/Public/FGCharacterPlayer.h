@@ -432,6 +432,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
 	TSubclassOf< class UCameraShake > GetDesiredWalkHeadBobShake();
 
+	/**Gets a precasted movement component. We should be able to optimzie this by ensuring that this component is the right type when assigning it and then do a free cast here ans have it faster. So making this way of fetching it now. Even though it's not really faster atm, it can be optimized later.*/
+	class UFGCharacterMovementComponent* GetFGMovementComponent();
+
 	/** Setter for mWantsSprintBobbing */
 	UFUNCTION( BlueprintCallable, Category = "Movement" ) 
 	void SetWantSprintBobbing( bool wantBobbing );

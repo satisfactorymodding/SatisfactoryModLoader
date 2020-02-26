@@ -12,15 +12,16 @@ void AFGBuildableTradingPost::StopIsLookedAtForDismantle_Implementation(  AFGCha
 void AFGBuildableTradingPost::OnTradingPostUpgraded_Implementation( int32 level, bool suppressBuildEffects ){ }
 void AFGBuildableTradingPost::UpdateGeneratorVisibility(){ }
 void AFGBuildableTradingPost::UpdateStorageVisibility(){ }
-void AFGBuildableTradingPost::UpdateMAMVisibility(){ }
 int32 AFGBuildableTradingPost::GetTradingPostLevel() const{ return int32(); }
 void AFGBuildableTradingPost::PlayBuildEffects( AActor* inInstigator){ }
 void AFGBuildableTradingPost::ExecutePlayBuildEffects(){ }
 void AFGBuildableTradingPost::PlayBuildEffectsOnAllClients( AActor* instigator ){ }
 bool AFGBuildableTradingPost::AreChildBuildingsLoaded(){ return bool(); }
+void AFGBuildableTradingPost::ValidateSubBuildings(){ }
+TArray<AActor*> AFGBuildableTradingPost::GetAllActiveSubBuildings(){ return TArray<AActor*>(); }
 void AFGBuildableTradingPost::OnBuildEffectFinished(){ }
 void AFGBuildableTradingPost::TogglePendingDismantleMaterial( bool enabled){ }
+void AFGBuildableTradingPost::OnRep_HAXX_SubbuildingReplicated(){ }
 void AFGBuildableTradingPost::AdjustPlayerSpawnsToGround(){ }
 AFGSchematicManager* AFGBuildableTradingPost::GetSchematicManager(){ return nullptr; }
-TArray<AActor*> AFGBuildableTradingPost::GetAllActiveSubBuildings(){ return TArray<AActor*>(); }
 void AFGBuildableTradingPost::OnRep_NeedPlayingBuildEffect(){ }

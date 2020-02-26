@@ -186,6 +186,9 @@ public:
 	*/
 	void RemoveAndSplitConveyorBucket( AFGBuildableConveyorBase* conveyorToRemove );
 
+	/** Returns true if this subsystem has been created on a server instance */
+	bool IsServerSubSystem() const;
+
 	/** Get all buildables of the supplied type. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory" )
 	void GetTypedBuildable( TSubclassOf< class AFGBuildable > inClass, TArray< class AFGBuildable* >& out_buildables ) const;
@@ -288,8 +291,6 @@ private:
 
 	/* Tick all factory buildings, conveyors and conveyor attachments */
 	void TickFactoryActors( float dt );
-
-	bool IsServerSubSystem() const;
 
 public:
 	/** Distance used when calculating if a location is near a base */

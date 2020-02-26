@@ -7,6 +7,7 @@ void AFGBuildableResourceExtractor::PreReplication( IRepChangedPropertyTracker& 
 AFGBuildableResourceExtractor::AFGBuildableResourceExtractor(){ }
 void AFGBuildableResourceExtractor::BeginPlay(){ }
 void AFGBuildableResourceExtractor::Destroyed(){ }
+bool AFGBuildableResourceExtractor::DisconnectExtractableResource(){ return bool(); }
 bool AFGBuildableResourceExtractor::CanProduce_Implementation() const{ return bool(); }
 float AFGBuildableResourceExtractor::GetProductionCycleTime() const{ return float(); }
 float AFGBuildableResourceExtractor::GetProductionProgress() const{ return float(); }
