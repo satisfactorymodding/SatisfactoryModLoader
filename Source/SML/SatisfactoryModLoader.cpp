@@ -103,7 +103,7 @@ namespace SML {
 	//version of the SML mod loader, as specified in the SML.h
 	static SML::Versioning::FVersion* modLoaderVersion = new SML::Versioning::FVersion(modLoaderVersionString);
 
-	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.3");
+	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.4");
 
 	//target (minimum) version of the bootstrapper we are capable running on
 	static SML::Versioning::FVersion* targetBootstrapperVersion = new SML::Versioning::FVersion(targetBootstrapperVersionString);
@@ -188,7 +188,7 @@ namespace SML {
 		modHandlerPtr->attachLoadingHooks();
 		initializePlayerComponent();
 		registerVersionCheckHooks();
-		//registerMainMenuHooks();
+		registerMainMenuHooks();
 		if (getSMLConfig().enableSMLChatCommands) {
 			SML::Logging::info(TEXT("Registering SML chat commands"));
 			SML::ChatCommand::registerSMLChatCommands();

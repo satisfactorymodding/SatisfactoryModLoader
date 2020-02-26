@@ -61,6 +61,9 @@ namespace SML {
 			std::vector<std::wstring> loadedModsModIDs;
 			std::vector<AActor*> modInitializerActorList;
 		public:
+			//we shouldn't be able to copy FModHandler, or move it
+			FModHandler(FModHandler&) = delete; //delete copy constructor
+			FModHandler(FModHandler&&) = delete; //delete move constructor
 			FModHandler();
 			
 			bool isModLoaded(const std::wstring& modId) const;

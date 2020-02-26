@@ -30,7 +30,7 @@ public:
 
 FString CreateModListString() {
 	//terribly inefficient due to multiple string copying and conversion, oh well.
-	SML::Mod::FModHandler modHandler = SML::getModHandler();
+	SML::Mod::FModHandler& modHandler = SML::getModHandler();
 	nlohmann::json resultJson;
 	for (const std::wstring& modid : modHandler.getLoadedMods()) {
 		const SML::Mod::FModInfo& info = modHandler.getLoadedMod(modid).modInfo;
@@ -41,7 +41,7 @@ FString CreateModListString() {
 
 void CheckModListString(const FString& modListString, FString& failureReason) {
 	nlohmann::json resultJson = nlohmann::json::parse(convertStr(*modListString));
-	SML::Mod::FModHandler modHandler = SML::getModHandler();
+	SML::Mod::FModHandler& modHandler = SML::getModHandler();
 	TArray<FString> missingMods;
 	for (const std::wstring& loadedModId : modHandler.getLoadedMods()) {
 		std::string modIdStr = convertStr(loadedModId.c_str());

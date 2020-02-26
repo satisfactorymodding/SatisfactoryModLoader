@@ -42,7 +42,7 @@ FileHash hashFileContents(const path& path);
 
 path generateTempFilePath(const FileHash& fileHash, const char* extension);
 
-bool extractArchiveFile(path& outFilePath, ttvfs::File* obj);
+bool extractArchiveFile(const path& outFilePath, ttvfs::File* obj);
 
 nlohmann::json readArchiveJson(ttvfs::File* obj);
 
