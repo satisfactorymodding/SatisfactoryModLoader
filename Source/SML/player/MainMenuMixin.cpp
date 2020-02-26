@@ -1,7 +1,7 @@
+#include "MainMenuMixin.h"
 #include "mod/hooking.h"
 #include "FGGameInstance.h"
 #include "util/Logging.h"
-#include "MainMenuMixin.h"
 #include "Slate.h"
 #include "mod/ModHandler.h"
 #include "SatisfactoryModLoader.h"
