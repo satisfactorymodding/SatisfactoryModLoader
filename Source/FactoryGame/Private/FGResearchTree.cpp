@@ -17,7 +17,4 @@ FText UFGResearchTree::GetPostUnlockDescription( TSubclassOf< UFGResearchTree > 
 FSlateBrush UFGResearchTree::GetResearchTreeIcon( TSubclassOf< UFGResearchTree > inClass){ return FSlateBrush(); }
 void UFGResearchTree::SetNodes( TSubclassOf <UFGResearchTree> inClass, TArray<  UFGResearchTreeNode* > nodes){ }
 TArray< class UFGResearchTreeNode* > UFGResearchTree::GetNodes( TSubclassOf <UFGResearchTree> inClass){ return TArray<class UFGResearchTreeNode*>(); }
-bool UFGResearchTree::IsUnlocked( UObject* worldContext, TSubclassOf <UFGResearchTree> inClass){ return bool(); }
-bool UFGResearchTree::IsVisible( UObject* worldContext, TSubclassOf <UFGResearchTree> inClass){ return bool(); }
 TArray<class UFGAvailabilityDependency *> UFGResearchTree::GetUnlockDependencies( TSubclassOf <UFGResearchTree> inClass){ return TArray<class UFGAvailabilityDependency*>(); }
-TArray<class UFGAvailabilityDependency *> UFGResearchTree::GetVisibilityDependencies( TSubclassOf <UFGResearchTree> inClass){ return TArray<class UFGAvailabilityDependency*>(); }

@@ -11,6 +11,8 @@ int32 AFGBuildableWire::GetDismantleRefundReturnsMultiplier() const{ return int3
 UFGCircuitConnectionComponent* AFGBuildableWire::GetOppositeConnection( const  UFGCircuitConnectionComponent* connection) const{ return nullptr; }
 void AFGBuildableWire::Disconnect(){ }
 void AFGBuildableWire::DisplayDebug(  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
+void AFGBuildableWire::UpdateWireMesh(){ }
 void AFGBuildableWire::Connect(  UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ }
 bool AFGBuildableWire::IsConnected() const{ return bool(); }
+void AFGBuildableWire::OnRep_Locations(){ }
 FName AFGBuildableWire::mWireMeshTag = FName();

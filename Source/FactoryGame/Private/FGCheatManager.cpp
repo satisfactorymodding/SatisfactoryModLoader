@@ -31,6 +31,7 @@ void UFGCheatManager::GiveAvailableSchematics(){ }
 void UFGCheatManager::GiveCheatSchematics(){ }
 void UFGCheatManager::GiveStorySchematics(){ }
 void UFGCheatManager::GiveStartingResearch(){ }
+void UFGCheatManager::GiveAllResearchTrees(){ }
 void UFGCheatManager::RebuildPowerCircuits(){ }
 void UFGCheatManager::EnableBuildableTick( bool enable){ }
 bool UFGCheatManager::EnableBuildableTick_Get(){ return bool(); }

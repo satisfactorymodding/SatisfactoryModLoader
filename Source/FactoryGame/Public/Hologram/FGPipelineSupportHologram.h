@@ -86,9 +86,9 @@ private:
 	bool mIsAdjustingLength;
 	bool mCanAdjustLength;
 
-	/** Can this support be stacked. */
-	bool mCanStack;
-	float mStackLength;
+	/** Can this pole be stacked. */
+	bool mCanStack = false;
+	float mStackHeight = 200;
 
 	/** Used to determine whether the relative offset needs to be updated for the support mesh */
 	bool mSupportLengthMarkedDirty : 1;

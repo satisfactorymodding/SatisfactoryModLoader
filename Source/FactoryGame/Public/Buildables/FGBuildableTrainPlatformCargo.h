@@ -1,6 +1,7 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "UObject/CoreNet.h"
 #include "SubclassOf.h"
 #include "Engine/StaticMesh.h"
 #include "Array.h"
@@ -33,6 +34,7 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 	// End AActor interface
@@ -82,6 +84,14 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Railroad|CargoPlatform" )
 	void OnBeginUnloadSequence();
 	// ***** End of Progress Events *****//
+
+	/** Get the smoothed Outflow rate in m^3/s. Only valid for Liquid Freight Platforms*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
+	float GetOutflowRate() const { return mReplicatedOutflowRate; }
+
+	/** Get the smoothed Inflow rate in m^3/s. Only valid for Liquid Freight Platforms*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
+	float GetInflowRate() const { return mReplicatedInflowRate; }
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_CargoPlatform::StaticClass(); };
@@ -261,4 +271,34 @@ private:
 
 	/** Set during a power outtage to store how much time remains on the toggle platform and freight cargo meshes */
 	float mCachedSwapCargoVisibilityTimeRemaining;
+
+	//******* Begin Pipe Flow params *******/
+
+	/** Last content value when updating flow rate */
+	int32 mFluidPushedLastProducingTick;
+
+	/** Last content value when updating flow rate */
+	int32 mFluidPulledLastProducingTick;
+
+	/** Current smoothed outflow rate */
+	float mSmoothedOutflowRate;
+
+	/** Current smoothed outflow rate */
+	float mSmoothedInflowRate;
+
+	/** How frequently to update flow rate ( both clients and server will use the replicated value in the UI )*/
+	float mUpdateReplicatedFlowFrequency;
+
+	/** How long since the last replicated flow assignment */
+	float mTimeSinceLastFlowUpdate;
+
+	/** Replicated smoothed outflow rate */
+	UPROPERTY( Replicated )
+	float mReplicatedOutflowRate;
+
+	/** Replicated smoothed inflow rate */
+	UPROPERTY( Replicated )
+	float mReplicatedInflowRate;
+
+	/******** End Pipe Flow Output Params ********/
 };

@@ -29,6 +29,10 @@ public:
 	virtual bool CanDismantle_Implementation() const override;
 	// End IFGDismantleInterface
 
+	//~ Begin AFGBuildable interface
+	virtual bool CanBeSampled_Implementation() const{ return false; }
+	//~ End AFGBuildable interface
+
 	// Begin IFGUseableInterface
 	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;

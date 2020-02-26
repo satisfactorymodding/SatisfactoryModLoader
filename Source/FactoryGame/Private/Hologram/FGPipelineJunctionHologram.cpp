@@ -3,5 +3,4 @@
 #include "FGPipelineJunctionHologram.h"
 
 AFGPipelineJunctionHologram::AFGPipelineJunctionHologram(){ }
-void AFGPipelineJunctionHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
 int32 AFGPipelineJunctionHologram::GetRotationStep() const{ return int32(); }

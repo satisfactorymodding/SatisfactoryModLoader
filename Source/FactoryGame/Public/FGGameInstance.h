@@ -21,7 +21,8 @@
 #include "FGGameInstance.generated.h"
 
 // MODDING EDIT: dummy classes from the Epic Online missing headers
-class EOS_ProductUserId {};
+class FACTORYGAME_API EOS_ProductUserId
+{};
 
 UENUM(BlueprintType)
 enum class EJoinSessionState : uint8

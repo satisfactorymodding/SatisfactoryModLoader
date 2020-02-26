@@ -76,6 +76,7 @@ public:
 	 * @param out_wires Array to append all the wires.
 	 */
 	FORCEINLINE void GetWires( TArray< class AFGBuildableWire* >& out_wires ) const { out_wires.Append( mWires ); }
+	FORCEINLINE void GetWires( TInlineComponentArray< class AFGBuildableWire* >& out_wires ) const { out_wires.Append( mWires ); }
 
 	/**
 	 * Add a connection to another component.

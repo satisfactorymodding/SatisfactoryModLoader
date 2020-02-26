@@ -34,6 +34,7 @@ void AFGPipeNetwork::DisplayDebugDetails(  UCanvas* canvas, const  FDebugDisplay
 void AFGPipeNetwork::RebuildUpdateList(){ }
 void AFGPipeNetwork::UpdateFluidDescriptor( TSubclassOf< UFGItemDescriptor > descriptor){ }
 int32 AFGPipeNetwork::CreatePressureGroup(){ return int32(); }
+int32 AFGPipeNetwork::FindTopMostPressureGroupIndex( int32 index){ return int32(); }
 void AFGPipeNetwork::UpdatePressureGroups( PipeJunction& junction, float dt){ }
 void AFGPipeNetwork::UpdatePressure( PipeJunction& junction, float dt){ }
 void AFGPipeNetwork::PostUpdatePressureGroups( PipeJunction& junction){ }

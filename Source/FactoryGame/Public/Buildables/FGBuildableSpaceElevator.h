@@ -32,6 +32,10 @@ public:
 	virtual void Dismantle_Implementation() override;
 	//~ End IFGDismantleInferface
 
+	//~ Begin AFGBuildable interface
+	virtual bool CanBeSampled_Implementation() const{ return false; }
+	//~ End AFGBuildable interface
+
 	// Begin AFGBuildableFactory interface
 	virtual void Factory_CollectInput_Implementation() override;
 	virtual void Factory_Tick( float dt ) override;

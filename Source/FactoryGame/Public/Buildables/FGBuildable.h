@@ -206,6 +206,10 @@ public:
 	void PlayDismantleEffects();
 	virtual void OnDismantleEffectFinished();
 
+	/** Returns true if this buildable can be sampled */
+	UFUNCTION( BlueprintNativeEvent )
+	bool CanBeSampled() const;
+
 	/** Returns whether or not the build effect is currently running */
 	bool IsPlayingBuildEffect() const { return mBuildEffectIsPlaying; }
 
@@ -247,6 +251,22 @@ public:
 		return mAllowCleranceSeparationEvenIfStackedOn;
 	}
 
+	//[DavalliusA:Mon/17-02-2020] moved these to not be private as I don't understand why they should be
+	/** Get the number of power connections */
+	UFUNCTION( BlueprintCallable, Category = "Buildable|Connections" )
+	uint8 GetNumPowerConnections() const;
+
+		/** Get the number of factory connections */
+	uint8 GetNumFactoryConnections() const;
+
+	/** Get the number of factory output connections */
+	uint8 GetNumFactoryOuputConnections() const;
+
+	/** Should this buildable be relevant when considering if a location is near a base/factory area */
+	UFUNCTION( BlueprintNativeEvent, Category = "Buildable" )
+	bool ShouldBeConsideredForBase();
+
+	virtual bool ShouldBeConsideredForBase_Implementation();
 #if WITH_EDITOR
 	/** Sets the display name for this buildable. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Buildable" )
@@ -352,7 +372,6 @@ protected:
 	/** Adds an entry for a given component mapping to its respective Material Instance Manager. Returns false if it could not add an entry (eg. It already exists or failed to create) */
 	bool AddMaterialInstanceManagerForMaterialName( const FString& lookupName, class UFGFactoryMaterialInstanceManager* materialInstanceManager );
 
-
 private:
 	/** Create a stat for the buildable */
 	void CreateFactoryStatID() const;
@@ -374,15 +393,6 @@ private:
 	UFUNCTION()
 	void OnRep_DidFirstTimeUse();
 
-	/** Get the number of power connections */
-	UFUNCTION(BlueprintCallable, Category = "Buildable|Connections")
-	uint8 GetNumPowerConnections() const;
-
-	/** Get the number of factory connections */
-	uint8 GetNumFactoryConnections() const;
-
-	/** Get the number of factory output connections */
-	uint8 GetNumFactoryOuputConnections() const;
 
 public:
 	//@todoGC Move to the descriptor maybe?

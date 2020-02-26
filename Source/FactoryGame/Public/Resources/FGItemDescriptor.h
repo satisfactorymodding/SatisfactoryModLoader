@@ -265,10 +265,6 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( ClampMin=0, UIMin=0, UIMax=1 ) )
 	float mRadioactiveDecay;
 
-	/** How many points you get from this item when consuming it in the resource sink */
-	UPROPERTY( EditDefaultsOnly, Category = "Item" )
-	int32 mResourceSinkPoints;
-
 	/** The state of this resource (cannot change during it's lifetime). */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	EResourceForm mForm;

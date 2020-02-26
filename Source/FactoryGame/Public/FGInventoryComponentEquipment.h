@@ -46,6 +46,9 @@ public:
 
 	/** Loop de loop */
 	void CycleEquipment( int32 dir );
+
+	/** Checks whether this contains any items of item type and whether they have room for inventory item */
+	bool ContainsItemTypeAndHasEnoughSpaceForItem( FInventoryItem item );
 protected:
 	/** Decide on what properties to replicate */
 	void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;

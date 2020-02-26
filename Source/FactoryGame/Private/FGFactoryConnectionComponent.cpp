@@ -34,3 +34,11 @@ UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingCon
 		float radius,
 		EFactoryConnectionConnector connector,
 		EFactoryConnectionDirection direction, UFGFactoryConnectionComponent* lowPrioConnection ){ return nullptr; }
+int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(
+		TArray<UFGFactoryConnectionComponent*> out_Connection,
+		UWorld* world,
+		const FVector& location,
+		float radius,
+		EFactoryConnectionConnector connector,
+		EFactoryConnectionDirection direction){ return int32(); }
+UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::CheckIfSnapOnlyIsBlockedbyOtherConnection( UFGFactoryConnectionComponent* connectionToCheck, TArray<FOverlapResult> potentialBlockers){ return nullptr; }

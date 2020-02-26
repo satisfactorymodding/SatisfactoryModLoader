@@ -24,6 +24,7 @@ public:
 	virtual void PostLoad() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	virtual void Tick( float DeltaSeconds ) override;
 	// End AActor interface
 
 	//Begin IFGSignificanceInterface
@@ -63,6 +64,9 @@ public:
 	/** @return The inventory containing possible loot */
 	UFUNCTION( BlueprintPure, Category = "Drop Pod" )
 	FORCEINLINE class UFGInventoryComponent* GetLootInventory() const { return mInventory; }
+
+	UFUNCTION( BlueprintPure, Category = "Drop Pod")
+	FORCEINLINE bool GetHasPower() const { return mHasPower; }
 	
 protected:
 	/** Open the drop pod. */
@@ -81,6 +85,14 @@ protected:
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Drop Pod")
 	void OnRepair(class AFGCharacterPlayer* InteractingCharacter);
 
+	/** Necessary to add for optimization reasons. We don't want to tick drop pods that don't require power but this is only set in blueprint. */
+	UFUNCTION(BlueprintImplementableEvent, Category = "Drop Pod")
+	bool RequiresPowerToOpen() const;
+
+	//[Snutt:Thu/20-02-2020] I added this because setting up a new connection component caused issues when loading
+	/** Gets the power connection that's been assigned to the drop pod via blueprint */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Drop Pod" )
+	class UFGPowerConnectionComponent* GetPowerConnection();
 
 	/** Roll a package to drop and adds the items to the loot inventory. Call this on server only. */
 	UFUNCTION( BlueprintCallable, Category = "Drop Pod" )
@@ -93,9 +105,19 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Drop Pod" )
 	int32 mAmountOfInventorySlots;
 
+	
+protected:
+	UPROPERTY( Replicated, BlueprintReadOnly )
+	class UFGPowerInfoComponent* mPowerInfo;
+
+	UPROPERTY( Replicated, BlueprintReadOnly )
+	bool mHasPower;
+
 private:
 	UFUNCTION()
 	void OnRep_HasBeenOpened();
+
+	void OnPowerConnectionChanged( class UFGCircuitConnectionComponent* connection );
 
 private:
 	/** True when this has been opened */

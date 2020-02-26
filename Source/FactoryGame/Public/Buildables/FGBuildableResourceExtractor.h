@@ -32,7 +32,10 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
-	// End AActor interface 
+
+	bool DisconnectExtractableResource();
+
+		// End AActor interface 
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
@@ -96,6 +99,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Pipes" )
 	float GetMaxFlowRate() const;
 
+	 //type names are used to match types for upgrades and such
+	FName GetExtractorTypeName()
+	{
+		return mExtractorTypeName; 
+	}
+
 protected:
 	// Begin Factory_ Interface
 	virtual void Factory_StartProducing() override;
@@ -122,17 +131,21 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	TArray< EResourceForm > mAllowedResourceForms;
 
-	/** (For Hologram) Minimum depth to collision this extractor requires to be placed ( tex. Water Pumps need to be at least X distance above floor ) */
-	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
-	float mMinimumDepthForPlacement;
-
-	/** (For Hologram) Require resource at minimum depth checks? 
-	 * If true, this will ensure placement is only allowed where a minimum depth trace collides 
-	 * with the resource class this extractor is snapped to. Will only execute if mMinimumDepthForPlacement is > 0.
+	/**
+	 * (For Hologram) Require resource at minimum depth checks? 
+	 * If true, this will ensure placement is only allowed where a minimum depth trace collides with the resource class this extractor is snapped to
 	 */
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	bool mRequireResourceAtMinimumDepthChecks;
 	
+	/** (For Hologram) Minimum depth to collision this extractor requires to be placed ( tex. Water Pumps need to be at least X distance above floor ) */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction", meta=( EditCondition="mRequireResourceAtMinimumDepthChecks" ) )
+	float mMinimumDepthForPlacement;
+
+	/** Offset from hologram origin to begin and end traces When performing minimum depth checks ( if enabled for this buildable ) during placement */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction", meta=( EditCondition="mRequireResourceAtMinimumDepthChecks" ) )
+	FVector mDepthTraceOriginOffset;
+
 	/** Should this extractor only allow extracting from specified resources? 
 	* @note - mAllowedResourceForms will still affect placement validation.*/
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
@@ -148,6 +161,10 @@ protected:
 	/** Class disqualifier to use when this resource extractor is not placed on a matching resource node ( used in the hologram ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	TSubclassOf< class UFGConstructDisqualifier > mMustPlaceOnResourceDisqualifier;
+
+	/** name used to mathc types of extractros for compatiblility when upgrading */
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
+	FName mExtractorTypeName = "";
 	
 	/** Cached property indicating that this Extractor is extracting a non-solid resource. This is used as a replication condition so FlowRate is not included for all extractors */
 	bool mIsLiquidOrGasType;

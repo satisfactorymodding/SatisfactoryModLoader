@@ -96,6 +96,9 @@ public:
 
 	UFUNCTION( exec, category = "Research" )
 	void GiveStartingResearch();
+
+	UFUNCTION( exec, category = "Research" )
+	void GiveAllResearchTrees();
 	
 	UFUNCTION( exec, category = "Factory|Uncommon" )
 	virtual void RebuildPowerCircuits();

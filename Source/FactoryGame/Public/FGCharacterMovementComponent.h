@@ -19,6 +19,7 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	AActor* mTravelingPipeHyper;
 	AActor* mTravelingPipeHyperLast;
 	float mTravelingPipeHyperLastLength; //used for faster position calc if needed. If negative, it means we moved ot through it's start
+	float mLastTransitTime = 0;
 
 	/**The spline progress in the pipe we are currently in*/
 	float mPipeProgressReal;

@@ -83,6 +83,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment", meta=( EditCondition = mUseProducerDirectionArrow ) )
 	FVector mProducerArrowRelativeLocation;
 
+	/** When snapping to a Wall apply this offset on the wall. */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
+	FVector2D mWallSnapOffset;
+
 	/** Directional indicator. Added to visualize "Producer" type pipe connection components direction */
 	UPROPERTY()
 	TArray< class UStaticMeshComponent* > mProducerComponentArrows;
@@ -99,7 +103,7 @@ protected:
 	int32 mSnapConnectionIndex;
 
 	/** The pipeline connection Component we have snapped to. Can be NULL
-	 *  Used when attempting to place the attachment at the end of a pipe that is not connect
+	 *  Used when attempting to place the attachment at the end of a pipe that is not connected
 	 */
 	UPROPERTY()
 	class UFGPipeConnectionComponent* mSnappedConnectionComponent;

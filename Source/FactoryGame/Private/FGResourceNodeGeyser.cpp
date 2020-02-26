@@ -3,3 +3,4 @@
 #include "FGResourceNodeGeyser.h"
 
 AFGResourceNodeGeyser::AFGResourceNodeGeyser(){ }
+FText AFGResourceNodeGeyser::GetLookAtDecription_Implementation(  AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }

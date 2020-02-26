@@ -19,6 +19,10 @@ public:
 	/** Get the trading post */
 	UFUNCTION( BlueprintPure, Category = "Hub Terminal" )
 	FORCEINLINE class AFGBuildableTradingPost* GetTradingPost() { return mTradingPost; }
+
+	//~ Begin AFGBuildable interface
+	virtual bool CanBeSampled_Implementation() const{ return false; }
+	//~ End AFGBuildable interface
 public:
 	UPROPERTY()
 	class AFGBuildableTradingPost* mTradingPost;

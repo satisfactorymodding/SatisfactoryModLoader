@@ -4,6 +4,7 @@
 
 AFGBuildableTrainPlatformCargo::AFGBuildableTrainPlatformCargo(){ }
 void AFGBuildableTrainPlatformCargo::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableTrainPlatformCargo::PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableTrainPlatformCargo::BeginPlay(){ }
 void AFGBuildableTrainPlatformCargo::Destroyed(){ }
 bool AFGBuildableTrainPlatformCargo::Dock(  AFGRailroadVehicle* actor){ return bool(); }

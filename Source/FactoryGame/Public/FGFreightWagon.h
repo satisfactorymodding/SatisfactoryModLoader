@@ -50,7 +50,11 @@ public:
 
 	/** Get the inventory where we store the cargo. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|FreightCar" )
-	float GetFreightInventoryFilledPercent() const { return 0.23f; } //@todotrains return a correct value
+	float GetFreightInventoryFilledPercent() const { return 0.23f; } //@todotrains return a correct value - Update on todo - This really doesn't seem used. Remove this.
+
+	/** Get the override stack size scaled for fluid types. Specified in class / BP defaults */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Inventory" )
+	FORCEINLINE int32 GetScaledFluidStackSize() const { return mCachedFluidStackSize * mFluidStackSizeMultiplier; }
 
 	/** Sets the visibility on the cargo mesh component. Toggled during load / unload sequences. As well when there is no inventory present or some is added */
 	void SetCargoMeshVisibility( bool isVisible );
@@ -62,6 +66,7 @@ public:
 	void UpdateFreightCargoType();
 
 	/** Gets the types of Freight Cargo this freight is carrying*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Inventory")
 	FORCEINLINE EFreightCargoType GetFreightCargoType() const { return mFreightCargoType; }
 
 	/** Checks if a freight is valid to dock with a certain platform and its type */
@@ -133,6 +138,17 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
 	int32 mInventorySize;
 
+	/** Item stack size Enum to use as base for how much fluid a Liquid / Gas Item descriptor can be stored on an index in an inventory */
+	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
+	EStackSize mFluidStackSizeDefault;
+
+	/** The size of the inventory for this wagon. */
+	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
+	int32 mFluidStackSizeMultiplier;
+
+	/** Cached value of Fluid Resource Stack Size ( set in begin play from the default stack enum ) */
+	int32 mCachedFluidStackSize;
+
 	UPROPERTY()
 	class UStaticMeshComponent* mCargoMeshComponent;
 
@@ -141,4 +157,5 @@ private:
 
 	UPROPERTY( VisibleAnywhere )
 	class UBoxComponent* mCargoOverlapCollision;
+
 };

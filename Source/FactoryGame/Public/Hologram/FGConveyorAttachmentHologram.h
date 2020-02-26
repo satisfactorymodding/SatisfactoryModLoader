@@ -1,6 +1,7 @@
 // Copyright 2017 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "Array.h"
 #include "UObject/Class.h"
 
 #include "CoreMinimal.h"
@@ -20,7 +21,11 @@ public:
 	// Begin AFGHologram Interface
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	// End AFGHologram Interface
+	virtual void BeginPlay() override;
+
+	bool IsValidHitResult( const FHitResult& hitResult ) const override;
+
+		// End AFGHologram Interface
 
 protected:
 	// Begin AFGHologram interface
@@ -33,6 +38,7 @@ protected:
 	// End AFGBuildableHologram Interface
 
 	virtual FVector GetGuideLinesBaseLocation() override;
+	void SnapToConnection( class UFGFactoryConnectionComponent* connectiontoSnapTo, class UFGFactoryConnectionComponent* myConnectionToSnapWith, FVector locationToDetermineSideIfAplicable );
 
 public:
 	/** Name of the pass through input connection. */
@@ -40,6 +46,8 @@ public:
 
 	/** Name of the pass through output connection. */
 	static FName mOutputConnection1;
+
+
 
 private:
 	/** Used to limit the placement in turns. What's the maximum offset to check from center to detect the curve. */
@@ -52,6 +60,13 @@ private:
 	/** The conveyor we snapped to. */
 	UPROPERTY()
 	class AFGBuildableConveyorBelt* mSnappedConveyor;
+
+	/** The connection we snapped to. */
+	UPROPERTY()
+	class UFGFactoryConnectionComponent* mSnappedConection = nullptr;
+
+	TArray<class UFGFactoryConnectionComponent* > mConnections;
+	int8 mSnappingConnectionIndex = -1;
 
 	/** The offset we snapped on the conveyor. */
 	float mSnappedConveyorOffset;

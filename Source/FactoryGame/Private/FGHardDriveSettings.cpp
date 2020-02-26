@@ -2,10 +2,7 @@
 
 #include "FGHardDriveSettings.h"
 
-TSubclassOf<class UFGSchematic> FHardDriveSchematicDrop::GetSchematic() const{ return TSubclassOf<class UFGSchematic>(); }
-const TArray<TSubclassOf<UFGSchematic>> UFGHardDriveSettings::GetResearchRewardPackages(  UWorld* world){ return TArray<TSubclassOf<UFGSchematic>>(); }
-TSubclassOf<UFGSchematic> UFGHardDriveSettings::GetHardDriveResearchSchematic(){ return TSubclassOf<UFGSchematic>(); }
-int32 UFGHardDriveSettings::GetTotalSchematicDropProbability( const TArray<FHardDriveSchematicDrop>& schematicDrops) const{ return int32(); }
-FResearchRecipeReward UFGHardDriveSettings::ResearchRecipeRewardFactory( TSubclassOf<class UFGSchematic> schematic, TSubclassOf<class UFGResearchRecipe> calledByResearch) const{ return FResearchRecipeReward(); }
-void UFGHardDriveSettings::GetValidSchematicRewardDrops(  AFGSchematicManager* schematicManager, TArray<FHardDriveSchematicDrop>& out_validSchematics) const{ }
-TArray<TSubclassOf<class UFGSchematic>> UFGHardDriveSettings::GetFinalSchematicRewards( const TArray<FHardDriveSchematicDrop>& allValidSchematicDrops) const{ return TArray<TSubclassOf<class UFGSchematic>>(); }
+const TArray<TSubclassOf<class UFGSchematic>> UFGHardDriveSettings::GetResearchRewardPackages(  UWorld* world){ return TArray<TSubclassOf<class UFGSchematic>>(); }
+TSubclassOf<class UFGSchematic> UFGHardDriveSettings::GetHardDriveResearchSchematic(){ return TSubclassOf<class UFGSchematic>(); }
+void UFGHardDriveSettings::GetValidSchematicRewardDrops(  AFGSchematicManager* schematicManager, TArray<TSubclassOf<class UFGSchematic>>& out_validSchematics) const{ }
+TArray<TSubclassOf<class UFGSchematic>> UFGHardDriveSettings::GetFinalSchematicRewards( const TArray<TSubclassOf<class UFGSchematic>>& allValidSchematicDrops) const{ return TArray<TSubclassOf<class UFGSchematic>>(); }

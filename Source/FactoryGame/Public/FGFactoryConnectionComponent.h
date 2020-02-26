@@ -210,6 +210,18 @@ public:
 		EFactoryConnectionConnector connector,
 		EFactoryConnectionDirection direction, UFGFactoryConnectionComponent* lowPrioConnection = nullptr );
 
+	/** Fin all overlapping connections and returns them in a list. Filters to not include blocks connections or other incompatible connections*/
+	static int32 FindAllOverlappingConnections(
+		TArray<UFGFactoryConnectionComponent*> out_Connection,
+		UWorld* world,
+		const FVector& location,
+		float radius,
+		EFactoryConnectionConnector connector,
+		EFactoryConnectionDirection direction );
+
+	//checks if a connection is blocked by another connection in a list of building overlaps. If not blocked it returns null, if blocked it returns the blocking connection. Intended for internal use in finding connections but left exposed for potential general usefulness
+	static UFGFactoryConnectionComponent* CheckIfSnapOnlyIsBlockedbyOtherConnection( UFGFactoryConnectionComponent* connectionToCheck, TArray<FOverlapResult> potentialBlockers );
+
 protected:
 	/** Physical type of connector used for this connection. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )

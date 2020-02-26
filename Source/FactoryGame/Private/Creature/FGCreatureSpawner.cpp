@@ -27,3 +27,4 @@ bool AFGCreatureSpawner::CalculateSpawningLocations(){ return bool(); }
 void AFGCreatureSpawner::AddCreature(  AFGCreature* newCreature){ }
 bool AFGCreatureSpawner::TryFindNonOverlappingLocation( const TArray<FVector2D>& usedSpawnLocations, float spawnRadius, int32 maxRetries, FVector2D& out_location){ return bool(); }
 bool AFGCreatureSpawner::IsLocationNonOverlapping( const FVector2D& location, const TArray< FVector2D >& usedLocations) const{ return bool(); }
+void AFGCreatureSpawner::CleanupCreatureList(){ }

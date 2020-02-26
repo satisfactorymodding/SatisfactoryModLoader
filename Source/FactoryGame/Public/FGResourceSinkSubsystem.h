@@ -35,7 +35,7 @@ public:
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
 	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
 	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override {}
 	virtual bool NeedTransform_Implementation() override { return false; }
 	virtual bool ShouldSave_Implementation() const override { return true; }
@@ -144,10 +144,10 @@ private:
 	int32 mAccumulatedPointsPastInterval;
 
 	/** Thread safe queue where we store the points that have been given by resource sinks during the factory tick */
-	TQueue<int32> mQueuedPoints;
+	TQueue<int32, EQueueMode::Mpsc> mQueuedPoints;
 
 	/** Thread safe queue where we store the failed items that have been tried to be sinked and failed by resource sinks during the factory tick */
-	TQueue<TSubclassOf<UFGItemDescriptor>> mQueuedFailedItems;
+	TQueue<TSubclassOf<UFGItemDescriptor>, EQueueMode::Mpsc> mQueuedFailedItems;
 
 	/** The number of data points for the global resource sink subsystem history */
 	int32 mGlobalHistorySize;

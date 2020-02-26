@@ -30,6 +30,15 @@ struct FACTORYGAME_API FCostIngredientEffectActorInfo
 	FVector TargetLocation;
 };
 
+USTRUCT()
+struct FACTORYGAME_API FCachedMaterialArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray< UMaterialInterface* > MaterialInterfaces;
+};
+
 /**
  * Base class for material based effects on actors.
  */
@@ -133,4 +142,8 @@ protected:
 	/** The cached mids we apply effects to. */
 	UPROPERTY( BlueprintReadOnly )
 	TArray< class UMaterialInstanceDynamic* > mMids;
+
+	/** The cached override materials present before initializing (Takes into account custom override materials on meshes)*/
+	UPROPERTY()
+	TArray< FCachedMaterialArray > mOverrideMaterials;
 };

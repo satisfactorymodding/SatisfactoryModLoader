@@ -7,7 +7,7 @@
 
 #include "CoreMinimal.h"
 #include "FGUnlock.h"
-#include "FGRecipe.h"
+#include "../FGRecipe.h"
 #include "FGUnlockRecipe.generated.h"
 
 /**

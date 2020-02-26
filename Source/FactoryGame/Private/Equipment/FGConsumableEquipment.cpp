@@ -4,7 +4,8 @@
 
 AFGConsumableEquipment::AFGConsumableEquipment(){ }
 bool AFGConsumableEquipment::ShouldSaveState() const{ return bool(); }
-void AFGConsumableEquipment::OnPrimaryFirePressed(){ }
+void AFGConsumableEquipment::OnPrimaryFire(){ }
+void AFGConsumableEquipment::OnConsumePressed(){ }
 void AFGConsumableEquipment::GetConsumeable( TSubclassOf<  UFGConsumableDescriptor >& out_consumeable, int32& out_numConsumeable) const{ }
 void AFGConsumableEquipment::Server_PrimaryFire_Implementation(){ }
 bool AFGConsumableEquipment::Server_PrimaryFire_Validate(){ return bool(); }

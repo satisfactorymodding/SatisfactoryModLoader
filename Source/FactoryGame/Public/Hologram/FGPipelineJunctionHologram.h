@@ -18,10 +18,6 @@ class FACTORYGAME_API AFGPipelineJunctionHologram : public AFGPipelineAttachment
 public:
 	AFGPipelineJunctionHologram();
 
-	// Begin AFGHologram Interface
-	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	// End AFGHologram Interface
-
 protected:
 	// Begin AFGHologram interface
 	virtual int32 GetRotationStep() const override;

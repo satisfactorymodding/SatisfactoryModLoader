@@ -283,6 +283,8 @@ public:
 	  */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
 	void TryStopProductionLoopEffects( bool didStopProducing );
+
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
 protected:
 	/** Called whenever HasPower has changed, exposed here for cleaner/more optimized ways of changing state when the factory has power */
 	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|Factory|Power")

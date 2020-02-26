@@ -18,6 +18,9 @@ class FACTORYGAME_API UFGInventoryComponentBeltSlot : public UFGInventoryCompone
 public:
 	/** Constructor */
 	UFGInventoryComponentBeltSlot();
+
+	bool ContainsStackItemTypeAndHasEnoughRoom( FInventoryStack itemStack );
+
 protected:
 	// Begin UFGInventoryComponent interface
 	virtual void OnItemsAdded( int32 idx, int32 num ) override;

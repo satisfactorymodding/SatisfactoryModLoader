@@ -31,8 +31,11 @@ protected:
 	// End AFGBuildableGeneratorFuel
 	
 	// Begin AFGBuildableGenerator interface
+	virtual bool HasPower() const override;
 	virtual bool CanStartPowerProduction_Implementation() const override;
 	// End AFGBuildableGenerator interface
+
+	bool IsWasteFull() const;
 
 	/** We can only load fuel if waste is not full */
 	virtual bool CanLoadFuel() const override;

@@ -155,6 +155,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Research" )
 	void GetAllResearchTrees( TArray<TSubclassOf<class UFGResearchTree>>& out_ResearchTrees ) const;
 
+	UFUNCTION( BlueprintPure, Category = "Research" )
+	bool IsResesearchTreeUnlocked( TSubclassOf<class UFGResearchTree> researchTree ) const;
+
 	/**
 	* Initiates research if given player inventory has enough items to cover the cost and research are allowed to start
 	* Returns whether research was successfully started.
@@ -268,6 +271,8 @@ private:
 
 	/** Claim pending rewards. One alternate recipe or give back one hard drive */
 	void ClaimPendingRewards( AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex );
+
+	bool AreResearchTreeUnlockDependeciesMet( TSubclassOf <UFGResearchTree> inClass );
 
 private:
 	friend class UFGCheatManager;

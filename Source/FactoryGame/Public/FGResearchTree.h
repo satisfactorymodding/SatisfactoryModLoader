@@ -62,19 +62,8 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Research Tree" )
 	static TArray< class UFGResearchTreeNode* > GetNodes( TSubclassOf <UFGResearchTree> inClass );
 
-	/** Returns true if all dependencies to use the tree is met */
-	UFUNCTION( BlueprintPure, Category = "Research Tree" )
-	static bool IsUnlocked( UObject* worldContext, TSubclassOf <UFGResearchTree> inClass );
-
-	/** Returns true if all dependencies for showing the tree is met */
-	UFUNCTION( BlueprintPure, Category = "Research Tree" )
-	static bool IsVisible( UObject* worldContext, TSubclassOf <UFGResearchTree> inClass );
-
 	UFUNCTION( BlueprintPure, Category = "Research Tree" )
 	static TArray<class UFGAvailabilityDependency *> GetUnlockDependencies( TSubclassOf <UFGResearchTree> inClass );
-
-	UFUNCTION( BlueprintPure, Category = "Research Tree" )
-	static TArray<class UFGAvailabilityDependency *> GetVisibilityDependencies( TSubclassOf <UFGResearchTree> inClass );
 
 protected:
 	/** The name to be displayed to the player before the tree is unlocked */

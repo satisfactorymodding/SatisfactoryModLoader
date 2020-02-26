@@ -57,9 +57,13 @@ public:
 
 	/** Read only access to the tag of the wire mesh */
 	FORCEINLINE static const FName& GetWireMeshTag(){ return AFGBuildableWire::mWireMeshTag; }
-private:
-	/** Internal helper function to connect this wire. */
+
+	void UpdateWireMesh();
+
+	/** Internal helper function to connect this wire. */ //[DavalliusA:Sun/16-02-2020] moved this out as it was needed for upgrades. If there is a reason to hide it, please make that clear, or I won't know why not to expose it.
 	void Connect( class UFGCircuitConnectionComponent* first, class UFGCircuitConnectionComponent* second );
+
+private:
 
 	/**
 	 * Internal helper function to see if this wire is connected.
@@ -67,6 +71,8 @@ private:
 	 */
 	bool IsConnected() const;
 
+	UFUNCTION()
+	void OnRep_Locations();
 public:
 	/** Maximum length a wire may be. [cm] */
 	UPROPERTY( EditDefaultsOnly, Category = "Wire" )
@@ -96,6 +102,6 @@ private:
 	TWeakObjectPtr< class UFGCircuitConnectionComponent > mConnections[ 2 ];
 
 	/** The two locations this wire span. */
-	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
+	UPROPERTY( ReplicatedUsing = OnRep_Locations, Meta = (NoAutoJson = true))
 	FVector mLocations[ 2 ];
 };
