@@ -220,7 +220,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 
 			if (Settings->CopyModsToGame) {
 				// Copy to Satisfactory Content/Paks folder
-				PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / FString::Printf(L"FactoryGame/mods/%s.pak", *pakName)), *pakFilePath);
+				PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("mods") / FString::Printf(L"%s.pak", *pakName)), *pakFilePath);
 				UE_LOG(LogTemp, Log, TEXT("Copied %s to game dir"), *mod.Name);
 			}
 		}
