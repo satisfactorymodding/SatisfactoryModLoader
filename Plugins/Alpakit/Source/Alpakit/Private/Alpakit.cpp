@@ -89,11 +89,6 @@ void FAlpakitModule::StartupModule()
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(AlpakitOverwriteTabName, FOnSpawnTab::CreateRaw(this, &FAlpakitModule::SpawnAlpakitOverwriteTab))
 		.SetDisplayName(LOCTEXT("AlpakitOverwriteTitle", "Overwrite in mod"))
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
-	
-	FPropertyEditorModule& PropertyModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-
-	//Custom detail views
-	PropertyModule.RegisterCustomClassLayout("AlpakitSettings", FOnGetDetailCustomizationInstance::CreateStatic(&FAlpakitModDetails::MakeInstance));
 }
 
 void FAlpakitModule::ShutdownModule()
