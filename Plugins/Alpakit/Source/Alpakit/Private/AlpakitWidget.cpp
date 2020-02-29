@@ -165,7 +165,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			// Choose from the cooked list only the current mod assets
 			TArray<FString> ModFilesToPak;
 			FString contentFolder = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / FString::Printf(TEXT("Saved/Cooked/WindowsNoEditor/%s/Content"), FApp::GetProjectName()));
-			FString modCookFolder = (contentFolder / FString::Printf(TEXT("FactoryGame/%s"), *mod.Name)).Replace(L"/", L"\\");
+			FString modCookFolder = (contentFolder / FString::Printf(TEXT("%s"), *mod.Name)).Replace(L"/", L"\\");
 			UE_LOG(LogTemp, Log, TEXT("%s"), *modCookFolder);
 			for (FString file : FilesToPak)
 			{

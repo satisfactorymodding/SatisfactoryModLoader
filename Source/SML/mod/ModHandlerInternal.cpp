@@ -56,7 +56,7 @@ FModLoadingEntry createSMLLoadingEntry() {
 }
 
 FModPakLoadEntry CreatePakLoadEntry(const std::wstring& modid) {
-	const std::wstring baseInitPath = formatStr(TEXT("/Game/FactoryGame/"), modid);
+	const std::wstring baseInitPath = formatStr(TEXT("/Game/"), modid);
 	const std::wstring modInitPath = formatStr(baseInitPath, TEXT("/InitMod.InitMod_C"));
 	const std::wstring menuInitPath = formatStr(baseInitPath, TEXT("/InitMenu.InitMenu_C"));
 	TSubclassOf<ASMLInitMod> modInitializerClass = LoadClass<ASMLInitMod>(nullptr, modInitPath.c_str());
@@ -83,7 +83,7 @@ std::wstring getModIdFromFile(const path& filePath) {
 	if (filePath.extension() == TEXT(".dll")) {
 		//UE4-SML-Win64-Shipping, Mod ID is the second piece - name of the module
 		if (modId.find(TEXT("UE4-")) == 0 && modId.find(TEXT("-Win64-Shipping")) == modId.size() - 15) {
-			return modId.substr(4, modId.size() - 15);
+			return modId.substr(4, modId.size() - 15 - 4);
 		}
 		//otherwise load it straight with the same name as file name
 		return modId;
