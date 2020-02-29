@@ -1,7 +1,6 @@
 #include "mod/ModInfo.h"
 #include "SatisfactoryModLoader.h"
 #include "util/Logging.h"
-#include "util/Internal.h"
 #include "util/Utility.h"
 
 using ModInfo = SML::Mod::FModInfo;

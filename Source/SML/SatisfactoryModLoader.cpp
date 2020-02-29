@@ -155,7 +155,7 @@ namespace SML {
 		rootGamePath = new path(accessors.gameRootDirectory);
 		SML::Logging::info(TEXT("Game root directory: "), rootGamePath->generic_wstring());
 
-		std::experimental::filesystem::create_directories(getModDirectory());
+		create_directories(getModDirectory());
 		create_directories(getConfigDirectory());
 		create_directories(getCacheDirectory());
 
@@ -204,7 +204,7 @@ namespace SML {
 	void flushDebugSymbols() {
 		//ensure StackWalker is initialized before flushing symbols
 		ANSICHAR tmpBuffer[100];
-		FGenericPlatformStackWalk::StackWalkAndDump(tmpBuffer, 100, 0);
+		FGenericPlatformStackWalk::StackWalkAndDump(tmpBuffer, 100, 0);		
 		//flush bootstrapper cached symbols
 		SML::Logging::info(TEXT("Flushing debug symbols"));
 		bootstrapAccessors->FlushDebugSymbols();
