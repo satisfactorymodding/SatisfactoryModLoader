@@ -215,7 +215,8 @@ bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 		//replace last 4 characters (.dll) with new extension (.pdb)
 		std::string archivePdbFilePath = archivePath;
 		archivePdbFilePath.replace(archivePdbFilePath.length() - 4, 4, ".pdb");
-		path pdbFilePath = filePath.replace_extension("pdb");
+		path pdbFilePath = path(filePath);
+		pdbFilePath.replace_extension("pdb");
 		ttvfs::File* pdbObjectFile = root.getFile(archivePdbFilePath.c_str());
 		if (pdbObjectFile != nullptr) {
 			//extract pdb file with the same name now
