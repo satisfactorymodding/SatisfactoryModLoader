@@ -62,12 +62,12 @@ int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass){
 }
 float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
 bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mCanBeDiscarded;}
-bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass) { return inClass.GetDefaultObject()->mRememberPickUp; }
-TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass) { return inClass.GetDefaultObject()->mItemCategory; }
-float UFGItemDescriptor::GetFluidDensity(TSubclassOf< UFGItemDescriptor > inClass) { return inClass.GetDefaultObject()->mFluidDensity; }
-float UFGItemDescriptor::GetFluidViscosity(TSubclassOf< UFGItemDescriptor > inClass) { return inClass.GetDefaultObject()->mFluidViscosity; }
-float UFGItemDescriptor::GetFluidFriction(TSubclassOf< UFGItemDescriptor > inClass) { return inClass.GetDefaultObject()->mFluidFriction; }
-FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass) { return inClass.GetDefaultObject()->mFluidColor; }
-FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf< UFGItemDescriptor > inClass) { return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear(); }
+bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mRememberPickUp; }
+TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mItemCategory; }
+float UFGItemDescriptor::GetFluidDensity(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidDensity; }
+float UFGItemDescriptor::GetFluidViscosity(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidViscosity; }
+float UFGItemDescriptor::GetFluidFriction(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidFriction; }
+FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidColor; }
+FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear(); }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }
