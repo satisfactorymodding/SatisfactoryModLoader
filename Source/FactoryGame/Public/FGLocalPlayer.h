@@ -24,6 +24,9 @@ class FACTORYGAME_API UFGEM_LoggedOutFromOnlineService : public UFGErrorMessage
 	GENERATED_BODY()
 public:
 	UFGEM_LoggedOutFromOnlineService();
+
+public:
+	FORCEINLINE ~UFGEM_LoggedOutFromOnlineService() = default;
 };
 
 UCLASS()
@@ -32,6 +35,9 @@ class FACTORYGAME_API UFGEM_LostConnectionWithOnlineService : public UFGErrorMes
 	GENERATED_BODY()
 public:
 	UFGEM_LostConnectionWithOnlineService();
+
+public:
+	FORCEINLINE ~UFGEM_LostConnectionWithOnlineService() = default;
 };
 
 UCLASS()
@@ -40,6 +46,9 @@ class FACTORYGAME_API UFGEM_FailedToLoginToOnlineService : public UFGErrorMessag
 	GENERATED_BODY()
 public:
 	UFGEM_FailedToLoginToOnlineService();
+
+public:
+	FORCEINLINE ~UFGEM_FailedToLoginToOnlineService() = default;
 };
 
 enum EFrindsListState
@@ -99,6 +108,9 @@ struct FACTORYGAME_API FFGOnlineFriend
 
 	/** Internal friend data */
 	TSharedPtr<FOnlineFriend> Friend;
+
+public:
+	FORCEINLINE ~FFGOnlineFriend() = default;
 };
 
 FORCEINLINE FString VarToFString( const FFGOnlineFriend& f ){ return FString::Printf( TEXT(/*"%s"), *VarToFString(f.Friend->GetUserId()) MODDING EDIT*/ "")); }
@@ -164,6 +176,9 @@ struct FACTORYGAME_API FSessionInformation
 	bool IsOfflineGame;
 private:
 	ECreateSessionState State;
+
+public:
+	FORCEINLINE ~FSessionInformation() = default;
 };
 
 // Workaround as it seems like you can't have a TArray<FFGOnlineFriends> exposed to a Dynamic multicast delegate
@@ -174,6 +189,9 @@ struct FACTORYGAME_API FUpdatedFriends
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FFGOnlineFriend> Friends;
+
+public:
+	FORCEINLINE ~FUpdatedFriends() = default;
 };
 
 
@@ -382,4 +400,7 @@ protected:
 
 	/** If true, then we have failed to autologin, and won't try to autologin again */
 	bool mFailedAutologin;
+
+public:
+	FORCEINLINE ~UFGLocalPlayer() = default;
 };

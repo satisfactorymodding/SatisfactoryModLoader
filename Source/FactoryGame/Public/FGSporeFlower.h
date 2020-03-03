@@ -56,4 +56,7 @@ protected:
 	UPROPERTY( )
 	TArray<AActor*> mTriggerActors;
 
+
+public:
+	FORCEINLINE ~AFGSporeFlower() = default;
 };

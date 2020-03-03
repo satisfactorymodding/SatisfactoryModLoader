@@ -74,4 +74,7 @@ private:
 	uint8 mHave_OnExitInnerVolume:1;
 	uint8 mHave_ShouldIgnoreListenerRotation:1;
 	uint8 mHave_GetEnterInnerVolumeEvent : 1;
+
+public:
+	FORCEINLINE ~UFGAmbientSettings() = default;
 };

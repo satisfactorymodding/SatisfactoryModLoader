@@ -17,6 +17,9 @@ class FACTORYGAME_API UFGVehicleDestroyableInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGVehicleDestroyableInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGVehicleDestroyableInterface() = default;
 };
 
 /**

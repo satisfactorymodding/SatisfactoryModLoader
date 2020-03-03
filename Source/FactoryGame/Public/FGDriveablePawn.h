@@ -156,4 +156,7 @@ private:
 	/** Is this vehicle being driven. */
 	UPROPERTY( ReplicatedUsing = OnRep_IsDriving )
 	bool mIsDriving;
+
+public:
+	FORCEINLINE ~AFGDriveablePawn() = default;
 };

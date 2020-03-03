@@ -23,4 +23,7 @@ protected:
 	 */
 	UFUNCTION( BlueprintImplementableEvent, Category = "PoweredWall" )
 	class UFGPowerConnectionComponent* GetFoundationConnection() const;
+
+public:
+	FORCEINLINE ~AFGBuildablePoweredWall() = default;
 };

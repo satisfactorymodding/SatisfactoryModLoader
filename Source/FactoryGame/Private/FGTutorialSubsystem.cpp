@@ -2,15 +2,15 @@
 
 #include "FGTutorialSubsystem.h"
 
-void UFGTutorialSubsystem::PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGTutorialSubsystem::PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGTutorialSubsystem::PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGTutorialSubsystem::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGTutorialSubsystem::GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects){ }
+void UFGTutorialSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGTutorialSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGTutorialSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGTutorialSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGTutorialSubsystem::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool UFGTutorialSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool UFGTutorialSubsystem::ShouldSave_Implementation() const{ return bool(); }
-void UFGTutorialSubsystem::AddToBuiltClasses( TSubclassOf< UObject > inClass){ }
+void UFGTutorialSubsystem::AddToBuiltClasses(TSubclassOf< UObject > inClass){ }
 void UFGTutorialSubsystem::Init(){ }
-void UFGTutorialSubsystem::OnBuildingBuilt( TSubclassOf<  UFGItemDescriptor > itemDesc){ }
+void UFGTutorialSubsystem::OnBuildingBuilt(TSubclassOf<  UFGItemDescriptor > itemDesc){ }
 void UFGTutorialSubsystem::ClearBuiltData(){ }
 void UFGTutorialSubsystem::PonderAddingIntroTutorial(){ }

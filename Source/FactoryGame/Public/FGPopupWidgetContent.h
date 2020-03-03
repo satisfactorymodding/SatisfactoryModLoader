@@ -46,4 +46,7 @@ public:
 	UPROPERTY( BlueprintReadWrite, Category = "PopupContent" )
 	class UFGPopupWidget* mPopupWidget;
 
+
+public:
+	FORCEINLINE ~UFGPopupWidgetContent() = default;
 };

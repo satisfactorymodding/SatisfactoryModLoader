@@ -46,6 +46,9 @@ public:
 	UPROPERTY()
 	FPopupClosed PopupClosedDelegate;
 
+
+public:
+	FORCEINLINE ~FPopupData() = default;
 };
 
 /**
@@ -75,4 +78,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Popup" )
 	UObject* mInstigator;
 
+
+public:
+	FORCEINLINE ~UFGPopupWidget() = default;
 };

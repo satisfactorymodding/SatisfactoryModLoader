@@ -16,4 +16,7 @@ class FACTORYGAME_API UFGNavArea_HardNature : public UNavArea
 	GENERATED_BODY()
 
 	UFGNavArea_HardNature( const FObjectInitializer& ObjectInitializer );
+
+public:
+	FORCEINLINE ~UFGNavArea_HardNature() = default;
 };

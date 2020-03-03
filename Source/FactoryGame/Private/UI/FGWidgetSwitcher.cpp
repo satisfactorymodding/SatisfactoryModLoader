@@ -5,12 +5,12 @@
 UFGWidgetSwitcher::UFGWidgetSwitcher(){ }
 void UFGWidgetSwitcher::ReleaseSlateResources(bool bReleaseChildren){ }
 void UFGWidgetSwitcher::RemoveFromParent(){ }
-void UFGWidgetSwitcher::SetActiveWidgetIndex( int32 index){ }
-void UFGWidgetSwitcher::SetActiveWidget( UWidget* widget){ }
-void UFGWidgetSwitcher::WidgetMenuEnterDone(  UFGMenuBase* menuBase){ }
-void UFGWidgetSwitcher::WidgetMenuExitDone(  UFGMenuBase* menuBase){ }
-void UFGWidgetSwitcher::Internal_SetActiveWidgetIndex( int32 index){ }
-void UFGWidgetSwitcher::Internal_SetActiveWidget(  UWidget* widget){ }
+void UFGWidgetSwitcher::SetActiveWidgetIndex(int32 index){ }
+void UFGWidgetSwitcher::SetActiveWidget(UWidget* widget){ }
+void UFGWidgetSwitcher::WidgetMenuEnterDone( UFGMenuBase* menuBase){ }
+void UFGWidgetSwitcher::WidgetMenuExitDone( UFGMenuBase* menuBase){ }
+void UFGWidgetSwitcher::Internal_SetActiveWidgetIndex(int32 index){ }
+void UFGWidgetSwitcher::Internal_SetActiveWidget( UWidget* widget){ }
 bool UFGWidgetSwitcher::IsDoingWidgetAnimation() const{ return bool(); }
 void UFGWidgetSwitcher::EnterAnimationTookToLong(){ }
 void UFGWidgetSwitcher::ExitAnimationTookToLong(){ }

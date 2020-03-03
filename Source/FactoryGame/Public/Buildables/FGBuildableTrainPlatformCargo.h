@@ -301,4 +301,7 @@ private:
 	float mReplicatedInflowRate;
 
 	/******** End Pipe Flow Output Params ********/
+
+public:
+	FORCEINLINE ~AFGBuildableTrainPlatformCargo() = default;
 };

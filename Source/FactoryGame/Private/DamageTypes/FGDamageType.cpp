@@ -2,4 +2,4 @@
 
 #include "FGDamageType.h"
 
-UFGDamageType::UFGDamageType( const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGDamageType::UFGDamageType(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }

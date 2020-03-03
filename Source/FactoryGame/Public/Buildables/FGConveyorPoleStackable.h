@@ -19,4 +19,7 @@ public:
 	
 	/** Sets the connection component to be at correct height and registers */
 	virtual void SetupConnectionComponent();
+
+public:
+	FORCEINLINE ~AFGConveyorPoleStackable() = default;
 };

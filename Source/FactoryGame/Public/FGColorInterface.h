@@ -14,6 +14,9 @@ class FACTORYGAME_API UFGColorInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGColorInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGColorInterface() = default;
 };
 
 /**

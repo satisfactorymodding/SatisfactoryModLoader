@@ -2,66 +2,57 @@
 
 #include "HologramHelpers.h"
 
-UStaticMeshComponent* FHologramHelpers::CreateClearanceComponent(  USceneComponent* attachTo,  UBoxComponent* fromBox){ return nullptr; }
-UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation(  UFGFactoryConnectionComponent* connectionComponent){ return nullptr; }
-float FHologramHelpers::CalcPoleHeight( const  FHitResult& aimResult, const  FVector& poleLocation){ return float(); }
+UStaticMeshComponent* FHologramHelpers::CreateClearanceComponent( USceneComponent* attachTo,  UBoxComponent* fromBox){ return nullptr; }
+UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation( UFGFactoryConnectionComponent* connectionComponent){ return nullptr; }
+float FHologramHelpers::CalcPoleHeight(const  FHitResult& aimResult, const  FVector& poleLocation){ return float(); }
 float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const  FHitResult& aimResult, const  FVector& poleLocation){ return float(); }
-void FSplineUtils::FSplineSegmentPointData::InitializePoints( FVector startPos, FVector startForward, FVector startRight, FVector endPos, FVector endForward, FVector endRight, float startRadius, float endRadius){ }
-void FSplineUtils::FSplineSegmentPointData::AssignDebugObject(  AActor* debugActor){ }
-void FSplineUtils::FSplineSegmentPointData::CalculateValues( float forceVerticalExceeding ){ }
-void FSplineUtils::FSplineSegmentPointData::AddSegementsToBuilder(  FSplineBuilder& builder){ }
-void FSplineUtils::CalcAutoCurveSpline(  FSplinePointData& startPoint,  FSplinePointData& endPoint){ }
-float FSplineUtils::CalcTangentRatioAtSplit( const  USplineComponent* component, float split){ return float(); }
-bool FSplineUtils::BuildStraightSpline2D(
-		 FSplineBuilder& builder,
+void FSplineUtils::FSplineSegmentPointData::InitializePoints(FVector startPos, FVector startForward, FVector startRight, FVector endPos, FVector endForward, FVector endRight, float startRadius, float endRadius){ }
+void FSplineUtils::FSplineSegmentPointData::AssignDebugObject( AActor* debugActor){ }
+void FSplineUtils::FSplineSegmentPointData::CalculateValues(float forceVerticalExceeding){ }
+void FSplineUtils::FSplineSegmentPointData::AddSegementsToBuilder( FSplineBuilder& builder){ }
+void FSplineUtils::CalcAutoCurveSpline( FSplinePointData& startPoint,  FSplinePointData& endPoint){ }
+float FSplineUtils::CalcTangentRatioAtSplit(const  USplineComponent* component, float split){ return float(); }
+bool FSplineUtils::BuildStraightSpline2D( FSplineBuilder& builder,
 		const FVector& endPos,
 		const FVector& endForward,
 		float dotTreshold){ return bool(); }
-bool FSplineUtils::BuildStraightSpline3D(
-		 FSplineBuilder& builder,
+bool FSplineUtils::BuildStraightSpline3D( FSplineBuilder& builder,
 		const FVector& endPos,
 		const FVector& endForward,
 		float dotTreshold){ return bool(); }
-bool FSplineUtils::BuildTangentBasedSpline3D(
-		 FSplineBuilder& builder,
+bool FSplineUtils::BuildTangentBasedSpline3D( FSplineBuilder& builder,
 		const FVector& endPos,
 		const FVector& endForward,
-		float tangetStrength, UWorld* debugWorld , FVector debugACtorLocation ){ return bool(); }
-bool FSplineUtils::BuildBendStraightBendSpline3D(
-		 FSplineBuilder& builder,
+		float tangetStrength, UWorld* debugWorld , FVector debugACtorLocation){ return bool(); }
+bool FSplineUtils::BuildBendStraightBendSpline3D( FSplineBuilder& builder,
 		float startRadius,
 		float endRadius,
 		const FVector& endPos,
-		const FVector& endForward, UWorld* debugWorld , FVector debugACtorLocation ){ return bool(); }
-bool FSplineUtils::BuildBendStraightBendSpline2D(
-		 FSplineBuilder& builder,
+		const FVector& endForward, UWorld* debugWorld , FVector debugACtorLocation){ return bool(); }
+bool FSplineUtils::BuildBendStraightBendSpline2D( FSplineBuilder& builder,
 		float startRadius,
 		float endRadius,
 		const FVector& endPos,
 		const FVector& endForward){ return bool(); }
-bool FSplineUtils::BuildBendHorizontalBendVerticalBendDefinedSpline(
-		 FSplineBuilder& builder,
+bool FSplineUtils::BuildBendHorizontalBendVerticalBendDefinedSpline( FSplineBuilder& builder,
 		float startRadius,
 		float internalRadii,
 		float endRadius,
 		const FVector& endPos,
 		const FVector& endForward,
 		bool horizontalFirst ,
-		AActor* debugActor ){ return bool(); }
-bool FSplineUtils::BuildPathDataDefinedSpline(
-		 FSplineBuilder& builder,
+		AActor* debugActor){ return bool(); }
+bool FSplineUtils::BuildPathDataDefinedSpline( FSplineBuilder& builder,
 		TArray<  FHologramAStarNode >& pathNodes,
 		float internalRadii,
 		const FVector& startNormal,
 		const FVector& endNormal,
 		AActor* owner){ return bool(); }
-bool FSplineUtils::BuildCurveSpline(
-		 FSplineBuilder& builder,
+bool FSplineUtils::BuildCurveSpline( FSplineBuilder& builder,
 		float minTurnRadius,
 		const FVector& endPos,
 		FVector endForward){ return bool(); }
-void FSplineUtils::CalcBendDirections3D(
-		const FVector& startPos,
+void FSplineUtils::CalcBendDirections3D(const FVector& startPos,
 		const FVector& startForward,
 		float startRadius,
 		const FVector& endPos,
@@ -69,8 +60,7 @@ void FSplineUtils::CalcBendDirections3D(
 		float endRadius,
 		bool& out_isStartCW,
 		bool& out_isEndCW){ }
-void FSplineUtils::CalcBendDirections2D(
-		const FVector& startPos,
+void FSplineUtils::CalcBendDirections2D(const FVector& startPos,
 		const FVector& startForward,
 		float startRadius,
 		const FVector& endPos,
@@ -78,8 +68,7 @@ void FSplineUtils::CalcBendDirections2D(
 		float endRadius,
 		bool& out_isStartCW,
 		bool& out_isEndCW){ }
-void FSplineUtils::CalcBendAngles3D(
-		const FVector& startPos,
+void FSplineUtils::CalcBendAngles3D(const FVector& startPos,
 		const FVector& startForward,
 		float startRadius,
 		bool isStartCW,
@@ -89,8 +78,7 @@ void FSplineUtils::CalcBendAngles3D(
 		bool isEndCW,
 		float& out_startAngle,
 		float& out_endAngle){ }
-void FSplineUtils::CalcBendAngles2D(
-		const FVector& startPos,
+void FSplineUtils::CalcBendAngles2D(const FVector& startPos,
 		const FVector& startForward,
 		float startRadius,
 		bool isStartCW,
@@ -100,36 +88,36 @@ void FSplineUtils::CalcBendAngles2D(
 		bool isEndCW,
 		float& out_startAngle,
 		float& out_endAngle){ }
-float FSplineUtils::CalcStraightTangentMagnitude( const FVector& startPos, const FVector& endPos, float targetTangetFactor ){ return float(); }
-void FSplineBuilder::Start( const FVector& pos, const FVector& tan){ }
-void FSplineBuilder::AddSegment( const FVector& pos, const FVector& tan){ }
-void FSplineBuilder::InsertSegmentAfterIndex( const FVector& pos, const FVector& tan, int32 index){ }
-void FSplineBuilder::ModifySegment( const FVector& pos, const FVector& tan){ }
-void FSplineBuilder::ModifySegment( const FVector& pos, const FVector& tan, int32 index){ }
-bool FSplineBuilder::IsValidIndex( int32 index){ return bool(); }
-void FSplineBuilder::RemoveSegment( int32 index){ }
+float FSplineUtils::CalcStraightTangentMagnitude(const FVector& startPos, const FVector& endPos, float targetTangetFactor){ return float(); }
+void FSplineBuilder::Start(const FVector& pos, const FVector& tan){ }
+void FSplineBuilder::AddSegment(const FVector& pos, const FVector& tan){ }
+void FSplineBuilder::InsertSegmentAfterIndex(const FVector& pos, const FVector& tan, int32 index){ }
+void FSplineBuilder::ModifySegment(const FVector& pos, const FVector& tan){ }
+void FSplineBuilder::ModifySegment(const FVector& pos, const FVector& tan, int32 index){ }
+bool FSplineBuilder::IsValidIndex(int32 index){ return bool(); }
+void FSplineBuilder::RemoveSegment(int32 index){ }
 FHologramPathingPoint::FHologramPathingPoint(){ }
-FHologramPathingPoint::FHologramPathingPoint( FVector worldLocation, FVector gridIndex,  FHologramPathingGrid* grid){ }
+FHologramPathingPoint::FHologramPathingPoint(FVector worldLocation, FVector gridIndex,  FHologramPathingGrid* grid){ }
 FHologramPathingGrid::FHologramPathingGrid(){ }
-FHologramPathingGrid::FHologramPathingGrid( const FVector& startForward, const FVector& startRight, const FVector& startLocation, const FVector& endLocation, int32 gridCellSize,  AFGHologram* hologramOwner){ }
+FHologramPathingGrid::FHologramPathingGrid(const FVector& startForward, const FVector& startRight, const FVector& startLocation, const FVector& endLocation, int32 gridCellSize,  AFGHologram* hologramOwner){ }
 void FHologramPathingGrid::InitializeGridPoints(){ }
-EHologramGraphAStarResult FHologramPathingGrid::GetHologramPath( const FVector& startLocation, const FVector& endLocation, const FVector& endNormal, TArray<  FHologramAStarNode >& out_pathNodes){ return EHologramGraphAStarResult(); }
+EHologramGraphAStarResult FHologramPathingGrid::GetHologramPath(const FVector& startLocation, const FVector& endLocation, const FVector& endNormal, TArray<  FHologramAStarNode >& out_pathNodes){ return EHologramGraphAStarResult(); }
 void FHologramPathingGrid::CalculateGridNodeCollision(){ }
-FVector FHologramPathingGrid::GetWorldSpaceOfGridIndex( const FVector& gridIndex){ return FVector(); }
-FHologramPathingPoint& FHologramPathingGrid::GetPathPointForWorldLocation( const FVector& worldLocation){ return *(new FHologramPathingPoint); }
-bool FHologramPathingGrid::IsValidGridIndex( const FVector& index){ return bool(); }
-bool FHologramPathingGrid::CanConstructGridFrom( const FVector& locationOne, const FVector& locationTwo, const FVector& forwardOne, const FVector& forwardTwo){ return bool(); }
-FHologramAStarNode::FHologramAStarNode( int32 unused ){ }
-FHologramAStarNode::FHologramAStarNode( FHologramPathingPoint* pathingPoint){ }
-FHologramAStarNode::FHologramAStarNode( const FHologramAStarNode& pathingNode){ }
-int32 FHolgramAStarHelper::GetNeighbourCount( const FHologramAStarNode& nodeRef) const{ return int32(); }
-bool FHolgramAStarHelper::IsValidRef( const FHologramAStarNode& nodeRef) const{ return bool(); }
-FHologramAStarNode FHolgramAStarHelper::GetNeighbour( const FHologramAStarNode& nodeRef, const int32 neighbourIndex) const{ return FHologramAStarNode(); }
-FVector FHolgramAStarHelper::GetDirectionNormal( const FHologramAStarNode& nodeA, const FHologramAStarNode& nodeB) const{ return FVector(); }
+FVector FHologramPathingGrid::GetWorldSpaceOfGridIndex(const FVector& gridIndex){ return FVector(); }
+FHologramPathingPoint& FHologramPathingGrid::GetPathPointForWorldLocation(const FVector& worldLocation){ return *(new FHologramPathingPoint); }
+bool FHologramPathingGrid::IsValidGridIndex(const FVector& index){ return bool(); }
+bool FHologramPathingGrid::CanConstructGridFrom(const FVector& locationOne, const FVector& locationTwo, const FVector& forwardOne, const FVector& forwardTwo){ return bool(); }
+FHologramAStarNode::FHologramAStarNode(int32 unused){ }
+FHologramAStarNode::FHologramAStarNode(FHologramPathingPoint* pathingPoint){ }
+FHologramAStarNode::FHologramAStarNode(const FHologramAStarNode& pathingNode){ }
+int32 FHolgramAStarHelper::GetNeighbourCount(const FHologramAStarNode& nodeRef) const{ return int32(); }
+bool FHolgramAStarHelper::IsValidRef(const FHologramAStarNode& nodeRef) const{ return bool(); }
+FHologramAStarNode FHolgramAStarHelper::GetNeighbour(const FHologramAStarNode& nodeRef, const int32 neighbourIndex) const{ return FHologramAStarNode(); }
+FVector FHolgramAStarHelper::GetDirectionNormal(const FHologramAStarNode& nodeA, const FHologramAStarNode& nodeB) const{ return FVector(); }
 FHologramAStarFilter::FHologramAStarFilter(){ }
 float FHologramAStarFilter::GetHeuristicScale() const{ return float(); }
-float FHologramAStarFilter::GetHeuristicCost( const FHologramAStarNode& startNodeRef, const FHologramAStarNode& endNodeRef) const{ return float(); }
-float FHologramAStarFilter::GetDirectionChangeCost( const FVector& parentNormal, const FVector& establishedNormal, const FVector& consideredNormal) const{ return float(); }
-float FHologramAStarFilter::GetTraversalCost( const FHologramAStarNode& startNodeRef, const FHologramAStarNode& endNodeRef) const{ return float(); }
-bool FHologramAStarFilter::IsTraversalAllowed( const FHologramAStarNode& nodeA, const FHologramAStarNode& nodeB) const{ return bool(); }
+float FHologramAStarFilter::GetHeuristicCost(const FHologramAStarNode& startNodeRef, const FHologramAStarNode& endNodeRef) const{ return float(); }
+float FHologramAStarFilter::GetDirectionChangeCost(const FVector& parentNormal, const FVector& establishedNormal, const FVector& consideredNormal) const{ return float(); }
+float FHologramAStarFilter::GetTraversalCost(const FHologramAStarNode& startNodeRef, const FHologramAStarNode& endNodeRef) const{ return float(); }
+bool FHologramAStarFilter::IsTraversalAllowed(const FHologramAStarNode& nodeA, const FHologramAStarNode& nodeB) const{ return bool(); }
 bool FHologramAStarFilter::WantsPartialSolution() const{ return bool(); }

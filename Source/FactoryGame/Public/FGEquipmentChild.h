@@ -49,4 +49,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	FName mAttachSocket;
 	
+
+public:
+	FORCEINLINE ~AFGEquipmentChild() = default;
 };

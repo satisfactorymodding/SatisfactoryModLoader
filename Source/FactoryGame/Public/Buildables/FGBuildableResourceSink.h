@@ -87,4 +87,7 @@ private:
 	* If we ever have the need for tick in this class we can move this functionality there with our own timer based on a float or similar.
 	*/
 	FTimerHandle mProducingTimer;
+
+public:
+	FORCEINLINE ~AFGBuildableResourceSink() = default;
 };

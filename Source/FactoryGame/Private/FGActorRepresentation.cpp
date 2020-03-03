@@ -3,7 +3,7 @@
 #include "FGActorRepresentation.h"
 
 bool UFGActorRepresentation::IsSupportedForNetworking() const{ return bool(); }
-void UFGActorRepresentation::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 FVector UFGActorRepresentation::GetActorLocation() const{ return FVector(); }
 FRotator UFGActorRepresentation::GetActorRotation() const{ return FRotator(); }
 UTexture2D* UFGActorRepresentation::GetRepresentationTexture() const{ return nullptr; }
@@ -14,9 +14,9 @@ bool UFGActorRepresentation::GetShouldShowInCompass() const{ return bool(); }
 bool UFGActorRepresentation::GetShouldShowOnMap() const{ return bool(); }
 EFogOfWarRevealType UFGActorRepresentation::GetFogOfWarRevealType() const{ return EFogOfWarRevealType(); }
 float UFGActorRepresentation::GetFogOfWarRevealRadius() const{ return float(); }
-void UFGActorRepresentation::SetIsOnClient( bool onClient){ }
+void UFGActorRepresentation::SetIsOnClient(bool onClient){ }
 ECompassViewDistance UFGActorRepresentation::GetCompassViewDistance() const{ return ECompassViewDistance(); }
-void UFGActorRepresentation::SetLocalCompassViewDistance( ECompassViewDistance compassViewDistance){ }
+void UFGActorRepresentation::SetLocalCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 AFGActorRepresentationManager* UFGActorRepresentation::GetActorRepresentationManager(){ return nullptr; }
 void UFGActorRepresentation::UpdateLocation(){ }
 void UFGActorRepresentation::UpdateRotation(){ }

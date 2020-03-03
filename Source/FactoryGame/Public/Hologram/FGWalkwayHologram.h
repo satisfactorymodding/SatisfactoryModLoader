@@ -29,4 +29,7 @@ private:
 	float mSize;
 	float mElevation;
 	FFoundationSideSelectionFlags mDisableSnapOn;
+
+public:
+	FORCEINLINE ~AFGWalkwayHologram() = default;
 };

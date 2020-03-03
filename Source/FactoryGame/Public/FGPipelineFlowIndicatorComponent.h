@@ -36,4 +36,7 @@ private:
 	/** Pipeline we indicate status for. */
 	UPROPERTY()
 	class AFGBuildablePipeline* mPipeline;
+
+public:
+	FORCEINLINE ~UFGPipelineFlowIndicatorComponent() = default;
 };

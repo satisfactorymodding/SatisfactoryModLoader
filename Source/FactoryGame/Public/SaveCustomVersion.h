@@ -93,4 +93,7 @@ struct FACTORYGAME_API FSaveCustomVersion
 
 private:
 	FSaveCustomVersion() {}
+
+public:
+	FORCEINLINE ~FSaveCustomVersion() = default;
 };

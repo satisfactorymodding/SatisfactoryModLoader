@@ -57,4 +57,7 @@ public:
 	/** Images to display in the codex */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	TArray< class UTexture2D* > mImages;
+
+public:
+	FORCEINLINE ~UFGMessageBase() = default;
 };

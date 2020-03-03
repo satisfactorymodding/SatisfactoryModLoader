@@ -3,4 +3,4 @@
 #include "FGDecorDescriptor.h"
 
 UFGDecorDescriptor::UFGDecorDescriptor(){ }
-UStaticMesh* UFGDecorDescriptor::GetDecorMesh( TSubclassOf< UFGDecorDescriptor > inClass){ return nullptr; }
+UStaticMesh* UFGDecorDescriptor::GetDecorMesh(TSubclassOf< UFGDecorDescriptor > inClass){ return nullptr; }

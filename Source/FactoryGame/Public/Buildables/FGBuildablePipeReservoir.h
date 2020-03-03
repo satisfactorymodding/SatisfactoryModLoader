@@ -36,6 +36,9 @@ private:
 	uint8 PackedFlowDrain = 0;
 	UPROPERTY()
 	uint8 PackedContent = 0;
+
+public:
+	FORCEINLINE ~FQuantizedReservoirIndicatorData() = default;
 };
 
 /**
@@ -111,4 +114,7 @@ private:
 	float mIndicatorFlowFillPct;
 	float mIndicatorFlowDrainPct;
 	float mIndicatorContentPct;
+
+public:
+	FORCEINLINE ~AFGBuildablePipeReservoir() = default;
 };

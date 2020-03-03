@@ -51,4 +51,7 @@ protected:
 
 	/** Returns an array of stacks that can be added to the player inventory. */
 	static TArray<FInventoryStack> GetValidInventoryStacks( class UFGFoliageResourceUserData* foliageUserData );
+
+public:
+	FORCEINLINE ~UFGFoliageLibrary() = default;
 };

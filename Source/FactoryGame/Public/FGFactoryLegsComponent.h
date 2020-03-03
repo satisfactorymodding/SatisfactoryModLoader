@@ -33,6 +33,9 @@ public:
 	/** Does this foot have a valid offset, only used during hologram placement. */
 	UPROPERTY( NotReplicated )
 	bool IsValidOffset;
+
+public:
+	FORCEINLINE ~FFeetOffset() = default;
 };
 
 UCLASS( ClassGroup = ( Custom ), meta = ( BlueprintSpawnableComponent ) )
@@ -134,4 +137,7 @@ private:
 	/** Stored so that we know the offset of the feet */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< FFeetOffset > mCachedFeetOffset;
+
+public:
+	FORCEINLINE ~UFGFactoryLegsComponent() = default;
 };

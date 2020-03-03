@@ -9,6 +9,9 @@
 #include "SlateBasics.h"
 #include "STreeView.h"
 
+// MODDING EDIT: doesn't inherit the one from FactoryGame.h
+#define WITH_CHEATS 0
+
 #if WITH_CHEATS
 
 
@@ -176,5 +179,8 @@ private:
 	/*UPROPERTY( Config )
 	TArray< UClass* > mPopularUClassChoices;*/
 
+
+public:
+	FORCEINLINE ~SFGCheatBoardWidget() = default;
 };
 #endif

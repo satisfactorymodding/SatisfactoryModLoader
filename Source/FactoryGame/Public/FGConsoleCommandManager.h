@@ -59,4 +59,7 @@ public:
 	/** Dump some stats about the factory to the log such as number of buildings and kilometers of railway built. */
 	UFUNCTION( exec, category = "Log" )
 	void DumpFactoryStatsToLog();
+
+public:
+	FORCEINLINE ~UFGConsoleCommandManager() = default;
 };

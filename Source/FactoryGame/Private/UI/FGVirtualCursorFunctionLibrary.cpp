@@ -2,5 +2,5 @@
 
 #include "FGVirtualCursorFunctionLibrary.h"
 
-void UFGVirtualCursorFunctionLibrary::EnableVirtualCursor(  APlayerController* PC){ }
-void UFGVirtualCursorFunctionLibrary::DisableVirtualCursor(  APlayerController* PC){ }
+void UFGVirtualCursorFunctionLibrary::EnableVirtualCursor( APlayerController* PC){ }
+void UFGVirtualCursorFunctionLibrary::DisableVirtualCursor( APlayerController* PC){ }

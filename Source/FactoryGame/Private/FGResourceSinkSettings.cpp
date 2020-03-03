@@ -2,11 +2,11 @@
 
 #include "FGResourceSinkSettings.h"
 
-bool FResourceSinkPointsData::operator==( const FResourceSinkPointsData &other) const{ return bool(); }
+bool FResourceSinkPointsData::operator==(const FResourceSinkPointsData &other) const{ return bool(); }
 #if WITH_EDITOR
 void UFGResourceSinkSettings::PostInitProperties(){ Super::PostInitProperties(); }
-void UFGResourceSinkSettings::PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent){ }
-void UFGResourceSinkSettings::SetMaxPointsForItem( int32 maxPointsForItem){ }
-void UFGResourceSinkSettings::SetPointCalculationExpression( FString pointCalculationExpression){ }
+void UFGResourceSinkSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ }
+void UFGResourceSinkSettings::SetMaxPointsForItem(int32 maxPointsForItem){ }
+void UFGResourceSinkSettings::SetPointCalculationExpression(FString pointCalculationExpression){ }
 void UFGResourceSinkSettings::CalculateRewardLevels(){ }
 #endif 

@@ -3,4 +3,4 @@
 #include "FGPopupWidget.h"
 
 void UFGPopupWidget::CallPopupConfirmClicked(){ }
-void UFGPopupWidget::CallPopupClosedClicked( bool confirm){ }
+void UFGPopupWidget::CallPopupClosedClicked(bool confirm){ }

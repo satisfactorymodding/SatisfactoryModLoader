@@ -12,6 +12,9 @@ UINTERFACE( BlueprintType, Blueprintable )
 class FACTORYGAME_API UFGPipeAttachmentSnapTargetInterface : public UInterface
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGPipeAttachmentSnapTargetInterface() = default;
 };
 
 /**

@@ -2,4 +2,4 @@
 
 #include "FGDismantleInterface.h"
 
-void FDismantleHelpers::DropRefundOnGround(  AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund){ }
+void FDismantleHelpers::DropRefundOnGround( AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund){ }

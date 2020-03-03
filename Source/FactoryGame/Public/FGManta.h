@@ -85,4 +85,7 @@ private:
 	/** Is the spline loop closed */
 	UPROPERTY( EditDefaultsOnly, Category = "Manta" )
 	bool mIsClosedSplineLoop;
+
+public:
+	FORCEINLINE ~AFGManta() = default;
 };

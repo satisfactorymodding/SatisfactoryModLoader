@@ -42,4 +42,7 @@ private:
 	 */
 	UPROPERTY()
 	class UFGPowerInfoComponent* mPowerInfo;
+
+public:
+	FORCEINLINE ~UFGPowerConnectionComponent() = default;
 };

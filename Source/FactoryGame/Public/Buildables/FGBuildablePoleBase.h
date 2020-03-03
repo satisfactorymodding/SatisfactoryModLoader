@@ -33,4 +33,7 @@ public:
 	{
 		return mStackHeight;
 	}
+
+public:
+	FORCEINLINE ~AFGBuildablePoleBase() = default;
 };

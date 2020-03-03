@@ -26,8 +26,8 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
 	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-	// MODDING EDIT: Does not override error
-	//virtual void CallPreReplication(UNetDriver* NetDriver) override;
+    
+	virtual void CallPreReplication(UNetDriver* NetDriver) override;
 
 	/** Get the circuit subsystem. */
 	static AFGCircuitSubsystem* Get( UWorld* world );
@@ -144,4 +144,7 @@ private:
 
 	/** Counter for generating new circuit ids. */
 	int32 IDCounter;
+
+public:
+	FORCEINLINE ~AFGCircuitSubsystem() = default;
 };

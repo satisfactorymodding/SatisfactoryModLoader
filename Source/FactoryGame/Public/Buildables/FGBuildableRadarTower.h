@@ -110,4 +110,7 @@ private:
 	UPROPERTY( Replicated, SaveGame )
 	float mTimeToNextExpansion;
 
+
+public:
+	FORCEINLINE ~AFGBuildableRadarTower() = default;
 };

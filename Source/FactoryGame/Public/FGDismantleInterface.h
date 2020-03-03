@@ -17,6 +17,9 @@ class FACTORYGAME_API UFGDismantleInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGDismantleInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGDismantleInterface() = default;
 };
 
 /**
@@ -92,4 +95,7 @@ struct FACTORYGAME_API FDismantleHelpers
 	 * @param refund			The refund to drop.
 	 */
 	static void DropRefundOnGround( class AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund );
+
+public:
+	FORCEINLINE ~FDismantleHelpers() = default;
 };

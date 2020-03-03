@@ -25,4 +25,7 @@ private:
 	/** Name of this item category*/
 	UPROPERTY( EditDefaultsOnly, Category = "Build Category" )
 	FText mDisplayName;
+
+public:
+	FORCEINLINE ~UFGItemCategory() = default;
 };

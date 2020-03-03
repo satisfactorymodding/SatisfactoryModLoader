@@ -173,4 +173,7 @@ private:
 	 */
 	UPROPERTY( VisibleAnywhere, ReplicatedUsing=OnRep_CircuitIDChanged, SaveGame, Category = "Connection" )
 	int32 mCircuitID;
+
+public:
+	FORCEINLINE ~UFGCircuitConnectionComponent() = default;
 };

@@ -8,19 +8,19 @@ FDebrisItemDrop::FDebrisItemDrop(){ }
 TSubclassOf< class UFGItemDescriptor > FDebrisItemDrop::GetItemClass() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 bool FDebrisItemDrop::IsValid() const{ return bool(); }
 FSimulatedMeshTransform::FSimulatedMeshTransform(){ }
-FSimulatedMeshTransform::FSimulatedMeshTransform(  UStaticMesh* mesh, const FTransform& transform){ }
+FSimulatedMeshTransform::FSimulatedMeshTransform( UStaticMesh* mesh, const FTransform& transform){ }
 FSimulatedActorTransform::FSimulatedActorTransform(){ }
-FSimulatedActorTransform::FSimulatedActorTransform( TSubclassOf< AFGCrashSiteDebrisActor > actor, const FTransform& transform){ }
+FSimulatedActorTransform::FSimulatedActorTransform(TSubclassOf< AFGCrashSiteDebrisActor > actor, const FTransform& transform){ }
 FSimulatedItemDropTransform::FSimulatedItemDropTransform(){ }
 #if WITH_EDITOR
-void AFGCrashSiteDebris::OnConstruction( const FTransform& transform){ }
+void AFGCrashSiteDebris::OnConstruction(const FTransform& transform){ }
 void AFGCrashSiteDebris::BeginPlay(){ }
-void AFGCrashSiteDebris::Tick( float dt){ }
-void AFGCrashSiteDebris::PostEditChangeChainProperty(  FPropertyChangedChainEvent& PropertyChangedEvent){ }
+void AFGCrashSiteDebris::Tick(float dt){ }
+void AFGCrashSiteDebris::PostEditChangeChainProperty( FPropertyChangedChainEvent& PropertyChangedEvent){ }
 #endif 
 #if WITH_EDITOR
-void AFGCrashSiteDebris::OnPreBeginPIE( bool isSimulating){ }
-void AFGCrashSiteDebris::OnEndPIE( bool wasSimulatingInEditor){ }
+void AFGCrashSiteDebris::OnPreBeginPIE(bool isSimulating){ }
+void AFGCrashSiteDebris::OnEndPIE(bool wasSimulatingInEditor){ }
 void AFGCrashSiteDebris::SpawnSimulation(){ }
 void AFGCrashSiteDebris::ResetSavedSimulation(){ }
 void AFGCrashSiteDebris::DestroySavedSimulation(){ }

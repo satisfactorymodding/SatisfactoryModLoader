@@ -190,6 +190,9 @@ private:
 
 	/** Is this state active? */
 	bool mIsActive;
+
+public:
+	FORCEINLINE ~UFGBuildGunState() = default;
 };
 
 /**
@@ -415,6 +418,9 @@ private:
 	bool mWaitingForPrimaryFireRelease;
 
 	bool mHasHookedUpBuildStateUserSettings = false; //[DavalliusA:Thu/23-01-2020] not happy with this, but didn't find a function that is only called once and where we know we have a local instagator or not 
+
+public:
+	FORCEINLINE ~AFGBuildGun() = default;
 };
 
 /**
@@ -424,4 +430,7 @@ UCLASS()
 class FACTORYGAME_API AFGBuildGunAttachment : public AFGEquipmentAttachment
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~AFGBuildGunAttachment() = default;
 };

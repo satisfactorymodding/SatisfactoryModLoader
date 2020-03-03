@@ -54,6 +54,9 @@ private:
 	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ EProductionStatus::IS_MAX ];
 	TArray< InstanceHandle* > mHandles[ EProductionStatus::IS_MAX ];
 
+
+public:
+	FORCEINLINE ~UFGProductionIndicatorInstanceManager() = default;
 };
 
 //</CSS>

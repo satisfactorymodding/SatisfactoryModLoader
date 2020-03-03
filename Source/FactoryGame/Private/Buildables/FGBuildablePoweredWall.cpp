@@ -2,4 +2,4 @@
 
 #include "FGBuildablePoweredWall.h"
 
-void AFGBuildablePoweredWall::AddConnection(  UFGPowerConnectionComponent* connection){ }
+void AFGBuildablePoweredWall::AddConnection( UFGPowerConnectionComponent* connection){ }

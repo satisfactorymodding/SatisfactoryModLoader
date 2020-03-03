@@ -28,6 +28,9 @@ struct FACTORYGAME_API FOnlinePresence
 	FORCEINLINE bool IsValid() const { return Presence.IsValid(); }
 	
 	TSharedPtr<FOnlineUserPresence> Presence;
+
+public:
+	FORCEINLINE ~FOnlinePresence() = default;
 };
 
 UENUM(BlueprintType)
@@ -58,6 +61,9 @@ struct FACTORYGAME_API FUserFeedbackFrontEndData
 	FString body;
 
 	FUserFeedbackFrontEndData() : isSatisfactory( false ), typeOfFeedback( "" ), body( "" ) {}
+
+public:
+	FORCEINLINE ~FUserFeedbackFrontEndData() = default;
 };
 
 // @todosession: We assume we always have cached presence for people. So we need to find where a we don't and it matters (friends-friends, discord invites)
@@ -98,6 +104,9 @@ public:
 	/** Returns true if a OnlinePresence is valid */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "Valid (OnlinePresence)", CompactNodeTitle = "Is Valid", Keywords = "valid presence"))
 	static bool IsValid_OnlinePresence( const FOnlinePresence& a );
+
+public:
+	FORCEINLINE ~UFGPresenceLibrary() = default;
 };
 
 UCLASS()
@@ -137,6 +146,9 @@ public:
 	/** Returns true if a OnlinePresence is valid */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends", meta=(DisplayName = "Valid (FGOnlineFriend)", CompactNodeTitle = "Is Valid", Keywords = "valid friend"))
 	static bool IsValid_Friend( const FFGOnlineFriend& a );
+
+public:
+	FORCEINLINE ~UFGFriendsLibrary() = default;
 };
 
 UCLASS()
@@ -189,6 +201,9 @@ public:
 	// Native library functions
 	static void UpdateSessionFromSessionSettings( FOnlineSessionSettings& session, const FFGOnlineSessionSettings& sessionSettings );
 	static void SessionSettingsFromSession( const FOnlineSessionSettings& session, FFGOnlineSessionSettings& sessionSettings );
+
+public:
+	FORCEINLINE ~UFGSessionLibrary() = default;
 };
 
 UCLASS()
@@ -219,6 +234,9 @@ public:
 	/** Discard a pending invite */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Invite")
 	static void DiscardInvite( UObject* worldContext, const FPendingInvite& invite );
+
+public:
+	FORCEINLINE ~UFGInviteLibrary() = default;
 };
 
 UCLASS()
@@ -276,4 +294,7 @@ public:
 	UE_DEPRECATED(4.22, "Please use UFGSessionLibrary::CheckIsCompatibleVersion instead")
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online", meta=(DeprecatedFunction, DeprecationMessage="Please use FGSessionLibrary::CheckIsCompatibleVersion instead") )
 	static bool CheckIsCompatibleVersion( const FFGOnlineSessionSettings& session);
+
+public:
+	FORCEINLINE ~UFGNetworkLibrary() = default;
 };

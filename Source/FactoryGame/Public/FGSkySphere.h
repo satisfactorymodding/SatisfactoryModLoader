@@ -53,10 +53,13 @@ struct FACTORYGAME_API FSkySphereSettings
 	bool OverrideMoonIntensity;
 
 
+
+public:
+	FORCEINLINE ~FSkySphereSettings() = default;
 };
 
 UCLASS(HideCategories=(Input,Rendering))
-class FACTORYGAME_API AFGSkySphere : public AActor/*, public ICurvePanningInterface*/ // MODDING EDIT
+class FACTORYGAME_API AFGSkySphere : public AActor, public ICurvePanningInterface
 {
 	GENERATED_BODY()
 public:
@@ -74,10 +77,9 @@ public:
 
 	//	Begin ICurvePanningInterface
 #if WITH_EDITOR
-	// MODDING EDIT
-	//virtual float GetViewMinInput() const override;
-	//virtual float GetViewMaxInput() const override;
-	//virtual void SetViewRange( float min, float max ) override;
+	virtual float GetViewMinInput() const override;
+	virtual float GetViewMaxInput() const override;
+	virtual void SetViewRange( float min, float max ) override;
 #endif
 	// End ICurvePanningInterface
 
@@ -88,10 +90,9 @@ public:
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, meta=( CallInEditor = "true" ) )
 	void UpdatePreview();
 
-	// MODDING EDIT
-	///** Expose getting a value from a FRuntimeCurveLinearColor to bp */
-	//UFUNCTION( BlueprintPure, Category="Color",meta= ( DefaultToSelf = "worldContext" ) )
-	//static FLinearColor GetColorCurveValue( const FRuntimeCurveLinearColor& curve, float time );
+	/** Expose getting a value from a FRuntimeCurveLinearColor to bp */
+	UFUNCTION( BlueprintPure, Category="Color",meta= ( DefaultToSelf = "worldContext" ) )
+	static FLinearColor GetColorCurveValue( const FRuntimeCurveLinearColor& curve, float time );
 
 	/** Expose getting a value from a FRuntimeFloatCurve to bp */
 	UFUNCTION( BlueprintPure, Category = "Color", meta = ( DefaultToSelf = "worldContext" ) )
@@ -105,10 +106,9 @@ protected:
 	void SetupPreviewDelegate();
 #endif
 protected:
-	// MODDING EDIT
-	///** How the sunlight changes during the day */
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="Curves|Sun")
-	//FRuntimeCurveLinearColor mSunLightColorCurve;
+	/** How the sunlight changes during the day */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="Curves|Sun")
+	FRuntimeCurveLinearColor mSunLightColorCurve;
 
 	/** How does the suns intensity change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|Sun" )
@@ -122,10 +122,9 @@ protected:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|Sun" )
 	FRuntimeFloatCurve mSunLightShaftOcclusionCurve;
 
-	// MODDING EDIT
-	///** How the moonlight changes during the NIGHT */
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|Moon" )
-	//FRuntimeCurveLinearColor mMoonLightColorCurve;
+	/** How the moonlight changes during the NIGHT */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|Moon" )
+	FRuntimeCurveLinearColor mMoonLightColorCurve;
 
 	/** How does the moons intensity change during the NIGHT */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|Moon" )
@@ -143,23 +142,21 @@ protected:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkyLight" )
 	FRuntimeFloatCurve mSkyLightIntensity;
 
-	// MODDING EDIT
-	///** How does the occlusion tint intensity change during the day */
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkyLight" )
-	//FRuntimeCurveLinearColor mOcclusionTintColor;
-	//
-	///** How the color of the horizon changes during the day */
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
-	//FRuntimeCurveLinearColor mHorizonColorCurve;
-	//
-	///** How the color of the zenith changes during the day */
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
-	//FRuntimeCurveLinearColor mZenithColorCurve;
+	/** How does the occlusion tint intensity change during the day */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkyLight" )
+	FRuntimeCurveLinearColor mOcclusionTintColor;
+	
+	/** How the color of the horizon changes during the day */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
+	FRuntimeCurveLinearColor mHorizonColorCurve;
+	
+	/** How the color of the zenith changes during the day */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
+	FRuntimeCurveLinearColor mZenithColorCurve;
 
-	// MODDING EDIT
-	///** How the color of clouds zenith changes during the day */
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
-	//FRuntimeCurveLinearColor mCloudColorCurve;
+	/** How the color of clouds zenith changes during the day */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
+	FRuntimeCurveLinearColor mCloudColorCurve;
 
 	/** How the opakeness of the clouds change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere", DisplayName="Cloudiness" )
@@ -169,10 +166,9 @@ protected:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
 	FRuntimeFloatCurve mStarBrightness;
 
-	// MODDING EDIT
-	///** How does the ambient light color change during the day */
-	//UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
-	//FRuntimeCurveLinearColor mSkyLightColor;
+	/** How does the ambient light color change during the day */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
+	FRuntimeCurveLinearColor mSkyLightColor;
 
 	/** How does the sun multiplier change during the day in the atmospheric fog */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|AtmosphericFog" )
@@ -190,4 +186,7 @@ protected:
 	float mViewMinInput;
 	float mViewMaxInput;
 #endif
+
+public:
+	FORCEINLINE ~AFGSkySphere() = default;
 };

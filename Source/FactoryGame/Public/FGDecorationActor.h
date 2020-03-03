@@ -37,4 +37,7 @@ public:
 	/** The descriptor of this decoration */
 	UPROPERTY( SaveGame, Replicated, BlueprintReadWrite, Meta = (ExposeOnSpawn) )
 	TSubclassOf< class UFGDecorationDescriptor > mDecorationDescriptor;
+
+public:
+	FORCEINLINE ~AFGDecorationActor() = default;
 };

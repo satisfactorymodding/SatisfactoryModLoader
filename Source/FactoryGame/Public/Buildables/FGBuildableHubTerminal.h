@@ -27,4 +27,7 @@ public:
 	UPROPERTY()
 	class AFGBuildableTradingPost* mTradingPost;
 	
+
+public:
+	FORCEINLINE ~AFGBuildableHubTerminal() = default;
 };

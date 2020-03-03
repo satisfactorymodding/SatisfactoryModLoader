@@ -36,4 +36,7 @@ protected:
 protected:
 	UPROPERTY( ReplicatedUsing=OnRep_Recipe, SaveGame )
 	TSubclassOf< class UFGRecipe > mRecipeToActivate;
+
+public:
+	FORCEINLINE ~UFGRecipeShortcut() = default;
 };

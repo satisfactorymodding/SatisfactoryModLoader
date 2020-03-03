@@ -2,6 +2,6 @@
 
 #include "FGOptionsLibrary.h"
 
-TArray<class UFGDynamicOptionsRow*> UFGOptionsLibrary::GetDynamicOptionsWidgets( UUserWidget* owningWidget, EOptionCategory category){ return TArray<class UFGDynamicOptionsRow*>(); }
-void UFGOptionsLibrary::GetDynamicOptionData( TArray<FOptionRowData>& out_optionRowData){ }
-TArray<class UFGDynamicOptionsRow*> UFGOptionsLibrary::SetupOptionRows( UUserWidget* owningWidget, TArray<FOptionRowData> optionRows, EOptionCategory optionCategory, TSubclassOf<  UFGDynamicOptionsRow > optionsRowWidgetClass){ return TArray<class UFGDynamicOptionsRow*>(); }
+TArray<class UFGDynamicOptionsRow*> UFGOptionsLibrary::GetDynamicOptionsWidgets(UUserWidget* owningWidget, EOptionCategory category){ return TArray<class UFGDynamicOptionsRow*>(); }
+void UFGOptionsLibrary::GetDynamicOptionData(TArray<FOptionRowData>& out_optionRowData){ }
+TArray<class UFGDynamicOptionsRow*> UFGOptionsLibrary::SetupOptionRows(UUserWidget* owningWidget, TArray<FOptionRowData> optionRows, EOptionCategory optionCategory, TSubclassOf<  UFGDynamicOptionsRow > optionsRowWidgetClass){ return TArray<class UFGDynamicOptionsRow*>(); }

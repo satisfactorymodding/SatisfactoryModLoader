@@ -52,4 +52,7 @@ protected:
 
 	/** Called when attack animation starts to blend out */
 	FOnMontageBlendingOutStarted mOnMontageBlendingOut;
+
+public:
+	FORCEINLINE ~UFGGameplayTask_AttackMelee() = default;
 };

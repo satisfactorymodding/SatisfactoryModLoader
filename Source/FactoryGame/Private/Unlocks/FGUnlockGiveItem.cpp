@@ -2,4 +2,4 @@
 
 #include "FGUnlockGiveItem.h"
 
-void UFGUnlockGiveItem::AddItemsToGive( TArray< FItemAmount > items){ }
+void UFGUnlockGiveItem::AddItemsToGive(TArray< FItemAmount > items){ }

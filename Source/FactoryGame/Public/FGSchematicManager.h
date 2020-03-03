@@ -29,6 +29,9 @@ struct FACTORYGAME_API FSchematicCost
 	/** Amount paid off */
 	UPROPERTY( SaveGame, EditDefaultsOnly )
 	TArray< FItemAmount > ItemCost;
+
+public:
+	FORCEINLINE ~FSchematicCost() = default;
 };
 
 /**
@@ -246,4 +249,7 @@ protected:
 	/** Message sent when trading post ship has returned */
 	UPROPERTY( EditDefaultsOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > mShipReturnedMessage;
+
+public:
+	FORCEINLINE ~AFGSchematicManager() = default;
 };

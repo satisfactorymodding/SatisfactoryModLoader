@@ -4,6 +4,6 @@
 
 AFGFoundationHologram::AFGFoundationHologram(){ }
 void AFGFoundationHologram::BeginPlay(){ }
-bool AFGFoundationHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
-void AFGFoundationHologram::ConfigureSnappedBuilding(  AFGBuildable* inBuildable) const{ }
+bool AFGFoundationHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
+void AFGFoundationHologram::ConfigureSnappedBuilding( AFGBuildable* inBuildable) const{ }
 void AFGFoundationHologram::CheckValidFloor(){ }

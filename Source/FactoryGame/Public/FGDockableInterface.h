@@ -28,6 +28,9 @@ class FACTORYGAME_API UFGDockableInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGDockableInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGDockableInterface() = default;
 };
 
 /**

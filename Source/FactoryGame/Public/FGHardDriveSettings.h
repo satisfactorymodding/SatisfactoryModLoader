@@ -58,4 +58,7 @@ private:
 	/** The list of schematics after the valid list is weighed by probability */
 	TArray<TSubclassOf<class UFGSchematic>> GetFinalSchematicRewards( const TArray<TSubclassOf<class UFGSchematic>>& allValidSchematicDrops ) const;
 
+
+public:
+	FORCEINLINE ~UFGHardDriveSettings() = default;
 };

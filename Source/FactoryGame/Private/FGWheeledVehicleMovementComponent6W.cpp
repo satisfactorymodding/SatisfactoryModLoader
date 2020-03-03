@@ -11,7 +11,7 @@ void UFGWheeledVehicleMovementComponent6W::ComputeConstants(){ }
 void UFGWheeledVehicleMovementComponent6W::GenerateTireForces( UVehicleWheel* Wheel, const FTireShaderInput& Input, FTireShaderOutput& Output){ }
 void UFGWheeledVehicleMovementComponent6W::SetupWheelMassProperties_AssumesLocked(const uint32 NumWheels, physx::PxVehicleWheelsSimData* PWheelsSimData, physx::PxRigidBody* PVehicleActor){ }
 void UFGWheeledVehicleMovementComponent6W::SetupWheels(physx::PxVehicleWheelsSimData* PWheelsSimData){ }
-void UFGWheeledVehicleMovementComponent6W::PreTick( float DeltaTime){ }
+void UFGWheeledVehicleMovementComponent6W::PreTick(float DeltaTime){ }
 void UFGWheeledVehicleMovementComponent6W::SetupVehicleShapes(){ }
 void UFGWheeledVehicleMovementComponent6W::SetupVehicleDrive(physx::PxVehicleWheelsSimData* PWheelsSimData){ }
 void UFGWheeledVehicleMovementComponent6W::UpdateSimulation(float DeltaTime){ }

@@ -4,11 +4,11 @@
 
 AFGRoadHologram::AFGRoadHologram(){ }
 void AFGRoadHologram::BeginPlay(){ }
-USceneComponent* AFGRoadHologram::SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
-void AFGRoadHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
+USceneComponent* AFGRoadHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
+void AFGRoadHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGRoadHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
-void AFGRoadHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
-void AFGRoadHologram::ConfigureComponents(  AFGBuildable* inBuildable) const{ }
+void AFGRoadHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
+void AFGRoadHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGRoadHologram::CheckValidFloor(){ }
 void AFGRoadHologram::CheckClearance(){ }
-UFGRoadConnectionComponent* AFGRoadHologram::FindOverlappingConnectionComponent( const FVector& location, float radius,  UFGRoadConnectionComponent* ignoredConnection, bool ignoreIsConnected) const{ return nullptr; }
+UFGRoadConnectionComponent* AFGRoadHologram::FindOverlappingConnectionComponent(const FVector& location, float radius,  UFGRoadConnectionComponent* ignoredConnection, bool ignoreIsConnected) const{ return nullptr; }

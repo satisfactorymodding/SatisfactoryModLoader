@@ -29,6 +29,8 @@ public:
 	virtual bool CanBeSampled_Implementation() const{ return false; }
 	//~ End AFGBuildable interface
 
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+
 	//~ Begin IFGDismantleInterface
 	virtual void Dismantle_Implementation() override;
 	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
@@ -183,4 +185,7 @@ protected:
 	/** Bool to sync playing of build and upgrade effects */
 	UPROPERTY( ReplicatedUsing = OnRep_NeedPlayingBuildEffect )
 	bool mNeedPlayingBuildEffectNotification;
+
+public:
+	FORCEINLINE ~AFGBuildableTradingPost() = default;
 };

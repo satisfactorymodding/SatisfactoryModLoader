@@ -86,4 +86,7 @@ private:
 	/** Max length that the linked list can be */
 	UPROPERTY( EditDefaultsOnly, Category = "LinkedList" )
 	int32 mMaxLength;
+
+public:
+	FORCEINLINE ~UFGTargetPointLinkedList() = default;
 };

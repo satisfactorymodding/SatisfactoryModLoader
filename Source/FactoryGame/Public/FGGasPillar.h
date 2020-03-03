@@ -75,4 +75,7 @@ private:
 
 	/** Saved significance value */
 	bool mIsSignificant;
+
+public:
+	FORCEINLINE ~AFGGasPillar() = default;
 };

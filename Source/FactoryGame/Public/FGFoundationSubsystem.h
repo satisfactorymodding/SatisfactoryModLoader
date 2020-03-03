@@ -18,6 +18,9 @@ public:
 	/** Which buildables belong to this building. */
 	UPROPERTY( SaveGame )
 	TArray< class AFGBuildable* > Buildables;
+
+public:
+	FORCEINLINE ~FBuilding() = default;
 };
 
 /**
@@ -76,6 +79,9 @@ private:
 	/** All the buildings in the game, map with foundation ID and the building struct. */
 	UPROPERTY( SaveGame )
 	TMap< int32, FBuilding > mBuildings;
+
+public:
+	FORCEINLINE ~AFGFoundationSubsystem() = default;
 };
 
 template< typename T >

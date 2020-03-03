@@ -82,4 +82,7 @@ private:
 
 private:
 	class AFGReplicationDetailActor_Storage* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_Storage>( mReplicationDetailActor ); };
+
+public:
+	FORCEINLINE ~AFGBuildableStorage() = default;
 };

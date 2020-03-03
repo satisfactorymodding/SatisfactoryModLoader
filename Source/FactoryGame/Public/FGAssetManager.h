@@ -17,7 +17,7 @@ public:
 
 #if WITH_EDITOR
 	/** Change behavior dependent on the cook parameters */
-	virtual void SetCookParameters( const FString& commandlineValues ) /*override MODDING EDIT*/;
+	virtual void SetCookParameters( const FString& commandlineValues ) override;
 
 	/** Convenient hook for when we want to be able to add more things to the cook */
 	virtual void ModifyCook( TArray<FName>& out_packagesToCook, TArray<FName>& out_packagesToNeverCook ) override;
@@ -33,4 +33,7 @@ protected:
 	/** During cooking step, what's the minimum value of EIncludeInBuild on asset for it to be included in cooks */
 	EIncludeInBuilds mMinimumIncludeInBuildFlag;
 #endif
+
+public:
+	FORCEINLINE ~UFGAssetManager() = default;
 };

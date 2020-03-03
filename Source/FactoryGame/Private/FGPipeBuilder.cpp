@@ -4,9 +4,9 @@
 
 AFGPipeBuilder::AFGPipeBuilder(){ }
 void AFGPipeBuilder::BeginPlay(){ }
-void AFGPipeBuilder::EndPlay( const EEndPlayReason::Type EndPlayReason){ }
-void AFGPipeBuilder::Tick( float dt){ }
-void AFGPipeBuilder::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPipeBuilder::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGPipeBuilder::Tick(float dt){ }
+void AFGPipeBuilder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGPipeBuilder::Dismantle_Implementation(){ }
 void AFGPipeBuilder::OnPrimaryFirePressed(){ }
 void AFGPipeBuilder::SetupSplineAndSupport(){ }
@@ -16,10 +16,10 @@ void AFGPipeBuilder::Server_PrimaryFire_Implementation(){ }
 bool AFGPipeBuilder::Server_PrimaryFire_Validate(){ return bool(); }
 void AFGPipeBuilder::Server_SecondaryFire_Implementation(){ }
 bool AFGPipeBuilder::Server_SecondaryFire_Validate(){ return bool(); }
-void AFGPipeBuilder::Server_UpdateHitResult_Implementation( FHitResult inHitResult){ }
-bool AFGPipeBuilder::Server_UpdateHitResult_Validate( FHitResult inHitResult){ return bool(); }
-void AFGPipeBuilder::SetHologramsActive( bool isActive){ }
-void AFGPipeBuilder::SetRecipeFromIndex( int32 newIndex){ }
+void AFGPipeBuilder::Server_UpdateHitResult_Implementation(FHitResult inHitResult){ }
+bool AFGPipeBuilder::Server_UpdateHitResult_Validate(FHitResult inHitResult){ return bool(); }
+void AFGPipeBuilder::SetHologramsActive(bool isActive){ }
+void AFGPipeBuilder::SetRecipeFromIndex(int32 newIndex){ }
 bool AFGPipeBuilder::IsReadyToBuild(){ return bool(); }
 void AFGPipeBuilder::SpawnHolograms(){ }
-void AFGPipeBuilder::TickMove( float dt){ }
+void AFGPipeBuilder::TickMove(float dt){ }

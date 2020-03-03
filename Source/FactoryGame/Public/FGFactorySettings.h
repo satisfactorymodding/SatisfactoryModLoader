@@ -33,6 +33,9 @@ struct FACTORYGAME_API FCategory
 	/** Icon for the category */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	FSlateBrush Icon;
+
+public:
+	FORCEINLINE ~FCategory() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -52,6 +55,9 @@ struct FACTORYGAME_API FViscosityToPuddlePair
 	/** Required puddle amount before this fluid viscosity can be moved from a fluid box [ 0 , 1 ] normalized fill amount */
 	UPROPERTY( EditDefaultsOnly, meta = ( ClampMin = "0.0", ClampMax = "1.0" ) )
 	float Puddle;
+
+public:
+	FORCEINLINE ~FViscosityToPuddlePair() = default;
 };
 
 /**
@@ -234,4 +240,7 @@ public:
 	*/
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	TArray< FViscosityToPuddlePair > mViscosityToPuddlePairs;
+
+public:
+	FORCEINLINE ~UFGFactorySettings() = default;
 };

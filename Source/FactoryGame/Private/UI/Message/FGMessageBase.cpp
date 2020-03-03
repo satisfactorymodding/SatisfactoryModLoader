@@ -3,4 +3,4 @@
 #include "FGMessageBase.h"
 
 AFGCharacterPlayer* UFGMessageBase::GetFGCharacter(){ return nullptr; }
-UObject* UFGMessageBase::GetMessageDefaultObject( TSubclassOf< UFGMessageBase > inClass){ return nullptr; }
+UObject* UFGMessageBase::GetMessageDefaultObject(TSubclassOf< UFGMessageBase > inClass){ return nullptr; }

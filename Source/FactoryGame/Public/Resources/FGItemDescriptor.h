@@ -65,6 +65,9 @@ struct FACTORYGAME_API FItemView
 	/** How much "down or up" the camera should be angeled (in degrees) when crating the view */
 	UPROPERTY( EditDefaultsOnly, Category = "View" )
 	float CameraPitch;
+
+public:
+	FORCEINLINE ~FItemView() = default;
 };
 
 /**
@@ -354,6 +357,9 @@ protected:
 private:
 	friend class FItemDescriptorDetails;
 	friend class FFGItemDescriptorPropertyHandle;
+
+public:
+	FORCEINLINE ~UFGItemDescriptor() = default;
 };
 
 FORCEINLINE FString VarToFString(const TSubclassOf<UFGItemDescriptor>& var) { return FString::Printf( TEXT("") ); }

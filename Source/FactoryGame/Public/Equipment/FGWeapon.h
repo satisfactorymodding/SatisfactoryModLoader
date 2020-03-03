@@ -205,6 +205,9 @@ protected:
 	/** A cast reference to the spawned child equipment, if it exists*/
 	class AFGWeaponChild* mChildWeapon;
 
+
+public:
+	FORCEINLINE ~AFGWeapon() = default;
 };
 
 

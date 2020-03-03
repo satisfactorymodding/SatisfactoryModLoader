@@ -72,6 +72,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipe Support" )
 	bool mUseStaticHeight;
 
+
+public:
+	FORCEINLINE ~AFGBuildablePipePart() = default;
 };
 
 UCLASS()
@@ -87,4 +90,7 @@ class FACTORYGAME_API AFGBuildablePipeHyperPart : public AFGBuildablePipePart, p
 	virtual bool OnPipeEnter_Implementation( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough = nullptr, const AActor* fromPipe = nullptr ) override;
 	// End FGHyperTube Interface
 
+
+public:
+	FORCEINLINE ~AFGBuildablePipeHyperPart() = default;
 };

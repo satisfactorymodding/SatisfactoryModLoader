@@ -133,4 +133,7 @@ private:
 
 	/** The last cached distance between the actor this object is representing and the player*/
 	float LastCachedDistanceFromPlayer;
+
+public:
+	FORCEINLINE ~UFGCompassObjectWidget() = default;
 };

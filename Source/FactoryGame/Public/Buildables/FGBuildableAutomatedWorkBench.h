@@ -43,4 +43,7 @@ public:
 	/** Size of the input inventory for the workbench */
 	UPROPERTY( EditDefaultsOnly, Category = "Automated WorkBench" )
 	int32 mInputInventorySize;
+
+public:
+	FORCEINLINE ~AFGBuildableAutomatedWorkBench() = default;
 };

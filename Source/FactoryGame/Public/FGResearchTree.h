@@ -109,4 +109,7 @@ private:
 	EIncludeInBuilds mIncludeInBuilds;
 #endif
 
+
+public:
+	FORCEINLINE ~UFGResearchTree() = default;
 };

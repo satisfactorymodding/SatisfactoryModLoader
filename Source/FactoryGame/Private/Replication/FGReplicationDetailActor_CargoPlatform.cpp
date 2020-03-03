@@ -3,7 +3,7 @@
 #include "FGReplicationDetailActor_CargoPlatform.h"
 
 AFGReplicationDetailActor_CargoPlatform::AFGReplicationDetailActor_CargoPlatform(){ }
-void AFGReplicationDetailActor_CargoPlatform::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGReplicationDetailActor_CargoPlatform::InitReplicationDetailActor(  AFGBuildable* owningActor){ }
+void AFGReplicationDetailActor_CargoPlatform::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_CargoPlatform::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_CargoPlatform::FlushReplicationActorStateToOwner(){ }
 bool AFGReplicationDetailActor_CargoPlatform::HasCompletedInitialReplication() const{ return bool(); }

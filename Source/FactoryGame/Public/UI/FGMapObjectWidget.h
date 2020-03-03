@@ -53,4 +53,7 @@ private:
 	class AFGMinimapCaptureActor* mMinimapCaptureActor;
 
 
+
+public:
+	FORCEINLINE ~UFGMapObjectWidget() = default;
 };

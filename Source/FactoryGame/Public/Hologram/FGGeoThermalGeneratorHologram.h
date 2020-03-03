@@ -22,4 +22,7 @@ protected:
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
+
+public:
+	FORCEINLINE ~AFGGeoThermalGeneratorHologram() = default;
 };

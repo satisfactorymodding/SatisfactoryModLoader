@@ -3,17 +3,17 @@
 #include "FGPipePartHologram.h"
 
 AFGPipePartHologram::AFGPipePartHologram(){ }
-void AFGPipePartHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const { }
+void AFGPipePartHologram::GetLifetimeReplicatedProps( TArray<class FLifetimeProperty,  FDefaultAllocator> & OutReplicatedProps) const{ }
 void AFGPipePartHologram::BeginPlay(){ }
-bool AFGPipePartHologram::DoMultiStepPlacement( bool isInputFromARelease){ return bool(); }
-bool AFGPipePartHologram::IsValidHitResult( const FHitResult& hitResult) const{ return bool(); }
-bool AFGPipePartHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
-void AFGPipePartHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
+bool AFGPipePartHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
+bool AFGPipePartHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
+bool AFGPipePartHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
+void AFGPipePartHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGPipePartHologram::CheckValidFloor(){ }
-void AFGPipePartHologram::SetSupportLength( float height){ }
-void AFGPipePartHologram::SnapToConnection( UFGPipeConnectionComponentBase* connection, FVector preSnapLocation){ }
-void AFGPipePartHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
-void AFGPipePartHologram::ConfigureComponents(  AFGBuildable* inBuildable) const{ }
+void AFGPipePartHologram::SetSupportLength(float height){ }
+void AFGPipePartHologram::SnapToConnection(UFGPipeConnectionComponentBase* connection, FVector preSnapLocation){ }
+void AFGPipePartHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
+void AFGPipePartHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGPipePartHologram::CheckClearance(){ }
 void AFGPipePartHologram::CheckValidPlacement(){ }
 void AFGPipePartHologram::OnRep_SupportMesh(){ }

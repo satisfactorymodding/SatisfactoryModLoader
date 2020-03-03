@@ -167,4 +167,7 @@ protected:
 
 	class AFGCharacterPlayer* mCharOwner; //[DavalliusA:Wed/20-03-2019] saved so we can easily handle outline stuff
 	bool mHadUseTargetLastFrame;
+
+public:
+	FORCEINLINE ~AFGColorGun() = default;
 };

@@ -37,4 +37,7 @@ public:
 	// Trace distance when building. * /
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Decoration" )
 	float mPlaceDistanceMax;
+
+public:
+	FORCEINLINE ~AFGEquipmentDecoration() = default;
 };

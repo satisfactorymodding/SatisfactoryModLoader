@@ -86,4 +86,7 @@ protected:
 	// UWidget interface
 	virtual TSharedRef< SWidget > RebuildWidget() override;
 	// End of UWidget interface
+
+public:
+	FORCEINLINE ~UFGListView() = default;
 };

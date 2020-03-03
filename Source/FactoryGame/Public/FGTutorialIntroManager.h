@@ -46,6 +46,9 @@ struct FACTORYGAME_API FRecipeAmountPair
 	/** How many of given recipe */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
 	int32 Amount;
+
+public:
+	FORCEINLINE ~FRecipeAmountPair() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -64,6 +67,9 @@ struct FACTORYGAME_API FTutorialHintData
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
 	TSubclassOf< class UFGMessageBase > Message;
+
+public:
+	FORCEINLINE ~FTutorialHintData() = default;
 };
 
 struct FACTORYGAME_API FFindByIntroID
@@ -76,6 +82,9 @@ struct FACTORYGAME_API FFindByIntroID
 	{
 		return ( TutorialStep == Element.ID );
 	}
+
+public:
+	FORCEINLINE ~FFindByIntroID() = default;
 };
 
 UCLASS( abstract )
@@ -370,4 +379,7 @@ private:
 	/** List of recipes that player should get the items of if the player chooses to skip the tutorial */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
 	TArray< FRecipeAmountPair > mRecipesToGivePlayersSkippingTutorial;
+
+public:
+	FORCEINLINE ~AFGTutorialIntroManager() = default;
 };

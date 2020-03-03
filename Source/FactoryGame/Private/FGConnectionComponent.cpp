@@ -2,11 +2,11 @@
 
 #include "FGConnectionComponent.h"
 
-void UFGConnectionComponent::Serialize( FArchive& ar){ Super::Serialize(ar ); }
-void UFGConnectionComponent::PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGConnectionComponent::PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGConnectionComponent::PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGConnectionComponent::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void UFGConnectionComponent::GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects){ }
+void UFGConnectionComponent::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void UFGConnectionComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGConnectionComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGConnectionComponent::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void UFGConnectionComponent::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool UFGConnectionComponent::NeedTransform_Implementation(){ return bool(); }
 bool UFGConnectionComponent::ShouldSave_Implementation() const{ return bool(); }

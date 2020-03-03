@@ -23,6 +23,9 @@ struct FACTORYGAME_API FSplineSupportPair
 	/** What recipe to use for the spline */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )
 	TSubclassOf< class UFGRecipe > SplineRecipeClass;
+
+public:
+	FORCEINLINE ~FSplineSupportPair() = default;
 };
 
 /**
@@ -183,4 +186,7 @@ public:
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )
 	float mTrailDistance;
 
+
+public:
+	FORCEINLINE ~AFGPipeBuilder() = default;
 };

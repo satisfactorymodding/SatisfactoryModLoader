@@ -2,4 +2,4 @@
 
 #include "FGWaterAudio.h"
 
-UAkAudioEvent* UFGWaterAudio::GetImpactEvent(  APawn* pawn) const{ return nullptr; }
+UAkAudioEvent* UFGWaterAudio::GetImpactEvent( APawn* pawn) const{ return nullptr; }

@@ -16,4 +16,7 @@ class FACTORYGAME_API UFGResourceDescriptorGeyser : public UFGResourceDescriptor
 	GENERATED_BODY()
 	
 	
+
+public:
+	FORCEINLINE ~UFGResourceDescriptorGeyser() = default;
 };

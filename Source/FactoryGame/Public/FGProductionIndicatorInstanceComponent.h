@@ -51,4 +51,7 @@ private:
 
 	/* Don't need to be a UPROPERTY as it's only meant as a shortcut to an object that is already managed elsewhere and guaranteed to live longer than this component. */
 	UFGProductionIndicatorInstanceManager* mInstanceManager;
+
+public:
+	FORCEINLINE ~UFGProductionIndicatorInstanceComponent() = default;
 };

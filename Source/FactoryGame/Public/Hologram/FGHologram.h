@@ -585,6 +585,9 @@ private:
 	UPROPERTY( /*CustomSerialization*/ )
 	FRotator mConstructionRotation;
 public:
+
+public:
+	FORCEINLINE ~AFGHologram() = default;
 };
 
 template<typename T>

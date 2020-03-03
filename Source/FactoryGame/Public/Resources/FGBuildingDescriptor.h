@@ -57,4 +57,7 @@ protected:
 	/** The class to build. */
 	UPROPERTY( EditDefaultsOnly, Category = "Building" )
 	TSubclassOf< class AFGBuildable > mBuildableClass;
+
+public:
+	FORCEINLINE ~UFGBuildingDescriptor() = default;
 };

@@ -33,6 +33,9 @@ struct FACTORYGAME_API FAudioSubtitlePair
 	/** Sender for this part of message */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Audio Message" )
 	TSubclassOf< class UFGMessageSender > SenderClass;
+
+public:
+	FORCEINLINE ~FAudioSubtitlePair() = default;
 };
 
 
@@ -109,4 +112,7 @@ private:
 
 	UPROPERTY()
 	class UInputComponent* mAudioMessageInputComponent;
+
+public:
+	FORCEINLINE ~UFGAudioMessage() = default;
 };

@@ -121,6 +121,9 @@ public:
 		Debug_PressureGroup = INDEX_NONE;
 		Debug_DP = 0.f;
 	}
+
+public:
+	FORCEINLINE ~FFluidBox() = default;
 };
 
 template<>
@@ -131,6 +134,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FFluidBox > : public TStructOpsType
 		WithSerializer = true,
 		WithIdenticalViaEquality = true,
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FFluidBox >() = default;
 };
 
 // This class does not need to be modified.
@@ -138,6 +144,9 @@ UINTERFACE(MinimalAPI)
 class UFGFluidIntegrantInterface : public UInterface
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGFluidIntegrantInterface() = default;
 };
 
 /**

@@ -4,6 +4,6 @@
 
 AFGAttentionPingActor::AFGAttentionPingActor(){ }
 void AFGAttentionPingActor::BeginPlay(){ }
-void AFGAttentionPingActor::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGAttentionPingActor::SetOwningPlayerState(  AFGPlayerState* playerState){ }
+void AFGAttentionPingActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGAttentionPingActor::SetOwningPlayerState( AFGPlayerState* playerState){ }
 void AFGAttentionPingActor::OnRep_OwningPlayerState(){ }

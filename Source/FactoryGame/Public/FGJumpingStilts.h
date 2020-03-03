@@ -61,6 +61,9 @@ private:
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
 
 	float mMaxFallSpeedBeforeDamage;
+
+public:
+	FORCEINLINE ~AFGJumpingStilts() = default;
 };
 
 
@@ -70,4 +73,7 @@ class FACTORYGAME_API AFGJumpingStiltsAttachment : public AFGEquipmentAttachment
 	GENERATED_BODY()
 
 
+
+public:
+	FORCEINLINE ~AFGJumpingStiltsAttachment() = default;
 };

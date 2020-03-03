@@ -33,4 +33,7 @@ private:
 
 private:
 	float mStackingHeight;
+
+public:
+	FORCEINLINE ~AFGPipeReservoirHologram() = default;
 };

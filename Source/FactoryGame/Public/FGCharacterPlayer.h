@@ -80,6 +80,9 @@ public:
 	uint8 mUse : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
 	uint8 mVehicleRecording : 1;
+
+public:
+	FORCEINLINE ~FDisabledInputGate() = default;
 };
 
 /**
@@ -91,6 +94,9 @@ class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead : public UFGUseSta
 	GENERATED_BODY()
 public:
 	UFGUseState_ReviveInvalid_PlayerNotDead() : Super() { mIsUsableState = false; }
+
+public:
+	FORCEINLINE ~UFGUseState_ReviveInvalid_PlayerNotDead() = default;
 };
 
 /**
@@ -102,6 +108,9 @@ class FACTORYGAME_API UFGUseState_ReviveValid : public UFGUseState
 	GENERATED_BODY()
 public:
 	UFGUseState_ReviveValid() : Super() { mIsUsableState = true; }
+
+public:
+	FORCEINLINE ~UFGUseState_ReviveValid() = default;
 };
 
 /**
@@ -1112,4 +1121,7 @@ private:
 public:
 	UPROPERTY( BlueprintReadWrite, Category = "FactoryGame|Movement|Crouch" )
 	bool mNoUpdate;
+
+public:
+	FORCEINLINE ~AFGCharacterPlayer() = default;
 };

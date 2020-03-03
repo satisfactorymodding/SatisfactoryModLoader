@@ -200,4 +200,7 @@ private:
 
 	/** Timer value used so that we don't push audio message direct after another */
 	float mAudioMessageCooldown;
+
+public:
+	FORCEINLINE ~UFGGameUI() = default;
 };

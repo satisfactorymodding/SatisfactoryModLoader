@@ -47,4 +47,7 @@ protected:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsDetonated )
 	bool mIsDetonated;
 
+
+public:
+	FORCEINLINE ~AFGC4Explosive() = default;
 };

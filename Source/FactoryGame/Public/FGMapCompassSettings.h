@@ -37,4 +37,7 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = FogOfWar, meta = ( ToolTip = "" ) )
 	bool mForceSingleThreadedCalculations;
 
+
+public:
+	FORCEINLINE ~UFGMapCompassSettings() = default;
 };

@@ -3,5 +3,5 @@
 #include "FGReplicationDetailInventoryComponent.h"
 
 UFGReplicationDetailInventoryComponent::UFGReplicationDetailInventoryComponent(){ }
-void UFGReplicationDetailInventoryComponent::SetMainInventoryComponent(  UFGInventoryComponent* inventoryComponent){ }
-void UFGReplicationDetailInventoryComponent::SetReplicationInventoryComponent(  UFGInventoryComponent* inventoryComponent){ }
+void UFGReplicationDetailInventoryComponent::SetMainInventoryComponent( UFGInventoryComponent* inventoryComponent){ }
+void UFGReplicationDetailInventoryComponent::SetReplicationInventoryComponent( UFGInventoryComponent* inventoryComponent){ }

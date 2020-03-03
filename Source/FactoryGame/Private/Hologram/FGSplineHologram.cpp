@@ -3,15 +3,15 @@
 #include "FGSplineHologram.h"
 
 AFGSplineHologram::AFGSplineHologram(){ }
-void AFGSplineHologram::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGSplineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGSplineHologram::BeginPlay(){ }
-void AFGSplineHologram::SerializeConstructMessage( FArchive& ar){ }
+void AFGSplineHologram::SerializeConstructMessage(FArchive& ar){ }
 void AFGSplineHologram::ClientPreConstructMessageSerialization(){ }
 void AFGSplineHologram::ServerPostConstructMessageDeserialization(){ }
-void AFGSplineHologram::OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram){ }
-bool AFGSplineHologram::IsConnectionSnapped( bool lastConnection){ return bool(); }
-void AFGSplineHologram::GetLastSplineData( FSplinePointData& data){ }
+void AFGSplineHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
+bool AFGSplineHologram::IsConnectionSnapped(bool lastConnection){ return bool(); }
+void AFGSplineHologram::GetLastSplineData(FSplinePointData& data){ }
 void AFGSplineHologram::ResetBuildSteps(){ }
-bool AFGSplineHologram::CheckClearanceForShapeIgnoreStructure( FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params){ return bool(); }
+bool AFGSplineHologram::CheckClearanceForShapeIgnoreStructure(FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params){ return bool(); }
 void AFGSplineHologram::OnRep_SplineData(){ }
 void AFGSplineHologram::UpdateSplineComponent(){ }

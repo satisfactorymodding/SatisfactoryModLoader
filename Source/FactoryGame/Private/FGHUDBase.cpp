@@ -2,4 +2,4 @@
 
 #include "FGHUDBase.h"
 
-void AFGHUDBase::SetBaseUI(  UFGBaseUI* newUI){ }
+void AFGHUDBase::SetBaseUI( UFGBaseUI* newUI){ }

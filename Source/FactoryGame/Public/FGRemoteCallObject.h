@@ -38,4 +38,7 @@ protected:
 
 	/** Returns the cast outer as a FGPlayerControlelr */
 	class AFGPlayerController* GetOuterFGPlayerController();
+
+public:
+	FORCEINLINE ~UFGRemoteCallObject() = default;
 };

@@ -257,4 +257,7 @@ protected:
 	/** Forward implementation details to our owner. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	uint8 mForwardPeekAndGrabToBuildable:1;
+
+public:
+	FORCEINLINE ~UFGFactoryConnectionComponent() = default;
 };

@@ -5,4 +5,4 @@
 void UFGMultiplayerVerticalBox::ReleaseSlateResources(bool bReleaseChildren){ }
 void UFGMultiplayerVerticalBox::Sort(){ }
 TSharedRef<SWidget> UFGMultiplayerVerticalBox::RebuildWidget(){ return Super::RebuildWidget(); }
-bool UFGMultiplayerVerticalBox::ReplaceChildAt_NoSync( int32 Index, UWidget* Content){ return bool(); }
+bool UFGMultiplayerVerticalBox::ReplaceChildAt_NoSync(int32 Index, UWidget* Content){ return bool(); }

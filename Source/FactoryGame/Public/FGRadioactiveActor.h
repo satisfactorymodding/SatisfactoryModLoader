@@ -29,4 +29,7 @@ private:
 	 */
 	UPROPERTY( EditInstanceOnly, Category = "Radioactivity" )
 	float mRadioactiveDecay;
+
+public:
+	FORCEINLINE ~AFGRadioactiveActor() = default;
 };

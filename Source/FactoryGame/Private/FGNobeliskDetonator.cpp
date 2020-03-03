@@ -3,16 +3,16 @@
 #include "FGNobeliskDetonator.h"
 
 AFGNobeliskDetonator::AFGNobeliskDetonator(){ }
-void AFGNobeliskDetonator::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
+void AFGNobeliskDetonator::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGNobeliskDetonator::ShouldSaveState() const{ return bool(); }
 void AFGNobeliskDetonator::BeginPrimaryFire(){ }
 void AFGNobeliskDetonator::EndPrimaryFire(){ }
-void AFGNobeliskDetonator::Equip(  AFGCharacterPlayer* character){ }
+void AFGNobeliskDetonator::Equip( AFGCharacterPlayer* character){ }
 void AFGNobeliskDetonator::UnEquip(){ }
 float AFGNobeliskDetonator::GetChargePct(){ return float(); }
-void AFGNobeliskDetonator::SpawnExplosive( FTransform spawnTransform, int32 throwForce){ }
-void AFGNobeliskDetonator::Server_SpawnExplosive_Implementation( FTransform spawnTransform, int32 throwForce){ }
-bool AFGNobeliskDetonator::Server_SpawnExplosive_Validate( FTransform spawnTransform, int32 throwForce){ return bool(); }
+void AFGNobeliskDetonator::SpawnExplosive(FTransform spawnTransform, int32 throwForce){ }
+void AFGNobeliskDetonator::Server_SpawnExplosive_Implementation(FTransform spawnTransform, int32 throwForce){ }
+bool AFGNobeliskDetonator::Server_SpawnExplosive_Validate(FTransform spawnTransform, int32 throwForce){ return bool(); }
 void AFGNobeliskDetonator::StartDetonations(){ }
 void AFGNobeliskDetonator::Server_StartDetonations_Implementation(){ }
 bool AFGNobeliskDetonator::Server_StartDetonations_Validate(){ return bool(); }

@@ -2,5 +2,5 @@
 
 #include "FGStingerWidgetRewardData.h"
 
-FText UFGStingerWidgetRewardData::GetIconText( TSubclassOf< UFGStingerWidgetRewardData > inClass){ return FText(); }
-UTexture2D* UFGStingerWidgetRewardData::GetIconTexture( TSubclassOf< UFGStingerWidgetRewardData > inClass){ return nullptr; }
+FText UFGStingerWidgetRewardData::GetIconText(TSubclassOf< UFGStingerWidgetRewardData > inClass){ return FText(); }
+UTexture2D* UFGStingerWidgetRewardData::GetIconTexture(TSubclassOf< UFGStingerWidgetRewardData > inClass){ return nullptr; }

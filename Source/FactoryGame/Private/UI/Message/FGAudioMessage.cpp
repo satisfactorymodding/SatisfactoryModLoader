@@ -2,7 +2,7 @@
 
 #include "FGAudioMessage.h"
 
-UFGAudioMessage::UFGAudioMessage( const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGAudioMessage::UFGAudioMessage(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 void UFGAudioMessage::NativeConstruct(){ }
 void UFGAudioMessage::NativeDestruct(){ }
 void UFGAudioMessage::StartPlayback(){ }

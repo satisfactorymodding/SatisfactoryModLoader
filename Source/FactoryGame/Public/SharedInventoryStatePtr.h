@@ -234,6 +234,9 @@ private:
 	 * this is only setup on the server and is completely ignored on clients and replication.
 	 */
 	SharedPointerInternals::FSharedReferencer< ESPMode::Fast > SharedReferenceCount;
+
+public:
+	FORCEINLINE ~FSharedInventoryStatePtr() = default;
 };
 FORCEINLINE FString VarToFString( FSharedInventoryStatePtr var ){ return FString::Printf( TEXT( "%s" ), *VarToFString(var.Get()) ); }
 
@@ -247,4 +250,7 @@ struct FACTORYGAME_API TStructOpsTypeTraits<FSharedInventoryStatePtr> : public T
 		WithNetSerializer = true,
 		WithSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits<FSharedInventoryStatePtr>() = default;
 };

@@ -85,4 +85,7 @@ protected:
 
 	/** Index of the currently moved point. */
 	int32 mActivePointIdx;
+
+public:
+	FORCEINLINE ~AFGSplineHologram() = default;
 };

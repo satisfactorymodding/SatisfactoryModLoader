@@ -16,4 +16,7 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Beacon" )
 	void PickUpBeacon( class AFGCharacterPlayer* player );
 	
+
+public:
+	FORCEINLINE ~AFGBeacon() = default;
 };

@@ -4,5 +4,5 @@
 
 AFGWeaponProjectileFire::AFGWeaponProjectileFire(){ }
 void AFGWeaponProjectileFire::FireAmmunition_Implementation(){ }
-void AFGWeaponProjectileFire::GetProjectileData( FProjectileData& out_data){ }
-void AFGWeaponProjectileFire::ProjectileFire( const FVector& shootDir, const FVector& origin){ }
+void AFGWeaponProjectileFire::GetProjectileData(FProjectileData& out_data){ }
+void AFGWeaponProjectileFire::ProjectileFire(const FVector& shootDir, const FVector& origin){ }

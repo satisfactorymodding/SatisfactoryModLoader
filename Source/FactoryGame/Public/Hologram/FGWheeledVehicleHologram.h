@@ -26,4 +26,7 @@ protected:
 
 	/** @copydoc AFGVehicleHologram::ConstructVehicle */
 	virtual class AFGVehicle* ConstructVehicle( FNetConstructionID netConstructionID ) const override;
+
+public:
+	FORCEINLINE ~AFGWheeledVehicleHologram() = default;
 };

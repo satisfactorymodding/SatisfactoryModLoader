@@ -33,4 +33,7 @@ public:
 	/** The creature this seat is on */
 	UPROPERTY( SaveGame, Replicated, BlueprintReadWrite, Meta = ( ExposeOnSpawn ) )
 	class AFGCreature* mMountedCreature;
+
+public:
+	FORCEINLINE ~AFGCreatureSeat() = default;
 };

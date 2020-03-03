@@ -2,5 +2,5 @@
 
 #include "FGPipeHyperStart.h"
 
-void AFGPipeHyperStart::OnPipeMove_Implementation( UFGCharacterMovementComponent* charMove, float deltaTime){ }
-bool AFGPipeHyperStart::OnPipeEnter_Implementation( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough , const AActor* fromPipe ){ return bool(); }
+void AFGPipeHyperStart::OnPipeMove_Implementation(UFGCharacterMovementComponent* charMove, float deltaTime){ }
+bool AFGPipeHyperStart::OnPipeEnter_Implementation(UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough , const AActor* fromPipe){ return bool(); }

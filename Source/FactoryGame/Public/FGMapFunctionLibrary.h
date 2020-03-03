@@ -30,4 +30,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	static float GetMapDistance ( const AFGMinimapCaptureActor* minimapCaptureActor, float worldDistance, float mapResolution );
 
+
+public:
+	FORCEINLINE ~UFGMapFunctionLibrary() = default;
 };

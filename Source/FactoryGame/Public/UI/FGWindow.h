@@ -18,4 +18,7 @@ public:
 	/** Returns the close button in the title label */
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	UUserWidget* GetCloseButton();
+
+public:
+	FORCEINLINE ~UFGWindow() = default;
 };

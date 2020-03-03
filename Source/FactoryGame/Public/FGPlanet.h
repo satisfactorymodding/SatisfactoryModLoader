@@ -33,4 +33,7 @@ private:
 	// In editor, receive updates for whenever the time of day is updated
 	FDelegateHandle mTimeOfDayUpdated;
 #endif
+
+public:
+	FORCEINLINE ~AFGPlanet() = default;
 };

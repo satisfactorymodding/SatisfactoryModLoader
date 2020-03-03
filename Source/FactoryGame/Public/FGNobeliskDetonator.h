@@ -130,4 +130,7 @@ private:
 	
 	
 	
+
+public:
+	FORCEINLINE ~AFGNobeliskDetonator() = default;
 };

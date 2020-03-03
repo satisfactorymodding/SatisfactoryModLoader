@@ -102,4 +102,7 @@ private:
 	/** Is the fuse triggered. */
 	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
 	bool mIsFuseTriggered;
+
+public:
+	FORCEINLINE ~AFGBuildableGenerator() = default;
 };

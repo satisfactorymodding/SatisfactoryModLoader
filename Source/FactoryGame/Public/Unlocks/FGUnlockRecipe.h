@@ -39,4 +39,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	TArray< TSubclassOf< class UFGRecipe > > mRecipes;
 
+
+public:
+	FORCEINLINE ~UFGUnlockRecipe() = default;
 };

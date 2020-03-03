@@ -55,4 +55,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Nobelisk" )
 	FRotator mThrowRotation;
 
+
+public:
+	FORCEINLINE ~AFGNobeliskExplosive() = default;
 };

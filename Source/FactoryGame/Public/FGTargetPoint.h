@@ -99,4 +99,7 @@ public:
 	/** Target speed at this node */ 
 	UPROPERTY( Replicated, BlueprintReadOnly, SaveGame, Meta = ( ExposeOnSpawn = "true" ), Category = "Target Point" )
 	int32 mTargetSpeed;
+
+public:
+	FORCEINLINE ~AFGTargetPoint() = default;
 };

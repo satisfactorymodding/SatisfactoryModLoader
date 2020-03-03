@@ -46,4 +46,7 @@ public:
 	/** The vehicle this descriptor describes. */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	TSubclassOf< class AFGVehicle > mVehicleClass;
+
+public:
+	FORCEINLINE ~UFGVehicleDescriptor() = default;
 };

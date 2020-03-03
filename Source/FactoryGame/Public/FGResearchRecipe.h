@@ -37,6 +37,9 @@ public:
 
 	/** For debugging */
 	FString ToString() const;
+
+public:
+	FORCEINLINE ~FResearchRecipeReward() = default;
 };
 
 
@@ -130,4 +133,7 @@ private:
 	/** Asset Bundle data computed at save time. In cooked builds this is accessible from AssetRegistry */
 	UPROPERTY()
 	FAssetBundleData mAssetBundleData;
+
+public:
+	FORCEINLINE ~UFGResearchRecipe() = default;
 };

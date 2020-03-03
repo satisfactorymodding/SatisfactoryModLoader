@@ -6,5 +6,5 @@ AFGBuildableAutomatedWorkBench::AFGBuildableAutomatedWorkBench(){ }
 void AFGBuildableAutomatedWorkBench::SetUpInventoryFilters(){ }
 bool AFGBuildableAutomatedWorkBench::CanProduce_Implementation() const{ return bool(); }
 void AFGBuildableAutomatedWorkBench::Factory_ConsumeIngredients(){ }
-void AFGBuildableAutomatedWorkBench::SetManufacturingSpeed( float newManufacturingSpeed){ }
+void AFGBuildableAutomatedWorkBench::SetManufacturingSpeed(float newManufacturingSpeed){ }
 void AFGBuildableAutomatedWorkBench::CreateInventories(){ }

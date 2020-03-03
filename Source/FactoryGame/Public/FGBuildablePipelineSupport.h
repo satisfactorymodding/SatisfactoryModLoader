@@ -95,4 +95,7 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipe Support" )
 	bool mUseStaticHeight;
 
+
+public:
+	FORCEINLINE ~AFGBuildablePipelineSupport() = default;
 };

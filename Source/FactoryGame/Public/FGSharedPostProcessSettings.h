@@ -40,4 +40,7 @@ protected:
 	/** Priority of the post process effect */
 	UPROPERTY( EditDefaultsOnly, Category = "PostProcess" )
 	float mPriority;
+
+public:
+	FORCEINLINE ~UFGSharedPostProcessSettings() = default;
 };

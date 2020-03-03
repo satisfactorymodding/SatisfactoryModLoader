@@ -28,4 +28,7 @@ public:
 	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
 	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
 	//~ End IFGUseableInterface
+
+public:
+	FORCEINLINE ~AFGInteractActor() = default;
 };

@@ -48,6 +48,9 @@ public:
 	/** Optionally store an actor, e.g. an equipment, so we can remember it's state. */
 	UPROPERTY()
 	FSharedInventoryStatePtr ItemState;
+
+public:
+	FORCEINLINE ~FInventoryItem() = default;
 };
 FORCEINLINE FString VarToFString( FInventoryItem var ){ return FString::Printf( TEXT( "%s: {%s}" ), *VarToFString(var.ItemClass), *VarToFString(var.ItemState) ); }
 
@@ -60,6 +63,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FInventoryItem > : public TStructOp
 		WithSerializer = true,
 		WithCopy = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FInventoryItem >() = default;
 };
 
 
@@ -92,6 +98,9 @@ public:
 	/** Number of items in this stack. */
 	UPROPERTY( EditAnywhere, SaveGame )
 	int32 NumItems;
+
+public:
+	FORCEINLINE ~FInventoryStack() = default;
 };
 FORCEINLINE bool IsValidForLoad( const FInventoryStack& element ){ return element.Item.ItemClass != nullptr; }
 
@@ -102,6 +111,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits<FInventoryStack> : public TStructOps
 	{
 		WithCopy = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits<FInventoryStack>() = default;
 };
 
 /** Others can hook up to this to allow/disallow items */
@@ -499,4 +511,7 @@ private:
 	/** Can stuff in this inventory be rearranged, that is moved from one slot to the other? */
 	UPROPERTY( SaveGame, Replicated )
 	bool mCanBeRearrange;
+
+public:
+	FORCEINLINE ~UFGInventoryComponent() = default;
 };

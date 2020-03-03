@@ -104,4 +104,7 @@ protected:
 	/** Defines where this recipe can be produced */
 	UPROPERTY( EditDefaultsOnly, Meta = ( MustImplement = "FGRecipeProducerInterface", Category = "Recipe" ) )
 	TArray< TSoftClassPtr< UObject > > mProducedIn;
+
+public:
+	FORCEINLINE ~UFGRecipe() = default;
 };

@@ -92,6 +92,9 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	FVector mSoftVelocity;
 	FVector mCameraPush;
 	float mCamFovMod;
+
+public:
+	FORCEINLINE ~FPlayerPipeHyperData() = default;
 };
 
 /**
@@ -131,7 +134,7 @@ public:
 	virtual void CalcVelocity( float dt, float friction, bool isFluid, float brakingDeceleration ) override;
 	virtual float GetMaxSpeed() const override;
 	virtual void SetDefaultMovementMode() override;
-	virtual float GetMaxJumpZVelocity() const /* override MODDING EDIT: Probably another CSS custom engine thing */;
+	virtual float GetMaxJumpZVelocity() const override;
 	// End UCharacterMovementComponent
 
 
@@ -434,6 +437,9 @@ private:
 	float CheatFlySpeedVertical;
 	void ZeroOutFallVelocity();
 	//end Cheat
+
+public:
+	FORCEINLINE ~UFGCharacterMovementComponent() = default;
 };
 
 class FACTORYGAME_API FSavedMove_FGMovement : public FSavedMove_Character
@@ -464,6 +470,9 @@ public:
 	uint8 mSavedIsSliding : 1;
 
 	FVector mSavedHookLocation;
+
+public:
+	FORCEINLINE ~FSavedMove_FGMovement() = default;
 };
 
 class FACTORYGAME_API FNetworkPredictionData_Client_FGMovement : public FNetworkPredictionData_Client_Character
@@ -475,4 +484,7 @@ public:
 
 	///@brief Allocates a new copy of our custom saved move
 	virtual FSavedMovePtr AllocateNewMove() override;
+
+public:
+	FORCEINLINE ~FNetworkPredictionData_Client_FGMovement() = default;
 };

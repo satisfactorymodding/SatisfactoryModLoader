@@ -48,4 +48,7 @@ public:
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Damage" )
 	static void DoRadialDamageWithinCollision( AController* controller, UShapeComponent* collisionShape, FVector centerLocation, TSubclassOf< class UFGDamageType > damageType, float damage, float radius );
+
+public:
+	FORCEINLINE ~UFGCombatFunctionLibrary() = default;
 };

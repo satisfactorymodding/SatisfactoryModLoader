@@ -38,4 +38,7 @@ private:
 
 	UPROPERTY( SaveGame, Meta = (NoAutoJson) )
 	int32 mCurrentInventoryIndex;
+
+public:
+	FORCEINLINE ~AFGBuildableAttachmentMerger() = default;
 };

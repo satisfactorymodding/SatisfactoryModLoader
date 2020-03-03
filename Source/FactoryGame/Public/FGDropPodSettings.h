@@ -39,6 +39,9 @@ public:
 	/** We can not find this package if we haven't purchased this schematic. */
 	UPROPERTY( EditAnywhere, Category = "DropPackage" )
 	TSubclassOf< class UFGSchematic > RequiredSchematic;
+
+public:
+	FORCEINLINE ~FDropPackage() = default;
 };
 
 /**
@@ -57,4 +60,7 @@ protected:
 	/** List of all available drop packages */
 	UPROPERTY( EditAnywhere, Category = "DropPackage" )
 	TArray< FDropPackage > mDropTable;
+
+public:
+	FORCEINLINE ~UFGDropPodSettings() = default;
 };

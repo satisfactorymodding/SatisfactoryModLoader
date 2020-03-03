@@ -21,6 +21,9 @@ struct FACTORYGAME_API FTutorialData
 
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
 	TSubclassOf< class UFGMessageBase > MessageID;
+
+public:
+	FORCEINLINE ~FTutorialData() = default;
 };
 
 struct FACTORYGAME_API FFindByClassBuilt
@@ -33,6 +36,9 @@ struct FACTORYGAME_API FFindByClassBuilt
 	{
 		return ( ClassBuilt == Element.ClassBuilt );
 	}
+
+public:
+	FORCEINLINE ~FFindByClassBuilt() = default;
 };
 
 /**
@@ -90,4 +96,7 @@ public:
 	/** Needed to set up delegates */
 	UPROPERTY( SaveGame )
 	class AFGPlayerState* mOwningPlayerState;
+
+public:
+	FORCEINLINE ~UFGTutorialSubsystem() = default;
 };

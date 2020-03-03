@@ -3,4 +3,4 @@
 #include "FGPipelineFlowIndicatorComponent.h"
 
 void UFGPipelineFlowIndicatorComponent::BeginPlay(){ }
-void UFGPipelineFlowIndicatorComponent::OnFluidDescriptorSet_Implementation( TSubclassOf< UFGItemDescriptor > fluidDescriptor){ }
+void UFGPipelineFlowIndicatorComponent::OnFluidDescriptorSet_Implementation(TSubclassOf< UFGItemDescriptor > fluidDescriptor){ }

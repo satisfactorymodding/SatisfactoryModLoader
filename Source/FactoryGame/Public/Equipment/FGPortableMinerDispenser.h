@@ -50,4 +50,7 @@ public:
 	/** Material on hologram for invalid placement. */
 	UPROPERTY()
 	class UMaterialInstance* mInvalidPlacementMaterial;
+
+public:
+	FORCEINLINE ~AFGPortableMinerDispenser() = default;
 };

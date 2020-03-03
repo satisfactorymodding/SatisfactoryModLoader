@@ -18,4 +18,7 @@ public:
 	virtual FObjectWriterFName& operator<<( class UObject*& Res ) override;
 	virtual FArchive& operator<<( class FName& N ) override;
 
+
+public:
+	FORCEINLINE ~FObjectWriterFName() = default;
 };

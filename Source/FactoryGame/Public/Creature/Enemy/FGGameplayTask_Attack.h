@@ -39,4 +39,7 @@ protected:
 protected:
 	UPROPERTY( Replicated )
 	TSubclassOf< class UFGAttack > mAttackClass;
+
+public:
+	FORCEINLINE ~UFGGameplayTask_Attack() = default;
 };

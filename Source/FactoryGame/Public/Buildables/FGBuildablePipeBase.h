@@ -1,4 +1,5 @@
 #pragma once
+#include "FGInstancedSplineMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Array.h"
 #include "SubclassOf.h"
@@ -120,6 +121,9 @@ private:
 
 	/** Is this buildable significant, i.e. is within significance range */
 	bool mIsSignificant;
+
+public:
+	FORCEINLINE ~AFGBuildablePipeBase() = default;
 };
 
 

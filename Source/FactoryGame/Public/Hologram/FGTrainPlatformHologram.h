@@ -90,4 +90,7 @@ private:
 	/** Track changes to the scroll direction */
 	int32 mPreviousScrollTrackDirection;
 
+
+public:
+	FORCEINLINE ~AFGTrainPlatformHologram() = default;
 };

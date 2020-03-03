@@ -3,4 +3,4 @@
 #include "FGDynamicOptionsRow.h"
 
 void UFGDynamicOptionsRow::NativePreConstruct(){ }
-void UFGDynamicOptionsRow::InitOptionRow( FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass){ }
+void UFGDynamicOptionsRow::InitOptionRow(FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass){ }

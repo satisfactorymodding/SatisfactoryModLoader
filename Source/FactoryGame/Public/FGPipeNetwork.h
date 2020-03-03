@@ -44,6 +44,9 @@ struct FACTORYGAME_API PipeJunction
 	FVector Debug_Location;
 	FString Debug_Name;
 	FString Debug_String;
+
+public:
+	FORCEINLINE ~PipeJunction() = default;
 };
 
 /**
@@ -199,4 +202,7 @@ private:
 	 * See comments in implementation for details.
 	 */
 	TArray< FPressureGroup > mPressureGroups;
+
+public:
+	FORCEINLINE ~AFGPipeNetwork() = default;
 };

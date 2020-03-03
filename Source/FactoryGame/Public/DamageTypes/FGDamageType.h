@@ -61,4 +61,7 @@ public:
 	/** Should this damage type shock and scare the enemy, like the stun spear? */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
 	bool mShouldShockEnemy;
+
+public:
+	FORCEINLINE ~UFGDamageType() = default;
 };

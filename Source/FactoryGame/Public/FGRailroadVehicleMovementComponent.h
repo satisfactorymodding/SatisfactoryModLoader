@@ -29,6 +29,9 @@ struct FACTORYGAME_API FWheelsetSetup
 
 	/** Where the axle/swivel center is along the vehicles X axis relative to the root. Calculated from the mesh. */
 	float Offset;
+
+public:
+	FORCEINLINE ~FWheelsetSetup() = default;
 };
 
 /**
@@ -51,6 +54,9 @@ struct FACTORYGAME_API FCouplerSetup
 
 	/** Where the coupler's base is along the vehicles X axis relative to the root. Calculated from the mesh. */
 	float Offset;
+
+public:
+	FORCEINLINE ~FCouplerSetup() = default;
 };
 
 /**
@@ -395,4 +401,7 @@ protected:
 	 * Force added by tracks gradient, i.e. gravity.
 	 */
 	float mGradientResistance;
+
+public:
+	FORCEINLINE ~UFGRailroadVehicleMovementComponent() = default;
 };

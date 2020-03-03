@@ -17,6 +17,9 @@ class FACTORYGAME_API UFGChainsawableInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGChainsawableInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGChainsawableInterface() = default;
 };
 
 /**

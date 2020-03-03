@@ -110,4 +110,7 @@ protected:
 
 	/** The offset we snapped on the pipeline. */
 	float mSnappedPipelineOffset;
+
+public:
+	FORCEINLINE ~AFGPipelineAttachmentHologram() = default;
 };

@@ -101,4 +101,7 @@ protected:
 	uint8 mIsAirBrakesApplied : 1;
 	uint8 mIsDynamicBrakesApplied : 1;
 	uint8 mIsThrottleApplied : 1;
+
+public:
+	FORCEINLINE ~UFGRailroadVehicleSoundComponent() = default;
 };

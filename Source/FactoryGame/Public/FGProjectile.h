@@ -136,4 +136,7 @@ private:
 
 	/** Was projectile fired by a weapon */
 	bool mWasFiredByWeapon;
+
+public:
+	FORCEINLINE ~AFGProjectile() = default;
 };

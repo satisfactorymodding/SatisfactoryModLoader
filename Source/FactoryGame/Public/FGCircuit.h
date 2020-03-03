@@ -111,4 +111,7 @@ private:
 	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
 private:
 	friend class AFGCircuitSubsystem;
+
+public:
+	FORCEINLINE ~UFGCircuit() = default;
 };

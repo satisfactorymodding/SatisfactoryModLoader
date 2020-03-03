@@ -190,4 +190,7 @@ private:
 	/** For updateing time of day when map changes in editor */
 	FDelegateHandle mOnMapChangedDelegateHandle;
 #endif
+
+public:
+	FORCEINLINE ~AFGWorldSettings() = default;
 };

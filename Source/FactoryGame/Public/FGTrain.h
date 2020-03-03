@@ -69,6 +69,9 @@ struct FACTORYGAME_API TrainConstants
 	static float DOCK_SPEED;
 	// This is the speed on a restricted section, e.g. before docking. [cm/s]
 	static float RESTRICTED_SPEED;
+
+public:
+	FORCEINLINE ~TrainConstants() = default;
 };
 
 /**
@@ -104,6 +107,9 @@ public:
 	float HighSpeedDynamicBrakingEffort = 0.f;
 	float LimitedSpeedDynamicBrakingEffort = 0.f;
 	float MaxTractiveEffort = 0.f;
+
+public:
+	FORCEINLINE ~FTrainConsist() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -129,6 +135,9 @@ public:
 
 	/** Signal output at this point. If any. */
 	ERailroadSignalAspect SignalAspect = ERailroadSignalAspect::RSA_None;
+
+public:
+	FORCEINLINE ~FTrainAtcPoint() = default;
 };
 
 /**
@@ -187,6 +196,9 @@ public:
 
 	/** If >= 0 we want to be catched at that distance. */
 	float CatchAtSignalDistance = -1.f;
+
+public:
+	FORCEINLINE ~FTrainAtcData() = default;
 };
 
 
@@ -225,6 +237,9 @@ public:
 
 	/** If the last speed was up or down or none. */
 	int8 LastSpeedControl = 0;
+
+public:
+	FORCEINLINE ~FTrainSelfDrivingData() = default;
 };
 
 
@@ -264,6 +279,9 @@ public:
 	// Velocity of this train [directional] [cm/s]
 	UPROPERTY( SaveGame )
 	float Velocity = 0.f;
+
+public:
+	FORCEINLINE ~FTrainSimulationData() = default;
 };
 
 // Delegates for blueprint
@@ -510,4 +528,7 @@ private:
 	FVector mSignificanceLocation;
 	float mSignificanceRadius;
 	float mSignificanceRange;
+
+public:
+	FORCEINLINE ~AFGTrain() = default;
 };

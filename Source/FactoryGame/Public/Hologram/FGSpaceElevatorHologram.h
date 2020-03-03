@@ -19,4 +19,7 @@ class FACTORYGAME_API AFGSpaceElevatorHologram : public AFGFactoryHologram
 	virtual void CheckValidPlacement() override;
 	// End AFGHologram interface
 	
+
+public:
+	FORCEINLINE ~AFGSpaceElevatorHologram() = default;
 };

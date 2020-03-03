@@ -50,4 +50,7 @@ protected:
 	class UMaterialInterface* mClearanceMaterial;
 
 	TMap<class UObject*, class AFGBuildGuide*> mGuideLineBuildings;
+
+public:
+	FORCEINLINE ~AFGFactoryHologram() = default;
 };

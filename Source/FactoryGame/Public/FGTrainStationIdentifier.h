@@ -65,4 +65,7 @@ public:
 	/** Cached here for clients. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_StationName )
 	FText mStationName;
+
+public:
+	FORCEINLINE ~AFGTrainStationIdentifier() = default;
 };

@@ -3,5 +3,5 @@
 #include "FGConsumableDescriptor.h"
 
 UFGConsumableDescriptor::UFGConsumableDescriptor(){ }
-USkeletalMesh* UFGConsumableDescriptor::GetFPOverrideMesh( TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }
-UStaticMesh* UFGConsumableDescriptor::GetTPOverrideMesh( TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }
+USkeletalMesh* UFGConsumableDescriptor::GetFPOverrideMesh(TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }
+UStaticMesh* UFGConsumableDescriptor::GetTPOverrideMesh(TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }

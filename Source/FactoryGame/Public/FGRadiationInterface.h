@@ -13,6 +13,9 @@ class FACTORYGAME_API UFGRadiationInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGRadiationInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGRadiationInterface() = default;
 };
 
 /**

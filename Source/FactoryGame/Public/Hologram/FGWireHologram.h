@@ -98,4 +98,7 @@ private:
 	/** The mesh we should stretch */
 	UPROPERTY()
 	UStaticMeshComponent* mWireMesh;
+
+public:
+	FORCEINLINE ~AFGWireHologram() = default;
 };

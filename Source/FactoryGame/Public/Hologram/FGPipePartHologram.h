@@ -1,5 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 #pragma once
+#include "Array.h"
 #include "Engine/StaticMesh.h"
 #include "UObject/Class.h"
 
@@ -20,6 +21,8 @@ class FACTORYGAME_API AFGPipePartHologram : public AFGFactoryHologram
 	
 public:
 	AFGPipePartHologram();
+    
+	virtual void GetLifetimeReplicatedProps(class TArray<class FLifetimeProperty, class FDefaultAllocator> & OutReplicatedProps) const override; // MODDING EDIT: Needed for the implementer to detect it
 
 	virtual void BeginPlay() override;
 
@@ -89,4 +92,7 @@ private:
 	UPROPERTY()
 	class USceneComponent* mSupportLengthComponent;
 
+
+public:
+	FORCEINLINE ~AFGPipePartHologram() = default;
 };

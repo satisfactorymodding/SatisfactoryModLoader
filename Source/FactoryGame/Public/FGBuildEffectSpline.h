@@ -33,4 +33,7 @@ public:
 	/** Attachment for this effect, can be null */
 	UPROPERTY( BlueprintReadOnly, Category = "FactoryGame|Effect" , Meta = (ExposeOnSpawn = "true") )
 	class AFGPipeBuilderTrail* mAttachment;
+
+public:
+	FORCEINLINE ~AFGBuildEffectSpline() = default;
 };

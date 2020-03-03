@@ -46,4 +46,7 @@ protected:
 private:
 	UPROPERTY()
 	class AFGPlayerController* mCachePlayerController;
+
+public:
+	FORCEINLINE ~AFGInteractableMarker() = default;
 };

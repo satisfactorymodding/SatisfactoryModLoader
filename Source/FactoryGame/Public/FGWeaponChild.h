@@ -49,4 +49,7 @@ protected:
 	/** Keeps track of whether our parent equipable is loaded */
 	UPROPERTY( BlueprintReadOnly, Category = "Weapon" )
 	bool mIsLoaded;
+
+public:
+	FORCEINLINE ~AFGWeaponChild() = default;
 };

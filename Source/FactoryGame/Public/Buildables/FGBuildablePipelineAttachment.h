@@ -58,4 +58,7 @@ protected:
 	UPROPERTY()
 	TSubclassOf< class UFGItemDescriptor > mCachedFluidDescriptor;
 
+
+public:
+	FORCEINLINE ~AFGBuildablePipelineAttachment() = default;
 };

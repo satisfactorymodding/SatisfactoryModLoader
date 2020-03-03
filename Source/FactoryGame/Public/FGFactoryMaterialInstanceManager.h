@@ -55,4 +55,7 @@ private:
 	/** Is this a colorable material instance? */
 	bool mCanBeColored;
 
+
+public:
+	FORCEINLINE ~UFGFactoryMaterialInstanceManager() = default;
 };

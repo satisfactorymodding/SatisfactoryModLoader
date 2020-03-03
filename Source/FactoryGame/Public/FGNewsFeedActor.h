@@ -23,6 +23,9 @@ struct FACTORYGAME_API FNewsFeedMap
 
 	UPROPERTY()
 	FString URL;
+
+public:
+	FORCEINLINE ~FNewsFeedMap() = default;
 };
 
 UCLASS( BlueprintType, Config=Game )
@@ -57,4 +60,7 @@ protected:
 	UPROPERTY( Config )
 	TArray< FNewsFeedMap > mNewsFeedURLs;
 	
+
+public:
+	FORCEINLINE ~AFGNewsFeedActor() = default;
 };

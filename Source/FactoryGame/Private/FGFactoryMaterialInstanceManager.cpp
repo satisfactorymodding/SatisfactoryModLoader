@@ -3,9 +3,9 @@
 #include "FGFactoryMaterialInstanceManager.h"
 
 UFGFactoryMaterialInstanceManager::UFGFactoryMaterialInstanceManager(){ }
-void UFGFactoryMaterialInstanceManager::Init( UMaterialInterface* materialInterface, UWorld* worldContext, bool canBeColored ){ }
+void UFGFactoryMaterialInstanceManager::Init(UMaterialInterface* materialInterface, UWorld* worldContext, bool canBeColored){ }
 void UFGFactoryMaterialInstanceManager::RefreshMaterialColors(){ }
-void UFGFactoryMaterialInstanceManager::RefreshMaterialColorForIndex( int32 index){ }
-void UFGFactoryMaterialInstanceManager::SetVectorParameterOnAllInstances( FName paramName, FVector value){ }
-UMaterialInstanceDynamic* UFGFactoryMaterialInstanceManager::GetMaterialForIndex( int32 index){ return nullptr; }
+void UFGFactoryMaterialInstanceManager::RefreshMaterialColorForIndex(int32 index){ }
+void UFGFactoryMaterialInstanceManager::SetVectorParameterOnAllInstances(FName paramName, FVector value){ }
+UMaterialInstanceDynamic* UFGFactoryMaterialInstanceManager::GetMaterialForIndex(int32 index){ return nullptr; }
 TArray<FString>& UFGFactoryMaterialInstanceManager::GetMaterialInstanceNames(){ return *(new TArray<FString>); }

@@ -2,9 +2,9 @@
 
 #include "FGBuildableStorage.h"
 
-void AFGBuildableStorage::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableStorage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGBuildableStorage::AFGBuildableStorage(){ }
 void AFGBuildableStorage::BeginPlay(){ }
-void AFGBuildableStorage::GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund) const{ }
+void AFGBuildableStorage::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
 void AFGBuildableStorage::Factory_CollectInput_Implementation(){ }
 void AFGBuildableStorage::OnRep_ReplicationDetailActor(){ }

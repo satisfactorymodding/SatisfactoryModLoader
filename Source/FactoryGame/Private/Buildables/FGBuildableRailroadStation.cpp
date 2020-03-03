@@ -3,15 +3,15 @@
 #include "FGBuildableRailroadStation.h"
 
 AFGBuildableRailroadStation::AFGBuildableRailroadStation(){ }
-void AFGBuildableRailroadStation::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableRailroadStation::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildableRailroadStation::BeginPlay(){ }
 void AFGBuildableRailroadStation::Destroyed(){ }
-void AFGBuildableRailroadStation::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
+void AFGBuildableRailroadStation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBuildableRailroadStation::CanDismantle_Implementation() const{ return bool(); }
 UFGTrainPlatformConnection* AFGBuildableRailroadStation::GetStationOutputConnection(){ return nullptr; }
-bool AFGBuildableRailroadStation::CanDock(  AFGLocomotive* locomotive){ return bool(); }
-bool AFGBuildableRailroadStation::StartDocking(  AFGLocomotive* locomotive, float offset){ return bool(); }
-void AFGBuildableRailroadStation::NotifyPlatformDockingComplete(  AFGBuildableTrainPlatform* completedPlatform){ }
+bool AFGBuildableRailroadStation::CanDock( AFGLocomotive* locomotive){ return bool(); }
+bool AFGBuildableRailroadStation::StartDocking( AFGLocomotive* locomotive, float offset){ return bool(); }
+void AFGBuildableRailroadStation::NotifyPlatformDockingComplete( AFGBuildableTrainPlatform* completedPlatform){ }
 void AFGBuildableRailroadStation::SetupRailroadTrack(){ }
-bool AFGBuildableRailroadStation::DockVehiclesToPlatforms(  AFGLocomotive* locomotive){ return bool(); }
+bool AFGBuildableRailroadStation::DockVehiclesToPlatforms( AFGLocomotive* locomotive){ return bool(); }
 void AFGBuildableRailroadStation::FinishDockingSequence(){ }

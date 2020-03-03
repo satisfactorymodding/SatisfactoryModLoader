@@ -192,4 +192,7 @@ private:
 	/** Have we sunken a item of the coupon class, Used to give a schematic */
 	UPROPERTY( SaveGame )
 	bool mIsCouponEverSunk;
+
+public:
+	FORCEINLINE ~AFGResourceSinkSubsystem() = default;
 };

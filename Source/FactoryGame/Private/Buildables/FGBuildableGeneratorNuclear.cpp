@@ -2,9 +2,9 @@
 
 #include "FGBuildableGeneratorNuclear.h"
 
-void AFGBuildableGeneratorNuclear::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableGeneratorNuclear::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableGeneratorNuclear::BeginPlay(){ }
-void AFGBuildableGeneratorNuclear::Factory_Tick( float dt){ }
+void AFGBuildableGeneratorNuclear::Factory_Tick(float dt){ }
 void AFGBuildableGeneratorNuclear::LoadFuel(){ }
 bool AFGBuildableGeneratorNuclear::HasPower() const{ return bool(); }
 bool AFGBuildableGeneratorNuclear::CanStartPowerProduction_Implementation() const{ return bool(); }

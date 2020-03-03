@@ -2,7 +2,7 @@
 
 #include "FGAnimPlayer.h"
 
-void UFGAnimPlayer::NativeUpdateAnimation( float DeltaSeconds){ }
+void UFGAnimPlayer::NativeUpdateAnimation(float DeltaSeconds){ }
 void UFGAnimPlayer::CacheArmSlotData(){ }
 void UFGAnimPlayer::CacheBackSlotData(){ }
 FVector UFGAnimPlayer::GetCharacterVelocity() const{ return FVector(); }

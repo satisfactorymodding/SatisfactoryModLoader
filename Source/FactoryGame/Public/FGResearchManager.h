@@ -62,6 +62,9 @@ struct FACTORYGAME_API FResearchData
 	UPROPERTY( SaveGame )
 	TArray<TSubclassOf<class UFGSchematic>> PendingRewards;
 
+
+public:
+	FORCEINLINE ~FResearchData() = default;
 };
 FORCEINLINE bool IsValidForLoad( const FResearchData& element );
 
@@ -98,6 +101,9 @@ struct FACTORYGAME_API FResearchTime
 	/** The time stamp for when the research is completed. When saved it represents how much time is left for research */
 	UPROPERTY( SaveGame )
 	float ResearchCompleteTimestamp;
+
+public:
+	FORCEINLINE ~FResearchTime() = default;
 };
 FORCEINLINE bool IsValidForLoad( const FResearchTime& element );
 
@@ -277,4 +283,7 @@ private:
 private:
 	friend class UFGCheatManager;
 
+
+public:
+	FORCEINLINE ~AFGResearchManager() = default;
 };

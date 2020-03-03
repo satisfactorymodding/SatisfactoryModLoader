@@ -4,4 +4,4 @@
 
 UFGCollectionParamUniformFloat::UFGCollectionParamUniformFloat(){ }
 bool UFGCollectionParamUniformFloat::IsPostLoadThreadSafe() const{ return bool(); }
-FVector UFGCollectionParamUniformFloat::GetValue( float F , UObject* Data , int32 LastExtreme ,  FRandomStream* InRandomStream ) const{ return FVector(); }
+FVector UFGCollectionParamUniformFloat::GetValue(float F , UObject* Data , int32 LastExtreme ,  FRandomStream* InRandomStream) const{ return FVector(); }

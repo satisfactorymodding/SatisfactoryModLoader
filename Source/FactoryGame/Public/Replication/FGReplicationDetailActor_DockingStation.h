@@ -31,4 +31,7 @@ protected:
 
 	UPROPERTY( Replicated )
 	class UFGInventoryComponent* mFuelInventory;
+
+public:
+	FORCEINLINE ~AFGReplicationDetailActor_DockingStation() = default;
 };

@@ -2,5 +2,5 @@
 
 #include "FGNobeliskDetonatorAttachment.h"
 
-void AFGNobeliskDetonatorAttachment::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGNobeliskDetonatorAttachment::Multicast_SetIsLoaded_Implementation( bool isLoaded){ }
+void AFGNobeliskDetonatorAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGNobeliskDetonatorAttachment::Multicast_SetIsLoaded_Implementation(bool isLoaded){ }

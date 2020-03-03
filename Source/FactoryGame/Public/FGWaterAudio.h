@@ -17,6 +17,9 @@ struct FACTORYGAME_API FPawnImpactAudio
 	/** Event to post if the pawn has the specified velocity */
 	UPROPERTY( EditAnywhere, Category = "Audio" )
 	class UAkAudioEvent* ImpactEvent;
+
+public:
+	FORCEINLINE ~FPawnImpactAudio() = default;
 };
 
 UCLASS(Abstract,Blueprintable)
@@ -43,4 +46,7 @@ protected:
 	/** Audio effects to play whenever a pawn hits the water surface with a specified velocity */
 	UPROPERTY( EditDefaultsOnly, Category = "Water|Audio" )
 	TArray<FPawnImpactAudio> mImpactAudioMap;
+
+public:
+	FORCEINLINE ~UFGWaterAudio() = default;
 };

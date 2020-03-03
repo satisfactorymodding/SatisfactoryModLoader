@@ -188,6 +188,9 @@ public:
 	/** Bigge values, I dunno */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	uint8 mAGHandBrakeStop : 1;
+
+public:
+	FORCEINLINE ~FAnimInstanceProxyRailRoadVehicle() = default;
 };
 
 /**
@@ -283,4 +286,7 @@ private:
 	/** Template for brake effect */
 	UPROPERTY()
 	UParticleSystemComponent* mHandBrakeVfxComponent;
+
+public:
+	FORCEINLINE ~UFGRailRoadVehicleAnim() = default;
 };

@@ -39,6 +39,9 @@ private:
 
 private:
 	TArray< TSharedRef< struct FMaterialFlowNode > > Nodes;
+
+public:
+	FORCEINLINE ~FMaterialFlowGraph() = default;
 };
 
 /**
@@ -68,6 +71,9 @@ public:
 	/** Total flow. [items/second] */
 	UPROPERTY( BlueprintReadOnly )
 	float TotalFlow;
+
+public:
+	FORCEINLINE ~FMaterialFlowConnection() = default;
 };
 
 /**
@@ -99,6 +105,9 @@ public:
 	/** Child flow nodes, 0 for leaf nodes. */
 	UPROPERTY( BlueprintReadOnly )
 	TArray< FMaterialFlowConnection > Inputs;
+
+public:
+	FORCEINLINE ~FMaterialFlowNode() = default;
 };
 
 /**
@@ -129,4 +138,7 @@ public:
 	/** Helpers to implement the exec functions. */
 	static void MaterialFlowAnalysisToLog( const TArray< FString >& recipeNames, class AFGRecipeManager* recipeManager );
 	static void MaterialLookupToLog( const FString& itemName, class AFGRecipeManager* recipeManager );
+
+public:
+	FORCEINLINE ~UFGMaterialFlowAnalysisFunctionLibrary() = default;
 };

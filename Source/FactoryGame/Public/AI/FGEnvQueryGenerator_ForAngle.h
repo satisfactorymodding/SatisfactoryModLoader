@@ -51,4 +51,7 @@ public:
 	UPROPERTY( EditAnywhere, Category = Generator )
 	TSubclassOf< UEnvQueryContext > mCenterActor;
 	
+
+public:
+	FORCEINLINE ~UFGEnvQueryGenerator_ForAngle() = default;
 };

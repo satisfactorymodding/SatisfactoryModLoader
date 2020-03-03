@@ -2,4 +2,4 @@
 
 #include "FGAnimNodeRandomPlayer.h"
 
-void FFGAnimNode_RandomPlayer::Initialize_AnyThread( const FAnimationInitializeContext& Context){ }
+void FFGAnimNode_RandomPlayer::Initialize_AnyThread(const FAnimationInitializeContext& Context){ }

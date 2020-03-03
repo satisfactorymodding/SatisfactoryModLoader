@@ -35,6 +35,9 @@ struct FACTORYGAME_API FSignColorData
 	/** The BACKGROUND material instance is created at runtime and stored here when it is needed */
 	UPROPERTY()
 	UMaterialInstanceDynamic* BackgroundMaterialInstance;
+
+public:
+	FORCEINLINE ~FSignColorData() = default;
 };
 
 
@@ -104,4 +107,7 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
 	TArray<FSignColorData> mSignColorData;
 
+
+public:
+	FORCEINLINE ~UFGSignSettings() = default;
 };

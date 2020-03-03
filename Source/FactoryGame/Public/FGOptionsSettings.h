@@ -98,6 +98,9 @@ public:
 	
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	FString Tooltip;
+
+public:
+	FORCEINLINE ~FOptionRowData() = default;
 };
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Satisfactory User Options" ) )
@@ -138,4 +141,7 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
 	TSubclassOf< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
 
+
+public:
+	FORCEINLINE ~UFGOptionsSettings() = default;
 };

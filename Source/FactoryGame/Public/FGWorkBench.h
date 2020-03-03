@@ -182,4 +182,7 @@ private:
 
 	/** Fatigue added based on how much of the fatigue interval we are currently in */
 	float mAdditionalFatigue;
+
+public:
+	FORCEINLINE ~UFGWorkBench() = default;
 };

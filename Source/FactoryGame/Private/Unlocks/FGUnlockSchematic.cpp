@@ -2,5 +2,5 @@
 
 #include "FGUnlockSchematic.h"
 
-void UFGUnlockSchematic::Apply(  AFGUnlockSubsystem* unlockSubssytem){ }
-void UFGUnlockSchematic::AddSchematics( TArray< TSubclassOf<  UFGSchematic > > schematics){ }
+void UFGUnlockSchematic::Apply( AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockSchematic::AddSchematics(TArray< TSubclassOf<  UFGSchematic > > schematics){ }

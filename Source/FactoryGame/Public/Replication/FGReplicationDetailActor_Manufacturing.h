@@ -35,4 +35,7 @@ protected:
 
 	UPROPERTY( Replicated )
 	float mCurrentManufacturingProgress;
+
+public:
+	FORCEINLINE ~AFGReplicationDetailActor_Manufacturing() = default;
 };

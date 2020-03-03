@@ -18,4 +18,7 @@ public:
 	/** Widget used to show the user when joining a session */
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TAssetSubclassOf<UUserWidget> mJoinSessionWidget;
+
+public:
+	FORCEINLINE ~UFGUISettings() = default;
 };

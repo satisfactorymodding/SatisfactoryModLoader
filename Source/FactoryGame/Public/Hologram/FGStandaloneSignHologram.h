@@ -18,4 +18,7 @@ class FACTORYGAME_API AFGStandaloneSignHologram : public AFGBuildableHologram
 	
 	
 	
+
+public:
+	FORCEINLINE ~AFGStandaloneSignHologram() = default;
 };

@@ -27,6 +27,9 @@ struct FACTORYGAME_API FItemDrop
 
 	/** Get a random amount of items in range */
 	int32 GetRandomItemAmount() const;
+
+public:
+	FORCEINLINE ~FItemDrop() = default;
 };
 
 USTRUCT(BlueprintType)
@@ -49,4 +52,7 @@ struct FACTORYGAME_API FItemDropWithChance
 	/** The drop to be given if we gain the item */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = (ShowOnlyInnerProperties) )
 	FItemDrop Drop;
+
+public:
+	FORCEINLINE ~FItemDropWithChance() = default;
 };

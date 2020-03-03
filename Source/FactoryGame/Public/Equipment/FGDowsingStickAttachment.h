@@ -15,4 +15,7 @@ class FACTORYGAME_API AFGDowsingStickAttachment : public AFGEquipmentAttachment
 {
 	GENERATED_BODY()
 	
+
+public:
+	FORCEINLINE ~AFGDowsingStickAttachment() = default;
 };

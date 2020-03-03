@@ -26,4 +26,7 @@ public:
 protected:
 	UPROPERTY( Replicated )
 	class UFGInventoryComponent* mFuelInventory;
+
+public:
+	FORCEINLINE ~AFGReplicationDetailActor_GeneratorFuel() = default;
 };

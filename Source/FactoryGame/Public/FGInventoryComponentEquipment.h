@@ -88,4 +88,7 @@ private:
 	/** Index of the active equipment*/
 	UPROPERTY( SaveGame, Replicated )
 	int32 mActiveEquipmentIndex;
+
+public:
+	FORCEINLINE ~UFGInventoryComponentEquipment() = default;
 };

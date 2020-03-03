@@ -13,4 +13,7 @@ UCLASS()
 class FACTORYGAME_API UFGItemDescriptorBiomass : public UFGItemDescriptor
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGItemDescriptorBiomass() = default;
 };

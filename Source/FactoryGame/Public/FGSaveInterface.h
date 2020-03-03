@@ -51,6 +51,9 @@ class FACTORYGAME_API UFGSaveInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGSaveInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGSaveInterface() = default;
 };
 
 /**

@@ -3,14 +3,14 @@
 #include "FGGameUI.h"
 
 void UFGGameUI::PopAllWidgets_Implementation(){ }
-void UFGGameUI::NativeTick( const FGeometry& MyGeometry, float InDeltaTime){ }
-void UFGGameUI::RemoveInteractWidget( UFGInteractWidget* widgetToRemove){ }
-void UFGGameUI::AddInteractWidget_Implementation( UFGInteractWidget* widgetToAdd){ }
+void UFGGameUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
+void UFGGameUI::RemoveInteractWidget(UFGInteractWidget* widgetToRemove){ }
+void UFGGameUI::AddInteractWidget_Implementation(UFGInteractWidget* widgetToAdd){ }
 void UFGGameUI::HandlePendingMessages_Implementation(){ }
-bool UFGGameUI::CanReceiveMessage_Implementation( TSubclassOf<  UFGMessageBase > inMessage){ return bool(); }
+bool UFGGameUI::CanReceiveMessage_Implementation(TSubclassOf<  UFGMessageBase > inMessage){ return bool(); }
 void UFGGameUI::CancelPressed(){ }
 void UFGGameUI::RemoveAudioMessage_Implementation(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
-UFGInteractWidget* UFGGameUI::FindWidgetByClass( TSubclassOf<UFGInteractWidget> widgetClass){ return nullptr; }
+UFGInteractWidget* UFGGameUI::FindWidgetByClass(TSubclassOf<UFGInteractWidget> widgetClass){ return nullptr; }
 void UFGGameUI::ResumeGame(){ }
-FReply UFGGameUI::NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }
+FReply UFGGameUI::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }

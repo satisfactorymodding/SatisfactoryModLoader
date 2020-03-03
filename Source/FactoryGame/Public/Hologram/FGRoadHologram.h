@@ -59,4 +59,7 @@ private:
 	/** The connection we snapped to. */
 	UPROPERTY()
 	class UFGRoadConnectionComponent* mSnappedConnectionComponents[ 2 ];
+
+public:
+	FORCEINLINE ~AFGRoadHologram() = default;
 };

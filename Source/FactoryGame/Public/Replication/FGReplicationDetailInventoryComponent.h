@@ -36,4 +36,7 @@ protected:
 	class UFGInventoryComponent* mReplicationInventoryComponent; // The dynamically replicated InventoryComponent that is created on demand
 
 	class AFGReplicationDetailActor* mReplicationDetailActor; // Replication Detail Actor owning the replication InventoryComponent
+
+public:
+	FORCEINLINE ~UFGReplicationDetailInventoryComponent() = default;
 };

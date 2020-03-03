@@ -44,4 +44,7 @@ private:
 	/** Saved interface to the object we are extracting resrouces from */
 	UPROPERTY( SaveGame )
 	TScriptInterface< class IFGExtractableResourceInterface > mExtractableResource;
+
+public:
+	FORCEINLINE ~AFGBuildableGeneratorGeoThermal() = default;
 };

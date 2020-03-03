@@ -254,4 +254,7 @@ protected:
 	/** Type of the currently burned piece of fuel. */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	TSubclassOf< class UFGItemDescriptor > mCurrentFuelClass;
+
+public:
+	FORCEINLINE ~AFGBuildableGeneratorFuel() = default;
 };

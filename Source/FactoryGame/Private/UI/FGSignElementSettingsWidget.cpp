@@ -2,6 +2,6 @@
 
 #include "FGSignElementSettingsWidget.h"
 
-void UFGSignElementSettingsWidget::NativeInit(  UFGSignElementWidget* elementWidget){ }
-void UFGSignElementSettingsWidget::OnColorIndexSelected_Implementation( int index){ }
+void UFGSignElementSettingsWidget::NativeInit( UFGSignElementWidget* elementWidget){ }
+void UFGSignElementSettingsWidget::OnColorIndexSelected_Implementation(int index){ }
 void UFGSignElementSettingsWidget::OnElementDataChanged(){ }

@@ -53,4 +53,7 @@ private:
 	 */
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mPotentialClimbers;
+
+public:
+	FORCEINLINE ~UFGLadderComponent() = default;
 };

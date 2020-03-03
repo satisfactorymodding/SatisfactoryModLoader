@@ -22,6 +22,9 @@ struct FACTORYGAME_API FCachedMaterialInterfaceArray
 public:
 	UPROPERTY()
 	TArray<class UMaterialInterface*> MaterialInterfaces;
+
+public:
+	FORCEINLINE ~FCachedMaterialInterfaceArray() = default;
 };
 
 USTRUCT()
@@ -32,6 +35,9 @@ struct FACTORYGAME_API FCachedMeshToMaterialObject
 public:
 	UPROPERTY()
 	TMap<class UMeshComponent*, FCachedMaterialInterfaceArray > CachedMaterialInterfaces;
+
+public:
+	FORCEINLINE ~FCachedMeshToMaterialObject() = default;
 };
 
 USTRUCT()
@@ -45,6 +51,9 @@ public:
 
 	UPROPERTY()
 	TArray<UMaterialInterface*> InstancedMaterialInterfaces;
+
+public:
+	FORCEINLINE ~FCachedSplineMeshToMaterialObject() = default;
 };
 
 
@@ -134,4 +143,7 @@ private:
 	bool IsOwnedByLocalPlayer();
 
 	EOutlineColor mLastOutlineColor;
+
+public:
+	FORCEINLINE ~UFGOutlineComponent() = default;
 };

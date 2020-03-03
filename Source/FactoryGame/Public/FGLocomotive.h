@@ -123,4 +123,7 @@ private:
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )
 	class UFGLocomotiveMovementComponent* mVehicleMovement;
+
+public:
+	FORCEINLINE ~AFGLocomotive() = default;
 };

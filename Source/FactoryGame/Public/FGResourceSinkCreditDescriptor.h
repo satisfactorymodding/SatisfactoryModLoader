@@ -15,4 +15,7 @@ class FACTORYGAME_API UFGResourceSinkCreditDescriptor : public UFGItemDescriptor
 {
 	GENERATED_BODY()
 	
+
+public:
+	FORCEINLINE ~UFGResourceSinkCreditDescriptor() = default;
 };

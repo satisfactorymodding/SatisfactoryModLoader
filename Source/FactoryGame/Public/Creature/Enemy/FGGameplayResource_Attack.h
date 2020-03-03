@@ -18,4 +18,7 @@ class FACTORYGAME_API UFGameplayTaskResource_Attack : public UGameplayTaskResour
 #if !(UE_BUILD_SHIPPING || UE_BUILD_TEST)
 		virtual FString GenerateDebugDescription() const override;
 #endif // !(UE_BUILD_SHIPPING || UE_BUILD_TEST)	
+
+public:
+	FORCEINLINE ~UFGameplayTaskResource_Attack() = default;
 };

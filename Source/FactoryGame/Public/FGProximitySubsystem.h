@@ -22,6 +22,9 @@ struct FACTORYGAME_API FMapAreaParticleCollection
 	/* Particle associated with map areas */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Proximity" )
 	class UParticleSystem* Particle;
+
+public:
+	FORCEINLINE ~FMapAreaParticleCollection() = default;
 };
 
 UCLASS( Blueprintable )
@@ -80,4 +83,7 @@ private:
 	/** How many decals we want to show */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Proximity" )
 	int32 mMaxNumDecals;
+
+public:
+	FORCEINLINE ~AFGProximitySubsystem() = default;
 };

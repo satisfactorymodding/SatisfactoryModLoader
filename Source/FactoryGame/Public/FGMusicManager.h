@@ -82,4 +82,7 @@ private:
 
 	/** If the player is in his factory. */
 	uint8 mIsPlayerNearBase : 1;
+
+public:
+	FORCEINLINE ~UFGMusicManager() = default;
 };

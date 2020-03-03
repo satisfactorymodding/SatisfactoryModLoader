@@ -2,4 +2,4 @@
 
 #include "FGConstructDisqualifier.h"
 
-FText UFGConstructDisqualifier::GetDisqualifyingText( TSubclassOf< UFGConstructDisqualifier > inClass){ return FText(); }
+FText UFGConstructDisqualifier::GetDisqualifyingText(TSubclassOf< UFGConstructDisqualifier > inClass){ return FText(); }

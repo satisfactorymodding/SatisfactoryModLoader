@@ -5,5 +5,5 @@
 UFGProductionIndicatorComponent::UFGProductionIndicatorComponent(){ }
 void UFGProductionIndicatorComponent::OnUnregister(){ Super::OnUnregister(); }
 void UFGProductionIndicatorComponent::OnRegister(){ Super::OnRegister(); }
-void UFGProductionIndicatorComponent::TickComponent( float deltaTime, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction){ }
+void UFGProductionIndicatorComponent::TickComponent(float deltaTime, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction){ }
 void UFGProductionIndicatorComponent::ResetIndicatorStatus(){ }

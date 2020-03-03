@@ -41,4 +41,7 @@ private:
 	/** If this connection is a producer type, should it apply the factory settings default pressure? */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	bool mApplyAdditionalPressure;
+
+public:
+	FORCEINLINE ~UFGPipeConnectionFactory() = default;
 };

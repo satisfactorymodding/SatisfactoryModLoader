@@ -6,9 +6,9 @@ AFGHookshot::AFGHookshot(){ }
 void AFGHookshot::BeginPlay(){ }
 void AFGHookshot::OnPrimaryFirePressed(){ }
 void AFGHookshot::OnSecondaryFirePressed(){ }
-void AFGHookshot::Equip(  AFGCharacterPlayer* character){ }
+void AFGHookshot::Equip( AFGCharacterPlayer* character){ }
 void AFGHookshot::UnEquip(){ }
-void AFGHookshot::Tick( float deltaTime){ }
+void AFGHookshot::Tick(float deltaTime){ }
 void AFGHookshot::WireDetach(){ }
 void AFGHookshot::AddEquipmentActionBindings(){ }
 void AFGHookshot::MoveAudioSourceInFrontOfPlayer(){ }

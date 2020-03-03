@@ -200,4 +200,7 @@ private:
 	/** Inventory for refueling the trucks. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_FuelInventory )
 	class UFGInventoryComponent* mFuelInventory;
+
+public:
+	FORCEINLINE ~AFGBuildableDockingStation() = default;
 };

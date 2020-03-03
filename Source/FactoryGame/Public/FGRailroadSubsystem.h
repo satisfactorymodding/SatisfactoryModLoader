@@ -43,6 +43,9 @@ public:
 	//@todotrains Signaling, consider if this and mHasTrackGraphsChanged is needed.
 	/** Has this track graph changed, tracks connected, rolling stock added or removed. */
 	uint8 HasChanged:1;
+
+public:
+	FORCEINLINE ~FTrackGraph() = default;
 };
 
 
@@ -404,4 +407,7 @@ private:
 	/** All the trains in the world. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGTrain* > mTrains;
+
+public:
+	FORCEINLINE ~AFGRailroadSubsystem() = default;
 };

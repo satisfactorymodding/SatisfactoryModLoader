@@ -84,4 +84,7 @@ protected:
 	/** What does this foliage identify itself as */
 	UPROPERTY( EditDefaultsOnly )
 	TArray< TSubclassOf< class UFGFoliageIdentifier > > mFoliageIdentifiers;
+
+public:
+	FORCEINLINE ~UFGFoliageResourceUserData() = default;
 };

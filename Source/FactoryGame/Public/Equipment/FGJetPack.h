@@ -85,6 +85,9 @@ private:
 
 	/** A cached instance of the instigators movementcomponent */
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
+
+public:
+	FORCEINLINE ~AFGJetPack() = default;
 };
 
 UCLASS()
@@ -116,6 +119,9 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_IsThrusting )
 	bool mIsThrusting;
 
+
+public:
+	FORCEINLINE ~AFGJetPackAttachment() = default;
 };
 
 

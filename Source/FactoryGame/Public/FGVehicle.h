@@ -36,6 +36,9 @@ struct FACTORYGAME_API FVehiclePhysicsData
 	FRigidBodyState BodyState;
 
 	friend FArchive& operator << ( FArchive& ar, FVehiclePhysicsData& physics );
+
+public:
+	FORCEINLINE ~FVehiclePhysicsData() = default;
 };
 
 /**
@@ -47,6 +50,9 @@ class FACTORYGAME_API UFGUseState_VehicleHasDriver : public UFGUseState
 	GENERATED_BODY()
 public:
 	UFGUseState_VehicleHasDriver() : Super() { mIsUsableState = true; }
+
+public:
+	FORCEINLINE ~UFGUseState_VehicleHasDriver() = default;
 };
 
 /**
@@ -58,6 +64,9 @@ class FACTORYGAME_API UFGUseState_VehicleInWater : public UFGUseState
 	GENERATED_BODY()
 public:
 	UFGUseState_VehicleInWater() : Super() { mIsUsableState = false; }
+
+public:
+	FORCEINLINE ~UFGUseState_VehicleInWater() = default;
 };
 
 /**
@@ -69,6 +78,9 @@ class FACTORYGAME_API UFGUseState_VehicleOccupied : public UFGUseState
 	GENERATED_BODY()
 public:
 	UFGUseState_VehicleOccupied() : Super() { mIsUsableState = false; }
+
+public:
+	FORCEINLINE ~UFGUseState_VehicleOccupied() = default;
 };
 
 USTRUCT()
@@ -107,6 +119,9 @@ struct FACTORYGAME_API FVehicleSeat
 	class AFGCharacterPlayer* mCharacter;
 	UPROPERTY()
 	class AController* mController;
+
+public:
+	FORCEINLINE ~FVehicleSeat() = default;
 };
 
 /**
@@ -436,4 +451,7 @@ protected:
 	/** Range that this vehicle should be significant within */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	float mSignificanceRange;
+
+public:
+	FORCEINLINE ~AFGVehicle() = default;
 };

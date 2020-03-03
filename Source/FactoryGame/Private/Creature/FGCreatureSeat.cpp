@@ -2,6 +2,6 @@
 
 #include "FGCreatureSeat.h"
 
-void AFGCreatureSeat::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGCreatureSeat::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGCreatureSeat::BeginPlay(){ }
-void AFGCreatureSeat::AttachDriver(  AFGCharacterPlayer* driver){ }
+void AFGCreatureSeat::AttachDriver( AFGCharacterPlayer* driver){ }

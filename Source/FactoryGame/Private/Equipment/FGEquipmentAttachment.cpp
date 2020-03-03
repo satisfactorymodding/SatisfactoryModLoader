@@ -2,16 +2,16 @@
 
 #include "FGEquipmentAttachment.h"
 
-void AFGEquipmentAttachment::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGEquipmentAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGEquipmentAttachment::AFGEquipmentAttachment(){ }
 void AFGEquipmentAttachment::BeginPlay(){ }
-void AFGEquipmentAttachment::Attach(  AFGCharacterPlayer* character){ }
+void AFGEquipmentAttachment::Attach( AFGCharacterPlayer* character){ }
 void AFGEquipmentAttachment::OnAttach_Implementation(){ }
 void AFGEquipmentAttachment::Detach(){ }
 void AFGEquipmentAttachment::OnDetach_Implementation(){ }
-void AFGEquipmentAttachment::SetAttachmentUseState( int newUseState){ }
-void AFGEquipmentAttachment::SetUseLocation( const FVector& newUseLocation){ }
-void AFGEquipmentAttachment::PlayUseEffect_Implementation( FVector useLocation){ }
+void AFGEquipmentAttachment::SetAttachmentUseState(int newUseState){ }
+void AFGEquipmentAttachment::SetUseLocation(const FVector& newUseLocation){ }
+void AFGEquipmentAttachment::PlayUseEffect_Implementation(FVector useLocation){ }
 void AFGEquipmentAttachment::OnRep_UseLocationUpdated(){ }
 void AFGEquipmentAttachment::OnRep_OnAnimationStateUpdated(){ }
-void AFGEquipmentAttachment::SetAttachmentTicks( bool inTick){ }
+void AFGEquipmentAttachment::SetAttachmentTicks(bool inTick){ }

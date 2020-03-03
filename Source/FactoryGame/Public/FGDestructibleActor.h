@@ -70,4 +70,7 @@ private:
 
 	/** Timer handle for delaying destroy */
 	FTimerHandle mDestroyTimerHandle;
+
+public:
+	FORCEINLINE ~AFGDestructibleActor() = default;
 };

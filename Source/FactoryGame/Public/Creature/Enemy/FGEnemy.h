@@ -55,5 +55,8 @@ public:
 private:
 	UPROPERTY( ReplicatedUsing = OnRep_CurrentAggroTarget )
 	AActor* mCurrentAggroTarget;
+
+public:
+	FORCEINLINE ~AFGEnemy() = default;
 };
 

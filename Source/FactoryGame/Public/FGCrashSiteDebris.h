@@ -30,6 +30,9 @@ public:
 	/** How many to spawn, note that the upper limit is guaranteed while the lower limit is not. */
 	UPROPERTY( EditDefaultsOnly, Category = "Mesh" )
 	FInt32Interval Num;
+
+public:
+	FORCEINLINE ~FDebrisMesh() = default;
 };
 
 /**
@@ -49,6 +52,9 @@ public:
 	/** How many to spawn, note that the upper limit is guaranteed while the lower limit is not. */
 	UPROPERTY( EditDefaultsOnly, Category = "Actor" )
 	FInt32Interval Num;
+
+public:
+	FORCEINLINE ~FDebrisActor() = default;
 };
 
 /**
@@ -74,6 +80,9 @@ protected:
 	/** Item to create pickup for. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	TSoftClassPtr< class UFGItemDescriptor > ItemClass;
+
+public:
+	FORCEINLINE ~FDebrisItemDrop() = default;
 };
 
 
@@ -93,6 +102,9 @@ public:
 
 	UPROPERTY()
 	FTransform MeshTransform;
+
+public:
+	FORCEINLINE ~FSimulatedMeshTransform() = default;
 };
 
 /**
@@ -111,6 +123,9 @@ public:
 
 	UPROPERTY()
 	FTransform ActorTransform;
+
+public:
+	FORCEINLINE ~FSimulatedActorTransform() = default;
 };
 
 /**
@@ -125,6 +140,9 @@ public:
 
 	UPROPERTY()
 	FTransform ItemDropTransform;
+
+public:
+	FORCEINLINE ~FSimulatedItemDropTransform() = default;
 };
 
 /**

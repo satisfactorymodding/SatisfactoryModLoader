@@ -4,5 +4,5 @@
 
 AFGCentralStorageContainer::AFGCentralStorageContainer(){ }
 void AFGCentralStorageContainer::BeginPlay(){ }
-void AFGCentralStorageContainer::EndPlay( const EEndPlayReason::Type endPlayReason){ }
+void AFGCentralStorageContainer::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGCentralStorageContainer::AddToCentralStorageSubsystem(){ }

@@ -43,6 +43,9 @@ struct FACTORYGAME_API FSpawnData
 	/** Overriden subclass of creature to spawn */
 	UPROPERTY( SaveGame )
 	TSubclassOf< class AFGCreature > CreatureClassOverride;
+
+public:
+	FORCEINLINE ~FSpawnData() = default;
 };
 
 UCLASS()
@@ -187,4 +190,7 @@ public:
 	/** How many days should pass before creatures start to respawn ( -1 means never ) */
 	UPROPERTY( EditInstanceOnly, Category = "Spawning" )
 	int32 mRespawnTimeIndays;
+
+public:
+	FORCEINLINE ~AFGCreatureSpawner() = default;
 };

@@ -2,4 +2,4 @@
 
 #include "FGUnlockBuildEfficiency.h"
 
-void UFGUnlockBuildEfficiency::Apply(  AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockBuildEfficiency::Apply( AFGUnlockSubsystem* unlockSubssytem){ }

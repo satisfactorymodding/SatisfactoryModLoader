@@ -31,4 +31,7 @@ protected:
 	/** Number of arm equipment slots this unlock adds to the players inventory */
 	UPROPERTY( EditDefaultsOnly )
 	int32 mNumArmEquipmentSlotsToUnlock;
+
+public:
+	FORCEINLINE ~UFGUnlockArmEquipmentSlot() = default;
 };

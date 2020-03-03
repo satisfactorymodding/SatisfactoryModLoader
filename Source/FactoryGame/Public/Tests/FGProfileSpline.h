@@ -31,4 +31,7 @@ public:
 	// Runtime length of the spline in minutes.
 	UPROPERTY(BlueprintReadOnly)
 	float Duration;	
+
+public:
+	FORCEINLINE ~AFGProfileSpline() = default;
 };

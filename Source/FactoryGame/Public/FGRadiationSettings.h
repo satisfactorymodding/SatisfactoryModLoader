@@ -59,6 +59,9 @@ public:
 	UPROPERTY( BlueprintReadOnly, VisibleAnywhere )
 	float DistanceForNoticableIntensity;
 
+
+public:
+	FORCEINLINE ~FRadiationVisualization() = default;
 };
 
 /**
@@ -119,4 +122,7 @@ private:
 	TArray<FRadiationVisualization> mVisualizations;
 #endif
 
+
+public:
+	FORCEINLINE ~UFGRadiationSettings() = default;
 };

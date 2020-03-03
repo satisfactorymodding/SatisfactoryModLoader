@@ -48,4 +48,7 @@ protected:
 	UPROPERTY( BlueprintReadOnly )
 	bool mIsDynamicOption;
 
+
+public:
+	FORCEINLINE ~UFGOptionsValueController() = default;
 };

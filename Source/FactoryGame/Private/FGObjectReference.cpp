@@ -2,22 +2,22 @@
 
 #include "FGObjectReference.h"
 
-FObjectRedirect::FObjectRedirect( const FString& source, const FString& destination){ }
+FObjectRedirect::FObjectRedirect(const FString& source, const FString& destination){ }
 FObjectReferenceDisc::FObjectReferenceDisc(){ }
-FObjectReferenceDisc::FObjectReferenceDisc( UObject* obj){ }
+FObjectReferenceDisc::FObjectReferenceDisc(UObject* obj){ }
 bool FObjectReferenceDisc::IsNullptr() const{ return bool(); }
 void FObjectReferenceDisc::Reset(){ }
-UObject* FObjectReferenceDisc::Resolve( UWorld* world) const{ return nullptr; }
-bool FObjectReferenceDisc::ResolveWithRedirect( UWorld* world, const FString& outerName, UObject*& out_object, UObject*& out_outer) const{ return bool(); }
-void FObjectReferenceDisc::Set( UObject* obj){ }
-void FObjectReferenceDisc::ParseObjectName( FString& out_objName) const{ }
-void FObjectReferenceDisc::ParseObjectNameAndPath( FString& out_objPath, FString& out_objName) const{ }
-void FObjectReferenceDisc::GetRelativePath( UObject* obj, FString& out_pathName){ }
-ULevel* FObjectReferenceDisc::FindOuterLevel( UObject* obj){ return nullptr; }
-ULevel* FObjectReferenceDisc::FindLevel( UWorld* world) const{ return nullptr; }
+UObject* FObjectReferenceDisc::Resolve(UWorld* world) const{ return nullptr; }
+bool FObjectReferenceDisc::ResolveWithRedirect(UWorld* world, const FString& outerName, UObject*& out_object, UObject*& out_outer) const{ return bool(); }
+void FObjectReferenceDisc::Set(UObject* obj){ }
+void FObjectReferenceDisc::ParseObjectName(FString& out_objName) const{ }
+void FObjectReferenceDisc::ParseObjectNameAndPath(FString& out_objPath, FString& out_objName) const{ }
+void FObjectReferenceDisc::GetRelativePath(UObject* obj, FString& out_pathName){ }
+ULevel* FObjectReferenceDisc::FindOuterLevel(UObject* obj){ return nullptr; }
+ULevel* FObjectReferenceDisc::FindLevel(UWorld* world) const{ return nullptr; }
 bool FObjectReferenceDisc::Valid() const{ return bool(); }
 FString FObjectReferenceDisc::ToString() const{ return FString(); }
 void FObjectReferenceDisc::ClearRedirects(){ }
-bool FObjectReferenceDisc::FindRedirect( const FString& oldName, FString& out_newRedirectedName){ return bool(); }
-void FObjectReferenceDisc::AddRedirector( const FString& source, const FString& destination){ }
-ULevel* FObjectReferenceDisc::InternalFindLevel( UWorld* world, const FString& levelName) const{ return nullptr; }
+bool FObjectReferenceDisc::FindRedirect(const FString& oldName, FString& out_newRedirectedName){ return bool(); }
+void FObjectReferenceDisc::AddRedirector(const FString& source, const FString& destination){ }
+ULevel* FObjectReferenceDisc::InternalFindLevel(UWorld* world, const FString& levelName) const{ return nullptr; }

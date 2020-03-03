@@ -2,6 +2,6 @@
 
 #include "FGOptionsValueController.h"
 
-void UFGOptionsValueController::InitValueController( FOptionRowData optionRowData){ }
-FString UFGOptionsValueController::GetNewSelectionKey( FString currentKey, bool incrementSelection){ return FString(); }
+void UFGOptionsValueController::InitValueController(FOptionRowData optionRowData){ }
+FString UFGOptionsValueController::GetNewSelectionKey(FString currentKey, bool incrementSelection){ return FString(); }
 void UFGOptionsValueController::NativeConstruct(){ }

@@ -75,4 +75,7 @@ private:
 	bool mIsDismantled;
 	bool mIsShowingDismantleOutline;
 	bool mIsShowingConnectionOutline;
+
+public:
+	FORCEINLINE ~AFGBuildablePowerPole() = default;
 };

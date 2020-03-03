@@ -3,7 +3,7 @@
 #include "FGC4Explosive.h"
 
 AFGC4Explosive::AFGC4Explosive(){ }
-void AFGC4Explosive::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGC4Explosive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGC4Explosive::Detonate(){ }
 void AFGC4Explosive::PlayExplosionEffects_Implementation(){ }
 void AFGC4Explosive::OnRep_IsDetonated(){ }

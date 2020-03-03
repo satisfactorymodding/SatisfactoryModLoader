@@ -71,6 +71,9 @@ struct FACTORYGAME_API FAggroEntry
 	UPROPERTY( BlueprintReadWrite, Category = "Aggro" )
 	EIgnore						Ignore;
 	float						LastIgnoreTime;
+
+public:
+	FORCEINLINE ~FAggroEntry() = default;
 };
 
 struct FACTORYGAME_API FFindByAggroTarget
@@ -84,6 +87,9 @@ struct FACTORYGAME_API FFindByAggroTarget
 		return ( AggroTarget == Element.AggroTarget );
 	}
 
+
+public:
+	FORCEINLINE ~FFindByAggroTarget() = default;
 };
 
 /**
@@ -462,4 +468,7 @@ private:
 	/** Time we should ignore targets when panicking */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	float mPanicIgnoreTime;
+
+public:
+	FORCEINLINE ~AFGEnemyController() = default;
 };

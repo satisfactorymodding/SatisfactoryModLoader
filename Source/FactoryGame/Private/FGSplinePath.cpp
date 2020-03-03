@@ -4,4 +4,4 @@
 
 AFGSplinePath::AFGSplinePath(){ }
 void AFGSplinePath::BeginPlay(){ }
-void AFGSplinePath::Tick( float DeltaSeconds){ }
+void AFGSplinePath::Tick(float DeltaSeconds){ }

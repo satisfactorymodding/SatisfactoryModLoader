@@ -3,8 +3,8 @@
 #include "FGBuildableGeneratorGeoThermal.h"
 
 void AFGBuildableGeneratorGeoThermal::Destroyed(){ }
-void AFGBuildableGeneratorGeoThermal::PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion){ }
-void AFGBuildableGeneratorGeoThermal::SetExtractableResource( TScriptInterface<  IFGExtractableResourceInterface > extractableResource){ }
+void AFGBuildableGeneratorGeoThermal::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGBuildableGeneratorGeoThermal::SetExtractableResource(TScriptInterface<  IFGExtractableResourceInterface > extractableResource){ }
 bool AFGBuildableGeneratorGeoThermal::CanStartPowerProduction_Implementation() const{ return bool(); }
 void AFGBuildableGeneratorGeoThermal::Factory_StartPowerProduction_Implementation(){ }
 void AFGBuildableGeneratorGeoThermal::Factory_StopPowerProduction_Implementation(){ }

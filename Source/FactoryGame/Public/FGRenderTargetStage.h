@@ -90,4 +90,7 @@ protected:
 	/** If true, then we create our own render target every time we want to play */
 	UPROPERTY(EditDefaultsOnly,Category="Stage|RenderTarget")
 	uint8 mDynamicRenderTarget:1;
+
+public:
+	FORCEINLINE ~AFGRenderTargetStage() = default;
 };

@@ -60,4 +60,7 @@ public:
 	/** The particle to use when hitting the ground */
 	UPROPERTY( EditDefaultsOnly )
 	class UParticleSystem* mHitParticleEffect;
+
+public:
+	FORCEINLINE ~AFGWeaponInstantFire() = default;
 };

@@ -22,4 +22,7 @@ public:
 	// Begin IFGUseableInterface
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
 	// End IFGUseableInterface
+
+public:
+	FORCEINLINE ~AFGResourceNodeGeyser() = default;
 };

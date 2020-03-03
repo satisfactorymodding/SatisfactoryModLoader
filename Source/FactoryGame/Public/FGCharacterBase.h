@@ -26,6 +26,9 @@ struct FACTORYGAME_API FFootstepEffect
 	/** The decal to place on the ground when walking around */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
 	TArray< class UMaterialInterface* > GroundDecals;
+
+public:
+	FORCEINLINE ~FFootstepEffect() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -40,6 +43,9 @@ struct FACTORYGAME_API FFootstepEffectSurface
 	/** The effect we want to play when hitting the surface */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep", meta = ( ShowOnlyInnerProperties ) )
 	FFootstepEffect Effect;
+
+public:
+	FORCEINLINE ~FFootstepEffectSurface() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -54,6 +60,9 @@ struct FACTORYGAME_API FFootstepEffectWater
 	/** The effect we want to play when hitting the surface */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep", meta = ( ShowOnlyInnerProperties ) )
 	FFootstepEffect Effect;
+
+public:
+	FORCEINLINE ~FFootstepEffectWater() = default;
 };
 
 
@@ -486,4 +495,7 @@ private:
 	/** Used to let client know when a pawn gets possessed/unpossessed */
 	UPROPERTY( ReplicatedUsing = OnRep_IsPossessed )
 	bool mIsPossessed;
+
+public:
+	FORCEINLINE ~AFGCharacterBase() = default;
 };

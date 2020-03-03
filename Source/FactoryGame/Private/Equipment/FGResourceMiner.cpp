@@ -3,8 +3,8 @@
 #include "FGResourceMiner.h"
 
 AFGResourceMiner::AFGResourceMiner(){ }
-void AFGResourceMiner::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGResourceMiner::Tick( float DeltaSeconds){ }
+void AFGResourceMiner::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGResourceMiner::Tick(float DeltaSeconds){ }
 void AFGResourceMiner::UnEquip(){ }
 bool AFGResourceMiner::ShouldSaveState() const{ return bool(); }
 void AFGResourceMiner::DoMine(){ }

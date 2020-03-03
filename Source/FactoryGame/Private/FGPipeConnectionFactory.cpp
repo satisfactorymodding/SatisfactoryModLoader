@@ -4,7 +4,7 @@
 
 UFGPipeConnectionFactory::UFGPipeConnectionFactory(){ }
 void UFGPipeConnectionFactory::BeginPlay(){ }
-void UFGPipeConnectionFactory::EndPlay( const EEndPlayReason::Type reason){ }
+void UFGPipeConnectionFactory::EndPlay(const EEndPlayReason::Type reason){ }
 FFluidBox* UFGPipeConnectionFactory::GetFluidBox(){ return nullptr; }
 TArray< UFGPipeConnectionComponent* > UFGPipeConnectionFactory::GetPipeConnections(){ return TArray<UFGPipeConnectionComponent*>(); }
 void UFGPipeConnectionFactory::OnDisconnectedFrom(){ }

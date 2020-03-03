@@ -15,4 +15,7 @@ class FACTORYGAME_API UFGResearchTreeNode : public UObject
 {
 	GENERATED_BODY()
 	
+
+public:
+	FORCEINLINE ~UFGResearchTreeNode() = default;
 };

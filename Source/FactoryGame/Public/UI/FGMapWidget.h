@@ -59,4 +59,7 @@ private:
 	class AFGActorRepresentationManager* mActorRepresentationManager;
 	
 
+
+public:
+	FORCEINLINE ~UFGMapWidget() = default;
 };

@@ -9,7 +9,7 @@
 #include "FGBuildable.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
-//#include "FGInstancedSplineMeshComponent.h"
+#include "FGInstancedSplineMeshComponent.h"
 #include "FGBuildableRailroadTrack.generated.h"
 
 
@@ -77,6 +77,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FRailroadTrackPosition > : public T
 	{
 		WithSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FRailroadTrackPosition >() = default;
 };
 
 
@@ -157,12 +160,11 @@ public:
 		TArray< USplineMeshComponent* >& meshPool,
 		MeshConstructor meshConstructor );
 
-	// MODDING EDIT
-	//static void BuildSplineMeshes(
-	//	class USplineComponent* spline,
-	//	UStaticMesh* mesh,
-	//	float meshLength,
-	//	UFGInstancedSplineMeshComponent* splineInstances );
+	static void BuildSplineMeshes(
+		class USplineComponent* spline,
+        UStaticMesh* mesh,
+		float meshLength,
+		UFGInstancedSplineMeshComponent* splineInstances );
 
 	static void BuildSplineCollisions(
 		class USplineComponent* spline,
@@ -191,10 +193,9 @@ private:
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class USplineComponent* mSplineComponent;
 	
-	// MODDING EDIT
-	///** The spline meshes for this train track. */
-	//UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	//class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
+	/** The spline meshes for this train track. */
+	UPROPERTY( VisibleAnywhere, Category = "Spline" )
+	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
 
 	/** Spline data saved in a compact form for saving and replicating. All the vectors are in local space. */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
@@ -213,4 +214,7 @@ private:
 
 	/** Length of this track. [cm] */
 	float mLength;
+
+public:
+	FORCEINLINE ~AFGBuildableRailroadTrack() = default;
 };

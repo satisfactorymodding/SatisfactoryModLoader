@@ -16,4 +16,7 @@ class FACTORYGAME_API AFGBuildableStair : public AFGBuildableFoundation
 	GENERATED_BODY()
 public:
 	AFGBuildableStair();
+
+public:
+	FORCEINLINE ~AFGBuildableStair() = default;
 };

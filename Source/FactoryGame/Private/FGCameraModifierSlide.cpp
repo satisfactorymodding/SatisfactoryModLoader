@@ -2,4 +2,4 @@
 
 #include "FGCameraModifierSlide.h"
 
-bool UFGCameraModifierSlide::ProcessViewRotation(  AActor* ViewTarget, float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot){ return bool(); }
+bool UFGCameraModifierSlide::ProcessViewRotation( AActor* ViewTarget, float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot){ return bool(); }

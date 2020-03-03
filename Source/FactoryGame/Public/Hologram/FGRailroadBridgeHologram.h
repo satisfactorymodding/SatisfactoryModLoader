@@ -36,4 +36,7 @@ private:
 	UPROPERTY()
 	class AFGBuildableFoundation* mSnappedFoundation[ 2 ];
 	FTransform mSnappedTransform[ 2 ];
+
+public:
+	FORCEINLINE ~AFGRailroadBridgeHologram() = default;
 };

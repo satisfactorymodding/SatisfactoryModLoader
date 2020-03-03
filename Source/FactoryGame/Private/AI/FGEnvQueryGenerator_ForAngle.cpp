@@ -2,6 +2,6 @@
 
 #include "FGEnvQueryGenerator_ForAngle.h"
 
-UFGEnvQueryGenerator_ForAngle::UFGEnvQueryGenerator_ForAngle( const FObjectInitializer& ObjectInitializer ) : Super(ObjectInitializer) { }
-void UFGEnvQueryGenerator_ForAngle::BindDataToDataProviders( FEnvQueryInstance& QueryInstance) const{ }
-void UFGEnvQueryGenerator_ForAngle::GenerateItems( FEnvQueryInstance& QueryInstance) const{ }
+UFGEnvQueryGenerator_ForAngle::UFGEnvQueryGenerator_ForAngle(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+void UFGEnvQueryGenerator_ForAngle::BindDataToDataProviders(FEnvQueryInstance& QueryInstance) const{ }
+void UFGEnvQueryGenerator_ForAngle::GenerateItems(FEnvQueryInstance& QueryInstance) const{ }

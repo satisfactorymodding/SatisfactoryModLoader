@@ -35,6 +35,9 @@ struct FACTORYGAME_API FItemAmount
 	/** The amount of this item. */
 	UPROPERTY( SaveGame, BlueprintReadWrite, EditAnywhere, Category = "Item", meta = ( ClampMin = 0 ) )
 	int32 Amount;
+
+public:
+	FORCEINLINE ~FItemAmount() = default;
 };
 
 FORCEINLINE bool IsValidForLoad( const FItemAmount& element ){ return element.ItemClass != nullptr; }

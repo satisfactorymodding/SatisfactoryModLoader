@@ -19,4 +19,7 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Inventory Slots", meta = ( ToolTip = "The number of starting slots for players arm equipments" ) )
 	int32 mDefaultArmEquipmentSlots;
+
+public:
+	FORCEINLINE ~UFGPlayerSettings() = default;
 };

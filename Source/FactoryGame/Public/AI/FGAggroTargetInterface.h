@@ -15,6 +15,9 @@ class FACTORYGAME_API UFGAggroTargetInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGAggroTargetInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGAggroTargetInterface() = default;
 };
 
 /**

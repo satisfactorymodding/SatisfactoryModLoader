@@ -32,4 +32,7 @@ public:
 	/** Disable snapping on specific sides. */
 	UPROPERTY( EditDefaultsOnly, Category = "Foundation" )
 	FFoundationSideSelectionFlags mDisableSnapOn;
+
+public:
+	FORCEINLINE ~AFGBuildableFoundation() = default;
 };

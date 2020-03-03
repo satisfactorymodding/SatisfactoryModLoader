@@ -2,24 +2,24 @@
 
 #include "FGBuildablePipelinePump.h"
 
-void FQuantizedPumpIndicatorData::SetFlowPct( float pct){ }
+void FQuantizedPumpIndicatorData::SetFlowPct(float pct){ }
 float FQuantizedPumpIndicatorData::GetFlowPct() const{ return float(); }
-void FQuantizedPumpIndicatorData::SetPressurePct( float pct){ }
+void FQuantizedPumpIndicatorData::SetPressurePct(float pct){ }
 float FQuantizedPumpIndicatorData::GetPressurePct() const{ return float(); }
 AFGBuildablePipelinePump::AFGBuildablePipelinePump(){ }
-void AFGBuildablePipelinePump::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipelinePump::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildablePipelinePump::BeginPlay(){ }
-void AFGBuildablePipelinePump::Tick( float dt){ }
-void AFGBuildablePipelinePump::Factory_Tick( float dt){ }
+void AFGBuildablePipelinePump::Tick(float dt){ }
+void AFGBuildablePipelinePump::Factory_Tick(float dt){ }
 bool AFGBuildablePipelinePump::CanProduce_Implementation() const{ return bool(); }
 void AFGBuildablePipelinePump::OnBuildEffectFinished(){ }
 EProductionStatus AFGBuildablePipelinePump::GetProductionIndicatorStatus() const{ return EProductionStatus(); }
 void AFGBuildablePipelinePump::OnFluidDescriptorSet(){ }
-void AFGBuildablePipelinePump::StopIsLookedAtForDismantle_Implementation(  AFGCharacterPlayer* byCharacter){ }
-void AFGBuildablePipelinePump::SetMaxHeadLift( float design, float max){ }
+void AFGBuildablePipelinePump::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildablePipelinePump::SetMaxHeadLift(float design, float max){ }
 float AFGBuildablePipelinePump::GetMaxHeadLift() const{ return float(); }
 float AFGBuildablePipelinePump::GetDesignHeadLift() const{ return float(); }
-void AFGBuildablePipelinePump::SetFlowLimit( float rate){ }
+void AFGBuildablePipelinePump::SetFlowLimit(float rate){ }
 float AFGBuildablePipelinePump::GetIndicatorFlowPct() const{ return float(); }
 float AFGBuildablePipelinePump::GetIndicatorFlow() const{ return float(); }
 float AFGBuildablePipelinePump::GetIndicatorHeadLiftPct() const{ return float(); }

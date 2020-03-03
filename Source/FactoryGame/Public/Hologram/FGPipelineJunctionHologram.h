@@ -23,4 +23,7 @@ protected:
 	virtual int32 GetRotationStep() const override;
 	// End of AFGHologram interface
 	
+
+public:
+	FORCEINLINE ~AFGPipelineJunctionHologram() = default;
 };

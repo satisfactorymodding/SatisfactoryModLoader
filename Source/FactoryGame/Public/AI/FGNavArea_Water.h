@@ -16,4 +16,7 @@ class FACTORYGAME_API UFGNavArea_Water : public UNavArea
 	GENERATED_BODY()
 	
 	UFGNavArea_Water( const FObjectInitializer& ObjectInitializer );
+
+public:
+	FORCEINLINE ~UFGNavArea_Water() = default;
 };

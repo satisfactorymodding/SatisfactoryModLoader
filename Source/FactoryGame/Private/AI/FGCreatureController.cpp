@@ -2,8 +2,8 @@
 
 #include "FGCreatureController.h"
 
-AFGCreatureController::AFGCreatureController( const FObjectInitializer& ObjectInitializer ) : Super(ObjectInitializer) { }
-void AFGCreatureController::SetEnabled( bool enabled){ }
+AFGCreatureController::AFGCreatureController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+void AFGCreatureController::SetEnabled(bool enabled){ }
 void AFGCreatureController::StartPanic_Implementation(){ }
 void AFGCreatureController::StopPanic_Implementation(){ }
-void AFGCreatureController::OnTargetPerceptionUpdated(  AActor* inActor,   FAIStimulus Stimulus){ }
+void AFGCreatureController::OnTargetPerceptionUpdated(AActor* inActor,   FAIStimulus Stimulus){ }

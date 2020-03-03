@@ -363,4 +363,7 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	bool mIsSpaceElevatorBuilt;
 
+
+public:
+	FORCEINLINE ~AFGGameState() = default;
 };

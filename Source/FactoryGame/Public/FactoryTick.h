@@ -25,6 +25,9 @@ struct FACTORYGAME_API FFactoryTickFunction : public FTickFunction
 	virtual void ExecuteTick( float DeltaTime, ELevelTick TickType, ENamedThreads::Type CurrentThread, const FGraphEventRef& MyCompletionGraphEvent ) override;
 	/** Abstract function to describe this tick. Used to print messages about illegal cycles in the dependency graph **/
 	virtual FString DiagnosticMessage() override;
+
+public:
+	FORCEINLINE ~FFactoryTickFunction() = default;
 };
 
 template<>
@@ -34,4 +37,7 @@ struct FACTORYGAME_API TStructOpsTypeTraits<FFactoryTickFunction> : public TStru
 	{
 		WithCopy = false
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits<FFactoryTickFunction>() = default;
 };

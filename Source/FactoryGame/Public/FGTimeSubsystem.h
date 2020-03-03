@@ -211,4 +211,7 @@ public:
 	/** Server and Client | Called when a new day starts */
 	UPROPERTY( BlueprintAssignable, Category = "Events|Time", DisplayName = "OnNewDay" )
 	FNewDayDelegate mOnNewDayDelegate;
+
+public:
+	FORCEINLINE ~AFGTimeOfDaySubsystem() = default;
 };

@@ -3,7 +3,7 @@
 #include "FGWallAttachmentHologram.h"
 
 AFGWallAttachmentHologram::AFGWallAttachmentHologram(){ }
-bool AFGWallAttachmentHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
+bool AFGWallAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGWallAttachmentHologram::CheckValidFloor(){ }
 void AFGWallAttachmentHologram::CheckClearance(){ }
 int32 AFGWallAttachmentHologram::GetRotationStep() const{ return int32(); }

@@ -228,4 +228,7 @@ private:
 	/** How far away this representation should be shown in the compass */
 	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
 	ECompassViewDistance mCompassViewDistance;
+
+public:
+	FORCEINLINE ~UFGActorRepresentation() = default;
 };

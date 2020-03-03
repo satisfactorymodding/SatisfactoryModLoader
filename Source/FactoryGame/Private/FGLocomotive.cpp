@@ -2,17 +2,17 @@
 
 #include "FGLocomotive.h"
 
-void AFGLocomotive::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGLocomotive::PreReplication( IRepChangedPropertyTracker & ChangedPropertyTracker){ }
+void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGLocomotive::PreReplication(IRepChangedPropertyTracker & ChangedPropertyTracker){ }
 AFGLocomotive::AFGLocomotive(){ }
 void AFGLocomotive::BeginPlay(){ }
-bool AFGLocomotive::DriverEnter(  AFGCharacterPlayer* driver){ return bool(); }
-bool AFGLocomotive::DriverLeave( bool keepDriving ){ return bool(); }
+bool AFGLocomotive::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
+bool AFGLocomotive::DriverLeave(bool keepDriving){ return bool(); }
 EMultipleUnitControl AFGLocomotive::GetMultipleUnitRole() const{ return EMultipleUnitControl(); }
 bool AFGLocomotive::CanSetTrainMultipleUnitMaster() const{ return bool(); }
-bool AFGLocomotive::SetMultipleUnitControlMaster( bool force){ return bool(); }
+bool AFGLocomotive::SetMultipleUnitControlMaster(bool force){ return bool(); }
 void AFGLocomotive::ClearMultipleUnitControlMaster(){ }
-void AFGLocomotive::SetPowerConsumption( float pct){ }
-void AFGLocomotive::SetPowerRegeneration( float pct){ }
-void AFGLocomotive::DisplayDebug(  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
+void AFGLocomotive::SetPowerConsumption(float pct){ }
+void AFGLocomotive::SetPowerRegeneration(float pct){ }
+void AFGLocomotive::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 FName AFGLocomotive::VehicleMovementComponentName = FName();

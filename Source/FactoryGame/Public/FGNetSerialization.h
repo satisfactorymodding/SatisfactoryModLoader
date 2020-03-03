@@ -74,6 +74,9 @@ struct FACTORYGAME_API FCustomFastArraySerializerItem
 	* NOTE: intentionally not virtual; invoked via templated code, @see FExampleItemEntry
 	*/
 	FORCEINLINE FString GetDebugString() { return FString( TEXT( "" ) ); }
+
+public:
+	FORCEINLINE ~FCustomFastArraySerializerItem() = default;
 };
 
 /** Base struct for wrapping the array used in Custom Fast TArray Replication */
@@ -148,6 +151,9 @@ private:
 	// Cached item counts, used for fast sanity checking when writing.
 	int32				CachedNumItems;
 	int32				CachedNumItemsToConsiderForWriting;
+
+public:
+	FORCEINLINE ~FCustomFastArraySerializer() = default;
 };
 
 struct FACTORYGAME_API FStableRemover
@@ -157,6 +163,9 @@ struct FACTORYGAME_API FStableRemover
 	{
 		a.RemoveAt( idx, 1, false );
 	}
+
+public:
+	FORCEINLINE ~FStableRemover() = default;
 };
 
 struct FACTORYGAME_API FFastRemover
@@ -166,6 +175,9 @@ struct FACTORYGAME_API FFastRemover
 	{
 		a.RemoveAtSwap( idx, 1, false );
 	}
+
+public:
+	FORCEINLINE ~FFastRemover() = default;
 };
 
 /** The function that implements Fast TArray Replication  */

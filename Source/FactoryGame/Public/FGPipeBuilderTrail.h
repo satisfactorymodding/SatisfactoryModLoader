@@ -60,4 +60,7 @@ private:
 
 	/** Indicates if we are currently moving along a spline */
 	bool mDoSplineMovement;
+
+public:
+	FORCEINLINE ~AFGPipeBuilderTrail() = default;
 };

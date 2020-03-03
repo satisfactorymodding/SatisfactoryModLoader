@@ -9,6 +9,9 @@ struct FACTORYGAME_API FHologramGraphAStarDefaultPolicy
 	static const int32 OpenSetSize = 64;
 	static const int32 FatalPathLength = 10000;
 	static const bool bReuseNodePoolInSubsequentSearches = true;
+
+public:
+	FORCEINLINE ~FHologramGraphAStarDefaultPolicy() = default;
 };
 
 enum EHologramGraphAStarResult
@@ -54,6 +57,9 @@ struct FACTORYGAME_API FHologramGraphAStarDefaultNode
 	FORCEINLINE void MarkNotClosed() { bIsClosed = false; }
 	FORCEINLINE bool IsOpened() const { return bIsOpened; }
 	FORCEINLINE bool IsClosed() const { return bIsClosed; }
+
+public:
+	FORCEINLINE ~FHologramGraphAStarDefaultNode() = default;
 };
 
 /**
@@ -410,4 +416,7 @@ struct FACTORYGAME_API FHologramGraphAStar
 
 		return EHologramGraphAStarResult::HologramSearchSuccess;
 	}
+
+public:
+	FORCEINLINE ~FHologramGraphAStar() = default;
 };

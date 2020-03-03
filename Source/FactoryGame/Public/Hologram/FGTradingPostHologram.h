@@ -64,4 +64,7 @@ private:
 	/** component matching the location where the work bench is placed */
 	UPROPERTY()
 	USceneComponent* mWorkBenchLocation;
+
+public:
+	FORCEINLINE ~AFGTradingPostHologram() = default;
 };

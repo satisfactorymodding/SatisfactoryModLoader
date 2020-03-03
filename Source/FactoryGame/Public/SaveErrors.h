@@ -22,6 +22,9 @@ struct FACTORYGAME_API FErrors
 	/** All unknown classes */
 	UPROPERTY()
 	TSet<FString> UnknownClasses;
+
+public:
+	FORCEINLINE ~FErrors() = default;
 };
 
 struct FACTORYGAME_API FSaveErrors
@@ -72,4 +75,7 @@ private:
 private:
 	/** All errors */
 	static FErrors Errors;
+
+public:
+	FORCEINLINE ~FSaveErrors() = default;
 };

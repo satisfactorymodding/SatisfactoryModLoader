@@ -161,4 +161,7 @@ private:
 	/** How many spawners can we iterate over per tick */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	int32 mMaxSpawnerIterationsPerTick; 
+
+public:
+	FORCEINLINE ~UFGAISystem() = default;
 };

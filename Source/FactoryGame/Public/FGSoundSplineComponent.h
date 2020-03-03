@@ -32,4 +32,7 @@ protected:
 	/** Distance beween each emitter on our parent spline, this might be scaled slightly so that we get a point on both start and end */
 	UPROPERTY( EditAnywhere, Category="Audio",Meta=(UIMin=100,UIMax=1000,ClampMin=50))
 	float mEmitterInterval;
+
+public:
+	FORCEINLINE ~UFGSoundSplineComponent() = default;
 };

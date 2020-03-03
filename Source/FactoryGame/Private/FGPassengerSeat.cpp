@@ -2,6 +2,6 @@
 
 #include "FGPassengerSeat.h"
 
-void AFGPassengerSeat::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPassengerSeat::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGPassengerSeat::AFGPassengerSeat(){ }
-void AFGPassengerSeat::Tick( float dt){ }
+void AFGPassengerSeat::Tick(float dt){ }

@@ -14,4 +14,7 @@ UCLASS()
 class FACTORYGAME_API UFGTitleButton : public UFGButtonWidget
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGTitleButton() = default;
 };

@@ -44,6 +44,9 @@ struct FACTORYGAME_API FConnectionRepresentation
 
 	UPROPERTY()
 	class UStaticMeshComponent* mConnectionRepresentation;
+
+public:
+	FORCEINLINE ~FConnectionRepresentation() = default;
 };
 
 USTRUCT()
@@ -73,6 +76,9 @@ struct FACTORYGAME_API FFactoryClearanceData
 	TArray< FConnectionRepresentation > mConnectionComponents;
 
 	uint8 ParticipatedInCleranceEncroachFrameCountDownLast = 0;
+
+public:
+	FORCEINLINE ~FFactoryClearanceData() = default;
 };
 
 /**
@@ -315,4 +321,7 @@ private:
 
 	/** All building locations spawned during this frame. Will be cleared at the start of every new frame to avoid spawning multiple buildings at the same location. */
 	TArray<FVector> mConstructionLocationDuringFrame;
+
+public:
+	FORCEINLINE ~UFGBuildGunStateBuild() = default;
 };

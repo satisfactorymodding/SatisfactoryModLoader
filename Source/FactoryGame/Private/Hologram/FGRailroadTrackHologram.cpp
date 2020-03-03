@@ -4,13 +4,13 @@
 
 AFGRailroadTrackHologram::AFGRailroadTrackHologram(){ }
 void AFGRailroadTrackHologram::BeginPlay(){ }
-USceneComponent* AFGRailroadTrackHologram::SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
-void AFGRailroadTrackHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
+USceneComponent* AFGRailroadTrackHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
+void AFGRailroadTrackHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 int32 AFGRailroadTrackHologram::GetBaseCostMultiplier() const{ return int32(); }
 bool AFGRailroadTrackHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
-void AFGRailroadTrackHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
-void AFGRailroadTrackHologram::ConfigureComponents(  AFGBuildable* inBuildable) const{ }
-void AFGRailroadTrackHologram::SetLocationAndRotationFromPlatformConnections(  UFGTrainPlatformConnection* connectionOne,  UFGTrainPlatformConnection* connectionTwo){ }
+void AFGRailroadTrackHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
+void AFGRailroadTrackHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
+void AFGRailroadTrackHologram::SetLocationAndRotationFromPlatformConnections( UFGTrainPlatformConnection* connectionOne,  UFGTrainPlatformConnection* connectionTwo){ }
 TArray<class UFGRailroadTrackConnectionComponent*> AFGRailroadTrackHologram::GetSnappedConnectionComponents(){ return TArray<class UFGRailroadTrackConnectionComponent*>(); }
 void AFGRailroadTrackHologram::CheckValidPlacement(){ }
 void AFGRailroadTrackHologram::CheckValidFloor(){ }
@@ -18,8 +18,7 @@ void AFGRailroadTrackHologram::CheckClearance(){ }
 void AFGRailroadTrackHologram::UpdateSplineComponent(){ }
 bool AFGRailroadTrackHologram::ValidateGrade(){ return bool(); }
 bool AFGRailroadTrackHologram::ValidateCurvature(){ return bool(); }
-void AFGRailroadTrackHologram::AutoRouteSpline(
-		const FVector& startConnectionPos,
+void AFGRailroadTrackHologram::AutoRouteSpline(const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,
 		const FVector& endConnectionPos,
 		const FVector& endConnectionNormal){ }

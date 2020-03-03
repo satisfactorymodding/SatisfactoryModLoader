@@ -272,4 +272,7 @@ private:
 	/** The latest created pawn HUD widget */
 	UPROPERTY()
 	UUserWidget* mPawnHUD;
+
+public:
+	FORCEINLINE ~AFGHUD() = default;
 };

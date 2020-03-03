@@ -101,6 +101,9 @@ private:
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
 	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;
+
+public:
+	FORCEINLINE ~AFGBuildableConveyorLift() = default;
 };
 
 

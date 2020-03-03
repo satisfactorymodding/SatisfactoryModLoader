@@ -570,4 +570,7 @@ protected:
 	/** The range to keep the factory in significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	float mSignificanceRange;
+
+public:
+	FORCEINLINE ~AFGBuildableFactory() = default;
 };

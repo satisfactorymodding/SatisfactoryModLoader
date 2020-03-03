@@ -24,6 +24,9 @@ public:
 	/** Time to stay. */
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	float Duration = 0.0f;
+
+public:
+	FORCEINLINE ~FTimeTableStop() = default;
 };
 
 /**
@@ -110,4 +113,7 @@ private:
 	/** Current stop the train is at or heading to. */
 	UPROPERTY( SaveGame )
 	int32 mCurrentStop;
+
+public:
+	FORCEINLINE ~AFGRailroadTimeTable() = default;
 };

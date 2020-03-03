@@ -16,4 +16,7 @@ class FACTORYGAME_API UFGWildCardDescriptor : public UFGItemDescriptor
 	GENERATED_BODY()
 public:
 	UFGWildCardDescriptor();
+
+public:
+	FORCEINLINE ~UFGWildCardDescriptor() = default;
 };

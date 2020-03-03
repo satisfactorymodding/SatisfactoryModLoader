@@ -33,4 +33,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	bool mRequireAllItemsToBePickedUp;
 
+
+public:
+	FORCEINLINE ~UFGItemPickedUpDependency() = default;
 };

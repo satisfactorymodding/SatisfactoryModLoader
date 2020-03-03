@@ -24,4 +24,7 @@ protected:
 	/** The static mesh for the decor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Decor" )
 	class UStaticMesh* mDecorMesh;
+
+public:
+	FORCEINLINE ~UFGDecorDescriptor() = default;
 };

@@ -50,4 +50,7 @@ private:
 	/** The speed of this effect. */
 	UPROPERTY()
 	float mSpeed;
+
+public:
+	FORCEINLINE ~UFGMaterialEffect_Build() = default;
 };

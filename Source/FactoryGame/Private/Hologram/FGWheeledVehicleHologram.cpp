@@ -2,6 +2,6 @@
 
 #include "FGWheeledVehicleHologram.h"
 
-void AFGWheeledVehicleHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
+void AFGWheeledVehicleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGWheeledVehicleHologram::CheckValidPlacement(){ }
-AFGVehicle* AFGWheeledVehicleHologram::ConstructVehicle( FNetConstructionID netConstructionID) const{ return nullptr; }
+AFGVehicle* AFGWheeledVehicleHologram::ConstructVehicle(FNetConstructionID netConstructionID) const{ return nullptr; }

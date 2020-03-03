@@ -2,5 +2,5 @@
 
 #include "ArchiveObjectDataProxy.h"
 
-FArchiveObjectDataProxy::FArchiveObjectDataProxy( FArchive& inInnerArchive,  UWorld* world) : FArchiveProxy(inInnerArchive) { }
-FArchive& FArchiveObjectDataProxy::operator<<(  UObject*& Res){ return *(new FArchive); }
+FArchiveObjectDataProxy::FArchiveObjectDataProxy(FArchive& inInnerArchive,  UWorld* world) : FArchiveProxy(inInnerArchive) { }
+FArchive& FArchiveObjectDataProxy::operator<<( UObject*& Res){ return *(new FArchive); }

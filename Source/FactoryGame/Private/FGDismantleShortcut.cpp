@@ -2,7 +2,7 @@
 
 #include "FGDismantleShortcut.h"
 
-void UFGDismantleShortcut::Execute_Implementation(  AFGPlayerController* owner){ }
-bool UFGDismantleShortcut::IsValidShortcut_Implementation(  AFGPlayerController* owner) const{ return bool(); }
+void UFGDismantleShortcut::Execute_Implementation( AFGPlayerController* owner){ }
+bool UFGDismantleShortcut::IsValidShortcut_Implementation( AFGPlayerController* owner) const{ return bool(); }
 UTexture2D* UFGDismantleShortcut::GetDisplayImage_Implementation() const{ return nullptr; }
-bool UFGDismantleShortcut::IsActive_Implementation(  AFGPlayerController* owner) const{ return bool(); }
+bool UFGDismantleShortcut::IsActive_Implementation( AFGPlayerController* owner) const{ return bool(); }

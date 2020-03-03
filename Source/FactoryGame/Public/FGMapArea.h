@@ -38,4 +38,7 @@ protected:
 	/** This is the name the player has given this area */
 	UPROPERTY()
 	FText mUserSetDisplayName;
+
+public:
+	FORCEINLINE ~UFGMapArea() = default;
 };

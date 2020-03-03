@@ -3,8 +3,8 @@
 #include "FGDamageOverTime.h"
 
 UFGDamageOverTime::UFGDamageOverTime(){ }
-float UFGDamageOverTime::GetDamageInterval( TSubclassOf< UFGDamageOverTime > dotClass){ return float(); }
-float UFGDamageOverTime::GetDamageAmount( TSubclassOf< UFGDamageOverTime > dotClass){ return float(); }
-TSubclassOf< class UFGDamageType > UFGDamageOverTime::GetDamageClass( TSubclassOf< UFGDamageOverTime > dotClass){ return TSubclassOf<class UFGDamageType>(); }
-bool UFGDamageOverTime::ShouldBeAppliedToActor( TSubclassOf< UFGDamageOverTime > dotClass,  AActor* actor){ return bool(); }
-bool UFGDamageOverTime::ShouldBeAppliedToActor(  AActor* actor) const{ return bool(); }
+float UFGDamageOverTime::GetDamageInterval(TSubclassOf< UFGDamageOverTime > dotClass){ return float(); }
+float UFGDamageOverTime::GetDamageAmount(TSubclassOf< UFGDamageOverTime > dotClass){ return float(); }
+TSubclassOf< class UFGDamageType > UFGDamageOverTime::GetDamageClass(TSubclassOf< UFGDamageOverTime > dotClass){ return TSubclassOf<class UFGDamageType>(); }
+bool UFGDamageOverTime::ShouldBeAppliedToActor(TSubclassOf< UFGDamageOverTime > dotClass,  AActor* actor){ return bool(); }
+bool UFGDamageOverTime::ShouldBeAppliedToActor( AActor* actor) const{ return bool(); }

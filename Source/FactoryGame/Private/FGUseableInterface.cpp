@@ -2,5 +2,5 @@
 
 #include "FGUseableInterface.h"
 
-bool UFGUseState::CanUseInState( TSubclassOf<UFGUseState> state){ return bool(); }
-void FUseState::SetUseState( TSubclassOf<UFGUseState> newState){ }
+bool UFGUseState::CanUseInState(TSubclassOf<UFGUseState> state){ return bool(); }
+void FUseState::SetUseState(TSubclassOf<UFGUseState> newState){ }

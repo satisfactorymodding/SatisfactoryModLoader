@@ -49,5 +49,8 @@ public:
 
 	/** Saving previous stepheight */
 	float mPrevStepHeight; 
+
+public:
+	FORCEINLINE ~UFGGameplayTask_AttackJump() = default;
 };
 

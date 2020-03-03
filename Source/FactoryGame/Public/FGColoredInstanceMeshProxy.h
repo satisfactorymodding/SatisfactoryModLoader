@@ -53,4 +53,7 @@ private:
 	//class AFGBuildableFactory* mOuterFactory; //[DavalliusA:Sat/23-02-2019] consider fetching tihs to be able to read color slot from it... but we only need that in rare cases, so it's probably not worth keeping
 
 
+
+public:
+	FORCEINLINE ~UFGColoredInstanceMeshProxy() = default;
 };

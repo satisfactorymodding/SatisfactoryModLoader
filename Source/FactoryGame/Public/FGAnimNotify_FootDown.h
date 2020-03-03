@@ -25,4 +25,7 @@ protected:
 	/** Should play a sound.  */
 	UPROPERTY( EditAnywhere, Category = "Foot" )
 	bool mPlaySound;
+
+public:
+	FORCEINLINE ~UFGAnimNotify_FootDown() = default;
 };

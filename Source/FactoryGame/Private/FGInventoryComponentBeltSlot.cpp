@@ -3,7 +3,7 @@
 #include "FGInventoryComponentBeltSlot.h"
 
 UFGInventoryComponentBeltSlot::UFGInventoryComponentBeltSlot(){ }
-bool UFGInventoryComponentBeltSlot::ContainsStackItemTypeAndHasEnoughRoom( FInventoryStack itemStack){ return bool(); }
-void UFGInventoryComponentBeltSlot::OnItemsAdded( int32 idx, int32 num){ }
-void UFGInventoryComponentBeltSlot::OnItemsRemoved( int32 index, int32 num, FInventoryItem item){ }
-bool UFGInventoryComponentBeltSlot::FilterEquipmentClasses( TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
+bool UFGInventoryComponentBeltSlot::ContainsStackItemTypeAndHasEnoughRoom(FInventoryStack itemStack){ return bool(); }
+void UFGInventoryComponentBeltSlot::OnItemsAdded(int32 idx, int32 num){ }
+void UFGInventoryComponentBeltSlot::OnItemsRemoved(int32 index, int32 num, FInventoryItem item){ }
+bool UFGInventoryComponentBeltSlot::FilterEquipmentClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }

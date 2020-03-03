@@ -324,4 +324,7 @@ private:
 	/** Should we use the default primary fire implementation */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	bool mUseDefaultPrimaryFire;
+
+public:
+	FORCEINLINE ~AFGEquipment() = default;
 };

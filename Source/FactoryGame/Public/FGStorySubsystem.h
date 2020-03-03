@@ -37,6 +37,9 @@ private:
 	/** Schematic to unlock ( if any ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< class UFGSchematic > SchematicClass;
+
+public:
+	FORCEINLINE ~FMapAreaVisitedData() = default;
 };
 
 struct FACTORYGAME_API FFindByMapAreFound
@@ -49,6 +52,9 @@ struct FACTORYGAME_API FFindByMapAreFound
 	{
 		return ( MapAreaFound == Element.MapAreaClass );
 	}
+
+public:
+	FORCEINLINE ~FFindByMapAreFound() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -80,6 +86,9 @@ private:
 	/** Item descriptor we are looking for */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< class UFGItemDescriptor > ItemClass;
+
+public:
+	FORCEINLINE ~FItemFoundData() = default;
 };
 
 struct FACTORYGAME_API FFindByItemFound
@@ -92,6 +101,9 @@ struct FACTORYGAME_API FFindByItemFound
 	{
 		return ( ItemFound == Element.GetItemDescriptor() && !Element.WasFound );
 	}
+
+public:
+	FORCEINLINE ~FFindByItemFound() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -109,6 +121,9 @@ private:
 	/** Associated schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< UFGSchematic > SchematicUnlocked;
+
+public:
+	FORCEINLINE ~FSchematicMessagePair() = default;
 };
 
 USTRUCT(BlueprintType)
@@ -130,6 +145,9 @@ private:
 	/** Associated research tree */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr<class UFGResearchTree> ResearchTree;
+
+public:
+	FORCEINLINE ~FResearchTreeMessageData() = default;
 };
 
 /**
@@ -198,6 +216,9 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Story|Research" )
 	TSubclassOf<class UFGMessageBase> mResearchTimerCompleteMessage;
+
+public:
+	FORCEINLINE ~AFGStorySubsystem() = default;
 };
 
 FORCEINLINE TSubclassOf< UFGSchematic > FSchematicMessagePair::GetSchematic() const

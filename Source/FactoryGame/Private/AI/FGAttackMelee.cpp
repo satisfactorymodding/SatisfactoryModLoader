@@ -2,4 +2,4 @@
 
 #include "FGAttackMelee.h"
 
-void UFGAttackMelee::PerformAttack( TScriptInterface< IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }
+void UFGAttackMelee::PerformAttack(TScriptInterface< IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }

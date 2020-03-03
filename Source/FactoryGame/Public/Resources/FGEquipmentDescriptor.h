@@ -25,4 +25,7 @@ public:
 	/** The equipment that is linked to this descriptor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
 	TSubclassOf< class AFGEquipment > mEquipmentClass;
+
+public:
+	FORCEINLINE ~UFGEquipmentDescriptor() = default;
 };

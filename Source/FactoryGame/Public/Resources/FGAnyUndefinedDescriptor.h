@@ -15,4 +15,7 @@ class FACTORYGAME_API UFGAnyUndefinedDescriptor : public UFGItemDescriptor
 	GENERATED_BODY()
 public:
 	UFGAnyUndefinedDescriptor();
+
+public:
+	FORCEINLINE ~UFGAnyUndefinedDescriptor() = default;
 };

@@ -33,4 +33,7 @@ public:
 	/** Get what version of the game we are running */
 	UFUNCTION( BlueprintPure, Category = "Development" )
 	static EGameVersion GetGameVersion();
+
+public:
+	FORCEINLINE ~UFGVersionFunctionLibrary() = default;
 };

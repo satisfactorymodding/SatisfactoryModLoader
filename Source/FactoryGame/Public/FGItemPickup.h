@@ -20,6 +20,9 @@ class FACTORYGAME_API UFGUseState_FullInventory : public UFGUseState
 	GENERATED_BODY()
 
 	UFGUseState_FullInventory() : Super() { mIsUsableState = false; }
+
+public:
+	FORCEINLINE ~UFGUseState_FullInventory() = default;
 };
 
 /**
@@ -31,6 +34,9 @@ class FACTORYGAME_API UFGUseState_Collecting : public UFGUseState
 	GENERATED_BODY()
 
 	UFGUseState_Collecting() : Super() { mIsUsableState = true; }
+
+public:
+	FORCEINLINE ~UFGUseState_Collecting() = default;
 };
 
 /**
@@ -162,4 +168,7 @@ protected:
 	/** The ak event to post for the sound  */
 	UPROPERTY( EditDefaultsOnly, Category = "AkComponent" )
 	class UAkAudioEvent* mAudioEvent;
+
+public:
+	FORCEINLINE ~AFGItemPickup() = default;
 };

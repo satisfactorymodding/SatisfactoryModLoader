@@ -41,4 +41,7 @@ protected:
 	/** Range that this volume should be significant within */
 	UPROPERTY( EditInstanceOnly, Category = "Significance" )
 	float mSignificanceRange;
+
+public:
+	FORCEINLINE ~AFGAmbientSoundSpline() = default;
 };

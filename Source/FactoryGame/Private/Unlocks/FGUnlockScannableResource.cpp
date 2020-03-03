@@ -4,4 +4,4 @@
 
 #if WITH_EDITORONLY_DATA
 #endif 
-void UFGUnlockScannableResource::Apply(  AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockScannableResource::Apply( AFGUnlockSubsystem* unlockSubssytem){ }

@@ -44,4 +44,7 @@ public:
 	/** Character this anim belongs to */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
 	class AFGCharacterPlayer* mCharacter;
+
+public:
+	FORCEINLINE ~UFGAnimPlayer() = default;
 };

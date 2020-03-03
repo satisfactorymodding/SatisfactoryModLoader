@@ -159,4 +159,7 @@ private:
 	UPROPERTY()
 	class UStaticMesh* mMesh;
 	float mMeshLength;
+
+public:
+	FORCEINLINE ~AFGConveyorBeltHologram() = default;
 };

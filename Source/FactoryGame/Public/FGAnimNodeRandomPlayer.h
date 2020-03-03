@@ -21,4 +21,7 @@ public:
 	// Begin FAnimNode_Base interface
 	virtual void Initialize_AnyThread( const FAnimationInitializeContext& Context ) override;
 	// End FAnimNode_Base interface
+
+public:
+	FORCEINLINE ~FFGAnimNode_RandomPlayer() = default;
 };
