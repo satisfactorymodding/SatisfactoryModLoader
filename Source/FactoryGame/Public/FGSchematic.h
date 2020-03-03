@@ -126,6 +126,16 @@ public:
 	/** Add a recipe to this schematic. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Schematic" )
 	static void AddRecipe( TSubclassOf< UFGSchematic > inClass, TSubclassOf< class UFGRecipe > recipe );
+	UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+	static void SetTechTier(TSubclassOf<UFGSchematic> inClass, int32 Tier);
+	UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+	static void SetTimeToComplete(TSubclassOf<UFGSchematic> inClass, float sec);
+	UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+	static void SetType(TSubclassOf<UFGSchematic> inClass, ESchematicType Type);
+	UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+	static void SetCost(TSubclassOf<UFGSchematic> inClass, TArray<FItemAmount> Cost);
+	UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+	static void SetDisplayName(TSubclassOf<UFGSchematic> inClass, FText Name);
 #endif
 
 	//~ Begin AssetInterface
