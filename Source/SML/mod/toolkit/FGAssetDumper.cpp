@@ -203,11 +203,11 @@ void SML::dumpSatisfactoryAssets(const FName& rootPath, const FString& fileName)
 	resultObject->SetArrayField(TEXT("UserDefinedStructs"), userDefinedStructs);
 	resultObject->SetArrayField(TEXT("Bluepirnts"), blueprints);
 
-	const path& resultPath = SML::getConfigDirectory() / *fileName;
+	const FString& resultPath = SML::getConfigDirectory() / *fileName;
 	FString resultString;
 	TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
 	FJsonSerializer Serializer;
 	Serializer.Serialize(resultObject, writer);
-	FFileHelper::SaveStringToFile(resultString, resultPath.c_str(), FFileHelper::EEncodingOptions::ForceUTF8);
+	FFileHelper::SaveStringToFile(resultString, *resultPath, FFileHelper::EEncodingOptions::ForceUTF8);
 	SML::Logging::info(TEXT("Dumping finished!"));
 }

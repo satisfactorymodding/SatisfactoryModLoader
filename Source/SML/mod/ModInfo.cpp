@@ -5,46 +5,46 @@
 
 using ModInfo = SML::Mod::FModInfo;
 
-void readDependencies(std::unordered_map<std::wstring, FVersionRange>& result, const FJsonObject& dependencies) {
+void readDependencies(TMap<FString, FVersionRange>& result, const FJsonObject& dependencies) {
 	for (auto& dependency : dependencies.Values) {
 		FString resultValue;
 		if (dependency.Value.Get()->TryGetString(resultValue)) {
-			result.insert({ *dependency.Key, FVersionRange(*resultValue) });
+			result.Add(dependency.Key, FVersionRange(resultValue));
 		}
 	}
 };
 
-std::vector<std::wstring> readAuthors(const TArray<TSharedPtr<FJsonValue>>& arr) {
-	std::vector<std::wstring> resultVec;
+TArray<FString> readAuthors(const TArray<TSharedPtr<FJsonValue>>& arr) {
+	TArray<FString> resultVec;
 	for (const TSharedPtr<FJsonValue>& element : arr) {
 		if (element.IsValid()) {
-			resultVec.push_back(*element.Get()->AsString());
+			resultVec.Add(element.Get()->AsString());
 		}
 	}
 	return resultVec;
 }
 
-bool ModInfo::isValid(const FJsonObject& object, const path& filePath) {
+bool ModInfo::isValid(const FJsonObject& object, const FString& filePath) {
 	bool isInfoValid = true;
 	if (!object.HasTypedField<EJson::String>("mod_reference")) {
-		SML::Logging::error("\"mod_reference\" not found in mod ", filePath);
+		SML::Logging::error(*FString::Printf(TEXT("\"mod_reference\" not found in mod %s"), *filePath));
 		isInfoValid = false;
 	}
 	if (!object.HasTypedField<EJson::String>("name")) {
-		SML::Logging::warning("\"name\" not found in mod ", filePath);
+		SML::Logging::warning(*FString::Printf(TEXT("\"name\" not found in mod %s"), *filePath));
 	}
 	if (!object.HasTypedField<EJson::String>("version")) {
-		SML::Logging::error("\"version\" not found in mod ", filePath);
+		SML::Logging::error(*FString::Printf(TEXT("\"version\" not found in mod %s"), *filePath));
 		isInfoValid = false;
 	}
 	if (!object.HasTypedField<EJson::String>("description")) {
-		SML::Logging::warning("\"description\" not found in mod ", filePath);
+		SML::Logging::warning(*FString::Printf(TEXT("\"description\" not found in mod %s"), *filePath));
 	}
 	if (!object.HasTypedField<EJson::Array>("authors")) {
-		SML::Logging::warning("\"authors\" not found in mod ", filePath);
+		SML::Logging::warning(*FString::Printf(TEXT("\"authors\" not found in mod %s"), *filePath));
 	}
 	if (!object.HasTypedField<EJson::Object>("objects")) {
-		SML::Logging::error("\"objects\" not found in mod ", filePath);
+		SML::Logging::error(*FString::Printf(TEXT("\"objects\" not found in mod %s"), *filePath));
 		isInfoValid = false;
 	}
 	return isInfoValid;
@@ -69,7 +69,7 @@ ModInfo ModInfo::createFromJson(const FJsonObject& object) {
 	return modInfo;
 };
 
-ModInfo ModInfo::createDummyInfo(const std::wstring& modid) {
+ModInfo ModInfo::createDummyInfo(const FString& modid) {
 	return FModInfo{
 		modid, modid,
 		FVersion(TEXT("1.0.0")),

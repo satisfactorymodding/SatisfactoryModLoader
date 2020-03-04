@@ -33,14 +33,14 @@ namespace SML {
 		// logs a message of <T> with various modifiers
 		template<typename First, typename ...Args>
 		void log(LogType type, First &&arg0, Args &&...args) {
-			std::wstring message = formatStr(arg0, args...);
+			FString message = formatStr(arg0, args...);
 #if WITH_EDITOR == 0
-			const std::wstring result = formatStr("[", getLogTypeStr(type), "] ", message);
-			std::wcout << result << std::endl;
-			getLogFile() << result << std::endl;
+			const FString result = FString::Printf(TEXT("[%s] %s"), getLogTypeStr(type), *message);
+			std::wcout << *result << std::endl;
+			getLogFile() << *result << std::endl;
 #endif
 			const ELogVerbosity::Type verbosity = logTypeToVerbosity(type);
-			FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), verbosity, TEXT("%s"), message.c_str());
+			FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), verbosity, TEXT("%s"), *message);
 		}
 
 		template<typename First, typename ...Args>

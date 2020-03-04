@@ -1,8 +1,6 @@
 #pragma once
 
-#include <unordered_map>
-#include <unordered_set>
-#include <vector>
+#include "CoreTypes.h"
 
 namespace SML {
 	namespace TopologicalSort {
@@ -32,7 +30,7 @@ namespace SML {
 		class DirectedGraph {
 		public:
 			//use a pointer to the unordered set as value to avoid excessive copying
-			std::unordered_map<T, std::unordered_set<T>*> nodes;
+			TMap<T, TSet<T>*> nodes;
 		public:
 			DirectedGraph();
 			DirectedGraph(const DirectedGraph<T>& src);
@@ -56,7 +54,7 @@ namespace SML {
 			* Returned reference is valid as long as the this graph object is valid
 			* throws std::invalid_argument if specified node is not in a graph
 			*/
-			const std::unordered_set<T>& edgesFrom(const T& node) const;
+			const TSet<T>& edgesFrom(const T& node) const;
 
 			/**
 			* Returns amount of nodes in the graph
@@ -69,7 +67,7 @@ namespace SML {
 		* Returns a list of sorted elements
 		*/
 		template<typename T>
-		std::vector<T> topologicalSort(const DirectedGraph<T>& graph);
+		TArray<T> topologicalSort(const DirectedGraph<T>& graph);
 	};
 };
 

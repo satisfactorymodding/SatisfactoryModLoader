@@ -35,9 +35,9 @@ FString CreateModListString() {
 	TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
 	FJsonSerializer Serializer;
 	TSharedRef<FJsonObject> modListObject = MakeShareable(new FJsonObject());
-	for (const std::wstring& modid : modHandler.getLoadedMods()) {
+	for (const FString& modid : modHandler.getLoadedMods()) {
 		const SML::Mod::FModInfo& info = modHandler.getLoadedMod(modid).modInfo;
-		modListObject->SetStringField(modid.c_str(), info.version.string().c_str());
+		modListObject->SetStringField(modid, info.version.string());
 	}
 	Serializer.Serialize(modListObject, writer);
 	return resultString;
@@ -53,14 +53,14 @@ void CheckModListString(const FString& modListString, FString& failureReason) {
 	}
 	SML::Mod::FModHandler& modHandler = SML::getModHandler();
 	TArray<FString> missingMods;
-	for (const std::wstring& loadedModId : modHandler.getLoadedMods()) {
-		if (!modListObject->HasField(loadedModId.c_str())) {
-			missingMods.Add(FString::Printf(TEXT("%s: missing"), loadedModId.c_str()));
+	for (const FString& loadedModId : modHandler.getLoadedMods()) {
+		if (!modListObject->HasField(loadedModId)) {
+			missingMods.Add(FString::Printf(TEXT("%s: missing"), *loadedModId));
 		} else {
-			const FVersion& modVersion = FVersion(*modListObject->GetStringField(loadedModId.c_str()));
+			const FVersion& modVersion = FVersion(*modListObject->GetStringField(loadedModId));
 			const FVersion& minModVersion = modHandler.getLoadedMod(loadedModId).modInfo.version;
 			if (modVersion.compare(minModVersion) < 0) {
-				const FString& message = FString::Printf(TEXT("%s: required at least %s"), loadedModId.c_str(), minModVersion.string().c_str());
+				const FString& message = FString::Printf(TEXT("%s: required at least %s"), *loadedModId, *minModVersion.string());
 				missingMods.Add(message);
 			}
 		}

@@ -23,8 +23,7 @@
 #include "util/Internal.h"
 #include "CoreDelegates.h"
 #include "FGGameMode.h"
-#include <experimental/filesystem>
-#include "MOD/ModHandler.h"
+#include "mod/ModHandler.h"
 #include "util/Console.h"
 #include "player/PlayerUtility.h"
 #include "command/ChatCommandAPI.h"
@@ -32,15 +31,13 @@
 #include "player/VersionCheck.h"
 #include "player/MainMenuMixin.h"
 
-using namespace std::experimental::filesystem;
-
 bool checkGameVersion(const long targetVersion) {
 	const FString& buildVersion = FString(FApp::GetBuildVersion());
 	int32 charIndex = -1;
 	buildVersion.FindLastChar('-', charIndex);
 	const long version = FCString::Atoi(*buildVersion.Mid(charIndex + 1));
 	if (targetVersion > version) {
-		SML::Logging::fatal(TEXT("Version check failed: Satisfactory version CL-"), version, TEXT(" is outdated. SML requires at least CL-"), targetVersion, TEXT(". Things are not going to work."));
+		SML::Logging::fatal(*FString::Printf(TEXT("Version check failed: Satisfactory version CL-%ld is outdated. SML requires at least CL-%ld. Things are not going to work."), version, targetVersion));
 		return false;
 	}
 	if (targetVersion < version) {
@@ -52,7 +49,7 @@ bool checkGameVersion(const long targetVersion) {
 
 bool checkBootstrapperVersion(SML::Versioning::FVersion target, SML::Versioning::FVersion actual) {
 	if (actual.compare(target) < 0) {
-		SML::Logging::fatal(TEXT("Bootstrapper version check failed: Bootstrapper version "), actual.string().c_str(), TEXT(" is outdated. SML requires at least "), target.string().c_str());
+		SML::Logging::fatal(*FString::Printf(TEXT("Bootstrapper version check failed: Bootstrapper version %s is outdated. SML requires at least %s"), *actual.string(), *target.string()));
 		return false;
 	}
 	return true;
@@ -113,8 +110,8 @@ namespace SML {
 	//Holds pointers to the bootstrapper functions used for loading modules
 	static BootstrapAccessors* bootstrapAccessors;
 
-	//path to the root of the game
-	static path* rootGamePath;
+	//FString to the root of the game
+	static FString* rootGamePath;
 
 	void* ResolveGameSymbol(const char* symbolName) {
 		return bootstrapAccessors->ResolveGameSymbol(symbolName);
@@ -127,18 +124,20 @@ namespace SML {
 	void bootstrapSML(BootstrapAccessors& accessors) {
 		bootstrapAccessors = new BootstrapAccessors(accessors);
 		logOutputStream = new std::wofstream();
-		logOutputStream->open(path(accessors.gameRootDirectory) / logFileName, std::ios_base::out | std::ios_base::trunc);
+		logOutputStream->open(*(FString(accessors.gameRootDirectory) / logFileName), std::ios_base::out | std::ios_base::trunc);
 
 		SML::Logging::info(TEXT("Log System Initialized!"));
-		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), modLoaderVersion->string());
+		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), *modLoaderVersion->string());
 		bootstrapperVersion = new SML::Versioning::FVersion(accessors.version);
 		
-		rootGamePath = new path(accessors.gameRootDirectory);
-		SML::Logging::info(TEXT("Game root directory: "), rootGamePath->generic_wstring());
+		rootGamePath = new FString(accessors.gameRootDirectory);
+		SML::Logging::info(TEXT("Game root directory: "), **rootGamePath);
 
-		create_directories(getModDirectory());
-		create_directories(getConfigDirectory());
-		create_directories(getCacheDirectory());
+		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+		PlatformFile.CreateDirectoryTree(*getModDirectory());
+		PlatformFile.CreateDirectoryTree(*getConfigDirectory());
+		PlatformFile.CreateDirectoryTree(*getCacheDirectory());
 
 		if (!checkBootstrapperVersion(*targetBootstrapperVersion, *bootstrapperVersion)) {
 			SML::shutdownEngine(TEXT("Incompatible bootstrapper version."));
@@ -194,15 +193,15 @@ namespace SML {
 		flushDebugSymbols();
 	}
 
-	SML_API path getModDirectory() {
+	SML_API FString getModDirectory() {
 		return *rootGamePath / TEXT("mods");
 	}
 
-	SML_API path getConfigDirectory() {
+	SML_API FString getConfigDirectory() {
 		return *rootGamePath / TEXT("configs");
 	}
 
-	SML_API path getCacheDirectory() {
+	SML_API FString getCacheDirectory() {
 		return *rootGamePath / TEXT(".cache");
 	}
 

@@ -30,16 +30,16 @@ void SML::ChatCommand::registerSMLChatCommands() {
 	
 	REGISTER_COMMAND("info", "/info - Information about environment", {TEXT("version")}, [](const FCommandData& data) {
 		USMLPlayerComponent* component = USMLPlayerComponent::Get(data.player);
-		component->SendChatMessage(FString(TEXT("Running SML v.")) += SML::getModLoaderVersion().string().c_str());
-		component->SendChatMessage(FString(TEXT("Powered by Bootstrapper v.")) += SML::getBootstrapperVersion().string().c_str());
+		component->SendChatMessage(FString::Printf(TEXT("Running SML v.%s"), *SML::getModLoaderVersion().string()));
+		component->SendChatMessage(FString::Printf(TEXT("Powered by Bootstrapper v.%s"), *SML::getBootstrapperVersion().string()));
 		Mod::FModHandler& modHandler = SML::getModHandler();
 		auto loadedModsVector = modHandler.getLoadedMods();
 		TArray<FString> loadedMods;
-		for (const std::wstring& loadedModId : loadedModsVector) {
+		for (const FString& loadedModId : loadedModsVector) {
 			const Mod::FModContainer& modContainer = modHandler.getLoadedMod(loadedModId);
-			loadedMods.Add(modContainer.modInfo.name.c_str());
+			loadedMods.Add(modContainer.modInfo.name);
 		}
-		component->SendChatMessage(FString(TEXT("Loaded Mods: ")) += FString::Join(loadedMods, TEXT(", ")));
+		component->SendChatMessage(FString::Printf(TEXT("Loaded Mods: %s"), *FString::Join(loadedMods, TEXT(", "))));
 		return EExecutionStatus::COMPLETED;
 	});
 	
