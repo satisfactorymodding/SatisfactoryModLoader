@@ -2,13 +2,13 @@
 
 #include <string>
 #include <unordered_map>
+#include <vector>
 #include "mod/version.h"
-#include "util/json.hpp"
 #include <filesystem>
+#include "Json.h"
 
 using namespace std::experimental::filesystem;
 
-using json = nlohmann::json;
 using namespace SML::Versioning;
 
 namespace SML {
@@ -18,12 +18,12 @@ namespace SML {
 			std::wstring name;
 			FVersion version;
 			std::wstring description;
-			std::wstring authors;
+			std::vector<std::wstring> authors;
 			std::unordered_map<std::wstring, FVersionRange> dependencies;
 			std::unordered_map<std::wstring, FVersionRange> optionalDependencies;
 
-			static bool isValid(json& object, const path& filePath);
-			static FModInfo createFromJson(json& object);
+			static bool isValid(const FJsonObject& object, const path& filePath);
+			static FModInfo createFromJson(const FJsonObject& object);
 			static FModInfo createDummyInfo(const std::wstring& modid);
 		};
 	}

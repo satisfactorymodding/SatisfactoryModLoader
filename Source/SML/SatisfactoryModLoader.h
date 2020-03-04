@@ -1,19 +1,9 @@
 #pragma once
-#include <string>
 #include "mod/version.h"
 #include "mod/ModHandler.h"
 #include <filesystem>
 
 using namespace std::experimental::filesystem;
-
-/**
- * Methods for converting widechar text to multibyte text
- * and vice-versa. While technically most C++ constructors can do
- * conversion automatically, they don't handle multi-byte
- * characters properly as experience shows
- */
-std::string convertStr(const wchar_t* string);
-std::wstring convertStr(const char* string);
 
 namespace SML {
 	struct FSMLConfiguration {

@@ -7,7 +7,6 @@
 #include "GameFramework/Actor.h"
 #include "actor/SMLInitMod.h"
 #include "actor/SMLInitMenu.h"
-#include "util/Internal.h"
 
 void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
 	std::unordered_map<std::wstring, uint64_t>& modIndices,
@@ -51,7 +50,7 @@ FModLoadingEntry createSMLLoadingEntry() {
 	entry.modInfo.name = TEXT("Satisfactory Mod Loader");
 	entry.modInfo.version = getModLoaderVersion();
 	entry.modInfo.description = TEXT("Mod Loading & Compatibility layer for Satisfactory");
-	entry.modInfo.authors = TEXT("TODO");
+	entry.modInfo.authors = {TEXT("Archengius"), TEXT("Brabb3l"), TEXT("Mircea"), TEXT("Panakotta00"), TEXT("SuperCoder79"), TEXT("Vilsol")};
 	return entry;
 }
 
@@ -91,19 +90,12 @@ std::wstring getModIdFromFile(const path& filePath) {
 	if (filePath.extension() == TEXT(".pak")) {
 		//FactoryGame_p.pak, clean priority suffix if it is there
 		if (modId.find_last_of(TEXT("_P")) == modId.size() - 2 ||
-			modId.find_last_of(TEXT("_p")) == modId.size() - 2) {
-			return modId.substr(0, modId.size() - 2);
+			modId.find_last_of(TEXT("_p")) == modId.size() - 2) {return modId.substr(0, modId.size() - 2);
 		}
 		//return normal mod id if it doesn't contain suffix
 		return modId;
 	}
 	return modId;
-}
-
-std::string createModuleNameFromModId(const std::wstring& modId) {
-	//TODO platform-independent way
-	//linker uses names with the following schema during linkage
-	return convertStr(formatStr(TEXT("UE4-"), modId, TEXT("-Win64-Shipping.dll")).c_str());
 }
 
 FileHash hashFileContents(const path& path) {
@@ -122,7 +114,8 @@ bool extractArchiveFile(const path& outFilePath, ttvfs::File* obj) {
 	std::ofstream outFile(outFilePath, std::ofstream::binary);
 	auto buffer_size = 4096;
 	if (!obj->open("rb")) {
-		SML::shutdownEngine(TEXT("Failed opening archive object"));
+		SML::Logging::error(TEXT("Failed opening archive object "), obj->name());
+		return false;
 	}
 	char* buf = new char[buffer_size];
 	do {
@@ -134,20 +127,27 @@ bool extractArchiveFile(const path& outFilePath, ttvfs::File* obj) {
 	return true;
 }
 
-nlohmann::json readArchiveJson(ttvfs::File* obj) {
+TSharedPtr<FJsonObject> readArchiveJson(ttvfs::File* obj) {
 	if (!obj->open("rb")) {
-		SML::shutdownEngine(TEXT("Failed opening archive object"));
+		SML::Logging::error(TEXT("Failed opening archive object"));
+		return TSharedPtr<FJsonObject>();
 	}
 	std::vector<char> buffer(obj->size());
 	obj->read(buffer.data(), obj->size());
 	obj->close();
 	const std::wstring string(buffer.begin(), buffer.end());
-	return parseJsonLenient(string);
+	try {
+		return parseJsonLenient(string);
+	} catch (const std::exception& ex) {
+		SML::Logging::error(TEXT("Failed to parse data.json from archive object "), obj->name(), TEXT(": "), ex.what());
+		return TSharedPtr<FJsonObject>();
+	}
 }
 
-FileHash hashArchiveFileContents(ttvfs::File* obj) {
+bool hashArchiveFileContents(ttvfs::File* obj, FileHash& outHash) {
 	if (!obj->open("rb")) {
-		SML::shutdownEngine(TEXT("Failed opening archive object"));
+		SML::Logging::error(TEXT("Failed opening archive object"));
+		return false;
 	}
 	std::vector<char> buffer(obj->size());
 	obj->read(buffer.data(), obj->size());
@@ -155,7 +155,8 @@ FileHash hashArchiveFileContents(ttvfs::File* obj) {
 
 	std::vector<unsigned char> hash(picosha2::k_digest_size);
 	picosha2::hash256(buffer.begin(), buffer.end(), hash.begin(), hash.end());
-	return picosha2::bytes_to_hex_string(hash);
+	outHash = picosha2::bytes_to_hex_string(hash);
+	return true;
 }
 
 bool stringEndsWith(const std::string& fullString, const std::string& ending) {
@@ -166,31 +167,38 @@ bool stringEndsWith(const std::string& fullString, const std::string& ending) {
 	}
 }
 
-void extractFixedNameFileInternal(ttvfs::File* objectFile, const path& filePath) {
-	const FileHash& fileHash = hashArchiveFileContents(objectFile);
+bool extractFixedNameFileInternal(ttvfs::File* objectFile, const path& filePath) {
+	FileHash fileHash;
+	if (!hashArchiveFileContents(objectFile, fileHash)) {
+		return false;
+	}
 	//if cached file doesn't exist, or file hashes don't match, unpack file and copy it
 	if (!exists(filePath) || fileHash != hashFileContents(filePath)) {
 		//in case of broken cache file, remove old file
 		remove(filePath);
 		//unpack file in the temporary directory
-		extractArchiveFile(filePath, objectFile);
+		return extractArchiveFile(filePath, objectFile);
 	}
+	return true;
 }
 
-path extractTempFileInternal(ttvfs::File* objectFile, const std::string& objectType) {
-	const FileHash& fileHash = hashArchiveFileContents(objectFile);
-	const path& filePath = generateTempFilePath(fileHash, objectType.c_str());
+bool extractTempFileInternal(ttvfs::File* objectFile, const std::string& objectType, path& filePath) {
+	FileHash fileHash;
+	if (!hashArchiveFileContents(objectFile, fileHash)) {
+		return false;
+	}
+	filePath = generateTempFilePath(fileHash, objectType.c_str());
 	//if cached file doesn't exist, or file hashes don't match, unpack file and copy it
 	if (!exists(filePath) || fileHash != hashFileContents(filePath)) {
 		//in case of broken cache file, remove old file
 		remove(filePath);
 		//unpack file in the temporary directory
-		extractArchiveFile(filePath, objectFile);
+		return extractArchiveFile(filePath, objectFile);
 	}
-	return filePath;
+	return true;
 }
 
-bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const json& metadata) {
+bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const FJsonObject* metadata) {
 	ttvfs::File* objectFile = root.getFile(archivePath.c_str());
 	if (objectFile == nullptr) {
 		SML::Logging::error("object specified in data.json is missing in zip file");
@@ -200,15 +208,18 @@ bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 	//extract configuration
 	if (objectType == "config") {
 		//extract mod configuration into the predefined folder
-		path configFilePath = getModConfigFilePath(loadingEntry.modInfo.modid);
+		const path& configFilePath = getModConfigFilePath(loadingEntry.modInfo.modid);
 		if (!exists(configFilePath)) {
 			//only extract it if it doesn't exist already
-			extractArchiveFile(configFilePath, objectFile);
+			return extractArchiveFile(configFilePath, objectFile);
 		}
-		return false;
+		return true;
 	}
 	//extract archive file now into the temporary directory
-	path filePath = extractTempFileInternal(objectFile, objectType);
+	path filePath;
+	if (!extractTempFileInternal(objectFile, objectType, filePath)) {
+		return false;
+	}
 
 	//try to also extract PDB files for archive dll files
 	if (stringEndsWith(archivePath, ".dll")) {
@@ -219,17 +230,16 @@ bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 		ttvfs::File* pdbObjectFile = root.getFile(archivePdbFilePath.c_str());
 		if (pdbObjectFile != nullptr) {
 			//extract pdb file with the same name now
-			extractFixedNameFileInternal(pdbObjectFile, pdbFilePath);
+			if (!extractFixedNameFileInternal(pdbObjectFile, pdbFilePath)) {
+				SML::Logging::warning(TEXT("Failed to extract mod PDB file"));
+			}
 		}
 	}
 	
 	if (objectType == "pak") {
 		int32 loadingPriority = 0;
-		if (!metadata.is_null()) {
-			const json loadingPriorityJson = metadata["loading_priority"];
-			if (loadingPriorityJson.is_number()) {
-				loadingPriorityJson.get_to(loadingPriority);
-			}
+		if (metadata != nullptr && metadata->HasTypedField<EJson::Number>(TEXT("loading_priority"))) {
+			loadingPriority = metadata->GetIntegerField(TEXT("loading_priority"));
 		}
 		const std::wstring pakFilePath = filePath.generic_wstring();
 		loadingEntry.pakFiles.push_back(FModPakFileEntry{ pakFilePath, loadingPriority });
@@ -249,23 +259,25 @@ bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 	return true;
 }
 
-bool extractArchiveObjects(ttvfs::Dir& root, const nlohmann::json& dataJson, SML::Mod::FModLoadingEntry& loadingEntry) {
-	const nlohmann::json& objects = dataJson["objects"];
-	if (!objects.is_array()) {
-		SML::Logging::error("missing `objects` array in data.json");
+bool extractArchiveObjects(ttvfs::Dir& root, const FJsonObject& dataJson, SML::Mod::FModLoadingEntry& loadingEntry) {
+	const TArray<TSharedPtr<FJsonValue>>& objects = dataJson.GetArrayField(TEXT("objects"));
+	
+	if (objects.Num() == 0) {
+		SML::Logging::error("missing `objects` array in data.json, or it is empty.");
 		return false;
 	}
-	for (auto& value : objects.items()) {
-		const nlohmann::json object = value.value();
-		if (!object.is_object() ||
-			!object["type"].is_string() ||
-			!object["path"].is_string()) {
-			SML::Logging::error("one of object entries in data.json has invalid format");
-			return false;
+	for (auto& value : objects) {
+		const TSharedPtr<FJsonObject>& jsonObject = value.Get()->AsObject();
+		if (!jsonObject.IsValid() ||
+			!jsonObject->HasTypedField<EJson::String>(TEXT("Path")) ||
+			!jsonObject->HasTypedField<EJson::String>(TEXT("path"))) {
+			SML::Logging::warning(TEXT("Invalid object entry found in mod's object definitions"));
+			continue;
 		}
-		std::string objType = object["type"].get<std::string>();
-		std::string path = object["path"].get<std::string>();
-		if (!extractArchiveObject(root, objType, path, loadingEntry, object["metadata"]))
+		std::string objType = TCHAR_TO_ANSI(*jsonObject->GetStringField(TEXT("type")));
+		std::string path = TCHAR_TO_ANSI(*jsonObject->GetStringField(TEXT("path")));
+		FJsonObject* metadata = jsonObject->HasField(TEXT("metadata")) ? jsonObject->GetObjectField(TEXT("metadata")).Get() : nullptr;
+		if (!extractArchiveObject(root, objType, path, loadingEntry, metadata))
 			return false;
 	}
 	return true;

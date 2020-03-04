@@ -1,7 +1,7 @@
 #pragma once
 #include "ModHandler.h"
 #include <filesystem>
-#include "util/json.hpp"
+#include "Json.h"
 #include "zip/ttvfs/ttvfs.h"
 #include "hooking.h"
 #include "util/TopologicalSort.h"
@@ -36,18 +36,12 @@ FModLoadingEntry createSMLLoadingEntry();
 
 std::wstring getModIdFromFile(const path& filePath);
 
-std::string createModuleNameFromModId(const std::wstring& modId);
-
-FileHash hashFileContents(const path& path);
-
-path generateTempFilePath(const FileHash& fileHash, const char* extension);
-
 bool extractArchiveFile(const path& outFilePath, ttvfs::File* obj);
 
-nlohmann::json readArchiveJson(ttvfs::File* obj);
+TSharedPtr<FJsonObject> readArchiveJson(ttvfs::File* obj);
 
 FileHash hashArchiveFileContents(ttvfs::File* obj);
 
-bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const json& metadata);
+bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const FJsonObject* metadata);
 
-bool extractArchiveObjects(ttvfs::Dir& root, const nlohmann::json& dataJson, SML::Mod::FModLoadingEntry& loadingEntry);
+bool extractArchiveObjects(ttvfs::Dir& root, const FJsonObject& dataJson, SML::Mod::FModLoadingEntry& loadingEntry);

@@ -16,7 +16,6 @@
 */
 #include "SatisfactoryModLoader.h"
 #include "util/bootstrapper_exports.h"
-#include <string>
 #include <fstream>
 #include <functional>
 #include "util/Logging.h"
@@ -24,8 +23,6 @@
 #include "util/Internal.h"
 #include "CoreDelegates.h"
 #include "FGGameMode.h"
-#include "mod/hooking.h"
-#include "MallocBinned2.h"
 #include <experimental/filesystem>
 #include "MOD/ModHandler.h"
 #include "util/Console.h"
@@ -37,27 +34,11 @@
 
 using namespace std::experimental::filesystem;
 
-std::string convertStr(const TCHAR* string) {
-	size_t arraySize;
-	wcstombs_s(&arraySize, nullptr, 0, string, 0);
-	std::vector<char> result;
-	result.reserve(arraySize);
-	wcstombs_s(nullptr, result.data(), arraySize, string, arraySize);
-	return std::string(result.data());
-}
-
-std::wstring convertStr(const char* string) {
-	size_t arraySize;
-	mbstowcs_s(&arraySize, nullptr, 0, string, 0);
-	std::vector<TCHAR> result;
-	result.reserve(arraySize);
-	mbstowcs_s(nullptr, result.data(), arraySize, string, arraySize);
-	return std::wstring(result.data());
-}
-
 bool checkGameVersion(const long targetVersion) {
-	std::string str = convertStr(FApp::GetBuildVersion());
-	const long version = std::atol(str.substr(str.find_last_of('-') + 1).c_str());
+	const FString& buildVersion = FString(FApp::GetBuildVersion());
+	int32 charIndex = -1;
+	buildVersion.FindLastChar('-', charIndex);
+	const long version = FCString::Atoi(*buildVersion.Mid(charIndex + 1));
 	if (targetVersion > version) {
 		SML::Logging::fatal(TEXT("Version check failed: Satisfactory version CL-"), version, TEXT(" is outdated. SML requires at least CL-"), targetVersion, TEXT(". Things are not going to work."));
 		return false;
@@ -77,24 +58,24 @@ bool checkBootstrapperVersion(SML::Versioning::FVersion target, SML::Versioning:
 	return true;
 }
 
-void parseConfig(nlohmann::json& json, SML::FSMLConfiguration& config) {
-	json.at("enableSMLCommands").get_to(config.enableSMLChatCommands);
-	json.at("enableCrashReporter").get_to(config.enableCrashReporter);
-	json.at("developmentMode").get_to(config.developmentMode);
-	json.at("debug").get_to(config.debugLogOutput);
-	json.at("consoleWindow").get_to(config.consoleWindow);
-	json.at("fullLog").get_to(config.fullLog);
+void parseConfig(const TSharedRef<FJsonObject>& json, SML::FSMLConfiguration& config) {
+	config.enableSMLChatCommands = json->GetBoolField(TEXT("enableSMLCommands"));
+	config.enableCrashReporter = json->GetBoolField(TEXT("enableCrashReporter"));
+	config.developmentMode = json->GetBoolField(TEXT("developmentMode"));
+	config.debugLogOutput = json->GetBoolField(TEXT("debug"));
+	config.consoleWindow = json->GetBoolField(TEXT("consoleWindow"));
+	config.fullLog = json->GetBoolField(TEXT("fullLog"));
 }
 
-nlohmann::json dumpConfig(SML::FSMLConfiguration& config) {
-	return nlohmann::json{
-		{"enableSMLCommands",		config.enableSMLChatCommands},
-		{"enableCrashReporter",		config.enableCrashReporter},
-		{"developmentMode",			config.developmentMode},
-		{"debug",					config.debugLogOutput},
-		{"consoleWindow",			config.consoleWindow},
-		{"fullLog",					config.fullLog},
-	};
+TSharedRef<FJsonObject> createConfigDefaults() {
+	TSharedRef<FJsonObject> ref = MakeShareable(new FJsonObject());
+	ref->SetBoolField(TEXT("enableSMLCommands"), true);
+	ref->SetBoolField(TEXT("enableCrashReporter"), true);
+	ref->SetBoolField(TEXT("developmentMode"), false);
+	ref->SetBoolField(TEXT("debug"), false);
+	ref->SetBoolField(TEXT("consoleWindow"), false);
+	ref->SetBoolField(TEXT("fullLog"), false);
+	return ref;
 }
 
 namespace SML {
@@ -166,14 +147,7 @@ namespace SML {
 			SML::shutdownEngine(TEXT("Game version check failed."));
 		}
 		
-		nlohmann::json configJson = readModConfig(TEXT("SML"), { 
-			{"enableSMLCommands", true}, 
-			{"enableCrashReporter", false}, 
-			{"developmentMode", false}, 
-			{"debug", false}, 
-			{"consoleWindow", false}, 
-			{"fullLog", false}
-		});
+		const TSharedRef<FJsonObject>& configJson = readModConfig(TEXT("SML"), createConfigDefaults());
 		activeConfiguration = new FSMLConfiguration;
 		parseConfig(configJson, *activeConfiguration);
 
@@ -255,10 +229,4 @@ namespace SML {
 
 extern "C" SML_API void BootstrapModule(BootstrapAccessors& accessors) {
 	return SML::bootstrapSML(accessors);
-}
-
-static const std::string LINKAGE_MODULE_NAME = createModuleNameFromModId(TEXT("SML"));
-
-extern "C" SML_API const char* GetLinkageModuleName() {
-	return LINKAGE_MODULE_NAME.c_str();
 }

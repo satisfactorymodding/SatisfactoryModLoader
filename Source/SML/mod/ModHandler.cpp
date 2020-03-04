@@ -1,7 +1,6 @@
 #include "ModHandler.h"
 #include <filesystem>
 #include "util/Utility.h"
-#include "util/json.hpp"
 #include "util/Logging.h"
 #include "util/picosha2.h"
 #include "zip/ttvfs/ttvfs.h"
@@ -39,14 +38,11 @@ public:
 		moduleInfo->Module->StartupModule();
 		{
 			FScopeLock Lock(&moduleManager.ModulesCriticalSection);
-
 			// Update hash table
 			moduleManager.Modules.Add(moduleName, moduleInfo);
 		}
-
 		//TODO: this is AddModuleToModulesList. Not sure if exported, not sure if needed
 		//FModuleManager::Get().ModulesChangedEvent.Broadcast(InModuleName, EModuleChangeReason::PluginDirectoryChanged);
-		
 		//TODO: this one is not exported in PDB; not sure if it is needed
 		//moduleManager.OnModulesChanged().Broadcast(moduleName, EModuleChangeReason::ModuleLoaded);
 		return moduleInfo->Module.Get();
@@ -61,15 +57,14 @@ void FModHandler::loadDllMods(const BootstrapAccessors& accessors) {
 	for (auto& loadingEntry : sortedModLoadList) {
 		const std::wstring& modid = loadingEntry.modInfo.modid;
 		if (!loadingEntry.dllFilePath.empty()) {
-			std::string moduleName = createModuleNameFromModId(loadingEntry.modInfo.modid);
-			HLOADEDMODULE module = accessors.LoadModule(moduleName.c_str(), loadingEntry.dllFilePath.c_str());
-			if (module == nullptr) SML::shutdownEngine(formatStr(TEXT("Module failed to load: "), moduleName));
+			HLOADEDMODULE module = accessors.LoadModule("", loadingEntry.dllFilePath.c_str());
+			if (module == nullptr) SML::shutdownEngine(formatStr(TEXT("Module failed to load: "), loadingEntry.dllFilePath.c_str()));
 			loadedModuleDlls.insert({ modid, module });
 		}
 	}
 }
 
-void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules) {
+void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, std::unordered_map<std::wstring, IModuleInterface*>& loadedModules) {
 	std::map<std::wstring, FName> registeredModules;
 	
 	//register SML module manually as it is already loaded into the process
@@ -95,7 +90,7 @@ void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, std::map
 	}
 }
 
-void FModHandler::PopulateModList(const std::map<std::wstring, IModuleInterface*>& loadedModules) {
+void FModHandler::PopulateModList(const std::unordered_map<std::wstring, IModuleInterface*>& loadedModules) {
 	for (auto& loadingEntry : sortedModLoadList) {
 		auto moduleInterface = loadedModules.find(loadingEntry.modInfo.modid);
 		FModContainer* modContainer;
@@ -141,7 +136,7 @@ void FModHandler::MountModPaks() {
 }
 
 void FModHandler::loadMods(const BootstrapAccessors& accessors) {
-	std::map<std::wstring, IModuleInterface*> loadedModules;
+	std::unordered_map<std::wstring, IModuleInterface*> loadedModules;
 	
 	SML::Logging::info("Loading mods...");
 	LoadModLibraries(accessors, loadedModules);
@@ -160,7 +155,6 @@ class MapFindHookProto {
 public: const FString* Find(const FName&) { return nullptr; }
 };
 
-static bool shouldLogAssetFinds = false;
 
 void FModHandler::attachLoadingHooks() {
 	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](CallResult<void>&, AFGGameMode* gameMode) {
@@ -183,16 +177,14 @@ void FModHandler::attachLoadingHooks() {
 }
 
 UClass* GetActiveLoadClass(const FModPakLoadEntry& entry, bool isMenuWorld) {
-	return isMenuWorld ? (UClass*)entry.menuInitClass : (UClass*)entry.modInitClass;
+	return isMenuWorld ? static_cast<UClass*>(entry.menuInitClass) : static_cast<UClass*>(entry.modInitClass);
 }
 
 void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
-	shouldLogAssetFinds = true;
 	UWorld* world = gameMode->GetWorld();
 	const bool isMenuWorld = gameMode->IsMainMenuGameMode();
 	modInitializerActorList.clear();
 	for (auto& initializer : modPakInitializers) {
-		SML::Logging::debug(TEXT("MENU INIT "), initializer.menuInitClass, TEXT(" MOD INIT "), initializer.modInitClass, TEXT(" IS MENU WORLD "), isMenuWorld);
 		UClass* targetClass = GetActiveLoadClass(initializer, isMenuWorld);
 		if (targetClass == nullptr) {
 			continue;
@@ -200,11 +192,7 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 		FVector position = FVector::ZeroVector;
 		FRotator rotation = FRotator::ZeroRotator;
 		FActorSpawnParameters spawnParams{};
-		SML::Logging::debug(TEXT("ACTOR CLASS "), GetData(targetClass->GetPathName()), TEXT(" IS AACTOR "), targetClass->IsChildOf(AActor::StaticClass()));
 		AActor* actor = world->SpawnActor(targetClass, &position, &rotation, spawnParams);
-		if (actor != nullptr) {
-			SML::Logging::debug(TEXT("SPAWNED ACTOR "), GetData(actor->GetFullName()));
-		}
 		modInitializerActorList.push_back(actor);
 	}
 }
@@ -304,14 +292,14 @@ void FModHandler::checkDependencies() {
 	}
 	//perform initial dependency sorting
 	std::vector<uint64_t> sortedIndices;
-	/*try {*/
+	try {
 		sortedIndices = SML::TopologicalSort::topologicalSort(sortGraph);
-	/*} catch (SML::TopologicalSort::cycle_detected<uint64_t>& ex) {
+	} catch (SML::TopologicalSort::cycle_detected<uint64_t>& ex) {
 		std::wstring message = formatStr(TEXT("Cycle dependency found in sorting graph at modid: "), modByIndex[ex.cycleNode]);
 		loadingProblems.push_back(message);
 		SML::Logging::error(message);
 		return;
-	}*/
+	}
 	finalizeSortingResults(modByIndex, loadingEntries, sortedIndices);
 	populateSortedModList(modByIndex, loadingEntries, sortedIndices, sortedModLoadList);
 	loadingEntries.clear();
@@ -352,16 +340,15 @@ void FModHandler::constructZipMod(const path& filePath) {
 		return;
 	}
 	FModInfo modInfo;
-	nlohmann::json dataJsonObj;
-	dataJsonObj = readArchiveJson(dataJson);
-	if (!FModInfo::isValid(dataJsonObj, filePath)) {
+	const TSharedPtr<FJsonObject>& dataJsonObj = readArchiveJson(dataJson);
+	if (!dataJsonObj.IsValid() || !FModInfo::isValid(*dataJsonObj.Get(), filePath)) {
 		reportBrokenZipMod(filePath, TEXT("Invalid data.json"));
 		return;
 	}
-	modInfo = FModInfo::createFromJson(dataJsonObj);
+	modInfo = FModInfo::createFromJson(*dataJsonObj.Get());
 	FModLoadingEntry& loadingEntry = createLoadingEntry(modInfo, filePath);
 	if (!loadingEntry.isValid) return;
-	if (!extractArchiveObjects(*modArchive, dataJsonObj, loadingEntry)) {
+	if (!extractArchiveObjects(*modArchive, *dataJsonObj.Get(), loadingEntry)) {
 		std::wstring message = formatStr(TEXT("Failed to extract data objects"));
 		reportBrokenZipMod(filePath, message.c_str());
 	}

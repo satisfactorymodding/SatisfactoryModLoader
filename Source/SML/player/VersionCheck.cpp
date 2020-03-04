@@ -5,10 +5,10 @@
 #include "util/Logging.h"
 #include "mod/ModHandler.h"
 #include "SatisfactoryModLoader.h"
-#include "util/json.hpp"
 #include "Base64.h"
 #include "GameFramework/GameSession.h"
 #include "Object.h"
+#include "Json.h"
 
 UKickReasonAttachment* UKickReasonAttachment::Get(AGameModeBase* actor) {
 	UKickReasonAttachment* attachment = actor->FindComponentByClass<UKickReasonAttachment>();
@@ -31,24 +31,33 @@ public:
 FString CreateModListString() {
 	//terribly inefficient due to multiple string copying and conversion, oh well.
 	SML::Mod::FModHandler& modHandler = SML::getModHandler();
-	nlohmann::json resultJson;
+	FString resultString;
+	TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+	FJsonSerializer Serializer;
+	TSharedRef<FJsonObject> modListObject = MakeShareable(new FJsonObject());
 	for (const std::wstring& modid : modHandler.getLoadedMods()) {
 		const SML::Mod::FModInfo& info = modHandler.getLoadedMod(modid).modInfo;
-		resultJson[convertStr(modid.c_str())] = convertStr(info.version.string().c_str());
+		modListObject->SetStringField(modid.c_str(), info.version.string().c_str());
 	}
-	return FString(nlohmann::to_string(resultJson).c_str());
+	Serializer.Serialize(modListObject, writer);
+	return resultString;
 }
 
 void CheckModListString(const FString& modListString, FString& failureReason) {
-	nlohmann::json resultJson = nlohmann::json::parse(convertStr(*modListString));
+	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(modListString);
+	FJsonSerializer Serializer;
+	TSharedPtr<FJsonObject> modListObject;
+	if (!Serializer.Deserialize(reader, modListObject)) {
+		failureReason = TEXT("Failed to parse mod list info json");
+		return;
+	}
 	SML::Mod::FModHandler& modHandler = SML::getModHandler();
 	TArray<FString> missingMods;
 	for (const std::wstring& loadedModId : modHandler.getLoadedMods()) {
-		std::string modIdStr = convertStr(loadedModId.c_str());
-		if (!resultJson.contains(modIdStr)) {
+		if (!modListObject->HasField(loadedModId.c_str())) {
 			missingMods.Add(FString::Printf(TEXT("%s: missing"), loadedModId.c_str()));
 		} else {
-			const FVersion& modVersion = FVersion(convertStr(resultJson[modIdStr].get<std::string>().c_str()));
+			const FVersion& modVersion = FVersion(*modListObject->GetStringField(loadedModId.c_str()));
 			const FVersion& minModVersion = modHandler.getLoadedMod(loadedModId).modInfo.version;
 			if (modVersion.compare(minModVersion) < 0) {
 				const FString& message = FString::Printf(TEXT("%s: required at least %s"), loadedModId.c_str(), minModVersion.string().c_str());

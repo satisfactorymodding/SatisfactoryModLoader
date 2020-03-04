@@ -49,7 +49,7 @@ namespace SML {
 			* Adds node adjacent to src into the graph
 			* If either of the nodes is not in a graph, throws std::invalid_argument
 			*/
-			void addEdge(const T& src, const T& dest);
+			bool addEdge(const T& src, const T& dest);
 
 			/**
 			* Returns all nodes adjacent to the given one

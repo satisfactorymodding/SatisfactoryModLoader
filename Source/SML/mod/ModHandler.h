@@ -16,8 +16,6 @@ struct BootstrapAccessors;
 
 using namespace std::experimental::filesystem;
 
-std::string createModuleNameFromModId(const std::wstring& modId);
-
 namespace SML {
 	namespace Mod {
 		struct FModPakFileEntry {
@@ -91,8 +89,8 @@ namespace SML {
 			void constructDllMod(const path& filePath);
 
 			void MountModPaks();
-			void LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules);
-			void PopulateModList(const std::map<std::wstring, IModuleInterface*>& loadedModules);
+			void LoadModLibraries(const BootstrapAccessors& accessors, std::unordered_map<std::wstring, IModuleInterface*>& loadedModules);
+			void PopulateModList(const std::unordered_map<std::wstring, IModuleInterface*>& loadedModules);
 
 			void initializeMenuActors();
 			void initializeModActors();

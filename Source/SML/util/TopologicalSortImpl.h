@@ -1,7 +1,5 @@
 #pragma once
 
-#include "TopologicalSort.h"
-#include <stdexcept>
 #include <vector>
 
 template<typename T>
@@ -64,8 +62,7 @@ void explore(const T& node, const SML::TopologicalSort::DirectedGraph<T>& g, std
 		 * and therefore is part of a cycle.  In that case, we should report an error.
 		 */
 		if (expanded.find(node) != expanded.end()) return;
-		//throw SML::TopologicalSort::cycle_detected<T>("Cycle dependency detected in a input graph", node);
-		SML::shutdownEngine(TEXT("Cycle dependency detected in a input graph"));
+		throw SML::TopologicalSort::cycle_detected<T>("Cycle dependency detected in a input graph", node);
 	}
 	/* Mark that we've been here */
 	visited.insert(node);
@@ -106,13 +103,13 @@ bool SML::TopologicalSort::DirectedGraph<T>::addNode(const T& node) {
 }
 
 template<typename T>
-void SML::TopologicalSort::DirectedGraph<T>::addEdge(const T& src, const T& dest) {
+bool SML::TopologicalSort::DirectedGraph<T>::addEdge(const T& src, const T& dest) {
 	if (nodes.find(src) == nodes.end() ||
 		nodes.find(dest) == nodes.end()) {
-		//throw std::invalid_argument("src/dst node is not contained in graph");
-		SML::shutdownEngine(TEXT("src/dst node is not contained in graph"));
+		return false;
 	}
 	this->nodes.find(src)->second->insert(dest);
+	return true;
 }
 
 template<typename T>
