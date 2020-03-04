@@ -2,6 +2,6 @@
 
 #include "FGBuildableRoad.h"
 
-void AFGBuildableRoad::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableRoad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 AFGBuildableRoad::AFGBuildableRoad(){ }
 void AFGBuildableRoad::BeginPlay(){ }

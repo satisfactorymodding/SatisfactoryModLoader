@@ -182,4 +182,7 @@ private:
 
 	/** Are we using gamepad? */
 	bool mIsUsingGamepad;
+
+public:
+	FORCEINLINE ~AFGPlayerControllerBase() = default;
 };

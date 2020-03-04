@@ -3,4 +3,4 @@
 #include "FGAttackMeleeJump.h"
 
 UFGAttackMeleeJump::UFGAttackMeleeJump(){ }
-void UFGAttackMeleeJump::PerformAttack( TScriptInterface< IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }
+void UFGAttackMeleeJump::PerformAttack(TScriptInterface< IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }

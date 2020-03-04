@@ -2,6 +2,6 @@
 
 #include "ObjectReaderFName.h"
 
-FObjectReaderFName::FObjectReaderFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion,  UWorld* world) : FObjectReader(Obj, InBytes) { }
-FObjectReaderFName& FObjectReaderFName::operator<<(  UObject*& Res){ return *(this); }
-FArchive& FObjectReaderFName::operator<<(  FName& N){ return *(new FArchive); }
+FObjectReaderFName::FObjectReaderFName(UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion,  UWorld* world) : FObjectReader(Obj, InBytes) { }
+FObjectReaderFName& FObjectReaderFName::operator<<( UObject*& Res){ return *(this); }
+FArchive& FObjectReaderFName::operator<<( FName& N){ return *(new FArchive); }

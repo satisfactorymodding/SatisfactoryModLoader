@@ -91,4 +91,7 @@ private:
 
 	UPROPERTY( /*CustomSerialization*/ )
 	float mPoleHeight;
+
+public:
+	FORCEINLINE ~AFGPoleHologram() = default;
 };

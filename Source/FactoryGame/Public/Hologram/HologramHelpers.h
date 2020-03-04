@@ -37,6 +37,9 @@ struct FACTORYGAME_API FHologramHelpers
 	 * Calculate a poles height given a hit result and the poles location while also calculating the poles horizontal offset angle from the rays forward direction
 	 */
 	static float CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const struct FHitResult& aimResult, const struct FVector& poleLocation );
+
+public:
+	FORCEINLINE ~FHologramHelpers() = default;
 };
 
 struct FACTORYGAME_API FSplineUtils
@@ -319,6 +322,9 @@ private:
 		float& out_endAngle );
 
 	static float CalcStraightTangentMagnitude( const FVector& startPos, const FVector& endPos, float targetTangetFactor = 1.0f );
+
+public:
+	FORCEINLINE ~FSplineUtils() = default;
 };
 
 /**
@@ -360,6 +366,9 @@ struct FACTORYGAME_API FSplineBuilder
 	void RemoveSegment( int32 index );
 public:
 	TArray< FSplinePointData >& SplineData;
+
+public:
+	FORCEINLINE ~FSplineBuilder() = default;
 };
 
 
@@ -390,6 +399,9 @@ struct FACTORYGAME_API FHologramPathingPoint
 
 	/** Array of connecting Grid Indexes */
 	TArray< FHologramPathingPoint* > Connections;
+
+public:
+	FORCEINLINE ~FHologramPathingPoint() = default;
 };
 
 /*************************************************************************
@@ -503,6 +515,9 @@ public:
 	/** Grid Origin offset ( Translation from Center to grid location (0,0,0) */
 	FVector GridTranslationOffset;
 
+
+public:
+	FORCEINLINE ~FHologramPathingGrid() = default;
 };
 
 /**
@@ -566,6 +581,9 @@ public:
 	* Reference to the pathing point that resides in a Hologram pathing grid
 	*/
 	FHologramPathingPoint* HologramPathingPoint;
+
+public:
+	FORCEINLINE ~FHologramAStarNode() = default;
 };
 
 /**
@@ -595,6 +613,9 @@ struct FACTORYGAME_API FHolgramAStarHelper
 	* @return the normal of the direction between the two nodeRefs
 	*/
 	FVector GetDirectionNormal( const FHologramAStarNode& nodeA, const FHologramAStarNode& nodeB ) const;
+
+public:
+	FORCEINLINE ~FHolgramAStarHelper() = default;
 };
 
 /**
@@ -632,4 +653,7 @@ struct FACTORYGAME_API FHologramAStarFilter
 public:
 	/** true if a partial solution is valid; false if we only want a path if the goal is reachable. */
 	bool AcceptsPartialSolution;
+
+public:
+	FORCEINLINE ~FHologramAStarFilter() = default;
 };

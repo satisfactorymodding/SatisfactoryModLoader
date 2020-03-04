@@ -39,4 +39,7 @@ protected:
 	 * @return - The constructed vehicle on success; nullptr on failure.
 	 */
 	virtual class AFGVehicle* ConstructVehicle( FNetConstructionID netConstructionID ) const;
+
+public:
+	FORCEINLINE ~AFGVehicleHologram() = default;
 };

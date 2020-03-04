@@ -3,7 +3,7 @@
 #include "FGPlanet.h"
 
 #if WITH_EDITOR
-void AFGPlanet::PostEditChangeChainProperty(  FPropertyChangedChainEvent& propertyChangedEvent){ }
+void AFGPlanet::PostEditChangeChainProperty( FPropertyChangedChainEvent& propertyChangedEvent){ }
 #endif 
 #if WITH_EDITOR
 void AFGPlanet::SetupPreviewDelegate(){ }

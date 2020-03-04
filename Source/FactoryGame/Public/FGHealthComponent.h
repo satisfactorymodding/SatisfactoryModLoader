@@ -184,4 +184,7 @@ protected:
 	/** If true, then the client will trigger the following event: DeathDelegate */
 	UPROPERTY()
 	uint8 mReplicateDeathEvents:1;
+
+public:
+	FORCEINLINE ~UFGHealthComponent() = default;
 };

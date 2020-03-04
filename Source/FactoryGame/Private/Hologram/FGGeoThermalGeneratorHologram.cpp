@@ -3,4 +3,4 @@
 #include "FGGeoThermalGeneratorHologram.h"
 
 void AFGGeoThermalGeneratorHologram::BeginPlay(){ }
-void AFGGeoThermalGeneratorHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
+void AFGGeoThermalGeneratorHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }

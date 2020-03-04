@@ -32,4 +32,7 @@ protected:
 	/** Shared implementation for world creation */
 	UPROPERTY()
 	FFGEngineCommon mEngineCommonImp;
+
+public:
+	FORCEINLINE ~UFGGameEngine() = default;
 };

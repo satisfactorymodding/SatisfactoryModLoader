@@ -29,6 +29,9 @@ public:
 
 	/** Information about the session the user is playing in */
 	FOnlineSessionSearchResult SearchResult;
+
+public:
+	FORCEINLINE ~FPendingInvite() = default;
 };
 
 bool operator == ( const FPendingInvite& a, const FPendingInvite& b );
@@ -94,4 +97,7 @@ protected:
 
 	// Invites that we don't have enough information to be able to accept, waiting for data from OSS
 	TArray<FPendingInvite> mUninitializedInvites;
+
+public:
+	FORCEINLINE ~UFGOnlineSessionClient() = default;
 };

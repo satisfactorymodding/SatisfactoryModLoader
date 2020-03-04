@@ -46,6 +46,9 @@ struct FACTORYGAME_API FMultipleItemStruct
 	/** Cost of schematic if there are more than once item in this array the true cost will be randomly selected. */
 	UPROPERTY( EditDefaultsOnly )
 	TArray< FItemAmount > ItemCost;
+
+public:
+	FORCEINLINE ~FMultipleItemStruct() = default;
 };
 
 /**
@@ -200,4 +203,7 @@ private:
 	EIncludeInBuilds mIncludeInBuilds;
 #endif
 
+
+public:
+	FORCEINLINE ~UFGSchematic() = default;
 };

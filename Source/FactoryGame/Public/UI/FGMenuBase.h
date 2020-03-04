@@ -34,4 +34,7 @@ protected:
 	/** Cached switcher owning this widget */
 	UPROPERTY()
 	class UFGWidgetSwitcher* mCachedOwner;
+
+public:
+	FORCEINLINE ~UFGMenuBase() = default;
 };

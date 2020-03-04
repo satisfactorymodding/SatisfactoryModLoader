@@ -13,6 +13,9 @@ struct FACTORYGAME_API FSignElementWidgetData
 	class UFGSignCanvasWidget* CanvasParent;
 	class UFGSignElementData* ElementData;
 	class UCanvasPanelSlot* PanelSlot;
+
+public:
+	FORCEINLINE ~FSignElementWidgetData() = default;
 };
 
 /**
@@ -99,4 +102,7 @@ protected:
 	// Tracks mouse cursor offset on a drag operation
 	FVector2D mDragOffset;
 
+
+public:
+	FORCEINLINE ~UFGSignElementWidget() = default;
 };

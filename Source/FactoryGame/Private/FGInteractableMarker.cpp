@@ -3,6 +3,6 @@
 #include "FGInteractableMarker.h"
 
 AFGInteractableMarker::AFGInteractableMarker(){ }
-void AFGInteractableMarker::Tick( float dt){ }
-void AFGInteractableMarker::SetTrackedActor(  AActor* trackedActor){ }
+void AFGInteractableMarker::Tick(float dt){ }
+void AFGInteractableMarker::SetTrackedActor( AActor* trackedActor){ }
 void AFGInteractableMarker::BeginPlay(){ }

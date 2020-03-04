@@ -2,10 +2,10 @@
 
 #include "FGBaseUI.h"
 
-UFGBaseUI::UFGBaseUI( const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGBaseUI::UFGBaseUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 void UFGBaseUI::NativeConstruct(){ }
-void UFGBaseUI::NativeTick( const FGeometry& MyGeometry, float InDeltaTime){ }
-void UFGBaseUI::AddPopupToQueue( FPopupData inPopupData){ }
-void UFGBaseUI::AddPopup( FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass ){ }
+void UFGBaseUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
+void UFGBaseUI::AddPopupToQueue(FPopupData inPopupData){ }
+void UFGBaseUI::AddPopup(FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass){ }
 void UFGBaseUI::PopPopupQueue(){ }
 void UFGBaseUI::ShowPopup(){ }

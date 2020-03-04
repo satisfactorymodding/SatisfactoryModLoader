@@ -66,4 +66,7 @@ private:
 	/** All the central storages built. */
 	UPROPERTY()
 	TArray< class AFGCentralStorageContainer* > mCentralStorages;
+
+public:
+	FORCEINLINE ~AFGCentralStorageSubsystem() = default;
 };

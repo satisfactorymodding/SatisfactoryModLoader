@@ -19,4 +19,7 @@ public:
 	/** Gets default object for loot settings */
 	UFUNCTION( BlueprintPure, Category = "LootSettings|Utilities", meta = ( DeterminesOutputType = "inClass") )
 	static UObject* GetLootSettingsDefaultObject( TSubclassOf< UFGLootSettings >  inClass );
+
+public:
+	FORCEINLINE ~UFGLootSettings() = default;
 };

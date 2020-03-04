@@ -22,6 +22,9 @@ struct FACTORYGAME_API FCollectedStats
 
 	// The amount of triangles drawn this frame
 	int32 TrianglesDrawn;
+
+public:
+	FORCEINLINE ~FCollectedStats() = default;
 };
 
 /** 
@@ -179,4 +182,7 @@ private:
 	/** If true, then we are collecting stats */
 	bool mCollectStats;
 #endif
+
+public:
+	FORCEINLINE ~FFGEngineCommon() = default;
 };

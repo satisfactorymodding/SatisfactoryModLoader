@@ -28,6 +28,9 @@ struct FACTORYGAME_API FCostIngredientEffectActorInfo
 	/** Where this cost actor should travel to */
 	UPROPERTY( BlueprintReadWrite )
 	FVector TargetLocation;
+
+public:
+	FORCEINLINE ~FCostIngredientEffectActorInfo() = default;
 };
 
 USTRUCT()
@@ -37,6 +40,9 @@ struct FACTORYGAME_API FCachedMaterialArray
 
 	UPROPERTY()
 	TArray< UMaterialInterface* > MaterialInterfaces;
+
+public:
+	FORCEINLINE ~FCachedMaterialArray() = default;
 };
 
 /**
@@ -146,4 +152,7 @@ protected:
 	/** The cached override materials present before initializing (Takes into account custom override materials on meshes)*/
 	UPROPERTY()
 	TArray< FCachedMaterialArray > mOverrideMaterials;
+
+public:
+	FORCEINLINE ~UFGMaterialEffectComponent() = default;
 };

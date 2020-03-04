@@ -26,4 +26,7 @@ private:
 	UPROPERTY()
 	class UFGBaseUI* mBaseUI;
 	
+
+public:
+	FORCEINLINE ~AFGHUDBase() = default;
 };

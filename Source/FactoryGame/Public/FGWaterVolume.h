@@ -139,4 +139,7 @@ private:
 	/** Significance range of water volume */
 	float mSignificanceRange;
 
+
+public:
+	FORCEINLINE ~AFGWaterVolume() = default;
 };

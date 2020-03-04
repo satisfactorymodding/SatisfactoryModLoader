@@ -73,6 +73,9 @@ struct FACTORYGAME_API FProjectileData
 		DamageType = UFGDamageType::StaticClass();
 		DamageTypeExplode = UFGDamageType::StaticClass();
 	}
+
+public:
+	FORCEINLINE ~FProjectileData() = default;
 };
 
 /**
@@ -99,4 +102,7 @@ protected:
 	/** weapon config */
 	UPROPERTY( EditDefaultsOnly, Category = "Weapon" )
 	FProjectileData mProjectileData;
+
+public:
+	FORCEINLINE ~AFGWeaponProjectileFire() = default;
 };

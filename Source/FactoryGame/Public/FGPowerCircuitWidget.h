@@ -35,4 +35,7 @@ private:
 	/** Power circuit we're observing. */
 	UPROPERTY()
 	class UFGPowerCircuit*  mPowerCircuit;
+
+public:
+	FORCEINLINE ~UFGPowerCircuitWidget() = default;
 };

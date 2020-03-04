@@ -2,5 +2,5 @@
 
 #include "FGListViewSlot.h"
 
-void UFGListViewSlot::ReleaseSlateResources( bool bReleaseChildren){ }
-void UFGListViewSlot::BuildSlot( TSharedRef< SVerticalBox > verticalBox){ }
+void UFGListViewSlot::ReleaseSlateResources(bool bReleaseChildren){ }
+void UFGListViewSlot::BuildSlot(TSharedRef< SVerticalBox > verticalBox){ }

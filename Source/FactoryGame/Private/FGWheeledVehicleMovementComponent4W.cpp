@@ -8,7 +8,7 @@ void UFGWheeledVehicleMovementComponent4W::UpdateSimulation(float DeltaTime){ }
 void UFGWheeledVehicleMovementComponent4W::GenerateTireForces( UVehicleWheel* Wheel, const FTireShaderInput& Input, FTireShaderOutput& Output){ }
 void UFGWheeledVehicleMovementComponent4W::SetupWheelMassProperties_AssumesLocked(const uint32 NumWheels, physx::PxVehicleWheelsSimData* PWheelsSimData, physx::PxRigidBody* PVehicleActor){ }
 void UFGWheeledVehicleMovementComponent4W::SetupWheels(physx::PxVehicleWheelsSimData* PWheelsSimData){ }
-void UFGWheeledVehicleMovementComponent4W::PreTick( float DeltaTime){ }
+void UFGWheeledVehicleMovementComponent4W::PreTick(float DeltaTime){ }
 void UFGWheeledVehicleMovementComponent4W::SetupVehicleShapes(){ }
 float UFGWheeledVehicleMovementComponent4W::GetLargestTireLoadValue(){ return float(); }
 float UFGWheeledVehicleMovementComponent4W::GetLargestLateralSlip(){ return float(); }

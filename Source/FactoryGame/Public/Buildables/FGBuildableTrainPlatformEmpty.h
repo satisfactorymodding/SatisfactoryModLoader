@@ -16,4 +16,7 @@ UCLASS()
 class FACTORYGAME_API AFGBuildableTrainPlatformEmpty : public AFGBuildableTrainPlatform
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~AFGBuildableTrainPlatformEmpty() = default;
 };

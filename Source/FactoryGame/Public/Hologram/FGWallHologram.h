@@ -43,4 +43,7 @@ private:
 	float mSnapBottomHitZoneRatio = 0.2f;
 
 	class AFGBuildableWall* mUpgradeTarget = nullptr;
+
+public:
+	FORCEINLINE ~AFGWallHologram() = default;
 };

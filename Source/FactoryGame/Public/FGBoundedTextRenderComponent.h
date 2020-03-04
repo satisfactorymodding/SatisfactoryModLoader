@@ -30,4 +30,7 @@ public:
 	UBoxComponent* mBoundingBox;
 
 	
+
+public:
+	FORCEINLINE ~UFGBoundedTextRenderComponent() = default;
 };

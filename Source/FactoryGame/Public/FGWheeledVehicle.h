@@ -43,6 +43,9 @@ struct FACTORYGAME_API FTireData
 	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
 	bool IsInAir;
 	//float TireFriction;
+
+public:
+	FORCEINLINE ~FTireData() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -58,6 +61,9 @@ struct FACTORYGAME_API FTireTrackDecalDetails
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	class UMaterial* DecalMaterialOverride;
 
+
+public:
+	FORCEINLINE ~FTireTrackDecalDetails() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -70,6 +76,9 @@ struct FACTORYGAME_API FSurfaceParticlePair
 
 	UPROPERTY( EditDefaultsOnly, Category = "SurfaceParticlePair" )
 	TEnumAsByte< EPhysicalSurface > Surface;
+
+public:
+	FORCEINLINE ~FSurfaceParticlePair() = default;
 };
 
 USTRUCT()
@@ -85,6 +94,9 @@ struct FACTORYGAME_API FParticleTemplatePair
 	UPROPERTY()
 	UParticleSystemComponent* Particle;
 
+
+public:
+	FORCEINLINE ~FParticleTemplatePair() = default;
 };
 
 USTRUCT()
@@ -94,6 +106,9 @@ struct FACTORYGAME_API FTireParticleCollection
 
 	UPROPERTY()
 	TArray< FParticleTemplatePair > Collection;
+
+public:
+	FORCEINLINE ~FTireParticleCollection() = default;
 };
 
 /* DSOL (Don't shift on (wheel) load) dynamic gearbox data */
@@ -104,6 +119,9 @@ struct FACTORYGAME_API DSOLDynGearboxData
 	int32 mTargetGear = 1;
 	float mGearSwitchTime;
 	float mSlopeShiftRatio; //Multiplier to affect shifting gears up and down on a slope
+
+public:
+	FORCEINLINE ~DSOLDynGearboxData() = default;
 };
 
 /* DSOL (Don't shift on (wheel) load) dynamic gearbox data */
@@ -111,6 +129,9 @@ struct FACTORYGAME_API DSOLSetupData
 {
 	int mNumberOfGears;
 	float mDownShiftLatency;
+
+public:
+	FORCEINLINE ~DSOLSetupData() = default;
 };
 
 /**
@@ -135,6 +156,9 @@ struct FACTORYGAME_API FReplicatedAddedVelocitiesState
 	// input replication: angular velocity yaw
 	UPROPERTY()
 	float AddedAngularVelocityInputYaw;
+
+public:
+	FORCEINLINE ~FReplicatedAddedVelocitiesState() = default;
 };
 
 /**
@@ -729,4 +753,7 @@ private:
 	/** Do we need fuel to drive */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	bool mNeedsFuelToDrive;
+
+public:
+	FORCEINLINE ~AFGWheeledVehicle() = default;
 };

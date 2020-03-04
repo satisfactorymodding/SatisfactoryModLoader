@@ -25,4 +25,7 @@ public:
 protected:
 	UPROPERTY( Replicated )
 	class UFGInventoryComponent* mStorageInventory;
+
+public:
+	FORCEINLINE ~AFGReplicationDetailActor_Storage() = default;
 };

@@ -56,4 +56,7 @@ private:
 	/** Reference to the UButton we have internally */
 	class UButton* mInternalButton;
 	
+
+public:
+	FORCEINLINE ~UFGManufacturingButton() = default;
 };

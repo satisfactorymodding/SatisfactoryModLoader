@@ -43,6 +43,9 @@ struct FACTORYGAME_API FColorMapAreaPair
 	int32 MaxX;
 	UPROPERTY()
 	int32 MaxY;
+
+public:
+	FORCEINLINE ~FColorMapAreaPair() = default;
 };
 
 
@@ -129,4 +132,7 @@ private:
 
 	UPROPERTY()
 	class AFGGameState* mCachedGameState;
+
+public:
+	FORCEINLINE ~UFGMapAreaTexture() = default;
 };

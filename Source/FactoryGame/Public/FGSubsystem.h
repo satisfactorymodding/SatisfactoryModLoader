@@ -16,4 +16,7 @@ class FACTORYGAME_API AFGSubsystem : public AInfo
 	GENERATED_BODY()
 public:
 	AFGSubsystem();
+
+public:
+	FORCEINLINE ~AFGSubsystem() = default;
 };

@@ -158,4 +158,7 @@ private:
 	UPROPERTY( VisibleAnywhere )
 	class UBoxComponent* mCargoOverlapCollision;
 
+
+public:
+	FORCEINLINE ~AFGFreightWagon() = default;
 };

@@ -35,6 +35,9 @@ struct FACTORYGAME_API FDestroyedFoliageEffectData
 	class UParticleSystem* DestroyedEffect;
 	UPROPERTY()
 	int32 Priority;
+
+public:
+	FORCEINLINE ~FDestroyedFoliageEffectData() = default;
 };
 
 
@@ -99,4 +102,7 @@ private:
 
 	/** Holds a list of all actors within the blast radius implementing IFGExplosiveDestructableInterface */
 	TArray< AActor* > mRelevantOverlappedActors;
+
+public:
+	FORCEINLINE ~AFGDestructiveProjectile() = default;
 };

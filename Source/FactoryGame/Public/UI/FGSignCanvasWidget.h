@@ -102,4 +102,7 @@ private:
 
 	class UFGSignElementWidget* GetElementWidgetById( int32 id );
 
+
+public:
+	FORCEINLINE ~UFGSignCanvasWidget() = default;
 };

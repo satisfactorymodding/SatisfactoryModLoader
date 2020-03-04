@@ -2,5 +2,5 @@
 
 #include "FGBuildableDecor.h"
 
-void AFGBuildableDecor::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableDecor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGBuildableDecor::AFGBuildableDecor(){ }

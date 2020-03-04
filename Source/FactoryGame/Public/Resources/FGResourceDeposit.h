@@ -88,4 +88,7 @@ public:
 
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TSubclassOf< class UFGResourceDescriptor > mOverrideResourceClass;
+
+public:
+	FORCEINLINE ~AFGResourceDeposit() = default;
 };

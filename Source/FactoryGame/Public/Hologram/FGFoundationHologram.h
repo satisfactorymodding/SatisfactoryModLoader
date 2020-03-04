@@ -40,4 +40,7 @@ protected:
 	/** Ratios for the snapping zones, how much of the wall to hit for snap to either direction. */
 	float mSnapVerticalHitZoneRatio = 0.25f;
 	float mSnapCenterHitZoneRatio = 0.33f; // This ratio is measured from the center.
+
+public:
+	FORCEINLINE ~AFGFoundationHologram() = default;
 };

@@ -117,4 +117,7 @@ protected:
 
 	/** @SERVER: Return true if our owner is logged in */
 	bool IsOwnerAdmin() const;
+
+public:
+	FORCEINLINE ~AFGAdminInterface() = default;
 };

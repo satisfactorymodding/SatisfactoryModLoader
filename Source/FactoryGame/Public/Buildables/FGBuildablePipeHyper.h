@@ -31,5 +31,8 @@ public:
 private:
 
 
+
+public:
+	FORCEINLINE ~AFGBuildablePipeHyper() = default;
 };
 

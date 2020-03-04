@@ -72,8 +72,10 @@ private:
 	/** Array of PhysX User defineable data that are passed to the shader */
 	TArray<FPhysxUserData> mPhysxUserData;
 
-	// MODDING EDIT: PhysX not working
-	///** Array of PhysXWheel User defineable data that are passed to the shader */
-	//TArray<FPhysxWheelUserData> mPhysxWheelUserData;
+	/** Array of PhysXWheel User defineable data that are passed to the shader */
+	TArray<FPhysxWheelUserData> mPhysxWheelUserData;
+
+public:
+	FORCEINLINE ~UFGWheeledVehicleMovementComponent4W() = default;
 };
 

@@ -18,4 +18,7 @@ class FACTORYGAME_API UFGSignElementDragDrop : public UDragDropOperation
 	
 	
 	
+
+public:
+	FORCEINLINE ~UFGSignElementDragDrop() = default;
 };

@@ -35,4 +35,7 @@ protected:
 	/*						End Widget Bindings
 	/************************************************************************/
 
+
+public:
+	FORCEINLINE ~UFGSignTextWidget() = default;
 };

@@ -38,6 +38,9 @@ private:
 	FText mLoadingText;
 
 	static TSharedPtr< class FSlateStyleSet > StyleSet;
+
+public:
+	FORCEINLINE ~SFGLoadingScreen() = default;
 };
 
 /**
@@ -81,4 +84,7 @@ private:
 
 	/** The amount of time in seconds for a full circle */
 	float mPeriod;
+
+public:
+	FORCEINLINE ~SFGSpinnerLoader() = default;
 };

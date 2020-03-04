@@ -379,4 +379,7 @@ public:
 	/** This is used to make picking the same classes in the cheat board easier */
 	UPROPERTY( Config )
 	TArray< UClass* > mPopularUClassChoices;
+
+public:
+	FORCEINLINE ~UFGCheatManager() = default;
 };

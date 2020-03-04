@@ -1,6 +1,7 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "Array.h"
 #include "Engine/StaticMesh.h"
 #include "UObject/Class.h"
 
@@ -20,6 +21,8 @@ class FACTORYGAME_API AFGPipelineSupportHologram : public AFGFactoryHologram
 	
 public:
 	AFGPipelineSupportHologram();
+    
+	virtual void GetLifetimeReplicatedProps(class TArray<class FLifetimeProperty, class FDefaultAllocator> & OutReplicatedProps) const override; // MODDING EDIT: needed for the implementer to implement it
 
 	virtual void BeginPlay() override;
 
@@ -108,4 +111,7 @@ private:
 	/**Used to store the initial offset of the support length component, so we can compensate for it during placement*/
 	float mSupportLengthOffset;
 
+
+public:
+	FORCEINLINE ~AFGPipelineSupportHologram() = default;
 };

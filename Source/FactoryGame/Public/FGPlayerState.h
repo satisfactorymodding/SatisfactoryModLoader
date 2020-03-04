@@ -42,6 +42,9 @@ struct FACTORYGAME_API FSlotData
 		return other.PingColor == PingColor && other.NametagColor == NametagColor;
 	}
 
+
+public:
+	FORCEINLINE ~FSlotData() = default;
 };
 
 /**
@@ -65,6 +68,9 @@ struct FACTORYGAME_API FMessageData
 	/** What class is the message */
 	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > MessageClass;
+
+public:
+	FORCEINLINE ~FMessageData() = default;
 };
 
 
@@ -360,4 +366,7 @@ private:
 	/** The last selected category in the resource sink shop so we can open the shop at the same category later */
 	UPROPERTY( Transient )
 	TSubclassOf< UFGSchematicCategory > mLastSelectedResourceSinkShopCategory;
+
+public:
+	FORCEINLINE ~AFGPlayerState() = default;
 };

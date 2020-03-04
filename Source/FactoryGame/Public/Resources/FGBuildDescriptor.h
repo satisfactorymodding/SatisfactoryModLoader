@@ -59,4 +59,7 @@ protected:
 	/** The order in the Build Menu is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
 	UPROPERTY( EditDefaultsOnly, Category = "Build" )
 	float mBuildMenuPriority;
+
+public:
+	FORCEINLINE ~UFGBuildDescriptor() = default;
 };

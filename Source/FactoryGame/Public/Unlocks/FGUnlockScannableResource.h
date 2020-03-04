@@ -34,4 +34,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	TArray< TSubclassOf< class UFGResourceDescriptor > > mResourcesToAddToScanner;
 
+
+public:
+	FORCEINLINE ~UFGUnlockScannableResource() = default;
 };

@@ -20,4 +20,7 @@ public:
 	/** How many arm slots are added by this belt  */
 	UPROPERTY( EditDefaultsOnly, Category = "Belt" )
 	int32 mNumArmSlotsToUnlock;
+
+public:
+	FORCEINLINE ~AFGToolBelt() = default;
 };

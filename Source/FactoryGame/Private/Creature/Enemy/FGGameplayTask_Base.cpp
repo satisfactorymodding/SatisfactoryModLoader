@@ -2,4 +2,4 @@
 
 #include "FGGameplayTask_Base.h"
 
-void UFGGameplayTask_Base::InitSimulatedTask( UGameplayTasksComponent& InGameplayTasksComponent){ }
+void UFGGameplayTask_Base::InitSimulatedTask(UGameplayTasksComponent& InGameplayTasksComponent){ }

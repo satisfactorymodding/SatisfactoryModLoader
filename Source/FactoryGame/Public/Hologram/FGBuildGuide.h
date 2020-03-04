@@ -21,6 +21,9 @@ struct FACTORYGAME_API FGuideLineBuildingSweepData
 
 	class AActor* mBuilding;
 	float mAngle;
+
+public:
+	FORCEINLINE ~FGuideLineBuildingSweepData() = default;
 };
 
 UENUM()
@@ -45,6 +48,9 @@ public:
 	FVector mStartPoint;
 	FVector mEndPoint;
 	EGuideLineType mGuideLineType;
+
+public:
+	FORCEINLINE ~FBuildingGuideLineData() = default;
 };
 
 UCLASS()
@@ -98,4 +104,7 @@ protected:
 
 private:
 
+
+public:
+	FORCEINLINE ~AFGBuildGuide() = default;
 };

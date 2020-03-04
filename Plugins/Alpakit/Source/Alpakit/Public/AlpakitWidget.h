@@ -36,9 +36,6 @@ public:
 	TSharedPtr<IDetailsView> DetailsView;
 
 	// Functions
-	FReply ChooseSatisfactoryFolder();
-	bool OpenFileDialog(const FString& DialogTitle, const FString& DefaultPath, const FString& FileTypes, TArray<FString>& OutFileNames);
-	bool OpenDirectoryDialog(const FString& DialogTitle, const FString& DefaultPath, FString& OutFileNames);
 	FReply Pakit();
 
 	void CookContent();

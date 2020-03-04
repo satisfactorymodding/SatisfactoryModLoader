@@ -38,6 +38,9 @@ struct FACTORYGAME_API FConstructHologramMessage
 	{
 		return UpgradeActor != nullptr;
 	}
+
+public:
+	FORCEINLINE ~FConstructHologramMessage() = default;
 };
 
 /**
@@ -47,6 +50,9 @@ UINTERFACE(Blueprintable)
 class FACTORYGAME_API UFGConstructionMessageInterface : public UInterface
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGConstructionMessageInterface() = default;
 };
 
 /**

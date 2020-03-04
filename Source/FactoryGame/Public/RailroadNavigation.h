@@ -33,6 +33,9 @@ public:
 
 	/** The distance this object is from the end. 0 for the last point. */
 	float Distance;
+
+public:
+	FORCEINLINE ~FRailroadPathPoint() = default;
 };
 
 /**
@@ -42,6 +45,9 @@ struct FACTORYGAME_API FRailroadPath
 {
 	/** Path points to follow to the destination. */
 	TArray< FRailroadPathPoint > PathPoints;
+
+public:
+	FORCEINLINE ~FRailroadPath() = default;
 };
 
 typedef TSharedPtr< struct FRailroadPath > FRailroadPathSharedPtr;
@@ -64,6 +70,9 @@ public:
 
 	/** Is the path valid, partial or invalid. */
 	ERailroadPathFindingResult Result;
+
+public:
+	FORCEINLINE ~FRailroadPathFindingResult() = default;
 };
 
 /**
@@ -101,6 +110,9 @@ public:
 
 	/** This will ensure that this start does not match the end. */
 	bool IgnoredStart;
+
+public:
+	FORCEINLINE ~FRailroadGraphAStarPathPoint() = default;
 };
 
 /**
@@ -118,6 +130,9 @@ struct FACTORYGAME_API FRailroadGraphAStarHelper
 	
 	/** @return neighbour ref. */
 	FRailroadGraphAStarPathPoint GetNeighbour( const FRailroadGraphAStarPathPoint& nodeRef, const int32 neighbourIndex ) const;
+
+public:
+	FORCEINLINE ~FRailroadGraphAStarHelper() = default;
 };
 
 /**
@@ -145,6 +160,9 @@ struct FACTORYGAME_API FRailroadGraphAStarFilter
 public:
 	/** true if a partial solution is valid; false if we only want a path if the goal is reachable. */
 	bool AcceptsPartialSolution;
+
+public:
+	FORCEINLINE ~FRailroadGraphAStarFilter() = default;
 };
 
 /** Collection of navigation functions */
@@ -179,4 +197,7 @@ private:
 		UFGRailroadTrackConnectionComponent* end,
 		bool hasStartPassedEnd,
 		TArray< FRailroadGraphAStarPathPoint >& out_pathPoints );
+
+public:
+	FORCEINLINE ~FRailroadNavigation() = default;
 };

@@ -104,4 +104,7 @@ private:
 	/** The two locations this wire span. */
 	UPROPERTY( ReplicatedUsing = OnRep_Locations, Meta = (NoAutoJson = true))
 	FVector mLocations[ 2 ];
+
+public:
+	FORCEINLINE ~AFGBuildableWire() = default;
 };

@@ -32,4 +32,7 @@ protected:
 	UPROPERTY( BlueprintReadWrite, Category = "Nobelisk" )
 	bool mIsLoaded;
 
+
+public:
+	FORCEINLINE ~AFGNobeliskDetonatorAttachment() = default;
 };

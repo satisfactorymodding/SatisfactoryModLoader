@@ -34,6 +34,9 @@ public:
 	uint8 Top : 1;
 	UPROPERTY( EditDefaultsOnly, Category = "Sides" )
 	uint8 Bottom : 1;
+
+public:
+	FORCEINLINE ~FFoundationSideSelectionFlags() = default;
 };
 
 /**
@@ -53,4 +56,7 @@ private:
 	/** Mesh component for the factory building. */
 	UPROPERTY( VisibleAnywhere )
 	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
+
+public:
+	FORCEINLINE ~AFGBuildableFactoryBuilding() = default;
 };

@@ -36,4 +36,7 @@ public:
 	/** The max rotation in yaw ( abs value ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Limited Look" )
 	float mMaxYaw;
+
+public:
+	FORCEINLINE ~UFGCameraModifierLimitLook() = default;
 };

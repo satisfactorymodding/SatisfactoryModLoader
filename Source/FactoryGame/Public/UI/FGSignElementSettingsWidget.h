@@ -35,4 +35,7 @@ protected:
 	class UFGSignElementWidget* mElementWidget;
 
 
+
+public:
+	FORCEINLINE ~UFGSignElementSettingsWidget() = default;
 };

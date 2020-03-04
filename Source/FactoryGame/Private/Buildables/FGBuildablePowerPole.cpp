@@ -4,9 +4,9 @@
 
 AFGBuildablePowerPole::AFGBuildablePowerPole(){ }
 void AFGBuildablePowerPole::BeginPlay(){ }
-void AFGBuildablePowerPole::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGBuildablePowerPole::StartIsLookedAtForConnection(  AFGCharacterPlayer* byCharacter){ }
-void AFGBuildablePowerPole::StopIsLookedAtForConnection(  AFGCharacterPlayer* byCharacter){ }
+void AFGBuildablePowerPole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePowerPole::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildablePowerPole::StopIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildablePowerPole::ShowConnectionFeedback(){ }
 void AFGBuildablePowerPole::HideConnectionFeedback(){ }
 void AFGBuildablePowerPole::Dismantle_Implementation(){ }

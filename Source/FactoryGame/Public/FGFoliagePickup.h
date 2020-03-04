@@ -64,4 +64,7 @@ protected:
 
 	/** The component we want to pickup from */
 	TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > mPickupComponent;
+
+public:
+	FORCEINLINE ~AFGFoliagePickup() = default;
 };

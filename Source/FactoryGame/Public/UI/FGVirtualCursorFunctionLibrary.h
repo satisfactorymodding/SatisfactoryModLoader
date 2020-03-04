@@ -20,4 +20,7 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "Game" )
 	static void DisableVirtualCursor( class APlayerController* PC );
+
+public:
+	FORCEINLINE ~UFGVirtualCursorFunctionLibrary() = default;
 };

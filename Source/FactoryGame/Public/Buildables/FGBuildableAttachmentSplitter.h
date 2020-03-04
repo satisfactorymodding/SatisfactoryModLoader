@@ -30,6 +30,9 @@ public:
 
 	// if the conveyor has a new item on it.
 	bool HasNewItem;
+
+public:
+	FORCEINLINE ~FConveyorSpaceData() = default;
 };
 
 /**
@@ -88,4 +91,7 @@ private:
 	UPROPERTY( Transient )
 	TMap<UFGFactoryConnectionComponent*, FConveyorSpaceData> mConveyorSpaceData;
 
+
+public:
+	FORCEINLINE ~AFGBuildableAttachmentSplitter() = default;
 };

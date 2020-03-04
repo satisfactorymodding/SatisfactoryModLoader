@@ -16,4 +16,7 @@ class FACTORYGAME_API UFGNavArea_Factory : public UNavArea
 	GENERATED_BODY()
 
 	UFGNavArea_Factory( const FObjectInitializer& ObjectInitializer );
+
+public:
+	FORCEINLINE ~UFGNavArea_Factory() = default;
 };

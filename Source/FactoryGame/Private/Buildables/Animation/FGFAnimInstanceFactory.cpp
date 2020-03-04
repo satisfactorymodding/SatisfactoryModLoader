@@ -2,10 +2,10 @@
 
 #include "FGFAnimInstanceFactory.h"
 
-void FAnimInstanceProxyFactory::PreUpdate( UAnimInstance* InAnimInstance, float DeltaSeconds){ }
-void FAnimInstanceProxyFactory::Update( float DeltaSeconds){ }
-void FAnimInstanceProxyFactory::Initialize( UAnimInstance* InAnimInstance){ }
+void FAnimInstanceProxyFactory::PreUpdate(UAnimInstance* InAnimInstance, float DeltaSeconds){ }
+void FAnimInstanceProxyFactory::Update(float DeltaSeconds){ }
+void FAnimInstanceProxyFactory::Initialize(UAnimInstance* InAnimInstance){ }
 UFGFAnimInstanceFactory::UFGFAnimInstanceFactory(){ }
-void UFGFAnimInstanceFactory::NativeUpdateAnimation( float DeltaSeconds){ }
+void UFGFAnimInstanceFactory::NativeUpdateAnimation(float DeltaSeconds){ }
 void UFGFAnimInstanceFactory::NativeInitializeAnimation(){ }
-void UFGFAnimInstanceFactory::UpdateSoundRTPC( float DeltaSeconds){ }
+void UFGFAnimInstanceFactory::UpdateSoundRTPC(float DeltaSeconds){ }

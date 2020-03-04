@@ -4,7 +4,7 @@
 
 UFGSignSettings* UFGSignSettings::Get(){ return nullptr; }
 const TArray<FSignColorData>& UFGSignSettings::GetSignColorData(){ return *(new TArray<FSignColorData>); }
-UMaterialInterface* UFGSignSettings::GetTextMaterialInstanceFromIndex( int32 index){ return nullptr; }
-UMaterialInterface* UFGSignSettings::GetIconMaterialInstanceFromIndex( int32 index){ return nullptr; }
-UMaterialInterface* UFGSignSettings::GetBackgroundMaterialInstanceFromIndex( int32 index){ return nullptr; }
+UMaterialInterface* UFGSignSettings::GetTextMaterialInstanceFromIndex(int32 index){ return nullptr; }
+UMaterialInterface* UFGSignSettings::GetIconMaterialInstanceFromIndex(int32 index){ return nullptr; }
+UMaterialInterface* UFGSignSettings::GetBackgroundMaterialInstanceFromIndex(int32 index){ return nullptr; }
 int32 UFGSignSettings::GetBackgroundMeshMaterialIndex(){ return int32(); }

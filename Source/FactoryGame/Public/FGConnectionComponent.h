@@ -30,4 +30,7 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFGSaveInterface
+
+public:
+	FORCEINLINE ~UFGConnectionComponent() = default;
 };

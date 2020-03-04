@@ -17,4 +17,7 @@ public:
 	// Begin AFGBuildableHologram interface
 	virtual void ConfigureSnappedPower( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram interface
+
+public:
+	FORCEINLINE ~AFGPoweredWallHologram() = default;
 };

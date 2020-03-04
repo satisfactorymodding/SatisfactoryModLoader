@@ -78,4 +78,7 @@ public:
 	/** How much inf ront of character the attack is */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
 	float mAttackDistance;
+
+public:
+	FORCEINLINE ~AFGEquipmentStunSpear() = default;
 };

@@ -33,4 +33,7 @@ protected:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	// End AFGHologram interface
 
+
+public:
+	FORCEINLINE ~AFGTrainStationHologram() = default;
 };

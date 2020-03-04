@@ -210,4 +210,7 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Default" )
 	bool mIsMainMenu;
+
+public:
+	FORCEINLINE ~AFGGameMode() = default;
 };

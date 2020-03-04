@@ -79,4 +79,7 @@ protected:
 
 	/** The actual class */
 	static TSubclassOf< UFGGlobalSettings > mGlobalSettingsClass;
+
+public:
+	FORCEINLINE ~UFGGlobalSettings() = default;
 };

@@ -30,6 +30,9 @@ private:
 	int8 PackedFlow = 0;
 	UPROPERTY()
 	uint8 PackedPressure = 0;
+
+public:
+	FORCEINLINE ~FQuantizedPumpIndicatorData() = default;
 };
 
 /**
@@ -140,4 +143,7 @@ private:
 	/** Smoothed values used by the indicators/UI. */
 	float mIndicatorFlowPct;
 	float mIndicatorPressurePct;
+
+public:
+	FORCEINLINE ~AFGBuildablePipelinePump() = default;
 };

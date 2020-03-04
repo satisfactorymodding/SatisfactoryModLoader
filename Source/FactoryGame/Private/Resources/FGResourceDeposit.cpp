@@ -3,13 +3,13 @@
 #include "FGResourceDeposit.h"
 
 AFGResourceDeposit::AFGResourceDeposit(){ }
-void AFGResourceDeposit::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGResourceDeposit::PostLoad(){ Super::PostLoad(); }
 void AFGResourceDeposit::BeginPlay(){ }
 void AFGResourceDeposit::RollResourceType(){ }
 void AFGResourceDeposit::TrySetDesiredResourceType(){ }
 void AFGResourceDeposit::SetupResourceInfo(){ }
-void AFGResourceDeposit::ExtractResourceAndGiveToPlayer( AFGCharacterPlayer* toPlayer, int32 amount ){ }
+void AFGResourceDeposit::ExtractResourceAndGiveToPlayer(AFGCharacterPlayer* toPlayer, int32 amount){ }
 void AFGResourceDeposit::OnRep_ResourceDepositEmptied(){ }
 void AFGResourceDeposit::InitRadioactivity(){ }
 void AFGResourceDeposit::UpdateRadioactivity(){ }

@@ -443,4 +443,7 @@ private:
 	/** Subsystem that keeps track of effects in proximity to the player */
 	UPROPERTY()
 	class AFGProximitySubsystem* mProximitySubsystem;
+
+public:
+	FORCEINLINE ~AFGPlayerController() = default;
 };

@@ -2,17 +2,17 @@
 
 #include "FGBuildablePipeReservoir.h"
 
-void FQuantizedReservoirIndicatorData::SetFlowFillPct( float pct){ }
+void FQuantizedReservoirIndicatorData::SetFlowFillPct(float pct){ }
 float FQuantizedReservoirIndicatorData::GetFlowFillPct() const{ return float(); }
-void FQuantizedReservoirIndicatorData::SetFlowDrainPct( float pct){ }
+void FQuantizedReservoirIndicatorData::SetFlowDrainPct(float pct){ }
 float FQuantizedReservoirIndicatorData::GetFlowDrainPct() const{ return float(); }
-void FQuantizedReservoirIndicatorData::SetContentPct( float pct){ }
+void FQuantizedReservoirIndicatorData::SetContentPct(float pct){ }
 float FQuantizedReservoirIndicatorData::GetContentPct() const{ return float(); }
 AFGBuildablePipeReservoir::AFGBuildablePipeReservoir(){ }
-void AFGBuildablePipeReservoir::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipeReservoir::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildablePipeReservoir::BeginPlay(){ }
-void AFGBuildablePipeReservoir::EndPlay( const EEndPlayReason::Type endPlayReason){ }
-void AFGBuildablePipeReservoir::Tick( float dt){ }
+void AFGBuildablePipeReservoir::EndPlay(const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildablePipeReservoir::Tick(float dt){ }
 FFluidBox* AFGBuildablePipeReservoir::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipeReservoir::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }
 float AFGBuildablePipeReservoir::GetFluidContent() const{ return float(); }

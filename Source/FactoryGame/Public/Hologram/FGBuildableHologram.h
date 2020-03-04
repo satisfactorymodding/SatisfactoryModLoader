@@ -266,4 +266,7 @@ protected:
 
 	bool mIsAimingAtOtherBuilding = false;
 	bool mDidSnapDuetoClearance = false;
+
+public:
+	FORCEINLINE ~AFGBuildableHologram() = default;
 };

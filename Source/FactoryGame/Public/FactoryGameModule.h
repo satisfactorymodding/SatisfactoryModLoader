@@ -16,4 +16,7 @@ public:
 
 	/** We want this module to be hot reloaded */
 	virtual bool IsGameModule() const override { return true; }
+
+public:
+	FORCEINLINE ~FFactoryGameModule() = default;
 };

@@ -29,4 +29,7 @@ private:
 	/** The connection conveyors snap to, used when placing a pole automatically. */
 	UPROPERTY( )
 	UFGFactoryConnectionComponent* mSnapConnection;
+
+public:
+	FORCEINLINE ~AFGConveyorPoleHologram() = default;
 };

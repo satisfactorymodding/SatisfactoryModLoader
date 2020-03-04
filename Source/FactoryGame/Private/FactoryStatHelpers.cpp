@@ -3,4 +3,4 @@
 #include "FactoryStatHelpers.h"
 
 FFactoryStats::FFactoryStats(){ }
-void FFactoryStatHelpers::GetFactoryStats(  UWorld* world, FFactoryStats& out_stats){ }
+void FFactoryStatHelpers::GetFactoryStats( UWorld* world, FFactoryStats& out_stats){ }

@@ -4,7 +4,7 @@
 
 AFGAmbientSoundSpline::AFGAmbientSoundSpline(){ }
 void AFGAmbientSoundSpline::BeginPlay(){ }
-void AFGAmbientSoundSpline::EndPlay( const EEndPlayReason::Type endPlayReason){ }
+void AFGAmbientSoundSpline::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGAmbientSoundSpline::GainedSignificance_Implementation(){ }
 void AFGAmbientSoundSpline::LostSignificance_Implementation(){ }
 float AFGAmbientSoundSpline::GetSignificanceRange(){ return float(); }

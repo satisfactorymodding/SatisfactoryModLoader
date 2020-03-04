@@ -23,4 +23,7 @@ private:
 	 * Helper function to DuplicateComponents, will parse out blueprint components and call duplicator on them
 	 */
 	static void Internal_SetupBlueprintComponent( class USCS_Node* node, class USCS_Node* parent, class UBlueprintGeneratedClass* actualBlueprintClass, FComponentDuplicator duplicator, TMap< FName, class USceneComponent* >& out_attachParentMap );
+
+public:
+	FORCEINLINE ~FGComponentHelpers() = default;
 };

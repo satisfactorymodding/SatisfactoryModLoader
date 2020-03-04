@@ -4,12 +4,12 @@
 
 UFGParachuteCameraShake::UFGParachuteCameraShake(){ }
 AFGParachute::AFGParachute(){ }
-void AFGParachute::Tick( float DeltaSeconds){ }
-void AFGParachute::Equip(  AFGCharacterPlayer* character){ }
+void AFGParachute::Tick(float DeltaSeconds){ }
+void AFGParachute::Equip( AFGCharacterPlayer* character){ }
 void AFGParachute::UnEquip(){ }
 void AFGParachute::Deploy(){ }
-FVector AFGParachute::ModifyVelocity_Implementation( float deltaTime, const FVector& oldVelocity){ return FVector(); }
+FVector AFGParachute::ModifyVelocity_Implementation(float deltaTime, const FVector& oldVelocity){ return FVector(); }
 void AFGParachute::AddEquipmentActionBindings(){ }
-void AFGParachuteAttachment::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGParachuteAttachment::SetIsDeployed( bool newIsDeployed){ }
+void AFGParachuteAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGParachuteAttachment::SetIsDeployed(bool newIsDeployed){ }
 void AFGParachuteAttachment::OnRep_IsDeployed(){ }

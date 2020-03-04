@@ -19,4 +19,7 @@ public:
 	virtual FArchive& operator<<( class FName& N ) override;
 private:
 	class UWorld* mWorld;
+
+public:
+	FORCEINLINE ~FObjectReaderFName() = default;
 };

@@ -26,4 +26,7 @@ class FACTORYGAME_API AFGBuildableSpeedSign : public AFGBuildable
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	//~ End IFGUseableInterface
+
+public:
+	FORCEINLINE ~AFGBuildableSpeedSign() = default;
 };

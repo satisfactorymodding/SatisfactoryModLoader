@@ -38,6 +38,9 @@ public:
 	//int32 NumCircuits;
 	//int32 NumTrains;
 	//int32 NumSelfDrivingTrucks;
+
+public:
+	FORCEINLINE ~FFactoryStats() = default;
 };
 
 /**
@@ -47,4 +50,7 @@ public:
 struct FACTORYGAME_API FFactoryStatHelpers
 {
 	static void GetFactoryStats( class UWorld* world, FFactoryStats& out_stats );
+
+public:
+	FORCEINLINE ~FFactoryStatHelpers() = default;
 };

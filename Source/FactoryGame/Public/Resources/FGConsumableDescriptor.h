@@ -60,4 +60,7 @@ protected:
 	/** The static mesh we want for representing the resource when it is in third person. */
 	UPROPERTY( EditDefaultsOnly, Category = "Consumeable" )
 	class UStaticMesh* mTPOverrideMesh;
+
+public:
+	FORCEINLINE ~UFGConsumableDescriptor() = default;
 };

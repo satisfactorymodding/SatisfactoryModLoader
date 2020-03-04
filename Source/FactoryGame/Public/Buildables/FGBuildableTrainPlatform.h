@@ -134,4 +134,7 @@ protected:
 
 private:
 	friend class AFGTrainPlatformHologram; //@todotrains use this instead of setters and getters for everything.
+
+public:
+	FORCEINLINE ~AFGBuildableTrainPlatform() = default;
 };

@@ -127,6 +127,9 @@ struct FACTORYGAME_API FSaveHeader
 
 	// The GUID for this custom version number
 	const static FGuid GUID;
+
+public:
+	FORCEINLINE ~FSaveHeader() = default;
 };
 
 /** Enable custom net delta serialization for the above struct. */
@@ -137,6 +140,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FSaveHeader > : public TStructOpsTy
 	{
 		WithNetSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FSaveHeader >() = default;
 };
 
 
@@ -169,6 +175,9 @@ struct FACTORYGAME_API FMapRedirector
 	/** New map name */
 	UPROPERTY()
 	FString NewMapName;
+
+public:
+	FORCEINLINE ~FMapRedirector() = default;
 };
 
 DECLARE_DELEGATE_ThreeParams( FOnEnumerateSaveGamesComplete, bool, const TArray<FSaveHeader>&, void* );
@@ -195,6 +204,9 @@ struct FACTORYGAME_API FSessionSaveStruct
 	/** The saves that are in this session */
 	UPROPERTY( BlueprintReadOnly )
 	TArray< FSaveHeader > SaveHeaders;		
+
+public:
+	FORCEINLINE ~FSessionSaveStruct() = default;
 };
 
 UCLASS(Config=Engine)
@@ -386,4 +398,7 @@ protected:
 
 	/** We are currently using internal saves */
 	static bool mIsUsingBundledSaves;
+
+public:
+	FORCEINLINE ~UFGSaveSystem() = default;
 };

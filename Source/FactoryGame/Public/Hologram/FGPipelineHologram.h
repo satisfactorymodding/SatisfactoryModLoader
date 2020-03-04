@@ -224,4 +224,7 @@ private:
 	float mMeshLength;
 
 	bool mPoleSnappedToActor = false;
+
+public:
+	FORCEINLINE ~AFGPipelineHologram() = default;
 };

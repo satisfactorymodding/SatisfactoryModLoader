@@ -2,6 +2,6 @@
 
 #include "FGPowerConnectionComponent.h"
 
-void UFGPowerConnectionComponent::SetPowerInfo(  UFGPowerInfoComponent* powerInfo){ }
+void UFGPowerConnectionComponent::SetPowerInfo( UFGPowerInfoComponent* powerInfo){ }
 UFGPowerCircuit* UFGPowerConnectionComponent::GetPowerCircuit() const{ return nullptr; }
 void UFGPowerConnectionComponent::OnCircuitIDChanged(){ }

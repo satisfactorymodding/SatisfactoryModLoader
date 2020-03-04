@@ -26,6 +26,9 @@ struct FACTORYGAME_API FAudioVolumeMap
 	/** The stored value of the RTPC */
 	UPROPERTY()
 	float Value;
+
+public:
+	FORCEINLINE ~FAudioVolumeMap() = default;
 };
 
 /**
@@ -39,6 +42,9 @@ public:
 
 	UPROPERTY()
 	TArray<FOptionUpdated> OptionUpdatedDelegates;
+
+public:
+	FORCEINLINE ~FOptionUpdateDelegateData() = default;
 };
 
 UCLASS(BlueprintType)
@@ -161,8 +167,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
 	bool IsPostProcessUsingCustomSettings();
 
-	// MODDING EDIT: Does not override error
-	//virtual void SetPostProcessingQuality( int32 Value ) override;
+	virtual void SetPostProcessingQuality( int32 Value ) override;
 
 	/** Update the custom post process settings like motion blur etc. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
@@ -403,4 +408,7 @@ private:
 	static const FString MOTION_BLUR_QUALITY;
 	static const FString HZBO_SETTING;
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
+
+public:
+	FORCEINLINE ~UFGGameUserSettings() = default;
 };

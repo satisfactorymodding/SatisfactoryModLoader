@@ -7,7 +7,7 @@ const FText UFGListView::GetPaletteCategory(){ return FText(); }
 #endif 
 void UFGListView::Refresh(){ }
 UClass* UFGListView::GetSlotClass() const{ return nullptr; }
-void UFGListView::OnSlotAdded( UPanelSlot* slot){ }
-void UFGListView::OnSlotRemoved( UPanelSlot* slot){ }
-void UFGListView::ReleaseSlateResources( bool releaseChildren){ }
+void UFGListView::OnSlotAdded(UPanelSlot* slot){ }
+void UFGListView::OnSlotRemoved(UPanelSlot* slot){ }
+void UFGListView::ReleaseSlateResources(bool releaseChildren){ }
 TSharedRef< SWidget > UFGListView::RebuildWidget(){ return Super::RebuildWidget(); }

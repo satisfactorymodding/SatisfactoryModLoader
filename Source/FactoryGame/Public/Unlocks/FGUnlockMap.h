@@ -19,4 +19,7 @@ public:
 	// Begin FGUnlock interface
 	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
+
+public:
+	FORCEINLINE ~UFGUnlockMap() = default;
 };

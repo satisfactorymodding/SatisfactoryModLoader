@@ -2,4 +2,4 @@
 
 #include "FGItemCategory.h"
 
-FText UFGItemCategory::GetCategoryName( TSubclassOf< UFGItemCategory > inClass){ return FText(); }
+FText UFGItemCategory::GetCategoryName(TSubclassOf< UFGItemCategory > inClass){ return FText(); }

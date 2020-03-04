@@ -2,4 +2,4 @@
 
 #include "FGPoweredWallHologram.h"
 
-void AFGPoweredWallHologram::ConfigureSnappedPower(  AFGBuildable* inBuildable) const{ }
+void AFGPoweredWallHologram::ConfigureSnappedPower( AFGBuildable* inBuildable) const{ }

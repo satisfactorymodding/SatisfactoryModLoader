@@ -3,31 +3,31 @@
 #include "FGPipelineHologram.h"
 
 AFGPipelineHologram::AFGPipelineHologram(){ }
-void AFGPipelineHologram::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPipelineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGPipelineHologram::BeginPlay(){ }
-void AFGPipelineHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
-void AFGPipelineHologram::RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal){ }
-bool AFGPipelineHologram::DoMultiStepPlacement( bool isInputFromARelease){ return bool(); }
+void AFGPipelineHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
+void AFGPipelineHologram::RouteSelectedSplineMode(FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal){ }
+bool AFGPipelineHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 int32 AFGPipelineHologram::GetBaseCostMultiplier() const{ return int32(); }
-void AFGPipelineHologram::SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
-void AFGPipelineHologram::GetSupportedScrollModes( TArray< EHologramScrollMode >* out_modes) const{ }
-void AFGPipelineHologram::GetSupportedSplineModes_Implementation( TArray< EHologramSplinePathMode >& out_splineModes) const{ }
-bool AFGPipelineHologram::IsValidHitResult( const FHitResult& hitResult) const{ return bool(); }
-void AFGPipelineHologram::AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
-bool AFGPipelineHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
+void AFGPipelineHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
+void AFGPipelineHologram::GetSupportedScrollModes(TArray< EHologramScrollMode >* out_modes) const{ }
+void AFGPipelineHologram::GetSupportedSplineModes_Implementation(TArray< EHologramSplinePathMode >& out_splineModes) const{ }
+bool AFGPipelineHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
+void AFGPipelineHologram::AdjustForGround(const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
+bool AFGPipelineHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineHologram::OnInvalidHitResult(){ }
-void AFGPipelineHologram::Scroll( int32 delta){ }
+void AFGPipelineHologram::Scroll(int32 delta){ }
 bool AFGPipelineHologram::CanTakeNextBuildStep() const{ return bool(); }
-void AFGPipelineHologram::SerializeConstructMessage( FArchive& ar){ }
+void AFGPipelineHologram::SerializeConstructMessage(FArchive& ar){ }
 void AFGPipelineHologram::ClientPreConstructMessageSerialization(){ }
 void AFGPipelineHologram::ServerPostConstructMessageDeserialization(){ }
-void AFGPipelineHologram::OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram){ }
+void AFGPipelineHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 void AFGPipelineHologram::ResetBuildSteps(){ }
-void AFGPipelineHologram::GetLastSplineData( FSplinePointData &data){ }
-bool AFGPipelineHologram::IsConnectionSnapped( bool lastConnection){ return bool(); }
-void AFGPipelineHologram::SetSnapToGuideLines( bool isEnabled){ }
-void AFGPipelineHologram::ConfigureActor(  AFGBuildable* inBuildable) const{ }
-void AFGPipelineHologram::ConfigureComponents(  AFGBuildable* inBuildable) const{ }
+void AFGPipelineHologram::GetLastSplineData(FSplinePointData &data){ }
+bool AFGPipelineHologram::IsConnectionSnapped(bool lastConnection){ return bool(); }
+void AFGPipelineHologram::SetSnapToGuideLines(bool isEnabled){ }
+void AFGPipelineHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
+void AFGPipelineHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGPipelineHologram::CheckValidFloor(){ }
 void AFGPipelineHologram::CheckClearance(){ }
 void AFGPipelineHologram::CheckValidPlacement(){ }
@@ -36,31 +36,26 @@ int32 AFGPipelineHologram::GetNumSections() const{ return int32(); }
 void AFGPipelineHologram::UpdateSplineComponent(){ }
 void AFGPipelineHologram::UpdateConnectionComponentsFromSplineData(){ }
 void AFGPipelineHologram::UpdateSplineCompFromSplineData(){ }
-void AFGPipelineHologram::AutoRouteSpline(
+void AFGPipelineHologram::AutoRouteSpline(const FVector& startConnectionPos,
+		const FVector& startConnectionNormal,
+		const FVector& endConnectionPos,
+		const FVector& endConnectionNormal){ }
+void AFGPipelineHologram::Auto2DRouteSpline(const FVector& startConnectionPos,
+		const FVector& startConnectionNormal,
+		const FVector& endConnectionPos,
+		const FVector& endConnectionNormal){ }
+void AFGPipelineHologram::AutoRouteNoodleSpline(const FVector& startConnectionPos, const FVector& startConnectionNormal, const FVector& endConnectionPos, const FVector& endConnectionNormal){ }
+void AFGPipelineHologram::HorizontalAndVerticalRouteSpline(bool horizontalFirst,
 		const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,
 		const FVector& endConnectionPos,
 		const FVector& endConnectionNormal){ }
-void AFGPipelineHologram::Auto2DRouteSpline(
+void AFGPipelineHologram::HorizontalAndVerticalRouteSplineNew(bool horizontalFirst,
 		const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,
 		const FVector& endConnectionPos,
 		const FVector& endConnectionNormal){ }
-void AFGPipelineHologram::AutoRouteNoodleSpline( const FVector& startConnectionPos, const FVector& startConnectionNormal, const FVector& endConnectionPos, const FVector& endConnectionNormal){ }
-void AFGPipelineHologram::HorizontalAndVerticalRouteSpline(
-		bool horizontalFirst,
-		const FVector& startConnectionPos,
-		const FVector& startConnectionNormal,
-		const FVector& endConnectionPos,
-		const FVector& endConnectionNormal){ }
-void AFGPipelineHologram::HorizontalAndVerticalRouteSplineNew(
-		bool horizontalFirst,
-		const FVector& startConnectionPos,
-		const FVector& startConnectionNormal,
-		const FVector& endConnectionPos,
-		const FVector& endConnectionNormal){ }
-void AFGPipelineHologram::PathFindingRouteSpline(
-		TArray<  FHologramAStarNode >& pathNodes,
+void AFGPipelineHologram::PathFindingRouteSpline(TArray<  FHologramAStarNode >& pathNodes,
 		const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,
 		const FVector& endConnectionPos,

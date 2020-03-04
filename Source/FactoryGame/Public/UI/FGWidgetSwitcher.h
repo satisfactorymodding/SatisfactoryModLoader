@@ -84,4 +84,7 @@ protected:
 	// Widget currently running it's exiting animation
 	UPROPERTY()
 	UFGMenuBase* mExitingWidget;
+
+public:
+	FORCEINLINE ~UFGWidgetSwitcher() = default;
 };

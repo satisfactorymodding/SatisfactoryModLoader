@@ -10,6 +10,9 @@ class FACTORYGAME_API UFGReplicationDetailActorOwnerInterface : public UInterfac
 	
  GENERATED_BODY()
 	UFGReplicationDetailActorOwnerInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGReplicationDetailActorOwnerInterface() = default;
 };
 
 class FACTORYGAME_API IFGReplicationDetailActorOwnerInterface

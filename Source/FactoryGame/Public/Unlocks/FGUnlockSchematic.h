@@ -34,4 +34,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	TArray< TSubclassOf< class UFGSchematic > > mSchematics;
 
+
+public:
+	FORCEINLINE ~UFGUnlockSchematic() = default;
 };

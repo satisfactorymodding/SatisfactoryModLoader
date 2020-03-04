@@ -32,6 +32,9 @@ struct FACTORYGAME_API FPickedUpInstance
 
 	UPROPERTY()
 	FVector Location;
+
+public:
+	FORCEINLINE ~FPickedUpInstance() = default;
 };
 
 UCLASS()
@@ -204,4 +207,7 @@ protected:
 
 	/** if true, then we are spinning the chainsaw up */
 	uint8 mIsSpinningUp:1;
+
+public:
+	FORCEINLINE ~AFGChainsaw() = default;
 };

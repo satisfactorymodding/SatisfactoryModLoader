@@ -2,16 +2,14 @@
 
 #include "FGSplineMeshGenerationLibrary.h"
 
-void UFGSplineMeshGenerationLibrary::BuildSplineMeshesInstanced(
-		 USplineComponent* spline,
+void UFGSplineMeshGenerationLibrary::BuildSplineMeshesInstanced( USplineComponent* spline,
 		UStaticMesh* mesh,
 		float meshLength,
 		UFGInstancedSplineMeshComponent* splineInstances){ }
-void UFGSplineMeshGenerationLibrary::BuildSplineCollisionBoxes(
-		 USplineComponent* spline,
+void UFGSplineMeshGenerationLibrary::BuildSplineCollisionBoxes( USplineComponent* spline,
 		const FVector& collisionExtent,
 		float collisionSpacing,
 		const FVector& collisionOffset,
 		FName collisionProfile){ }
-void UFGSplineMeshGenerationLibrary::BuildSplineCollisionCapsules( USplineComponent* spline, float collisionRadius, float collisionSpacing, const FVector& collisionOffset, FName collisionProfile){ }
-bool UFGSplineMeshGenerationLibrary::GetNextDistanceExcedingTollerance( USplineComponent* spline, const FVector& startPos, float startDistance, float stepSize, float tollerance, float& outEndDistance, FVector& outEndPos, float& outLength, uint8 fineTuningIterations , float minStepFactor , ESplineCoordinateSpace::Type space ){ return bool(); }
+void UFGSplineMeshGenerationLibrary::BuildSplineCollisionCapsules(USplineComponent* spline, float collisionRadius, float collisionSpacing, const FVector& collisionOffset, FName collisionProfile){ }
+bool UFGSplineMeshGenerationLibrary::GetNextDistanceExcedingTollerance(USplineComponent* spline, const FVector& startPos, float startDistance, float stepSize, float tollerance, float& outEndDistance, FVector& outEndPos, float& outLength, uint8 fineTuningIterations , float minStepFactor , ESplineCoordinateSpace::Type space){ return bool(); }

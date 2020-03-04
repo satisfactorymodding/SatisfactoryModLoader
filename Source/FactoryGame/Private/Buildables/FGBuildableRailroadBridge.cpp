@@ -3,5 +3,5 @@
 #include "FGBuildableRailroadBridge.h"
 
 AFGBuildableRailroadBridge::AFGBuildableRailroadBridge(){ }
-void AFGBuildableRailroadBridge::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableRailroadBridge::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableRailroadBridge::BeginPlay(){ }

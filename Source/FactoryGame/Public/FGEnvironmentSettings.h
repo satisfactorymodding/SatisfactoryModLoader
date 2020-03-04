@@ -28,4 +28,7 @@ public:
 	static FName WorldBoundsMinName;
 	/** The parameter name of Extent of mWorldBoundsParameters */
 	static FName WorldBoundsExtentName;
+
+public:
+	FORCEINLINE ~UFGEnvironmentSettings() = default;
 };

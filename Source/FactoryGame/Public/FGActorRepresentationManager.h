@@ -139,4 +139,7 @@ private:
 	/** These are representation that the local player adds for them selves, often temporary stuff that others shouldn't see */
 	UPROPERTY()
 	TArray< UFGActorRepresentation* > mLocalRepresentations;
+
+public:
+	FORCEINLINE ~AFGActorRepresentationManager() = default;
 };

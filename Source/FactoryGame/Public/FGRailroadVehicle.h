@@ -156,4 +156,7 @@ private:
 	UPROPERTY( SaveGame )
 	FRailroadTrackPosition mTrackPosition;
 
+
+public:
+	FORCEINLINE ~AFGRailroadVehicle() = default;
 };

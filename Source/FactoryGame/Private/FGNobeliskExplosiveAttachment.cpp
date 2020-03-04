@@ -2,6 +2,6 @@
 
 #include "FGNobeliskExplosiveAttachment.h"
 
-void AFGNobeliskExplosiveAttachment::GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGNobeliskExplosiveAttachment::Multicast_PlayBeginFireEffect_Implementation( const FVector& location){ }
-void AFGNobeliskExplosiveAttachment::Multicast_SetIsLoaded_Implementation( bool isLoaded){ }
+void AFGNobeliskExplosiveAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGNobeliskExplosiveAttachment::Multicast_PlayBeginFireEffect_Implementation(const FVector& location){ }
+void AFGNobeliskExplosiveAttachment::Multicast_SetIsLoaded_Implementation(bool isLoaded){ }

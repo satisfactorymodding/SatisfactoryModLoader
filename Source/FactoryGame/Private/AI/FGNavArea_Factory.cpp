@@ -2,4 +2,4 @@
 
 #include "FGNavArea_Factory.h"
 
-UFGNavArea_Factory::UFGNavArea_Factory( const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGNavArea_Factory::UFGNavArea_Factory(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }

@@ -53,4 +53,7 @@ private:
 	UPROPERTY( Transient )
 	class AFGResourceSinkSubsystem* mResourceSinkSubsystem;
 
+
+public:
+	FORCEINLINE ~AFGBuildableResourceSinkShop() = default;
 };

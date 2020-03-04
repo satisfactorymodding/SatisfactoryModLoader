@@ -2,5 +2,5 @@
 
 #include "FGStairHologram.h"
 
-bool AFGStairHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
+bool AFGStairHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGStairHologram::CheckValidPlacement(){ }

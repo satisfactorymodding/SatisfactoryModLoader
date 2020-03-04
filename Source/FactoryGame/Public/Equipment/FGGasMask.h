@@ -14,10 +14,16 @@ class FACTORYGAME_API AFGGasMask : public AFGEquipment
 public:
 	/** Ctor */
 	AFGGasMask();
+
+public:
+	FORCEINLINE ~AFGGasMask() = default;
 };
 
 UCLASS()
 class FACTORYGAME_API AFGGasMaskAttachment : public AFGEquipmentAttachment
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~AFGGasMaskAttachment() = default;
 };

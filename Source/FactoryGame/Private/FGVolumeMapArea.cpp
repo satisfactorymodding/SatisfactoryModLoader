@@ -7,5 +7,5 @@ void AFGVolumeMapArea::CheckForErrors(){ }
 #endif 
 AFGVolumeMapArea::AFGVolumeMapArea(){ }
 void AFGVolumeMapArea::BeginPlay(){ }
-void AFGVolumeMapArea::OnPrimitiveComponentEntered( UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult){ }
-void AFGVolumeMapArea::OnPawnEntered( APawn* pawn, const FHitResult& enterInfo){ }
+void AFGVolumeMapArea::OnPrimitiveComponentEntered(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult){ }
+void AFGVolumeMapArea::OnPawnEntered(APawn* pawn, const FHitResult& enterInfo){ }

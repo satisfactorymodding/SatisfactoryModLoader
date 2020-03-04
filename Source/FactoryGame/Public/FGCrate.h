@@ -74,4 +74,7 @@ protected:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Compass" )
 	EFGCrateIconType mIconType;
 
+
+public:
+	FORCEINLINE ~AFGCrate() = default;
 };

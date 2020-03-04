@@ -54,6 +54,9 @@ struct FACTORYGAME_API FConnectionItemStruct
 
 	/** To allow this to be thread safe, this bool marks if a table element has been consumed, to remove the need to delete from the table array */
 	bool Grabbed;
+
+public:
+	FORCEINLINE ~FConnectionItemStruct() = default;
 };
 
 /**
@@ -112,4 +115,7 @@ protected:
 	/** Cached linear size of the inventory component*/
 	int32 mCachedInventorySize;
 
+
+public:
+	FORCEINLINE ~AFGBuildableConveyorAttachment() = default;
 };

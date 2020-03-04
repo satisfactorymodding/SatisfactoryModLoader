@@ -20,4 +20,7 @@ public:
 	FArchive& operator<<( class UObject*& Res ) override;
 private:
 	class UWorld* mWorld;
+
+public:
+	FORCEINLINE ~FArchiveObjectDataProxy() = default;
 };

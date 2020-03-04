@@ -42,4 +42,7 @@ protected:
 
 	/** Get a valid player that can use the shortcut, will be null if it's not allowed for some reason */
 	class AFGCharacterPlayer* GetValidPlayerCharacter( class AFGPlayerController* playerController ) const;
+
+public:
+	FORCEINLINE ~UFGHotbarShortcut() = default;
 };

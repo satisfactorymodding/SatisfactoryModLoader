@@ -52,4 +52,7 @@ protected:
 
 	/** Checks whether this actor is relevant to a connection. */
 	virtual bool IsNetRelevantFor( const AActor* realViewer, const AActor* viewTarget, const FVector& srcLocation ) const override;
+
+public:
+	FORCEINLINE ~AFGReplicationDetailActor() = default;
 };

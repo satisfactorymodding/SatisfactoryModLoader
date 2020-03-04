@@ -22,6 +22,9 @@ public:
 	/** The material to put on that slot name */
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	UMaterialInterface* Material;
+
+public:
+	FORCEINLINE ~FMaterialAndSlotName() = default;
 };
 
 /**
@@ -50,6 +53,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Materials" )
 	TArray< FMaterialAndSlotName > mSuit1PMeshMaterials;
 	
+
+public:
+	FORCEINLINE ~AFGSuitBase() = default;
 };
 
 UCLASS()
@@ -70,4 +76,7 @@ class FACTORYGAME_API AFGSuitBaseAttachment : public AFGEquipmentAttachment
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Materials" )
 	TArray< FMaterialAndSlotName > mSuit3PMeshMaterials;
+
+public:
+	FORCEINLINE ~AFGSuitBaseAttachment() = default;
 };

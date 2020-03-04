@@ -3,7 +3,7 @@
 #include "FGPipeBuilderTrail.h"
 
 AFGPipeBuilderTrail::AFGPipeBuilderTrail(){ }
-void AFGPipeBuilderTrail::AddPipeline(  AFGBuildablePipeline* inPipe){ }
+void AFGPipeBuilderTrail::AddPipeline( AFGBuildablePipeline* inPipe){ }
 void AFGPipeBuilderTrail::StartSplineMovement(){ }
 void AFGPipeBuilderTrail::PlayBuildEffect(){ }
 void AFGPipeBuilderTrail::EffectDone(){ }

@@ -70,4 +70,7 @@ private:
 	/** Current switch position read from the controlled connection, polled each tick. */
 	UPROPERTY( ReplicatedUsing = OnRep_SwitchPosition, Meta = (NoAutoJson = true) )
 	int32 mSwitchPosition;
+
+public:
+	FORCEINLINE ~AFGBuildableRailroadSwitchControl() = default;
 };

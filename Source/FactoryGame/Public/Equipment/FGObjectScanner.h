@@ -70,6 +70,9 @@ private:
 	/** Required schematic to search for this object. None means no requirement. */
 	UPROPERTY( EditDefaultsOnly )
 	TSoftClassPtr< class UFGSchematic > RequiredSchematic;
+
+public:
+	FORCEINLINE ~FScannableDetails() = default;
 };
 
 /**
@@ -230,6 +233,9 @@ private:
 
 	/** if we had a closest object last frame */
 	bool mHadClosestObject;
+
+public:
+	FORCEINLINE ~AFGObjectScanner() = default;
 };
 
 
@@ -273,6 +279,9 @@ private:
 	/** Scanner light color */
 	UPROPERTY( ReplicatedUsing = OnRep_ScannerLightColor )
 	FColor mScannerLightColor;
+
+public:
+	FORCEINLINE ~AFGObjectScannerAttachment() = default;
 };
 
 FORCEINLINE TSubclassOf< class UFGSchematic > FScannableDetails::GetRequiredSchematic() const

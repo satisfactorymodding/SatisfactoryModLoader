@@ -4,8 +4,8 @@
 
 AFGFactoryHologram::AFGFactoryHologram(){ }
 void AFGFactoryHologram::BeginPlay(){ }
-void AFGFactoryHologram::Tick( float dt){ }
-void AFGFactoryHologram::SetupClearance(  UBoxComponent* boxComponent){ }
-void AFGFactoryHologram::SetHologramLocationAndRotation( const FHitResult& hitResult){ }
+void AFGFactoryHologram::Tick(float dt){ }
+void AFGFactoryHologram::SetupClearance( UBoxComponent* boxComponent){ }
+void AFGFactoryHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGFactoryHologram::Destroyed(){ }
 FVector AFGFactoryHologram::GetGuideLinesBaseLocation(){ return FVector(); }

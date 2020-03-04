@@ -32,6 +32,9 @@ public:
 	int32 mItemIndex;
 
 	int8 mRepVersion;
+
+public:
+	FORCEINLINE ~UFGUseState_ConveyorBeltValid() = default;
 };
 
 UCLASS()
@@ -44,6 +47,9 @@ public:
 public:
 	/** index for the looked at item in mItems */
 	int32 mItemIndex;
+
+public:
+	FORCEINLINE ~UFGUseState_ConveyorBeltFullInventory() = default;
 };
 
 /**
@@ -55,6 +61,9 @@ class FACTORYGAME_API UFGUseState_ConveyorBeltEmpty : public UFGUseState
 	GENERATED_BODY()
 public:
 	UFGUseState_ConveyorBeltEmpty() { mIsUsableState = false; mWantAdditonalData = false; }
+
+public:
+	FORCEINLINE ~UFGUseState_ConveyorBeltEmpty() = default;
 };
 
 /**
@@ -192,4 +201,7 @@ private:
 	/** The ak event to post for the sound spline */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
 	class UAkAudioEvent* mSplineAudioEvent;
+
+public:
+	FORCEINLINE ~AFGBuildableConveyorBelt() = default;
 };

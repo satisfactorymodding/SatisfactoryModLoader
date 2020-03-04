@@ -2,25 +2,25 @@
 
 #include "FGEngineCommon.h"
 
-void IStatCollector::GetAndCreateOutputDirectory( const FDateTime& timestamp, FString& out_directory){ }
-void IStatCollector::GetDesiredOutputFile( const FDateTime& timestamp, const FString& mapName, const FString& fileTag, FString& out_filename){ }
+void IStatCollector::GetAndCreateOutputDirectory(const FDateTime& timestamp, FString& out_directory){ }
+void IStatCollector::GetDesiredOutputFile(const FDateTime& timestamp, const FString& mapName, const FString& fileTag, FString& out_filename){ }
 #if WITH_EDITOR
-void FFGEngineCommon::PostPIEStarted( bool bIsSimulatingInEditor){ }
-void FFGEngineCommon::OnMapOpened( const FString& Filename, bool bAsTemplate){ }
+void FFGEngineCommon::PostPIEStarted(bool bIsSimulatingInEditor){ }
+void FFGEngineCommon::OnMapOpened(const FString& Filename, bool bAsTemplate){ }
 #endif 
 #if STATS
-void FFGEngineCommon::StartCollection( FString label, FString mapName, FString guid){ }
+void FFGEngineCommon::StartCollection(FString label, FString mapName, FString guid){ }
 void FFGEngineCommon::StopCollection(){ }
-void FFGEngineCommon::CollectStats( int64 frame){ }
+void FFGEngineCommon::CollectStats(int64 frame){ }
 void FFGEngineCommon::DumpChart(){ }
 #endif 
 #if STATS
 #endif 
-void FFGEngineCommon::Init( UEngine* engine,  IEngineLoop* inEngineLoop){ }
+void FFGEngineCommon::Init(UEngine* engine,  IEngineLoop* inEngineLoop){ }
 void FFGEngineCommon::Start(){ }
 void FFGEngineCommon::PreExit(){ }
-bool FFGEngineCommon::Exec(  UWorld* inWorld, const TCHAR* cmd, FOutputDevice& ar){ return bool(); }
-void FFGEngineCommon::Tick( float dt){ }
-UWorld* FFGEngineCommon::CreateWorld( const FString& worldName){ return nullptr; }
-void FFGEngineCommon::DestroyWorld(  UWorld* world){ }
-void FFGEngineCommon::HandleHiddenTextureStatsCommand( const TCHAR* cmd, FOutputDevice& ar){ }
+bool FFGEngineCommon::Exec( UWorld* inWorld, const TCHAR* cmd, FOutputDevice& ar){ return bool(); }
+void FFGEngineCommon::Tick(float dt){ }
+UWorld* FFGEngineCommon::CreateWorld(const FString& worldName){ return nullptr; }
+void FFGEngineCommon::DestroyWorld( UWorld* world){ }
+void FFGEngineCommon::HandleHiddenTextureStatsCommand(const TCHAR* cmd, FOutputDevice& ar){ }

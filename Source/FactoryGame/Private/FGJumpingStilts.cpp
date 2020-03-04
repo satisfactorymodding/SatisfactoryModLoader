@@ -3,10 +3,10 @@
 #include "FGJumpingStilts.h"
 
 AFGJumpingStilts::AFGJumpingStilts(){ }
-void AFGJumpingStilts::Equip(  AFGCharacterPlayer* character){ }
+void AFGJumpingStilts::Equip( AFGCharacterPlayer* character){ }
 void AFGJumpingStilts::UnEquip(){ }
-float AFGJumpingStilts::GetAdjustedMaxSpeed( float defaultMaxSpeed){ return float(); }
-float AFGJumpingStilts::GetAdjustedZJumpSpeed( float defaultJumpZ){ return float(); }
+float AFGJumpingStilts::GetAdjustedMaxSpeed(float defaultMaxSpeed){ return float(); }
+float AFGJumpingStilts::GetAdjustedZJumpSpeed(float defaultJumpZ){ return float(); }
 float AFGJumpingStilts::GetMaxFallSpeedBeforeDamage(){ return float(); }
 float AFGJumpingStilts::GetCurrentFallSpeed(){ return float(); }
 float AFGJumpingStilts::GetNormalizedFallSpeedUntilDamaged(){ return float(); }

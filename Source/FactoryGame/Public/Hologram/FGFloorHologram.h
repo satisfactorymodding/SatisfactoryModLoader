@@ -16,4 +16,7 @@ class FACTORYGAME_API AFGFloorHologram : public AFGFactoryBuildingHologram
 public:
 
 	//@save 2018-10-30 these have not been used for at least a year now, fix up floors or delete them which includes hologram, buildable, desc, recipe, meshes etc.
+
+public:
+	FORCEINLINE ~AFGFloorHologram() = default;
 };

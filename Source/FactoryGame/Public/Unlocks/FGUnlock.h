@@ -41,4 +41,7 @@ public:
 	*/
 	virtual class UWorld* GetWorld() const override;
 
+
+public:
+	FORCEINLINE ~UFGUnlock() = default;
 };

@@ -2,4 +2,4 @@
 
 #include "FGEnvQueryTest_ItemDescription.h"
 
-void UFGEnvQueryTest_ItemDescription::RunTest( FEnvQueryInstance& QueryInstance) const{ }
+void UFGEnvQueryTest_ItemDescription::RunTest(FEnvQueryInstance& QueryInstance) const{ }

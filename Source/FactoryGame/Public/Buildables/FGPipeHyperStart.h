@@ -40,6 +40,9 @@ private:
 	   Could be exploited if made too big, but it felt better and clearer feedback about slowdowns if it was a little above the usual min speed when doing initial tests.*/
 	UPROPERTY( EditDefaultsOnly )
 	float mInitialMinSpeedFactor = 1.4f;
+
+public:
+	FORCEINLINE ~AFGPipeHyperStart() = default;
 };
 
 

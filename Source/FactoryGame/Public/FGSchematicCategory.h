@@ -34,4 +34,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic Category" )
 	FSlateBrush mCategoryIcon;
 
+
+public:
+	FORCEINLINE ~UFGSchematicCategory() = default;
 };

@@ -68,4 +68,7 @@ private:
 	/** Simulation data for this fluid integrant. */
 	UPROPERTY( SaveGame )
 	FFluidBox mFluidBox;
+
+public:
+	FORCEINLINE ~AFGBuildableCheatFluidSpawner() = default;
 };

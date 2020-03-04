@@ -146,4 +146,7 @@ private:
 	/** Should we play a spawn effect? */
 	UPROPERTY( SaveGame )
 	bool mPlaySpawnEffect;
+
+public:
+	FORCEINLINE ~AFGItemPickup_Spawnable() = default;
 };

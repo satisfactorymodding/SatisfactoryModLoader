@@ -5,4 +5,4 @@
 AFGNewsFeedActor::AFGNewsFeedActor(){ }
 void AFGNewsFeedActor::BeginPlay(){ }
 FString AFGNewsFeedActor::GetNewsFeedURL(){ return FString(); }
-void AFGNewsFeedActor::OnResponseReceived( FHttpRequestPtr request, FHttpResponsePtr response, bool wasSuccessful){ }
+void AFGNewsFeedActor::OnResponseReceived(FHttpRequestPtr request, FHttpResponsePtr response, bool wasSuccessful){ }

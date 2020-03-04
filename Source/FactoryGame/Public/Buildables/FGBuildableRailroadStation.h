@@ -95,4 +95,7 @@ private:
 
 	/** Stores the distance from the perfect center of the platform that a docked loco has stopped. Used to position the claw arm when loading/unloading. */
 	float mDockedPositionOffset;
+
+public:
+	FORCEINLINE ~AFGBuildableRailroadStation() = default;
 };

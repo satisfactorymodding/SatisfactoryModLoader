@@ -40,4 +40,7 @@ private:
 	/** Spline data saved in a compact form for saving and replicating. All the vectors are in local space. */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	TArray< FSplinePointData > mSplineData;
+
+public:
+	FORCEINLINE ~AFGBuildableRailroadBridge() = default;
 };

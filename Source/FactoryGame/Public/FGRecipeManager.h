@@ -88,4 +88,7 @@ private:
 	/** All recipes that are available to the producers, i.e. build gun, workbench, manufacturers etc. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< UFGRecipe > > mAvailableRecipes;
+
+public:
+	FORCEINLINE ~AFGRecipeManager() = default;
 };

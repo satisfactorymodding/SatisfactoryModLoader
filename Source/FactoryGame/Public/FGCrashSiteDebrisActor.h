@@ -25,4 +25,7 @@ public:
 protected:
 	UPROPERTY( EditDefaultsOnly )
 	class UStaticMeshComponent* mMesh;
+
+public:
+	FORCEINLINE ~AFGCrashSiteDebrisActor() = default;
 };

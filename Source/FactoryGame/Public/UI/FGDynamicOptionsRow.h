@@ -49,4 +49,7 @@ private:
 
 	UPROPERTY()
 	UFGOptionsValueController* mValueControllerWidget;
+
+public:
+	FORCEINLINE ~UFGDynamicOptionsRow() = default;
 };

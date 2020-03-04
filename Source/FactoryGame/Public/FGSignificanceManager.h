@@ -32,6 +32,9 @@ struct FACTORYGAME_API FGainSignificanceData
 	GENERATED_BODY()
 	EFGSignificanceType SignificanceType; 
 	int32				GainSignificanceDistance;
+
+public:
+	FORCEINLINE ~FGainSignificanceData() = default;
 };
 
 /**
@@ -155,4 +158,7 @@ private:
 
 	/** Current value of sorting timer */
 	float mSortTimer;
+
+public:
+	FORCEINLINE ~UFGSignificanceManager() = default;
 };

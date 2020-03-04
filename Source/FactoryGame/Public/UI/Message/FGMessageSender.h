@@ -31,4 +31,7 @@ public:
 	/** Image of the sender */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
 	class UTexture2D* mTexture;
+
+public:
+	FORCEINLINE ~UFGMessageSender() = default;
 };

@@ -33,6 +33,9 @@ public: // MODDING EDIT?
 		SignText( "THIS IS A WALL SIGN" )
 	{}
 
+
+public:
+	FORCEINLINE ~FSignWallData() = default;
 };
 
 
@@ -92,4 +95,7 @@ private:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_SignData )
 	FSignWallData mSignData;
 	
+
+public:
+	FORCEINLINE ~AFGBuildableSignWall() = default;
 };

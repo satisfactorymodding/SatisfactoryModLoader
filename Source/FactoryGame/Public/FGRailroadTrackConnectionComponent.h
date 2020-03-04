@@ -166,4 +166,7 @@ private:
 	/** The signal associated with this connection, if any. */
 	UPROPERTY()
 	class AFGBuildableRailroadSignal* mSignal; //@todotrains
+
+public:
+	FORCEINLINE ~UFGRailroadTrackConnectionComponent() = default;
 };

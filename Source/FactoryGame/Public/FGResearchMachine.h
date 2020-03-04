@@ -80,4 +80,7 @@ private:
 	UPROPERTY( )
 	UCurveFloat* mItemScaleCurve;
 
+
+public:
+	FORCEINLINE ~UFGResearchMachine() = default;
 };

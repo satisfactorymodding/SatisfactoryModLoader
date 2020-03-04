@@ -73,4 +73,7 @@ protected:
 	/** Angle that target must be within in order to hit with attack ( 180 = full circle hit area ) */
 	UPROPERTY( EditDefaultsOnly )
 	float mAttackAngle;
+
+public:
+	FORCEINLINE ~UFGAttack() = default;
 };

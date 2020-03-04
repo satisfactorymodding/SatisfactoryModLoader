@@ -586,6 +586,9 @@ private:
 	/** Caching the shape component once we have gotten it */
 	UPROPERTY()
 	UShapeComponent* mCachedShapeComponent;
+
+public:
+	FORCEINLINE ~AFGBuildable() = default;
 };
 
 /** Definition for GetDefaultComponents. */

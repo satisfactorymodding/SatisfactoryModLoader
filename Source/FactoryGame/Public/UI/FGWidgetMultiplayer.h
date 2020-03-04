@@ -18,4 +18,7 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	FString mTitle;
+
+public:
+	FORCEINLINE ~UFGWidgetMultiplayer() = default;
 };

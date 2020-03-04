@@ -3,7 +3,7 @@
 #include "FGAudioVolumeSubsystem.h"
 
 AFGAudioVolumeSubsystem::AFGAudioVolumeSubsystem(){ }
-void AFGAudioVolumeSubsystem::Tick( float dt){ }
-bool AFGAudioVolumeSubsystem::ShouldUpdateWorld( UWorld* world) const{ return bool(); }
-void AFGAudioVolumeSubsystem::UpdateWorld( UWorld* world){ }
-float AFGAudioVolumeSubsystem::GetCloseDistance(  AFGAmbientVolume* ambientVolume) const{ return float(); }
+void AFGAudioVolumeSubsystem::Tick(float dt){ }
+bool AFGAudioVolumeSubsystem::ShouldUpdateWorld(UWorld* world) const{ return bool(); }
+void AFGAudioVolumeSubsystem::UpdateWorld(UWorld* world){ }
+float AFGAudioVolumeSubsystem::GetCloseDistance( AFGAmbientVolume* ambientVolume) const{ return float(); }

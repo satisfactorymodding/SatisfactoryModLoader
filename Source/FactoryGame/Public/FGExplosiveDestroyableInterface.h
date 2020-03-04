@@ -10,6 +10,9 @@ UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGExplosiveDestroyableInterface : public UInterface
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGExplosiveDestroyableInterface() = default;
 };
 
 /**

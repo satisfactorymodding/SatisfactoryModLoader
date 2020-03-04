@@ -2,11 +2,11 @@
 
 #include "FGMusicManager.h"
 
-UFGMusicManager* UFGMusicManager::CreateMusicManager(  UFGGameInstance* gameInstance){ return nullptr; }
-UFGMusicManager* UFGMusicManager::Get( UWorld* world){ return nullptr; }
-UFGMusicManager* UFGMusicManager::Get( UObject* worldContext){ return nullptr; }
+UFGMusicManager* UFGMusicManager::CreateMusicManager( UFGGameInstance* gameInstance){ return nullptr; }
+UFGMusicManager* UFGMusicManager::Get(UWorld* world){ return nullptr; }
+UFGMusicManager* UFGMusicManager::Get(UObject* worldContext){ return nullptr; }
 UWorld* UFGMusicManager::GetWorld() const{ return nullptr; }
-void UFGMusicManager::OnPlayerControllerBeginPlay(  AFGPlayerControllerBase* pc){ }
+void UFGMusicManager::OnPlayerControllerBeginPlay( AFGPlayerControllerBase* pc){ }
 UFGMusicManager::UFGMusicManager(){ }
 void UFGMusicManager::Update(){ }
-void UFGMusicManager::OnPostLoadMap( UWorld* loadedWorld){ }
+void UFGMusicManager::OnPostLoadMap(UWorld* loadedWorld){ }

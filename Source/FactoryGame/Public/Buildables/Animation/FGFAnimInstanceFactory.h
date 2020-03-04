@@ -129,6 +129,9 @@ public:
 	/** True if generator has power and is producing */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	uint8 mIsFuelGeneratorOnline : 1;
+
+public:
+	FORCEINLINE ~FAnimInstanceProxyFactory() = default;
 };
 
 /**
@@ -203,4 +206,7 @@ public:
 	/** Max value for RTPC range */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
 	float mSoundSpeedRTPCMaxValue;
+
+public:
+	FORCEINLINE ~UFGFAnimInstanceFactory() = default;
 };

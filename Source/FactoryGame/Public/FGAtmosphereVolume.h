@@ -97,6 +97,9 @@ struct FACTORYGAME_API FExponentialFogSettings
 	uint8 EnableFogMaxOpacity : 1;
 	uint8 EnableStartDistance : 1;
 	uint8 EnableFogCutoffDistance : 1;
+
+public:
+	FORCEINLINE ~FExponentialFogSettings() = default;
 };
 
 // @todo: Should be renamed to something else, as it does a lot more than give settings to fog
@@ -538,4 +541,7 @@ private:
 	float mViewMinInput;
 	float mViewMaxInput;
 #endif
+
+public:
+	FORCEINLINE ~AFGAtmosphereVolume() = default;
 };

@@ -46,4 +46,7 @@ protected:
 	/** Animation to play before jumping */
 	UPROPERTY( EditDefaultsOnly )
 	class UAnimMontage* mPreJumpMontage;
+
+public:
+	FORCEINLINE ~UFGAttackMeleeJump() = default;
 };

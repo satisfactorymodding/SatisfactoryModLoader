@@ -127,4 +127,7 @@ private:
 	/** Contains the loot if any */
 	UPROPERTY( SaveGame, Replicated )
 	class UFGInventoryComponent* mInventory;
+
+public:
+	FORCEINLINE ~AFGDropPod() = default;
 };

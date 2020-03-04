@@ -127,4 +127,7 @@ protected:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Compass" )
 	float mThresholdForCenteredResourceObjects;
+
+public:
+	FORCEINLINE ~UFGCompassWidget() = default;
 };

@@ -3,4 +3,4 @@
 #include "FGDowsingStick.h"
 
 AFGDowsingStick::AFGDowsingStick(){ }
-void AFGDowsingStick::Tick( float DeltaSeconds){ }
+void AFGDowsingStick::Tick(float DeltaSeconds){ }

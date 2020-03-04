@@ -208,4 +208,7 @@ protected:
 
 private:
 	class AFGReplicationDetailActor_Manufacturing* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_Manufacturing>( mReplicationDetailActor ); };
+
+public:
+	FORCEINLINE ~AFGBuildableManufacturer() = default;
 };

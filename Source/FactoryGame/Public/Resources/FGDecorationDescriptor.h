@@ -61,4 +61,7 @@ protected:
 	/** The actor to spawn on primary fire press if we want one, can be null */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	TSubclassOf< class AFGDecorationActor > mDecorationActorClass;
+
+public:
+	FORCEINLINE ~UFGDecorationDescriptor() = default;
 };

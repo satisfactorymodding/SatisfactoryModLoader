@@ -18,4 +18,7 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	// End AActor interface
+
+public:
+	FORCEINLINE ~AFGBuildableWindTurbine() = default;
 };

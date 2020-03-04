@@ -16,6 +16,9 @@ class FACTORYGAME_API UFGParachuteCameraShake : public UCameraShake
 	GENERATED_BODY()
 	public:
 		UFGParachuteCameraShake();
+
+public:
+	FORCEINLINE ~UFGParachuteCameraShake() = default;
 };
 
 /**
@@ -66,6 +69,9 @@ private:
 
 	/** A cached instance of the instigators movement */
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
+
+public:
+	FORCEINLINE ~AFGParachute() = default;
 };
 
 
@@ -99,4 +105,7 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_IsDeployed )
 	bool mIsDeployed;
 
+
+public:
+	FORCEINLINE ~AFGParachuteAttachment() = default;
 };

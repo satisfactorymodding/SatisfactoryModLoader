@@ -1,6 +1,7 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "FGInstancedSplineMeshComponent.h"
 #include "Engine/StaticMesh.h"
 #include "Array.h"
 #include "Components/SplineMeshComponent.h"
@@ -129,16 +130,18 @@ private:
 	UPROPERTY()
 	TArray< class USplineMeshComponent* > mCustomDepthSplineMeshComponents;
 
-	// MODDING EDIT
-	///** The meshes that make up the spline when instanced. */
-	//UPROPERTY()
-	//class UFGInstancedSplineMeshComponent* mSplineMeshInstances;
-	//
-	///** If we have enabled custom depth pass, this will be non-null */
-	//UPROPERTY()
-	//class UFGInstancedSplineMeshComponent* mCustomDepthSplineMeshInstances;
+	/** The meshes that make up the spline when instanced. */
+	UPROPERTY()
+	class UFGInstancedSplineMeshComponent* mSplineMeshInstances;
+	
+	/** If we have enabled custom depth pass, this will be non-null */
+	UPROPERTY()
+	class UFGInstancedSplineMeshComponent* mCustomDepthSplineMeshInstances;
 
 	/** The collisions that make up the spline. */
 	UPROPERTY()
 	TArray< class UShapeComponent* > mSplineCollisionComponents;
+
+public:
+	FORCEINLINE ~UFGSplineComponent() = default;
 };

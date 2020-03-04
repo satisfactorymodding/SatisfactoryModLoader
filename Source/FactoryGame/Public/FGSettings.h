@@ -13,4 +13,7 @@ UCLASS( Blueprintable, abstract, meta = (AutoJson = true) )
 class FACTORYGAME_API UFGSettings : public UObject
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGSettings() = default;
 };

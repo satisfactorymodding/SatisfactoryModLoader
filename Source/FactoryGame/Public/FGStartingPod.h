@@ -60,4 +60,7 @@ protected:
 	/** Flag for whether the actor is being dismantled */
 	int32 mIsDismantled : 1;
 
+
+public:
+	FORCEINLINE ~AFGStartingPod() = default;
 };

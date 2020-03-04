@@ -131,4 +131,7 @@ protected:
 	/** integer used for animation states */
 	UPROPERTY( ReplicatedUsing = OnRep_OnAnimationStateUpdated )
 	int32 mAnimationState;
+
+public:
+	FORCEINLINE ~AFGEquipmentAttachment() = default;
 };

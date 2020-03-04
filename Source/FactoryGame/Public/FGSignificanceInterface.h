@@ -11,6 +11,9 @@ UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGSignificanceInterface : public UInterface
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGSignificanceInterface() = default;
 };
 
 /**

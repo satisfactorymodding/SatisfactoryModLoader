@@ -35,4 +35,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Build Category" )
 	FSlateBrush mCategoryIcon;
 	
+
+public:
+	FORCEINLINE ~UFGBuildCategory() = default;
 };

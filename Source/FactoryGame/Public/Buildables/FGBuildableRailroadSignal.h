@@ -16,4 +16,7 @@ class FACTORYGAME_API AFGBuildableRailroadSignal : public AFGBuildable
 	GENERATED_BODY()
 public:
 	//@todo Implement
+
+public:
+	FORCEINLINE ~AFGBuildableRailroadSignal() = default;
 };

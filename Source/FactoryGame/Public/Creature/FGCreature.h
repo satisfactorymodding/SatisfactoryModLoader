@@ -40,6 +40,9 @@ struct FACTORYGAME_API FMoveSpeedPair
 
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
 	float Speed;
+
+public:
+	FORCEINLINE ~FMoveSpeedPair() = default;
 };
 
 /**
@@ -277,4 +280,7 @@ private:
 	/** Reference to the spawner that handles this creature */
 	UPROPERTY()
 	class AFGCreatureSpawner* mOwningSpawner;
+
+public:
+	FORCEINLINE ~AFGCreature() = default;
 };

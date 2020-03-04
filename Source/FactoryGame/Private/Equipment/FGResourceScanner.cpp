@@ -4,10 +4,10 @@
 
 AFGResourceScanner::AFGResourceScanner(){ }
 void AFGResourceScanner::BeginPlay(){ }
-void AFGResourceScanner::Tick( float dt){ }
+void AFGResourceScanner::Tick(float dt){ }
 bool AFGResourceScanner::ShouldSaveState() const{ return bool(); }
 TArray< TSubclassOf< UFGResourceDescriptor > > AFGResourceScanner::GetScannableResources() const{ return TArray<TSubclassOf<UFGResourceDescriptor> >(); }
-void AFGResourceScanner::SetResourceDescriptorToScanFor( TSubclassOf< UFGResourceDescriptor > inClass){ }
+void AFGResourceScanner::SetResourceDescriptorToScanFor(TSubclassOf< UFGResourceDescriptor > inClass){ }
 void AFGResourceScanner::UnEquip(){ }
 void AFGResourceScanner::Server_ScanReleased_Implementation(){ }
 bool AFGResourceScanner::Server_ScanReleased_Validate(){ return bool(); }
@@ -16,5 +16,5 @@ void AFGResourceScanner::AddEquipmentActionBindings(){ }
 void AFGResourceScanner::OnScanPressed(){ }
 void AFGResourceScanner::OnScanReleased(){ }
 void AFGResourceScanner::GenerateNodeClusters(){ }
-void AFGResourceScanner::GetNodesWithinDistance( AFGResourceNode* node, float dist, TArray< AFGResourceNode* >& clusterNodes, TArray< AFGResourceNode* >& remainingNodes){ }
+void AFGResourceScanner::GetNodesWithinDistance(AFGResourceNode* node, float dist, TArray< AFGResourceNode* >& clusterNodes, TArray< AFGResourceNode* >& remainingNodes){ }
 void AFGResourceScanner::OnCheatBoardOpened(){ }

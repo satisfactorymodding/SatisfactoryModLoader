@@ -52,4 +52,7 @@ private:
 	/** The snapped vehicle. */
 	UPROPERTY()
 	class AFGRailroadVehicle* mSnappedVehicle;
+
+public:
+	FORCEINLINE ~AFGRailroadVehicleHologram() = default;
 };

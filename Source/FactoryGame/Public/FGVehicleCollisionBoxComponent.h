@@ -49,4 +49,7 @@ public:
 
 private:
 	class AFGWheeledVehicle* OwnerVehicle;
+
+public:
+	FORCEINLINE ~UFGVehicleCollisionBoxComponent() = default;
 };

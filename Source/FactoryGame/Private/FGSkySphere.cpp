@@ -3,9 +3,12 @@
 #include "FGSkySphere.h"
 
 #if WITH_EDITOR
-void AFGSkySphere::PostEditChangeChainProperty(  FPropertyChangedChainEvent& propertyChangedEvent){ }
+void AFGSkySphere::PostEditChangeChainProperty( FPropertyChangedChainEvent& propertyChangedEvent){ }
 #endif 
 #if WITH_EDITOR
+float AFGSkySphere::GetViewMinInput() const{ return float(); }
+float AFGSkySphere::GetViewMaxInput() const{ return float(); }
+void AFGSkySphere::SetViewRange(float min, float max){ }
 #endif 
 #if WITH_EDITOR
 void AFGSkySphere::SetupPreviewDelegate(){ }
@@ -17,5 +20,6 @@ void AFGSkySphere::PostActorCreated(){ }
 void AFGSkySphere::PostLoad(){ Super::PostLoad(); }
 void AFGSkySphere::BeginDestroy(){ Super::BeginDestroy(); }
 void AFGSkySphere::UpdatePreview_Implementation(){ }
-float AFGSkySphere::GetFloatCurveValue( const FRuntimeFloatCurve& curve, float time){ return float(); }
-void AFGSkySphere::GetSkySphereSettings( float atTime, FSkySphereSettings& out_settings) const{ }
+FLinearColor AFGSkySphere::GetColorCurveValue(const FRuntimeCurveLinearColor& curve, float time){ return FLinearColor(); }
+float AFGSkySphere::GetFloatCurveValue(const FRuntimeFloatCurve& curve, float time){ return float(); }
+void AFGSkySphere::GetSkySphereSettings(float atTime, FSkySphereSettings& out_settings) const{ }

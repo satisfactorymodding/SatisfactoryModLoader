@@ -4,8 +4,8 @@
 
 AFGEquipmentChild::AFGEquipmentChild(){ }
 void AFGEquipmentChild::BeginPlay(){ }
-void AFGEquipmentChild::Equip(  AFGCharacterPlayer* character,  AFGEquipment* parentEquipment){ }
+void AFGEquipmentChild::Equip( AFGCharacterPlayer* character,  AFGEquipment* parentEquipment){ }
 void AFGEquipmentChild::UnEquip(){ }
-void AFGEquipmentChild::OnEquip_Implementation(  AFGCharacterPlayer* character){ }
+void AFGEquipmentChild::OnEquip_Implementation( AFGCharacterPlayer* character){ }
 void AFGEquipmentChild::OnUnEquip_Implementation(){ }
 FTransform AFGEquipmentChild::GetAttachSocketTransform(){ return FTransform(); }

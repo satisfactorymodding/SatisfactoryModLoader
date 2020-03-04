@@ -66,4 +66,7 @@ protected:
 	/** The node we want to pick from */
 	UPROPERTY( Replicated )
 	class AFGResourceNode* mCachedResouceNode;
+
+public:
+	FORCEINLINE ~AFGResourceMiner() = default;
 };

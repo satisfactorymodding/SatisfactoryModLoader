@@ -71,4 +71,7 @@ struct FACTORYGAME_API FFactoryGameCustomVersion
 
 private:
 	FFactoryGameCustomVersion() {}
+
+public:
+	FORCEINLINE ~FFactoryGameCustomVersion() = default;
 };

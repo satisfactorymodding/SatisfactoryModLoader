@@ -23,4 +23,7 @@ public:
 	virtual void LostFocus( FViewport* Viewport ) override;
 	virtual void ReceivedFocus( FViewport* Viewport ) override;
 	//~ End FViewportClient Interface.
+
+public:
+	FORCEINLINE ~UFGGameViewportClient() = default;
 };

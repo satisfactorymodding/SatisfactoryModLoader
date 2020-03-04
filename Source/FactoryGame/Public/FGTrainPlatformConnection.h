@@ -100,4 +100,7 @@ private:
 	UPROPERTY( SaveGame )
 	UFGTrainPlatformConnection* mConnectedTo;
 
+
+public:
+	FORCEINLINE ~UFGTrainPlatformConnection() = default;
 };

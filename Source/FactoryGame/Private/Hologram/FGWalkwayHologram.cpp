@@ -3,5 +3,5 @@
 #include "FGWalkwayHologram.h"
 
 AFGWalkwayHologram::AFGWalkwayHologram(){ }
-bool AFGWalkwayHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
+bool AFGWalkwayHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGWalkwayHologram::BeginPlay(){ }

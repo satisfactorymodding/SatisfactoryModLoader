@@ -25,4 +25,7 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+public:
+	FORCEINLINE ~AFGFluffActor() = default;
 };

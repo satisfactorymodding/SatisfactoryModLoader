@@ -24,4 +24,7 @@ public:
 public:	
 	UPROPERTY( BlueprintReadOnly, Category = "Spline" )
 	class USplineComponent* mSpline;
+
+public:
+	FORCEINLINE ~AFGSplinePath() = default;
 };

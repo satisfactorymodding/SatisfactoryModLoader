@@ -126,4 +126,7 @@ protected:
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SignData )
 	FSignData mSignData;
 
+
+public:
+	FORCEINLINE ~AFGBuildableStandaloneSign() = default;
 };

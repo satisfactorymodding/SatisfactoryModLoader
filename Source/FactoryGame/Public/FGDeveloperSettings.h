@@ -40,4 +40,7 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Schematic category classes for migrating from old enum to new object based type" )
 	TMap< ESchematicCategory, TSubclassOf< class UFGSchematicCategory > > mSchematicCategoryMigrationData;
+
+public:
+	FORCEINLINE ~UFGDeveloperSettings() = default;
 };

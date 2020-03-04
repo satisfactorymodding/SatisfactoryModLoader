@@ -89,4 +89,7 @@ protected:
 	/** Origin Offset when performing minimum depth traces. Assigned from the buildable */
 	FVector mDepthTraceOriginOffset;
 
+
+public:
+	FORCEINLINE ~AFGResourceExtractorHologram() = default;
 };

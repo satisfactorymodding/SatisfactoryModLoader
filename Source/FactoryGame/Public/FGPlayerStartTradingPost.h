@@ -15,4 +15,7 @@ public:
 	AFGPlayerStartTradingPost( const FObjectInitializer& ObjectInitializer );
 public:
 	static const FName STATIC_PLAYER_START_TAG;
+
+public:
+	FORCEINLINE ~AFGPlayerStartTradingPost() = default;
 };

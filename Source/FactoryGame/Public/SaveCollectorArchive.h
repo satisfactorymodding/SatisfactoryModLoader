@@ -18,4 +18,7 @@ public:
 	
 	/** Generates objects to the member that was passed in when class was setup */
 	void GenerateSaveObjects( const TArray<class UObject*>& rootSet );
+
+public:
+	FORCEINLINE ~FSaveCollectorArchive() = default;
 };

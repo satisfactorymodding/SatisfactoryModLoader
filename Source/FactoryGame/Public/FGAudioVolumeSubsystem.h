@@ -24,4 +24,7 @@ protected:
 
 	/** Get the distance where we assume that we are "close" to the volume */
 	float GetCloseDistance( class AFGAmbientVolume* ambientVolume ) const;
+
+public:
+	FORCEINLINE ~AFGAudioVolumeSubsystem() = default;
 };

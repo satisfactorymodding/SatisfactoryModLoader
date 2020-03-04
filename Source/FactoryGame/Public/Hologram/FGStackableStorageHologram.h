@@ -33,4 +33,7 @@ private:
 
 private:
 	float mStackingHeight;
+
+public:
+	FORCEINLINE ~AFGStackableStorageHologram() = default;
 };

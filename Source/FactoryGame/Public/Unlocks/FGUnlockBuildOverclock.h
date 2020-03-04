@@ -20,4 +20,7 @@ public:
 	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 
+
+public:
+	FORCEINLINE ~UFGUnlockBuildOverclock() = default;
 };

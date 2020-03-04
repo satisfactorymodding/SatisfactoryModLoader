@@ -36,66 +36,6 @@ void SAlpakaWidget::Construct(const FArguments& InArgs)
 		[
 			SNew(SVerticalBox)
 			+	SVerticalBox::Slot()
-				.AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+	SHorizontalBox::Slot()
-						.Padding(3.0f)
-						.AutoWidth()
-						.VAlign(VAlign_Center)
-						.HAlign(HAlign_Fill)
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString("Satisfactory Game Folder"))
-						]
-					+	SHorizontalBox::Slot()
-						.Padding(3.0f)
-						.FillWidth(1.0f)
-						.VAlign(VAlign_Center)
-						.HAlign(HAlign_Fill)
-						[
-							SNew(SEditableTextBox)
-							.Text_Lambda([this]() { return Settings->SatisfactoryGamePath; })
-							.OnTextChanged_Lambda([this](const FText& InText) { Settings->SatisfactoryGamePath = InText; Settings->SaveConfig(); })
-						]
-					+	SHorizontalBox::Slot()
-						.Padding(3.0f)
-						.AutoWidth()
-						.VAlign(VAlign_Center)
-						.HAlign(HAlign_Fill)
-						[
-							SNew(SButton)
-							.VAlign(VAlign_Center)
-							.HAlign(HAlign_Center)
-							.Text(FText::FromString("Choose folder"))
-							.OnClicked_Raw(this, &SAlpakaWidget::ChooseSatisfactoryFolder)
-						]
-				]	
-			+	SVerticalBox::Slot()
-				.AutoHeight()
-				[
-					SNew(SHorizontalBox)
-					+	SHorizontalBox::Slot()
-						.Padding(3.0f)
-						.AutoWidth()
-						.VAlign(VAlign_Center)
-						.HAlign(HAlign_Fill)
-						[
-							SNew(STextBlock)
-							.Text(FText::FromString("Start game after paking"))
-						]
-					+	SHorizontalBox::Slot()
-						.Padding(3.0f)
-						.FillWidth(1.0f)
-						.VAlign(VAlign_Center)
-						.HAlign(HAlign_Fill)
-						[
-							SNew(SCheckBox)
-							.IsChecked_Lambda([this]() {return Settings->StartGame ? ECheckBoxState::Checked : ECheckBoxState::Unchecked; })
-							.OnCheckStateChanged_Lambda([this](ECheckBoxState state) { Settings->StartGame = (state == ECheckBoxState::Checked); Settings->SaveConfig(); })
-						]
-				]	
-			+	SVerticalBox::Slot()
 				.FillHeight(1.0f)
 				[
 					SNew(SScrollBox)
@@ -146,46 +86,53 @@ FReply SAlpakaWidget::Pakit()
 	return FReply::Handled();
 }
 
-FReply SAlpakaWidget::ChooseSatisfactoryFolder()
-{
-	FString satisfactoryPath;
-	if (OpenDirectoryDialog(FString("Choose Satisfactory install folder"), Settings->SatisfactoryGamePath.ToString(), satisfactoryPath))
-	{
-		Settings->SatisfactoryGamePath = FText::FromString(satisfactoryPath);
-		Settings->SaveConfig();
-	}
-	return FReply::Handled();
+FString GetAutomationLogDirV1() {
+	return FPaths::ConvertRelativePathToFull(FPaths::EngineDir() / TEXT("Programs/AutomationTool/Saved/Logs"));
 }
 
-bool SAlpakaWidget::OpenFileDialog(const FString& DialogTitle, const FString& DefaultPath, const FString& FileTypes, TArray<FString>& OutFileNames)
-{
-	TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
-	const void* ParentWindowHandle = (ParentWindow.IsValid() && ParentWindow->GetNativeWindow().IsValid())
-		? ParentWindow->GetNativeWindow()->GetOSWindowHandle()
-		: nullptr;
-	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
-	if (DesktopPlatform)
-	{
-		//Opening the file picker!
-		uint32 SelectionFlag = 0; //A value of 0 represents single file selection while a value of 1 represents multiple file selection
-		return DesktopPlatform->OpenFileDialog(ParentWindowHandle, DialogTitle, DefaultPath, FString(""), FileTypes, SelectionFlag, OutFileNames);
-	}
-	return false;
+FString GetAutomationLogDirV2() {
+	FString UEPathPlus = FPaths::ConvertRelativePathToFull(FPaths::EngineDir() / TEXT(".."));
+	UEPathPlus = UEPathPlus.Replace(TEXT(":"), TEXT(""));
+	UEPathPlus = UEPathPlus.Replace(TEXT("/"), TEXT("+"));
+	UEPathPlus = UEPathPlus.Replace(TEXT(" "), TEXT("+"));
+	return FString(FPlatformProcess::UserSettingsDir()) / TEXT("..") / TEXT("Roaming") / TEXT("Unreal Engine") / TEXT("AutomationTool") / TEXT("Logs") / UEPathPlus;
 }
 
-bool SAlpakaWidget::OpenDirectoryDialog(const FString& DialogTitle, const FString& DefaultPath, FString& OutFolderName)
-{
-	TSharedPtr<SWindow> ParentWindow = FSlateApplication::Get().FindWidgetWindow(AsShared());
-	const void* ParentWindowHandle = (ParentWindow.IsValid() && ParentWindow->GetNativeWindow().IsValid())
-		? ParentWindow->GetNativeWindow()->GetOSWindowHandle()
-		: nullptr;
-	IDesktopPlatform* DesktopPlatform = FDesktopPlatformModule::Get();
-	if (DesktopPlatform)
-	{
-		//Opening the file picker!
-		return DesktopPlatform->OpenDirectoryDialog(ParentWindowHandle, DialogTitle, DefaultPath, OutFolderName);
+FString GetPakListPathV1(FString moduleName) {
+	return GetAutomationLogDirV1() / FString::Printf(TEXT("PakList_%s-WindowsNoEditor.txt"), *moduleName);
+}
+
+FString GetPakListPathV2(FString moduleName) {
+	return GetAutomationLogDirV2() / FString::Printf(TEXT("PakList_%s-WindowsNoEditor.txt"), *moduleName);
+}
+
+int FindUsedAutomationLogDir() {
+	FString v1LogPath = GetPakListPathV1("FactoryGame");
+	FString v2LogPath = GetPakListPathV2("FactoryGame");
+
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+	if (PlatformFile.FileExists(*v1LogPath))
+		return 0;
+	else if (PlatformFile.FileExists(*v2LogPath))
+		return 1;
+	
+	UE_LOG(LogTemp, Error, TEXT("No PakList was created in either AutomationTool log directory"));
+	return -1;
+}
+
+void ClearAutomationLogForVersionCheck() {
+	FString v1LogPath = GetPakListPathV1("FactoryGame");
+	FString v2LogPath = GetPakListPathV2("FactoryGame");
+
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+	if (PlatformFile.FileExists(*v1LogPath)) {
+		PlatformFile.DeleteFile(*v1LogPath);
 	}
-	return false;
+	if (PlatformFile.FileExists(*v2LogPath)) {
+		PlatformFile.DeleteFile(*v2LogPath);
+	}	
 }
 
 void SAlpakaWidget::CookDone(FString result, double runtime)
@@ -195,7 +142,19 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 		// Cooking was successful
 		FString CmdExe = TEXT("cmd.exe");
 		FString UPakPath = FPaths::ConvertRelativePathToFull(FPaths::EngineDir() / TEXT("Binaries/Win64/UnrealPak.exe"));
-		FString PakListPath = FPaths::ConvertRelativePathToFull(FPaths::EngineDir() / TEXT("Programs/AutomationTool/Saved/Logs") / FString::Printf(TEXT("PakList_%s-WindowsNoEditor.txt"), FApp::GetProjectName()));
+		FString PakListPath;
+
+		int automationLogVersion = FindUsedAutomationLogDir();
+		if (automationLogVersion == 0) {
+			PakListPath = GetPakListPathV1("FactoryGame");
+		}
+		else if (automationLogVersion == 1) {
+			PakListPath = GetPakListPathV2("FactoryGame");
+		}
+		else
+			return;
+
+		UE_LOG(LogTemp, Log, TEXT("%s"), *PakListPath);
 
 		// Get list of all cooked assets
 		TArray<FString> FilesToPak;
@@ -206,7 +165,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			// Choose from the cooked list only the current mod assets
 			TArray<FString> ModFilesToPak;
 			FString contentFolder = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / FString::Printf(TEXT("Saved/Cooked/WindowsNoEditor/%s/Content"), FApp::GetProjectName()));
-			FString modCookFolder = (contentFolder / FString::Printf(TEXT("FactoryGame/%s"), *mod.Name)).Replace(L"/", L"\\");
+			FString modCookFolder = (contentFolder / FString::Printf(TEXT("%s"), *mod.Name)).Replace(L"/", L"\\");
 			UE_LOG(LogTemp, Log, TEXT("%s"), *modCookFolder);
 			for (FString file : FilesToPak)
 			{
@@ -228,7 +187,17 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			FString pakName = FString::Printf(TEXT("%s%s"), *mod.Name, mod.OverwritePaths.Num() == 0 ? TEXT("") : TEXT("_p"));
 
 			// Save it for UnrealPak.exe
-			FString ModPakListPath = FPaths::ConvertRelativePathToFull(FPaths::EngineDir() / TEXT("Programs/AutomationTool/Saved/Logs") / FString::Printf(TEXT("PakList_%s-WindowsNoEditor.txt"), *pakName));
+			FString ModPakListPath;
+
+			if (automationLogVersion == 0) {
+				ModPakListPath = GetPakListPathV1(pakName);
+			}
+			else if (automationLogVersion == 1) {
+				ModPakListPath = GetPakListPathV2(pakName);
+			}
+			else
+				return;
+
 			FFileHelper::SaveStringArrayToFile(ModFilesToPak, *ModPakListPath);
 			
 			// Setup the pak file path
@@ -247,18 +216,17 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			UE_LOG(LogTemp, Log, TEXT("Packing %s"), *mod.Name);
 			while (PakingProcess->Update())
 				FPlatformProcess::Sleep(0.03);
-
-			// Copy to Satisfactory Content/Paks folder
-			PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.ToString() / FString::Printf(L"FactoryGame/Content/Paks/%s.pak", *pakName)), *pakFilePath);
-
-			// Copy sig
-			PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.ToString() / FString::Printf(L"FactoryGame/Content/Paks/%s.sig", *pakName)), *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.ToString() / L"FactoryGame/Content/Paks/FactoryGame-WindowsNoEditor.sig"));
-
 			UE_LOG(LogTemp, Log, TEXT("Packed %s"), *mod.Name);
+
+			if (Settings->CopyModsToGame) {
+				// Copy to Satisfactory Content/Paks folder
+				PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("mods") / FString::Printf(L"%s.pak", *pakName)), *pakFilePath);
+				UE_LOG(LogTemp, Log, TEXT("Copied %s to game dir"), *mod.Name);
+			}
 		}
 		if (Settings->StartGame)
 		{
-			FString gamePath = FString::Printf(TEXT("\"%s\""), *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.ToString() / L"FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe").Replace(L"/", L"\\"));
+			FString gamePath = FString::Printf(TEXT("\"%s\""), *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / L"FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe").Replace(L"/", L"\\"));
 			int pathLength = gamePath.Len();
 			char SatisfactoryPath[WINDOWS_MAX_PATH + 5];
 			for (int i = 0; i < pathLength; i++)
@@ -301,6 +269,7 @@ void SAlpakaWidget::CookContent()
 {
 	// Create WwiseAudio folder if it doesn't exist
 	VerifyOrCreateDirectory(FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()) / TEXT("WwiseAudio"));
+	ClearAutomationLogForVersionCheck();
 
 	// Run the cook
 	FString ProjectPath = FPaths::IsProjectFilePathSet() ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath()) : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");

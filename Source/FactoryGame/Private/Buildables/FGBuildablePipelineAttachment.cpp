@@ -4,7 +4,7 @@
 
 AFGBuildablePipelineAttachment::AFGBuildablePipelineAttachment(){ }
 void AFGBuildablePipelineAttachment::BeginPlay(){ }
-void AFGBuildablePipelineAttachment::EndPlay( const EEndPlayReason::Type endPlayReason){ }
+void AFGBuildablePipelineAttachment::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipelineAttachment::Dismantle_Implementation(){ }
 FFluidBox* AFGBuildablePipelineAttachment::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipelineAttachment::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }

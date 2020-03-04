@@ -2,7 +2,7 @@
 
 #include "FGSignTextWidget.h"
 
-void UFGSignTextWidget::InitSignElement( const FSignElementWidgetData& elementWidgetData){ }
-void UFGSignTextWidget::SetElementData(  UFGSignElementData* data){ }
-void UFGSignTextWidget::RefreshElement(bool isInitialization ){ }
+void UFGSignTextWidget::InitSignElement(const FSignElementWidgetData& elementWidgetData){ }
+void UFGSignTextWidget::SetElementData( UFGSignElementData* data){ }
+void UFGSignTextWidget::RefreshElement(bool isInitialization){ }
 UTextBlock* UFGSignTextWidget::GetTextBlock(){ return nullptr; }

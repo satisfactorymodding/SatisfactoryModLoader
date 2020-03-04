@@ -148,6 +148,9 @@ protected:
 	/** Light-weight connected indication for clients. */
 	UPROPERTY( Replicated )
 	bool mHasConnectedComponent = false;
+
+public:
+	FORCEINLINE ~UFGPipeConnectionComponentBase() = default;
 };
 
 
@@ -299,4 +302,7 @@ private:
 
 	/** Cached Owner. Valid if owner is a pipeline. Null otherwise (Not a UPROPERTY because this component must have an owner and null is okay )*/
 	class AFGBuildablePipeline* mCachedPipelineOwner;
+
+public:
+	FORCEINLINE ~UFGPipeConnectionComponent() = default;
 };

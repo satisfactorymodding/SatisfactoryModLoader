@@ -4,6 +4,6 @@
 
 AFGCrashSiteDebrisActor::AFGCrashSiteDebrisActor(){ }
 void AFGCrashSiteDebrisActor::BeginPlay(){ }
-void AFGCrashSiteDebrisActor::EndPlay( const EEndPlayReason::Type endPlayReason){ }
+void AFGCrashSiteDebrisActor::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGCrashSiteDebrisActor::GainedSignificance_Implementation(){ }
 void AFGCrashSiteDebrisActor::LostSignificance_Implementation(){ }

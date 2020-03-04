@@ -39,6 +39,9 @@ struct FACTORYGAME_API FConnectionAlwaysRelevant_NodePair
 
 	UPROPERTY()
 	UReplicationGraphNode_AlwaysRelevant_ForConnection* Node = nullptr;
+
+public:
+	FORCEINLINE ~FConnectionAlwaysRelevant_NodePair() = default;
 };
 
 class UReplicationGraphNode_GridSpatialization2D;
@@ -158,6 +161,9 @@ private:
 	void LogCurrentActorDependencyList( FGlobalActorReplicationInfo& actorInfo, FString& logMarker );
 
 	UReplicationGraphNode_AlwaysRelevant_ForConnection* GetAlwaysRelevantNodeForConnection( UNetConnection* Connection );
+
+public:
+	FORCEINLINE ~UFGReplicationGraph() = default;
 };
 
 UCLASS()
@@ -176,6 +182,9 @@ public:
 
 private:
 	FActorRepListRefView mAllReplicationActors;
+
+public:
+	FORCEINLINE ~UFGReplicationGraphNode_ConditionallyAlwaysRelevant() = default;
 };
 
 UCLASS()
@@ -198,4 +207,7 @@ protected:
 	TArray<FName, TInlineAllocator<64>> mAlwaysRelevantStremingLevels;
 
 	bool mInitializedPlayerState = false;
+
+public:
+	FORCEINLINE ~UFGReplicationGraphNode_AlwaysRelevant_ForConnection() = default;
 };

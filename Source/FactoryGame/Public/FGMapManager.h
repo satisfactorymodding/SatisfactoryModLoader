@@ -30,6 +30,9 @@ struct FACTORYGAME_API FFogOfWarQueuePair
 	class AFGPlayerController* playerController;
 
 	int32 currentPackageIndex;
+
+public:
+	FORCEINLINE ~FFogOfWarQueuePair() = default;
 };
 
 /**
@@ -150,4 +153,7 @@ private:
 	/** The pixel data array contains 4 uint8 per pixel. We only need to change 1 during runtime and the red channel is used in the material.
 	So we stick with an offset of 2 for now. */
 	const static int32 PIXEL_OFFSET;
+
+public:
+	FORCEINLINE ~AFGMapManager() = default;
 };

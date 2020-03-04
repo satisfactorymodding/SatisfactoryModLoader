@@ -143,4 +143,7 @@ private:
 	UPROPERTY( Savegame, Replicated )
 	int32 mNumTotalArmEquipmentSlots;
 
+
+public:
+	FORCEINLINE ~AFGUnlockSubsystem() = default;
 };

@@ -5,4 +5,4 @@
 AFGBuildEffectSpline::AFGBuildEffectSpline(){ }
 void AFGBuildEffectSpline::BeginPlay(){ }
 void AFGBuildEffectSpline::Tick(float DeltaTime){ }
-void AFGBuildEffectSpline::SetupAttachment(  AFGPipeBuilderTrail* inAttachment){ }
+void AFGBuildEffectSpline::SetupAttachment( AFGPipeBuilderTrail* inAttachment){ }

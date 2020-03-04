@@ -8,8 +8,8 @@ void AFGManta::LostSignificance_Implementation(){ }
 void AFGManta::GainedSignificance_Native(){ }
 void AFGManta::LostSignificance_Native(){ }
 float AFGManta::GetSignificanceRange(){ return float(); }
-void AFGManta::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGManta::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGManta::BeginPlay(){ }
-void AFGManta::EndPlay( const EEndPlayReason::Type endPlayReason){ }
+void AFGManta::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGManta::UpdateManta(){ }
 void AFGManta::Tick(float DeltaTime){ }

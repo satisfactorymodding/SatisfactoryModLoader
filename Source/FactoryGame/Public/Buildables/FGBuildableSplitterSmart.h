@@ -36,6 +36,9 @@ public:
 	/** Which output to send this to. */
 	UPROPERTY( SaveGame, BlueprintReadWrite, EditDefaultsOnly, Category = "Sort Rule" )
 	int32 OutputIndex;
+
+public:
+	FORCEINLINE ~FSplitterSortRule() = default;
 };
 
 /**
@@ -118,4 +121,7 @@ private:
 	UPROPERTY( SaveGame )
 	int32 mLastOutputIndex;
 
+
+public:
+	FORCEINLINE ~AFGBuildableSplitterSmart() = default;
 };

@@ -125,4 +125,7 @@ private:
 	bool mIsProducing;
 
 
+
+public:
+	FORCEINLINE ~AFGPortableMiner() = default;
 };

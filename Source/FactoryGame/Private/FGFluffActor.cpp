@@ -4,5 +4,5 @@
 
 AFGFluffActor::AFGFluffActor(){ }
 void AFGFluffActor::BeginPlay(){ }
-void AFGFluffActor::EndPlay( const EEndPlayReason::Type EndPlayReason){ }
+void AFGFluffActor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGFluffActor::Tick(float DeltaTime){ }

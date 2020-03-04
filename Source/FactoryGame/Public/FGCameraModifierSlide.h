@@ -32,4 +32,7 @@ public:
 	/** The min rotation in pitch  */
 	UPROPERTY( EditDefaultsOnly, Category = "Limited Look" )
 	float mMinPitch;
+
+public:
+	FORCEINLINE ~UFGCameraModifierSlide() = default;
 };

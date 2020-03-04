@@ -2,4 +2,4 @@
 
 #include "FGNavArea_Water.h"
 
-UFGNavArea_Water::UFGNavArea_Water( const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGNavArea_Water::UFGNavArea_Water(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }

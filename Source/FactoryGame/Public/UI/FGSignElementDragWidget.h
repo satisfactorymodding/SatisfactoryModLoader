@@ -56,6 +56,9 @@ protected:
 	/*					End Widget Bindings
 	/************************************************************************/
 
+
+public:
+	FORCEINLINE ~UFGSignElementDragWidget() = default;
 };
 
 void UFGSignElementDragWidget::SetElementReference( UFGSignElementWidget* elementWidget )

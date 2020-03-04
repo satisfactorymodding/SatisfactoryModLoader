@@ -210,4 +210,7 @@ protected:
 
 	/******** End Pipe Flow Output Params ********/
 
+
+public:
+	FORCEINLINE ~AFGBuildableResourceExtractor() = default;
 };

@@ -41,4 +41,7 @@ protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
 protected:
+
+public:
+	FORCEINLINE ~AFGConsumableEquipment() = default;
 };

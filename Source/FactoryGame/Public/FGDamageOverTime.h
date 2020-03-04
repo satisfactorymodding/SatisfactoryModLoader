@@ -74,4 +74,7 @@ protected:
 	/** Only deal damage to subclasses of these actor classes */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	TArray< TSubclassOf< class AActor > > mActorFilter;
+
+public:
+	FORCEINLINE ~UFGDamageOverTime() = default;
 };

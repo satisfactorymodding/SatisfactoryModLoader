@@ -14,6 +14,9 @@ UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGPopupInstigatorInterface : public UInterface
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGPopupInstigatorInterface() = default;
 };
 
 /**

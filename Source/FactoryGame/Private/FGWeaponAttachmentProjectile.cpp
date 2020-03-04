@@ -2,4 +2,4 @@
 
 #include "FGWeaponAttachmentProjectile.h"
 
-void AFGWeaponAttachmentProjectile::PlayerFired( FVector flashLocation){ }
+void AFGWeaponAttachmentProjectile::PlayerFired(FVector flashLocation){ }

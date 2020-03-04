@@ -76,4 +76,7 @@ protected:
 
 	bool mDidStartExpanding;
 	
+
+public:
+	FORCEINLINE ~AFGCrabHatcher() = default;
 };

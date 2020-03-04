@@ -2,24 +2,24 @@
 
 #include "FGLocomotiveMovementComponent.h"
 
-void UFGLocomotiveMovementComponent::TickComponent( float dt, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction){ }
+void UFGLocomotiveMovementComponent::TickComponent(float dt, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction){ }
 void UFGLocomotiveMovementComponent::GetLifetimeReplicatedProps( TArray<class FLifetimeProperty,  FDefaultAllocator> & OutReplicatedProps) const{ }
 void UFGLocomotiveMovementComponent::ComputeConstants(){ }
-void UFGLocomotiveMovementComponent::TickSlaveInput( float dt, const UFGLocomotiveMovementComponent* master){ }
-void UFGLocomotiveMovementComponent::TickTractionAndFriction( float dt){ }
-void UFGLocomotiveMovementComponent::TickMasterInput( float dt){ }
-void UFGLocomotiveMovementComponent::SetReverserInput( int32 reverser){ }
-void UFGLocomotiveMovementComponent::SetThrottleInput( float throttle){ }
-void UFGLocomotiveMovementComponent::SetSteeringInput( float steering){ }
-void UFGLocomotiveMovementComponent::SetAirBrakeInput( float brake){ }
+void UFGLocomotiveMovementComponent::TickSlaveInput(float dt, const UFGLocomotiveMovementComponent* master){ }
+void UFGLocomotiveMovementComponent::TickTractionAndFriction(float dt){ }
+void UFGLocomotiveMovementComponent::TickMasterInput(float dt){ }
+void UFGLocomotiveMovementComponent::SetReverserInput(int32 reverser){ }
+void UFGLocomotiveMovementComponent::SetThrottleInput(float throttle){ }
+void UFGLocomotiveMovementComponent::SetSteeringInput(float steering){ }
+void UFGLocomotiveMovementComponent::SetAirBrakeInput(float brake){ }
 void UFGLocomotiveMovementComponent::SetEmergencyBrake(){ }
 float UFGLocomotiveMovementComponent::CalcSteeringInput(){ return float(); }
 float UFGLocomotiveMovementComponent::CalcDynamicBrakeInput(){ return float(); }
 float UFGLocomotiveMovementComponent::CalcAirBrakeInput(){ return float(); }
 float UFGLocomotiveMovementComponent::CalcThrottleInput(){ return float(); }
 void UFGLocomotiveMovementComponent::ClearInput(){ }
-void UFGLocomotiveMovementComponent::UpdateState( float dt, const UFGLocomotiveMovementComponent* master){ }
-void UFGLocomotiveMovementComponent::ServerUpdateState_Implementation( int32 inReverserInput, float inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput){ }
-bool UFGLocomotiveMovementComponent::ServerUpdateState_Validate( int32 inReverserInput, float inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput){ return bool(); }
+void UFGLocomotiveMovementComponent::UpdateState(float dt, const UFGLocomotiveMovementComponent* master){ }
+void UFGLocomotiveMovementComponent::ServerUpdateState_Implementation(int32 inReverserInput, float inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput){ }
+bool UFGLocomotiveMovementComponent::ServerUpdateState_Validate(int32 inReverserInput, float inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput){ return bool(); }
 void UFGLocomotiveMovementComponent::UseReplicatedState(){ }
-void UFGLocomotiveMovementComponent::UseMultipleUnitMasterState( const UFGLocomotiveMovementComponent* master){ }
+void UFGLocomotiveMovementComponent::UseMultipleUnitMasterState(const UFGLocomotiveMovementComponent* master){ }

@@ -35,4 +35,7 @@ private:
 	/** Snapping offset of this attachment on the walls surface. */
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	FVector2D mSnapOffset;
+
+public:
+	FORCEINLINE ~AFGWallAttachmentHologram() = default;
 };

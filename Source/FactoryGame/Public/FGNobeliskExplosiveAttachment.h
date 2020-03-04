@@ -41,4 +41,7 @@ protected:
 	bool mIsLoaded;
 
 
+
+public:
+	FORCEINLINE ~AFGNobeliskExplosiveAttachment() = default;
 };

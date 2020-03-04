@@ -91,4 +91,7 @@ protected:
 
 	/** Cached input connections (No need for UPROPERTY as they are referenced in component array) */
 	TArray< class UFGFactoryConnectionComponent* > mInputConnections;
+
+public:
+	FORCEINLINE ~AFGBuildableSpaceElevator() = default;
 };

@@ -13,6 +13,9 @@ class FACTORYGAME_API UFGExtractableResourceInterface : public UInterface
 	
     GENERATED_BODY()
     UFGExtractableResourceInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGExtractableResourceInterface() = default;
 };
 
 /**

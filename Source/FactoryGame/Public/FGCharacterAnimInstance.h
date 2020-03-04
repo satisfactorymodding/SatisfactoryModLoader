@@ -246,4 +246,7 @@ public:
 	/** What to collide against in pre land */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
 	TArray< TEnumAsByte< ECollisionChannel > > mPreLandCollisionChannels;
+
+public:
+	FORCEINLINE ~UFGCharacterAnimInstance() = default;
 };

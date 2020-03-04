@@ -63,4 +63,7 @@ protected:
 	// this little guy ensures that the input index for consuming ingredients keeps cycling across all inputs.
 	// otherwise there could be a bias between which inputs are used across production cycles.
 	int32 mPreservedInputIndex;
+
+public:
+	FORCEINLINE ~AFGBuildableConverter() = default;
 };

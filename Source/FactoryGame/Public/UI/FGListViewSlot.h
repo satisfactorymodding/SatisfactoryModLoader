@@ -34,4 +34,7 @@ private:
 
 	/** A raw pointer to the slot to allow us to adjust the size, padding...etc at runtime. */
 	SVerticalBox::FSlot* mSlot;
+
+public:
+	FORCEINLINE ~UFGListViewSlot() = default;
 };

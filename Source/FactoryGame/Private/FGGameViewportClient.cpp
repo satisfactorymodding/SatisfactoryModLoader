@@ -2,6 +2,6 @@
 
 #include "FGGameViewportClient.h"
 
-void UFGGameViewportClient::Tick( float deltaSeconds){ }
-void UFGGameViewportClient::LostFocus( FViewport* Viewport){ }
-void UFGGameViewportClient::ReceivedFocus( FViewport* Viewport){ }
+void UFGGameViewportClient::Tick(float deltaSeconds){ }
+void UFGGameViewportClient::LostFocus(FViewport* Viewport){ }
+void UFGGameViewportClient::ReceivedFocus(FViewport* Viewport){ }

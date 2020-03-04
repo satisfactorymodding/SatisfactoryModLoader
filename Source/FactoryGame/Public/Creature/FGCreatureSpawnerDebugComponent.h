@@ -20,4 +20,7 @@ public:
 	UFGCreatureSpawnerDebugComponent();
 protected:
 
+
+public:
+	FORCEINLINE ~UFGCreatureSpawnerDebugComponent() = default;
 };

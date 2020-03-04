@@ -21,4 +21,7 @@ public:
 	/** Size of the floor, width and depth. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
 	float mSize;
+
+public:
+	FORCEINLINE ~AFGBuildableFloor() = default;
 };

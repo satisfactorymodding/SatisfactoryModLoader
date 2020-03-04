@@ -295,4 +295,7 @@ public:
 
 	// Find and return a local player
 	static class AFGPlayerController* GetLocalPlayerController( const UObject* worldContext );
+
+public:
+	FORCEINLINE ~UFGBlueprintFunctionLibrary() = default;
 };

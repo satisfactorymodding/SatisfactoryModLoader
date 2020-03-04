@@ -109,4 +109,7 @@ private:
 
 	// Scale from World Size of sign to our Canvas UI Element
 	float mCanvasToComponentScale;
+
+public:
+	FORCEINLINE ~UFGSignInteractWidget() = default;
 };

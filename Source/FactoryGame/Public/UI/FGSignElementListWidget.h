@@ -46,4 +46,7 @@ protected:
 	// Reference to the parent interact widget
 	class UFGSignInteractWidget* mInteractWidget;
 
+
+public:
+	FORCEINLINE ~UFGSignElementListWidget() = default;
 };

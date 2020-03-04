@@ -16,6 +16,9 @@ class FACTORYGAME_API UFGWorldCreationInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGWorldCreationInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGWorldCreationInterface() = default;
 };
 
 /**

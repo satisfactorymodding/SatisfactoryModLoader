@@ -30,6 +30,9 @@ public:
 
 	UPROPERTY( BlueprintReadOnly )
 	float ProductionCapacity;
+
+public:
+	FORCEINLINE ~FPowerGraphPoint() = default;
 };
 
 template<>
@@ -39,6 +42,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FPowerGraphPoint > : public TStruct
 	{
 		WithNetSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FPowerGraphPoint >() = default;
 };
 
 
@@ -112,6 +118,9 @@ private:
 
 	/** Maximum number of points in the graph. */
 	int32 NumGraphPointsMax;
+
+public:
+	FORCEINLINE ~FPowerCircuitStats() = default;
 };
 
 template<>
@@ -121,6 +130,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FPowerCircuitStats > : public TStru
 	{
 		WithNetSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FPowerCircuitStats >() = default;
 };
 
 
@@ -203,6 +215,9 @@ private:
 	/** The power consumption/production over time. Used for feedback. */
 	UPROPERTY( Replicated )
 	FPowerCircuitStats mPowerStats;
+
+public:
+	FORCEINLINE ~UFGPowerCircuit() = default;
 };
 
 void FPowerCircuitStats::MakeGraphPoint( FPowerGraphPoint& out_newGraphPoint ) const

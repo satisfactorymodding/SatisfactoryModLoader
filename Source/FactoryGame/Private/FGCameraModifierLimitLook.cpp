@@ -2,4 +2,4 @@
 
 #include "FGCameraModifierLimitLook.h"
 
-bool UFGCameraModifierLimitLook::ProcessViewRotation(  AActor* ViewTarget, float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot){ return bool(); }
+bool UFGCameraModifierLimitLook::ProcessViewRotation( AActor* ViewTarget, float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot){ return bool(); }

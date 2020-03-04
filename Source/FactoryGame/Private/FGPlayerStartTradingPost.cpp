@@ -2,5 +2,5 @@
 
 #include "FGPlayerStartTradingPost.h"
 
-AFGPlayerStartTradingPost::AFGPlayerStartTradingPost( const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+AFGPlayerStartTradingPost::AFGPlayerStartTradingPost(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 const FName AFGPlayerStartTradingPost::STATIC_PLAYER_START_TAG = FName();

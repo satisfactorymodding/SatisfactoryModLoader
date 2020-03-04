@@ -19,4 +19,7 @@ public:
 	/ Handles the attack logic, differs depending on type of attack ( ex melee, ranged etc )
 	*/
 	virtual void PerformAttack( TScriptInterface< IFGAggroTargetInterface >	aggroTarget, class AFGEnemy* sourceActor ) override;
+
+public:
+	FORCEINLINE ~UFGAttackMelee() = default;
 };

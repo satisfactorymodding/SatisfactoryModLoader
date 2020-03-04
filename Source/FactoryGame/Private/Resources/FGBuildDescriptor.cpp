@@ -3,13 +3,13 @@
 #include "FGBuildDescriptor.h"
 
 #if WITH_EDITOR
-void UFGBuildDescriptor::PostEditChangeProperty(  FPropertyChangedEvent& propertyChangedEvent){ }
+void UFGBuildDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
 #endif 
 UFGBuildDescriptor::UFGBuildDescriptor(){ }
-TSubclassOf< class UFGBuildCategory > UFGBuildDescriptor::GetBuildCategory( TSubclassOf< UFGBuildDescriptor > inClass){ return TSubclassOf<class UFGBuildCategory>(); }
-void UFGBuildDescriptor::GetSubCategories( TSubclassOf< UFGBuildDescriptor > inClass, UPARAM( ref ) TArray< TSubclassOf<  UFGBuildSubCategory > >& out_subCategories){ }
-float UFGBuildDescriptor::GetBuildMenuPriority( TSubclassOf< UFGBuildDescriptor > inClass){ return float(); }
-UClass* UFGBuildDescriptor::GetHologramClass( TSubclassOf< UFGBuildDescriptor > inClass){ return nullptr; }
-TSubclassOf< AActor > UFGBuildDescriptor::GetBuildClass( TSubclassOf< UFGBuildDescriptor > inClass){ return TSubclassOf<AActor>(); }
+TSubclassOf< class UFGBuildCategory > UFGBuildDescriptor::GetBuildCategory(TSubclassOf< UFGBuildDescriptor > inClass){ return TSubclassOf<class UFGBuildCategory>(); }
+void UFGBuildDescriptor::GetSubCategories(TSubclassOf< UFGBuildDescriptor > inClass,  TArray< TSubclassOf<  UFGBuildSubCategory > >& out_subCategories){ }
+float UFGBuildDescriptor::GetBuildMenuPriority(TSubclassOf< UFGBuildDescriptor > inClass){ return float(); }
+UClass* UFGBuildDescriptor::GetHologramClass(TSubclassOf< UFGBuildDescriptor > inClass){ return nullptr; }
+TSubclassOf< AActor > UFGBuildDescriptor::GetBuildClass(TSubclassOf< UFGBuildDescriptor > inClass){ return TSubclassOf<AActor>(); }
 TSubclassOf< class AFGHologram > UFGBuildDescriptor::GetHologramClassInternal() const{ return TSubclassOf<class AFGHologram>(); }
 TSubclassOf< AActor > UFGBuildDescriptor::GetBuildClassInternal() const{ return TSubclassOf<AActor>(); }

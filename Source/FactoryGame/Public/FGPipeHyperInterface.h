@@ -21,6 +21,9 @@ class FACTORYGAME_API UFGPipeHyperInterface : public UInterface
 	
     GENERATED_BODY()
     UFGPipeHyperInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGPipeHyperInterface() = default;
 };
 
 /**

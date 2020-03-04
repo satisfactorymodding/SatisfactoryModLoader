@@ -36,4 +36,7 @@ protected:
 	/** The worlds we want to affect */
 	UPROPERTY()
 	TArray< class UWorld* > mActiveWorlds;
+
+public:
+	FORCEINLINE ~UFGAtmosphereUpdater() = default;
 };

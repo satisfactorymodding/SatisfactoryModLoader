@@ -51,6 +51,9 @@ struct FACTORYGAME_API FSignElementConstraints
 	UPROPERTY( EditDefaultsOnly, Category = "SignData" )
 	float MaxScale;
 
+
+public:
+	FORCEINLINE ~FSignElementConstraints() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -80,6 +83,9 @@ struct FACTORYGAME_API FSignPixelColumn
 			return nullptr;
 		}
 	}
+
+public:
+	FORCEINLINE ~FSignPixelColumn() = default;
 };
 
 UCLASS( BlueprintType )
@@ -122,6 +128,9 @@ public:
 	UPROPERTY( SaveGame )
 	FVector2D mPixelDimensions;
 
+
+public:
+	FORCEINLINE ~UFGSignLayer() = default;
 };
 
 //@todoSigns : Change all blueprint read / write properties over to getters / setters where applicable
@@ -185,6 +194,9 @@ public:
 
 	UPROPERTY( BlueprintReadOnly, Category = "SignData" )
 	bool mIsElementStatic;
+
+public:
+	FORCEINLINE ~UFGSignElementData() = default;
 };
 
 UCLASS( BlueprintType )
@@ -204,6 +216,9 @@ public:
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignData" )
 	FVector2D mDimensions;
 
+
+public:
+	FORCEINLINE ~UFGSignPixelData() = default;
 };
 
 
@@ -238,6 +253,9 @@ public:
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignData" )
 	EHorizontalSignTextAlignment mTextAlignmentHorizontal;
 
+
+public:
+	FORCEINLINE ~UFGSignTextData() = default;
 };
 
 UCLASS( BlueprintType )
@@ -259,6 +277,9 @@ public:
 	// Index pointing to a location in the FGSignSettings Icon array
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignData" )
 	int32 mIconIndex;
+
+public:
+	FORCEINLINE ~UFGSignIconData() = default;
 };
 
 
@@ -309,6 +330,9 @@ struct FACTORYGAME_API FSignData
 	int32 BackgroundColorIndex;
 
 
+
+public:
+	FORCEINLINE ~FSignData() = default;
 };
 
 /** Enable custom serialization of FRailroadTrackPosition */
@@ -319,6 +343,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FSignData > : public TStructOpsType
 	{
 		WithSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FSignData >() = default;
 };
 
 
@@ -327,6 +354,9 @@ UINTERFACE( MinimalAPI, Blueprintable )
 class UFGSignInterface : public UInterface
 {
 	GENERATED_BODY()
+
+public:
+	FORCEINLINE ~UFGSignInterface() = default;
 };
 
 /**

@@ -55,4 +55,7 @@ private:
 	UPROPERTY( SaveGame )
 	int32 mWasteLeftFromCurrentFuel;
 
+
+public:
+	FORCEINLINE ~AFGBuildableGeneratorNuclear() = default;
 };

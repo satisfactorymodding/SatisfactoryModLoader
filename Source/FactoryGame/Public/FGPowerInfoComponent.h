@@ -168,4 +168,7 @@ private:
 	/** true if the circuit is overloaded and the fuse has been triggered. */
 	UPROPERTY( Replicated )
 	uint8 mIsFuseTriggered:1;
+
+public:
+	FORCEINLINE ~UFGPowerInfoComponent() = default;
 };

@@ -51,4 +51,7 @@ private:
 	/** A cached game state */
 	class AFGGameState* mCachedGameState;
 	
+
+public:
+	FORCEINLINE ~AFGVolumeMapArea() = default;
 };

@@ -60,6 +60,9 @@ struct FACTORYGAME_API FPurityTextPair
 	/** Enum to localize */
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
 	TEnumAsByte< EResourcePurity > Purity;
+
+public:
+	FORCEINLINE ~FPurityTextPair() = default;
 };
 
 /**
@@ -71,6 +74,9 @@ class FACTORYGAME_API UFGUseState_NodeFullInventory : public UFGUseState
 	GENERATED_BODY()
 
 	UFGUseState_NodeFullInventory() : Super() { mIsUsableState = false; }
+
+public:
+	FORCEINLINE ~UFGUseState_NodeFullInventory() = default;
 };
 
 /**
@@ -82,6 +88,9 @@ class FACTORYGAME_API UFGUseState_NonConveyorResource : public UFGUseState
 	GENERATED_BODY()
 
 	UFGUseState_NonConveyorResource() : Super() { mIsUsableState = false; }
+
+public:
+	FORCEINLINE ~UFGUseState_NonConveyorResource() = default;
 };
 
 UCLASS(Blueprintable,abstract)
@@ -305,4 +314,7 @@ public:
 	/** Bool for is we should spawn particle */
 	UPROPERTY( Replicated, EditDefaultsOnly, SaveGame, Category = "Resources" ) 
 	bool mDoSpawnParticle;
+
+public:
+	FORCEINLINE ~AFGResourceNode() = default;
 };

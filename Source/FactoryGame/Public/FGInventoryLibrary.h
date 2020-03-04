@@ -187,4 +187,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Inventory" )
 	static void RemoveAllItemsNotOfResourceForm( UPARAM( ref ) TArray< FInventoryStack >& items, EResourceForm validForm = EResourceForm::RF_SOLID );
 
+
+public:
+	FORCEINLINE ~UFGInventoryLibrary() = default;
 };

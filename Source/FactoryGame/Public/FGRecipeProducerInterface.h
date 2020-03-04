@@ -14,6 +14,9 @@ class FACTORYGAME_API UFGRecipeProducerInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGRecipeProducerInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGRecipeProducerInterface() = default;
 };
 
 /**

@@ -36,4 +36,7 @@ public:
 	//UPROPERTY(EditInstanceOnly)
 	//TArray<class UFoliageType*> mFoliageTypes;
 #endif
+
+public:
+	FORCEINLINE ~AFGProceduralStaticMeshActor() = default;
 };

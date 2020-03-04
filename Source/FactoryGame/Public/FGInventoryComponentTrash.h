@@ -26,4 +26,7 @@ private:
 	/** Can item be trashed? */
 	UFUNCTION()
 	bool IsValidItem( TSubclassOf< class UFGItemDescriptor > resource ) const;
+
+public:
+	FORCEINLINE ~UFGInventoryComponentTrash() = default;
 };

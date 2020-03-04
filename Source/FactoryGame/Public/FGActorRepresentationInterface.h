@@ -14,6 +14,9 @@ class FACTORYGAME_API UFGActorRepresentationInterface : public UInterface
 	
  GENERATED_BODY()
 	UFGActorRepresentationInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
+
+public:
+	FORCEINLINE ~UFGActorRepresentationInterface() = default;
 };
 
 /**

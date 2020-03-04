@@ -4,23 +4,23 @@
 
 FExponentialFogSettings::FExponentialFogSettings(){ }
 #if WITH_EDITOR
-void AFGAtmosphereVolume::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
+void AFGAtmosphereVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ }
 #endif 
 #if WITH_EDITOR
 float AFGAtmosphereVolume::GetViewMinInput() const{ return float(); }
 float AFGAtmosphereVolume::GetViewMaxInput() const{ return float(); }
-void AFGAtmosphereVolume::SetViewRange( float min, float max){ }
+void AFGAtmosphereVolume::SetViewRange(float min, float max){ }
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGAtmosphereVolume::AFGAtmosphereVolume(){ }
 void AFGAtmosphereVolume::PostLoad(){ Super::PostLoad(); }
-bool AFGAtmosphereVolume::EncompassesPoint( FVector point, float sphereRadius , float* out_distanceToPoint ){ return bool(); }
+bool AFGAtmosphereVolume::EncompassesPoint(FVector point, float sphereRadius , float* out_distanceToPoint){ return bool(); }
 FPostProcessVolumeProperties AFGAtmosphereVolume::GetProperties() const{ return FPostProcessVolumeProperties(); }
-void AFGAtmosphereVolume::GetSettings( FExponentialFogSettings& out_settings) const{ }
-void AFGAtmosphereVolume::GetSettings( float atTime, FExponentialFogSettings& out_settings) const{ }
-void AFGAtmosphereVolume::GetSkySphereSettings( float atTime, FSkySphereSettings& out_settings) const{ }
-void AFGAtmosphereVolume::PostUnregisterAllComponents( void){ }
+void AFGAtmosphereVolume::GetSettings(FExponentialFogSettings& out_settings) const{ }
+void AFGAtmosphereVolume::GetSettings(float atTime, FExponentialFogSettings& out_settings) const{ }
+void AFGAtmosphereVolume::GetSkySphereSettings(float atTime, FSkySphereSettings& out_settings) const{ }
+void AFGAtmosphereVolume::PostUnregisterAllComponents(void){ }
 void AFGAtmosphereVolume::PostRegisterAllComponents(){ }
 void AFGAtmosphereVolume::AddVolume(){ }
 void AFGAtmosphereVolume::RemoveVolume(){ }

@@ -19,4 +19,7 @@ class FACTORYGAME_API UFGAvailabilityDependency : public UObject
 public:
 	UFUNCTION( BlueprintPure )
 	virtual bool AreDependenciesMet( UObject* worldContext ) const;
+
+public:
+	FORCEINLINE ~UFGAvailabilityDependency() = default;
 };

@@ -38,4 +38,7 @@ private:
 	/** Used when upgrading. */
 	UPROPERTY()
 	TArray< UFGFactoryConnectionComponent* > mSnappedConnectionComponents;
+
+public:
+	FORCEINLINE ~AFGAttachmentSplitterHologram() = default;
 };

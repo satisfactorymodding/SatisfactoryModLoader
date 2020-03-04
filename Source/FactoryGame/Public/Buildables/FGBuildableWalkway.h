@@ -29,4 +29,7 @@ public:
 	/** Disable snapping on specific sides. */
 	UPROPERTY( EditDefaultsOnly, Category = "Walkway" )
 	FFoundationSideSelectionFlags mDisableSnapOn;
+
+public:
+	FORCEINLINE ~AFGBuildableWalkway() = default;
 };

@@ -37,4 +37,7 @@ private:
 	class UFGCircuitConnectionComponent* mSnapConnection;
 
 	class AFGBuildablePowerPole* mUpgradeTarget = nullptr;
+
+public:
+	FORCEINLINE ~AFGPowerPoleHologram() = default;
 };

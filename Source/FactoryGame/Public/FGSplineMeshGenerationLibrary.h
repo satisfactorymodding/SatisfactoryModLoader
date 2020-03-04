@@ -131,6 +131,9 @@ public:
 	 * @return	bool - returns false if we've reached the end and true if there is still more left
 	 */
 	static bool GetNextDistanceExcedingTollerance( USplineComponent* spline, const FVector& startPos, float startDistance, float stepSize, float tollerance, float& outEndDistance, FVector& outEndPos, float& outLength, uint8 fineTuningIterations = 5, float minStepFactor = 0.5f, ESplineCoordinateSpace::Type space = ESplineCoordinateSpace::World );
+
+public:
+	FORCEINLINE ~UFGSplineMeshGenerationLibrary() = default;
 };
 
 
@@ -148,7 +151,7 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	check( spline );
 
 	const float splineLength = spline->GetSplineLength();
-	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) + 1 );
+	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) ); //[DavalliusA:Tue/25-02-2020] removed a +1 here that as messing with conveyors max length (me and G2 could not see why we needed the +1 )
 
 	// Create more or remove the excess meshes.
 	if( numMeshes < meshPool.Num() )
@@ -213,7 +216,8 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	check( spline );
 
 	const float splineLength = spline->GetSplineLength();
-	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) + 1 ); //[DavalliusA:Wed/29-01-2020] don't apply max value here, as that will make the meshes stretch over the full length of the spline still instead of cutting of early.
+	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) );  //[DavalliusA:Tue/25-02-2020] removed a +1 here that as messing with conveyors max length (me and G2 could not see why we needed the +1 )
+	//[DavalliusA:Wed/29-01-2020] don't apply max value here, as that will make the meshes stretch over the full length of the spline still instead of cutting of early.
 
 	// Create more or remove the excess meshes.
 	if( numMeshes < meshPool.Num() )

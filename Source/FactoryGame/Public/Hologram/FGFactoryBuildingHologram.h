@@ -68,4 +68,7 @@ protected:
 private:
 	UPROPERTY()
 	UStaticMeshComponent* mBuildingMesh;
+
+public:
+	FORCEINLINE ~AFGFactoryBuildingHologram() = default;
 };

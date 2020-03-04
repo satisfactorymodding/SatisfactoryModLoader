@@ -2,4 +2,4 @@
 
 #include "FGNavArea_HardNature.h"
 
-UFGNavArea_HardNature::UFGNavArea_HardNature( const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGNavArea_HardNature::UFGNavArea_HardNature(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }

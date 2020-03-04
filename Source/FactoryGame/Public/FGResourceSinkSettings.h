@@ -22,6 +22,9 @@ struct FACTORYGAME_API FCalculatedRewardSteps
 	UPROPERTY( EditAnywhere )
 	int32 NumRepeats;
 
+
+public:
+	FORCEINLINE ~FCalculatedRewardSteps() = default;
 };
 
 USTRUCT(BlueprintType)
@@ -46,6 +49,9 @@ struct FACTORYGAME_API FResourceSinkPointsData : public FTableRowBase
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 OverriddenResourceSinkPoints;
 
+
+public:
+	FORCEINLINE ~FResourceSinkPointsData() = default;
 };
 
 /**
@@ -124,4 +130,7 @@ public:
 	TArray<FCalculatedRewardSteps> mRewardLevels;
 
 
+
+public:
+	FORCEINLINE ~UFGResourceSinkSettings() = default;
 };

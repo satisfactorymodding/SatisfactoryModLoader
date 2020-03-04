@@ -18,4 +18,7 @@ class FACTORYGAME_API UFGBuildSubCategory : public UFGBuildCategory
 	
 	
 	
+
+public:
+	FORCEINLINE ~UFGBuildSubCategory() = default;
 };

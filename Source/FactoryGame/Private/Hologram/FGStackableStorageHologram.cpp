@@ -4,6 +4,6 @@
 
 AFGStackableStorageHologram::AFGStackableStorageHologram(){ }
 void AFGStackableStorageHologram::BeginPlay(){ }
-bool AFGStackableStorageHologram::IsValidHitResult( const FHitResult& hitResult) const{ return bool(); }
-bool AFGStackableStorageHologram::TrySnapToActor( const FHitResult& hitResult){ return bool(); }
+bool AFGStackableStorageHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
+bool AFGStackableStorageHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 int32 AFGStackableStorageHologram::GetRotationStep() const{ return int32(); }

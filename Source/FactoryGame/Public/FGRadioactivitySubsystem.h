@@ -35,6 +35,9 @@ public:
 	/** Location where radiation is emitted. */
 	FVector LocalLocation;
 	FVector CachedWorldLocation;
+
+public:
+	FORCEINLINE ~FRadioactiveEmitter() = default;
 };
 
 
@@ -50,6 +53,9 @@ public:
 
 
 	TArray< FRadioactiveEmitter > Emitters;
+
+public:
+	FORCEINLINE ~FRadioactiveSource() = default;
 };
 
 USTRUCT()
@@ -72,6 +78,9 @@ public:
 	UObject* Owner;
 
 	int32 UID;
+
+public:
+	FORCEINLINE ~FRemoveEmitterID() = default;
 };
 
 USTRUCT()
@@ -113,6 +122,9 @@ public:
 	int32 ItemAmount;
 
 	int32 UID;
+
+public:
+	FORCEINLINE ~FSetEmitterID() = default;
 };
 
 
@@ -237,4 +249,7 @@ private:
 
 	/** The max accumulated intensity that can be registered from radioactive emitters */
 	float mMaxIntensity;
+
+public:
+	FORCEINLINE ~AFGRadioactivitySubsystem() = default;
 };

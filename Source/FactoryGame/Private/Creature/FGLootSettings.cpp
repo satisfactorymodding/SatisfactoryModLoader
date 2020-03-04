@@ -2,4 +2,4 @@
 
 #include "FGLootSettings.h"
 
-UObject* UFGLootSettings::GetLootSettingsDefaultObject( TSubclassOf< UFGLootSettings >  inClass){ return nullptr; }
+UObject* UFGLootSettings::GetLootSettingsDefaultObject(TSubclassOf< UFGLootSettings >  inClass){ return nullptr; }

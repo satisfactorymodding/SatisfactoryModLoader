@@ -2,5 +2,5 @@
 
 #include "FGItemPickedUpDependency.h"
 
-bool UFGItemPickedUpDependency::AreDependenciesMet( UObject* worldContext) const{ return bool(); }
-void UFGItemPickedUpDependency::GetItems( TArray< TSubclassOf<  UFGItemDescriptor > >& out_items) const{ }
+bool UFGItemPickedUpDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }
+void UFGItemPickedUpDependency::GetItems(TArray< TSubclassOf<  UFGItemDescriptor > >& out_items) const{ }

@@ -15,4 +15,7 @@ public:
 	UTexture2D* GetDisplayImage_Implementation() const override;
 	bool IsActive_Implementation( class AFGPlayerController* owner ) const override;
 	//~ End UFGHotbarShortcut interface
+
+public:
+	FORCEINLINE ~UFGDismantleShortcut() = default;
 };

@@ -31,4 +31,7 @@ protected:
 	/** Number of inventory slots this unlock adds to the players inventory */
 	UPROPERTY( EditDefaultsOnly )
 	int32 mNumInventorySlotsToUnlock;
+
+public:
+	FORCEINLINE ~UFGUnlockInventorySlot() = default;
 };

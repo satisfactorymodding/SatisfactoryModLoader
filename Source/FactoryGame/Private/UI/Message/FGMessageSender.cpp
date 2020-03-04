@@ -2,4 +2,4 @@
 
 #include "FGMessageSender.h"
 
-UObject* UFGMessageSender::GetSenderDefaultObject( TSubclassOf< UFGMessageSender > inClass){ return nullptr; }
+UObject* UFGMessageSender::GetSenderDefaultObject(TSubclassOf< UFGMessageSender > inClass){ return nullptr; }

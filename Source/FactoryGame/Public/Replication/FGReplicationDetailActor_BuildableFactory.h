@@ -25,4 +25,7 @@ public:
 protected:
 	UPROPERTY( Replicated )
 	class UFGInventoryComponent* mInventoryPotential;
+
+public:
+	FORCEINLINE ~AFGReplicationDetailActor_BuildableFactory() = default;
 };

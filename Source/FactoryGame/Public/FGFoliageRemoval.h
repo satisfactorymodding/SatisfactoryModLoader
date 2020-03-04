@@ -34,6 +34,9 @@ struct FACTORYGAME_API FRemovedInstance : public FFastArraySerializerItem
 	/** Stored in localspace */
 	UPROPERTY( SaveGame, NotReplicated ) 
 	FTransform Transform;
+
+public:
+	FORCEINLINE ~FRemovedInstance() = default;
 };
 
 /** Wrapper around the Items struct to enable custom delta serialization (we send a part of the data to the client every frame instead of sending it all in one frame) */
@@ -64,6 +67,9 @@ struct FACTORYGAME_API FRemovedInstanceArray : public FFastArraySerializer
 	
 	// This does the delta sending of data
 	bool NetDeltaSerialize( FNetDeltaSerializeInfo & DeltaParms );
+
+public:
+	FORCEINLINE ~FRemovedInstanceArray() = default;
 };
 
 /** Enables NetDeltaSerialize in FRemovedInstanceArray with template magic */
@@ -74,6 +80,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FRemovedInstanceArray > : public TS
 	{
 		WithNetDeltaSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FRemovedInstanceArray >() = default;
 };
 
 
@@ -196,4 +205,7 @@ protected:
 
 	// Flag to indicate whether this removal actor is allowed to run apply. Needs to be setup by FoliageSubSystem first. 
 	uint8 mMarkedByFoliageSubSystem:1;
+
+public:
+	FORCEINLINE ~AFGFoliageRemoval() = default;
 };

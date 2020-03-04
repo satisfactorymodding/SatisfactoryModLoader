@@ -3,13 +3,13 @@
 #include "FGChatManager.h"
 
 FChatMessageStruct::FChatMessageStruct(){ }
-FChatMessageStruct::FChatMessageStruct( FString messageString,  AFGPlayerState* sender, float serverTimeStamp){ }
-AFGChatManager* AFGChatManager::Get( UObject* worldContext){ return nullptr; }
+FChatMessageStruct::FChatMessageStruct(FString messageString,  AFGPlayerState* sender, float serverTimeStamp){ }
+AFGChatManager* AFGChatManager::Get(UObject* worldContext){ return nullptr; }
 AFGChatManager::AFGChatManager(){ }
-FString AFGChatManager::GetChatMessageName( const FChatMessageStruct& inMessage){ return FString(); }
-FLinearColor AFGChatManager::GetChatMessageColor( const FChatMessageStruct& inMessage){ return FLinearColor(); }
-void AFGChatManager::Multicast_BroadcastChatMessage_Implementation( const FChatMessageStruct& newMessage){ }
-void AFGChatManager::AddChatMessageToReceived( const FChatMessageStruct& inMessage){ }
-void AFGChatManager::GetReceivedChatMessages( UPARAM( ref ) TArray< FChatMessageStruct >& out_messages) const{ }
+FString AFGChatManager::GetChatMessageName(const FChatMessageStruct& inMessage){ return FString(); }
+FLinearColor AFGChatManager::GetChatMessageColor(const FChatMessageStruct& inMessage){ return FLinearColor(); }
+void AFGChatManager::Multicast_BroadcastChatMessage_Implementation(const FChatMessageStruct& newMessage){ }
+void AFGChatManager::AddChatMessageToReceived(const FChatMessageStruct& inMessage){ }
+void AFGChatManager::GetReceivedChatMessages(TArray< FChatMessageStruct >& out_messages) const{ }
 int32 AFGChatManager::GetMaxNumMessagesInHistory() const{ return int32(); }
 float AFGChatManager::GetMessageVisibleDuration() const{ return float(); }

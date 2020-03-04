@@ -29,4 +29,7 @@ protected:
 private:
 	/** @copydoc UFGInventoryComponent::FilterEquipmentClasses */
 	bool FilterEquipmentClasses( TSubclassOf< UObject > object, int32 idx ) const;
+
+public:
+	FORCEINLINE ~UFGInventoryComponentBeltSlot() = default;
 };

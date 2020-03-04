@@ -2,4 +2,4 @@
 
 #include "FGAvailabilityDependency.h"
 
-bool UFGAvailabilityDependency::AreDependenciesMet( UObject* worldContext) const{ return bool(); }
+bool UFGAvailabilityDependency::AreDependenciesMet(UObject* worldContext) const{ return bool(); }

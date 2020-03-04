@@ -29,4 +29,7 @@ private:
 	
 	static TArray<class UFGDynamicOptionsRow*> SetupOptionRows( UUserWidget* owningWidget, TArray<FOptionRowData> optionRows, EOptionCategory optionCategory, TSubclassOf< class UFGDynamicOptionsRow > optionsRowWidgetClass );
 
+
+public:
+	FORCEINLINE ~UFGOptionsLibrary() = default;
 };

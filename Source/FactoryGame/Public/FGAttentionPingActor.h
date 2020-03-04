@@ -41,4 +41,7 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_OwningPlayerState )
 	class AFGPlayerState* mOwningPlayerState;
 	
+
+public:
+	FORCEINLINE ~AFGAttentionPingActor() = default;
 };

@@ -29,6 +29,9 @@ struct FACTORYGAME_API FNodeClusterData
 	/** The resource descriptor of this cluster */
 	UPROPERTY( BluePrintReadOnly )
 	TSubclassOf< class UFGResourceDescriptor > ResourceDescriptor;
+
+public:
+	FORCEINLINE ~FNodeClusterData() = default;
 };
 
 
@@ -133,4 +136,7 @@ protected:
 private:
 	// Temp fix for avoiding scanning when opening CheatBoard, function is bound to CheatBoard input
 	void OnCheatBoardOpened();
+
+public:
+	FORCEINLINE ~AFGResourceScanner() = default;
 };

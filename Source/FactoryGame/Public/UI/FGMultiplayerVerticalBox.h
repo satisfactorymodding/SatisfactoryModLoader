@@ -18,4 +18,7 @@ class FACTORYGAME_API UFGMultiplayerVerticalBox : public UVerticalBox
 protected:
 	// Specialized replace child at with no property sync, as we will create a new slot anyway
 	bool ReplaceChildAt_NoSync( int32 Index, UWidget* Content );
+
+public:
+	FORCEINLINE ~UFGMultiplayerVerticalBox() = default;
 };

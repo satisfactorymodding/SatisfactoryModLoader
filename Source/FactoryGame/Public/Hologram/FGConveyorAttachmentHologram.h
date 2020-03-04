@@ -70,4 +70,7 @@ private:
 
 	/** The offset we snapped on the conveyor. */
 	float mSnappedConveyorOffset;
+
+public:
+	FORCEINLINE ~AFGConveyorAttachmentHologram() = default;
 };

@@ -33,6 +33,9 @@ private:
 	int8 PackedFlow = 0;
 	UPROPERTY()
 	uint8 PackedContent = 0;
+
+public:
+	FORCEINLINE ~FQuantizedPipelineIndicatorData() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -50,6 +53,9 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Category = "String Pair" )
 	FString ActualName;
+
+public:
+	FORCEINLINE ~FStringPair() = default;
 };
 
 /**
@@ -250,4 +256,7 @@ private:
 	/** Stop rattle sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	class UAkAudioEvent* mStopRattleSoundEvent;
+
+public:
+	FORCEINLINE ~AFGBuildablePipeline() = default;
 };

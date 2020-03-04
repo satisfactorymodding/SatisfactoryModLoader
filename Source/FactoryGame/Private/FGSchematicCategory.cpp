@@ -2,5 +2,5 @@
 
 #include "FGSchematicCategory.h"
 
-FText UFGSchematicCategory::GetCategoryName( TSubclassOf< UFGSchematicCategory > inClass){ return FText(); }
-FSlateBrush UFGSchematicCategory::GetCategoryIcon( TSubclassOf< UFGSchematicCategory > inClass){ return FSlateBrush(); }
+FText UFGSchematicCategory::GetCategoryName(TSubclassOf< UFGSchematicCategory > inClass){ return FText(); }
+FSlateBrush UFGSchematicCategory::GetCategoryIcon(TSubclassOf< UFGSchematicCategory > inClass){ return FSlateBrush(); }

@@ -8,8 +8,8 @@ void UFGAmbientSettings::CheckForErrors(){ }
 UFGAmbientSettings::UFGAmbientSettings(){ }
 UAkAudioEvent* UFGAmbientSettings::GetEnterOuterVolumeEvent_Implementation() const{ return nullptr; }
 UAkAudioEvent* UFGAmbientSettings::GetEnterInnerVolumeEvent_Implementation() const{ return nullptr; }
-void UFGAmbientSettings::OnEnterOuterVolume_Implementation(  UAkComponent* ambientComponent) const{ }
-void UFGAmbientSettings::OnExitOuterVolume_Implementation(  UAkComponent* ambientComponent) const{ }
-void UFGAmbientSettings::OnEnterInnerVolume_Implementation(  UAkComponent* ambientComponent) const{ }
-void UFGAmbientSettings::OnExitInnerVolume_Implementation(  UAkComponent* ambientComponent) const{ }
+void UFGAmbientSettings::OnEnterOuterVolume_Implementation( UAkComponent* ambientComponent) const{ }
+void UFGAmbientSettings::OnExitOuterVolume_Implementation( UAkComponent* ambientComponent) const{ }
+void UFGAmbientSettings::OnEnterInnerVolume_Implementation( UAkComponent* ambientComponent) const{ }
+void UFGAmbientSettings::OnExitInnerVolume_Implementation( UAkComponent* ambientComponent) const{ }
 bool UFGAmbientSettings::ShouldIgnoreListenerRotation_Implementation() const{ return bool(); }

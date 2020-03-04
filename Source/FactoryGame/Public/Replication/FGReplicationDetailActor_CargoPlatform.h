@@ -29,4 +29,7 @@ protected:
 	UPROPERTY( Replicated )
 	class UFGInventoryComponent* mCargoInventory;
 	
+
+public:
+	FORCEINLINE ~AFGReplicationDetailActor_CargoPlatform() = default;
 };

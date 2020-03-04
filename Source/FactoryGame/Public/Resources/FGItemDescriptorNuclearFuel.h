@@ -33,4 +33,7 @@ private:
 	/** How much waste to produce */
 	UPROPERTY( EditDefaultsOnly, Category = "Nuclear Fuel" )
 	int32 mAmountOfWaste;
+
+public:
+	FORCEINLINE ~UFGItemDescriptorNuclearFuel() = default;
 };

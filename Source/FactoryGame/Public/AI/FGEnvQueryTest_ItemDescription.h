@@ -25,4 +25,7 @@ protected:
 	/** Class of what descriptor we are looking for */
 	UPROPERTY( EditAnywhere, Category = "Item Descriptor" )
 	TSubclassOf< class UFGItemDescriptor > mItemDescriptorClass;
+
+public:
+	FORCEINLINE ~UFGEnvQueryTest_ItemDescription() = default;
 };

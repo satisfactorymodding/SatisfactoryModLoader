@@ -28,4 +28,7 @@ protected:
 
 	UPROPERTY( EditDefaultsOnly, Category = "StingerWidgetRewardData" )
 	UTexture2D* mIconTexture;
+
+public:
+	FORCEINLINE ~UFGStingerWidgetRewardData() = default;
 };

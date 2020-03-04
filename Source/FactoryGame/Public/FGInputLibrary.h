@@ -30,6 +30,9 @@ struct FACTORYGAME_API FFGKeyMapping
 	UPROPERTY( BlueprintReadOnly, Category = "Input" )
 	bool IsAxisMapping;
 
+
+public:
+	FORCEINLINE ~FFGKeyMapping() = default;
 };
 
 /**
@@ -115,4 +118,7 @@ public:
 
 private:
 	static const TArray<FString> IRRELEVANT_PREFIXES;
+
+public:
+	FORCEINLINE ~UFGInputLibrary() = default;
 };

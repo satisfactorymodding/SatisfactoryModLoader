@@ -2,5 +2,5 @@
 
 #include "FGAttackRanged.h"
 
-void UFGAttackRanged::PerformAttack( TScriptInterface<  IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }
-void UFGAttackRanged::SpawnProjectile_Implementation(  AActor* targetActor,  AFGEnemy* sourceActor){ }
+void UFGAttackRanged::PerformAttack(TScriptInterface<  IFGAggroTargetInterface >	aggroTarget,  AFGEnemy* sourceActor){ }
+void UFGAttackRanged::SpawnProjectile_Implementation( AActor* targetActor,  AFGEnemy* sourceActor){ }

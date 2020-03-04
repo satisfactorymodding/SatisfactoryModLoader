@@ -36,4 +36,7 @@ public:
 	/** Instance of the vehicle this passenger seat belongs to */
 	UPROPERTY( SaveGame, Replicated )
 	class AFGVehicle* mOuterVehicle; 
+
+public:
+	FORCEINLINE ~AFGPassengerSeat() = default;
 };

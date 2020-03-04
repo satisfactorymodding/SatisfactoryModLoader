@@ -66,6 +66,9 @@ private:
 
 	TArray< InstanceHandle* > mHandles[ BUILDABLE_COLORS_MAX_SLOTS ];
 
+
+public:
+	FORCEINLINE ~UFGColoredInstanceManager() = default;
 };
 
 //</CSS>

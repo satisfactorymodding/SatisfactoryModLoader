@@ -19,4 +19,7 @@ protected:
 	/** Called on remote clients when the player fires the weapon. Needed a function so I could overload in FGWeaponAttachmentProjectile */
 	virtual void PlayerFired( FVector flashLocation ) override;
 		
+
+public:
+	FORCEINLINE ~AFGWeaponAttachmentProjectile() = default;
 };

@@ -38,6 +38,9 @@ class FACTORYGAME_API UFGConveyorRemoteCallObject : public UFGRemoteCallObject
 
 	//UFUNCTION( Reliable, Server, WithValidation, Category = "Sync" )
 	//void Server_RequestCleanSync( class AFGBuildableConveyorBelt* target );
+
+public:
+	FORCEINLINE ~UFGConveyorRemoteCallObject() = default;
 };
 
 
@@ -94,6 +97,9 @@ private:
 	FG_ConveyorItemRepKeyType ReplicationID = INDEX_NONE;
 
 	FG_ConveyorItemRepKeyType ReplicationKey = INDEX_NONE;
+
+public:
+	FORCEINLINE ~FConveyorBeltItem() = default;
 };
 
 
@@ -582,6 +588,9 @@ private:
 
 	friend FConveyorBeltItemsBaseState;
 	friend class AFGBuildableConveyorBelt;
+
+public:
+	FORCEINLINE ~FConveyorBeltItems() = default;
 };
 
 
@@ -593,6 +602,9 @@ struct FACTORYGAME_API TStructOpsTypeTraits< FConveyorBeltItems > : public TStru
 	{
 		WithNetDeltaSerializer = true
 	};
+
+public:
+	FORCEINLINE ~TStructOpsTypeTraits< FConveyorBeltItems >() = default;
 };
 
 
@@ -752,4 +764,7 @@ private:
 	/** The id for the conveyor bucket this conveyor belongs to */
 	int32 mConveyorBucketID;
 
+
+public:
+	FORCEINLINE ~AFGBuildableConveyorBase() = default;
 };

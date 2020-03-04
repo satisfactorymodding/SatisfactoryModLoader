@@ -23,4 +23,7 @@ protected:
 	// Begin AFGHologram Interface
 	virtual void CheckValidPlacement() override;
 	// End AFGHologram Interface
+
+public:
+	FORCEINLINE ~AFGStairHologram() = default;
 };

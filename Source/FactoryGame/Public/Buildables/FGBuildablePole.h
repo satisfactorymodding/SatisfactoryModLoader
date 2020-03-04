@@ -66,4 +66,7 @@ public:
 protected:
 	//virtual void TogglePendingDismantleMaterial( bool enabled ) override;
 	//virtual void OnBuildEffectFinished() override;
+
+public:
+	FORCEINLINE ~AFGBuildablePole() = default;
 };

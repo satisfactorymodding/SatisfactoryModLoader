@@ -59,4 +59,7 @@ protected:
 
 	/** handle to keep track of when we want to damage actors */
 	FTimerHandle mDamageTimerHandle;
+
+public:
+	FORCEINLINE ~UFGDotComponent() = default;
 };

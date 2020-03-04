@@ -7,8 +7,8 @@ bool AFGC4Dispenser::ShouldSaveState() const{ return bool(); }
 void AFGC4Dispenser::OnPrimaryFirePressed(){ }
 void AFGC4Dispenser::OnPrimaryFireReleased(){ }
 float AFGC4Dispenser::GetChargePct(){ return float(); }
-void AFGC4Dispenser::Server_SpawnC4_Implementation( int32 throwForce){ }
-bool AFGC4Dispenser::Server_SpawnC4_Validate( int32 throwForce){ return bool(); }
+void AFGC4Dispenser::Server_SpawnC4_Implementation(int32 throwForce){ }
+bool AFGC4Dispenser::Server_SpawnC4_Validate(int32 throwForce){ return bool(); }
 void AFGC4Dispenser::DetonateNextCharge(){ }
 void AFGC4Dispenser::OnDetonatePressed(){ }
 void AFGC4Dispenser::Server_DetonatePressed_Implementation(){ }

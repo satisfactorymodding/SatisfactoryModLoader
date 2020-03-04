@@ -167,4 +167,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mSupportsStacking;
 
+
+public:
+	FORCEINLINE ~UFGInteractWidget() = default;
 };

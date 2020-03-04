@@ -30,4 +30,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	TArray< FItemAmount > mItemsToGive;
 
+
+public:
+	FORCEINLINE ~UFGUnlockGiveItem() = default;
 };

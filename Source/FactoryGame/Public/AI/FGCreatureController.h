@@ -35,4 +35,7 @@ public:
 
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(  AActor* inActor,  struct FAIStimulus Stimulus );
+
+public:
+	FORCEINLINE ~AFGCreatureController() = default;
 };

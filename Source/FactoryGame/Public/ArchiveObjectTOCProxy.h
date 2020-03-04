@@ -23,5 +23,8 @@ private:
 
 	/** Keep track of the names of objects, so we can find them faster */
 	TMap< FString, UObject* > mObjectNames;
+
+public:
+	FORCEINLINE ~FArchiveObjectTOCProxy() = default;
 };
 

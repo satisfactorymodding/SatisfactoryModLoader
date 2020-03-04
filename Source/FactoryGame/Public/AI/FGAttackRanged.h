@@ -27,4 +27,7 @@ public:
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Attack" )
 	TSubclassOf< class AFGProjectile > mProjectileClass;
+
+public:
+	FORCEINLINE ~UFGAttackRanged() = default;
 };

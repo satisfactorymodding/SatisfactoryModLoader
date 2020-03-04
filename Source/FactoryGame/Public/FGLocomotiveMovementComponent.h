@@ -52,6 +52,9 @@ struct FACTORYGAME_API FReplicatedRailroadVehicleState
 	float AirBrakeInput;
 
 	//@todotrains Tooot input
+
+public:
+	FORCEINLINE ~FReplicatedRailroadVehicleState() = default;
 };
 
 USTRUCT()
@@ -82,6 +85,9 @@ struct FACTORYGAME_API FRailroadVehicleInputRate
 		const float clampedDeltaValue = FMath::Clamp( deltaValue, -maxDeltaValue, maxDeltaValue );
 		return currentValue + clampedDeltaValue;
 	}
+
+public:
+	FORCEINLINE ~FRailroadVehicleInputRate() = default;
 };
 
 /**
@@ -281,6 +287,9 @@ protected:
 
 	/** How much power do we get [0,1] */
 	float mPowerFactor;
+
+public:
+	FORCEINLINE ~UFGLocomotiveMovementComponent() = default;
 };
 
 // Some helper functions for converting units

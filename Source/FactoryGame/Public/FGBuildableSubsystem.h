@@ -52,6 +52,9 @@ struct FACTORYGAME_API FNetConstructionID
 	{
 		return NetPlayerID >= 0 && Server_ID > 0 && Client_ID > 0;
 	}
+
+public:
+	FORCEINLINE ~FNetConstructionID() = default;
 };
 
 /** Distances where we switch tick rate */
@@ -65,6 +68,9 @@ struct FACTORYGAME_API FDistanceBasedTickRate
 
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
 	float TickRate;
+
+public:
+	FORCEINLINE ~FDistanceBasedTickRate() = default;
 };
 
 USTRUCT()
@@ -77,6 +83,9 @@ struct FACTORYGAME_API FBuildableBucket
 
 	UPROPERTY()
 	TArray< class AFGBuildable* > Buildables;
+
+public:
+	FORCEINLINE ~FBuildableBucket() = default;
 };
 
 USTRUCT()
@@ -88,6 +97,9 @@ struct FACTORYGAME_API FConveyorBucket
 
 	UPROPERTY()
 	TArray< class AFGBuildableConveyorBase* > Conveyors;
+
+public:
+	FORCEINLINE ~FConveyorBucket() = default;
 };
 
 USTRUCT()
@@ -106,6 +118,9 @@ struct FACTORYGAME_API FBuildableGroupTimeData
 	int32 RealSeconds;
 
 	float RealPartialSeconds;
+
+public:
+	FORCEINLINE ~FBuildableGroupTimeData() = default;
 };
 
 /**
@@ -364,9 +379,9 @@ private:
 	/** Hierarchical instances for the factory buildings. */
 	UPROPERTY()
 	AActor* mBuildableInstancesActor;
-	// MODDING EDIT
-	//UPROPERTY()
-	//TMap< class UStaticMesh*, class UProxyHierarchicalInstancedStaticMeshComponent* > mBuildableMeshInstances;
+	
+	UPROPERTY()
+	TMap< class UStaticMesh*, class UProxyHierarchicalInstancedStaticMeshComponent* > mBuildableMeshInstances;
 
 	/**/
 	UPROPERTY()
@@ -473,6 +488,9 @@ private:
 
 	/** Holograms simulated on client to indicate any pending constructions from server */
 	TMap<int16, class AFGHologram*> mPendingConstructionHolograms;
+
+public:
+	FORCEINLINE ~AFGBuildableSubsystem() = default;
 };
 
 template< typename T >

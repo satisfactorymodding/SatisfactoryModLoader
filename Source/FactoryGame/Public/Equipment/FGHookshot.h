@@ -72,4 +72,7 @@ protected:
 private:
 	/** Distance from player when attached, caluclated from mHookshotAudio */
 	float mAttachDistance;
+
+public:
+	FORCEINLINE ~AFGHookshot() = default;
 };

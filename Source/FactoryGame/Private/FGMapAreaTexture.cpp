@@ -5,13 +5,13 @@
 #if WITH_EDITORONLY_DATA
 #endif 
 #if WITH_EDITOR
-void UFGMapAreaTexture::PostEditChangeProperty(  FPropertyChangedEvent& propertyChangedEvent){ }
-void UFGMapAreaTexture::GenerateAreaData( bool reopenAssetEditor, TArray<UPackage*>& out_modifiedAddedPackages){ }
+void UFGMapAreaTexture::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
+void UFGMapAreaTexture::GenerateAreaData(bool reopenAssetEditor, TArray<UPackage*>& out_modifiedAddedPackages){ }
 #endif 
-void UFGMapAreaTexture::InitMapAreaTexture(  AFGMinimapCaptureActor* inCaptureActor){ }
-TSubclassOf< UFGMapArea > UFGMapAreaTexture::GetMapAreaForWorldLocation( FVector worldLocation){ return TSubclassOf<UFGMapArea>(); }
-void UFGMapAreaTexture::InitFogOfWarTexture( UObject* worldContext){ }
+void UFGMapAreaTexture::InitMapAreaTexture( AFGMinimapCaptureActor* inCaptureActor){ }
+TSubclassOf< UFGMapArea > UFGMapAreaTexture::GetMapAreaForWorldLocation(FVector worldLocation){ return TSubclassOf<UFGMapArea>(); }
+void UFGMapAreaTexture::InitFogOfWarTexture(UObject* worldContext){ }
 UTexture2D* UFGMapAreaTexture::GetFogOfWarTexture() const{ return nullptr; }
-void UFGMapAreaTexture::GetAllMapAreas( TArray< TSubclassOf< UFGMapArea > > out_MapAreas) const{ }
-void UFGMapAreaTexture::OnNewMapAreaVisisted( TSubclassOf< UFGMapArea > newMapArea){ }
-void UFGMapAreaTexture::UpdateFogOfWarTexture( TSubclassOf< UFGMapArea > newMapArea){ }
+void UFGMapAreaTexture::GetAllMapAreas(TArray< TSubclassOf< UFGMapArea > > out_MapAreas) const{ }
+void UFGMapAreaTexture::OnNewMapAreaVisisted(TSubclassOf< UFGMapArea > newMapArea){ }
+void UFGMapAreaTexture::UpdateFogOfWarTexture(TSubclassOf< UFGMapArea > newMapArea){ }

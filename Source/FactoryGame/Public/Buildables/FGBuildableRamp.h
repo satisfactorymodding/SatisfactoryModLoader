@@ -17,4 +17,7 @@ class FACTORYGAME_API AFGBuildableRamp : public AFGBuildableFoundation
 public:
 	
 	//@todo You should not be able to snap on top of this, but on all other sides.
+
+public:
+	FORCEINLINE ~AFGBuildableRamp() = default;
 };

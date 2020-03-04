@@ -2,7 +2,7 @@
 
 #include "FGReplicationDetailActor_DockingStation.h"
 
-void AFGReplicationDetailActor_DockingStation::GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGReplicationDetailActor_DockingStation::InitReplicationDetailActor(  AFGBuildable* owningActor){ }
+void AFGReplicationDetailActor_DockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_DockingStation::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_DockingStation::FlushReplicationActorStateToOwner(){ }
 bool AFGReplicationDetailActor_DockingStation::HasCompletedInitialReplication() const{ return bool(); }

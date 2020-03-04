@@ -22,6 +22,14 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
 	static bool CanBeHandMined( TSubclassOf< UFGResourceDescriptor > inClass );
 
+	/** Returns the material this resource deposit use (if any) */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
+	static UMaterialInstance* GetDepositMaterial( TSubclassOf< UFGResourceDescriptor > inClass );
+
+	/** The static mesh we want the Resource Deposit to use when it has this class selected */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
+	static class UStaticMesh* GetDepositMesh( TSubclassOf< UFGResourceDescriptor > inClass );
+
 	/** Returns the decal this resource use (if any) */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Resource" )
 	static UMaterial* GetDecalMaterial( TSubclassOf< UFGResourceDescriptor > inClass );
@@ -65,6 +73,14 @@ public:
 #endif
 	
 protected:
+	/** The static mesh we want the Resource Deposit to use when it has this class selected */
+	UPROPERTY( EditDefaultsOnly, Category = "Item|World", meta = ( EditCondition = "!mUseMaterialDecal" ) )
+	class UStaticMesh* mDepositMesh;
+
+	/** The material this resource deposit use (if any) */
+	UPROPERTY( EditDefaultsOnly, Category = "Item|World" )
+	class UMaterialInstance* mDepositMaterial;
+
 	/** The decal this resource use (if any) */
 	UPROPERTY( EditDefaultsOnly, Category = "Item|World" )
 	class UMaterial* mDecalMaterial;
@@ -102,4 +118,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
 	FName mManualMiningAudioName;
 private:
+
+public:
+	FORCEINLINE ~UFGResourceDescriptor() = default;
 };

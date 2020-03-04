@@ -38,4 +38,7 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float IntensityMax;
+
+public:
+	FORCEINLINE ~UFGCollectionParamUniformFloat() = default;
 };

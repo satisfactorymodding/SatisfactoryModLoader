@@ -3,6 +3,6 @@
 #include "FGMaterialEffect_Build.h"
 
 UFGMaterialEffect_Build::UFGMaterialEffect_Build(){ }
-void UFGMaterialEffect_Build::SetInstigator(  AActor* instigator){ }
-void UFGMaterialEffect_Build::SetCost( TArray< FItemAmount > cost){ }
-void UFGMaterialEffect_Build::SetSpeed( float speed){ }
+void UFGMaterialEffect_Build::SetInstigator( AActor* instigator){ }
+void UFGMaterialEffect_Build::SetCost(TArray< FItemAmount > cost){ }
+void UFGMaterialEffect_Build::SetSpeed(float speed){ }

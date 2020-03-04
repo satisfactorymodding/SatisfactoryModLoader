@@ -80,4 +80,7 @@ private:
 	/** The time when we press the fire button */
 	float mPressTimestamp;
 
+
+public:
+	FORCEINLINE ~AFGC4Dispenser() = default;
 };

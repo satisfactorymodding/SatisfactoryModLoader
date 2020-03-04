@@ -18,4 +18,7 @@ class FACTORYGAME_API AFGConveyorMultiPoleHologram : public AFGBuildableHologram
 	
 	
 	
+
+public:
+	FORCEINLINE ~AFGConveyorMultiPoleHologram() = default;
 };

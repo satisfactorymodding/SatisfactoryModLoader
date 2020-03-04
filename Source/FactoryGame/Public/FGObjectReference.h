@@ -18,6 +18,9 @@ struct FACTORYGAME_API FObjectRedirect
 
 	/** New Name for the redirector */
 	FString Destination;
+
+public:
+	FORCEINLINE ~FObjectRedirect() = default;
 };
 
 /** Level agnostic object reference */
@@ -125,6 +128,9 @@ private:
 	* Does the internal level finding logic
 	*/
 	ULevel* InternalFindLevel( UWorld* world, const FString& levelName ) const;
+
+public:
+	FORCEINLINE ~FObjectReferenceDisc() = default;
 };
 
 /**

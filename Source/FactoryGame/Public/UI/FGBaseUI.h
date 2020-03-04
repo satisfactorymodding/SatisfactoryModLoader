@@ -66,4 +66,7 @@ protected:
 
 	/** Queue with popups to show */
 	TArray< FPopupData > mPopupDataQueue;
+
+public:
+	FORCEINLINE ~UFGBaseUI() = default;
 };

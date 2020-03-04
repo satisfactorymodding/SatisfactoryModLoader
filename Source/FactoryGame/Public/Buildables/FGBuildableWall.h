@@ -24,4 +24,7 @@ public:
 	/** Height of the wall */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Wall" )
 	float mHeight;
+
+public:
+	FORCEINLINE ~AFGBuildableWall() = default;
 };

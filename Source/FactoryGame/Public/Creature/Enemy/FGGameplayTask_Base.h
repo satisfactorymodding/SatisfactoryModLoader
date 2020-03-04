@@ -21,4 +21,7 @@ public:
 	UPROPERTY()
 	class AFGEnemy* mCachedPawn;
 	
+
+public:
+	FORCEINLINE ~UFGGameplayTask_Base() = default;
 };

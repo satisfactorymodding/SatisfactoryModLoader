@@ -41,4 +41,7 @@ private:
 
 	/** Not UPROPERTY as this will never live longer than it's outer, cached version of it's main meshes */
 	TArray< UMeshComponent* > mCachedMainMeshes;
+
+public:
+	FORCEINLINE ~UFGProductionIndicatorComponent() = default;
 };

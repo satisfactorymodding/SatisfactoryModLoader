@@ -75,4 +75,7 @@ public:
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGAdminInterface > mAdminInterfaceClass;
 
+
+public:
+	FORCEINLINE ~UFGSubsystemClasses() = default;
 };

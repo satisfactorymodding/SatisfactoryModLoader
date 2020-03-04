@@ -39,4 +39,7 @@ private:
 
 	int32 mClosestVolumeIndex;
 	float mClosestDistanceSq;
+
+public:
+	FORCEINLINE ~AFGDowsingStick() = default;
 };

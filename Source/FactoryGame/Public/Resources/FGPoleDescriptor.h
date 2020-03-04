@@ -27,6 +27,9 @@ public:
 	/** Pole height for the current mesh. */
 	UPROPERTY( EditDefaultsOnly )
 	float Height;
+
+public:
+	FORCEINLINE ~FPoleHeightMesh() = default;
 };
 
 /**
@@ -66,4 +69,7 @@ private:
 
 	/** Helper to find the pole top mesh component. */
 	static FName mPoleTopMeshComponentTag;
+
+public:
+	FORCEINLINE ~UFGPoleDescriptor() = default;
 };

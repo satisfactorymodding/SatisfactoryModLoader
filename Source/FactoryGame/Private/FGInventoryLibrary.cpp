@@ -2,28 +2,28 @@
 
 #include "FGInventoryLibrary.h"
 
-UFGInventoryComponent* UFGInventoryLibrary::CreateInventoryComponent(  AActor* owner, FName name){ return nullptr; }
-UFGInventoryComponent* UFGInventoryLibrary::CreateInventoryComponentOfClass(  AActor* owner,
-																		 UPARAM( DisplayName = "Class" ) TSubclassOf<  UFGInventoryComponent > inClass,
+UFGInventoryComponent* UFGInventoryLibrary::CreateInventoryComponent( AActor* owner, FName name){ return nullptr; }
+UFGInventoryComponent* UFGInventoryLibrary::CreateInventoryComponentOfClass( AActor* owner,
+																		  TSubclassOf<  UFGInventoryComponent > inClass,
 																		 FName name){ return nullptr; }
-void UFGInventoryLibrary::BreakInventoryStack( UPARAM( ref ) const FInventoryStack& stack,
-									 UPARAM( DisplayName = "Num Items" ) int32& out_numItems,
-									 UPARAM( DisplayName = "Item" ) FInventoryItem& out_item){ }
-void UFGInventoryLibrary::BreakInventoryItem( UPARAM( ref ) const FInventoryItem& item,
-									UPARAM( DisplayName = "Class" ) TSubclassOf<  UFGItemDescriptor >& out_itemClass,
-									UPARAM( DisplayName = "State" )  AActor*& out_itemState){ }
-FInventoryItem UFGInventoryLibrary::MakeInventoryItem( UPARAM( DisplayName = "Class" ) TSubclassOf<  UFGItemDescriptor > itemClass){ return FInventoryItem(); }
-FInventoryStack UFGInventoryLibrary::MakeInventoryStack( int32 numItems, FInventoryItem item){ return FInventoryStack(); }
-float UFGInventoryLibrary::GetAmountConvertedByForm( int32 amount, EResourceForm form){ return float(); }
-FText UFGInventoryLibrary::GetProductionSuffixFromFormType( EResourceForm form){ return FText(); }
-float UFGInventoryLibrary::GetConversionScalarByForm( EResourceForm form){ return float(); }
-void UFGInventoryLibrary::GetAmountConvertedFromItemAmount( UPARAM( ref ) const FItemAmount& itemAmount, TSubclassOf<  UFGItemDescriptor >& itemClass, float& amountConverted){ }
-void UFGInventoryLibrary::GetUIDataPartialForInventoryStack( UPARAM( ref ) const FInventoryStack& inventoryStack, const TSubclassOf<  AFGBuildableFactory > buildableFactory, TSubclassOf<  UFGItemDescriptor>& itemClass, float& numItemsConverted, float& maxItemsConverted){ }
-void UFGInventoryLibrary::GetUIDataFullForInventoryStack( UPARAM( ref ) const FInventoryStack& inventoryStack, const TSubclassOf<  AFGBuildableFactory > buildableFactory, TSubclassOf<  UFGItemDescriptor>& itemClass, float& numItemsConverted, float& maxItemsConverted, FText& suffix, EResourceForm& form){ }
-bool UFGInventoryLibrary::MoveInventoryItem(  UFGInventoryComponent* sourceComponent, int32 sourceIdx,  UFGInventoryComponent* destinationComponent, int32 destinationIdx){ return bool(); }
-bool UFGInventoryLibrary::GrabAllItemsFromInventory( UFGInventoryComponent* sourceComponent, UFGInventoryComponent* destinationComponent, TSubclassOf< UFGItemDescriptor > onlyGrabOfDesc ){ return bool(); }
-void UFGInventoryLibrary::ConsolidateInventoryItems( UPARAM( ref ) TArray< FInventoryStack >& items){ }
-int32 UFGInventoryLibrary::GetMinNumSlotsForItems( UPARAM( ref ) TArray< FInventoryStack >& items){ return int32(); }
-void UFGInventoryLibrary::MergeInventoryItem( UPARAM( ref ) TArray< FInventoryStack >& items, const FInventoryStack& item){ }
-void UFGInventoryLibrary::ConsolidateItemsAmount( UPARAM( ref ) TArray< FItemAmount >& items){ }
-void UFGInventoryLibrary::RemoveAllItemsNotOfResourceForm( UPARAM( ref ) TArray< FInventoryStack >& items, EResourceForm validForm ){ }
+void UFGInventoryLibrary::BreakInventoryStack(const FInventoryStack& stack,
+									  int32& out_numItems,
+									  FInventoryItem& out_item){ }
+void UFGInventoryLibrary::BreakInventoryItem(const FInventoryItem& item,
+									 TSubclassOf<  UFGItemDescriptor >& out_itemClass,
+									  AActor*& out_itemState){ }
+FInventoryItem UFGInventoryLibrary::MakeInventoryItem(TSubclassOf<  UFGItemDescriptor > itemClass){ return FInventoryItem(); }
+FInventoryStack UFGInventoryLibrary::MakeInventoryStack(int32 numItems, FInventoryItem item){ return FInventoryStack(); }
+float UFGInventoryLibrary::GetAmountConvertedByForm(int32 amount, EResourceForm form){ return float(); }
+FText UFGInventoryLibrary::GetProductionSuffixFromFormType(EResourceForm form){ return FText(); }
+float UFGInventoryLibrary::GetConversionScalarByForm(EResourceForm form){ return float(); }
+void UFGInventoryLibrary::GetAmountConvertedFromItemAmount(const FItemAmount& itemAmount, TSubclassOf<  UFGItemDescriptor >& itemClass, float& amountConverted){ }
+void UFGInventoryLibrary::GetUIDataPartialForInventoryStack(const FInventoryStack& inventoryStack, const TSubclassOf<  AFGBuildableFactory > buildableFactory, TSubclassOf<  UFGItemDescriptor>& itemClass, float& numItemsConverted, float& maxItemsConverted){ }
+void UFGInventoryLibrary::GetUIDataFullForInventoryStack(const FInventoryStack& inventoryStack, const TSubclassOf<  AFGBuildableFactory > buildableFactory, TSubclassOf<  UFGItemDescriptor>& itemClass, float& numItemsConverted, float& maxItemsConverted, FText& suffix, EResourceForm& form){ }
+bool UFGInventoryLibrary::MoveInventoryItem( UFGInventoryComponent* sourceComponent, int32 sourceIdx,  UFGInventoryComponent* destinationComponent, int32 destinationIdx){ return bool(); }
+bool UFGInventoryLibrary::GrabAllItemsFromInventory(UFGInventoryComponent* sourceComponent, UFGInventoryComponent* destinationComponent, TSubclassOf< UFGItemDescriptor > onlyGrabOfDesc){ return bool(); }
+void UFGInventoryLibrary::ConsolidateInventoryItems(TArray< FInventoryStack >& items){ }
+int32 UFGInventoryLibrary::GetMinNumSlotsForItems(TArray< FInventoryStack >& items){ return int32(); }
+void UFGInventoryLibrary::MergeInventoryItem(TArray< FInventoryStack >& items, const FInventoryStack& item){ }
+void UFGInventoryLibrary::ConsolidateItemsAmount(TArray< FItemAmount >& items){ }
+void UFGInventoryLibrary::RemoveAllItemsNotOfResourceForm(TArray< FInventoryStack >& items, EResourceForm validForm){ }

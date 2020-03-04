@@ -113,4 +113,7 @@ private:
 	/** List of logged in admins */
 	UPROPERTY()
 	TArray<class APlayerController*> mLoggedInAdmins;
+
+public:
+	FORCEINLINE ~AFGGameSession() = default;
 };
