@@ -1,11 +1,11 @@
 #include "SMLModule.h"
-#include "Factories/BlueprintFactory.h"
-#include "ContentBrowserModule.h"
-#include "Engine/UserDefinedEnum.h"
 
 #define LOCTEXT_NAMESPACE "FSMLModule"
 
 #if WITH_EDITOR
+#include "Factories/BlueprintFactory.h"
+#include "ContentBrowserModule.h"
+#include "Engine/UserDefinedEnum.h"
 #include "Engine/Blueprint.h"
 #include "FileHelper.h"
 #include "LevelEditor.h"
