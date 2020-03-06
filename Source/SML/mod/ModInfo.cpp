@@ -43,7 +43,7 @@ bool ModInfo::isValid(const FJsonObject& object, const FString& filePath) {
 	if (!object.HasTypedField<EJson::Array>("authors")) {
 		SML::Logging::warning(*FString::Printf(TEXT("\"authors\" not found in mod %s"), *filePath));
 	}
-	if (!object.HasTypedField<EJson::Object>("objects")) {
+	if (!object.HasTypedField<EJson::Array>("objects")) {
 		SML::Logging::error(*FString::Printf(TEXT("\"objects\" not found in mod %s"), *filePath));
 		isInfoValid = false;
 	}
