@@ -3,7 +3,7 @@
 
 typedef __int64(__stdcall *FUNCTION_PTR)();
 typedef void* HLOADEDMODULE;
-typedef HLOADEDMODULE(*LoadModuleFunc)(const char* moduleName, const wchar_t* filePath);
+typedef HLOADEDMODULE(*LoadModuleFunc)(const char* unusedShouldBeEmptyString, const wchar_t* filePath);
 typedef FUNCTION_PTR(*GetModuleProcAddress)(HLOADEDMODULE module, const char* symbolName);
 typedef bool(*IsLoaderModuleLoaded)(const char* moduleName);
 typedef FUNCTION_PTR(*ResolveGameSymbolPtr)(const char* symbolName);

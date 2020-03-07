@@ -13,11 +13,11 @@ public: void LoadComplete(const float loadTime, const FString& mapName) {}
 TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 	const FSlateFontInfo& fontInfo = FSlateFontInfo(FString(TEXT("Roboto")), 10, EFontHinting::Auto, FFontOutlineSettings());
 	SML::Mod::FModHandler& modHandler = SML::getModHandler();
-	const size_t modsLoaded = modHandler.getLoadedMods().size();
+	const int32 modsLoaded = modHandler.getLoadedMods().Num();
 	TArray<FString> resultText;
-	resultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), SML::getModLoaderVersion().string().c_str()));
+	resultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *SML::getModLoaderVersion().string()));
 	resultText.Add(FString::Printf(TEXT("%llu mod(s) loaded"), modsLoaded));
-	resultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), SML::getBootstrapperVersion().string().c_str()));
+	resultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), *SML::getBootstrapperVersion().string()));
 	if (SML::getSMLConfig().developmentMode) {
 		resultText.Add(TEXT("Development mode enabled."));
 	}

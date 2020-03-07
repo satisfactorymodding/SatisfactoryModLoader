@@ -25,12 +25,12 @@ void setHandlerListInstanceInternal(const std::string& identifier, void* handler
 std::string decorateSymbolName(const char* functionName, const char* symbolType) {
 	//TODO support hooking different C++ function overloads (bootstrapper supports it)
 	//SML::Logging::info(TEXT("Function signature: "), symbolType);
-	SML::Logging::info(TEXT("Function name: "), functionName);
+	SML::Logging::info(TEXT("Hooking Function name: "), functionName);
 	return std::string(functionName);
 }
 
 #define CHECK_FUNCHOOK_ERR(arg, message) \
-	if (arg != FUNCHOOK_ERROR_SUCCESS) SML::shutdownEngine(SML::formatStr(message, convertStr(functionNameStr.c_str()), TEXT(": "), convertStr(funchook_error_message(funchook))));
+	if (arg != FUNCHOOK_ERROR_SUCCESS) SML::shutdownEngine(*FString::Printf(TEXT("%s%s: %s"), message, functionNameStr.c_str(), funchook_error_message(funchook)));
 
 void* registerHookFunction(const std::string& functionNameStr, void* hookFunction) {
 #if WITH_EDITOR
@@ -43,7 +43,7 @@ void* registerHookFunction(const std::string& functionNameStr, void* hookFunctio
 		}
 		void* gameFunctionPtr = SML::ResolveGameSymbol(functionNameStr.c_str());
 		if (gameFunctionPtr == nullptr) {
-			SML::shutdownEngine(SML::formatStr(TEXT("Hook target function not found: "), convertStr(functionNameStr.c_str())));
+			SML::shutdownEngine(FString::Printf(TEXT("Hook target function not found: %s"), functionNameStr.c_str()));
 		}
 		CHECK_FUNCHOOK_ERR(funchook_prepare(funchook, &gameFunctionPtr, hookFunction), TEXT("funchook_prepare returned error: "));
 		CHECK_FUNCHOOK_ERR(funchook_install(funchook, 0), TEXT("funchook_install returned error:"));

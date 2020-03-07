@@ -1,7 +1,6 @@
 #pragma once
 #include "ModHandler.h"
-#include <filesystem>
-#include "util/json.hpp"
+#include "Json.h"
 #include "zip/ttvfs/ttvfs.h"
 #include "hooking.h"
 #include "util/TopologicalSort.h"
@@ -11,43 +10,37 @@ using namespace Mod;
 
 typedef std::string FileHash;
 
-void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
-	std::unordered_map<std::wstring, uint64_t>& modIndices,
+void iterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
+	TMap<FString, uint64_t>& modIndices,
 	const FModInfo& selfInfo,
-	std::vector<std::wstring>& missingDependencies,
+	TArray<FString>& missingDependencies,
 	TopologicalSort::DirectedGraph<uint64_t>& sortGraph,
-	const std::unordered_map<std::wstring, FVersionRange>& dependencies,
+	const TMap<FString, FVersionRange>& dependencies,
 	bool optional);
 
-void finalizeSortingResults(std::unordered_map<uint64_t, std::wstring>& modByIndex,
-	std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
-	std::vector<uint64_t>& sortedIndices);
+void finalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
+	TMap<FString, FModLoadingEntry>& loadingEntries,
+	TArray<uint64_t>& sortedIndices);
 
-void populateSortedModList(std::unordered_map<uint64_t, std::wstring>& modByIndex,
-	std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
-	std::vector<uint64_t>& sortedIndices,
-	std::vector<FModLoadingEntry>& sortedModLoadingList);
+void populateSortedModList(TMap<uint64_t, FString>& modByIndex,
+	TMap<FString, FModLoadingEntry>& loadingEntries,
+	TArray<uint64_t>& sortedIndices,
+	TArray<FModLoadingEntry>& sortedModLoadingList);
 
 IModuleInterface* InitializeSMLModule();
 
-FModPakLoadEntry CreatePakLoadEntry(const std::wstring& modid);
+FModPakLoadEntry CreatePakLoadEntry(const FString& modid);
 
 FModLoadingEntry createSMLLoadingEntry();
 
-std::wstring getModIdFromFile(const path& filePath);
+FString getModIdFromFile(const FString& filePath);
 
-std::string createModuleNameFromModId(const std::wstring& modId);
+bool extractArchiveFile(const FString& outFilePath, ttvfs::File* obj);
 
-FileHash hashFileContents(const path& path);
-
-path generateTempFilePath(const FileHash& fileHash, const char* extension);
-
-bool extractArchiveFile(const path& outFilePath, ttvfs::File* obj);
-
-nlohmann::json readArchiveJson(ttvfs::File* obj);
+TSharedPtr<FJsonObject> readArchiveJson(ttvfs::File* obj);
 
 FileHash hashArchiveFileContents(ttvfs::File* obj);
 
-bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const json& metadata);
+bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const FJsonObject* metadata);
 
-bool extractArchiveObjects(ttvfs::Dir& root, const nlohmann::json& dataJson, SML::Mod::FModLoadingEntry& loadingEntry);
+bool extractArchiveObjects(ttvfs::Dir& root, const FJsonObject& dataJson, SML::Mod::FModLoadingEntry& loadingEntry);

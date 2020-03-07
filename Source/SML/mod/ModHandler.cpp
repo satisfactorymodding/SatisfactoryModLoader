@@ -1,7 +1,5 @@
 #include "ModHandler.h"
-#include <filesystem>
 #include "util/Utility.h"
-#include "util/json.hpp"
 #include "util/Logging.h"
 #include "util/picosha2.h"
 #include "zip/ttvfs/ttvfs.h"
@@ -39,14 +37,11 @@ public:
 		moduleInfo->Module->StartupModule();
 		{
 			FScopeLock Lock(&moduleManager.ModulesCriticalSection);
-
 			// Update hash table
 			moduleManager.Modules.Add(moduleName, moduleInfo);
 		}
-
 		//TODO: this is AddModuleToModulesList. Not sure if exported, not sure if needed
 		//FModuleManager::Get().ModulesChangedEvent.Broadcast(InModuleName, EModuleChangeReason::PluginDirectoryChanged);
-		
 		//TODO: this one is not exported in PDB; not sure if it is needed
 		//moduleManager.OnModulesChanged().Broadcast(moduleName, EModuleChangeReason::ModuleLoaded);
 		return moduleInfo->Module.Get();
@@ -55,62 +50,61 @@ public:
 
 FModHandler::FModHandler() {}
 
-std::map<std::wstring, HLOADEDMODULE> loadedModuleDlls;
+TMap<FString, HLOADEDMODULE> loadedModuleDlls;
 
 void FModHandler::loadDllMods(const BootstrapAccessors& accessors) {
 	for (auto& loadingEntry : sortedModLoadList) {
-		const std::wstring& modid = loadingEntry.modInfo.modid;
-		if (!loadingEntry.dllFilePath.empty()) {
-			std::string moduleName = createModuleNameFromModId(loadingEntry.modInfo.modid);
-			HLOADEDMODULE module = accessors.LoadModule(moduleName.c_str(), loadingEntry.dllFilePath.c_str());
-			if (module == nullptr) SML::shutdownEngine(formatStr(TEXT("Module failed to load: "), moduleName));
-			loadedModuleDlls.insert({ modid, module });
+		const FString& modid = loadingEntry.modInfo.modid;
+		if (loadingEntry.dllFilePath.Len() > 0) {
+			HLOADEDMODULE module = accessors.LoadModule("", *loadingEntry.dllFilePath);
+			if (module == nullptr) SML::shutdownEngine(FString::Printf(TEXT("Module failed to load: %s"), *loadingEntry.dllFilePath));
+			loadedModuleDlls.Add(modid, module);
 		}
 	}
 }
 
-void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, std::map<std::wstring, IModuleInterface*>& loadedModules) {
-	std::map<std::wstring, FName> registeredModules;
+void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, TMap<FString, IModuleInterface*>& loadedModules) {
+	TMap<FString, FName> registeredModules;
 	
 	//register SML module manually as it is already loaded into the process
 	FName smlModuleName = FName(TEXT("SML"));
 	IModuleInterface* smlModule = FModuleManagerHack::LoadModuleFromInitializerFunc(smlModuleName, &InitializeSMLModule);
-	loadedModules.insert({ TEXT("SML"), smlModule });
+	loadedModules.Add(TEXT("SML"), smlModule);
 
 	//Populate loaded modules map
 	for (auto& pair : loadedModuleDlls) {
-		const std::wstring& modid = pair.first;
-		const HLOADEDMODULE loadedModule = pair.second;
+		const FString& modid = pair.Key;
+		const HLOADEDMODULE loadedModule = pair.Value;
 		void* rawInitPtr = accessors.GetModuleProcAddress(loadedModule, "InitializeModule");
 		const FInitializeModuleFunctionPtr initModule = static_cast<FInitializeModuleFunctionPtr>(rawInitPtr);
 		if (initModule == nullptr) {
-			std::wstring message = formatStr(TEXT("Failed to initialize module "), modid, ": InitializeModule() function not found");
-			SML::Logging::error(message);
-			loadingProblems.push_back(message);
+			FString message = FString::Printf(TEXT("Failed to initialize module %s: InitializeModule() function not found"), *modid);
+			SML::Logging::error(*message);
+			loadingProblems.Add(message);
 			continue;
 		}
-		FName moduleName = FName(modid.c_str());
+		FName moduleName = FName(*modid);
 		IModuleInterface* moduleInterface = FModuleManagerHack::LoadModuleFromInitializerFunc(moduleName, initModule);
-		loadedModules.insert({ modid, moduleInterface });
+		loadedModules.Add(modid, moduleInterface);
 	}
 }
 
-void FModHandler::PopulateModList(const std::map<std::wstring, IModuleInterface*>& loadedModules) {
+void FModHandler::PopulateModList(const TMap<FString, IModuleInterface*>& loadedModules) {
 	for (auto& loadingEntry : sortedModLoadList) {
-		auto moduleInterface = loadedModules.find(loadingEntry.modInfo.modid);
+		auto moduleInterface = loadedModules.Find(loadingEntry.modInfo.modid);
 		FModContainer* modContainer;
-		if (moduleInterface != loadedModules.end()) {
+		if (moduleInterface != nullptr) {
 			//mod has DLL, so we reference module loaded from it here
-			IModuleInterface* interface = moduleInterface->second;
+			IModuleInterface* interface = *moduleInterface;
 			modContainer = new FModContainer{ loadingEntry.modInfo, interface };
 		} else {
 			//mod has no DLL, it is pak-only mod, construct default mode implementation
 			IModuleInterface* interface = new FDefaultModuleImpl();
 			modContainer = new FModContainer{ loadingEntry.modInfo, interface };
 		}
-		loadedModsList.push_back(modContainer);
-		loadedMods.insert({ loadingEntry.modInfo.modid, modContainer });
-		loadedModsModIDs.push_back(loadingEntry.modInfo.modid);
+		loadedModsList.Add(modContainer);
+		loadedMods.Add(loadingEntry.modInfo.modid, modContainer);
+		loadedModsModIDs.Add(loadingEntry.modInfo.modid);
 	}
 }
 
@@ -118,30 +112,29 @@ void FModHandler::MountModPaks() {
 	FPakPlatformFile* pakPlatformFile = static_cast<FPakPlatformFile*>(FPlatformFileManager::Get().FindPlatformFile(TEXT("PakFile")));
 	TArray<FString> mountedPakNames;
 	pakPlatformFile->GetMountedPakFilenames(mountedPakNames);
-	path platformPakFileName = GetData(mountedPakNames[0]);
-	const path pakSignatureFilePath = platformPakFileName.replace_extension(".sig");
+	FString platformPakFileName = GetData(mountedPakNames[0]);
+	const FString gamePakSignaturePath = FPaths::ChangeExtension(platformPakFileName, TEXT("sig"));
 	
 	for (auto& loadingEntry : sortedModLoadList) {
 		for (auto& pakFileDef : loadingEntry.pakFiles) {
-			std::wstring pakFilePathStr = pakFileDef.pakFilePath;
-			path pakFileSystemPath(pakFilePathStr);
-			path pakFileSignaturePath = pakFileSystemPath.replace_extension(".sig");
+			FString pakFilePathStr = pakFileDef.pakFilePath;
+			FString modPakSignaturePath = FPaths::ChangeExtension(pakFilePathStr, TEXT("sig"));
 			//make sure we have signature file in place before mounting pak
-			if (!exists(pakFileSignaturePath)) {
-				copy_file(pakSignatureFilePath, pakFileSignaturePath);
+			if (!FPaths::FileExists(modPakSignaturePath)) {
+				FPlatformFileManager::Get().GetPlatformFile().CopyFile(*modPakSignaturePath, *gamePakSignaturePath);
 			}
-			FString filePathString(pakFilePathStr.c_str());
-			FCoreDelegates::OnMountPak.Execute(filePathString, pakFileDef.loadingPriority, nullptr);
+
+			FCoreDelegates::OnMountPak.Execute(pakFilePathStr, pakFileDef.loadingPriority, nullptr);
 		}
-		if (!loadingEntry.pakFiles.empty()) {
+		if (loadingEntry.pakFiles.Num() > 0) {
 			const FModPakLoadEntry pakEntry = CreatePakLoadEntry(loadingEntry.modInfo.modid);
-			modPakInitializers.push_back(pakEntry);
+			modPakInitializers.Add(pakEntry);
 		}
 	}
 }
 
 void FModHandler::loadMods(const BootstrapAccessors& accessors) {
-	std::map<std::wstring, IModuleInterface*> loadedModules;
+	TMap<FString, IModuleInterface*> loadedModules;
 	
 	SML::Logging::info("Loading mods...");
 	LoadModLibraries(accessors, loadedModules);
@@ -160,7 +153,6 @@ class MapFindHookProto {
 public: const FString* Find(const FName&) { return nullptr; }
 };
 
-static bool shouldLogAssetFinds = false;
 
 void FModHandler::attachLoadingHooks() {
 	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](CallResult<void>&, AFGGameMode* gameMode) {
@@ -183,16 +175,14 @@ void FModHandler::attachLoadingHooks() {
 }
 
 UClass* GetActiveLoadClass(const FModPakLoadEntry& entry, bool isMenuWorld) {
-	return isMenuWorld ? (UClass*)entry.menuInitClass : (UClass*)entry.modInitClass;
+	return isMenuWorld ? static_cast<UClass*>(entry.menuInitClass) : static_cast<UClass*>(entry.modInitClass);
 }
 
 void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
-	shouldLogAssetFinds = true;
 	UWorld* world = gameMode->GetWorld();
 	const bool isMenuWorld = gameMode->IsMainMenuGameMode();
-	modInitializerActorList.clear();
+	modInitializerActorList.Empty();
 	for (auto& initializer : modPakInitializers) {
-		SML::Logging::debug(TEXT("MENU INIT "), initializer.menuInitClass, TEXT(" MOD INIT "), initializer.modInitClass, TEXT(" IS MENU WORLD "), isMenuWorld);
 		UClass* targetClass = GetActiveLoadClass(initializer, isMenuWorld);
 		if (targetClass == nullptr) {
 			continue;
@@ -200,12 +190,8 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 		FVector position = FVector::ZeroVector;
 		FRotator rotation = FRotator::ZeroRotator;
 		FActorSpawnParameters spawnParams{};
-		SML::Logging::debug(TEXT("ACTOR CLASS "), GetData(targetClass->GetPathName()), TEXT(" IS AACTOR "), targetClass->IsChildOf(AActor::StaticClass()));
 		AActor* actor = world->SpawnActor(targetClass, &position, &rotation, spawnParams);
-		if (actor != nullptr) {
-			SML::Logging::debug(TEXT("SPAWNED ACTOR "), GetData(actor->GetFullName()));
-		}
-		modInitializerActorList.push_back(actor);
+		modInitializerActorList.Add(actor);
 	}
 }
 
@@ -270,21 +256,21 @@ void FModHandler::postInitializeModActors() {
 }
 
 void FModHandler::checkDependencies() {
-	std::vector<FModLoadingEntry> allLoadingEntries;
-	std::unordered_map<std::wstring, uint64_t> modIndices;
-	std::unordered_map<uint64_t, std::wstring> modByIndex;
+	TArray<FModLoadingEntry> allLoadingEntries;
+	TMap<FString, uint64_t> modIndices;
+	TMap<uint64_t, FString> modByIndex;
 	SML::TopologicalSort::DirectedGraph<uint64_t> sortGraph;
 	uint64_t currentIdx = 1;
 	//construct initial mod list, assign indices, add mod nodes
 	for (auto& pair : loadingEntries) {
-		allLoadingEntries.push_back(pair.second);
+		allLoadingEntries.Add(pair.Value);
 		uint64_t index = currentIdx++;
-		modIndices.insert({ pair.first, index });
-		modByIndex.insert({ index, pair.first });
+		modIndices.Add(pair.Key, index);
+		modByIndex.Add(index, pair.Key);
 		sortGraph.addNode(index);
 	}
 
-	std::vector<std::wstring> missingDependencies;
+	TArray<FString> missingDependencies;
 	//setup node dependencies
 	for (const FModLoadingEntry& loadingEntry : allLoadingEntries) {
 		const FModInfo& selfInfo = loadingEntry.modInfo;
@@ -292,56 +278,61 @@ void FModHandler::checkDependencies() {
 		iterateDependencies(loadingEntries, modIndices, selfInfo, missingDependencies, sortGraph, selfInfo.optionalDependencies, true);
 	}
 	//check for missing dependencies
-	if (!missingDependencies.empty()) {
-		loadingProblems.push_back(TEXT("Found missing dependencies:"));
+	if (missingDependencies.Num() > 0) {
+		loadingProblems.Add(TEXT("Found missing dependencies:"));
 		SML::Logging::error(TEXT("Found missing dependencies:"));
 		for (auto& dependencyLine : missingDependencies) {
-			loadingProblems.push_back(dependencyLine);
-			SML::Logging::error(dependencyLine);
+			SML::Logging::error(*dependencyLine);
+			loadingProblems.Add(dependencyLine);
 		}
 		SML::shutdownEngine(TEXT("Cannot continue loading without dependencies"));
 		return;
 	}
 	//perform initial dependency sorting
-	std::vector<uint64_t> sortedIndices;
-	/*try {*/
+	TArray<uint64_t> sortedIndices;
+	try {
 		sortedIndices = SML::TopologicalSort::topologicalSort(sortGraph);
-	/*} catch (SML::TopologicalSort::cycle_detected<uint64_t>& ex) {
-		std::wstring message = formatStr(TEXT("Cycle dependency found in sorting graph at modid: "), modByIndex[ex.cycleNode]);
-		loadingProblems.push_back(message);
-		SML::Logging::error(message);
+	} catch (SML::TopologicalSort::cycle_detected<uint64_t>& ex) {
+		FString message = FString::Printf(TEXT("Cycle dependency found in sorting graph at modid: %s"), *modByIndex[ex.cycleNode]);
+		loadingProblems.Add(message);
+		SML::Logging::error(*message);
 		return;
-	}*/
+	}
 	finalizeSortingResults(modByIndex, loadingEntries, sortedIndices);
 	populateSortedModList(modByIndex, loadingEntries, sortedIndices, sortedModLoadList);
-	loadingEntries.clear();
+	loadingEntries.Empty();
 	checkStageErrors(TEXT("dependency resolution"));
 };
 
+
+
 void FModHandler::discoverMods() {
-	loadingEntries.insert({ TEXT("SML"), createSMLLoadingEntry() });
-	path modsPath = SML::getModDirectory();
-	for (auto& file : directory_iterator(modsPath)) {
-		if (is_regular_file(file.path())) {
-			if (file.path().extension() == ".smod" ||
-				file.path().extension() == ".zip") {
-				constructZipMod(file.path());
-			} else if (file.path().extension() == ".dll") {
-				constructDllMod(file.path());
-			} if (file.path().extension() == ".pak") {
-				constructPakMod(file.path());
+	loadingEntries.Add(TEXT("SML"), createSMLLoadingEntry());
+	FString modsPath = SML::getModDirectory();
+	auto directoryVisitor = MakeDirectoryVisitor([this](const TCHAR* filepath, bool isDir) {
+		if (!isDir) {
+			if (FPaths::GetExtension(filepath) == TEXT("smod") ||
+				FPaths::GetExtension(filepath) == TEXT("zip")) {
+				constructZipMod(filepath);
+			}
+			else if (FPaths::GetExtension(filepath) == TEXT("dll")) {
+				constructDllMod(filepath);
+			} if (FPaths::GetExtension(filepath) == TEXT("pak")) {
+				constructPakMod(filepath);
 			}
 		}
-	}
+		return true;
+	});
+	FPlatformFileManager::Get().GetPlatformFile().IterateDirectory(*modsPath, directoryVisitor);
 	checkStageErrors(TEXT("mod discovery"));
 };
 
-void FModHandler::constructZipMod(const path& filePath) {
-	SML::Logging::debug(TEXT("Constructing zip mod from "), filePath);
+void FModHandler::constructZipMod(const FString& filePath) {
+	SML::Logging::debug(TEXT("Constructing zip mod from "), *filePath);
 	ttvfs::Root vfs;
 	vfs.AddLoader(new ttvfs::DiskLoader);
 	vfs.AddArchiveLoader(new ttvfs::VFSZipArchiveLoader);
-	auto modArchive = vfs.AddArchive(filePath.generic_string().c_str());
+	auto modArchive = vfs.AddArchive(TCHAR_TO_ANSI(*filePath));
 	if (modArchive == nullptr) {
 		reportBrokenZipMod(filePath, TEXT("corrupted zip file"));
 		return;
@@ -352,109 +343,112 @@ void FModHandler::constructZipMod(const path& filePath) {
 		return;
 	}
 	FModInfo modInfo;
-	nlohmann::json dataJsonObj;
-	dataJsonObj = readArchiveJson(dataJson);
-	if (!FModInfo::isValid(dataJsonObj, filePath)) {
+	const TSharedPtr<FJsonObject>& dataJsonObj = readArchiveJson(dataJson);
+	if (!dataJsonObj.IsValid() || !FModInfo::isValid(*dataJsonObj.Get(), filePath)) {
 		reportBrokenZipMod(filePath, TEXT("Invalid data.json"));
 		return;
 	}
-	modInfo = FModInfo::createFromJson(dataJsonObj);
+	modInfo = FModInfo::createFromJson(*dataJsonObj.Get());
 	FModLoadingEntry& loadingEntry = createLoadingEntry(modInfo, filePath);
 	if (!loadingEntry.isValid) return;
-	if (!extractArchiveObjects(*modArchive, dataJsonObj, loadingEntry)) {
-		std::wstring message = formatStr(TEXT("Failed to extract data objects"));
-		reportBrokenZipMod(filePath, message.c_str());
+	if (!extractArchiveObjects(*modArchive, *dataJsonObj.Get(), loadingEntry)) {
+		FString message = TEXT("Failed to extract data objects");
+		reportBrokenZipMod(filePath, message);
 	}
 }
 
-void FModHandler::constructDllMod(const path& filePath) {
+void FModHandler::constructDllMod(const FString& filePath) {
 	if (!checkAndNotifyRawMod(filePath)) return;
 	auto modId = getModIdFromFile(filePath);
 	auto& loadingEntry = createRawModLoadingEntry(modId, filePath);
 	if (!loadingEntry.isValid) return;
-	loadingEntry.dllFilePath = filePath.generic_wstring();
+	loadingEntry.dllFilePath = filePath;
 }
 
-void FModHandler::constructPakMod(const path& filePath) {
+void FModHandler::constructPakMod(const FString& filePath) {
 	if (!checkAndNotifyRawMod(filePath)) return;
 	auto modId = getModIdFromFile(filePath);
 	auto& loadingEntry = createRawModLoadingEntry(modId, filePath);
 	if (!loadingEntry.isValid) return;
-	loadingEntry.pakFiles.push_back(FModPakFileEntry{ filePath.generic_wstring(), 0 });
+	loadingEntry.pakFiles.Add(FModPakFileEntry{ filePath, 0 });
 }
 
-const std::vector<std::wstring>& FModHandler::getLoadedMods() const {
+const TArray<FString>& FModHandler::getLoadedMods() const {
 	return loadedModsModIDs;
 }
 
-bool FModHandler::isModLoaded(const std::wstring& modId) const {
-	return loadedMods.find(modId) != loadedMods.end();
+bool FModHandler::isModLoaded(const FString& modId) const {
+	return loadedMods.Find(modId) != nullptr;
 }
 
-const FModContainer& FModHandler::getLoadedMod(const std::wstring& modId) const {
-	const auto loadedModWrapped = loadedMods.find(modId);
-	if (loadedModWrapped == loadedMods.end()) {
-		SML::shutdownEngine(formatStr(TEXT("Mod with provided ID is not loaded: "), modId));
+const FModContainer& FModHandler::getLoadedMod(const FString& modId) const {
+	const auto loadedModWrapped = loadedMods.Find(modId);
+	if (loadedModWrapped == nullptr) {
+		SML::shutdownEngine(FString::Printf(TEXT("Mod with provided ID is not loaded: %s"), *modId));
 	}
-	return *loadedModWrapped->second;
+	return **loadedModWrapped;
 }
 
 void FModHandler::checkStageErrors(const TCHAR* stageName) {
-	if (!loadingProblems.empty()) {
-		std::wstring message = formatStr(TEXT("Errors occurred during mod loading stage '"), stageName, TEXT("'. Loading cannot continue:\n"));
+	if (loadingProblems.Num() > 0) {
+		FString message = FString::Printf(TEXT("Errors occurred during mod loading stage '%s'. Loading cannot continue:\n"), stageName);
 		for (auto& problem : loadingProblems)
-			message.append(problem).append(TEXT("\n"));
-		SML::shutdownEngine(message);
-		loadingProblems.clear();
+			message.Append(problem).Append(TEXT("\n"));
+		SML::shutdownEngine(*message);
+		loadingProblems.Empty();
 	}
 }
 
-void FModHandler::reportBrokenZipMod(const path& filePath, const std::wstring& reason) {
-	std::wstring message = formatStr(TEXT("Failed to load zip mod from "), filePath.generic_wstring(), TEXT(" ("), reason, TEXT(")"));
-	SML::Logging::error(message);
-	loadingProblems.push_back(message);
+void FModHandler::reportBrokenZipMod(const FString& filePath, const FString& reason) {
+	FString message = FString::Printf(TEXT("Failed to load zip mod from %s(%s)"), *filePath, *reason);
+	loadingProblems.Add(message);
+	SML::Logging::error(*message);
 }
 
-bool FModHandler::checkAndNotifyRawMod(const path& filePath) {
+bool FModHandler::checkAndNotifyRawMod(const FString& filePath) {
 	if (!SML::getSMLConfig().developmentMode) {
-		SML::Logging::error(TEXT("Found raw mod in mods directory: "), filePath.generic_wstring());
+		SML::Logging::error(TEXT("Found raw mod in mods directory: "), *filePath);
 		SML::Logging::error(TEXT("Raw mods are not supported in production mode and can be used only for development"));
-		this->loadingProblems.push_back(formatStr(TEXT("Found unsupported raw mod file: "), filePath.generic_wstring()));
+		this->loadingProblems.Add(FString::Printf(TEXT("Found unsupported raw mod file: %s"), *filePath));
 		return false;
 	}
-	SML::Logging::warning(TEXT("Loading development raw mod: "), filePath.generic_wstring());
+	SML::Logging::warning(TEXT("Loading development raw mod: "), *filePath);
 	SML::Logging::warning(TEXT("Dependencies and versioning won't work!"));
 	return true;
 }
 
-FModLoadingEntry& FModHandler::createLoadingEntry(const FModInfo& modInfo, const path& filePath) {
+FModLoadingEntry& FModHandler::createLoadingEntry(const FModInfo& modInfo, const FString& filePath) {
+	if (loadingEntries.Find(modInfo.modid) == nullptr)
+		loadingEntries.Add(modInfo.modid);
 	FModLoadingEntry& loadingEntry = loadingEntries[modInfo.modid];
 	if (loadingEntry.isValid) {
-		std::wstring message = formatStr(TEXT("Found duplicate mods with same mod ID "), modInfo.modid, TEXT(": "),
-			filePath.generic_wstring(), TEXT(" and "), loadingEntry.virtualModFilePath);
-		SML::Logging::fatal(message);
-		loadingProblems.push_back(message);
+		FString message = FString::Printf(TEXT("Found duplicate mods with same mod ID %s: %s and %s"), *modInfo.modid, *filePath, *loadingEntry.virtualModFilePath);
+		loadingProblems.Add(message);
+		SML::Logging::fatal(*message);
 		return INVALID_ENTRY;
 	}
 	loadingEntry.isValid = true;
 	loadingEntry.modInfo = modInfo;
-	loadingEntry.virtualModFilePath = filePath.generic_wstring();
+	loadingEntry.virtualModFilePath = filePath;
 	return loadingEntry;
 }
 
 
-FModLoadingEntry& FModHandler::createRawModLoadingEntry(const std::wstring& modId, const path& filePath) {
+FModLoadingEntry& FModHandler::createRawModLoadingEntry(const FString& modId, const FString& filePath) {
+	if (loadingEntries.Find(modId) == nullptr)
+		loadingEntries.Add(modId);
 	FModLoadingEntry& loadingEntry = loadingEntries[modId];
 	if (!loadingEntry.isValid) {
 		loadingEntry.isValid = true;
 		loadingEntry.modInfo = SML::Mod::FModInfo::createDummyInfo(modId);
-		loadingEntry.modInfo.dependencies.insert({ TEXT("@ORDER:LAST"), FVersionRange(TEXT("1.0.0")) });
-		loadingEntry.virtualModFilePath = filePath.generic_wstring();
+		loadingEntry.modInfo.dependencies.Add(TEXT("@ORDER:LAST"), FVersionRange(TEXT("1.0.0")));
+		loadingEntry.virtualModFilePath = filePath;
 		loadingEntry.isRawMod = true;
 	}
 	if (!loadingEntry.isRawMod) {
-		SML::Logging::fatal(TEXT("Found raw mod file conflicting with packed mod: "), filePath.generic_string());
-		loadingProblems.push_back(formatStr(TEXT("Found raw mod file conflicting with packed mod: "), filePath.generic_string()));
+        FString message = FString::Printf(TEXT("Found raw mod file conflicting with packed mod: %s"), *filePath);
+		SML::Logging::fatal(*message);
+		loadingProblems.Add(message);
 		return INVALID_ENTRY;
 	}
 	return loadingEntry;

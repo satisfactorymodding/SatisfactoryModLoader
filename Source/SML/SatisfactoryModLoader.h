@@ -1,19 +1,6 @@
 #pragma once
-#include <string>
 #include "mod/version.h"
 #include "mod/ModHandler.h"
-#include <filesystem>
-
-using namespace std::experimental::filesystem;
-
-/**
- * Methods for converting widechar text to multibyte text
- * and vice-versa. While technically most C++ constructors can do
- * conversion automatically, they don't handle multi-byte
- * characters properly as experience shows
- */
-std::string convertStr(const wchar_t* string);
-std::wstring convertStr(const char* string);
 
 namespace SML {
 	struct FSMLConfiguration {
@@ -98,14 +85,14 @@ namespace SML {
 	/**
 	 * Retrieves path to the mods directory used by the mod handler to locate mods
 	 */
-	SML_API extern path getModDirectory();
+	SML_API extern FString getModDirectory();
 
 	/**
 	 * Retrieves path used for storing configuration information related to SML
 	 * and active mods. You don't have to use it directly, instead, you can use
 	 * ready configuration module which will locate proper config automatically
 	 */
-	SML_API extern path getConfigDirectory();
+	SML_API extern FString getConfigDirectory();
 
 	/**
 	 * Retrieves path to the directory used for caching resources unpacked from mod zips
@@ -113,7 +100,7 @@ namespace SML {
 	 * It can be invalidated in any time, so it's not safe to use it for persistent storage
 	 * for configuration, use getConfigDirectory()
 	 */
-	SML_API extern path getCacheDirectory();
+	SML_API extern FString getCacheDirectory();
 
 	void* ResolveGameSymbol(const char* symbolName);
 };

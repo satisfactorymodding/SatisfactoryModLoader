@@ -16,7 +16,6 @@
 */
 #include "SatisfactoryModLoader.h"
 #include "util/bootstrapper_exports.h"
-#include <string>
 #include <fstream>
 #include <functional>
 #include "util/Logging.h"
@@ -24,10 +23,7 @@
 #include "util/Internal.h"
 #include "CoreDelegates.h"
 #include "FGGameMode.h"
-#include "mod/hooking.h"
-#include "MallocBinned2.h"
-#include <experimental/filesystem>
-#include "MOD/ModHandler.h"
+#include "mod/ModHandler.h"
 #include "util/Console.h"
 #include "player/PlayerUtility.h"
 #include "command/ChatCommandAPI.h"
@@ -35,31 +31,13 @@
 #include "player/VersionCheck.h"
 #include "player/MainMenuMixin.h"
 
-using namespace std::experimental::filesystem;
-
-std::string convertStr(const TCHAR* string) {
-	size_t arraySize;
-	wcstombs_s(&arraySize, nullptr, 0, string, 0);
-	std::vector<char> result;
-	result.reserve(arraySize);
-	wcstombs_s(nullptr, result.data(), arraySize, string, arraySize);
-	return std::string(result.data());
-}
-
-std::wstring convertStr(const char* string) {
-	size_t arraySize;
-	mbstowcs_s(&arraySize, nullptr, 0, string, 0);
-	std::vector<TCHAR> result;
-	result.reserve(arraySize);
-	mbstowcs_s(nullptr, result.data(), arraySize, string, arraySize);
-	return std::wstring(result.data());
-}
-
 bool checkGameVersion(const long targetVersion) {
-	std::string str = convertStr(FApp::GetBuildVersion());
-	const long version = std::atol(str.substr(str.find_last_of('-') + 1).c_str());
+	const FString& buildVersion = FString(FApp::GetBuildVersion());
+	int32 charIndex = -1;
+	buildVersion.FindLastChar('-', charIndex);
+	const long version = FCString::Atoi(*buildVersion.Mid(charIndex + 1));
 	if (targetVersion > version) {
-		SML::Logging::fatal(TEXT("Version check failed: Satisfactory version CL-"), version, TEXT(" is outdated. SML requires at least CL-"), targetVersion, TEXT(". Things are not going to work."));
+		SML::Logging::fatal(*FString::Printf(TEXT("Version check failed: Satisfactory version CL-%ld is outdated. SML requires at least CL-%ld. Things are not going to work."), version, targetVersion));
 		return false;
 	}
 	if (targetVersion < version) {
@@ -71,30 +49,30 @@ bool checkGameVersion(const long targetVersion) {
 
 bool checkBootstrapperVersion(SML::Versioning::FVersion target, SML::Versioning::FVersion actual) {
 	if (actual.compare(target) < 0) {
-		SML::Logging::fatal(TEXT("Bootstrapper version check failed: Bootstrapper version "), actual.string().c_str(), TEXT(" is outdated. SML requires at least "), target.string().c_str());
+		SML::Logging::fatal(*FString::Printf(TEXT("Bootstrapper version check failed: Bootstrapper version %s is outdated. SML requires at least %s"), *actual.string(), *target.string()));
 		return false;
 	}
 	return true;
 }
 
-void parseConfig(nlohmann::json& json, SML::FSMLConfiguration& config) {
-	json.at("enableSMLCommands").get_to(config.enableSMLChatCommands);
-	json.at("enableCrashReporter").get_to(config.enableCrashReporter);
-	json.at("developmentMode").get_to(config.developmentMode);
-	json.at("debug").get_to(config.debugLogOutput);
-	json.at("consoleWindow").get_to(config.consoleWindow);
-	json.at("fullLog").get_to(config.fullLog);
+void parseConfig(const TSharedRef<FJsonObject>& json, SML::FSMLConfiguration& config) {
+	config.enableSMLChatCommands = json->GetBoolField(TEXT("enableSMLCommands"));
+	config.enableCrashReporter = json->GetBoolField(TEXT("enableCrashReporter"));
+	config.developmentMode = json->GetBoolField(TEXT("developmentMode"));
+	config.debugLogOutput = json->GetBoolField(TEXT("debug"));
+	config.consoleWindow = json->GetBoolField(TEXT("consoleWindow"));
+	config.fullLog = json->GetBoolField(TEXT("fullLog"));
 }
 
-nlohmann::json dumpConfig(SML::FSMLConfiguration& config) {
-	return nlohmann::json{
-		{"enableSMLCommands",		config.enableSMLChatCommands},
-		{"enableCrashReporter",		config.enableCrashReporter},
-		{"developmentMode",			config.developmentMode},
-		{"debug",					config.debugLogOutput},
-		{"consoleWindow",			config.consoleWindow},
-		{"fullLog",					config.fullLog},
-	};
+TSharedRef<FJsonObject> createConfigDefaults() {
+	TSharedRef<FJsonObject> ref = MakeShareable(new FJsonObject());
+	ref->SetBoolField(TEXT("enableSMLCommands"), true);
+	ref->SetBoolField(TEXT("enableCrashReporter"), true);
+	ref->SetBoolField(TEXT("developmentMode"), false);
+	ref->SetBoolField(TEXT("debug"), false);
+	ref->SetBoolField(TEXT("consoleWindow"), false);
+	ref->SetBoolField(TEXT("fullLog"), false);
+	return ref;
 }
 
 namespace SML {
@@ -132,8 +110,8 @@ namespace SML {
 	//Holds pointers to the bootstrapper functions used for loading modules
 	static BootstrapAccessors* bootstrapAccessors;
 
-	//path to the root of the game
-	static path* rootGamePath;
+	//FString to the root of the game
+	static FString* rootGamePath;
 
 	void* ResolveGameSymbol(const char* symbolName) {
 		return bootstrapAccessors->ResolveGameSymbol(symbolName);
@@ -146,18 +124,20 @@ namespace SML {
 	void bootstrapSML(BootstrapAccessors& accessors) {
 		bootstrapAccessors = new BootstrapAccessors(accessors);
 		logOutputStream = new std::wofstream();
-		logOutputStream->open(path(accessors.gameRootDirectory) / logFileName, std::ios_base::out | std::ios_base::trunc);
+		logOutputStream->open(*(FString(accessors.gameRootDirectory) / logFileName), std::ios_base::out | std::ios_base::trunc);
 
 		SML::Logging::info(TEXT("Log System Initialized!"));
-		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), modLoaderVersion->string());
+		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), *modLoaderVersion->string());
 		bootstrapperVersion = new SML::Versioning::FVersion(accessors.version);
 		
-		rootGamePath = new path(accessors.gameRootDirectory);
-		SML::Logging::info(TEXT("Game root directory: "), rootGamePath->generic_wstring());
+		rootGamePath = new FString(accessors.gameRootDirectory);
+		SML::Logging::info(TEXT("Game root directory: "), **rootGamePath);
 
-		std::experimental::filesystem::create_directories(getModDirectory());
-		create_directories(getConfigDirectory());
-		create_directories(getCacheDirectory());
+		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+
+		PlatformFile.CreateDirectoryTree(*getModDirectory());
+		PlatformFile.CreateDirectoryTree(*getConfigDirectory());
+		PlatformFile.CreateDirectoryTree(*getCacheDirectory());
 
 		if (!checkBootstrapperVersion(*targetBootstrapperVersion, *bootstrapperVersion)) {
 			SML::shutdownEngine(TEXT("Incompatible bootstrapper version."));
@@ -166,14 +146,7 @@ namespace SML {
 			SML::shutdownEngine(TEXT("Game version check failed."));
 		}
 		
-		nlohmann::json configJson = readModConfig(TEXT("SML"), { 
-			{"enableSMLCommands", true}, 
-			{"enableCrashReporter", false}, 
-			{"developmentMode", false}, 
-			{"debug", false}, 
-			{"consoleWindow", false}, 
-			{"fullLog", false}
-		});
+		const TSharedRef<FJsonObject>& configJson = readModConfig(TEXT("SML"), createConfigDefaults());
 		activeConfiguration = new FSMLConfiguration;
 		parseConfig(configJson, *activeConfiguration);
 
@@ -204,7 +177,7 @@ namespace SML {
 	void flushDebugSymbols() {
 		//ensure StackWalker is initialized before flushing symbols
 		ANSICHAR tmpBuffer[100];
-		FGenericPlatformStackWalk::StackWalkAndDump(tmpBuffer, 100, 0);
+		FGenericPlatformStackWalk::StackWalkAndDump(tmpBuffer, 100, 0);		
 		//flush bootstrapper cached symbols
 		SML::Logging::info(TEXT("Flushing debug symbols"));
 		bootstrapAccessors->FlushDebugSymbols();
@@ -220,15 +193,15 @@ namespace SML {
 		flushDebugSymbols();
 	}
 
-	SML_API path getModDirectory() {
+	SML_API FString getModDirectory() {
 		return *rootGamePath / TEXT("mods");
 	}
 
-	SML_API path getConfigDirectory() {
+	SML_API FString getConfigDirectory() {
 		return *rootGamePath / TEXT("configs");
 	}
 
-	SML_API path getCacheDirectory() {
+	SML_API FString getCacheDirectory() {
 		return *rootGamePath / TEXT(".cache");
 	}
 
@@ -255,10 +228,4 @@ namespace SML {
 
 extern "C" SML_API void BootstrapModule(BootstrapAccessors& accessors) {
 	return SML::bootstrapSML(accessors);
-}
-
-static const std::string LINKAGE_MODULE_NAME = createModuleNameFromModId(TEXT("SML"));
-
-extern "C" SML_API const char* GetLinkageModuleName() {
-	return LINKAGE_MODULE_NAME.c_str();
 }

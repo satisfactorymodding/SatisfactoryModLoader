@@ -1,89 +1,91 @@
 #include "Utility.h"
 #include "util/Logging.h"
-#include <fstream>
 #include <regex>
 
 namespace SML {
-	nlohmann::json parseJsonLenient(const std::wstring& input) {
-		return nlohmann::json::parse(input);
+	TSharedPtr<FJsonObject> parseJsonLenient(const FString& input) {
+		TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(*input);
+		FJsonSerializer Serializer;
+		TSharedPtr<FJsonObject> result;
+		Serializer.Deserialize(reader, result);
+		return result;
 	}
 	
-	path getModConfigFilePath(std::wstring modid) {
-		path configDirPath = getConfigDirectory();
-		std::wstring fileName = formatStr(modid, TEXT(".cfg"));
+	FString getModConfigFilePath(FString modid) {
+		FString configDirPath = getConfigDirectory();
+		FString fileName = modid + TEXT(".cfg");
 		return configDirPath / fileName;
 	}
 	
-	nlohmann::json readModConfig(std::wstring modid, const json& defaultValues) {
-		path configPath = getModConfigFilePath(modid);
-		if (!exists(configPath)) {
+	TSharedRef<FJsonObject> readModConfig(FString modid, const TSharedRef<FJsonObject>& defaultValues) {
+		FString configPath = getModConfigFilePath(modid);
+		if (!FPaths::FileExists(configPath)) {
 			writeModConfig(modid, defaultValues);
 			return defaultValues;
 		}
-		std::wifstream fileStream(configPath);
+		
+		FString contents;
+		FFileHelper::LoadFileToString(contents, *configPath);
 
-		auto iterator = std::istreambuf_iterator<TCHAR>(fileStream);
-		auto endIterator = std::istreambuf_iterator<TCHAR>();
-		std::wstring contents{iterator, endIterator};
-		nlohmann::json loadedJson = parseJsonLenient(contents);
-		loadedJson = setDefaultValues(loadedJson, defaultValues);
-		writeModConfig(modid, loadedJson);
-		return loadedJson;
+		TSharedPtr<FJsonObject> loadedJson = parseJsonLenient(contents);
+		if (!loadedJson.IsValid()) {
+			writeModConfig(modid, defaultValues);
+			return defaultValues;
+		}
+		TSharedRef<FJsonObject> ref = loadedJson.ToSharedRef();
+		if (setDefaultValues(ref, defaultValues)) {
+			writeModConfig(modid, ref);
+		}
+		return ref;
 	}
 
-	void writeModConfig(std::wstring modid, const nlohmann::json& config) {
-		path configPath = getModConfigFilePath(modid);
-		std::wofstream fileStream(configPath, std::ios::out);
+	void writeModConfig(FString modid, const TSharedRef<FJsonObject>& config) {
+		FString configPath = getModConfigFilePath(modid);
 
-		fileStream << config.dump(4);
-		fileStream.close();
+		FString resultString;
+		TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+		FJsonSerializer Serializer;
+		Serializer.Serialize(config, writer);
+		FFileHelper::SaveStringToFile(resultString, *configPath);
 	}
 
-	nlohmann::json setDefaultValues(nlohmann::json j, const nlohmann::json & defaultValues) {
-		for (auto it : defaultValues.items()) {
-			auto key = it.key();
-			auto value = it.value();
+	bool setDefaultValues(const TSharedPtr<FJsonObject>& j, const TSharedPtr<FJsonObject>& defaultValues) {
+		bool changedSomething = false;
+		for (const auto& it : defaultValues.Get()->Values) {
+			const auto& key = it.Key;
+			const auto& value = it.Value;
 
 			// Add if not existing
-			if (j.find(key) == j.end()) {
-				j[key] = value;
+			if (!j->HasField(key)) {
+				j->SetField(key, value);
+				changedSomething = true;
 				continue;
 			}
-
-			if (key.length() < 1 || key[0] != '$') { // ignore type checks if key[0] == '$'
-				auto jvalue = j[key];
-
-				// number type check
-				if (value.is_number_integer()) {
-					if (jvalue.is_number_integer())
-						continue;
-				}
-				else if (value.is_number() && jvalue.is_number()) {
-					continue;
-				}
-
+			// ignore type checks for key `$` (why tho?)
+			if (key.Len() != 1 || key[0] != '$') {
+				const auto& jvalue = j->Values[key];
 				// Override if wrong type
-				if (value.type() != j[key].type()) {
-					j[key] = value;
+				if (value->Type != jvalue->Type) {
+					j->SetField(key, value);
+					changedSomething = true;
 					continue;
 				}
 			}
-
 			// iterate over sub object
-			if (value.is_object())
-				j[key] = setDefaultValues(j[key], value);
+			if (value->Type == EJson::Object) {
+				changedSomething |= setDefaultValues(j->Values[key]->AsObject(), value->AsObject());
+			}
 		}
 
-		json jduplicate = j;
-
-		for (auto it : jduplicate.items()) {
-			auto key = it.key();
-
+		TArray<FString> configKeys;
+		j->Values.GetKeys(configKeys);
+		for (const FString& key : configKeys) {
 			// Remove if unused
-			if (!defaultValues.contains(key))
-				j.erase(key);
+			if (!defaultValues->HasField(key)) {
+				j->RemoveField(key);
+				changedSomething = true;
+			}
 		}
-
-		return j;
+		return changedSomething;
 	}
 }
