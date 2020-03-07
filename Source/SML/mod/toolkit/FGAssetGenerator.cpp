@@ -619,7 +619,7 @@ FEdGraphPinType CreateGraphPinType(const TSharedRef<FJsonObject>& PinJson) {
 }
 
 bool IsObjectAlreadyLoaded(const FString& ObjectPath) {
-	return FindObject<UObject>(GetTransientPackage(), *ObjectPath);
+	return IsValid(FindObject<UObject>(GetTransientPackage(), *ObjectPath));
 }
 
 void AddDependencyIfNeeded(const FString& ObjectPath, TArray<FString>& Dependencies) {
