@@ -7,38 +7,113 @@
 #include "Json.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Engine/UserDefinedEnum.h"
+#include "Engine/MemberReference.h"
 
 #define DEFAULT_ITERATOR_FLAGS EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces
 
-TSharedPtr<FJsonObject> CreateFieldDescriptor(UProperty* Property, const void* defaultObjectPtr, UObject* defaultObject, UObject* parentObject) {
-	FString resultValueString;
-	const void* propertyValue = Property->ContainerPtrToValuePtr<void>(defaultObjectPtr);
-	if (parentObject != nullptr && parentObject->IsA(static_cast<UClass*>(Property->GetOuter()))) {
-		const void* defaultPropertyValue = Property->ContainerPtrToValuePtr<void>(parentObject);
-		if (Property->Identical(propertyValue, defaultPropertyValue)) {
-			return TSharedPtr<FJsonObject>(); //skip value if it is the same as in the parent class
-		}
+//Defined Originally In EDGraphSchema_K2.h, re-implemented below to work out of Editor.
+//Note that some information cannot be recovered because UObject metadata is missing
+bool ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType& TypeOut);
+
+TSharedRef<FJsonObject> CreatePropertyTypeDescriptor(UProperty* Property) {
+	FEdGraphPinType graphPinType;
+	ConvertPropertyToPinType(Property, graphPinType);
+	TSharedRef<FJsonObject> typeEntry = MakeShareable(new FJsonObject());
+	typeEntry->SetStringField(TEXT("PinCategory"), graphPinType.PinCategory.ToString());
+	typeEntry->SetStringField(TEXT("PinSubCategory"), graphPinType.PinCategory.ToString());
+
+	UObject* subCategoryObject = graphPinType.PinSubCategoryObject.Get();
+	if (subCategoryObject != nullptr) {
+		typeEntry->SetStringField(TEXT("PinSubCategoryObject"), subCategoryObject->GetPathName());
 	}
-	Property->ExportTextItem(resultValueString, propertyValue, propertyValue, defaultObject, 0);
+
+	const FSimpleMemberReference& memberRef = graphPinType.PinSubCategoryMemberReference;
+	if (memberRef.MemberGuid.IsValid()) {
+		TSharedRef<FJsonObject> memberReference = MakeShareable(new FJsonObject());
+		if (memberRef.MemberParent != nullptr) {
+			memberReference->SetStringField(TEXT("MemberParent"), memberRef.MemberParent->GetPathName());
+		}
+		memberReference->SetStringField(TEXT("MemberName"), memberRef.MemberName.ToString());
+		memberReference->SetStringField(TEXT("MemberGuid"), memberRef.MemberGuid.ToString());
+		typeEntry->SetObjectField(TEXT("PinSubCategoryMemberReference"), memberReference);
+	}
+	
+	if (graphPinType.ContainerType == EPinContainerType::Map) {
+		TSharedRef<FJsonObject> pinValueType = MakeShareable(new FJsonObject());
+		pinValueType->SetStringField(TEXT("TerminalCategory"), graphPinType.PinValueType.TerminalCategory.ToString());
+		pinValueType->SetStringField(TEXT("TerminalSubCategory"), graphPinType.PinValueType.TerminalSubCategory.ToString());
+		UObject* terminalSubCategoryObject = graphPinType.PinValueType.TerminalSubCategoryObject.Get();
+		if (terminalSubCategoryObject != nullptr) {
+			pinValueType->SetStringField(TEXT("TerminalSubCategoryObject"), terminalSubCategoryObject->GetPathName());
+		}
+		pinValueType->SetBoolField(TEXT("TerminalIsConst"), graphPinType.PinValueType.bTerminalIsConst);
+		pinValueType->SetBoolField(TEXT("TerminalIsWeakPointer"), graphPinType.PinValueType.bTerminalIsWeakPointer);
+		typeEntry->SetObjectField(TEXT("PinValueType"), pinValueType);
+	}
+
+	if (graphPinType.ContainerType != EPinContainerType::None) {
+		typeEntry->SetNumberField(TEXT("ContainerType"), static_cast<uint8>(graphPinType.ContainerType));
+	}
+	if (graphPinType.bIsReference) {
+		typeEntry->SetBoolField(TEXT("IsReference"), graphPinType.bIsReference);
+	}
+	if (graphPinType.bIsConst) {
+		typeEntry->SetBoolField(TEXT("IsConst"), graphPinType.bIsConst);
+	}
+	if (graphPinType.bIsWeakPointer) {
+		typeEntry->SetBoolField(TEXT("IsWeakPointer"), graphPinType.bIsWeakPointer);
+	}
+	return typeEntry;
+}
+
+TSharedPtr<FJsonObject> CreateFieldDescriptor(UProperty* Property, const void* defaultObjectPtr, UObject* defaultObject, UObject* parentObject) {
 	TSharedRef<FJsonObject> fieldEntry = MakeShareable(new FJsonObject());
 	fieldEntry->SetStringField(TEXT("Name"), Property->GetFName().ToString());
-	fieldEntry->SetStringField(TEXT("Value"), resultValueString);
-	fieldEntry->SetStringField(TEXT("Type"), Property->GetCPPType());
-	fieldEntry->SetNumberField(TEXT("PropertyFlags"), Property->PropertyFlags);
+	bool isParentProperty = false;
+	
+	if (defaultObjectPtr != nullptr) {
+		FString resultValueString;
+		const void* propertyValue = Property->ContainerPtrToValuePtr<void>(defaultObjectPtr);
+
+		if (parentObject != nullptr && parentObject->IsA(static_cast<UClass*>(Property->GetOuter()))) {
+			isParentProperty = true;
+			const void* defaultPropertyValue = Property->ContainerPtrToValuePtr<void>(parentObject);
+			if (Property->Identical(propertyValue, defaultPropertyValue)) {
+				return TSharedPtr<FJsonObject>(); //skip value if it is the same as in the parent class
+			}
+		}
+		Property->ExportTextItem(resultValueString, propertyValue, propertyValue, defaultObject, 0);
+		//only add field value if their default value is not empty or nullptr
+		if (resultValueString != TEXT("") && resultValueString != TEXT("None")) {
+			fieldEntry->SetStringField(TEXT("Value"), resultValueString);
+		}
+	}
+
+	//do not include attributes and type for parent properties, they are already defined, we need name and value only
+	if (!isParentProperty) {
+		fieldEntry->SetObjectField(TEXT("PinType"), CreatePropertyTypeDescriptor(Property));
+		fieldEntry->SetNumberField(TEXT("PropertyFlags"), Property->PropertyFlags);
+	}
+	
 	return fieldEntry;
 }
 
 TSharedRef<FJsonObject> CreateFunctionSignature(UFunction* function) {
 	TSharedRef<FJsonObject> resultJson = MakeShareable(new FJsonObject());
 	resultJson->SetStringField(TEXT("Name"), function->GetFName().ToString());
-	resultJson->SetStringField(TEXT("ReturnType"), TEXT("void"));
 
 	TArray<TSharedPtr<FJsonValue>> argumentArray;
 	for (TFieldIterator<UProperty> It(function); It && (It->PropertyFlags & CPF_Parm); ++It) {
 		if (It->PropertyFlags & CPF_ReturnParm) {
-			resultJson->SetStringField(TEXT("ReturnType"), It->GetCPPType(nullptr, 0));
+			TSharedPtr<FJsonObject> ReturnType = MakeShareable(new FJsonObject());
+			ReturnType->SetStringField(TEXT("Name"), It->GetFName().ToString());
+			ReturnType->SetObjectField(TEXT("PinType"), CreatePropertyTypeDescriptor(*It));
+			resultJson->SetObjectField(TEXT("ReturnType"), ReturnType);
 		} else {
-			argumentArray.Add(MakeShareable(new FJsonValueString(It->GetCPPType(nullptr, 0))));
+			TSharedPtr<FJsonObject> ReturnType = MakeShareable(new FJsonObject());
+			ReturnType->SetStringField(TEXT("Name"), It->GetFName().ToString());
+			ReturnType->SetObjectField(TEXT("PinType"), CreatePropertyTypeDescriptor(*It));
+			argumentArray.Add(MakeShareable(new FJsonValueObject(ReturnType)));
 		}
 	}
 	resultJson->SetArrayField(TEXT("Arguments"), argumentArray);
@@ -108,6 +183,19 @@ TSharedRef<FJsonObject> dumpUserDefinedStruct(UUserDefinedStruct* definedStruct)
 	return resultJson;
 }
 
+UClass* GetOverridenFunctionSource(UFunction* Function) {
+	UClass* OuterClass = Cast<UClass>(Function->GetOuter());
+	if (OuterClass->GetSuperClass()->FindFunctionByName(Function->GetFName()) != nullptr)
+		return OuterClass->GetSuperClass(); //function is defined in super class, overriden in child
+	
+	for (const FImplementedInterface& Iface : OuterClass->Interfaces) {
+		if (Iface.Class->FindFunctionByName(Function->GetFName()) != nullptr)
+			return Iface.Class; //function is defined in interface, overriden in child
+	}
+	//function is not defined in parents
+	return nullptr;
+}
+
 TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* generatedClass) {
 	TSharedRef<FJsonObject> resultJson = MakeShareable(new FJsonObject());
 	SML::Logging::info(TEXT("Dumping blueprint class "), *generatedClass->GetFullName());
@@ -146,8 +234,19 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* generated
 	TArray<TSharedPtr<FJsonValue>> methods;
 	for (TFieldIterator<UFunction> It(generatedClass, EFieldIteratorFlags::ExcludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::ExcludeInterfaces); It; ++It) {
 		UFunction* Function = *It;
-		const TSharedPtr<FJsonObject>& methodEntry = CreateFunctionSignature(Function);
-		if (methodEntry.IsValid()) {
+		UClass* FunctionOverrideSrc = GetOverridenFunctionSource(Function);
+		if (FunctionOverrideSrc == nullptr) {
+			//for blueprint defined functions, record full signature
+			const TSharedPtr<FJsonObject>& methodEntry = CreateFunctionSignature(Function);
+			if (methodEntry.IsValid()) {
+				methods.Add(MakeShareable(new FJsonValueObject(methodEntry)));
+			}
+		} else {
+			//For overriden functions, record only their name
+			TSharedPtr<FJsonObject> methodEntry = MakeShareable(new FJsonObject());
+			methodEntry->SetStringField(TEXT("Name"), Function->GetFName().ToString());
+			methodEntry->SetStringField(TEXT("SuperClass"), FunctionOverrideSrc->GetPathName());
+			methodEntry->SetBoolField(TEXT("IsOverride"), true);
 			methods.Add(MakeShareable(new FJsonValueObject(methodEntry)));
 		}
 	}
@@ -201,7 +300,7 @@ void SML::dumpSatisfactoryAssets(const FName& rootPath, const FString& fileName)
 	TSharedRef<FJsonObject> resultObject = MakeShareable(new FJsonObject());
 	resultObject->SetArrayField(TEXT("UserDefinedEnums"), userDefinedEnums);
 	resultObject->SetArrayField(TEXT("UserDefinedStructs"), userDefinedStructs);
-	resultObject->SetArrayField(TEXT("Bluepirnts"), blueprints);
+	resultObject->SetArrayField(TEXT("Blueprints"), blueprints);
 
 	const path& resultPath = SML::getConfigDirectory() / *fileName;
 	FString resultString;
@@ -210,4 +309,149 @@ void SML::dumpSatisfactoryAssets(const FName& rootPath, const FString& fileName)
 	Serializer.Serialize(resultObject, writer);
 	FFileHelper::SaveStringToFile(resultString, resultPath.c_str(), FFileHelper::EEncodingOptions::ForceUTF8);
 	SML::Logging::info(TEXT("Dumping finished!"));
+}
+
+//------------------------------------------------------------------
+//CODE BELOW IS STRAIGHT COPIED FROM EDGraphSchema_K2.cpp
+//BECAUSE IT IS EDITOR-ONLY MODULE WHICH DOESN'T EXIST IN SHIPPING
+//Some code was cut off because we don't have editor-only data like function object metadata
+//------------------------------------------------------------------
+
+const FName PC_Exec(TEXT("exec"));
+const FName PC_Boolean(TEXT("bool"));
+const FName PC_Byte(TEXT("byte"));
+const FName PC_Class(TEXT("class"));
+const FName PC_Int(TEXT("int"));
+const FName PC_Int64(TEXT("int64"));
+const FName PC_Float(TEXT("float"));
+const FName PC_Name(TEXT("name"));
+const FName PC_Delegate(TEXT("delegate"));
+const FName PC_MCDelegate(TEXT("mcdelegate"));
+const FName PC_Object(TEXT("object"));
+const FName PC_Interface(TEXT("interface"));
+const FName PC_String(TEXT("string"));
+const FName PC_Text(TEXT("text"));
+const FName PC_Struct(TEXT("struct"));
+const FName PC_Wildcard(TEXT("wildcard"));
+const FName PC_Enum(TEXT("enum"));
+const FName PC_SoftObject(TEXT("softobject"));
+const FName PC_SoftClass(TEXT("softclass"));
+const FName PSC_Self(TEXT("self"));
+const FName PSC_Index(TEXT("index"));
+const FName PSC_Bitmask(TEXT("bitmask"));
+const FName PN_Execute(TEXT("execute"));
+
+bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer);
+
+bool ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType& TypeOut) {
+	if (Property == nullptr) {
+		TypeOut.PinCategory = TEXT("bad_type");
+		return false;
+	}
+
+	TypeOut.PinSubCategory = NAME_None;
+
+	// Handle whether or not this is an array property
+	const UMapProperty* MapProperty = Cast<const UMapProperty>(Property);
+	const USetProperty* SetProperty = Cast<const USetProperty>(Property);
+	const UArrayProperty* ArrayProperty = Cast<const UArrayProperty>(Property);
+	const UProperty* TestProperty = Property;
+	if (MapProperty) {
+		TestProperty = MapProperty->KeyProp;
+
+		// set up value property:
+		UObject* SubCategoryObject = nullptr;
+		bool bIsWeakPtr = false;
+		bool bResult = GetPropertyCategoryInfo(MapProperty->ValueProp, TypeOut.PinValueType.TerminalCategory, TypeOut.PinValueType.TerminalSubCategory, SubCategoryObject, bIsWeakPtr);
+		TypeOut.PinValueType.TerminalSubCategoryObject = SubCategoryObject;
+
+		if (bIsWeakPtr) {
+			return false;
+		}
+
+		if (!bResult) {
+			return false;
+		}
+	} else if (SetProperty) {
+		TestProperty = SetProperty->ElementProp;
+	} else if (ArrayProperty) {
+		TestProperty = ArrayProperty->Inner;
+	}
+	TypeOut.ContainerType = FEdGraphPinType::ToPinContainerType(ArrayProperty != nullptr, SetProperty != nullptr, MapProperty != nullptr);
+	TypeOut.bIsReference = Property->HasAllPropertyFlags(CPF_OutParm | CPF_ReferenceParm);
+	TypeOut.bIsConst = Property->HasAllPropertyFlags(CPF_ConstParm);
+
+	// Check to see if this is the wildcard property for the target container type
+	if (const UMulticastDelegateProperty* MulticastDelegateProperty = Cast<const UMulticastDelegateProperty>(TestProperty)) {
+		TypeOut.PinCategory = PC_MCDelegate;
+		FMemberReference::FillSimpleMemberReference<UFunction>(MulticastDelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
+	} else if (const UDelegateProperty* DelegateProperty = Cast<const UDelegateProperty>(TestProperty)) {
+		TypeOut.PinCategory = PC_Delegate;
+		FMemberReference::FillSimpleMemberReference<UFunction>(DelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
+	} else {
+		UObject* SubCategoryObject = nullptr;
+		bool bIsWeakPointer = false;
+		bool bResult = GetPropertyCategoryInfo(TestProperty, TypeOut.PinCategory, TypeOut.PinSubCategory, SubCategoryObject, bIsWeakPointer);
+		TypeOut.bIsWeakPointer = bIsWeakPointer;
+		TypeOut.PinSubCategoryObject = SubCategoryObject;
+		if (!bResult) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer) {
+	if (const UInterfaceProperty* InterfaceProperty = Cast<const UInterfaceProperty>(TestProperty)) {
+		OutCategory = PC_Interface;
+		OutSubCategoryObject = InterfaceProperty->InterfaceClass;
+	} else if (const UClassProperty* ClassProperty = Cast<const UClassProperty>(TestProperty)) {
+		OutCategory = PC_Class;
+		OutSubCategoryObject = ClassProperty->MetaClass;
+	} else if (const USoftClassProperty* SoftClassProperty = Cast<const USoftClassProperty>(TestProperty)) {
+		OutCategory = PC_SoftClass;
+		OutSubCategoryObject = SoftClassProperty->MetaClass;
+	} else if (const USoftObjectProperty* SoftObjectProperty = Cast<const USoftObjectProperty>(TestProperty)) {
+		OutCategory = PC_SoftObject;
+		OutSubCategoryObject = SoftObjectProperty->PropertyClass;
+	} else if (const UObjectPropertyBase* ObjectProperty = Cast<const UObjectPropertyBase>(TestProperty)) {
+		OutCategory = PC_Object;
+		OutSubCategoryObject = ObjectProperty->PropertyClass;
+		bOutIsWeakPointer = TestProperty->IsA(UWeakObjectProperty::StaticClass());
+	} else if (const UStructProperty* StructProperty = Cast<const UStructProperty>(TestProperty)) {
+		OutCategory = PC_Struct;
+		OutSubCategoryObject = StructProperty->Struct;
+	} else if (TestProperty->IsA<UFloatProperty>()) {
+		OutCategory = PC_Float;
+	} else if (TestProperty->IsA<UInt64Property>()) {
+		OutCategory = PC_Int64;
+	} else if (TestProperty->IsA<UIntProperty>()) {
+		OutCategory = PC_Int;
+	} else if (const UByteProperty* ByteProperty = Cast<const UByteProperty>(TestProperty)) {
+		OutCategory = PC_Byte;
+		OutSubCategoryObject = ByteProperty->Enum;
+	} else if (const UEnumProperty* EnumProperty = Cast<const UEnumProperty>(TestProperty)) {
+		// K2 only supports byte enums right now - any violations should have been caught by UHT or the editor
+		if (!EnumProperty->GetUnderlyingProperty()->IsA<UByteProperty>()) {
+			OutCategory = TEXT("unsupported_enum_type");
+			return false;
+		}
+
+		OutCategory = PC_Byte;
+		OutSubCategoryObject = EnumProperty->GetEnum();
+		
+	} else if (TestProperty->IsA<UNameProperty>()) {
+		OutCategory = PC_Name;
+	} else if (TestProperty->IsA<UBoolProperty>()) {
+		OutCategory = PC_Boolean;
+	} else if (TestProperty->IsA<UStrProperty>()) {
+		OutCategory = PC_String;
+	} else if (TestProperty->IsA<UTextProperty>()) {
+		OutCategory = PC_Text;
+	} else {
+		OutCategory = TEXT("bad_type");
+		return false;
+	}
+
+	return true;
 }

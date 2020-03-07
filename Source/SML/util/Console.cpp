@@ -1,12 +1,13 @@
 #include "Console.h"
+#include "SatisfactoryModLoader.h"
+#define WIN32_LEAN_AND_MEAN
+#include "Windows.h"
+#include "Logging.h"
 
 void SML::initConsole() {
-	auto config = getSMLConfig();
+	const SML::FSMLConfiguration& config = getSMLConfig();
 	if (config.consoleWindow) {
 		enableConsole();
-	}
-	if (config.fullLog) {
-		enableFullLog();
 	}
 }
 
@@ -19,11 +20,4 @@ void SML::enableConsole() {
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 	SML::Logging::info(TEXT("Console Window enabled!"));
-}
-
-void SML::enableFullLog() {
-	SML::Logging::info(TEXT("Enable Full Log"));
-	freopen("game.log", "r", stdin);
-	freopen("game.log", "w", stdout);
-	freopen("game.log", "w", stderr);
 }

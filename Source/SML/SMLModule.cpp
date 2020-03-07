@@ -3,17 +3,12 @@
 #define LOCTEXT_NAMESPACE "FSMLModule"
 
 #if WITH_EDITOR
-#include "Factories/BlueprintFactory.h"
 #include "ContentBrowserModule.h"
-#include "Engine/UserDefinedEnum.h"
-#include "Engine/Blueprint.h"
-#include "FileHelper.h"
 #include "LevelEditor.h"
 #include "Framework/Commands/Commands.h"
 #include "MultiBoxBuilder.h"
-#include "BlueprintEditorUtils.h"
 #include "AssetRegistryModule.h"
-#include "UserDefinedStructureCompilerUtils.h"
+#include "mod/toolkit/FGAssetGenerator.h"
 
 class FSMLCommands : public TCommands<FSMLCommands> {
 public:
@@ -23,31 +18,16 @@ public:
 		NAME_None, 
 		FCoreStyle::Get().GetStyleSetName()) {}
 
-	// TCommands<> interface
+	
 	virtual void RegisterCommands() override {
-		UI_COMMAND(DebugBlueprintsCommand, "SML Debugging", "Debug blueprint generation", EUserInterfaceActionType::Button, FInputChord());
+		UI_COMMAND(DebugBlueprintsCommand, "Generate FG Assets", "Generate FactoryGame assets from dump file", EUserInterfaceActionType::Button, FInputChord());
 	}
 public:
 	TSharedPtr<FUICommandInfo> DebugBlueprintsCommand;
 };
 
 void SMLDebugButtonClicked() {
-	UBlueprintFactory* Factory = NewObject<UBlueprintFactory>();
-	Factory->ParentClass = AActor::StaticClass();
-	const FString PackageName = TEXT("/Game/FactoryGame/Recipe_IndustrialTank");
-	UPackage* BlueprintPackage = CreatePackage(nullptr, *PackageName);
-	EObjectFlags Flags = RF_Public | RF_Standalone;
-	UBlueprint* BlueprintObject = Cast<UBlueprint>(Factory->FactoryCreateNew(UBlueprint::StaticClass(), BlueprintPackage, FName(TEXT("Recipe_IndustrialTank")), Flags, nullptr, GWarn));
-	if (BlueprintObject) {
-		FAssetRegistryModule::AssetCreated(BlueprintObject);
-		BlueprintPackage->MarkPackageDirty();
-
-		
-		//FStructureEditorUtils for UUserDefinedStruct
-		//BlueprintCompilationManager.h for requesting blueprint compilation
-		//FAssetEditorManager::Get().OpenEditorForAsset(BlueprintObject);
-		//Save can be forced via calling FileHelpers.h SavePackagesAndPromptUser
-	}
+	SML::generateSatisfactoryAssets(TEXT("D:/SatisfactoryExperimental/configs/FGDataAssets.json"));
 }
 
 #endif

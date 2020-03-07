@@ -41,7 +41,7 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
  */
 #define DEFINE_LEVEL_WIDGET_PANEL(Name, MapName, InitializerFunc) \
 	static TSharedPtr<SWidget> CurrentWidgetPtr_##Name; \
-	if (mapName == TEXT(MapName)) { \
+	if (mapName.StartsWith(TEXT(MapName))) { \
 		TSharedRef<SWidget> ResultWidget = InitializerFunc(); \
 		CurrentWidgetPtr_##Name = ResultWidget; \
 		viewport->AddViewportWidgetContent(ResultWidget, 0); \
@@ -51,11 +51,16 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 		CurrentWidgetPtr_##Name.Reset(); \
 	}
 
+//For Reference Purposes:
+// /Game/FactoryGame/Map/MenuScenes/MenuScene_01 - Standard Menu Background
+// /Game/FactoryGame/Map/MenuScenes/MenuScene_02 - Update 3 Menu Background
+// So, menu overlay should match both of them and probably any maps that will be added next
+// so all entries will be matched with StartsWith instead of simple equality check
 
 void SML::registerMainMenuHooks() {
 	SUBSCRIBE_METHOD("?LoadComplete@UFGGameInstance@@MEAAXMAEBVFString@@@Z", UFGGameInstanceProto::LoadComplete, [](CallResult<void>&, void* thisPtr, const float, const FString& mapName) {
 		UFGGameInstance* gameInstance = reinterpret_cast<UFGGameInstance*>(thisPtr);
 		UGameViewportClient* viewport = gameInstance->GetWorld()->GetGameViewport();
-		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, "/Game/FactoryGame/Map/MenuScenes/MenuScene_01", CreateMenuInfoTextPanel);
+		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, "/Game/FactoryGame/Map/MenuScenes/MenuScene_", CreateMenuInfoTextPanel);
 	});
 }

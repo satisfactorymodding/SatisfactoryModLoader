@@ -29,7 +29,7 @@ public class SML : ModuleRules
             "Json" });
 			
 		if (Target.Type == TargetRules.TargetType.Editor) {
-			PublicDependencyModuleNames.AddRange(new string[] {"OnlineBlueprintSupport", "AnimGraph", "UnrealEd"});
+			PublicDependencyModuleNames.AddRange(new string[] {"OnlineBlueprintSupport", "AnimGraph", "UnrealEd", "BlueprintGraph", "Kismet"});
 		}
 
         PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});
