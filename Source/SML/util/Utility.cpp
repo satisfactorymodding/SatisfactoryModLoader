@@ -1,34 +1,32 @@
 #include "Utility.h"
 #include "util/Logging.h"
-#include <fstream>
 #include <regex>
 
 namespace SML {
-	TSharedPtr<FJsonObject> parseJsonLenient(const std::wstring& input) {
-		TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(input.c_str());
+	TSharedPtr<FJsonObject> parseJsonLenient(const FString& input) {
+		TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(*input);
 		FJsonSerializer Serializer;
 		TSharedPtr<FJsonObject> result;
 		Serializer.Deserialize(reader, result);
 		return result;
 	}
 	
-	path getModConfigFilePath(std::wstring modid) {
-		path configDirPath = getConfigDirectory();
-		std::wstring fileName = formatStr(modid, TEXT(".cfg"));
+	FString getModConfigFilePath(FString modid) {
+		FString configDirPath = getConfigDirectory();
+		FString fileName = modid + TEXT(".cfg");
 		return configDirPath / fileName;
 	}
 	
-	TSharedRef<FJsonObject> readModConfig(std::wstring modid, const TSharedRef<FJsonObject>& defaultValues) {
-		path configPath = getModConfigFilePath(modid);
-		if (!exists(configPath)) {
+	TSharedRef<FJsonObject> readModConfig(FString modid, const TSharedRef<FJsonObject>& defaultValues) {
+		FString configPath = getModConfigFilePath(modid);
+		if (!FPaths::FileExists(configPath)) {
 			writeModConfig(modid, defaultValues);
 			return defaultValues;
 		}
-		std::wifstream fileStream(configPath);
+		
+		FString contents;
+		FFileHelper::LoadFileToString(contents, *configPath);
 
-		auto iterator = std::istreambuf_iterator<TCHAR>(fileStream);
-		auto endIterator = std::istreambuf_iterator<TCHAR>();
-		std::wstring contents{iterator, endIterator};
 		TSharedPtr<FJsonObject> loadedJson = parseJsonLenient(contents);
 		if (!loadedJson.IsValid()) {
 			writeModConfig(modid, defaultValues);
@@ -41,15 +39,14 @@ namespace SML {
 		return ref;
 	}
 
-	void writeModConfig(std::wstring modid, const TSharedRef<FJsonObject>& config) {
-		path configPath = getModConfigFilePath(modid);
-		std::wofstream fileStream(configPath, std::ios::out);
+	void writeModConfig(FString modid, const TSharedRef<FJsonObject>& config) {
+		FString configPath = getModConfigFilePath(modid);
+
 		FString resultString;
 		TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
 		FJsonSerializer Serializer;
 		Serializer.Serialize(config, writer);
-		fileStream << *resultString;
-		fileStream.close();
+		FFileHelper::SaveStringToFile(resultString, *configPath);
 	}
 
 	bool setDefaultValues(const TSharedPtr<FJsonObject>& j, const TSharedPtr<FJsonObject>& defaultValues) {

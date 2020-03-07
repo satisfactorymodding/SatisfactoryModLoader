@@ -16,13 +16,13 @@ namespace SML {
 			uint64_t major;
 			uint64_t minor;
 			uint64_t patch;
-			std::wstring type;
-			std::wstring buildInfo;
+			FString type;
+			FString buildInfo;
 
 			FVersion();
-			FVersion(const std::wstring& string);
+			FVersion(const FString& string);
 		public:
-			std::wstring string() const;
+			FString string() const;
 
 			int compare(const FVersion& other) const;
 		};
@@ -32,9 +32,9 @@ namespace SML {
 			FVersion myVersion;
 		public:
 			FVersionRange();
-			FVersionRange(const std::wstring& string);
+			FVersionRange(const FString& string);
 
-			std::wstring string() const;
+			FString string() const;
 			bool matches(const FVersion& version) const;
 		};
 	};

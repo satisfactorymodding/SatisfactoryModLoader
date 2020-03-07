@@ -1,6 +1,5 @@
 #pragma once
 #include "ModHandler.h"
-#include <filesystem>
 #include "Json.h"
 #include "zip/ttvfs/ttvfs.h"
 #include "hooking.h"
@@ -11,32 +10,32 @@ using namespace Mod;
 
 typedef std::string FileHash;
 
-void iterateDependencies(std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
-	std::unordered_map<std::wstring, uint64_t>& modIndices,
+void iterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
+	TMap<FString, uint64_t>& modIndices,
 	const FModInfo& selfInfo,
-	std::vector<std::wstring>& missingDependencies,
+	TArray<FString>& missingDependencies,
 	TopologicalSort::DirectedGraph<uint64_t>& sortGraph,
-	const std::unordered_map<std::wstring, FVersionRange>& dependencies,
+	const TMap<FString, FVersionRange>& dependencies,
 	bool optional);
 
-void finalizeSortingResults(std::unordered_map<uint64_t, std::wstring>& modByIndex,
-	std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
-	std::vector<uint64_t>& sortedIndices);
+void finalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
+	TMap<FString, FModLoadingEntry>& loadingEntries,
+	TArray<uint64_t>& sortedIndices);
 
-void populateSortedModList(std::unordered_map<uint64_t, std::wstring>& modByIndex,
-	std::unordered_map<std::wstring, FModLoadingEntry>& loadingEntries,
-	std::vector<uint64_t>& sortedIndices,
-	std::vector<FModLoadingEntry>& sortedModLoadingList);
+void populateSortedModList(TMap<uint64_t, FString>& modByIndex,
+	TMap<FString, FModLoadingEntry>& loadingEntries,
+	TArray<uint64_t>& sortedIndices,
+	TArray<FModLoadingEntry>& sortedModLoadingList);
 
 IModuleInterface* InitializeSMLModule();
 
-FModPakLoadEntry CreatePakLoadEntry(const std::wstring& modid);
+FModPakLoadEntry CreatePakLoadEntry(const FString& modid);
 
 FModLoadingEntry createSMLLoadingEntry();
 
-std::wstring getModIdFromFile(const path& filePath);
+FString getModIdFromFile(const FString& filePath);
 
-bool extractArchiveFile(const path& outFilePath, ttvfs::File* obj);
+bool extractArchiveFile(const FString& outFilePath, ttvfs::File* obj);
 
 TSharedPtr<FJsonObject> readArchiveJson(ttvfs::File* obj);
 
