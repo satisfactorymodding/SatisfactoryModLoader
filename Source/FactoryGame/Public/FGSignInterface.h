@@ -397,4 +397,7 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "SignData" )
 	FVector2D GetGridSquareDimensions();
 
+
+public:
+	FORCEINLINE IFGSignInterface() = default;
 };

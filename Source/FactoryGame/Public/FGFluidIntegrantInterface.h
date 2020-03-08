@@ -164,4 +164,7 @@ public:
 
 	/** Notify that the network this fluid integrant belongs to has set its fluid descriptor */
 	virtual void OnFluidDescriptorSet();
+
+public:
+	FORCEINLINE IFGFluidIntegrantInterface() = default;
 };

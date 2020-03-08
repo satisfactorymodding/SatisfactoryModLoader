@@ -82,6 +82,9 @@ class FACTORYGAME_API IFGDismantleInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
 	void StopIsLookedAtForDismantle( AFGCharacterPlayer* byCharacter );
+
+public:
+	FORCEINLINE IFGDismantleInterface() = default;
 };
 
 /**

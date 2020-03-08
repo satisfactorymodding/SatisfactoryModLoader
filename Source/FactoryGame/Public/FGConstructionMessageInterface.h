@@ -73,4 +73,7 @@ public:
 	/** This is called on server when a hologram has been created from a construct message */
 	UFUNCTION( BlueprintNativeEvent )
 	void OnConstructMessagedDeserialized();
+
+public:
+	FORCEINLINE IFGConstructionMessageInterface() = default;
 };

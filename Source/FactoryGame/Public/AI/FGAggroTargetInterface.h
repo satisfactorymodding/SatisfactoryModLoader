@@ -64,4 +64,7 @@ class FACTORYGAME_API IFGAggroTargetInterface
 	virtual void UnregisterIncomingAttacker( class AFGEnemyController* forController ) = 0;
 
 	virtual bool IsDynamic() = 0;*/
+
+public:
+	FORCEINLINE IFGAggroTargetInterface() = default;
 };

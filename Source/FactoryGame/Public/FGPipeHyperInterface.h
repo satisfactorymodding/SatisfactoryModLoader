@@ -64,4 +64,7 @@ public:
 	*/
 	UFUNCTION(  BlueprintNativeEvent, Category = "Hyper Tube" )
 	bool OnPipeEnter( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough = nullptr, const AActor* fromPipe = nullptr );
+
+public:
+	FORCEINLINE IFGPipeHyperInterface() = default;
 };

@@ -37,4 +37,7 @@ public:
 		void NotifyPopupClosed( TSubclassOf<class UUserWidget> popupClass, int32 exitCode );
 
 
+
+public:
+	FORCEINLINE IFGPopupInstigatorInterface() = default;
 };

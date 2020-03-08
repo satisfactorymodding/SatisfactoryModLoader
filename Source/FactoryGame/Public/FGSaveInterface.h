@@ -63,8 +63,6 @@ class FACTORYGAME_API IFGSaveInterface
 {
 	GENERATED_IINTERFACE_BODY()
 
-	FORCEINLINE IFGSaveInterface() = default;
-
 	/**
 	 * Called on all UObjects that will be saved right before the save is done
 	 *
@@ -125,4 +123,7 @@ class FACTORYGAME_API IFGSaveInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent )
 	bool NeedTransform();
+
+public:
+	FORCEINLINE IFGSaveInterface() = default;
 };

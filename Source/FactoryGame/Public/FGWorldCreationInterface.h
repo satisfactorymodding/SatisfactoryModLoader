@@ -37,4 +37,7 @@ public:
 	 * Destroy a world created with CreateWorld
 	 */
 	virtual void DestroyWorld( class UWorld* world ) = 0;
+
+public:
+	FORCEINLINE IFGWorldCreationInterface() = default;
 };

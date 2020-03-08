@@ -31,4 +31,7 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Explosive Destroy Interface" )
 	bool NotifyExploded();
 
+
+public:
+	FORCEINLINE IFGExplosiveDestroyableInterface() = default;
 };

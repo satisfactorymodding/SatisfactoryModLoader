@@ -57,4 +57,7 @@ class FACTORYGAME_API IFGColorInterface
 	*/
 	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
 	void StopIsAimedAtForColor( AFGCharacterPlayer* byCharacter );
+
+public:
+	FORCEINLINE IFGColorInterface() = default;
 };

@@ -168,4 +168,7 @@ class FACTORYGAME_API IFGUseableInterface
 	/** Called from widgets that are opened by the use functionality */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Use" )
 	void UnregisterInteractingPlayer( class AFGCharacterPlayer* player );
+
+public:
+	FORCEINLINE IFGUseableInterface() = default;
 };

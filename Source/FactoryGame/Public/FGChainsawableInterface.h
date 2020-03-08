@@ -36,4 +36,7 @@ class FACTORYGAME_API IFGChainsawableInterface
 	/* @returns true if this thing is chainsawable */
 	UFUNCTION( BlueprintNativeEvent, Category = "Chainsaw" )
 	UStaticMeshComponent* GetMeshComponent();
+
+public:
+	FORCEINLINE IFGChainsawableInterface() = default;
 };

@@ -35,4 +35,7 @@ public:
 
 	/** Returns the relevant class type for the replication detail actor. Must inherit from AFGReplicationDetailActor. */
 	virtual UClass* GetReplicationDetailActorClass() const = 0;
+
+public:
+	FORCEINLINE IFGReplicationDetailActorOwnerInterface() = default;
 };

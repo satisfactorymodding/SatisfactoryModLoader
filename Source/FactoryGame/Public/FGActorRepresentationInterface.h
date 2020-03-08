@@ -93,4 +93,7 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Representation" )
 	ECompassViewDistance SetActorCompassViewDistance( ECompassViewDistance compassViewDistance );
+
+public:
+	FORCEINLINE IFGActorRepresentationInterface() = default;
 };
