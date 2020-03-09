@@ -45,22 +45,23 @@ UTexture2D* UFGItemDescriptor::GetSmallIcon(TSubclassOf< UFGItemDescriptor > inC
 UTexture2D* UFGItemDescriptor::GetBigIcon(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mPersistentBigIcon;}
 UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mConveyorMesh;}
 int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass){
-	if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_FLUID)
-		return 1000;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_ONE)
-		return 1;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_SMALL)
-		return 20;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_MEDIUM)
-		return 50;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_BIG)
-		return 200;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_HUGE)
-		return 500;
-	else
-		return 0;
+	if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_ONE) return 0;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_SMALL) return 1;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_MEDIUM) return 2;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_BIG) return 3;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_HUGE) return 4;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_FLUID) return 5;
+	else return 0;
 }
-float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
+float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){
+	if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_ONE) return 1;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_SMALL) return 20;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_MEDIUM) return 50;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_BIG) return 200;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_HUGE) return 500;
+	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_FLUID) return 1000;
+	else return 1;
+}
 bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mCanBeDiscarded;}
 bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mRememberPickUp; }
 TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mItemCategory; }
