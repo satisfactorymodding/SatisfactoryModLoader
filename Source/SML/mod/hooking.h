@@ -26,24 +26,6 @@ std::vector<F>* createHandlerList(const std::string& identifier) {
 template <typename TCallable, TCallable Callable>
 struct HookInvoker;
 
-template<typename ResultType>
-struct CallResult;
-
-//CallResult specialization for void
-template <>
-struct CallResult<void> {
-private:
-	bool forwardCall = true;
-public:
-	inline bool shouldForwardCall() {
-		return forwardCall;
-	}
-public:
-	void Cancel() {
-		this->forwardCall = false;
-	}
-};
-
 //general template for other types
 template <typename Result, typename Member>
 struct CallScope {
