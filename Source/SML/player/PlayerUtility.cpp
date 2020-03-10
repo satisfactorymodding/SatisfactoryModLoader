@@ -8,21 +8,21 @@
 
 namespace SML {
 	void initializePlayerComponent() {
-		SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](CallResult<void>&, AFGPlayerController* controller) {
+		SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](CallScope<void, AFGPlayerController>& scope, AFGPlayerController* controller) {
 			if (controller->HasAuthority()) {
 				USMLPlayerComponent* component = NewObject<USMLPlayerComponent>(controller, TEXT("SML_PlayerComponent"));
 				component->RegisterComponent();
 				component->SetNetAddressable();
 				component->SetIsReplicated(true);
 			}
+			scope(controller);
 		});
-		SUBSCRIBE_METHOD("?EnterChatMessage@AFGPlayerController@@IEAAXAEBVFString@@@Z", AFGPlayerController::EnterChatMessage, [](CallResult<void>& callResult, AFGPlayerController* player, const FString& message) {
+		SUBSCRIBE_METHOD("?EnterChatMessage@AFGPlayerController@@IEAAXAEBVFString@@@Z", AFGPlayerController::EnterChatMessage, [](CallScope<void, AFGPlayerController>& scope, AFGPlayerController* player, const FString& message) {
 			if (message.StartsWith(TEXT("/"))) {
 				const FString commandLine = message.TrimStartAndEnd().RightChop(1);
 				USMLPlayerComponent* component = USMLPlayerComponent::Get(player);
 				component->HandleChatCommand(commandLine);
-				callResult.Cancel();
-			}
+			} else scope(player, message);
 		});
 	}
 	
