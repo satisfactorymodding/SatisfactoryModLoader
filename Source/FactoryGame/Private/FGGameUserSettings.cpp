@@ -45,8 +45,8 @@ float UFGGameUserSettings::GetFloatOptionValue(FString cvar){ return float(); }
 void UFGGameUserSettings::SetFloatOptionValue(FString cvar, float value, bool updateInstantly , bool requireRestart){ }
 void UFGGameUserSettings::SetCvarValue(FString cvar, int32 value){ }
 void UFGGameUserSettings::SetCvarValue(FString cvar, float value){ }
-void UFGGameUserSettings::SetDefaultIntOptionValue(FString cvar, int32 value, FString tooltip){ }
-void UFGGameUserSettings::SetDefaultFloatOptionValue(FString cvar, float value, FString tooltip){ }
+void UFGGameUserSettings::SetDefaultIntOptionValue(FString cvar, int32 value, FText tooltip){ }
+void UFGGameUserSettings::SetDefaultFloatOptionValue(FString cvar, float value, FText tooltip){ }
 void UFGGameUserSettings::SetupDefaultOptionsValues(){ }
 void UFGGameUserSettings::RegisterConsoleVariable(FString cvar, int32 value, FString tooltip){ }
 void UFGGameUserSettings::RegisterConsoleVariable(FString cvar, float value, FString tooltip){ }

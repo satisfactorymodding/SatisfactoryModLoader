@@ -210,7 +210,24 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnLoginStateChanged, ELoginState,
 // @todosession: Listen for session updates
  
 /**
- * 
+ * @OSS: Responsibility:
+ * - Login to OSS
+ * EpicGameLauncher passes a access token, artifact started and a few other parameters required to be able to login. AutoLogin checks if these a valid and
+ * logs in to EGS automatically when main menu starts. Note that this isn't blocking. So the user might try to start a game before he has managed
+ * to properly login.
+ * - UserInterface
+ * This is fetching information from the backend about a online user
+ * - Presence
+ * Updating our presence based on what we are doing. A timer is called regurlarly, where we can update our current "PresenceString" (See UFGLocalPlayer::UpdatePresence)
+ * @todo: We should most likely update this in the chain where we are trying to setup a game
+ * - Copy host presence to clients
+ * Whenever a client receives a presence update, it will check if it's the host of the current game, if yes, then it will copy information about that
+ * game to it's own presence
+ * - Friends
+ * - MapTravel and Sessions:
+ * (SetupServerAndTravelToMap) Tears down current session and ensures that we are in a good state for map travel. Also ensures that we are properly logged in and that all data is
+ * properly propagated to the backend servers.
+ * @IMPORTANT that loading games should always be done through AFGAdminInterface::LoadGame, as that handles travel on dedicated servers.
  */
 UCLASS(BlueprintType)
 class FACTORYGAME_API UFGLocalPlayer : public ULocalPlayer
@@ -228,7 +245,7 @@ public:
 	UFUNCTION(BlueprintPure,Category="Online")
 	FORCEINLINE TEnumAsByte<ELoginState> GetLoginState() const{ return mLoginState; }
 
-	/** Get in what state our login is */
+	/** Get the username of the current user */
 	UFUNCTION(BlueprintPure,Category="Online")
 	FString GetUsername() const;
 

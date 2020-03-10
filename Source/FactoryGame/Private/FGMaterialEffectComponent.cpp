@@ -18,3 +18,4 @@ void UFGMaterialEffectComponent::OnUpdate_Implementation(float deltaTime){ }
 void UFGMaterialEffectComponent::SetMaterialScalarParameterValue(FName name, float value){ }
 void UFGMaterialEffectComponent::InitializeMaterials(){ }
 void UFGMaterialEffectComponent::FinalizeMaterials(){ }
+void UFGMaterialEffectComponent::TryGetFNameFromMeshComponent(UMeshComponent* meshComp, FName& out_meshName){ }

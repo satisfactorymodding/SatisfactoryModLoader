@@ -256,10 +256,10 @@ public:
 	void SetCvarValue( FString cvar, float value );
 	
 	/** Setup the default value for an int option, registers a cvar if it doesn't already exists */
-	void SetDefaultIntOptionValue( FString cvar, int32 value, FString tooltip );
+	void SetDefaultIntOptionValue( FString cvar, int32 value, FText tooltip );
 
 	/** Setup the default value for an float option, registers a cvar if it doesn't already exists */
-	void SetDefaultFloatOptionValue( FString cvar, float value, FString tooltip );
+	void SetDefaultFloatOptionValue( FString cvar, float value, FText tooltip );
 	
 	void SetupDefaultOptionsValues();
 

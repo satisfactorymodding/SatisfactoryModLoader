@@ -48,7 +48,6 @@ bool AFGPlayerController::Server_DealRadialDamage_Validate(const FHitResult& imp
 FString AFGPlayerController::GetScreenshotPath(bool isHighRes){ return FString(); }
 bool AFGPlayerController::DestroyNetworkActorHandled(){ return bool(); }
 void AFGPlayerController::AcknowledgePossession( APawn* P){ }
-void AFGPlayerController::DumpPlayerCoordinates(const FString& label , bool copyToClipboard){ }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }

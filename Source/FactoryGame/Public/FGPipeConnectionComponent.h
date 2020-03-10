@@ -72,7 +72,17 @@ public:
 	 * Get which connection this is connected to.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Connection" )
-	FORCEINLINE class UFGPipeConnectionComponentBase* GetConnection() const { return mConnectedComponent; }
+	FORCEINLINE class UFGPipeConnectionComponentBase* GetConnection() const 
+	{
+		if( IsValid( mConnectedComponent ) ) 			
+		{
+			return mConnectedComponent;
+		}
+		else 	
+		{
+			return nullptr;
+		}
+	}
 
 	/**
 	 * Clear the connection on this component
@@ -128,6 +138,7 @@ public:
 	 */
 	static UFGPipeConnectionComponentBase* FindOverlappingConnection( class UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection = nullptr );
 
+	void UpdateClientCachedConnection();
 protected:
 	/** Specifies the type of connection this is, used to determine attachment potential */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )

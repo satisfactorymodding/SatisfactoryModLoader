@@ -221,9 +221,6 @@ public:
 	/** Getter for proximity subsystem */
 	FORCEINLINE class AFGProximitySubsystem* GetProximitySubsystem() const { return mProximitySubsystem; }
 protected:
-	UFUNCTION( exec )
-	void DumpPlayerCoordinates( const FString& label = TEXT(""), bool copyToClipboard = true );
-
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 

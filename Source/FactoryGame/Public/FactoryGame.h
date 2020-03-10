@@ -59,7 +59,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogFactory, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogNetConveyorBelt, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogNetFoliageRemoval, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogPower, Warning, All );
-DECLARE_LOG_CATEGORY_EXTERN( LogRailroad, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogRailroad, Log, All ); //@todoTrains @todoBU3 - These should be dialed back to only warnings before going on EA. We want it verbose on EX for now.
 DECLARE_LOG_CATEGORY_EXTERN( LogBuildGun, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogHologram, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogSave, Display, All );
@@ -73,7 +73,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, Warning );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, All );
 #endif
-DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Verbose, All ); //@todoPipes - These should be dialed back to only warnings before going on EA. We want it verbose on EX for now.
+DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Verbose, All ); //@todoPipes @todoBU3 - These should be dialed back to only warnings before going on EA. We want it verbose on EX for now.
 
 
 /** Helpers when using interfaces */

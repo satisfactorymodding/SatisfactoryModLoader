@@ -2,6 +2,8 @@
 
 #include "FGBuildableGeneratorGeoThermal.h"
 
+void AFGBuildableGeneratorGeoThermal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableGeneratorGeoThermal::BeginPlay(){ }
 void AFGBuildableGeneratorGeoThermal::Destroyed(){ }
 void AFGBuildableGeneratorGeoThermal::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableGeneratorGeoThermal::SetExtractableResource(TScriptInterface<  IFGExtractableResourceInterface > extractableResource){ }

@@ -3,6 +3,9 @@
 #include "FGItemDescriptor.h"
 
 #if WITH_EDITOR
+void UFGItemDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
+#endif 
+#if WITH_EDITOR
 void UFGItemDescriptor::DeleteAllIcons(){ }
 void UFGItemDescriptor::GenerateAllIcons(){ }
 FVector UFGItemDescriptor::GetCenterOfCollision(){ return FVector(); }
@@ -33,6 +36,7 @@ float UFGItemDescriptor::GetEnergyValue(TSubclassOf< UFGItemDescriptor > inClass
 float UFGItemDescriptor::GetRadioactiveDecay(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
 FText UFGItemDescriptor::GetItemName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 FText UFGItemDescriptor::GetItemDescription(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
+FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 void UFGItemDescriptor::GetPreviewView(TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_previewView){ }
 void UFGItemDescriptor::GetIconView(TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_itemView){ }
 FSlateBrush UFGItemDescriptor::GetItemIcon(TSubclassOf< UFGItemDescriptor > inClass){ return FSlateBrush(); }

@@ -80,6 +80,10 @@ class FACTORYGAME_API UFGItemDescriptor : public UObject
 public:
 	UFGItemDescriptor();
 
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty( struct FPropertyChangedEvent& propertyChangedEvent ) override;
+#endif
+
 	// Begin UObject interface
 	virtual void Serialize( FArchive& ar ) override;
 	virtual void PostLoad() override;
@@ -104,6 +108,10 @@ public:
 	/** Used to get the resource description in blueprints */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static FText GetItemDescription( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Used to get the abbreviated name of the item in blueprints */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static FText GetAbbreviatedDisplayName( TSubclassOf< UFGItemDescriptor > inClass );
 
 	/** Get the view to use when previewing this item */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
@@ -183,7 +191,8 @@ public:
 
 	/** Calculate the bounds of this item */
 	virtual FVector GetCenterOfCollision();
-#endif	
+#endif
+
 protected:
 	/** Internal function to get the display name. */
 	virtual FText GetItemNameInternal() const;
@@ -244,6 +253,10 @@ public:
 	FText mDescription;
 
 protected:
+	/** Abbreviated name of the item */
+	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( EditCondition = mUseDisplayNameAndDescription, HideEditConditionToggle ) )
+	FText mAbbreviatedDisplayName;
+
 	/** How many of this item can be in the same slot in an inventory */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	EStackSize mStackSize;

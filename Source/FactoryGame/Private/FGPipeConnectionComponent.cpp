@@ -17,6 +17,7 @@ bool UFGPipeConnectionComponentBase::CheckCompatibility(UFGPipeConnectionCompone
 FVector UFGPipeConnectionComponentBase::GetConnectorLocation(bool withClearance) const{ return FVector(); }
 UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindCompatibleOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
 UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
+void UFGPipeConnectionComponentBase::UpdateClientCachedConnection(){ }
 UFGPipeConnectionComponent::UFGPipeConnectionComponent(){ }
 void UFGPipeConnectionComponent::BeginPlay(){ }
 void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }

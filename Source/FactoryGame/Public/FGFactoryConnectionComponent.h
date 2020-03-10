@@ -251,7 +251,8 @@ protected:
 	UPROPERTY( SaveGame )
 	int32 mInventoryAccessIndex;
 
-	/** Buildable owning us, cached for performance (no need to UPROPERTY this) */
+	/** Buildable owning us, cached for performance */
+	UPROPERTY()
 	class AFGBuildable* mOuterBuildable;
 
 	/** Forward implementation details to our owner. */

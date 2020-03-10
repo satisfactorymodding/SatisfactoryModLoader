@@ -12,9 +12,14 @@
 #include "FGResourceSinkSettings.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FCalculatedRewardSteps
+struct FACTORYGAME_API FResourceSinkRewardLevelsData : public FTableRowBase
 {
 	GENERATED_BODY()
+
+	FResourceSinkRewardLevelsData() :
+	RequiredPoints(0),
+	NumRepeats(0)
+	{}
 
 	UPROPERTY( EditAnywhere )
 	int64 RequiredPoints;
@@ -22,9 +27,8 @@ struct FACTORYGAME_API FCalculatedRewardSteps
 	UPROPERTY( EditAnywhere )
 	int32 NumRepeats;
 
-
 public:
-	FORCEINLINE ~FCalculatedRewardSteps() = default;
+	FORCEINLINE ~FResourceSinkRewardLevelsData() = default;
 };
 
 USTRUCT(BlueprintType)
@@ -80,15 +84,32 @@ class FACTORYGAME_API UFGResourceSinkSettings : public UDeveloperSettings
 	static void SetPointCalculationExpression( FString pointCalculationExpression );
 
 	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static int32 GetNumRepeatsPerLevel() { return GetDefault<UFGResourceSinkSettings>()->mDefaultNumRepeats; }
+
+	UFUNCTION( BlueprintCallable, Category = "Settings" )
+	void SetNumRepeatsPerLevel( int32 numRepeats );
+
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static int32 GetNumLevels() { return GetDefault<UFGResourceSinkSettings>()->mNumLevels; }
+
+	UFUNCTION( BlueprintCallable, Category = "Settings" )
+	void SetNumLevels( int32 numLevels );
+
+	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static TSoftObjectPtr< class UDataTable > GetPointsDataTable() { return GetDefault<UFGResourceSinkSettings>()->mPointsDataTable; }
 
-	void CalculateRewardLevels();
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static TSoftObjectPtr< class UDataTable > GetRewardLevelsDataTable() { return GetDefault<UFGResourceSinkSettings>()->mRewardLevelsDataTable; }
+
 #endif
 
 public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Data table" )
 	TSoftObjectPtr< class UDataTable > mPointsDataTable;
+
+	UPROPERTY( EditAnywhere, config, Category = "Data table" )
+	TSoftObjectPtr< class UDataTable > mRewardLevelsDataTable;
 
 	UPROPERTY( VisibleAnywhere, config, Category = "Settings", meta = ( ToolTip = "The maximum value an item can be worth, 0 = No cap" ) )
 	int32 mMaxPointsForItem;
@@ -111,24 +132,17 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Cyber coupon", meta = ( ToolTip = "The schematic to unlock when sinking a coupon" ) )
 	TSubclassOf<class UFGSchematic> mCyberCouponSchematic;
 
-	UPROPERTY( EditAnywhere, Category = "Rewards", meta = ( ToolTip = "Points = mMulitplier * level^mExponent" ) )
-	bool mCalculateRewardLevels;
-
 	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Points = mMulitplier * level^mExponent" ) )
 	float mMultiplier;
 
 	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Points = mMulitplier * level^mExponent" ) )
 	float mExponent;
 
-	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Number of repeats per each level" ) )
-	int32 mDefaultNumRepeats;
-
 	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Number of levels" ) )
 	int32 mNumLevels;
 
-	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "" ) )
-	TArray<FCalculatedRewardSteps> mRewardLevels;
-
+	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Number of repeats per each level" ) )
+	int32 mDefaultNumRepeats;
 
 
 public:

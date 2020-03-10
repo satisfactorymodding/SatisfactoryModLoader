@@ -273,8 +273,8 @@ protected:
 	UPROPERTY( SaveGame, Replicated, EditInstanceOnly, BlueprintReadOnly, Category="Resources")
 	int32 mResourcesLeft;
 
-	/** If true, then we are occupied by something */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsOccupied, BlueprintReadOnly, Category = "Resources" )
+	/** If true, then we are occupied by something // [Dylan 3/2/2020] - Removed savegame meta */
+	UPROPERTY( ReplicatedUsing = OnRep_IsOccupied, BlueprintReadOnly, Category = "Resources" )
 	bool mIsOccupied;
 
 	/** Radar tower modifies this to show this resource node in the map */
@@ -311,7 +311,7 @@ public:
 	UPROPERTY()
 	class UParticleSystemComponent* mHighlightParticleSystemComponent;
 
-	/** Bool for is we should spawn particle */
+	/** Bool for is we should spawn particle - @todo Do we really need to save this? //[Dylan 3/2/2020] */
 	UPROPERTY( Replicated, EditDefaultsOnly, SaveGame, Category = "Resources" ) 
 	bool mDoSpawnParticle;
 

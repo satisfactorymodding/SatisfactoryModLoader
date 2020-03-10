@@ -11,6 +11,7 @@ void AFGBuildablePipeline::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 void AFGBuildablePipeline::BeginPlay(){ }
 void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipeline::Tick(float dt){ }
+void AFGBuildablePipeline::Factory_Tick(float dt){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeline::LostSignificance_Implementation(){ }
 TSubclassOf< UFGPipeConnectionComponentBase > AFGBuildablePipeline::GetConnectionType_Implementation(){ return TSubclassOf<UFGPipeConnectionComponentBase>(); }

@@ -1,6 +1,7 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "Array.h"
 #include "GameFramework/Actor.h"
 #include "UObject/Class.h"
 
@@ -15,8 +16,11 @@ class FACTORYGAME_API AFGBuildableGeneratorGeoThermal : public AFGBuildableGener
 {
 	GENERATED_BODY()
 public:
+	// Replication
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 
 	// Begin AActor interface
+	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 	// End AActor interface 
 
@@ -41,9 +45,8 @@ private:
 	UPROPERTY( SaveGame )
 	class AFGResourceNode* mExtractResourceNode;
 
-	/** Saved interface to the object we are extracting resrouces from */
-	UPROPERTY( SaveGame )
-	TScriptInterface< class IFGExtractableResourceInterface > mExtractableResource;
+	UPROPERTY( SaveGame, Replicated )
+	AActor* mExtractableResource;
 
 public:
 	FORCEINLINE ~AFGBuildableGeneratorGeoThermal() = default;

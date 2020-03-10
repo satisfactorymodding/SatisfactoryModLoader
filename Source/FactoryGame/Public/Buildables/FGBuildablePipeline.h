@@ -75,6 +75,10 @@ public:
 	virtual void Tick( float dt ) override;
 	// End Actor Interface 
 
+	// Begin AFGBuildable interface
+	virtual void Factory_Tick( float dt ) override;
+	// End AFGBuildable interface
+
 	// Begin Significance
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;

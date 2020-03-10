@@ -13,7 +13,10 @@
 #include "FGGameSession.generated.h"
 
 /**
- * 
+ * @OSS: Responsibility:
+ * Handle interaction on server and updating the SessionSettings (number of players connected and other things that need to be propagated the the matchmaking services)
+ * Internally it converts it to presence and posts it to the hosts presence.
+ * @todo DedicatedServers need to propagate this to a real matchmaking backend, as they have no presence to post that data to
  */
 UCLASS()
 class FACTORYGAME_API AFGGameSession : public AGameSession
