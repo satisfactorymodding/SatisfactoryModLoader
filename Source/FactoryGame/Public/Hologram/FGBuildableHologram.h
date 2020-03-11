@@ -45,6 +45,9 @@ public:
 
 	// AFGHologram interface
 
+	/** Net Construction Messages */
+	virtual void SerializeConstructMessage( FArchive& ar ) override;
+
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 
@@ -262,6 +265,7 @@ protected:
 	class UBoxComponent* mClearanceBox;
 
 	/** If we have snapped to another buildable, i.e. foundation, floor etc, this is it. */
+	UPROPERTY( /*CustomSerialization*/ ) // MODDING EDIT: Another CSS custom engine thing
 	class AFGBuildable* mSnappedBuilding;
 
 	bool mIsAimingAtOtherBuilding = false;

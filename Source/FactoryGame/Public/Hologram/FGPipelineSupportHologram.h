@@ -31,11 +31,15 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual void CheckClearance() override;
 	// End AFGHologram interface
 
 	// Begin FGConstructionMessageInterface
 	virtual void SerializeConstructMessage( FArchive& ar ) override;
 	// End FGConstructionMessageInterface
+
+	/** Helper */
+	bool CheckClearanceForBuildingMesh( UStaticMeshComponent* mesh, const FComponentQueryParams& params = FComponentQueryParams::DefaultComponentQueryParams );
 
 	/** Set the height of the support */
 	void SetSupportLength( float height );

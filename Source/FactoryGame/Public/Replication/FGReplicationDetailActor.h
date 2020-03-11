@@ -42,6 +42,7 @@ public:
 	/** Flushes the state of the replication detail actor over to its owner. E.g. Inventory components copy their state. */
 	virtual void FlushReplicationActorStateToOwner();
 
+	/** Validation function to check whether initial replication has occurred. Only works on client and overriden implementations. */
 	virtual bool HasCompletedInitialReplication() const;
 
 protected:

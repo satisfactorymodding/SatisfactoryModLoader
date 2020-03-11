@@ -9,7 +9,9 @@ bool AFGPipelineSupportHologram::DoMultiStepPlacement(bool isInputFromARelease){
 bool AFGPipelineSupportHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGPipelineSupportHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineSupportHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
+void AFGPipelineSupportHologram::CheckClearance(){ }
 void AFGPipelineSupportHologram::SerializeConstructMessage(FArchive& ar){ }
+bool AFGPipelineSupportHologram::CheckClearanceForBuildingMesh(UStaticMeshComponent* mesh, const FComponentQueryParams& params){ return bool(); }
 void AFGPipelineSupportHologram::SetSupportLength(float height){ }
 void AFGPipelineSupportHologram::SnapToConnection(UFGPipeConnectionComponentBase* connection,  AFGPipelineHologram* parentPipeline){ }
 void AFGPipelineSupportHologram::ResetBuildSteps(){ }

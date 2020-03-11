@@ -5,6 +5,8 @@
 #include "UObject/Class.h"
 
 #include "CoreMinimal.h"
+#include "Buildables/FGBuildableGeneratorFuel.h"
+#include "../Replication/FGReplicationDetailActor_GeneratorNuclear.h"
 #include "FGBuildableGeneratorFuel.h"
 #include "FGBuildableGeneratorNuclear.generated.h"
 
@@ -16,6 +18,8 @@ class FACTORYGAME_API AFGBuildableGeneratorNuclear : public AFGBuildableGenerato
 {
 	GENERATED_BODY()
 public:
+	AFGBuildableGeneratorNuclear();
+
 	// Replication
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
@@ -35,6 +39,10 @@ protected:
 	virtual bool CanStartPowerProduction_Implementation() const override;
 	// End AFGBuildableGenerator interface
 
+	// Begin IFGReplicationDetailActorOwnerInterface
+	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_GeneratorNuclear::StaticClass(); };
+	// End IFGReplicationDetailActorOwnerInterface
+
 	bool IsWasteFull() const;
 
 	/** We can only load fuel if waste is not full */
@@ -45,11 +53,20 @@ protected:
 
 	/** Returns the inventory for waste in the nuclear generator */
 	UFUNCTION( BlueprintPure, Category = "Nuclear" )
-	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventory; }
+	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventoryHandler->GetActiveInventoryComponent(); }
 private:
+	friend class AFGReplicationDetailActor_GeneratorNuclear;
+
+	virtual void OnRep_ReplicationDetailActor() override;
+
+	class AFGReplicationDetailActor_GeneratorNuclear* GetCastRepDetailsActor() const;
+
 	/** Spent fuel rods goes here. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mOutputInventory;
+
+	UPROPERTY()
+	UFGReplicationDetailInventoryComponent* mOutputInventoryHandler;
 
 	/** Waste left to produce from the current fuel rod*/
 	UPROPERTY( SaveGame )
