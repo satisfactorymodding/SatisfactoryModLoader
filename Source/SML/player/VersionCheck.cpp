@@ -21,7 +21,7 @@ UKickReasonAttachment* UKickReasonAttachment::Get(AGameModeBase* actor) {
 
 class FunctionProto {
 public:
-	EBrowseReturnVal::Type Browse(FWorldContext&, FURL&, const FString&) {
+	EBrowseReturnVal::Type Browse(FWorldContext&, FURL&, FString&) {
 		return EBrowseReturnVal::Success;
 	}
 	void PreLogin(const FString&, const FString&, const FUniqueNetIdRepl&, FString* ErrorMessage) {
@@ -83,7 +83,7 @@ bool Base64Decode(const FString& Source, FString& OutDest) {
 }
 
 void SML::registerVersionCheckHooks() {
-	SUBSCRIBE_METHOD("?PreLogin@AGameModeBase@@UEAAXAEBVFString@@0AEBUFUniqueNetIdRepl@@AEAV2@@Z", FunctionProto::PreLogin, [](CallScope<void, FunctionProto> scope, FunctionProto* gm, const FString& Options, const FString& str, const FUniqueNetIdRepl& repl, FString* ErrorMessage) {
+	SUBSCRIBE_METHOD("?PreLogin@AGameModeBase@@UEAAXAEBVFString@@0AEBUFUniqueNetIdRepl@@AEAV2@@Z", FunctionProto::PreLogin, [](auto& scope, FunctionProto* gm, const FString& Options, const FString& str, const FUniqueNetIdRepl& repl, FString* ErrorMessage) {
 		const int32 SmlModListIndex = Options.Find(TEXT("?SML_ModList="));
 		FString disconnectReason;
 		if (SmlModListIndex != INDEX_NONE) {
@@ -107,7 +107,6 @@ void SML::registerVersionCheckHooks() {
 		if (!disconnectReason.IsEmpty()) {	
 			attachment->PlayerKickReason = disconnectReason;
 		}
-		scope(gm, Options, str, repl, ErrorMessage);
 	});
 	FGameModeEvents::OnGameModePreLoginEvent().AddLambda([](AGameModeBase* gameMode, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) {
 		UKickReasonAttachment* attachment = UKickReasonAttachment::Get(gameMode);
@@ -117,11 +116,10 @@ void SML::registerVersionCheckHooks() {
 		}
 	});
 	
-	SUBSCRIBE_METHOD("?Browse@UEngine@@UEAA?AW4Type@EBrowseReturnVal@@AEAUFWorldContext@@UFURL@@AEAVFString@@@Z", FunctionProto::Browse, [](CallScope<EBrowseReturnVal::Type, FunctionProto>& scope, FunctionProto* ptr, FWorldContext& world, FURL& URL, const FString& Error) {
+	SUBSCRIBE_METHOD("?Browse@UEngine@@UEAA?AW4Type@EBrowseReturnVal@@AEAUFWorldContext@@UFURL@@AEAVFString@@@Z", FunctionProto::Browse, [](auto& scope, FunctionProto* ptr, FWorldContext& world, FURL& URL, FString& Error) {
 		SML::Logging::info(TEXT("Connecting to URL "), *URL.ToString());
 		const FString& myModList = CreateModListString();
 		const FString& encodedModList = FBase64::Encode(myModList);
 		URL.AddOption(*(FString(TEXT("SML_ModList=")) += encodedModList));
-		return scope(ptr, world, (FURL)URL, Error);
 	});
 }

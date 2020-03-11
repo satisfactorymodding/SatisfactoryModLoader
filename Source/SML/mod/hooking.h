@@ -26,46 +26,94 @@ std::vector<F>* createHandlerList(const std::string& identifier) {
 template <typename TCallable, TCallable Callable>
 struct HookInvoker;
 
-//general template for other types
-template <typename Result, typename Member>
-struct CallScope {
-private:
-	std::vector<void*>* functionList;
-	size_t handlerPtr = 0;
-	void* functionPtr;
-	
-public:
-	template<typename T>
-	CallScope(void* functionPtr, std::vector<T>* functionList) : functionList((std::vector<void*>*)functionList), functionPtr(functionPtr) {}
+template<typename TCallable>
+struct CallScope;
 
-	template<typename... Args>
-	Result operator()(Member* m, Args&&... args) {
-		auto funcList = (std::vector<std::function<Result(CallScope<Result, Member>&, Member*, Args...)>>*)functionList;
-		if (handlerPtr >= funcList->size()) {
-			return ((Result(*)(Member*, Args...))functionPtr)(m, args...);
-		}
-		else return (funcList)->at(handlerPtr++)(*this, m, args...);
+//CallResult specialization for void
+template <typename... Args>
+struct CallScope<void(*)(Args...)> {
+public:
+	typedef void HookType(Args...);
+	typedef void HookFuncSig(CallScope<void(*)(Args...)>&, Args...);
+	typedef std::function<HookFuncSig> HookFunc;
+
+private:
+	std::vector<HookFunc>* functionList;
+	size_t handlerPtr = 0;
+	HookType* function;
+
+	bool forwardCall = true;
+
+public:
+	CallScope(std::vector<HookFunc>* functionList, HookType* function) : functionList(functionList), function(function) {}
+
+	inline bool shouldForwardCall() {
+		return forwardCall;
 	}
-};
 
-template <typename Result>
-struct CallScope<Result, void> {
-private:
-	std::vector<void*>* functionList;
-	size_t handlerPtr = 0;
-	void* functionPtr;
+	void Cancel() {
+		this->forwardCall = false;
+	}
 
-public:
-	template<typename T>
-	CallScope(void* functionPtr, std::vector<T>* functionList) : functionList((std::vector<void*>*)functionList), functionPtr(functionPtr) {}
-
-	template<typename... Args>
-	Result operator()(Args&&... args) {
+	inline void operator()(Args... args) {
 		if (functionList == nullptr || handlerPtr >= functionList->size()) {
-			return ((Result(*)(Args...))functionPtr)(args...);
-		} else return ((std::vector<std::function<Result(CallScope<Result, void>&, Args...)>>*)functionList)->at(handlerPtr++)(*this, args...);
+			function(args...);
+		} else {
+			auto cachePtr = handlerPtr + 1;
+			functionList->at(handlerPtr++)(*this, args...);
+			if (handlerPtr == cachePtr && forwardCall) {
+				(*this)(args...);
+			}
+		}
 	}
 };
+
+//general template for other types
+template <typename Result, typename... Args>
+struct CallScope<Result(*)(Args...)> {
+public:
+	typedef Result HookType(Args...);
+	typedef void HookFuncSig(CallScope<Result(*)(Args...)>&, Args...);
+	typedef std::function<HookFuncSig> HookFunc;
+
+private:
+	std::vector<HookFunc>* functionList;
+	size_t handlerPtr = 0;
+	HookType* function;
+	
+	bool forwardCall = true;
+	Result result;
+
+public:
+	CallScope(std::vector<HookFunc>* functionList, HookType* function) : functionList(functionList), function(function) {}
+
+	inline bool shouldForwardCall() {
+		return forwardCall;
+	}
+	inline Result getResult() {
+		return result;
+	}
+
+	void Override(const Result& newResult) {
+		this->forwardCall = false;
+		this->result = newResult;
+	}
+
+	inline void operator()(Args... args) {
+		if (functionList == nullptr || handlerPtr >= functionList->size()) {
+			result = function(args...);
+		} else {
+			auto cachePtr = handlerPtr + 1;
+			functionList->at(handlerPtr++)(*this, args...);
+			if (handlerPtr == cachePtr && forwardCall) {
+				(*this)(args...);
+			}
+		}
+	}
+};
+
+template <typename Result, typename C, typename... Args>
+struct CallScope<Result(C::*)(Args...)> : public CallScope<Result(*)(C*, Args...)> {};
 
 template<typename Ret, typename... A>
 class HandlerAfterFunc : public std::function<void(Ret, A...)> {};
@@ -76,8 +124,9 @@ class HandlerAfterFunc<void, A...> : public std::function<void(A...)> {};
 template <typename R, typename... A, R(*PMF)(A...)>
 struct HookInvoker<R(*)(A...), PMF> {
 public:
+	typedef CallScope<R(*)(A...)> ScopeType;
 	// mod handler function
-	typedef R HandlerSignature(CallScope<R, void>&, A...);
+	typedef void HandlerSignature(ScopeType&, A...);
 	typedef void HandlerSignatureAfter(const R&, A...);
 	typedef R HookType(A...);
 	typedef R ReturnType;
@@ -88,16 +137,18 @@ public:
 private:
 	static std::vector<Handler>* handlersBefore;
 	static std::vector<HandlerAfter>* handlersAfter;
-	static void* functionPtr;
+	static HookType* functionPtr;
 public:
 	static R applyCall(A... args) {
-		R result = CallScope<R, void>(functionPtr, handlersBefore)(args...);
+		ScopeType scope(handlersBefore, functionPtr);
+		scope(args...);
 		if (handlersAfter) for (HandlerAfter& handler : * handlersAfter) handler(result, args...);
-		return result;
+		return scope.getResult();
 	}
 
 	static void applyCallVoid(A... args) {
-		CallScope<R, void>(functionPtr, handlersBefore)(args...);
+		ScopeType scope(handlersBefore, functionPtr);
+		scope(args...);
 		if (handlersAfter) for (HandlerAfter& handler : *handlersAfter) handler(args...);
 	}
 
@@ -117,14 +168,14 @@ private:
 	static void installHook(const std::string& symbolName) {
 		if (handlersBefore == nullptr) {
 			handlersBefore = createHandlerList<HandlerSignature>(symbolName);
-			if (functionPtr == nullptr) functionPtr = registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
+			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
 		}
 	}
 
 	static void installHookAfter(const std::string& symbolName) {
 		if (handlersAfter == nullptr) {
 			handlersAfter = createHandlerList<HandlerSignatureAfter>(symbolName);
-			if (functionPtr == nullptr) functionPtr = registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
+			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
 		}
 	}
 
@@ -146,8 +197,9 @@ public:
 template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
 struct HookInvoker<R(C::*)(A...), PMF> {
 public:
+	typedef CallScope<R(*)(C*, A...)> ScopeType;
 	// mod handler function
-	typedef R HandlerSignature(CallScope<R, C>&, C*, A...);
+	typedef void HandlerSignature(ScopeType&, C*, A...);
 	typedef R HookType(C*, A...);
 	typedef R ReturnType;
 
@@ -157,16 +209,18 @@ public:
 private:
 	static std::vector<Handler>* handlersBefore;
 	static std::vector<HandlerAfter>* handlersAfter;
-	static void* functionPtr;
+	static HookType* functionPtr;
 public:
 	static R applyCall(C* self, A... args) {
-		R result = CallScope<R, C>(functionPtr, handlersBefore)(self, args...);
-		if (handlersAfter) for (HandlerAfter& handler : *handlersAfter) handler(result, self, args...);
-		return result;
+		ScopeType scope(handlersBefore, functionPtr);
+		scope(self, args...);
+		if (handlersAfter) for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
+		return scope.getResult();
 	}
 
 	static void applyCallVoid(C* self, A... args) {
-		CallScope<void, C>(functionPtr, handlersBefore)(self, args...);
+		ScopeType scope(handlersBefore, functionPtr);
+		scope(self, args...);
 		if (handlersAfter) for (HandlerAfter& handler : *handlersAfter) handler(self, args...);
 	}
 
@@ -186,14 +240,14 @@ private:
 	static void installHook(const std::string& symbolName) {
 		if (handlersBefore == nullptr) {
 			handlersBefore = createHandlerList<Handler>(symbolName);
-			if (functionPtr == nullptr) functionPtr = registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
+			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
 		}
 	}
 
 	static void installHookAfter(const std::string& symbolName) {
 		if (handlersAfter == nullptr) {
 			handlersAfter = createHandlerList<HandlerAfter>(symbolName);
-			if (functionPtr == nullptr) functionPtr = registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
+			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
 		}
 	}
 
@@ -212,22 +266,22 @@ public:
 };
 
 template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
-std::vector<std::function<R(CallScope<R, C>&, C*, A...)>>* HookInvoker<R(C::*)(A...), PMF>::handlersBefore = nullptr;
+std::vector<std::function<void(CallScope<R(*)(C*,A...)>&, C*, A...)>>* HookInvoker<R(C::*)(A...), PMF>::handlersBefore = nullptr;
 
 template <typename R, typename C, typename... A, R(C:: * PMF)(A...)>
 std::vector<HandlerAfterFunc<R, C*, A...>>* HookInvoker<R(C::*)(A...), PMF>::handlersAfter = nullptr;
 
 template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
-void* HookInvoker<R(C::*)(A...), PMF>::functionPtr = nullptr;
+R(* HookInvoker<R(C::*)(A...), PMF>::functionPtr)(C*,A...) = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
-std::vector<std::function<R(CallScope<R, void>&, A...)>>* HookInvoker<R(*)(A...), PMF>::handlersBefore = nullptr;
+std::vector<std::function<void(CallScope<R(*)(A...)>&, A...)>>* HookInvoker<R(*)(A...), PMF>::handlersBefore = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
 std::vector<HandlerAfterFunc<R, A...>>* HookInvoker<R(*)(A...), PMF>::handlersAfter = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
-void* HookInvoker<R(*)(A...), PMF>::functionPtr = nullptr;
+R(* HookInvoker<R(*)(A...), PMF>::functionPtr)(A...) = nullptr;
 
 #define SUBSCRIBE_METHOD(MethodName, MethodReference, Handler) \
 HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerBefore(MethodName, Handler);

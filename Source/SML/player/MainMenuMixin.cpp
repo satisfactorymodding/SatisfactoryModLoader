@@ -58,10 +58,9 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 // so all entries will be matched with StartsWith instead of simple equality check
 
 void SML::registerMainMenuHooks() {
-	SUBSCRIBE_METHOD("?LoadComplete@UFGGameInstance@@MEAAXMAEBVFString@@@Z", UFGGameInstanceProto::LoadComplete, [](CallScope<void, UFGGameInstanceProto>& scope, UFGGameInstanceProto* thisPtr, const float f, const FString& mapName) {
+	SUBSCRIBE_METHOD("?LoadComplete@UFGGameInstance@@MEAAXMAEBVFString@@@Z", UFGGameInstanceProto::LoadComplete, [](auto& scope, UFGGameInstanceProto* thisPtr, const float f, const FString& mapName) {
 		UFGGameInstance* gameInstance = reinterpret_cast<UFGGameInstance*>(thisPtr);
 		UGameViewportClient* viewport = gameInstance->GetWorld()->GetGameViewport();
 		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, "/Game/FactoryGame/Map/MenuScenes/MenuScene_", CreateMenuInfoTextPanel)
-		scope(thisPtr, f, mapName);
 	});
 }
