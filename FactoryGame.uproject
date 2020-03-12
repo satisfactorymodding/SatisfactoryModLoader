@@ -1,0 +1,49 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "4.22.3-CSS",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "FactoryGame",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "SML",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		},
+		{
+			"Name": "ExampleMod",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ApexDestruction",
+			"Enabled": true
+		},
+		{
+			"Name": "ReplicationGraph",
+			"Enabled": true
+		},
+		{
+			"Name": "AnalyticsBlueprintLibrary",
+			"Enabled": true
+		},
+		{
+			"Name": "AnalyticsMulticast",
+			"Enabled": true
+		},
+		{
+			"Name": "SignificanceManager",
+			"Enabled": true
+		},
+		{
+			"Name": "Alpakit",
+			"Enabled": true
+		}
+	]
+}

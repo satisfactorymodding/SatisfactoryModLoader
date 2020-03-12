@@ -1,24 +1,31 @@
 ﻿=== SML Developers ===
-SuperCoder79
-Nomnom
 Anttirt
+Archengius
 Brabb3l
-Trxnce
-VirtusModz
 Crystalin
 Kronos
-Vilsol
+Mircea
+Nomnom
+Panakotta00
 Stinosko
+SuperCoder79
+Trxnce
+Vilsol
+VirtusModz
 
 === SML Collaborators ===
-TiaqoY0
-gallexme
 Csstform
+TiaqoY0
 Turupawn
+gallexme
 
 === Special Thanks ===
 Markus Rännare and the rest of the Satisfactory team :D
 
 === Technologies used ===
-Microsoft/Detours
+kubo/funchook
+ttvfs/ttvfs
 nlohmann/json
+Archengius/SatisfactoryModBootstrapper
+Unreal Engine 4
+
