@@ -52,15 +52,17 @@ public:
 	}
 
 	void Cancel() {
-		this->forwardCall = false;
+		forwardCall = false;
 	}
 
 	inline void operator()(Args... args) {
 		if (functionList == nullptr || handlerPtr >= functionList->size()) {
 			function(args...);
+			forwardCall = false;
 		} else {
 			auto cachePtr = handlerPtr + 1;
-			functionList->at(handlerPtr++)(*this, args...);
+			auto& handler = functionList->at(handlerPtr++);
+			handler(*this, args...);
 			if (handlerPtr == cachePtr && forwardCall) {
 				(*this)(args...);
 			}
@@ -102,9 +104,11 @@ public:
 	inline void operator()(Args... args) {
 		if (functionList == nullptr || handlerPtr >= functionList->size()) {
 			result = function(args...);
+			this->forwardCall = false;
 		} else {
 			auto cachePtr = handlerPtr + 1;
-			functionList->at(handlerPtr++)(*this, args...);
+			auto handler = functionList->at(handlerPtr++);
+			handler(*this, args...);
 			if (handlerPtr == cachePtr && forwardCall) {
 				(*this)(args...);
 			}
