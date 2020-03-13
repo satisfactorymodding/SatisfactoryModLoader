@@ -8,5 +8,6 @@ void UFGResourceSinkSettings::PostInitProperties(){ Super::PostInitProperties();
 void UFGResourceSinkSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ }
 void UFGResourceSinkSettings::SetMaxPointsForItem(int32 maxPointsForItem){ }
 void UFGResourceSinkSettings::SetPointCalculationExpression(FString pointCalculationExpression){ }
-void UFGResourceSinkSettings::CalculateRewardLevels(){ }
+void UFGResourceSinkSettings::SetNumRepeatsPerLevel(int32 numRepeats){ }
+void UFGResourceSinkSettings::SetNumLevels(int32 numLevels){ }
 #endif 

@@ -13,6 +13,7 @@ void AFGBuildablePipeReservoir::GetLifetimeReplicatedProps(TArray< FLifetimeProp
 void AFGBuildablePipeReservoir::BeginPlay(){ }
 void AFGBuildablePipeReservoir::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipeReservoir::Tick(float dt){ }
+void AFGBuildablePipeReservoir::Factory_Tick(float dt){ }
 FFluidBox* AFGBuildablePipeReservoir::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipeReservoir::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }
 float AFGBuildablePipeReservoir::GetFluidContent() const{ return float(); }

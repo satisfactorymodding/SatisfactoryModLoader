@@ -28,7 +28,7 @@ void AFGBuildableGeneratorFuel::Factory_StopPowerProduction_Implementation(){ }
 void AFGBuildableGeneratorFuel::Factory_TickPowerProduction_Implementation(float dt){ }
 bool AFGBuildableGeneratorFuel::CanLoadFuel() const{ return bool(); }
 bool AFGBuildableGeneratorFuel::CanLoadSupplenmental() const{ return bool(); }
+void AFGBuildableGeneratorFuel::OnRep_ReplicationDetailActor(){ }
 bool AFGBuildableGeneratorFuel::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 void AFGBuildableGeneratorFuel::OnRep_FuelInventory(){ }
-void AFGBuildableGeneratorFuel::OnRep_ReplicationDetailActor(){ }
 AFGReplicationDetailActor_GeneratorFuel* AFGBuildableGeneratorFuel::GetCastRepDetailsActor() const{ return nullptr; }

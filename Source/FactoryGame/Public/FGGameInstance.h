@@ -144,7 +144,14 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnNetworkErrorRecieved, ENetworkF
 
 // Called if/when the NAT-type is updated
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNatTypeUpdated, ECachedNATType, natType );
-
+/**
+ * @OSS: Responsibilities:
+ * - QueryNATType:
+ * This queries the backend systems what kind of NAT they think we have. Doesn't always succeed
+ * - Joining Sessions
+ * We have two ways of joining sessions, invites or through joining someones presence. This is done through the UGameInstance::JoinSession
+ * call. This will automatically tear down our current session. Leave the current game and join the new session
+ */
 UCLASS()
 class FACTORYGAME_API UFGGameInstance : public UGameInstance
 {

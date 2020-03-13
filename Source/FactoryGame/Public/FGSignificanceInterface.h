@@ -51,4 +51,7 @@ public:
 public:
 	
 	
+
+public:
+	FORCEINLINE IFGSignificanceInterface() = default;
 };

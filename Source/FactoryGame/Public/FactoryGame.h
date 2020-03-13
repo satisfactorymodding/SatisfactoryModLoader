@@ -73,7 +73,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, Warning );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, All );
 #endif
-DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Verbose, All ); //@todoPipes - These should be dialed back to only warnings before going on EA. We want it verbose on EX for now.
+DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Warning, All );
 
 
 /** Helpers when using interfaces */

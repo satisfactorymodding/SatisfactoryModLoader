@@ -4,7 +4,7 @@
 
 AFGUnlockSubsystem::AFGUnlockSubsystem(){ }
 void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGUnlockSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGUnlockSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UWorld* world){ return nullptr; }
 AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGUnlockSubsystem::Init(){ }

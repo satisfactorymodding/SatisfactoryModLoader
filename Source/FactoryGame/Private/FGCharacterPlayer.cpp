@@ -114,6 +114,10 @@ void AFGCharacterPlayer::CheatTeleport(){ }
 void AFGCharacterPlayer::OnSlideStart(){ }
 void AFGCharacterPlayer::OnSlideEnd(){ }
 void AFGCharacterPlayer::Multicast_PlayJumpEffects_Implementation(bool boostJump){ }
+void AFGCharacterPlayer::Client_HyperTubeStart_Implementation(AActor* tubeStart, float startTime, float pipeVelocity, float pipeProgress){ }
+bool AFGCharacterPlayer::Client_HyperTubeStart_Validate(AActor* tubeStart, float startTime, float pipeVelocity, float pipeProgress){ return bool(); }
+void AFGCharacterPlayer::Client_HyperTubeEnd_Implementation(FVector point, FVector velocity, float startTime){ }
+bool AFGCharacterPlayer::Client_HyperTubeEnd_Validate(FVector point, FVector velocity, float startTime){ return bool(); }
 void AFGCharacterPlayer::SetupPlayerInputComponent( UInputComponent* InputComponent){ }
 void AFGCharacterPlayer::OnInventorySlotsUnlocked(int32 newUnlockedSlots){ }
 void AFGCharacterPlayer::OnArmsSlotsUnlocked(int32 newUnlockedSlots){ }

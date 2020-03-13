@@ -50,6 +50,11 @@ FORCEINLINE uint32 GetTypeHash( const FPendingInvite& invite )
 	return 0;
 }
 
+/**
+ * @OSS: responsibility
+ * - HandleInvites
+ * Will detect that we receive a invite and expose functionality to join invites and react to the invite
+ */
 UCLASS()
 class FACTORYGAME_API UFGOnlineSessionClient : public UOnlineSessionClient
 {

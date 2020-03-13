@@ -32,4 +32,7 @@ class FACTORYGAME_API IFGRadiationInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Radioactivity" )
 	void ReceiveRadiation( float amount, float duration, FVector direction, TSubclassOf< class UFGDamageType > damageType );
+
+public:
+	FORCEINLINE IFGRadiationInterface() = default;
 };

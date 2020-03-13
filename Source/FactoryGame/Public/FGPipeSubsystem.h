@@ -114,7 +114,6 @@ public:
 private:
 	int32 GenerateUniqueID();
 
-private:
 	void TickPipeNetworks( float dt );
 
 	/** Helpers to manage pipe networks. */

@@ -156,6 +156,9 @@ protected:
 	/** Can we load supplemental resources into the generator */
 	virtual bool CanLoadSupplenmental() const;
 
+	virtual void OnRep_ReplicationDetailActor() override;
+
+
 private:
 	/**
 	 * Filter out what we consider as fuel for our fuel inventory.
@@ -168,9 +171,6 @@ private:
 	UFUNCTION()
 	void OnRep_FuelInventory();
 
-
-
-	virtual void OnRep_ReplicationDetailActor() override;
 
 	class AFGReplicationDetailActor_GeneratorFuel* GetCastRepDetailsActor() const;
 

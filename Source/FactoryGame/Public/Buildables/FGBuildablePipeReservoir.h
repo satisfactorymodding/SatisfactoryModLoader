@@ -58,6 +58,10 @@ public:
 	virtual void Tick( float dt ) override;
 	// End Actor Interface 
 
+	// Begin AFGBuildable interface
+	virtual void Factory_Tick( float dt ) override;
+	// End AFGBuildable interface
+
 	// Begin Fluid Integrant Interface
 	virtual FFluidBox* GetFluidBox() override;
 	virtual TArray< class UFGPipeConnectionComponent* > GetPipeConnections() override;

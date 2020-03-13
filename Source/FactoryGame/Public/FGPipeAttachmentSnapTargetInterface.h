@@ -32,4 +32,7 @@ public:
 
 
 
+
+public:
+	FORCEINLINE IFGPipeAttachmentSnapTargetInterface() = default;
 };

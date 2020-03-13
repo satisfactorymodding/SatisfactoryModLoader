@@ -67,4 +67,7 @@ public:
 	bool CanPlaceResourceExtractor() const;
 
 	
+
+public:
+	FORCEINLINE IFGExtractableResourceInterface() = default;
 };

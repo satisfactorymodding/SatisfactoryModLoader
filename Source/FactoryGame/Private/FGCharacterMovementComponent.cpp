@@ -8,6 +8,7 @@ FNetworkPredictionData_Client* UFGCharacterMovementComponent::GetPredictionData_
 bool UFGCharacterMovementComponent::DoJump(bool isReplayingMoves){ return bool(); }
 void UFGCharacterMovementComponent::CalcVelocity(float dt, float friction, bool isFluid, float brakingDeceleration){ }
 float UFGCharacterMovementComponent::GetMaxSpeed() const{ return float(); }
+void UFGCharacterMovementComponent::StartNewPhysics(float deltaTime, int32 Iterations){ }
 void UFGCharacterMovementComponent::SetDefaultMovementMode(){ }
 float UFGCharacterMovementComponent::GetMaxJumpZVelocity() const{ return float(); }
 void UFGCharacterMovementComponent::ServerSetHookLocation_Implementation(const FVector& hookLocation){ }
@@ -31,6 +32,7 @@ void UFGCharacterMovementComponent::UpdateFromCompressedFlags(uint8 flags){ }
 void UFGCharacterMovementComponent::OnMovementUpdated(float deltaSeconds, const FVector & oldLocation, const FVector & oldVelocity){ }
 void UFGCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode){ }
 void UFGCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations){ }
+void UFGCharacterMovementComponent::ExecuteDeferredCollisionChange(){ }
 void UFGCharacterMovementComponent::SetOnLadder( UFGLadderComponent* ladder){ }
 void UFGCharacterMovementComponent::PhysFlying(float deltaTime, int32 Iterations){ }
 void UFGCharacterMovementComponent::PhysLadder(float deltaTime, int32 iterations){ }

@@ -2,6 +2,7 @@
 
 #include "FGBuildableGeneratorNuclear.h"
 
+AFGBuildableGeneratorNuclear::AFGBuildableGeneratorNuclear(){ }
 void AFGBuildableGeneratorNuclear::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableGeneratorNuclear::BeginPlay(){ }
 void AFGBuildableGeneratorNuclear::Factory_Tick(float dt){ }
@@ -11,3 +12,5 @@ bool AFGBuildableGeneratorNuclear::CanStartPowerProduction_Implementation() cons
 bool AFGBuildableGeneratorNuclear::IsWasteFull() const{ return bool(); }
 bool AFGBuildableGeneratorNuclear::CanLoadFuel() const{ return bool(); }
 void AFGBuildableGeneratorNuclear::TryProduceWaste(){ }
+void AFGBuildableGeneratorNuclear::OnRep_ReplicationDetailActor(){ }
+AFGReplicationDetailActor_GeneratorNuclear* AFGBuildableGeneratorNuclear::GetCastRepDetailsActor() const{ return nullptr; }

@@ -41,4 +41,7 @@ public:
 	/** Particle System to be played when destroyed */
 	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle Destroy Interface" )
 	class UParticleSystem* GetDestroyEffect();
+
+public:
+	FORCEINLINE IFGVehicleDestroyableInterface() = default;
 };

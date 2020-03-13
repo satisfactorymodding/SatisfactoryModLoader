@@ -165,6 +165,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	TSubclassOf< class AFGCrate > mInventoryDropCrate;
 
+	/** The default class we use for over clocking buildings */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	TSubclassOf< class UFGItemDescriptor > mPowerShardClass;
+
 	/** Default sound played when constructing a building, a random from the list is played. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable|Build Effect" )
 	TArray< class UAkAudioEvent* > mConstructionSounds;

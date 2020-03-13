@@ -754,7 +754,7 @@ FEdGraphPinType CreateGraphPinType(const TSharedRef<FJsonObject>& PinJson) {
 }
 
 bool IsObjectAlreadyLoaded(const FString& ObjectPath) {
-	return StaticFindObject(UObject::StaticClass(), ANY_PACKAGE, *ObjectPath);
+	return IsValid(StaticFindObject(UObject::StaticClass(), ANY_PACKAGE, *ObjectPath));
 }
 
 void AddDependencyIfNeeded(const FString& ObjectPath, TArray<FString>& Dependencies) {

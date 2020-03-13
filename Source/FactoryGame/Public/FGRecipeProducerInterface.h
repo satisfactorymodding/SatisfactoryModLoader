@@ -25,4 +25,7 @@ public:
 class FACTORYGAME_API IFGRecipeProducerInterface
 {
 	GENERATED_IINTERFACE_BODY()
+
+public:
+	FORCEINLINE IFGRecipeProducerInterface() = default;
 };

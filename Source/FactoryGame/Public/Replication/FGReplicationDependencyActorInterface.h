@@ -17,4 +17,7 @@ public:
 class FACTORYGAME_API IFGReplicationDependencyActorInterface
 {
 	GENERATED_IINTERFACE_BODY()
+
+public:
+	FORCEINLINE IFGReplicationDependencyActorInterface() = default;
 };

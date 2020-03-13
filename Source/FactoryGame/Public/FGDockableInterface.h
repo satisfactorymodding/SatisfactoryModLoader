@@ -71,4 +71,7 @@ class FACTORYGAME_API IFGDockableInterface
 	/** Notify for when loading/unloading are completed */
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Docking" )
 	void OnTransferComplete();
+
+public:
+	FORCEINLINE IFGDockableInterface() = default;
 };

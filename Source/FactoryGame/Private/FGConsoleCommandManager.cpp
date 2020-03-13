@@ -13,3 +13,5 @@ void UFGConsoleCommandManager::TrackAkMemoryPools(){ }
 void UFGConsoleCommandManager::TrackAkComponentsWithNoPositionOrOwner(){ }
 void UFGConsoleCommandManager::FixupBuiltByRecipeInOldSave(bool reapplyRecipeIfBetterMatchFound){ }
 void UFGConsoleCommandManager::DumpFactoryStatsToLog(){ }
+void UFGConsoleCommandManager::CopyPlayerCoordinates(){ }
+void UFGConsoleCommandManager::DumpPlayerCoordinates(const FString& label , bool copyToClipboard){ }

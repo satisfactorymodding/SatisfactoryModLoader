@@ -116,8 +116,12 @@ protected:
 	friend class AFGResourceExtractorHologram;
 
 	/** Power up time for the extraction process, e.g. the time it takes for a drill to start spinning. */
-	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Extraction" )
+	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	float mExtractStartupTime;
+
+	/** How much time we have left of the start up time for the extraction process (mExtractStartupTime). */
+	UPROPERTY( Replicated, SaveGame )
+	float mExtractStartupTimer;
 
 	/** How long does it take to complete one mining cycle. In seconds. */
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction", meta = (ClampMin = "0.0001") )

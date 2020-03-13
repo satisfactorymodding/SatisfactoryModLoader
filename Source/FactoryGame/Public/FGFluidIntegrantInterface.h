@@ -31,17 +31,29 @@ public:
 	// The lowest and highest point on the box. [meters][world space]
 	float LowZ = 0.f;
 	float HighZ = 0.f;
-	// Height of this box. [meters]
-	float Height = 0.f;
-	// Height at which this box can achieve laminar flow. If 0, height is used.
-	float LaminarHeight = 0.f;
+	// Height of this box, cannot be 0. [meters]
+	float Height = 1.f;
+	/**
+	 * Height from the outflow at which this box can achieve laminar flow. [meters]
+	 * Must be in range (0, Height]
+	 */
+	float LaminarHeight = 1.f;
 
 	/** The current content of this fluid box. [m^3] */
 	float Content = 0.f;
 	/** The max content this fluid box can hold. [m^3] */
 	float MaxContent = 5.f;
-	/** The maximum overfill allowed in the range [0,1] normalized percent. */
-	float MaxOverfillPct = 0.1f;
+	/** The maximum overfill allowed in the range (0,1] normalized percent. */
+	float MaxOverfillPct = 0.40f;
+	/**
+	 * Overfilling is what creates pressure in the pipes,
+	 * How much of the overfill that contributes to the pressure is defined here.
+	 * If the max over fill is 10 % and 50 % of that is contributing to pressure:
+	 * Then we'll reach maximum pressure at 105 % content and are allowed to fill to 110 %.
+	 *
+	 * This value is in the range (0,1] normalized percent.
+	 */
+	static constexpr float OVERFILL_USED_FOR_PRESSURE_PCT = 0.75f;
 
 	/**
 	 * The following flow values are not used for any simulations only for feedback.
@@ -70,7 +82,7 @@ public:
 	/** Toggle to allow disabling added pressure ( currently used by pumps ) */
 	float AddedPressureToggle = 1.f;
 
-	// Debug
+	//@todoPipes WITH_EDITORONLY_DATA maybe
 	bool Debug_EnableVerboseLogging = false;
 	int32 Debug_PressureGroup = INDEX_NONE;
 	float Debug_DP = 0.f;
@@ -164,4 +176,7 @@ public:
 
 	/** Notify that the network this fluid integrant belongs to has set its fluid descriptor */
 	virtual void OnFluidDescriptorSet();
+
+public:
+	FORCEINLINE IFGFluidIntegrantInterface() = default;
 };

@@ -60,6 +60,14 @@ public:
 	UFUNCTION( exec, category = "Log" )
 	void DumpFactoryStatsToLog();
 
+	/** Copy the player coordinates to cliboard */
+	UFUNCTION( exec )
+	void CopyPlayerCoordinates();
+
+	/** Dumps the player coordinates to log, potentially with a label and copy to clipboard */
+	UFUNCTION( exec )
+	void DumpPlayerCoordinates( const FString& label = TEXT(""), bool copyToClipboard = false );
+
 public:
 	FORCEINLINE ~UFGConsoleCommandManager() = default;
 };

@@ -102,12 +102,10 @@ FileHash hashFileContents(const FString& path) {
 	return picosha2::bytes_to_hex_string(hash);
 }
 
-FString generateTempFilePath(const FileHash& fileHash, const char* extension) {
-	FString result = SML::getCacheDirectory() / FString(fileHash.c_str());
-	if (FPaths::GetExtension(result).Len() == 0) {
-		return result + TEXT(".") + extension;
-	}
-	return FPaths::ChangeExtension(result, extension);
+FString generateTempFilePath(const FileHash& fileHash, const char* fileName) {
+	FString dir = SML::getCacheDirectory() / FString(fileHash.c_str());
+	FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*dir);
+	return dir / fileName;
 }
 
 bool extractArchiveFile(const FString& outFilePath, ttvfs::File* obj) {
@@ -179,7 +177,7 @@ bool extractTempFileInternal(ttvfs::File* objectFile, const std::string& objectT
 	if (!hashArchiveFileContents(objectFile, fileHash)) {
 		return false;
 	}
-	filePath = generateTempFilePath(fileHash, objectType.c_str());
+	filePath = generateTempFilePath(fileHash, objectFile->name());
 	//if cached file doesn't exist, or file hashes don't match, unpack file and copy it
 	if (!FPaths::FileExists(filePath) || fileHash != hashFileContents(filePath)) {
 		//in case of broken cache file, remove old file
@@ -214,12 +212,12 @@ bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const
 	}
 
 	//try to also extract PDB files for archive dll files
-	if (filePath.EndsWith(TEXT(".dll"))) {
+	if (FPaths::GetExtension(filePath) == TEXT("dll")) {
 		//replace last 4 characters (.dll) with new extension (.pdb)
 		std::string archivePdbFilePath = archivePath;
 		archivePdbFilePath.replace(archivePdbFilePath.length() - 4, 4, ".pdb");
 		FString pdbFilePath = FString(filePath);
-		FPaths::ChangeExtension(pdbFilePath, TEXT("pdb"));
+		pdbFilePath = FPaths::ChangeExtension(pdbFilePath, TEXT("pdb"));
 		ttvfs::File* pdbObjectFile = root.getFile(archivePdbFilePath.c_str());
 		if (pdbObjectFile != nullptr) {
 			//extract pdb file with the same name now

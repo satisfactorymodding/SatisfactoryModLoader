@@ -123,4 +123,7 @@ class FACTORYGAME_API IFGSaveInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent )
 	bool NeedTransform();
+
+public:
+	FORCEINLINE IFGSaveInterface() = default;
 };

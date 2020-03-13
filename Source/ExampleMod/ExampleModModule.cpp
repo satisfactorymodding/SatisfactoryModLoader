@@ -5,7 +5,7 @@
 #include <fstream>
 
 void FExampleModModule::StartupModule() {
-	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](CallResult<void>&, AFGGameMode* gameMode) {
+	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](auto& scope, AFGGameMode* gameMode) {
 		AExampleActor* actor = gameMode->GetWorld()->SpawnActor<AExampleActor>(FVector::ZeroVector, FRotator::ZeroRotator);
 		actor->DoStuff();
 	});

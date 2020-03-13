@@ -16,8 +16,8 @@
 
 #if WITH_CHEATS
 
-
-#include "FGCheatBoardMenuElements.h"
+// MODDING EDIT: missing header :(
+// #include "FGCheatBoardMenuElements.h"
 
 
 /**
@@ -74,7 +74,8 @@ public:
 	void SetFilterTextboxFocus() const;
 	void ResetMenu();
 
-	void ShowMenu( CheatMenuCategory* newMenu, FString title, FString filtervalue );
+	// MODDING EDIT: missing header :(
+	// void ShowMenu( CheatMenuCategory* newMenu, FString title, FString filtervalue );
 	/** This finds all the functions in UFGCheatManager */
 	TArray< UFunction* > GetAllCheats();
 
@@ -82,9 +83,11 @@ public:
 	 *
 	 * @ param func - The cheat function the player clicked
 	 */
-	FReply OnCheatClicked( CheatMenuElementPtr cheat );
+	// MODDING EDIT: missing header :(
+	// FReply OnCheatClicked( CheatMenuElementPtr cheat );
 
-	FReply OnCheatFavoriteToggle( CheatMenuElementPtr cheat );
+	// MODDING EDIT: missing header :(
+	// FReply OnCheatFavoriteToggle( CheatMenuElementPtr cheat );
 
 	/** Called when the players commits text in the input window */
 	void OnInputTextCommited( const FText& InText, ETextCommit::Type InCommitType );
@@ -146,7 +149,8 @@ private:
 	  * trying to write more properties to it */
 	uint8* mParameters;
 	uint8 mCurrentParameterIndex = 0;
-	CheatMenuObject* mCurrentCheat = nullptr;
+	// MODDING EDIT: missing header :(
+	// CheatMenuObject* mCurrentCheat = nullptr;
 
 	/** This is the property we asked for input about */
 	UProperty* mPropertyWaitingForInput;
@@ -162,22 +166,28 @@ private:
 	TArray< TSharedRef< SWidget > > mButtons;
 
 
-	TSharedPtr< CheatMenuTreeView> mTreeMenu;
+	// MODDING EDIT: missing header :(
+	// TSharedPtr< CheatMenuTreeView> mTreeMenu;
 
 
 
 
 	/** Called to generate a widget for the specified tree item */
-	TSharedRef<ITableRow> CheatMenu_OnGenerateRow( CheatMenuElementPtr Item, const TSharedRef<STableViewBase>& OwnerTable );
+	// MODDING EDIT: missing header :(
+	// TSharedRef<ITableRow> CheatMenu_OnGenerateRow( CheatMenuElementPtr Item, const TSharedRef<STableViewBase>& OwnerTable );
 
-	void GetVisibleChildren( CheatMenuElement* Item, TArray< CheatMenuElementPtr >& OutChildren );
+	// MODDING EDIT: missing header :(
+	// void GetVisibleChildren( CheatMenuElement* Item, TArray< CheatMenuElementPtr >& OutChildren );
 	/** Given a tree item, fills an array of child items */
-	void CheatMenu_OnGetChildren( CheatMenuElementPtr Item, TArray< CheatMenuElementPtr >& OutChildren );
+	// MODDING EDIT: missing header :(
+	// void CheatMenu_OnGetChildren( CheatMenuElementPtr Item, TArray< CheatMenuElementPtr >& OutChildren );
 
 	/** Called when the user clicks on an  item, or when selection changes by some other means */
-	void CheatMenu_OnSelectionChanged( CheatMenuElementPtr Item, ESelectInfo::Type SelectInfo );
+	// MODDING EDIT: missing header :(
+	// void CheatMenu_OnSelectionChanged( CheatMenuElementPtr Item, ESelectInfo::Type SelectInfo );
 
-	void CheatMenu_OnMouseClick( CheatMenuElementPtr Item );
+	// MODDING EDIT: missing header :(
+	// void CheatMenu_OnMouseClick( CheatMenuElementPtr Item );
 	/*UPROPERTY( Config )
 	TArray< UClass* > mPopularUClassChoices;*/
 
