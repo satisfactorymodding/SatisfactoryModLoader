@@ -5,6 +5,7 @@
 #include "Slate.h"
 #include "mod/ModHandler.h"
 #include "SatisfactoryModLoader.h"
+#include "mod/toolkit/FGAssetDumper.h"
 
 class UFGGameInstanceProto {
 public: void LoadComplete(const float loadTime, const FString& mapName) {}
@@ -21,6 +22,7 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 	if (SML::getSMLConfig().developmentMode) {
 		resultText.Add(TEXT("Development mode enabled."));
 	}
+	SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
 	const TSharedRef<STextBlock> MyTextBlock = SNew(STextBlock)
 		.Font(fontInfo)
 		.ColorAndOpacity(FSlateColor(FLinearColor(0.7, 0.7, 0.7)))

@@ -1,5 +1,4 @@
 #include "FGAssetDumper.h"
-#include "IAssetRegistry.h"
 #include "AssetRegistryModule.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "SatisfactoryModLoader.h"
@@ -8,6 +7,9 @@
 #include "Engine/UserDefinedStruct.h"
 #include "Engine/UserDefinedEnum.h"
 #include "Engine/MemberReference.h"
+#include "IPlatformFilePak.h"
+#include "Engine/AssetManager.h"
+#include "FGHealthComponent.h"
 
 #define DEFAULT_ITERATOR_FLAGS EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces
 
@@ -66,35 +68,66 @@ TSharedRef<FJsonObject> CreatePropertyTypeDescriptor(UProperty* Property) {
 	return typeEntry;
 }
 
+bool CheckValueEqualDefault(UProperty* Property, const void* PropertyValue) {
+	const SIZE_T PropertyValueSize = Property->GetSize();
+	void* DefaultValue = FMemory::Malloc(PropertyValueSize);
+	Property->InitializeValue(DefaultValue);
+	bool res = Property->Identical(PropertyValue, DefaultValue);
+	FMemory::Free(DefaultValue);
+	return res;
+}
+
+bool CanSkipPropertyValue(UProperty* Property, UClass* ParentClass, const void* PropertyValue, const void* ParentPropertyValue) {
+	const bool ValueIsEqualToDefault = CheckValueEqualDefault(Property, PropertyValue);
+	if (ParentClass == nullptr) {
+		//Parent property value is null, so we can skip value if it is equal to default one
+		return ValueIsEqualToDefault;
+	} else {
+		const bool CanUseParentValue = !ParentClass->GetPathName().StartsWith(TEXT("/Script/FactoryGame."));
+		const bool ValueIsEqualToParent = Property->Identical(PropertyValue, ParentPropertyValue);
+		SML::Logging::info(TEXT("PROPERTY "), *Property->GetFName().ToString(), TEXT(" OUTER CLASS "), *ParentClass->GetPathName());
+		if (ValueIsEqualToParent) {
+			//Value is equal to parent value, we can use it as long as it's not blacklisted
+			//If we have ValueIsEqualToDefault, we can skip it however, since it's default anyway
+			return CanUseParentValue || ValueIsEqualToDefault;
+		}
+		//We cannot skip value if it's different from parent
+		return false;
+	}
+}
+
 TSharedPtr<FJsonObject> CreateFieldDescriptor(UProperty* Property, const void* defaultObjectPtr, UObject* defaultObject, UObject* parentObject) {
 	TSharedRef<FJsonObject> fieldEntry = MakeShareable(new FJsonObject());
 	fieldEntry->SetStringField(TEXT("Name"), Property->GetFName().ToString());
 	bool isParentProperty = false;
+	void* parentPropertyValue = nullptr;
+	UClass* ParentClass = nullptr;
+	bool WroteFieldValue = false;
 	
 	if (defaultObjectPtr != nullptr) {
-		FString resultValueString;
 		const void* propertyValue = Property->ContainerPtrToValuePtr<void>(defaultObjectPtr);
-
-		if (parentObject != nullptr && parentObject->IsA(static_cast<UClass*>(Property->GetOuter()))) {
-			isParentProperty = true;
-			const void* defaultPropertyValue = Property->ContainerPtrToValuePtr<void>(parentObject);
-			if (Property->Identical(propertyValue, defaultPropertyValue)) {
-				return TSharedPtr<FJsonObject>(); //skip value if it is the same as in the parent class
-			}
+		isParentProperty = parentObject != nullptr && parentObject->IsA(static_cast<UClass*>(Property->GetOuter()));
+		if (isParentProperty) {
+			ParentClass = parentObject->GetClass();
+			parentPropertyValue = Property->ContainerPtrToValuePtr<void>(parentObject);
 		}
-		Property->ExportTextItem(resultValueString, propertyValue, propertyValue, defaultObject, 0);
-		//only add field value if their default value is not empty or nullptr
-		if (resultValueString != TEXT("") && resultValueString != TEXT("None")) {
+		if (!CanSkipPropertyValue(Property, ParentClass, propertyValue, parentPropertyValue)) {
+			FString resultValueString;
+			Property->ExportTextItem(resultValueString, propertyValue, propertyValue, defaultObject, 0);
 			fieldEntry->SetStringField(TEXT("Value"), resultValueString);
+			WroteFieldValue = true;
 		}
 	}
-
+	
+	//If we didn't write default value, and property is defined in parent, skip it
+	if (!WroteFieldValue && isParentProperty)
+		return TSharedPtr<FJsonObject>();
+	
 	//do not include attributes and type for parent properties, they are already defined, we need name and value only
 	if (!isParentProperty) {
 		fieldEntry->SetObjectField(TEXT("PinType"), CreatePropertyTypeDescriptor(Property));
 		fieldEntry->SetNumberField(TEXT("PropertyFlags"), Property->PropertyFlags);
 	}
-	
 	return fieldEntry;
 }
 
@@ -257,46 +290,66 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* generated
 	return resultJson;
 }
 
+FString CreateClassPathFromPackageName(const FString& PackagePath) {
+	int32 PackageIndex;
+	PackagePath.FindLastChar('/', PackageIndex);
+	check(PackageIndex != INDEX_NONE);
+	const FString ResultFileName = PackagePath.Mid(PackageIndex + 1);
+	return FString::Printf(TEXT("%s.%s_C"), *PackagePath, *ResultFileName);
+}
+
 void SML::dumpSatisfactoryAssets(const FName& rootPath, const FString& fileName) {
 	SML::Logging::info(TEXT("Dumping assets on path "), *rootPath.ToString(), TEXT(" to json file "), *fileName);
-	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(FName("AssetRegistry"));
-	IAssetRegistry& AssetRegistry = AssetRegistryModule.Get();
-	TArray<FAssetData> FoundAssets;
-	AssetRegistry.GetAssetsByPath(rootPath, FoundAssets, true, false);
-	SML::Logging::info(*FString::Printf(TEXT("[FG Asset Dumper] FactoryGame total Assets to Dump: %d"), FoundAssets.Num()));
-
 	TArray<TSharedPtr<FJsonValue>> blueprints;
 	TArray<TSharedPtr<FJsonValue>> userDefinedStructs;
 	TArray<TSharedPtr<FJsonValue>> userDefinedEnums;
-	
-	for (const FAssetData& assetData : FoundAssets) {
-		const FString& assetClass = assetData.AssetClass.ToString();
-		if (assetClass == TEXT("UserDefinedStruct")) {
-			UObject* assetObject = assetData.GetAsset();
-			UUserDefinedStruct* definedStruct = Cast<UUserDefinedStruct>(assetObject);
+
+	TSet<FString> ResultAssetList;
+	FPakPlatformFile* PakPlatformFile = static_cast<FPakPlatformFile*>(FPlatformFileManager::Get().GetPlatformFile(TEXT("PakFile")));
+	PakPlatformFile->IterateDirectoryRecursively(TEXT("../../../FactoryGame/Content/"), [&ResultAssetList](const TCHAR* FileName, bool IsDirectory) {
+		if (!IsDirectory) {
+			const FString PackageName = FPackageName::FilenameToLongPackageName(FileName);
+			ResultAssetList.Add(PackageName);
+		}
+		return true;
+	});
+	for (const FString& PackageName : ResultAssetList) {
+		if (PackageName.StartsWith(TEXT("/Game/FactoryGame/World/Environment/")) ||
+			PackageName.StartsWith(TEXT("/Game/WwiseAudio/")) ||
+			PackageName.StartsWith(TEXT("/Game/ProceduralNaturePack/")))
+			continue; //Skip audio and environment assets - they are useless
+		UObject* LoadedObject = StaticLoadObject(UObject::StaticClass(), nullptr, *PackageName);
+		if (LoadedObject == nullptr) {
+			//Will happen for blueprints. UBlueprints don't exist in cooked game, and they are considered PrimaryAsset for their package.
+			//So we need to retrieve full BlueprintGeneratedClass path from UBlueprint path
+			FString BlueprintClassPath = CreateClassPathFromPackageName(PackageName);
+			LoadedObject = StaticLoadObject(UObject::StaticClass(), nullptr, *BlueprintClassPath);
+		}
+		if (LoadedObject == nullptr)
+			continue; //Can happen sometimes for some assets actually
+		if (LoadedObject->IsA(UUserDefinedStruct::StaticClass())) {
+			UUserDefinedStruct* definedStruct = Cast<UUserDefinedStruct>(LoadedObject);
 			if (definedStruct != nullptr) {
 				const TSharedRef<FJsonObject>& classJson = dumpUserDefinedStruct(definedStruct);
 				userDefinedStructs.Add(MakeShareable(new FJsonValueObject(classJson)));
 			}
 		}
-		if (assetClass == TEXT("UserDefinedEnum")) {
-			UObject* assetObject = assetData.GetAsset();
-			UUserDefinedEnum* definedEnum = Cast<UUserDefinedEnum>(assetObject);
+		if (LoadedObject->IsA(UUserDefinedEnum::StaticClass())) {
+			UUserDefinedEnum* definedEnum = Cast<UUserDefinedEnum>(LoadedObject);
 			if (definedEnum != nullptr) {
 				const TSharedRef<FJsonObject>& classJson = dumpUserDefinedEnum(definedEnum);
 				userDefinedEnums.Add(MakeShareable(new FJsonValueObject(classJson)));
 			}
 		}
-		if (assetClass.Contains(TEXT("Blueprint"))) {
-			FString resultPath = assetData.ObjectPath.ToString().Append(TEXT("_C"));
-			UObject* assetObject = StaticLoadObject(UObject::StaticClass(), nullptr, *resultPath);
-			UBlueprintGeneratedClass* generatedClass = Cast<UBlueprintGeneratedClass>(assetObject);
+		if (LoadedObject->IsA(UBlueprintGeneratedClass::StaticClass())) {
+			UBlueprintGeneratedClass* generatedClass = Cast<UBlueprintGeneratedClass>(LoadedObject);
 			if (generatedClass != nullptr) {
 				const TSharedRef<FJsonObject>& classJson = dumpBlueprintContent(generatedClass);
 				blueprints.Add(MakeShareable(new FJsonValueObject(classJson)));
 			}
 		}
 	}
+	
 	TSharedRef<FJsonObject> resultObject = MakeShareable(new FJsonObject());
 	resultObject->SetArrayField(TEXT("UserDefinedEnums"), userDefinedEnums);
 	resultObject->SetArrayField(TEXT("UserDefinedStructs"), userDefinedStructs);
