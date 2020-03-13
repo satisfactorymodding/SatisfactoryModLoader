@@ -12,13 +12,14 @@ namespace SML {
 		template<typename T>
 		class cycle_detected : public std::logic_error {
 		public:
-			typedef logic_error _Mybase;
 			const T cycleNode;
+			const TSet<T> cycleList;
 
-			explicit cycle_detected(const char *message, const T cycleNode)
-				: _Mybase(message),
-				  cycleNode(cycleNode)
-			{	// construct from message string
+			explicit cycle_detected(const char *message, const T cycleNode, const TSet<T> cycleList)
+				: std::logic_error(message),
+				  cycleNode(cycleNode),
+				  cycleList(cycleList)
+			{
 			}
 		};
 
@@ -31,12 +32,9 @@ namespace SML {
 		class DirectedGraph {
 		public:
 			//use a pointer to the unordered set as value to avoid excessive copying
-			TMap<T, TSet<T>*> nodes;
+			TMap<T, TSet<T>> graph;
+			TArray<T> orderedNodes;
 		public:
-			DirectedGraph();
-			DirectedGraph(const DirectedGraph<T>& src);
-			~DirectedGraph();
-
 			/**
 			* Adds node into the graph without any adjacent nodes
 			* returns false if specified node already exists in a graph
@@ -48,8 +46,10 @@ namespace SML {
 			* Adds node adjacent to src into the graph
 			* If either of the nodes is not in a graph, throws std::invalid_argument
 			*/
-			bool addEdge(const T& src, const T& dest);
+			bool addEdge(const T& from, const T& to);
 
+			void removeAllReferencesTo(const T& node);
+			
 			/**
 			* Returns all nodes adjacent to the given one
 			* Returned reference is valid as long as the this graph object is valid
@@ -57,6 +57,8 @@ namespace SML {
 			*/
 			const TSet<T>& edgesFrom(const T& node) const;
 
+			const TArray<T>& iterator();
+			
 			/**
 			* Returns amount of nodes in the graph
 			*/

@@ -153,7 +153,7 @@ public:
 /**
  * 
  */
-UCLASS( abstract )
+UCLASS( abstract, Blueprintable )
 class FACTORYGAME_API AFGStorySubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()

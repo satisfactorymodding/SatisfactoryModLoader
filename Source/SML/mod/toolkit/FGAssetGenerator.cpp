@@ -8,7 +8,6 @@
 #include "Engine/UserDefinedStruct.h"
 #include "EdGraphSchema_K2.h"
 #include "UserDefinedStructure/UserDefinedStructEditorData.h"
-#include "Factories/BlueprintFactory.h"
 #include "BlueprintEditorUtils.h"
 #include "util/TopologicalSort.h"
 #include "Json.h"
@@ -17,28 +16,16 @@
 #include "K2Node_FunctionEntry.h"
 #include "K2Node_FunctionResult.h"
 #include "K2Node_CallFunction.h"
+#include "K2Node_Event.h"
 #include "util/Logging.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
+#include "EdGraphSchema_K2_Actions.h"
 
 struct FPackageObjectData {
 	FString ObjectPath;
 	TSharedPtr<FJsonObject> SourceObject;
 	bool bIsUserStruct;
 	bool bIsBlueprint;
-};
-
-struct FStructInitData {
-	TMap<FGuid, FString> DelayedVariableDefaultValues;
-};
-
-struct FBlueprintInitData {
-	TMap<FString, FString> DelayedPropertyInitializationData;
-};
-
-struct FObjectInfo {
-	UObject* LoadedObject;
-	UPackage* ObjectPackage;
-	TSharedPtr<FStructInitData> StructInitData;
-	TSharedPtr<FBlueprintInitData> BlueprintInitData;
 };
 
 FPackageObjectData OBJECT_DATA_Empty;
@@ -49,15 +36,17 @@ void GatherPinTypeDependencies(const TSharedRef<FJsonObject>& PinJson, TArray<FS
 bool IsObjectAlreadyLoaded(const FString& ObjectPath);
 void AddDependencyIfNeeded(const FString& ObjectPath, TArray<FString>& Dependencies);
 
-FPackageObjectData CreateStructHeader(const TSharedRef<FJsonObject>& StructJson, TArray<FString>& Dependencies);
-FPackageObjectData CreateBlueprintHeader(const TSharedRef<FJsonObject>& StructJson, TArray<FString>& Dependencies);
+void AddDependenciesForStruct(const FPackageObjectData& ObjectData, TArray<FString>& Dependencies);
+void AddDependenciesForBlueprint(const FPackageObjectData& ObjectData, TArray<FString>& Dependencies);
 
 UPackage* CreateEnumerationFromJson(const TSharedRef<FJsonObject>& EnumJson);
-FObjectInfo CreateGenericObject(const FPackageObjectData& PackageObjectData, bool bHasDependents);
-FObjectInfo CreateStructFromJson(const TSharedRef<FJsonObject>& StructJson, bool bHasDependents);
-FObjectInfo CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson, bool bHasDependents);
+UPackage* CreateGenericObject(const FPackageObjectData& PackageObjectData, bool bHasDependents);
+UPackage* CreateStructFromJson(const TSharedRef<FJsonObject>& StructJson);
+UPackage* CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson, bool bHasDependents);
 
-void PostInitializeObject(const FObjectInfo& ObjectInfo);
+void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& BlueprintJson, bool bHasDepdents);
+
+void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonObject);
 
 inline uint64 GetObjectIndex(const FString& Object, uint64& LastIndex, TMap<FString, uint64>& ObjectPathToIndex) {
 	if (!ObjectPathToIndex.Contains(Object)) {
@@ -74,7 +63,7 @@ inline uint64 AddPackageDependencies(const FString& ObjectPath, const TArray<FSt
 	for (const FString& DependencyObjectPath : Dependencies) {
 		uint64 DependencyIndex = GetObjectIndex(DependencyObjectPath, LastObjectIndex, ObjectPathToIndex);
 		DependencyGraph.addNode(DependencyIndex);
-		DependencyGraph.addEdge(ObjectIndex, DependencyIndex);
+		DependencyGraph.addEdge(DependencyIndex, ObjectIndex);
 		HasDependentsMap.Add(DependencyIndex, true);
 	}
 	return ObjectIndex;
@@ -95,6 +84,7 @@ void SML::generateSatisfactoryAssets(const FString& DataJsonFilePath) {
 		UE_LOG(LogTemp, Error, TEXT("Failed to parse FG Blueprints definitions json file"));
 		return;
 	}
+	
 	SML::Logging::info(TEXT("Generating user defined enumerations..."));
 	TArray<UPackage*> DefinedPackages;
 	const TArray<TSharedPtr<FJsonValue>>& UserDefinedEnums = ResultJsonObject->GetArrayField(TEXT("UserDefinedEnums"));
@@ -104,6 +94,9 @@ void SML::generateSatisfactoryAssets(const FString& DataJsonFilePath) {
 			DefinedPackages.Add(Package);
 		}
 	}
+	//Save all defined enumerations now
+	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
+	DefinedPackages.Empty();
 	
 	const TArray<TSharedPtr<FJsonValue>>& UserDefinedStructs = ResultJsonObject->GetArrayField(TEXT("UserDefinedStructs"));
 	const TArray<TSharedPtr<FJsonValue>>& Blueprints = ResultJsonObject->GetArrayField(TEXT("Blueprints"));
@@ -112,123 +105,156 @@ void SML::generateSatisfactoryAssets(const FString& DataJsonFilePath) {
 	TMap<uint64, FPackageObjectData> ObjectHeaders;
 	TMap<FString, uint64> ObjectPathToIndex;
 	TMap<uint64, bool> HasDependentsMap;
-	uint64 LastObjectIndex = 0;
+	uint64 LastObjectIndex = 2;
 
 	SML::Logging::info(TEXT("Building structure dependency graph..."));
 	//Gather UserStruct and Blueprint dependencies now
 	for (const TSharedPtr<FJsonValue>& Value : UserDefinedStructs) {
-		TArray<FString> Dependencies;
-		const FPackageObjectData& ObjectData = CreateStructHeader(Value->AsObject().ToSharedRef(), Dependencies);
+		TSharedPtr<FJsonObject> StructJson = Value->AsObject();
+		const FString& ObjectPath = StructJson->GetStringField(TEXT("StructName"));
+		const FPackageObjectData& ObjectData = FPackageObjectData{ ObjectPath, StructJson, true, false };
 		if (!ObjectData.ObjectPath.IsEmpty()) {
+			TArray<FString> Dependencies;
+			AddDependenciesForStruct(ObjectData, Dependencies);
 			uint64 ObjectIndex = AddPackageDependencies(ObjectData.ObjectPath, Dependencies, DependencyGraph, LastObjectIndex, ObjectPathToIndex, HasDependentsMap);
 			ObjectHeaders.Add(ObjectIndex, ObjectData);
 		}
 	}
+	
 	SML::Logging::info(TEXT("Building blueprint dependency graph..."));
 	for (const TSharedPtr<FJsonValue>& Value : Blueprints) {
-		TArray<FString> Dependencies;
-		const FPackageObjectData& ObjectData = CreateBlueprintHeader(Value->AsObject().ToSharedRef(), Dependencies);
+		TSharedPtr<FJsonObject> StructJson = Value->AsObject();
+		const FString& ObjectPath = StructJson->GetStringField(TEXT("Blueprint"));
+		const FPackageObjectData& ObjectData = FPackageObjectData{ ObjectPath, StructJson, false, true };
 		if (!ObjectData.ObjectPath.IsEmpty()) {
+			TArray<FString> Dependencies;
+			AddDependenciesForBlueprint(ObjectData, Dependencies);
 			uint64 ObjectIndex = AddPackageDependencies(ObjectData.ObjectPath, Dependencies, DependencyGraph, LastObjectIndex, ObjectPathToIndex, HasDependentsMap);
 			ObjectHeaders.Add(ObjectIndex, ObjectData);
 		}
 	}
 
 	//Apply topological sort now
-	try {
-		const auto& SortingResult = SML::TopologicalSort::topologicalSort(DependencyGraph);
-		TMap<uint64, FObjectInfo> ObjectInfoMap;
-		SML::Logging::info(TEXT("Loading assets..."));
-		//Load assets in sorted order now
-		for (uint64 ObjectIndex : SortingResult) {
-			const FPackageObjectData& ObjectData = ObjectHeaders[ObjectIndex];
-			check(!ObjectData.ObjectPath.IsEmpty());
-			bool bHasDependents = HasDependentsMap.Contains(ObjectIndex);
-			const FObjectInfo& CreatedObject = CreateGenericObject(ObjectData, bHasDependents);
-			check(CreatedObject.LoadedObject != nullptr);
-			ObjectInfoMap.Add(ObjectIndex, CreatedObject);
+	const TArray<uint64> SortingResult = SML::TopologicalSort::topologicalSort(DependencyGraph);
+	SML::Logging::info(TEXT("Loading assets..."));
+	
+	//Load assets in sorted order now
+	for (int32 i = 0; i < SortingResult.Num(); i++) {
+		uint64 ObjectIndex = SortingResult[i];
+		const FPackageObjectData& ObjectData = ObjectHeaders.FindChecked(ObjectIndex);
+		check(!ObjectData.ObjectPath.IsEmpty());
+		SML::Logging::info(TEXT("Loading object "), *ObjectData.ObjectPath, TEXT(" ("), i, TEXT("/"), SortingResult.Num(), TEXT(")"));
+		bool bHasDependents = HasDependentsMap.Contains(ObjectIndex);
+		UPackage* Package = CreateGenericObject(ObjectData, bHasDependents);
+		if (Package != nullptr) {
+			DefinedPackages.Add(Package);
+			if (bHasDependents) {
+				//Force package save now if it has dependents available
+				UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
+				DefinedPackages.Empty();
+			}
 		}
-		//Compile queued blueprints without dependents now
-		FBlueprintCompilationManager::FlushCompilationQueueAndReinstance();
+	}
+	
+	//Save packages after all assets have been re-created
+	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
+	DefinedPackages.Empty();
+	
+	//Compile queued blueprints without dependents now
+	SML::Logging::info(TEXT("Flushing compilation queue.."));
+	FBlueprintCompilationManager::FlushCompilationQueueAndReinstance();
 
-		SML::Logging::info(TEXT("Post-initializing loaded assets.."));
-		//Now, post initialize delayed default properties
-		for (uint64 ObjectIndex : SortingResult) {
-			const FObjectInfo& ObjectInfo = ObjectInfoMap[ObjectIndex];
-			PostInitializeObject(ObjectInfo);
-			DefinedPackages.Add(ObjectInfo.ObjectPackage);
+	SML::Logging::info(TEXT("Initializing objects.."));
+	
+	//Finish blueprint construction once all dependencies have been defined and saved
+	for (int32 i = 0; i < SortingResult.Num(); i++) {
+		uint64 ObjectIndex = SortingResult[i];
+		const FPackageObjectData& ObjectData = ObjectHeaders[ObjectIndex];
+		if (ObjectData.bIsBlueprint) {
+			const FString& ObjectPath = ObjectData.ObjectPath.LeftChop(2);
+			UBlueprint* Blueprint = LoadObject<UBlueprint>(nullptr, *ObjectPath);
+			bool bHasDependents = HasDependentsMap.Contains(ObjectIndex);
+			check(Blueprint != nullptr);
+			InitializeBlueprint(Blueprint, ObjectData.SourceObject, bHasDependents);
 		}
-		
-	} catch (const SML::TopologicalSort::cycle_detected<uint64>& ex) {
-		const FString& CyclePath = ObjectHeaders[ex.cycleNode].ObjectPath;
-		UE_LOG(LogTemp, Fatal, TEXT("Cycle detected in FG asset dependency graph at asset: "), *CyclePath);
+	}
+	
+	//Compile delay initialized blueprints now
+	SML::Logging::info(TEXT("Flushing compilation queue.."));
+	FBlueprintCompilationManager::FlushCompilationQueueAndReinstance();
+	
+	SML::Logging::info(TEXT("Post-initializing loaded assets.."));
+	
+	//Now, post initialize delayed default properties
+	for (int32 i = 0; i < SortingResult.Num(); i++) {
+		uint64 ObjectIndex = SortingResult[i];
+		const FPackageObjectData& ObjectData = ObjectHeaders[ObjectIndex];
+		UObject* Object = nullptr;
+		if (ObjectData.bIsBlueprint) {
+			const FString& ObjectPath = ObjectData.ObjectPath.LeftChop(2);
+			Object = LoadObject<UBlueprint>(nullptr, *ObjectPath);
+		}
+		if (ObjectData.bIsUserStruct) {
+			const FString& ObjectPath = ObjectData.ObjectPath;
+			Object = LoadObject<UUserDefinedStruct>(nullptr, *ObjectPath);
+		}
+		if (Object != nullptr) {
+			PostInitializeObject(Object, ObjectData.SourceObject);
+		} else {
+			SML::Logging::error(TEXT("Object not found for object path "), *ObjectData.ObjectPath);
+		}
 	}
 
 	SML::Logging::info(TEXT("Saving Packages..."));
-	//Now, prompt user to save all packages we defined
-	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
+	//Now, save all packages we defined
+	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
 	SML::Logging::info(TEXT("Success!"));
 }
 
-FPackageObjectData CreateBlueprintHeader(const TSharedRef<FJsonObject>& StructJson, TArray<FString>& Dependencies) {
-	const FString& ObjectPath = StructJson->GetStringField(TEXT("Blueprint"));
-	if (IsObjectAlreadyLoaded(ObjectPath)) {
-		return OBJECT_DATA_Empty;
-	}
-	//add parent class
+void AddDependenciesForBlueprint(const FPackageObjectData& ObjectData, TArray<FString>& Dependencies) {
+	const TSharedPtr<FJsonObject> StructJson = ObjectData.SourceObject;
+	//add parent class as only dependency
 	const FString& ParentClass = StructJson->GetStringField(TEXT("ParentClass"));
 	AddDependencyIfNeeded(ParentClass, Dependencies);
-	
-	//add implemented interfaces as dependencies
-	if (StructJson->HasField(TEXT("ImplementedInterfaces"))) {
-		const TArray<TSharedPtr<FJsonValue>>& ImplementedInterfaces = StructJson->GetArrayField(TEXT("ImplementedInterfaces"));
-		for (const TSharedPtr<FJsonValue>& Value : ImplementedInterfaces) {
-			const FString& InterfacePath = Value.Get()->AsString();
-			AddDependencyIfNeeded(InterfacePath, Dependencies);
-		}
-	}
-	
-	//also iterate fields to add their types
-	if (StructJson->HasField(TEXT("Fields"))) {
-		const TArray<TSharedPtr<FJsonValue>>& Fields = StructJson->GetArrayField(TEXT("Fields"));
-		for (const TSharedPtr<FJsonValue>& Value : Fields) {
-			const FJsonObject* ValueObject = Value.Get()->AsObject().Get();
-			TSharedPtr<FJsonObject> PinData = ValueObject->GetObjectField(TEXT("PinType"));
-			GatherPinTypeDependencies(PinData.ToSharedRef(), Dependencies);
-		}
-	}
-	//check function return types and arguments
+
 	if (StructJson->HasField(TEXT("Functions"))) {
-		const TArray<TSharedPtr<FJsonValue>>& Functions = StructJson->GetArrayField(TEXT("Functions"));
+		const TArray<TSharedPtr<FJsonValue>> Functions = StructJson->GetArrayField(TEXT("Functions"));
 		for (const TSharedPtr<FJsonValue>& Value : Functions) {
-			const FJsonObject* ValueObject = Value.Get()->AsObject().Get();
-			if (ValueObject->HasField(TEXT("ReturnType"))) {
-				const TSharedPtr<FJsonObject>& PinType = ValueObject->GetObjectField(TEXT("ReturnType"))->GetObjectField(TEXT("PinType"));
-				GatherPinTypeDependencies(PinType.ToSharedRef(), Dependencies);
+			const TSharedPtr<FJsonObject>& MethodObject = Value.Get()->AsObject();
+			const FString& MethodName = MethodObject->GetStringField(TEXT("Name"));
+
+			if (MethodName.StartsWith(TEXT("ExecuteUbergraph_"))) {
+				continue; //Skip generated uber graph entry point function
 			}
-			if (ValueObject->HasField(TEXT("Arguments"))) {
-				const TArray<TSharedPtr<FJsonValue>>& Arguments = ValueObject->GetArrayField(TEXT("Arguments"));
-				for (const TSharedPtr<FJsonValue> ArgumentValue : Arguments) {
-					const TSharedPtr<FJsonObject>& PinType = ArgumentValue->AsObject()->GetObjectField(TEXT("PinType"));
-					GatherPinTypeDependencies(PinType.ToSharedRef(), Dependencies);
-				}
+			if (MethodObject->HasField(TEXT("SuperClass"))) {
+				const FString& SuperObjectPath = MethodObject->GetStringField(TEXT("SuperClass"));
+				AddDependencyIfNeeded(SuperObjectPath, Dependencies);
 			}
 		}
 	}
-	return FPackageObjectData{ ObjectPath, StructJson, false, true };
 }
 
-void PostInitializeObject(const FObjectInfo& ObjectInfo) {
-	UUserDefinedStruct* UserDefinedStruct = Cast<UUserDefinedStruct>(ObjectInfo.LoadedObject);
+
+void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonObject) {
+	UUserDefinedStruct* UserDefinedStruct = Cast<UUserDefinedStruct>(Object);
+	
 	if (UserDefinedStruct) {
+		const TArray<TSharedPtr<FJsonValue>>& Fields = JsonObject->GetArrayField(TEXT("Fields"));
 		//re-initialize all properties to their new defaults, then request recompile
 		bool bSetDefaultValues = false;
-		for (const auto& StructVarEntry : ObjectInfo.StructInitData->DelayedVariableDefaultValues) {
-			const FGuid& VariableGuid = StructVarEntry.Key;
-			const FString& VariableDefaultValue = StructVarEntry.Value;
-			FStructVariableDescription* VariableDesc = FStructureEditorUtils::GetVarDescByGuid(UserDefinedStruct, VariableGuid);
-			VariableDesc->DefaultValue = VariableDefaultValue;
-			bSetDefaultValues = true;
+		for (const TSharedPtr<FJsonValue>& Value : Fields) {
+			const FJsonObject* ValueObject = Value.Get()->AsObject().Get();
+			const FString& FieldName = ValueObject->GetStringField(TEXT("Name"));
+			const FGuid& VariableGuid = FStructureEditorUtils::GetGuidFromPropertyName(*FieldName);
+			if (ValueObject->HasField(TEXT("Value"))) {
+				FStructVariableDescription* VariableDesc = FStructureEditorUtils::GetVarDescByGuid(UserDefinedStruct, VariableGuid);
+				check(VariableDesc != nullptr);
+				const FString& VariableDefaultValue = ValueObject->GetStringField(TEXT("Value"));
+				if (VariableDefaultValue != VariableDesc->DefaultValue) {
+					VariableDesc->DefaultValue = VariableDefaultValue;
+					bSetDefaultValues = true;
+				}
+			}
 		}
 		//request structure recompile when we actually set some default values
 		if (bSetDefaultValues) {
@@ -236,37 +262,44 @@ void PostInitializeObject(const FObjectInfo& ObjectInfo) {
 			FStructureEditorUtils::OnStructureChanged(UserDefinedStruct, FStructureEditorUtils::EStructureEditorChangeInfo::DefaultValueChanged);
 		}
 	}
-	UBlueprint* Blueprint = Cast<UBlueprint>(ObjectInfo.LoadedObject);
-	if (Blueprint) {
+	
+	UBlueprint* Blueprint = Cast<UBlueprint>(Object);
+	if (Blueprint && JsonObject->HasField(TEXT("Fields"))) {
+		const TArray<TSharedPtr<FJsonValue>> Fields = JsonObject->GetArrayField(TEXT("Fields"));
 		//Blueprint should have been already compiled at that moment
 		check(Blueprint->GeneratedClass != nullptr);
 		UClass* BlueprintGeneratedClass = Blueprint->GeneratedClass;
 		UObject* ClassDefaultObject = BlueprintGeneratedClass->GetDefaultObject();
-		for (const auto& BPPropertyEntry : ObjectInfo.BlueprintInitData->DelayedPropertyInitializationData) {
-			UProperty* ResultProperty = BlueprintGeneratedClass->FindPropertyByName(*BPPropertyEntry.Key);
-			check(ResultProperty != nullptr);
-			const FString& DefaultValue = BPPropertyEntry.Value;
-			void* PropertyData = ResultProperty->ContainerPtrToValuePtr<void>(ClassDefaultObject);
-			ResultProperty->ImportText(*DefaultValue, PropertyData, 0, ClassDefaultObject);
+		bool bSetDefaultValues = false;
+		for (const TSharedPtr<FJsonValue>& Value : Fields) {
+			const TSharedPtr<FJsonObject>& FieldObject = Value.Get()->AsObject();
+			const FString& FieldName = FieldObject->GetStringField(TEXT("Name"));
+			if (FieldName == TEXT("UberGraphFrame"))
+				continue; //Skip generated uber graph frame field
+			if (FieldObject->HasField(TEXT("Value"))) {
+				UProperty* ResultProperty = BlueprintGeneratedClass->FindPropertyByName(*FieldName);
+				SML::Logging::info(TEXT("BP "), *BlueprintGeneratedClass->GetPathName(), TEXT(" "), *FieldName);
+				check(ResultProperty != nullptr);
+				const FString& DefaultValue = FieldObject->GetStringField(TEXT("Value"));
+				void* PropertyData = ResultProperty->ContainerPtrToValuePtr<void>(ClassDefaultObject);
+				ResultProperty->ImportText(*DefaultValue, PropertyData, 0, ClassDefaultObject);
+				bSetDefaultValues = true;
+			}
 		}
-		//Mark default class object package as dirty now
-		ClassDefaultObject->MarkPackageDirty();
-	}	
+		if (bSetDefaultValues) {
+			//Mark default class object package as dirty now
+			ClassDefaultObject->MarkPackageDirty();
+		}
+	}
 }
 
-
-FPackageObjectData CreateStructHeader(const TSharedRef<FJsonObject>& StructJson, TArray<FString>& Dependencies) {
-	const FString& ObjectPath = StructJson->GetStringField(TEXT("StructName"));
-	if (IsObjectAlreadyLoaded(ObjectPath)) {
-		return OBJECT_DATA_Empty;
-	}
-	const TArray<TSharedPtr<FJsonValue>>& Fields = StructJson->GetArrayField(TEXT("Fields"));
+void AddDependenciesForStruct(const FPackageObjectData& ObjectData, TArray<FString>& Dependencies) {
+	const TArray<TSharedPtr<FJsonValue>>& Fields = ObjectData.SourceObject->GetArrayField(TEXT("Fields"));
 	for (const TSharedPtr<FJsonValue>& Value : Fields) {
 		const FJsonObject* ValueObject = Value.Get()->AsObject().Get();
 		TSharedPtr<FJsonObject> PinData = ValueObject->GetObjectField(TEXT("PinType"));
 		GatherPinTypeDependencies(PinData.ToSharedRef(), Dependencies);
 	}
-	return FPackageObjectData{ ObjectPath, StructJson, true, false };
 }
 
 UUserDefinedStruct* CreateUserDefinedStructWithGUID(UObject* InParent, const FName& Name, EObjectFlags Flags, const FGuid& PredefinedGuid) {
@@ -280,42 +313,49 @@ UUserDefinedStruct* CreateUserDefinedStructWithGUID(UObject* InParent, const FNa
 	Struct->Bind();
 	Struct->StaticLink(true);
 	Struct->Status = UDSS_Error;
-	FStructureEditorUtils::AddVariable(Struct, FEdGraphPinType(UEdGraphSchema_K2::PC_Boolean, NAME_None, nullptr, EPinContainerType::None, false, FEdGraphTerminalType()));
 	return Struct;
 }
 
 FGuid AddStructVariableWithName(UUserDefinedStruct* Struct, const FEdGraphPinType& VarType, const FString& PredefinedUniqueName) {
-	FStructureEditorUtils::ModifyStructData(Struct);
-
 	FString ErrorMessage;
-	check(FStructureEditorUtils::CanHaveAMemberVariableOfType(Struct, VarType, &ErrorMessage));
-	const FGuid Guid = FGuid::NewGuid();
+	const bool Result = FStructureEditorUtils::CanHaveAMemberVariableOfType(Struct, VarType, &ErrorMessage);
+	if (!Result) {
+		SML::Logging::error(TEXT("Error Adding Field Because of: "), *ErrorMessage);
+		check(false);
+	}
+	
+	const FGuid& Guid = FStructureEditorUtils::GetGuidFromPropertyName(*PredefinedUniqueName);
 	int32 FirstUnderscoreIndex;
 	PredefinedUniqueName.FindChar('_', FirstUnderscoreIndex);
 	check(FirstUnderscoreIndex != INDEX_NONE);
-	const FString DisplayName = PredefinedUniqueName.Mid(0, FirstUnderscoreIndex);
+	const FString& DisplayName = PredefinedUniqueName.Mid(0, FirstUnderscoreIndex);
 	const FName VarName = FName(*PredefinedUniqueName);
 
-	FStructVariableDescription NewVar;
-	NewVar.VarName = VarName;
-	NewVar.FriendlyName = DisplayName;
-	NewVar.SetPinType(VarType);
-	NewVar.VarGuid = Guid;
-	NewVar.bDontEditoOnInstance = false;
-	NewVar.bInvalidMember = false;
-	FStructureEditorUtils::GetVarDesc(Struct).Add(NewVar);
+	//Only add variable if it doesn't exist already
+	if (FStructureEditorUtils::GetVarDescByGuid(Struct, Guid) == nullptr && !FindObject<UObject>(Struct, *PredefinedUniqueName, false)) {
+		FStructureEditorUtils::ModifyStructData(Struct);
+		FStructVariableDescription NewVar;
+		NewVar.VarName = VarName;
+		NewVar.FriendlyName = DisplayName;
+		NewVar.SetPinType(VarType);
+		NewVar.VarGuid = Guid;
+		NewVar.bDontEditoOnInstance = false;
+		NewVar.bInvalidMember = false;
+		FStructureEditorUtils::GetVarDesc(Struct).Add(NewVar);
+	}
+
 	//Do not fire struct change event now, fire it only after all fields have been added
 	return Guid;
 }
 
-FObjectInfo CreateGenericObject(const FPackageObjectData& PackageObjectData, bool bHasDependents) {
+UPackage* CreateGenericObject(const FPackageObjectData& PackageObjectData, bool bHasDependents) {
 	if (PackageObjectData.bIsUserStruct) {
-		return CreateStructFromJson(PackageObjectData.SourceObject.ToSharedRef(), bHasDependents);
+		return CreateStructFromJson(PackageObjectData.SourceObject.ToSharedRef());
 	}
 	if (PackageObjectData.bIsBlueprint) {
 		return CreateBlueprintFromJson(PackageObjectData.SourceObject.ToSharedRef(), bHasDependents);
 	}
-	return FObjectInfo{ nullptr };
+	return nullptr;
 }
 
 void DefineCustomFunctionFromJson(UEdGraph& Graph, UK2Node_FunctionEntry* EntryNode, const TSharedPtr<FJsonObject> FunctionObject) {
@@ -328,6 +368,8 @@ void DefineCustomFunctionFromJson(UEdGraph& Graph, UK2Node_FunctionEntry* EntryN
 			//initialize properties for argument
 			const TSharedPtr<FJsonObject>& ArgumentObject = Value->AsObject();
 			const FString& ParameterName = ArgumentObject->GetStringField(TEXT("Name"));
+			if (ParameterName == TEXT("__WorldContext"))
+				continue; //World context pin is created automatically in AllocateDefaultPins()
 			const FEdGraphPinType& GraphPinType = CreateGraphPinType(ArgumentObject->GetObjectField(TEXT("PinType")).ToSharedRef());
 	
 			//Create argument pin from given information
@@ -369,27 +411,50 @@ void DefineCustomFunctionFromJson(UEdGraph& Graph, UK2Node_FunctionEntry* EntryN
 	EntryNode->AddExtraFlags(SavedFunctionFlags);
 }
 
-FObjectInfo CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson, bool bHasDependents) {
-	FString PackageName;
-	FString ObjectName;
-	const FString& ObjectPath = BlueprintJson->GetStringField(TEXT("Blueprint"));
-	ParseObjectPath(ObjectPath, PackageName, ObjectName);
-	SML::Logging::info(TEXT("Creating blueprint "), *ObjectPath, TEXT("; Has Dependents? "), bHasDependents);
-	UPackage* TargetPackage = CreatePackage(nullptr, *PackageName);
-	EObjectFlags Flags = RF_Public | RF_Standalone;
-	UBlueprintFactory* BlueprintFactory = NewObject<UBlueprintFactory>();
+UK2Node* CreateFunctionOverride(UBlueprint* Blueprint, UFunction* OverrideFunc) {
+	UClass* FunctionClass = Cast<UClass>(OverrideFunc->GetOuter());
+	UEdGraph* EventGraph = FBlueprintEditorUtils::FindEventGraph(Blueprint);
+	if (UEdGraphSchema_K2::FunctionCanBePlacedAsEvent(OverrideFunc) && EventGraph) {
+		// Add to event graph
+		FName EventName = OverrideFunc->GetFName();
+		UK2Node_Event* ExistingNode = FBlueprintEditorUtils::FindOverrideForFunction(Blueprint, FunctionClass, EventName);
 
+		if (!ExistingNode) {
+			return FEdGraphSchemaAction_K2NewNode::SpawnNode<UK2Node_Event>(
+				EventGraph,
+				EventGraph->GetGoodPlaceForNewNode(),
+				EK2NewNodeFlags::SelectNewNode,
+				[EventName, FunctionClass](UK2Node_Event* NewInstance) {
+				NewInstance->EventReference.SetExternalMember(EventName, FunctionClass);
+				NewInstance->bOverrideFunction = true;
+			});
+		}
+	} else {
+		// Implement the function graph
+		UEdGraph* const NewGraph = FBlueprintEditorUtils::CreateNewGraph(Blueprint, OverrideFunc->GetFName(), UEdGraph::StaticClass(), UEdGraphSchema_K2::StaticClass());
+		FBlueprintEditorUtils::AddFunctionGraph(Blueprint, NewGraph, /*bIsUserCreated=*/ false, FunctionClass);
+		TArray<UK2Node_FunctionEntry*> ResultArray;
+		NewGraph->GetNodesOfClass<UK2Node_FunctionEntry>(ResultArray);
+		return ResultArray.Num() > 0 ? ResultArray[0] : nullptr;
+	}
+	return nullptr;
+}
+
+bool IsInterfaceImplemented(UBlueprint* Blueprint, UClass* InterfaceClass) {
+	for (int32 i = 0; i < Blueprint->ImplementedInterfaces.Num(); i++) {
+		if (Blueprint->ImplementedInterfaces[i].Interface == InterfaceClass) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& BlueprintJson, bool bHasDependents) {
 	const FString& ParentClassPath = BlueprintJson->GetStringField(TEXT("ParentClass"));
 	TArray<UClass*> OverrideFunctionSources;
 	UClass* ParentClass = Cast<UClass>(StaticFindObject(UClass::StaticClass(), ANY_PACKAGE, *ParentClassPath));
 	check(ParentClass != nullptr);
 	OverrideFunctionSources.Add(ParentClass);
-	
-	//Generate blueprint object with parent class
-	//TODO Do we need to override blueprint type?
-	BlueprintFactory->ParentClass = ParentClass;
-	UBlueprint* Blueprint = Cast<UBlueprint>(BlueprintFactory->FactoryCreateNew(UBlueprint::StaticClass(), TargetPackage, *ObjectName, Flags, nullptr, GWarn));
-	check(Blueprint != nullptr);
 	
 	//Implement required interfaces for generated blueprint
 	if (BlueprintJson->HasField(TEXT("ImplementedInterfaces"))) {
@@ -397,14 +462,18 @@ FObjectInfo CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson
 		for (const TSharedPtr<FJsonValue>& Value : ImplementedInterfaces) {
 			const FString& InterfaceName = Value.Get()->AsString();
 			UClass* InterfaceClass = Cast<UClass>(StaticFindObject(UClass::StaticClass(), ANY_PACKAGE, *InterfaceName));
-			check(InterfaceClass != nullptr);
-			FBlueprintEditorUtils::ImplementNewInterface(Blueprint, *InterfaceName);
+			//Ensure that class exists and is in fact interface
+			check(InterfaceClass != nullptr && InterfaceClass->HasAnyClassFlags(EClassFlags::CLASS_Interface));
+			//Only implement interface if it isn't already implemented
+			if (!IsInterfaceImplemented(Blueprint, InterfaceClass)) {
+				FBlueprintEditorUtils::ImplementNewInterface(Blueprint, *InterfaceName);
+			}
+			//Still add it to function sources for resolving overrides
 			OverrideFunctionSources.Add(InterfaceClass);
 		}
 	}
-	
+
 	//Generate blueprint own properties (only properties with specified pin type)
-	TSharedPtr<FBlueprintInitData> BlueprintInitData = MakeShareable(new FBlueprintInitData());
 	if (BlueprintJson->HasField(TEXT("Fields"))) {
 		const TArray<TSharedPtr<FJsonValue>> Fields = BlueprintJson->GetArrayField(TEXT("Fields"));
 		for (const TSharedPtr<FJsonValue>& Value : Fields) {
@@ -412,14 +481,13 @@ FObjectInfo CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson
 			const FString& FieldName = FieldObject->GetStringField(TEXT("Name"));
 			if (FieldName == TEXT("UberGraphFrame"))
 				continue; //Skip generated uber graph frame field
+			if (FBlueprintEditorUtils::FindMemberVariableGuidByName(Blueprint, *FieldName).IsValid())
+				continue; //Skip adding variable if it is already there
 			if (FieldObject->HasField(TEXT("PinType"))) {
 				//It is blueprint's own variable, generate it
 				FEdGraphPinType PinType = CreateGraphPinType(FieldObject->GetObjectField(TEXT("PinType")).ToSharedRef());
+				SML::Logging::info(TEXT("Adding member variable "), *FieldName, TEXT(" TO BP "), *Blueprint->GetPathName());
 				FBlueprintEditorUtils::AddMemberVariable(Blueprint, *FieldName, PinType);
-			}
-			if (FieldObject->HasField(TEXT("Value"))) {
-				const FString& VariableValue = FieldObject->GetStringField(TEXT("Value"));
-				BlueprintInitData->DelayedPropertyInitializationData.Add(FieldName, VariableValue);
 			}
 		}
 	}
@@ -431,109 +499,176 @@ FObjectInfo CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson
 		for (const TSharedPtr<FJsonValue>& Value : Functions) {
 			const TSharedPtr<FJsonObject>& MethodObject = Value.Get()->AsObject();
 			const FString& MethodName = MethodObject->GetStringField(TEXT("Name"));
-			if (MethodName.StartsWith(TEXT("ExecuteUbergraph_")))
+			
+			if (MethodName.StartsWith(TEXT("ExecuteUbergraph_"))) {
 				continue; //Skip generated uber graph entry point function
-			UEdGraph* FunctionGraph = FBlueprintEditorUtils::CreateNewGraph(Blueprint, *MethodName, UEdGraph::StaticClass(), UEdGraphSchema_K2::StaticClass());
-			UClass* ParentFunctionClass = nullptr;
-			bool bIsUserCreated = true;
+			}
+			
+			UEdGraph* ExistingGraph = FindObject<UEdGraph>(Blueprint, *MethodName);
+			if (ExistingGraph != nullptr) {
+				continue; //Graph is already there, no need to create it again
+			}
+
+			UK2Node* ResultEntryNode = nullptr;
 			if (MethodObject->HasField(TEXT("SuperClass"))) {
 				//if this is override function, set super class for it
 				const FString& SuperObjectPath = MethodObject->GetStringField(TEXT("SuperClass"));
-				ParentFunctionClass = Cast<UClass>(StaticFindObject(UClass::StaticClass(), ANY_PACKAGE, *SuperObjectPath));
+				UClass* ParentFunctionClass = Cast<UClass>(StaticFindObject(UClass::StaticClass(), ANY_PACKAGE, *SuperObjectPath));
 				check(ParentFunctionClass != nullptr);
-				bIsUserCreated = false;
-			}
-			FBlueprintEditorUtils::AddFunctionGraph(Blueprint, FunctionGraph, bIsUserCreated, ParentFunctionClass);
-			TArray<UK2Node_FunctionEntry*> EntryNodes;
-			FunctionGraph->GetNodesOfClass(EntryNodes);
-			UK2Node_FunctionEntry* EntryNode = EntryNodes[0];
-			if (bIsUserCreated) {
+				if (ParentFunctionClass->HasAllClassFlags(EClassFlags::CLASS_Interface)) {
+					continue; //Do not create overrides manually from interface classes - already implemented via ImplementNewInterface
+				}
+				if (FBlueprintEditorUtils::FindOverrideForFunction(Blueprint, ParentFunctionClass, *MethodName) != nullptr) {
+					continue; //Function override is already implemented, skip it
+				}
+				UFunction* Function = ParentFunctionClass->FindFunctionByName(*MethodName);
+				SML::Logging::info(TEXT("BP "), *Blueprint->GetPathName(), TEXT(" Class "), *SuperObjectPath, TEXT(" Function "), *MethodName);
+				check(Function != nullptr);
+				ResultEntryNode = CreateFunctionOverride(Blueprint, Function);
+			} else {
+				UEdGraph* FunctionGraph = FBlueprintEditorUtils::CreateNewGraph(Blueprint, *MethodName, UEdGraph::StaticClass(), UEdGraphSchema_K2::StaticClass());
+				FBlueprintEditorUtils::AddFunctionGraph(Blueprint, FunctionGraph, false, static_cast<UClass*>(nullptr));
+				TArray<UK2Node_FunctionEntry*> EntryNodes;
+				FunctionGraph->GetNodesOfClass(EntryNodes);
+				UK2Node_FunctionEntry* EntryNode = EntryNodes[0];
 				DefineCustomFunctionFromJson(*FunctionGraph, EntryNode, MethodObject);
+				ResultEntryNode = EntryNode;
 			}
-			EntryNode->OnUpdateCommentText(TEXT("Function Stub: Implementation not available."));
+			if (ResultEntryNode != nullptr) {
+				ResultEntryNode->bCommentBubblePinned = true;
+				ResultEntryNode->bCommentBubbleVisible = true;
+				ResultEntryNode->OnUpdateCommentText(TEXT("Function Stub: Implementation not available."));
+			}
 		}
 	}
-	
-	//Force Blueprint synchronous blueprint compilation now if somebody depends on us
+
 	if (bHasDependents) {
+		//compile immediately if we have dependents
 		FBPCompileRequest CompileRequest{ Blueprint, EBlueprintCompileOptions::None, nullptr };
+		FBlueprintCompilationManager::CompileSynchronously(CompileRequest);
+	} else {
+		//Otherwise, queue recompilation
+		FBlueprintCompilationManager::QueueForCompilation(Blueprint);
+	}
+}
+
+UBlueprint* CreateBlueprint(UPackage* Package, const FString& Name, const FString& ParentClassPath) {
+	UClass* ParentClass = Cast<UClass>(StaticFindObject(UClass::StaticClass(), ANY_PACKAGE, *ParentClassPath));
+	SML::Logging::info(TEXT("Parent Class: "), *ParentClass->GetPathName());
+	check(ParentClass != nullptr);
+	EBlueprintType BlueprintType = BPTYPE_Normal;
+	if (ParentClass == UBlueprintFunctionLibrary::StaticClass()) {
+		BlueprintType = BPTYPE_FunctionLibrary;
+	} else if (ParentClass == UInterface::StaticClass()) {
+		BlueprintType = BPTYPE_Interface;
+	}
+	return FKismetEditorUtilities::CreateBlueprint(ParentClass, Package, *Name, BlueprintType, UBlueprint::StaticClass(), UBlueprintGeneratedClass::StaticClass(), NAME_None);
+}
+
+UPackage* CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson, bool bHasDependents) {
+	//Remove _C from the object name because we got a class name, while we are creating blueprint object itself
+	const FString& ObjectPath = BlueprintJson->GetStringField(TEXT("Blueprint"));
+	FString PackageName, ObjectName;
+	ParseObjectPath(ObjectPath, PackageName, ObjectName);
+	ObjectName = ObjectName.Mid(0, ObjectName.Len() - 2);
+
+	UPackage* TargetPackage = CreatePackage(nullptr, *PackageName);
+	SML::Logging::info(TEXT("Creating blueprint "), *ObjectPath, TEXT("; Has Dependents? "), bHasDependents);
+
+	UBlueprint* Blueprint = LoadObject<UBlueprint>(TargetPackage, *ObjectName);
+	if (Blueprint == nullptr) {
+		const FString& ParentClassPath = BlueprintJson->GetStringField(TEXT("ParentClass"));
+		Blueprint = CreateBlueprint(TargetPackage, ObjectName, ParentClassPath);
+		check(Blueprint != nullptr);
+	}
+	//Force Blueprint synchronous compilation now if somebody depends on it
+	if (bHasDependents) {
+		const FBPCompileRequest CompileRequest{ Blueprint, EBlueprintCompileOptions::None, nullptr };
 		FBlueprintCompilationManager::CompileSynchronously(CompileRequest);
 	} else {
 		//Otherwise, queue blueprint for further compilation with all other blueprints
 		FBlueprintCompilationManager::QueueForCompilation(Blueprint);
 	}
-	//Remove temporary blueprint factory
-	BlueprintFactory->MarkPendingKill();
-	return FObjectInfo{ Blueprint, TargetPackage, TSharedPtr<FStructInitData>(), BlueprintInitData };
+	return TargetPackage;
 }
 
-FObjectInfo CreateStructFromJson(const TSharedRef<FJsonObject>& StructJson, bool bHasDependents) {
-	FString PackageName;
-	FString ObjectName;
-	const FString& ObjectPath = StructJson->GetStringField(TEXT("StructName"));
-	SML::Logging::info(TEXT("Creating user defined struct "), *ObjectPath);
-	ParseObjectPath(ObjectPath, PackageName, ObjectName);
-	UPackage* TargetPackage = CreatePackage(nullptr, *PackageName);
-	EObjectFlags Flags = RF_Public | RF_Standalone;
-	FGuid PredefinedGuid = FGuid::NewGuid();
-	FGuid::Parse(StructJson->GetStringField(TEXT("Guid")), PredefinedGuid);
-	//create structure with predefined FGuid value
-	UUserDefinedStruct* StructObject = CreateUserDefinedStructWithGUID(TargetPackage, FName(*ObjectName), Flags, PredefinedGuid);
-	check(StructObject != nullptr);
-
+void InitializeUserStruct(UUserDefinedStruct* StructObject, const TSharedPtr<FJsonObject>& StructJson) {
 	//create all required struct fields
 	const TArray<TSharedPtr<FJsonValue>>& Fields = StructJson->GetArrayField(TEXT("Fields"));
-	TSharedRef<FStructInitData> StructInitData = MakeShareable(new FStructInitData());
 	for (const TSharedPtr<FJsonValue>& Value : Fields) {
 		const FJsonObject* ValueObject = Value.Get()->AsObject().Get();
 		const FString& FieldName = ValueObject->GetStringField(TEXT("Name"));
 		const FEdGraphPinType& PinType = CreateGraphPinType(ValueObject->GetObjectField(TEXT("PinType")).ToSharedRef());
-		const FGuid& VariableGuid = AddStructVariableWithName(StructObject, PinType, FieldName);
-		if (ValueObject->HasField(TEXT("Value"))) {
-			const FString& TextValue = ValueObject->GetStringField(TEXT("Value"));
-			StructInitData->DelayedVariableDefaultValues.Add(VariableGuid, TextValue);
-		}
+		AddStructVariableWithName(StructObject, PinType, FieldName);
 	}
-	
 	//fire structure change event now, after all variables have been added
 	//it will cause structure recompile, and also mark package dirty.
 	FStructureEditorUtils::OnStructureChanged(StructObject, FStructureEditorUtils::EStructureEditorChangeInfo::AddedVariable);
-	return FObjectInfo{ StructObject, TargetPackage, StructInitData };
+}
+
+UPackage* CreateStructFromJson(const TSharedRef<FJsonObject>& StructJson) {
+	const FString& ObjectPath = StructJson->GetStringField(TEXT("StructName"));
+	SML::Logging::info(TEXT("Creating user defined struct "), *ObjectPath);
+	
+	UUserDefinedStruct* StructObject = LoadObject<UUserDefinedStruct>(nullptr, *ObjectPath);
+	if (StructObject == nullptr) {
+		FString PackageName, ObjectName;
+		ParseObjectPath(ObjectPath, PackageName, ObjectName);
+		UPackage* TargetPackage = CreatePackage(nullptr, *PackageName);
+		const EObjectFlags Flags = RF_Public | RF_Standalone;
+		FGuid PredefinedGuid = FGuid::NewGuid();
+		FGuid::Parse(StructJson->GetStringField(TEXT("Guid")), PredefinedGuid);
+		//create structure with predefined FGuid value
+		StructObject = CreateUserDefinedStructWithGUID(TargetPackage, FName(*ObjectName), Flags, PredefinedGuid);
+		check(StructObject != nullptr);
+	}
+	
+	InitializeUserStruct(StructObject, StructJson);
+	return Cast<UPackage>(StructObject->GetTypedOuter(UPackage::StaticClass()));
 }
 
 UPackage* CreateEnumerationFromJson(const TSharedRef<FJsonObject>& EnumJson) {
 	const FString& ObjectPath = EnumJson->GetStringField(TEXT("StructName"));
-	if (IsObjectAlreadyLoaded(ObjectPath)) {
-		return nullptr;
-	}
-	FString PackageName;
-	FString ObjectName;
-	ParseObjectPath(ObjectPath, PackageName, ObjectName);
-	SML::Logging::info(TEXT("Creating enumeration "), *ObjectPath);
+	SML::Logging::info(TEXT("Creating user defined enumeration "), *ObjectPath);
 	
-	UPackage* TargetPackage = CreatePackage(nullptr, *PackageName);
-	EObjectFlags Flags = RF_Public | RF_Standalone;
-	UUserDefinedEnum* EnumObject = Cast<UUserDefinedEnum>(FEnumEditorUtils::CreateUserDefinedEnum(TargetPackage, FName(*ObjectName), Flags));
-	check(EnumObject != nullptr);
-	FAssetRegistryModule::AssetCreated(EnumObject);
-	const TArray<TSharedPtr<FJsonValue>>& Values = EnumJson->GetArrayField(TEXT("Values"));
-	//first, add required amount of values there (one of values is _MAX entry, do not add it)
-	for (int32 i = 0; i < Values.Num() - 1; i++) {
-		FEnumEditorUtils::AddNewEnumeratorForUserDefinedEnum(EnumObject);
+	UUserDefinedEnum* EnumObject = LoadObject<UUserDefinedEnum>(nullptr, *ObjectPath);
+	if (EnumObject == nullptr) {
+		FString PackageName, ObjectName;
+		ParseObjectPath(ObjectPath, PackageName, ObjectName);
+		UPackage* TargetPackage = CreatePackage(nullptr, *PackageName);
+		const EObjectFlags Flags = RF_Public | RF_Standalone;
+		EnumObject = Cast<UUserDefinedEnum>(FEnumEditorUtils::CreateUserDefinedEnum(TargetPackage, FName(*ObjectName), Flags));
+		check(EnumObject != nullptr);
 	}
+
+	const TArray<TSharedPtr<FJsonValue>>& Values = EnumJson->GetArrayField(TEXT("Values"));
+	const int32 EnumsCurrently = EnumObject->NumEnums();
+	const int32 EnumsExpected = Values.Num();
+	//Ensure enums holds exactly as much values as we need it to
+	if (EnumsCurrently != EnumsExpected) {
+		const bool ShouldTruncate = EnumsCurrently > EnumsExpected;
+		const uint32 Difference = FMath::Abs(EnumsCurrently - EnumsExpected);
+		for (uint32 i = 0; i < Difference; i++) {
+			if (ShouldTruncate)
+				FEnumEditorUtils::RemoveEnumeratorFromUserDefinedEnum(EnumObject, 0);
+			else FEnumEditorUtils::AddNewEnumeratorForUserDefinedEnum(EnumObject);
+		}
+	}
+	
 	//after that, enumerate entries and update their display names
 	for (const TSharedPtr<FJsonValue>& Value : Values) {
 		const FJsonObject* ValueObject = Value.Get()->AsObject().Get();
 		if (!ValueObject->HasField(TEXT("DisplayName"))) {
 			continue; //skip entries without display name, including _MAX
 		}
+		const int32 EnumIndex = ValueObject->GetIntegerField(TEXT("Value"));
 		const FString& DisplayName = ValueObject->GetStringField(TEXT("DisplayName"));
-		int32 EnumIndex = ValueObject->GetIntegerField(TEXT("Value"));
-		FEnumEditorUtils::SetEnumeratorDisplayName(EnumObject, EnumIndex, FText::AsCultureInvariant(DisplayName));
+		const FString& CurrentName = EnumObject->GetDisplayNameText(EnumIndex).ToString();
+		if (CurrentName != DisplayName) {
+			FEnumEditorUtils::SetEnumeratorDisplayName(EnumObject, EnumIndex, FText::AsCultureInvariant(DisplayName));
+		}
 	}
-	//mark package as dirty for saving
-	TargetPackage->MarkPackageDirty();
-	return TargetPackage;
+	return Cast<UPackage>(EnumObject->GetTypedOuter(UPackage::StaticClass()));
 }
 
 void ParseObjectPath(const FString& ObjectPath, FString& PackageName, FString& ObjectName) {
@@ -619,7 +754,7 @@ FEdGraphPinType CreateGraphPinType(const TSharedRef<FJsonObject>& PinJson) {
 }
 
 bool IsObjectAlreadyLoaded(const FString& ObjectPath) {
-	return FindObject<UObject>(GetTransientPackage(), *ObjectPath);
+	return StaticFindObject(UObject::StaticClass(), ANY_PACKAGE, *ObjectPath);
 }
 
 void AddDependencyIfNeeded(const FString& ObjectPath, TArray<FString>& Dependencies) {

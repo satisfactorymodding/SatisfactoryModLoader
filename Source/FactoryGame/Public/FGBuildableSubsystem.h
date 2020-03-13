@@ -127,7 +127,7 @@ public:
  * Subsystem responsible for spawning and maintaining buildables.
  * This enables and disables ticks on the buildable.
  */
-UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Buildable Subsystem" ) )
+UCLASS(Blueprintable, config = Game, defaultconfig, meta = ( DisplayName = "Buildable Subsystem" ) )
 class FACTORYGAME_API AFGBuildableSubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
