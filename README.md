@@ -15,7 +15,7 @@ If you just want to use SML, you can find the latest releases on the [releases p
 
 # Compiling SatisfactoryModLoader
 __These instructions are for those who want to contribute to SML's development and the development of new Mods.__
-Follow detailed instrction as [releases page](INSTALL.md)  
+Follow detailed instrction to [setup the development environment](INSTALL.md)  
 
 
 ## Required tools
