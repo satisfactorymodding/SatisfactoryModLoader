@@ -30,12 +30,12 @@ And run it from within the new folder.
 ### 2.1 Download and Install Wwise
 https://www.audiokinetic.com/download/ ( more steps later ) 
 
-(Optional) Download a Git client (one of them)
-https://www.sourcetreeapp.com/
-https://desktop.github.com/
-https://tortoisegit.org/download/
+###### (Optional) Download a Git client (one of them)
+https://www.sourcetreeapp.com/  
+https://desktop.github.com/  
+https://tortoisegit.org/download/  
 
-(Optional) Download Satisfactory Mod Launcher
+###### (Optional) Download Satisfactory Mod Launcher
 https://github.com/satisfactorymodding/SatisfactoryModLauncher/releases
 
 # 3. Project Setup
@@ -59,14 +59,14 @@ https://github.com/satisfactorymodding/SatisfactoryModLoader
     - Close WWise
 
 ### 3.3 Go to your fresh copy of SatisfactoryModLoader folder
-- Right click on “FactoryGame.uproject” and select “Generate Visual studio project files”
-  If you don’t have “Generate Visual studio project files” go back to “Fix the file association” in the previous section.
-- Wait for the process to finish.
-- Dobule click the newly created “FactoryGame.sln”.
-- Make sure to open it with “Visual Studio 2017”, eventually just right-click -> open with… -> Visual Studio 2017.
-- Within Visual Studio 2017, select from the top menu “Build -> Build Solution”.
-- Go make yourself a coffe.
-- Now the compilation should be over, close Visual Studio 2017.
+- Right click on “FactoryGame.uproject” and select “Generate Visual studio project files”.  
+  If you don’t have “Generate Visual studio project files” go back to “Fix the file association” in the previous section.  
+- Wait for the process to finish.  
+- Dobule click the newly created “FactoryGame.sln”.  
+- Make sure to open it with “Visual Studio 2017”, eventually just right-click -> open with… -> Visual Studio 2017.  
+- Within Visual Studio 2017, select from the top menu “Build -> Build Solution”.  
+- Go make yourself a coffe.  
+- Now the compilation should be over, close Visual Studio 2017.  
 
 ### 3.4 Go back to SatisfactoryModLoader folder:
 - Double click “FactoryGame.uproject” 
