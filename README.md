@@ -9,8 +9,15 @@ Join our [discord server](https://discord.gg/QzcG9nX) to talk about SML and Sati
 This software is provided by the author "as is". In no event shall the author be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not limited to procurement of substitute goods or services; loss of use, data, or profits; or business interruption) however caused and on any 
 theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
 
+# Download SatisfactoryModLoader
+__These instructions are for those who want to be able to install mods on Satisfactory.__
+If you just want to use SML, you can find the latest releases on the [releases page](https://github.com/satisfactorymodding/SatisfactoryModLoader/releases). 
+
 # Compiling SatisfactoryModLoader
-If you just want to use SML, you can find the latest releases on the [releases page](https://github.com/satisfactorymodding/SatisfactoryModLoader/releases). __These instructions are for those who want to contribute to SML's development.__
+__These instructions are for those who want to contribute to SML's development and the development of new Mods.__
+Follow detailed instrction as [releases page](INSTALL.md)  
+
+
 ## Required tools
 * Visual Studio 2017
 * Git client (optional, but makes things easier)
