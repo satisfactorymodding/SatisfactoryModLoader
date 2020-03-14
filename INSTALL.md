@@ -30,12 +30,12 @@ And run it from within the new folder.
 ### 2.1 Download and Install Wwise
 https://www.audiokinetic.com/download/ ( more steps later ) 
 
-### (Optional) Download a Git client (one of them)
+(Optional) Download a Git client (one of them)
 https://www.sourcetreeapp.com/
 https://desktop.github.com/
 https://tortoisegit.org/download/
 
-### (Optional) Download Satisfactory Mod Launcher
+(Optional) Download Satisfactory Mod Launcher
 https://github.com/satisfactorymodding/SatisfactoryModLauncher/releases
 
 # 3. Project Setup
@@ -49,14 +49,14 @@ https://github.com/satisfactorymodding/SatisfactoryModLoader
 - Select “FactoryGame.uproject”
 - Click “Integrate Wwise into Project…”
 - If you a prompred with some red boxes, no panic:
- **Copy of Wwise SDK files**
- - From the click “Install Wise <version_proposed>”
- - Make sure to select “SDK (C++)” and “Microsoft -> Windows -> Visual Studio 2017 and Visual Studio 2015 ”
- - Follow the instructions (next, next, next, ...  )
-**Wwise Project Path**
-- Just select “new” from the little arrow on the right side.
-- Now your “integrate” button should be enabled, click it.
-- Close WWise
+  - **Copy of Wwise SDK files**
+    - From the click “Install Wise <version_proposed>”
+    - Make sure to select “SDK (C++)” and “Microsoft -> Windows -> Visual Studio 2017 and Visual Studio 2015 ”
+    - Follow the instructions (next, next, next, ...  )
+  - **Wwise Project Path**
+    - Just select “new” from the little arrow on the right side.
+    - Now your “integrate” button should be enabled, click it.
+    - Close WWise
 
 ### 3.3 Go to your fresh copy of SatisfactoryModLoader folder
 - Right click on “FactoryGame.uproject” and select “Generate Visual studio project files”
