@@ -30,12 +30,12 @@ And run it from within the new folder.
 ### 2.1 Download and Install Wwise
 https://www.audiokinetic.com/download/ ( more steps later ) 
 
-###### (Optional) Download a Git client (one of them)
+#### (Optional) Download a Git client (one of them)
 https://www.sourcetreeapp.com/  
 https://desktop.github.com/  
 https://tortoisegit.org/download/  
 
-###### (Optional) Download Satisfactory Mod Launcher
+#### (Optional) Download Satisfactory Mod Launcher
 https://github.com/satisfactorymodding/SatisfactoryModLauncher/releases
 
 # 3. Project Setup
