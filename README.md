@@ -10,19 +10,18 @@ This software is provided by the author "as is". In no event shall the author be
 theory of liability, whether in contract, strict liability, or tort (including negligence or otherwise) arising in any way out of the use of this software, even if advised of the possibility of such damage.
 
 # Download SatisfactoryModLoader
-__These instructions are for those who want to be able to install mods on Satisfactory.__
-If you just want to use SML, you can find the latest releases on the [releases page](https://github.com/satisfactorymodding/SatisfactoryModLoader/releases). 
+If you just want to use SML and be able to use mods in the game, you can find the latest releases on the [releases page](https://github.com/satisfactorymodding/SatisfactoryModLoader/releases). 
 
 # Compiling SatisfactoryModLoader
 __These instructions are for those who want to contribute to SML's development and the development of new Mods.__
 Follow detailed instrction to [setup the development environment](INSTALL.md)  
-
 
 ## Required tools
 * Visual Studio 2017
 * Git client (optional, but makes things easier)
 
 When you download/clone SML, you will see 3 projects in the solution: Detours, BaseMod, and SatisfactoryModLoader. You'll want to build the SatisfactoryModLoader project. __Make sure you build with the configuration options Release and x64! It will not work otherwise!__ When the SatisfactoryModLoader project is compiled, you will find an xinput1_3.dll file in x64/Release folder.
+
 # Running SatisfactoryModLoader
 Take the xinput1_3.dll file and place it next to FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe (the game install directory), and then click that exe to run. If everything went well, a console window should appear. It will disappear once and then reappear; then the game should be good to go!
 
