@@ -19,11 +19,11 @@ https://github.com/SatisfactoryModdingUE/UnrealEngine/releases
 
 
 ### 1.4 Fix the file association (UE <-> Windows)
-- Copy _UnrealVersionSelector.exe_ from EpicGame Launcher folder   
-  > C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64\UnrealVersionSelector.exe
+- Copy `UnrealVersionSelector.exe` from EpicGame Launcher folder   
+  `C:\Program Files (x86)\Epic Games\Launcher\Engine\Binaries\Win64\UnrealVersionSelector.exe`
 - Into Unreal Engine - CSS folder   
-  > C:\Program Files\Unreal Engine - CSS\Engine\Binaries\Win64
-- Run _UnrealVersionSelector.exe_ from within the new folder.
+  `C:\Program Files\Unreal Engine - CSS\Engine\Binaries\Win64`
+- Run `UnrealVersionSelector.exe` from within the new folder.
 
 
 
