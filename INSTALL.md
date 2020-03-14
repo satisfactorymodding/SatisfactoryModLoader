@@ -3,7 +3,7 @@
 ### 1.1 Login on [epicgames.com](epicgames.com)   
 - Go to your account (top right)    
 - Connected account   
-- Add GitHub   
+- Add GitHub (if you don't have one, create a github account)   
 - Open your email, accept Epic github invitation   
 
 ### 1.2 Download custom UnrealEngine release (.exe):   
