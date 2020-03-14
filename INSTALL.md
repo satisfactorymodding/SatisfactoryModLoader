@@ -11,10 +11,11 @@ https://github.com/SatisfactoryModdingUE/UnrealEngine/releases
 
 ### 1.3 Setup Visual Studio 2017 ( Community is fine )   
 - [Download Visual Studio 2017](https://visualstudio.microsoft.com/vs/older-downloads/)
-- Select “Desktop Development with C++”  
-- Select “Game Development with C++”  
-- Make sure to select unreal engine integration from the right side  
-- Eventually is possible to add them after Installation, by relaunching the installer.  
+- Install Visual Studio 2017.
+  - Select “Desktop Development with C++”  
+  - Select “Game Development with C++”  
+    - Make sure to select unreal engine integration from the right side  
+  ( Eventually is possible to add them after Installation, by relaunching the installer, but best to get it done right the first time )     
 
 
 ### 1.4 Fix the file association (UE <-> Windows)
