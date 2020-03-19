@@ -1,16 +1,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "CoreUObject.h"
 #include "GameFramework/Actor.h"
 #include "FGSchematic.h"
+#include "FGResearchTree.h"
+#include "FGPlayerController.h"
 #include "SMLInitMod.generated.h"
 
-UCLASS(Blueprintable, HideCategories = ("Actor Tick", Rendering, Replication, Input, Actor, Collision, LOD, Cooking))
+UCLASS(Abstract, Blueprintable, HideCategories = ("Actor Tick", Rendering, Replication, Input, Actor, Collision, LOD, Cooking))
 class SML_API ASMLInitMod : public AActor {
 	GENERATED_BODY()
 public:
-	/** Called before anything in the game has been loaded */
+	/** Called after map has been loaded and ga
+	 * 
+	 */
 	UFUNCTION(BlueprintImplementableEvent)
 	void Init();
 
@@ -20,9 +23,22 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void PostInit();
 
-	void LoadSchematics();
+	void LoadModContent();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void PlayerJoined(AFGPlayerController* Player);
 public:
+	/**
+	 * List of schematics that will be automatically registered
+	 * by the SML during the loading phase
+	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSubclassOf<UFGSchematic>> mSchematics;
+
+	/**
+	 * List of MAM research trees that will be registered
+	 * by the SML during the loading phase
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<UFGResearchTree>> mResearchTrees;
 };

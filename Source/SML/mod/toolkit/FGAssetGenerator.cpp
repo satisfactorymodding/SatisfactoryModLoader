@@ -48,6 +48,13 @@ void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& B
 
 void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonObject);
 
+struct FDeserializationContext {
+	TMap<uint32, UObject*> SerializationStack;
+	UObject* Outer;
+};
+
+void DeserializePropertyValue(const UProperty* Property, void* Value, const TSharedPtr<FJsonValue>& JsonValue, FDeserializationContext& Context);
+
 inline uint64 GetObjectIndex(const FString& Object, uint64& LastIndex, TMap<FString, uint64>& ObjectPathToIndex) {
 	if (!ObjectPathToIndex.Contains(Object)) {
 		const uint64 ObjectIndex = LastIndex++;
@@ -69,7 +76,7 @@ inline uint64 AddPackageDependencies(const FString& ObjectPath, const TArray<FSt
 	return ObjectIndex;
 }
 
-void SML::generateSatisfactoryAssets(const FString& DataJsonFilePath) {
+void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	FString LoadedJsonFileText;
 	SML::Logging::info(TEXT("Generating assets from dump "), *DataJsonFilePath);
 	const bool result = FFileHelper::LoadFileToString(LoadedJsonFileText, *DataJsonFilePath);
@@ -211,6 +218,10 @@ void SML::generateSatisfactoryAssets(const FString& DataJsonFilePath) {
 	SML::Logging::info(TEXT("Success!"));
 }
 
+void SML::generateSatisfactoryAssets(const FString& DataJsonFilePath) {
+	generateSatisfactoryAssetsInternal(DataJsonFilePath);
+}
+
 void AddDependenciesForBlueprint(const FPackageObjectData& ObjectData, TArray<FString>& Dependencies) {
 	const TSharedPtr<FJsonObject> StructJson = ObjectData.SourceObject;
 	//add parent class as only dependency
@@ -241,26 +252,33 @@ void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonOb
 	if (UserDefinedStruct) {
 		const TArray<TSharedPtr<FJsonValue>>& Fields = JsonObject->GetArrayField(TEXT("Fields"));
 		//re-initialize all properties to their new defaults, then request recompile
-		bool bSetDefaultValues = false;
+		void* AllocatedStructInstance = FMemory::Malloc(UserDefinedStruct->GetStructureSize());
+		UserDefinedStruct->InitializeStruct(AllocatedStructInstance);
+		FDeserializationContext DeserializationContext;
+		DeserializationContext.Outer = UserDefinedStruct;
+
 		for (const TSharedPtr<FJsonValue>& Value : Fields) {
 			const FJsonObject* ValueObject = Value.Get()->AsObject().Get();
 			const FString& FieldName = ValueObject->GetStringField(TEXT("Name"));
 			const FGuid& VariableGuid = FStructureEditorUtils::GetGuidFromPropertyName(*FieldName);
 			if (ValueObject->HasField(TEXT("Value"))) {
+				UProperty* VariableProperty = UserDefinedStruct->FindPropertyByName(*FieldName);
 				FStructVariableDescription* VariableDesc = FStructureEditorUtils::GetVarDescByGuid(UserDefinedStruct, VariableGuid);
-				check(VariableDesc != nullptr);
-				const FString& VariableDefaultValue = ValueObject->GetStringField(TEXT("Value"));
-				if (VariableDefaultValue != VariableDesc->DefaultValue) {
-					VariableDesc->DefaultValue = VariableDefaultValue;
-					bSetDefaultValues = true;
+				check(VariableDesc != nullptr && VariableProperty != nullptr);
+				void* PropertyValuePtr = VariableProperty->ContainerPtrToValuePtr<void>(AllocatedStructInstance);
+				const TSharedPtr<FJsonValue>& FieldValue = ValueObject->Values.FindChecked(TEXT("Value"));
+				DeserializePropertyValue(VariableProperty, PropertyValuePtr, FieldValue, DeserializationContext);
+				//Now, export it's value as text
+				FString ExportedTextValue;
+				VariableProperty->ExportTextItem(ExportedTextValue, PropertyValuePtr, PropertyValuePtr, nullptr, 0);
+				if (VariableDesc->DefaultValue != ExportedTextValue) {
+					VariableDesc->DefaultValue = ExportedTextValue;
 				}
 			}
 		}
+		FMemory::Free(AllocatedStructInstance);
 		//request structure recompile when we actually set some default values
-		if (bSetDefaultValues) {
-			//will also mark package dirty, so we don't have to do it ourselves
-			FStructureEditorUtils::OnStructureChanged(UserDefinedStruct, FStructureEditorUtils::EStructureEditorChangeInfo::DefaultValueChanged);
-		}
+		FStructureEditorUtils::OnStructureChanged(UserDefinedStruct, FStructureEditorUtils::EStructureEditorChangeInfo::DefaultValueChanged);
 	}
 	
 	UBlueprint* Blueprint = Cast<UBlueprint>(Object);
@@ -270,6 +288,10 @@ void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonOb
 		check(Blueprint->GeneratedClass != nullptr);
 		UClass* BlueprintGeneratedClass = Blueprint->GeneratedClass;
 		UObject* ClassDefaultObject = BlueprintGeneratedClass->GetDefaultObject();
+		FDeserializationContext DeserializationContext;
+		DeserializationContext.Outer = ClassDefaultObject;
+		DeserializationContext.SerializationStack.Add(0, ClassDefaultObject);
+		
 		bool bSetDefaultValues = false;
 		for (const TSharedPtr<FJsonValue>& Value : Fields) {
 			const TSharedPtr<FJsonObject>& FieldObject = Value.Get()->AsObject();
@@ -280,9 +302,9 @@ void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonOb
 				UProperty* ResultProperty = BlueprintGeneratedClass->FindPropertyByName(*FieldName);
 				SML::Logging::info(TEXT("BP "), *BlueprintGeneratedClass->GetPathName(), TEXT(" "), *FieldName);
 				check(ResultProperty != nullptr);
-				const FString& DefaultValue = FieldObject->GetStringField(TEXT("Value"));
-				void* PropertyData = ResultProperty->ContainerPtrToValuePtr<void>(ClassDefaultObject);
-				ResultProperty->ImportText(*DefaultValue, PropertyData, 0, ClassDefaultObject);
+				const TSharedPtr<FJsonValue>& FieldValue = FieldObject->Values.FindChecked(TEXT("Value"));
+				void* PropertyValuePtr = ResultProperty->ContainerPtrToValuePtr<void>(ClassDefaultObject);
+				DeserializePropertyValue(ResultProperty, PropertyValuePtr, FieldValue, DeserializationContext);
 				bSetDefaultValues = true;
 			}
 		}
@@ -380,29 +402,34 @@ void DefineCustomFunctionFromJson(UEdGraph& Graph, UK2Node_FunctionEntry* EntryN
 	}
 	
 	//generate function result node if we have return type defined for our function
-	if (FunctionObject->HasField(TEXT("ReturnType"))) {
-		const TSharedPtr<FJsonObject>& ReturnType = FunctionObject->GetObjectField(TEXT("ReturnType"));
-		const FString& ReturnPinName = ReturnType->GetStringField(TEXT("Name"));
-		const FEdGraphPinType& GraphPinType = CreateGraphPinType(ReturnType->GetObjectField(TEXT("PinType")).ToSharedRef());
+	if (FunctionObject->HasField(TEXT("Outputs"))) {
+		const TArray<TSharedPtr<FJsonValue>>& Outputs = FunctionObject->GetArrayField(TEXT("Arguments"));
+		if (Outputs.Num() > 0) {
+			//Initialize node with default pins and location
+			FGraphNodeCreator<UK2Node_FunctionResult> NodeCreator(Graph);
+			UK2Node_FunctionResult* ReturnNode = NodeCreator.CreateNode();
+			ReturnNode->NodePosX = EntryNode->NodePosX + EntryNode->NodeWidth + 256;
+			ReturnNode->NodePosY = EntryNode->NodePosY;
+			NodeCreator.Finalize();
 
-		//Initialize node with default pins and location
-		FGraphNodeCreator<UK2Node_FunctionResult> NodeCreator(Graph);
-		UK2Node_FunctionResult* ReturnNode = NodeCreator.CreateNode();
-		ReturnNode->NodePosX = EntryNode->NodePosX + EntryNode->NodeWidth + 256;
-		ReturnNode->NodePosY = EntryNode->NodePosY;
-		NodeCreator.Finalize();
+			for (const TSharedPtr<FJsonValue> Value : Outputs) {
+				const TSharedPtr<FJsonObject>& ArgumentObject = Value->AsObject();
+				const FString& ReturnPinName = ArgumentObject->GetStringField(TEXT("Name"));
+				const FEdGraphPinType& GraphPinType = CreateGraphPinType(ArgumentObject->GetObjectField(TEXT("PinType")).ToSharedRef());
 
-		//Create return Value Pin because default one is empty since we don't have UFunction prototype
-		UEdGraphPin* Pin = ReturnNode->CreatePin(EGPD_Input, NAME_None, *ReturnPinName);
-		Pin->PinType = GraphPinType;
-		Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
-		Schema->SetNodeMetaData(ReturnNode, FNodeMetadata::DefaultGraphNode);
+				//Create return Value Pin because default one is empty since we don't have UFunction prototype
+				UEdGraphPin* Pin = ReturnNode->CreatePin(EGPD_Input, NAME_None, *ReturnPinName);
+				Pin->PinType = GraphPinType;
+				Schema->SetPinAutogeneratedDefaultValueBasedOnType(Pin);
+			}
 
-		// Auto-connect the pins for entry and exit, so that by default the signature is properly generated
-		UEdGraphPin* ResultNodeExec = Schema->FindExecutionPin(*ReturnNode, EGPD_Input);
-		UEdGraphPin* NextExec = Schema->FindExecutionPin(*EntryNode, EGPD_Output);
-		if (ResultNodeExec && NextExec) {
-			NextExec->MakeLinkTo(ResultNodeExec);
+			Schema->SetNodeMetaData(ReturnNode, FNodeMetadata::DefaultGraphNode);
+			// Auto-connect the pins for entry and exit, so that by default the signature is properly generated
+			UEdGraphPin* ResultNodeExec = Schema->FindExecutionPin(*ReturnNode, EGPD_Input);
+			UEdGraphPin* NextExec = Schema->FindExecutionPin(*EntryNode, EGPD_Output);
+			if (ResultNodeExec && NextExec) {
+				NextExec->MakeLinkTo(ResultNodeExec);
+			}
 		}
 	}
 
@@ -763,4 +790,246 @@ void AddDependencyIfNeeded(const FString& ObjectPath, TArray<FString>& Dependenc
 		Dependencies.Add(ObjectPath);
 	}
 }
+
+void DeserializeFieldsInternal(UStruct* Struct, void* Object, const TSharedRef<FJsonObject>& ObjectJson, FDeserializationContext& Context) {
+	for (TFieldIterator<UProperty> It(Struct); It; ++It) {
+		UProperty* Property = *It;
+		void* PropertyValue = Property->ContainerPtrToValuePtr<void>(Object);
+		const FString PropertyName = Property->GetFName().ToString();
+		if (ObjectJson->HasField(PropertyName)) {
+			const TSharedPtr<FJsonValue>& JsonValue = ObjectJson->Values[PropertyName];
+			DeserializePropertyValue(Property, PropertyValue, JsonValue, Context);
+		}
+	}
+}
+
+void DeserializeStruct(void* Value, UScriptStruct* Struct, const TSharedPtr<FJsonObject>& JsonValue, FDeserializationContext& Context) {
+	//We don't need anything other than fields for struct deserialization
+	DeserializeFieldsInternal(Struct, Value, JsonValue.ToSharedRef(), Context);
+}
+
+UObject* DeserializeUObject(const TSharedPtr<FJsonObject>& Value, FDeserializationContext& Context) {
+	if (Value->HasField(TEXT("$Empty"))) {
+		return nullptr; //This is NULL UObject if empty key exists
+	}
+	if (Value->HasField(TEXT("$AssetPath"))) {
+		//This is an asset reference, we just need to load UObject from that asset path
+		const FString AssetPath = Value->GetStringField(TEXT("$AssetPath"));
+		return StaticLoadObject(UObject::StaticClass(), nullptr, *AssetPath);
+	}
+	if (Value->HasField(TEXT("$ObjectRef"))) {
+		//We already have that object in serialization stack, obtain it by index
+		const uint32 ObjectIndex = Value->GetIntegerField(TEXT("$ObjectRef"));
+		check(Context.SerializationStack.Contains(ObjectIndex));
+		return Context.SerializationStack[ObjectIndex];
+	}
+	if (Value->HasField(TEXT("$ObjectNameRef"))) {
+		//We already have object with such name in outer object, find it
+		const uint32 ObjectIndex = Value->GetIntegerField(TEXT("$OuterObjectRef"));
+		UObject* OuterObject = Context.SerializationStack.FindChecked(ObjectIndex);
+		const FString ObjectName = Value->GetStringField(TEXT("$ObjectNameRef"));
+		return StaticFindObject(UObject::StaticClass(), OuterObject, *ObjectName, false);
+	}
+	//Otherwise, we need to deserialize UObject
+	const FString ObjectClassName = Value->GetStringField(TEXT("$ObjectClass"));
+	const EObjectFlags ObjectFlags = static_cast<EObjectFlags>(Value->GetIntegerField(TEXT("$ObjectFlags")));
+	const FString ObjectName = Value->GetStringField(TEXT("$ObjectName"));
+	UClass* ObjectClass = LoadObject<UClass>(nullptr, *ObjectClassName);
+	SML::Logging::info(TEXT("Deserializing object with type "), *ObjectClassName);
+	check(ObjectClass != nullptr);
+	UObject* CurrentOuter = Context.Outer;
+	UObject* AlreadyExistingObject = StaticFindObjectFast(nullptr, CurrentOuter, *ObjectName, true);
+	if (AlreadyExistingObject != nullptr) {
+		//Object already exists? Kill it!
+		AlreadyExistingObject->MarkPendingKill();
+		AlreadyExistingObject->ConditionalBeginDestroy();
+	}
+	UObject* NewlyCreatedUObject = NewObject<UObject>(CurrentOuter, ObjectClass, *ObjectName, ObjectFlags);
+	
+	//Update current outer for new objects, add ourselves to serialization stack if required
+	Context.Outer = NewlyCreatedUObject;
+	const bool bHasObjectIndex = Value->HasField(TEXT("$ObjectIndex"));
+	const uint32 ObjectIndex = bHasObjectIndex ? Value->GetIntegerField(TEXT("$ObjectIndex")) : 0;
+	if (bHasObjectIndex) {
+		Context.SerializationStack.Add(ObjectIndex, NewlyCreatedUObject);
+	}
+	DeserializeFieldsInternal(ObjectClass, NewlyCreatedUObject, Value.ToSharedRef(), Context);
+	//Restore last outer, remove ourselves from serialization stack
+	if (bHasObjectIndex) {
+		Context.SerializationStack.Remove(ObjectIndex);
+	}
+	Context.Outer = CurrentOuter;
+	return NewlyCreatedUObject;
+}
+
+void DeserializePropertyValueInternal(const UProperty* TestProperty, void* Value, FDeserializationContext& Context, TSharedPtr<FJsonValue> JsonValue);
+
+void DeserializePropertyValue(const UProperty* Property, void* Value, const TSharedPtr<FJsonValue>& JsonValue, FDeserializationContext& Context) {
+	SML::Logging::info(TEXT("Deserializing Property "), *Property->GetFName().ToString(), TEXT(" Of Class "), *Property->GetOuter()->GetName());
+	const UMapProperty* MapProperty = Cast<const UMapProperty>(Property);
+	const USetProperty* SetProperty = Cast<const USetProperty>(Property);
+	const UArrayProperty* ArrayProperty = Cast<const UArrayProperty>(Property);
+	if (MapProperty) {
+		const UProperty* KeyProperty = MapProperty->KeyProp;
+		const UProperty* ValueProperty = MapProperty->ValueProp;
+		FScriptMapHelper MapHelper(MapProperty, Value);
+		const TArray<TSharedPtr<FJsonValue>>& PairArray = JsonValue->AsArray();
+
+		for (int32 i = 0; i < PairArray.Num(); i++) {
+			const TSharedPtr<FJsonObject>& Pair = PairArray[i]->AsObject();
+			const TSharedPtr<FJsonValue>& EntryKey = Pair->Values.FindChecked(TEXT("Key"));
+			const TSharedPtr<FJsonValue>& EntryValue = Pair->Values.FindChecked(TEXT("Value"));
+			const int32 Index = MapHelper.AddDefaultValue_Invalid_NeedsRehash();
+			uint8* PairPtr = MapHelper.GetPairPtr(Index);
+			// Copy over imported key and value from temporary storage
+			DeserializePropertyValue(KeyProperty, PairPtr, EntryKey, Context);
+			DeserializePropertyValue(ValueProperty, PairPtr + MapHelper.MapLayout.ValueOffset, EntryValue, Context);
+		}
+		MapHelper.Rehash();
+
+	} else if (SetProperty) {
+		const UProperty* ElementProperty = SetProperty->ElementProp;
+		FScriptSetHelper SetHelper(SetProperty, Value);
+		const TArray<TSharedPtr<FJsonValue>>& SetArray = JsonValue->AsArray();
+		SetHelper.EmptyElements();
+		uint8* TempElementStorage = static_cast<uint8*>(FMemory::Malloc(ElementProperty->ElementSize));
+		ElementProperty->InitializeValue(TempElementStorage);
+		
+		for (int32 i = 0; i < SetArray.Num(); i++) {
+			const TSharedPtr<FJsonValue>& Element = SetArray[i];
+			DeserializePropertyValue(ElementProperty, TempElementStorage, Element, Context);
+			
+			const int32 NewElementIndex = SetHelper.AddDefaultValue_Invalid_NeedsRehash();
+			uint8* NewElementPtr = SetHelper.GetElementPtr(NewElementIndex);
+
+			// Copy over imported key from temporary storage
+			ElementProperty->CopyCompleteValue_InContainer(NewElementPtr, TempElementStorage);
+		}
+		SetHelper.Rehash();
+
+		ElementProperty->DestroyValue(TempElementStorage);
+		FMemory::Free(TempElementStorage);
+		
+	} else if (ArrayProperty) {
+		const UProperty* ElementProperty = ArrayProperty->Inner;
+		FScriptArrayHelper ArrayHelper(ArrayProperty, Value);
+		const TArray<TSharedPtr<FJsonValue>>& SetArray = JsonValue->AsArray();
+		ArrayHelper.EmptyValues();
+
+		for (int32 i = 0; i < SetArray.Num(); i++) {
+			const TSharedPtr<FJsonValue>& Element = SetArray[i];
+			const uint32 AddedIndex = ArrayHelper.AddValue();
+			uint8* ValuePtr = ArrayHelper.GetRawPtr(AddedIndex);
+			DeserializePropertyValue(ElementProperty, ValuePtr, Element, Context);
+		}
+		
+	} else {
+		DeserializePropertyValueInternal(Property, Value, Context, JsonValue);
+	}
+}
+
+void DeserializePropertyValueInternal(const UProperty* TestProperty, void* Value, FDeserializationContext& Context, TSharedPtr<FJsonValue> JsonValue) {
+	if (TestProperty->IsA<UMulticastDelegateProperty>()) {
+		FMulticastScriptDelegate* DelegateMulti = reinterpret_cast<FMulticastScriptDelegate*>(Value);
+		const TArray<TSharedPtr<FJsonValue>>& BoundObjects = JsonValue->AsArray();
+		for (const TSharedPtr<FJsonValue>& Delegate : BoundObjects) {
+			const TSharedPtr<FJsonObject>& JsonObject = Delegate->AsObject();
+			UObject* Object = DeserializeUObject(JsonObject->GetObjectField(TEXT("Object")), Context);
+			const FString FunctionName = JsonObject->GetStringField(TEXT("FunctionName"));
+			if (Object != nullptr) {
+				FScriptDelegate ScriptDelegate;
+				ScriptDelegate.BindUFunction(Object, *FunctionName);
+				DelegateMulti->Add(ScriptDelegate);
+			}
+		}
+		
+	} else if (TestProperty->IsA<UDelegateProperty>()) {
+		//Single delegate, serialize object and function name
+		FScriptDelegate* Delegate = reinterpret_cast<FScriptDelegate*>(Value);
+		const TSharedPtr<FJsonObject>& JsonObject = JsonValue->AsObject();
+		if (JsonObject->HasField(TEXT("Object"))) {
+			UObject* Object = DeserializeUObject(JsonObject->GetObjectField(TEXT("Object")), Context);
+			const FString FunctionName = JsonObject->GetStringField(TEXT("FunctionName"));
+			if (Object != nullptr) {
+				Delegate->BindUFunction(Object, *FunctionName);
+			}
+		}
+
+	} else if (const UInterfaceProperty* InterfaceProperty = Cast<const UInterfaceProperty>(TestProperty)) {
+		//UObject is enough to re-create value, since we known property on deserialization
+		FScriptInterface* Interface = reinterpret_cast<FScriptInterface*>(Value);
+		UObject* Object = DeserializeUObject(JsonValue->AsObject(), Context);
+		if (Object != nullptr) {
+			void* InterfacePtr = Object->GetInterfaceAddress(InterfaceProperty->InterfaceClass);
+			check(InterfacePtr != nullptr);
+			Interface->SetObject(Object);
+			Interface->SetInterface(InterfacePtr);
+		}
+
+	} else if (const UClassProperty* ClassProperty = Cast<const UClassProperty>(TestProperty)) {
+		//For class it's enough just to have it's path name for deserialization
+		const FString PathName = JsonValue->AsString();
+		if (PathName != TEXT("None")) {
+			UClass* ClassObject = LoadObject<UClass>(nullptr, *PathName);
+			check(ClassObject != nullptr && ClassObject->IsChildOf(ClassProperty->MetaClass));
+			ClassProperty->SetObjectPropertyValue(Value, ClassObject);
+		}
+		
+	} else if (TestProperty->IsA<USoftObjectProperty>()) {
+		//For soft object reference, path is enough too for deserialization.
+		const FString PathString = JsonValue->AsString();
+		FSoftObjectPtr* ObjectPtr = reinterpret_cast<FSoftObjectPtr*>(Value);
+		*ObjectPtr = FSoftObjectPath(PathString);
+
+	} else if (const UObjectPropertyBase* ObjectProperty = Cast<const UObjectPropertyBase>(TestProperty)) {
+		//Need to serialize full UObject for object property
+		UObject* Object = DeserializeUObject(JsonValue->AsObject(), Context);
+		ObjectProperty->SetObjectPropertyValue(Value, Object);
+
+	} else if (const UStructProperty* StructProperty = Cast<const UStructProperty>(TestProperty)) {
+		//To serialize struct, we need it's type and value pointer, because struct value doesn't contain type information
+		DeserializeStruct(Value, StructProperty->Struct, JsonValue->AsObject(), Context);
+
+		//Primitives below, they are serialized as plain json values
+	} else if (const UNumericProperty* NumberProperty = Cast<const UNumericProperty>(TestProperty)) {
+		const double NumberValue = JsonValue->AsNumber();
+		if (NumberProperty->IsFloatingPoint())
+			NumberProperty->SetFloatingPointPropertyValue(Value, NumberValue);
+		else NumberProperty->SetIntPropertyValue(Value, static_cast<int64>(NumberValue));
+		
+	} else if (const UBoolProperty* BoolProperty = Cast<const UBoolProperty>(TestProperty)) {
+		const bool bBooleanValue = JsonValue->AsBool();
+		BoolProperty->SetPropertyValue(Value, bBooleanValue);
+
+	} else if (TestProperty->IsA<UStrProperty>()) {
+		const FString StringValue = JsonValue->AsString();
+		*reinterpret_cast<FString*>(Value) = StringValue;
+
+	} else if (const UEnumProperty* EnumProperty = Cast<const UEnumProperty>(TestProperty)) {
+		// K2 only supports byte enums right now - any violations should have been caught by UHT or the editor
+		if (!EnumProperty->GetUnderlyingProperty()->IsA<UByteProperty>()) {
+			SML::Logging::fatal(TEXT("Unsupported Underlying Enum Property Found: "), *EnumProperty->GetUnderlyingProperty()->GetClass()->GetName());
+		}
+		//Prefer readable enum names in result json to raw numbers
+		const FString EnumName = JsonValue->AsString();
+		const int64 UnderlyingValue = EnumProperty->GetEnum()->GetValueByNameString(EnumName);
+		check(UnderlyingValue != INDEX_NONE);
+		*reinterpret_cast<uint8*>(Value) = static_cast<uint8>(UnderlyingValue);
+
+	} else if (TestProperty->IsA<UNameProperty>()) {
+		//Name is perfectly representable as string
+		const FString NameString = JsonValue->AsString();
+		*reinterpret_cast<FName*>(Value) = *NameString;
+		
+	} else if (const UTextProperty* TextProperty = Cast<const UTextProperty>(TestProperty)) {
+		//For FText, standard ExportTextItem is okay to use, because it's serialization is quite complex
+		const FString SerializedValue = JsonValue->AsString();
+		if (!SerializedValue.IsEmpty()) {
+			FTextStringHelper::ReadFromBuffer(*SerializedValue, *reinterpret_cast<FText*>(Value));
+		}
+	} else {
+		SML::Logging::fatal(TEXT("Found unsupported property type when deserializing value: "), *TestProperty->GetClass()->GetName());
+	}
+}
+
 #endif

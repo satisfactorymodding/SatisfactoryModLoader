@@ -6,6 +6,7 @@
 #include "actor/SMLInitMod.h"
 #include "actor/SMLInitMenu.h"
 
+class AFGPlayerController;
 class UClass;
 class IModuleInterface;
 class AFGGameMode;
@@ -88,9 +89,9 @@ namespace SML {
 			void LoadModLibraries(const BootstrapAccessors& accessors, TMap<FString, IModuleInterface*>& loadedModules);
 			void PopulateModList(const TMap<FString, IModuleInterface*>& loadedModules);
 
-			void initializeMenuActors();
 			void initializeModActors();
 			void postInitializeModActors();
+			void handlePlayerJoin(AFGPlayerController* PlayerController);
 		public:
 			/**
 			* Load all mods from the given FString.
@@ -114,7 +115,7 @@ namespace SML {
 
 			static void attachLoadingHooks();
 
-			void onGameModePostLoad(AFGGameMode* gameMode);
+			void onMapLoadComplete(UWorld* world, bool isMenuWorld);
 		};
 	};
 };
