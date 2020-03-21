@@ -9,12 +9,10 @@
 namespace SML {
 	void initializePlayerComponent() {
 		SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](auto& scope, AFGPlayerController* controller) {
-			if (controller->HasAuthority()) {
-				USMLPlayerComponent* component = NewObject<USMLPlayerComponent>(controller, TEXT("SML_PlayerComponent"));
-				component->RegisterComponent();
-				component->SetNetAddressable();
-				component->SetIsReplicated(true);
-			}
+			USMLPlayerComponent* component = NewObject<USMLPlayerComponent>(controller, TEXT("SML_PlayerComponent"));
+			component->RegisterComponent();
+			component->SetNetAddressable();
+			component->SetIsReplicated(true);
 		});
 		SUBSCRIBE_METHOD("?EnterChatMessage@AFGPlayerController@@IEAAXAEBVFString@@@Z", AFGPlayerController::EnterChatMessage, [](auto& scope, AFGPlayerController* player, const FString& message) {
 			if (message.StartsWith(TEXT("/"))) {
