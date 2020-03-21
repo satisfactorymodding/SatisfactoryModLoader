@@ -9,6 +9,8 @@
 #include "IPlatformFilePak.h"
 #include <excpt.h>
 #include "ExceptionHandling.h"
+#include "Engine/ComponentDelegateBinding.h"
+#include "WidgetAnimationDelegateBinding.h"
 
 #define DEFAULT_ITERATOR_FLAGS EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces
 
@@ -29,6 +31,10 @@ bool ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType
 
 //Performs property serialization. Defined below.
 TSharedPtr<FJsonValue> SerializePropertyValue(const UProperty* TestProperty, const void* Value, FSerializationContext& Context);
+
+TSharedPtr<FJsonValue> SerializeUObject(const UObject* Object, FSerializationContext& Context);
+
+TSharedPtr<FJsonValue> SerializeStruct(UScriptStruct* StructType, const void* StructValue, FSerializationContext& Context);
 
 TSharedRef<FJsonObject> CreatePropertyTypeDescriptor(UProperty* Property) {
 	FEdGraphPinType graphPinType;
@@ -250,46 +256,257 @@ UClass* GetOverridenFunctionSource(UFunction* Function) {
 	return nullptr;
 }
 
-TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* generatedClass) {
-	TSharedRef<FJsonObject> resultJson = MakeShareable(new FJsonObject());
-	SML::Logging::info(TEXT("Dumping blueprint class "), *generatedClass->GetFullName());
+#define ENSURE_NODE_HAS_INDEX(Node) if (!SCSNodeToIndex.Contains(Node)) SCSNodeToIndex.Add(Node, LastSCSNodeIndex++);
 
-	resultJson->SetStringField(TEXT("Blueprint"), generatedClass->GetPathName());
-	resultJson->SetStringField(TEXT("ParentClass"), generatedClass->GetSuperClass()->GetPathName());
+#define SERIALIZE_TRACK(Variable, TrackType) \
+	TArray<TSharedPtr<FJsonValue>> ##TrackType_Array; \
+	for (TrackType& TrackObject : Timeline->##Variable) { \
+		##TrackType_Array.Add(SerializeStruct(TrackType::StaticStruct(), &TrackObject, SerializationContext)); \
+	} \
+	Object->SetArrayField(TEXT(#Variable), ##TrackType_Array);
 
-	TArray<TSharedPtr<FJsonValue>> implementedInterfaces;
-	for (const FImplementedInterface& iface : generatedClass->Interfaces) {
-		UClass* interfaceClass = iface.Class;
-		TSharedRef<FJsonValueString> string = MakeShareable(new FJsonValueString(interfaceClass->GetPathName()));
-		implementedInterfaces.Add(string);
+TSharedRef<FJsonObject> WriteConstructionScript(USimpleConstructionScript* SCS, TArray<FString>& FieldsGeneratedBySCS) {
+	TSharedRef<FJsonObject> ConstructionScript = MakeShareable(new FJsonObject());
+	TMap<USCS_Node*, uint32> SCSNodeToIndex;
+	uint32 LastSCSNodeIndex = 1;
+	TArray<TSharedPtr<FJsonValue>> AllSCSNodes;
+	for (USCS_Node* SCSNode : SCS->GetAllNodes()) {
+		ENSURE_NODE_HAS_INDEX(SCSNode);
+		uint32 NodeIndex = SCSNodeToIndex.FindChecked(SCSNode);
+		TSharedRef<FJsonObject> NodeObject = MakeShareable(new FJsonObject());
+		NodeObject->SetNumberField(TEXT("NodeIndex"), NodeIndex);
+		NodeObject->SetStringField(TEXT("VariableName"), SCSNode->GetVariableName().ToString());
+		NodeObject->SetStringField(TEXT("VariableGuid"), SCSNode->VariableGuid.ToString());
+		NodeObject->SetStringField(TEXT("ComponentClass"), SCSNode->ComponentClass->GetPathName());
+		FSerializationContext SerializationContext;
+		NodeObject->SetField(TEXT("ComponentTemplate"), SerializeUObject(SCSNode->ComponentTemplate, SerializationContext));
+		NodeObject->SetStringField(TEXT("ParentComponentOrVariableName"), SCSNode->ParentComponentOrVariableName.ToString());
+		NodeObject->SetStringField(TEXT("ParentComponentOwnerClassName"), SCSNode->ParentComponentOwnerClassName.ToString());
+		NodeObject->SetStringField(TEXT("AttachToName"), SCSNode->AttachToName.ToString());
+		NodeObject->SetBoolField(TEXT("ParentComponentNative"), SCSNode->bIsParentComponentNative);
+		TArray<TSharedPtr<FJsonValue>> ChildNodes;
+		for (USCS_Node* ChildNode : SCSNode->ChildNodes) {
+			ENSURE_NODE_HAS_INDEX(ChildNode);
+			const uint32 ChildNodeIndex = SCSNodeToIndex.FindChecked(ChildNode);
+			ChildNodes.Add(MakeShareable(new FJsonValueNumber(ChildNodeIndex)));
+		}
+		NodeObject->SetArrayField(TEXT("ChildNodes"), ChildNodes);
+		FieldsGeneratedBySCS.Add(SCSNode->GetVariableName().ToString());
+		AllSCSNodes.Add(MakeShareable(new FJsonValueObject(NodeObject)));
 	}
-	if (implementedInterfaces.Num() > 0) {
-		resultJson->SetArrayField(TEXT("ImplementedInterfaces"), implementedInterfaces);
+	ConstructionScript->SetArrayField(TEXT("AllNodes"), AllSCSNodes);
+	TArray<TSharedPtr<FJsonValue>> RootSCSNodes;
+	for (USCS_Node* RootSCSNode : SCS->GetRootNodes()) {
+		uint32 RootNodeIndex = SCSNodeToIndex.FindChecked(RootSCSNode);
+		RootSCSNodes.Add(MakeShareable(new FJsonValueNumber(RootNodeIndex)));
 	}
-	
-	if (isBlacklistedClass(generatedClass->GetPathName())) {
-		return resultJson;
-	}
+	ConstructionScript->SetArrayField(TEXT("RootNodes"), RootSCSNodes);
+	return ConstructionScript;
+}
 
-	FSerializationContext Context;
-	TArray<TSharedPtr<FJsonValue>> fields;
-	UObject* defaultObject = generatedClass->GetDefaultObject();
-	Context.SerializationStack.Add(defaultObject, FSerializationObjectInfo{ 0 });
-	for (TFieldIterator<UProperty> It(generatedClass, DEFAULT_ITERATOR_FLAGS); It; ++It) {
-		UProperty* Property = *It;
-		if (Property->GetFName().ToString() == TEXT("UberGraphFrame"))
-			continue; //Skip graph frame pointer (cannot be meaningfully serialized)
-		const TSharedPtr<FJsonObject>& fieldEntry = CreateFieldDescriptor(Property, defaultObject, defaultObject, Context);
-		if (fieldEntry.IsValid()) {
-			fields.Add(MakeShareable(new FJsonValueObject(fieldEntry)));
+TArray<TSharedPtr<FJsonValue>> WriteDelegateBindings(UBlueprintGeneratedClass* GeneratedClass) {
+	TArray<TSharedPtr<FJsonValue>> BlueprintDelegateBindings;
+	for (const UDynamicBlueprintBinding* Binding : GeneratedClass->DynamicBindingObjects) {
+		SML::Logging::info(TEXT("Serializing delegate binding "), *Binding->GetClass()->GetName());
+		if (Binding->GetClass()->GetName() == TEXT("ComponentDelegateBinding")) {
+			const UComponentDelegateBinding* ComponentBinding = static_cast<const UComponentDelegateBinding*>(Binding);
+			TSharedRef<FJsonObject> BindingObject = MakeShareable(new FJsonObject());
+			BindingObject->SetStringField(TEXT("Type"), TEXT("Component"));
+			TArray<TSharedPtr<FJsonValue>> BindingValues;
+			for (const FBlueprintComponentDelegateBinding& DelegateBinding : ComponentBinding->ComponentDelegateBindings) {
+				TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
+				Object->SetStringField(TEXT("ComponentName"), DelegateBinding.ComponentPropertyName.ToString());
+				Object->SetStringField(TEXT("DelegatePropertyName"), DelegateBinding.DelegatePropertyName.ToString());
+				Object->SetStringField(TEXT("FunctionName"), DelegateBinding.FunctionNameToBind.ToString());
+				BindingValues.Add(MakeShareable(new FJsonValueObject(Object)));
+			}
+			BindingObject->SetArrayField(TEXT("Bindings"), BindingValues);
+			BlueprintDelegateBindings.Add(MakeShareable(new FJsonValueObject(BindingObject)));
+		}
+		if (Binding->GetClass()->GetName() == TEXT("WidgetAnimationDelegateBinding")) {
+			const UWidgetAnimationDelegateBinding* WidgetBinding = static_cast<const UWidgetAnimationDelegateBinding*>(Binding);
+			TSharedRef<FJsonObject> BindingObject = MakeShareable(new FJsonObject());
+			BindingObject->SetStringField(TEXT("Type"), TEXT("WidgetAnimation"));
+			TArray<TSharedPtr<FJsonValue>> BindingValues;
+			for (const FBlueprintWidgetAnimationDelegateBinding& DelegateBinding : WidgetBinding->WidgetAnimationDelegateBindings) {
+				TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
+				Object->SetNumberField(TEXT("Action"), static_cast<uint8>(DelegateBinding.Action));
+				Object->SetStringField(TEXT("AnimationToBind"), DelegateBinding.AnimationToBind.ToString());
+				Object->SetStringField(TEXT("FunctionNameToBind"), DelegateBinding.FunctionNameToBind.ToString());
+				Object->SetStringField(TEXT("UserTag"), DelegateBinding.UserTag.ToString());
+				BindingValues.Add(MakeShareable(new FJsonValueObject(Object)));
+			}
+			BindingObject->SetArrayField(TEXT("Bindings"), BindingValues);
+			BlueprintDelegateBindings.Add(MakeShareable(new FJsonValueObject(BindingObject)));
 		}
 	}
-	if (fields.Num() > 0) {
-		resultJson->SetArrayField(TEXT("Fields"), fields);
+	return BlueprintDelegateBindings;
+}
+
+FString PropertyPathToString(const FCachedPropertyPath& Path) {
+	FString OutString;
+	UProperty* Property = FCachedPropertyPath::StaticStruct()->FindPropertyByName(TEXT("Segments"));
+	check(Property != nullptr);
+	const TArray<FPropertyPathSegment>* Segments = Property->ContainerPtrToValuePtr<const TArray<FPropertyPathSegment>>(&Path);
+	
+	for (int32 SegmentIndex = 0; SegmentIndex < Segments->Num(); ++SegmentIndex) {
+		const FPropertyPathSegment& Segment = (*Segments)[SegmentIndex];
+
+		// Add property name
+		OutString += Segment.Name.ToString();
+
+		// Add array index
+		if (Segment.ArrayIndex != INDEX_NONE) {
+			OutString += FString::Printf(TEXT("[%d]"), Segment.ArrayIndex);
+		}
+
+		// Add separator
+		if (SegmentIndex < Segments->Num() - 1) {
+			OutString += TEXT(".");
+		}
 	}
 
-	TArray<TSharedPtr<FJsonValue>> methods;
-	for (TFieldIterator<UFunction> It(generatedClass, EFieldIteratorFlags::ExcludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::ExcludeInterfaces); It; ++It) {
+	return OutString;
+}
+
+void DumpAnimInfo(TSharedRef<FJsonObject>& ResultJson, UAnimBlueprintGeneratedClass* AnimClass) {
+	ResultJson->SetStringField(TEXT("BlueprintKind"), TEXT("Animation"));
+	FSerializationContext SerializationContext;
+	ResultJson->SetField(TEXT("TargetSkeleton"), SerializeUObject(AnimClass->TargetSkeleton, SerializationContext));
+	//TODO proper animation serialization? Can we reverse it? do we really need it?
+}
+
+void DumpWidgetInfo(TSharedRef<FJsonObject>& ResultJson, UWidgetBlueprintGeneratedClass* WidgetClass, TArray<FString>& FieldsGeneratedByWidget) {
+	ResultJson->SetStringField(TEXT("BlueprintKind"), TEXT("Widget"));
+	FSerializationContext SerializationContext;
+	UWidget* RootWidget = WidgetClass->WidgetTree->RootWidget;
+	ResultJson->SetField(TEXT("WidgetTreeRootWidget"), SerializeUObject(RootWidget, SerializationContext));
+
+	//Blacklist widget names from dumped field list
+	WidgetClass->WidgetTree->ForEachWidget([&FieldsGeneratedByWidget](UWidget* Widget) {
+		FieldsGeneratedByWidget.Add(Widget->GetFName().ToString());
+	});
+
+	SML::Logging::info(TEXT("Serializing Widget data of "), *WidgetClass->GetName());
+	TArray<TSharedPtr<FJsonValue>> DelegateRuntimeBindings;
+	for (const FDelegateRuntimeBinding& RuntimeBinding : WidgetClass->Bindings) {
+		//I I have no idea why this is needed, but some bindings just seem to have COMPLETELY invalid ObjectName (deref gives nullptr and Len gives random number)
+		uint64 PointerValue = reinterpret_cast<uint64>(*RuntimeBinding.ObjectName);
+		SML::Logging::info(TEXT("Pointer Value: "), PointerValue);
+		if (PointerValue > 1024*64 && RuntimeBinding.ObjectName.Len() > 0 && RuntimeBinding.ObjectName.Len() <= 100) {
+			SML::Logging::info(TEXT("Object Name Ptr: "), (void*)*RuntimeBinding.ObjectName);
+			SML::Logging::info(TEXT("Num: "), RuntimeBinding.ObjectName.Len());
+			TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
+			Object->SetStringField(TEXT("ObjectName"), RuntimeBinding.ObjectName);
+			Object->SetStringField(TEXT("PropertyName"), RuntimeBinding.PropertyName.ToString());
+			Object->SetStringField(TEXT("FunctionName"), RuntimeBinding.FunctionName.ToString());
+			Object->SetStringField(TEXT("SourcePath"), PropertyPathToString(RuntimeBinding.SourcePath));
+			Object->SetNumberField(TEXT("Kind"), static_cast<uint8>(RuntimeBinding.Kind));
+			DelegateRuntimeBindings.Add(MakeShareable(new FJsonValueObject(Object)));
+		} 
+	}
+	ResultJson->SetArrayField(TEXT("Bindings"), DelegateRuntimeBindings);
+
+	TArray<TSharedPtr<FJsonValue>> WidgetAnimations;
+	for (UWidgetAnimation* Animation : WidgetClass->Animations) {
+		TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
+		Object->SetStringField(TEXT("AnimationName"), Animation->GetFName().ToString());
+		Object->SetField(TEXT("MovieScene"), SerializeUObject(Animation->MovieScene, SerializationContext));
+		TArray<TSharedPtr<FJsonValue>> AnimationBindings;
+		for (const FWidgetAnimationBinding& Binding : Animation->AnimationBindings) {
+			TSharedRef<FJsonObject> BindingObject = MakeShareable(new FJsonObject());
+			BindingObject->SetStringField(TEXT("WidgetName"), Binding.WidgetName.ToString());
+			BindingObject->SetStringField(TEXT("WidgetSlotName"), Binding.SlotWidgetName.ToString());
+			BindingObject->SetStringField(TEXT("AnimationGuid"), Binding.AnimationGuid.ToString());
+			BindingObject->SetBoolField(TEXT("IsRootWidget"), Binding.bIsRootWidget);
+			AnimationBindings.Add(MakeShareable(new FJsonValueObject(BindingObject)));
+		}
+		Object->SetArrayField(TEXT("AnimationBindings"), AnimationBindings);
+		WidgetAnimations.Add(MakeShareable(new FJsonValueObject(Object)));
+		//Blacklist animations from dumped field list
+		FieldsGeneratedByWidget.Add(Animation->GetFName().ToString());
+		FieldsGeneratedByWidget.Add(Animation->GetMovieScene()->GetFName().ToString());
+	}
+	ResultJson->SetArrayField(TEXT("Animations"), WidgetAnimations);
+
+	TArray<TSharedPtr<FJsonValue>> NamedSlots;
+	for (FName& NamedSlot : WidgetClass->NamedSlots) {
+		NamedSlots.Add(MakeShareable(new FJsonValueString(NamedSlot.ToString())));
+	}
+	ResultJson->SetArrayField(TEXT("NamedSlots"), NamedSlots);
+}
+
+TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* GeneratedClass) {
+	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
+	SML::Logging::info(TEXT("Dumping blueprint class "), *GeneratedClass->GetFullName());
+
+	ResultJson->SetStringField(TEXT("Blueprint"), GeneratedClass->GetPathName());
+	ResultJson->SetStringField(TEXT("ParentClass"), GeneratedClass->GetSuperClass()->GetPathName());
+	ResultJson->SetStringField(TEXT("BlueprintKind"), TEXT("Normal"));
+
+	if (UAnimBlueprintGeneratedClass* AnimClass = Cast<UAnimBlueprintGeneratedClass>(GeneratedClass)) {
+		DumpAnimInfo(ResultJson, AnimClass);
+		//Dump only basic information for animation blueprints
+		return ResultJson;
+	}
+	
+	TArray<TSharedPtr<FJsonValue>> ImplementedInterfaces;
+	for (const FImplementedInterface& iface : GeneratedClass->Interfaces) {
+		UClass* interfaceClass = iface.Class;
+		TSharedRef<FJsonValueString> string = MakeShareable(new FJsonValueString(interfaceClass->GetPathName()));
+		ImplementedInterfaces.Add(string);
+	}
+	if (ImplementedInterfaces.Num() > 0) {
+		ResultJson->SetArrayField(TEXT("ImplementedInterfaces"), ImplementedInterfaces);
+	}
+	
+	TArray<FString> FieldsGeneratedBySCS;
+	if (GeneratedClass->SimpleConstructionScript != nullptr) {
+		ResultJson->SetObjectField(TEXT("ConstructionScript"), WriteConstructionScript(GeneratedClass->SimpleConstructionScript, FieldsGeneratedBySCS));
+	}
+	
+	TArray<TSharedPtr<FJsonValue>> Timelines;
+	TArray<FString> FieldsGeneratedByTimelines;
+	for (UTimelineTemplate* Timeline : GeneratedClass->Timelines) {
+		FSerializationContext SerializationContext;
+		Timelines.Add(SerializeUObject(Timeline, SerializationContext));
+		FieldsGeneratedByTimelines.Add(Timeline->GetVariableName().ToString());
+	}
+	if (Timelines.Num() > 0) {
+		ResultJson->SetArrayField(TEXT("Timelines"), Timelines);
+	}
+
+	TArray<FString> FieldsGeneratedByWidget;
+	if (UWidgetBlueprintGeneratedClass* WidgetClass = Cast<UWidgetBlueprintGeneratedClass>(GeneratedClass)) {
+		DumpWidgetInfo(ResultJson, WidgetClass, FieldsGeneratedByWidget);
+	}
+	
+	FSerializationContext Context;
+	TArray<TSharedPtr<FJsonValue>> Fields;
+	UObject* DefaultObject = GeneratedClass->GetDefaultObject();
+	Context.SerializationStack.Add(DefaultObject, FSerializationObjectInfo{ 0 });
+	for (TFieldIterator<UProperty> It(GeneratedClass, DEFAULT_ITERATOR_FLAGS); It; ++It) {
+		UProperty* Property = *It;
+		const FString PropertyName = Property->GetFName().ToString();
+		if (PropertyName == TEXT("UberGraphFrame"))
+			continue; //Skip graph frame pointer (cannot be meaningfully serialized)
+		if (FieldsGeneratedBySCS.Contains(PropertyName))
+			continue; //Skip fields generated by Simple Construction Script
+		if (FieldsGeneratedByTimelines.Contains(PropertyName))
+			continue; //Skip fields generated by Timelines
+		if (FieldsGeneratedByWidget.Contains(PropertyName))
+			continue; //Skip variables generated by widget compiler
+		const TSharedPtr<FJsonObject>& fieldEntry = CreateFieldDescriptor(Property, DefaultObject, DefaultObject, Context);
+		if (fieldEntry.IsValid()) {
+			Fields.Add(MakeShareable(new FJsonValueObject(fieldEntry)));
+		}
+	}
+	if (Fields.Num() > 0) {
+		ResultJson->SetArrayField(TEXT("Fields"), Fields);
+	}
+
+	TArray<TSharedPtr<FJsonValue>> Methods;
+	for (TFieldIterator<UFunction> It(GeneratedClass, EFieldIteratorFlags::ExcludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::ExcludeInterfaces); It; ++It) {
 		UFunction* Function = *It;
 		if (Function->GetFName().ToString().StartsWith(TEXT("ExecuteUbergraph_")))
 			continue; //Skip autogenerated UBG execute function
@@ -298,22 +515,26 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* generated
 			//for blueprint defined functions, record full signature
 			const TSharedPtr<FJsonObject>& methodEntry = CreateFunctionSignature(Function);
 			if (methodEntry.IsValid()) {
-				methods.Add(MakeShareable(new FJsonValueObject(methodEntry)));
+				Methods.Add(MakeShareable(new FJsonValueObject(methodEntry)));
 			}
 		} else {
 			//For overriden functions, record only their name
-			TSharedPtr<FJsonObject> methodEntry = MakeShareable(new FJsonObject());
-			methodEntry->SetStringField(TEXT("Name"), Function->GetFName().ToString());
-			methodEntry->SetStringField(TEXT("SuperClass"), FunctionOverrideSrc->GetPathName());
-			methodEntry->SetBoolField(TEXT("IsOverride"), true);
-			methods.Add(MakeShareable(new FJsonValueObject(methodEntry)));
+			TSharedPtr<FJsonObject> MethodEntry = MakeShareable(new FJsonObject());
+			MethodEntry->SetStringField(TEXT("Name"), Function->GetFName().ToString());
+			MethodEntry->SetStringField(TEXT("SuperClass"), FunctionOverrideSrc->GetPathName());
+			MethodEntry->SetBoolField(TEXT("IsOverride"), true);
+			Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry)));
 		}
 	}
-	if (methods.Num() > 0) {
-		resultJson->SetArrayField(TEXT("Functions"), methods);
+	if (Methods.Num() > 0) {
+		ResultJson->SetArrayField(TEXT("Functions"), Methods);
 	}
 
-	return resultJson;
+	TArray<TSharedPtr<FJsonValue>> BlueprintDelegateBindings = WriteDelegateBindings(GeneratedClass);
+	if (BlueprintDelegateBindings.Num() > 0) {
+		ResultJson->SetArrayField(TEXT("DynamicBindings"), BlueprintDelegateBindings);
+	}
+	return ResultJson;
 }
 
 FString CreateClassPathFromPackageName(const FString& PackagePath) {
@@ -387,12 +608,7 @@ void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileNa
 }
 
 void SML::dumpSatisfactoryAssets(const FName& rootPath, const FString& fileName) {
-	__try {
-		dumpSatisfactoryAssetsInternal(rootPath, fileName);
-	} __except (1) {
-		uint64 ExCode = GetExceptionCode();
-		SML::Logging::info(TEXT("Windows SEG Exception Code: "), ExCode);
-	}
+	dumpSatisfactoryAssetsInternal(rootPath, fileName);
 }
 
 //------------------------------------------------------------------
@@ -634,28 +850,12 @@ public: TArray<FScriptDelegate> InvocationList;
 
 TSharedPtr<FJsonValue> SerializePropertyValueInternal(const UProperty* TestProperty, const void* Value, FSerializationContext& Context) {
 	if (TestProperty->IsA<UMulticastDelegateProperty>()) {
-		//For multicast delegate, we need to serialize each script delegate
-		const FMulticastScriptDelegateAccessor* DelegateMulti = reinterpret_cast<const FMulticastScriptDelegateAccessor*>(Value);
-		TArray<TSharedPtr<FJsonValue>> ResultArray;
-		for (const FScriptDelegate& Delegate : DelegateMulti->InvocationList) {
-			if (Delegate.IsBound()) {
-				TSharedPtr<FJsonObject> Object = MakeShareable(new FJsonObject());
-				Object->SetField(TEXT("Object"), SerializeUObject(Delegate.GetUObject(), Context));
-				Object->SetStringField(TEXT("FunctionName"), Delegate.GetFunctionName().ToString());
-				ResultArray.Add(MakeShareable(new FJsonValueObject(Object)));
-			}
-		}
-		return MakeShareable(new FJsonValueArray(ResultArray));
+		//Delegates should not be serialized directly
+		return MakeShareable(new FJsonValueNumber(0));
 
 	} else if (TestProperty->IsA<UDelegateProperty>()) {
-		//Single delegate, serialize object and function name
-		const FScriptDelegate* Delegate = reinterpret_cast<const FScriptDelegate*>(Value);
-		TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
-		if (Delegate->IsBound()) {
-			Object->SetField(TEXT("Object"), SerializeUObject(Delegate->GetUObject(), Context));
-			Object->SetStringField(TEXT("FunctionName"), Delegate->GetFunctionName().ToString());
-		}
-		return MakeShareable(new FJsonValueObject(Object));
+		//Delegates should not be serialized directly
+		return MakeShareable(new FJsonValueNumber(0));
 		
 	} else if (TestProperty->IsA<UInterfaceProperty>()) {
 		//UObject is enough to re-create value, since we known property on deserialization
