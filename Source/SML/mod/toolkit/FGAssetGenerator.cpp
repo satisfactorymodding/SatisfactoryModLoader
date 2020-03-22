@@ -159,16 +159,11 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 		UPackage* Package = CreateGenericObject(ObjectData, bHasDependents);
 		if (Package != nullptr) {
 			DefinedPackages.Add(Package);
-			if (bHasDependents) {
-				//Force package save now if it has dependents available
-				UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
-				DefinedPackages.Empty();
-			}
 		}
 	}
 	
-	//Save packages after all assets have been re-created
-	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
+	//Save packages after all assets have been re-created (not just dirty, every package created)
+	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
 	DefinedPackages.Empty();
 	
 	//Compile queued blueprints without dependents now
@@ -193,7 +188,7 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	//Compile delay initialized blueprints now
 	SML::Logging::info(TEXT("Flushing compilation queue.."));
 	FBlueprintCompilationManager::FlushCompilationQueueAndReinstance();
-	
+	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
 	SML::Logging::info(TEXT("Post-initializing loaded assets.."));
 	
 	//Now, post initialize delayed default properties
@@ -218,7 +213,7 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 
 	SML::Logging::info(TEXT("Saving Packages..."));
 	//Now, save all packages we defined
-	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
+	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
 	SML::Logging::info(TEXT("Success!"));
 }
 
@@ -317,6 +312,7 @@ void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonOb
 			ClassDefaultObject->MarkPackageDirty();
 		}
 	}
+	Object->MarkPackageDirty();
 }
 
 void AddDependenciesForStruct(const FPackageObjectData& ObjectData, TArray<FString>& Dependencies) {
@@ -592,6 +588,7 @@ UWidgetAnimation* DeserializeAnimation(UWidgetBlueprint* WidgetBlueprint, const 
 }
 
 void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& BlueprintJson, bool bHasDependents) {
+	SML::Logging::info(TEXT("Initializing blueprint "), *Blueprint->GetPathName());
 	const FString& ParentClassPath = BlueprintJson->GetStringField(TEXT("ParentClass"));
 	TArray<UClass*> OverrideFunctionSources;
 	UClass* ParentClass = Cast<UClass>(StaticFindObject(UClass::StaticClass(), ANY_PACKAGE, *ParentClassPath));
@@ -705,6 +702,7 @@ void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& B
 		}
 	}
 
+	Blueprint->MarkPackageDirty();
 	if (bHasDependents) {
 		//compile immediately if we have dependents
 		FBPCompileRequest CompileRequest{ Blueprint, EBlueprintCompileOptions::None, nullptr };
@@ -783,13 +781,13 @@ UPackage* CreateBlueprintFromJson(const TSharedRef<FJsonObject>& BlueprintJson, 
 	ObjectName = ObjectName.Mid(0, ObjectName.Len() - 2);
 
 	UPackage* TargetPackage = CreatePackage(nullptr, *PackageName);
-	SML::Logging::info(TEXT("Creating blueprint "), *ObjectPath, TEXT("; Has Dependents? "), bHasDependents);
 
 	UBlueprint* Blueprint = LoadObject<UBlueprint>(TargetPackage, *ObjectName);
 	if (Blueprint == nullptr) {
-		
 		Blueprint = CreateBlueprint(TargetPackage, ObjectName, BlueprintJson);
+		SML::Logging::info(TEXT("Creating blueprint "), *ObjectName, TEXT(" at "), *PackageName, TEXT("; Has Dependents? "), bHasDependents);
 		check(Blueprint != nullptr);
+		TargetPackage->MarkPackageDirty();
 	}
 	//Force Blueprint synchronous compilation now if somebody depends on it
 	if (bHasDependents) {
@@ -831,6 +829,7 @@ UPackage* CreateStructFromJson(const TSharedRef<FJsonObject>& StructJson) {
 		//create structure with predefined FGuid value
 		StructObject = CreateUserDefinedStructWithGUID(TargetPackage, FName(*ObjectName), Flags, PredefinedGuid);
 		check(StructObject != nullptr);
+		TargetPackage->MarkPackageDirty();
 	}
 	
 	InitializeUserStruct(StructObject, StructJson);
