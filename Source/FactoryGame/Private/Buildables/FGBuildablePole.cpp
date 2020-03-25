@@ -3,7 +3,7 @@
 #include "FGBuildablePole.h"
 #include "FGColoredInstanceMeshProxy.h"
 AFGBuildablePole::AFGBuildablePole(){
-	mPoleComponentProxy = CreateOptionalDefaultSubobject<UFGColoredInstanceMeshProxy>(FName("PoleMeshProxy")); mPoleComponentProxy->SetupAttachment(RootComponent);
+	mPoleComponentProxy = CreateOptionalDefaultSubobject<UFGColoredInstanceMeshProxy>(FName("PoleComponentProxy")); mPoleComponentProxy->SetupAttachment(RootComponent);
 }
 void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildablePole::BeginPlay(){ }
