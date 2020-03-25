@@ -102,12 +102,12 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	for (const TSharedPtr<FJsonValue>& Value : UserDefinedEnums) {
 		UPackage* Package = CreateEnumerationFromJson(Value->AsObject().ToSharedRef());
 		if (Package != nullptr) {
+			Package->MarkPackageDirty();
 			DefinedPackages.Add(Package);
 		}
 	}
-	//Save all defined enumerations now
-	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, true);
-	DefinedPackages.Empty();
+
+	//UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
 	
 	const TArray<TSharedPtr<FJsonValue>>& UserDefinedStructs = ResultJsonObject->GetArrayField(TEXT("UserDefinedStructs"));
 	const TArray<TSharedPtr<FJsonValue>>& Blueprints = ResultJsonObject->GetArrayField(TEXT("Blueprints"));
@@ -163,9 +163,8 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	}
 	
 	//Save packages after all assets have been re-created (not just dirty, every package created)
-	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
-	DefinedPackages.Empty();
-	
+	//UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
+
 	//Compile queued blueprints without dependents now
 	SML::Logging::info(TEXT("Flushing compilation queue.."));
 	FBlueprintCompilationManager::FlushCompilationQueueAndReinstance();
@@ -188,7 +187,7 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	//Compile delay initialized blueprints now
 	SML::Logging::info(TEXT("Flushing compilation queue.."));
 	FBlueprintCompilationManager::FlushCompilationQueueAndReinstance();
-	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
+	//UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
 	SML::Logging::info(TEXT("Post-initializing loaded assets.."));
 	
 	//Now, post initialize delayed default properties
@@ -1003,14 +1002,9 @@ UObject* DeserializeUObject(const TSharedPtr<FJsonObject>& Value, FDeserializati
 		//We already have that object in serialization stack, obtain it by index
 		const uint32 ObjectIndex = Value->GetIntegerField(TEXT("$ObjectRef"));
 		check(Context.SerializationStack.Contains(ObjectIndex));
-		return Context.SerializationStack[ObjectIndex];
-	}
-	if (Value->HasField(TEXT("$ObjectNameRef"))) {
-		//We already have object with such name in outer object, find it
-		const uint32 ObjectIndex = Value->GetIntegerField(TEXT("$OuterObjectRef"));
-		UObject* OuterObject = Context.SerializationStack.FindChecked(ObjectIndex);
-		const FString ObjectName = Value->GetStringField(TEXT("$ObjectNameRef"));
-		return StaticFindObject(UObject::StaticClass(), OuterObject, *ObjectName, false);
+		UObject* FoundObject = Context.SerializationStack[ObjectIndex];
+		check(FoundObject != nullptr);
+		return FoundObject;
 	}
 	//Otherwise, we need to deserialize UObject
 	const FString ObjectClassName = Value->GetStringField(TEXT("$ObjectClass"));
@@ -1021,12 +1015,15 @@ UObject* DeserializeUObject(const TSharedPtr<FJsonObject>& Value, FDeserializati
 	check(ObjectClass != nullptr);
 	UObject* CurrentOuter = Context.Outer;
 	UObject* AlreadyExistingObject = StaticFindObjectFast(nullptr, CurrentOuter, *ObjectName, true);
-	if (AlreadyExistingObject != nullptr) {
-		//Object already exists? Kill it!
-		AlreadyExistingObject->MarkPendingKill();
-		AlreadyExistingObject->ConditionalBeginDestroy();
+	UObject* NewlyCreatedUObject;
+	if (AlreadyExistingObject == nullptr) {
+		//Create object if it doesn't exist yet
+		NewlyCreatedUObject = NewObject<UObject>(CurrentOuter, ObjectClass, *ObjectName, ObjectFlags);
+	} else {
+		//Otherwise use existing one, even if type is different - we are more likely to break even more things than fix some
+		//if we try to remove old objects, as it will result in nullptrs in random places
+		NewlyCreatedUObject = AlreadyExistingObject;
 	}
-	UObject* NewlyCreatedUObject = NewObject<UObject>(CurrentOuter, ObjectClass, *ObjectName, ObjectFlags);
 	
 	//Update current outer for new objects, add ourselves to serialization stack if required
 	Context.Outer = NewlyCreatedUObject;
