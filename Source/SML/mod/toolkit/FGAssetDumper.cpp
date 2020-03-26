@@ -17,7 +17,6 @@
 
 struct FSerializationObjectInfo {
 	uint32 ObjectId;
-	TSet<FString> AlreadySerializedSubobjects;
 	bool bIsReferenced = false;
 };
 
@@ -743,20 +742,6 @@ TSharedPtr<FJsonValue> SerializeStruct(UScriptStruct* StructType, const void* St
 	return MakeShareable(new FJsonValueObject(Object));
 }
 
-bool CheckObjectNotSerializedAlready(const UObject* Object, FSerializationContext& Context) {
-	const FString SelfObjectName = Object->GetFName().ToString();
-	
-	FSerializationObjectInfo* OuterObjectInfo = Context.SerializationStack.Find(Object->GetOuter());
-	SML::Logging::info(TEXT("Object's "), *Object->GetPathName(), TEXT(" Outer: "), *Object->GetOuter()->GetPathName(), TEXT(" ; Info = "), OuterObjectInfo);
-	if (OuterObjectInfo == nullptr)
-		return true;
-	if (OuterObjectInfo->AlreadySerializedSubobjects.Contains(SelfObjectName)) {
-		return false;
-	}
-	OuterObjectInfo->AlreadySerializedSubobjects.Add(SelfObjectName);
-	return true;
-}
-
 TSharedPtr<FJsonValue> SerializeUObject(const UObject* Object, FSerializationContext& Context) {
 	const TSharedRef<FJsonObject> ObjectJson = MakeShareable(new FJsonObject());
 	if (Object == nullptr) {
@@ -768,11 +753,6 @@ TSharedPtr<FJsonValue> SerializeUObject(const UObject* Object, FSerializationCon
 		//Object is already written as outer, so we need just object index
 		ObjectJson->SetNumberField(TEXT("$ObjectRef"), ObjectInfo->ObjectId);
 		ObjectInfo->bIsReferenced = true;
-	} else if (!CheckObjectNotSerializedAlready(Object, Context)) {
-		//Object with such name already exists within given outer, so we need just it's name as reference
-		FSerializationObjectInfo* OuterObjectInfo = Context.SerializationStack.Find(Object->GetOuter());
-		ObjectJson->SetNumberField(TEXT("$OuterObjectRef"), OuterObjectInfo->ObjectId);
-		ObjectJson->SetStringField(TEXT("$ObjectNameRef"), Object->GetFName().ToString());
 	} else {
 		//Object is not written, write it
 		SML::Logging::info(TEXT("Recursively serializing object "), *Object->GetPathName());
