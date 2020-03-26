@@ -131,7 +131,6 @@ public:
 	typedef CallScope<R(*)(A...)> ScopeType;
 	// mod handler function
 	typedef void HandlerSignature(ScopeType&, A...);
-	typedef void HandlerSignatureAfter(const R&, A...);
 	typedef R HookType(A...);
 	typedef R ReturnType;
 
@@ -171,14 +170,14 @@ private:
 
 	static void installHook(const std::string& symbolName) {
 		if (handlersBefore == nullptr) {
-			handlersBefore = createHandlerList<HandlerSignature>(symbolName);
+			handlersBefore = createHandlerList<Handler>(symbolName);
 			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
 		}
 	}
 
 	static void installHookAfter(const std::string& symbolName) {
 		if (handlersAfter == nullptr) {
-			handlersAfter = createHandlerList<HandlerSignatureAfter>(symbolName);
+			handlersAfter = createHandlerList<HandlerAfter>(symbolName);
 			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
 		}
 	}
