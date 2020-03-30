@@ -11,6 +11,7 @@
 #include "ExceptionHandling.h"
 #include "Engine/ComponentDelegateBinding.h"
 #include "WidgetAnimationDelegateBinding.h"
+#include "BPCodeDumper.h"
 
 #define DEFAULT_ITERATOR_FLAGS EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces
 
@@ -189,6 +190,7 @@ TSharedRef<FJsonObject> CreateFunctionSignature(UFunction* function) {
 		accessRights = TEXT("private");
 	resultJson->SetStringField(TEXT("Access"), accessRights);
 	resultJson->SetNumberField(TEXT("FunctionFlags"), function->FunctionFlags);
+	resultJson->SetArrayField(TEXT("Code"), SML::CreateFunctionCode(function));
 	return resultJson;
 }
 
