@@ -62,20 +62,20 @@ void USMLBlueprintLibrary::convertJsonValueToUProperty(TSharedPtr<FJsonValue> js
 		UObject* uObj = FSoftObjectPath(json->AsString()).TryLoad();
 		uProp->SetPropertyValue(ptrToProp, uObj);
 	} else if (auto aProp = Cast<UArrayProperty>(prop)) {
-		// Broken
-		FScriptArray arr;
+		FScriptArrayHelper helper(aProp, ptrToProp);
+		helper.EmptyValues();
 		TArray<TSharedPtr<FJsonValue>> jsonArr = json->AsArray();
-		arr.Add(jsonArr.Num(), aProp->Inner->ElementSize);
 		for (int i = 0; i < jsonArr.Num(); i++) {
-			//convertJsonValueToUProperty(jsonArr[i], aProp->Inner, (void*)((size_t)arr.GetData() + i * aProp->Inner->ElementSize));
+			int64 valueIndex = helper.AddValue();
+			convertJsonValueToUProperty(jsonArr[i], aProp->Inner, helper.GetRawPtr(valueIndex));
 		}
-		//aProp->SetPropertyValue(ptrToProp, arr);
+		aProp->SetPropertyValue(ptrToProp, arr);
 	} else if (auto sProp = Cast<UStructProperty>(prop)) {
 		convertJsonObjectToUStruct(json->AsObject(), sProp->Struct, ptrToProp);
 	}
 }
 
-inline TSharedPtr<FJsonValue> USMLBlueprintLibrary::convertUPropToJsonValue(UProperty* prop, void* ptrToProp) {
+TSharedPtr<FJsonValue> USMLBlueprintLibrary::convertUPropToJsonValue(UProperty* prop, void* ptrToProp) {
 	if (auto strProp = Cast<UStrProperty>(prop)) {
 		return TSharedPtr<FJsonValue>(new FJsonValueString(strProp->GetPropertyValue(ptrToProp)));
 	} else if (auto fProp = Cast<UFloatProperty>(prop)) {
