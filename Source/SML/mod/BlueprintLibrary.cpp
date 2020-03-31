@@ -55,6 +55,7 @@ void USMLBlueprintLibrary::convertJsonValueToUProperty(TSharedPtr<FJsonValue> js
 		cProp->SetPropertyValue(ptrToProp, CastResult);
 	} else if (auto eProp = Cast<UEnumProperty>(prop)) {
 		UByteProperty* ByteProp = Cast<UByteProperty>(eProp->GetUnderlyingProperty());
+		int64 ENumb = json->AsNumber();
 		void* EnumPtr = eProp->ContainerPtrToValuePtr<void>(ptrToProp);
 		ByteProp->SetIntPropertyValue(EnumPtr, ENumb);
 	} else if (auto uProp = Cast<UObjectProperty>(prop)) {
