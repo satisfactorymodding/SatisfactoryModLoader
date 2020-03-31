@@ -11,6 +11,7 @@
 #include "ExceptionHandling.h"
 #include "Engine/ComponentDelegateBinding.h"
 #include "WidgetAnimationDelegateBinding.h"
+#include "BPCodeDumper.h"
 
 #define DEFAULT_ITERATOR_FLAGS EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces
 
@@ -189,6 +190,7 @@ TSharedRef<FJsonObject> CreateFunctionSignature(UFunction* function) {
 		accessRights = TEXT("private");
 	resultJson->SetStringField(TEXT("Access"), accessRights);
 	resultJson->SetNumberField(TEXT("FunctionFlags"), function->FunctionFlags);
+	resultJson->SetArrayField(TEXT("Code"), SML::CreateFunctionCode(function));
 	return resultJson;
 }
 
@@ -386,48 +388,6 @@ void DumpWidgetInfo(TSharedRef<FJsonObject>& ResultJson, UWidgetBlueprintGenerat
 		FieldsGeneratedByWidget.Add(Widget->GetFName().ToString());
 	});
 
-	SML::Logging::info(TEXT("Serializing Widget data of "), *WidgetClass->GetName());
-	TArray<TSharedPtr<FJsonValue>> DelegateRuntimeBindings;
-	for (const FDelegateRuntimeBinding& RuntimeBinding : WidgetClass->Bindings) {
-		//I I have no idea why this is needed, but some bindings just seem to have COMPLETELY invalid ObjectName (deref gives nullptr and Len gives random number)
-		uint64 PointerValue = reinterpret_cast<uint64>(*RuntimeBinding.ObjectName);
-		SML::Logging::info(TEXT("Pointer Value: "), PointerValue);
-		if (PointerValue > 1024*64 && RuntimeBinding.ObjectName.Len() > 0 && RuntimeBinding.ObjectName.Len() <= 100) {
-			SML::Logging::info(TEXT("Object Name Ptr: "), (void*)*RuntimeBinding.ObjectName);
-			SML::Logging::info(TEXT("Num: "), RuntimeBinding.ObjectName.Len());
-			TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
-			Object->SetStringField(TEXT("ObjectName"), RuntimeBinding.ObjectName);
-			Object->SetStringField(TEXT("PropertyName"), RuntimeBinding.PropertyName.ToString());
-			Object->SetStringField(TEXT("FunctionName"), RuntimeBinding.FunctionName.ToString());
-			Object->SetStringField(TEXT("SourcePath"), PropertyPathToString(RuntimeBinding.SourcePath));
-			Object->SetNumberField(TEXT("Kind"), static_cast<uint8>(RuntimeBinding.Kind));
-			DelegateRuntimeBindings.Add(MakeShareable(new FJsonValueObject(Object)));
-		} 
-	}
-	ResultJson->SetArrayField(TEXT("Bindings"), DelegateRuntimeBindings);
-
-	TArray<TSharedPtr<FJsonValue>> WidgetAnimations;
-	for (UWidgetAnimation* Animation : WidgetClass->Animations) {
-		TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
-		Object->SetStringField(TEXT("AnimationName"), Animation->GetFName().ToString());
-		Object->SetField(TEXT("MovieScene"), SerializeUObject(Animation->MovieScene, SerializationContext));
-		TArray<TSharedPtr<FJsonValue>> AnimationBindings;
-		for (const FWidgetAnimationBinding& Binding : Animation->AnimationBindings) {
-			TSharedRef<FJsonObject> BindingObject = MakeShareable(new FJsonObject());
-			BindingObject->SetStringField(TEXT("WidgetName"), Binding.WidgetName.ToString());
-			BindingObject->SetStringField(TEXT("WidgetSlotName"), Binding.SlotWidgetName.ToString());
-			BindingObject->SetStringField(TEXT("AnimationGuid"), Binding.AnimationGuid.ToString());
-			BindingObject->SetBoolField(TEXT("IsRootWidget"), Binding.bIsRootWidget);
-			AnimationBindings.Add(MakeShareable(new FJsonValueObject(BindingObject)));
-		}
-		Object->SetArrayField(TEXT("AnimationBindings"), AnimationBindings);
-		WidgetAnimations.Add(MakeShareable(new FJsonValueObject(Object)));
-		//Blacklist animations from dumped field list
-		FieldsGeneratedByWidget.Add(Animation->GetFName().ToString());
-		FieldsGeneratedByWidget.Add(Animation->GetMovieScene()->GetFName().ToString());
-	}
-	ResultJson->SetArrayField(TEXT("Animations"), WidgetAnimations);
-
 	TArray<TSharedPtr<FJsonValue>> NamedSlots;
 	for (FName& NamedSlot : WidgetClass->NamedSlots) {
 		NamedSlots.Add(MakeShareable(new FJsonValueString(NamedSlot.ToString())));
@@ -463,16 +423,10 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	if (GeneratedClass->SimpleConstructionScript != nullptr) {
 		ResultJson->SetObjectField(TEXT("ConstructionScript"), WriteConstructionScript(GeneratedClass->SimpleConstructionScript, FieldsGeneratedBySCS));
 	}
-	
-	TArray<TSharedPtr<FJsonValue>> Timelines;
+
 	TArray<FString> FieldsGeneratedByTimelines;
 	for (UTimelineTemplate* Timeline : GeneratedClass->Timelines) {
-		FSerializationContext SerializationContext;
-		Timelines.Add(SerializeUObject(Timeline, SerializationContext));
 		FieldsGeneratedByTimelines.Add(Timeline->GetVariableName().ToString());
-	}
-	if (Timelines.Num() > 0) {
-		ResultJson->SetArrayField(TEXT("Timelines"), Timelines);
 	}
 
 	TArray<FString> FieldsGeneratedByWidget;
