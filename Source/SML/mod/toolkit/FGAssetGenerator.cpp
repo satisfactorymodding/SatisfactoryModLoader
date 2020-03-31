@@ -430,11 +430,15 @@ void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode,
 				MakeNode->NodePosX = OriginNode->NodePosX - MakeNode->NodeWidth - 64;
 				MakeNode->NodePosY = OriginNode->NodePosY - MakeNode->NodeHeight + 64;
 				StructNodeCreator.Finalize();
-				UEdGraphPin** OutPin = MakeNode->GetAllPins().FindByPredicate([](UEdGraphPin* Pin) {
-					return Pin->Direction == EEdGraphPinDirection::EGPD_Output;
-				});
-				check(OutPin != nullptr);
-				(*OutPin)->MakeLinkTo(NewPin);
+				TArray<UEdGraphPin*> Pins = MakeNode->GetAllPins();
+				for (int32 ArrayIndex = 0; ArrayIndex < Pins.Num(); ArrayIndex++)
+				{
+					if (Pins[ArrayIndex]->Direction == EEdGraphPinDirection::EGPD_Output)
+					{
+						Pins[ArrayIndex]->MakeLinkTo(NewPin);
+						break;
+					}
+				}
 			}
 		}
   }
