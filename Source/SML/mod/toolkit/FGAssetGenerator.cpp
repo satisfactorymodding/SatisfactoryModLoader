@@ -1,6 +1,4 @@
 #include "FGAssetGenerator.h"
-#include "K2Node_DynamicCast.h"
-#include "K2Node_Self.h"
 #if WITH_EDITOR
 #include "K2Node_Self.h"
 #include "K2Node_DynamicCast.h" 
