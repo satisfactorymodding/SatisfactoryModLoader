@@ -1,4 +1,6 @@
 #include "FGAssetGenerator.h"
+#include "K2Node_DynamicCast.h"
+#include "K2Node_Self.h"
 #if WITH_EDITOR
 #include "K2Node_Self.h"
 #include "K2Node_DynamicCast.h" 
@@ -385,7 +387,6 @@ UPackage* CreateGenericObject(const FPackageObjectData& PackageObjectData, bool 
 void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode, const UEdGraphSchema_K2* Schema, UEdGraphPin* NewPin) {
 	if (!NewPin->PinType.IsContainer()) {
 		const FName& PinCategory = NewPin->PinType.PinCategory;
-
 		//For class pins, we set just that class as default value
 		if (PinCategory == UEdGraphSchema_K2::PC_Class || PinCategory == UEdGraphSchema_K2::PC_SoftClass) {
 			UClass* TargetClass = Cast<UClass>(NewPin->PinType.PinSubCategoryObject);
@@ -397,7 +398,7 @@ void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode,
 		if (PinCategory == UEdGraphSchema_K2::PC_Object || PinCategory == UEdGraphSchema_K2::PC_Interface) {
 			UClass* TargetClass = Cast<UClass>(NewPin->PinType.PinSubCategoryObject);
 			check(TargetClass);
-
+      
 			FGraphNodeCreator<UK2Node_DynamicCast> NodeCreator(*Graph);
 			UK2Node_DynamicCast* CastNode = NodeCreator.CreateNode();
 			CastNode->TargetType = TargetClass;
@@ -418,44 +419,27 @@ void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode,
 			CastNode->ReconstructNode();
 
 		}
+    
 		// For Structs, we create Default MakeNodes if possible
 		if (PinCategory == UEdGraphSchema_K2::PC_Struct) {
-			FGraphNodeCreator<UK2Node_MakeStruct> NodeCreator(*Graph);
 			UScriptStruct* TargetStruct = Cast<UScriptStruct>(NewPin->PinType.PinSubCategoryObject);
 			check(TargetStruct);
-			if (TargetStruct != nullptr )
-			{
-				UK2Node_MakeStruct * MakeNode = NodeCreator.CreateNode();
-				if(MakeNode->CanBeMade(TargetStruct) == true)
-				{
-					MakeNode->StructType = TargetStruct;
-					MakeNode->AllocateDefaultPins();
-					MakeNode->NodePosX = OriginNode->NodePosX - MakeNode->NodeWidth - 64;
-					MakeNode->NodePosY = OriginNode->NodePosY - MakeNode->NodeHeight + 64;
-					NodeCreator.Finalize();
-					// Could have more than 1 Pin but only 1 output
-					TArray<UEdGraphPin*> Pins = MakeNode->GetAllPins();
-					for (int32 ArrayIndex = 0; ArrayIndex < Pins.Num(); ArrayIndex++)
-					{
-						if (Pins[ArrayIndex]->Direction == EEdGraphPinDirection::EGPD_Output)
-						{				
-							Pins[ArrayIndex]->MakeLinkTo(NewPin);
-							break;
-						}
-					}
-				}
-				else
-				{
-					NodeCreator.Finalize();
-				}
-			}
-			else
-			{
-				// Finalizing if still even if something went wrong.
-				NodeCreator.Finalize();
+			//TODO skip structs that have native make node for now, initialize only default ones
+			if (!TargetStruct->HasMetaData(TEXT("HasNativeMake"))) {
+				FGraphNodeCreator<UK2Node_MakeStruct> StructNodeCreator(*Graph);
+				UK2Node_MakeStruct * MakeNode = StructNodeCreator.CreateNode();
+				MakeNode->StructType = TargetStruct;
+				MakeNode->NodePosX = OriginNode->NodePosX - MakeNode->NodeWidth - 64;
+				MakeNode->NodePosY = OriginNode->NodePosY - MakeNode->NodeHeight + 64;
+				StructNodeCreator.Finalize();
+				UEdGraphPin** OutPin = MakeNode->GetAllPins().FindByPredicate([](UEdGraphPin* Pin) {
+					return Pin->Direction == EEdGraphPinDirection::EGPD_Output;
+				});
+				check(OutPin != nullptr);
+				(*OutPin)->MakeLinkTo(NewPin);
 			}
 		}
-	}
+  }
 }
 
 void DefineCustomFunctionFromJson(UEdGraph* Graph, UK2Node_EditablePinBase* FunctionNode, const TSharedPtr<FJsonObject> FunctionObject) {
