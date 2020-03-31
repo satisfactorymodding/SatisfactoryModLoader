@@ -7,6 +7,16 @@ void UFGSchematic::PreSave(const  ITargetPlatform* targetPlatform){ }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::AddRecipe(TSubclassOf< UFGSchematic > inClass, TSubclassOf<  UFGRecipe > recipe){ }
+UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+void UFGSchematic::SetTechTier(TSubclassOf< UFGSchematic > inClass, int32 Tier) { inClass.GetDefaultObject()->mTechTier = Tier;}
+UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+void UFGSchematic::SetTimeToComplete(TSubclassOf< UFGSchematic > inClass, float sec) { inClass.GetDefaultObject()->mTimeToComplete = sec; }
+UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+void UFGSchematic::SetType(TSubclassOf< UFGSchematic > inClass, ESchematicType Type) { inClass.GetDefaultObject()->mType = Type; }
+UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+void UFGSchematic::SetCost(TSubclassOf< UFGSchematic > inClass, TArray<FItemAmount> Cost) { inClass.GetDefaultObject()->mCost = Cost; }
+UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+void UFGSchematic::SetDisplayName(TSubclassOf< UFGSchematic > inClass, FText Name) { inClass.GetDefaultObject()->mDisplayName = Name; }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }
@@ -15,14 +25,14 @@ void UFGSchematic::UpdateAssetBundleData(){ }
 void UFGSchematic::MigrateDataToNewSchematicCategory(){ }
 #endif 
 UFGSchematic::UFGSchematic(){ }
-ESchematicType UFGSchematic::GetType(TSubclassOf< UFGSchematic > inClass){ return ESchematicType(); }
-FText UFGSchematic::GetSchematicDisplayName(TSubclassOf< UFGSchematic > inClass){ return FText(); }
-TSubclassOf< class UFGSchematicCategory > UFGSchematic::GetSchematicCategory(TSubclassOf< UFGSchematic > inClass){ return TSubclassOf<class UFGSchematicCategory>(); }
-void UFGSchematic::GetSubCategories(TSubclassOf< UFGSchematic > inClass,  TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ }
-TArray< FItemAmount > UFGSchematic::GetCost(TSubclassOf< UFGSchematic > inClass){ return TArray<FItemAmount>(); }
-TArray< UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass){ return TArray<UFGUnlock*>(); }
-int32 UFGSchematic::GetTechTier(TSubclassOf< UFGSchematic > inClass){ return int32(); }
-float UFGSchematic::GetTimeToComplete(TSubclassOf< UFGSchematic > inClass){ return float(); }
+ESchematicType UFGSchematic::GetType(TSubclassOf< UFGSchematic > inClass){return inClass.GetDefaultObject()->mType;}
+FText UFGSchematic::GetSchematicDisplayName(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mDisplayName;}
+TSubclassOf< class UFGSchematicCategory > UFGSchematic::GetSchematicCategory(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mSchematicCategory; }
+void UFGSchematic::GetSubCategories(TSubclassOf< UFGSchematic > inClass,  TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){out_subCategories = inClass.GetDefaultObject()->mSubCategories;}
+TArray< FItemAmount > UFGSchematic::GetCost(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mCost;}
+TArray< UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mUnlocks; }
+int32 UFGSchematic::GetTechTier(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mTechTier;}
+float UFGSchematic::GetTimeToComplete(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mTimeToComplete; }
 FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass){ return FSlateBrush(); }
 TSubclassOf< UFGSchematic > UFGSchematic::GetDependentOnSchematic(TSubclassOf< UFGSchematic > inClass){ return TSubclassOf<UFGSchematic>(); }
 TArray< TSubclassOf< UFGSchematic > > UFGSchematic::GetAdditionalSchematicDependencies(TSubclassOf< UFGSchematic > inClass){ return TArray<TSubclassOf<UFGSchematic> >(); }

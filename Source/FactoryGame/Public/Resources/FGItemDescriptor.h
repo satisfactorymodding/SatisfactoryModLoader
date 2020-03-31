@@ -183,6 +183,44 @@ public:
 	static FLinearColor GetFluidColorLinear( TSubclassOf< UFGItemDescriptor > inClass );
 
 #if WITH_EDITOR
+	//** Defaul Set Functions for BP
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetUseName(TSubclassOf< UFGItemDescriptor > item, bool UseName) { item.GetDefaultObject()->mUseDisplayNameAndDescription = UseName; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetName(TSubclassOf< UFGItemDescriptor > item, FText Name) { item.GetDefaultObject()->mDisplayName = Name; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetDescription(TSubclassOf< UFGItemDescriptor > item, FText Name) { item.GetDefaultObject()->mDescription = Name; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetMesh(TSubclassOf< UFGItemDescriptor > item, UStaticMesh * Mesh) { item.GetDefaultObject()->mConveyorMesh = Mesh; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetMaterial(TSubclassOf< UFGItemDescriptor > item, UMaterialInterface * Mat) { item.GetDefaultObject()->mConveyorMesh->SetMaterial(0, Mat); }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetBigIcon(TSubclassOf<UFGItemDescriptor> item, UTexture2D *Icon) { item.GetDefaultObject()->mPersistentBigIcon = Icon; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetSmallIcon(TSubclassOf<UFGItemDescriptor> item, UTexture2D *Icon) { item.GetDefaultObject()->mSmallIcon = Icon; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetFluidDensity(TSubclassOf<UFGItemDescriptor> item, float  Value) { item.GetDefaultObject()->mFluidDensity = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetFluidViscosity(TSubclassOf<UFGItemDescriptor> item, float  Value) { item.GetDefaultObject()->mFluidViscosity = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetFluidFriction(TSubclassOf<UFGItemDescriptor> item, float  Value) { item.GetDefaultObject()->mFluidFriction = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetFluidColor(TSubclassOf<UFGItemDescriptor> item, FLinearColor  Value) { item.GetDefaultObject()->mFluidColor = Value.ToFColor(false); }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetForm(TSubclassOf<UFGItemDescriptor> item, EResourceForm  Value) { item.GetDefaultObject()->mForm = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetCategory(TSubclassOf<UFGItemDescriptor> item, TSubclassOf<UFGItemCategory>  Value) { item.GetDefaultObject()->mItemCategory = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetCanbeDisgarded(TSubclassOf<UFGItemDescriptor> item, bool  Value) { item.GetDefaultObject()->mCanBeDiscarded = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetRememberPickUp(TSubclassOf<UFGItemDescriptor> item, bool  Value) { item.GetDefaultObject()->mRememberPickUp = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetEnergyValue(TSubclassOf<UFGItemDescriptor> item, float  Value) { item.GetDefaultObject()->mEnergyValue = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetRadioactiveDecay(TSubclassOf<UFGItemDescriptor> item, float  Value) { item.GetDefaultObject()->mRadioactiveDecay = Value; }
+	UFUNCTION(BlueprintCallable, Category = "Editor|Item")
+		static void SetStackSize(TSubclassOf<UFGItemDescriptor> item, EStackSize  Value) { item.GetDefaultObject()->mStackSize = Value; }
+
 	/** Delete all icons in the game that's referenced by a FGItemDescriptor */
 	static void DeleteAllIcons();
 

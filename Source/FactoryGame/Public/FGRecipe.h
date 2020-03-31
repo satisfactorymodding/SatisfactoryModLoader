@@ -68,6 +68,12 @@ public:
 	/** Sets the products produced from this recipe. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Recipe" )
 	static void SetProduct( TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product );
+	UFUNCTION(BlueprintCallable, Category = "Editor|Recipe")
+	static void SetIngredient(TSubclassOf<UFGRecipe> recipe, TArray<FItemAmount> ingredient);
+	UFUNCTION(BlueprintCallable, Category = "Editor|Recipe")
+	static void SetManufactoringDuration(TSubclassOf<UFGRecipe> recipe, float sec);
+	UFUNCTION(BlueprintCallable, Category = "Editor|Recipe")
+	static void SetManualManufacturingMultiplier(TSubclassOf<UFGRecipe> recipe, float sec);
 #endif
 
 	EHologramSplinePathMode GetLastSplineMode();
