@@ -422,7 +422,6 @@ void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode,
 		if (PinCategory == UEdGraphSchema_K2::PC_Struct) {
 			UScriptStruct* TargetStruct = Cast<UScriptStruct>(NewPin->PinType.PinSubCategoryObject);
 			check(TargetStruct);
-			//TODO skip structs that have native make node for now, initialize only default ones
 			if (!TargetStruct->HasMetaData(TEXT("HasNativeMake"))) {
 				FGraphNodeCreator<UK2Node_MakeStruct> StructNodeCreator(*Graph);
 				UK2Node_MakeStruct * MakeNode = StructNodeCreator.CreateNode();
@@ -430,11 +429,38 @@ void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode,
 				MakeNode->NodePosX = OriginNode->NodePosX - MakeNode->NodeWidth - 64;
 				MakeNode->NodePosY = OriginNode->NodePosY - MakeNode->NodeHeight + 64;
 				StructNodeCreator.Finalize();
-				UEdGraphPin** OutPin = MakeNode->GetAllPins().FindByPredicate([](UEdGraphPin* Pin) {
-					return Pin->Direction == EEdGraphPinDirection::EGPD_Output;
-				});
-				check(OutPin != nullptr);
-				(*OutPin)->MakeLinkTo(NewPin);
+				TArray<UEdGraphPin*> Pins = MakeNode->GetAllPins();
+				for (int32 ArrayIndex = 0; ArrayIndex < Pins.Num(); ArrayIndex++) {
+					if (Pins[ArrayIndex]->Direction == EEdGraphPinDirection::EGPD_Output) {
+						Pins[ArrayIndex]->MakeLinkTo(NewPin);
+						break;
+					}
+				}
+			} else {
+				//MetaData Attribute Value: Engine.KismetMathLibrary.MakeVector
+				const FString NativeMakePath = TargetStruct->GetMetaData(TEXT("HasNativeMake"));
+				int32 LastSeparatorIndex;
+				check(NativeMakePath.FindLastChar('.', LastSeparatorIndex));
+				
+				//Class Path: /Script/Engine.KismetMathLibrary
+				const FString ClassPath = FString(TEXT("/Script/")).Append(NativeMakePath.Mid(0, LastSeparatorIndex));
+				UClass* FunctionClass = LoadObject<UClass>(nullptr, *ClassPath);
+				checkf(FunctionClass, TEXT("Failed to load UClass from HasNativeMake. Class Path: %s"), *ClassPath)
+				
+				//Method Name: MakeVector
+				const FString FunctionName = NativeMakePath.Mid(LastSeparatorIndex + 1);
+				UFunction* TargetFunction = FunctionClass->FindFunctionByName(*FunctionName);
+				checkf(TargetFunction, TEXT("Function specified in HasNativeMake not found: %s"), *FunctionName);
+
+				FGraphNodeCreator<UK2Node_CallFunction> StructNodeCreator(*Graph);
+				UK2Node_CallFunction* MakeNode = StructNodeCreator.CreateNode();
+				MakeNode->SetFromFunction(TargetFunction);
+				MakeNode->NodePosX = OriginNode->NodePosX - MakeNode->NodeWidth - 128;
+				MakeNode->NodePosY = OriginNode->NodePosY - MakeNode->NodeHeight - 264;
+				StructNodeCreator.Finalize();
+				UEdGraphPin* ReturnValuePin = MakeNode->GetReturnValuePin();
+				check(ReturnValuePin);
+				ReturnValuePin->MakeLinkTo(NewPin);
 			}
 		}
   }
