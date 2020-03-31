@@ -4,9 +4,6 @@
 
 #if WITH_EDITOR
 void UFGRecipe::SetProduct(TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product){ recipe.GetDefaultObject()->mProduct = product; }
-void UFGRecipe::SetIngredient(TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > ingredient){ recipe.GetDefaultObject()->mIngredients = ingredient; }
-void UFGRecipe::SetManufactoringDuration(TSubclassOf< UFGRecipe > recipe, float sec){ recipe.GetDefaultObject()->mManufactoringDuration = sec; }
-void UFGRecipe::SetManualManufacturingMultiplier(TSubclassOf< UFGRecipe > recipe, float sec){ recipe.GetDefaultObject()->mManualManufacturingMultiplier = sec; }
 #endif 
 UFGRecipe::UFGRecipe(){ }
 FText UFGRecipe::GetRecipeName(TSubclassOf< UFGRecipe > inClass){return inClass.GetDefaultObject()->mDisplayName;}

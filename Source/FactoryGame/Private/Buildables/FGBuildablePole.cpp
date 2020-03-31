@@ -3,6 +3,7 @@
 #include "FGBuildablePole.h"
 #include "FGColoredInstanceMeshProxy.h"
 AFGBuildablePole::AFGBuildablePole(){
+	// MODDING EDIT: Objects appear to have this without it being added for us -> Adding it here.
 	mPoleComponentProxy = CreateOptionalDefaultSubobject<UFGColoredInstanceMeshProxy>(FName("PoleComponentProxy")); mPoleComponentProxy->SetupAttachment(RootComponent);
 }
 void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }

@@ -8,15 +8,6 @@ void UFGSchematic::PreSave(const  ITargetPlatform* targetPlatform){ }
 #if WITH_EDITOR
 void UFGSchematic::AddRecipe(TSubclassOf< UFGSchematic > inClass, TSubclassOf<  UFGRecipe > recipe){ }
 UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
-void UFGSchematic::SetTechTier(TSubclassOf< UFGSchematic > inClass, int32 Tier) { inClass.GetDefaultObject()->mTechTier = Tier;}
-UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
-void UFGSchematic::SetTimeToComplete(TSubclassOf< UFGSchematic > inClass, float sec) { inClass.GetDefaultObject()->mTimeToComplete = sec; }
-UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
-void UFGSchematic::SetType(TSubclassOf< UFGSchematic > inClass, ESchematicType Type) { inClass.GetDefaultObject()->mType = Type; }
-UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
-void UFGSchematic::SetCost(TSubclassOf< UFGSchematic > inClass, TArray<FItemAmount> Cost) { inClass.GetDefaultObject()->mCost = Cost; }
-UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
-void UFGSchematic::SetDisplayName(TSubclassOf< UFGSchematic > inClass, FText Name) { inClass.GetDefaultObject()->mDisplayName = Name; }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }

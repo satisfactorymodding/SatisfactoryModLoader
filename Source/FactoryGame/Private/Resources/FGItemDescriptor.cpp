@@ -31,15 +31,11 @@ UFGItemDescriptor::FGenerateIconContext UFGItemDescriptor::GenerateIconContext =
 UFGItemDescriptor::UFGItemDescriptor(){ }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
+//MODDING EDIT: Filled in Function Bodys. usefull for in Editor development.
 EResourceForm UFGItemDescriptor::GetForm(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mForm;}
 float UFGItemDescriptor::GetEnergyValue(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mEnergyValue; }
 float UFGItemDescriptor::GetRadioactiveDecay(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mRadioactiveDecay;}
-FText UFGItemDescriptor::GetItemName(TSubclassOf< UFGItemDescriptor > inClass){ 
-if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription == true)
-	return inClass.GetDefaultObject()->mDisplayName;
-else
-	return FText::FromString(inClass->GetName());
-}
+FText UFGItemDescriptor::GetItemName(TSubclassOf< UFGItemDescriptor > inClass){ if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription == true) return inClass.GetDefaultObject()->mDisplayName; else return FText::FromString(inClass->GetName()); }
 FText UFGItemDescriptor::GetItemDescription(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mDescription; }
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 void UFGItemDescriptor::GetPreviewView(TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_previewView){ }
@@ -48,24 +44,8 @@ FSlateBrush UFGItemDescriptor::GetItemIcon(TSubclassOf< UFGItemDescriptor > inCl
 UTexture2D* UFGItemDescriptor::GetSmallIcon(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mSmallIcon;}
 UTexture2D* UFGItemDescriptor::GetBigIcon(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mPersistentBigIcon;}
 UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mConveyorMesh;}
-int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass){
-	if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_ONE) return 0;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_SMALL) return 1;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_MEDIUM) return 2;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_BIG) return 3;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_HUGE) return 4;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_FLUID) return 5;
-	else return 0;
-}
-float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){
-	if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_ONE) return 1;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_SMALL) return 20;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_MEDIUM) return 50;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_BIG) return 200;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_HUGE) return 500;
-	else if (inClass.GetDefaultObject()->mStackSize == EStackSize::SS_FLUID) return 1000;
-	else return 1;
-}
+int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass){ return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);}
+float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass) { switch (inClass.GetDefaultObject()->mStackSize) { case EStackSize::SS_ONE: return 1; case EStackSize::SS_SMALL: return 20; case EStackSize::SS_MEDIUM: return 50; case EStackSize::SS_BIG: return 200; case EStackSize::SS_HUGE: return 500; case EStackSize::SS_FLUID: return 5000; case EStackSize::SS_LAST_ENUM: return 1; } return 0; }
 bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mCanBeDiscarded;}
 bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mRememberPickUp; }
 TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mItemCategory; }
