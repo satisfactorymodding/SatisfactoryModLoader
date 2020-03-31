@@ -48,19 +48,11 @@ void USMLBlueprintLibrary::convertJsonValueToUProperty(TSharedPtr<FJsonValue> js
 		iProp->SetPropertyValue(ptrToProp, json->AsNumber());
 	} else if (auto bProp = Cast<UBoolProperty>(prop)) {
 		bProp->SetPropertyValue(ptrToProp, json->AsBool());
-	} else if (auto cProp = Cast<UClassProperty>(prop)) {
-		FSoftObjectPath CppName = json->AsString();
-		UObject* LoadedObject = FSoftObjectPath(json->AsString()).TryLoad();
-		UClass * CastResult = Cast<UClass>(LoadedObject);
-		cProp->SetPropertyValue(ptrToProp, CastResult);
 	} else if (auto eProp = Cast<UEnumProperty>(prop)) {
 		UByteProperty* ByteProp = Cast<UByteProperty>(eProp->GetUnderlyingProperty());
 		int64 ENumb = json->AsNumber();
 		void* EnumPtr = eProp->ContainerPtrToValuePtr<void>(ptrToProp);
 		ByteProp->SetIntPropertyValue(EnumPtr, ENumb);
-	} else if (auto uProp = Cast<UObjectProperty>(prop)) {
-		UObject* uObj = FSoftObjectPath(json->AsString()).TryLoad();
-		uProp->SetPropertyValue(ptrToProp, uObj);
 	} else if (auto aProp = Cast<UArrayProperty>(prop)) {
 		FScriptArrayHelper helper(aProp, ptrToProp);
 		helper.EmptyValues();
@@ -69,7 +61,6 @@ void USMLBlueprintLibrary::convertJsonValueToUProperty(TSharedPtr<FJsonValue> js
 			int64 valueIndex = helper.AddValue();
 			convertJsonValueToUProperty(jsonArr[i], aProp->Inner, helper.GetRawPtr(valueIndex));
 		}
-		aProp->SetPropertyValue(ptrToProp, arr);
 	} else if (auto sProp = Cast<UStructProperty>(prop)) {
 		convertJsonObjectToUStruct(json->AsObject(), sProp->Struct, ptrToProp);
 	}
@@ -84,12 +75,8 @@ TSharedPtr<FJsonValue> USMLBlueprintLibrary::convertUPropToJsonValue(UProperty* 
 		return TSharedPtr<FJsonValue>(new FJsonValueNumber(iProp->GetPropertyValue(ptrToProp)));
 	} else if (auto bProp = Cast<UBoolProperty>(prop)) {
 		return TSharedPtr<FJsonValue>(new FJsonValueBoolean(bProp->GetPropertyValue(ptrToProp)));
-	} else if (auto cProp = Cast<UClassProperty>(prop)) {
-		return TSharedPtr<FJsonValue>(new FJsonValueString(cProp->GetPropertyValue(ptrToProp)->GetPathName()));
 	} else if (auto eProp = Cast<UEnumProperty>(prop)) {
 		return TSharedPtr<FJsonValue>(new FJsonValueNumber(eProp->GetUnderlyingProperty()->GetSignedIntPropertyValue(ptrToProp)));
-	} else if (auto oProp = Cast<UObjectProperty>(prop)) {
-		return TSharedPtr<FJsonValue>(new FJsonValueString(oProp->GetPropertyValue(ptrToProp)->GetPathName()));
 	} else if (auto nProp = Cast<UNumericProperty>(prop)) {
 		return TSharedPtr<FJsonValue>(new FJsonValueNumber(nProp->GetUnsignedIntPropertyValue(ptrToProp)));
 	} else if (auto aProp = Cast<UArrayProperty>(prop)) {
