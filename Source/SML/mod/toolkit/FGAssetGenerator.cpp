@@ -1,7 +1,8 @@
 #include "FGAssetGenerator.h"
-#include "K2Node_DynamicCast.h"
-#include "K2Node_Self.h"
 #if WITH_EDITOR
+#include "K2Node_Self.h"
+#include "K2Node_DynamicCast.h" 
+#include "K2Node_MakeStruct.h" 
 #include "FileHelper.h"
 #include "AssetRegistryModule.h"
 #include "EnumEditorUtils.h"
@@ -384,26 +385,25 @@ UPackage* CreateGenericObject(const FPackageObjectData& PackageObjectData, bool 
 void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode, const UEdGraphSchema_K2* Schema, UEdGraphPin* NewPin) {
 	if (!NewPin->PinType.IsContainer()) {
 		const FName& PinCategory = NewPin->PinType.PinCategory;
-		
 		//For class pins, we set just that class as default value
 		if (PinCategory == UEdGraphSchema_K2::PC_Class || PinCategory == UEdGraphSchema_K2::PC_SoftClass) {
 			UClass* TargetClass = Cast<UClass>(NewPin->PinType.PinSubCategoryObject);
 			check(TargetClass);
 			Schema->TrySetDefaultObject(*NewPin, TargetClass);
 		}
-		
+
 		//For objects and interfaces, we use pure cast from Self node
 		if (PinCategory == UEdGraphSchema_K2::PC_Object || PinCategory == UEdGraphSchema_K2::PC_Interface) {
 			UClass* TargetClass = Cast<UClass>(NewPin->PinType.PinSubCategoryObject);
 			check(TargetClass);
-			
+      
 			FGraphNodeCreator<UK2Node_DynamicCast> NodeCreator(*Graph);
 			UK2Node_DynamicCast* CastNode = NodeCreator.CreateNode();
 			CastNode->TargetType = TargetClass;
-			CastNode->SetPurity(true);
 			CastNode->NodePosX = OriginNode->NodePosX - CastNode->NodeWidth - 128;
-			CastNode->NodePosY = OriginNode->NodePosY - CastNode->NodeHeight - 64;
+			CastNode->NodePosY = OriginNode->NodePosY - CastNode->NodeHeight - 264;
 			NodeCreator.Finalize();
+			CastNode->SetPurity(true);
 
 			FGraphNodeCreator<UK2Node_Self> SelfNodeCreator(*Graph);
 			UK2Node_Self* SelfNode = SelfNodeCreator.CreateNode();
@@ -413,8 +413,31 @@ void EnsureCorrectDefaultValueForPin(UEdGraph* Graph, const UK2Node* OriginNode,
 
 			SelfNode->GetPinAt(0)->MakeLinkTo(CastNode->GetCastSourcePin());
 			CastNode->GetCastResultPin()->MakeLinkTo(NewPin);
+			SelfNode->ReconstructNode();
+			CastNode->ReconstructNode();
+
 		}
-	}
+    
+		// For Structs, we create Default MakeNodes if possible
+		if (PinCategory == UEdGraphSchema_K2::PC_Struct) {
+			UScriptStruct* TargetStruct = Cast<UScriptStruct>(NewPin->PinType.PinSubCategoryObject);
+			check(TargetStruct);
+			//TODO skip structs that have native make node for now, initialize only default ones
+			if (!TargetStruct->HasMetaData(TEXT("HasNativeMake"))) {
+				FGraphNodeCreator<UK2Node_MakeStruct> StructNodeCreator(*Graph);
+				UK2Node_MakeStruct * MakeNode = StructNodeCreator.CreateNode();
+				MakeNode->StructType = TargetStruct;
+				MakeNode->NodePosX = OriginNode->NodePosX - MakeNode->NodeWidth - 64;
+				MakeNode->NodePosY = OriginNode->NodePosY - MakeNode->NodeHeight + 64;
+				StructNodeCreator.Finalize();
+				UEdGraphPin** OutPin = MakeNode->GetAllPins().FindByPredicate([](UEdGraphPin* Pin) {
+					return Pin->Direction == EEdGraphPinDirection::EGPD_Output;
+				});
+				check(OutPin != nullptr);
+				(*OutPin)->MakeLinkTo(NewPin);
+			}
+		}
+  }
 }
 
 void DefineCustomFunctionFromJson(UEdGraph* Graph, UK2Node_EditablePinBase* FunctionNode, const TSharedPtr<FJsonObject> FunctionObject) {
@@ -462,6 +485,8 @@ void DefineCustomFunctionFromJson(UEdGraph* Graph, UK2Node_EditablePinBase* Func
 			if (ResultNodeExec && NextExec) {
 				NextExec->MakeLinkTo(ResultNodeExec);
 			}
+			ReturnNode->ReconstructNode();
+
 		}
 	}
 }
@@ -707,8 +732,10 @@ void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& B
 			}
 			if (ResultEntryNode != nullptr) {
 				ResultEntryNode->OnUpdateCommentText(TEXT("Function Stub: Implementation not available."));
+				ResultEntryNode->ReconstructNode();
 			}
 		}
+		
 	}
 
 	UWidgetBlueprint* WidgetBlueprint = Cast<UWidgetBlueprint>(Blueprint);

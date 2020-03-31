@@ -268,11 +268,12 @@ protected:
 	/** If we have no static mesh but a decal, then we use this for collision*/
 	UPROPERTY( BlueprintReadOnly, VisibleDefaultsOnly, Category = "Resources" )
 	UBoxComponent* mBoxComponent;
-
+	//MODDING EDIT: Making this Public and BP ReadWrite allows creation of Limited Nodes without custom Amount tracking
+	public:
 	/** How much resources is left in this node */
-	UPROPERTY( SaveGame, Replicated, EditInstanceOnly, BlueprintReadOnly, Category="Resources")
+	UPROPERTY( SaveGame, Replicated, BlueprintReadWrite, Category="Resources")
 	int32 mResourcesLeft;
-
+	protected:
 	/** If true, then we are occupied by something // [Dylan 3/2/2020] - Removed savegame meta */
 	UPROPERTY( ReplicatedUsing = OnRep_IsOccupied, BlueprintReadOnly, Category = "Resources" )
 	bool mIsOccupied;
