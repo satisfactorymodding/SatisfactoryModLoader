@@ -370,6 +370,7 @@ public:
 	void SetStateOnIndex( int32 index, const FSharedInventoryStatePtr& itemState );
 
 	/** The total size of the inventory, when accessing inventory linearly using indices. */
+	MODDING_SHIPPING_FORCEINLINE
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	int32 GetSizeLinear(){ return mInventoryStacks.Num(); }
 
