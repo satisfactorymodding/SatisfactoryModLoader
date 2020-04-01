@@ -1,8 +1,8 @@
 #include "FGAssetGenerator.h"
+#if WITH_EDITOR
 #include "K2Node_MakeArray.h"
 #include "K2Node_MakeMap.h"
 #include "K2Node_MakeSet.h"
-#if WITH_EDITOR
 #include "K2Node_Self.h"
 #include "K2Node_DynamicCast.h" 
 #include "K2Node_MakeStruct.h" 
