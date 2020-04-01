@@ -165,16 +165,22 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 		UPackage* Package = CreateGenericObject(ObjectData, bHasDependents);
 		if (Package != nullptr) {
 			DefinedPackages.Add(Package);
+			if (bHasDependents) {
+				//If somebody depends on us, we need to save compiled package right now
+				TArray<UPackage*> SelfPackageArr;
+				SelfPackageArr.Add(Package);
+				UEditorLoadingAndSavingUtils::SavePackages(SelfPackageArr, false);
+			}
 		}
 	}
-	
-	//Save packages after all assets have been re-created (not just dirty, every package created)
-	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
 
 	//Compile queued blueprints without dependents now
 	SML::Logging::info(TEXT("Flushing compilation queue.."));
 	FBlueprintCompilationManager::FlushCompilationQueueAndReinstance();
 
+	//Save packages after all assets have been re-created (not just dirty, every package created)
+	UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
+	
 	SML::Logging::info(TEXT("Initializing objects.."));
 	
 	//Finish blueprint construction once all dependencies have been defined and saved
