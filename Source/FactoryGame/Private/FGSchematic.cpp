@@ -24,9 +24,9 @@ TArray< FItemAmount > UFGSchematic::GetCost(TSubclassOf< UFGSchematic > inClass)
 TArray< UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mUnlocks; }
 int32 UFGSchematic::GetTechTier(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mTechTier;}
 float UFGSchematic::GetTimeToComplete(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mTimeToComplete; }
-FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass){ return FSlateBrush(); }
-TSubclassOf< UFGSchematic > UFGSchematic::GetDependentOnSchematic(TSubclassOf< UFGSchematic > inClass){ return TSubclassOf<UFGSchematic>(); }
-TArray< TSubclassOf< UFGSchematic > > UFGSchematic::GetAdditionalSchematicDependencies(TSubclassOf< UFGSchematic > inClass){ return TArray<TSubclassOf<UFGSchematic> >(); }
+FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass) { return inClass.GetDefaultObject()->mSchematicIcon; }
+TSubclassOf< UFGSchematic > UFGSchematic::GetDependentOnSchematic(TSubclassOf< UFGSchematic > inClass) { return inClass.GetDefaultObject()->mDependsOnSchematic; }
+TArray< TSubclassOf< UFGSchematic > > UFGSchematic::GetAdditionalSchematicDependencies(TSubclassOf< UFGSchematic > inClass) { return inClass.GetDefaultObject()->mAdditionalSchematicDependencies; }
 bool UFGSchematic::IsRepeatPurchasesAllowed(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 bool UFGSchematic::IsIncludedInBuild(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 void UFGSchematic::PostLoad(){ Super::PostLoad(); }
