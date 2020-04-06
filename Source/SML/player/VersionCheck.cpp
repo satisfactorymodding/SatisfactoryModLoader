@@ -1,22 +1,20 @@
 #include "VersionCheck.h"
 #include "mod/hooking.h"
 #include "FGGameMode.h"
-#include "UnrealEngine.h"
 #include "util/Logging.h"
 #include "mod/ModHandler.h"
 #include "SatisfactoryModLoader.h"
 #include "Base64.h"
-#include "GameFramework/GameSession.h"
-#include "Object.h"
 #include "Json.h"
+#include "util/FuncNames.h"
 
-UKickReasonAttachment* UKickReasonAttachment::Get(AGameModeBase* actor) {
-	UKickReasonAttachment* attachment = actor->FindComponentByClass<UKickReasonAttachment>();
-	if (attachment == nullptr) {
-		attachment = NewObject<UKickReasonAttachment>(actor, TEXT("SML_KickAttachment"));
-		attachment->RegisterComponent();
+UKickReasonAttachment* UKickReasonAttachment::Get(AGameModeBase* Actor) {
+	UKickReasonAttachment* Attachment = Actor->FindComponentByClass<UKickReasonAttachment>();
+	if (Attachment == nullptr) {
+		Attachment = NewObject<UKickReasonAttachment>(Actor, TEXT("SML_KickAttachment"));
+		Attachment->RegisterComponent();
 	}
-	return attachment;
+	return Attachment;
 }
 
 class FunctionProto {
@@ -29,50 +27,52 @@ public:
 };
 
 FString CreateModListString() {
-	//terribly inefficient due to multiple string copying and conversion, oh well.
-	SML::Mod::FModHandler& modHandler = SML::getModHandler();
-	FString resultString;
-	TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+	SML::Mod::FModHandler& ModHandler = SML::getModHandler();
+	FString ResultString;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&ResultString);
 	FJsonSerializer Serializer;
-	TSharedRef<FJsonObject> modListObject = MakeShareable(new FJsonObject());
-	for (const FString& modid : modHandler.getLoadedMods()) {
-		const SML::Mod::FModInfo& info = modHandler.getLoadedMod(modid).modInfo;
-		modListObject->SetStringField(modid, info.version.string());
+	TSharedRef<FJsonObject> ModListObject = MakeShareable(new FJsonObject());
+	for (const FString& Modid : ModHandler.getLoadedMods()) {
+		const SML::Mod::FModInfo& Info = ModHandler.getLoadedMod(Modid).modInfo;
+		ModListObject->SetStringField(Modid, Info.version.string());
 	}
-	Serializer.Serialize(modListObject, writer);
-	return resultString;
+	Serializer.Serialize(ModListObject, Writer);
+	return ResultString;
 }
 
 void CheckModListString(const FString& modListString, FString& failureReason) {
-	TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(modListString);
+	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(modListString);
 	FJsonSerializer Serializer;
-	TSharedPtr<FJsonObject> modListObject;
-	if (!Serializer.Deserialize(reader, modListObject)) {
+	TSharedPtr<FJsonObject> ModListObject;
+	if (!Serializer.Deserialize(Reader, ModListObject)) {
 		failureReason = TEXT("Failed to parse mod list info json");
 		return;
 	}
-	SML::Mod::FModHandler& modHandler = SML::getModHandler();
-	TArray<FString> missingMods;
-	for (const FString& loadedModId : modHandler.getLoadedMods()) {
-		if (!modListObject->HasField(loadedModId)) {
-			missingMods.Add(FString::Printf(TEXT("%s: missing"), *loadedModId));
+	SML::Mod::FModHandler& ModHandler = SML::getModHandler();
+	TArray<FString> MissingMods;
+	for (const FString& loadedModId : ModHandler.getLoadedMods()) {
+		if (!ModListObject->HasField(loadedModId)) {
+			MissingMods.Add(FString::Printf(TEXT("%s: missing"), *loadedModId));
 		} else {
-			const FVersion& modVersion = FVersion(*modListObject->GetStringField(loadedModId));
-			const FVersion& minModVersion = modHandler.getLoadedMod(loadedModId).modInfo.version;
-			if (modVersion.compare(minModVersion) < 0) {
-				const FString& message = FString::Printf(TEXT("%s: required at least %s"), *loadedModId, *minModVersion.string());
-				missingMods.Add(message);
+			const FVersion& ModVersion = FVersion(*ModListObject->GetStringField(loadedModId));
+			const FVersion& MinModVersion = ModHandler.getLoadedMod(loadedModId).modInfo.version;
+			if (ModVersion.compare(MinModVersion) < 0) {
+				const FString& Message = FString::Printf(TEXT("%s: required at least %s"), *loadedModId, *MinModVersion.string());
+				MissingMods.Add(Message);
 			}
 		}
 	}
-	if (missingMods.Num() > 0) {
-		failureReason = FString(TEXT("Missing Mods on Client: \n")) += FString::Join(missingMods, TEXT("\n"));
+	if (MissingMods.Num() > 0) {
+		failureReason = FString(TEXT("Missing Mods on Client: \n")) += FString::Join(MissingMods, TEXT("\n"));
 	}
 }
 
-bool Base64Decode(const FString& Source, FString& OutDest) {
-	uint32 ExpectedLength = FBase64::GetDecodedDataSize(Source);
+FString Base64Encode(const FString& Source) {
+	return FBase64::Encode(Source);
+}
 
+bool Base64Decode(const FString& Source, FString& OutDest) {
+	const uint32 ExpectedLength = FBase64::GetDecodedDataSize(Source);
 	TArray<ANSICHAR> TempDest;
 	TempDest.AddZeroed(ExpectedLength + 1);
 	if (!FBase64::Decode(*Source, Source.Len(), reinterpret_cast<uint8*>(TempDest.GetData()))) {
@@ -82,30 +82,41 @@ bool Base64Decode(const FString& Source, FString& OutDest) {
 	return true;
 }
 
-void SML::registerVersionCheckHooks() {
-	SUBSCRIBE_METHOD("?PreLogin@AGameModeBase@@UEAAXAEBVFString@@0AEBUFUniqueNetIdRepl@@AEAV2@@Z", FunctionProto::PreLogin, [](auto& scope, FunctionProto* gm, const FString& Options, const FString& str, const FUniqueNetIdRepl& repl, FString* ErrorMessage) {
-		const int32 SmlModListIndex = Options.Find(TEXT("?SML_ModList="));
-		FString disconnectReason;
-		if (SmlModListIndex != INDEX_NONE) {
-			FString subString = Options.Mid(SmlModListIndex + 13);
-			int32 nextQuestionIndex;
-			if (subString.FindChar('?', nextQuestionIndex)) {
-				subString = subString.Mid(0, nextQuestionIndex);
-			}
-			FString decodedString;
-			if (Base64Decode(subString, decodedString)) {
-				CheckModListString(decodedString, disconnectReason);
-			} else {
-				disconnectReason = TEXT("Malformed Mod List Data");
-			}
-		} else {
-			disconnectReason = TEXT("This server is running Satisfactory Mod Loader, and your client doesn't have it installed.");
+void AddOptionWithValue(FURL& URL, const FString& OptionName, const FString& OptionValue) {
+	const FString OptionDesc = FString::Printf(TEXT("%s=%s"), *OptionName, *OptionValue);
+	URL.AddOption(*OptionDesc);
+}
+
+FString FindOptionValue(const FString& Options, const FString& OptionName) {
+	const FString SearchPrefix = FString::Printf(TEXT("?%s="), *OptionName);
+	const int32 OptionIndex = Options.Find(*SearchPrefix);
+	if (OptionIndex != INDEX_NONE) {
+		FString SubString = Options.Mid(OptionIndex + SearchPrefix.Len());
+		int32 NextQuestionIndex;
+		if (SubString.FindChar('?', NextQuestionIndex)) {
+			SubString = SubString.Mid(0, NextQuestionIndex);
 		}
+		return SubString;
+	}
+	return TEXT("");
+}
+
+void SML::RegisterVersionCheckHooks() {
+	SUBSCRIBE_METHOD(GAME_MODE_PRE_LOGIN_FUNC_DESC, FunctionProto::PreLogin, [](auto& scope, FunctionProto* gm, const FString& Options, const FString& str, const FUniqueNetIdRepl& repl, FString* ErrorMessage) {
+		const FString OptionValue = FindOptionValue(Options, TEXT("SML_ModList"));
+		FString DisconnectReason;
+		if (!OptionValue.IsEmpty()) {
+			FString ModListJsonString;
+			if (Base64Decode(OptionValue, ModListJsonString)) {
+				CheckModListString(ModListJsonString, DisconnectReason);
+			} else DisconnectReason = TEXT("Malformed Mod List Data");
+		} else DisconnectReason = TEXT("This server is running Satisfactory Mod Loader, and your client doesn't have it installed.");
+		
 		AGameModeBase* gameMode = reinterpret_cast<AGameModeBase*>(gm);
 		UKickReasonAttachment* attachment = UKickReasonAttachment::Get(gameMode);
 		attachment->PlayerKickReason.Empty();
-		if (!disconnectReason.IsEmpty()) {	
-			attachment->PlayerKickReason = disconnectReason;
+		if (!DisconnectReason.IsEmpty()) {
+			attachment->PlayerKickReason = DisconnectReason;
 		}
 	});
 	FGameModeEvents::OnGameModePreLoginEvent().AddLambda([](AGameModeBase* gameMode, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) {
@@ -116,10 +127,10 @@ void SML::registerVersionCheckHooks() {
 		}
 	});
 	
-	SUBSCRIBE_METHOD("?Browse@UEngine@@UEAA?AW4Type@EBrowseReturnVal@@AEAUFWorldContext@@UFURL@@AEAVFString@@@Z", FunctionProto::Browse, [](auto& scope, FunctionProto* ptr, FWorldContext& world, FURL& URL, FString& Error) {
+	SUBSCRIBE_METHOD(ENGINE_BROWSE_MAP_FUNC_DESC, FunctionProto::Browse, [](auto& scope, FunctionProto* ptr, FWorldContext& world, FURL& URL, FString& Error) {
 		SML::Logging::info(TEXT("Connecting to URL "), *URL.ToString());
-		const FString& myModList = CreateModListString();
-		const FString& encodedModList = FBase64::Encode(myModList);
-		URL.AddOption(*(FString(TEXT("SML_ModList=")) += encodedModList));
+		const FString MyModListJson = CreateModListString();
+		const FString EncodedModList = Base64Encode(MyModListJson);
+		AddOptionWithValue(URL, TEXT("SML_ModList"), EncodedModList);
 	});
 }

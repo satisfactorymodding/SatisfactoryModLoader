@@ -5,6 +5,7 @@
 #include "FGSchematic.h"
 #include "FGResearchTree.h"
 #include "FGPlayerController.h"
+#include "command/ChatCommandLibrary.h"
 #include "SMLInitMod.generated.h"
 
 UCLASS(Abstract, Blueprintable, HideCategories = ("Actor Tick", Rendering, Replication, Input, Actor, Collision, LOD, Cooking))
@@ -41,4 +42,10 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSubclassOf<UFGResearchTree>> mResearchTrees;
+
+	/**
+	 * List of chat commands to register automatically on startup
+	 */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<TSubclassOf<AChatCommandInstance>> mChatCommands;
 };

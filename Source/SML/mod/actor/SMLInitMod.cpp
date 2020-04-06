@@ -17,6 +17,7 @@ void ASMLInitMod::LoadModContent() {
 			}
 		}
 	}
+	//Add research trees
 	AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
 	for (TSubclassOf<UFGResearchTree> ResearchTree : mResearchTrees) {
 		SML::Logging::debug("Loading research tree ", *UFGResearchTree::GetDisplayName(ResearchTree).ToString(), " of mod ", *this->GetClass()->GetPathName());
@@ -27,4 +28,12 @@ void ASMLInitMod::LoadModContent() {
 	}
 	//Update unlocked trees because new research trees might have been added
 	ResearchManager->UpdateUnlockedResearchTrees();
+	AChatCommandSubsystem* ChatCommandSubsystem = AChatCommandSubsystem::Get(this);
+	if (ChatCommandSubsystem != nullptr && ChatCommandSubsystem->HasAuthority()) {
+		//Register chat commands on server side only
+		for (const TSubclassOf<AChatCommandInstance>& RegistrarEntry : mChatCommands) {
+			SML::Logging::info(TEXT("Registering chat command "), *RegistrarEntry->GetPathName());
+			ChatCommandSubsystem->RegisterCommand(RegistrarEntry);
+		}
+	}
 }

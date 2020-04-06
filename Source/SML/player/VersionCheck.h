@@ -1,6 +1,5 @@
 #pragma once
 
-#include "GameFramework/Actor.h"
 #include "GameFramework/GameMode.h"
 #include "VersionCheck.generated.h"
 
@@ -9,9 +8,9 @@ class UKickReasonAttachment : public UActorComponent {
 	GENERATED_BODY()
 public:
 	FString PlayerKickReason;
-	static UKickReasonAttachment* Get(AGameModeBase* actor);
+	static UKickReasonAttachment* Get(AGameModeBase* Actor);
 };
 
 namespace SML {
-	void registerVersionCheckHooks();
+	void RegisterVersionCheckHooks();
 }

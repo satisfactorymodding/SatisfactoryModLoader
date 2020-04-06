@@ -3,11 +3,11 @@
 #include "FGCharacterPlayer.h"
 
 namespace SML {
-	void initializePlayerComponent();
+	void InitializePlayerComponent();
 	
-    SML_API AFGCharacterPlayer* getPlayerCharacter(const UPlayer* player);
+    SML_API AFGCharacterPlayer* GetPlayerCharacter(const UPlayer* Player);
 
-	SML_API TArray<AFGPlayerController*> getConnectedPlayers(const UWorld* world);
+	SML_API TArray<AFGPlayerController*> GetConnectedPlayers(const UWorld* World);
 
-	SML_API AFGPlayerController* GetPlayerByName(const UWorld* world, const FString& playerName);
+	SML_API AFGPlayerController* GetPlayerByName(const UWorld* World, const FString& PlayerName);
 }

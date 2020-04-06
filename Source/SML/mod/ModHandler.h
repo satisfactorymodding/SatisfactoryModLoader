@@ -54,7 +54,7 @@ namespace SML {
 			TMap<FString, FModContainer*> loadedMods;
 			TArray<FModContainer*> loadedModsList;
 			TArray<FString> loadedModsModIDs;
-			TArray<AActor*> modInitializerActorList;
+			TArray<TWeakObjectPtr<AActor>> modInitializerActorList;
 		public:
 			//we shouldn't be able to copy FModHandler, or move it
 			FModHandler(FModHandler&) = delete; //delete copy constructor
@@ -89,6 +89,7 @@ namespace SML {
 			void LoadModLibraries(const BootstrapAccessors& accessors, TMap<FString, IModuleInterface*>& loadedModules);
 			void PopulateModList(const TMap<FString, IModuleInterface*>& loadedModules);
 
+			void spawnModActors(UWorld* World, bool bIsMenuWorld);
 			void initializeModActors();
 			void postInitializeModActors();
 			void handlePlayerJoin(AFGPlayerController* PlayerController);
@@ -114,8 +115,6 @@ namespace SML {
 			void loadDllMods(const BootstrapAccessors& accessors);
 
 			static void attachLoadingHooks();
-
-			void onMapLoadComplete(UWorld* world, bool isMenuWorld);
 		};
 	};
 };

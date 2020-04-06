@@ -1,9 +1,20 @@
 #pragma once
-#include <string>
 #include <sstream>
 #include "Json.h"
 #include "SatisfactoryModLoader.h"
 #include "GenericPlatform/GenericPlatformFile.h"
+
+#define CALL_VARARG_HANDLER(FunctionName, UserType, args) \
+	__processVararg_##FunctionName(UserType, std::forward<Args>(args)...);
+
+#define DEFINE_VARARG_HANDLER(FunctionName, UserType, Body) \
+	template<typename First, typename ...Args> \
+	void __processVararg_##FunctionName(UserType& Result, First& FirstArg, Args &&...args) { \
+		Body; \
+		__processVararg_##FunctionName(Result, std::forward<Args>(args)...); \
+	} \
+	template <typename ResultParamType> \
+	void __processVararg_##FunctionName(ResultParamType& Result) {}
 
 namespace SML {
 
@@ -40,21 +51,41 @@ namespace SML {
 	SML_API void writeModConfig(FString modid, const TSharedRef<FJsonObject>& config);
 	
 	bool setDefaultValues(const TSharedPtr<FJsonObject>& j, const TSharedPtr<FJsonObject>& defaultValues);
-	
-	template<typename First, typename ...Args>
-	FString formatStr(First &&arg0, Args &&...args) {
+
+	DEFINE_VARARG_HANDLER(formatStr, std::wostringstream, { Result << FirstArg; });
+	template<typename ...Args>
+	FString formatStr(Args &&...args) {
 		std::wostringstream stream;
-		formatInternal(stream, arg0, args...);
+		CALL_VARARG_HANDLER(formatStr, stream, args);
 		return FString(stream.str().c_str());
 	}
 
-	inline void formatInternal(std::wostringstream& str) {}
-
-	template<typename First, typename ...Args>
-	void formatInternal(std::wostringstream& stream, First &&arg0, Args &&...args) {
-		stream << arg0;
-		formatInternal(stream, std::forward<Args>(args)...);
+	DEFINE_VARARG_HANDLER(ArrayOf, TArray<First>, { Result.Add(FirstArg); });
+	
+	/**
+	 * Constructs TArray and fills it with given arguments
+	 */
+	template <typename First, typename ...Args>
+	TArray<First> ArrayOf(Args&& ...VarArgs) {
+		TArray<First> ResultArray;
+		CALL_VARARG_HANDLER(ArrayOf, ResultArray, VarArgs);
+		return ResultArray;
 	}
+
+	DEFINE_VARARG_HANDLER(ArrayOfNullable, TArray<First>, { if (FirstArg != nullptr) Result.Add(FirstArg); });
+	
+	/**
+	 * Constructs TArray and fills it with given arguments
+	 * Only non-nullptr values will be added into the array
+	 * Arguments are expected to be pointers
+	 */
+	template <typename First, typename ...Args>
+	TArray<First> ArrayOfNullable(Args&& ...VarArgs) {
+		TArray<First> ResultArray;
+		CALL_VARARG_HANDLER(ArrayOfNullable, ResultArray, VarArgs);
+		return ResultArray;
+	}
+	
 	
 	template <class FuncType>
 	class FuncDirectoryVisitor : public IPlatformFile::FDirectoryVisitor

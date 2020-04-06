@@ -1,5 +1,5 @@
 #pragma once
 
 namespace SML {
-	void registerMainMenuHooks();
+	void RegisterMainMenuHooks();
 }

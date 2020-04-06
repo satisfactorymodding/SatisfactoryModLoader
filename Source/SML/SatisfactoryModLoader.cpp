@@ -26,11 +26,9 @@
 #include "mod/ModHandler.h"
 #include "util/Console.h"
 #include "player/PlayerUtility.h"
-#include "command/ChatCommandAPI.h"
 #include "command/SMLChatCommands.h"
 #include "player/VersionCheck.h"
 #include "player/MainMenuMixin.h"
-#include "command/SMLDebugCommands.h"
 #include "mod/toolkit/FGAssetDumper.h"
 
 bool checkGameVersion(const long targetVersion) {
@@ -161,15 +159,13 @@ namespace SML {
 		modHandlerPtr->checkDependencies();
 
 		modHandlerPtr->attachLoadingHooks();
-		initializePlayerComponent();
-		registerVersionCheckHooks();
-		registerMainMenuHooks();
+		InitializePlayerComponent();
+		RegisterVersionCheckHooks();
+		RegisterMainMenuHooks();
 		if (getSMLConfig().enableSMLChatCommands) {
 			SML::Logging::info(TEXT("Registering SML chat commands"));
-			SML::ChatCommand::registerSMLChatCommands();
 			if (getSMLConfig().developmentMode) {
 				SML::Logging::info(TEXT("Register SML development commands"));
-				SML::ChatCommand::registerSMLDebugCommands();
 			}
 		}
 

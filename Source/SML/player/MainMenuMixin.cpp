@@ -5,6 +5,7 @@
 #include "Slate.h"
 #include "mod/ModHandler.h"
 #include "SatisfactoryModLoader.h"
+#include "util/FuncNames.h"
 
 TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 	const FSlateFontInfo& fontInfo = FSlateFontInfo(FString(TEXT("Roboto")), 10, EFontHinting::Auto, FFontOutlineSettings());
@@ -53,8 +54,8 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 // So, menu overlay should match both of them and probably any maps that will be added next
 // so all entries will be matched with StartsWith instead of simple equality check
 
-void SML::registerMainMenuHooks() {
-	SUBSCRIBE_METHOD("?LoadComplete@UFGGameInstance@@MEAAXMAEBVFString@@@Z", UFGGameInstance::LoadComplete, [](auto& scope, UFGGameInstance* gameInstance, const float, const FString& mapName) {
+void SML::RegisterMainMenuHooks() {
+	SUBSCRIBE_METHOD(GAME_INSTANCE_LOAD_COMPLETE_FUNC_DESC, UFGGameInstance::LoadComplete, [](auto& scope, UFGGameInstance* gameInstance, const float, const FString& mapName) {
 		UGameViewportClient* viewport = gameInstance->GetWorld()->GetGameViewport();
 		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, SML::GetMenuSceneMapNamePrefix(), CreateMenuInfoTextPanel)
 	});

@@ -120,9 +120,15 @@ template <typename Result, typename C, typename... Args>
 struct CallScope<Result(C::*)(Args...)> : public CallScope<Result(*)(C*, Args...)> {};
 
 template<typename Ret, typename... A>
-class HandlerAfterFunc : public std::function<void(Ret, A...)> {};
+class HandlerAfterFunc {
+public:
+	typedef void Value(const Ret&, A...);
+};
 template<typename... A>
-class HandlerAfterFunc<void, A...> : public std::function<void(A...)> {};
+class HandlerAfterFunc<void, A...> {
+public:
+	typedef void Value(A...);
+};
 
 //Hook invoker for global functions
 template <typename R, typename... A, R(*PMF)(A...)>
@@ -131,13 +137,13 @@ public:
 	typedef CallScope<R(*)(A...)> ScopeType;
 	// mod handler function
 	typedef void HandlerSignature(ScopeType&, A...);
-	typedef void HandlerSignatureAfter(const R&, A...);
+	typedef typename HandlerAfterFunc<R, A...>::Value HandlerSignatureAfter;
 	typedef R HookType(A...);
 	typedef R ReturnType;
 
 	// support arbitrary context for handlers
 	typedef std::function<HandlerSignature> Handler;
-	typedef HandlerAfterFunc<R, A...> HandlerAfter;
+	typedef std::function<HandlerSignatureAfter> HandlerAfter;
 private:
 	static std::vector<Handler>* handlersBefore;
 	static std::vector<HandlerAfter>* handlersAfter;
@@ -146,7 +152,7 @@ public:
 	static R applyCall(A... args) {
 		ScopeType scope(handlersBefore, functionPtr);
 		scope(args...);
-		if (handlersAfter) for (HandlerAfter& handler : * handlersAfter) handler(result, args...);
+		if (handlersAfter) for (HandlerAfter& handler : * handlersAfter) handler(scope.getResult(), args...);
 		return scope.getResult();
 	}
 
@@ -204,12 +210,13 @@ public:
 	typedef CallScope<R(*)(C*, A...)> ScopeType;
 	// mod handler function
 	typedef void HandlerSignature(ScopeType&, C*, A...);
+	typedef typename HandlerAfterFunc<R, C*, A...>::Value HandlerSignatureAfter;
 	typedef R HookType(C*, A...);
 	typedef R ReturnType;
 
 	// support arbitrary context for handlers
 	typedef std::function<HandlerSignature> Handler;
-	typedef HandlerAfterFunc<R, C*, A...> HandlerAfter;
+	typedef std::function<HandlerSignatureAfter> HandlerAfter;
 private:
 	static std::vector<Handler>* handlersBefore;
 	static std::vector<HandlerAfter>* handlersAfter;
@@ -273,7 +280,7 @@ template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
 std::vector<std::function<void(CallScope<R(*)(C*,A...)>&, C*, A...)>>* HookInvoker<R(C::*)(A...), PMF>::handlersBefore = nullptr;
 
 template <typename R, typename C, typename... A, R(C:: * PMF)(A...)>
-std::vector<HandlerAfterFunc<R, C*, A...>>* HookInvoker<R(C::*)(A...), PMF>::handlersAfter = nullptr;
+std::vector<std::function<typename HandlerAfterFunc<R, C*, A...>::Value>>* HookInvoker<R(C::*)(A...), PMF>::handlersAfter = nullptr;
 
 template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
 R(* HookInvoker<R(C::*)(A...), PMF>::functionPtr)(C*,A...) = nullptr;
@@ -282,7 +289,7 @@ template <typename R, typename... A, R(*PMF)(A...)>
 std::vector<std::function<void(CallScope<R(*)(A...)>&, A...)>>* HookInvoker<R(*)(A...), PMF>::handlersBefore = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
-std::vector<HandlerAfterFunc<R, A...>>* HookInvoker<R(*)(A...), PMF>::handlersAfter = nullptr;
+std::vector<std::function<typename HandlerAfterFunc<R, A...>::Value>>* HookInvoker<R(*)(A...), PMF>::handlersAfter = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
 R(* HookInvoker<R(*)(A...), PMF>::functionPtr)(A...) = nullptr;

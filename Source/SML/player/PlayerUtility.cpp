@@ -5,45 +5,46 @@
 #include "Engine.h"
 #include "mod/hooking.h"
 #include "player/component/SMLPlayerComponent.h"
+#include "util/FuncNames.h"
 
 namespace SML {
-	void initializePlayerComponent() {
-		SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](auto& scope, AFGPlayerController* controller) {
-			USMLPlayerComponent* component = NewObject<USMLPlayerComponent>(controller, TEXT("SML_PlayerComponent"));
-			component->RegisterComponent();
-			component->SetNetAddressable();
-			component->SetIsReplicated(true);
+	void InitializePlayerComponent() {
+		SUBSCRIBE_METHOD(PLAYER_CONTROLLER_BEGIN_PLAY_FUNC_DESC, AFGPlayerController::BeginPlay, [](auto& scope, AFGPlayerController* controller) {
+			USMLPlayerComponent* Component = NewObject<USMLPlayerComponent>(controller, TEXT("SML_PlayerComponent"));
+			Component->RegisterComponent();
+			Component->SetNetAddressable();
+			Component->SetIsReplicated(true);
 		});
-		SUBSCRIBE_METHOD("?EnterChatMessage@AFGPlayerController@@IEAAXAEBVFString@@@Z", AFGPlayerController::EnterChatMessage, [](auto& scope, AFGPlayerController* player, const FString& message) {
+		SUBSCRIBE_METHOD(ENTER_CHAT_MESSAGE_FUNC_DESC, AFGPlayerController::EnterChatMessage, [](auto& scope, AFGPlayerController* player, const FString& message) {
 			if (message.StartsWith(TEXT("/"))) {
-				const FString commandLine = message.TrimStartAndEnd().RightChop(1);
-				USMLPlayerComponent* component = USMLPlayerComponent::Get(player);
-				component->HandleChatCommand(commandLine);
+				const FString CommandLine = message.TrimStartAndEnd().RightChop(1);
+				USMLPlayerComponent* Component = USMLPlayerComponent::Get(player);
+				Component->HandleChatCommand(CommandLine);
 				scope.Cancel();
 			}
 		});
 	}
 	
-    SML_API AFGCharacterPlayer* getPlayerCharacter(const UPlayer* player) {
-        return static_cast<AFGCharacterPlayer*>(player->GetPlayerController(nullptr)->GetCharacter());
+    SML_API AFGCharacterPlayer* GetPlayerCharacter(const UPlayer* Player) {
+        return static_cast<AFGCharacterPlayer*>(Player->GetPlayerController(nullptr)->GetCharacter());
     }
 
-	SML_API TArray<AFGPlayerController*> getConnectedPlayers(const UWorld* world) {
-		TArray<AFGPlayerController*> result;
+	SML_API TArray<AFGPlayerController*> GetConnectedPlayers(const UWorld* World) {
+		TArray<AFGPlayerController*> Result;
 		//iterate connected players
-		for (FConstPlayerControllerIterator iterator = world->GetPlayerControllerIterator(); iterator; iterator++) {
+		for (FConstPlayerControllerIterator iterator = World->GetPlayerControllerIterator(); iterator; iterator++) {
 			APlayerController* controller = (*iterator).Get();
 			if (controller == nullptr) continue;
-			result.Add(static_cast<AFGPlayerController*>(controller));
+			Result.Add(static_cast<AFGPlayerController*>(controller));
 		}
-		return result;
+		return Result;
     }
 
-	SML_API AFGPlayerController* GetPlayerByName(const UWorld* world, const FString& playerName) {
-		TArray<AFGPlayerController*> connectedPlayers = getConnectedPlayers(world);
-    	for (AFGPlayerController* controller : connectedPlayers) {
-    		if (controller->PlayerState->GetPlayerName() == playerName) {
-				return controller;
+	SML_API AFGPlayerController* GetPlayerByName(const UWorld* World, const FString& PlayerName) {
+		TArray<AFGPlayerController*> ConnectedPlayers = GetConnectedPlayers(World);
+    	for (AFGPlayerController* Controller : ConnectedPlayers) {
+    		if (Controller->PlayerState->GetPlayerName() == PlayerName) {
+				return Controller;
     		}
     	}
 		return nullptr;
