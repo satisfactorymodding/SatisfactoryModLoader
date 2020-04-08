@@ -3,7 +3,7 @@
 #include "FGConsoleCommandManager.h"
 
 UWorld* UFGConsoleCommandManager::GetWorld() const{ return nullptr; }
-void UFGConsoleCommandManager::MaterialFlowAnalysis(FString recipeName){ }
+void UFGConsoleCommandManager::MaterialFlowAnalysis(FString recipeNames){ }
 void UFGConsoleCommandManager::MaterialLookup(FString itemName){ }
 void UFGConsoleCommandManager::SetSessionName(FString newSessionName){ }
 void UFGConsoleCommandManager::SaveWithNewSessionName(const FString& saveName, const FString& sessionName){ }
