@@ -80,7 +80,7 @@ FString getModIdFromFile(const FString& filePath) {
 	if (FPaths::GetExtension(filePath) == TEXT("dll")) {
 		//UE4-SML-Win64-Shipping, Mod ID is the second piece - name of the module
 		if (modId.StartsWith(TEXT("UE4-")) && modId.EndsWith(TEXT("-Win64-Shipping"))) {
-			return modId.RightChop(4).Left(15);
+			return modId.RightChop(4).LeftChop(15);
 		}
 		//otherwise load it straight with the same name as file name
 		return modId;
