@@ -140,8 +140,8 @@ public:
 	/** This uses the old schematic category enum to add the new object based type category */
 	void MigrateDataToNewSchematicCategory();
 #endif
-
-protected:
+// MODDING EDIT : protected -> public
+public:
 	/** What type of schematic is this. */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	ESchematicType mType;
