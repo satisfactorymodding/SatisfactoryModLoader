@@ -292,7 +292,7 @@ void iterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 				if (!optional) missingDependencies.Add(message);
 				continue;
 			}
-			sortGraph.addEdge(modIndices[selfInfo.modid], modIndices[depInfo.modid]);
+			sortGraph.addEdge(modIndices[depInfo.modid], modIndices[selfInfo.modid]);
 		}
 	}
 }

@@ -3,6 +3,20 @@
 #include "TopologicalSort.h"
 
 template<typename T>
+SML::TopologicalSort::DirectedGraph<T> reverseGraph(const SML::TopologicalSort::DirectedGraph<T>& graph) {
+	SML::TopologicalSort::DirectedGraph<T> result;
+	for (const T& node : graph.orderedNodes) {
+		result.addNode(node);
+	}
+	for (const T& from : graph.orderedNodes) {
+		for (const T& to : graph.edgesFrom(from)) {
+			result.addEdge(to, from);
+		}
+	}
+	return result;
+}
+
+template<typename T>
 void explore(const T& node, const SML::TopologicalSort::DirectedGraph<T>& graph, TArray<T>& sortedResult, TSet<T>& visitedNodes, TSet<T>& expandedNodes) {
 	// Have we been here before?
 	if (visitedNodes.Contains(node)) {
@@ -31,13 +45,14 @@ void explore(const T& node, const SML::TopologicalSort::DirectedGraph<T>& graph,
 
 template<typename T>
 TArray<T> SML::TopologicalSort::topologicalSort(const SML::TopologicalSort::DirectedGraph<T>& graph) {
+	DirectedGraph<T> rGraph = reverseGraph(graph);
 	TArray<T> sortedResult;
 	TSet<T> visitedNodes;
 	// A list of "fully explored" nodes. Leftovers in here indicate cycles in the graph
 	TSet<T> expandedNodes;
 	
-	for (const T& node : graph.orderedNodes) {
-		explore(node, graph, sortedResult, visitedNodes, expandedNodes);
+	for (const T& node : rGraph.orderedNodes) {
+		explore(node, rGraph, sortedResult, visitedNodes, expandedNodes);
 	}
 
 	return sortedResult;
