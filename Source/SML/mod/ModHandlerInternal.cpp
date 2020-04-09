@@ -25,7 +25,7 @@ void finalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
 		const FModLoadingEntry& loadingEntry = loadingEntries[modByIndex[modIndex]];
 		auto dependencies = loadingEntry.modInfo.dependencies;
 		if (dependencies.Find(TEXT("@ORDER:LAST")) != nullptr)
-			modsToMoveInTheEnd.Add(i);
+			modsToMoveInTheEnd.Add(sortedIndices[i]);
 	}
 	for (auto& modIndex : modsToMoveInTheEnd) {
 		sortedIndices.Remove(modIndex);
