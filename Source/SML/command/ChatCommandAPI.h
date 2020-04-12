@@ -6,6 +6,8 @@
 namespace SML {
 	namespace ChatCommand {
 
+		struct FCommandRegistrarEntry;
+
 		/**
 		 * Describes command execution result status
 		 */
@@ -41,6 +43,11 @@ namespace SML {
 			* Will be nullptr if executed by runCommand.
 			*/
 			AFGPlayerController* player;
+
+			/**
+			 * The command entry being executed
+			 */
+			const FCommandRegistrarEntry* Command;
 		};
 
 		/**
@@ -79,9 +86,11 @@ namespace SML {
 			const CommandHandler* commandHandler;
 		};
 
-		TOptional<FCommandRegistrarEntry> getCommandByName(const FString& name);
+		SML_API void PrintCommandUsage(const FCommandData& Data);
 
-		const TArray<FCommandRegistrarEntry>& getRegisteredCommands();
+		SML_API TOptional<FCommandRegistrarEntry> getCommandByName(const FString& name);
+
+		SML_API const TArray<FCommandRegistrarEntry>& getRegisteredCommands();
 
 		/**
 		* Registers a chat command to be called

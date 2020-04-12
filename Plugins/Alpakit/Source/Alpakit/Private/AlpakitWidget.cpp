@@ -2,6 +2,8 @@
 #include "Developer/DesktopPlatform/Public/IDesktopPlatform.h"
 #include "Developer/DesktopPlatform/Public/DesktopPlatformModule.h"
 #include "Editor/UATHelper/Public/IUATHelperModule.h"
+#include "Dom/JsonObject.h"
+#include "SML/SatisfactoryModLoader.h"
 #include "PropertyEditorModule.h"
 
 void SAlpakaWidget::Construct(const FArguments& InArgs)
@@ -159,32 +161,46 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 		// Get list of all cooked assets
 		TArray<FString> FilesToPak;
 		FFileHelper::LoadFileToStringArray(FilesToPak, *PakListPath);
+		FVersion smlVersion = SML::getModLoaderVersion();
+		FString smlVersionString = FString::Printf(TEXT("%d.%d.%d"), smlVersion.major, smlVersion.minor, smlVersion.patch);
 
 		for (FAlpakitMod mod : Settings->Mods)
 		{
+			if (!mod.Enabled) {
+				UE_LOG(LogTemp, Log, TEXT("Skipping %s"), *mod.Name);
+				continue;
+			}
 			// Choose from the cooked list only the current mod assets
 			TArray<FString> ModFilesToPak;
 			FString contentFolder = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / FString::Printf(TEXT("Saved/Cooked/WindowsNoEditor/%s/Content"), FApp::GetProjectName()));
-			FString modCookFolder = (contentFolder / FString::Printf(TEXT("%s"), *mod.Name)).Replace(L"/", L"\\");
+			FString modCookFolder = (contentFolder / FString::Printf(TEXT("%s"), *mod.Name)).Replace(TEXT("/"), TEXT("\\"));
 			UE_LOG(LogTemp, Log, TEXT("%s"), *modCookFolder);
+			bool didOverwrite = false;
 			for (FString file : FilesToPak)
 			{
 				if (file.TrimQuotes().StartsWith(modCookFolder))
 					ModFilesToPak.Add(file);
-				else if (file.TrimQuotes().StartsWith((contentFolder / TEXT("FactoryGame")).Replace(L"/", L"\\")))
+				else if (file.TrimQuotes().StartsWith((contentFolder / TEXT("FactoryGame")).Replace(TEXT("/"), TEXT("\\"))))
 				{
 					for (FString path : mod.OverwritePaths)
 					{
-						FString cookedFilePath = (contentFolder / path.RightChop(6)).Replace(L"/", L"\\"); // Should cut /Game/ from the path. Pls don't cause issues.
+						FString cookedFilePath = (contentFolder / path.RightChop(6)).Replace(TEXT("/"), TEXT("\\")); // Should cut /Game/ from the path. Pls don't cause issues.
 						FString uassetPath = FString::Printf(TEXT("%s.uasset"), *cookedFilePath);
 						FString uexpPath = FString::Printf(TEXT("%s.uexp"), *cookedFilePath);
-						if (file.TrimQuotes().StartsWith(uassetPath) || file.TrimQuotes().StartsWith(uexpPath))
+						if (file.TrimQuotes().StartsWith(uassetPath) || file.TrimQuotes().StartsWith(uexpPath)) {
 							ModFilesToPak.Add(file);
+							didOverwrite = true;
+						}
 					}
 				}
 			}
 
-			FString pakName = FString::Printf(TEXT("%s%s"), *mod.Name, mod.OverwritePaths.Num() == 0 ? TEXT("") : TEXT("_p"));
+			if (ModFilesToPak.Num() == 0) {
+				UE_LOG(LogTemp, Error, TEXT("Mod %s has no files! Check that the mod name is set correctly (it should be the mod folder name, not path, check for typos)"), *mod.Name);
+				continue;
+			}
+
+			FString pakName = FString::Printf(TEXT("%s%s"), *mod.Name, didOverwrite ? TEXT("_p") : TEXT(""));
 
 			// Save it for UnrealPak.exe
 			FString ModPakListPath;
@@ -202,11 +218,37 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			
 			// Setup the pak file path
 			IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-			FString modPakFolder = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / L"Mods");
+			FString modPakFolder = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("Mods"));
 			if (!PlatformFile.DirectoryExists(*modPakFolder))
 				PlatformFile.CreateDirectory(*modPakFolder);
-			FString pakFilePath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / L"Mods" / FString::Printf(L"%s.pak", *pakName));
+			FString localModFolderPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("Mods") / mod.Name);
+			FString pakFilePath = localModFolderPath / FString::Printf(TEXT("%s.pak"), *pakName);
+			FString dataJsonPath = localModFolderPath / TEXT("incomplete-data.json");
 			
+			TSharedPtr<FJsonObject> dataJson = MakeShared<FJsonObject>(FJsonObject());
+			dataJson->SetStringField(TEXT("mod_reference"), mod.Name);
+			dataJson->SetStringField(TEXT("name"), mod.DisplayName);
+			dataJson->SetStringField(TEXT("description"), mod.Description);
+			dataJson->SetStringField(TEXT("version"), mod.Version);
+			dataJson->SetStringField(TEXT("sml_version"), smlVersionString);
+			TArray<TSharedPtr<FJsonValue>> authorsJson;
+			for (FString author : mod.Authors) {
+				authorsJson.Add(MakeShared<FJsonValueString>(FJsonValueString(author)));
+			}
+			dataJson->SetArrayField(TEXT("authors"), authorsJson);
+			TArray<TSharedPtr<FJsonValue>> objectsJson;
+			TSharedPtr<FJsonObject> objectJson = MakeShared<FJsonObject>(FJsonObject());
+			objectJson->SetStringField(TEXT("type"), TEXT("pak"));
+			objectJson->SetStringField(TEXT("path"), FString::Printf(TEXT("%s.pak"), *pakName));
+			objectsJson.Add(MakeShared<FJsonValueObject>(FJsonValueObject(objectJson)));
+			dataJson->SetArrayField(TEXT("objects"), objectsJson);
+
+			FString resultString;
+			TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+			FJsonSerializer Serializer;
+			Serializer.Serialize(dataJson.ToSharedRef(), writer);
+			FFileHelper::SaveStringToFile(resultString, *dataJsonPath);
+
 			// Run the paker and wait
 			FString FullCommandLine = FString::Printf(TEXT("/c \"\"%s\" %s\""), *UPakPath, *FString::Printf(TEXT("\"%s\" -create=\"%s\""), *pakFilePath, *ModPakListPath));
 			TSharedPtr<FMonitoredProcess> PakingProcess = MakeShareable(new FMonitoredProcess(CmdExe, FullCommandLine, true));
@@ -220,21 +262,14 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 
 			if (Settings->CopyModsToGame) {
 				// Copy to Satisfactory Content/Paks folder
-				PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("mods") / FString::Printf(L"%s.pak", *pakName)), *pakFilePath);
+				PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("mods") / FString::Printf(TEXT("%s.pak"), *pakName)), *pakFilePath);
 				UE_LOG(LogTemp, Log, TEXT("Copied %s to game dir"), *mod.Name);
 			}
 		}
 		if (Settings->StartGame)
 		{
-			FString gamePath = FString::Printf(TEXT("\"%s\""), *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / L"FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe").Replace(L"/", L"\\"));
-			int pathLength = gamePath.Len();
-			char SatisfactoryPath[WINDOWS_MAX_PATH + 5];
-			for (int i = 0; i < pathLength; i++)
-			{
-				SatisfactoryPath[i] = gamePath[i];
-				SatisfactoryPath[i + 1] = '\000';
-			}
-			system(SatisfactoryPath);
+			FString gamePath = FString::Printf(TEXT("\"%s\""), *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe")).Replace(TEXT("/"), TEXT("\\")));
+			system(TCHAR_TO_ANSI(*gamePath));
 		}
 	}
 	else

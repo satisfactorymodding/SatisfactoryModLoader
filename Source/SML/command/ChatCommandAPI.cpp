@@ -5,7 +5,6 @@
 #include "FGRadioactivitySubsystem.h"
 #include "player/component/SMLPlayerComponent.h"
 #include "mod/hooking.h"
-#include "util/Logging.h"
 
 template <typename T>
 inline TArray<T> singleElement(T element) {
@@ -26,7 +25,7 @@ namespace SML {
 		//holds the list of all registered commands
 		static TArray<FCommandRegistrarEntry> registeredCommandsList;
 
-		TOptional<FCommandRegistrarEntry> getCommandByName(const FString& name) {
+		SML_API TOptional<FCommandRegistrarEntry> getCommandByName(const FString& name) {
 			if (!registeredCommands.Contains(name)) {
 				return TOptional<FCommandRegistrarEntry>();
 			}
@@ -34,11 +33,11 @@ namespace SML {
 		}
 		
 		//returns the list of all registered commands
-		const TArray<FCommandRegistrarEntry>& getRegisteredCommands() {
+		SML_API const TArray<FCommandRegistrarEntry>& getRegisteredCommands() {
 			return registeredCommandsList;
 		}
 
-		void registerCommand(const FCommandRegistrarEntry& commandEntry) {
+		SML_API void registerCommand(const FCommandRegistrarEntry& commandEntry) {
 			TArray<FString> allCommandNames = TArray<FString>(commandEntry.aliases);
 			allCommandNames.AddUnique(commandEntry.commandName);
 			//register all command aliases
@@ -58,9 +57,15 @@ namespace SML {
 			component->SendChatMessage(TEXT("Unknown command. Type /help for a list of commands."), FLinearColor::Red);
 		}
 
+		SML_API void PrintCommandUsage(const FCommandData& Data) {
+			USMLPlayerComponent* Component = USMLPlayerComponent::Get(Data.player);
+			Component->SendChatMessage(FString::Printf(TEXT("Usage: %s"), *Data.Command->usage), FLinearColor::Red);
+		}
+
+
 		FString parseArgument(const FString& line, size_t& off);
 
-		EExecutionStatus runChatCommand(const FString& commandLine, AFGPlayerController* player) {
+		SML_API EExecutionStatus runChatCommand(const FString& commandLine, AFGPlayerController* player) {
 			if (commandLine.IsEmpty()) {
 				printCommandNotFound(player);
 				return EExecutionStatus::BAD_ARGUMENTS;
@@ -78,7 +83,7 @@ namespace SML {
 				return EExecutionStatus::BAD_ARGUMENTS;
 			}
 			const FCommandRegistrarEntry& commandEntry = registeredCommands[commandName];
-			const FCommandData commandData{ resultArgArray, player };
+			const FCommandData commandData{ resultArgArray, player, &commandEntry };
 			const EExecutionStatus resultStatus = (*commandEntry.commandHandler)(commandData);
 			return resultStatus;
 		}
@@ -114,7 +119,7 @@ namespace SML {
 			return result;
 		}
 
-		TArray<AFGPlayerController*> parsePlayerName(AFGPlayerController* caller, const FString& name) {
+		SML_API TArray<AFGPlayerController*> parsePlayerName(AFGPlayerController* caller, const FString& name) {
 			UWorld* world = caller != nullptr ? caller->GetWorld() : GWorld;
 			if (name == TEXT("@s")) {
 				//check if caller is null, then return empty vector

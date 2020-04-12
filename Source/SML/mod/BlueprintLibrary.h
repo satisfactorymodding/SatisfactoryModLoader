@@ -11,8 +11,8 @@ class USMLBlueprintLibrary : public UBlueprintFunctionLibrary {
 
 public:
 	static TSharedPtr<FJsonValue> convertUPropToJsonValue(UProperty* prop, void* ptrToProp);
-	static TSharedPtr<FJsonObject> convertUStructToJsonObject(UStruct* Struct, void* ptrToStruct);
-	static void convertJsonObjectToUStruct(TSharedPtr<FJsonObject> json, UStruct* Struct, void* ptrToStruct);
+	static TSharedPtr<FJsonObject> convertUStructToJsonObject(UStruct* Struct, void* ptrToStruct, bool UsePrettyName = true);
+	static void convertJsonObjectToUStruct(TSharedPtr<FJsonObject> json, UStruct* Struct, void* ptrToStruct, bool UsePrettyName = true);
 	static void convertJsonValueToUProperty(TSharedPtr<FJsonValue> json, UProperty* prop, void* ptrToProp);
 
 	/**
@@ -64,6 +64,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SML", CustomThunk, meta = (CustomStructureParam = "Config"))
 	static void SaveConfig(const FString& modid, UProperty* Config);
 
+
 	/**
 	 * Loads the config for the given modid to the given struct.
 	 * Additional config entries not mapped to the struct are just ignored.
@@ -105,5 +106,48 @@ public:
 		config = SML::readModConfig(modid, config.ToSharedRef());
 
 		convertJsonObjectToUStruct(config, Struct->Struct, StructPtr);
+	}
+
+	UFUNCTION(BlueprintCallable, Category = "SML", CustomThunk, meta = (CustomStructureParam = "Structure"))
+		static void GetStructAsJson(UPARAM(ref)FString &String, bool  UsePretty, UProperty *Structure);
+
+	DECLARE_FUNCTION(execGetStructAsJson)
+	{
+		bool UsePretty;
+
+		PARAM_PASSED_BY_REF(String, UStrProperty, FString);
+		Stack.StepCompiledIn<UBoolProperty>(&UsePretty);
+		Stack.Step(Stack.Object, NULL);
+
+		UStructProperty* StructureProperty = ExactCast<UStructProperty>(Stack.MostRecentProperty);
+
+		void* StructurePtr = Stack.MostRecentPropertyAddress;
+
+		P_FINISH;
+		InternalGetStructAsJson(StructureProperty, StructurePtr, String, UsePretty);
+	}
+	static void InternalGetStructAsJson(UStructProperty *Structure, void * StructurePtr, FString &String, bool UsePretty = false);
+
+
+	UFUNCTION(BlueprintCallable, Category = "SML", CustomThunk, meta = (CustomStructureParam = "Structure"))
+		static void StructfromJson(const FString& String,  bool UsePrety, UPARAM(ref) UProperty*& Structure);
+
+	DECLARE_FUNCTION(execStructfromJson) {
+		FString String;
+		bool UsePretty;
+		Stack.StepCompiledIn<UStrProperty>(&String);
+		Stack.StepCompiledIn<UBoolProperty>(&UsePretty);
+		Stack.Step(Stack.Object, NULL);
+
+		UStructProperty* Struct = ExactCast<UStructProperty>(Stack.MostRecentProperty);
+		void* StructPtr = Stack.MostRecentPropertyAddress;
+
+		P_FINISH;
+
+		TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(*String);
+		FJsonSerializer Serializer;
+		TSharedPtr<FJsonObject> result;
+		Serializer.Deserialize(reader, result);
+		convertJsonObjectToUStruct(result, Struct->Struct, StructPtr, UsePretty);
 	}
 };

@@ -252,9 +252,11 @@ public:
 	UFUNCTION(BlueprintPure, Category="FactoryGame|Online")
 	EJoinSessionState GetCurrentJoinSessionState() const;
 protected:
+public:
+	//MODDING EDIT
 	// Called when a map has loaded properly in Standalone
 	virtual void LoadComplete( const float loadTime, const FString& mapName ) override;
-
+protected:
 	/** Called after we have destroyed a old session for joining a new session */
 	virtual void OnDestroySessionComplete_JoinSession( FName gameSessionName, bool wasSuccessful );
 

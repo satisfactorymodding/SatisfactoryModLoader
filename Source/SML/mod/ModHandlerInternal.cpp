@@ -25,7 +25,7 @@ void finalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
 		const FModLoadingEntry& loadingEntry = loadingEntries[modByIndex[modIndex]];
 		auto dependencies = loadingEntry.modInfo.dependencies;
 		if (dependencies.Find(TEXT("@ORDER:LAST")) != nullptr)
-			modsToMoveInTheEnd.Add(i);
+			modsToMoveInTheEnd.Add(sortedIndices[i]);
 	}
 	for (auto& modIndex : modsToMoveInTheEnd) {
 		sortedIndices.Remove(modIndex);
@@ -80,7 +80,7 @@ FString getModIdFromFile(const FString& filePath) {
 	if (FPaths::GetExtension(filePath) == TEXT("dll")) {
 		//UE4-SML-Win64-Shipping, Mod ID is the second piece - name of the module
 		if (modId.StartsWith(TEXT("UE4-")) && modId.EndsWith(TEXT("-Win64-Shipping"))) {
-			return modId.RightChop(4).Left(15);
+			return modId.RightChop(4).LeftChop(15);
 		}
 		//otherwise load it straight with the same name as file name
 		return modId;
@@ -292,7 +292,7 @@ void iterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 				if (!optional) missingDependencies.Add(message);
 				continue;
 			}
-			sortGraph.addEdge(modIndices[selfInfo.modid], modIndices[depInfo.modid]);
+			sortGraph.addEdge(modIndices[depInfo.modid], modIndices[selfInfo.modid]);
 		}
 	}
 }

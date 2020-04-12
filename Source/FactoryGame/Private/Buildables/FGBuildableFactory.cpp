@@ -9,6 +9,7 @@ bool AFGBuildableFactory::GetNetDormancy(const FVector& ViewPos, const FVector& 
 void AFGBuildableFactory::BeginPlay(){ }
 void AFGBuildableFactory::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableFactory::Tick(float dt){ }
+void AFGBuildableFactory::Destroyed(){ }
 void AFGBuildableFactory::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableFactory::GainedSignificance_Implementation(){ }
 void AFGBuildableFactory::LostSignificance_Implementation(){ }

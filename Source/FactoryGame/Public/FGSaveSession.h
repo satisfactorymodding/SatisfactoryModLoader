@@ -155,6 +155,8 @@ public:
 	/** Updates the autosave interval */
 	void SetAutosaveInterval( int32 newInterval );
 
+	/** Returns true if we have called SaveGame this frame */
+	FORCEINLINE bool HasTriggedSaveThisFrame() const { return mPendingSaveWorldHandle.IsValid(); }
 protected:
 	/** Make sure we can get a world easily */
 	class UWorld* GetWorld() const override;

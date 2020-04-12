@@ -26,10 +26,10 @@ public class SML : ModuleRules
             "GameplayTasks",
             "AnimGraphRuntime",
             "Slate", "SlateCore",
-            "Json" });
+            "Json", "PropertyPath" });
 			
 		if (Target.Type == TargetRules.TargetType.Editor) {
-			PublicDependencyModuleNames.AddRange(new string[] {"OnlineBlueprintSupport", "AnimGraph", "UnrealEd", "BlueprintGraph", "Kismet"});
+			PublicDependencyModuleNames.AddRange(new string[] {"OnlineBlueprintSupport", "AnimGraph", "UnrealEd", "BlueprintGraph", "Kismet", "UMGEditor", "MovieScene"});
 		}
 
         PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});

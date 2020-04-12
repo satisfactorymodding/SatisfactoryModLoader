@@ -24,8 +24,8 @@ public:
 	FORCEINLINE TArray< FItemAmount > GetItemsToGive() const { return mItemsToGive; }
 
 	void AddItemsToGive( TArray< FItemAmount > items );
-
-protected:
+// MODDING EDIT protected -> public
+public:
 	/** The items you get from this unlock */
 	UPROPERTY( EditDefaultsOnly )
 	TArray< FItemAmount > mItemsToGive;

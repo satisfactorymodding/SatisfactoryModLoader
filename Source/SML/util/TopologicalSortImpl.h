@@ -3,136 +3,99 @@
 #include "TopologicalSort.h"
 
 template<typename T>
-void reverseGraph(SML::TopologicalSort::DirectedGraph<T>& result, const SML::TopologicalSort::DirectedGraph<T>& graph) {
-	/* Add all the nodes from the original graph. */
-	for (auto& pair : graph.nodes) {
-		const T& nodeValue = pair.Key;
-		result.addNode(nodeValue);
+SML::TopologicalSort::DirectedGraph<T> reverseGraph(const SML::TopologicalSort::DirectedGraph<T>& graph) {
+	SML::TopologicalSort::DirectedGraph<T> result;
+	for (const T& node : graph.orderedNodes) {
+		result.addNode(node);
 	}
-	/* Scan over all the edges in the graph, adding their reverse to the
-	 * reverse graph.
-	 */
-	for (auto& pair : graph.nodes) {
-		const T& node = pair.Key;
-		for (const T& endpoint : graph.edgesFrom(node)) {
-			result.addEdge(endpoint, node);
+	for (const T& from : graph.orderedNodes) {
+		for (const T& to : graph.edgesFrom(from)) {
+			result.addEdge(to, from);
 		}
 	}
-}
-
-template<typename T>
-TArray<T> SML::TopologicalSort::topologicalSort(const SML::TopologicalSort::DirectedGraph<T>& graph) {
-	SML::TopologicalSort::DirectedGraph<T> gRev;
-    reverseGraph(gRev, graph);
-
-	/* Maintain two structures - a set of visited nodes (so that once we've
-	 * added a node to the list, we don't label it again), and a list of
-	 * nodes that actually holds the topological ordering.
-	 */
-	TArray<T> result;
-	TSet<T> visited;
-
-	/* We'll also maintain a third set consisting of all nodes that have
-	 * been fully expanded.  If the graph contains a cycle, then we can
-	 * detect this by noting that a node has been explored but not fully
-	 * expanded.
-	 */
-	TSet<T> expanded;
-
-	/* Fire off a DFS from each node in the graph. */
-	for (auto& pair : gRev.nodes) {
-		const T& node = pair.Key;
-		explore(node, gRev, result, visited, expanded);
-	}
-	/* Hand back the resulting ordering. */
 	return result;
 }
 
 template<typename T>
-void explore(const T& node, const SML::TopologicalSort::DirectedGraph<T>& g, TArray<T>& ordering, TSet<T>& visited, TSet<T>& expanded) {
-	/* Check whether we've been here before.  If so, we should stop the
-	 * search.
-	 */
-	if (visited.Find(node) != nullptr) {
-		/* There are two cases to consider.  First, if this node has
-		 * already been expanded, then it's already been assigned a
-		 * position in the final topological sort and we don't need to
-		 * explore it again.  However, if it hasn't been expanded, it means
-		 * that we've just found a node that is currently being explored,
-		 * and therefore is part of a cycle.  In that case, we should report an error.
-		 */
-		if (expanded.Find(node) != nullptr) return;
-		throw SML::TopologicalSort::cycle_detected<T>("Cycle dependency detected in a input graph", node);
-	}
-	/* Mark that we've been here */
-	visited.Add(node);
-	/* Recursively explore all of the node's predecessors. */
-	const TSet<T>& set = g.edgesFrom(node);
-	for (const T& predecessor : set) {
-		explore(predecessor, g, ordering, visited, expanded);
+void explore(const T& node, const SML::TopologicalSort::DirectedGraph<T>& graph, TArray<T>& sortedResult, TSet<T>& visitedNodes, TSet<T>& expandedNodes) {
+	// Have we been here before?
+	if (visitedNodes.Contains(node)) {
+		// And have completed this node before
+		if (expandedNodes.Contains(node)) {
+			// Then we're fine
+			return;
+		}
+		const TSet<T> cycleList = visitedNodes.Difference(expandedNodes);
+		throw SML::TopologicalSort::cycle_detected<T>("There was a cycle detected in the input graph, sorting is not possible", node, cycleList);
 	}
 
-	/* Having explored all of the node's predecessors, we can now add this
-	 * node to the sorted ordering.
-	 */
-	ordering.Add(node);
+	// Visit this node
+	visitedNodes.Add(node);
 
-	/* Similarly, mark that this node is done being expanded. */
-	expanded.Add(node);
+	// Recursively explore inbound edges
+	for (const T& inbound : graph.edgesFrom(node)) {
+		explore(inbound, graph, sortedResult, visitedNodes, expandedNodes);
+	}
+
+	// Add ourselves now
+	sortedResult.Add(node);
+	// And mark ourselves as explored
+	expandedNodes.Add(node);
 }
 
-template <typename T>
-SML::TopologicalSort::DirectedGraph<T>::DirectedGraph() {}
-
 template<typename T>
-SML::TopologicalSort::DirectedGraph<T>::~DirectedGraph() {
-	//delete all created set pointers there
-	for (auto& entry : this->nodes) {
-		delete entry.Value;
+TArray<T> SML::TopologicalSort::topologicalSort(const SML::TopologicalSort::DirectedGraph<T>& graph) {
+	DirectedGraph<T> rGraph = reverseGraph(graph);
+	TArray<T> sortedResult;
+	TSet<T> visitedNodes;
+	// A list of "fully explored" nodes. Leftovers in here indicate cycles in the graph
+	TSet<T> expandedNodes;
+	
+	for (const T& node : rGraph.orderedNodes) {
+		explore(node, rGraph, sortedResult, visitedNodes, expandedNodes);
 	}
+
+	return sortedResult;
 }
 
 template<typename T>
 bool SML::TopologicalSort::DirectedGraph<T>::addNode(const T& node) {
-	if (nodes.Find(node) != nullptr) {
+	if (graph.Contains(node)) {
 		return false;
 	}
-	auto adjacentNodes = new TSet<T>();
-	this->nodes.Add(node, adjacentNodes);
+	orderedNodes.Add(node);
+	graph.Add(node, TSet<T>());
 	return true;
 }
 
 template<typename T>
-bool SML::TopologicalSort::DirectedGraph<T>::addEdge(const T& src, const T& dest) {
-	if (nodes.Find(src) == nullptr ||
-		nodes.Find(dest) == nullptr) {
+bool SML::TopologicalSort::DirectedGraph<T>::addEdge(const T& from, const T& to) {
+	if (!(graph.Contains(from) && graph.Contains(to))) {
 		return false;
 	}
-	(*this->nodes.Find(src))->Add(dest);
+	graph.FindChecked(from).Add(to);
 	return true;
+}
+
+template<typename T>
+void SML::TopologicalSort::DirectedGraph<T>::removeAllReferencesTo(const T& node) {
+	for (const T& otherNode : orderedNodes) {
+		graph.FindChecked(otherNode).Remove(node);
+	}
 }
 
 template<typename T>
 const TSet<T>& SML::TopologicalSort::DirectedGraph<T>::edgesFrom(const T& node) const {
-	check(nodes.Find(node) != nullptr);
-	return *(*this->nodes.Find(node));
+	return graph.FindChecked(node);
 }
 
 template<typename T>
 size_t SML::TopologicalSort::DirectedGraph<T>::size() const {
-	return this->nodes.Num();
+	return orderedNodes.Num();
 }
 
-template<typename T>
-SML::TopologicalSort::DirectedGraph<T>::DirectedGraph(const SML::TopologicalSort::DirectedGraph<T> &src) {
-    for (auto& pair : src.nodes) {
-        const T& nodeValue = pair.first;
-        addNode(nodeValue);
-    }
-    for (auto& pair : src.nodes) {
-        const T& node = pair.first;
-        for (const T& endpoint : src.edgesFrom(node)) {
-            addEdge(node, endpoint);
-        }
-    }
+template <typename T>
+const TArray<T>& SML::TopologicalSort::DirectedGraph<T>::iterator() {
+	return orderedNodes;
 }
+

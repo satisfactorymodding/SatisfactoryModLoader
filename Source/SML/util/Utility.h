@@ -3,10 +3,17 @@
 #include <sstream>
 #include "Json.h"
 #include "SatisfactoryModLoader.h"
-#include "CoreMinimal.h"
 #include "GenericPlatform/GenericPlatformFile.h"
 
 namespace SML {
+
+	inline TCHAR* GetMenuSceneMapNamePrefix() {
+		return TEXT("/Game/FactoryGame/Map/MenuScenes/MenuScene_");
+	}
+
+	inline bool IsMenuMapName(const FString& MapName) {
+		return MapName.StartsWith(GetMenuSceneMapNamePrefix());
+	}
 
 	FString getModConfigFilePath(FString modid);
 

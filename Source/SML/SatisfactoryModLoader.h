@@ -37,6 +37,13 @@ namespace SML {
 		* for allowing you to better debug the runtime
 		*/
 		bool consoleWindow;
+
+		/**
+		 * Dumps all satisfactory assets into the configs folder as json file
+		 * for further import by the editor tools
+		 * Takes some time to complete, and usually you want it for 1 launch only
+		 */
+		bool dumpGameAssets;
 	};
 };
 

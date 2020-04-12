@@ -20,9 +20,9 @@ public:
 	/** Use the Outer Player Controller to get a World.  */
 	virtual UWorld* GetWorld() const override;
 
-	/** Perform a MFA analysis. Output is shown in the log. */
+	/** Perform a MFA analysis on the given recipes (comma separated). Output is shown in the log. */
 	UFUNCTION( Exec )
-	void MaterialFlowAnalysis( FString recipeName );
+	void MaterialFlowAnalysis( FString recipeNames );
 	/** Perform a Material Lookup. Output is shown in the log. */
 	UFUNCTION( Exec )
 	void MaterialLookup( FString itemName );

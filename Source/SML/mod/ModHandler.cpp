@@ -15,6 +15,7 @@
 #include "hooking.h"
 #include "FGPlayerController.h"
 #include "ModHandlerInternal.h"
+#include "FGGameInstance.h"
 
 using namespace SML;
 using namespace Mod;
@@ -148,29 +149,21 @@ void FModHandler::loadMods(const BootstrapAccessors& accessors) {
 	checkStageErrors(TEXT("mod initialization"));
 }
 
-//because current hooking doesn't support const instance methods properly yet
-class MapFindHookProto {
-public: const FString* Find(const FName&) { return nullptr; }
-};
-
-
 void FModHandler::attachLoadingHooks() {
-	SUBSCRIBE_METHOD("?InitGameState@AFGGameMode@@UEAAXXZ", AFGGameMode::InitGameState, [](auto& scope, AFGGameMode* gameMode) {
-		//only call initializers on host worlds
-		SML::Logging::debug(TEXT("AFGGameMode::InitGameState on map "), *gameMode->GetWorld()->GetMapName());
-		if (gameMode->HasAuthority()) {
-			SML::getModHandler().onGameModePostLoad(gameMode);
-			SML::getModHandler().initializeModActors();
-			SML::Logging::info(TEXT("Finished initializing mod actors"));
-		}
+	SUBSCRIBE_METHOD("?ReceivedGameModeClass@AGameState@@UEAAXXZ", AGameStateBase::ReceivedGameModeClass, [](auto& scope, AGameStateBase* gameMode) {
+		UWorld* World = gameMode->GetWorld();
+		const FString MapName = World->GetPathName();
+		SML::Logging::info(TEXT("Initializing on map "), *MapName, TEXT(". Is Menu? "), SML::IsMenuMapName(MapName));
+		SML::getModHandler().onMapLoadComplete(World, SML::IsMenuMapName(MapName));
+		SML::getModHandler().initializeModActors();
+		SML::Logging::info(TEXT("Finished initializing mod actors"));
+	});
+	SUBSCRIBE_METHOD("?LoadComplete@UFGGameInstance@@MEAAXMAEBVFString@@@Z", UFGGameInstance::LoadComplete, [](auto& scope, UFGGameInstance* thisPtr, const float, const FString& MapName) {
+		SML::getModHandler().postInitializeModActors();
+		SML::Logging::info(TEXT("Finished post initializing mod actors"));
 	});
 	SUBSCRIBE_METHOD("?BeginPlay@AFGPlayerController@@UEAAXXZ", AFGPlayerController::BeginPlay, [](auto& scope, AFGPlayerController* controller) {
-		SML::Logging::debug(TEXT("AFGPlayerController::BeginPlay on "), GetData(controller->GetWorld()->GetMapName()));
-		//only call initializers on host worlds
-		AFGGameMode* gameMode = static_cast<AFGGameMode*>(controller->GetWorld()->GetGameState<AGameStateBase>()->AuthorityGameMode);
-		if (gameMode != nullptr && gameMode->HasAuthority()) {
-			SML::getModHandler().postInitializeModActors();
-		}
+		SML::getModHandler().handlePlayerJoin(controller);
 	});
 }
 
@@ -178,9 +171,7 @@ UClass* GetActiveLoadClass(const FModPakLoadEntry& entry, bool isMenuWorld) {
 	return isMenuWorld ? static_cast<UClass*>(entry.menuInitClass) : static_cast<UClass*>(entry.modInitClass);
 }
 
-void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
-	UWorld* world = gameMode->GetWorld();
-	const bool isMenuWorld = gameMode->IsMainMenuGameMode();
+void FModHandler::onMapLoadComplete(UWorld* World, bool isMenuWorld) {
 	modInitializerActorList.Empty();
 	for (auto& initializer : modPakInitializers) {
 		UClass* targetClass = GetActiveLoadClass(initializer, isMenuWorld);
@@ -190,7 +181,7 @@ void FModHandler::onGameModePostLoad(AFGGameMode* gameMode) {
 		FVector position = FVector::ZeroVector;
 		FRotator rotation = FRotator::ZeroRotator;
 		FActorSpawnParameters spawnParams{};
-		AActor* actor = world->SpawnActor(targetClass, &position, &rotation, spawnParams);
+		AActor* actor = World->SpawnActor(targetClass, &position, &rotation, spawnParams);
 		modInitializerActorList.Add(actor);
 	}
 }
@@ -209,30 +200,19 @@ bool CallActorFunction(AActor* actor, const FName& functionName) {
 	return true;
 }
 
-void FModHandler::initializeMenuActors() {
-	SML::Logging::info(TEXT("Initializing mod content packages..."));
-	for (AActor* actor : this->modInitializerActorList) {
-		if (actor != nullptr) {
-			ASMLInitMenu* initMenu = Cast<ASMLInitMenu>(actor);
-			if (initMenu) {
-				SML::Logging::info(TEXT("Initializing menu of mod "), *actor->GetClass()->GetPathName());
-				initMenu->Init();
-				SML::Logging::debug(TEXT("Done initializing menu of mod "), *actor->GetClass()->GetPathName());
-			}
-		}
-	}
-	SML::Logging::debug(TEXT("Done initializing mod content packages"));
-}
-
 void FModHandler::initializeModActors() {
 	SML::Logging::info(TEXT("Initializing mod content packages..."));
-	for (AActor* actor : this->modInitializerActorList) {
-		if (actor != nullptr) {
-			ASMLInitMod* initMod = Cast<ASMLInitMod>(actor);
-			if (initMod) {
-				SML::Logging::info(TEXT("Initializing mod "), *actor->GetClass()->GetPathName());
-				initMod->Init();
-				SML::Logging::debug(TEXT("Done initializing mod "), *actor->GetClass()->GetPathName());
+	for (AActor* Actor : this->modInitializerActorList) {
+		if (Actor->IsValidLowLevel()) {
+			if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+				SML::Logging::info(TEXT("Initializing mod "), *Actor->GetClass()->GetPathName());
+				InitMod->Init();
+				SML::Logging::debug(TEXT("Done initializing mod "), *Actor->GetClass()->GetPathName());
+			}
+			if (ASMLInitMenu* InitMenu = Cast<ASMLInitMenu>(Actor)) {
+				SML::Logging::info(TEXT("Initializing menu of mod "), *Actor->GetClass()->GetPathName());
+				InitMenu->Init();
+				SML::Logging::debug(TEXT("Done initializing menu of mod "), *Actor->GetClass()->GetPathName());
 			}
 		}
 	}
@@ -241,18 +221,28 @@ void FModHandler::initializeModActors() {
 
 void FModHandler::postInitializeModActors() {
 	SML::Logging::info(TEXT("Post-initializing mod content packages..."));
-	for (AActor* actor : this->modInitializerActorList) {
-		if (actor != nullptr) {
-			ASMLInitMod* initMod = Cast<ASMLInitMod>(actor);
-			if (initMod) {
-				SML::Logging::info(TEXT("Post-initializing mod "), *actor->GetClass()->GetPathName());
-				initMod->LoadSchematics();
-				initMod->PostInit();
-				SML::Logging::debug(TEXT("Done post-initializing mod "), *actor->GetClass()->GetPathName());
+	for (AActor* Actor : this->modInitializerActorList) {
+		if (Actor->IsValidLowLevel()) {
+			if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+				SML::Logging::info(TEXT("Post-initializing mod "), *Actor->GetClass()->GetPathName());
+				InitMod->LoadModContent();
+				InitMod->PostInit();
+				SML::Logging::debug(TEXT("Done post-initializing mod "), *Actor->GetClass()->GetPathName());
 			}
 		}
 	}
 	SML::Logging::debug(TEXT("Done post-initializing mod content packages"));
+}
+
+void FModHandler::handlePlayerJoin(AFGPlayerController* PlayerController) {
+	SML::Logging::info(TEXT("HandlePlayerJoin "), *PlayerController->PlayerState->GetPlayerName());
+	for (AActor* Actor : this->modInitializerActorList) {
+		if (Actor->IsValidLowLevel()) {
+			if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+				InitMod->PlayerJoined(PlayerController);
+			}
+		}
+	}
 }
 
 void FModHandler::checkDependencies() {

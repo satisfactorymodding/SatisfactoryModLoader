@@ -21,7 +21,7 @@ enum class EFGCrateIconType : uint8
 /**
  * @todo Comment me please!
  */
-UCLASS()
+UCLASS(Blueprintable)
 class FACTORYGAME_API AFGCrate : public AFGInteractActor, public IFGSaveInterface
 {
 	GENERATED_BODY()

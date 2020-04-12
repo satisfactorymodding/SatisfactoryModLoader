@@ -10,7 +10,7 @@
 /**
  * Base for all subsystems we use in the game.
  */
-UCLASS( Abstract, hidecategories = ( Actor, Input, Rendering, "Actor Tick" ) )
+UCLASS( Blueprintable, Abstract, hidecategories = ( Actor, Input, Rendering, "Actor Tick" ) )
 class FACTORYGAME_API AFGSubsystem : public AInfo
 {
 	GENERATED_BODY()

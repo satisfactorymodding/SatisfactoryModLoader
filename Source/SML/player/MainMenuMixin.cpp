@@ -6,17 +6,13 @@
 #include "mod/ModHandler.h"
 #include "SatisfactoryModLoader.h"
 
-class UFGGameInstanceProto {
-public: void LoadComplete(const float loadTime, const FString& mapName) {}
-};
-
 TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 	const FSlateFontInfo& fontInfo = FSlateFontInfo(FString(TEXT("Roboto")), 10, EFontHinting::Auto, FFontOutlineSettings());
 	SML::Mod::FModHandler& modHandler = SML::getModHandler();
 	const int32 modsLoaded = modHandler.getLoadedMods().Num();
 	TArray<FString> resultText;
 	resultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *SML::getModLoaderVersion().string()));
-	resultText.Add(FString::Printf(TEXT("%llu mod(s) loaded"), modsLoaded));
+	resultText.Add(FString::Printf(TEXT("%lu mod(s) loaded"), modsLoaded));
 	resultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), *SML::getBootstrapperVersion().string()));
 	if (SML::getSMLConfig().developmentMode) {
 		resultText.Add(TEXT("Development mode enabled."));
@@ -41,7 +37,7 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
  */
 #define DEFINE_LEVEL_WIDGET_PANEL(Name, MapName, InitializerFunc) \
 	static TSharedPtr<SWidget> CurrentWidgetPtr_##Name; \
-	if (mapName.StartsWith(TEXT(MapName))) { \
+	if (mapName.StartsWith(MapName)) { \
 		TSharedRef<SWidget> ResultWidget = InitializerFunc(); \
 		CurrentWidgetPtr_##Name = ResultWidget; \
 		viewport->AddViewportWidgetContent(ResultWidget, 0); \
@@ -58,9 +54,8 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 // so all entries will be matched with StartsWith instead of simple equality check
 
 void SML::registerMainMenuHooks() {
-	SUBSCRIBE_METHOD("?LoadComplete@UFGGameInstance@@MEAAXMAEBVFString@@@Z", UFGGameInstanceProto::LoadComplete, [](auto& scope, UFGGameInstanceProto* thisPtr, const float f, const FString& mapName) {
-		UFGGameInstance* gameInstance = reinterpret_cast<UFGGameInstance*>(thisPtr);
+	SUBSCRIBE_METHOD("?LoadComplete@UFGGameInstance@@MEAAXMAEBVFString@@@Z", UFGGameInstance::LoadComplete, [](auto& scope, UFGGameInstance* gameInstance, const float, const FString& mapName) {
 		UGameViewportClient* viewport = gameInstance->GetWorld()->GetGameViewport();
-		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, "/Game/FactoryGame/Map/MenuScenes/MenuScene_", CreateMenuInfoTextPanel)
+		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, SML::GetMenuSceneMapNamePrefix(), CreateMenuInfoTextPanel)
 	});
 }

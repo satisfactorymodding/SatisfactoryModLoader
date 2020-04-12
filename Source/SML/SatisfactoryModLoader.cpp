@@ -30,6 +30,8 @@
 #include "command/SMLChatCommands.h"
 #include "player/VersionCheck.h"
 #include "player/MainMenuMixin.h"
+#include "command/SMLDebugCommands.h"
+#include "mod/toolkit/FGAssetDumper.h"
 
 bool checkGameVersion(const long targetVersion) {
 	const FString& buildVersion = FString(FApp::GetBuildVersion());
@@ -61,6 +63,7 @@ void parseConfig(const TSharedRef<FJsonObject>& json, SML::FSMLConfiguration& co
 	config.developmentMode = json->GetBoolField(TEXT("developmentMode"));
 	config.debugLogOutput = json->GetBoolField(TEXT("debug"));
 	config.consoleWindow = json->GetBoolField(TEXT("consoleWindow"));
+	config.dumpGameAssets = json->GetBoolField(TEXT("dumpGameAssets"));
 }
 
 TSharedRef<FJsonObject> createConfigDefaults() {
@@ -70,6 +73,7 @@ TSharedRef<FJsonObject> createConfigDefaults() {
 	ref->SetBoolField(TEXT("developmentMode"), false);
 	ref->SetBoolField(TEXT("debug"), false);
 	ref->SetBoolField(TEXT("consoleWindow"), false);
+	ref->SetBoolField(TEXT("dumpGameAssets"), false);
 	return ref;
 }
 
@@ -92,7 +96,7 @@ namespace SML {
 	
 	//CL of Satisfactory we want to target
 	//SML will be unable to load in production mode if it doesn't match actual game version
-	extern "C" DLLEXPORT const long targetGameVersion = 117050;
+	extern "C" DLLEXPORT const long targetGameVersion = 118201;
 	
 	//Pointer to the active mod handler object
 	//Initialized early during the process attach
@@ -163,6 +167,10 @@ namespace SML {
 		if (getSMLConfig().enableSMLChatCommands) {
 			SML::Logging::info(TEXT("Registering SML chat commands"));
 			SML::ChatCommand::registerSMLChatCommands();
+			if (getSMLConfig().developmentMode) {
+				SML::Logging::info(TEXT("Register SML development commands"));
+				SML::ChatCommand::registerSMLDebugCommands();
+			}
 		}
 
 		modHandlerPtr->loadDllMods(*bootstrapAccessors);
@@ -189,6 +197,10 @@ namespace SML {
 		modHandlerPtr->loadMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Post Initialization finished!"));
 		flushDebugSymbols();
+		if (getSMLConfig().dumpGameAssets) {
+			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
+			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
+		}
 	}
 
 	SML_API FString getModDirectory() {
