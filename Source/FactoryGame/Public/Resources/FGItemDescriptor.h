@@ -251,8 +251,8 @@ public:
 	/** Readable description of the item */
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( EditCondition = mUseDisplayNameAndDescription, HideEditConditionToggle, MultiLine = true ) )
 	FText mDescription;
-
-protected:
+	//MODDING EDIT: protected -> public
+public:
 	/** Abbreviated name of the item */
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( EditCondition = mUseDisplayNameAndDescription, HideEditConditionToggle ) )
 	FText mAbbreviatedDisplayName;

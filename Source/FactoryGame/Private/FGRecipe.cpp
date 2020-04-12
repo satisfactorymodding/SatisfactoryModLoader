@@ -11,7 +11,21 @@ TArray< FItemAmount > UFGRecipe::GetIngredients(TSubclassOf< UFGRecipe > inClass
 TArray< FItemAmount > UFGRecipe::GetProducts(TSubclassOf< UFGRecipe > inClass, bool allowChildRecipes ){ return inClass.GetDefaultObject()->mProduct;}
 float UFGRecipe::GetManufacturingDuration(TSubclassOf< UFGRecipe > inClass){ return inClass.GetDefaultObject()->mManufactoringDuration;}
 float UFGRecipe::GetManualManufacturingDuration(TSubclassOf< UFGRecipe > inClass){ return inClass.GetDefaultObject()->mManualManufacturingMultiplier;}
-TArray< TSubclassOf< UObject > > UFGRecipe::GetProducedIn(TSubclassOf< UFGRecipe > inClass) {return TArray<TSubclassOf<UObject> >(); }
+TArray< TSubclassOf< UObject > > UFGRecipe::GetProducedIn(TSubclassOf< UFGRecipe > inClass) {
+	TArray<TSubclassOf<UObject>>   out;
+	TArray<TSoftClassPtr<UObject>> In = inClass.GetDefaultObject()->mProducedIn;
+	if (In.Num() > 0)
+	{
+		for (int j = 0; j < In.Num(); j++)
+		{
+			TSubclassOf<UObject> obj = In[j].LoadSynchronous();
+			out.Add(obj);
+		}
+		return out;
+	}
+	else
+		return TArray<TSubclassOf<UObject>>(); 
+}
 bool UFGRecipe::IsRecipeAffordable( AFGCharacterPlayer* player, TSubclassOf<  UFGRecipe > recipe){ return bool(); }
 void UFGRecipe::SortByName(TArray< TSubclassOf< UFGRecipe > >& recipes){ }
 TSubclassOf< class UFGItemDescriptor > UFGRecipe::GetDescriptorForRecipe(TSubclassOf<  UFGRecipe > recipe){ return TSubclassOf<class UFGItemDescriptor>(); }
