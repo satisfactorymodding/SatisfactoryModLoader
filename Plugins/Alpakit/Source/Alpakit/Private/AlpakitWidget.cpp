@@ -163,6 +163,8 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 		FFileHelper::LoadFileToStringArray(FilesToPak, *PakListPath);
 		FVersion smlVersion = SML::getModLoaderVersion();
 		FString smlVersionString = FString::Printf(TEXT("%d.%d.%d"), smlVersion.major, smlVersion.minor, smlVersion.patch);
+		int modsCopied = 0;
+		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
 		for (FAlpakitMod mod : Settings->Mods)
 		{
@@ -217,7 +219,6 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			FFileHelper::SaveStringArrayToFile(ModFilesToPak, *ModPakListPath);
 			
 			// Setup the pak file path
-			IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 			FString modPakFolder = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("Mods"));
 			if (!PlatformFile.DirectoryExists(*modPakFolder))
 				PlatformFile.CreateDirectory(*modPakFolder);
@@ -261,15 +262,48 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			UE_LOG(LogTemp, Log, TEXT("Packed %s"), *mod.Name);
 
 			if (Settings->CopyModsToGame) {
-				// Copy to Satisfactory Content/Paks folder
-				PlatformFile.CopyFile(*FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("mods") / FString::Printf(TEXT("%s.pak"), *pakName)), *pakFilePath);
+				modsCopied++;
+				FString gameModsDir = FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("mods"));
+				if (!FPaths::DirectoryExists(gameModsDir)) {
+					PlatformFile.CreateDirectoryTree(*gameModsDir);
+				}
+				// Copy to Satisfactory mods folder
+				PlatformFile.CopyFile(*(gameModsDir / FString::Printf(TEXT("%s.pak"), *pakName)), *pakFilePath);
 				UE_LOG(LogTemp, Log, TEXT("Copied %s to game dir"), *mod.Name);
+			}
+		}
+		if (Settings->CopyModsToGame && modsCopied > 0) {
+			// Enable SML developmentMode
+			FString gameConfigDir = FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("configs"));
+			FString smlConfigFile = gameConfigDir / TEXT("SML.cfg");
+			if (!FPaths::DirectoryExists(*gameConfigDir)) {
+				PlatformFile.CreateDirectoryTree(*gameConfigDir);
+			}
+			
+			TSharedPtr<FJsonObject> smlCfg = MakeShared<FJsonObject>(FJsonObject());
+			if (FPaths::FileExists(smlConfigFile)) {
+				FString contents;
+				FFileHelper::LoadFileToString(contents, *smlConfigFile);
+
+				TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(*contents);
+				FJsonSerializer Serializer;
+				Serializer.Deserialize(reader, smlCfg);
+
+			}
+			if (!smlCfg->HasField(TEXT("developmentMode")) || !smlCfg->GetBoolField(TEXT("developmentMode"))) {
+				smlCfg->SetBoolField(TEXT("developmentMode"), true);
+				
+				FString resultString;
+				TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+				FJsonSerializer Serializer;
+				Serializer.Serialize(smlCfg.ToSharedRef(), writer);
+				FFileHelper::SaveStringToFile(resultString, *smlConfigFile);
 			}
 		}
 		if (Settings->StartGame)
 		{
-			FString gamePath = FString::Printf(TEXT("\"%s\""), *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe")).Replace(TEXT("/"), TEXT("\\")));
-			system(TCHAR_TO_ANSI(*gamePath));
+			FString gamePath = *FPaths::ConvertRelativePathToFull(Settings->SatisfactoryGamePath.Path / TEXT("FactoryGame/Binaries/Win64/FactoryGame-Win64-Shipping.exe")).Replace(TEXT("/"), TEXT("\\"));
+			system(TCHAR_TO_ANSI(*FString::Printf(TEXT("start \"\" \"%s\""), *gamePath)));
 		}
 	}
 	else
