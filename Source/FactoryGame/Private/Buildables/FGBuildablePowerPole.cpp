@@ -2,6 +2,7 @@
 
 #include "FGBuildablePowerPole.h"
 #include "FGColoredInstanceMeshProxy.h"
+
 AFGBuildablePowerPole::AFGBuildablePowerPole(){
 	// MODDING EDIT: Objects appear to have this without it being added for us -> Adding it here.
 	mMeshComponentProxy = CreateOptionalDefaultSubobject<UFGColoredInstanceMeshProxy>(FName("PoleMeshProxy")); mMeshComponentProxy->SetupAttachment(RootComponent);

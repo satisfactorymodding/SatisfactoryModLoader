@@ -39,6 +39,15 @@ public:
 	FORCEINLINE ~UFGUseState_Collecting() = default;
 };
 
+//State that an item pickup can be in
+UENUM( BlueprintType )
+enum class EItemState :uint8
+{
+	ES_SEED			UMETA( DisplayName = "Seed" ),
+	ES_NORMAL		UMETA( DisplayName = "Normal" ),
+	ES_MAX			UMETA( Hidden )
+};
+
 /**
  * @todo: This looks like it should be a subclass of FGInteractActor
  */
@@ -53,6 +62,7 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void Serialize( FArchive& ar ) override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason) override;
 	//~ End UObject interface
 
 	// Begin IFGSaveInterface
@@ -94,8 +104,12 @@ public:
 	bool PickupByAmount( int32 amount = 1 );
 	
 	/** Multicast to everyone so picking up clients can see effects */
-	UFUNCTION(BlueprintImplementableEvent,BlueprintCosmetic)
+	UFUNCTION( BlueprintImplementableEvent,BlueprintCosmetic )
 	void PlayPickupEffect();
+
+	/** Multicast to everyone so picking up clients can see effects */
+	UFUNCTION( Unreliable, NetMulticast )
+	void Multicast_PlayPickupEffect();
 
 	/** Returns the normalized progress until collection is complete */
 	UFUNCTION( BlueprintCallable, Category = "Pickup" )
@@ -110,6 +124,40 @@ public:
 	FORCEINLINE FInventoryStack GetPickupItems() const{ return mPickupItems; }
 
 	FORCEINLINE const TSubclassOf< class UFGItemDescriptor >& GetPickupItemClass() const { return mPickupItems.Item.ItemClass; }
+
+	/** Get the respawn time in days*/
+	UFUNCTION( BlueprintPure, Category = "Pickup" )
+	FORCEINLINE int32 GetRespawnTimeInDays() const{ return mRespawnTimeInDays; }
+
+	/** Sets new items */
+	void RespawnItems();
+
+	/** Clears any items this pickup has */
+	UFUNCTION( BlueprintCallable, Category = "Pickup" )
+	void ClearPickup();
+
+	/** Plants this pickup */
+	UFUNCTION( BlueprintCallable, Category = "Pickup" )
+	void PlantPickup();
+
+	/** Updates the state of the item  */
+	void Grow();
+
+	/** Returns the state of this item pickup */
+	UFUNCTION( BlueprintPure, Category = "Pickup" )
+	FORCEINLINE EItemState GetItemState() const{ return mItemState; }
+
+	/** Returns amount of items we have saved that this pickup should give */
+	UFUNCTION( BlueprintPure, Category = "Pickup" )
+	FORCEINLINE int32 GetSavedNumItems() const{ return mSavedNumItems; }
+	
+	/** Called when whe have changed something and want to do a visual update */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Pickup" )
+	void UpdateVisuals();
+
+	/** Should this item be destroyed on pickup b*/
+	UFUNCTION( BlueprintPure, Category = "Pickup" )
+	FORCEINLINE bool GetDestroyOnPickup() const{ return mDestroyOnPickup; }
 protected:
 	/**
 	* SERVER and Client picking up: Called right after this item is added to the players inventory, for GameplayEffects.
@@ -136,6 +184,10 @@ private:
 	/** Replicated and set when we are picked up */
 	UFUNCTION()
 	void OnRep_PickedUp();
+
+	/** Replicated and set when we are picked up */
+	UFUNCTION()
+	void OnRep_StateUpdated();
 
 	// Handle any radioactive materials.
 	void UpdateRadioactivity();
@@ -168,6 +220,34 @@ protected:
 	/** The ak event to post for the sound  */
 	UPROPERTY( EditDefaultsOnly, Category = "AkComponent" )
 	class UAkAudioEvent* mAudioEvent;
+private:
+	/** How many days before item can respawn */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	int32 mRespawnTimeInDays;
+
+	/** What day count was the item last updated */
+	UPROPERTY( SaveGame )
+	int32 mUpdatedOnDayNr;
+
+	/** Current state for this item */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_StateUpdated )
+	EItemState mItemState;
+
+	/** How many days before item has grown from seed */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	int32 mGrowTimeInDays;
+
+	/** Current state for this item */
+	UPROPERTY( SaveGame )
+	int32 mSavedNumItems;
+
+	/** How many respawns are allowed on this item */
+	UPROPERTY( EditDefaultsOnly, Category = "Item" )
+	int32 mMaxRespawns;
+
+	/** How many respawns are allowed on this item */
+	UPROPERTY( SaveGame )
+	int32 mNumRespawns;
 
 public:
 	FORCEINLINE ~AFGItemPickup() = default;

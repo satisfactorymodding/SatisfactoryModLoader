@@ -3,8 +3,8 @@
 #include "FGColoredInstanceManager.h"
 
 UFGColoredInstanceManager::UFGColoredInstanceManager(){ }
-void UFGColoredInstanceManager::OnUnregister(){ Super::OnUnregister(); }
-void UFGColoredInstanceManager::OnRegister(){ Super::OnRegister(); }
+void UFGColoredInstanceManager::OnUnregister(){ Super::OnUnregister();}
+void UFGColoredInstanceManager::OnRegister(){ Super::OnRegister();}
 void UFGColoredInstanceManager::ClearInstances(){ }
 void UFGColoredInstanceManager::AddInstance(const FTransform& transform, InstanceHandle& handle, uint8 colorIndex){ }
 void UFGColoredInstanceManager::RemoveInstance(InstanceHandle& handle){ }

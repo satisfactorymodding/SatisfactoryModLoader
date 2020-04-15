@@ -13,7 +13,7 @@ void AFGPoleHologram::CheckClearance(){ }
 void AFGPoleHologram::ResetBuildSteps(){ }
 bool AFGPoleHologram::CheckClearanceForBuildingMesh(UStaticMeshComponent* mesh, const FComponentQueryParams& params){ return bool(); }
 void AFGPoleHologram::SetPoleHeight(float height){ }
-void AFGPoleHologram::SerializeConstructMessage(FArchive& ar){ }
+void AFGPoleHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPoleHologram::ServerPostConstructMessageDeserialization(){ }
 void AFGPoleHologram::OnConstructMessagedDeserialized_Implementation(){ }
 void AFGPoleHologram::OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram){ }

@@ -13,7 +13,6 @@ class FACTORYGAME_API AFGAmbientVolume : public AVolume, public IFGSignificanceI
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	AFGAmbientVolume();
 
 	virtual void BeginPlay() override;

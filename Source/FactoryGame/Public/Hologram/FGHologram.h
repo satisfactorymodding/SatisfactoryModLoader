@@ -76,7 +76,7 @@ public:
 	void DeserializeFromConstructHologramMessage( FConstructHologramMessage& message, class AFGBuildGun* buildGun );
 
 	/** Net Construction Messages */
-	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
 	virtual void ClientPreConstructMessageSerialization() override;
 	virtual void ServerPostConstructMessageDeserialization() override;
 	virtual void OnConstructMessagedDeserialized_Implementation() override;

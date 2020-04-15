@@ -28,10 +28,10 @@ public:
 	/** Returns the schematic that this schematic unlocks */
 	UFUNCTION( BlueprintPure, Category = Unlocks )
 	FORCEINLINE TArray< TSubclassOf< class UFGSchematic > > GetSchematicsToUnlock() const { return mSchematics; }
-// MODDING EDIT: Editor Tools protected -> public
-public:
+
+public: // MODDING EDIT: protected -> public
 	/** The schematics you get from this unlock */
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly ) // MODDING EDIT: BPRW
 	TArray< TSubclassOf< class UFGSchematic > > mSchematics;
 
 

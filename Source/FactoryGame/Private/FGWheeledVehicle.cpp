@@ -4,7 +4,7 @@
 
 void AFGWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 AFGWheeledVehicle::AFGWheeledVehicle(){ }
-void AFGWheeledVehicle::PostInitializeComponents(){ Super::PostInitializeComponents(); }
+void AFGWheeledVehicle::PostInitializeComponents(){ Super::PostInitializeComponents();}
 void AFGWheeledVehicle::BeginPlay(){ }
 void AFGWheeledVehicle::Destroyed(){ }
 void AFGWheeledVehicle::Tick(float dt){ }

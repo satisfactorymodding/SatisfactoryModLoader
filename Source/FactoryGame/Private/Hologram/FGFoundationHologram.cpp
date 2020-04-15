@@ -7,3 +7,4 @@ void AFGFoundationHologram::BeginPlay(){ }
 bool AFGFoundationHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGFoundationHologram::ConfigureSnappedBuilding( AFGBuildable* inBuildable) const{ }
 void AFGFoundationHologram::CheckValidFloor(){ }
+bool AFGFoundationHologram::CanSnapVertically( AFGBuildableFoundation* toFoundation, float dirZ) const{ return bool(); }

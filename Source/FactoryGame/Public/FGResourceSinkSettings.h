@@ -65,6 +65,8 @@ UCLASS( Blueprintable, config = Game, defaultconfig, meta = ( DisplayName = "Res
 class FACTORYGAME_API UFGResourceSinkSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
+public:
+	static const UFGResourceSinkSettings* Get() { return GetDefault<UFGResourceSinkSettings>(); };
 
 #if WITH_EDITOR
 

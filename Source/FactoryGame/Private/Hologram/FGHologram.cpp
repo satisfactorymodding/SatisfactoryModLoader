@@ -11,7 +11,7 @@ void AFGHologram::SetRecipe(TSubclassOf<  UFGRecipe > recipe){ }
 TSubclassOf< class UFGItemDescriptor > AFGHologram::GetItemDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 void AFGHologram::SerializeOntoConstructHologramMessage(FConstructHologramMessage& message){ }
 void AFGHologram::DeserializeFromConstructHologramMessage(FConstructHologramMessage& message,  AFGBuildGun* buildGun){ }
-void AFGHologram::SerializeConstructMessage(FArchive& ar){ }
+void AFGHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGHologram::ClientPreConstructMessageSerialization(){ }
 void AFGHologram::ServerPostConstructMessageDeserialization(){ }
 void AFGHologram::OnConstructMessagedDeserialized_Implementation(){ }

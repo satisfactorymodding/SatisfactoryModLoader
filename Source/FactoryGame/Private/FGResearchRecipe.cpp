@@ -16,6 +16,6 @@ bool UFGResearchRecipe::IsExcludedFromBuild(TSubclassOf<UFGResearchRecipe> inCla
 const TArray<TSubclassOf<class UFGResearchRecipe>> UFGResearchRecipe::GetRewardedResearchRecipes() const{ return TArray<TSubclassOf<class UFGResearchRecipe>>(); }
 const TArray<TSubclassOf<class UFGSchematic>> UFGResearchRecipe::GetRewardedSchematics() const{ return TArray<TSubclassOf<class UFGSchematic>>(); }
 FText UFGResearchRecipe::GetDisplayName() const{ return FText(); }
-void UFGResearchRecipe::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void UFGResearchRecipe::PostLoad(){ Super::PostLoad(); }
+void UFGResearchRecipe::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void UFGResearchRecipe::PostLoad(){ Super::PostLoad();}
 FPrimaryAssetId UFGResearchRecipe::GetPrimaryAssetId() const{ return FPrimaryAssetId(); }

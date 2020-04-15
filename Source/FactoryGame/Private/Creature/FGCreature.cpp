@@ -7,6 +7,7 @@ AFGCreature::AFGCreature(const FObjectInitializer& ObjectInitializer) : Super(Ob
 void AFGCreature::BeginPlay(){ }
 void AFGCreature::PreInitializeComponents(){ }
 void AFGCreature::Tick(float deltaTime){ }
+bool AFGCreature::ShouldSave_Implementation() const{ return bool(); }
 void AFGCreature::Died(AActor* died){ }
 FVector AFGCreature::GetPawnViewLocation() const{ return FVector(); }
 void AFGCreature::StartRotationMovement_Implementation(FRotator targetRotation){ }
@@ -21,3 +22,4 @@ void AFGCreature::SpawnDeathItem_Implementation(){ }
 void AFGCreature::OnRep_TargetRotation(){ }
 void AFGCreature::OnRep_IsEnabled(){ }
 void AFGCreature::SetEnabled(EEnabled enabled){ }
+void AFGCreature::KillOrphanCreature(){ }

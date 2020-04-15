@@ -4,7 +4,7 @@
 
 AFGBuildableWire::AFGBuildableWire(){ }
 void AFGBuildableWire::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGBuildableWire::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGBuildableWire::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGBuildableWire::BeginPlay(){ }
 void AFGBuildableWire::Destroyed(){ }
 int32 AFGBuildableWire::GetDismantleRefundReturnsMultiplier() const{ return int32(); }

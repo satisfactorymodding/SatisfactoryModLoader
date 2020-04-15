@@ -7,6 +7,8 @@ void AFGBuildableTrainPlatformCargo::GetLifetimeReplicatedProps(TArray<FLifetime
 void AFGBuildableTrainPlatformCargo::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableTrainPlatformCargo::BeginPlay(){ }
 void AFGBuildableTrainPlatformCargo::Destroyed(){ }
+bool AFGBuildableTrainPlatformCargo::Factory_PeekOutput_Implementation(const  UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type) const{ return bool(); }
+bool AFGBuildableTrainPlatformCargo::Factory_GrabOutput_Implementation( UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 bool AFGBuildableTrainPlatformCargo::Dock( AFGRailroadVehicle* actor){ return bool(); }
 void AFGBuildableTrainPlatformCargo::Undock(){ }
 void AFGBuildableTrainPlatformCargo::SetIsInLoadMode(bool isInLoadMode){ }

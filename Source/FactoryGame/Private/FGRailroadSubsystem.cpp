@@ -5,7 +5,7 @@
 FTrackGraph::FTrackGraph(){ }
 AFGRailroadSubsystem::AFGRailroadSubsystem(){ }
 void AFGRailroadSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGRailroadSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGRailroadSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGRailroadSubsystem::BeginPlay(){ }
 void AFGRailroadSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGRailroadSubsystem::Tick(float dt){ }
@@ -50,4 +50,5 @@ void AFGRailroadSubsystem::MergeTrackGraphs(int32 first, int32 second){ }
 int32 AFGRailroadSubsystem::CreateTrackGraph(){ return int32(); }
 void AFGRailroadSubsystem::RemoveTrackGraph(int32 graphID){ }
 void AFGRailroadSubsystem::AddTrackToGraph( AFGBuildableRailroadTrack* track, int32 graphID){ }
+void AFGRailroadSubsystem::RemoveTrackFromGraph( AFGBuildableRailroadTrack* track){ }
 int32 AFGRailroadSubsystem::GenerateUniqueTrackGraphID(){ return int32(); }

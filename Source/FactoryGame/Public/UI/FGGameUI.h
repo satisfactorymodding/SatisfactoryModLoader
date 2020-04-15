@@ -165,6 +165,11 @@ public:
 	/** Blueprint event called when resuming the game */
 	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|HUD")
 	void OnResumeGame();
+
+	/** Called when we want to show the quick search */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Quick Search" )
+	void ShowQuickSearch();
+
 protected:
 	// Begin UUserwidget interface
 	virtual FReply NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;

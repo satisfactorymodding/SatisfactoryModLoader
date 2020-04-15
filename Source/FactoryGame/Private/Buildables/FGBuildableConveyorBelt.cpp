@@ -32,5 +32,5 @@ AFGBuildableConveyorBelt* AFGBuildableConveyorBelt::Respline(AFGBuildableConveyo
 void AFGBuildableConveyorBelt::OnUseServerRepInput( AFGCharacterPlayer* byCharacter, int32 itemIndex, int8 repVersion){ }
 bool AFGBuildableConveyorBelt::VerifyDefaults(FString& out_message){ return bool(); }
 void AFGBuildableConveyorBelt::TickItemTransforms(float dt){ }
-void AFGBuildableConveyorBelt::UpdateItemTransformTick(const FConveyorBeltItem& item, TMap<FName, int32>& instanceCounts,  AFGRadioactivitySubsystem* radioactiveSubsystem){ }
+void AFGBuildableConveyorBelt::TickSingleItemTransform(const FConveyorBeltItem& item, TMap< FName, int32 >& instanceCounts,  AFGRadioactivitySubsystem* radioactiveSubsystem){ }
 void AFGBuildableConveyorBelt::GetConveyorMaterials(TArray<UMaterialInterface*, TInlineAllocator<4>>& out_materials){ }

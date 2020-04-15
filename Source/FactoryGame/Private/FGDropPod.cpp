@@ -4,7 +4,7 @@
 
 AFGDropPod::AFGDropPod(){ }
 void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGDropPod::PostLoad(){ Super::PostLoad(); }
+void AFGDropPod::PostLoad(){ Super::PostLoad();}
 void AFGDropPod::BeginPlay(){ }
 void AFGDropPod::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGDropPod::Tick(float DeltaSeconds){ }

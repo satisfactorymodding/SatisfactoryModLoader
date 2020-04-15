@@ -46,7 +46,7 @@ public:
 	// AFGHologram interface
 
 	/** Net Construction Messages */
-	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
 
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;

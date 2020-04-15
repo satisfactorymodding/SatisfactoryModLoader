@@ -18,7 +18,7 @@ bool AFGPipelineHologram::TrySnapToActor(const FHitResult& hitResult){ return bo
 void AFGPipelineHologram::OnInvalidHitResult(){ }
 void AFGPipelineHologram::Scroll(int32 delta){ }
 bool AFGPipelineHologram::CanTakeNextBuildStep() const{ return bool(); }
-void AFGPipelineHologram::SerializeConstructMessage(FArchive& ar){ }
+void AFGPipelineHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPipelineHologram::ClientPreConstructMessageSerialization(){ }
 void AFGPipelineHologram::ServerPostConstructMessageDeserialization(){ }
 void AFGPipelineHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }

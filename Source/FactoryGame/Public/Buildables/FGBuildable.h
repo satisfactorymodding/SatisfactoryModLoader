@@ -206,6 +206,8 @@ public:
 	void PlayDismantleEffects();
 	virtual void OnDismantleEffectFinished();
 
+	class UFGMaterialEffect_Build* GetActiveBuildEffect();
+
 	/** Returns true if this buildable can be sampled */
 	UFUNCTION( BlueprintNativeEvent )
 	bool CanBeSampled() const;
@@ -273,7 +275,15 @@ public:
 	static void SetBuildableDisplayName( TSubclassOf< AFGBuildable > inClass, FText displayName );
 #endif
 
+	/** Called when materials are updated by the buildable subsystem material sharing or when a new color is set */
+	virtual void Native_OnMaterialInstancesUpdated();
+
 protected:
+
+	/** Blueprint event for when materials are updated by the buildable subsystem*/
+	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
+	void OnMaterialInstancesUpdated();
+
 	/** Plays construction sound, override this event to play a custom sound. */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCosmetic, Category = "Buildable|Build Effect" )
 	void PlayConstructSound();
@@ -351,9 +361,12 @@ protected:
 	/** @return true if this building is replicating detailed information about it; false otherwise. */
 	bool IsReplicatingDetails() const { return mReplicateDetails; }
 
-
 	/** Toggles the pending dismantle material on buildable */
 	virtual void TogglePendingDismantleMaterial( bool enabled );
+
+	/** Set the buildable to reevaluate material instances with the buildable subsystem when applying color slot */
+	UFUNCTION( BlueprintCallable, Category="Buildable")
+	void FlagReevaluateMaterialOnColored() { mReevaluateMaterialsWithSubsystem = true; }
 
 	/** Update the color from the current color slot*/
 	UFUNCTION( BlueprintCallable )
@@ -371,6 +384,9 @@ protected:
 
 	/** Adds an entry for a given component mapping to its respective Material Instance Manager. Returns false if it could not add an entry (eg. It already exists or failed to create) */
 	bool AddMaterialInstanceManagerForMaterialName( const FString& lookupName, class UFGFactoryMaterialInstanceManager* materialInstanceManager );
+
+	/** OnDismantle check to see if the buildable subsystem has any BlockedSharing material instance references that were only relevent to this object and remove them from the master material manager map */
+	void CleanUpMaterialInstanceMappingsInSubsystem();
 
 private:
 	/** Create a stat for the buildable */
@@ -431,6 +447,17 @@ protected:
 	UPROPERTY()
 	TMap< FString, class UFGFactoryMaterialInstanceManager* > mMaterialNameToInstanceManager;
 
+	/** 
+	*	Set to true to keep the materials in this buildable from being added to the material instance manager. Uses include buildings that set other material parameters outside of the color params.
+	*	Ex. Pipeline Pumps use a Vertex animation that varies between instances at runtime so it doesn't make sense to attempt to use a universal material instance
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	bool mBlockSharingMaterialInstanceMapping;
+
+	/** Array of mesh elements to selectively block material instancing on. Used in the event that certain buildable components should not attempt to use a shared material instance. */
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Buildable" )
+	TArray< class UMeshComponent* > mExcludeFromMaterialInstancing;
+
 	/** The primary color of this buildable */
 	UPROPERTY( SaveGame, meta = (NoAutoJson = true) )
 	FLinearColor mPrimaryColor;
@@ -456,6 +483,7 @@ protected:
 	UPROPERTY()
 	TSubclassOf< class UFGMaterialEffect_Build > mDismantleEffectTemplate;
 
+	UPROPERTY()
 	UFGMaterialEffect_Build* mActiveBuildEffect = nullptr; //Store the active effect so we can cancel an old one if we need to start a new.
 
 	/** Used to sync and start build effect on buildings when created, but not after creation. Set's to true when creating a building, turns off in the construction effect finish play.*/
@@ -490,6 +518,9 @@ protected:
 
 	/** Flag to indicate whether the dismantle material should be active. Used to being able to activate the material when other effects end (like the build effect) */
 	uint8 mPendingDismantleHighlighted : 1;
+
+	/** Flag for if the buildable undergoes mesh changes and needs to update its shared material instances ( Tex. When a mesh component is added or changed after Native Begin Play */
+	uint8 mReevaluateMaterialsWithSubsystem : 1;
 
 	//@todoGC mHighlight*** only needs to be in the space elevator and hub.
 	/** Name read from config */
@@ -586,6 +617,9 @@ private:
 	/** Caching the shape component once we have gotten it */
 	UPROPERTY()
 	UShapeComponent* mCachedShapeComponent;
+
+	/** Has this buildable created its material dynamic material instances for shared coloring? */
+	bool mHasInitializedMaterialManagers;
 
 public:
 	FORCEINLINE ~AFGBuildable() = default;

@@ -6,5 +6,5 @@ UFGDecorationDescriptor::UFGDecorationDescriptor(){ }
 UStaticMesh* UFGDecorationDescriptor::GetGroundMesh(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 UStaticMesh* UFGDecorationDescriptor::GetMesh1p(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 UStaticMesh* UFGDecorationDescriptor::GetMesh3p(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
-TSubclassOf< class AFGDecorationActor > UFGDecorationDescriptor::GetDecorationActorClass(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<class AFGDecorationActor>(); }
+TSubclassOf< AActor > UFGDecorationDescriptor::GetDecorationActorClass(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<AActor>(); }
 FVector UFGDecorationDescriptor::GetGroundMeshScale(TSubclassOf< UFGItemDescriptor > inClass){ return FVector(); }

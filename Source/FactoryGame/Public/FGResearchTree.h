@@ -10,6 +10,7 @@
 #include "FGResearchTreeNode.h"
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
 #include "IncludeInBuild.h"
+#include "Styling/SlateBrush.h"
 #include "FGResearchTree.generated.h"
 
 /**
@@ -64,8 +65,8 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Research Tree" )
 	static TArray<class UFGAvailabilityDependency *> GetUnlockDependencies( TSubclassOf <UFGResearchTree> inClass );
-	// MODDING EDIT : protected -> public
-public:
+
+public: // MODDING EDIT: protected -> public
 	/** The name to be displayed to the player before the tree is unlocked */
 	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )
 	FText mPreUnlockDisplayName;
@@ -83,7 +84,7 @@ public:
 	FText mPostUnlockDescription;
 
 	/** Icon used when displaying this research tree */
-	UPROPERTY( EditDefaultsOnly, Category = "Research Tree", meta = ( NoAutoJson = true ) )
+	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )
 	FSlateBrush mResearchTreeIcon;
 
 	/** The dependencies that needs to be satisfied before the player can use the tree */

@@ -33,7 +33,7 @@ public:
 	// End AActor Interface
 
 	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
 	virtual void ClientPreConstructMessageSerialization() override;
 	virtual void ServerPostConstructMessageDeserialization() override;
 	// End FGConstructionMessageInterface

@@ -19,7 +19,21 @@
 DECLARE_DELEGATE_ThreeParams( FOnSaveGameComplete, bool, const FText&, void* );
 
 /**
- * Handles serialization for save and load functionality
+ * Handles serialization for save and load functionality in a single session. It does the meat of the bones functionality
+ * of gathering the objects that's required to save the state of the world in a session.
+ *
+ * @todosave: Separate this into a base class UFGSaveBase. As we most likely want to be able to be able to store some persistent
+ * player progression also (like, amount of foliage gathered over all sessions, if you have unlocked some special skin etc). This
+ * save would be nice if it could be done the exact same way. What would differ then is that progression files: "SaveWorldImplementation".
+ *
+ * Most important function is LoadGame and SaveWorldImplementation. Neither of these
+ * should be called directly, but from their respective chains.
+ *
+ * LoadGame comes from: AFGGameMode::InitGameState, and is required to come from there as that before BeginPlay has been called,
+ * but after all objects has been loaded into memory in a map.
+ *
+ * If you want to call SaveWorldImplementation, call SaveGame instead. It will ensure that SaveWorldImplementation is called at end of frame, so that all actors
+ * has been ticked the same amount of times and that we don't half a frame of ticked actors saved.
  */
 UCLASS(Config=Engine)
 class FACTORYGAME_API UFGSaveSession : public UObject
@@ -169,6 +183,9 @@ protected:
 
 	/** Setup the autosave timer */
 	void SetupAutosave();
+	
+	/** Check if we should broadcast an auto save notification and potentially start a new notification timer */
+	void CheckAutoSaveNotificationTimer();
 
 	/**
 	 * Sort the object list so that objects always have their dependencies first
@@ -222,6 +239,12 @@ protected:
 
 	/** Timer holding the autosave timer */
 	FTimerHandle mAutosaveHandle;
+
+	/** Timer holding the autosave notification timer */
+	FTimerHandle mAutosaveNotificationHandle;
+
+	/** How much time there should be left on the auto save timer when the next auto save notification should be broadcasted  */
+	float mNextAutoSaveNotificationTiming;
 
 	/** Delegate that listens for when the save is done */
 	FOnSaveGameComplete mOnSaveCompleteDelegate;

@@ -361,6 +361,8 @@ private:
 
 	/** Adds a track to a graph, performs a merge if the track is connected to another graph. */
 	void AddTrackToGraph( class AFGBuildableRailroadTrack* track, int32 graphID );
+	/** Tries to remove a track from it's current graph, if not part of a graph this does nothing. */
+	void RemoveTrackFromGraph( class AFGBuildableRailroadTrack* track );
 
 	/** Get a new UID for a track graph. */
 	int32 GenerateUniqueTrackGraphID();

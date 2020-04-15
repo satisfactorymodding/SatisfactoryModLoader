@@ -6,7 +6,7 @@ AFGBuildableGeneratorFuel::AFGBuildableGeneratorFuel(){ }
 void AFGBuildableGeneratorFuel::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildableGeneratorFuel::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableGeneratorFuel::BeginPlay(){ }
-void AFGBuildableGeneratorFuel::PostLoad(){ Super::PostLoad(); }
+void AFGBuildableGeneratorFuel::PostLoad(){ Super::PostLoad();}
 void AFGBuildableGeneratorFuel::Factory_Tick(float dt){ }
 void AFGBuildableGeneratorFuel::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
 bool AFGBuildableGeneratorFuel::IsValidFuel(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }

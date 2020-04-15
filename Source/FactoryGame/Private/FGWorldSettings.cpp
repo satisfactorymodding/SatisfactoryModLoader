@@ -12,9 +12,9 @@ void AFGWorldSettings::HandleMapChanged( UWorld* newWorld, EMapChangeType mapCha
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGWorldSettings::AFGWorldSettings(){ }
-void AFGWorldSettings::BeginDestroy(){ Super::BeginDestroy(); }
+void AFGWorldSettings::BeginDestroy(){ Super::BeginDestroy();}
 void AFGWorldSettings::PostActorCreated(){ }
-void AFGWorldSettings::PostLoad(){ Super::PostLoad(); }
+void AFGWorldSettings::PostLoad(){ Super::PostLoad();}
 void AFGWorldSettings::PreInitializeComponents(){ }
 void AFGWorldSettings::NotifyBeginPlay(){ }
 void AFGWorldSettings::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

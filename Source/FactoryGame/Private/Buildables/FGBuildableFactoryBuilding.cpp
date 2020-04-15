@@ -2,12 +2,12 @@
 
 #include "FGBuildableFactoryBuilding.h"
 #include "FGColoredInstanceMeshProxy.h"
+
 FFoundationSideSelectionFlags::FFoundationSideSelectionFlags(){ }
 FFoundationSideSelectionFlags::FFoundationSideSelectionFlags(bool defaults){ }
 FFoundationSideSelectionFlags FFoundationSideSelectionFlags::RotateEdges(int32 steps) const{ return FFoundationSideSelectionFlags(); }
 const FFoundationSideSelectionFlags FFoundationSideSelectionFlags::NoEdges = FFoundationSideSelectionFlags();
 const FFoundationSideSelectionFlags FFoundationSideSelectionFlags::AllEdges = FFoundationSideSelectionFlags();
-// MODDING EDIT: Objects appear to have this without it being added for us -> Adding it here.
 AFGBuildableFactoryBuilding::AFGBuildableFactoryBuilding() {
 	mMeshComponentProxy = CreateOptionalDefaultSubobject<UFGColoredInstanceMeshProxy>(FName("BuildingMeshProxy")); mMeshComponentProxy->SetupAttachment(RootComponent);
 }

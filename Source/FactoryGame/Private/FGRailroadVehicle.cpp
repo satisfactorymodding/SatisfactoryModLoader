@@ -7,7 +7,7 @@ void AFGRailroadVehicle::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 bool AFGRailroadVehicle::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const{ return bool(); }
 void AFGRailroadVehicle::BeginPlay(){ }
 void AFGRailroadVehicle::Destroyed(){ }
-void AFGRailroadVehicle::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGRailroadVehicle::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGRailroadVehicle::Tick(float dt){ }
 bool AFGRailroadVehicle::CanDismantle_Implementation() const{ return bool(); }
 void AFGRailroadVehicle::GainedSignificance_Implementation(){ }

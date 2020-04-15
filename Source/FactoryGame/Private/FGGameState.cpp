@@ -3,7 +3,7 @@
 #include "FGGameState.h"
 
 AFGGameState::AFGGameState(){ }
-void AFGGameState::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGGameState::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGGameState::Tick(float delta){ }
 void AFGGameState::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -31,13 +31,14 @@ void AFGGameState::NotifyPlayerAdded( AFGCharacterPlayer* inPlayer){ }
 void AFGGameState::SendMessageToAllPlayers(TSubclassOf<  UFGMessageBase > inMessage){ }
 void AFGGameState::SendMessageToPlayer(TSubclassOf<  UFGMessageBase > inMessage,  APlayerController* controller){ }
 int32 AFGGameState::GetTotalPlayDuration() const{ return int32(); }
-void AFGGameState::SetupColorSlots(const FColor *mColorSlotsPrimary, const FColor *mColorSlotsSecondary, const  uint8 startINdex, const uint8 writeCount){ }
-void AFGGameState::SetAndReplicateBuildingColorInSlot_Implementation(uint8 slot, FColor pColor, FColor sColor){ }
-bool AFGGameState::SetAndReplicateBuildingColorInSlot_Validate(uint8 slot, FColor pColor, FColor sColor){ return bool(); }
-FColor AFGGameState::GetBuildingColorPrimary(uint8 slot){ return FColor(); }
-FColor AFGGameState::GetBuildingColorSecondary(uint8 slot){ return FColor(); }
+void AFGGameState::SetupColorSlots_Linear(const TArray<FLinearColor>& mColorSlotsPrimary, const TArray<FLinearColor>& mColorSlotsSecondary){ }
+void AFGGameState::Server_SetBuildingColorInSlotLinear_Implementation(uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear){ }
+bool AFGGameState::Server_SetBuildingColorInSlotLinear_Validate(uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear){ return bool(); }
 uint8 AFGGameState::GetNbColorSlotsExposedToPlayers(){ return uint8(); }
-void AFGGameState::OnRep_BuildingColorSlot(){ }
+FLinearColor AFGGameState::GetBuildingColorPrimary_Linear(uint8 slot){ return FLinearColor(); }
+FLinearColor AFGGameState::GetBuildingColorSecondary_Linear(uint8 slot){ return FLinearColor(); }
+void AFGGameState::OnRep_BuildingColorSlotPrimary_Linear(){ }
+void AFGGameState::OnRep_BuildingColorSlotSecondary_Linear(){ }
 void AFGGameState::ClaimPlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ReleasePlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ItemPickedUp(TSubclassOf<  UFGItemDescriptor > itemClass){ }

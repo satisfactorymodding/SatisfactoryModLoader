@@ -17,8 +17,8 @@ void AFGSkySphere::SetupPreviewDelegate(){ }
 #endif 
 AFGSkySphere::AFGSkySphere(){ }
 void AFGSkySphere::PostActorCreated(){ }
-void AFGSkySphere::PostLoad(){ Super::PostLoad(); }
-void AFGSkySphere::BeginDestroy(){ Super::BeginDestroy(); }
+void AFGSkySphere::PostLoad(){ Super::PostLoad();}
+void AFGSkySphere::BeginDestroy(){ Super::BeginDestroy();}
 void AFGSkySphere::UpdatePreview_Implementation(){ }
 FLinearColor AFGSkySphere::GetColorCurveValue(const FRuntimeCurveLinearColor& curve, float time){ return FLinearColor(); }
 float AFGSkySphere::GetFloatCurveValue(const FRuntimeFloatCurve& curve, float time){ return float(); }

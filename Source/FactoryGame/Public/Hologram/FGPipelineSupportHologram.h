@@ -35,7 +35,7 @@ public:
 	// End AFGHologram interface
 
 	// Begin FGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
 	// End FGConstructionMessageInterface
 
 	/** Helper */

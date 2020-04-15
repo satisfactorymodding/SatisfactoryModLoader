@@ -17,10 +17,6 @@ class FACTORYGAME_API UFGConnectionComponent : public USceneComponent, public IF
 {
 	GENERATED_BODY()
 public:
-	// Begin UObject interface
-	virtual void Serialize( FArchive& ar ) override;
-	// End UObject interface
-
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;

@@ -27,6 +27,9 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Pipes|Indicator" )
 	void OnFluidDescriptorSet( TSubclassOf< UFGItemDescriptor > fluidDescriptor );
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Pipes|Indicator" )
+	void OnMaterialInstanceUpdated();
+
 protected:
 	/** Get the pipeline this is indicating status for. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Indicator" )

@@ -6,7 +6,7 @@ void AFGBuildableHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty 
 AFGBuildableHologram::AFGBuildableHologram(){ }
 void AFGBuildableHologram::SetBuildableClass(TSubclassOf<  AFGBuildable > buildableClass){ }
 void AFGBuildableHologram::BeginPlay(){ }
-void AFGBuildableHologram::SerializeConstructMessage(FArchive& ar){ }
+void AFGBuildableHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 bool AFGBuildableHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGBuildableHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGBuildableHologram::ApplyBuildingClearnaceSnapping(FRotator &newRotation, FVector &newLocation, AFGBuildable* snapTarget, FVector traceStart, FVector traceEnd){ return bool(); }

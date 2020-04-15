@@ -18,7 +18,7 @@ bool AFGConveyorBeltHologram::TrySnapToActor(const FHitResult& hitResult){ retur
 void AFGConveyorBeltHologram::Scroll(int32 delta){ }
 void AFGConveyorBeltHologram::GetSupportedScrollModes(TArray<EHologramScrollMode>* out_modes) const{ }
 bool AFGConveyorBeltHologram::CanTakeNextBuildStep() const{ return bool(); }
-void AFGConveyorBeltHologram::SerializeConstructMessage(FArchive& ar){ }
+void AFGConveyorBeltHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGConveyorBeltHologram::ClientPreConstructMessageSerialization(){ }
 void AFGConveyorBeltHologram::ServerPostConstructMessageDeserialization(){ }
 TArray<AFGBuildable*> AFGConveyorBeltHologram::GetAnyConnectedBuildables(){ return TArray<AFGBuildable*>(); }

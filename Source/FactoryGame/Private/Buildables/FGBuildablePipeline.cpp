@@ -12,6 +12,7 @@ void AFGBuildablePipeline::BeginPlay(){ }
 void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipeline::Tick(float dt){ }
 void AFGBuildablePipeline::Factory_Tick(float dt){ }
+void AFGBuildablePipeline::Native_OnMaterialInstancesUpdated(){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeline::LostSignificance_Implementation(){ }
 TSubclassOf< UFGPipeConnectionComponentBase > AFGBuildablePipeline::GetConnectionType_Implementation(){ return TSubclassOf<UFGPipeConnectionComponentBase>(); }
@@ -25,6 +26,7 @@ float AFGBuildablePipeline::GetIndicatorFlowPct() const{ return float(); }
 float AFGBuildablePipeline::GetIndicatorContent() const{ return float(); }
 float AFGBuildablePipeline::GetIndicatorFlow() const{ return float(); }
 TSubclassOf< UFGItemDescriptor > AFGBuildablePipeline::GetFluidDescriptor() const{ return TSubclassOf<UFGItemDescriptor>(); }
+UFGPipelineFlowIndicatorComponent* AFGBuildablePipeline::GetFlowIndicatorComponent() const{ return nullptr; }
 void AFGBuildablePipeline::FlushPipeNetwork(){ }
 void AFGBuildablePipeline::UpdateSounds(){ }
 bool AFGBuildablePipeline::FindBestInidicatorPlacement(FTransform& out_transform){ return bool(); }

@@ -12,7 +12,7 @@ void AFGVehicle::Tick(float dt){ }
 float AFGVehicle::TakeDamage(float DamageAmount,  FDamageEvent const& DamageEvent,  AController* EventInstigator, AActor* DamageCauser){ return float(); }
 void AFGVehicle::DisplayDebug( UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 UPawnMovementComponent* AFGVehicle::GetMovementComponent() const{ return nullptr; }
-void AFGVehicle::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGVehicle::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGVehicle::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGVehicle::GainedSignificance_Implementation(){ }

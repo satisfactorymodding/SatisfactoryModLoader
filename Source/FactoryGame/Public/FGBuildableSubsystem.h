@@ -216,30 +216,44 @@ public:
 	UFUNCTION()
 	void ReplayBuildingEffects();
 
-	/** Check if a mesh component has a material instance manager matching its material */
-	bool HasMaterialInstanceManagerForMaterialInterface( UMaterialInterface* materialInterface );
+	/** Check if a material instance manager exists in the Subsystem TMap
+	 *  @return - True if the lookupName is a key in mFactoryMaterialInstanceManagerMap. False otherwise.
+	 */
+	bool HasMaterialInstanceManagerForMaterialInterface( UMaterialInterface* materialInterface, FString& lookupName );
 
 	/**
 	*	Attempts to get the correct colored material for a supplied factory building material.
 	*	If the material does not exist in the material map, a new dynamic instance is created, filled, and returned.
 	*/
-	class UFGFactoryMaterialInstanceManager* GetMaterialInstanceManagerForMaterialInterface( UMaterialInterface* materialInterface, bool canBeColored = true );
+	class UFGFactoryMaterialInstanceManager* GetOrCreateMaterialManagerForMaterialInterface( UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, bool canBeColored = true );
 
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	void SetColorSlotPrimary( uint8 index, FColor color );
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	void SetColorSlotSecondary( uint8 index, FColor color );
+	/**
+	*	Get the mMaterialInstanceManager TMap of all managers
+	*/
+	const TMap< FString, class UFGFactoryMaterialInstanceManager* >& GetFactoryMaterialInstanceManagerMap() { return mFactoryColoredMaterialMap; }
 
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	FColor GetColorSlotPrimary( uint8 index );
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	FColor GetColorSlotSecondary( uint8 index );
+	/**
+	*	Called on a buildable when it is added to the subsystem to update its materials to utilize pooled DynamicMaterialInstances if they exist for the present factory materials
+	*	If no FactoryMaterialInstanceManager can be matched with the present colorable factory materials on the mesh components on the buildable, a new manager object is created and applied
+	*/
+	void UpdateBuildableMaterialInstances( AFGBuildable* buildable );
 
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	FLinearColor GetColorSlotPrimaryLinear( uint8 index );
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	FLinearColor GetColorSlotSecondaryLinear( uint8 index );
+	/** Will attempt to remove an entry from the material instance manager map. This is called by buildables when they have a*/
+	void RemoveFactoryMaterialInstanceFromMap( const FString& lookupName );
 
+	/** Getters for Color Slots - Now Linear Colors */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
+	FLinearColor GetColorSlotPrimary_Linear( uint8 index );
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
+	FLinearColor GetColorSlotSecondary_Linear( uint8 index);
+
+	/** Settings for Color Slots - Now linear Colors */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
+	void SetColorSlotPrimary_Linear( uint8 index, FLinearColor color );
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
+	void SetColorSlotSecondary_Linear( uint8 index, FLinearColor color );
+
+	/** Returns the number of colorable slots actually available to the the player ( this can be less than BUILDABLE_COLORS_MAX_SLOTS ) */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
 	uint8 GetNbColorSlotsExposedToPlayers() { return mNbPlayerExposedSlots; }
 
@@ -298,12 +312,6 @@ private:
 
 	void AddBuildableMeshInstances( class AFGBuildable* buildable );
 
-	/** 
-	*	Called on a buildable when it is added to the subsystem to update its materials to utilize pooled DynamicMaterialInstances if they exist for the present factory materials 
-	*	If no FactoryMaterialInstanceManager can be matched with the present colorable factory materials on the mesh components on the buildable, a new manager object is created and applied
-	*/
-	void UpdateBuildableMaterialInstances( AFGBuildable* buildable );
-
 	/* Tick all factory buildings, conveyors and conveyor attachments */
 	void TickFactoryActors( float dt );
 
@@ -329,6 +337,8 @@ public:
 	class UFGColoredInstanceManager* GetColoredInstanceManager( class UFGColoredInstanceMeshProxy* proxy );
 
 private:
+	// Allow the Colored instance manager objects created to directly add entries into the FactoryColoredMaterialMap
+	friend class UFGFactoryMaterialInstanceManager;
 
 	/** last used net construction ID. Used to identify pending constructions over network. Will increase ID every constructed building. */
 	FNetConstructionID mLastServerNetConstructionID;
@@ -337,7 +347,10 @@ private:
 	UPROPERTY()
 	TArray< class AFGBuildable* > mBuildables;
 
-	// Begin variables for parallelization
+	/************************************************************************/
+	/* Begin variables for parallelization
+	/************************************************************************/
+	
 	/** This contains all factory tickable buildings except conveyors and splitter/mergers */
 	TArray< class AFGBuildable* > mFactoryBuildings;
 
@@ -374,7 +387,10 @@ private:
 
 	// Track if we need to rebuild the attachments groupings
 	bool mConveyorAttachmentGroupsDirty;
-	// End variables for parallelization
+
+	/************************************************************************/
+	/* End variables for parallelization
+	/************************************************************************/
 
 	/** Hierarchical instances for the factory buildings. */
 	UPROPERTY()
@@ -392,15 +408,24 @@ private:
 	TMap< class UStaticMesh*, class UFGColoredInstanceManager* > mColoredInstances;
 
 	bool mColorSlotsAreDirty = false;
-
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
+	
+	// DEPRECATED - Use Linear Color instead
+	UPROPERTY( SaveGame, VisibleDefaultsOnly, Category = "Customization" )
 	FColor mColorSlotsPrimary[ BUILDABLE_COLORS_MAX_SLOTS ];
 
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
+	// DEPRECATED - Use Linear Color instead
+	UPROPERTY( SaveGame, VisibleDefaultsOnly, Category = "Customization" )
 	FColor mColorSlotsSecondary[ BUILDABLE_COLORS_MAX_SLOTS ];
+
+	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
+	TArray< FLinearColor > mColorSlotsPrimary_Linear;
+
+	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
+	TArray< FLinearColor > mColorSlotsSecondary_Linear;
 
 	uint8 mColorSlotDirty[ BUILDABLE_COLORS_MAX_SLOTS ];
 
+	/** The number of color slots players can adjust/define, this can be less than the total number of color slots actually present */
 	UPROPERTY( EditDefaultsOnly, Category = "Customization" )
 	uint8 mNbPlayerExposedSlots = 16;
 
@@ -408,6 +433,7 @@ private:
 	// This is also used for non-colored materials, for example, the conveyor belt materials so that the same instance can be applied to many different belts
 	UPROPERTY()
 	TMap< FString, class UFGFactoryMaterialInstanceManager* > mFactoryColoredMaterialMap;
+
 
 	/** Begin Fixed Factory Tick Config Parameters */
 	UPROPERTY( config )

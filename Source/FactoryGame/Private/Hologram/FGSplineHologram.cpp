@@ -5,7 +5,7 @@
 AFGSplineHologram::AFGSplineHologram(){ }
 void AFGSplineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGSplineHologram::BeginPlay(){ }
-void AFGSplineHologram::SerializeConstructMessage(FArchive& ar){ }
+void AFGSplineHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGSplineHologram::ClientPreConstructMessageSerialization(){ }
 void AFGSplineHologram::ServerPostConstructMessageDeserialization(){ }
 void AFGSplineHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }

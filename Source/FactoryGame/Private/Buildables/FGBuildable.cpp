@@ -15,7 +15,7 @@ void AFGBuildable::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTra
 AFGBuildable::AFGBuildable(){ 
   RootComponent = CreateDefaultSubobject<USceneComponent>("RootComponent");
 }
-void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGBuildable::OnConstruction(const FTransform& transform){ }
 void AFGBuildable::BeginPlay(){ }
 void AFGBuildable::EndPlay(const EEndPlayReason::Type endPlayReason){ }
@@ -68,6 +68,7 @@ void AFGBuildable::ExecutePlayBuildEffects(){ }
 void AFGBuildable::OnBuildEffectFinished(){ }
 void AFGBuildable::PlayDismantleEffects_Implementation(){ }
 void AFGBuildable::OnDismantleEffectFinished(){ }
+UFGMaterialEffect_Build* AFGBuildable::GetActiveBuildEffect(){ return nullptr; }
 bool AFGBuildable::CanBeSampled_Implementation() const{ return bool(); }
 void AFGBuildable::ShowHighlightEffect(){ }
 void AFGBuildable::RemoveHighlightEffect(){ }
@@ -78,6 +79,7 @@ uint8 AFGBuildable::GetNumPowerConnections() const{ return uint8(); }
 uint8 AFGBuildable::GetNumFactoryConnections() const{ return uint8(); }
 uint8 AFGBuildable::GetNumFactoryOuputConnections() const{ return uint8(); }
 bool AFGBuildable::ShouldBeConsideredForBase_Implementation(){ return bool(); }
+void AFGBuildable::Native_OnMaterialInstancesUpdated(){ }
 void AFGBuildable::PlayConstructSound_Implementation(){ }
 void AFGBuildable::PlayDismantleSound_Implementation(){ }
 void AFGBuildable::RegisterInteractingPlayerWithCircuit( AFGCharacterPlayer* player){ }
@@ -97,6 +99,7 @@ void AFGBuildable::ReapplyColorSlot(){ }
 bool AFGBuildable::HasMaterialInstanceManagerForMaterialName(const FString& lookupName){ return bool(); }
 UFGFactoryMaterialInstanceManager* AFGBuildable::GetMaterialInstanceManagerForMaterialName(const FString& lookupName){ return nullptr; }
 bool AFGBuildable::AddMaterialInstanceManagerForMaterialName(const FString& lookupName,  UFGFactoryMaterialInstanceManager* materialInstanceManager){ return bool(); }
+void AFGBuildable::CleanUpMaterialInstanceMappingsInSubsystem(){ }
 void AFGBuildable::CreateFactoryStatID() const{ }
 void AFGBuildable::SetReplicateDetails(bool replicateDetails){ }
 bool AFGBuildable::CheckFactoryConnectionComponents(FString& out_message){ return bool(); }

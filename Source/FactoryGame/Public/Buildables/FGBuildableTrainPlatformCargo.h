@@ -39,6 +39,9 @@ public:
 	virtual void Destroyed() override;
 	// End AActor interface
 
+	virtual bool Factory_PeekOutput_Implementation( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const override;
+	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
+
 	/** Get the inventory the docked vehicle loads/unloads to  */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
 	FORCEINLINE class UFGInventoryComponent* GetInventory() const{ return mCargoInventoryHandler->GetActiveInventoryComponent(); }
@@ -105,6 +108,13 @@ public:
 	/** Sets the hidden power connection from the child track assigned to this platform */
 	void UpdatePowerConnectionFromTrack();
 
+	/** Get mIsFullLoad */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
+	FORCEINLINE uint8 IsFullLoad() const{ return mIsFullLoad; }
+
+	/** Get mIsFullUnload */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
+	FORCEINLINE uint8 IsFullUnload() const{ return mIsFullUnload; }
 protected:
 	friend class AFGReplicationDetailActor_CargoPlatform;
 

@@ -164,14 +164,6 @@ private:
 	UPROPERTY(SaveGame)
 	uint8 mLastAutosaveId;
 
-	/** The save session (should actually be SaveSessionId */
-	UPROPERTY(SaveGame)
-	int32 mSessionId_DEPRECATED;
-
-	/** The name of the session we are playing, migrated over to mSaveSessionName */
-	UPROPERTY( SaveGame )
-	FString mSessionIDString_DEPRECATED;
-
 	/** The name of the session we are playing */
 	UPROPERTY( SaveGame )
 	FString mSaveSessionName;

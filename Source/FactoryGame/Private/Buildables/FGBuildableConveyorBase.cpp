@@ -23,7 +23,7 @@ AFGBuildableConveyorBase::AFGBuildableConveyorBase(){
 void AFGBuildableConveyorBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildableConveyorBase::BeginPlay(){ }
 void AFGBuildableConveyorBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGBuildableConveyorBase::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGBuildableConveyorBase::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGBuildableConveyorBase::Tick(float dt){ }
 void AFGBuildableConveyorBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableConveyorBase::Factory_Tick(float deltaTime){ }

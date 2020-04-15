@@ -13,7 +13,7 @@ bool AFGConveyorLiftHologram::TryUpgrade(const FHitResult& hitResult){ return bo
 AActor* AFGConveyorLiftHologram::GetUpgradedActor() const{ return nullptr; }
 int32 AFGConveyorLiftHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGConveyorLiftHologram::CheckClearance(){ }
-void AFGConveyorLiftHologram::SerializeConstructMessage(FArchive& ar){ }
+void AFGConveyorLiftHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGConveyorLiftHologram::ServerPostConstructMessageDeserialization(){ }
 void AFGConveyorLiftHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 void AFGConveyorLiftHologram::CheckValidFloor(){ }

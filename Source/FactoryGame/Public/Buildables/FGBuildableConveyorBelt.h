@@ -161,7 +161,11 @@ protected:
 	// End AFGBuildableConveyorBase interface
 
 private:
-	void UpdateItemTransformTick( const FConveyorBeltItem& item, TMap<FName, int32>& instanceCounts, class AFGRadioactivitySubsystem* radioactiveSubsystem );
+	/**
+	 * Updates the transform of a single item only.
+	 * We need to do this separately as all items are not in the same items array.
+	 */
+	void TickSingleItemTransform( const FConveyorBeltItem& item, TMap< FName, int32 >& instanceCounts, class AFGRadioactivitySubsystem* radioactiveSubsystem );
 
 	/** Get the that have the "moving conveyor material" in it */
 	void GetConveyorMaterials( TArray<UMaterialInterface*, TInlineAllocator<4>>& out_materials );

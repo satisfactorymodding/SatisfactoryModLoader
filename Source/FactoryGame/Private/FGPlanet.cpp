@@ -11,5 +11,5 @@ void AFGPlanet::SetupPreviewDelegate(){ }
 #if WITH_EDITORONLY_DATA
 #endif 
 void AFGPlanet::PostActorCreated(){ }
-void AFGPlanet::PostLoad(){ Super::PostLoad(); }
-void AFGPlanet::BeginDestroy(){ Super::BeginDestroy(); }
+void AFGPlanet::PostLoad(){ Super::PostLoad();}
+void AFGPlanet::BeginDestroy(){ Super::BeginDestroy();}

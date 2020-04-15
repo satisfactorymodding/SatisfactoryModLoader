@@ -209,6 +209,15 @@ public:
 	FORCEINLINE ~FSessionSaveStruct() = default;
 };
 
+/**
+ * Handles the "higher level" save functionality, like listing saves, save directories, sorting saves and validating filenames.
+ * A lot of the functionality is static as it doesn't operate on the actual save session, but can be used from anywhere.
+ *
+ * This interface should only be used when you know you really want to use things that's on the local machine. This is mostly
+ * used from FGAdminInterface so that clients call the functionally of the interface and load/save remotely. So consider
+ * if the UI should use this interface directly, or if it should go through the admin interface when you are making a
+ * BlueprintCallable function in this class.
+ */
 UCLASS(Config=Engine)
 class FACTORYGAME_API UFGSaveSystem : public UObject
 {

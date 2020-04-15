@@ -6,7 +6,7 @@ AFGPlayerController::AFGPlayerController(){ }
 bool AFGPlayerController::ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor){ return bool(); }
 void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 bool AFGPlayerController::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
-void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
+void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents();}
 void AFGPlayerController::BeginPlay(){ }
 void AFGPlayerController::Destroyed(){ }
 void AFGPlayerController::OnRep_PlayerState(){ }
@@ -26,12 +26,25 @@ bool AFGPlayerController::NeedRespawn() const{ return bool(); }
 void AFGPlayerController::SetRespawningFromDeath(bool respawningFromDeath){ }
 bool AFGPlayerController::GetRespawningFromDeath(){ return bool(); }
 void AFGPlayerController::ExecuteShortcut(int32 shortcutIndex){ }
-void AFGPlayerController::GetAllShortcuts(TArray<  UFGHotbarShortcut* >& out_shortcuts){ }
-void AFGPlayerController::GetValidShortcuts(TArray<class UFGHotbarShortcut*>& out_shortcuts){ }
+void AFGPlayerController::GetCurrentShortcuts(TArray<  UFGHotbarShortcut* >& out_shortcuts){ }
+void AFGPlayerController::GetPresetShortcuts(int32 presetHotbarIndex, TArray<  UFGHotbarShortcut* >& out_shortcuts){ }
+void AFGPlayerController::GetAllPresetHotbars(TArray<FPresetHotbar>& out_presetHotbars){ }
+void AFGPlayerController::GetPresetHotbar(int32 presetHotbarIndex, FPresetHotbar& out_presetHotbar){ }
+bool AFGPlayerController::CreatePresetHotbarFromCurrentHotbar(const FText& presetName, int32 iconIndex){ return bool(); }
+bool AFGPlayerController::CanCreateNewPresetHotbar() const{ return bool(); }
+bool AFGPlayerController::CopyCurrentHotbarToPresetHotbar(int32 presetHotbarIndex){ return bool(); }
+void AFGPlayerController::ChangeNameOfPresetHotbar(int32 presetHotbarIndex, const FText& newName){ }
+void AFGPlayerController::ChangeIconIndexOfPresetHotbar(int32 presetHotbarIndex, int32 iconIndex){ }
+bool AFGPlayerController::RemovePresetHotbar(int32 presetHotbarIndex){ return bool(); }
+void AFGPlayerController::CopyPresetHotbarToCurrentHotbar(int32 presetHotbarIndex){ }
 void AFGPlayerController::SetRecipeShortcutOnIndex(TSubclassOf<  UFGRecipe > recipe, int32 onIndex){ }
+void AFGPlayerController::SetHotbarIndex(int32 newIndex){ }
+int32 AFGPlayerController::GetCurrentHotbarIndex(){ return int32(); }
+int32 AFGPlayerController::GetNumHotbars(){ return int32(); }
+int32 AFGPlayerController::GetNumPresetHotbars() const{ return int32(); }
+int32 AFGPlayerController::GetMaxNumPresetHotbars(){ return int32(); }
+int32 AFGPlayerController::GetNumSlotsPerHotbar(){ return int32(); }
 int32 AFGPlayerController::GetRecipeShortcutIndex(TSubclassOf<  UFGRecipe > recipe) const{ return int32(); }
-void AFGPlayerController::SetDismantleShortcutOnIndex(int32 onIndex){ }
-int32 AFGPlayerController::GetDismantleShortcutIndex() const{ return int32(); }
 int32 AFGPlayerController::GetShortcutIndexFromKey(const FKeyEvent& key){ return int32(); }
 void AFGPlayerController::Server_RequestFogOfWarData_Implementation(){ }
 bool AFGPlayerController::Server_RequestFogOfWarData_Validate(){ return bool(); }
@@ -48,6 +61,8 @@ bool AFGPlayerController::Server_DealRadialDamage_Validate(const FHitResult& imp
 FString AFGPlayerController::GetScreenshotPath(bool isHighRes){ return FString(); }
 bool AFGPlayerController::DestroyNetworkActorHandled(){ return bool(); }
 void AFGPlayerController::AcknowledgePossession( APawn* P){ }
+void AFGPlayerController::CycleToNextHotbar(){ }
+void AFGPlayerController::CycleToPreviousHotbar(){ }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
@@ -71,8 +86,14 @@ void AFGPlayerController::SetupTutorial(){ }
 void AFGPlayerController::FinishRespawn(){ }
 void AFGPlayerController::Server_SetRecipeShortcutOnIndex_Implementation(TSubclassOf<class UFGRecipe> recipe, int32 onIndex){ }
 bool AFGPlayerController::Server_SetRecipeShortcutOnIndex_Validate(TSubclassOf<class UFGRecipe> recipe, int32 onIndex){ return bool(); }
-void AFGPlayerController::Server_SetDismantleShortcutOnIndex_Implementation(int32 onIndex){ }
-bool AFGPlayerController::Server_SetDismantleShortcutOnIndex_Validate(int32 onIndex){ return bool(); }
+void AFGPlayerController::Server_SetHotbarIndex_Implementation(int32 index){ }
+bool AFGPlayerController::Server_SetHotbarIndex_Validate(int32 index){ return bool(); }
+void AFGPlayerController::Server_CreatePresetHotbarFromCurrentHotbar_Implementation(const FText& presetName, int32 iconIndex){ }
+bool AFGPlayerController::Server_CreatePresetHotbarFromCurrentHotbar_Validate(const FText& presetName, int32 iconIndex){ return bool(); }
+void AFGPlayerController::Server_CopyCurrentHotbarToPresetHotbar_Implementation(int32 presetHotbarIndex){ }
+bool AFGPlayerController::Server_CopyCurrentHotbarToPresetHotbar_Validate(int32 presetHotbarIndex){ return bool(); }
+void AFGPlayerController::Server_CopyPresetHotbarToCurrentHotbar_Implementation(int32 presetHotbarIndex){ }
+bool AFGPlayerController::Server_CopyPresetHotbarToCurrentHotbar_Validate(int32 presetHotbarIndex){ return bool(); }
 void AFGPlayerController::Server_SendChatMessage_Implementation(const FChatMessageStruct& newMessage){ }
 bool AFGPlayerController::Server_SendChatMessage_Validate(const FChatMessageStruct& newMessage){ return bool(); }
 void AFGPlayerController::Server_SpawnAttentionPingActor_Implementation(FVector pingLocation, FVector pingNormal){ }
@@ -87,5 +108,4 @@ void AFGPlayerController::Server_WaitForLevelStreaming(){ }
 void AFGPlayerController::Client_WaitForLevelStreaming_Implementation(){ }
 void AFGPlayerController::OnRep_IsRespawning(){ }
 void AFGPlayerController::DisablePawnMovement(bool isDisabled){ }
-void AFGPlayerController::OnShortcutsReplicated(){ }
 void AFGPlayerController::testAndProcesAdaMessages(AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds,  APlayerState* PlayerState,  AFGGameState* fgGameState){ }

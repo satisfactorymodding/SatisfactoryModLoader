@@ -7,7 +7,7 @@ void UFGSchematic::PreSave(const  ITargetPlatform* targetPlatform){ }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::AddRecipe(TSubclassOf< UFGSchematic > inClass, TSubclassOf<  UFGRecipe > recipe){ }
-UFUNCTION(BlueprintCallable, Category = "Editor|Schematic")
+void UFGSchematic::MigrateDataToNewDependencySystem(){ }
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }
@@ -16,19 +16,39 @@ void UFGSchematic::UpdateAssetBundleData(){ }
 void UFGSchematic::MigrateDataToNewSchematicCategory(){ }
 #endif 
 UFGSchematic::UFGSchematic(){ }
-ESchematicType UFGSchematic::GetType(TSubclassOf< UFGSchematic > inClass){return inClass.GetDefaultObject()->mType;}
-FText UFGSchematic::GetSchematicDisplayName(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mDisplayName;}
-TSubclassOf< class UFGSchematicCategory > UFGSchematic::GetSchematicCategory(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mSchematicCategory; }
-void UFGSchematic::GetSubCategories(TSubclassOf< UFGSchematic > inClass,  TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){out_subCategories = inClass.GetDefaultObject()->mSubCategories;}
-TArray< FItemAmount > UFGSchematic::GetCost(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mCost;}
-TArray< UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mUnlocks; }
-int32 UFGSchematic::GetTechTier(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mTechTier;}
-float UFGSchematic::GetTimeToComplete(TSubclassOf< UFGSchematic > inClass){ return inClass.GetDefaultObject()->mTimeToComplete; }
-FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass) { return inClass.GetDefaultObject()->mSchematicIcon; }
-TSubclassOf< UFGSchematic > UFGSchematic::GetDependentOnSchematic(TSubclassOf< UFGSchematic > inClass) { return inClass.GetDefaultObject()->mDependsOnSchematic; }
-TArray< TSubclassOf< UFGSchematic > > UFGSchematic::GetAdditionalSchematicDependencies(TSubclassOf< UFGSchematic > inClass) { return inClass.GetDefaultObject()->mAdditionalSchematicDependencies; }
+ESchematicType UFGSchematic::GetType(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mType;
+}
+FText UFGSchematic::GetSchematicDisplayName(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mDisplayName;
+}
+TSubclassOf< class UFGSchematicCategory > UFGSchematic::GetSchematicCategory(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mSchematicCategory;
+}
+void UFGSchematic::GetSubCategories(TSubclassOf< UFGSchematic > inClass,  TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ 
+	out_subCategories = inClass.GetDefaultObject()->mSubCategories;
+}
+TArray< FItemAmount > UFGSchematic::GetCost(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mCost;
+}
+TArray< UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mUnlocks;
+}
+int32 UFGSchematic::GetTechTier(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mTechTier;
+}
+float UFGSchematic::GetTimeToComplete(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mTimeToComplete;
+}
+FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass){ 
+	return inClass.GetDefaultObject()->mSchematicIcon;
+}
+bool UFGSchematic::AreSchematicDependenciesMet(TSubclassOf< UFGSchematic > inClass, UObject* worldContext){ return bool(); }
+void UFGSchematic::GetSchematicDependencies(TSubclassOf< UFGSchematic > inClass, TArray<  UFGAvailabilityDependency* >& out_schematicDependencies) { 
+	out_schematicDependencies = inClass.GetDefaultObject()->mSchematicDependencies;
+}
 bool UFGSchematic::IsRepeatPurchasesAllowed(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 bool UFGSchematic::IsIncludedInBuild(TSubclassOf< UFGSchematic > inClass){ return bool(); }
-void UFGSchematic::PostLoad(){ Super::PostLoad(); }
-void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void UFGSchematic::PostLoad(){ Super::PostLoad();}
+void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar);}
 FPrimaryAssetId UFGSchematic::GetPrimaryAssetId() const{ return FPrimaryAssetId(); }

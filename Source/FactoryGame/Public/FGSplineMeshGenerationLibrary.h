@@ -72,13 +72,24 @@ public:
 	/**
 	 * Given a spline, this creates an instanced spline mesh along the spline.
 	 *
-	 * @param spline, mesh, meshLength		See BuildSplineMeshes above.
+	 * For all parameters see BuildSplineMeshes.
 	 *
-	 * @param splineInstances				The instance component to fill up with spline instances.
-	 *										This can be reused between calls to update an existing one.
-	 *										If this have mobility Static, it must not be registered before calling this function, if it is then this function have no effect.
+	 * @param splineInstances    The instance component to fill up with spline instances.
+	 *                           This can be reused between calls to update an existing one.
+	 *                           If this have mobility Static, it must not be registered before calling this function, if it is then this function have no effect.
 	 */
 	static void BuildSplineMeshesInstanced(
+		class USplineComponent* spline,
+		UStaticMesh* mesh,
+		float meshLength,
+		UFGInstancedSplineMeshComponent* splineInstances );
+
+	/**
+	 * Given a spline, this creates an instanced spline mesh along the spline.
+	 *
+	 * For all parameters see BuildSplineMeshesInstanced.
+	 */
+	static void BuildSplineMeshesPerSegmentInstanced(
 		class USplineComponent* spline,
 		UStaticMesh* mesh,
 		float meshLength,
@@ -95,13 +106,23 @@ public:
 	 *
 	 * @note The created collisions are registered and attached to the spline with the same owning actor.
 	 */
-	static void BuildSplineCollisionBoxes(
+	static void BuildSplineCollisionBoxesWithFixedSteps_DEPRECATED(
 		class USplineComponent* spline,
 		const FVector& collisionExtent,
 		float collisionSpacing,
 		const FVector& collisionOffset,
 		FName collisionProfile );
 
+	/**
+	 * See function above.
+	 * This uses a variable segment length approach to more segments where needed.
+	 */
+	static void BuildSplineCollisionBoxesWithVariableSteps(
+		class USplineComponent* spline,
+		const FVector& collisionExtent,
+		float collisionSpacing,
+		const FVector& collisionOffset,
+		FName collisionProfile );
 
 	/**
 	 * Given a spline, this creates collisions along the spline.
@@ -114,7 +135,12 @@ public:
 	 *
 	 * @note The created collisions are registered and attached to the spline with the same owning actor.
 	 */
-	static void BuildSplineCollisionCapsules( USplineComponent* spline, float collisionRadius, float collisionSpacing, const FVector& collisionOffset, FName collisionProfile );
+	static void BuildSplineCollisionCapsules(
+		class USplineComponent* spline,
+		float collisionRadius,
+		float collisionSpacing,
+		const FVector& collisionOffset,
+		FName collisionProfile );
 
 	/** GetNextDistanceExcedingTollerance used to step though a spline to take as long straight steps as possible within an error threshold
 	 *
@@ -130,7 +156,18 @@ public:
 	 *
 	 * @return	bool - returns false if we've reached the end and true if there is still more left
 	 */
-	static bool GetNextDistanceExcedingTollerance( USplineComponent* spline, const FVector& startPos, float startDistance, float stepSize, float tollerance, float& outEndDistance, FVector& outEndPos, float& outLength, uint8 fineTuningIterations = 5, float minStepFactor = 0.5f, ESplineCoordinateSpace::Type space = ESplineCoordinateSpace::World );
+	static bool GetNextDistanceExcedingTollerance(
+		USplineComponent* spline,
+		const FVector& startPos,
+		float startDistance,
+		float stepSize,
+		float tollerance,
+		float& outEndDistance,
+		FVector& outEndPos,
+		float& outLength,
+		uint8 fineTuningIterations = 5,
+		float minStepFactor = 0.5f,
+		ESplineCoordinateSpace::Type space = ESplineCoordinateSpace::World );
 
 public:
 	FORCEINLINE ~UFGSplineMeshGenerationLibrary() = default;

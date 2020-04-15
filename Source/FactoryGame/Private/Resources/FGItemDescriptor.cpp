@@ -29,30 +29,78 @@ bool UFGItemDescriptor::FGenerateIconContext::IsValid() const{ return bool(); }
 UFGItemDescriptor::FGenerateIconContext UFGItemDescriptor::GenerateIconContext = UFGItemDescriptor::FGenerateIconContext();
 #endif 
 UFGItemDescriptor::UFGItemDescriptor(){ }
-void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
-//MODDING EDIT: Filled in Function Bodys. usefull for in Editor development.
-EResourceForm UFGItemDescriptor::GetForm(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mForm;}
-float UFGItemDescriptor::GetEnergyValue(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mEnergyValue; }
-float UFGItemDescriptor::GetRadioactiveDecay(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mRadioactiveDecay;}
-FText UFGItemDescriptor::GetItemName(TSubclassOf< UFGItemDescriptor > inClass){ if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription == true) return inClass.GetDefaultObject()->mDisplayName; else return FText::FromString(inClass->GetName()); }
-FText UFGItemDescriptor::GetItemDescription(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mDescription; }
+void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void UFGItemDescriptor::PostLoad(){ Super::PostLoad();}
+EResourceForm UFGItemDescriptor::GetForm(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mForm;
+}
+float UFGItemDescriptor::GetEnergyValue(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mEnergyValue;
+}
+float UFGItemDescriptor::GetRadioactiveDecay(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mRadioactiveDecay;
+}
+FText UFGItemDescriptor::GetItemName(TSubclassOf< UFGItemDescriptor > inClass){ 
+	if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription == true)
+	return inClass.GetDefaultObject()->mDisplayName;
+else
+	return FText::FromString(inClass->GetName());
+}
+FText UFGItemDescriptor::GetItemDescription(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mDescription;
+}
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 void UFGItemDescriptor::GetPreviewView(TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_previewView){ }
 void UFGItemDescriptor::GetIconView(TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_itemView){ }
-FSlateBrush UFGItemDescriptor::GetItemIcon(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mInventoryIcon;}
-UTexture2D* UFGItemDescriptor::GetSmallIcon(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mSmallIcon;}
-UTexture2D* UFGItemDescriptor::GetBigIcon(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mPersistentBigIcon;}
-UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mConveyorMesh;}
-int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass){ return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);}
-float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass) { switch (inClass.GetDefaultObject()->mStackSize) { case EStackSize::SS_ONE: return 1; case EStackSize::SS_SMALL: return 20; case EStackSize::SS_MEDIUM: return 50; case EStackSize::SS_BIG: return 200; case EStackSize::SS_HUGE: return 500; case EStackSize::SS_FLUID: return 5000; case EStackSize::SS_LAST_ENUM: return 1; } return 0; }
-bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mCanBeDiscarded;}
-bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mRememberPickUp; }
-TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mItemCategory; }
-float UFGItemDescriptor::GetFluidDensity(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidDensity; }
-float UFGItemDescriptor::GetFluidViscosity(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidViscosity; }
-float UFGItemDescriptor::GetFluidFriction(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidFriction; }
-FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidColor; }
-FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf< UFGItemDescriptor > inClass){ return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear(); }
+FSlateBrush UFGItemDescriptor::GetItemIcon(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mInventoryIcon;
+}
+UTexture2D* UFGItemDescriptor::GetSmallIcon(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mSmallIcon;
+}
+UTexture2D* UFGItemDescriptor::GetBigIcon(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mPersistentBigIcon;
+}
+UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mConveyorMesh;
+}
+int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);
+}
+float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
+bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mCanBeDiscarded;
+}
+bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mRememberPickUp;
+}
+TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mItemCategory;
+}
+float UFGItemDescriptor::GetFluidDensity(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mFluidDensity;
+}
+float UFGItemDescriptor::GetFluidViscosity(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mFluidViscosity;
+}
+float UFGItemDescriptor::GetFluidFriction(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mFluidFriction;
+}
+FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mFluidColor;
+}
+FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf< UFGItemDescriptor > inClass){ 
+	return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear();
+}
+FTransform UFGItemDescriptor::GetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass){ return FTransform(); }
+void UFGItemDescriptor::SetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass, FTransform cameraTransform){ }
+float UFGItemDescriptor::GetIconFOV(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
+void UFGItemDescriptor::SetIconFOV(TSubclassOf< UFGItemDescriptor > inClass, float iconFOV){ }
+FRotator UFGItemDescriptor::GetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass){ return FRotator(); }
+void UFGItemDescriptor::SetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator objectOrientation){ }
+float UFGItemDescriptor::GetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
+void UFGItemDescriptor::SetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass, float cameraDistance){ }
+FRotator UFGItemDescriptor::GetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass){ return FRotator(); }
+void UFGItemDescriptor::SetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation){ }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }

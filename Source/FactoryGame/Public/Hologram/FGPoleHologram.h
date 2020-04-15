@@ -43,7 +43,7 @@ public:
 	void SetPoleHeight( float height );
 
 	// Begin IFGConstructionMessageInterface
-	virtual void SerializeConstructMessage( FArchive& ar ) override;
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
 	virtual void ServerPostConstructMessageDeserialization() override;
 	virtual void OnConstructMessagedDeserialized_Implementation() override;
 	// End IFGConstructionMessageInterface

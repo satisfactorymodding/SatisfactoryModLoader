@@ -46,6 +46,10 @@ public:
 	/** Dumps all ak components with no position (0,0,0) or owner to the log. */
 	UFUNCTION( exec )
 	void TrackAkComponentsWithNoPositionOrOwner();
+	/** Dumps all FGFactoryMaterialInstanceManager stats for debugging */
+	UFUNCTION( exec )
+	void DumpFactoryMaterialInstanceManagerStats();
+
 
 	/**
 	 * Tries to find a recipe that built a building and (re)applies it to the building,

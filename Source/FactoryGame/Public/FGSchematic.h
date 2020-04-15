@@ -34,7 +34,8 @@ enum class ESchematicType :uint8
 	EST_Story				UMETA( DisplayName = "Story" ),
 	EST_MAM					UMETA( DisplayName = "MAM" ),
 	EST_ResourceSink		UMETA( DisplayName = "Resource Sink" ),
-	EST_HardDrive			UMETA( DisplayName = "Hard Drive" )
+	EST_HardDrive			UMETA( DisplayName = "Hard Drive" ),
+	EST_Prototype			UMETA( DisplayName = "Prototype" )
 };
 
 /** Holds info about a schematic cost. */
@@ -98,13 +99,13 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Item" )
 	static FSlateBrush GetItemIcon( TSubclassOf< UFGSchematic > inClass );
 
-	/**Gets the schematic this is dependent on for being unlocked */
+	/** Returns true if the dependencies for this schematic are met and are available for purchase */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static TSubclassOf< UFGSchematic > GetDependentOnSchematic( TSubclassOf< UFGSchematic > inClass );
+	static bool AreSchematicDependenciesMet( TSubclassOf< UFGSchematic > inClass, UObject* worldContext );
 
-	/**Gets an additional array of dependencies for this schematic to be available */
-	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static TArray< TSubclassOf< UFGSchematic > > GetAdditionalSchematicDependencies( TSubclassOf< UFGSchematic > inClass );
+	/** Returns true if the dependencies for this schematic are met and are available for purchase */
+	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+	static void GetSchematicDependencies( TSubclassOf< UFGSchematic > inClass, TArray< class UFGAvailabilityDependency* >& out_schematicDependencies );
 
 	/** Returns true if this schematic is allowed to be purchased more than once */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -126,6 +127,10 @@ public:
 	/** Add a recipe to this schematic. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Schematic" )
 	static void AddRecipe( TSubclassOf< UFGSchematic > inClass, TSubclassOf< class UFGRecipe > recipe );
+
+	/** This migrates the old schematic dependencies to the new dependency system */
+	void MigrateDataToNewDependencySystem();
+
 #endif
 
 	//~ Begin AssetInterface
@@ -140,8 +145,8 @@ public:
 	/** This uses the old schematic category enum to add the new object based type category */
 	void MigrateDataToNewSchematicCategory();
 #endif
-// MODDING EDIT : protected -> public
-public:
+
+public: // MODDING EDIT: protected -> public
 	/** What type of schematic is this. */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	ESchematicType mType;
@@ -178,23 +183,27 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic", meta = (NoAutoJson = true) )
 	FSlateBrush mSchematicIcon;
 
+	/** Is this schematic dependant on anything to be available for purchase? */
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Dependencies" )
+	TArray< class UFGAvailabilityDependency* > mSchematicDependencies;
+
+	// Begin Deprecated
 	/** Is this schematic dependant on any other for being unlocked? */
-	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated - To be removed", meta = ( DeprecatedProperty, DeprecationMessage = "Use availability dependencies instead", NoAutoJson = true ) )
 	TSubclassOf< UFGSchematic > mDependsOnSchematic;
 
 	/** Additional list of schematics for more specific dependency checking */
-	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated - To be removed", meta = ( DeprecatedProperty, DeprecationMessage = "Use availability dependencies instead", NoAutoJson = true ) )
 	TArray< TSubclassOf< UFGSchematic > > mAdditionalSchematicDependencies;
 	
-	// Begin Deprecated
 	/** The category this schematic belongs to. */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated - To be removed", meta = ( DeprecatedProperty, DeprecationMessage = "Use new schematic category object instead" ) )
+	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated - To be removed", meta = ( DeprecatedProperty, DeprecationMessage = "Use new schematic category object instead", NoAutoJson = true ) )
 	ESchematicCategory mSchematicCategoryDeprecated;
 	// End Deprecated
 
 private:
 	/** Asset Bundle data computed at save time. In cooked builds this is accessible from AssetRegistry */
-	UPROPERTY()
+	UPROPERTY( meta = ( NoAutoJson = true ) )
 	FAssetBundleData mAssetBundleData;
 
 #if WITH_EDITORONLY_DATA
