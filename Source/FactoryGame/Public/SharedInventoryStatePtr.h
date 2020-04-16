@@ -217,6 +217,8 @@ private:
 public: // VarToFString requires this
 	/**
 	 * Private constructor to create a pointer with reference counting enabled.
+	 *
+	 * Modders, please use FSharedInventoryStatePtr::MakeShared, using this might cause a runtime crash.
 	 */
 	FSharedInventoryStatePtr( AActor* actor ) :
 		ActorPtr( actor ),
