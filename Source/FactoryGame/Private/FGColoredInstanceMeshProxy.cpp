@@ -2,7 +2,11 @@
 
 #include "FGColoredInstanceMeshProxy.h"
 
-UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy(){ }
+
+UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy() : Super() {
+	this->mCanBecolored = true;
+	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = false; this->PrimaryComponentTick.bStartWithTickEnabled = false; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false; this->PrimaryComponentTick.TickInterval = 0;
+}
 void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister();}
 void UFGColoredInstanceMeshProxy::OnRegister(){ Super::OnRegister();}
 void UFGColoredInstanceMeshProxy::SetColorSlot(uint8 colorSlotIndex){ }

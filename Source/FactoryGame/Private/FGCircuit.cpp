@@ -2,11 +2,14 @@
 
 #include "FGCircuit.h"
 
+
 void UFGCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool UFGCircuit::IsSupportedForNetworking() const{ return bool(); }
 bool UFGCircuit::IsNameStableForNetworking() const{ return bool(); }
 void UFGCircuit::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
-UFGCircuit::UFGCircuit(){ }
+UFGCircuit::UFGCircuit() : Super() {
+	this->mCircuitID = -1;
+}
 void UFGCircuit::BeginDestroy(){ Super::BeginDestroy();}
 void UFGCircuit::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGCircuit::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

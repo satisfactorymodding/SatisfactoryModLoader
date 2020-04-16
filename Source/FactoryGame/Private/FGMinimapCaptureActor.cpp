@@ -2,6 +2,7 @@
 
 #include "FGMinimapCaptureActor.h"
 
+
 #if WITH_EDITOR
 void AFGMinimapCaptureActor::ExportHeightData(){ }
 void AFGMinimapCaptureActor::CalculateHeightData(FVector upperLeftWorld, const FVector xStepVect, const FVector yStepVect, const TArray< AActor* >& ignoreActors, FFGHeightData& out_terrainHeightData, FFGHeightData& out_waterHeightData, FFGHeightData& out_foliageHeightData){ }
@@ -15,5 +16,7 @@ TArray<TArray<FColor>> AFGMinimapCaptureActor::CreateLayeredPixelArray(FFGHeight
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-AFGMinimapCaptureActor::AFGMinimapCaptureActor(){ }
+AFGMinimapCaptureActor::AFGMinimapCaptureActor() : Super() {
+	
+}
 void AFGMinimapCaptureActor::BeginPlay(){ }

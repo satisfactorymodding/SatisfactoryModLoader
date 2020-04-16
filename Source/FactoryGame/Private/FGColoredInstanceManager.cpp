@@ -2,7 +2,10 @@
 
 #include "FGColoredInstanceManager.h"
 
-UFGColoredInstanceManager::UFGColoredInstanceManager(){ }
+
+UFGColoredInstanceManager::UFGColoredInstanceManager() : Super() {
+	
+}
 void UFGColoredInstanceManager::OnUnregister(){ Super::OnUnregister();}
 void UFGColoredInstanceManager::OnRegister(){ Super::OnRegister();}
 void UFGColoredInstanceManager::ClearInstances(){ }

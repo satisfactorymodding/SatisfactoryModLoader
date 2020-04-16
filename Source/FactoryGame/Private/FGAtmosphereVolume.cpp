@@ -2,6 +2,7 @@
 
 #include "FGAtmosphereVolume.h"
 
+
 FExponentialFogSettings::FExponentialFogSettings(){ }
 #if WITH_EDITOR
 void AFGAtmosphereVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ }
@@ -13,7 +14,21 @@ void AFGAtmosphereVolume::SetViewRange(float min, float max){ }
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-AFGAtmosphereVolume::AFGAtmosphereVolume(){ }
+AFGAtmosphereVolume::AFGAtmosphereVolume() : Super() {
+	this->mPriority = 1;
+	this->mBlendDistance = 100;
+	this->mFogHeight.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mFogHeight.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mFogHeight.EditorCurveData.DefaultValue = 5000;
+	this->mFogDensity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mFogDensity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mFogDensity.EditorCurveData.DefaultValue = 0.0199999995529652;
+	this->mFullyDirectionalInscatteringColorDistance.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mFullyDirectionalInscatteringColorDistance.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mFullyDirectionalInscatteringColorDistance.EditorCurveData.DefaultValue = 100000;
+	this->mNonDirectionalInscatteringColorDistance.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mNonDirectionalInscatteringColorDistance.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mNonDirectionalInscatteringColorDistance.EditorCurveData.DefaultValue = 1000;
+	this->mDirectionalInscatteringExponent.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mDirectionalInscatteringExponent.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mDirectionalInscatteringExponent.EditorCurveData.DefaultValue = 4;
+	this->mDirectionalInscatteringStartDistance.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mDirectionalInscatteringStartDistance.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mDirectionalInscatteringStartDistance.EditorCurveData.DefaultValue = 10000;
+	this->mFogHeightFalloff.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mFogHeightFalloff.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mFogHeightFalloff.EditorCurveData.DefaultValue = 0.200000002980232;
+	this->mFogMaxOpacity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mFogMaxOpacity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mFogMaxOpacity.EditorCurveData.DefaultValue = 1;
+	this->mStartDistance.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mStartDistance.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mStartDistance.EditorCurveData.DefaultValue = 0;
+	this->mFogCutoffDistance.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mFogCutoffDistance.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mFogCutoffDistance.EditorCurveData.DefaultValue = 0;
+	this->mBlendWeight = 1;
+}
 void AFGAtmosphereVolume::PostLoad(){ Super::PostLoad();}
 void AFGAtmosphereVolume::PostRegisterAllComponents(){ }
 void AFGAtmosphereVolume::PostUnregisterAllComponents(void){ }

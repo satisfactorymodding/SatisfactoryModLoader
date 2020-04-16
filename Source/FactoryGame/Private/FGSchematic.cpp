@@ -2,6 +2,7 @@
 
 #include "FGSchematic.h"
 
+
 #if WITH_EDITOR
 void UFGSchematic::PreSave(const  ITargetPlatform* targetPlatform){ }
 #endif 
@@ -15,7 +16,9 @@ void UFGSchematic::UpdateAssetBundleData(){ }
 #if WITH_EDITORONLY_DATA
 void UFGSchematic::MigrateDataToNewSchematicCategory(){ }
 #endif 
-UFGSchematic::UFGSchematic(){ }
+UFGSchematic::UFGSchematic() : Super() {
+	this->mTimeToComplete = 600;
+}
 ESchematicType UFGSchematic::GetType(TSubclassOf< UFGSchematic > inClass){ 
 	return inClass.GetDefaultObject()->mType;
 }
@@ -44,9 +47,7 @@ FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass){
 	return inClass.GetDefaultObject()->mSchematicIcon;
 }
 bool UFGSchematic::AreSchematicDependenciesMet(TSubclassOf< UFGSchematic > inClass, UObject* worldContext){ return bool(); }
-void UFGSchematic::GetSchematicDependencies(TSubclassOf< UFGSchematic > inClass, TArray<  UFGAvailabilityDependency* >& out_schematicDependencies) { 
-	out_schematicDependencies = inClass.GetDefaultObject()->mSchematicDependencies;
-}
+void UFGSchematic::GetSchematicDependencies(TSubclassOf< UFGSchematic > inClass, TArray<  UFGAvailabilityDependency* >& out_schematicDependencies){ }
 bool UFGSchematic::IsRepeatPurchasesAllowed(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 bool UFGSchematic::IsIncludedInBuild(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 void UFGSchematic::PostLoad(){ Super::PostLoad();}

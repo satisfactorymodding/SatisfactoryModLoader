@@ -2,7 +2,11 @@
 
 #include "FGBuildGun.h"
 
-UFGBuildGunState::UFGBuildGunState(){ }
+
+
+UFGBuildGunState::UFGBuildGunState() : Super() {
+	
+}
 bool UFGBuildGunState::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 bool UFGBuildGunState::IsSupportedForNetworking() const{ return bool(); }
 int32 UFGBuildGunState::GetFunctionCallspace(UFunction* Function, void* Parameters, FFrame* Stack){ return int32(); }
@@ -32,7 +36,15 @@ void UFGBuildGunState::BeginBuildGunDelay(){ }
 void UFGBuildGunState::ResetBuildGunDelay(){ }
 bool UFGBuildGunState::BuildGunDelayIsComplete(){ return bool(); }
 bool UFGBuildGunState::HasBuildGunDelay(){ return bool(); }
-AFGBuildGun::AFGBuildGun(){ }
+AFGBuildGun::AFGBuildGun() : Super() {
+	this->mBuildDistanceMax = 10000;
+	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
+	this->mArmAnimation = EArmEquipment::AE_BuildGun;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bOnlyRelevantToOwner = true;
+	this->bNetUseOwnerRelevancy = true;
+	this->bReplicates = true;
+}
 void AFGBuildGun::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool AFGBuildGun::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGBuildGun::BeginPlay(){ }

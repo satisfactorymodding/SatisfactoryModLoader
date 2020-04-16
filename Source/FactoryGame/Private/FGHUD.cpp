@@ -2,10 +2,13 @@
 
 #include "FGHUD.h"
 
+
 #if WITH_CHEATS
 void AFGHUD::PonderOpeningCheatBoard(){ }
 #endif 
-AFGHUD::AFGHUD(){ }
+AFGHUD::AFGHUD() : Super() {
+	
+}
 void AFGHUD::PostInitializeComponents(){ Super::PostInitializeComponents();}
 void AFGHUD::BeginPlay(){ }
 void AFGHUD::EndPlay(const EEndPlayReason::Type endPlayReason){ }

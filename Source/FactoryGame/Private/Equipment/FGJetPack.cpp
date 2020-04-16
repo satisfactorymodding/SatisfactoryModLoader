@@ -2,7 +2,15 @@
 
 #include "FGJetPack.h"
 
-AFGJetPack::AFGJetPack(){ }
+
+AFGJetPack::AFGJetPack() : Super() {
+	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
+	this->mBackAnimation = EBackEquipment::BE_Jetpack;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bOnlyRelevantToOwner = true;
+	this->bNetUseOwnerRelevancy = true;
+	this->bReplicates = true;
+}
 void AFGJetPack::Tick(float DeltaSeconds){ }
 bool AFGJetPack::ShouldSaveState() const{ return bool(); }
 void AFGJetPack::SetIsThrusting(bool newIsThrusting){ }

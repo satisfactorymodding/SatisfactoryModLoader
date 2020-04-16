@@ -2,6 +2,9 @@
 
 #include "FGSplinePath.h"
 
-AFGSplinePath::AFGSplinePath(){ }
+
+AFGSplinePath::AFGSplinePath() : Super() {
+	
+}
 void AFGSplinePath::BeginPlay(){ }
 void AFGSplinePath::Tick(float DeltaSeconds){ }

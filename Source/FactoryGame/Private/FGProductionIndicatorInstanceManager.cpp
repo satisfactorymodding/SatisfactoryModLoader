@@ -2,7 +2,10 @@
 
 #include "FGProductionIndicatorInstanceManager.h"
 
-UFGProductionIndicatorInstanceManager::UFGProductionIndicatorInstanceManager(){ }
+
+UFGProductionIndicatorInstanceManager::UFGProductionIndicatorInstanceManager() : Super() {
+	
+}
 void UFGProductionIndicatorInstanceManager::OnUnregister(){ Super::OnUnregister();}
 void UFGProductionIndicatorInstanceManager::OnRegister(){ Super::OnRegister();}
 void UFGProductionIndicatorInstanceManager::ClearInstances(){ }

@@ -2,6 +2,13 @@
 
 #include "FGVehicleCollisionBoxComponent.h"
 
-UFGVehicleCollisionBoxComponent::UFGVehicleCollisionBoxComponent(){ }
+
+UFGVehicleCollisionBoxComponent::UFGVehicleCollisionBoxComponent() : Super() {
+	this->mFudgeFactor = 1.20000004768372;
+	this->mAddedZVelocityFactor = 0.100000001490116;
+	this->mMaxAddedZVelocity = 600;
+	this->mMaxCollisionVelocity = 1000;
+	this->mMinVelocityForAddedZ = 400;
+}
 void UFGVehicleCollisionBoxComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }
 void UFGVehicleCollisionBoxComponent::PushCharacter(AActor* OtherActor){ }
