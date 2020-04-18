@@ -78,7 +78,7 @@ TSharedRef<FJsonObject> createConfigDefaults() {
 }
 
 namespace SML {
-	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.0.0");
+	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.1.0");
 	
 	//version of the SML mod loader, as specified in the SML.h
 	static SML::Versioning::FVersion* modLoaderVersion = new SML::Versioning::FVersion(modLoaderVersionString);
