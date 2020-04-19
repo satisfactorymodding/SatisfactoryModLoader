@@ -28,27 +28,49 @@ DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advan
 #define DEBUG_FACTORY_IO 0
 
 /** Show debug names */
-static const FName SHOWDEBUG_FACTORY( TEXT( "FACTORY" ) );
-static const FName SHOWDEBUG_FACTORYCONNECTIONS( TEXT( "FACTORYCONNECTIONS" ) );
-static const FName SHOWDEBUG_CIRCUITS( TEXT( "CIRCUITS" ) );
-static const FName SHOWDEBUG_POWER( TEXT( "POWER" ) );
-static const FName SHOWDEBUG_TRAINS( TEXT( "TRAINS" ) );
-static const FName SHOWDEBUG_TRACKS( TEXT( "TRACKS" ) );
-static const FName SHOWDEBUG_STATIONS( TEXT( "STATIONS" ) );
-static const FName SHOWDEBUG_TRAINCOUPLERS( TEXT( "TRAINCOUPLERS" ) );
-static const FName SHOWDEBUG_FOUNDATIONS( TEXT( "FOUNDATIONS" ) );
-static const FName SHOWDEBUG_RADIATION( TEXT( "RADIATION" ) );
-static const FName SHOWDEBUG_RADIATIONSPHERES( TEXT( "RADIATIONSPHERES" ) );
-static const FName SHOWDEBUG_RESOURCESINK( TEXT( "RESOURCESINK" ) );
-static const FName SHOWDEBUG_AKAUDIOSOURCES( TEXT( "AKAUDIOSOURCES" ) );
-static const FName SHOWDEBUG_AKAUDIOSOURCEATTENUATIONS( TEXT( "AKAUDIOSOURCEATTENUATIONS" ) );
-static const FName SHOWDEBUG_PIPES( TEXT( "PIPES" ) );
+static const FName SHOWDEBUG_FACTORY( TEXT( "Factory" ) );
+static const FName SHOWDEBUG_FACTORYCONNECTIONS( TEXT( "FactoryConnections" ) );
+static const FName SHOWDEBUG_CIRCUITS( TEXT( "Circuits" ) );
+static const FName SHOWDEBUG_POWER( TEXT( "Power" ) );
+static const FName SHOWDEBUG_TRAINS( TEXT( "Trains" ) );
+static const FName SHOWDEBUG_TRACKS( TEXT( "Tracks" ) );
+static const FName SHOWDEBUG_STATIONS( TEXT( "Stations" ) );
+static const FName SHOWDEBUG_TRAINCOUPLERS( TEXT( "TrainCouplers" ) );
+static const FName SHOWDEBUG_FOUNDATIONS( TEXT( "Foundations" ) );
+static const FName SHOWDEBUG_RADIATION( TEXT( "Radiation" ) );
+static const FName SHOWDEBUG_RADIATIONSPHERES( TEXT( "RadiationSpheres" ) );
+static const FName SHOWDEBUG_RESOURCESINK( TEXT( "ResourceSink" ) );
+static const FName SHOWDEBUG_AKAUDIOSOURCES( TEXT( "AkAudioSources" ) );
+static const FName SHOWDEBUG_AKAUDIOSOURCEATTENUATIONS( TEXT( "AkAudioSourceAttenuations" ) );
+static const FName SHOWDEBUG_PIPE_NETWORKS( TEXT( "PipeNetworks" ) );
+static const FName SHOWDEBUG_PIPE_DETAILS( TEXT( "PipeDetails" ) );
+static const FName SHOWDEBUG_PIPE_PRESSURE( TEXT( "PipePressure" ) );
+static const FName SHOWDEBUG_PIPE_PRESSURE_GROUPS( TEXT( "PipePressureGroups" ) );
+static const FName SHOWDEBUG_PIPE_DELTA_PRESSURE( TEXT( "PipeDeltaPressure" ) );
+static const FName SHOWDEBUG_PIPE_FLOW( TEXT( "PipeFlow" ) );
+static const FName SHOWDEBUG_CREATURES( TEXT( "Creatures" ) );
 
 /** Common show debug colors */
 static const FLinearColor DEBUG_TEXTWHITE( 0.9f, 0.9f, 0.9f );
 static const FLinearColor DEBUG_TEXTGREEN( 0.86f, 0.f, 0.f );
 static const FLinearColor DEBUG_TEXTYELLOW( 0.86f, 0.69f, 0.f );
 static const FLinearColor DEBUG_TEXTRED( 0.f, 0.69f, 0.f );
+
+/** Colors for splitting up indexes into different colors. */
+const TArray< FColor > DEBUG_COLORS =
+{
+	// Do not add black to this list, it is reserved for INDEX_NONE.
+	FColorList::Red,
+	FColorList::Green,
+	FColorList::Blue,
+	FColorList::Cyan,
+	FColorList::Magenta,
+	FColorList::Yellow
+};
+
+/** A semi unique color for an index to color things, see colors above, unsafe checks the index and returns black for INDEX_NONE */
+FORCEINLINE FColor Debug_GetColorForAnIndex( int32 index ) { return index >= 0 ? DEBUG_COLORS[ index % DEBUG_COLORS.Num() ] : FColor::Black; }
+FORCEINLINE FColor Debug_GetColorForAnIndex_Unsafe( int32 index ) { return DEBUG_COLORS[ index % DEBUG_COLORS.Num() ]; }
 
 DECLARE_CYCLE_STAT_EXTERN( TEXT( "NetIncrementalSerialize Array" ), STAT_NetIncrementalArray, STATGROUP_ServerCPU, FACTORYGAME_API );
 DECLARE_CYCLE_STAT_EXTERN( TEXT( "NetIncrementalSerialize Array BuildMap" ), STAT_NetIncrementalArray_BuildMap, STATGROUP_ServerCPU, FACTORYGAME_API );
@@ -67,11 +89,11 @@ DECLARE_LOG_CATEGORY_EXTERN( LogWidget, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogEquipment, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogFoundation, Warning, All );
 #if IS_PUBLIC_BUILD
-DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, Warning, Warning );
-DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, Warning );
+DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, NoLogging, Warning );
+DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, NoLogging, Warning );
 #else
-DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, Warning, All );
-DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, NoLogging, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, NoLogging, All );
 #endif
 DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Warning, All );
 
@@ -145,8 +167,11 @@ static const FName BuildGunSnapToGuideLinesAction( TEXT( "BuildGunSnapToGuideLin
 static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT( "BuildGunDismantle_ToggleMultiSelectState" ) );
 static const FName AttentionPingAction( TEXT( "AttentionPing" ) );
 static const FName BuildingSampleAction( TEXT( "BuildingSample" ) );
+static const FName CycleToNextHotbarAction( TEXT( "CycleToNextHotbar" ) );
+static const FName CycleToPreviousHotbarAction( TEXT( "CycleToPreviousHotbar" ) );
 
 /** Color Parameters */
+static const FName CanPaintPrimaryOrSecondary( TEXT( "CanBePainted" ) ); //Some - Not all - MaterialInterfaces have this property and it should override the "ability" to modify primary and secondary color
 static const FName PrimaryColor( TEXT( "PrimaryPaintedMetal_Color" ) );
 static const FName SecondaryColor( TEXT( "SecondaryPaintedMetal_Color" ) );
 

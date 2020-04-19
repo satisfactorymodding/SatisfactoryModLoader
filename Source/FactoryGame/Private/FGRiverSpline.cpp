@@ -2,8 +2,12 @@
 
 #include "FGRiverSpline.h"
 
+
 #if WITH_EDITOR
 void AFGRiverSpline::CheckForErrors(){ }
 #endif 
-AFGRiverSpline::AFGRiverSpline(){ }
-void AFGRiverSpline::PostLoad(){ Super::PostLoad(); }
+AFGRiverSpline::AFGRiverSpline() : Super() {
+	this->mEmitterInterval = 600;
+	this->mShouldHaveAudio = true;
+}
+void AFGRiverSpline::PostLoad(){ Super::PostLoad();}

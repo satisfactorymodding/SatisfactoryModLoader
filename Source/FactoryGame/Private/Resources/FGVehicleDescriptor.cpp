@@ -2,12 +2,19 @@
 
 #include "FGVehicleDescriptor.h"
 
+
 #if WITH_EDITOR
 void UFGVehicleDescriptor::SetupStage(){ }
 FVector UFGVehicleDescriptor::GetCenterOfCollision(){ return FVector(); }
 #endif 
-UFGVehicleDescriptor::UFGVehicleDescriptor(){ }
-void UFGVehicleDescriptor::PostLoad(){ Super::PostLoad(); }
+UFGVehicleDescriptor::UFGVehicleDescriptor() : Super() {
+	this->mDisplayName = INVTEXT("");
+	this->mDescription = INVTEXT("");
+	this->mStackSize = EStackSize::SS_MEDIUM;
+	this->mCanBeDiscarded = true;
+	this->mPreviewView.Distance = 1200; this->mPreviewView.FocalOffset.X = 0; this->mPreviewView.FocalOffset.Y = 0; this->mPreviewView.FocalOffset.Z = 0; this->mPreviewView.CameraPitch = -35;
+}
+void UFGVehicleDescriptor::PostLoad(){ Super::PostLoad();}
 TSubclassOf< class AFGVehicle > UFGVehicleDescriptor::GetVehicleClass(TSubclassOf< UFGVehicleDescriptor > inClass){ return TSubclassOf<class AFGVehicle>(); }
 FText UFGVehicleDescriptor::GetItemNameInternal() const{ return FText(); }
 FText UFGVehicleDescriptor::GetItemDescriptionInternal() const{ return FText(); }

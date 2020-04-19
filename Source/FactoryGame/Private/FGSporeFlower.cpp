@@ -2,7 +2,10 @@
 
 #include "FGSporeFlower.h"
 
-AFGSporeFlower::AFGSporeFlower(){ }
+
+AFGSporeFlower::AFGSporeFlower() : Super() {
+	this->bReplicates = true;
+}
 void AFGSporeFlower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGSporeFlower::BeginPlay(){ }
 void AFGSporeFlower::GainedSignificance_Implementation(){ }

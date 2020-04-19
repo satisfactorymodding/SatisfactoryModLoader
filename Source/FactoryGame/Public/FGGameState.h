@@ -19,6 +19,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FVisitedMapAreaDelegate, TSubclassOf< class UFGMapArea >, mapArea );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRestartTimeNotification, float, timeLeft );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutoSaveTimeNotification, float, timeLeft );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnAutoSaveFinished );
 
 /**
  * 
@@ -116,6 +118,7 @@ public:
 	FORCEINLINE class AFGUnlockSubsystem* GetUnlockSubsystem() const { return mUnlockSubsystem; }
 	FORCEINLINE class AFGPipeSubsystem* GetPipeSubsystem() const { return mPipeSubsystem; }
 	FORCEINLINE class AFGResourceSinkSubsystem* GetResourceSinkSubsystem() const { return mResourceSinkSubsystem; }
+	FORCEINLINE class AFGItemRegrowSubsystem* GetItemRegrowSubsystem() const { return mItemRegrowSubsystem; }
 
 	/** Helper to access the actor representation manager */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation", meta = ( DeprecatedFunction, DeprecationMessage = "Use global getter instead" ) )
@@ -188,18 +191,29 @@ public:
 	FORCEINLINE void SetSessionName( const FString& inName ) { mReplicatedSessionName = inName; }
 
 	/*
-	 *	No need to be a ufunction, as it is only used to set a start state from loading so far, when the game loads on the server.
+	 * Called from buildable subsystem on load to apply saved color slot data
 	 */
-	void SetupColorSlots( const FColor *mColorSlotsPrimary, const FColor *mColorSlotsSecondary, const  uint8 startINdex, const uint8 writeCount );
+	void SetupColorSlots_Linear( const TArray<FLinearColor>& mColorSlotsPrimary, const TArray<FLinearColor>& mColorSlotsSecondary );
 
+	/*
+	 * Server - Called to propogate Building Color Changes
+	 */
 	UFUNCTION( Reliable, Server, WithValidation )
-	void SetAndReplicateBuildingColorInSlot( uint8 slot, FColor pColor, FColor sColor );
-	FColor GetBuildingColorPrimary( uint8 slot );
-	FColor GetBuildingColorSecondary( uint8 slot );
+	void Server_SetBuildingColorInSlotLinear( uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear );
+
 	uint8 GetNbColorSlotsExposedToPlayers();
 
+	/** Linear Color Getters */
+	FLinearColor GetBuildingColorPrimary_Linear( uint8 slot );
+	FLinearColor GetBuildingColorSecondary_Linear( uint8 slot );
+
+	/** Called both on client and server. Apply primary color changes to the buildable subsystem*/
 	UFUNCTION()
-	void OnRep_BuildingColorSlot();
+	void OnRep_BuildingColorSlotPrimary_Linear();
+
+	/** Called both on client and server. Apply secondary color changes to the buildable subsystem*/
+	UFUNCTION()
+	void OnRep_BuildingColorSlotSecondary_Linear();
 
 	void ClaimPlayerColor( class AFGPlayerState* playerState );
 	
@@ -254,10 +268,14 @@ public:
 	/** Message sent when a power fuse is triggered occurs. */
 	UPROPERTY( EditDefaultsOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > mPowerCircuitFuseTriggeredMessage;
-	
-	/** @todo @save 2019-02-26 If this is cleaned up alpha saves will lose recipes unlocked by other means than through schematics, i.e. probably alternate recipes. */
-	UPROPERTY( SaveGame )
-	TArray< TSubclassOf< UFGRecipe > > mAvailableRecipes; //_DEPRECATED
+
+	/** Broadcast a notification when we are about to autosave */
+	UPROPERTY( BlueprintAssignable, Category = "Notification" )
+	FOnAutoSaveTimeNotification mOnAutoSaveTimeNotification;
+
+	/** Broadcast a notification when we are finished auto saving */
+	UPROPERTY( BlueprintAssignable, Category = "Notification" )
+	FOnAutoSaveFinished mOnAutoSaveFinished;
 
 private:
 	/** Spawned subsystems */
@@ -295,6 +313,8 @@ private:
 	class AFGUnlockSubsystem* mUnlockSubsystem;
 	UPROPERTY( SaveGame, Replicated )
 	class AFGResourceSinkSubsystem* mResourceSinkSubsystem;
+	UPROPERTY()
+	class AFGItemRegrowSubsystem* mItemRegrowSubsystem;
 
 	/** This array keeps track of what map areas have been visited this game */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapAreaVisited )
@@ -312,10 +332,19 @@ private:
 	FString mReplicatedSessionName;
 
 	/*
-	 *	System to keep track of color slot changes and comapre to buildable system to update and mark dirty
+	 *	Array of primary building color slots as Linear Colors. Note: This used to be handled with FColor which resulted in unneeded conversions back and forth
 	 */
-	UPROPERTY( Replicated, ReplicatedUsing = OnRep_BuildingColorSlot, EditDefaultsOnly, Category = "Customization" )
-	FFGBuildingColorSlotStruct mBuildingColorSlots[ BUILDABLE_COLORS_MAX_SLOTS ];
+	UPROPERTY( ReplicatedUsing = OnRep_BuildingColorSlotPrimary_Linear, EditDefaultsOnly, Category = "Customization" )
+	TArray<FLinearColor> mBuildingColorSlotsPrimary_Linear;
+
+	/*
+	 *	Array of secondary building color slots as Linear Colors. Note: This used to be handled with FColor which resulted in unneeded conversions back and forth
+	 */
+	UPROPERTY( ReplicatedUsing = OnRep_BuildingColorSlotSecondary_Linear, EditDefaultsOnly, Category = "Customization" )
+	TArray<FLinearColor> mBuildingColorSlotsSecondary_Linear;
+
+	/** Track whether or not colors have been initialized by the subsystem. This is here to support an old legacy save issue */
+	bool mHasInitializedColorSlots;
 
 	/** The different colors to represent players over the network. We keep this if we need to loop back over the colors again*/
 	TArray< FSlotData > mPlayerColors;

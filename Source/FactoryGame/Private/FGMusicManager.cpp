@@ -2,11 +2,16 @@
 
 #include "FGMusicManager.h"
 
+
 UFGMusicManager* UFGMusicManager::CreateMusicManager( UFGGameInstance* gameInstance){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UWorld* world){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UObject* worldContext){ return nullptr; }
 UWorld* UFGMusicManager::GetWorld() const{ return nullptr; }
 void UFGMusicManager::OnPlayerControllerBeginPlay( AFGPlayerControllerBase* pc){ }
-UFGMusicManager::UFGMusicManager(){ }
+UFGMusicManager::UFGMusicManager() : Super() {
+	this->mUpdateInterval = 5;
+	this->mFactoryCloseDistance = 10000;
+	this->mMusicManagerClassName = FSoftClassPath("/Game/FactoryGame/-Shared/Audio/Blueprints/BP_MusicManager.BP_MusicManager_C");
+}
 void UFGMusicManager::Update(){ }
 void UFGMusicManager::OnPostLoadMap(UWorld* loadedWorld){ }

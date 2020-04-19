@@ -2,9 +2,14 @@
 
 #include "FGTutorialIntroManager.h"
 
+
 AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UWorld* world){ return nullptr; }
 AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UObject* worldContext){ return nullptr; }
-AFGTutorialIntroManager::AFGTutorialIntroManager(){ }
+AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bAlwaysRelevant = true;
+	this->bReplicates = true;
+}
 void AFGTutorialIntroManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGTutorialIntroManager::Tick(float DeltaTime){ }
 void AFGTutorialIntroManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

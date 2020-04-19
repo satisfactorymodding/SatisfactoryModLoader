@@ -21,7 +21,8 @@ struct FACTORYGAME_API FSpawnData
 		Creature( nullptr ),
 		WasKilled( false ),
 		KilledOnDayNr( -1 ),
-		CreatureClassOverride( nullptr )
+		CreatureClassOverride( nullptr ),
+		SpawnWeight( 1.0f )
 	{}
 
 	/** Location where we want to spawn */
@@ -43,6 +44,10 @@ struct FACTORYGAME_API FSpawnData
 	/** Overriden subclass of creature to spawn */
 	UPROPERTY( SaveGame )
 	TSubclassOf< class AFGCreature > CreatureClassOverride;
+
+	/** How much weight this creature adds to spawn calculations */
+	UPROPERTY( SaveGame )
+	float SpawnWeight;
 
 public:
 	FORCEINLINE ~FSpawnData() = default;
@@ -133,6 +138,16 @@ public:
 	/** Adds a creature to be handled by spawner */
 	UFUNCTION( BlueprintCallable, Category = "Spawning" ) 
 	void AddCreature( class AFGCreature* newCreature );
+
+	/** The total weight that this spawner adds for the spawn calculation */
+	float GetSpawnerWeight();
+
+	/** The distance at which this spawner can activate */
+	float GetSpawnerDistance() { return mSpawnerDistance; }
+
+	/** Returns the cached value for isNearBase */
+	UFUNCTION( BlueprintPure, Category = "Spawning" ) 
+	FORCEINLINE bool IsNearBase() { return mCachedIsNearBase; }
 protected:
 	/** Randoms a location within range of this actor, and randoms new locations trying to find a unused location numRetries times */
 	bool TryFindNonOverlappingLocation( const TArray<FVector2D>& usedSpawnLocations, float spawnRadius, int32 maxRetries, FVector2D& out_location );
@@ -142,6 +157,15 @@ protected:
 
 	/** Remove entries that were added dynamically and now has WasKilled status */
 	void CleanupCreatureList();
+
+	/** Setup the initial weight of this spawner */
+	void SetupSpawnWeight();
+
+	/** Setup the initial spawn distance of this spawner */
+	void SetupSpawnDistance();
+
+	UFUNCTION()
+	void TryDestroyCreatures();
 protected:
 	/** For showing a preview of what will happen in the editor */
 	UPROPERTY()
@@ -182,7 +206,19 @@ protected:
 	TArray< class AFGSplinePath* > mSplines;
 
 	/** cached value to see if spawner is near a base */
+	UPROPERTY( SaveGame )
 	bool mCachedIsNearBase;
+
+	/** cached value for what distance to activate this spawner on. Less than zero means we use AISystems default */
+	UPROPERTY( SaveGame )
+	float mSpawnerDistance;
+
+	/** Indicates that this spawner has been deactivated and want to destroy its creatures */
+	UPROPERTY( SaveGame )
+	bool mIsPendingDestroy;
+
+	UPROPERTY()
+	FTimerHandle mPendingDestroyTimer;
 private:
 	UPROPERTY( SaveGame )
 	int32 mRandomSeed;

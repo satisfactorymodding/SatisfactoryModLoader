@@ -48,22 +48,22 @@ struct FACTORYGAME_API FSaveCustomVersion
 		DROPPED_DockingStationSingleInventory,
 
 		// 2018-03-06: Saving build shortcuts
-		SavingBuildShortcuts,
+		DROPPED_SavingBuildShortcuts,
 
 		// 2018-04-05 Game Phase manager has been added and functionality has been moved from GameState.
 		DROPPED_GamePhaseManagerAdded,
 
 		// 2018-10-25 No longer save relative transforms for UFGConnectionComponent.
-		RemovedRelativeTransformsFromConnectionComponents,
+		DROPPED_RemovedRelativeTransformsFromConnectionComponents,
 
 		// 2018-11-19 OnlineSubsystemMCP - Restore a lost pawn since we didn't have peoples EpicID
-		MCP_RestoreLostPawn,
+		DROPPED_MCP_RestoreLostPawn,
 
 		// 2018-11-19 Wires no longer save locations, they span between connection components instead
-		WireSpanFromConnnectionComponents,
+		DROPPED_WireSpanFromConnnectionComponents,
 
 		// 2019-01-30 Renamed SaveSessionId
-		RenamedSaveSessionId,
+		DROPPED_RenamedSaveSessionId,
 
 		// 2019-06-20 GeoThermal generators didn't save resource nodes prior to this which results with issues when being dismantled
 		ChangedGeoThermalGeneratorSaved,
@@ -80,6 +80,9 @@ struct FACTORYGAME_API FSaveCustomVersion
 		// 2020-02-09: This is so we can check if a save is older than BU3 and do certain migrations. 
 		// For example save old number of inventory and arm slots to new system
 		BU3SaveCompatibility,
+
+		// 2020-03-19: Factory Colors have been converted to Linear Color. The buildable subsystem needs to convert from FColor to Linear Color overriding the defaults
+		BuildingColorConversion,
 
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

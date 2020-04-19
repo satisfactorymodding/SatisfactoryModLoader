@@ -1,6 +1,7 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "FGInventoryComponent.h"
 #include "Engine/StaticMesh.h"
 #include "UObject/Interface.h"
 #include "UObject/Class.h"
@@ -37,6 +38,7 @@ class FACTORYGAME_API IFGChainsawableInterface
 	UFUNCTION( BlueprintNativeEvent, Category = "Chainsaw" )
 	UStaticMeshComponent* GetMeshComponent();
 
-public:
-	FORCEINLINE IFGChainsawableInterface() = default;
+	/* @returns the items you get for chainsawing this actor */
+	UFUNCTION( BlueprintNativeEvent, Category = "Chainsaw" )
+	FInventoryStack GetActorChainsawReturn();
 };

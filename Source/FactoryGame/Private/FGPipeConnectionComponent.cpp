@@ -2,11 +2,16 @@
 
 #include "FGPipeConnectionComponent.h"
 
-UFGPipeConnectionComponentBase::UFGPipeConnectionComponentBase(){ }
+
+
+UFGPipeConnectionComponentBase::UFGPipeConnectionComponentBase() : Super() {
+	this->mPipeType = "Base";
+	this->bReplicates = true;
+}
 void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPipeConnectionComponentBase::OnComponentDestroyed(bool isDestroyingHierarchy){ }
-void UFGPipeConnectionComponentBase::OnRegister(){ Super::OnRegister(); }
-void UFGPipeConnectionComponentBase::OnUnregister(){ Super::OnUnregister(); }
+void UFGPipeConnectionComponentBase::OnRegister(){ Super::OnRegister();}
+void UFGPipeConnectionComponentBase::OnUnregister(){ Super::OnUnregister();}
 void UFGPipeConnectionComponentBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGPipeConnectionComponentBase::SetConnection( UFGPipeConnectionComponentBase* toComponent){ }
 void UFGPipeConnectionComponentBase::ClearConnection(){ }
@@ -18,7 +23,11 @@ FVector UFGPipeConnectionComponentBase::GetConnectorLocation(bool withClearance)
 UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindCompatibleOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
 UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
 void UFGPipeConnectionComponentBase::UpdateClientCachedConnection(){ }
-UFGPipeConnectionComponent::UFGPipeConnectionComponent(){ }
+UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
+	this->mPipeNetworkID = -1;
+	this->mPipeType = "Fluid";
+	this->bReplicates = true;
+}
 void UFGPipeConnectionComponent::BeginPlay(){ }
 void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool UFGPipeConnectionComponent::CheckCompatibility(UFGPipeConnectionComponentBase* otherConnection,  AFGHologram* buildStepOwner){ return bool(); }

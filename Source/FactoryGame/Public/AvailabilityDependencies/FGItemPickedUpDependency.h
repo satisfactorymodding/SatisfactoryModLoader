@@ -21,7 +21,7 @@ class FACTORYGAME_API UFGItemPickedUpDependency : public UFGAvailabilityDependen
 public:
 	bool AreDependenciesMet( UObject* worldContext ) const override;
 
-	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Item" )
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Dependency" )
 	void GetItems( TArray< TSubclassOf< class UFGItemDescriptor > >& out_items ) const;
 
 protected:

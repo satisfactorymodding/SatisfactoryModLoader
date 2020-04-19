@@ -2,13 +2,28 @@
 
 #include "FGBuildablePole.h"
 #include "FGColoredInstanceMeshProxy.h"
-AFGBuildablePole::AFGBuildablePole(){
-	// MODDING EDIT: Objects appear to have this without it being added for us -> Adding it here.
-	mPoleComponentProxy = CreateOptionalDefaultSubobject<UFGColoredInstanceMeshProxy>(FName("PoleComponentProxy")); mPoleComponentProxy->SetupAttachment(RootComponent);
+#include "FGFactoryConnectionComponent.h"
+#include "FGPoleHologram.h"
+
+AFGBuildablePole::AFGBuildablePole() : Super() {
+	this->mHeight = 100;
+	this->mPoleComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleComponentProxy")); this->mPoleComponentProxy->SetupAttachment(this->RootComponent);
+	this->mSnapOnly0 = CreateDefaultSubobject<UFGFactoryConnectionComponent>(TEXT("SnapOnly0")); this->mSnapOnly0->SetupAttachment(this->RootComponent);
+	this->mStackHeight = 200;
+	this->mHologramClass = AFGPoleHologram::StaticClass();
+	this->MaxRenderDistance = -1;
+	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = false; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
+	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
+	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
+	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
+	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
+	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
+	this->bReplicates = true;
+	this->NetCullDistanceSquared = 5624999936;
 }
 void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildablePole::BeginPlay(){ }
 void AFGBuildablePole::SetPoleHeight(float height){ }
 void AFGBuildablePole::SetupConnectionComponent(){ }
-void AFGBuildablePole::PostLoad(){ Super::PostLoad(); }
+void AFGBuildablePole::PostLoad(){ Super::PostLoad();}
 const FName AFGBuildablePole::PoleMeshName = FName();

@@ -66,13 +66,16 @@ public:
 	UFUNCTION( exec, Category = "Resources", meta = ( ToolTip = "Give the number of coupons specified" ) )
 	virtual void GiveResourceSinkCoupons( int32 NumCoupons );
 
+	UFUNCTION( exec, category = "Player" )
+	void DrawSphere( int32 radius );
+
 	UFUNCTION( exec, Category = "Player/Camera" )
 	virtual void PlayerFly( bool flyModeEnabled );
 	UFUNCTION( exec, Category = "Player/Camera" )
 	virtual bool PlayerFly_Get();
 
 	UFUNCTION( exec, Category = "Player/Camera" )
-	virtual void PlayerNoClipModeOnFly( bool gohstMode );
+	virtual void PlayerNoClipModeOnFly( bool ghostMode );
 	UFUNCTION( exec, Category = "Player/Camera" )
 	virtual bool PlayerNoClipModeOnFly_Get();
 
@@ -90,6 +93,9 @@ public:
 
 	UFUNCTION( exec, category = "Research" )
 	virtual void GiveCheatSchematics();
+
+	UFUNCTION( exec, category = "Research" )
+	virtual void GivePrototypeSchematics();
 
 	UFUNCTION( exec )
 	virtual void GiveStorySchematics();
@@ -248,6 +254,9 @@ public:
 
 	UFUNCTION( exec, category = "Log" )
 	void DumpPlayerStates();
+
+	UFUNCTION( exec, category = "Log" )
+	void DumpHotbarShortcuts();
 
 	UFUNCTION( exec, category = "Display" )
 	void EnableInstancingOnFactory( bool enabled );

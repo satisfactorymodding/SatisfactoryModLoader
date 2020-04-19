@@ -193,11 +193,19 @@ private:
 
 		virtual void DestroyObject() override
 		{
-			if( !GExitPurge && ActorPtr.IsValid() && !ActorPtr->IsPendingKill() )
-			{
-				ActorPtr->SetActorHiddenInGame( true );
-				ActorPtr->SetLifeSpan( 0.001f ); // Delete next frame.
-			}
+			//[FreiholtzK:Mon/16-03-2020] Added support for removing objects in non game thread, E.g  parallelfor in buildable subsystem
+			FSimpleDelegateGraphTask::CreateAndDispatchWhenReady
+			(
+				FSimpleDelegateGraphTask::FDelegate::CreateLambda( [ = ]()
+				{
+					if( !GExitPurge && ActorPtr.IsValid() && !ActorPtr->IsPendingKill() )
+					{
+						ActorPtr->SetActorHiddenInGame( true );
+						ActorPtr->SetLifeSpan( 0.001f ); // Delete next frame.
+					}
+				} ),
+				TStatId(), nullptr, ENamedThreads::GameThread
+			);
 		}
 
 		// Non-copyable

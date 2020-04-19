@@ -2,8 +2,11 @@
 
 #include "FGProductionIndicatorComponent.h"
 
-UFGProductionIndicatorComponent::UFGProductionIndicatorComponent(){ }
-void UFGProductionIndicatorComponent::OnUnregister(){ Super::OnUnregister(); }
-void UFGProductionIndicatorComponent::OnRegister(){ Super::OnRegister(); }
+
+UFGProductionIndicatorComponent::UFGProductionIndicatorComponent() : Super() {
+	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = true; this->PrimaryComponentTick.bStartWithTickEnabled = true; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true; this->PrimaryComponentTick.TickInterval = 0;
+}
+void UFGProductionIndicatorComponent::OnUnregister(){ Super::OnUnregister();}
+void UFGProductionIndicatorComponent::OnRegister(){ Super::OnRegister();}
 void UFGProductionIndicatorComponent::TickComponent(float deltaTime, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction){ }
 void UFGProductionIndicatorComponent::ResetIndicatorStatus(){ }

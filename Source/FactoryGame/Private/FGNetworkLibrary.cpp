@@ -25,7 +25,9 @@ bool UFGSessionLibrary::IsInGameSession(ULocalPlayer* localPlayer){ return bool(
 bool UFGSessionLibrary::IsSessionValid(FBlueprintSessionResult session){ return bool(); }
 bool UFGSessionLibrary::InOnlineSession(UObject* worldContext, const FUniqueNetIdRepl& playerId){ return bool(); }
 void UFGSessionLibrary::JoinSession(UObject* worldContext, const FBlueprintSessionResult& session){ }
+void UFGSessionLibrary::JoinSessionByID(UObject* worldContext, const FString sessionID){ }
 int32 UFGSessionLibrary::GetMaxNumberOfPlayers(const FBlueprintSessionResult& session){ return int32(); }
+FString UFGSessionLibrary::GetSessionID(ULocalPlayer* localPlayer){ return FString(); }
 bool UFGSessionLibrary::CheckIsCompatibleVersion(const FFGOnlineSessionSettings& session){ return bool(); }
 void UFGSessionLibrary::UpdateSessionFromSessionSettings(FOnlineSessionSettings& session, const FFGOnlineSessionSettings& sessionSettings){ }
 void UFGSessionLibrary::SessionSettingsFromSession(const FOnlineSessionSettings& session, FFGOnlineSessionSettings& sessionSettings){ }

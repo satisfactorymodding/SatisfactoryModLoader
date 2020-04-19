@@ -2,7 +2,7 @@
 
 #include "FGFoundationSubsystem.h"
 
-void AFGFoundationSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGFoundationSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void AFGFoundationSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGFoundationSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGFoundationSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

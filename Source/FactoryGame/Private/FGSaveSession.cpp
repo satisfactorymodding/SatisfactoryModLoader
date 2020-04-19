@@ -2,7 +2,10 @@
 
 #include "FGSaveSession.h"
 
-UFGSaveSession::UFGSaveSession(){ }
+
+UFGSaveSession::UFGSaveSession() : Super() {
+	this->mNumRotatingAutosaves = 3;
+}
 UFGSaveSession::~UFGSaveSession(){ }
 void UFGSaveSession::Init(bool willLoad){ }
 UFGSaveSession* UFGSaveSession::Get( UWorld* world){ return nullptr; }
@@ -20,6 +23,7 @@ UWorld* UFGSaveSession::GetWorld() const{ return nullptr; }
 FString UFGSaveSession::GenerateAutosaveName(int32& out_autosaveNum, const FString& sessionName){ return FString(); }
 FString UFGSaveSession::GetFullMapName() const{ return FString(); }
 void UFGSaveSession::SetupAutosave(){ }
+void UFGSaveSession::CheckAutoSaveNotificationTimer(){ }
 void UFGSaveSession::SortObjectsByDependency(TArray< UObject* >& io_objectsToSerialize){ }
 void UFGSaveSession::CollectObjects(TArray<UObject*> rootSet, TArray< UObject* >& out_objectsToSerialize){ }
 void UFGSaveSession::CollectObjects(UObject* rootObject, TArray< UObject* >& out_objectsToSerialize){ }

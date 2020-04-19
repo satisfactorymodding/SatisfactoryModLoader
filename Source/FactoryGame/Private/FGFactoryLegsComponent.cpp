@@ -2,15 +2,18 @@
 
 #include "FGFactoryLegsComponent.h"
 
+
 uint8 FFeetOffset::GetFeetIndexFromSocketName(const FName socket){ return uint8(); }
 FFeetOffset::FFeetOffset(){ }
 FFeetOffset::FFeetOffset(const FName socket){ }
 FName FFeetOffset::GetSocket() const{ return FName(); }
 #if WITH_EDITOR
-void UFGFactoryLegsComponent::OnRegister(){ Super::OnRegister(); }
-void UFGFactoryLegsComponent::OnUnregister(){ Super::OnUnregister(); }
+void UFGFactoryLegsComponent::OnRegister(){ Super::OnRegister();}
+void UFGFactoryLegsComponent::OnUnregister(){ Super::OnUnregister();}
 #endif 
-UFGFactoryLegsComponent::UFGFactoryLegsComponent(){ }
+UFGFactoryLegsComponent::UFGFactoryLegsComponent() : Super() {
+	this->bReplicates = true;
+}
 void UFGFactoryLegsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGFactoryLegsComponent::BeginPlay(){ }
 void UFGFactoryLegsComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ }

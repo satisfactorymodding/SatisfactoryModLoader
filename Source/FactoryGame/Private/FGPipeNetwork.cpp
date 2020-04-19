@@ -30,7 +30,8 @@ void AFGPipeNetwork::FlushNetwork(){ }
 void AFGPipeNetwork::MarkForFullRebuild(){ }
 bool AFGPipeNetwork::NeedFullRebuild() const{ return bool(); }
 void AFGPipeNetwork::OnFullRebuildCompleted(){ }
-void AFGPipeNetwork::DisplayDebugDetails( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }
+void AFGPipeNetwork::Debug_DisplayDetails( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }
+void AFGPipeNetwork::Debug_PipeVisualization(EDebugPipeVisualization mode){ }
 void AFGPipeNetwork::RebuildUpdateList(){ }
 void AFGPipeNetwork::UpdateFluidDescriptor(TSubclassOf< UFGItemDescriptor > descriptor){ }
 int32 AFGPipeNetwork::CreatePressureGroup(){ return int32(); }

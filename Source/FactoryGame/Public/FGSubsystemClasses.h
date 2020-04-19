@@ -74,6 +74,9 @@ public:
 	/** Handles administration task of servers */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGAdminInterface > mAdminInterfaceClass;
+	/** Handles regrowth of item pickups */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGItemRegrowSubsystem > mItemRegrowSubsystemClass;
 
 
 public:

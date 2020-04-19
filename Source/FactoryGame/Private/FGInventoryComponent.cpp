@@ -2,6 +2,7 @@
 
 #include "FGInventoryComponent.h"
 
+
 FInventoryItem::FInventoryItem(){ }
 FInventoryItem::FInventoryItem(TSubclassOf<  UFGItemDescriptor > itemClass){ }
 bool FInventoryItem::Serialize(FArchive& ar){ return bool(); }
@@ -12,8 +13,11 @@ FInventoryStack::FInventoryStack(int32 numItems, TSubclassOf<  UFGItemDescriptor
 void UFGInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGInventoryComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void UFGInventoryComponent::PreNetReceive(){ }
-UFGInventoryComponent::UFGInventoryComponent(){ }
-void UFGInventoryComponent::Serialize(FArchive& ar){ Super::Serialize(ar); }
+UFGInventoryComponent::UFGInventoryComponent() : Super() {
+	this->mDefaultInventorySize = 1;
+	this->mCanBeRearrange = true;
+}
+void UFGInventoryComponent::Serialize(FArchive& ar){ Super::Serialize(ar);}
 void UFGInventoryComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGInventoryComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGInventoryComponent::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -21,7 +25,7 @@ void UFGInventoryComponent::PostLoadGame_Implementation(int32 saveVersion, int32
 void UFGInventoryComponent::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool UFGInventoryComponent::NeedTransform_Implementation(){ return bool(); }
 bool UFGInventoryComponent::ShouldSave_Implementation() const{ return bool(); }
-void UFGInventoryComponent::OnRegister(){ Super::OnRegister(); }
+void UFGInventoryComponent::OnRegister(){ Super::OnRegister();}
 void UFGInventoryComponent::SetDefaultSize(int32 defaultSize){ }
 void UFGInventoryComponent::Resize(int32 newSize){ }
 void UFGInventoryComponent::SortInventory(){ }

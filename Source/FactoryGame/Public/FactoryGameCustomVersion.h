@@ -13,7 +13,7 @@ struct FACTORYGAME_API FFactoryGameCustomVersion
 		// 2017-06-02: Moved mNumItems and mPickupClass into mPickupItems in FGItemPickup
 		ItemPickupGotInventoryStack,
 
-		// 2017-06-17: Added persistant serialization to inventory items
+		// 2017-06-17: Added persistent serialization to inventory items
 		InventoryItemGotPersistantSeralization,
 
 		// 2017-08-23: Moved mPreviewDistance from Vehicle and Buildable to FGItemDescriptor
@@ -60,6 +60,9 @@ struct FACTORYGAME_API FFactoryGameCustomVersion
 
 		// 2020-02-21: Renamed mShipTravelTimeAfterPurchase to mTimeToComplete
 		RenamedSchematicShipTravelTime,
+
+		// 2020-03-24: Migrate the schematic dependencies to use the UFGAvailabilityDependency
+		RefactorSchematicDependencies,
 
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

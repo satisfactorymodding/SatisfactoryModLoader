@@ -2,6 +2,7 @@
 
 #include "FGSkySphere.h"
 
+
 #if WITH_EDITOR
 void AFGSkySphere::PostEditChangeChainProperty( FPropertyChangedChainEvent& propertyChangedEvent){ }
 #endif 
@@ -15,10 +16,17 @@ void AFGSkySphere::SetupPreviewDelegate(){ }
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-AFGSkySphere::AFGSkySphere(){ }
+AFGSkySphere::AFGSkySphere() : Super() {
+	this->mSunIntensity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mSunIntensity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mSunIntensity.EditorCurveData.DefaultValue = 1;
+	this->mSkyLightIntensity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.EditorCurveData.DefaultValue = 5;
+	this->mOcclusionTintColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[0].DefaultValue = 0;
+	this->mCloudOpacity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mCloudOpacity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mCloudOpacity.EditorCurveData.DefaultValue = 1.20000004768372;
+	this->mStarBrightness.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mStarBrightness.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mStarBrightness.EditorCurveData.DefaultValue = 0.200000002980232;
+	this->mSkyLightColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[0].DefaultValue = 1;
+}
 void AFGSkySphere::PostActorCreated(){ }
-void AFGSkySphere::PostLoad(){ Super::PostLoad(); }
-void AFGSkySphere::BeginDestroy(){ Super::BeginDestroy(); }
+void AFGSkySphere::PostLoad(){ Super::PostLoad();}
+void AFGSkySphere::BeginDestroy(){ Super::BeginDestroy();}
 void AFGSkySphere::UpdatePreview_Implementation(){ }
 FLinearColor AFGSkySphere::GetColorCurveValue(const FRuntimeCurveLinearColor& curve, float time){ return FLinearColor(); }
 float AFGSkySphere::GetFloatCurveValue(const FRuntimeFloatCurve& curve, float time){ return float(); }

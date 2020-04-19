@@ -20,15 +20,17 @@ bool UFGCheatManager::TurboMode_Get(){ return bool(); }
 void UFGCheatManager::GiveItemStacks(TSubclassOf<  UFGItemDescriptor > resource, int32 NumberOfStacks){ }
 void UFGCheatManager::GiveItemsSingle(TSubclassOf<  UFGItemDescriptor > resource, int32 NumberOfItems){ }
 void UFGCheatManager::GiveResourceSinkCoupons(int32 NumCoupons){ }
+void UFGCheatManager::DrawSphere(int32 radius){ }
 void UFGCheatManager::PlayerFly(bool flyModeEnabled){ }
 bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
-void UFGCheatManager::PlayerNoClipModeOnFly(bool gohstMode){ }
+void UFGCheatManager::PlayerNoClipModeOnFly(bool ghostMode){ }
 bool UFGCheatManager::PlayerNoClipModeOnFly_Get(){ return bool(); }
 void UFGCheatManager::ClearGiveItemPopularList(){ }
 void UFGCheatManager::GiveALLSchematics(){ }
 void UFGCheatManager::GiveAllSchematicsAndPhases(){ }
 void UFGCheatManager::GiveAvailableSchematics(){ }
 void UFGCheatManager::GiveCheatSchematics(){ }
+void UFGCheatManager::GivePrototypeSchematics(){ }
 void UFGCheatManager::GiveStorySchematics(){ }
 void UFGCheatManager::GiveStartingResearch(){ }
 void UFGCheatManager::GiveAllResearchTrees(){ }
@@ -79,6 +81,7 @@ void UFGCheatManager::UpdateSessionToOSS(){ }
 void UFGCheatManager::VisitAllMapAreas(){ }
 void UFGCheatManager::SetAITickDistance(float distance){ }
 void UFGCheatManager::DumpPlayerStates(){ }
+void UFGCheatManager::DumpHotbarShortcuts(){ }
 void UFGCheatManager::EnableInstancingOnFactory(bool enabled){ }
 void UFGCheatManager::DumpActorRepresentations(){ }
 void UFGCheatManager::DumpSignificanceManagedObjects(){ }
