@@ -34,6 +34,7 @@ public:
 	UFunction* Func;
 	FlowStackType FlowStack;
 	bool Return = false;
+	int32 ubergraphOffset = -1;
 
 	FParseFrame(UObject* Context, UFunction* Func) : Context(Context), Code(Func->Script.GetData()), Func(Func) {
 		Frame = (FFrame*)malloc(sizeof(FFrame));
@@ -195,6 +196,10 @@ INSTRUCTION(EX_Return)
 
 INSTRUCTION_HANDLER(EX_Jump)
 	CodeSkipSizeType offset = Stack.ReadCodeSkipCount();
+	if (Stack.Func->Script.Num() - 3 == offset) {
+		Result->SetStringField("Instruction", "End");
+		return true;
+	}
 	Result->SetNumberField("Offset", offset);
 	return true;
 }
@@ -586,8 +591,8 @@ INSTRUCTION_HANDLER(EX_PrimitiveCast)
 INSTRUCTION(EX_PrimitiveCast)
 
 INSTRUCTION_HANDLER(EX_SetSet)
-	const int32 Num = Stack.ReadInt<int32>();
 	Result->SetObjectField("Set", Stack.Step(nullptr));
+	const int32 Num = Stack.ReadInt<int32>();
 	TArray<TSharedPtr<FJsonValue>> values;
 	if (Num > 0) {
 		while (*Stack.Code != EX_EndSet) {
@@ -668,7 +673,7 @@ INSTRUCTION_HANDLER(EX_StructMemberContext)
 	UProperty* StructProperty = Stack.ReadProperty();
 	Result->SetStringField("Context", StructProperty->GetFullName());
 	Result->SetObjectField("Code", Stack.Step(ReturnValue));
-
+	SetDefaultRetVal(ReturnValue, StructProperty);
 	return true;
 }
 INSTRUCTION(EX_StructMemberContext)
@@ -710,6 +715,7 @@ INSTRUCTION(EX_LocalFinalFunction)
 INSTRUCTION_HANDLER(EX_LocalOutVariable)
 	UProperty* VarProperty = Stack.ReadProperty();
 	Result->SetStringField("Var", VarProperty->GetName());
+	SetDefaultRetVal(ReturnValue, VarProperty);
 	return true;
 }
 INSTRUCTION(EX_LocalOutVariable)
@@ -728,20 +734,16 @@ INSTRUCTION(EX_InstanceDelegate)
 INSTRUCTION_HANDLER(EX_PushExecutionFlow)
 	CodeSkipSizeType offset = Stack.ReadCodeSkipCount();
 	Result->SetNumberField("Offset", offset);
-	Stack.FlowStack.Push(offset);
-	return false;
+	return true;
 }
 INSTRUCTION(EX_PushExecutionFlow)
 
 INSTRUCTION_HANDLER(EX_PopExecutionFlow)
-	CodeSkipSizeType offset = Stack.FlowStack.Pop(false);
-	Stack.Code = &Stack.Func->Script[offset];
-	return false;
+	return true;
 }
 INSTRUCTION(EX_PopExecutionFlow)
 
 INSTRUCTION_HANDLER(EX_ComputedJump)
-	throw std::exception("computed jump not supported");
 	Result->SetObjectField("Offset", Stack.Step(nullptr));
 	return true;
 }
@@ -749,8 +751,7 @@ INSTRUCTION(EX_ComputedJump)
 
 INSTRUCTION_HANDLER(EX_PopExecutionFlowIfNot)
 	Result->SetObjectField("Condition", Stack.Step(nullptr));
-	CodeSkipSizeType offset = Stack.FlowStack.Pop(false);
-	return false;
+	return true;
 }
 INSTRUCTION(EX_PopExecutionFlowIfNot)
 
@@ -798,9 +799,8 @@ INSTRUCTION_HANDLER(EX_WireTracepoint)
 INSTRUCTION(EX_WireTracepoint)
 
 INSTRUCTION_HANDLER(EX_SkipOffsetConst)
-	throw std::exception("SkipOffsetConst no supported!");
 	Result->SetNumberField("Value", Stack.ReadCodeSkipCount());
-	return false;
+	return true;
 }
 INSTRUCTION(EX_SkipOffsetConst)
 
@@ -856,6 +856,7 @@ INSTRUCTION_HANDLER(EX_CallMulticastDelegate)
 	UFunction* Signature = CastChecked<UFunction>(Stack.ReadObject());
 	Result->SetStringField("Signature", Signature->GetFullName());
 	Result->SetObjectField("Delegate", Stack.Step(nullptr));
+	ParseFunctionInstruction(Signature, Stack, Result, ReturnValue);
 	return true;
 }
 INSTRUCTION(EX_CallMulticastDelegate)
@@ -961,10 +962,11 @@ TArray<TSharedPtr<FJsonValue>> SML::CreateFunctionCode(UFunction* function) {
 	static int calls = 0;
 	
 	TArray<TSharedPtr<FJsonValue>> result;
-	if (function->Script.Num() > 0 && function->GetName() == TEXT("Test")) {
+	if (function->Script.Num() > 0) {
 		FParseFrame frame = FParseFrame(Cast<UClass>(function->GetOuter())->GetDefaultObject(), function);
 		const bool bHasReturnParam = function->ReturnValueOffset != MAX_uint16;
 		void* ReturnValue = bHasReturnParam ? ((uint8*)frame.Params + function->ReturnValueOffset) : nullptr;
+		
 		result = ParseClosure(frame, (uint8*)ReturnValue);
 	}
 
