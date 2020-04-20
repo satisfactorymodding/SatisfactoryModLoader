@@ -18,20 +18,6 @@ public:
 };
 
 /**
- * Retrieves instance of the given subsystem holder for the world context
- * TODO: Similar function accessible from blueprints
- */
-template <typename T>
-T* GetSubsystemHolder(UObject* WorldContext) {
-	UWorld* World = WorldContext->GetWorld();
-	checkf(World, TEXT("GetWorld not implemented for passed WorldContext object"));
-	AFGGameState* GameState = World->GetGameState<AFGGameState>();
-	if (GameState == nullptr)
-		return nullptr;
-	return GameState->FindComponentByClass<T>();
-}
-
-/**
  * Abstract holder for mod defined subsystems
  * Component is initialized on server and replicated to client, but subsystem instances
  * are created only on server side, and replicated to clients as needed
@@ -80,7 +66,23 @@ public:
 		OutSpawnedSubsystem = Subsystem;
 		check(OutSpawnedSubsystem);
 	}
+
+	/**
+	* Retrieves instance of the given subsystem holder for the world context
+	* You need to cast it to your class afterwards
+	* In C++, use helper template function GetSubsystemHolder<T>()
+	*/
+	UFUNCTION(BlueprintPure, meta = (DisplayName = "GetModSubsystemHolder", WorldContext = "WorldContextObject"))
+	static UModSubsystemHolder* K2_GetModSubsystemHolder(TSubclassOf<UModSubsystemHolder> HolderClass, UObject* WorldContextObject);
 };
+
+/**
+ * Retrieves instance of the given subsystem holder for the world context
+ */
+template <typename T>
+T* GetSubsystemHolder(UObject* WorldContext) {
+	return Cast<T>(UModSubsystemHolder::K2_GetModSubsystemHolder(T::StaticClass(), WorldContext));
+}
 
 UCLASS(MinimalAPI)
 class USMLSubsystemHolder : public UModSubsystemHolder {

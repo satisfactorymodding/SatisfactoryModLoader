@@ -4,8 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "FGSchematic.h"
 #include "FGResearchTree.h"
-#include "FGPlayerController.h"
 #include "command/ChatCommandLibrary.h"
+#include "mod/ModSubsystems.h"
 #include "SMLInitMod.generated.h"
 
 UCLASS(Abstract, Blueprintable, HideCategories = ("Actor Tick", Rendering, Replication, Input, Actor, Collision, LOD, Cooking))
@@ -48,4 +48,10 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<TSubclassOf<AChatCommandInstance>> mChatCommands;
+
+	/**
+	 * List of subsystem holders to register
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = Advanced)
+	TArray<TSubclassOf<UModSubsystemHolder>> mModSubsystems;
 };

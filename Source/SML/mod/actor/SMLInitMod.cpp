@@ -36,4 +36,8 @@ void ASMLInitMod::LoadModContent() {
 			ChatCommandSubsystem->RegisterCommand(RegistrarEntry);
 		}
 	}
+	//Register subsystem holders
+	for (const TSubclassOf<UModSubsystemHolder> SubsystemHolder : mModSubsystems) {
+		FSubsystemInfoHolder::RegisterSubsystemHolder(SubsystemHolder);
+	}
 }

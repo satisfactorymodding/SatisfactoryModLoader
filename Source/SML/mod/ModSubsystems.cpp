@@ -4,7 +4,7 @@
 #include "util/FuncNames.h"
 #include "util/Logging.h"
 
-static TArray<UClass*> SubsystemHolders;
+static TSet<UClass*> SubsystemHolders;
 
 void FSubsystemInfoHolder::RegisterSubsystemHolder(TSubclassOf<UModSubsystemHolder> Class) {
 	SubsystemHolders.Add(Class.Get());
@@ -40,6 +40,15 @@ AFGSubsystem* UModSubsystemHolder::K2_SpawnSubsystem(TSubclassOf<AFGSubsystem> S
 	SpawnParams.Name = SpawnName;
 
 	return GetWorld()->SpawnActor<AFGSubsystem>(SpawnClass, SpawnParams);
+}
+
+UModSubsystemHolder* UModSubsystemHolder::K2_GetModSubsystemHolder(TSubclassOf<UModSubsystemHolder> HolderClass, UObject* WorldContextObject) {
+	UWorld* World = WorldContextObject->GetWorld();
+	checkf(World, TEXT("GetWorld not implemented for passed WorldContext object"));
+	AFGGameState* GameState = World->GetGameState<AFGGameState>();
+	if (GameState == nullptr)
+		return nullptr;
+	return Cast<UModSubsystemHolder>(GameState->FindComponentByClass(HolderClass));
 }
 
 void UModSubsystemHolder::InitSubsystems() {

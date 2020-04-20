@@ -29,7 +29,7 @@ const TArray<AChatCommandInstance*>& AChatCommandSubsystem::GetRegisteredCommand
 }
 
 AChatCommandInstance* AChatCommandSubsystem::FindCommandByName(const FString& Name) {
-	AChatCommandInstance** Entry = CommandByNameMap.Find(Name);
+	AChatCommandInstance** Entry = CommandByNameMap.Find(Name.ToLower());
 	return Entry == nullptr ? nullptr : *Entry;
 }
 
@@ -63,14 +63,9 @@ AChatCommandSubsystem* AChatCommandSubsystem::Get(UObject* WorldContext) {
 }
 
 void AChatCommandSubsystem::Init() {
-	SML::Logging::info(TEXT("Element Num Pre: "), CommandByNameMap.Num());
-	SML::Logging::info(TEXT("FindCommand Help: "), FindCommandByName(TEXT("help")));
-	CommandByNameMap = TMap<FString, AChatCommandInstance*>();
 	RegisterCommand(AHelpCommandInstance::StaticClass());
 	RegisterCommand(AInfoCommandInstance::StaticClass());
 	RegisterCommand(APlayerListCommandInstance::StaticClass());
-	SML::Logging::info(TEXT("Element Num Post: "), CommandByNameMap.Num());
-	SML::Logging::info(TEXT("FindCommand Help: "), FindCommandByName(TEXT("help")));
 }
 
 
@@ -112,19 +107,19 @@ void AChatCommandSubsystem::RegisterCommand(TSubclassOf<AChatCommandInstance> Co
 		//register all command aliases
 		for (const FString& CommandAlias : AllCommandNames) {
 			const FString FqCommandAlias = MakeFQCommandName(CommandCDO->ModId, CommandAlias);
-			CommandByNameMap.Add(CommandAlias, Command);
-			CommandByNameMap.Add(FqCommandAlias, Command);
+			CommandByNameMap.Add(CommandAlias.ToLower(), Command);
+			CommandByNameMap.Add(FqCommandAlias.ToLower(), Command);
 			SML::Logging::info(TEXT("Registering chat command with name "), *FqCommandAlias, TEXT(" from mod "), *CommandCDO->ModId);
 		}
 		//Register command entry
 		RegisteredCommands.Add(Command);
 	}
-	SML::Logging::info(TEXT("FindCommand Help: "), FindCommandByName(TEXT("help")));
 }
 
 FString ParseCommandArgument(const FString& Line, int32& Off);
 
 EExecutionStatus AChatCommandSubsystem::RunChatCommand(const FString& CommandLine, UCommandSender* Sender) {
+	SML::Logging::info(TEXT("[CHAT CMD] "), *Sender->GetSenderName(), TEXT(": /"), *CommandLine);
 	if (CommandLine.IsEmpty()) {
 		PrintCommandNotFound(Sender);
 		return EExecutionStatus::BAD_ARGUMENTS;
@@ -133,10 +128,10 @@ EExecutionStatus AChatCommandSubsystem::RunChatCommand(const FString& CommandLin
 	int32 Offset = 0;
 	while (CommandLine.Len() > Offset) {
 		FString resultArg = ParseCommandArgument(CommandLine, Offset);
-		ResultArgArray.Add(std::move(resultArg));
+		ResultArgArray.Add(resultArg);
 		Offset++; //skip argument separator
 	}
-	const FString& CommandName = ResultArgArray[0];
+	const FString CommandName = ResultArgArray[0];
 	//Remove command name from arguments array
 	ResultArgArray.RemoveAt(0);
 	AChatCommandInstance* CommandEntry = FindCommandByName(CommandName);
