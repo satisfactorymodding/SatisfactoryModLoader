@@ -6,6 +6,7 @@
 #include "player/component/SMLPlayerComponent.h"
 #include "SMLChatCommands.h"
 #include "mod/ModSubsystems.h"
+#include "util/Logging.h"
 
 AFGPlayerController* UCommandSender::GetPlayer() const {
 	checkf(false, TEXT("GetPlayer not implemented by this CommandSource"));
@@ -62,9 +63,14 @@ AChatCommandSubsystem* AChatCommandSubsystem::Get(UObject* WorldContext) {
 }
 
 void AChatCommandSubsystem::Init() {
+	SML::Logging::info(TEXT("Element Num Pre: "), CommandByNameMap.Num());
+	SML::Logging::info(TEXT("FindCommand Help: "), FindCommandByName(TEXT("help")));
+	CommandByNameMap = TMap<FString, AChatCommandInstance*>();
 	RegisterCommand(AHelpCommandInstance::StaticClass());
 	RegisterCommand(AInfoCommandInstance::StaticClass());
 	RegisterCommand(APlayerListCommandInstance::StaticClass());
+	SML::Logging::info(TEXT("Element Num Post: "), CommandByNameMap.Num());
+	SML::Logging::info(TEXT("FindCommand Help: "), FindCommandByName(TEXT("help")));
 }
 
 
@@ -108,10 +114,12 @@ void AChatCommandSubsystem::RegisterCommand(TSubclassOf<AChatCommandInstance> Co
 			const FString FqCommandAlias = MakeFQCommandName(CommandCDO->ModId, CommandAlias);
 			CommandByNameMap.Add(CommandAlias, Command);
 			CommandByNameMap.Add(FqCommandAlias, Command);
+			SML::Logging::info(TEXT("Registering chat command with name "), *FqCommandAlias, TEXT(" from mod "), *CommandCDO->ModId);
 		}
 		//Register command entry
 		RegisteredCommands.Add(Command);
 	}
+	SML::Logging::info(TEXT("FindCommand Help: "), FindCommandByName(TEXT("help")));
 }
 
 FString ParseCommandArgument(const FString& Line, int32& Off);

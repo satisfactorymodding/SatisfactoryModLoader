@@ -13,14 +13,20 @@ SML_API void* registerHookFunction(const std::string& symbolName, void* hookFunc
 
 SML_API std::string decorateSymbolName(const char* functionName, const char* symbolType);
 
-template <typename F>
-std::vector<F>* createHandlerList(const std::string& identifier) {
+template <typename T, typename E>
+struct THandlerLists {
+	std::vector<T> HandlersBefore;
+	std::vector<E> HandlersAfter;
+};
+
+template <typename T, typename E>
+THandlerLists<T, E>* createHandlerLists(const std::string& identifier) {
 	void* handlerListRaw = getHandlerListInternal(identifier);
 	if (handlerListRaw == nullptr) {
-		handlerListRaw = new std::vector<F>();
+		handlerListRaw = new THandlerLists<T, E>();
 		setHandlerListInstanceInternal(identifier, handlerListRaw);
 	}
-	return static_cast<std::vector<F>*>(handlerListRaw);
+	return reinterpret_cast<THandlerLists<T, E>*>(handlerListRaw);
 }
 
 template <typename TCallable, TCallable Callable>
@@ -176,19 +182,13 @@ private:
 	}
 
 	static void installHook(const std::string& symbolName) {
-		if (handlersBefore == nullptr) {
-			handlersBefore = createHandlerList<HandlerSignature>(symbolName);
-			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
+		if (functionPtr == nullptr) {
+			functionPtr = static_cast<HookType*>(registerHookFunction(symbolName, static_cast<void*>(getApplyCall())));
+			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(symbolName);
+			handlersBefore = &HandlerLists->HandlersBefore;
+			handlersAfter = &HandlerLists->HandlersAfter;
 		}
 	}
-
-	static void installHookAfter(const std::string& symbolName) {
-		if (handlersAfter == nullptr) {
-			handlersAfter = createHandlerList<HandlerSignatureAfter>(symbolName);
-			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
-		}
-	}
-
 public:
 	static void addHandlerBefore(const char* methodName, Handler handler) {
 		const std::string symbolName = decorateSymbolName(methodName, typeid(PMF).name());
@@ -198,7 +198,7 @@ public:
 
 	static void addHandlerAfter(const char* methodName, HandlerAfter handler) {
 		const std::string symbolName = decorateSymbolName(methodName, typeid(PMF).name());
-		installHookAfter(symbolName);
+		installHook(symbolName);
 		handlersAfter->push_back(handler);
 	}
 };
@@ -249,19 +249,13 @@ private:
 	}
 
 	static void installHook(const std::string& symbolName) {
-		if (handlersBefore == nullptr) {
-			handlersBefore = createHandlerList<Handler>(symbolName);
-			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
+		if (functionPtr == nullptr) {
+			functionPtr = static_cast<HookType*>(registerHookFunction(symbolName, static_cast<void*>(getApplyCall())));
+			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(symbolName);
+			handlersBefore = &HandlerLists->HandlersBefore;
+			handlersAfter = &HandlerLists->HandlersAfter;
 		}
 	}
-
-	static void installHookAfter(const std::string& symbolName) {
-		if (handlersAfter == nullptr) {
-			handlersAfter = createHandlerList<HandlerAfter>(symbolName);
-			if (functionPtr == nullptr) functionPtr = (HookType*) registerHookFunction(symbolName, static_cast<void*>(getApplyCall()));
-		}
-	}
-
 public:
 	static void addHandlerBefore(const char* methodName, Handler handler) {
 		const std::string symbolName = decorateSymbolName(methodName, typeid(PMF).name());

@@ -30,6 +30,7 @@
 #include "player/VersionCheck.h"
 #include "player/MainMenuMixin.h"
 #include "mod/toolkit/FGAssetDumper.h"
+#include "mod/ModSubsystems.h"
 
 bool checkGameVersion(const long targetVersion) {
 	const FString& buildVersion = FString(FApp::GetBuildVersion());
@@ -150,7 +151,7 @@ namespace SML {
 		activeConfiguration = new FSMLConfiguration;
 		parseConfig(configJson, *activeConfiguration);
 
-		initConsole();
+		InitConsole();
 
 		modHandlerPtr = new Mod::FModHandler();
 		SML::Logging::info(TEXT("Performing mod discovery"));
@@ -162,13 +163,7 @@ namespace SML {
 		InitializePlayerComponent();
 		RegisterVersionCheckHooks();
 		RegisterMainMenuHooks();
-		if (getSMLConfig().enableSMLChatCommands) {
-			SML::Logging::info(TEXT("Registering SML chat commands"));
-			if (getSMLConfig().developmentMode) {
-				SML::Logging::info(TEXT("Register SML development commands"));
-			}
-		}
-
+		FSubsystemInfoHolder::SetupHooks();
 		modHandlerPtr->loadDllMods(*bootstrapAccessors);
 
 		SML::Logging::info(TEXT("Construction phase finished!"));

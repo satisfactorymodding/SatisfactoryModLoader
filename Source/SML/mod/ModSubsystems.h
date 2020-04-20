@@ -57,6 +57,29 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "InitSubsystems"))
 	void K2_InitSubsystems();
+
+	/**
+	 * Spawns subsystem instance and returns created actor
+	 * Store it in member variable for faster access
+	 * @return spawned subsystem instance, or nullptr if spawning failed
+	 */
+	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnSubsystem"))
+	AFGSubsystem* K2_SpawnSubsystem(TSubclassOf<AFGSubsystem> SpawnClass, FName SpawnName) const;
+	
+	/**
+	* Spawns subsystem instance and sets it's pointer to returned object
+	* Type-safe wrapper around K2_SpawnSubsystem
+	*/
+	template< class C >
+	void SpawnSubsystem(C*& OutSpawnedSubsystem, TSubclassOf<AFGSubsystem> SpawnClass, FName SpawnName) {
+		if (OutSpawnedSubsystem) {
+			UE_LOG(LogTemp, Error, TEXT("ModSubsystems::SpawnSubsystem failed for '%s', already spawned or loaded."), *SpawnName.ToString());
+			return;
+		}
+		auto* Subsystem = Cast<C>(K2_SpawnSubsystem(SpawnClass, SpawnName));
+		OutSpawnedSubsystem = Subsystem;
+		check(OutSpawnedSubsystem);
+	}
 };
 
 UCLASS(MinimalAPI)
@@ -68,26 +91,4 @@ private:
 public:
 	FORCEINLINE AChatCommandSubsystem* GetChatCommandSubsystem() const { return ChatCommandSubsystem; }
 	void InitSubsystems() override;
-
-	/**
-	* Spawns subsystem instance and sets it's pointer to returned object
-	* TODO: Similar function accessible from blueprints
-	*/
-	template< class C >
-	void SpawnSubsystem(C*& OutSpawnedSubsystem, TSubclassOf<AFGSubsystem> SpawnClass, FName SpawnName) {
-		if (OutSpawnedSubsystem) {
-			UE_LOG(LogTemp, Error, TEXT("ModSubsystems::SpawnSubsystem failed for '%s', already spawned or loaded."), *SpawnName.ToString());
-			return;
-		}
-		if (!IsValid(SpawnClass)) {
-			UE_LOG(LogTemp, Error, TEXT("ModSubsystems::SpawnSubsystem failed for '%s', no class given."), *SpawnName.ToString());
-			return;
-		}
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = GetOwner();
-		SpawnParams.Name = SpawnName;
-
-		OutSpawnedSubsystem = GetWorld()->SpawnActor<C>(SpawnClass, SpawnParams);
-		check(OutSpawnedSubsystem);
-	}
 };

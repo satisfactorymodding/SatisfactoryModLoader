@@ -7,11 +7,11 @@ namespace SML {
 	*
 	* !WARNING! Only call it after the SML config has loaded
 	*/
-	void initConsole();
+	void InitConsole();
 
 	/**
 	* Used by initConsole to allocate and show the console.
 	* All standard output streams will get cloned to the console.
 	*/
-	void enableConsole();
+	void EnableConsole();
 }
