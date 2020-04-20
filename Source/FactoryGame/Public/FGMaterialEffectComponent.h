@@ -43,11 +43,13 @@ struct FACTORYGAME_API FCachedMaterialArray
 
 	// Component FName for each material interface
 	UPROPERTY()
-	TArray< FName > MeshFNames;
+	FName MeshFName;
+
+	UPROPERTY()
+	TWeakObjectPtr<UMeshComponent> MeshComponent;
 
 public:
 	FORCEINLINE ~FCachedMaterialArray() = default;
-	FORCEINLINE FCachedMaterialArray() = default;
 };
 
 /**
@@ -91,6 +93,12 @@ public:
 	FORCEINLINE float GetDuration() const { return mDuration; }
 
 	FORCEINLINE void SetAutoDestroy( bool autoDestroy ) { mAutoDestroy = autoDestroy; }
+
+	/** Get the array of cached materials set when the build effect starts */
+	const TArray< FCachedMaterialArray >& GetCachedMaterialArray() { return mOverrideMaterials; }
+
+	/** Attempt to retrieve a cached material for a given component. Will return null if not set OR if the name of the actual mesh asset doesn't match that cached name*/
+	UMaterialInterface* GetCachedMaterialForComponent( UMeshComponent* inComponent, int32 materialIndex );
 
 protected:
 	/** Called prior to the build effect starting and before the materials have been overridden. */

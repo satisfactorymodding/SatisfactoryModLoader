@@ -25,7 +25,7 @@ public:
 
 	void AddItemsToGive( TArray< FItemAmount > items );
 
-protected:
+public: // MODDING EDIT: protected -> public
 	/** The items you get from this unlock */
 	UPROPERTY( EditDefaultsOnly )
 	TArray< FItemAmount > mItemsToGive;

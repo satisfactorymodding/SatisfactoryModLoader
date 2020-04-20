@@ -63,7 +63,7 @@ class FACTORYGAME_API IFGConstructionMessageInterface
 	GENERATED_BODY()
 
 public:
-	virtual void SerializeConstructMessage( FArchive& ar ) = 0;
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) = 0;
 
 	virtual void ClientPreConstructMessageSerialization() {};
 	virtual void ClientPostConstructMessageSerialization() {};

@@ -103,10 +103,98 @@ public:
 	FORCEINLINE ~FOptionRowData() = default;
 };
 
+USTRUCT( BlueprintType, meta = ( ShowOnlyInnerProperties ) )
+struct FACTORYGAME_API FActionMappingDisplayName
+{
+	GENERATED_BODY()
+	
+	FActionMappingDisplayName(){}
+
+	FActionMappingDisplayName( FName keyBidningName ) :
+		ActionMappingName( keyBidningName )
+	{}
+
+	UPROPERTY( BlueprintReadOnly, VisibleAnywhere )
+	FName ActionMappingName;
+
+	UPROPERTY( BlueprintReadOnly, EditAnywhere )
+	FText DisplayName;
+
+public:
+	FORCEINLINE ~FActionMappingDisplayName() = default;
+};
+
+USTRUCT( BlueprintType, meta = ( ShowOnlyInnerProperties ) )
+struct FACTORYGAME_API FAxisMappingDisplayName
+{
+	GENERATED_BODY()
+
+	FAxisMappingDisplayName(){}
+
+	FAxisMappingDisplayName( FName axisMappingName ) :
+		AxisMappingName( axisMappingName )
+	{}
+
+	UPROPERTY( BlueprintReadOnly, VisibleAnywhere )
+	FName AxisMappingName;
+
+	UPROPERTY( BlueprintReadOnly, EditAnywhere )
+	FText DisplayNamePositiveScale;
+
+	UPROPERTY( BlueprintReadOnly, EditAnywhere )
+	FText DisplayNameNegativeScale;
+
+public:
+	FORCEINLINE ~FAxisMappingDisplayName() = default;
+};
+
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Satisfactory User Options" ) )
 class FACTORYGAME_API UFGOptionsSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
+public:
+	
+	/** Return the display name struct for an action mapping */
+	UFUNCTION( BlueprintCallable )
+	static bool GetActionMappingDisplayName( FName actionMappingName, FActionMappingDisplayName& out_ActionMappingDisplayName )
+	{
+		TArray<FActionMappingDisplayName> actionBindingsDisplayNames = GetDefault<UFGOptionsSettings>()->mActionBindingsDisplayNames;
+		bool result = false;
+		if( FActionMappingDisplayName* actionMappingDisplayName = actionBindingsDisplayNames.FindByPredicate( [ actionMappingName ]( const FActionMappingDisplayName& actionBindingsDisplayNames ){ return actionBindingsDisplayNames.ActionMappingName.IsEqual( actionMappingName ); } ) )
+		{
+			out_ActionMappingDisplayName = *actionMappingDisplayName;
+			result = true;
+		}
+		return result;
+	}
+
+	/** Return the display name struct for an axis mapping */
+	UFUNCTION( BlueprintCallable )
+	static bool GetAxisMappingDisplayName( FName axisMappingName, FAxisMappingDisplayName& out_AxisMappingDisplayName )
+	{
+		TArray<FAxisMappingDisplayName> axisBindingsDisplayNames = GetDefault<UFGOptionsSettings>()->mAxisBindingsDisplayNames;
+		bool result = false;
+		if( FAxisMappingDisplayName* axisMappingDisplayName = axisBindingsDisplayNames.FindByPredicate( [ axisMappingName ]( const FAxisMappingDisplayName& axisBindingsDisplayNames ){ return axisBindingsDisplayNames.AxisMappingName.IsEqual( axisMappingName ); } ) )
+		{
+			out_AxisMappingDisplayName = *axisMappingDisplayName;
+			result = true;
+		}
+		return result;
+	}
+
+	/** Return all display name structs for an action mappings */
+	UFUNCTION( BlueprintCallable )
+	static void GetActionMappings( TArray<FActionMappingDisplayName>& out_ActionMappingDisplayName )
+	{
+		out_ActionMappingDisplayName.Append( GetDefault<UFGOptionsSettings>()->mActionBindingsDisplayNames );
+	}
+
+	/** Return all display name structs for an axis mappings */
+	UFUNCTION( BlueprintCallable )
+	static void GetAxisMappings( TArray<FAxisMappingDisplayName>& out_AxisMappingDisplayName )
+	{
+		out_AxisMappingDisplayName.Append( GetDefault<UFGOptionsSettings>()->mAxisBindingsDisplayNames );
+	}
 
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override
@@ -119,20 +207,25 @@ class FACTORYGAME_API UFGOptionsSettings : public UDeveloperSettings
 	};
 #endif
 public:
+	UPROPERTY( EditAnywhere, config, Category = "Key Bindings", meta = ( ShowOnlyInnerProperties, ToolTip = "This maps a axis name to a postive and negative display name. If no display name is provided we show the axis name" ) )
+	TArray<FAxisMappingDisplayName> mAxisBindingsDisplayNames;
 
-	UPROPERTY( EditAnywhere, config, Category = "OptionRowData", meta = ( ToolTip = "" ) )
+	UPROPERTY( EditAnywhere, config, Category = "Key Bindings", meta = ( ShowOnlyInnerProperties, ToolTip = "This maps a action name to a display name. If no display name is provided we show the action name" ) )
+	TArray<FActionMappingDisplayName> mActionBindingsDisplayNames;
+
+	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
 	TArray<FOptionRowData> mGameplayOptions;
 
-	UPROPERTY( EditAnywhere, config, Category = "OptionRowData", meta = ( ToolTip = "" ) )
+	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
 	TArray<FOptionRowData> mAudioOptions;
 
-	UPROPERTY( EditAnywhere, config, Category = "OptionRowData", meta = ( ToolTip = "" ) )
+	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
 	TArray<FOptionRowData> mVideoOptions;
 
-	UPROPERTY( EditAnywhere, config, Category = "OptionRowData", meta = ( ToolTip = "" ) )
+	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
 	TArray<FOptionRowData> mControlsOptions;
 
-	UPROPERTY( EditAnywhere, config, Category = "OptionRowData", meta = ( ToolTip = "" ) )
+	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
 	TArray<FOptionRowData> mUserInterfaceOptions;
 
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
@@ -145,3 +238,4 @@ public:
 public:
 	FORCEINLINE ~UFGOptionsSettings() = default;
 };
+

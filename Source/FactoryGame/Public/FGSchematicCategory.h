@@ -6,6 +6,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "Styling/SlateBrush.h"
 #include "FGSchematicCategory.generated.h"
 
 /**

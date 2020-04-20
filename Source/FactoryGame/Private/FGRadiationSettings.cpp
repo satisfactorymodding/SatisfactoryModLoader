@@ -4,5 +4,5 @@
 
 #if WITH_EDITOR
 void UFGRadiationSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ }
-void UFGRadiationSettings::PostInitProperties(){ Super::PostInitProperties(); }
+void UFGRadiationSettings::PostInitProperties(){ Super::PostInitProperties();}
 #endif 

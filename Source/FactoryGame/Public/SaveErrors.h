@@ -70,6 +70,7 @@ struct FACTORYGAME_API FSaveErrors
 	/** Get the file with the save errors */
 	static FString GetSaveErrorFileName();
 private:
+	//@todoSaveSmokeTest This is a good staring point to look at.
 	/** Dump all errors to a file */
 	static void DumpErrorsToFile();	
 private:

@@ -73,6 +73,59 @@ public:
 	FORCEINLINE ~FMessageData() = default;
 };
 
+/**
+* A hotbar with a set of shortcuts that can be assigned and executed
+*/
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FHotbar
+{
+	GENERATED_BODY();
+
+	FHotbar(){}
+
+	FHotbar( class AFGPlayerState* owningState, const FHotbar& hotbar );
+
+	FHotbar( TArray< class UFGHotbarShortcut* > hotbarShortcuts );
+
+	UPROPERTY( SaveGame, BlueprintReadOnly )
+	TArray< class UFGHotbarShortcut* > HotbarShortcuts;
+
+public:
+	FORCEINLINE ~FHotbar() = default;
+};
+
+/**
+* A preset represents a way for players to create pre made hotbars they can replace there current hotbar with
+*/
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FPresetHotbar
+{
+	GENERATED_BODY();
+
+	FPresetHotbar(){}
+
+	FPresetHotbar( class AFGPlayerState* owningState, const FPresetHotbar& presetHotbar );
+
+	FPresetHotbar( FText presetName, uint8 iconIndex, FHotbar hotbar ) :
+		PresetName( presetName ),
+		IconIndex( iconIndex ),
+		Hotbar( hotbar )
+	{}
+
+	UPROPERTY( SaveGame, BlueprintReadOnly )
+	FText PresetName;
+
+	/** The shortcut in the hotbar with this index will decide the icon for the preset */
+	UPROPERTY( SaveGame, BlueprintReadOnly )
+	uint8 IconIndex;
+
+	/** The hotbar shortcuts for this preset */
+	UPROPERTY( SaveGame, BlueprintReadOnly )
+	FHotbar Hotbar;
+
+public:
+	FORCEINLINE ~FPresetHotbar() = default;
+};
 
 UCLASS()
 class FACTORYGAME_API AFGPlayerState : public APlayerState, public IFGSaveInterface
@@ -188,11 +241,54 @@ public:
 		return Cast< T >( CreateShortcut( shortcutClass ) );
 	}
 
-	/** Get all shortcuts as a read only array */
-	const TArray<class UFGHotbarShortcut*>& GetShortcuts() const{ return mHotbarShortcuts; }	
 
-	/** Get editable shortcuts */
-	TArray<class UFGHotbarShortcut*>& GetShortcuts() { return mHotbarShortcuts; }
+	/** Get current shortcuts */
+	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
+
+	/** Get current shortcuts */
+	UFGHotbarShortcut* GetShortcutFromCurrentHotbar( int32 shortcutIndex );
+
+	/** Get preset shortcuts with the given index */
+	void GetPresetShortcuts( int32 presetHotbarIndex, TArray< class UFGHotbarShortcut* >& out_shortcuts );
+
+	/** Get all preset hotbars */
+	void GetAllPresetHotbars( TArray<FPresetHotbar>& out_presetHotbars );
+
+	int32 GetNumHotbars() const { return mHotbars.Num(); }
+	
+	int32 GetNumPresetHotbars() const { return mPresetHotbars.Num(); }
+
+	int32 GetCurrentHotbarIndex() const { return mCurrentHotbarIndex; }
+
+	void SetHotbarIndex( int32 val );
+
+	/** Copy the current hotbar shortcuts to a new preset hotbar
+	*	@return true if the copy was a success 
+	*/
+	bool CreatePresetFromCurrentHotbar( const FText& presetName, int32 iconIndex );
+	
+	/** Check if we can create a new preset */
+	bool CanCreateNewPresetHotbar() const;
+
+	/** Copy the current hotbar shortcuts to the preset hotbar with the given index */
+	bool CopyCurrentHotbarToPresetHotbar( int32 presetHotbarIndex );
+
+	/** Change the name of the preset hotbar at the given index */
+	void ChangeNameOfPresetHotbar( int32 presetHotbarIndex, const FText& newName );
+	
+	/** Change the icon index of the preset hotbar at the given index */
+	void ChangeIconIndexOfPresetHotbar( int32 presetHotbarIndex, int32 iconIndex );
+
+	/** Remove the preset hotbar with the given index */
+	bool RemovePresetHotbar( int32 presetHotbarIndex );
+
+	/** Copy the shortcuts of the preset hotbar with the given index to the current hotbar
+	*	@return true if the copy was a success 
+	*/
+	bool CopyPresetHotbarToCurrentHotbar( int32 presetHotbarIndex );
+
+	/** Set the specified hotbar shortcut on the index if it's valid */
+	void SetRecipeShortcutOnIndex( TSubclassOf< class UFGRecipe > recipe, int32 onIndex );
 
 	/** Get the current value of first time equipped and then sets the value to false. */
 	bool GetAndSetFirstTimeEquipped( class AFGEquipment* equipment );
@@ -202,6 +298,10 @@ public:
 
 	/** Adds a new recipe to the list of new recipes. This is only for UI feedback and doesn't give the player the actual ability to use the recipe */
 	void AddNewRecipe( TSubclassOf< UFGRecipe > recipe );
+
+	/** Get all recipes that are new to the player. This is only for UI feedback */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Recipes" )
+	void GetNewRecipes( TArray<TSubclassOf<class UFGRecipe>>& out_newRecipes ) const;
 
 	/** Removes a recipe from the list of new recipes. This is only for UI feedback and doesn't remove the players ability to use the recipe */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipes" )
@@ -281,10 +381,18 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Schematic" )
 	void SetLastSelectedResourceSinkShopCategory( TSubclassOf<UFGSchematicCategory> selectedCategory ) { mLastSelectedResourceSinkShopCategory = selectedCategory; }
 
+	// Debug command to show all hotbars
+	void DumpHotbars();
+
 protected:
 	// Client get notified that the hotbar has changed
 	UFUNCTION()
 	void OnRep_HotbarShortcuts();
+
+	// Client get notified that the hotbar index has changed
+	UFUNCTION()
+	void OnRep_CurrentHotbarIndex();
+
 public:
 	/** Broadcast when a buildable or decor has been constructed. */
 	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableConstructed" )
@@ -292,17 +400,26 @@ public:
 
 	/** Broadcast if hotbar has been replicated */
 	FOnHotbarReplicated mOnHotbarReplicated;
+
 protected:
 	/** All hotbar actions assigned */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_HotbarShortcuts )
-	TArray< class UFGHotbarShortcut* > mHotbarShortcuts;
+	TArray< FHotbar > mHotbars;
+
+	/** All hotbar actions assigned to presets. A preset is a saved set of shortcuts that can be assigned to the hotbar */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< FPresetHotbar > mPresetHotbars;
+
+	/** The index of the current hotbar*/
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentHotbarIndex )
+	int32 mCurrentHotbarIndex;
 
 	/** Default recipes to have shortcuts to */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TArray< TSubclassOf< class UFGRecipe > > mDefaultRecipeShortcuts;
 
 	/** Recipes that are new to the player. This is only for UI feedback and doesn't affect the players ability to use the recipe  */
-	UPROPERTY( SaveGame, BlueprintReadOnly, Replicated, Category = "Recipes" )
+	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< class UFGRecipe > > mNewRecipes;
 
 	/** The slot num of this player state */
@@ -320,10 +437,6 @@ protected:
 	/** Set to true after we have received our initial items */
 	UPROPERTY( SaveGame )
 	uint8 mHasReceivedInitialItems:1;
-
-	/** Set to true after we have setup our initial shortcuts */
-	UPROPERTY( SaveGame )
-	uint8 mHasSetupDefaultShortcuts : 1;
 
 	/** If true, then we are server admin */
 	UPROPERTY( Replicated )

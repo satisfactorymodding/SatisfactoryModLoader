@@ -2,7 +2,10 @@
 
 #include "FGGameSession.h"
 
-AFGGameSession::AFGGameSession(){ }
+
+AFGGameSession::AFGGameSession() : Super() {
+	
+}
 void AFGGameSession::UpdateGameSession(){ }
 void AFGGameSession::Destroyed(){ }
 void AFGGameSession::InitOptions(const FString& options){ }

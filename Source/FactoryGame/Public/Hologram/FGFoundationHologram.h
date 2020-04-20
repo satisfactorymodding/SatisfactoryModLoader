@@ -31,6 +31,9 @@ public:
 	// End AFGBuildableHologram interface
 
 protected:
+	bool CanSnapVertically( class AFGBuildableFoundation* toFoundation, float dirZ ) const;
+
+protected:
 	/** Defaults from the default buildable. */
 	float mSize;
 	float mHeight;

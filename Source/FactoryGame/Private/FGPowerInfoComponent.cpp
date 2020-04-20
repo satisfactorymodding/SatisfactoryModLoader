@@ -2,9 +2,13 @@
 
 #include "FGPowerInfoComponent.h"
 
+
 void UFGPowerInfoComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPowerInfoComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
-UFGPowerInfoComponent::UFGPowerInfoComponent(){ }
+UFGPowerInfoComponent::UFGPowerInfoComponent() : Super() {
+	this->mCircuitID = -1;
+	this->bReplicates = true;
+}
 void UFGPowerInfoComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGPowerInfoComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGPowerInfoComponent::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

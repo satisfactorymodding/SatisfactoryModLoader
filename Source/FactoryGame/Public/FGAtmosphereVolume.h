@@ -102,13 +102,12 @@ public:
 	FORCEINLINE ~FExponentialFogSettings() = default;
 };
 
-// @todo: Should be renamed to something else, as it does a lot more than give settings to fog
+
 UCLASS(HideCategories=(Collision,Tags,Cooking,Actor,Mobile))
 class FACTORYGAME_API AFGAtmosphereVolume : public AVolume, public ICurvePanningInterface, public IInterface_PostProcessVolume
 {
 	GENERATED_BODY()
 public:
-	/** Ctor */
 	AFGAtmosphereVolume();
 
 	//~ Begin UObject interface
@@ -117,6 +116,11 @@ public:
 #endif
 	virtual void PostLoad() override;
 	//~ End UObject interface
+
+	//~ Begin AActor Interface
+	virtual void PostRegisterAllComponents() override;
+	virtual void PostUnregisterAllComponents( void ) override;
+	//~ End AActor Interface
 
 	//	Begin ICurvePanningInterface
 #if WITH_EDITOR
@@ -136,14 +140,10 @@ public:
 	void GetSettings( float atTime, FExponentialFogSettings& out_settings ) const;
 	void GetSkySphereSettings( float atTime, FSkySphereSettings& out_settings ) const;
 
+	// Get the blend priority, higher number is higher priority.
+	FORCEINLINE float GetPriority() const { return mPriority; }
 	// Get the blend distance of this volume
-	FORCEINLINE float GetBlendDistance() const{ return mBlendDistance; }
-
-	//~ Begin AActor Interface
-	virtual void PostUnregisterAllComponents( void ) override;
-protected:
-	virtual void PostRegisterAllComponents() override;
-	//~ End AActor Interface
+	FORCEINLINE float GetBlendDistance() const { return mBlendDistance; }
 protected:
 	/** Add the volume to the world */
 	void AddVolume();
@@ -151,11 +151,11 @@ protected:
 	/** Remove the volume from the world */
 	void RemoveVolume();
 protected:
-	UPROPERTY( EditInstanceOnly, Category="Shared")
-	float mPriority;
+	UPROPERTY( EditInstanceOnly, Category = "Shared" )
+	float mPriority; //@todoFog change to int since people use it like that anyway.
 
 	// The distance that the fog blends over
-	UPROPERTY( EditInstanceOnly, Category="Shared")
+	UPROPERTY( EditInstanceOnly, Category = "Shared" )
 	float mBlendDistance;
 
 	/** Interpolate the fog height during the day */

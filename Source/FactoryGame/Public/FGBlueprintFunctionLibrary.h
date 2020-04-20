@@ -293,8 +293,32 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void ClosePopup( APlayerController* controller );
 
+	/** Copies the given text to the users clipboard */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static void CopyTextToClipboard( FText textToCopy );
+
+	/** Return the text from the users clipboard */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static FText CopyTextFromClipboard();
+
 	// Find and return a local player
 	static class AFGPlayerController* GetLocalPlayerController( const UObject* worldContext );
+
+	/** 
+	*	Evaluates a math expression. Can handle white spaces between characters.
+	*	@return true if expression could be evaluated.
+	**/
+	UFUNCTION( BlueprintCallable, Category = "Math" )
+	static bool EvaluateMathExpression( const FString& expression, UPARAM( DisplayName = "Result" ) FText& out_Result );
+
+	/** Does the same thing as UEditorAssetLibrary::SetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
+	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
+	static void SetMetadataTag( UObject* object, FName tag, const FString& value );
+
+	/** Does the same thing as UEditorAssetLibrary::GetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
+	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
+	static FString GetMetadataTag( UObject* object, FName tag );
+
 
 public:
 	FORCEINLINE ~UFGBlueprintFunctionLibrary() = default;

@@ -3,7 +3,7 @@
 #include "FGConsoleCommandManager.h"
 
 UWorld* UFGConsoleCommandManager::GetWorld() const{ return nullptr; }
-void UFGConsoleCommandManager::MaterialFlowAnalysis(FString recipeName){ }
+void UFGConsoleCommandManager::MaterialFlowAnalysis(FString recipeNames){ }
 void UFGConsoleCommandManager::MaterialLookup(FString itemName){ }
 void UFGConsoleCommandManager::SetSessionName(FString newSessionName){ }
 void UFGConsoleCommandManager::SaveWithNewSessionName(const FString& saveName, const FString& sessionName){ }
@@ -11,6 +11,7 @@ void UFGConsoleCommandManager::TrackAllAkStats(){ }
 void UFGConsoleCommandManager::TrackAkComponents(bool byClass){ }
 void UFGConsoleCommandManager::TrackAkMemoryPools(){ }
 void UFGConsoleCommandManager::TrackAkComponentsWithNoPositionOrOwner(){ }
+void UFGConsoleCommandManager::DumpFactoryMaterialInstanceManagerStats(){ }
 void UFGConsoleCommandManager::FixupBuiltByRecipeInOldSave(bool reapplyRecipeIfBetterMatchFound){ }
 void UFGConsoleCommandManager::DumpFactoryStatsToLog(){ }
 void UFGConsoleCommandManager::CopyPlayerCoordinates(){ }

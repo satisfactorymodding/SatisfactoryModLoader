@@ -11,7 +11,7 @@
 /**
  * Base class for unlocks that you get when purchasing/research a schematic
  */
-UCLASS( Blueprintable, DefaultToInstanced, abstract, editinlinenew )
+UCLASS( Blueprintable, DefaultToInstanced, abstract, editinlinenew, Meta = ( AutoJSON = true ) )
 class FACTORYGAME_API UFGUnlock : public UObject
 {
 	GENERATED_BODY()

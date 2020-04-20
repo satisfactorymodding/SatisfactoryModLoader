@@ -77,7 +77,7 @@ TSharedRef<FJsonObject> createConfigDefaults() {
 }
 
 namespace SML {
-	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.0.0");
+	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.1.0");
 	
 	//version of the SML mod loader, as specified in the SML.h
 	static SML::Versioning::FVersion* modLoaderVersion = new SML::Versioning::FVersion(modLoaderVersionString);
@@ -95,7 +95,7 @@ namespace SML {
 	
 	//CL of Satisfactory we want to target
 	//SML will be unable to load in production mode if it doesn't match actual game version
-	extern "C" DLLEXPORT const long targetGameVersion = 117050;
+	extern "C" DLLEXPORT const long targetGameVersion = 119583;
 	
 	//Pointer to the active mod handler object
 	//Initialized early during the process attach

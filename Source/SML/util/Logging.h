@@ -4,6 +4,7 @@
 #include "util/Utility.h"
 #include "SatisfactoryModLoader.h"
 #include "CoreTypes.h"
+#include <winuser.h>
 #include <fstream>
 
 namespace SML {
@@ -39,6 +40,9 @@ namespace SML {
 			std::wcout << *result << std::endl;
 			getLogFile() << *result << std::endl;
 #endif
+			if (type == LogType::Fatal) {
+				MessageBoxA(NULL, TCHAR_TO_ANSI(*FString::Printf(TEXT("%s\nClick OK to exit."), *message)), "SatisfactoryModLoader", MB_ICONERROR);
+			}
 			const ELogVerbosity::Type verbosity = logTypeToVerbosity(type);
 			FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), verbosity, TEXT("%s"), *message);
 		}

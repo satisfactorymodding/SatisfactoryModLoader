@@ -87,7 +87,7 @@ protected:
 	 */
 	void GetDesiredOutputFile( const FDateTime& timestamp, const FString& mapName, const FString& fileTag, FString& out_filename );
 private:
-	/** The label of the collectior */
+	/** The label of the collector */
 	FString Label;
 	/** The guid of the collector */
 	FString GUID;
@@ -97,7 +97,7 @@ USTRUCT()
 struct FACTORYGAME_API FFGEngineCommon
 {
 	GENERATED_BODY()
-
+public:
 	/** Called during startup */
 	void Init( UEngine* engine, class IEngineLoop* inEngineLoop );
 
@@ -106,7 +106,7 @@ struct FACTORYGAME_API FFGEngineCommon
 
 	/** Called right before engine shutdown */
 	void PreExit();
-	
+
 	/**
 	 * Handle exec commands
 	 */
@@ -170,7 +170,7 @@ protected:
 
 	/** Height fog properties that's controlled from camera */
 	UPROPERTY()
-	class UFGAtmosphereUpdater* HeightFogUpdater;
+	class UFGAtmosphereUpdater* AtmosphereUpdater;
 private:
 #if STATS
 	/** The current stats collectors, @note: Threadcontext StatsThread */

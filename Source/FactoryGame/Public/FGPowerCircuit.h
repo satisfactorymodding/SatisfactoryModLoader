@@ -154,18 +154,22 @@ public:
 	void ResetFuse();
 
 	/** @return true if the fuse is triggered; false otherwise. */
+	MODDING_SHIPPING_FORCEINLINE
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	bool IsFuseTriggered() { return mIsFuseTriggered; }
 
 	/** Get the stats for this circuit. */
+	MODDING_SHIPPING_FORCEINLINE
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	void GetStats( FPowerCircuitStats& out_stats ) const { out_stats = mPowerStats; }
 
 	/** Get the graph point from the index in our stats,  @return false if the index is invalid */
+	MODDING_SHIPPING_FORCEINLINE
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	static bool GetGraphPointAtIndex( const FPowerCircuitStats& stats, int32 idx, FPowerGraphPoint& out_item ){ return stats.GetGraphPointAtIndex( idx, out_item ); }
 
 	/** Get how many graph points there is in our stats */
+	MODDING_SHIPPING_FORCEINLINE
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerCircuit" )
 	static int32 GetNumGraphPoint( const FPowerCircuitStats& stats ){ return stats.GetNumGraphPoints(); }
 

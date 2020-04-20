@@ -2,9 +2,25 @@
 
 #include "FGBuildableSubsystem.h"
 
+
 #if STATS
 #endif 
-AFGBuildableSubsystem::AFGBuildableSubsystem(){ }
+AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
+	this->mDistanceConsideredClose = 30000;
+	this->mNumFactoriesNeededForCloseCheck = 5;
+	this->mColorSlotsPrimary[0].B = 39; this->mColorSlotsPrimary[0].G = 112; this->mColorSlotsPrimary[0].R = 255; this->mColorSlotsPrimary[0].A = 255;
+	this->mColorSlotsSecondary[0].B = 67; this->mColorSlotsSecondary[0].G = 34; this->mColorSlotsSecondary[0].R = 29; this->mColorSlotsSecondary[0].A = 255;
+	this->mNbPlayerExposedSlots = 16;
+	this->mUseFixedFactoryTick = true;
+	this->mMinFactoryTickRate = 30;
+	this->mMaxFactoryTickRate = 62;
+	this->mFactoryOptimizationEnabled = true;
+	this->mReplayEffecTimeDilation = 0.100000001490116;
+	this->mReplayEffectTimerDefault = 0.5;
+	this->PrimaryActorTick.TickGroup = TG_DuringPhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bAlwaysRelevant = true;
+	this->bReplicates = true;
+}
 void AFGBuildableSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -30,14 +46,14 @@ void AFGBuildableSubsystem::RemoveAndSplitConveyorBucket(AFGBuildableConveyorBas
 bool AFGBuildableSubsystem::IsServerSubSystem() const{ return bool(); }
 void AFGBuildableSubsystem::GetTypedBuildable(TSubclassOf<  AFGBuildable > inClass, TArray<  AFGBuildable* >& out_buildables) const{ }
 void AFGBuildableSubsystem::ReplayBuildingEffects(){ }
-bool AFGBuildableSubsystem::HasMaterialInstanceManagerForMaterialInterface(UMaterialInterface* materialInterface){ return bool(); }
-UFGFactoryMaterialInstanceManager* AFGBuildableSubsystem::GetMaterialInstanceManagerForMaterialInterface(UMaterialInterface* materialInterface, bool canBeColored){ return nullptr; }
-void AFGBuildableSubsystem::SetColorSlotPrimary(uint8 index, FColor color){ }
-void AFGBuildableSubsystem::SetColorSlotSecondary(uint8 index, FColor color){ }
-FColor AFGBuildableSubsystem::GetColorSlotPrimary(uint8 index){ return FColor(); }
-FColor AFGBuildableSubsystem::GetColorSlotSecondary(uint8 index){ return FColor(); }
-FLinearColor AFGBuildableSubsystem::GetColorSlotPrimaryLinear(uint8 index){ return FLinearColor(); }
-FLinearColor AFGBuildableSubsystem::GetColorSlotSecondaryLinear(uint8 index){ return FLinearColor(); }
+bool AFGBuildableSubsystem::HasMaterialInstanceManagerForMaterialInterface(UMaterialInterface* materialInterface, FString& lookupName){ return bool(); }
+UFGFactoryMaterialInstanceManager* AFGBuildableSubsystem::GetOrCreateMaterialManagerForMaterialInterface(UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, bool canBeColored){ return nullptr; }
+void AFGBuildableSubsystem::UpdateBuildableMaterialInstances(AFGBuildable* buildable){ }
+void AFGBuildableSubsystem::RemoveFactoryMaterialInstanceFromMap(const FString& lookupName){ }
+FLinearColor AFGBuildableSubsystem::GetColorSlotPrimary_Linear(uint8 index){ return FLinearColor(); }
+FLinearColor AFGBuildableSubsystem::GetColorSlotSecondary_Linear(uint8 index){ return FLinearColor(); }
+void AFGBuildableSubsystem::SetColorSlotPrimary_Linear(uint8 index, FLinearColor color){ }
+void AFGBuildableSubsystem::SetColorSlotSecondary_Linear(uint8 index, FLinearColor color){ }
 void AFGBuildableSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildableSubsystem::DebugEnableInstancing(bool enabled){ }
 void AFGBuildableSubsystem::DebugGetFactoryActors(TArray< AActor* >& out_actors){ }
@@ -52,7 +68,6 @@ void AFGBuildableSubsystem::RegisterFactoryTickFunction(bool shouldRegister){ }
 void AFGBuildableSubsystem::CreateFactoryStatID() const{ }
 void AFGBuildableSubsystem::UpdateReplayEffects(float dt){ }
 void AFGBuildableSubsystem::AddBuildableMeshInstances( AFGBuildable* buildable){ }
-void AFGBuildableSubsystem::UpdateBuildableMaterialInstances(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::TickFactoryActors(float dt){ }
 void AFGBuildableSubsystem::DumpFixedFactoryTickValues() const{ }
 UFGColoredInstanceManager* AFGBuildableSubsystem::GetColoredInstanceManager( UFGColoredInstanceMeshProxy* proxy){ return nullptr; }

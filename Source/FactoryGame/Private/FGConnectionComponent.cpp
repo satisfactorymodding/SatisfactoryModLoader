@@ -2,7 +2,6 @@
 
 #include "FGConnectionComponent.h"
 
-void UFGConnectionComponent::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGConnectionComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGConnectionComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGConnectionComponent::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

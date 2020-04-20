@@ -58,13 +58,17 @@ ModInfo ModInfo::createFromJson(const FJsonObject& object) {
 		*object.GetStringField(TEXT("description")),
 		readAuthors(object.GetArrayField(TEXT("authors")))
 	};
-	const TSharedPtr<FJsonObject>& dependencies = object.GetObjectField(TEXT("dependencies"));
-	if (dependencies.IsValid()) {
-		readDependencies(modInfo.dependencies, *dependencies.Get());
+	if (object.HasField(TEXT("dependencies"))) {
+		const TSharedPtr<FJsonObject>& dependencies = object.GetObjectField(TEXT("dependencies"));
+		if (dependencies.IsValid()) {
+			readDependencies(modInfo.dependencies, *dependencies.Get());
+		}
 	}
-	const TSharedPtr<FJsonObject>& optionalDependencies = object.GetObjectField(TEXT("optional_dependencies"));
-	if (optionalDependencies.IsValid()) {
-		readDependencies(modInfo.optionalDependencies, *optionalDependencies.Get());
+	if (object.HasField(TEXT("optional_dependencies"))) {
+		const TSharedPtr<FJsonObject>& optionalDependencies = object.GetObjectField(TEXT("optional_dependencies"));
+		if (optionalDependencies.IsValid()) {
+			readDependencies(modInfo.optionalDependencies, *optionalDependencies.Get());
+		}
 	}
 	return modInfo;
 };

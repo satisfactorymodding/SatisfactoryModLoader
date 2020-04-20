@@ -2,13 +2,16 @@
 
 #include "FGDotComponent.h"
 
+
 #if WITH_EDITOR
 void UFGDotComponent::CheckForErrors(){ }
 #endif 
-UFGDotComponent::UFGDotComponent(){ }
-void UFGDotComponent::PostLoad(){ Super::PostLoad(); }
-void UFGDotComponent::OnRegister(){ Super::OnRegister(); }
-void UFGDotComponent::OnUnregister(){ Super::OnUnregister(); }
+UFGDotComponent::UFGDotComponent() : Super() {
+	this->bAutoActivate = true;
+}
+void UFGDotComponent::PostLoad(){ Super::PostLoad();}
+void UFGDotComponent::OnRegister(){ Super::OnRegister();}
+void UFGDotComponent::OnUnregister(){ Super::OnUnregister();}
 void UFGDotComponent::Activate(bool reset){ }
 void UFGDotComponent::Deactivate(){ }
 void UFGDotComponent::StartDamageTimer(){ }

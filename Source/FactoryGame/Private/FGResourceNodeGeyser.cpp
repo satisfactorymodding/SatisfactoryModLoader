@@ -2,5 +2,11 @@
 
 #include "FGResourceNodeGeyser.h"
 
-AFGResourceNodeGeyser::AFGResourceNodeGeyser(){ }
+
+AFGResourceNodeGeyser::AFGResourceNodeGeyser() : Super() {
+	this->mCanPlaceResourceExtractor = true;
+	this->mExtractMultiplier = 1;
+	this->mDoSpawnParticle = true;
+	this->bReplicates = true;
+}
 FText AFGResourceNodeGeyser::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }

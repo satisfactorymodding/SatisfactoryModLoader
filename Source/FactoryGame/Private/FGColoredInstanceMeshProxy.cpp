@@ -2,12 +2,16 @@
 
 #include "FGColoredInstanceMeshProxy.h"
 
-UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy(){ }
-void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister(); }
-void UFGColoredInstanceMeshProxy::OnRegister(){ Super::OnRegister(); }
+
+UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy() : Super() {
+	this->mCanBecolored = true;
+	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = false; this->PrimaryComponentTick.bStartWithTickEnabled = false; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false; this->PrimaryComponentTick.TickInterval = 0;
+}
+void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister();}
+void UFGColoredInstanceMeshProxy::OnRegister(){ Super::OnRegister();}
 void UFGColoredInstanceMeshProxy::SetColorSlot(uint8 colorSlotIndex){ }
 void UFGColoredInstanceMeshProxy::BeginPlay(){ }
 void UFGColoredInstanceMeshProxy::InstantiateInternal(){ }
 void UFGColoredInstanceMeshProxy::SetInstanced(bool setToInstanced){ }
-void UFGColoredInstanceMeshProxy::CreateRenderState_Concurrent(){ Super::CreateRenderState_Concurrent(); }
+void UFGColoredInstanceMeshProxy::CreateRenderState_Concurrent(){ Super::CreateRenderState_Concurrent();}
 void UFGColoredInstanceMeshProxy::OnHiddenInGameChanged(){ }

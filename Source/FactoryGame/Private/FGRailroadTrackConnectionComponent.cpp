@@ -2,7 +2,10 @@
 
 #include "FGRailroadTrackConnectionComponent.h"
 
-UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent(){ }
+
+UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Super() {
+	this->mSwitchPosition = -1;
+}
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGRailroadTrackConnectionComponent::AddConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnection(UFGRailroadTrackConnectionComponent* toComponent){ }

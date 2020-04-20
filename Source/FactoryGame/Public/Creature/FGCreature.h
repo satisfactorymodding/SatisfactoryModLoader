@@ -64,6 +64,10 @@ public:
 	virtual void Tick( float deltaTime ) override;
 	// End AActor Interface
 
+	// Begin IFGSaveInterface
+	virtual bool ShouldSave_Implementation() const override;
+	// End IFSaveInterface
+
 	// Begin FGCharacterBase
 	virtual void Died( AActor* died ) override;
 	// End FGCharacterBase
@@ -158,10 +162,18 @@ public:
 
 	/** Returns the spawner that created this creature. Can be null */
 	UFUNCTION( BlueprintPure, Category = "Creature" )
-	class AFGCreatureSpawner* GetSpawner() { return mOwningSpawner; }
+	class AFGCreatureSpawner* GetSpawner() const { return mOwningSpawner; }
 
 	/** Sets the spawner for this creature */
 	void SetSpawner( class AFGCreatureSpawner* inSpawner ) { mOwningSpawner = inSpawner; }
+
+	/** Returns the spawn weight for this creature */
+	UFUNCTION( BlueprintPure, Category = "Creature" )
+	FORCEINLINE float GetSpawnWeight() const { return mSpawnWeight; }
+
+	/** Returns the spawn distance for this creature */
+	UFUNCTION( BlueprintPure, Category = "Creature" )
+	FORCEINLINE float GetSpawnDistance() const { return mSpawnDistance; }
 private:
 	UFUNCTION()
 	void OnRep_TargetRotation();
@@ -175,6 +187,9 @@ protected:
 
 	/** Set our enabled state */
 	void SetEnabled( EEnabled enabled );
+
+	/** Kills of creatures that have no spawner unless they have set mNeedsSpawner to false */
+	void KillOrphanCreature();
 protected:
 	/** How big navmesh do we want to generate */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
@@ -228,6 +243,10 @@ private:
 	UPROPERTY()
 	FTimerHandle mRotationTimerHandle;
 
+	/** Timer handle used for killing orphan creatures ( orphan = missing a reference to a spawner ) */
+	UPROPERTY()
+	FTimerHandle mKillOrphanHandle;
+
 	/** Target rotation for custom rotate movement */
 	UPROPERTY( ReplicatedUsing = OnRep_TargetRotation )
 	FRotator mTargetRotation; 
@@ -278,8 +297,20 @@ private:
 	float mDayTimePctCountAsNight;
 
 	/** Reference to the spawner that handles this creature */
-	UPROPERTY()
+	UPROPERTY( SaveGame )
 	class AFGCreatureSpawner* mOwningSpawner;
+
+	/** How much weight this creature adds to spawn calculation */
+	UPROPERTY( EditDefaultsOnly, Category = "Spawning" )
+	float mSpawnWeight;
+
+	/** Does this creature need a spawner in order to exist */
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	bool mNeedsSpawner;
+
+	/** At what distance this creature can spawn from */
+	UPROPERTY( EditDefaultsOnly, Category = "Spawning" )
+	float mSpawnDistance;
 
 public:
 	FORCEINLINE ~AFGCreature() = default;

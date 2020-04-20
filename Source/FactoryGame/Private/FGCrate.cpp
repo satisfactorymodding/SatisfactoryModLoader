@@ -2,7 +2,11 @@
 
 #include "FGCrate.h"
 
-AFGCrate::AFGCrate(){ }
+
+AFGCrate::AFGCrate() : Super() {
+	this->bReplicateMovement = true;
+	this->bReplicates = true;
+}
 void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGCrate::PostActorCreated(){ }
 void AFGCrate::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

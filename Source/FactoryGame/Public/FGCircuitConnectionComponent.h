@@ -37,15 +37,7 @@ public:
 
 	/** Get the number of connections to this connection, excluding hidden. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
-	FORCEINLINE int32 GetNumConnections() const { 
-#if !IS_PUBLIC_BUILD
-		if( GetOwner() && GetOwner()->HasAuthority() )
-		{
-			check( mWires.Num() == mNbWiresConnected );
-		}
-#endif
-		return mNbWiresConnected;
-	}
+	int32 GetNumConnections() const;
 
 	/** Get the number of hidden connections to this connection. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
@@ -121,12 +113,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Connection" )
 	FORCEINLINE int32 GetCircuitID() const { return mCircuitID; }
 
-	/** Tracks replication changes to mCircuitID */
-	UFUNCTION()
-	void OnRep_CircuitIDChanged();
-
-	/** Callback when connection was removed or added */
-	FConnectionChanged OnConnectionChanged;
+	/** Used by the circuits and circuit subsystem to update the circuit this is connected to. */
+	void SetCircuitID( int32 circuitID );
 
 	/** Debug */
 	void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
@@ -140,12 +128,15 @@ protected:
 	void ReceiveOnCircuitIDChanged();
 
 private:
-	/** Used by the circuit subsystem to update the circuit this is connected to. */
-	void SetCircuitID( int32 circuitID );
+	/** Tracks replication changes to mCircuitID */
+	UFUNCTION()
+	void OnRep_CircuitIDChanged();
+
+public:
+	/** Callback when connection was removed or added */
+	FConnectionChanged OnConnectionChanged;
 
 private:
-	friend class AFGCircuitSubsystem;
-
 	/** How many connections this component can have connected. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	int32 mMaxNumConnectionLinks;
@@ -171,7 +162,7 @@ private:
 	 * The circuit this connection is connected to. INDEX_NONE if not connected.
 	 * @note - This ID may change at any time when changes occurs in the circuitry. Do not save copies of it!
 	 */
-	UPROPERTY( VisibleAnywhere, ReplicatedUsing=OnRep_CircuitIDChanged, SaveGame, Category = "Connection" )
+	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_CircuitIDChanged, Category = "Connection" )
 	int32 mCircuitID;
 
 public:

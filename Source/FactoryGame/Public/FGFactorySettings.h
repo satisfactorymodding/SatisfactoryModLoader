@@ -213,10 +213,6 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
 	float mMaxFeetLength;
 
-	/** The class we want to spawn for dismantle shortcuts */
-	UPROPERTY( EditDefaultsOnly, Category= "Shortcuts" )
-	TSubclassOf<class UFGDismantleShortcut> mDismantleShortcutClass;
-
 	/** The class we want to spawn for recipe shortcuts */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TSubclassOf<class UFGRecipeShortcut> mRecipeShortcutClass;
@@ -224,6 +220,18 @@ public:
 	/** Names if the input actions that defines the shortcuts. This maps directly to their index (so first entry here should mean that it should call ExecuteShortcut 0) */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TArray< FName > mShortcutMap;
+
+	/** The number of hotbars */
+	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
+	int32 mNumHotbars;
+
+	/** The max number of preset hotbars */
+	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
+	int32 mNumPresetHotbars;
+
+	/** The number of starting hot bars */
+	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
+	int32 mNumSlotsPerHotbar;
 
 	// Default rate of converting FluidBox content into inventory stacks. Measured in Liters / Second
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )

@@ -251,7 +251,6 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="FactoryGame|Online")
 	EJoinSessionState GetCurrentJoinSessionState() const;
-protected:
 public:
 	//MODDING EDIT
 	// Called when a map has loaded properly in Standalone

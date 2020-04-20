@@ -143,7 +143,7 @@ public:
 	virtual void PreInitializeComponents() override;
 
 	//MODDING EDIT: forceinline world accessor
-	__forceinline static AFGResearchManager* Get(class UWorld* world) { return Get(static_cast<UObject*>(world)); }
+	MODDING_SHIPPING_FORCEINLINE static AFGResearchManager* Get(class UWorld* world) { return Get(static_cast<UObject*>(world)); }
 
 	UFUNCTION( BlueprintPure, Category = "Research", DisplayName = "GetResearchManager", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGResearchManager* Get( class UObject* worldContext );
@@ -252,8 +252,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Research" )
 	bool mCanConductMultipleResearch;
 
-	//MODDING EDIT
-public:
+public: // MODDING EDIT
 	UPROPERTY( Transient )
 	TArray<TSubclassOf<class UFGResearchTree>> mAllResearchTrees;
 protected:

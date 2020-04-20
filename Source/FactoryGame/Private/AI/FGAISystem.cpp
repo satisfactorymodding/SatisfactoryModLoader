@@ -4,6 +4,7 @@
 
 UFGAISystem::UFGAISystem(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 void UFGAISystem::InitializeActorsForPlay(bool bTimeGotReset){ }
+void UFGAISystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void UFGAISystem::Tick(float DeltaTime){ }
 bool UFGAISystem::IsTickable() const{ return bool(); }
 UFGAISystem* UFGAISystem::GetCurrentFG(UWorld* world){ return nullptr; }
@@ -16,10 +17,12 @@ void UFGAISystem::ClearAllPardonedActors(){ }
 void UFGAISystem::PardonActor(AActor* inActor){ }
 void UFGAISystem::UnpardonActor(AActor* inActor){ }
 bool UFGAISystem::IsActorPardoned(AActor* inActor){ return bool(); }
+float UFGAISystem::FindClosestPlayerSq( AActor* actor) const{ return float(); }
 void UFGAISystem::AddToTargetableListImp(TScriptInterface<class IFGAggroTargetInterface> aggroTarget){ }
 void UFGAISystem::RemoveFromTargetableListImp(TScriptInterface<class IFGAggroTargetInterface> aggroTarget){ }
 void UFGAISystem::OnActorSpawned(AActor* spawnedActor){ }
 void UFGAISystem::AggroTargetDestroyed(AActor* destroyedActor){ }
 void UFGAISystem::CreatureDestroyed(AActor* destroyedEnemy){ }
 void UFGAISystem::PlayerDestroyed(AActor* destroyedPlayer){ }
-float UFGAISystem::FindClosestPlayerSq( AActor* actor,  AFGCharacterPlayer*& out_closestPlayer) const{ return float(); }
+void UFGAISystem::UpdatePotentialSpawners( AFGCreatureSpawner* inSpawner, bool withinDistance, float closeSqDistance){ }
+void UFGAISystem::ManagePotentialSpawners(){ }

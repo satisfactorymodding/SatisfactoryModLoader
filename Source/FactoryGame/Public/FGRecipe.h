@@ -72,7 +72,8 @@ public:
 
 	EHologramSplinePathMode GetLastSplineMode();
 	void SetLastSplineMode( EHologramSplinePathMode mode );
-protected:
+
+public: // MODDING EDIT: protected -> public
 	friend class FRecipeDetails;
 
 	/** If we override the display name or get it from the first products item name. */

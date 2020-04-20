@@ -408,7 +408,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 		//Dump only basic information for animation blueprints
 		return ResultJson;
 	}
-	
+
 	TArray<TSharedPtr<FJsonValue>> ImplementedInterfaces;
 	for (const FImplementedInterface& iface : GeneratedClass->Interfaces) {
 		UClass* interfaceClass = iface.Class;
@@ -418,7 +418,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	if (ImplementedInterfaces.Num() > 0) {
 		ResultJson->SetArrayField(TEXT("ImplementedInterfaces"), ImplementedInterfaces);
 	}
-	
+
 	TArray<FString> FieldsGeneratedBySCS;
 	if (GeneratedClass->SimpleConstructionScript != nullptr) {
 		ResultJson->SetObjectField(TEXT("ConstructionScript"), WriteConstructionScript(GeneratedClass->SimpleConstructionScript, FieldsGeneratedBySCS));
@@ -433,7 +433,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	if (UWidgetBlueprintGeneratedClass* WidgetClass = Cast<UWidgetBlueprintGeneratedClass>(GeneratedClass)) {
 		DumpWidgetInfo(ResultJson, WidgetClass, FieldsGeneratedByWidget);
 	}
-	
+
 	FSerializationContext Context;
 	TArray<TSharedPtr<FJsonValue>> Fields;
 	UObject* DefaultObject = GeneratedClass->GetDefaultObject();
@@ -490,6 +490,30 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	return ResultJson;
 }
 
+
+TSharedRef<FJsonObject> dumpClassContent(UClass* NativeClass) {
+	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
+	SML::Logging::info(TEXT("Dumping class "), *NativeClass->GetFullName());
+
+	ResultJson->SetStringField(TEXT("Class"), NativeClass->GetPathName());
+	
+	FSerializationContext Context;
+	TArray<TSharedPtr<FJsonValue>> Fields;
+	UObject* DefaultObject = NativeClass->GetDefaultObject();
+	Context.SerializationStack.Add(DefaultObject, FSerializationObjectInfo{ 0 });
+	for (TFieldIterator<UProperty> It(NativeClass, DEFAULT_ITERATOR_FLAGS); It; ++It) {
+		UProperty* Property = *It;
+		const TSharedPtr<FJsonObject>& fieldEntry = CreateFieldDescriptor(Property, DefaultObject, DefaultObject, Context);
+		if (fieldEntry.IsValid()) {
+			Fields.Add(MakeShareable(new FJsonValueObject(fieldEntry)));
+		}
+	}
+	if (Fields.Num() > 0) {
+		ResultJson->SetArrayField(TEXT("Fields"), Fields);
+	}
+	return ResultJson;
+}
+
 FString CreateClassPathFromPackageName(const FString& PackagePath) {
 	int32 PackageIndex;
 	PackagePath.FindLastChar('/', PackageIndex);
@@ -503,6 +527,7 @@ void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileNa
 	TArray<TSharedPtr<FJsonValue>> blueprints;
 	TArray<TSharedPtr<FJsonValue>> userDefinedStructs;
 	TArray<TSharedPtr<FJsonValue>> userDefinedEnums;
+	TArray<TSharedPtr<FJsonValue>> classes;
 
 	TSet<FString> ResultAssetList;
 	FPakPlatformFile* PakPlatformFile = static_cast<FPakPlatformFile*>(FPlatformFileManager::Get().GetPlatformFile(TEXT("PakFile")));
@@ -546,10 +571,28 @@ void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileNa
 		}
 	}
 
+	for (TObjectIterator<UClass> ClassIt; ClassIt; ++ClassIt)
+	{
+		UClass* Class = *ClassIt;
+
+		// Only interested in native C++ classes
+		if (!Class->IsNative())
+		{
+			continue;
+		}
+
+		if (Class->GetPathName().StartsWith(TEXT("/Script/FactoryGame."))) {
+			const TSharedRef<FJsonObject>& classJson = dumpClassContent(Class);
+			classes.Add(MakeShareable(new FJsonValueObject(classJson)));
+		}
+	}
+
 	TSharedRef<FJsonObject> resultObject = MakeShareable(new FJsonObject());
 	resultObject->SetArrayField(TEXT("UserDefinedEnums"), userDefinedEnums);
 	resultObject->SetArrayField(TEXT("UserDefinedStructs"), userDefinedStructs);
 	resultObject->SetArrayField(TEXT("Blueprints"), blueprints);
+	resultObject->SetArrayField(TEXT("Classes"), classes);
+
 
 	const FString& resultPath = SML::getConfigDirectory() / *fileName;
 	FString resultString;

@@ -5,7 +5,6 @@
 AFGRecipeManager* AFGRecipeManager::Get(UWorld* world){ return nullptr; }
 AFGRecipeManager* AFGRecipeManager::Get(UObject* worldContext){ return nullptr; }
 void AFGRecipeManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGRecipeManager::BeginPlay(){ }
 void AFGRecipeManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRecipeManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRecipeManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

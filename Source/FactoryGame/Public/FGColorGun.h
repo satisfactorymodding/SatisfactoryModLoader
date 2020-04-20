@@ -34,7 +34,7 @@ public:
 
 	/** Sets the currently active color slot index for the gun on the server */
 	UFUNCTION( Server, Reliable, WithValidation )
-	void Sever_SetColorSlot( uint8 slotIndex );
+	void Server_SetColorSlot( uint8 slotIndex );
 
 	/** Gets the mac number of color slots */
 	UFUNCTION( BlueprintPure, Category = "Color Gun" )
@@ -49,7 +49,7 @@ public:
 
 	/** Set the secondary color for a given slot on the server */
 	UFUNCTION( Server, Reliable, WithValidation )
-	void Sever_SetPrimaryColorForSlot( uint8 slotIndex, FLinearColor newColor );
+	void Server_SetPrimaryColorForSlot( uint8 slotIndex, FLinearColor newColor );
 
 	/** Set the secondary color for a given slot index*/
 	UFUNCTION( BlueprintCallable, Category = "Color Gun" )
@@ -57,7 +57,7 @@ public:
 
 	/** Sets the primary color for a given slot index on the server*/
 	UFUNCTION( Server, Reliable, WithValidation )
-	void Sever_SetSecondaryColorForSlot( uint8 slotIndex, FLinearColor newColor );
+	void Server_SetSecondaryColorForSlot( uint8 slotIndex, FLinearColor newColor );
 
 	/** Get the primary color for a given color slot index*/
 	UFUNCTION( BlueprintPure, Category = "Color Gun" )
