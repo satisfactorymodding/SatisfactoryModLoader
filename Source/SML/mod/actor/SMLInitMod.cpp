@@ -3,6 +3,22 @@
 #include "SML/util/Logging.h"
 #include "FGResearchManager.h"
 
+void ASMLInitMod::Init_Implementation() {
+}
+
+void ASMLInitMod::PostInit_Implementation() {
+}
+
+void ASMLInitMod::PreInit_Implementation() {
+}
+
+void ASMLInitMod::PreLoadModContent() {
+	//Register subsystem holders
+	for (const TSubclassOf<UModSubsystemHolder> SubsystemHolder : mModSubsystems) {
+		FSubsystemInfoHolder::RegisterSubsystemHolder(SubsystemHolder);
+	}
+}
+
 void ASMLInitMod::LoadModContent() {
 	AFGSchematicManager* schematicManager = AFGSchematicManager::Get(this);
 	//No need to register AvailableSchematics on client side, they are replicated
@@ -36,8 +52,7 @@ void ASMLInitMod::LoadModContent() {
 			ChatCommandSubsystem->RegisterCommand(RegistrarEntry);
 		}
 	}
-	//Register subsystem holders
-	for (const TSubclassOf<UModSubsystemHolder> SubsystemHolder : mModSubsystems) {
-		FSubsystemInfoHolder::RegisterSubsystemHolder(SubsystemHolder);
-	}
+}
+
+void ASMLInitMod::PlayerJoined_Implementation(AFGPlayerController* Player) {
 }

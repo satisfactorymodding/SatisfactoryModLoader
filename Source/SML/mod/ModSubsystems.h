@@ -50,7 +50,7 @@ public:
 	 * @return spawned subsystem instance, or nullptr if spawning failed
 	 */
 	UFUNCTION(BlueprintCallable, meta = (DisplayName = "SpawnSubsystem"))
-	AFGSubsystem* K2_SpawnSubsystem(TSubclassOf<AFGSubsystem> SpawnClass, FName SpawnName) const;
+	AFGSubsystem* K2_SpawnSubsystem(TSubclassOf<AFGSubsystem> SpawnClass, FName SpawnName);
 	
 	/**
 	* Spawns subsystem instance and sets it's pointer to returned object

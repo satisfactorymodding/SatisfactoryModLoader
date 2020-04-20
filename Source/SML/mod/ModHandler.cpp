@@ -151,11 +151,16 @@ void FModHandler::loadMods(const BootstrapAccessors& accessors) {
 }
 
 void FModHandler::attachLoadingHooks() {
-	SUBSCRIBE_METHOD(GAME_STATE_RECEIVE_GAME_MODE_CLASS_FUNC_DESC, AGameStateBase::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
-		UWorld* World = gameMode->GetWorld();
+	SUBSCRIBE_METHOD_AFTER(FG_GAME_STATE_INIT_FUNC_DESC, AFGGameState::Init, [](AFGGameState* GameState) {
+		UWorld* World = GameState->GetWorld();
 		const FString MapName = World->GetPathName();
 		SML::Logging::info(TEXT("Initializing on map "), *MapName, TEXT(". Is Menu? "), SML::IsMenuMapName(MapName));
 		SML::getModHandler().spawnModActors(World, SML::IsMenuMapName(MapName));
+		SML::getModHandler().preInitializeModActors();
+		SML::Logging::info(TEXT("Finished preinitializing mod actors"));
+	});
+	
+	SUBSCRIBE_METHOD(GAME_STATE_RECEIVE_GAME_MODE_CLASS_FUNC_DESC, AGameStateBase::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
 		SML::getModHandler().initializeModActors();
 		SML::Logging::info(TEXT("Finished initializing mod actors"));
 	});
@@ -185,6 +190,23 @@ void FModHandler::spawnModActors(UWorld* World, bool bIsMenuWorld) {
 		AActor* actor = World->SpawnActor(targetClass, &position, &rotation, spawnParams);
 		modInitializerActorList.Add(TWeakObjectPtr<AActor>(actor));
 	}
+}
+
+void FModHandler::preInitializeModActors() {
+	SML::Logging::info(TEXT("Preinitializing mod content packages..."));
+	for (const TWeakObjectPtr<AActor> ActorPtr : this->modInitializerActorList) {
+		if (AActor* Actor = ActorPtr.Get()) {
+			if (Actor->IsValidLowLevel()) {
+				if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+					SML::Logging::info(TEXT("Preinitializing mod "), *Actor->GetClass()->GetPathName());
+					InitMod->PreInit();
+					InitMod->PreLoadModContent();
+					SML::Logging::debug(TEXT("Done preinitializing mod "), *Actor->GetClass()->GetPathName());
+				}
+			}
+		}
+	}
+	SML::Logging::debug(TEXT("Done preinitializing mod content packages"));
 }
 
 void FModHandler::initializeModActors() {

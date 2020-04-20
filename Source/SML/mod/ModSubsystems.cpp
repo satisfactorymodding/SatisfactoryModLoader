@@ -30,7 +30,7 @@ void FSubsystemInfoHolder::InitializeSubsystems(AFGGameState* GameState) {
 	}
 }
 
-AFGSubsystem* UModSubsystemHolder::K2_SpawnSubsystem(TSubclassOf<AFGSubsystem> SpawnClass, FName SpawnName) const {
+AFGSubsystem* UModSubsystemHolder::K2_SpawnSubsystem(TSubclassOf<AFGSubsystem> SpawnClass, FName SpawnName) {
 	if (!IsValid(SpawnClass)) {
 		UE_LOG(LogTemp, Error, TEXT("ModSubsystems::SpawnSubsystem failed for '%s', no class given."), *SpawnName.ToString());
 		return nullptr;

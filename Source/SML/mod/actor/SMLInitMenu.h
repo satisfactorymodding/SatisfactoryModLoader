@@ -7,6 +7,6 @@ UCLASS(Abstract, Blueprintable, HideCategories = ("Actor Tick", Rendering, Repli
 class SML_API ASMLInitMenu : public AActor {
 	GENERATED_BODY()
 public:
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintNativeEvent)
 	void Init();
 };

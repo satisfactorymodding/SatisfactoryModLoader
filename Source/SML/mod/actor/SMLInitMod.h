@@ -12,21 +12,30 @@ UCLASS(Abstract, Blueprintable, HideCategories = ("Actor Tick", Rendering, Repli
 class SML_API ASMLInitMod : public AActor {
 	GENERATED_BODY()
 public:
-	/** Called after map has been loaded and ga
-	 * 
+	/**
+	 * Called before subsystem initialization early during the world init
+	 * Most things are unsafe to do here, so use carefully
 	 */
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintNativeEvent)
+	void PreInit();
+
+	virtual void PreLoadModContent();
+	
+	/**
+	 * Called after map has been loaded and subsystems are initialized
+	 */
+	UFUNCTION(BlueprintNativeEvent)
 	void Init();
 
-	/** Called when the game is fully loaded and the player is spawned
+	/** Called when the game save is fully loaded and the player is spawned
 	  * You don't have to load your schematics in here, they are loaded by SML
 	  */
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintNativeEvent)
 	void PostInit();
 
-	void LoadModContent();
+	virtual void LoadModContent();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintNativeEvent)
 	void PlayerJoined(AFGPlayerController* Player);
 public:
 	/**

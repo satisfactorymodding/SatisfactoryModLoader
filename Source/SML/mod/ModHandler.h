@@ -90,6 +90,7 @@ namespace SML {
 			void PopulateModList(const TMap<FString, IModuleInterface*>& loadedModules);
 
 			void spawnModActors(UWorld* World, bool bIsMenuWorld);
+			void preInitializeModActors();
 			void initializeModActors();
 			void postInitializeModActors();
 			void handlePlayerJoin(AFGPlayerController* PlayerController);
