@@ -309,23 +309,25 @@ INSTRUCTION_HANDLER(EX_Context_FailSilent)
 INSTRUCTION(EX_Context_FailSilent)
 
 void ParseFunctionInstruction(UFunction* function, FParseFrame& Stack, TSharedPtr<FJsonObject>& Result, uint8* ReturnValue) {
-	TArray<TSharedPtr<FJsonValue>> inputs;
-	TArray<TSharedPtr<FJsonValue>> outputs;
-	for (TFieldIterator<UProperty> field = TFieldIterator<UProperty>(function); field; ++field) {
-		if (field->PropertyFlags & CPF_Parm) {
-			if (field->PropertyFlags & CPF_ReturnParm) {
-				if (UObjectProperty* objProp = Cast<UObjectProperty>(*field)) {
-					if (ReturnValue) *(UObject**)ReturnValue = objProp->PropertyClass->GetDefaultObject();
-				}
-			} else if (field->PropertyFlags & CPF_OutParm) {
-				outputs.Add(MakeShareable(new FJsonValueObject(Stack.Step(nullptr))));
-			} else {
-				inputs.Add(MakeShareable(new FJsonValueObject(Stack.Step(nullptr))));
+	TArray<TSharedPtr<FJsonValue>> params;
+	for (UProperty* Property = (UProperty*) function->Children; *Stack.Code != EX_EndFunctionParms; Property = (UProperty*)Property->Next) {
+		if (Property->PropertyFlags & CPF_ReturnParm) {
+			if (UObjectProperty* objProp = Cast<UObjectProperty>(Property)) {
+				if (ReturnValue) *(UObject**)ReturnValue = objProp->PropertyClass->GetDefaultObject();
 			}
+		} else if (Property->PropertyFlags & CPF_OutParm) {
+			TSharedPtr<FJsonObject> param = Stack.Step(nullptr);
+			param->SetBoolField("FunctionParamOut", true);
+			param->SetStringField("FunctionParamName", Property->GetName());
+			params.Add(MakeShareable(new FJsonValueObject(param)));
+		} else {
+			TSharedPtr<FJsonObject> param = Stack.Step(nullptr);
+			param->SetBoolField("FunctionParamOut", false);
+			param->SetStringField("FunctionParamName", Property->GetName());
+			params.Add(MakeShareable(new FJsonValueObject(param)));
 		}
 	}
-	Result->SetArrayField("Inputs", inputs);
-	Result->SetArrayField("Outputs", outputs);
+	Result->SetArrayField("Params", params);
 	P_FINISH; // EX_EndFunctionParms
 }
 
@@ -530,7 +532,9 @@ INSTRUCTION_HANDLER(EX_StructConst)
 		}
 
 		for (int32 ArrayIter = 0; ArrayIter < StructProp->ArrayDim; ++ArrayIter) {
-			attributes.Add(MakeShareable(new FJsonValueObject(Stack.Step(nullptr))));
+			TSharedPtr<FJsonObject> prop = Stack.Step(nullptr);
+			prop->SetStringField("StructPropName", StructProp->GetName());
+			attributes.Add(MakeShareable(new FJsonValueObject(prop)));
 		}
 	}
 	Result->SetArrayField("Value", attributes);
@@ -841,6 +845,7 @@ INSTRUCTION(EX_LetWeakObjPtr)
 INSTRUCTION_HANDLER(EX_BindDelegate)
 	Result->SetStringField("Func", Stack.ReadName().ToString());
 	Result->SetObjectField("Var", Stack.Step(nullptr));
+	Result->SetObjectField("Obj", Stack.Step(nullptr));
 	return true;
 }
 INSTRUCTION(EX_BindDelegate)

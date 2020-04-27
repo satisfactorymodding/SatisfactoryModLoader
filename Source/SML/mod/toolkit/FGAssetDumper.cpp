@@ -495,8 +495,8 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 						ubergraphFunc.Split(":", NULL, &ubergraph);
 						if (ubergraph.Contains("ExecuteUbergraph")) {
 							isUbergraph = true;
-							TArray<TSharedPtr<FJsonValue>> inputs = code[0]->AsObject()->GetArrayField("Inputs");
-							MethodEntry->SetNumberField("UbergraphOffset", inputs[0]->AsObject()->GetNumberField("Value"));
+							TArray<TSharedPtr<FJsonValue>> params = code[0]->AsObject()->GetArrayField("Params");
+							MethodEntry->SetNumberField("UbergraphOffset", params[0]->AsObject()->GetNumberField("Value"));
 							MethodEntry->SetStringField("Ubergraph", ubergraph);
 						}
 					}
