@@ -490,7 +490,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 				if (code.Num() == 1) {
 					TSharedPtr<FJsonObject> firstInst = code[0]->AsObject();
 					if (firstInst->GetStringField("Instruction") == "EX_LocalFinalFunction") {
-						FString ubergraphFunc = code[0]->AsObject()->GetStringField("Func");
+						FString ubergraphFunc = code[0]->AsObject()->GetStringField("Function");
 						FString ubergraph;
 						ubergraphFunc.Split(":", NULL, &ubergraph);
 						if (ubergraph.Contains("ExecuteUbergraph")) {
