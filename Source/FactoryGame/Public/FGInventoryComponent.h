@@ -50,6 +50,7 @@ public:
 	FSharedInventoryStatePtr ItemState;
 
 public:
+	FORCEINLINE FInventoryItem(const FInventoryItem& item) = default;
 	FORCEINLINE ~FInventoryItem() = default;
 };
 FORCEINLINE FString VarToFString( FInventoryItem var ){ return FString::Printf( TEXT( "%s: {%s}" ), *VarToFString(var.ItemClass), *VarToFString(var.ItemState) ); }
