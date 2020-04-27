@@ -1,8 +1,8 @@
 #include "SMLChatCommands.h"
 #include "ChatCommandLibrary.h"
 #include "SatisfactoryModLoader.h"
-#include "FGResearchManager.h"
 #include "player/PlayerUtility.h"
+#include "AkComponent.h"
 
 AHelpCommandInstance::AHelpCommandInstance() {
 	ModId = TEXT("SML");

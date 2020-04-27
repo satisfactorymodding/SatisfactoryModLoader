@@ -19,8 +19,8 @@ public:
 
 /**
  * Abstract holder for mod defined subsystems
- * Component is initialized on server and replicated to client, but subsystem instances
- * are created only on server side, and replicated to clients as needed
+ * Component is initialized on server only, so if you need
+ * to access subsystem instances on client you should set bReplicates to true
  *
  * You should use it like that:
  * 1) Add number of subsystems to the static fields

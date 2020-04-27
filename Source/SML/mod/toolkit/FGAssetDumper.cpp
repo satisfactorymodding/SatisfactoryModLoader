@@ -501,7 +501,9 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 						}
 					}
 				}
-				if (!isUbergraph) MethodEntry->SetArrayField(TEXT("Code"), code);
+				if (!isUbergraph) {
+					MethodEntry->SetArrayField(TEXT("Code"), code);
+				}
 			}
 			Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry)));
 		}

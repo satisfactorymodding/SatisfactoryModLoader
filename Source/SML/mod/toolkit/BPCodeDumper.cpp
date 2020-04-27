@@ -3,8 +3,8 @@
 #include "Engine/EngineTypes.h"
 #include "SML/util/Logging.h"
 
+TSharedRef<FJsonObject> CreatePropertyTypeDescriptor(UProperty* Property);
 class FParseFrame;
-
 typedef bool InstructionHandler(FParseFrame&, TSharedPtr<FJsonObject>&, uint8*);
 typedef InstructionHandler PrimitiveCastHandler;
 
@@ -167,6 +167,7 @@ void SetDefaultRetVal(uint8* ReturnValue, UProperty* Prop) {
 INSTRUCTION_HANDLER(EX_LocalVariable)
 	UProperty* Prop = Stack.ReadProperty();
 	Result->SetStringField("VarName", Prop->GetName());
+	Result->SetObjectField("VarType", CreatePropertyTypeDescriptor(Prop));
 	SetDefaultRetVal(ReturnValue, Prop);
 	return true;
 }
@@ -264,8 +265,8 @@ INSTRUCTION_HANDLER(EX_MetaCast)
 INSTRUCTION(EX_MetaCast)
 
 INSTRUCTION_HANDLER(EX_LetBool)
-	Result->SetObjectField("Var", Stack.Step(nullptr));
-	Result->SetObjectField("Value", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateProp", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateExp", Stack.Step(nullptr));
 	return true;
 }
 INSTRUCTION(EX_LetBool)
@@ -671,7 +672,7 @@ INSTRUCTION(EX_MapConst)
 
 INSTRUCTION_HANDLER(EX_StructMemberContext)
 	UProperty* StructProperty = Stack.ReadProperty();
-	Result->SetStringField("Context", StructProperty->GetFullName());
+	Result->SetStringField("Context", StructProperty->GetName());
 	Result->SetObjectField("Code", Stack.Step(ReturnValue));
 	SetDefaultRetVal(ReturnValue, StructProperty);
 	return true;
@@ -679,16 +680,16 @@ INSTRUCTION_HANDLER(EX_StructMemberContext)
 INSTRUCTION(EX_StructMemberContext)
 
 INSTRUCTION_HANDLER(EX_LetMulticastDelegate)
-	Result->SetObjectField("Var", Stack.Step(nullptr));
-	Result->SetObjectField("Value", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateProp", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateExp", Stack.Step(nullptr));
 
 	return true;
 }
 INSTRUCTION(EX_LetMulticastDelegate)
 
 INSTRUCTION_HANDLER(EX_LetDelegate)
-	Result->SetObjectField("Var", Stack.Step(nullptr));
-	Result->SetObjectField("Value", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateProp", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateExp", Stack.Step(nullptr));
 
 	return true;
 }
@@ -696,7 +697,7 @@ INSTRUCTION(EX_LetDelegate)
 
 INSTRUCTION_HANDLER(EX_LocalVirtualFunction)
 	FName funcName = Stack.ReadName();
-	Result->SetStringField("Func", funcName.ToString());
+	Result->SetStringField("Function", funcName.ToString());
 	ParseFunctionInstruction(Stack.Context->FindFunctionChecked(funcName), Stack, Result, ReturnValue);
 
 	return true;
@@ -705,7 +706,7 @@ INSTRUCTION(EX_LocalVirtualFunction)
 
 INSTRUCTION_HANDLER(EX_LocalFinalFunction)
 	UFunction* func = (UFunction*)Stack.ReadObject();
-	Result->SetStringField("Func", func->GetFullName());
+	Result->SetStringField("Function", func->GetFullName());
 	ParseFunctionInstruction(func, Stack, Result, ReturnValue);
 
 	return true;
@@ -714,7 +715,8 @@ INSTRUCTION(EX_LocalFinalFunction)
 
 INSTRUCTION_HANDLER(EX_LocalOutVariable)
 	UProperty* VarProperty = Stack.ReadProperty();
-	Result->SetStringField("Var", VarProperty->GetName());
+	Result->SetStringField("VarName", VarProperty->GetName());
+	Result->SetObjectField("VarType", CreatePropertyTypeDescriptor(VarProperty));
 	SetDefaultRetVal(ReturnValue, VarProperty);
 	return true;
 }
@@ -726,7 +728,7 @@ INSTRUCTION_HANDLER(EX_DeprecatedOp4A)
 INSTRUCTION(EX_DeprecatedOp4A)
 
 INSTRUCTION_HANDLER(EX_InstanceDelegate)
-	Result->SetStringField("Delegate", Stack.ReadName().ToString());
+	Result->SetStringField("FunctionName", Stack.ReadName().ToString());
 	return true;
 }
 INSTRUCTION(EX_InstanceDelegate)
@@ -763,7 +765,7 @@ INSTRUCTION_HANDLER(EX_Breakpoint)
 INSTRUCTION(EX_Breakpoint)
 
 INSTRUCTION_HANDLER(EX_InterfaceContext)
-	Result->SetObjectField("Type", Stack.Step(ReturnValue));
+	Result->SetObjectField("Interface", Stack.Step(ReturnValue));
 	return true;
 }
 INSTRUCTION(EX_InterfaceContext)
@@ -839,14 +841,15 @@ INSTRUCTION_HANDLER(EX_LetWeakObjPtr)
 INSTRUCTION(EX_LetWeakObjPtr)
 
 INSTRUCTION_HANDLER(EX_BindDelegate)
-	Result->SetStringField("Func", Stack.ReadName().ToString());
-	Result->SetObjectField("Var", Stack.Step(nullptr));
+	Result->SetStringField("FunctionName", Stack.ReadName().ToString());
+	Result->SetObjectField("Variable", Stack.Step(nullptr));
+	Result->SetObjectField("Object", Stack.Step(nullptr));
 	return true;
 }
 INSTRUCTION(EX_BindDelegate)
 
 INSTRUCTION_HANDLER(EX_RemoveMulticastDelegate)
-	Result->SetObjectField("Var", Stack.Step(nullptr));
+	Result->SetObjectField("Variable", Stack.Step(nullptr));
 	Result->SetObjectField("Delegate", Stack.Step(nullptr));
 	return true;
 }
@@ -855,7 +858,7 @@ INSTRUCTION(EX_RemoveMulticastDelegate)
 INSTRUCTION_HANDLER(EX_CallMulticastDelegate)
 	UFunction* Signature = CastChecked<UFunction>(Stack.ReadObject());
 	Result->SetStringField("Signature", Signature->GetFullName());
-	Result->SetObjectField("Delegate", Stack.Step(nullptr));
+	Result->SetObjectField("Variable", Stack.Step(nullptr));
 	ParseFunctionInstruction(Signature, Stack, Result, ReturnValue);
 	return true;
 }
@@ -905,17 +908,18 @@ INSTRUCTION(EX_CallMath)
 
 INSTRUCTION_HANDLER(EX_SwitchValue)
 	const int32 NumCases = Stack.ReadWord();
-	Result->SetNumberField("Cases", NumCases);
 	const CodeSkipSizeType OffsetToEnd = Stack.ReadCodeSkipCount();
 	Result->SetNumberField("Offset", OffsetToEnd);
 	Result->SetObjectField("Input", Stack.Step(nullptr));
 	
 	TArray<TSharedPtr<FJsonValue>> cases;
 	for (int32 CaseIndex = 0; CaseIndex < NumCases; ++CaseIndex) {
-		Stack.Step(nullptr);
+		TSharedPtr<FJsonObject> CaseObject = MakeShareable(new FJsonObject());
+		CaseObject->SetObjectField("Match", Stack.Step(nullptr));
 		const CodeSkipSizeType OffsetToNextCase = Stack.ReadCodeSkipCount();
-		// TODO: Eventually do something with the offset
-		cases.Add(MakeShareable(new FJsonValueObject(Stack.Step(ReturnValue))));
+		CaseObject->SetObjectField("Result", Stack.Step(ReturnValue));
+		CaseObject->SetNumberField("OffsetToNextCase", OffsetToNextCase);
+		cases.Add(MakeShareable(new FJsonValueObject(CaseObject)));
 	}
 	Result->SetArrayField("Cases", cases);
 	Result->SetObjectField("Default", Stack.Step(ReturnValue));
@@ -932,7 +936,7 @@ INSTRUCTION_HANDLER(EX_InstrumentationEvent)
 INSTRUCTION(EX_InstrumentationEvent)
 
 INSTRUCTION_HANDLER(EX_ArrayGetByRef)
-	Result->SetObjectField("Var", Stack.Step(nullptr));
+	Result->SetObjectField("Variable", Stack.Step(nullptr));
 	Result->SetObjectField("Index", Stack.Step(nullptr));
 	return true;
 }

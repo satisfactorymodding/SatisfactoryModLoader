@@ -24,7 +24,6 @@ void FSubsystemInfoHolder::InitializeSubsystems(AFGGameState* GameState) {
 			check(ComponentClass->IsChildOf<UModSubsystemHolder>());
 			UModSubsystemHolder* Component = NewObject<UModSubsystemHolder>(GameState, ComponentClass);
 			Component->RegisterComponent();
-			Component->SetIsReplicated(true);
 			Component->InitSubsystems();
 		}
 	}

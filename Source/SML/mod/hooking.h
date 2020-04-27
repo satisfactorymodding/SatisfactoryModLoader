@@ -120,6 +120,11 @@ public:
 			}
 		}
 	}
+
+	inline Result CallAndGetResult(Args... args) {
+		operator()(args...);
+		return result;
+	}
 };
 
 template <typename Result, typename C, typename... Args>
