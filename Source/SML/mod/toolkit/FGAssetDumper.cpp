@@ -396,6 +396,34 @@ void DumpWidgetInfo(TSharedRef<FJsonObject>& ResultJson, UWidgetBlueprintGenerat
 	ResultJson->SetArrayField(TEXT("NamedSlots"), NamedSlots);
 }
 
+void IterateArray(const TArray<TSharedPtr<FJsonValue>>& code, TFunctionRef<void(const TSharedPtr<FJsonObject>&)> func);
+void IterateObject(const TSharedPtr<FJsonObject>& obj, TFunctionRef<void(const TSharedPtr<FJsonObject>&)> func);
+
+void DoValue(const TSharedPtr<FJsonValue>& value, TFunctionRef<void(const TSharedPtr<FJsonObject>&)> func) {
+	const TArray<TSharedPtr<FJsonValue>>* arr;
+	const TSharedPtr<FJsonObject>* obj;
+	if (value->TryGetArray(arr)) {
+		IterateArray(*arr, func);
+	} else if (value->TryGetObject(obj)) {
+		if ((*obj)->HasField("Instruction")) {
+			func(*obj);
+		}
+		IterateObject(*obj, func);
+	}
+}
+
+void IterateObject(const TSharedPtr<FJsonObject>& obj, TFunctionRef<void(const TSharedPtr<FJsonObject>&)> func) {
+	for (const TPair<FString, TSharedPtr<FJsonValue>> field : obj->Values) {
+		DoValue(field.Value, func);
+	}
+}
+
+void IterateArray(const TArray<TSharedPtr<FJsonValue>>& code, TFunctionRef<void(const TSharedPtr<FJsonObject>&)> func) {
+	for (const TSharedPtr<FJsonValue>& val : code) {
+		DoValue(val, func);
+	}
+}
+
 TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* GeneratedClass) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
 	SML::Logging::info(TEXT("Dumping blueprint class "), *GeneratedClass->GetFullName());
@@ -460,6 +488,8 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	}
 
 	TArray<TSharedPtr<FJsonValue>> Methods;
+	TMap<FString, int32> Ubergraphs;
+	TMap<FString, TMap<int32, FString>> UbergraphEntries;
 	for (TFieldIterator<UFunction> It(GeneratedClass, EFieldIteratorFlags::ExcludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::ExcludeInterfaces); It; ++It) {
 		UFunction* Function = *It;
 		if (Function->GetFName().ToString().StartsWith(TEXT("ExecuteUbergraph_"))) {
@@ -468,16 +498,14 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 			if (code.Num() > 0) code.RemoveAt(0);
 			MethodEntry->SetStringField(TEXT("Name"), Function->GetName());
 			MethodEntry->SetArrayField(TEXT("Code"), code);
-			Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry)));
+			Ubergraphs.Add(Function->GetFName().ToString(), Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry))));
 			continue;
 		}
+		const TSharedPtr<FJsonObject>& MethodEntry = CreateFunctionSignature(Function);
 		UClass* FunctionOverrideSrc = GetOverridenFunctionSource(Function);
 		if (FunctionOverrideSrc == nullptr) {
 			//for blueprint defined functions, record full signature
-			const TSharedPtr<FJsonObject>& methodEntry = CreateFunctionSignature(Function);
-			if (methodEntry.IsValid()) {
-				Methods.Add(MakeShareable(new FJsonValueObject(methodEntry)));
-			}
+			if (!MethodEntry.IsValid()) continue;
 		} else {
 			//For overriden functions, record only their name
 			TSharedPtr<FJsonObject> MethodEntry = MakeShareable(new FJsonObject());
@@ -486,28 +514,39 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 			MethodEntry->SetBoolField(TEXT("IsOverride"), true);
 			if (Function->FunctionFlags & FUNC_BlueprintEvent) {
 				TArray<TSharedPtr<FJsonValue>> code = SML::CreateFunctionCode(Function);
-				bool isUbergraph = false;
-				if (code.Num() == 1) {
-					TSharedPtr<FJsonObject> firstInst = code[0]->AsObject();
-					if (firstInst->GetStringField("Instruction") == "EX_LocalFinalFunction") {
-						FString ubergraphFunc = code[0]->AsObject()->GetStringField("Function");
-						FString ubergraph;
-						ubergraphFunc.Split(":", NULL, &ubergraph);
-						if (ubergraph.Contains("ExecuteUbergraph")) {
-							isUbergraph = true;
-							TArray<TSharedPtr<FJsonValue>> params = code[0]->AsObject()->GetArrayField("Params");
-							MethodEntry->SetNumberField("UbergraphOffset", params[0]->AsObject()->GetNumberField("Value"));
-							MethodEntry->SetStringField("Ubergraph", ubergraph);
-						}
-					}
-				}
-				if (!isUbergraph) {
-					MethodEntry->SetArrayField(TEXT("Code"), code);
-				}
+				MethodEntry->SetArrayField(TEXT("Code"), code);
 			}
-			Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry)));
+		}
+		TArray<TSharedPtr<FJsonValue>> code = MethodEntry->GetArrayField("Code");
+		if (code.Num() == 1 && code[0]->AsObject()->GetStringField("Instruction") == "CallUbergraph") {
+			UbergraphEntries.FindOrAdd(code[0]->AsObject()->GetStringField("Ubergraph")).Add(code[0]->AsObject()->GetNumberField("UbergraphOffset"), Function->GetName());
+		}
+		Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry)));
+	}
+
+	// Add Ubergraph entries
+	for (TPair<FString, TMap<int32, FString>> ug : UbergraphEntries) {
+		TSharedPtr<FJsonObject> ubergraph = Methods[Ubergraphs[ug.Key]]->AsObject();
+		IterateObject(ubergraph, [&](const TSharedPtr<FJsonObject>& inst) {
+			if (FString* func = ug.Value.Find(inst->GetNumberField("InstOffsetFromTop"))) {
+				inst->SetStringField("UbergraphFunctionEntry", *func);
+			}
+		});
+	}
+
+	// Resolve Ubergraph references
+	for (TSharedPtr<FJsonValue> method : Methods) {
+		TSharedPtr<FJsonObject> obj = method.Get()->AsObject();
+		const TArray<TSharedPtr<FJsonValue>>& code = obj->GetArrayField("Code");
+		if (code.Num() > 1 || (code.Num() == 1 && code[0]->AsObject()->GetStringField("Instruction") != "CallUbergraph")) {
+			IterateObject(code[0]->AsObject(), [&](const TSharedPtr<FJsonObject>& inst) {
+				if (inst->GetStringField("Instruction") == "CallUbergraph") {
+					inst->SetStringField("UbergraphFunction", UbergraphEntries[inst->GetStringField("Ubergraph")][inst->GetNumberField("UbergraphOffset")]);
+				}
+			});
 		}
 	}
+
 	if (Methods.Num() > 0) {
 		ResultJson->SetArrayField(TEXT("Functions"), Methods);
 	}
