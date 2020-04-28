@@ -818,7 +818,7 @@ INSTRUCTION_HANDLER(EX_AddMulticastDelegate)
 INSTRUCTION(EX_AddMulticastDelegate)
 
 INSTRUCTION_HANDLER(EX_ClearMulticastDelegate)
-	Result->SetObjectField("Delegate", Stack.Step(nullptr));
+	Result->SetObjectField("Variable", Stack.Step(nullptr));
 	return true;
 }
 INSTRUCTION(EX_ClearMulticastDelegate)
@@ -831,15 +831,15 @@ INSTRUCTION_HANDLER(EX_Tracepoint)
 INSTRUCTION(EX_Tracepoint)
 
 INSTRUCTION_HANDLER(EX_LetObj)
-	Result->SetObjectField("Var", Stack.Step(nullptr));
-	Result->SetObjectField("Value", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateProp", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateExp", Stack.Step(nullptr));
 	return true;
 }
 INSTRUCTION(EX_LetObj)
 
 INSTRUCTION_HANDLER(EX_LetWeakObjPtr)
-	Result->SetObjectField("Var", Stack.Step(nullptr));
-	Result->SetObjectField("Value", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateProp", Stack.Step(nullptr));
+	Result->SetObjectField("EvaluateExp", Stack.Step(nullptr));
 	return true;
 }
 INSTRUCTION(EX_LetWeakObjPtr)
