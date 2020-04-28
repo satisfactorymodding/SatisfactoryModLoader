@@ -713,6 +713,22 @@ INSTRUCTION_HANDLER(EX_LocalFinalFunction)
 	Result->SetStringField("Function", func->GetFullName());
 	ParseFunctionInstruction(func, Stack, Result, ReturnValue);
 
+	// Ubergraph execute parse
+	if (Result->GetStringField("Instruction") == "EX_LocalFinalFunction") {
+		FString ubergraphFunc = Result->GetStringField("Function");
+		FString ubergraph;
+		ubergraphFunc.Split(":", NULL, &ubergraph);
+		if (ubergraph.Contains("ExecuteUbergraph")) {
+			TSharedPtr<FJsonObject> newInstruction = MakeShareable(new FJsonObject());
+			newInstruction->SetStringField("Instruction", "CallUbergraph");
+			newInstruction->SetNumberField("InstOffsetFromTop", Result->GetNumberField("InstOffsetFromTop"));
+			TArray<TSharedPtr<FJsonValue>> params = Result->GetArrayField("Params");
+			newInstruction->SetNumberField("UbergraphOffset", params[0]->AsObject()->GetNumberField("Value"));
+			newInstruction->SetStringField("Ubergraph", ubergraph);
+			Result = newInstruction;
+		}
+	}
+
 	return true;
 }
 INSTRUCTION(EX_LocalFinalFunction)
