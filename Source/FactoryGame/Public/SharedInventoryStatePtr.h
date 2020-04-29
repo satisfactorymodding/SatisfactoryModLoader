@@ -22,7 +22,7 @@ public:
 	 * Make a shared pointer of for an actor.
 	 * @note Only valid to call on the server.
 	 */
-	static FSharedInventoryStatePtr MakeShared( AActor* actor )
+	FORCEINLINE static FSharedInventoryStatePtr MakeShared( AActor* actor )
 	{
 		if( ::IsValid( actor ) )
 		{
@@ -52,7 +52,7 @@ public:
 		inSharedPtr.ActorPtr = nullptr;
 	}
 
-	FSharedInventoryStatePtr& operator=( const FSharedInventoryStatePtr& inSharedPtr )
+	FORCEINLINE FSharedInventoryStatePtr& operator=( const FSharedInventoryStatePtr& inSharedPtr )
 	{
 		SharedReferenceCount = inSharedPtr.SharedReferenceCount;
 		ActorPtr = inSharedPtr.ActorPtr;
@@ -79,14 +79,14 @@ public:
 	/**
 	 * Use a custom serialize so we can start the reference counting on a loaded pointer.
 	 */
-	bool Serialize( FArchive& ar )
+	FORCEINLINE bool Serialize( FArchive& ar )
 	{
 		ar << *this;
 
 		return !ar.IsError();
 	}
 	
-	friend FArchive& operator<<( FArchive& ar, FSharedInventoryStatePtr& state )
+	FORCEINLINE friend FArchive& operator<<( FArchive& ar, FSharedInventoryStatePtr& state )
 	{
 		ar << state.ActorPtr;
 
@@ -109,7 +109,7 @@ public:
 	/**
 	 * Use a custom net serialize to only allow replication from server to client and never the other way around.
 	 */
-	bool NetSerialize( FArchive& ar, class UPackageMap* map, bool& out_Success )
+	FORCEINLINE bool NetSerialize( FArchive& ar, class UPackageMap* map, bool& out_Success )
 	{
 		bool isServer = false;
 		if( UPackageMapClient* client = Cast<UPackageMapClient>( map ) )
@@ -159,7 +159,7 @@ public:
 		return nullptr;
 	}
 
-	int32 GetSharedReferenceCount() const
+	FORCEINLINE int32 GetSharedReferenceCount() const
 	{
 		return SharedReferenceCount.GetSharedReferenceCount();
 	}
@@ -187,11 +187,11 @@ private:
 	class TReferenceControllerWithNextFrameDeleter : public SharedPointerInternals::FReferenceControllerBase
 	{
 	public:
-		explicit TReferenceControllerWithNextFrameDeleter( AActor* inActorPtr ) :
+		FORCEINLINE explicit TReferenceControllerWithNextFrameDeleter( AActor* inActorPtr ) :
 			ActorPtr( inActorPtr )
 		{}
 
-		virtual void DestroyObject() override
+		FORCEINLINE virtual void DestroyObject() override
 		{
 			//[FreiholtzK:Mon/16-03-2020] Added support for removing objects in non game thread, E.g  parallelfor in buildable subsystem
 			FSimpleDelegateGraphTask::CreateAndDispatchWhenReady
@@ -217,7 +217,7 @@ private:
 		TWeakObjectPtr< AActor > ActorPtr;
 	};
 
-	inline SharedPointerInternals::FReferenceControllerBase* NewReferenceControllerWithNextFrameDeleter( AActor* inActorPtr )
+	FORCEINLINE SharedPointerInternals::FReferenceControllerBase* NewReferenceControllerWithNextFrameDeleter( AActor* inActorPtr )
 	{
 		return new TReferenceControllerWithNextFrameDeleter( inActorPtr );
 	}
@@ -228,7 +228,7 @@ public: // VarToFString requires this
 	 *
 	 * Modders, please use FSharedInventoryStatePtr::MakeShared, using this might cause a runtime crash.
 	 */
-	FSharedInventoryStatePtr( AActor* actor ) :
+	FORCEINLINE FSharedInventoryStatePtr( AActor* actor ) :
 		ActorPtr( actor ),
 		SharedReferenceCount( NewReferenceControllerWithNextFrameDeleter( actor ) )
 	{
