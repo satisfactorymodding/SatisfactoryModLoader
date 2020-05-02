@@ -17,10 +17,10 @@ class FACTORYGAME_API UFGAtmosphereUpdater : public UObject
 public:
 	/** Update the value of the height fog in each world */
 	void Tick( float dt );
-protected:
+//MODDING EDIT: Make member accessible
 	/** Apply the fog settings to the current world */
 	void ApplyFogSettings( const FExponentialFogSettings& fogSettings, class UWorld* world );
-
+protected:
 	/** Interpolate in src settings into destination, when alpha is 1, then take entire src */
 	void InterpolateFogSettings( FExponentialFogSettings& dest, const FExponentialFogSettings& src, float alpha ) const;
 
