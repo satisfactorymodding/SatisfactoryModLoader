@@ -23,6 +23,7 @@ void FSubsystemInfoHolder::InitializeSubsystems(AFGGameState* GameState) {
 		for (UClass* ComponentClass : SubsystemHolders) {
 			check(ComponentClass->IsChildOf<UModSubsystemHolder>());
 			UModSubsystemHolder* Component = NewObject<UModSubsystemHolder>(GameState, ComponentClass);
+			SML::Logging::info(TEXT("Initializing subsystem holder "), *ComponentClass->GetPathName());
 			Component->RegisterComponent();
 			Component->InitSubsystems();
 		}
