@@ -290,9 +290,11 @@ protected:
 	//           We cannot do that on the client cause it does not have a graph built.
 	//           And the pipe network id gets wonky on the client as well... and
 	//           we need this to work for the play test so for now lets go with ugly.
-	UPROPERTY( ReplicatedUsing = OnRep_FluidDescriptor )
+	// MODDING EDIT : protected -> public + BPReadyOnly and Visibiltiy
+	public:
+	UPROPERTY(BlueprintReadOnly,VisibleAnywhere, ReplicatedUsing = OnRep_FluidDescriptor )
 	TSubclassOf< class UFGItemDescriptor > mFluidDescriptor;
-
+	protected:
 	/**
 	 * The fluid integrant this connection belongs to ( interface on the outer buildable ). Assigned in begin play if one exists.
 	 * Can be null. Tex. For production buildings
