@@ -2,7 +2,6 @@
 
 #include "FGDecorationDescriptor.h"
 
-
 UFGDecorationDescriptor::UFGDecorationDescriptor() : Super() {
 	this->mGroundMeshScale.X = 1; this->mGroundMeshScale.Y = 1; this->mGroundMeshScale.Z = 1;
 	this->mUseDisplayNameAndDescription = true;

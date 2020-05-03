@@ -142,8 +142,8 @@ private:
 		int32 Redirect = INDEX_NONE;
 
 		/** World Z values for different pressure points in meters, NOT unreal units. */
-		float HighestPumpZ = 0.f;
-		float HighestElevationZ = 0.f;
+		float HighestPumpZ = -1000000.f;
+		float HighestElevationZ = -1000000.f;
 	};
 
 	void RebuildUpdateList();

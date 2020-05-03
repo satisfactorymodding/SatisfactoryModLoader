@@ -2,7 +2,6 @@
 
 #include "FGSignificanceManager.h"
 
-
 UFGSignificanceManager::UFGSignificanceManager() : Super() {
 	this->mIsEnabled = true;
 }

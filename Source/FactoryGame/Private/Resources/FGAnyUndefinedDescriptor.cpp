@@ -2,7 +2,6 @@
 
 #include "FGAnyUndefinedDescriptor.h"
 
-
 UFGAnyUndefinedDescriptor::UFGAnyUndefinedDescriptor() : Super() {
 	this->mUseDisplayNameAndDescription = true;
 	this->mDisplayName = NSLOCTEXT("AnyUndefinedDescriptor", "DisplayName", "Any Undefined");

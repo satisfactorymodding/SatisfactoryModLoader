@@ -2,7 +2,6 @@
 
 #include "FGWildCardDescriptor.h"
 
-
 UFGWildCardDescriptor::UFGWildCardDescriptor() : Super() {
 	this->mUseDisplayNameAndDescription = true;
 	this->mDisplayName = NSLOCTEXT("WildCardDescriptor", "DisplayName", "*");

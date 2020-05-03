@@ -2,7 +2,6 @@
 
 #include "FGTargetPoint.h"
 
-
 AFGTargetPoint::AFGTargetPoint() : Super() {
 	this->mWaitTime = 3;
 	this->mDefaultWaitTime = 3;

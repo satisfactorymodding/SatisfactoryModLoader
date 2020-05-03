@@ -384,6 +384,13 @@ public:
 	UFUNCTION( exec )
 	void ToggleDebuggingOnPipe();
 
+	/** Duplicate a component within a circuit so it contains multiple entries for the same component. */
+	UFUNCTION( exec )
+	void DupeComponentInCircuit( int32 target );
+	/** Duplicate a component from one circuit to another circuit so they contain the same component. */
+	UFUNCTION( exec )
+	void DupeComponentToAnotherCircuit( int32 source, int32 target );
+
 public:
 	/** This is used to make picking the same classes in the cheat board easier */
 	UPROPERTY( Config )

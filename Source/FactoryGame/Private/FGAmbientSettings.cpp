@@ -2,7 +2,6 @@
 
 #include "FGAmbientSettings.h"
 
-
 #if WITH_EDITOR
 void UFGAmbientSettings::CheckForErrors(){ }
 #endif 

@@ -2,7 +2,6 @@
 
 #include "FGActorRepresentationManager.h"
 
-
 AFGActorRepresentationManager* AFGActorRepresentationManager::Get(UWorld* world){ return nullptr; }
 AFGActorRepresentationManager* AFGActorRepresentationManager::Get(UObject* worldContext){ return nullptr; }
 AFGActorRepresentationManager::AFGActorRepresentationManager() : Super() {

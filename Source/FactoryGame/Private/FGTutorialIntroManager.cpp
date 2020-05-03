@@ -2,7 +2,6 @@
 
 #include "FGTutorialIntroManager.h"
 
-
 AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UWorld* world){ return nullptr; }
 AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UObject* worldContext){ return nullptr; }
 AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {

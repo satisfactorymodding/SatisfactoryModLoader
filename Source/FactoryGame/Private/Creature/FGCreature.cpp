@@ -19,6 +19,7 @@ void AFGCreature::Multicast_ConsumeItem_Implementation(TSubclassOf<  UFGItemDesc
 void AFGCreature::SetMoveSpeed(EMoveSpeed newMoveSpeedType){ }
 void AFGCreature::AiCalculateLeadTrajectory(const FVector& targetPos, const FVector& targetVelocity, const FVector& fromPos, float interceptorSpeed, bool &isPosibleToLead , FVector& interceptPoint, float leadScaling){ }
 void AFGCreature::SpawnDeathItem_Implementation(){ }
+void AFGCreature::ClearKillOrphanTimer(){ }
 void AFGCreature::OnRep_TargetRotation(){ }
 void AFGCreature::OnRep_IsEnabled(){ }
 void AFGCreature::SetEnabled(EEnabled enabled){ }

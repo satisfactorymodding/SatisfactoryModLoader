@@ -2,7 +2,6 @@
 
 #include "FGObjectScanner.h"
 
-
 AFGObjectScanner::AFGObjectScanner() : Super() {
 	this->mBeepDelayMax = 1.5;
 	this->mBeepDelayMin = 0.200000002980232;

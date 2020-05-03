@@ -2,7 +2,6 @@
 
 #include "FGItemDescriptorNuclearFuel.h"
 
-
 UFGItemDescriptorNuclearFuel::UFGItemDescriptorNuclearFuel() : Super() {
 	this->mAmountOfWaste = 1;
 	this->mUseDisplayNameAndDescription = true;

@@ -2,7 +2,6 @@
 
 #include "FGSoundSplineComponent.h"
 
-
 UFGSoundSplineComponent::UFGSoundSplineComponent() : Super() {
 	this->mEmitterInterval = 200;
 }

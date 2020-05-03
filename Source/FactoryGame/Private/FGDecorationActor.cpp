@@ -2,7 +2,6 @@
 
 #include "FGDecorationActor.h"
 
-
 AFGDecorationActor::AFGDecorationActor() : Super() {
 	this->bReplicates = true;
 }

@@ -2,7 +2,6 @@
 
 #include "FGWorkBench.h"
 
-
 UFGWorkBench::UFGWorkBench() : Super() {
 	this->mManufacturingSpeed = 0.800000011920929;
 	this->mFatigueMultiplier = 0.200000002980232;

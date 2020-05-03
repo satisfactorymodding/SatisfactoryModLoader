@@ -2,7 +2,6 @@
 
 #include "FGGameSession.h"
 
-
 AFGGameSession::AFGGameSession() : Super() {
 	
 }

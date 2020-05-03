@@ -2,7 +2,6 @@
 
 #include "FGBuildablePipelineSupport.h"
 #include "FGColoredInstanceMeshProxy.h"
-#include "FGBuildablePipelineSupport.h"
 
 #if WITH_EDITOR
 void AFGBuildablePipelineSupport::OnConstruction(const FTransform& transform){ }

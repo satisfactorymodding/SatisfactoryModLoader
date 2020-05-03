@@ -2,7 +2,6 @@
 
 #include "FGInventoryComponentBeltSlot.h"
 
-
 UFGInventoryComponentBeltSlot::UFGInventoryComponentBeltSlot() : Super() {
 	this->mDefaultInventorySize = 1;
 	this->bReplicates = true;

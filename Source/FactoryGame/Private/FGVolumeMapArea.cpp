@@ -2,7 +2,6 @@
 
 #include "FGVolumeMapArea.h"
 
-
 #if WITH_EDITOR
 void AFGVolumeMapArea::CheckForErrors(){ }
 #endif 

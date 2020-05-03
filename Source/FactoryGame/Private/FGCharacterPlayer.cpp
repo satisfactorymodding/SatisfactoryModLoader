@@ -5,7 +5,7 @@
 AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 void AFGCharacterPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGCharacterPlayer::PostActorCreated(){ }
-void AFGCharacterPlayer::PostInitializeComponents(){ Super::PostInitializeComponents();}
+void AFGCharacterPlayer::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGCharacterPlayer::BeginPlay(){ }
 void AFGCharacterPlayer::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGCharacterPlayer::Tick(float deltaTime){ }

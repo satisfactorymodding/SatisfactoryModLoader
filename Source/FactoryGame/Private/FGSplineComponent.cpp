@@ -2,7 +2,6 @@
 
 #include "FGSplineComponent.h"
 
-
 UFGSplineComponent::UFGSplineComponent() : Super() {
 	this->mSplineMeshLength = 100;
 	this->mCollisionSpacing = 100;

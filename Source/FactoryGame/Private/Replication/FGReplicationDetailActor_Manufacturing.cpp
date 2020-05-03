@@ -2,7 +2,6 @@
 
 #include "FGReplicationDetailActor_Manufacturing.h"
 
-
 AFGReplicationDetailActor_Manufacturing::AFGReplicationDetailActor_Manufacturing() : Super() {
 	this->bHidden = true;
 	this->bReplicates = true;

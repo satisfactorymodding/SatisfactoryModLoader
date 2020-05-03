@@ -2,8 +2,6 @@
 
 #include "FGBuildGun.h"
 
-
-
 UFGBuildGunState::UFGBuildGunState() : Super() {
 	
 }

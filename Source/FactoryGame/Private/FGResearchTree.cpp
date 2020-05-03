@@ -8,7 +8,7 @@ void UFGResearchTree::PreSave(const  ITargetPlatform* targetPlatform){ }
 #if WITH_EDITOR
 void UFGResearchTree::UpdateAssetBundleData(){ }
 #endif 
-void UFGResearchTree::PostLoad(){ Super::PostLoad();}
+void UFGResearchTree::PostLoad(){ Super::PostLoad(); }
 FPrimaryAssetId UFGResearchTree::GetPrimaryAssetId() const{ return FPrimaryAssetId(); }
 FText UFGResearchTree::GetPreUnlockDisplayName(TSubclassOf< UFGResearchTree > inClass){ 
 	return inClass.GetDefaultObject()->mPreUnlockDisplayName;

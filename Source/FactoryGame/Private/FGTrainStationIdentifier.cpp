@@ -2,7 +2,6 @@
 
 #include "FGTrainStationIdentifier.h"
 
-
 AFGTrainStationIdentifier::AFGTrainStationIdentifier() : Super() {
 	this->mTrackGraphID = -1;
 	this->bAlwaysRelevant = true;

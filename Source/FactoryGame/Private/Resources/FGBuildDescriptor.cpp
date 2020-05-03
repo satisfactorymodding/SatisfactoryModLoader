@@ -2,7 +2,6 @@
 
 #include "FGBuildDescriptor.h"
 
-
 #if WITH_EDITOR
 void UFGBuildDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
 #endif 

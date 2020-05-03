@@ -2,7 +2,6 @@
 
 #include "FGBuildableConveyorLift.h"
 
-
 AFGBuildableConveyorLift::AFGBuildableConveyorLift() : Super() {
 	this->mMeshHeight = 200;
 	this->MaxRenderDistance = -1;

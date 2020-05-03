@@ -2,7 +2,6 @@
 
 #include "FGGameInstance.h"
 
-
 void FOnJoinSessionData::SetState(EJoinSessionState newState, FOnJoinSessionStateChanged& onStateChangedDelegate){ }
 UFGGameInstance::UFGGameInstance() : Super() {
 	

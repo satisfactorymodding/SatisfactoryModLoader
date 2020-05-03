@@ -2,7 +2,6 @@
 
 #include "FGAttackMeleeJump.h"
 
-
 UFGAttackMeleeJump::UFGAttackMeleeJump() : Super() {
 	this->mJumpRange = 2000;
 	this->mAttackRange = 100;

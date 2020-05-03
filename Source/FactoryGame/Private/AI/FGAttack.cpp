@@ -2,7 +2,6 @@
 
 #include "FGAttack.h"
 
-
 UFGAttack::UFGAttack() : Super() {
 	this->mAttackRange = 100;
 	this->mDamage = 10;

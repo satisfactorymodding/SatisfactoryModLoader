@@ -2,7 +2,6 @@
 
 #include "FGPowerCircuit.h"
 
-
 FPowerGraphPoint::FPowerGraphPoint(){ }
 bool FPowerGraphPoint::NetSerialize(FArchive& ar,  UPackageMap* map, bool& out_success){ return bool(); }
 FPowerCircuitStats::FPowerCircuitStats(){ }

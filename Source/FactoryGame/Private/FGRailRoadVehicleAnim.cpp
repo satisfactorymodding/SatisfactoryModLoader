@@ -2,7 +2,6 @@
 
 #include "FGRailRoadVehicleAnim.h"
 
-
 void FAnimInstanceProxyRailRoadVehicle::PreUpdate(UAnimInstance* InAnimInstance, float DeltaSeconds){ }
 void FAnimInstanceProxyRailRoadVehicle::Update(float DeltaSeconds){ }
 void FAnimInstanceProxyRailRoadVehicle::Initialize(UAnimInstance* InAnimInstance){ }

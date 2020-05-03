@@ -2,7 +2,6 @@
 
 #include "FGResearchManager.h"
 
-
 AFGResearchManager::AFGResearchManager() : Super() {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;

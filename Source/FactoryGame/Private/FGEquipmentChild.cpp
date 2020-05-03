@@ -2,7 +2,6 @@
 
 #include "FGEquipmentChild.h"
 
-
 AFGEquipmentChild::AFGEquipmentChild() : Super() {
 	this->bOnlyRelevantToOwner = true;
 	this->bNetUseOwnerRelevancy = true;

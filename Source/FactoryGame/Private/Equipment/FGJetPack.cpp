@@ -2,7 +2,6 @@
 
 #include "FGJetPack.h"
 
-
 AFGJetPack::AFGJetPack() : Super() {
 	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
 	this->mBackAnimation = EBackEquipment::BE_Jetpack;

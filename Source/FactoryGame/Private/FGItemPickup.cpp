@@ -2,7 +2,6 @@
 
 #include "FGItemPickup.h"
 
-
 AFGItemPickup::AFGItemPickup() : Super() {
 	this->mDestroyOnPickup = true;
 	this->mRespawnTimeInDays = -1;
@@ -14,7 +13,7 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->bReplicates = true;
 }
 void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGItemPickup::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void AFGItemPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGItemPickup::BeginPlay(){ }
 void AFGItemPickup::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGItemPickup::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

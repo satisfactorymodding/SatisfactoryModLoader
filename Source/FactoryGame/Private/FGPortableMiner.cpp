@@ -2,7 +2,6 @@
 
 #include "FGPortableMiner.h"
 
-
 void AFGPortableMiner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 AFGPortableMiner::AFGPortableMiner() : Super() {
 	this->mInventorySize = 1;

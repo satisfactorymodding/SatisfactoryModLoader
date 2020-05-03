@@ -2,7 +2,6 @@
 
 #include "FGCharacterAnimInstance.h"
 
-
 UFGCharacterAnimInstance::UFGCharacterAnimInstance() : Super() {
 	this->mAimYawInterpSpeed = 5;
 	this->mYawRotationStrength = 7;

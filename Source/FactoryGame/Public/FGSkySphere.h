@@ -52,8 +52,6 @@ struct FACTORYGAME_API FSkySphereSettings
 	bool OverrideMoonLightColor;
 	bool OverrideMoonIntensity;
 
-
-
 public:
 	FORCEINLINE ~FSkySphereSettings() = default;
 };
@@ -86,7 +84,7 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category="SkySphere", meta = (CallInEditor = "true") )
 	void ApplySkySphereSettings( UPARAM(ref) const FSkySphereSettings& settings );
 
-	/** Update the preview of the skyesphere in the editor */	
+	/** Update the preview of the skysphere in the editor */	
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, meta=( CallInEditor = "true" ) )
 	void UpdatePreview();
 
@@ -105,8 +103,7 @@ protected:
 	/** Setup so that we get calls to UpdatePreview whenever time of day is updated in the editor */
 	void SetupPreviewDelegate();
 #endif
-//MODDING EDIT: Expose properties to mods
-public:
+public: // MODDING EDIT
 	/** How the sunlight changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="Curves|Sun")
 	FRuntimeCurveLinearColor mSunLightColorCurve;

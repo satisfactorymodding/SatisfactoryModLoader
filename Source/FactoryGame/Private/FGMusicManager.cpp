@@ -2,7 +2,6 @@
 
 #include "FGMusicManager.h"
 
-
 UFGMusicManager* UFGMusicManager::CreateMusicManager( UFGGameInstance* gameInstance){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UWorld* world){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UObject* worldContext){ return nullptr; }

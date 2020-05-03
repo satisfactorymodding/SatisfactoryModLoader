@@ -2,7 +2,6 @@
 
 #include "FGAdminInterface.h"
 
-
 AFGAdminInterface::AFGAdminInterface() : Super() {
 	this->bOnlyRelevantToOwner = true;
 	this->bAlwaysRelevant = true;

@@ -2,7 +2,6 @@
 
 #include "FGCollectionParamUniformFloat.h"
 
-
 UFGCollectionParamUniformFloat::UFGCollectionParamUniformFloat() : Super() {
 	this->WindDirectionParamName = "WindDirection";
 	this->WindIntensityParamName = "WindSpeed";

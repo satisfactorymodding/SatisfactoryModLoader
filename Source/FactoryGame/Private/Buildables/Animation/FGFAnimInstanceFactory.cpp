@@ -2,7 +2,6 @@
 
 #include "FGFAnimInstanceFactory.h"
 
-
 void FAnimInstanceProxyFactory::PreUpdate(UAnimInstance* InAnimInstance, float DeltaSeconds){ }
 void FAnimInstanceProxyFactory::Update(float DeltaSeconds){ }
 void FAnimInstanceProxyFactory::Initialize(UAnimInstance* InAnimInstance){ }

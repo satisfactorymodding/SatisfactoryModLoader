@@ -13,7 +13,7 @@ AFGDestructiveProjectile::AFGDestructiveProjectile() : Super() {
 	this->bReplicates = true;
 	this->InitialLifeSpan = 3;
 }
-void AFGDestructiveProjectile::PostInitializeComponents(){ Super::PostInitializeComponents();}
+void AFGDestructiveProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGDestructiveProjectile::BeginPlay(){ }
 void AFGDestructiveProjectile::OnImpact(const FHitResult& hitResult){ }
 void AFGDestructiveProjectile::PopulateDestructionContainers(){ }

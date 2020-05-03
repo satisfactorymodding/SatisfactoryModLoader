@@ -107,6 +107,7 @@ protected:
 	uint8 mReplicateDetails : 1;
 private:
 	friend class AFGCircuitSubsystem;
+	friend class UFGCheatManager;
 
 	/** All players interacting with a building that's connected to this circuit */
 	UPROPERTY()

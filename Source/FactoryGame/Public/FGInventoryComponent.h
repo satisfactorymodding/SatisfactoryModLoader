@@ -29,7 +29,7 @@ public:
 public:
 	FInventoryItem();
 	explicit FInventoryItem( TSubclassOf< class UFGItemDescriptor > itemClass );
-	FORCEINLINE FInventoryItem(const FInventoryItem& other) = default;
+	FORCEINLINE FInventoryItem(const FInventoryItem& other) = default; // MODDING EDIT
 
 	/** Function called when serializing this struct to a FArchive. */
 	bool Serialize( FArchive& ar );
@@ -82,7 +82,7 @@ struct FACTORYGAME_API FInventoryStack
 	GENERATED_BODY()
 public:
 	FInventoryStack();
-	FORCEINLINE FInventoryStack(const FInventoryStack& other) = default;
+	FORCEINLINE FInventoryStack(const FInventoryStack& other) = default; // MODDING EDIT
 	explicit FInventoryStack( const FInventoryItem& item );
 	FInventoryStack( int32 numItems, TSubclassOf< class UFGItemDescriptor > itemClass );
 

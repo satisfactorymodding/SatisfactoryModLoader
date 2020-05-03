@@ -2,7 +2,6 @@
 
 #include "FGAtmosphereVolume.h"
 
-
 FExponentialFogSettings::FExponentialFogSettings(){ }
 #if WITH_EDITOR
 void AFGAtmosphereVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ }
@@ -29,7 +28,7 @@ AFGAtmosphereVolume::AFGAtmosphereVolume() : Super() {
 	this->mFogCutoffDistance.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mFogCutoffDistance.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mFogCutoffDistance.EditorCurveData.DefaultValue = 0;
 	this->mBlendWeight = 1;
 }
-void AFGAtmosphereVolume::PostLoad(){ Super::PostLoad();}
+void AFGAtmosphereVolume::PostLoad(){ Super::PostLoad(); }
 void AFGAtmosphereVolume::PostRegisterAllComponents(){ }
 void AFGAtmosphereVolume::PostUnregisterAllComponents(void){ }
 bool AFGAtmosphereVolume::EncompassesPoint(FVector point, float sphereRadius , float* out_distanceToPoint){ return bool(); }

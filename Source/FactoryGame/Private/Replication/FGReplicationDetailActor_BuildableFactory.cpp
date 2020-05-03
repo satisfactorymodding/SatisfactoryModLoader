@@ -2,7 +2,6 @@
 
 #include "FGReplicationDetailActor_BuildableFactory.h"
 
-
 AFGReplicationDetailActor_BuildableFactory::AFGReplicationDetailActor_BuildableFactory() : Super() {
 	this->bHidden = true;
 	this->bReplicates = true;

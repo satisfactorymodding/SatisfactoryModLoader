@@ -2,10 +2,11 @@
 
 #include "FGRailroadTrackConnectionComponent.h"
 
-
 UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Super() {
 	this->mSwitchPosition = -1;
+	this->bReplicates = true;
 }
+void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGRailroadTrackConnectionComponent::AddConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnection(UFGRailroadTrackConnectionComponent* toComponent){ }

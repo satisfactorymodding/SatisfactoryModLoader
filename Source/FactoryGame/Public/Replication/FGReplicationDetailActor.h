@@ -48,7 +48,7 @@ public:
 protected:
 
 	/** Owning AFGBuildable to this replication detail actor object. Should never be null. */
-	UPROPERTY()
+	UPROPERTY(Transient)
 	class AFGBuildable* mOwningBuildable;
 
 	/** Checks whether this actor is relevant to a connection. */

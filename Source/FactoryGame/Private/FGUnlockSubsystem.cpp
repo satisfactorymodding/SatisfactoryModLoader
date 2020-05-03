@@ -2,7 +2,6 @@
 
 #include "FGUnlockSubsystem.h"
 
-
 AFGUnlockSubsystem::AFGUnlockSubsystem() : Super() {
 	this->mNumTotalInventorySlots = 16;
 	this->mNumTotalArmEquipmentSlots = 1;

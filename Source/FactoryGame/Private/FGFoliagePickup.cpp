@@ -2,7 +2,6 @@
 
 #include "FGFoliagePickup.h"
 
-
 AFGFoliagePickup::AFGFoliagePickup() : Super() {
 	this->bHidden = true;
 	this->bOnlyRelevantToOwner = true;

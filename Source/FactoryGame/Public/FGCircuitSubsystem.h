@@ -130,6 +130,8 @@ private:
 
 	/** Adds a connection component to a circuit, performs a circuit merge if the component is already connected to another circuit. */
 	void AddComponentToCircuit( class UFGCircuitConnectionComponent* component, int32 circuitID );
+	/** Removes a connection component from it's circuit. If the connection component does not have a valid circuit ID this does nothing. */
+	void RemoveComponentFromCircuit( class UFGCircuitConnectionComponent* component );
 
 private:
 	friend class UFGPowerCircuit;

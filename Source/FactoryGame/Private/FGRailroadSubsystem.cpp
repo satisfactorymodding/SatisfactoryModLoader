@@ -2,7 +2,6 @@
 
 #include "FGRailroadSubsystem.h"
 
-
 FTrackGraph::FTrackGraph(){ }
 AFGRailroadSubsystem::AFGRailroadSubsystem() : Super() {
 	this->mConnectDistance = 200;
@@ -11,7 +10,7 @@ AFGRailroadSubsystem::AFGRailroadSubsystem() : Super() {
 	this->bReplicates = true;
 }
 void AFGRailroadSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGRailroadSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void AFGRailroadSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGRailroadSubsystem::BeginPlay(){ }
 void AFGRailroadSubsystem::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGRailroadSubsystem::Tick(float dt){ }

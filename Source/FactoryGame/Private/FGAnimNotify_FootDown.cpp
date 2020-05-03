@@ -2,7 +2,6 @@
 
 #include "FGAnimNotify_FootDown.h"
 
-
 UFGAnimNotify_FootDown::UFGAnimNotify_FootDown() : Super() {
 	this->mPlaySound = true;
 }

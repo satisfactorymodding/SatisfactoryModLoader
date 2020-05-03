@@ -2,7 +2,6 @@
 
 #include "FGTargetPointLinkedList.h"
 
-
 UFGTargetPointLinkedList::UFGTargetPointLinkedList() : Super() {
 	this->mMaxLength = 2000;
 }

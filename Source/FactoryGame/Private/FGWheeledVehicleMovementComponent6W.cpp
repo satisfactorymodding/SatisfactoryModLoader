@@ -6,7 +6,7 @@ float FVehicleEngineData6W::FindPeakTorque() const{ return float(); }
 #if WITH_EDITOR
 void UFGWheeledVehicleMovementComponent6W::PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent){ }
 #endif 
-void UFGWheeledVehicleMovementComponent6W::Serialize(FArchive & Ar){ Super::Serialize(Ar);}
+void UFGWheeledVehicleMovementComponent6W::Serialize(FArchive & Ar){ Super::Serialize(Ar); }
 void UFGWheeledVehicleMovementComponent6W::ComputeConstants(){ }
 void UFGWheeledVehicleMovementComponent6W::GenerateTireForces( UVehicleWheel* Wheel, const FTireShaderInput& Input, FTireShaderOutput& Output){ }
 void UFGWheeledVehicleMovementComponent6W::SetupWheelMassProperties_AssumesLocked(const uint32 NumWheels, physx::PxVehicleWheelsSimData* PWheelsSimData, physx::PxRigidBody* PVehicleActor){ }

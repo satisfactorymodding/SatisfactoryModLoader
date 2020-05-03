@@ -2,7 +2,6 @@
 
 #include "FGCharacterMovementComponent.h"
 
-
 UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mClimbSpeed = 500;
 	this->mMaxSprintSpeed = 900;

@@ -2,7 +2,6 @@
 
 #include "FGDriveablePawn.h"
 
-
 AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mShouldAttachDriver = true;
 }

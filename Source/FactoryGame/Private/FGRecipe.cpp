@@ -2,9 +2,10 @@
 
 #include "FGRecipe.h"
 
-
 #if WITH_EDITOR
-void UFGRecipe::SetProduct(TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product){ }
+void UFGRecipe::SetProduct(TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product){ 
+	recipe.GetDefaultObject()->mProduct = product;
+}
 #endif 
 UFGRecipe::UFGRecipe() : Super() {
 	this->mManufactoringDuration = 1;

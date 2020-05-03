@@ -219,23 +219,23 @@ protected:
 	FRuntimeCurveLinearColor mCloudColorCurve;
 
 
-	/** How the opakeness of the clouds change during the day */
+	/** How the opaqueness of the clouds change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = (EditCondition = "mOverrideSunLightColor") )
 	FRuntimeCurveLinearColor mSunLightColorCurve;
 
-	/** How the opakeness of the clouds change during the day */
+	/** How the opaqueness of the clouds change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = ( EditCondition = "mOverrideMoonLightColor" ) )
 	FRuntimeCurveLinearColor mMoonLightColorCurve;
 
-	/** How the opakeness of the clouds change during the day */
+	/** How the opaqueness of the clouds change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = ( EditCondition = "mOverrideSunIntensity" ) )
 	FRuntimeFloatCurve mSunIntensity;
 
-	/** How the opakeness of the clouds change during the day */
+	/** How the opaqueness of the clouds change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", meta = ( EditCondition = "mOverrideMoonIntensity" ) )
 	FRuntimeFloatCurve mMoonIntensity;
 
-	/** How the opakeness of the clouds change during the day */
+	/** How the opaqueness of the clouds change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SkySphere", DisplayName="mCloudiness", meta = ( EditCondition = "mOverrideCloudOpacity" ) )
 	FRuntimeFloatCurve mCloudOpacity;
 	
@@ -344,7 +344,7 @@ protected:
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "PostProcess|Film", meta = ( UIMin = "0.0", UIMax = "1.0", editcondition = "mEnableFilmWhiteClip", DisplayName = "White clip" ) )
 	FRuntimeFloatCurve mFilmWhiteClip;
 
-	// BEGIN DEPRECATED
+	// BEGIN DEPRECATED @todo Just found this, when do we clean up the code? -G2 2020-04-15
 	UPROPERTY()
 	FRuntimeCurveLinearColor mContrast_DEPRECATED;
 
@@ -401,14 +401,14 @@ protected:
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 mEnableFogCutoffDistance : 1;
 
-
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 mOverrideHorizonColor : 1;
 
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 mOverrideMoonIntensity : 1;
 
-	UPROPERTY( EditAnywhere, DisplayName="mOverrideCloudiness", meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
+	/** This is disabled for now, see FGAtmosphereUpdater.cpp */
+	UPROPERTY( EditAnywhere, DisplayName = "mOverrideCloudiness", meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )
 	uint8 mOverrideCloudOpacity : 1;
 
 	UPROPERTY( EditAnywhere, meta = ( PinHiddenByDefault, InlineEditConditionToggle ) )

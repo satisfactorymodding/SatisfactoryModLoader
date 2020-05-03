@@ -2,7 +2,6 @@
 
 #include "FGResourceNode.h"
 
-
 #if WITH_EDITOR
 bool AFGResourceNode::IsGeyserDescButNotGeyserNode(){ return bool(); }
 void AFGResourceNode::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
@@ -16,7 +15,7 @@ AFGResourceNode::AFGResourceNode() : Super() {
 	this->mAddToSignificanceManager = true;
 	this->bReplicates = true;
 }
-void AFGResourceNode::PostLoad(){ Super::PostLoad();}
+void AFGResourceNode::PostLoad(){ Super::PostLoad(); }
 void AFGResourceNode::BeginPlay(){ }
 void AFGResourceNode::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGResourceNode::GainedSignificance_Implementation(){ }
