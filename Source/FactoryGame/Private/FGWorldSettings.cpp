@@ -2,7 +2,6 @@
 
 #include "FGWorldSettings.h"
 
-
 #if WITH_EDITOR
 void AFGWorldSettings::CheckForErrors(){ }
 void AFGWorldSettings::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
@@ -15,9 +14,9 @@ void AFGWorldSettings::HandleMapChanged( UWorld* newWorld, EMapChangeType mapCha
 AFGWorldSettings::AFGWorldSettings() : Super() {
 	this->mStartTimeOfDay = 12;
 }
-void AFGWorldSettings::BeginDestroy(){ Super::BeginDestroy();}
+void AFGWorldSettings::BeginDestroy(){ Super::BeginDestroy(); }
 void AFGWorldSettings::PostActorCreated(){ }
-void AFGWorldSettings::PostLoad(){ Super::PostLoad();}
+void AFGWorldSettings::PostLoad(){ Super::PostLoad(); }
 void AFGWorldSettings::PreInitializeComponents(){ }
 void AFGWorldSettings::NotifyBeginPlay(){ }
 void AFGWorldSettings::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

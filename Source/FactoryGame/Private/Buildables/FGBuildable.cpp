@@ -27,7 +27,7 @@ AFGBuildable::AFGBuildable() : Super() {
 	this->NetCullDistanceSquared = 5624999936;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
-void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildable::OnConstruction(const FTransform& transform){ }
 void AFGBuildable::BeginPlay(){ }
 void AFGBuildable::EndPlay(const EEndPlayReason::Type endPlayReason){ }

@@ -2,7 +2,6 @@
 
 #include "FGMapManager.h"
 
-
 AFGMapManager* AFGMapManager::Get(UWorld* world){ return nullptr; }
 AFGMapManager* AFGMapManager::Get(UObject* worldContext){ return nullptr; }
 AFGMapManager::AFGMapManager() : Super() {

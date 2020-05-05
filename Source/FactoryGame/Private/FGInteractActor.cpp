@@ -2,7 +2,6 @@
 
 #include "FGInteractActor.h"
 
-
 AFGInteractActor::AFGInteractActor() : Super() {
 	this->bReplicates = true;
 }

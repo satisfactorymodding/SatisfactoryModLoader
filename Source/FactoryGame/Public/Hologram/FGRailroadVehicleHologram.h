@@ -24,6 +24,10 @@ public:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	// End of AFGHologram interface
 
+	// Begin Net Construction Messages
+	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
+	// End of Net Construction Messages 
+
 protected:
 	// Begin AFGHologram interface
 	virtual void CheckValidPlacement() override;

@@ -2,7 +2,6 @@
 
 #include "FGInventoryComponentEquipment.h"
 
-
 UFGInventoryComponentEquipment::UFGInventoryComponentEquipment() : Super() {
 	this->mActiveEquipmentIndex = -1;
 	this->mDefaultInventorySize = 1;

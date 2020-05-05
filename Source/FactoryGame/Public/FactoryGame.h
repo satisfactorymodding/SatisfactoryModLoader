@@ -80,7 +80,8 @@ DECLARE_LOG_CATEGORY_EXTERN( LogGame, Log, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogFactory, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogNetConveyorBelt, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogNetFoliageRemoval, Warning, All );
-DECLARE_LOG_CATEGORY_EXTERN( LogPower, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogPower, Log, All ); //@todoG2 Put back to Warning when circuit crash is fixed
+DECLARE_LOG_CATEGORY_EXTERN( LogCircuit, Log, All ); //@todoG2 Put back to Warning when circuit crash is fixed
 DECLARE_LOG_CATEGORY_EXTERN( LogRailroad, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogBuildGun, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogHologram, Warning, All );

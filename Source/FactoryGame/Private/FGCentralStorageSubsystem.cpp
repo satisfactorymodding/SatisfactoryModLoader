@@ -2,7 +2,6 @@
 
 #include "FGCentralStorageSubsystem.h"
 
-
 AFGCentralStorageSubsystem* AFGCentralStorageSubsystem::Get(UWorld* world){ return nullptr; }
 AFGCentralStorageSubsystem* AFGCentralStorageSubsystem::Get(UObject* worldContext){ return nullptr; }
 AFGCentralStorageSubsystem::AFGCentralStorageSubsystem() : Super() {

@@ -2,7 +2,6 @@
 
 #include "FGPortableMinerDispenser.h"
 
-
 AFGPortableMinerDispenser::AFGPortableMinerDispenser() : Super() {
 	this->mPlaceDistanceMax = 1000;
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;

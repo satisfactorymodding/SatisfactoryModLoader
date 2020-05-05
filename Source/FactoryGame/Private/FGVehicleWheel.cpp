@@ -2,7 +2,6 @@
 
 #include "FGVehicleWheel.h"
 
-
 UFGVehicleWheel::UFGVehicleWheel() : Super() {
 	this->mCamberStiffness = 5.72957801818848;
 }

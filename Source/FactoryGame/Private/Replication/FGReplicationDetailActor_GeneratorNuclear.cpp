@@ -2,7 +2,6 @@
 
 #include "FGReplicationDetailActor_GeneratorNuclear.h"
 
-
 AFGReplicationDetailActor_GeneratorNuclear::AFGReplicationDetailActor_GeneratorNuclear() : Super() {
 	this->bHidden = true;
 	this->bReplicates = true;

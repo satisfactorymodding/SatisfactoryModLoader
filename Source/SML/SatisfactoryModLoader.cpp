@@ -95,7 +95,7 @@ namespace SML {
 	
 	//CL of Satisfactory we want to target
 	//SML will be unable to load in production mode if it doesn't match actual game version
-	extern "C" DLLEXPORT const long targetGameVersion = 119583;
+	extern "C" DLLEXPORT const long targetGameVersion = 120739;
 	
 	//Pointer to the active mod handler object
 	//Initialized early during the process attach

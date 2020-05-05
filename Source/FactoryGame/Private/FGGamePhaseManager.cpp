@@ -2,7 +2,6 @@
 
 #include "FGGamePhaseManager.h"
 
-
 AFGGamePhaseManager* AFGGamePhaseManager::Get(UWorld* world){ return nullptr; }
 AFGGamePhaseManager* AFGGamePhaseManager::Get(UObject* worldContext){ return nullptr; }
 AFGGamePhaseManager::AFGGamePhaseManager() : Super() {

@@ -2,7 +2,6 @@
 
 #include "FGChatManager.h"
 
-
 FChatMessageStruct::FChatMessageStruct(){ }
 FChatMessageStruct::FChatMessageStruct(FString messageString,  AFGPlayerState* sender, float serverTimeStamp){ }
 AFGChatManager* AFGChatManager::Get(UObject* worldContext){ return nullptr; }

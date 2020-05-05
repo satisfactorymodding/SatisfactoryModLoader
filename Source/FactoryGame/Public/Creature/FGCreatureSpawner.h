@@ -148,6 +148,9 @@ public:
 	/** Returns the cached value for isNearBase */
 	UFUNCTION( BlueprintPure, Category = "Spawning" ) 
 	FORCEINLINE bool IsNearBase() { return mCachedIsNearBase; }
+
+	/** Try and recouple creatures that are in this instances mSpawnData but has no spawner set */
+	void TryRecoupleCreatureAndSpawner();
 protected:
 	/** Randoms a location within range of this actor, and randoms new locations trying to find a unused location numRetries times */
 	bool TryFindNonOverlappingLocation( const TArray<FVector2D>& usedSpawnLocations, float spawnRadius, int32 maxRetries, FVector2D& out_location );

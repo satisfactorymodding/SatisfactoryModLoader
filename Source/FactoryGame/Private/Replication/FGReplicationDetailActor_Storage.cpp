@@ -2,7 +2,6 @@
 
 #include "FGReplicationDetailActor_Storage.h"
 
-
 AFGReplicationDetailActor_Storage::AFGReplicationDetailActor_Storage() : Super() {
 	this->bHidden = true;
 	this->bReplicates = true;

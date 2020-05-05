@@ -90,14 +90,14 @@ protected:
 	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
 	// End Factory_ interface
 
-	virtual void FillDistributionTable() override;
+	virtual void FillDistributionTable(float deltaTime) override;
 
 private:
 	UFUNCTION()
 	void OnRep_SortRules();
 
 	/** Returns all connections that this item could be placed onto. It excludes wildcard outputs if there is a rule specifically set for this item type */
-	TArray<UFGFactoryConnectionComponent*> GetAllOutputConnectionsForItem( const FInventoryItem& item ) const;
+	TArray<UFGFactoryConnectionComponent*> GetAllOutputConnectionsForItem( const FInventoryItem& item, float deltaTime ) const;
 
 protected:
 	UPROPERTY( BlueprintAssignable )

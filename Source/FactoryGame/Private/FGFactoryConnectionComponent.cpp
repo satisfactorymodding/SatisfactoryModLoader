@@ -2,7 +2,6 @@
 
 #include "FGFactoryConnectionComponent.h"
 
-
 UFGFactoryConnectionComponent::UFGFactoryConnectionComponent() : Super() {
 	this->mConnectorClearance = 100;
 	this->mInventoryAccessIndex = -1;
@@ -10,8 +9,8 @@ UFGFactoryConnectionComponent::UFGFactoryConnectionComponent() : Super() {
 }
 void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
-void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister();}
-void UFGFactoryConnectionComponent::OnUnregister(){ Super::OnUnregister();}
+void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister(); }
+void UFGFactoryConnectionComponent::OnUnregister(){ Super::OnUnregister(); }
 void UFGFactoryConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGFactoryConnectionComponent::SetInventory( UFGInventoryComponent* inventory){ }
 void UFGFactoryConnectionComponent::SetInventoryAccessIndex(int32 index){ }

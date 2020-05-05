@@ -2,7 +2,6 @@
 
 #include "FGCircuitSubsystem.h"
 
-
 void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool AFGCircuitSubsystem::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGCircuitSubsystem::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
@@ -21,7 +20,7 @@ AFGCircuitSubsystem::AFGCircuitSubsystem() : Super() {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
-void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGCircuitSubsystem::BeginPlay(){ }
 void AFGCircuitSubsystem::Tick(float DeltaSeconds){ }
 void AFGCircuitSubsystem::DebugRebuildAll(){ }
@@ -35,3 +34,4 @@ void AFGCircuitSubsystem::MergeCircuits(int32 first, int32 second){ }
 int32 AFGCircuitSubsystem::CreateCircuit(TSubclassOf<  UFGCircuit > circuitClass){ return int32(); }
 void AFGCircuitSubsystem::RemoveCircuit(int32 circuitID){ }
 void AFGCircuitSubsystem::AddComponentToCircuit( UFGCircuitConnectionComponent* component, int32 circuitID){ }
+void AFGCircuitSubsystem::RemoveComponentFromCircuit( UFGCircuitConnectionComponent* component){ }

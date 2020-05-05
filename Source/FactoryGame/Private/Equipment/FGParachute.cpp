@@ -2,8 +2,6 @@
 
 #include "FGParachute.h"
 
-
-
 UFGParachuteCameraShake::UFGParachuteCameraShake() : Super() {
 	this->bSingleInstance = true;
 	this->OscillationDuration = 2.09999990463257;

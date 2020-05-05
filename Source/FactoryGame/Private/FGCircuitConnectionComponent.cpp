@@ -2,7 +2,6 @@
 
 #include "FGCircuitConnectionComponent.h"
 
-
 UFGCircuitConnectionComponent::UFGCircuitConnectionComponent() : Super() {
 	this->mMaxNumConnectionLinks = 1;
 	this->mCircuitID = -1;
@@ -19,5 +18,6 @@ void UFGCircuitConnectionComponent::RemoveHiddenConnection( UFGCircuitConnection
 void UFGCircuitConnectionComponent::ClearHiddenConnections(){ }
 void UFGCircuitConnectionComponent::SetCircuitID(int32 circuitID){ }
 void UFGCircuitConnectionComponent::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
+FString UFGCircuitConnectionComponent::GetDebugName() const{ return FString(); }
 void UFGCircuitConnectionComponent::OnCircuitIDChanged(){ }
 void UFGCircuitConnectionComponent::OnRep_CircuitIDChanged(){ }

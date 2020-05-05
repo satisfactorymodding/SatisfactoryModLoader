@@ -2,7 +2,6 @@
 
 #include "FGPlayerState.h"
 
-
 FHotbar::FHotbar( AFGPlayerState* owningState, const FHotbar& hotbar){ }
 FHotbar::FHotbar(TArray<  UFGHotbarShortcut* > hotbarShortcuts){ }
 FPresetHotbar::FPresetHotbar( AFGPlayerState* owningState, const FPresetHotbar& presetHotbar){ }
@@ -11,7 +10,7 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->mNumArmSlots = 1;
 	this->NetUpdateFrequency = 10;
 }
-void AFGPlayerState::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void AFGPlayerState::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 bool AFGPlayerState::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGPlayerState::BeginPlay(){ }

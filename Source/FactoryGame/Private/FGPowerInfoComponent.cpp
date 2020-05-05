@@ -2,7 +2,6 @@
 
 #include "FGPowerInfoComponent.h"
 
-
 void UFGPowerInfoComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPowerInfoComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 UFGPowerInfoComponent::UFGPowerInfoComponent() : Super() {

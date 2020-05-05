@@ -2,7 +2,6 @@
 
 #include "FGNoneDescriptor.h"
 
-
 UFGNoneDescriptor::UFGNoneDescriptor() : Super() {
 	this->mUseDisplayNameAndDescription = true;
 	this->mDisplayName = NSLOCTEXT("NoneDescriptor", "DisplayName", "None");

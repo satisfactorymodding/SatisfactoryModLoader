@@ -2,7 +2,6 @@
 
 #include "FGMaterialEffect_Build.h"
 
-
 UFGMaterialEffect_Build::UFGMaterialEffect_Build() : Super() {
 	this->mAutoDestroy = true;
 	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = true; this->PrimaryComponentTick.bStartWithTickEnabled = false; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true; this->PrimaryComponentTick.TickInterval = 0;

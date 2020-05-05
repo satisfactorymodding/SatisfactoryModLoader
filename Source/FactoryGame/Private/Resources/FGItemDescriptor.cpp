@@ -2,7 +2,6 @@
 
 #include "FGItemDescriptor.h"
 
-
 #if WITH_EDITOR
 void UFGItemDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
 #endif 
@@ -35,8 +34,8 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mCanBeDiscarded = true;
 	this->mForm = EResourceForm::RF_SOLID;
 }
-void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar);}
-void UFGItemDescriptor::PostLoad(){ Super::PostLoad();}
+void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
 EResourceForm UFGItemDescriptor::GetForm(TSubclassOf< UFGItemDescriptor > inClass){ 
 	return inClass.GetDefaultObject()->mForm;
 }

@@ -2,7 +2,6 @@
 
 #include "FGConsumableDescriptor.h"
 
-
 UFGConsumableDescriptor::UFGConsumableDescriptor() : Super() {
 	this->mCustomHandsMeshScale = 1;
 	this->mUseDisplayNameAndDescription = true;

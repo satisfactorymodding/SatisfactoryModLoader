@@ -66,10 +66,10 @@ protected:
 
 	// Populate the elements of the distribution table. The algorithm vaires between normal splitters and smart splitters. 
 	// The goal is to get all possible items assigned to an output while maintaining throughput and evenly splitting items between belts
-	virtual void FillDistributionTable();
+	virtual void FillDistributionTable(float deltaTime);
 	
 	/** Returns an estimate of how many items the conveyor connected to the given component can grab. If no conveyor is connected it returns 0  */
-	uint8 EstimatedMaxNumGrabFromConveyor( UFGFactoryConnectionComponent* factoryConnection, float dt );
+	uint8 EstimatedMaxNumGrabFromConveyor( UFGFactoryConnectionComponent* factoryConnection, float dt ) const;
 
 protected:
 

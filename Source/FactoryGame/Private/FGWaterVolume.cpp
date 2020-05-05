@@ -4,7 +4,7 @@
 #include "FGNavArea_Water.h"
 
 #if WITH_EDITOR
-void AFGWaterVolume::PostLoad(){ Super::PostLoad();}
+void AFGWaterVolume::PostLoad(){ Super::PostLoad(); }
 void AFGWaterVolume::PreSave(const  ITargetPlatform* targetPlatform){ }
 void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ }
 void AFGWaterVolume::CheckForErrors(){ }

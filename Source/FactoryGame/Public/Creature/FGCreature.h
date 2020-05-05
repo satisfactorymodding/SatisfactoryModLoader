@@ -174,6 +174,9 @@ public:
 	/** Returns the spawn distance for this creature */
 	UFUNCTION( BlueprintPure, Category = "Creature" )
 	FORCEINLINE float GetSpawnDistance() const { return mSpawnDistance; }
+
+	/** Called if the spawner has successfully recoupled itself with this creature */
+	void ClearKillOrphanTimer();
 private:
 	UFUNCTION()
 	void OnRep_TargetRotation();

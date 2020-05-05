@@ -2,7 +2,6 @@
 
 #include "FGResourceScanner.h"
 
-
 AFGResourceScanner::AFGResourceScanner() : Super() {
 	this->mNrOfClosestClustersToMark = 3;
 	this->mHoldDownDurationForUI = 0.5;

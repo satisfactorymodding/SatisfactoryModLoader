@@ -2,7 +2,6 @@
 
 #include "FGBuildGunBuild.h"
 
-
 UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
 	this->mSplineModeSelectHoldDownDurationForUI = 0.180000007152557;
 	this->mIsUsingPressAndReleaseAsBuildSteps = true;

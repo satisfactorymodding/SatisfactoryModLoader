@@ -1,6 +1,7 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "UnrealString.h"
 #include "Array.h"
 #include "UObject/Class.h"
 #include "GameFramework/Actor.h"
@@ -118,6 +119,7 @@ public:
 
 	/** Debug */
 	void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
+	FString GetDebugName() const;
 
 protected:
 	/** Called when the circuit ID changes, this can happen at any time when the circuitry is changed, e.g. when circuits are split or merged. */

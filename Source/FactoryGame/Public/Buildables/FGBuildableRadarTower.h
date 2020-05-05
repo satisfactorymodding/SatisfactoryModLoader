@@ -14,7 +14,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogRadarTower, Log, All );
 /**
  * Radar Tower reveals nearby fog of war on the Map. Expanding over time until it reaches its max limit.
  */
-UCLASS( Meta = (AutoJson = false) )
+UCLASS()
 class FACTORYGAME_API AFGBuildableRadarTower : public AFGBuildableFactory
 {
 	GENERATED_BODY()

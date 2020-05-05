@@ -2,7 +2,6 @@
 
 #include "FGSaveSession.h"
 
-
 UFGSaveSession::UFGSaveSession() : Super() {
 	this->mNumRotatingAutosaves = 3;
 }

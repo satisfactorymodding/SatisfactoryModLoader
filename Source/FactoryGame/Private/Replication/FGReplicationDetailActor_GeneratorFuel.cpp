@@ -2,7 +2,6 @@
 
 #include "FGReplicationDetailActor_GeneratorFuel.h"
 
-
 AFGReplicationDetailActor_GeneratorFuel::AFGReplicationDetailActor_GeneratorFuel() : Super() {
 	this->bHidden = true;
 	this->bReplicates = true;

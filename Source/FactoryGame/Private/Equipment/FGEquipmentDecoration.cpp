@@ -2,7 +2,6 @@
 
 #include "FGEquipmentDecoration.h"
 
-
 AFGEquipmentDecoration::AFGEquipmentDecoration() : Super() {
 	this->mPlaceDistanceMax = 1000;
 	this->mArmAnimation = EArmEquipment::AE_Generic1Hand;

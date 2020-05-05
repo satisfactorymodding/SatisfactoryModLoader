@@ -2,10 +2,6 @@
 
 #include "FGLocalPlayer.h"
 
-
-
-
-
 UFGEM_LoggedOutFromOnlineService::UFGEM_LoggedOutFromOnlineService() : Super() {
 	this->mErrorMessage = NSLOCTEXT("ErrorMessages", "LoggedOutFromOnlineService", "You got sent to main menu as you got logged out from the online service. Your game was autosaved. You need to relaunch the game from the launcher to login again (sorry for the temporary solution)");
 }

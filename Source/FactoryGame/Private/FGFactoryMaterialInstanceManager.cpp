@@ -2,7 +2,6 @@
 
 #include "FGFactoryMaterialInstanceManager.h"
 
-
 UFGFactoryMaterialInstanceManager::UFGFactoryMaterialInstanceManager() : Super() {
 	this->mMaterialInstances.SetNum(18);
 }

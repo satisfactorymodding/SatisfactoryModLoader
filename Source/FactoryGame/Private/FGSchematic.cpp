@@ -2,7 +2,6 @@
 
 #include "FGSchematic.h"
 
-
 #if WITH_EDITOR
 void UFGSchematic::PreSave(const  ITargetPlatform* targetPlatform){ }
 #endif 
@@ -50,6 +49,6 @@ bool UFGSchematic::AreSchematicDependenciesMet(TSubclassOf< UFGSchematic > inCla
 void UFGSchematic::GetSchematicDependencies(TSubclassOf< UFGSchematic > inClass, TArray<  UFGAvailabilityDependency* >& out_schematicDependencies){ }
 bool UFGSchematic::IsRepeatPurchasesAllowed(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 bool UFGSchematic::IsIncludedInBuild(TSubclassOf< UFGSchematic > inClass){ return bool(); }
-void UFGSchematic::PostLoad(){ Super::PostLoad();}
-void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar);}
+void UFGSchematic::PostLoad(){ Super::PostLoad(); }
+void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar); }
 FPrimaryAssetId UFGSchematic::GetPrimaryAssetId() const{ return FPrimaryAssetId(); }

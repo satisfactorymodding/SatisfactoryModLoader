@@ -2,7 +2,6 @@
 
 #include "FGInventoryComponentTrash.h"
 
-
 UFGInventoryComponentTrash::UFGInventoryComponentTrash() : Super() {
 	this->mDefaultInventorySize = 1;
 }

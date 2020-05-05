@@ -2,7 +2,6 @@
 
 #include "FGFoliageRemovalSubsystem.h"
 
-
 AFGFoliageRemovalSubsystem::AFGFoliageRemovalSubsystem() : Super() {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;

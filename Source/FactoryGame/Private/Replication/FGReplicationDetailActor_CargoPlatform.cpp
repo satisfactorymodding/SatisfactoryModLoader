@@ -2,7 +2,6 @@
 
 #include "FGReplicationDetailActor_CargoPlatform.h"
 
-
 AFGReplicationDetailActor_CargoPlatform::AFGReplicationDetailActor_CargoPlatform() : Super() {
 	this->bHidden = true;
 	this->bReplicates = true;

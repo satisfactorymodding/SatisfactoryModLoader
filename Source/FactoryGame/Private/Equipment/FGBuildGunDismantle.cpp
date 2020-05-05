@@ -2,7 +2,6 @@
 
 #include "FGBuildGunDismantle.h"
 
-
 UFGBuildGunStateDismantle::UFGBuildGunStateDismantle() : Super() {
 	
 }

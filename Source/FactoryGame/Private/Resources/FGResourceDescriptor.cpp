@@ -2,7 +2,6 @@
 
 #include "FGResourceDescriptor.h"
 
-
 #if WITH_EDITOR
 void UFGResourceDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
 #endif 

@@ -124,3 +124,5 @@ void UFGCheatManager::FillFirstPipeInEachNetwork(){ }
 void UFGCheatManager::EmptyAllPipes(){ }
 void UFGCheatManager::ResetAllPipes(){ }
 void UFGCheatManager::ToggleDebuggingOnPipe(){ }
+void UFGCheatManager::DupeComponentInCircuit(int32 target){ }
+void UFGCheatManager::DupeComponentToAnotherCircuit(int32 source, int32 target){ }

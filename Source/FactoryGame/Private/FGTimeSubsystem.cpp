@@ -2,7 +2,6 @@
 
 #include "FGTimeSubsystem.h"
 
-
 #if WITH_EDITOR
 #endif 
 #if WITH_EDITORONLY_DATA

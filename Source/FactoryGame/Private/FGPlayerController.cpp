@@ -13,7 +13,7 @@ AFGPlayerController::AFGPlayerController() : Super() {
 bool AFGPlayerController::ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor){ return bool(); }
 void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 bool AFGPlayerController::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
-void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents();}
+void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGPlayerController::BeginPlay(){ }
 void AFGPlayerController::Destroyed(){ }
 void AFGPlayerController::OnRep_PlayerState(){ }

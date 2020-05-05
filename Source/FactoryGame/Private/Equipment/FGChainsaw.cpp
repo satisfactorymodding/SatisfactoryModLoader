@@ -2,7 +2,6 @@
 
 #include "FGChainsaw.h"
 
-
 AFGChainsaw::AFGChainsaw() : Super() {
 	this->mEnergyConsumption = 3;
 	this->mSawDownTreeTime = 2;

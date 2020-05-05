@@ -2,7 +2,6 @@
 
 #include "FGGolfCartDispenser.h"
 
-
 AFGGolfCartDispenser::AFGGolfCartDispenser() : Super() {
 	this->mPlaceDistanceMax = 1000;
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;

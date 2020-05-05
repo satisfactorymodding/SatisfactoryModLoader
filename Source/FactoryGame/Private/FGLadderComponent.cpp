@@ -3,8 +3,8 @@
 #include "FGLadderComponent.h"
 
 UFGLadderComponent::UFGLadderComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
-void UFGLadderComponent::OnRegister(){ Super::OnRegister();}
-void UFGLadderComponent::OnUnregister(){ Super::OnUnregister();}
+void UFGLadderComponent::OnRegister(){ Super::OnRegister(); }
+void UFGLadderComponent::OnUnregister(){ Super::OnUnregister(); }
 void UFGLadderComponent::BeginPlay(){ }
 void UFGLadderComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void UFGLadderComponent::TickComponent(float deltaTime, enum ELevelTick tickType, FActorComponentTickFunction* thisTickFunction){ }

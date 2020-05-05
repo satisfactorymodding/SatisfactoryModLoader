@@ -2,7 +2,6 @@
 
 #include "FGBuildableSubsystem.h"
 
-
 #if STATS
 #endif 
 AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {

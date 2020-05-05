@@ -2,7 +2,6 @@
 
 #include "FGResourceMiner.h"
 
-
 AFGResourceMiner::AFGResourceMiner() : Super() {
 	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
 	this->mArmAnimation = EArmEquipment::AE_ResourceCollector;

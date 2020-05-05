@@ -2,7 +2,6 @@
 
 #include "FGVehicleCollisionBoxComponent.h"
 
-
 UFGVehicleCollisionBoxComponent::UFGVehicleCollisionBoxComponent() : Super() {
 	this->mFudgeFactor = 1.20000004768372;
 	this->mAddedZVelocityFactor = 0.100000001490116;

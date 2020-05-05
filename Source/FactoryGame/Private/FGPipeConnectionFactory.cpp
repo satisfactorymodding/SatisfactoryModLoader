@@ -2,7 +2,6 @@
 
 #include "FGPipeConnectionFactory.h"
 
-
 UFGPipeConnectionFactory::UFGPipeConnectionFactory() : Super() {
 	this->mApplyAdditionalPressure = true;
 	this->mPipeNetworkID = -1;

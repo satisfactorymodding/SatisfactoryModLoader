@@ -2,7 +2,6 @@
 
 #include "FGResourceNodeGeyser.h"
 
-
 AFGResourceNodeGeyser::AFGResourceNodeGeyser() : Super() {
 	this->mCanPlaceResourceExtractor = true;
 	this->mExtractMultiplier = 1;

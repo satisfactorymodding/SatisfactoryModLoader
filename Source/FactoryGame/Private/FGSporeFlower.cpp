@@ -2,7 +2,6 @@
 
 #include "FGSporeFlower.h"
 
-
 AFGSporeFlower::AFGSporeFlower() : Super() {
 	this->bReplicates = true;
 }

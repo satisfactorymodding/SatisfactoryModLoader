@@ -2,7 +2,6 @@
 
 #include "FGWidgetSwitcher.h"
 
-
 UFGWidgetSwitcher::UFGWidgetSwitcher() : Super() {
 	this->mFadeOutTime = 0.25;
 }

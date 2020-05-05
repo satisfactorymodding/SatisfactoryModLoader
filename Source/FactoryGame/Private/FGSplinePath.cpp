@@ -2,7 +2,6 @@
 
 #include "FGSplinePath.h"
 
-
 AFGSplinePath::AFGSplinePath() : Super() {
 	
 }

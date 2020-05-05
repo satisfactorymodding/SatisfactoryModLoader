@@ -2,7 +2,6 @@
 
 #include "FGItemRegrowSubsystem.h"
 
-
 AFGItemRegrowSubsystem::AFGItemRegrowSubsystem() : Super() {
 	this->mMaxPerTick = 200;
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 1;
