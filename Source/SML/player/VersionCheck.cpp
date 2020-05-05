@@ -67,8 +67,25 @@ void CheckModListString(const FString& modListString, FString& failureReason) {
 	}
 }
 
+static constexpr uint32 Base64GetEncodedDataSize(uint32 NumBytes) {
+	return ((NumBytes + 2) / 3) * 4;
+}
+
+FString Base64Encode(const uint8* Source, uint32 Length) {
+	uint32 ExpectedLength = Base64GetEncodedDataSize(Length);
+
+	FString OutBuffer;
+
+	TArray<TCHAR>& OutCharArray = OutBuffer.GetCharArray();
+	OutCharArray.SetNum(ExpectedLength + 1);
+	int64 EncodedLength = FBase64::Encode(Source, Length, OutCharArray.GetData());
+	verify(EncodedLength == OutBuffer.Len());
+
+	return OutBuffer;
+}
+
 FString Base64Encode(const FString& Source) {
-	return FBase64::Encode(Source);
+	return Base64Encode((uint8*)TCHAR_TO_ANSI(*Source), Source.Len());
 }
 
 bool Base64Decode(const FString& Source, FString& OutDest) {

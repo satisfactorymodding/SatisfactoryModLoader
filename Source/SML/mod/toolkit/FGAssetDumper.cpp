@@ -432,12 +432,6 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	ResultJson->SetStringField(TEXT("ParentClass"), GeneratedClass->GetSuperClass()->GetPathName());
 	ResultJson->SetStringField(TEXT("BlueprintKind"), TEXT("Normal"));
 
-	if (UAnimBlueprintGeneratedClass* AnimClass = Cast<UAnimBlueprintGeneratedClass>(GeneratedClass)) {
-		DumpAnimInfo(ResultJson, AnimClass);
-		//Dump only basic information for animation blueprints
-		return ResultJson;
-	}
-
 	TArray<TSharedPtr<FJsonValue>> ImplementedInterfaces;
 	for (const FImplementedInterface& iface : GeneratedClass->Interfaces) {
 		UClass* interfaceClass = iface.Class;
@@ -461,6 +455,9 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	TArray<FString> FieldsGeneratedByWidget;
 	if (UWidgetBlueprintGeneratedClass* WidgetClass = Cast<UWidgetBlueprintGeneratedClass>(GeneratedClass)) {
 		DumpWidgetInfo(ResultJson, WidgetClass, FieldsGeneratedByWidget);
+	}
+	if (UAnimBlueprintGeneratedClass* AnimClass = Cast<UAnimBlueprintGeneratedClass>(GeneratedClass)) {
+		DumpAnimInfo(ResultJson, AnimClass);
 	}
 
 	FSerializationContext Context;
