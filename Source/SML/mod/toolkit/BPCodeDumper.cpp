@@ -123,7 +123,7 @@ public:
 			if (B == EX_EndOfScript) break;
 			handler = InstructionHandlers.Find(B);
 			if (!handler) SML::Logging::error(*FString::Printf(TEXT("Handler not found. Deep: %i Token: %X"), deep, B));
-			else SML::Logging::error(*FString::Printf(TEXT("Handler found. Deep: %i Token: %X"), deep++, B));
+			else SML::Logging::info(*FString::Printf(TEXT("Handler found. Deep: %i Token: %X"), deep++, B));
 		}
 		if (handler) {
 			TSharedPtr<FJsonObject> Instruction = MakeShareable(new FJsonObject());
@@ -146,13 +146,13 @@ public:
 	bool Handle##Cast(FParseFrame& Stack, TSharedPtr<FJsonObject>& Result, uint8* ReturnValue) {
 
 TArray<TSharedPtr<FJsonValue>> ParseClosure(FParseFrame& Stack, uint8* ReturnValue) {
-	TArray<TSharedPtr<FJsonValue>> result;
+	TArray<TSharedPtr<FJsonValue>> Result;
 	Stack.Return = false;
 	while (*Stack.Code != EX_Return && !Stack.Return) {
 		TSharedPtr<FJsonObject> Inst = Stack.Step(ReturnValue, true);
-		if (Inst.IsValid()) result.Add(MakeShareable(new FJsonValueObject(Inst)));
+		if (Inst.IsValid()) Result.Add(MakeShareable(new FJsonValueObject(Inst)));
 	}
-	return result;
+	return Result;
 }
 
 void SetDefaultRetVal(uint8* ReturnValue, UProperty* Prop) {
@@ -982,17 +982,70 @@ PRIMITIVE_CAST_HANDLER(CST_ObjectToInterface)
 }
 PRIMITIVE_CAST(CST_ObjectToInterface);
 
-TArray<TSharedPtr<FJsonValue>> SML::CreateFunctionCode(UFunction* function) {
-	static int calls = 0;
-	
+TArray<TSharedPtr<FJsonValue>> SML::CreateFunctionCode(UFunction* Function) {
 	TArray<TSharedPtr<FJsonValue>> result;
-	if (function->Script.Num() > 0) {
-		FParseFrame frame = FParseFrame(Cast<UClass>(function->GetOuter())->GetDefaultObject(), function);
-		const bool bHasReturnParam = function->ReturnValueOffset != MAX_uint16;
-		void* ReturnValue = bHasReturnParam ? ((uint8*)frame.Params + function->ReturnValueOffset) : nullptr;
-		
-		result = ParseClosure(frame, (uint8*)ReturnValue);
+	if (Function->Script.Num() > 0) {
+		UObject* Context = Function->GetTypedOuter<UClass>()->GetDefaultObject();
+		FParseFrame Frame = FParseFrame(Context, Function);
+		const bool bHasReturnParam = Function->ReturnValueOffset != MAX_uint16;
+		void* ReturnValue = bHasReturnParam ? ((uint8*)Frame.Params + Function->ReturnValueOffset) : nullptr;
+		result = ParseClosure(Frame, (uint8*)ReturnValue);
 	}
-
 	return result;
 }
+
+TArray<TSharedPtr<FJsonValue>> SML::DumpByteCode(TArray<uint8>& Code, UFunction* Function) {
+	TArray<TSharedPtr<FJsonValue>> result;
+	if (Function->Script.Num() > 0) {
+		UObject* Context = Function->GetTypedOuter<UClass>()->GetDefaultObject();
+		FParseFrame Frame = FParseFrame(Context, Function);
+		Frame.Code = Code.GetData();
+		const bool bHasReturnParam = Function->ReturnValueOffset != MAX_uint16;
+		void* ReturnValue = bHasReturnParam ? ((uint8*)Frame.Params + Function->ReturnValueOffset) : nullptr;
+		result = ParseClosure(Frame, (uint8*)ReturnValue);
+	}
+	return result;
+}
+
+int32 SML::ComputeStatementReplaceOffset(UFunction* Function, uint32 BytesRequired, uint32 StartOffset) {
+	if (Function->Script.Num() > 0) {
+		UObject* Context = Function->GetTypedOuter<UClass>()->GetDefaultObject();
+		FParseFrame Frame = FParseFrame(Context, Function);
+		Frame.Code += StartOffset;
+		const bool bHasReturnParam = Function->ReturnValueOffset != MAX_uint16;
+		void* ReturnValue = bHasReturnParam ? ((uint8*)Frame.Params + Function->ReturnValueOffset) : nullptr;
+		Frame.Return = false;
+		const uint64 CodePointerBase = reinterpret_cast<uint64>(Frame.Code);
+		while (*Frame.Code != EX_Return && !Frame.Return) {
+			Frame.Step(ReturnValue, true);
+			const uint64 CodePointer = reinterpret_cast<uint64>(Frame.Code);
+			const uint64 Offset = CodePointer - CodePointerBase;
+			if (Offset >= BytesRequired)
+				return StartOffset + Offset;
+		}
+		return -1;
+	}
+	return -1;
+}
+
+int32 SML::FindReturnStatementOffset(UFunction* Function) {
+	if (Function->Script.Num() > 0) {
+		UObject* Context = Function->GetTypedOuter<UClass>()->GetDefaultObject();
+		FParseFrame Frame = FParseFrame(Context, Function);
+		const bool bHasReturnParam = Function->ReturnValueOffset != MAX_uint16;
+		void* ReturnValue = bHasReturnParam ? ((uint8*)Frame.Params + Function->ReturnValueOffset) : nullptr;
+		Frame.Return = false;
+		const uint64 CodePointerBase = (uint64)Frame.Code;
+		while (true) {
+			const uint64 CodePointer = (uint64)Frame.Code;
+			if (*Frame.Code == EX_Return)
+				return CodePointer - CodePointerBase;
+			Frame.Step(ReturnValue, true);
+			if (Frame.Return)
+				return CodePointer - CodePointerBase;
+		}
+	}
+	return -1;
+}
+
+

@@ -57,6 +57,7 @@ TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 void SML::RegisterMainMenuHooks() {
 	SUBSCRIBE_METHOD(GAME_INSTANCE_LOAD_COMPLETE_FUNC_DESC, UFGGameInstance::LoadComplete, [](auto& scope, UFGGameInstance* gameInstance, const float, const FString& mapName) {
 		UGameViewportClient* viewport = gameInstance->GetWorld()->GetGameViewport();
-		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, SML::GetMenuSceneMapNamePrefix(), CreateMenuInfoTextPanel)
+		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, SML::GetMenuSceneMapNamePrefix(), CreateMenuInfoTextPanel);
 	});
 }
+
