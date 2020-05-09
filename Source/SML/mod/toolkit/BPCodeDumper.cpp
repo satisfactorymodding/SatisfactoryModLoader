@@ -1007,7 +1007,7 @@ TArray<TSharedPtr<FJsonValue>> SML::DumpByteCode(TArray<uint8>& Code, UFunction*
 	return result;
 }
 
-int32 SML::ComputeStatementReplaceOffset(UFunction* Function, uint32 BytesRequired, uint32 StartOffset) {
+int32 SML::GetMinInstructionReplaceLength(UFunction* Function, uint32 BytesRequired, uint32 StartOffset) {
 	if (Function->Script.Num() > 0) {
 		UObject* Context = Function->GetTypedOuter<UClass>()->GetDefaultObject();
 		FParseFrame Frame = FParseFrame(Context, Function);
@@ -1021,11 +1021,18 @@ int32 SML::ComputeStatementReplaceOffset(UFunction* Function, uint32 BytesRequir
 			const uint64 CodePointer = reinterpret_cast<uint64>(Frame.Code);
 			const uint64 Offset = CodePointer - CodePointerBase;
 			if (Offset >= BytesRequired)
-				return StartOffset + Offset;
+				return Offset;
 		}
-		return -1;
+		//Not enough bytes before return to actually fit MinBytes
+		//Try to compute largest possible replacement using Script length
+		//And if it fits, return it.
+		const uint32 ActuallyBytesHere = Function->Script.Num() - StartOffset;
+		if (ActuallyBytesHere >= BytesRequired)
+			return BytesRequired;
+		const int32 BytesLacking = BytesRequired - ActuallyBytesHere;
+		return -BytesLacking;
 	}
-	return -1;
+	return -((int32) BytesRequired);
 }
 
 int32 SML::FindReturnStatementOffset(UFunction* Function) {

@@ -31,6 +31,7 @@
 #include "player/MainMenuMixin.h"
 #include "mod/toolkit/FGAssetDumper.h"
 #include "mod/ModSubsystems.h"
+#include "player/BuildMenuTweaks.h"
 
 bool checkGameVersion(const long targetVersion) {
 	const FString& buildVersion = FString(FApp::GetBuildVersion());
@@ -188,6 +189,7 @@ namespace SML {
 		modHandlerPtr->loadMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Post Initialization finished!"));
 		flushDebugSymbols();
+		GRegisterBuildMenuHooks();
 		if (getSMLConfig().dumpGameAssets) {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
 			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));

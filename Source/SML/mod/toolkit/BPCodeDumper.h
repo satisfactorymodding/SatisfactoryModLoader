@@ -14,9 +14,9 @@ namespace SML {
 	/**
 	 * Parses BP script byte code and returns offset to the start of first statement
 	 * Before which it is possible to insert N bytes of code
-	 * @return amount of bytes to skip, or -1 if cannot satisfy argument requirement
+	 * @return amount of bytes to skip (>= BytesRequired), or negative number specifying how much bytes are missing to fill up BytesRequired
 	 */
-	int32 ComputeStatementReplaceOffset(UFunction* Function, uint32 BytesRequired, uint32 StartOffset = 0);
+	int32 GetMinInstructionReplaceLength(UFunction* Function, uint32 BytesRequired, uint32 StartOffset = 0);
 
 	int32 FindReturnStatementOffset(UFunction* Function);
 }

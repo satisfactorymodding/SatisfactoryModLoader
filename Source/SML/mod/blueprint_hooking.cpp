@@ -47,13 +47,20 @@ void HandleHookedFunctionCall(FFrame& Stack, int64 HookedFunctionAddress, int32 
 
 void InstallBlueprintHook(UFunction* Function, const FHookKey& HookKey) {
 	TArray<uint8>& OriginalCode = Function->Script;
+	checkf(OriginalCode.Num() > HookKey.HookOffset, TEXT("Invalid hook: HookOffset > Script.Num()"));
 	//basically EX_Jump + CodeSkipSizeType;
 	const int32 MinBytesRequired = 1 + sizeof(CodeSkipSizeType);
-	const int32 JumpDestination = SML::ComputeStatementReplaceOffset(Function, MinBytesRequired, HookKey.HookOffset);
-	checkf(JumpDestination != -1, TEXT("Cannot install hook on that function"));
-	const int32 BytesToMove = JumpDestination - HookKey.HookOffset;
-	//SML::Logging::info(TEXT("InstallBlueprintHook: Address: "), reinterpret_cast<int64>(Function));
-	//SML::Logging::info(TEXT("InstallBlueprintHook: Min Bytes: "), MinBytesRequired, TEXT(", Hook Offset: "), HookKey.HookOffset, TEXT(", Jump Destination: "), JumpDestination);
+	int32 BytesToMove = SML::GetMinInstructionReplaceLength(Function, MinBytesRequired, HookKey.HookOffset);
+	if (BytesToMove < 0) {
+		//Not enough bytes in method body to fit jump into, append required amount of bytes and fill them with EX_EndOfScript
+		const int32 BytesToAppend = -BytesToMove;
+		OriginalCode.AddUninitialized(BytesToAppend);
+		FPlatformMemory::Memset(&OriginalCode[OriginalCode.Num() - BytesToMove], EX_EndOfScript, BytesToAppend);
+		BytesToMove = MinBytesRequired;
+	}
+	const int32 JumpDestination = HookKey.HookOffset + BytesToMove;
+	SML::Logging::info(TEXT("InstallBlueprintHook: Address: "), reinterpret_cast<int64>(Function), TEXT(", Code Size: "), Function->Script.Num());
+	SML::Logging::info(TEXT("InstallBlueprintHook: Min Bytes: "), MinBytesRequired, TEXT(", Hook Offset: "), HookKey.HookOffset, TEXT(", Jump Destination: "), JumpDestination);
 
 	//Generate code to call function & code we stripped by jump
 	TArray<uint8> AppendedCode;
@@ -86,7 +93,7 @@ void InstallBlueprintHook(UFunction* Function, const FHookKey& HookKey) {
 	FPlatformMemory::Memset(&OriginalCode[HookKey.HookOffset], EX_EndOfScript, BytesToMove);
 	OriginalCode[HookKey.HookOffset] = EX_Jump;
 	FPlatformMemory::WriteUnaligned<CodeSkipSizeType>(&OriginalCode[HookKey.HookOffset + 1], StartOfAppendedCode);
-	//SML::Logging::info(TEXT("Inserted EX_Jump at "), HookKey.HookOffset, TEXT(" to "), StartOfAppendedCode, TEXT(" (Appended Code Size: "), AppendedCode.Num(), TEXT(")"));
+	SML::Logging::info(TEXT("Inserted EX_Jump at "), HookKey.HookOffset, TEXT(" to "), StartOfAppendedCode, TEXT(" (Appended Code Size: "), AppendedCode.Num(), TEXT(")"));
 }
 
 int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
@@ -96,6 +103,7 @@ int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 		//So we need to hook only in one place to handle all possible execution paths
 		const int32 ReturnOffset = SML::FindReturnStatementOffset(Function);
 		checkf(ReturnOffset != -1, TEXT("EX_Return not found for function"));
+		SML::Logging::info(TEXT("Return Offset: "), ReturnOffset);
 		return ReturnOffset;
 	}
 	return HookOffset;
