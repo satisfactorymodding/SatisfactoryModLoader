@@ -94,7 +94,7 @@ int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 		//For now Kismet Compiler will always generate only one Return node, so all
 		//execution paths will end up either with executing it directly or jumping to it
 		//So we need to hook only in one place to handle all possible execution paths
-		int32 ReturnOffset = SML::FindReturnStatementOffset(Function);
+		const int32 ReturnOffset = SML::FindReturnStatementOffset(Function);
 		checkf(ReturnOffset != -1, TEXT("EX_Return not found for function"));
 		return ReturnOffset;
 	}
@@ -110,6 +110,15 @@ SML_API void HookBlueprintFunction(UFunction* Function, std::function<HookSignat
 	
 	SML::Logging::info(TEXT("Hooking blueprint implemented function "), *Function->GetPathName());
 	HookOffset = PreProcessHookOffset(Function, HookOffset);
+#if UE_BLUEPRINT_EVENTGRAPH_FASTCALLS
+	if (Function->EventGraphFunction != nullptr) {
+		SML::Logging::warning(TEXT("Attempt to hook event graph call stub function with fast-call enabled, disabling fast call for that function"));
+		SML::Logging::warning(TEXT("It may result in performance regression for called function, if you need highest performance possible, consider hooking event graph function"));
+		SML::Logging::warning(TEXT("Event graph function: "), *Function->EventGraphFunction->GetPathName(), TEXT(", From Offset: "), Function->EventGraphCallOffset);
+		Function->EventGraphFunction = nullptr;
+	}
+#endif
+	
 	const FHookKey SearchKey{ reinterpret_cast<int64>(Function), HookOffset };
 	bool HookEntryAdded = false;
 	FHookEntry& HookEntry = GetOrAddHookEntry(SearchKey, HookEntryAdded);
