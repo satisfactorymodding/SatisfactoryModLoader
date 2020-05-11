@@ -37,75 +37,198 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
 EResourceForm UFGItemDescriptor::GetForm(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mForm;
+	if (inClass)
+		return inClass.GetDefaultObject()->mForm;
+	else
+		return EResourceForm();
 }
 float UFGItemDescriptor::GetEnergyValue(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mEnergyValue;
+	if (inClass)
+		return inClass.GetDefaultObject()->mEnergyValue;
+	else
+		return float();
 }
 float UFGItemDescriptor::GetRadioactiveDecay(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mRadioactiveDecay;
+	if (inClass)
+		return inClass.GetDefaultObject()->mRadioactiveDecay;
+	else
+		return float();
 }
 FText UFGItemDescriptor::GetItemName(TSubclassOf< UFGItemDescriptor > inClass){ 
-	if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription == true)
-	return inClass.GetDefaultObject()->mDisplayName;
-else
-	return FText::FromString(inClass->GetName());
+	if (!inClass)
+		return FText();
+	if (inClass.GetDefaultObject()->mUseDisplayNameAndDescription)
+		return inClass.GetDefaultObject()->mDisplayName;
+	else
+		return FText::FromString(inClass->GetName());
 }
 FText UFGItemDescriptor::GetItemDescription(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mDescription;
+	if (inClass)
+		return inClass.GetDefaultObject()->mDescription;
+	else
+		return FText();
 }
 FText UFGItemDescriptor::GetAbbreviatedDisplayName(TSubclassOf< UFGItemDescriptor > inClass){ return FText(); }
 void UFGItemDescriptor::GetPreviewView(TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_previewView){ }
 void UFGItemDescriptor::GetIconView(TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_itemView){ }
 FSlateBrush UFGItemDescriptor::GetItemIcon(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mInventoryIcon;
+	if (inClass)
+		return inClass.GetDefaultObject()->mInventoryIcon;
+	else
+		return FSlateBrush();
 }
 UTexture2D* UFGItemDescriptor::GetSmallIcon(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mSmallIcon;
+	if (inClass)
+		return inClass.GetDefaultObject()->mSmallIcon;
+	else
+		return nullptr;
 }
 UTexture2D* UFGItemDescriptor::GetBigIcon(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mPersistentBigIcon;
+	if (inClass)
+		return inClass.GetDefaultObject()->mPersistentBigIcon;
+	else
+		return nullptr;
 }
 UStaticMesh* UFGItemDescriptor::GetItemMesh(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mConveyorMesh;
+	if (inClass)
+		return inClass.GetDefaultObject()->mConveyorMesh;
+	else
+		return nullptr;
 }
 int32 UFGItemDescriptor::GetStackSize(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);
+	if (inClass)
+		return static_cast<int32>(inClass.GetDefaultObject()->mStackSize);
+	else
+		return int32();
 }
 float UFGItemDescriptor::GetStackSizeConverted(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
 bool UFGItemDescriptor::CanBeDiscarded(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mCanBeDiscarded;
+	if (inClass)
+		return inClass.GetDefaultObject()->mCanBeDiscarded;
+	else
+		return bool();
 }
 bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mRememberPickUp;
+	if (inClass)
+		return inClass.GetDefaultObject()->mRememberPickUp;
+	else
+		return bool();
 }
 TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mItemCategory;
+	if (inClass)
+		return inClass.GetDefaultObject()->mItemCategory;
+	else
+		return TSubclassOf< UFGItemCategory >();
 }
 float UFGItemDescriptor::GetFluidDensity(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mFluidDensity;
+	if (inClass)
+		return inClass.GetDefaultObject()->mFluidDensity;
+	else
+		return float();
 }
 float UFGItemDescriptor::GetFluidViscosity(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mFluidViscosity;
+	if (inClass)
+		return inClass.GetDefaultObject()->mFluidViscosity;
+	else
+		return float();
 }
 float UFGItemDescriptor::GetFluidFriction(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mFluidFriction;
+	if (inClass)
+		return inClass.GetDefaultObject()->mFluidFriction;
+	else
+		return float();
 }
 FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mFluidColor;
+	if (inClass)
+		return inClass.GetDefaultObject()->mFluidColor;
+	else
+		return FColor();
 }
 FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf< UFGItemDescriptor > inClass){ 
-	return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear();
+	if (inClass)
+		return inClass.GetDefaultObject()->mFluidColor.ReinterpretAsLinear();
+	else
+		return FLinearColor();
 }
-FTransform UFGItemDescriptor::GetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass){ return FTransform(); }
-void UFGItemDescriptor::SetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass, FTransform cameraTransform){ }
-float UFGItemDescriptor::GetIconFOV(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
-void UFGItemDescriptor::SetIconFOV(TSubclassOf< UFGItemDescriptor > inClass, float iconFOV){ }
-FRotator UFGItemDescriptor::GetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass){ return FRotator(); }
-void UFGItemDescriptor::SetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator objectOrientation){ }
-float UFGItemDescriptor::GetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
-void UFGItemDescriptor::SetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass, float cameraDistance){ }
-FRotator UFGItemDescriptor::GetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass){ return FRotator(); }
-void UFGItemDescriptor::SetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation){ }
+FTransform UFGItemDescriptor::GetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass){ 
+	if (inClass)
+#if WITH_EDITOR
+		return inClass.GetDefaultObject()->mIconCameraTransform;
+#else
+		return FTransform();
+#endif
+	else
+		return FTransform(); 
+}
+void UFGItemDescriptor::SetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass, FTransform cameraTransform){
+#if WITH_EDITOR
+	if (inClass)
+		inClass.GetDefaultObject()->mIconCameraTransform = cameraTransform;
+#endif
+}
+float UFGItemDescriptor::GetIconFOV(TSubclassOf< UFGItemDescriptor > inClass){ 
+	if (inClass)
+#if WITH_EDITOR
+		return inClass.GetDefaultObject()->mIconFOV;
+#else
+		return float();
+#endif
+	else
+		return float();
+}
+void UFGItemDescriptor::SetIconFOV(TSubclassOf< UFGItemDescriptor > inClass, float iconFOV){
+#if WITH_EDITOR
+	if (inClass)
+		inClass.GetDefaultObject()->mIconFOV = iconFOV;
+#endif
+}
+FRotator UFGItemDescriptor::GetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass){ 
+	if (inClass)
+#if WITH_EDITOR
+		return inClass.GetDefaultObject()->mIconObjectOrientation;
+#else
+		return FRotator();
+#endif
+	else
+		return FRotator(); 
+}
+void UFGItemDescriptor::SetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator objectOrientation){
+#if WITH_EDITOR
+	if (inClass)
+		inClass.GetDefaultObject()->mIconObjectOrientation = objectOrientation;
+#endif
+}
+float UFGItemDescriptor::GetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass){
+	if (inClass)
+#if WITH_EDITOR
+		return inClass.GetDefaultObject()->mIconCameraDistance;
+#else
+		return float();
+#endif
+	else
+		return  float(); 
+}
+void UFGItemDescriptor::SetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass, float cameraDistance){ 
+#if WITH_EDITOR
+	if (inClass)
+		inClass.GetDefaultObject()->mIconCameraDistance = cameraDistance;
+#endif
+}
+FRotator UFGItemDescriptor::GetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass){
+	if (inClass)
+#if WITH_EDITOR
+		return inClass.GetDefaultObject()->mIconSkyOrientation;
+#else
+		return FRotator();
+#endif
+	else
+		return FRotator(); 
+}
+void UFGItemDescriptor::SetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation){
+#if WITH_EDITOR
+	if (inClass)
+		inClass.GetDefaultObject()->mIconSkyOrientation = skyOrientation;
+#endif
+}
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }

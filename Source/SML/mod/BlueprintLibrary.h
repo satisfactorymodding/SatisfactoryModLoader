@@ -57,6 +57,14 @@ public:
 	static FString GetBootstrapperVersion();
 
 	/**
+	 * Returns the currently used DevelopmentMode Setting
+	 */
+	UFUNCTION(BlueprintCallable, Category = "SML")
+		static bool GetDevelopmentModeEnabled();
+
+
+
+	/**
 	 * Saves the given struct as config file for the given modid
 	 * @param modid - the modid you want to save to config for
 	 * @param Config - the struct you want to save as config
