@@ -19,31 +19,56 @@ UFGSchematic::UFGSchematic() : Super() {
 	this->mTimeToComplete = 600;
 }
 ESchematicType UFGSchematic::GetType(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mType;
+	if (inClass)
+		return inClass.GetDefaultObject()->mType;
+	else
+		return ESchematicType();
 }
 FText UFGSchematic::GetSchematicDisplayName(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mDisplayName;
+	if (inClass)
+		return inClass.GetDefaultObject()->mDisplayName;
+	else
+		return FText();
 }
 TSubclassOf< class UFGSchematicCategory > UFGSchematic::GetSchematicCategory(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mSchematicCategory;
+	if (inClass)
+		return inClass.GetDefaultObject()->mSchematicCategory;
+	else
+		return TSubclassOf< class UFGSchematicCategory >();
 }
 void UFGSchematic::GetSubCategories(TSubclassOf< UFGSchematic > inClass,  TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ 
-	out_subCategories = inClass.GetDefaultObject()->mSubCategories;
+	if(inClass)
+		out_subCategories = inClass.GetDefaultObject()->mSubCategories;
 }
 TArray< FItemAmount > UFGSchematic::GetCost(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mCost;
+	if (inClass)
+		return inClass.GetDefaultObject()->mCost;
+	else
+		return TArray< FItemAmount >();
 }
 TArray< UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mUnlocks;
+	if (inClass)
+		return inClass.GetDefaultObject()->mUnlocks;
+	else
+		return TArray<UFGUnlock*>();
 }
 int32 UFGSchematic::GetTechTier(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mTechTier;
+	if (inClass)
+		return inClass.GetDefaultObject()->mTechTier;
+	else
+		return int32();
 }
 float UFGSchematic::GetTimeToComplete(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mTimeToComplete;
+	if (inClass)
+		return inClass.GetDefaultObject()->mTimeToComplete;
+	else
+		return float();
 }
 FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass){ 
-	return inClass.GetDefaultObject()->mSchematicIcon;
+	if (inClass)
+		return inClass.GetDefaultObject()->mSchematicIcon;
+	else
+		return FSlateBrush();
 }
 bool UFGSchematic::AreSchematicDependenciesMet(TSubclassOf< UFGSchematic > inClass, UObject* worldContext){ return bool(); }
 void UFGSchematic::GetSchematicDependencies(TSubclassOf< UFGSchematic > inClass, TArray<  UFGAvailabilityDependency* >& out_schematicDependencies){ }

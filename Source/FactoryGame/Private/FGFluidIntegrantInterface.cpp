@@ -13,6 +13,6 @@ bool FFluidBox::operator==(const FFluidBox& other) const{
 	return !this->operator!=(other);
 }
 bool FFluidBox::operator!=(const FFluidBox& other) const{ 
-	return FPlatformMemory::Memcmp(this, &other, sizeof(FFluidBox));
+	return (bool)FPlatformMemory::Memcmp(this, &other, sizeof(FFluidBox));
 }
 void IFGFluidIntegrantInterface::OnFluidDescriptorSet(){ }

@@ -4,7 +4,8 @@
 
 #if WITH_EDITOR
 void UFGRecipe::SetProduct(TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product){ 
-	recipe.GetDefaultObject()->mProduct = product;
+	if(recipe)
+		recipe.GetDefaultObject()->mProduct = product;
 }
 #endif 
 UFGRecipe::UFGRecipe() : Super() {
@@ -12,29 +13,48 @@ UFGRecipe::UFGRecipe() : Super() {
 	this->mManualManufacturingMultiplier = 1;
 }
 FText UFGRecipe::GetRecipeName(TSubclassOf< UFGRecipe > inClass){ 
-	return inClass.GetDefaultObject()->mDisplayName;
+	if (inClass)
+		return inClass.GetDefaultObject()->mDisplayName;
+	else
+		return FText();
 }
 TArray< FItemAmount > UFGRecipe::GetIngredients(TSubclassOf< UFGRecipe > inClass){ 
-	return inClass.GetDefaultObject()->mIngredients;
+	if (inClass)
+		return inClass.GetDefaultObject()->mIngredients;
+	else
+		return TArray<FItemAmount>();
 }
 TArray< FItemAmount > UFGRecipe::GetProducts(TSubclassOf< UFGRecipe > inClass, bool allowChildRecipes){ 
-	return inClass.GetDefaultObject()->mProduct;
+	if (inClass)
+		return inClass.GetDefaultObject()->mProduct;
+	else
+		return TArray< FItemAmount >();
 }
 float UFGRecipe::GetManufacturingDuration(TSubclassOf< UFGRecipe > inClass){ 
-	return inClass.GetDefaultObject()->mManufactoringDuration;
+	if (inClass)
+		return inClass.GetDefaultObject()->mManufactoringDuration;
+	else
+		return float();
 }
 float UFGRecipe::GetManualManufacturingDuration(TSubclassOf< UFGRecipe > inClass){ 
-	return inClass.GetDefaultObject()->mManualManufacturingMultiplier;
+	if (inClass)
+		return inClass.GetDefaultObject()->mManualManufacturingMultiplier;
+	else
+		return float();
 }
 TArray< TSubclassOf< UObject > > UFGRecipe::GetProducedIn(TSubclassOf< UFGRecipe > inClass){ 
 	TArray<TSubclassOf<UObject>>   out;
+	if (!inClass)
+		return TArray< TSubclassOf< UObject > >();
+	
 	TArray<TSoftClassPtr<UObject>> In = inClass.GetDefaultObject()->mProducedIn;
 	if (In.Num() > 0)
 	{
 		for (int j = 0; j < In.Num(); j++)
 		{
 			TSubclassOf<UObject> obj = In[j].LoadSynchronous();
-			out.Add(obj);
+			if(obj)
+				out.Add(obj);
 		}
 		return out;
 	}
