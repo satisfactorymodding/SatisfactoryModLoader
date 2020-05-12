@@ -17,3 +17,6 @@
 #define GAME_MODE_PRE_LOGIN_FUNC_DESC "?PreLogin@AGameModeBase@@UEAAXAEBVFString@@0AEBUFUniqueNetIdRepl@@AEAV2@@Z"
 /** AFGGameState::Init */
 #define FG_GAME_STATE_INIT_FUNC_DESC "?Init@AFGGameState@@UEAAXXZ"
+
+/** FWindowsPlatformStackWalk::GetDownstreamStorage */
+#define WIN_STACK_WALK_GET_DOWNSTREAM_STORAGE_FUNC_DESC "?GetDownstreamStorage@FWindowsPlatformStackWalk@@SA?AVFString@@XZ"

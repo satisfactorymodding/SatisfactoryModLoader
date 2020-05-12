@@ -27,11 +27,13 @@
 #include "util/Console.h"
 #include "player/PlayerUtility.h"
 #include "command/SMLChatCommands.h"
+#include "mod/hooking.h"
 #include "player/VersionCheck.h"
 #include "player/MainMenuMixin.h"
 #include "mod/toolkit/FGAssetDumper.h"
 #include "mod/ModSubsystems.h"
 #include "player/BuildMenuTweaks.h"
+#include "util/FuncNames.h"
 
 bool checkGameVersion(const long targetVersion) {
 	const FString& buildVersion = FString(FApp::GetBuildVersion());
@@ -78,12 +80,12 @@ TSharedRef<FJsonObject> createConfigDefaults() {
 }
 
 namespace SML {
-	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.1.1");
+	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.1.2");
 	
 	//version of the SML mod loader, as specified in the SML.h
 	static SML::Versioning::FVersion* modLoaderVersion = new SML::Versioning::FVersion(modLoaderVersionString);
 
-	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.4");
+	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.8");
 
 	//target (minimum) version of the bootstrapper we are capable running on
 	static SML::Versioning::FVersion* targetBootstrapperVersion = new SML::Versioning::FVersion(targetBootstrapperVersionString);
@@ -120,6 +122,8 @@ namespace SML {
 	}
 
 	void postInitializeSML();
+
+	void AppendSymbolSearchPaths(FString& OutSearchPaths);
 
 	//called by a bootstrapper off the engine thread during process initialization
 	//you should not access engine at that point since for now no engine code was executed
@@ -165,11 +169,30 @@ namespace SML {
 		RegisterVersionCheckHooks();
 		RegisterMainMenuHooks();
 		FSubsystemInfoHolder::SetupHooks();
+		SUBSCRIBE_METHOD(WIN_STACK_WALK_GET_DOWNSTREAM_STORAGE_FUNC_DESC, FWindowsPlatformStackWalk::GetDownstreamStorage, [](auto& Call) {
+			FString OriginalResult = Call();
+			AppendSymbolSearchPaths(OriginalResult);
+			Call.Override(OriginalResult);
+		});
+		
 		modHandlerPtr->loadDllMods(*bootstrapAccessors);
 
 		SML::Logging::info(TEXT("Construction phase finished!"));
 		
 		FCoreDelegates::OnPostEngineInit.AddStatic(postInitializeSML);
+	}
+
+	//Wrapper for bootstrapper functions allocating memory with prototype void*(*)(unsigned long long)
+	void* BootstrapperFMemoryMallocWrapper(uint64 Size) {
+		return FMemory::Malloc(Size);
+	}
+	
+	void AppendSymbolSearchPaths(FString& OutSearchPaths) {
+		wchar_t* SymbolFileRoots = bootstrapAccessors->GetSymbolFileRoots(&BootstrapperFMemoryMallocWrapper);
+		SML::Logging::info(TEXT("Appending SML symbol search paths: "), SymbolFileRoots);
+		OutSearchPaths.AppendChar(';');
+		OutSearchPaths.Append(SymbolFileRoots);
+		FMemory::Free(SymbolFileRoots);
 	}
 
 	void flushDebugSymbols() {

@@ -107,7 +107,7 @@ public:
 		this->result = newResult;
 	}
 
-	inline void operator()(Args... args) {
+	inline Result operator()(Args... args) {
 		if (functionList == nullptr || handlerPtr >= functionList->size()) {
 			result = function(args...);
 			this->forwardCall = false;
@@ -119,10 +119,6 @@ public:
 				(*this)(args...);
 			}
 		}
-	}
-
-	inline Result CallAndGetResult(Args... args) {
-		operator()(args...);
 		return result;
 	}
 };
@@ -195,7 +191,7 @@ private:
 		}
 	}
 public:
-	static void addHandlerBefore(const char* methodName, Handler handler) {
+	static void  addHandlerBefore(const char* methodName, Handler handler) {
 		const std::string symbolName = decorateSymbolName(methodName, typeid(PMF).name());
 		installHook(symbolName);
 		handlersBefore->push_back(handler);
