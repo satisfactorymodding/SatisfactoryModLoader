@@ -116,6 +116,9 @@ FString USMLBlueprintLibrary::GetBootstrapperVersion() {
 	return SML::getBootstrapperVersion().string();
 }
 
+bool USMLBlueprintLibrary::GetDevelopmentModeEnabled() {
+	return SML::getSMLConfig().developmentMode;
+}
 
 void USMLBlueprintLibrary::InternalGetStructAsJson(UStructProperty *Structure, void* StructurePtr, FString &String, bool UsePretty)
 {
