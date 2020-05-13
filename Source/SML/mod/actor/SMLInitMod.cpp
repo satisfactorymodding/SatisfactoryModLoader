@@ -2,6 +2,7 @@
 #include "FGSchematicManager.h"
 #include "SML/util/Logging.h"
 #include "FGResearchManager.h"
+#include "tooltip/ItemTooltipHandler.h"
 
 void ASMLInitMod::Init_Implementation() {
 }
@@ -18,6 +19,8 @@ void ASMLInitMod::PreLoadModContent() {
 		FSubsystemInfoHolder::RegisterSubsystemHolder(SubsystemHolder);
 	}
 }
+
+static TArray<FString> ProviderClassNamesRegistered;
 
 void ASMLInitMod::LoadModContent() {
 	AFGSchematicManager* schematicManager = AFGSchematicManager::Get(this);
@@ -50,6 +53,15 @@ void ASMLInitMod::LoadModContent() {
 		for (const TSubclassOf<AChatCommandInstance>& RegistrarEntry : mChatCommands) {
 			SML::Logging::info(TEXT("Registering chat command "), *RegistrarEntry->GetPathName());
 			ChatCommandSubsystem->RegisterCommand(RegistrarEntry);
+		}
+	}
+	//Register tooltip providers
+	for (UClass* ProviderClass : GlobalItemTooltipProviders) {
+		FString ClassName = ProviderClass->GetPathName();
+		if (!ProviderClassNamesRegistered.Contains(ClassName)) {
+			ProviderClassNamesRegistered.Add(ClassName);
+			UObject* ProviderObject = NewObject<UObject>(UItemTooltipHandler::StaticClass(), ProviderClass);
+			UItemTooltipHandler::RegisterGlobalTooltipProvider(ProviderObject);
 		}
 	}
 }

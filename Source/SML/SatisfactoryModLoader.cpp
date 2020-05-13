@@ -33,6 +33,7 @@
 #include "mod/toolkit/FGAssetDumper.h"
 #include "mod/ModSubsystems.h"
 #include "player/BuildMenuTweaks.h"
+#include "tooltip/ItemTooltipHandler.h"
 #include "util/FuncNames.h"
 
 bool checkGameVersion(const long targetVersion) {
@@ -164,11 +165,13 @@ namespace SML {
 		SML::Logging::info(TEXT("Resolving mod dependencies"));
 		modHandlerPtr->checkDependencies();
 
+		//C++ hooks can be registered very early in the engine initialization
 		modHandlerPtr->attachLoadingHooks();
 		InitializePlayerComponent();
 		RegisterVersionCheckHooks();
 		RegisterMainMenuHooks();
 		FSubsystemInfoHolder::SetupHooks();
+		
 		SUBSCRIBE_METHOD(WIN_STACK_WALK_GET_DOWNSTREAM_STORAGE_FUNC_DESC, FWindowsPlatformStackWalk::GetDownstreamStorage, [](auto& Call) {
 			FString OriginalResult = Call();
 			AppendSymbolSearchPaths(OriginalResult);
@@ -212,7 +215,11 @@ namespace SML {
 		modHandlerPtr->loadMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Post Initialization finished!"));
 		flushDebugSymbols();
+
+		//Blueprint hooks are registered here, after engine initialization
 		GRegisterBuildMenuHooks();
+		UItemTooltipHandler::GRegisterHooking();
+		
 		if (getSMLConfig().dumpGameAssets) {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
 			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));

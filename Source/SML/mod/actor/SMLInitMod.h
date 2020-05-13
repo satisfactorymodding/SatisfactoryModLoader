@@ -63,4 +63,12 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, Category = Advanced)
 	TArray<TSubclassOf<UModSubsystemHolder>> mModSubsystems;
+
+	/**
+	 * List of classes for objects implementing ISMLItemTooltipProvider
+	 * These will be registered on startup and used to obtain additional description
+	 * text/widget for all items
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = Advanced)
+	TArray<UClass*> GlobalItemTooltipProviders;
 };

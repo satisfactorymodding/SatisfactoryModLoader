@@ -33,7 +33,6 @@ public:
 	void* Params;
 	UFunction* Func;
 	FlowStackType FlowStack;
-	bool Return = false;
 	int32 ubergraphOffset = -1;
 
 	FParseFrame(UObject* Context, UFunction* Func) : Context(Context), Code(Func->Script.GetData()), Func(Func) {
@@ -147,8 +146,7 @@ public:
 
 TArray<TSharedPtr<FJsonValue>> ParseClosure(FParseFrame& Stack, uint8* ReturnValue) {
 	TArray<TSharedPtr<FJsonValue>> Result;
-	Stack.Return = false;
-	while (*Stack.Code != EX_Return && !Stack.Return) {
+	while (*Stack.Code != EX_Return) {
 		TSharedPtr<FJsonObject> Inst = Stack.Step(ReturnValue, true);
 		if (Inst.IsValid()) Result.Add(MakeShareable(new FJsonValueObject(Inst)));
 	}
@@ -190,7 +188,6 @@ INSTRUCTION_HANDLER(EX_DefaultVariable)
 INSTRUCTION(EX_DefaultVariable)
 
 INSTRUCTION_HANDLER(EX_Return)
-	Stack.Return = true;
 	return true;
 }
 INSTRUCTION(EX_Return)
@@ -1014,23 +1011,23 @@ int32 SML::GetMinInstructionReplaceLength(UFunction* Function, uint32 BytesRequi
 		Frame.Code += StartOffset;
 		const bool bHasReturnParam = Function->ReturnValueOffset != MAX_uint16;
 		void* ReturnValue = bHasReturnParam ? ((uint8*)Frame.Params + Function->ReturnValueOffset) : nullptr;
-		Frame.Return = false;
 		const uint64 CodePointerBase = reinterpret_cast<uint64>(Frame.Code);
-		while (*Frame.Code != EX_Return && !Frame.Return) {
+		
+		while (*Frame.Code != EX_Return) {
 			Frame.Step(ReturnValue, true);
 			const uint64 CodePointer = reinterpret_cast<uint64>(Frame.Code);
 			const uint64 Offset = CodePointer - CodePointerBase;
 			if (Offset >= BytesRequired)
 				return Offset;
 		}
-		//Not enough bytes before return to actually fit MinBytes
-		//Try to compute largest possible replacement using Script length
-		//And if it fits, return it.
-		const uint32 ActuallyBytesHere = Function->Script.Num() - StartOffset;
-		if (ActuallyBytesHere >= BytesRequired)
-			return BytesRequired;
-		const int32 BytesLacking = BytesRequired - ActuallyBytesHere;
-		return -BytesLacking;
+		//Not enough bytes before return to actually fit MinBytes before return
+		//return after it will also have EX_Nothing or EX_LocalOutVariable and then EX_Nothing
+		//so if we can't fit we should before we replace entire remaining part
+		const uint32 BytesRemaining = Function->Script.Num() - StartOffset;
+		if (BytesRemaining >= BytesRequired)
+			return BytesRemaining; //return full bytes remaining, because after return we have 2 more instructions generated
+		const int32 BytesLacking = BytesRequired - BytesRemaining;
+		return -BytesLacking; //Otherwise return how much bytes we lack
 	}
 	return -((int32) BytesRequired);
 }
@@ -1041,16 +1038,13 @@ int32 SML::FindReturnStatementOffset(UFunction* Function) {
 		FParseFrame Frame = FParseFrame(Context, Function);
 		const bool bHasReturnParam = Function->ReturnValueOffset != MAX_uint16;
 		void* ReturnValue = bHasReturnParam ? ((uint8*)Frame.Params + Function->ReturnValueOffset) : nullptr;
-		Frame.Return = false;
 		const uint64 CodePointerBase = (uint64)Frame.Code;
-		while (true) {
-			const uint64 CodePointer = (uint64)Frame.Code;
-			if (*Frame.Code == EX_Return)
-				return CodePointer - CodePointerBase;
+		while (*Frame.Code != EX_Return) {
 			Frame.Step(ReturnValue, true);
-			if (Frame.Return)
-				return CodePointer - CodePointerBase;
 		}
+		//Will always point to EX_Return at that point, so just compute offset
+		const uint64 CodePointer = (uint64)Frame.Code;
+		return CodePointer - CodePointerBase;
 	}
 	return -1;
 }

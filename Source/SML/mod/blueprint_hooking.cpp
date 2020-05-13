@@ -51,15 +51,19 @@ void InstallBlueprintHook(UFunction* Function, const FHookKey& HookKey) {
 	//basically EX_Jump + CodeSkipSizeType;
 	const int32 MinBytesRequired = 1 + sizeof(CodeSkipSizeType);
 	int32 BytesToMove = SML::GetMinInstructionReplaceLength(Function, MinBytesRequired, HookKey.HookOffset);
+	SML::Logging::info(TEXT("InstallBlueprintHook: Address: "), reinterpret_cast<int64>(Function), TEXT(", Code Size: "), Function->Script.Num());
+	
 	if (BytesToMove < 0) {
 		//Not enough bytes in method body to fit jump into, append required amount of bytes and fill them with EX_EndOfScript
 		const int32 BytesToAppend = -BytesToMove;
 		OriginalCode.AddUninitialized(BytesToAppend);
-		FPlatformMemory::Memset(&OriginalCode[OriginalCode.Num() - BytesToMove], EX_EndOfScript, BytesToAppend);
+		FPlatformMemory::Memset(&OriginalCode[OriginalCode.Num() - BytesToAppend], EX_EndOfScript, BytesToAppend);
+		//If we are here, that means Script.Num() - HookOffset is less than MinBytesRequired
+		//So to move instructions properly, we just move MinBytesRequired
 		BytesToMove = MinBytesRequired;
 	}
 	const int32 JumpDestination = HookKey.HookOffset + BytesToMove;
-	SML::Logging::info(TEXT("InstallBlueprintHook: Address: "), reinterpret_cast<int64>(Function), TEXT(", Code Size: "), Function->Script.Num());
+	SML::Logging::info(TEXT("InstallBlueprintHook: Verified Code Size: "), OriginalCode.Num());
 	SML::Logging::info(TEXT("InstallBlueprintHook: Min Bytes: "), MinBytesRequired, TEXT(", Hook Offset: "), HookKey.HookOffset, TEXT(", Jump Destination: "), JumpDestination);
 
 	//Generate code to call function & code we stripped by jump
@@ -104,6 +108,7 @@ int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 		const int32 ReturnOffset = SML::FindReturnStatementOffset(Function);
 		checkf(ReturnOffset != -1, TEXT("EX_Return not found for function"));
 		SML::Logging::info(TEXT("Return Offset: "), ReturnOffset);
+		SML::Logging::info(TEXT("Instruction at Offset: "), Function->Script[ReturnOffset], TEXT(", EX_Return: "), EX_Return);
 		return ReturnOffset;
 	}
 	return HookOffset;

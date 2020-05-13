@@ -17,6 +17,24 @@ public:
 		check(Property);
 		return Property->GetPropertyValuePtr_InContainer(FramePointer.Locals, ArrayIndex);
 	}
+
+	//Retrieves variable passed to method as [out] parameter (pass by reference basically), e.g which
+	//Can be set by blueprint method and changes will be visible to caller
+	//These variables are stored separately from other local variables, so
+	//GetLocalVarPtr won't work on them, you should use this method instead
+	template<typename T>
+	typename T::TCppType* GetOutVariablePtr(const TCHAR* VariableName = TEXT("ReturnValue")) {
+		FOutParmRec* Out = FramePointer.OutParms;
+		check(Out);
+		while (Out->Property->GetName() != VariableName) {
+			Out = Out->NextOutParm;
+			check(Out);
+		}
+		check(Out->Property->GetName() == VariableName);
+		T* Property = Cast<T>(Out->Property);
+		check(Property);
+		return Property->GetPropertyValuePtr(Out->PropAddr);
+	}
 };
 
 typedef void(HookSignature)(FBlueprintHookHelper& HookHelper);
