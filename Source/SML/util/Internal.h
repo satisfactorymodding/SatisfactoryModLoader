@@ -3,7 +3,7 @@
 #include "PlatformStackWalk.h"
 
 namespace SML {
-	inline void shutdownEngine(const FString& reason) {
+	inline void ShutdownEngine(const FString& reason) {
 		FPlatformStackWalk::InitStackWalking();
 		ANSICHAR StackTrace[4096];
 		FPlatformStackWalk::StackWalkAndDump(StackTrace, ARRAY_COUNT(StackTrace), 0);

@@ -26,20 +26,20 @@ namespace SML {
 		return MapName.StartsWith(GetMenuSceneMapNamePrefix());
 	}
 
-	FString getModConfigFilePath(FString modid);
+	FString GetModConfigFilePath(const FString& ModId);
 
 	/**
 	 * Parses given json string into a valid json object
 	 * Strips json syntax extensions like commentaries prior to parsing
 	 */
-	SML_API TSharedPtr<FJsonObject> parseJsonLenient(const FString& input);
+	SML_API TSharedPtr<FJsonObject> ParseJsonLenient(const FString& Input);
 
 	/**
 	 * Parses mod configuration file and returns json object
 	 * returns json.null() if config file is missing, unreadable or corrupted
 	 * It also supports comments in mod configs
 	 */
-	SML_API TSharedRef<FJsonObject> readModConfig(FString modid, const TSharedRef<FJsonObject>& defaultValues);
+	SML_API TSharedRef<FJsonObject> ReadModConfig(const FString& ModId, const TSharedRef<FJsonObject>& DefaultValues);
 
 	/*
 	 * Dumps the given mod configuration json to the mod config file with the given modid.
@@ -48,9 +48,9 @@ namespace SML {
 	 * @param[in]	modid	the id of the mod you want to save the config from
 	 * @param[in]	config	the coniguration you want to overwrite the file with
 	 */
-	SML_API void writeModConfig(FString modid, const TSharedRef<FJsonObject>& config);
+	SML_API void WriteModConfig(const FString& ModId, const TSharedRef<FJsonObject>& Config);
 	
-	bool setDefaultValues(const TSharedPtr<FJsonObject>& j, const TSharedPtr<FJsonObject>& defaultValues);
+	bool SetDefaultValues(const TSharedPtr<FJsonObject>& Obj, const TSharedPtr<FJsonObject>& DefaultValues);
 
 	DEFINE_VARARG_HANDLER(formatStr, std::wostringstream, { Result << FirstArg; });
 	template<typename ...Args>
@@ -86,6 +86,14 @@ namespace SML {
 		return ResultArray;
 	}
 	
+	template<typename In, typename FunctorType, typename Out = std::result_of_t<FunctorType(const In&)>>
+	FORCEINLINE TArray<Out> Map(const TArray<In>& Input, FunctorType Functor) {
+		TArray<Out> ResultArray;
+		for (const In& Element : Input) {
+			ResultArray.Add(Functor(Element));
+		}
+		return ResultArray;
+	}
 	
 	template <class FuncType>
 	class FuncDirectoryVisitor : public IPlatformFile::FDirectoryVisitor

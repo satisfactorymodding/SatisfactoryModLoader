@@ -3,22 +3,17 @@
 #include "mod/version.h"
 #include "Json.h"
 
-using namespace SML::Versioning;
+struct FModInfo {
+	FString Modid;
+	FString Name;
+	FVersion Version;
+	FString Description;
+	TArray<FString> Authors;
+	TMap<FString, FVersionRange> Dependencies;
+	TMap<FString, FVersionRange> OptionalDependencies;
 
-namespace SML {
-	namespace Mod {
-		struct FModInfo {
-			FString modid;
-			FString name;
-			FVersion version;
-			FString description;
-			TArray<FString> authors;
-			TMap<FString, FVersionRange> dependencies;
-			TMap<FString, FVersionRange> optionalDependencies;
-
-			static bool isValid(const FJsonObject& object, const FString& filePath);
-			static FModInfo createFromJson(const FJsonObject& object);
-			static FModInfo createDummyInfo(const FString& modid);
-		};
-	}
-}
+	static bool IsValid(const FJsonObject& Object, const FString& FilePath);
+	static FModInfo CreateFromJson(const FJsonObject& Object);
+	static FModInfo CreateDummyInfo(const FString& Modid);
+	static bool IsModIdValid(const FString& ModId);
+};

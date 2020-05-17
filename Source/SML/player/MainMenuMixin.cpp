@@ -9,13 +9,13 @@
 
 TSharedRef<SWidget> CreateMenuInfoTextPanel() {
 	const FSlateFontInfo& fontInfo = FSlateFontInfo(FString(TEXT("Roboto")), 10, EFontHinting::Auto, FFontOutlineSettings());
-	SML::Mod::FModHandler& modHandler = SML::getModHandler();
-	const int32 modsLoaded = modHandler.getLoadedMods().Num();
+	FModHandler& modHandler = SML::GetModHandler();
+	const int32 modsLoaded = modHandler.GetLoadedMods().Num();
 	TArray<FString> resultText;
-	resultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *SML::getModLoaderVersion().string()));
+	resultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *SML::GetModLoaderVersion().String()));
 	resultText.Add(FString::Printf(TEXT("%lu mod(s) loaded"), modsLoaded));
-	resultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), *SML::getBootstrapperVersion().string()));
-	if (SML::getSMLConfig().developmentMode) {
+	resultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), *SML::GetBootstrapperVersion().String()));
+	if (SML::GetSmlConfig().bDevelopmentMode) {
 		resultText.Add(TEXT("Development mode enabled."));
 	}
 	const TSharedRef<STextBlock> MyTextBlock = SNew(STextBlock)
@@ -58,6 +58,7 @@ void SML::RegisterMainMenuHooks() {
 	SUBSCRIBE_METHOD(GAME_INSTANCE_LOAD_COMPLETE_FUNC_DESC, UFGGameInstance::LoadComplete, [](auto& scope, UFGGameInstance* gameInstance, const float, const FString& mapName) {
 		UGameViewportClient* viewport = gameInstance->GetWorld()->GetGameViewport();
 		DEFINE_LEVEL_WIDGET_PANEL(MenuSMLInfo, SML::GetMenuSceneMapNamePrefix(), CreateMenuInfoTextPanel);
+		UE_LOG(LogTemp, Fatal, TEXT("Here we crash again!"));
 	});
 }
 

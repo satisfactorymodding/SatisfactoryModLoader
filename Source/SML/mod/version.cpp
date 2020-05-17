@@ -4,31 +4,29 @@
 #include "util/Utility.h"
 #include "util/Logging.h"
 
-using namespace SML::Versioning;
-
-std::wregex versionRegex(TEXT("^(<=|<|>|>=|\\^)?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"), std::regex::ECMAScript | std::regex::optimize);
+std::wregex VersionRegex(TEXT("^(<=|<|>|>=|\\^)?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"), std::regex::ECMAScript | std::regex::optimize);
 
 void parseVersion(const FString& string, FVersion& version, FString* compareOp);
 
-EComparisonOp parseComparisonOp(const FString& type) {
+EVersionComparisonOp parseComparisonOp(const FString& type) {
 	if (type == TEXT("<="))
-		return EComparisonOp::LESS_EQUALS;
+		return EVersionComparisonOp::LESS_EQUALS;
 	if (type == TEXT("<"))
-		return EComparisonOp::LESS;
+		return EVersionComparisonOp::LESS;
 	if (type == TEXT(">="))
-		return EComparisonOp::GREATER_EQUALS;
+		return EVersionComparisonOp::GREATER_EQUALS;
 	if (type == TEXT(">"))
-		return EComparisonOp::GREATER;
-	return EComparisonOp::EQUALS;
+		return EVersionComparisonOp::GREATER;
+	return EVersionComparisonOp::EQUALS;
 }
 
-const TCHAR* comparisonString(const EComparisonOp op) {
+const TCHAR* comparisonString(const EVersionComparisonOp op) {
 	switch (op) {
-	case EComparisonOp::EQUALS: return TEXT("");
-	case EComparisonOp::GREATER: return TEXT(">");
-	case EComparisonOp::GREATER_EQUALS: return TEXT(">=");
-	case EComparisonOp::LESS: return TEXT("<");
-	case EComparisonOp::LESS_EQUALS: return TEXT("<=");
+	case EVersionComparisonOp::EQUALS: return TEXT("");
+	case EVersionComparisonOp::GREATER: return TEXT(">");
+	case EVersionComparisonOp::GREATER_EQUALS: return TEXT(">=");
+	case EVersionComparisonOp::LESS: return TEXT("<");
+	case EVersionComparisonOp::LESS_EQUALS: return TEXT("<=");
 	default: return TEXT("");
 	}	
 }
@@ -47,59 +45,59 @@ FVersionRange::FVersionRange() {}
 
 FVersionRange::FVersionRange(const FString& string) {
 	FString comparisonOp;
-	parseVersion(string, myVersion, &comparisonOp);
-	this->op = parseComparisonOp(comparisonOp);
+	parseVersion(string, MyVersion, &comparisonOp);
+	this->Op = parseComparisonOp(comparisonOp);
 }
 
-bool FVersionRange::matches(const FVersion& version) const {
-	int result = version.compare(myVersion);
-	switch (op) {
-	case EComparisonOp::GREATER_EQUALS: return result >= 0;
-	case EComparisonOp::GREATER: return result > 0;
-	case EComparisonOp::LESS_EQUALS: return result <= 0;
-	case EComparisonOp::LESS: return result < 0;
+bool FVersionRange::Matches(const FVersion& version) const {
+	int result = version.Compare(MyVersion);
+	switch (Op) {
+	case EVersionComparisonOp::GREATER_EQUALS: return result >= 0;
+	case EVersionComparisonOp::GREATER: return result > 0;
+	case EVersionComparisonOp::LESS_EQUALS: return result <= 0;
+	case EVersionComparisonOp::LESS: return result < 0;
 	default: return result == 0;
 	}
 }
 
 void parseVersion(const FString& string, FVersion& version, FString* compareOp) {
-	std::wsmatch match;
-	const std::wstring wstr(*string);
-	std::regex_match(wstr, match, versionRegex);
-	if (match.empty()) {
-		SML::Logging::error(*FString::Printf(TEXT("Version string \"%s\" doesn't match the pattern"), *version.string()));
+	std::wsmatch Match;
+	const std::wstring WideString(*string);
+	if (!std::regex_match(WideString, Match, VersionRegex)) {
+		SML::Logging::error(*FString::Printf(TEXT("Version string \"%s\" doesn't match the pattern"), *version.String()));
+		return;
 	}
 	if (compareOp != nullptr)
-		*compareOp = match[1].str().c_str();
-	version.major = std::stoull(match[2]);
-	version.minor = std::stoull(match[3]);
-	version.patch = std::stoull(match[4]);
-	version.type = match[5].str().c_str();
-	version.buildInfo = match[6].str().c_str();
+		*compareOp = Match[1].str().c_str();
+	version.Major = std::stoull(Match[2]);
+	version.Minor = std::stoull(Match[3]);
+	version.Patch = std::stoull(Match[4]);
+	version.Type = Match[5].str().c_str();
+	version.BuildInfo = Match[6].str().c_str();
 }
 
-FString FVersion::string() const {
+FString FVersion::String() const {
 	FString result;
-	result.Append(FString::FromInt(major)).Append(TEXT("."));
-	result.Append(FString::FromInt(minor)).Append(TEXT("."));
-	result.Append(FString::FromInt(patch));
-	if (!type.IsEmpty())
-		result.Append(TEXT("-")).Append(type);
-	if (!buildInfo.IsEmpty())
-		result.Append(TEXT("+")).Append(buildInfo);
+	result.Append(FString::FromInt(Major)).Append(TEXT("."));
+	result.Append(FString::FromInt(Minor)).Append(TEXT("."));
+	result.Append(FString::FromInt(Patch));
+	if (!Type.IsEmpty())
+		result.Append(TEXT("-")).Append(Type);
+	if (!BuildInfo.IsEmpty())
+		result.Append(TEXT("+")).Append(BuildInfo);
 	return result;
 }
 
-FString FVersionRange::string() const {
-	return comparisonString(this->op) + myVersion.string();
+FString FVersionRange::String() const {
+	return comparisonString(this->Op) + MyVersion.String();
 }
 
-int FVersion::compare(const FVersion& other) const {
-	if (major != other.major)
-		return major > other.major ? 1 : -1;
-	if (minor != other.minor)
-		return minor > other.minor ? 1 : -1;
-	if (patch != other.patch)
-		return patch > other.patch ? 1 : -1;
-	return type.Compare(other.type);
+int FVersion::Compare(const FVersion& other) const {
+	if (Major != other.Major)
+		return Major > other.Major ? 1 : -1;
+	if (Minor != other.Minor)
+		return Minor > other.Minor ? 1 : -1;
+	if (Patch != other.Patch)
+		return Patch > other.Patch ? 1 : -1;
+	return Type.Compare(other.Type);
 }

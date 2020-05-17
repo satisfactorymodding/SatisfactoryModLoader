@@ -658,7 +658,7 @@ void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileNa
 	resultObject->SetArrayField(TEXT("Classes"), classes);
 
 
-	const FString& resultPath = SML::getConfigDirectory() / *fileName;
+	const FString& resultPath = SML::GetConfigDirectory() / *fileName;
 	FString resultString;
 	TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
 	FJsonSerializer Serializer;

@@ -27,14 +27,14 @@ public:
 };
 
 FString CreateModListString() {
-	SML::Mod::FModHandler& ModHandler = SML::getModHandler();
+	FModHandler& ModHandler = SML::GetModHandler();
 	FString ResultString;
 	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&ResultString);
 	FJsonSerializer Serializer;
 	TSharedRef<FJsonObject> ModListObject = MakeShareable(new FJsonObject());
-	for (const FString& Modid : ModHandler.getLoadedMods()) {
-		const SML::Mod::FModInfo& Info = ModHandler.getLoadedMod(Modid).modInfo;
-		ModListObject->SetStringField(Modid, Info.version.string());
+	for (const FString& Modid : ModHandler.GetLoadedMods()) {
+		const FModInfo& Info = ModHandler.GetLoadedMod(Modid).ModInfo;
+		ModListObject->SetStringField(Modid, Info.Version.String());
 	}
 	Serializer.Serialize(ModListObject, Writer);
 	return ResultString;
@@ -48,16 +48,16 @@ void CheckModListString(const FString& modListString, FString& failureReason) {
 		failureReason = TEXT("Failed to parse mod list info json");
 		return;
 	}
-	SML::Mod::FModHandler& ModHandler = SML::getModHandler();
+	FModHandler& ModHandler = SML::GetModHandler();
 	TArray<FString> MissingMods;
-	for (const FString& loadedModId : ModHandler.getLoadedMods()) {
+	for (const FString& loadedModId : ModHandler.GetLoadedMods()) {
 		if (!ModListObject->HasField(loadedModId)) {
 			MissingMods.Add(FString::Printf(TEXT("%s: missing"), *loadedModId));
 		} else {
 			const FVersion& ModVersion = FVersion(*ModListObject->GetStringField(loadedModId));
-			const FVersion& MinModVersion = ModHandler.getLoadedMod(loadedModId).modInfo.version;
-			if (ModVersion.compare(MinModVersion) < 0) {
-				const FString& Message = FString::Printf(TEXT("%s: required at least %s"), *loadedModId, *MinModVersion.string());
+			const FVersion& MinModVersion = ModHandler.GetLoadedMod(loadedModId).ModInfo.Version;
+			if (ModVersion.Compare(MinModVersion) < 0) {
+				const FString& Message = FString::Printf(TEXT("%s: required at least %s"), *loadedModId, *MinModVersion.String());
 				MissingMods.Add(Message);
 			}
 		}
@@ -72,7 +72,7 @@ static constexpr uint32 Base64GetEncodedDataSize(uint32 NumBytes) {
 }
 
 FString Base64Encode(const uint8* Source, uint32 Length) {
-	uint32 ExpectedLength = Base64GetEncodedDataSize(Length);
+	const uint32 ExpectedLength = Base64GetEncodedDataSize(Length);
 
 	FString OutBuffer;
 

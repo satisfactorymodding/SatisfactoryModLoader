@@ -3,8 +3,8 @@
 #include "Logging.h"
 
 void SML::InitConsole() {
-	const SML::FSMLConfiguration& config = getSMLConfig();
-	if (config.consoleWindow) {
+	const SML::FSMLConfiguration& config = GetSmlConfig();
+	if (config.bConsoleWindow) {
 		EnableConsole();
 	}
 }
@@ -22,8 +22,14 @@ void SML::EnableConsole() {
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 	SML::Logging::info(TEXT("Console Window enabled!"));
 }
+
+void SML::NotifyFatalError(const FString& Message) {
+	MessageBoxA(NULL, TCHAR_TO_ANSI(*FString::Printf(TEXT("%s\nClick OK to exit."), *Message)), "SatisfactoryModLoader", MB_ICONERROR);
+}
 #else
 void SML::EnableConsole() {
 	//TODO: Implementation for other platforms
+}
+void SML::NotifyFatalError(const FString& Message) {
 }
 #endif

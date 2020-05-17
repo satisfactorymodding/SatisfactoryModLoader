@@ -7,6 +7,8 @@
 #include <winuser.h>
 #include <fstream>
 
+#include "Console.h"
+
 namespace SML {
 	namespace Logging
 	{	
@@ -34,22 +36,22 @@ namespace SML {
 		// logs a message of <T> with various modifiers
 		template<typename First, typename ...Args>
 		void log(LogType type, First &&arg0, Args &&...args) {
-			FString message = formatStr(arg0, args...);
-#if WITH_EDITOR == 0
-			const FString result = FString::Printf(TEXT("[%s] %s"), getLogTypeStr(type), *message);
-			std::wcout << *result << std::endl;
-			getLogFile() << *result << std::endl;
+			const FString Message = formatStr(arg0, args...);
+#if !WITH_EDITOR
+			const FString Result = FString::Printf(TEXT("[%s] %s"), getLogTypeStr(type), *Message);
+			std::wcout << *Result << std::endl;
+			GetLogFile() << *Result << std::endl;
 #endif
 			if (type == LogType::Fatal) {
-				MessageBoxA(NULL, TCHAR_TO_ANSI(*FString::Printf(TEXT("%s\nClick OK to exit."), *message)), "SatisfactoryModLoader", MB_ICONERROR);
+				SML::NotifyFatalError(Message);
 			}
-			const ELogVerbosity::Type verbosity = logTypeToVerbosity(type);
-			FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), verbosity, TEXT("%s"), *message);
+			const ELogVerbosity::Type Verbosity = logTypeToVerbosity(type);
+			FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), Verbosity, TEXT("%s"), *Message);
 		}
 
 		template<typename First, typename ...Args>
 		void debug(First &&arg0, Args &&...args) {
-			if (getSMLConfig().debugLogOutput) {
+			if (GetSmlConfig().bDebugLogOutput) {
 				log(LogType::Debug, arg0, args...);
 			}
 		}

@@ -1,55 +1,61 @@
 #include "Utility.h"
 #include "util/Logging.h"
-#include <regex>
 
 namespace SML {
-	TSharedPtr<FJsonObject> parseJsonLenient(const FString& input) {
-		TSharedRef<TJsonReader<>> reader = TJsonReaderFactory<>::Create(*input);
+	TSharedPtr<FJsonObject> ParseJsonLenient(const FString& Input) {
+		const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(*Input);
 		FJsonSerializer Serializer;
-		TSharedPtr<FJsonObject> result;
-		Serializer.Deserialize(reader, result);
-		return result;
+		TSharedPtr<FJsonObject> Result;
+		Serializer.Deserialize(Reader, Result);
+		return Result;
 	}
 	
-	FString getModConfigFilePath(FString modid) {
-		FString configDirPath = getConfigDirectory();
-		FString fileName = modid + TEXT(".cfg");
-		return configDirPath / fileName;
+	FString GetModConfigFilePath(const FString& ModId) {
+		const FString ConfigDirPath = GetConfigDirectory();
+		const FString FileName = ModId + TEXT(".cfg");
+		return ConfigDirPath / FileName;
 	}
 	
-	TSharedRef<FJsonObject> readModConfig(FString modid, const TSharedRef<FJsonObject>& defaultValues) {
-		FString configPath = getModConfigFilePath(modid);
-		if (!FPaths::FileExists(configPath)) {
-			writeModConfig(modid, defaultValues);
-			return defaultValues;
+	TSharedRef<FJsonObject> ReadModConfig(const FString& ModId, const TSharedRef<FJsonObject>& DefaultValues) {
+		if (!FModInfo::IsModIdValid(ModId)) {
+			SML::Logging::error(TEXT("ReadModConfig: Invalid ModId provided: "), *ModId);
+			return MakeShareable(new FJsonObject());
+		}
+		const FString ConfigPath = GetModConfigFilePath(ModId);
+		if (!FPaths::FileExists(ConfigPath)) {
+			WriteModConfig(ModId, DefaultValues);
+			return DefaultValues;
 		}
 		
-		FString contents;
-		FFileHelper::LoadFileToString(contents, *configPath);
+		FString Contents;
+		FFileHelper::LoadFileToString(Contents, *ConfigPath);
 
-		TSharedPtr<FJsonObject> loadedJson = parseJsonLenient(contents);
-		if (!loadedJson.IsValid()) {
-			writeModConfig(modid, defaultValues);
-			return defaultValues;
+		const TSharedPtr<FJsonObject> LoadedJson = ParseJsonLenient(Contents);
+		if (!LoadedJson.IsValid()) {
+			WriteModConfig(ModId, DefaultValues);
+			return DefaultValues;
 		}
-		TSharedRef<FJsonObject> ref = loadedJson.ToSharedRef();
-		if (setDefaultValues(ref, defaultValues)) {
-			writeModConfig(modid, ref);
+		TSharedRef<FJsonObject> ref = LoadedJson.ToSharedRef();
+		if (SetDefaultValues(ref, DefaultValues)) {
+			WriteModConfig(ModId, ref);
 		}
 		return ref;
 	}
 
-	void writeModConfig(FString modid, const TSharedRef<FJsonObject>& config) {
-		FString configPath = getModConfigFilePath(modid);
-
-		FString resultString;
-		TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+	void WriteModConfig(const FString& ModId, const TSharedRef<FJsonObject>& Config) {
+		if (!FModInfo::IsModIdValid(ModId)) {
+			SML::Logging::error(TEXT("WriteModConfig: Invalid ModId provided: "), *ModId);
+			return;
+		}
+		const FString ConfigPath = GetModConfigFilePath(ModId);
+		FString ResultString;
+		const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&ResultString);
 		FJsonSerializer Serializer;
-		Serializer.Serialize(config, writer);
-		FFileHelper::SaveStringToFile(resultString, *configPath);
+		Serializer.Serialize(Config, Writer);
+		FFileHelper::SaveStringToFile(ResultString, *ConfigPath);
 	}
 
-	bool setDefaultValues(const TSharedPtr<FJsonObject>& j, const TSharedPtr<FJsonObject>& defaultValues) {
+	bool SetDefaultValues(const TSharedPtr<FJsonObject>& j, const TSharedPtr<FJsonObject>& defaultValues) {
 		bool changedSomething = false;
 		for (const auto& it : defaultValues.Get()->Values) {
 			const auto& key = it.Key;
@@ -73,7 +79,7 @@ namespace SML {
 			}
 			// iterate over sub object
 			if (value->Type == EJson::Object) {
-				changedSomething |= setDefaultValues(j->Values[key]->AsObject(), value->AsObject());
+				changedSomething |= SetDefaultValues(j->Values[key]->AsObject(), value->AsObject());
 			}
 		}
 

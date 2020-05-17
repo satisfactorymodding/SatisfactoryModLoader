@@ -11,6 +11,8 @@ public:
 	static void ExecuteBPHook(int64 HookedFunctionAddress, int32 HookOffset);
 
 	DECLARE_FUNCTION(execExecuteBPHook) {
+		//StepCompiledIn is not used here since this function cannot be called from BP directly, it can only
+		//be inserted into bytecode, so codegen support is not needed
 		int64 HookedFunctionAddress = 0;
 		int32 HookOffset = 0;
 		Stack.Step(Context, &HookedFunctionAddress);

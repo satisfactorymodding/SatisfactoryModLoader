@@ -96,6 +96,10 @@ void USMLBlueprintLibrary::LogDebug(const FString& str, bool ignoreDebugMode) {
 	else SML::Logging::debug(*str);
 }
 
+void USMLBlueprintLibrary::LogInfo(const FString& str) {
+	SML::Logging::info(*str);
+}
+
 void USMLBlueprintLibrary::LogWarning(const FString& str) {
 	SML::Logging::warning(*str);
 }
@@ -109,19 +113,18 @@ void USMLBlueprintLibrary::LogFatal(const FString& str) {
 }
 
 FString USMLBlueprintLibrary::GetSMLVersion() {
-	return SML::getModLoaderVersion().string();
+	return SML::GetModLoaderVersion().String();
 }
 
 FString USMLBlueprintLibrary::GetBootstrapperVersion() {
-	return SML::getBootstrapperVersion().string();
+	return SML::GetBootstrapperVersion().String();
 }
 
 bool USMLBlueprintLibrary::GetDevelopmentModeEnabled() {
-	return SML::getSMLConfig().developmentMode;
+	return SML::GetSmlConfig().bDevelopmentMode;
 }
 
-void USMLBlueprintLibrary::InternalGetStructAsJson(UStructProperty *Structure, void* StructurePtr, FString &String, bool UsePretty)
-{
+void USMLBlueprintLibrary::InternalGetStructAsJson(UStructProperty *Structure, void* StructurePtr, FString &String, bool UsePretty) {
 	TSharedPtr<FJsonObject> JsonObject = convertUStructToJsonObject(Structure->Struct,StructurePtr, UsePretty);
 	FString write;
 	TSharedRef<TJsonWriter<wchar_t, TPrettyJsonPrintPolicy<wchar_t>>> JsonWriter = TJsonWriterFactory<wchar_t, TPrettyJsonPrintPolicy<wchar_t>>::Create(&write); //Our Writer Factory

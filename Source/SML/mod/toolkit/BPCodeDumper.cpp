@@ -122,7 +122,7 @@ public:
 			if (B == EX_EndOfScript) break;
 			handler = InstructionHandlers.Find(B);
 			if (!handler) SML::Logging::error(*FString::Printf(TEXT("Handler not found. Deep: %i Token: %X"), deep, B));
-			else SML::Logging::info(*FString::Printf(TEXT("Handler found. Deep: %i Token: %X"), deep++, B));
+			//else SML::Logging::info(*FString::Printf(TEXT("Handler found. Deep: %i Token: %X"), deep++, B));
 		}
 		if (handler) {
 			TSharedPtr<FJsonObject> Instruction = MakeShareable(new FJsonObject());

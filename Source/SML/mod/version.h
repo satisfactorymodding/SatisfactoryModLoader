@@ -1,42 +1,36 @@
 #pragma once
-#include <string>
+#include "CoreMinimal.h"
 
-namespace SML {
-	namespace Versioning {
-		enum EComparisonOp {
-			EQUALS,
-			GREATER,
-			GREATER_EQUALS,
-			LESS,
-			LESS_EQUALS
-		};
-		
-		class FVersion {
-		public:
-			uint64_t major;
-			uint64_t minor;
-			uint64_t patch;
-			FString type;
-			FString buildInfo;
-
-			FVersion();
-			FVersion(const FString& string);
-		public:
-			FString string() const;
-
-			int compare(const FVersion& other) const;
-		};
-		class FVersionRange {
-		private:
-			EComparisonOp op;
-			FVersion myVersion;
-		public:
-			FVersionRange();
-			FVersionRange(const FString& string);
-
-			FString string() const;
-			bool matches(const FVersion& version) const;
-		};
-	};
+enum EVersionComparisonOp {
+	EQUALS,
+    GREATER,
+    GREATER_EQUALS,
+    LESS,
+    LESS_EQUALS
 };
 		
+class FVersion {
+public:
+    uint64_t Major;
+	uint64_t Minor;
+	uint64_t Patch;
+	FString Type;
+	FString BuildInfo;
+
+	FVersion();
+	FVersion(const FString& string);
+public:
+    FString String() const;
+	int Compare(const FVersion& other) const;
+};
+class FVersionRange {
+private:
+    EVersionComparisonOp Op;
+	FVersion MyVersion;
+public:
+    FVersionRange();
+	FVersionRange(const FString& string);
+
+	FString String() const;
+	bool Matches(const FVersion& version) const;
+};
