@@ -168,7 +168,6 @@ namespace SML {
 		modHandlerPtr->AttachLoadingHooks();
 		InitializePlayerComponent();
 		RegisterVersionCheckHooks();
-		RegisterMainMenuHooks();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
 		
@@ -242,6 +241,7 @@ namespace SML {
 
 		//Blueprint hooks are registered here, after engine initialization
 		GRegisterBuildMenuHooks();
+		GRegisterMainMenuHooks();
 		UItemTooltipHandler::GRegisterHooking();
 		
 		if (GetSmlConfig().bDumpGameAssets) {
