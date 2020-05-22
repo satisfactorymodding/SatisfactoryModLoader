@@ -31,6 +31,7 @@ public class SML : ModuleRules
 		if (Target.Type == TargetRules.TargetType.Editor) {
 			PublicDependencyModuleNames.AddRange(new string[] {"OnlineBlueprintSupport", "AnimGraph", "UnrealEd", "BlueprintGraph", "Kismet", "UMGEditor", "MovieScene"});
 		}
+        bEnableUndefinedIdentifierWarnings = false;
 
         PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});
         string platformName = Enum.GetName(typeof(UnrealTargetPlatform), Target.Platform);
