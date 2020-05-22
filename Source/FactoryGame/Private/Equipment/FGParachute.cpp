@@ -18,10 +18,13 @@ AFGParachute::AFGParachute() : Super() {
 	this->bNetUseOwnerRelevancy = true;
 	this->bReplicates = true;
 }
+void AFGParachute::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGParachute::Tick(float DeltaSeconds){ }
 void AFGParachute::Equip( AFGCharacterPlayer* character){ }
 void AFGParachute::UnEquip(){ }
 void AFGParachute::Deploy(){ }
+void AFGParachute::Server_Deploy_Implementation(){ }
+bool AFGParachute::Server_Deploy_Validate(){ return bool(); }
 FVector AFGParachute::ModifyVelocity_Implementation(float deltaTime, const FVector& oldVelocity){ return FVector(); }
 void AFGParachute::AddEquipmentActionBindings(){ }
 void AFGParachuteAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }

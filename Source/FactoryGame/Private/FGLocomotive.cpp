@@ -17,6 +17,7 @@ AFGLocomotive::AFGLocomotive() : Super() {
 	this->mHologramClass = AFGRailroadVehicleHologram::StaticClass();
 	this->mDisabledByWaterLocations.SetNum(1); this->mDisabledByWaterLocations[0].X = 0; this->mDisabledByWaterLocations[0].Y = 0; this->mDisabledByWaterLocations[0].Z = 0;
 	this->mSignificanceRange = 20000;
+	this->mSimulationDistance = 20000;
 	this->mShouldAttachDriver = true;
 }
 void AFGLocomotive::BeginPlay(){ }

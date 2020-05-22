@@ -27,6 +27,10 @@ public:
 	virtual void OnComponentDestroyed( bool isDestroyingHierarchy ) override;
 	// End ActorComponent interface
 
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	// End IFGSaveInterface
+
 	/** Return the connectors world location. */
 	FORCEINLINE FVector GetConnectorLocation() const { return GetComponentTransform().GetLocation(); }
 	/** Return the connectors world normal. */
@@ -141,6 +145,8 @@ private:
 	/** Internal helper functions to add/remove connection. */
 	void AddConnectionInternal( UFGRailroadTrackConnectionComponent* toComponent );
 	void RemoveConnectionInternal( UFGRailroadTrackConnectionComponent* toComponent );
+
+	void ClampSwitchPosition();
 
 public:
 	/** Delegate to fire when changing switch on a track */

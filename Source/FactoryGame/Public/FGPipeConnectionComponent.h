@@ -260,11 +260,11 @@ private:
 	*/
 	UFUNCTION()
 	void OnRep_FluidDescriptor();
-//MODDING EDIT protected -> public
-public:
+
+public: // MODDING EDIT: protected -> public
 	/** The inventory of this connection. This can be null in many cases. */
-	// MODDING EDIT VERY Experimental most buildings handle this on their own. Writing to it maybe crashes. 
-	UPROPERTY(BlueprintReadWrite, SaveGame )
+    // MODDING EDIT VERY Experimental most buildings handle this on their own. Writing to it maybe crashes.
+	UPROPERTY( BlueprintReadWrite, SaveGame )
 	class UFGInventoryComponent* mConnectionInventory;
 
 	/**
@@ -273,15 +273,15 @@ public:
 	 * buildables. This is because fluids should belong to a single stack in an inventory and if none is specified then a pipe should
 	 * not be eligible to receive liquid. There may be a better way to handle this but that is how its operating.
 	 */
-	//MODDING EDIT Experimental !!! Writing to it maybe crashes
-	UPROPERTY(BlueprintReadWrite, SaveGame )
+    //MODDING EDIT Experimental !!! Writing to it maybe crashes
+	UPROPERTY( BlueprintReadWrite, SaveGame )
 	int32 mInventoryAccessIndex;
 
 	/**
 	 * The network this connection is connected to. INDEX_NONE if not connected.
 	 * @note - This ID may change at any time when changes occurs in the network. Do not save copies of it!
 	 */
-	//MODDING EDIT added BlueprintReadOnly
+    // MODDING EDIT: BPReadOnly
 	UPROPERTY( SaveGame, BlueprintReadOnly, VisibleAnywhere, Replicated, Category = "Connection" )
 	int32 mPipeNetworkID;
 
@@ -293,10 +293,11 @@ public:
 	//           We cannot do that on the client cause it does not have a graph built.
 	//           And the pipe network id gets wonky on the client as well... and
 	//           we need this to work for the play test so for now lets go with ugly.
-	// MODDING EDIT : BPReadyOnly and Visibiltiy  -- End protected->public
-	UPROPERTY(BlueprintReadOnly,VisibleAnywhere, ReplicatedUsing = OnRep_FluidDescriptor )
+	// MODDING EDIT: BPReadOnly, VisibleAnywhere
+    UPROPERTY( BlueprintReadOnly, VisibleAnywhere, ReplicatedUsing = OnRep_FluidDescriptor )
 	TSubclassOf< class UFGItemDescriptor > mFluidDescriptor;
-	protected:
+
+protected: // MODDING EDIT
 	/**
 	 * The fluid integrant this connection belongs to ( interface on the outer buildable ). Assigned in begin play if one exists.
 	 * Can be null. Tex. For production buildings

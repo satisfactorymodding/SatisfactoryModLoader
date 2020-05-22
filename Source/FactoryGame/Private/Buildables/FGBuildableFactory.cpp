@@ -73,7 +73,6 @@ void AFGBuildableFactory::TryStopIdlingLoopEffects(bool didLosePower){ }
 void AFGBuildableFactory::TryStartIdlingLoopEffects(bool didGainPower){ }
 void AFGBuildableFactory::TryStartProductionLoopEffects(bool didStartProducing){ }
 void AFGBuildableFactory::TryStopProductionLoopEffects(bool didStopProducing){ }
-bool AFGBuildableFactory::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildableFactory::OnIsProducingChanged_Native(bool newIsProducing){ }
 void AFGBuildableFactory::OnHasPowerChanged_Native(bool newHasPower){ }
 void AFGBuildableFactory::OnReplicatingDetailsChanged(){ }

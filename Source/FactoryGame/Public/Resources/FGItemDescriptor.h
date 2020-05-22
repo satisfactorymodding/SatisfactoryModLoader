@@ -316,11 +316,11 @@ public: // MODDING EDIT: protected -> public
 	FSlateBrush mInventoryIcon;
 
 	/** Small icon of the item, always in memory */
-	UPROPERTY( EditDefaultsOnly, Category="UI" )
+	UPROPERTY( EditDefaultsOnly, Category="UI", meta = ( AddAutoJSON = true ) )
 	UTexture2D* mSmallIcon;
 
 	/** Big icon of the item, SHOULD only be loaded by demand, but right now persistent in memory */
-	UPROPERTY( EditDefaultsOnly, Category = "UI", DisplayName="Big Icon" )
+	UPROPERTY( EditDefaultsOnly, Category = "UI", DisplayName="Big Icon", meta = ( AddAutoJSON = true ) )
 	UTexture2D* mPersistentBigIcon;
 
 	/** The static mesh we want for representing the resource when they are in the production line. */
@@ -415,11 +415,11 @@ public: // MODDING EDIT: protected -> public
 	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
 	FColor mFluidColor;
 
-	/** This is just a placeholder for the resource sink points so we can add them to the 
-	* JSON wiki file even though there is in a separate datatable.  
+	/** This is just a hook for the resource sink points so we can add them to the 
+	* JSON wiki file even though they are in a separate datatable.  
 	*/
 	UPROPERTY()
-	float mResourceSinkPoints;
+	int32 mResourceSinkPoints;
 
 private:
 	friend class FItemDescriptorDetails;

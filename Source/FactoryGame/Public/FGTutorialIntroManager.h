@@ -22,6 +22,7 @@ enum class EIntroTutorialSteps :uint8
 	ITS_NONE			UMETA( DisplayName = "No tutorial" ),
 	ITS_INTRO			UMETA( DisplayName = "Intro state with message" ),
 	ITS_DISMANTLE_POD	UMETA( DisplayName = "Dismantle drop pod" ),
+	ITS_OPEN_CODEX		UMETA( DisplayName = "Open the codex" ),
 	ITS_STUN_SPEAR		UMETA( DisplayName = "Equip stun spear" ),
 	ITS_IRON_ORE		UMETA( DisplayName = "Pick up iron ore" ),
 	ITS_HUB				UMETA( DisplayName = "Build a hub" ),
@@ -183,6 +184,9 @@ public:
 
 	/** Gives resoures to player that they need to build things they should have built playing the tutorial */
 	void GiveTutorialResources( class AFGCharacterPlayer* inPlayer );
+
+	UFUNCTION( BlueprintCallable, Category = "Tutorial" )
+	void OnCodexOpened();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -379,6 +383,10 @@ private:
 	/** List of recipes that player should get the items of if the player chooses to skip the tutorial */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
 	TArray< FRecipeAmountPair > mRecipesToGivePlayersSkippingTutorial;
+
+	/** Bool for when codex has been opened */
+	UPROPERTY( SaveGame )
+	bool mDidOpenCodex;
 
 public:
 	FORCEINLINE ~AFGTutorialIntroManager() = default;

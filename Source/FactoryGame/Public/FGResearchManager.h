@@ -232,6 +232,13 @@ public:
 	/** Unlock a research tree */
 	void UnlockResearchTree( TSubclassOf<class UFGResearchTree> researchTree );
 
+	/** Checks if the system has activated yet */
+	UFUNCTION( BlueprintPure, Category = "Research" )
+	FORCEINLINE bool IsActivated() const { return mIsActivated; }
+
+	/** Activates subsystem */
+	UFUNCTION( BlueprintCallable, Category = "Research" )
+	void SetActivated( bool inActivate ) { mIsActivated = inActivate; }
 protected:
 	UFUNCTION()
 	void OnRep_OngoingResearch();
@@ -247,6 +254,13 @@ protected:
 
 	/** Generates pending research for any completed research */
 	void GeneratePendingReward( FResearchData& researchData );
+
+	/** Sets up delegate for building built so that we can check for activation */
+	void SetupActivation();
+
+	/** Called when the local player builds anything */
+	UFUNCTION()
+	void OnBuildingBuiltGlobal( class AFGBuildable* buildable );
 
 	/** Whether multiple concurrent research can be conducted, or only one at a time. */
 	UPROPERTY( EditDefaultsOnly, Category = "Research" )
@@ -282,6 +296,12 @@ private:
 
 	bool AreResearchTreeUnlockDependeciesMet( TSubclassOf <UFGResearchTree> inClass );
 
+	UPROPERTY( SaveGame, Replicated )
+	bool mIsActivated;
+
+	/** What class the MAM is */
+	UPROPERTY( EditDefaultsOnly, Category = "Research" )
+	TSubclassOf< class AFGBuildable > mMAMClass;
 private:
 	friend class UFGCheatManager;
 

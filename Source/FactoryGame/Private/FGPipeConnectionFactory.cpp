@@ -4,9 +4,9 @@
 
 UFGPipeConnectionFactory::UFGPipeConnectionFactory() : Super() {
 	this->mApplyAdditionalPressure = true;
-	this->mPipeNetworkID = -1;
 	this->mPipeType = "Fluid";
 	this->bReplicates = true;
+	this->bNetAddressable = true;
 }
 void UFGPipeConnectionFactory::BeginPlay(){ }
 void UFGPipeConnectionFactory::EndPlay(const EEndPlayReason::Type reason){ }

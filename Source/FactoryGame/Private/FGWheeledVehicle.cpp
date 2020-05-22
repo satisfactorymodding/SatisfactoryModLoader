@@ -21,7 +21,6 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mNaturalAirAngularVelocityStrengthPitch = 1;
 	this->mAddedAngularVelocityInputSmoothingSpeed = 0.5;
 	this->mFoliageCollideBox = CreateDefaultSubobject<UBoxComponent>(TEXT("FoliageBox")); this->mFoliageCollideBox->SetupAttachment(this->mMesh);
-	this->mSimulationDistance = 20000;
 	this->mSimulationMovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("SimulationComponent"));
 	this->mIsPathVisible = true;
 	this->mReverseAddedAngularVelocityYawMultiplier = 1;
@@ -40,6 +39,7 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mHologramClass = AFGWheeledVehicleHologram::StaticClass();
 	this->mDisabledByWaterLocations.SetNum(1); this->mDisabledByWaterLocations[0].X = 0; this->mDisabledByWaterLocations[0].Y = 0; this->mDisabledByWaterLocations[0].Z = 0;
 	this->mSignificanceRange = 20000;
+	this->mSimulationDistance = 20000;
 	this->mShouldAttachDriver = true;
 }
 void AFGWheeledVehicle::PostInitializeComponents(){ Super::PostInitializeComponents(); }
@@ -74,7 +74,6 @@ void AFGWheeledVehicle::SimulateDSOLGearBox(float DeltaTime,
 									 PxVehicleWheelsSimData& wheelsSimData, 
 									 PxVehicleDriveDynData& driveDynData, 
 									 PxVehicleDriveSimData& driveSimData){ }
-void AFGWheeledVehicle::SetSimulation(bool newIsSimulating){ }
 bool AFGWheeledVehicle::WantsToMove(){ return bool(); }
 float AFGWheeledVehicle::GetFuelBurnRatio(){ return float(); }
 UFGTargetPointLinkedList* AFGWheeledVehicle::GetTargetNodeLinkedList(){ return nullptr; }
@@ -93,7 +92,6 @@ void AFGWheeledVehicle::UpdateAssistedVelocitiesState(){ }
 void AFGWheeledVehicle::ServerUpdateAssistedVelocitiesState_Implementation(bool inDrifting, float inInputYaw, float inInputPitch){ }
 bool AFGWheeledVehicle::ServerUpdateAssistedVelocitiesState_Validate(bool inDrifting, float inInputYaw, float inInputPitch){ return bool(); }
 void AFGWheeledVehicle::UseReplicatedState(){ }
-void AFGWheeledVehicle::UpdateSimulationState(){ }
 void AFGWheeledVehicle::UpdateAirStatus(){ }
 void AFGWheeledVehicle::UpdateTireEffects(){ }
 void AFGWheeledVehicle::UpdateTireParticle(FTireData tireData){ }
@@ -106,6 +104,5 @@ void AFGWheeledVehicle::ClampVelocities(){ }
 void AFGWheeledVehicle::AddedLinearThrottleVelocity(){ }
 void AFGWheeledVehicle::ApplyRollStabilisation(float deltaTime){ }
 void AFGWheeledVehicle::ApplyAssistedVelocities(float deltaTime){ }
-void AFGWheeledVehicle::OnRep_IsSimulated(){ }
 void AFGWheeledVehicle::OnRep_TransferStatusChanged(){ }
 FName AFGWheeledVehicle::VehicleMovementComponentName = FName();

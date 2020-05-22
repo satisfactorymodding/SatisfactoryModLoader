@@ -480,6 +480,7 @@ private:
 	class UFGMapAreaTexture* mCachedMapAreaTexture;
 
 	/** If the tutorial is currently active and affecting the player controller */
+	UPROPERTY( Replicated )
 	bool mInTutorialMode;
 
 	/** Did we died */

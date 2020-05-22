@@ -31,6 +31,8 @@ public:
 	 * so players searching for games can see it.
 	 */
 	void UpdateGameSession();
+	void SessionIdUpdated();
+	
 
 	//~Begin AActor interface
 	virtual void Destroyed() override;
@@ -57,7 +59,10 @@ public:
 	/**
 	 * Get session settings from the specified world
 	 */
-	static FFGOnlineSessionSettings GetSessionSettings( UWorld* forWorld, FString sessionName );
+	static FFGOnlineSessionSettings CreateSessionSettingsForPropagation( UWorld* forWorld, FString saveSessionName );
+	static void SetTemporaryCSSSessionID(FString tempID);
+	static void ClearTemporaryCSSSessionID();
+	static FString GetCSSSessionID(UWorld* forWorld, const FString &saveSessionName);
 
 	/** Set the visibility of the current session */
 	void SetSessionVisibility( ESessionVisibility visibility );

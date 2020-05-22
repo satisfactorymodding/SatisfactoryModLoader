@@ -2,12 +2,11 @@
 
 #include "FGBuildableConveyorBelt.h"
 #include "FGConveyorBeltHologram.h"
-#include "FGInstancedSplineMeshComponent.h"
 #include "Components/SplineComponent.h"
 
 AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent")); this->mSplineComponent->SetupAttachment(this->RootComponent);
-	this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent")); this->mInstancedSplineComponent->SetupAttachment(this->RootComponent);
+	/* Skipping UFGInstancedSplineMeshComponent this->mInstancedSplineComponent */
 	this->mHologramClass = AFGConveyorBeltHologram::StaticClass();
 	this->MaxRenderDistance = -1;
 	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;

@@ -6,6 +6,7 @@ void FOnJoinSessionData::SetState(EJoinSessionState newState, FOnJoinSessionStat
 UFGGameInstance::UFGGameInstance() : Super() {
 	
 }
+UFGGameInstance::~UFGGameInstance(){ }
 void UFGGameInstance::Init(){ }
 bool UFGGameInstance::JoinSession(ULocalPlayer* localPlayer, const FOnlineSessionSearchResult& searchResult){ return bool(); }
 TSubclassOf<UOnlineSession> UFGGameInstance::GetOnlineSessionClass(){ return TSubclassOf<UOnlineSession>(); }
@@ -25,7 +26,7 @@ bool UFGGameInstance::GetLatestNetworkError(FFGGameNetworkErrorMsg& msg){ return
 bool UFGGameInstance::PopLatestNetworkError(){ return bool(); }
 EJoinSessionState UFGGameInstance::GetCurrentJoinSessionState() const{ return EJoinSessionState(); }
 void UFGGameInstance::LoadComplete(const float loadTime, const FString& mapName){ }
-void UFGGameInstance::OnDestroySessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
+void UFGGameInstance::OnDestroyOldSessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
 void UFGGameInstance::OnQueryFriendProductIdCompleted_JoinSession(bool wasSuccessful, FString EpicId, EOS_ProductUserId ProductId){ }
 void UFGGameInstance::PollHostProductUserId_JoinSession(){ }
 void UFGGameInstance::OnPreLoadMap(const FString& levelName){ }

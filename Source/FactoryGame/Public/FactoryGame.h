@@ -222,7 +222,7 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 #define QUICKLOG( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: %s" ), TEXT( x ), __VA_ARGS__ );
 
 /** QUICKLOG that marks output with authority/remote depending on the actors role. Note that this is not always synonymous with server/client, use the net mode in that case. */
-#define QUICKLOG_AUTHORITY_MARKING( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: [%s] %s" ) ,*FString::Printf( TEXT( x ), HasAuthority() ? TEXT( "Authority" ) : TEXT( "Remote" ), __VA_ARGS__ ) );
+#define QUICKLOG_AUTHORITY_MARKING( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: [%s] %s" ), HasAuthority() ? TEXT( "Authority" ) : TEXT( "Remote" ), *FString::Printf( TEXT( x ), __VA_ARGS__ ) );
 
 /** Similar to QUICKLOG but for single variables. */
 #define QUICKSHOW( x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), SHOWVAR( x ) ); 
@@ -258,13 +258,13 @@ inline FString NetmodeToString( ENetMode NM )
 
 /** Analytics Helper Macros */
 #define SEND_TOTAL_TRACK_COUNTER_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__, __STAT_ID__ , __COUNT__)	\
-if( UAnalyticsService* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendTotalTrackedCounterAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __COUNT__ )
+if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendTotalTrackedCounterAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __COUNT__ )
 
 #define SEND_COUNTER_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__ , __COUNT__)	\
-if( UAnalyticsService* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendCounterAnalytic( __SERVICE__, __STAT_KEY__, __COUNT__ )
+if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendCounterAnalytic( __SERVICE__, __STAT_KEY__, __COUNT__ )
 
 #define SEND_VALUE_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__) \
-if( UAnalyticsService* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendValueAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__ )
+if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendValueAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__ )
 
 FORCEINLINE FString VarToFString( FVector2D var ) { return FString::Printf( TEXT( "(X=%f,Y=%f)" ), var.X, var.Y ); }
 FORCEINLINE FString VarToFString( FVector var ){ return FString::Printf( TEXT( "(X=%f,Y=%f,Z=%f)" ), var.X, var.Y, var.Z ); }

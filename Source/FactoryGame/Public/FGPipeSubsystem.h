@@ -116,6 +116,12 @@ private:
 
 	void TickPipeNetworks( float dt );
 
+	/**
+	 * Internal helper to rebuild a network.
+	 * Note: This function might split, remove or otherwise change the network so it is not safe to assume anything about the network afterwards.
+	 */
+	void RebuildPipeNetwork( int32 networkID );
+
 	/** Helpers to manage pipe networks. */
 	void MergePipeNetworks( int32 first, int32 second );
 	int32 CreatePipeNetwork();

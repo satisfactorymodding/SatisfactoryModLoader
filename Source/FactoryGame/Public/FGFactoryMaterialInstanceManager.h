@@ -32,7 +32,7 @@ public:
 	 * @param worldContext - Used to get the buildable subsystem and cache it since it is persistent for an entire game session
 	 * @param canBeColored - Optional, defaults to True. This property is precomputed before instantiating new Manager Instances so it should be passed in if needed.
 	*/
-	void Init( UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, UWorld* worldContext, bool canBeColored = true );
+	void Init( UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, UWorld* worldContext, bool canBeColored = true, class AFGBuildable* forBuildable = nullptr );
 
 	/** Update the colors on all material instances */
 	void RefreshMaterialColors();
@@ -61,6 +61,10 @@ private:
 private:
 	// The string that is the identifier for this manager in the BuildableSubsystem
 	FString mInitialLookupString;
+
+	// Initial Material Interface used to Init this manager
+	UPROPERTY()
+	UMaterialInterface* mInitializingFromInterface;
 
 	// All materials are the same but their params are set to match the colors specified by the color gun
 	UPROPERTY()

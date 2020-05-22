@@ -105,11 +105,12 @@ public:
 	FORCEINLINE bool IsSpawnerActive() { return mIsActive; }
 
 	/**  Server only - Handles logic for creating creatures when the spawners becomes active */
-	UFUNCTION( BlueprintNativeEvent, Category = "Spawning" )
 	void SpawnCreatures();
 
+	/**  Server only - Handles logic for actually spawning a single creature */
+	void SpawnSingleCreature();
+
 	/** Server only - Handles logic for destroying creatures when the spawners becomes active */
-	UFUNCTION( BlueprintNativeEvent, Category = "Spawning" )
 	void DestroyCreatures();
 
 	/** Returns true if all conditions for resetting the WasKilled status of an entry in SpawnData are met */
@@ -121,9 +122,11 @@ public:
 	/** Should this creature exist at this time? ( day/night ) */
 	bool IsTimeForCreature();
 
-	/** If all conditions are met ( day/night spawning, reset kill status when days have passed etc ) we spawn creatures */
-	void TrySpawnCreatures();
+	/** Query if all conditions are met ( day/night spawning, reset kill status when days have passed etc ) we want to spawn creatures */
+	void QuerySpawnConditions();
 
+	/** Actually spawn creatures */
+	void TrySpawnCreatures();
 	/** Called when a creature died, need to be UFUNCTION as it's bound as a delegate */
 	UFUNCTION()
 	virtual void CreatureDied( AActor* thisActor );
@@ -220,6 +223,14 @@ protected:
 	UPROPERTY( SaveGame )
 	bool mIsPendingDestroy;
 
+	/** Indicates that this spawner has been activated and want to spawn its creatures */
+	UPROPERTY( SaveGame )
+	bool mIsPendingSpawn;
+
+	/** Indicates how far into mSpawnData we have gotten with spawning -1 means that no spawning should occur */
+	UPROPERTY( SaveGame )
+	int32 mCurrentCreatureToSpawnIndex;
+
 	UPROPERTY()
 	FTimerHandle mPendingDestroyTimer;
 private:
@@ -229,6 +240,23 @@ public:
 	/** How many days should pass before creatures start to respawn ( -1 means never ) */
 	UPROPERTY( EditInstanceOnly, Category = "Spawning" )
 	int32 mRespawnTimeIndays;
+
+	/** Async overlap check is done and result is passed in here */
+	UFUNCTION()
+	void ReceiveOnTraceCompleted( const TArray< FOverlapResult > & Results );
+
+	/** Starts the async overlap check */
+	FTraceHandle RequestTrace();
+
+	/** Function bound to mOverlapDelegate */
+	void OnTraceCompleted( const FTraceHandle& Handle, FOverlapDatum& Data );
+
+	FTraceHandle LastTraceHandle;
+
+	/** Delegate fired when we're done with the async check for overlapping actors */
+	FOverlapDelegate mOverlapDelegate;
+
+	bool mOverlapCheckIsReady;
 
 public:
 	FORCEINLINE ~AFGCreatureSpawner() = default;

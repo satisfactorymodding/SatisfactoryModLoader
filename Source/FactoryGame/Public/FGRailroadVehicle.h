@@ -115,6 +115,9 @@ public:
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 
 private:
+	/** Updates the vehicles settings depending on if it should be simulated or "real" */
+	virtual void OnSimulationChanged();
+
 	bool IsVehicleNetRelevantFor( const class AFGRailroadVehicle* vehicle, const FVector& SrcLocation ) const;
 
 	/** @param at Coupler to connect to. */

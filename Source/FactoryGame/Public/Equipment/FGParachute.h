@@ -30,13 +30,17 @@ class FACTORYGAME_API AFGParachute : public AFGEquipment
 	GENERATED_BODY()
 public:
 	AFGParachute();
-
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void Tick( float DeltaSeconds ) override;
 	virtual void Equip( class AFGCharacterPlayer* character ) override;
 	virtual void UnEquip() override;
 
 	/** Player pressed deploy */
 	void Deploy();
+
+	/** Only the server handles the building. */
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_Deploy();
 	
 	/** This function calculates our new velocity when we are deployed */
 	UFUNCTION( BlueprintNativeEvent )
@@ -65,9 +69,11 @@ protected:
 
 private:
 	/** If we are actually deployed or not */
+	UPROPERTY( Replicated )
 	bool mIsDeployed;
 
 	/** A cached instance of the instigators movement */
+	UPROPERTY()
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
 
 public:

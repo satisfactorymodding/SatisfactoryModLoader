@@ -128,6 +128,12 @@ private:
 	int32 CreateCircuit( TSubclassOf< class UFGCircuit > circuitClass );
 	void RemoveCircuit( int32 circuitID );
 
+	/**
+	 * Internal helper to rebuild a circuit.
+	 * Note: This function might split, remove or otherwise change the circuit so it is not safe to assume anything about the circuit afterwards.
+	 */
+	void RebuildCircuit( int32 circuitID );
+
 	/** Adds a connection component to a circuit, performs a circuit merge if the component is already connected to another circuit. */
 	void AddComponentToCircuit( class UFGCircuitConnectionComponent* component, int32 circuitID );
 	/** Removes a connection component from it's circuit. If the connection component does not have a valid circuit ID this does nothing. */
