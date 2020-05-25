@@ -4,7 +4,7 @@
 #include "BPHookHelper.generated.h"
 
 UCLASS()
-class UBPHookHelper : public UObject {
+class SML_API UBPHookHelper : public UObject {
 	GENERATED_BODY()
 public:
 	UFUNCTION(BlueprintInternalUseOnly, CustomThunk)

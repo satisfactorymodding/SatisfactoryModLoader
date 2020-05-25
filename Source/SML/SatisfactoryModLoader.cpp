@@ -20,7 +20,6 @@
 #include "Misc/App.h"
 #include "util/Internal.h"
 #include "CoreDelegates.h"
-#include "FGBuildableFactory.h"
 #include "FGGameMode.h"
 #include "WindowsPlatformCrashContext.h"
 #include "mod/ModHandler.h"
@@ -171,15 +170,6 @@ namespace SML {
 		RegisterVersionCheckHooks();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
-
-		SUBSCRIBE_METHOD("?GetOrCreateReplicationDetailActor@AFGBuildableFactory@@MEAAPEAVAFGReplicationDetailActor@@XZ",
-			AFGBuildableFactory::GetReplicationDetailActor, [](auto& Call, AFGBuildableFactory* ThisPtr) {
-				SML::Logging::info(TEXT("GetOrCreateReplicationDetailActor "), *ThisPtr->GetClass()->GetPathName());
-				ANSICHAR tmpBuffer[1000];
-				FGenericPlatformStackWalk::StackWalkAndDump(tmpBuffer, ARRAY_COUNT(tmpBuffer), 0);
-				SML::Logging::info(TEXT("Stack BackTrace: "), tmpBuffer);
-		});
-		
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Construction phase finished!"));
 		
