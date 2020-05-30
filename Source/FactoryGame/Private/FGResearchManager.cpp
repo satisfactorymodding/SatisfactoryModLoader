@@ -34,6 +34,8 @@ void AFGResearchManager::Client_NewResearchStarted_Implementation(TSubclassOf<  
 void AFGResearchManager::PopulateResearchTreeList(){ }
 void AFGResearchManager::StartResearch(TSubclassOf<class UFGSchematic> schematic, TSubclassOf<  UFGResearchTree> initiatingResearchTree){ }
 void AFGResearchManager::GeneratePendingReward(FResearchData& researchData){ }
+void AFGResearchManager::SetupActivation(){ }
+void AFGResearchManager::OnBuildingBuiltGlobal( AFGBuildable* buildable){ }
 void AFGResearchManager::OnResearchTimerComplete(TSubclassOf<class UFGSchematic> schematic){ }
 bool AFGResearchManager::PayForResearch(UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 void AFGResearchManager::ClaimPendingRewards(AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex){ }

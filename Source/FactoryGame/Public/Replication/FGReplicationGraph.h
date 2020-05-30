@@ -137,7 +137,7 @@ protected:
 	TClassMap<EClassRepPolicy> mClassRepPolicies;
 
 	// The size in uunits of each grid cell
-	float mGridCellSize = 100000.f;
+	float mGridCellSize = 50000.f; // [Dylan] Was 100000.f
 	
 	// Essentially "Min X" for replication. This is just an initial value. The system will reset itself if actors appears outside of this.
 	float mSpatialBiasX = -15000.f;
@@ -146,7 +146,7 @@ protected:
 	float mSpatialBiasY = -15000.f;
 
 	// How many buckets to spread dynamic, spatialized actors across. High number = more buckets = smaller effective replication frequency. This happens before individual actors do their own NetUpdateFrequency check.
-	float mDynamicActorFrequencyBuckets = 4;
+	float mDynamicActorFrequencyBuckets = 6; // [Dylan] Was 4
 
 	//	[Dylan] - I Enabled this to stop the World->bInTick() crash. It doesn't blacklist all actors though. Only FGFoliageRemoval as spawning these during level stream was triggering a rebuild
 	//		Rebuilds were causing a crash in world tick as the level was still being streamed and did not flush.

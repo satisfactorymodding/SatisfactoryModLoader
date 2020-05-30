@@ -5,7 +5,7 @@
 UFGFactoryMaterialInstanceManager::UFGFactoryMaterialInstanceManager() : Super() {
 	this->mMaterialInstances.SetNum(18);
 }
-void UFGFactoryMaterialInstanceManager::Init(UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, UWorld* worldContext, bool canBeColored){ }
+void UFGFactoryMaterialInstanceManager::Init(UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, UWorld* worldContext, bool canBeColored ,  AFGBuildable* forBuildable){ }
 void UFGFactoryMaterialInstanceManager::RefreshMaterialColors(){ }
 void UFGFactoryMaterialInstanceManager::RefreshMaterialColorForIndex(int32 index){ }
 void UFGFactoryMaterialInstanceManager::SetVectorParameterOnAllInstances(FName paramName, FVector value){ }

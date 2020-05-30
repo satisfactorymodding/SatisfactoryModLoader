@@ -34,6 +34,7 @@ AActor* AFGGameMode::ChoosePlayerStart_Implementation(AController* player){ retu
 void AFGGameMode::RestartPlayer(AController* newPlayer){ }
 void AFGGameMode::PostLogin(APlayerController* newPlayer){ }
 void AFGGameMode::Logout(AController* exiting){ }
+bool AFGGameMode::FindInactivePlayer(APlayerController* PC){ return bool(); }
 void AFGGameMode::PostActorsInitialized(const UWorld::FActorsInitializedParams& inParams){ }
 uint8 AFGGameMode::GenerateNextAutosaveId(){ return uint8(); }
 void AFGGameMode::SetSaveSessionName(SessionNameType name){ }
@@ -53,3 +54,4 @@ void AFGGameMode::PartitionPlayerStartsByOccupancy(const TArray<  APlayerStart* 
 		TSubclassOf<  APawn > pawnClassToFit,
 		TArray<  APlayerStart* >& out_unOccupied,
 		TArray<  APlayerStart* >& out_occupied){ }
+bool AFGGameMode::CompareUniqueNetIdBetweenOSS(FUniqueNetIdRepl& newID, FUniqueNetIdRepl& savedID){ return bool(); }

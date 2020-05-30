@@ -285,16 +285,9 @@ public:
 									 PxVehicleDriveDynData& driveDynData, 
 									 PxVehicleDriveSimData& driveSimData );
 
-	/** Is the movement being simulated? */
-	UFUNCTION( BlueprintPure, Category = "Simulation" )
-	FORCEINLINE bool IsSimulated() { return mIsSimulated; }
-
 	/**Returns the simulation component */
 	UFUNCTION( BlueprintPure, Category = "Simulation" )
 	FORCEINLINE UFloatingPawnMovement* GetSimulationComponent() { return mSimulationMovementComponent; }
-
-	/** Toggles what movement mode we are using */
-	void SetSimulation( bool newIsSimulating );
 
 	/** Indicates if the vehicle is gasing or wants to move in simulated state */
 	UFUNCTION( BlueprintPure, Category = "Movement" ) 
@@ -398,7 +391,6 @@ protected:
 
 private:
 	/** Tick helpers */
-	void UpdateSimulationState();
 	void UpdateAirStatus();
 	void UpdateTireEffects();
 	void UpdateTireParticle( FTireData tireData );
@@ -414,7 +406,7 @@ private:
 	void DrawTireTrack( FTireData tireData, FVector decalLocation );
 
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
-	void OnSimulationChanged();
+	virtual void OnSimulationChanged();
 
 	/** Clamp angular and linear velocities */
 	void ClampVelocities();
@@ -427,10 +419,6 @@ private:
 
 	/** applies assisted acceleration and drifting velocities */
 	void ApplyAssistedVelocities( float deltaTime );
-
-	/** Rep notifies */
-	UFUNCTION()
-	void OnRep_IsSimulated();
 
 	UFUNCTION()
 	void OnRep_TransferStatusChanged();
@@ -445,14 +433,6 @@ public:
 
 	UPROPERTY( BlueprintReadWrite, Category = "Vehicle" )
 	FTimerHandle mUpdateMovementHandle;
-
-	/* Forces vehicle to be in simulation mode */
-	UPROPERTY( BlueprintReadWrite, Category = "Debug" )
-	bool mForceSimulationMode; 
-
-	/* Forces vehicle to be in real mode */
-	UPROPERTY( BlueprintReadWrite, Category = "Debug" )
-	bool mForceRealMode;
 
 	/** Broadcast when transfer status is updated */
 	UPROPERTY( BlueprintAssignable, Category = "Docking", DisplayName = "OnTransferStatusChanged" )
@@ -575,14 +555,6 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	UBoxComponent* mFoliageCollideBox;
 private:
-	/** Is the movement being simulated? */
-	UPROPERTY( ReplicatedUsing = OnRep_IsSimulated, SaveGame )
-	bool mIsSimulated;
-
-	/** Distance from player at which simulation begins */
-	UPROPERTY( EditDefaultsOnly, Category = "Simulation" )
-	float mSimulationDistance;
-
 	/** Our component used for simulated movement */
 	UPROPERTY()
 	class UFloatingPawnMovement* mSimulationMovementComponent;

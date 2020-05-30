@@ -60,14 +60,14 @@ private:
 	virtual void OnRep_ReplicationDetailActor() override;
 
 	class AFGReplicationDetailActor_GeneratorNuclear* GetCastRepDetailsActor() const;
-
+public://MODDING EDIT
 	/** Spent fuel rods goes here. */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mOutputInventory;
 
 	UPROPERTY()
 	UFGReplicationDetailInventoryComponent* mOutputInventoryHandler;
-
+private://MODDING EDIT
 	/** Waste left to produce from the current fuel rod*/
 	UPROPERTY( SaveGame )
 	int32 mWasteLeftFromCurrentFuel;

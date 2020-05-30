@@ -447,6 +447,10 @@ public:
 	/** Duplicates and overrides all relevant values from the other component */
 	void CopyFromOtherComponent( UFGInventoryComponent* otherComponent );
 
+	/** Notify component its owning buildable is dismantled (or is dismantling), don't allow movement in or out of this inventory */
+	FORCEINLINE void SetOwningBuildingIsDismantled( bool isDismantling ) { mOwningBuildableIsDismantled = isDismantling; }
+	FORCEINLINE bool GetOwningBuildingIsDismantled() const { return mOwningBuildableIsDismantled; }
+
 protected:
 	/** Used to call OnItemAdded/OnItemRemoved on clients */
 	UFUNCTION()
@@ -495,6 +499,10 @@ protected:
 	/** When we resize the inventory we save how much bigger or smaller the inventory was made */
 	UPROPERTY( SaveGame )
 	int32 mAdjustedSizeDiff;
+
+	/** If this inventory belongs to a buildable, this will be flagged on dismantle and all calls to IsItemAllowed will fail */
+	bool mOwningBuildableIsDismantled;
+
 private:
 	/** All items in the inventory */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_InventoryStacks )

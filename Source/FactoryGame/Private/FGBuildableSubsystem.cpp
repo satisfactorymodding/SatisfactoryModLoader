@@ -46,7 +46,7 @@ bool AFGBuildableSubsystem::IsServerSubSystem() const{ return bool(); }
 void AFGBuildableSubsystem::GetTypedBuildable(TSubclassOf<  AFGBuildable > inClass, TArray<  AFGBuildable* >& out_buildables) const{ }
 void AFGBuildableSubsystem::ReplayBuildingEffects(){ }
 bool AFGBuildableSubsystem::HasMaterialInstanceManagerForMaterialInterface(UMaterialInterface* materialInterface, FString& lookupName){ return bool(); }
-UFGFactoryMaterialInstanceManager* AFGBuildableSubsystem::GetOrCreateMaterialManagerForMaterialInterface(UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, bool canBeColored){ return nullptr; }
+UFGFactoryMaterialInstanceManager* AFGBuildableSubsystem::GetOrCreateMaterialManagerForMaterialInterface(UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, bool canBeColored ,  UMeshComponent* onMeshComp  ,  AFGBuildable* forBuildable){ return nullptr; }
 void AFGBuildableSubsystem::UpdateBuildableMaterialInstances(AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveFactoryMaterialInstanceFromMap(const FString& lookupName){ }
 FLinearColor AFGBuildableSubsystem::GetColorSlotPrimary_Linear(uint8 index){ return FLinearColor(); }

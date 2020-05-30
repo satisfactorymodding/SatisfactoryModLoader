@@ -5,15 +5,14 @@
   ___) | |  | | |___
  |____/|_|  |_|_____|
 
- SatisfactoryModLoader is a tool to load mods into satisfactory.
- It also provides several APIs to be used by mods to work properly together.
- To get started with modding, take a look at https://docs.ficsit.app
- If you have any questions, please ask them on the modding discord server.
+ SatisfactoryModLoader is a tool to load dll mods into satisfactory.
+ To get started with modding, take a look at BaseMod/ExampleMod.cpp.
+ If you have any questions, please contact SuperCoder79 on the modding discord.
 
  Known issues:
- * People still cannot understand how loading_priority works
- * Modular game build has been delayed by 5000 years
- * Mircea is too lazy to update SMM so we are stuck with mod_id requirement
+ * Everything crashes 10000% more than it should
+ * SML 2.0.0 has been delayed by 2000 years
+ * People still can't install this properly (even though there's instructions everywhere ffs)
 */
 #include "SatisfactoryModLoader.h"
 #include "util/bootstrapper_exports.h"
@@ -21,7 +20,6 @@
 #include "Misc/App.h"
 #include "util/Internal.h"
 #include "CoreDelegates.h"
-#include "FGBuildableGeneratorNuclear.h"
 #include "FGGameMode.h"
 #include "WindowsPlatformCrashContext.h"
 #include "mod/ModHandler.h"
@@ -172,9 +170,7 @@ namespace SML {
 		RegisterVersionCheckHooks();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
-
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
-
 		SML::Logging::info(TEXT("Construction phase finished!"));
 		
 		FCoreDelegates::OnPostEngineInit.AddStatic(PostInitializeSML);

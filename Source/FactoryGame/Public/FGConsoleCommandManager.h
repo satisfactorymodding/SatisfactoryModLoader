@@ -50,6 +50,12 @@ public:
 	UFUNCTION( exec )
 	void DumpFactoryMaterialInstanceManagerStats();
 
+	/** Useful for testing the crash reporter. */
+	UFUNCTION( exec )
+	void CrashTheGame();
+	/** Some of the properties the crash reporter sends with a crash. */
+	UFUNCTION( exec )
+	void DumpCrashContext();
 
 	/**
 	 * Tries to find a recipe that built a building and (re)applies it to the building,

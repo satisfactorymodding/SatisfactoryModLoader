@@ -5,9 +5,11 @@
 UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Super() {
 	this->mSwitchPosition = -1;
 	this->bReplicates = true;
+	this->bNetAddressable = true;
 }
 void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
+void UFGRailroadTrackConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGRailroadTrackConnectionComponent::AddConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
 bool UFGRailroadTrackConnectionComponent::IsFacingSwitch() const{ return bool(); }
@@ -23,3 +25,4 @@ UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindOv
 void UFGRailroadTrackConnectionComponent::SetTrackPosition(const FRailroadTrackPosition& position){ }
 void UFGRailroadTrackConnectionComponent::AddConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
+void UFGRailroadTrackConnectionComponent::ClampSwitchPosition(){ }

@@ -5,7 +5,7 @@
 #include "Widget.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ItemTooltipHandler.generated.h"
-
+class ISMLItemTooltipProvider;
 UCLASS()
 class UItemStackContextWidget : public UWidget {
     GENERATED_BODY()

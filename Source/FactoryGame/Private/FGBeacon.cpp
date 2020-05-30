@@ -2,3 +2,6 @@
 
 #include "FGBeacon.h"
 
+AFGBeacon::AFGBeacon() : Super() {
+	this->bReplicates = true;
+}

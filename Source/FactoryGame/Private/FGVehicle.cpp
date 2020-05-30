@@ -17,10 +17,12 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mSubmergedLinearDamping = 15;
 	this->mSubmergedBouyantForce = 1000;
 	this->mSignificanceRange = 20000;
+	this->mSimulationDistance = 20000;
 	this->mShouldAttachDriver = true;
 }
 void AFGVehicle::BeginPlay(){ }
 void AFGVehicle::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGVehicle::Destroyed(){ }
 void AFGVehicle::Tick(float dt){ }
 float AFGVehicle::TakeDamage(float DamageAmount,  FDamageEvent const& DamageEvent,  AController* EventInstigator, AActor* DamageCauser){ return float(); }
 void AFGVehicle::DisplayDebug( UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
@@ -76,6 +78,8 @@ bool AFGVehicle::SelfDriverEnter( AAIController* ai){ return bool(); }
 void AFGVehicle::KickAllPlayers(){ }
 void AFGVehicle::Stat_Cost(TArray< FItemAmount >& out_amount) const{ }
 void AFGVehicle::Stat_StockInventory(TArray< FItemAmount >& out_amount) const{ }
+void AFGVehicle::SetSimulation(bool newIsSimulating){ }
+void AFGVehicle::OnRep_IsSimulated(){ }
 void AFGVehicle::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }
 void AFGVehicle::Died(AActor* thisActor){ }
 void AFGVehicle::OnDrivingStatusChanged(){ }

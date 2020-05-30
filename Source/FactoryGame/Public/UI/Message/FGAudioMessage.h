@@ -79,6 +79,17 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "AudioMessage" )
 	void AssignOnConcludedDelegate( FAudioMessageConcludedDelegate concludedDelegate ) { mAudioMessageConcluded = concludedDelegate; }
 
+	/** Gets the message text  */
+	UFUNCTION( BlueprintPure, BlueprintImplementableEvent, Category = "Audio Message" )
+	FText GetMessageText();
+
+	/** Gets the message text  */
+	UFUNCTION( BlueprintPure, Category = "Audio Message" )
+	FORCEINLINE FText GetOverrideText() { return mOverrideText; }
+
+	/** Do we want to show only the override text or the subtitle also?  */
+	UFUNCTION( BlueprintPure, Category = "Audio Message" )
+	FORCEINLINE bool ShowOnlyOverrideText() { return mShowOnlyOverrideText; }
 private:
 	/** Used to discard any input we want to consume but not use */
 	FORCEINLINE UFUNCTION()
@@ -104,8 +115,13 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Audio Message" )
 	float mSubtitleTimeMultiplier;
 
+	/** Text that can be displayed instead for (or added to) subtitle text when displaying the message */
+	UPROPERTY( EditDefaultsOnly, Category = "Audio Message", meta = (MultiLine = true) )
+	FText mOverrideText;
 
-
+	/**Multiplier for time per character to display */
+	UPROPERTY( EditDefaultsOnly, Category = "Audio Message" )
+	bool mShowOnlyOverrideText;
 private:
 	UPROPERTY( )
 	FAudioMessageConcludedDelegate mAudioMessageConcluded;

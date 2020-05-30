@@ -28,6 +28,7 @@ void AFGPipeSubsystem::RegisterFluidIntegrant( IFGFluidIntegrantInterface* fluid
 void AFGPipeSubsystem::UnregisterFluidIntegrant( IFGFluidIntegrantInterface* fluidIntegrant){ }
 int32 AFGPipeSubsystem::GenerateUniqueID(){ return int32(); }
 void AFGPipeSubsystem::TickPipeNetworks(float dt){ }
+void AFGPipeSubsystem::RebuildPipeNetwork(int32 networkID){ }
 void AFGPipeSubsystem::MergePipeNetworks(int32 first, int32 second){ }
 int32 AFGPipeSubsystem::CreatePipeNetwork(){ return int32(); }
 void AFGPipeSubsystem::RemovePipeNetwork(int32 networkID){ }

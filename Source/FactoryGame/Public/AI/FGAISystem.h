@@ -20,8 +20,7 @@ struct FACTORYGAME_API FSpawnerInfo
 
 	FSpawnerInfo() : 
 		Spawner( nullptr ),
-		WithinDistance( false ),
-		IsNearBase( false ),
+		WithinSpawnRange( false ),
 		DistanceSq( -1.0f )
 	{
 	}
@@ -30,10 +29,7 @@ struct FACTORYGAME_API FSpawnerInfo
 	class AFGCreatureSpawner* Spawner;
 
 	UPROPERTY()
-	bool WithinDistance;
-
-	UPROPERTY()
-	bool IsNearBase;
+	bool WithinSpawnRange;
 
 	UPROPERTY()
 	float DistanceSq;
@@ -78,6 +74,11 @@ public:
 	/** Check spawners proximity to players */
 	void TickSpawners( float dt );
 
+	/** Activates spawners one at a time */
+	void TickSpawnerActivationList();
+
+	/** Add a spawner to the pending activation list **/
+	void AddPendingActiveSpawner( class AFGCreatureSpawner* inSpawner );
 	/**
 	 * Addes this aggro target as a global aggro target
 	 */
@@ -148,7 +149,7 @@ protected:
 	UFUNCTION()
 	void PlayerDestroyed( AActor* destroyedPlayer );
 
-	void UpdatePotentialSpawners( class AFGCreatureSpawner* inSpawner, bool withinDistance, float closeSqDistance );
+	void UpdatePotentialSpawners( class AFGCreatureSpawner* inSpawner, bool withinSpawnRange, float closeSqDistance );
 
 	void ManagePotentialSpawners();
 public:
@@ -177,19 +178,28 @@ protected:
 	bool mDisablePawnMovement;
 
 	/** Cached list of all aggro targets, not guaranteed to have the same order */
+	UPROPERTY( )
 	TArray< class TScriptInterface< class IFGAggroTargetInterface > > mAllAggroTargets;
 
 	/** Cached list of all enemies, used for optimizing enemies depending on distance */
+	UPROPERTY()
 	TArray< class AFGCreature* > mAllCreatures;
 
 	/** Cached list of all players, used for checking distance to all enemies */
+	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mAllPlayers;
 
 	/** Cached list of all enemy spawners. Used to spawn enemies based on distance to player */
+	UPROPERTY()
 	TArray< class AFGCreatureSpawner* > mAllCreatureSpawners;
 
 	/** Actors that have been given pardon from being targeted by enemies */
+	UPROPERTY()
 	TArray< AActor* > mPardonedActors;
+
+	/** Cached list of creature spawners that are trying to activate*/
+	UPROPERTY()
+	TArray< class AFGCreatureSpawner* > mPendingActiveSpawners;
 private:
 	/** Iterator for current index in the creatures array */
 	int32 mCreatureIterator; 
@@ -220,6 +230,9 @@ private:
 	/** If a creature is withing this distance to an active player then it should not despawn */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	float mKeepAliveDistanceToPlayer;
+
+	/** Handle to the last async trace performed */
+	FTraceHandle mLastAsyncTraceHandle;
 
 public:
 	FORCEINLINE ~UFGAISystem() = default;

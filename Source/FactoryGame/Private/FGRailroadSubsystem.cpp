@@ -42,6 +42,7 @@ bool AFGRailroadSubsystem::MoveTrackPosition( FRailroadTrackPosition& position, 
 void AFGRailroadSubsystem::AddTrack( AFGBuildableRailroadTrack* track){ }
 void AFGRailroadSubsystem::RemoveTrack( AFGBuildableRailroadTrack* track){ }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
+void AFGRailroadSubsystem::RebuildTrackGraph(int32 graphID){ }
 void AFGRailroadSubsystem::RefreshPlatformPowerConnectionsFromStation( AFGBuildableRailroadStation* station,  UFGCircuitConnectionComponent* connectTo){ }
 void AFGRailroadSubsystem::InitializeStationNames(){ }
 AFGTrain* AFGRailroadSubsystem::CreateTrain(AFGRailroadVehicle* vehicle) const{ return nullptr; }

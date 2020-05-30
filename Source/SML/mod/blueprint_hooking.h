@@ -39,7 +39,7 @@ public:
 
 typedef void(HookSignature)(FBlueprintHookHelper& HookHelper);
 
-void HandleHookedFunctionCall(FFrame& Stack, int64 HookFunctionAddress, int32 HookOffset);
+SML_API void HandleHookedFunctionCall(FFrame& Stack, int64 HookFunctionAddress, int32 HookOffset);
 
 enum EPredefinedHookOffset: int32 {
 	Start = 0,

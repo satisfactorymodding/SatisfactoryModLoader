@@ -140,6 +140,7 @@ public:
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
+	virtual void Destroyed() override;
 	virtual void Tick( float dt ) override;
 	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser ) override;
 	virtual void DisplayDebug( class UCanvas* canvas, const FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
@@ -218,6 +219,10 @@ public:
 	virtual FVector GetAttackLocation_Implementation() const override;
 	// End IFGAggroTargetInterface
 
+	/** Getter for simulation distance */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle" )
+	FORCEINLINE float GetSimulationDistance() { return mSimulationDistance; }
+
 	/** Getter for significance */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle|Significance" )
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
@@ -282,7 +287,25 @@ public:
 	FORCEINLINE void SetNetConstructionID( FNetConstructionID netConstructionID ) { mNetConstructionID = netConstructionID; }
 	FNetConstructionID GetNetConstructionID() const { return mNetConstructionID; }
 
+	/** Is this vehicle forced to be in real mode */
+	FORCEINLINE bool GetForceRealMode() {return mForceRealMode; }
+
+	/** Is this vehicle forced to be in simulation mode */
+	FORCEINLINE bool GetForceSimulationMode() { return mForceSimulationMode; }
+
+	/** Toggles what movement mode we are using */
+	void SetSimulation( bool newIsSimulating );
+
+	/** Is the movement being simulated? */
+	UFUNCTION( BlueprintPure, Category = "Simulation" )
+	FORCEINLINE bool IsSimulated() { return mIsSimulated; }
+private:
+	/** Rep notifies */
+	UFUNCTION()
+	void OnRep_IsSimulated();
 protected:
+	/** Updates the vehicles settings depending on if it should be simulated or "real" */
+	virtual void OnSimulationChanged(){}
 	/** Notifies from our health component */
 	UFUNCTION()
 	virtual void OnTakeDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
@@ -443,6 +466,16 @@ private:
 	/** A bias to the significance value */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	float mSignificanceBias;
+
+	/* Forces vehicle to be in simulation mode */
+	bool mForceSimulationMode;
+
+	/* Forces vehicle to be in real mode */
+	bool mForceRealMode;
+
+	/** Is the movement being simulated? */
+	UPROPERTY( ReplicatedUsing = OnRep_IsSimulated, SaveGame )
+	bool mIsSimulated;
 protected:
 	/** Indicates if the vehicle should be handled by significance manager */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
@@ -451,6 +484,10 @@ protected:
 	/** Range that this vehicle should be significant within */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	float mSignificanceRange;
+
+	/** Range after we disable simulation (remove collision) */
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	float mSimulationDistance;
 
 public:
 	FORCEINLINE ~AFGVehicle() = default;
