@@ -3,8 +3,6 @@
 
 #include "NAT.generated.h"
 
-// MODDING EDIT: This has moved to EOS, but is kept for modding
-
 UENUM(BlueprintType)
 enum class ECachedNATType : uint8
 {

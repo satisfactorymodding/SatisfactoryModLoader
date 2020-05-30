@@ -2,11 +2,12 @@
 
 #include "FGBuildablePipeBase.h"
 #include "FGPipelineHologram.h"
+#include "FGInstancedSplineMeshComponent.h"
 #include "Components/SplineComponent.h"
 
 AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent")); this->mSplineComponent->SetupAttachment(this->RootComponent);
-	/* Skipping UFGInstancedSplineMeshComponent this->mInstancedSplineComponent */
+	//this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent")); this->mInstancedSplineComponent->SetupAttachment(this->RootComponent);
 	this->mHologramClass = AFGPipelineHologram::StaticClass();
 	this->MaxRenderDistance = -1;
 	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = false; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
@@ -20,6 +21,7 @@ AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->NetCullDistanceSquared = 5624999936;
 }
 void AFGBuildablePipeBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipeBase::OnConstruction(const FTransform& transform){ }
 void AFGBuildablePipeBase::BeginPlay(){ }
 void AFGBuildablePipeBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 int32 AFGBuildablePipeBase::GetDismantleRefundReturnsMultiplier() const{ return int32(); }

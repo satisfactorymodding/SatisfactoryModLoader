@@ -60,13 +60,6 @@ public:
 		TArray< USplineMeshComponent* >& meshPool,
 		MeshConstructor meshConstructor );
 
-	/**
-	 * Overload that can limit the number of meshes generated.
-	 *
-	 * @param maxNumMeshes      Maximum number of meshes to generate from the start of the spline,
-	 *                          This will cut of the generation after that point even if the
-	 *                          spline requires more meshes to be completely filled.
-	 */
 	template< typename MeshConstructor >
 	static void BuildSplineMeshes(
 		class USplineComponent* spline,
@@ -149,12 +142,12 @@ public:
 		const FVector& collisionOffset,
 		FName collisionProfile );
 
-	/** GetNextDistanceExceedingTolerance used to step though a spline to take as long straight steps as possible within an error threshold
+	/** GetNextDistanceExcedingTollerance used to step though a spline to take as long straight steps as possible within an error threshold
 	 *
 	 * @param	startPos - position on spline. In sync with startDistance. Only sent in so we needing less fetches from the spline, as it can be used from last result in a loop
 	 * @param	startDistance - distance on spline to start from
 	 * @param	stepSize - the distance to take in each test. (will use half distance to search back when violation of limits exceeded)
-	 * @param	tolerance - see it as a bound value that as long as the curve stay within, we continue
+	 * @param	tollerance - see it as a bound value that as long as the curve stay within, we continue
 	 * @param	outEndDistance - the end distance that is just within the threshold
 	 * @param	outEndPos - the position on the spline at the end distance
 	 * @param	outLength - the length of the segment connecting the start and the end point. Can be used to calculate a direction of the segment if needed for collision or similar
@@ -163,12 +156,12 @@ public:
 	 *
 	 * @return	bool - returns false if we've reached the end and true if there is still more left
 	 */
-	static bool GetNextDistanceExceedingTolerance(
+	static bool GetNextDistanceExcedingTollerance(
 		USplineComponent* spline,
 		const FVector& startPos,
 		float startDistance,
 		float stepSize,
-		float tolerance,
+		float tollerance,
 		float& outEndDistance,
 		FVector& outEndPos,
 		float& outLength,
@@ -179,6 +172,7 @@ public:
 public:
 	FORCEINLINE ~UFGSplineMeshGenerationLibrary() = default;
 };
+
 
 /**
  * Templated function implementations.
@@ -191,9 +185,60 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	TArray< USplineMeshComponent* >& meshPool,
 	MeshConstructor meshConstructor )
 {
-	const int32 REASONABLE_MAX_NUM_MESHES = 500;
+	check( spline );
 
-	BuildSplineMeshes( spline, mesh, meshLength, REASONABLE_MAX_NUM_MESHES, meshPool, meshConstructor );
+	const float splineLength = spline->GetSplineLength();
+	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) ); //[DavalliusA:Tue/25-02-2020] removed a +1 here that as messing with conveyors max length (me and G2 could not see why we needed the +1 )
+
+	// Create more or remove the excess meshes.
+	if( numMeshes < meshPool.Num() )
+	{
+		while( meshPool.Num() > numMeshes )
+		{
+			meshPool.Last()->DestroyComponent();
+			meshPool.Pop();
+		}
+	}
+	else if( numMeshes > meshPool.Num() )
+	{
+		while( meshPool.Num() < numMeshes )
+		{
+			auto newMesh = meshConstructor( spline );
+			if( newMesh ) //[DavalliusA:Wed/29-01-2020] added null handling. No reason not to do it really. Only question is if we should break or not? But as it's a new thing, let's do the cheapest alternative for now and break. Feel free to change it later.
+			{
+
+				meshPool.Push( newMesh );
+			}
+			else
+			{
+				break;
+			}
+		}
+	}
+
+	// Put all pieces along the spline.
+	for( int32 i = 0; i < meshPool.Num(); ++i )
+	{
+		const float segmentLength = splineLength / numMeshes;
+		const float startDistance = (float )i * segmentLength;
+		const float endDistance = (float )( i + 1 ) * segmentLength;
+		const FVector startPos = spline->GetLocationAtDistanceAlongSpline( startDistance, ESplineCoordinateSpace::Local );
+		const FVector startTangent = spline->GetTangentAtDistanceAlongSpline( startDistance, ESplineCoordinateSpace::Local ).GetSafeNormal() * segmentLength;
+		const FVector endPos = spline->GetLocationAtDistanceAlongSpline( endDistance, ESplineCoordinateSpace::Local );
+		const FVector endTangent = spline->GetTangentAtDistanceAlongSpline( endDistance, ESplineCoordinateSpace::Local ).GetSafeNormal() * segmentLength;
+
+		meshPool[ i ]->SetStartAndEnd( startPos, startTangent, endPos, endTangent, true );
+		meshPool[ i ]->SetStaticMesh( mesh );
+	}
+
+	// Register new meshes, needs to happen after the properties are set for static components.
+	for( auto meshComp : meshPool )
+	{
+		if( !meshComp->IsRegistered() )
+		{
+			meshComp->RegisterComponent();
+		}
+	}
 }
 
 template< typename MeshConstructor >
@@ -208,7 +253,8 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	check( spline );
 
 	const float splineLength = spline->GetSplineLength();
-	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) );
+	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) );  //[DavalliusA:Tue/25-02-2020] removed a +1 here that as messing with conveyors max length (me and G2 could not see why we needed the +1 )
+	//[DavalliusA:Wed/29-01-2020] don't apply max value here, as that will make the meshes stretch over the full length of the spline still instead of cutting of early.
 
 	// Create more or remove the excess meshes.
 	if( numMeshes < meshPool.Num() )
@@ -223,37 +269,33 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	{
 		while( meshPool.Num() < numMeshes && meshPool.Num() < maxNumMeshes )
 		{
-			if( auto newMesh = meshConstructor( spline ) )
+			auto newMesh = meshConstructor( spline );
+			if( newMesh ) //[DavalliusA:Wed/29-01-2020] added null handling. No reason not to do it really. Only question is if we should break or not? But as it's a new thing, let's do the cheapest alternative for now and break. Feel free to change it later.
 			{
+
 				meshPool.Push( newMesh );
 			}
 			else
 			{
-				// If the constructor failed, any subsequent calls will most likely fail as well. Might as well warn about this and bail.
-				UE_LOG( LogGame, Warning, TEXT( "BuildSplineMeshes() failed, mesh constructor return null, spline '%s' with owner '%s'" ),
-						*spline->GetName(), spline->GetOwner() ? *spline->GetOwner()->GetName() : TEXT( "none" ) );
-
 				break;
 			}
 		}
 	}
 
+
+	const float segmentLength = splineLength / numMeshes;
 	// Put all pieces along the spline.
+	for( int32 i = 0; i < meshPool.Num(); ++i )
 	{
-		const float segmentLength = splineLength / numMeshes;
+		const float startDistance = (float )i * segmentLength;
+		const float endDistance = (float )( i + 1 ) * segmentLength;
+		const FVector startPos = spline->GetLocationAtDistanceAlongSpline( startDistance, ESplineCoordinateSpace::Local );
+		const FVector startTangent = spline->GetTangentAtDistanceAlongSpline( startDistance, ESplineCoordinateSpace::Local ).GetSafeNormal() * segmentLength;
+		const FVector endPos = spline->GetLocationAtDistanceAlongSpline( endDistance, ESplineCoordinateSpace::Local );
+		const FVector endTangent = spline->GetTangentAtDistanceAlongSpline( endDistance, ESplineCoordinateSpace::Local ).GetSafeNormal() * segmentLength;
 
-		for( int32 i = 0; i < meshPool.Num(); ++i )
-		{
-			const float startDistance = ( float )i * segmentLength;
-			const float endDistance = ( float )( i + 1 ) * segmentLength;
-			const FVector startPos = spline->GetLocationAtDistanceAlongSpline( startDistance, ESplineCoordinateSpace::Local );
-			const FVector startTangent = spline->GetTangentAtDistanceAlongSpline( startDistance, ESplineCoordinateSpace::Local ).GetSafeNormal() * segmentLength;
-			const FVector endPos = spline->GetLocationAtDistanceAlongSpline( endDistance, ESplineCoordinateSpace::Local );
-			const FVector endTangent = spline->GetTangentAtDistanceAlongSpline( endDistance, ESplineCoordinateSpace::Local ).GetSafeNormal() * segmentLength;
-
-			meshPool[ i ]->SetStartAndEnd( startPos, startTangent, endPos, endTangent, true );
-			meshPool[ i ]->SetStaticMesh( mesh );
-		}
+		meshPool[ i ]->SetStartAndEnd( startPos, startTangent, endPos, endTangent, true );
+		meshPool[ i ]->SetStaticMesh( mesh );
 	}
 
 	// Register new meshes, needs to happen after the properties are set for static components.

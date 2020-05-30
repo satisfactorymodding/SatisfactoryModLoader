@@ -19,6 +19,7 @@ class FACTORYGAME_API AFGTrainPlatformHologram : public AFGFactoryHologram
 	GENERATED_BODY()
 	
 public:
+	//Ctor
 	AFGTrainPlatformHologram();
 
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
@@ -66,6 +67,7 @@ protected:
 	UPROPERTY()
 	class UFGTrainPlatformConnection* mConnectedPlatformComponents[ 2 ];
 
+
 private:
 	/** radius to allow snapping to occur*/
 	float mSnapDistance;
@@ -87,6 +89,7 @@ private:
 
 	/** Track changes to the scroll direction */
 	int32 mPreviousScrollTrackDirection;
+
 
 public:
 	FORCEINLINE ~AFGTrainPlatformHologram() = default;

@@ -261,10 +261,7 @@ public:
 	 * @return if we consider the location as close to a factory
 	 **/
 	UFUNCTION( BlueprintPure, Category = "Factory" )
-	static bool IsLocationNearABase( const UObject* worldContext, FVector inLocation, float closeDistance = -1);
-
-
-	static bool IsLocationNearABaseFromResult( const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results );
+	static bool IsLocationNearABase( const UObject* worldContext, FVector inLocation, float closeDistance = -1 );
 
 	/** Helper function that takes care of creating a session and travel to the map */
 	UFUNCTION( BlueprintCallable, Category="Online" )

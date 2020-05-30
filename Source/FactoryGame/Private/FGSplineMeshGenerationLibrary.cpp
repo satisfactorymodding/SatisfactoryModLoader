@@ -25,11 +25,11 @@ void UFGSplineMeshGenerationLibrary::BuildSplineCollisionCapsules( USplineCompon
 		float collisionSpacing,
 		const FVector& collisionOffset,
 		FName collisionProfile){ }
-bool UFGSplineMeshGenerationLibrary::GetNextDistanceExceedingTolerance(USplineComponent* spline,
+bool UFGSplineMeshGenerationLibrary::GetNextDistanceExcedingTollerance(USplineComponent* spline,
 		const FVector& startPos,
 		float startDistance,
 		float stepSize,
-		float tolerance,
+		float tollerance,
 		float& outEndDistance,
 		FVector& outEndPos,
 		float& outLength,

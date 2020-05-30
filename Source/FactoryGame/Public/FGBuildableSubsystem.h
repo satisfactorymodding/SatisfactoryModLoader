@@ -224,9 +224,8 @@ public:
 	/**
 	*	Attempts to get the correct colored material for a supplied factory building material.
 	*	If the material does not exist in the material map, a new dynamic instance is created, filled, and returned.
-	*	@note - Params onMeshComp and forBuildable are not needed and are only used for logging purposes
 	*/
-	class UFGFactoryMaterialInstanceManager* GetOrCreateMaterialManagerForMaterialInterface( UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, bool canBeColored = true, class UMeshComponent* onMeshComp  = nullptr, class AFGBuildable* forBuildable = nullptr );
+	class UFGFactoryMaterialInstanceManager* GetOrCreateMaterialManagerForMaterialInterface( UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, bool canBeColored = true );
 
 	/**
 	*	Get the mMaterialInstanceManager TMap of all managers
@@ -434,9 +433,6 @@ private:
 	// This is also used for non-colored materials, for example, the conveyor belt materials so that the same instance can be applied to many different belts
 	UPROPERTY()
 	TMap< FString, class UFGFactoryMaterialInstanceManager* > mFactoryColoredMaterialMap;
-
-	// Count index for unique naming of new material Insance mangers
-	int32 mMaterialManagerIDCounter;
 
 
 	/** Begin Fixed Factory Tick Config Parameters */

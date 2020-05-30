@@ -94,7 +94,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "1.0", ClampMax = "4.0" ) )
 	float mPowerProductionExponent;
 
-public://MODDING EDIT
+private:
 	/** Current load of this generator in the range [0,1]. */
 	UPROPERTY( Replicated )
 	float mLoadPercentage;

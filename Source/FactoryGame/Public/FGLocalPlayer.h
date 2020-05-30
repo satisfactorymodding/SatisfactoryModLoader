@@ -15,23 +15,8 @@
 #include "Online.h"
 #include "FGErrorMessage.h"
 #include "CoreOnline.h"
-#include "FindSessionsCallbackProxy.h"
-// MODDING EDIT: Online stuff...
-//#include "EOSSDKForwards.h"
 #include "FGLocalPlayer.generated.h"
 
-
-// MODDING EDIT: dummy classes from the Epic Online missing headers
-UENUM()
-enum class EEosAccountConnectionResult
-{
-	SOMETHING
-};
-class EOS_ContinuanceTokenClass
-{
-
-};
-typedef EOS_ContinuanceTokenClass* EOS_ContinuanceToken; // why...
 
 UCLASS()
 class FACTORYGAME_API UFGEM_LoggedOutFromOnlineService : public UFGErrorMessage
@@ -76,10 +61,10 @@ enum EFrindsListState
 UENUM(BlueprintType)
 enum ELoginState
 {
-	LS_NotLoggedIn		UMETA(DisplayName = "NotLoggedIn"), 
-	LS_FailedToLogin	UMETA(DisplayName = "FailedToLogin"),
+	LS_NotLoggedIn		UMETA(DisplayName="NotLoggedIn"),
 	LS_LoggingIn		UMETA(DisplayName="LoggingIn"),
-	LS_LoggedIn			UMETA(DisplayName="LoggedIn")
+	LS_LoggedIn			UMETA(DisplayName="LoggedIn"),
+	LS_FailedToLogin	UMETA(DisplayName="FailedToLogin")
 };
 
 UENUM(BlueprintType)
@@ -142,15 +127,13 @@ FORCEINLINE uint32 GetTypeHash( const FFGOnlineFriend& onlineFriend )
 }
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreateSessionStateChanged, ECreateSessionState, newState );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnAccountConnectionComplete, const FName, currentPlatform, EEosAccountConnectionResult, result );
-
 
 struct FACTORYGAME_API FSessionInformation
 {
 	FSessionInformation() :
 		MapName(TEXT("")),
 		Options(TEXT("")),
-		SaveSessionName(TEXT("")),
+		SessionName(TEXT("")),
 		IsSessionCreationInFlight(false),
 		IsOfflineGame( false )
 	{
@@ -177,7 +160,7 @@ struct FACTORYGAME_API FSessionInformation
 	FString Options;
 	
 	/** Name of the session */
-	FString SaveSessionName;
+	FString SessionName;
 	
 	/** Session visibility */
 	ESessionVisibility Visibility;
@@ -260,27 +243,11 @@ public:
 
 	/** Get in what state our login is */
 	UFUNCTION(BlueprintPure,Category="Online")
-	TEnumAsByte<ELoginState> GetLoginState() const;
-	
-	/** Get in what state our epic login is */
-	UFUNCTION( BlueprintPure, Category = "Online" )
-	FORCEINLINE TEnumAsByte<ELoginState> GetLoginStateEpic() const{ return mLoginStateEpic; }
-	
-	/** Get in what state our Steam login is */
-	UFUNCTION( BlueprintPure, Category = "Online" )
-	FORCEINLINE TEnumAsByte<ELoginState> GetLoginStateSteam() const{ return mLoginStateSteam; }
+	FORCEINLINE TEnumAsByte<ELoginState> GetLoginState() const{ return mLoginState; }
 
-	/** Get the username of the current user (from the first logged in platform)*/
+	/** Get the username of the current user */
 	UFUNCTION(BlueprintPure,Category="Online")
 	FString GetUsername() const;
-
-	/** Get the username of the current user for the specified platform (empty string if not logged in)*/
-	UFUNCTION(BlueprintPure, Category = "Online")
-	FString GetUsernameEpic() const;
-
-	/** Get the username of the current user for the specified platform (empty string if not logged in)*/
-	UFUNCTION(BlueprintPure, Category = "Online")
-	FString GetUsernameSteam() const;
 
 	/**
 	 * Get the list of friends of the current user
@@ -298,81 +265,35 @@ public:
 	void SetupServerAndTravelToMap( const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility );
 
 	/** Make sure our session presence patches the specified presence */
-	void CopyPresenceDataToLocalPresenceAndPushToServer( const TSharedRef<FOnlineUserPresence>& presence );
+	void CopySessionPresence( const TSharedRef<FOnlineUserPresence>& presence );
 
 	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
 	UFUNCTION()
 	void UpdatePresence();
 
-	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
-	UFUNCTION()
-	void SetNextUpdatePresenceTime(float timeTillNextUpdate);
-
 	/** Called when we have received a invite and gotten full information about it */
 	void OnInviteReceived( const FPendingInvite& invite );
 
 	/** Checks if last logged in user id matches the current logged in user and if not updates the cached value */
-	void RefreshRecentRegisteredSocialAccountID();
+	void RefreshRecentRegisteredEpicIdLogin();
 
 	// Return true if we have received the Product User Id needed for hosting the game
 	bool HasReceivedProductUserId() const;
 
 	// Get the unique net id of the current local player
 	TSharedPtr<const FUniqueNetId> GetPlayerId() const;
-	TSharedPtr<const FUniqueNetId> GetPlayerIdSteam() const;
-
-
-	//~ Begin Account Connection Functions //
-	/** Connect two logged in accounts */
-	void ConnectAccount( const FName currentPlatform );
-
-	/** Create a new account connection without connection to an existing account */
-	void CreateNewAccountConnection( const FName currentPlatform );
-
-	/** Prompt the user to login and link that account */
-	void LoginAndConnectAccount( const FName currentPlatform );
-
-	/** Continue without linking an account to our current one */
-	void ContinueWithoutConnectingAccount( const FName currentPlatform );
-
-	virtual void SwitchController(class APlayerController* PC) override;
-
-	/** Logout current account and login to a epic account and connect */
-	void LoginAndConnectOtherEpicAccount();
-
-	/** Logout current account and continue */
-	void LogoutEpicAccountAndContinue();
-
-	//~ End Account Connection Functions //
-
-	UFUNCTION( BlueprintCallable )
-	void LoginEpicAccountPortal();
-
-	UFUNCTION( BlueprintCallable )
-	void LogoutEpicAccountPortal();
-
 protected:
 	//~Begin Online Delegates
 	//~Begin OnlineIdentity delegates
 	void OnLoginStatusChanged( int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId );
-	void OnLoginStatusChangedSteam(int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId);
-
-	void SteamTaskRetryWaiter();
-	void StartSteamEOSConnect();
-
-	void OnLoginComplete(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnLoginCompleteSteam(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnAutoLoginComplete(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnAutoLoginCompleteSteam(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error);
-	void OnConnectionStatusChanged(const FString& serviceName, EOnlineServerConnectionStatus::Type lastConnectionState, EOnlineServerConnectionStatus::Type connectionState);
-	void OnConnectionStatusChangedSteam(const FString& serviceName, EOnlineServerConnectionStatus::Type lastConnectionState, EOnlineServerConnectionStatus::Type connectionState);
+	void OnLoginComplete( int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error );
+	void OnAutoLoginComplete( int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error );
+	void OnConnectionStatusChanged( const FString& serviceName, EOnlineServerConnectionStatus::Type lastConnectionState, EOnlineServerConnectionStatus::Type connectionState );
 	//~End OnlineIdentity delegates
 
 	//~Begin OnlineFriends delegates
 	void OnReadFriendsListComplete( int32 localUserNum, bool wasSuccessful, const FString& listName, const FString& errorStr );
-	void OnReadFriendsListCompleteSteam(int32 localUserNum, bool wasSuccessful, const FString& listName, const FString& errorStr);
 	void OnFriendsChange();
-	void OnFriendsChangeSteam();
 	//~End OnlineFriends delegates
 
 	//~Begin OnlineUser delegates
@@ -382,10 +303,9 @@ protected:
 
 	//~Begin OnlinePresence delegates
 	void OnPresenceReceived( const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence );
-	void OnPresenceReceivedSteam(const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence);
 	//~End OnlinePresence deleages
 
-	void OnPreviousSessionCleanedup_SetupServer( FName sessionName, bool wasSuccessful );
+	void OnSessionCleanup_SetupServer( FName sessionName, bool wasSuccessful );
 	void OnSessionCreated_SetupServer( FName sessionName, bool wasSuccessful );
 	void OnPresenceUpdated_SetupServer( const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence );
 	UFUNCTION()
@@ -401,9 +321,8 @@ protected:
 	//~End Online Delegates
 
 	// @return true if we are able to autologin
-	bool CanAutoLoginEpic() const;
+	bool CanAutoLogin() const;
 
-	bool CanAutoLoginSteam() const;
 	/** Get the presence string we should show to other users */
 	virtual FString GetPresenceString() const;
 
@@ -424,51 +343,37 @@ protected:
 	/** Pulls the current state of creating a session */
 	UFUNCTION(BlueprintPure,Category="FactoryGame|Session")
 	ECreateSessionState GetCurrentCreateSessionState() const;
-
 protected:
 	// Called whenever we get logged in
 	void OnLoggedIn();
 	
 	// Set the login state of the local player and broadcast it
-	void SetLoginStateEpic( ELoginState newLoginState );
+	void SetLoginState( ELoginState newLoginState );
 
-	void SetLoginStateSteam(ELoginState newLoginState);
 	// Get friends that we don't have any presence data or similar for
-	void GetFriendsWithNoData( TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData );
+	void GetUsersWithNoData( TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData );
 private:
 	// Return true if our presence has session id set
 	bool PresenceHasSessionId() const;
 
 	/** Push error and autosave the game */
 	void PushErrorAndAutosave( TSubclassOf<class UFGErrorMessage> errorMessage );
-
-public:
-	/** Called when the when we have a result from connection accounts */
-	FOnAccountConnectionComplete mOnAccountConnectionComplete;
-
 protected:
 	friend class UFGCheatManager;
 
 	//~Begin OnlineFriends delegates
 	FDelegateHandle mOnFriendsChangeHandle;
-	FDelegateHandle mOnFriendsChangeHandleSteam;
 	//~End OnlineFriends delegates
 	//~Begin OnlineIdentity delegates
 	FDelegateHandle mOnLoginStatusChangeHandle;
 	FDelegateHandle mOnLoginCompleteHandle;
-	FDelegateHandle mOnLoginStatusChangeHandleSteam;
-	FDelegateHandle mOnLoginCompleteHandleSteam;
 	// Special delegate that is just setup during autologin
 	FDelegateHandle mOnAutoLoginCompleteHandle;
-	FDelegateHandle mOnAutoLoginCompleteHandleSteam;
 	//~End OnlineIdentity delegates
 	//~Begin OnlineUser delegates
 	FDelegateHandle mOnQueryUserInfoForFriendListCompleteHandle;
 	FDelegateHandle mOnPresenceReceived;
-	FDelegateHandle mOnQueryUserInfoForFriendListCompleteHandleSteam;
-	FDelegateHandle mOnPresenceReceivedSteam;
 
-	//only need one for session related stuff
 	FDelegateHandle mSetupServer_OnCreateSessionCompleteDelegateHandle;
 	FDelegateHandle mSetupServer_OnPresenceReceivedCompleteDelegateHandle;
 
@@ -476,17 +381,12 @@ protected:
 
 	// Handle for updating presence info
 	FTimerHandle mPresenceUpdateHandle;
-	FTimerHandle mPresenceUpdateHandleSteam;
-	FTimerHandle mSteamConnectyAccountDelayHandle;
 
 	// For detecting player disconnects from services
 	FDelegateHandle mOnConnectionStatusChangedHandle;
-	FDelegateHandle mOnConnectionStatusChangedHandleSteam;
 
 	// The status of our logins
-	ELoginState mLoginStateEpic;
-	// The status of our logins
-	ELoginState mLoginStateSteam;
+	ELoginState mLoginState;
 
 	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
 	FOnLoginStateChanged mOnLoginStateChanged;
@@ -515,26 +415,8 @@ protected:
 
 	TArray<FFGOnlineFriend> mCachedFriends;
 
-	//Used while setting up account linking with EOS. Need to be kept from a result and used with potential continuance actions.
-	EOS_ContinuanceToken mCurrentContinuanceToken = nullptr;
-
 	/** If true, then we have failed to autologin, and won't try to autologin again */
-	bool mFailedAutologinEpic;
-
-	/** If true, then we have failed to autologin, and won't try to autologin again */
-	bool mFailedAutologinSteam;
-
-	enum class ESteamTaskRetryState: uint8
-	{
-		STRS_StopTimer,
-		STRS_Continue,
-		STRS_TriggerRetry
-	};
-	ESteamTaskRetryState mSteamRetryState;
-	bool mIsWaitingToConnectSteamAccount = false;
-	bool mIsWaitingForEpicLogout = false;
-	bool mIsWaitingForEpicAccountSwap = false;
-	bool mHasTriedConnectingSteam = false;
+	bool mFailedAutologin;
 
 public:
 	FORCEINLINE ~UFGLocalPlayer() = default;

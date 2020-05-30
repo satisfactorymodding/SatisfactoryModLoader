@@ -3,7 +3,6 @@
 #include "FGGameState.h"
 
 AFGGameState::AFGGameState() : Super() {
-	this->mReplicatedOnlineSessionName = "Auto";
 	this->mPlannedRestartTime = 24;
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = true; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 120;
 }
@@ -35,9 +34,6 @@ void AFGGameState::NotifyPlayerAdded( AFGCharacterPlayer* inPlayer){ }
 void AFGGameState::SendMessageToAllPlayers(TSubclassOf<  UFGMessageBase > inMessage){ }
 void AFGGameState::SendMessageToPlayer(TSubclassOf<  UFGMessageBase > inMessage,  APlayerController* controller){ }
 int32 AFGGameState::GetTotalPlayDuration() const{ return int32(); }
-void AFGGameState::SetSessionName(const FString& inName){ }
-FString AFGGameState::GenerateOnlineSessionName(){ return FString(); }
-FString AFGGameState::GetOnlineSessionName() const{ return FString(); }
 void AFGGameState::SetupColorSlots_Linear(const TArray<FLinearColor>& mColorSlotsPrimary, const TArray<FLinearColor>& mColorSlotsSecondary){ }
 void AFGGameState::Server_SetBuildingColorInSlotLinear_Implementation(uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear){ }
 bool AFGGameState::Server_SetBuildingColorInSlotLinear_Validate(uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear){ return bool(); }

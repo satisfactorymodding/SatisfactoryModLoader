@@ -46,7 +46,7 @@ TArray< TSubclassOf< UObject > > UFGRecipe::GetProducedIn(TSubclassOf< UFGRecipe
 	TArray<TSubclassOf<UObject>>   out;
 	if (!inClass)
 		return TArray< TSubclassOf< UObject > >();
-
+	
 	TArray<TSoftClassPtr<UObject>> In = inClass.GetDefaultObject()->mProducedIn;
 	if (In.Num() > 0)
 	{

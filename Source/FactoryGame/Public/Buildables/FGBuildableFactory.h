@@ -284,6 +284,8 @@ public:
 	  */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
 	void TryStopProductionLoopEffects( bool didStopProducing );
+
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
 protected:
 	/** Called whenever HasPower has changed, exposed here for cleaner/more optimized ways of changing state when the factory has power */
 	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|Factory|Power")
@@ -402,10 +404,6 @@ protected:
 	/** So that you can listen for when production has changed */
 	UPROPERTY( BlueprintAssignable )
 	FBuildingStateChanged mOnHasProductionChanged;
-
-	/** So that you can listen for when standby is toggled. True == Standby is active False == Standby was disabled */
-	UPROPERTY( BlueprintAssignable )
-	FBuildingStateChanged mOnHasStandbyChanged;
 
 	/**/
 	EProductionStatus mCachedProductionStatus;

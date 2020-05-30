@@ -103,6 +103,7 @@ void UFGCheatManager::MCP_GetFriends(){ }
 void UFGCheatManager::TriggerPresenceUpdate(){ }
 void UFGCheatManager::ShowSequenceList(){ }
 void UFGCheatManager::SendInviteToFriend(FString friendName){ }
+void UFGCheatManager::DebugCrash(){ }
 void UFGCheatManager::ResetHubTutorial(){ }
 void UFGCheatManager::ResetSchematics(){ }
 void UFGCheatManager::ResetRecipes(){ }
@@ -125,4 +126,3 @@ void UFGCheatManager::ResetAllPipes(){ }
 void UFGCheatManager::ToggleDebuggingOnPipe(){ }
 void UFGCheatManager::DupeComponentInCircuit(int32 target){ }
 void UFGCheatManager::DupeComponentToAnotherCircuit(int32 source, int32 target){ }
-void UFGCheatManager::DumpConnectionString(){ }

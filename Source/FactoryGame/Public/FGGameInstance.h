@@ -8,14 +8,16 @@
 #include "Engine/GameInstance.h"
 #include "NAT.h"
 // MODDING EDIT: Online stuff doesn't work
+//#include "eos_common.h"
+//#include "EpicPeerManager.h"
+//#include "AnalyticsService.h"
+//#include "EpicPeerManager.h"
 //#include "AnalyticsService.h"
 #include "FGAnalyticsMacros.h"
 #include "OnlineSessionSettings.h"
 #include "Online.h"
 #include "Interfaces/OnlineSessionInterface.h"
-// MODDING EDIT: Online stuff...
-//#include "EOSSDKForwards.h"
-//#include "AnalyticsService.h"
+#include "Engine/EngineTypes.h"
 #include "FGGameInstance.generated.h"
 
 // MODDING EDIT: dummy classes from the Epic Online missing headers
@@ -156,7 +158,6 @@ class FACTORYGAME_API UFGGameInstance : public UGameInstance
 	GENERATED_BODY()
 public:
 	UFGGameInstance();
-	~UFGGameInstance();
 
 	// Begin UGameInstance interface
 	virtual void Init() override;
@@ -233,8 +234,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Onboarding" )
 	FORCEINLINE bool GetSkipOnboarding() { return mSkipOnboarding; }
 
-	//[Gafgar:Tue/07-04-2020] moved to be done automatically now
-	///** Query our current NAT-type */
+	/** Query our current NAT-type */
 	void QueryNATType();
 
 	/** Get cached NAT-type */
@@ -257,7 +257,7 @@ public:
 	virtual void LoadComplete( const float loadTime, const FString& mapName ) override;
 protected:
 	/** Called after we have destroyed a old session for joining a new session */
-	virtual void OnDestroyOldSessionComplete_JoinSession( FName gameSessionName, bool wasSuccessful );
+	virtual void OnDestroySessionComplete_JoinSession( FName gameSessionName, bool wasSuccessful );
 
 	/** Called after we have queried a friends product id */
 	virtual void OnQueryFriendProductIdCompleted_JoinSession( bool wasSuccessful, FString EpicId, EOS_ProductUserId ProductId );
@@ -344,4 +344,7 @@ public:
 	bool mHasSeenAlphaInfo;
 private:
 	void JoinSession_Internal();
+
+public:
+	FORCEINLINE ~UFGGameInstance() = default;
 };

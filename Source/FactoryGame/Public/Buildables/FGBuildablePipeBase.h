@@ -26,6 +26,7 @@ public:
 
 	// Begin Actor Interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual void OnConstruction( const FTransform& transform ) override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	// End Actor Interface 

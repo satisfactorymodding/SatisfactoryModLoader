@@ -2,6 +2,7 @@
 
 #include "FGBuildableRailroadTrack.h"
 #include "FGRailroadTrackHologram.h"
+#include "FGInstancedSplineMeshComponent.h"
 #include "Components/SplineComponent.h"
 
 FRailroadTrackPosition::FRailroadTrackPosition(){ }
@@ -24,7 +25,7 @@ UFGRailroadTrackConnectionComponent* FRailroadTrackPosition::GetReverseConnectio
 const FRailroadTrackPosition FRailroadTrackPosition::InvalidTrackPosition = FRailroadTrackPosition();
 AFGBuildableRailroadTrack::AFGBuildableRailroadTrack() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent")); this->mSplineComponent->SetupAttachment(this->RootComponent);
-	/* Skipping UFGInstancedSplineMeshComponent this->mInstancedSplineComponent */
+	this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent")); this->mInstancedSplineComponent->SetupAttachment(this->RootComponent);
 	this->mHologramClass = AFGRailroadTrackHologram::StaticClass();
 	this->MaxRenderDistance = -1;
 	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = false; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;

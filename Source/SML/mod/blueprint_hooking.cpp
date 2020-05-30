@@ -6,41 +6,44 @@
 struct FHookKey {
 	int64 HookFunctionAddress;
 	int32 HookOffset;
+	
+	bool operator==(const FHookKey& Other) const {
+		return HookFunctionAddress == Other.HookFunctionAddress && HookOffset == Other.HookOffset;
+	}
 };
+
+FORCEINLINE uint32 GetTypeHash(const FHookKey& Key) {
+	return FCrc::MemCrc32(&Key, sizeof(FHookKey));
+}
 
 struct FHookEntry {
 	TArray<std::function<HookSignature>> Hooks;
 };
 
-//Initially it was FHookKey <--> FHookEntry,
-//but due to some retarded reason RegisteredHooks.Find returned
-//NULL even when fucking keys were invalid. so fuck it, we will use double map instead
-static TMap<int64, TMap<int32, FHookEntry>> RegisteredHooks;
+static TMap<FHookKey, FHookEntry> RegisteredHooks;
 
 FHookEntry& GetOrAddHookEntry(const FHookKey& SearchKey, bool& EntryAdded) {
-	TMap<int32, FHookEntry>& FunctionHooks = RegisteredHooks.FindOrAdd(SearchKey.HookFunctionAddress);
-	FHookEntry* ExistingEntry = FunctionHooks.Find(SearchKey.HookOffset);
+	FHookEntry* ExistingEntry = RegisteredHooks.Find(SearchKey);
 	if (ExistingEntry)
 		return *ExistingEntry;
 	EntryAdded = true;
-	return FunctionHooks.Add(SearchKey.HookOffset);
+	return RegisteredHooks.Add(SearchKey);
 }
 
-SML_API void HandleHookedFunctionCall(FFrame& Stack, int64 HookedFunctionAddress, int32 HookOffset) {
+void HandleHookedFunctionCall(FFrame& Stack, int64 HookedFunctionAddress, int32 HookOffset) {
 	const FHookKey SearchKey{ HookedFunctionAddress, HookOffset };
-	bool KeyAdded;
-	FHookEntry& HookEntry = GetOrAddHookEntry(SearchKey, KeyAdded);
+	FHookEntry* HookEntry = RegisteredHooks.Find(SearchKey);
+	checkf(HookEntry, TEXT("HandleHookedFunctionCall on unhooked function"));
 	FBlueprintHookHelper HookHelper{ Stack };
-	SML::Logging::info(TEXT("HandleHookedFunctionCall: Hooked Function Address: "),
-		HookedFunctionAddress, TEXT(", Hook Offset: "), HookOffset, TEXT(", Hook Entry Size: "), HookEntry.Hooks.Num());
-	for (const std::function<HookSignature>& Hook : HookEntry.Hooks) {
+	//SML::Logging::info(TEXT("HandleHookedFunctionCall: Hooked Function Address: "), HookedFunctionAddress, TEXT(", Hook Offset: "), HookOffset);
+	for (const std::function<HookSignature>& Hook : HookEntry->Hooks) {
 		Hook(HookHelper);
 	}
 }
 
 #define WRITE_UNALIGNED(Arr, Type, Value) \
 	Arr.AddUninitialized(sizeof(Type)); \
-	FPlatformMemory::WriteUnaligned<Type>(&AppendedCode[Arr.Num() - sizeof(Type)], (Type) Value);
+	FPlatformMemory::WriteUnaligned<Type>(&Arr[Arr.Num() - sizeof(Type)], (Type) Value);
 
 void InstallBlueprintHook(UFunction* Function, const FHookKey& HookKey) {
 	TArray<uint8>& OriginalCode = Function->Script;
@@ -132,7 +135,6 @@ SML_API void HookBlueprintFunction(UFunction* Function, std::function<HookSignat
 	const FHookKey SearchKey{ reinterpret_cast<int64>(Function), HookOffset };
 	bool HookEntryAdded = false;
 	FHookEntry& HookEntry = GetOrAddHookEntry(SearchKey, HookEntryAdded);
-	SML::Logging::info(TEXT("Hook Entry: "), &HookEntry, TEXT(", Function Address: "), SearchKey.HookFunctionAddress, TEXT(", Hook Offset: "), SearchKey.HookOffset);
 	if (HookEntryAdded) {
 		//Entry was just added, we need to install hook now
 		InstallBlueprintHook(Function, SearchKey);

@@ -77,9 +77,6 @@ public:
 	/** Handles regrowth of item pickups */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGItemRegrowSubsystem > mItemRegrowSubsystemClass;
-	/** Handles all vehicles */
-	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
-	TSubclassOf< class AFGVehicleSubsystem > mVehicleSubsystemClass;
 
 
 public:
