@@ -45,10 +45,6 @@ FZipFile::~FZipFile() {
 }
 
 bool FZipFile::InitArchive() {
-	SML::Logging::info(TEXT("File size = "), FileHandle->Size());
-	SML::Logging::info(TEXT("pRead = "), ZipArchive.m_pRead);
-	SML::Logging::info(TEXT("Internal state = "), ZipArchive.m_pState);
-	SML::Logging::info(TEXT("Zip mode = "), ZipArchive.m_zip_mode);
 	InitSuccess = mz_zip_reader_init(&ZipArchive, FileHandle->Size(), 0);
 	return InitSuccess;
 }
