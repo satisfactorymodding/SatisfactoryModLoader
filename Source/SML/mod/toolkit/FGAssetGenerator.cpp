@@ -292,7 +292,7 @@ void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonOb
 	}
 	
 	UBlueprint* Blueprint = Cast<UBlueprint>(Object);
-	if (Blueprint && JsonObject->HasField(TEXT("Fields"))) {
+	if (Blueprint && JsonObject->HasField(TEXT("Fields")) && !Blueprint->IsA<UAnimBlueprint>()) {
 		const TArray<TSharedPtr<FJsonValue>> Fields = JsonObject->GetArrayField(TEXT("Fields"));
 		//Blueprint should have been already compiled at that moment
 		check(Blueprint->GeneratedClass != nullptr);
@@ -756,7 +756,7 @@ void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& B
 	}
 
 	//Generate blueprint own properties (only properties with specified pin type)
-	if (BlueprintJson->HasField(TEXT("Fields"))) {
+	if (BlueprintJson->HasField(TEXT("Fields")) && !Blueprint->IsA<UAnimBlueprint>()) {
 		const TArray<TSharedPtr<FJsonValue>> Fields = BlueprintJson->GetArrayField(TEXT("Fields"));
 		for (const TSharedPtr<FJsonValue>& Value : Fields) {
 			const TSharedPtr<FJsonObject>& FieldObject = Value.Get()->AsObject();

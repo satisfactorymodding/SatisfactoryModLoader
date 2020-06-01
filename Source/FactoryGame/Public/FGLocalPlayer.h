@@ -17,21 +17,8 @@
 #include "CoreOnline.h"
 #include "FindSessionsCallbackProxy.h"
 // MODDING EDIT: Online stuff...
-//#include "EOSSDKForwards.h"
+#include "NAT.h"
 #include "FGLocalPlayer.generated.h"
-
-
-// MODDING EDIT: dummy classes from the Epic Online missing headers
-UENUM()
-enum class EEosAccountConnectionResult
-{
-	SOMETHING
-};
-class EOS_ContinuanceTokenClass
-{
-
-};
-typedef EOS_ContinuanceTokenClass* EOS_ContinuanceToken; // why...
 
 UCLASS()
 class FACTORYGAME_API UFGEM_LoggedOutFromOnlineService : public UFGErrorMessage
