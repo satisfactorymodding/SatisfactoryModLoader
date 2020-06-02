@@ -7,7 +7,6 @@
 #include "Engine/UserDefinedEnum.h"
 #include "Engine/MemberReference.h"
 #include "IPlatformFilePak.h"
-#include <excpt.h>
 #include "ExceptionHandling.h"
 #include "Engine/ComponentDelegateBinding.h"
 #include "WidgetAnimationDelegateBinding.h"
@@ -513,6 +512,8 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 				TArray<TSharedPtr<FJsonValue>> code = SML::CreateFunctionCode(Function);
 				MethodEntry->SetArrayField(TEXT("Code"), code);
 			}
+			Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry)));
+			continue;
 		}
 		TArray<TSharedPtr<FJsonValue>> code = MethodEntry->GetArrayField("Code");
 		if (code.Num() == 1 && code[0]->AsObject()->GetStringField("Instruction") == "CallUbergraph") {
