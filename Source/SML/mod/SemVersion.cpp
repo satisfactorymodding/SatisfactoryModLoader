@@ -1,8 +1,8 @@
 #pragma once
-#include "version.h"
-#include <regex>
+#include "SemVersion.h"
 #include "util/Utility.h"
 #include "util/Logging.h"
+#include <regex>
 
 std::wregex VersionRegex(TEXT("^(<=|<|>|>=|\\^)?(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$"), std::regex::ECMAScript | std::regex::optimize);
 

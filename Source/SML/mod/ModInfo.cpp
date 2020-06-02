@@ -63,6 +63,16 @@ FModInfo FModInfo::CreateFromJson(const FJsonObject& object) {
 		*object.GetStringField(TEXT("description")),
 		readAuthors(object.GetArrayField(TEXT("authors")))
 	};
+	if (object.HasField(TEXT("credits"))) {
+		modInfo.Credits = object.GetStringField(TEXT("credits"));
+	}
+	if (object.HasField(TEXT("resources"))) {
+		FModResources ModResources{};
+		const TSharedPtr<FJsonObject>& ResourcesObject = object.GetObjectField(TEXT("resources"));
+		if (ResourcesObject->HasField(TEXT("icon")))
+			ModResources.ModIconPath = ResourcesObject->GetStringField(TEXT("icon"));
+		modInfo.ModResources = ModResources;
+	}
 	if (object.HasField(TEXT("dependencies"))) {
 		const TSharedPtr<FJsonObject>& dependencies = object.GetObjectField(TEXT("dependencies"));
 		if (dependencies.IsValid()) {

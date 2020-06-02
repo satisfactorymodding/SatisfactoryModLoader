@@ -50,6 +50,15 @@ FModLoadingEntry CreateSmlLoadingEntry() {
 	entry.ModInfo.Version = GetModLoaderVersion();
 	entry.ModInfo.Description = TEXT("Mod Loading & Compatibility layer for Satisfactory");
 	entry.ModInfo.Authors = {TEXT("Archengius"), TEXT("Brabb3l"), TEXT("Mircea"), TEXT("Panakotta00"), TEXT("SuperCoder79"), TEXT("Vilsol")};
+	const FString SMLPakFilePath = FPaths::Combine(FPaths::GetPath(SML::GetModDirectory()), TEXT("loaders"), TEXT("SML.pak"));
+	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+	if (PlatformFile.FileExists(*SMLPakFilePath)) {
+		entry.PakFiles.Add({SMLPakFilePath, 100});
+	} else {
+		SML::Logging::error(TEXT("SML Pak file missing from the expected location: "), *SMLPakFilePath);
+		SML::Logging::error(TEXT("It probably means your installation is corrupt, please re-install SML"));
+		SML::Logging::error(TEXT("Game will launch, but some features won't be available."));
+	}
 	return entry;
 }
 
@@ -117,6 +126,10 @@ FFileHash HashFileAttributes(const FString& Path) {
 
 bool ExtractArchiveFile(FZipFile& ZipHandle, const FString& OutFilePath, const FString& ArchiveFilePath) {
 	const FFileHash ArchiveFileHash = HashArchiveFileAttributes(ZipHandle, ArchiveFilePath);
+	if (ArchiveFileHash.FileSize == 0) {
+		SML::Logging::error(TEXT("ExtractArchiveFile failed for "), *OutFilePath, TEXT(": File specified is not found in mod archive: "), *ArchiveFilePath);
+		return false;
+	}
 	//First, check if file already exists and it's hash matches
 	FFileHash DiskFileHash = HashFileAttributes(OutFilePath);
 	if (DiskFileHash == ArchiveFileHash) {
@@ -229,7 +242,7 @@ bool ExtractArchiveObject(FZipFile& ZipHandle, const FArchiveObjectInfo& ObjectI
 		SML::Logging::error(TEXT("Core mods are not supported by this version of SML"));
 		return false;
 	} else if (ObjectInfo.ObjectType == TEXT("custom")) {
-		LoadingEntry.CustomFilePaths[ObjectInfo.ObjectPath] = FileLocation;
+		LoadingEntry.CustomFilePaths.Add(ObjectInfo.ObjectPath, FileLocation);
 		return true;
 	} else {
 		SML::Logging::error(TEXT("Unsupported archive object type: "), *ObjectInfo.ObjectType);
@@ -256,10 +269,19 @@ bool ExtractArchiveObjects(FZipFile& ZipHandle, const FJsonObject& DataJson, FMo
 		if (JSONObject->HasField(TEXT("metadata"))) {
 			Metadata = JSONObject->GetObjectField(TEXT("metadata")).ToSharedRef();
 		}
-		FArchiveObjectInfo ObjectInfo{Path, OBJType, Metadata};
+		const FArchiveObjectInfo ObjectInfo{Path, OBJType, Metadata};
 		if (!ExtractArchiveObject(ZipHandle, ObjectInfo, LoadingEntry)) {
 			SML::Logging::error(TEXT("Failed to extract object "), *Path, TEXT(" for mod "), *LoadingEntry.ModInfo.Modid);
 			return false;
+		}
+	}
+	const FModResources& ModResources = LoadingEntry.ModInfo.ModResources;
+	if (!ModResources.ModIconPath.IsEmpty()) {
+		//Mod icon is considered a custom object with fixed path,
+		//Resolvable via ordinary CustomFilePaths lookup with key available from ModIconPath
+		const FArchiveObjectInfo IconObjectInfo{ModResources.ModIconPath, TEXT("custom"), MakeShareable(new FJsonObject())};
+		if (!ExtractArchiveObject(ZipHandle, IconObjectInfo, LoadingEntry)) {
+			SML::Logging::error(TEXT("Failed to extract mod icon at "), *ModResources.ModIconPath, TEXT(" for mod "), *LoadingEntry.ModInfo.Modid);
 		}
 	}
 	return true;

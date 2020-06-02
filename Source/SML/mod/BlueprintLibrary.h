@@ -1,5 +1,6 @@
 #pragma once
 
+#include "mod/ModInfo.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SML/util/Utility.h"
@@ -10,11 +11,35 @@ class USMLBlueprintLibrary : public UBlueprintFunctionLibrary {
 	GENERATED_BODY()
 
 public:
-	static TSharedPtr<FJsonValue> convertUPropToJsonValue(UProperty* prop, void* ptrToProp);
-	static TSharedPtr<FJsonObject> convertUStructToJsonObject(UStruct* Struct, void* ptrToStruct, bool UsePrettyName = true);
-	static void convertJsonObjectToUStruct(TSharedPtr<FJsonObject> json, UStruct* Struct, void* ptrToStruct, bool UsePrettyName = true);
-	static void convertJsonValueToUProperty(TSharedPtr<FJsonValue> json, UProperty* prop, void* ptrToProp);
+	static TSharedPtr<FJsonValue> ConvertUPropToJsonValue(UProperty* Prop, void* PtrToProp);
+	static TSharedPtr<FJsonObject> ConvertUStructToJsonObject(UStruct* Struct, void* PtrToStruct, bool UsePrettyName = true);
+	static void ConvertJsonObjectToUStruct(TSharedPtr<FJsonObject> Json, UStruct* Struct, void* PtrToStruct, bool UsePrettyName = true);
+	static void ConvertJsonValueToUProperty(TSharedPtr<FJsonValue> Json, UProperty* Prop, void* PtrToProp);
 
+	/** Constructs sem version from version string */
+	UFUNCTION(BlueprintPure, Category = "SML|Version")
+    static FVersion ParseVersionString(const FString& String);
+
+	/** Converts version data to the string */
+	UFUNCTION(BlueprintPure, Category = "SML|Version", meta = (DisplayName = "ToString (Version)", CompactNodeTitle = "->", ScriptMethod="ToString"))
+	static FString Conv_VersionToString(const FVersion& Version);
+	
+	/** Returns true when mod with provided ModId is loaded */
+	UFUNCTION(BlueprintPure, Category = "SML|ModLoading")
+	static bool IsModLoaded(const FString& ModId);
+
+	/** Returns list of loaded mods (their ModIds actually) */
+	UFUNCTION(BlueprintPure, Category = "SML|ModLoading")
+	static const TArray<FString>& GetLoadedMods();
+
+	/** Retrieves information about loaded mod by it's ModId. Returns empty struct if mod is not loaded */
+	UFUNCTION(BlueprintPure, Category = "SML|ModLoading")
+	static FModInfo GetLoadedModInfo(const FString& ModId);
+
+	/** Tries to load mod icon and returns pointer to the loaded texture, or FallbackIcon if icon cannot be loaded */
+	UFUNCTION(BlueprintCallable, Category = "SML|ModLoading")
+	static UTexture2D* LoadModIconTexture(const FString& ModId, UTexture2D* FallbackIcon);
+	
 	/**
 	 * Logs the given string in debug level to the SML Log file and the game log as well as into the console
 	 * @param str - the string you want to log
@@ -54,19 +79,19 @@ public:
 	/**
 	 * Returns the currently used SML version
 	 */
-	UFUNCTION(BlueprintCallable, Category = "SML")
-	static FString GetSMLVersion();
+	UFUNCTION(BlueprintPure, Category = "SML|Version")
+	static FVersion GetSMLVersion();
 
 	/**
 	 * Returns the currently used bootstrapper version
 	 */
-	UFUNCTION(BlueprintCallable, Category = "SML")
-	static FString GetBootstrapperVersion();
+	UFUNCTION(BlueprintPure, Category = "SML|Version")
+	static FVersion GetBootstrapperVersion();
 
 	/**
 	 * Returns the currently used DevelopmentMode Setting
 	 */
-	UFUNCTION(BlueprintCallable, Category = "SML")
+	UFUNCTION(BlueprintPure, Category = "SML|Development")
 	static bool GetDevelopmentModeEnabled();
 
 	/**
@@ -74,7 +99,7 @@ public:
 	 * @param modid - the modid you want to save to config for
 	 * @param Config - the struct you want to save as config
 	 */
-	UFUNCTION(BlueprintCallable, Category = "SML", CustomThunk, meta = (CustomStructureParam = "Config"))
+	UFUNCTION(BlueprintCallable, Category = "SML|Config", CustomThunk, meta = (CustomStructureParam = "Config"))
 	static void SaveConfig(const FString& modid, UProperty* Config);
 
 	/**
@@ -85,13 +110,13 @@ public:
 	 * @param modid - the modid of the config you want to load
 	 * @param Config - the struct you want to use as default values and were to copy the loaded config values to
 	 */
-	UFUNCTION(BlueprintCallable, Category = "SML", CustomThunk, meta = (CustomStructureParam = "Config"))
+	UFUNCTION(BlueprintCallable, Category = "SML|Config", CustomThunk, meta = (CustomStructureParam = "Config"))
 	static void LoadConfig(const FString& modid, UPARAM(ref) UProperty*& Config);
 
-	UFUNCTION(BlueprintCallable, Category = "SML", CustomThunk, meta = (CustomStructureParam = "Structure"))
+	UFUNCTION(BlueprintCallable, Category = "SML|Config", CustomThunk, meta = (CustomStructureParam = "Structure"))
     static void StructToJson(UPARAM(ref) FString& String, bool UsePrettyPropertyNames, UProperty* Structure);
 
-	UFUNCTION(BlueprintCallable, Category = "SML", CustomThunk, meta = (CustomStructureParam = "Structure"))
+	UFUNCTION(BlueprintCallable, Category = "SML|Config", CustomThunk, meta = (CustomStructureParam = "Structure"))
 	static void StructFromJson(const FString& String, bool UsePrettyPropertyNames, UPARAM(ref) UProperty*& Structure);
 
 private:
@@ -126,7 +151,7 @@ public:
 		void* StructPtr = Stack.MostRecentPropertyAddress;
 		P_FINISH;
 		if (StructCorrect && StructProperty && StructPtr) {
-			const TSharedPtr<FJsonObject> Config = convertUStructToJsonObject(StructProperty->Struct, StructPtr);
+			const TSharedPtr<FJsonObject> Config = ConvertUStructToJsonObject(StructProperty->Struct, StructPtr);
 			SML::WriteModConfig(ModId, Config.ToSharedRef());
 		}
 	}
@@ -139,9 +164,9 @@ public:
 		void* StructPtr = Stack.MostRecentPropertyAddress;
 		P_FINISH;
 		if (StructCorrect && StructProperty && StructPtr) {
-			TSharedPtr<FJsonObject> Config = convertUStructToJsonObject(StructProperty->Struct, StructPtr);
+			TSharedPtr<FJsonObject> Config = ConvertUStructToJsonObject(StructProperty->Struct, StructPtr);
 			Config = SML::ReadModConfig(ModId, Config.ToSharedRef());
-			convertJsonObjectToUStruct(Config, StructProperty->Struct, StructPtr);
+			ConvertJsonObjectToUStruct(Config, StructProperty->Struct, StructPtr);
 		}
 	}
 
@@ -186,7 +211,7 @@ public:
 			FJsonSerializer Serializer;
 			TSharedPtr<FJsonObject> Result;
 			Serializer.Deserialize(Reader, Result);
-			convertJsonObjectToUStruct(Result, StructProperty->Struct, StructPtr, bUsePrettyPropertyNames);
+			ConvertJsonObjectToUStruct(Result, StructProperty->Struct, StructPtr, bUsePrettyPropertyNames);
 		}
 	}
 };

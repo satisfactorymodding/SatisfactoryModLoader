@@ -1,7 +1,7 @@
 #pragma once
 #include <iosfwd>
 
-#include "mod/version.h"
+#include "mod/SemVersion.h"
 #include "mod/ModHandler.h"
 
 namespace SML {
