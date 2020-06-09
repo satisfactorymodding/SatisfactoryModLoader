@@ -38,8 +38,7 @@ struct FACTORYGAME_API FDisabledInputGate
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FORCEINLINE FDisabledInputGate() : FDisabledInputGate( false )
-	{}
+	FDisabledInputGate();
 
 	FORCEINLINE FDisabledInputGate( bool disabled ) :
 		mBuildGun( disabled ),
@@ -84,6 +83,7 @@ public:
 public:
 	FORCEINLINE ~FDisabledInputGate() = default;
 };
+FORCEINLINE FDisabledInputGate::FDisabledInputGate() : FDisabledInputGate( false ) {}
 
 /**
 * not dead, cant revive
@@ -93,11 +93,12 @@ class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead : public UFGUseSta
 {
 	GENERATED_BODY()
 public:
-	FORCEINLINE UFGUseState_ReviveInvalid_PlayerNotDead() : Super() { mIsUsableState = false; }
+	UFGUseState_ReviveInvalid_PlayerNotDead();
 
 public:
 	FORCEINLINE ~UFGUseState_ReviveInvalid_PlayerNotDead() = default;
 };
+FORCEINLINE UFGUseState_ReviveInvalid_PlayerNotDead::UFGUseState_ReviveInvalid_PlayerNotDead() { mIsUsableState = false; }
 
 /**
 * Revive valid
@@ -107,11 +108,12 @@ class FACTORYGAME_API UFGUseState_ReviveValid : public UFGUseState
 {
 	GENERATED_BODY()
 public:
-	FORCEINLINE UFGUseState_ReviveValid() : Super() { mIsUsableState = true; }
+	UFGUseState_ReviveValid();
 
 public:
 	FORCEINLINE ~UFGUseState_ReviveValid() = default;
 };
+FORCEINLINE UFGUseState_ReviveValid::UFGUseState_ReviveValid() { mIsUsableState = true; }
 
 /**
  * Base class for all player characters in the game.
