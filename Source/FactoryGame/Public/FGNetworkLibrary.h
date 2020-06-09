@@ -119,10 +119,6 @@ public:
 	/** @return true if the user is playing another game */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence" )
 	static bool IsPlayingOtherGame( const FOnlinePresence& presence );
-	
-	/** Get the a session for the players presence */
-	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Presence", meta = (DeprecatedFunction, DeprecationMessage = "Please use don't use anymore"))
-	static FBlueprintSessionResult GetSessionFromPresence( const FOnlinePresence& presence );
 
 	/** Returns true if a OnlinePresence is valid */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "Valid (OnlinePresence)", CompactNodeTitle = "Is Valid", Keywords = "valid presence"))
@@ -154,13 +150,6 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends" )
 	static FFGOnlineFriend GetFriendFromNetId( ULocalPlayer* friendOf, const FUniqueNetIdRepl& netId );
 		
-	/** Is the friend joinable publicly **/
-
-	UE_DEPRECATED(4.22, "Please use UFGAdminInterface::SetSessionVisibility instead")
-	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends", meta = (DeprecatedFunction, DeprecationMessage = "Please use UFGSessionLibrary::IsSessionJoinable instead"))
-	static TEnumAsByte<ECantJoinReason> IsFriendJoinable( ULocalPlayer* friendOf, const FFGOnlineFriend& onlineFriend);
-
-
 	/** @return Get the name of the friend */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends" )
 	static bool GetFriendName( ULocalPlayer* friendOf,  const FFGOnlineFriend& onlineFriend, FString& out_displayName );
@@ -190,11 +179,6 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static TEnumAsByte<ESessionVisibility> GetSessionVisibility( const FBlueprintSessionResult& session );
 
-	/** @SERVER: Sets the current visibility of the session */
-	UE_DEPRECATED(4.22, "Please use UFGAdminInterface::SetSessionVisibility instead")
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Session", Meta = ( DefaultToSelf = "worldContext" ), meta=(DeprecatedFunction, DeprecationMessage="Please use FGAdminInterface::SetSessionVisibility instead") )
-	static void SetSessionVisibility( UObject* worldContext, TEnumAsByte<ESessionVisibility> visibility );
-
 	/** Get the session information about my session */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static FBlueprintSessionResult GetMySession( ULocalPlayer* localPlayer );
@@ -209,11 +193,6 @@ public:
 	/** return true if the session is valid */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session", meta=(DisplayName = "Valid (FBlueprintSessionResult)", CompactNodeTitle = "Is Valid", Keywords = "valid session") )
 	static bool IsSessionValid( FBlueprintSessionResult session );
-
-	/** Check if a local player is in a game session */
-	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session", Meta = ( DefaultToSelf = "worldContext" ) )
-	static bool InOnlineSession( UObject* worldContext, const FUniqueNetIdRepl& playerId );
-
 
 	UFUNCTION(BlueprintPure, Category = "FactoryGame|Online|Session")
 	static TEnumAsByte<ECantJoinReason> IsSessionJoinable(const FBlueprintSessionResult& session);
@@ -301,14 +280,6 @@ class FACTORYGAME_API UFGNetworkLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
-	/**
-	 * Return true if this is on a server (playing singleplayer is same as server)
-	 * @param worldContext - a object that we can get the world from
-	 */
-	UE_DEPRECATED( 4.22, "Is duplicate of UKismetSystemLibrary::IsServer, please use that function instead")
-	UFUNCTION( BlueprintPure, Category="FactoryGame|Network", Meta = ( DefaultToSelf = "worldContext", DeprecatedFunction, DeprecationMessage = "UFGNetworkLibrary::IsServer is deprecated as it's a duplicate of UKismetSystemLibrary::IsServer, please use that function instead" ) )
-	static bool IsServer( class UObject* worldContext );
-	
 	/** 
 	 * Opens a webpage to the specified url. 
 	 * (In the case of steam, this opens the steam overlay with a webpage. Dunno what happens elsewhere).
@@ -348,13 +319,8 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "ToText (ECachedNATType)", CompactNodeTitle = "ToText", Keywords = "NAT ToText") )
 	static FText NATTypeToText( ECachedNATType NatType );
 
-
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online" )
 	static FString GetLocalBuildVersion();
-
-	UE_DEPRECATED(4.22, "Please use UFGSessionLibrary::CheckIsCompatibleVersion instead")
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online", meta=(DeprecatedFunction, DeprecationMessage="Please use FGSessionLibrary::CheckIsCompatibleVersion instead") )
-	static bool CheckIsCompatibleVersion( const FFGOnlineSessionSettings& session);
 
 	/** Get UniqueNetId from fg local player.*/
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online" )

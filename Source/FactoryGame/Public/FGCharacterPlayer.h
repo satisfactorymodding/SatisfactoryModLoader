@@ -683,6 +683,11 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "Radiation" )
 	FORCEINLINE float GetRadiationDamageAngle() const { return mRadiationDamageAngle; }
 
+	bool IsInRadioActiveZone()
+	{
+		return mInRadioactiveZone;
+	}
+
 	/** Start the pending removal of the character */
 	virtual void TornOff() override;
 
@@ -797,6 +802,9 @@ private:
 	
 	/** Migrate number of inventory and arm equipment slots saved before BU3 to unlock subsystem */
 	void MigrateNumSavedSlots();
+
+	/** Check if we have items picked up that isn't registered as picked up. Fixes issues on old saves before we saved picked up items */
+	void CheckItemPickedUp();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */

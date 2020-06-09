@@ -9,6 +9,7 @@
 #include "FGChatManager.h"
 #include "FGCharacterPlayer.h"
 #include "FGPlayerState.h"
+#include "PlayerPresenceState.h"
 #include "FGPlayerController.generated.h"
 
 
@@ -288,6 +289,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Hotbar" )
 	void CycleToPreviousHotbar();
 
+
+	virtual bool GetPresenceState(FPlayerPresenceState& outState) const override;
+
+
 protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
@@ -466,6 +471,9 @@ protected:
 	float mTurnOffMovementWindTimer;
 	float mMovementWindInAirTimer;
 	float mMovementSpeedSoft; //Used to detect changes in movement speed
+
+
+	float mNoMovementTime; //Used to detect if player has been idling for a long time.. idealy we should cehck for input too, but this should be good enough for now
 
 private:
 	/** If we're currently in the state of respawning */

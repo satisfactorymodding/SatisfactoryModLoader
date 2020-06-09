@@ -18,7 +18,6 @@ void UFGSplineComponent::SetVectorParameterOnInstancedMeshMaterials(FName parame
 void UFGSplineComponent::SetUseInstancing(bool useInstancing){ }
 void UFGSplineComponent::SetAdditionalCustomDepthPass(bool enable){ }
 void UFGSplineComponent::GenerateCollisionIdx(int32 idx, float splineLength, int32 numCollisions){ }
-bool UFGSplineComponent::IsSegmentStraight(int32 fromPointIdx, int32 toPointIdx) const{ return bool(); }
 void UFGSplineComponent::GenerateSplineCollisions(){ }
 UFGInstancedSplineMeshComponent* UFGSplineComponent::CreateInstancedSplineMeshComponent(){ return nullptr; }
 USplineMeshComponent* UFGSplineComponent::CreateSplineMeshComponent(){ return nullptr; }

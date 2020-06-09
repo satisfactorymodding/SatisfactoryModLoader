@@ -276,6 +276,9 @@ struct FACTORYGAME_API FSplineUtils
 		const FVector& endPos,
 		FVector endForward );
 
+	/** Calculates an optimal magnitude for a straight line between the points. */
+	static float CalcStraightTangentMagnitude( const FVector& startPos, const FVector& endPos, float targetTangetFactor = 1.0f );
+
 private:
 	/** Internal helpers for building routing the splines. */
 	static void CalcBendDirections3D(
@@ -320,8 +323,6 @@ private:
 		bool isEndCW,
 		float& out_startAngle,
 		float& out_endAngle );
-
-	static float CalcStraightTangentMagnitude( const FVector& startPos, const FVector& endPos, float targetTangetFactor = 1.0f );
 
 public:
 	FORCEINLINE ~FSplineUtils() = default;

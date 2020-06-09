@@ -18,6 +18,8 @@ bool UFGPowerInfoComponent::ShouldSave_Implementation() const{ return bool(); }
 UFGPowerCircuit* UFGPowerInfoComponent::GetPowerCircuit() const{ return nullptr; }
 void UFGPowerInfoComponent::SetTargetConsumption(float newConsumption){ }
 float UFGPowerInfoComponent::GetTargetConsumption() const{ return float(); }
+void UFGPowerInfoComponent::SetMaximumTargetConsumption(float maxConsumption){ }
+float UFGPowerInfoComponent::GetMaximumTargetConsumption() const{ return float(); }
 float UFGPowerInfoComponent::GetActualConsumption() const{ return float(); }
 void UFGPowerInfoComponent::SetBaseProduction(float newProduction){ }
 float UFGPowerInfoComponent::GetBaseProduction() const{ return float(); }

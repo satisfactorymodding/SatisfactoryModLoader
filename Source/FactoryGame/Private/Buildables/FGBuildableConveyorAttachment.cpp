@@ -32,3 +32,5 @@ void AFGBuildableConveyorAttachment::BeginPlay(){ }
 void AFGBuildableConveyorAttachment::Dismantle_Implementation(){ }
 void AFGBuildableConveyorAttachment::Factory_CollectInput_Implementation(){ }
 void AFGBuildableConveyorAttachment::OnRep_ReplicationDetailActor(){ }
+void AFGBuildableConveyorAttachment::OnBuildableReplicationDetailStateChange(bool newStateIsActive){ }
+AFGReplicationDetailActor* AFGBuildableConveyorAttachment::GetOrCreateReplicationDetailActor(){ return nullptr; }

@@ -26,3 +26,4 @@ int32 AFGGamePhaseManager::PayOffOnGamePhase(FItemAmount payOff, EGamePhase game
 void AFGGamePhaseManager::OnRep_GamePhase(){ }
 void AFGGamePhaseManager::Debug_DumpStateToLog(){ }
 void AFGGamePhaseManager::ResetGamePhase(){ }
+int32 AFGGamePhaseManager::GetLastTechTierForGamePhase(EGamePhase phase) const{ return int32(); }

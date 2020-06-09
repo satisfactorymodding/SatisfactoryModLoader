@@ -448,8 +448,10 @@ public:
 	void CopyFromOtherComponent( UFGInventoryComponent* otherComponent );
 
 	/** Notify component its owning buildable is dismantled (or is dismantling), don't allow movement in or out of this inventory */
-	FORCEINLINE void SetOwningBuildingIsDismantled( bool isDismantling ) { mOwningBuildableIsDismantled = isDismantling; }
-	FORCEINLINE bool GetOwningBuildingIsDismantled() const { return mOwningBuildableIsDismantled; }
+	FORCEINLINE void SetLocked( bool isLocked ) { mIsLocked = isLocked; }
+
+	UFUNCTION( BlueprintPure, Category = "Inventory ")
+	FORCEINLINE bool IsLocked() const { return mIsLocked; }
 
 protected:
 	/** Used to call OnItemAdded/OnItemRemoved on clients */
@@ -500,8 +502,8 @@ protected:
 	UPROPERTY( SaveGame )
 	int32 mAdjustedSizeDiff;
 
-	/** If this inventory belongs to a buildable, this will be flagged on dismantle and all calls to IsItemAllowed will fail */
-	bool mOwningBuildableIsDismantled;
+	/** Locks the inventory. Indicating that no items are allowed and you should not be able to drag stuff from it either */
+	bool mIsLocked;
 
 private:
 	/** All items in the inventory */

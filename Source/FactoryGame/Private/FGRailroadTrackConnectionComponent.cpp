@@ -23,6 +23,7 @@ UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindOv
 		float radius,
 		bool allowPlatformTracks){ return nullptr; }
 void UFGRailroadTrackConnectionComponent::SetTrackPosition(const FRailroadTrackPosition& position){ }
+void UFGRailroadTrackConnectionComponent::SortConnections(){ }
 void UFGRailroadTrackConnectionComponent::AddConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::ClampSwitchPosition(){ }

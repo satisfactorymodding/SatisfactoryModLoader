@@ -52,6 +52,7 @@ bool FSplineUtils::BuildCurveSpline( FSplineBuilder& builder,
 		float minTurnRadius,
 		const FVector& endPos,
 		FVector endForward){ return bool(); }
+float FSplineUtils::CalcStraightTangentMagnitude(const FVector& startPos, const FVector& endPos, float targetTangetFactor){ return float(); }
 void FSplineUtils::CalcBendDirections3D(const FVector& startPos,
 		const FVector& startForward,
 		float startRadius,
@@ -88,7 +89,6 @@ void FSplineUtils::CalcBendAngles2D(const FVector& startPos,
 		bool isEndCW,
 		float& out_startAngle,
 		float& out_endAngle){ }
-float FSplineUtils::CalcStraightTangentMagnitude(const FVector& startPos, const FVector& endPos, float targetTangetFactor){ return float(); }
 void FSplineBuilder::Start(const FVector& pos, const FVector& tan){ }
 void FSplineBuilder::AddSegment(const FVector& pos, const FVector& tan){ }
 void FSplineBuilder::InsertSegmentAfterIndex(const FVector& pos, const FVector& tan, int32 index){ }

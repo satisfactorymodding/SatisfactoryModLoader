@@ -1,4 +1,5 @@
 #pragma once
+#include "SubclassOf.h"
 #include "UObject/Class.h"
 
 #include "Engine/DeveloperSettings.h"
@@ -21,7 +22,7 @@ public:
 
 	/** Widget used to show the user when linking accounts */
 	UPROPERTY( EditAnywhere, config, Category = UI )
-	TAssetSubclassOf<UUserWidget> mConnectAccountsWidget;
+	TSubclassOf<UUserWidget> mConnectAccountsWidget;
 
 public:
 	FORCEINLINE ~UFGUISettings() = default;

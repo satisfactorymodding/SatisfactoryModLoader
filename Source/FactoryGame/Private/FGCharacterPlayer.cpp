@@ -187,6 +187,7 @@ void AFGCharacterPlayer::OnRep_InRadioactiveZone(){ }
 void AFGCharacterPlayer::OnRep_RadiationIntensity(){ }
 void AFGCharacterPlayer::OnRep_IsSliding(){ }
 void AFGCharacterPlayer::MigrateNumSavedSlots(){ }
+void AFGCharacterPlayer::CheckItemPickedUp(){ }
 bool AFGCharacterPlayer::FilterInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 void AFGCharacterPlayer::InitializePreferredCameraMode(){ }
 void AFGCharacterPlayer::DoUnSlide(){ }

@@ -71,6 +71,7 @@ void AFGHologram::GetConstructDisqualifiers(TArray< TSubclassOf<  UFGConstructDi
 void AFGHologram::ResetConstructDisqualifiers(){ }
 void AFGHologram::UpdateRotationValuesFromTransform(){ }
 void AFGHologram::SetBuildClass(TSubclassOf<  AActor > buildClass){ }
+void AFGHologram::OnHologramTransformUpdated(){ }
 void AFGHologram::SetupClearance( UBoxComponent* boxComponent){ }
 void AFGHologram::SetupClearanceDetector( UBoxComponent* boxComponent){ }
 void AFGHologram::CheckValidPlacement(){ }

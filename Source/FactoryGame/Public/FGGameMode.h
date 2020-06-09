@@ -188,6 +188,10 @@ private:
 	UPROPERTY( SaveGame )
 	FName mStartingPointTagName;
 
+	/** Command line param -PossesAny will allow players using authorization to posses other players on startup regardless of if their UniqueIds match */
+	UPROPERTY()
+	bool mAllowPossessAny;
+
 	/** Overriding selected starting point when respawning. */
 	UPROPERTY()
 	FName mDebugStartingPointTagName;

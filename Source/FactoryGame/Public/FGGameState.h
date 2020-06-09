@@ -22,6 +22,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRestartTimeNotification, float, 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutoSaveTimeNotification, float, timeLeft );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnAutoSaveFinished );
 
+extern const wchar_t STARTUP_TEMP_ID_PREFIX[];
 /**
  * 
  */
@@ -197,7 +198,7 @@ public:
 	FString GetOnlineSessionName() const;
 
 	UFUNCTION(BlueprintCallable, Category = "FactoryGame|Session")
-	void SetOnlineSessionName( const FString& inName ) { mReplicatedOnlineSessionName = inName; }
+	void SetOnlineSessionName( const FString& inName );
 
 	/*
 	 * Called from buildable subsystem on load to apply saved color slot data
@@ -237,6 +238,14 @@ public:
 
 	/** Set the planned restart in time seconds */
 	void SetPlannedServerRestartWorldTime( float worldTimeSeconds );
+	
+	/** Called both on client and server for syncing session names for connected players*/
+	UFUNCTION()
+	void OnRep_OnlineSessionName();
+
+	/** Called both on client and server for syncing session visibility for connected players*/
+	UFUNCTION()
+	void OnRep_OnlineSessionVisibility();
 private:
 	/** Check the restart time of server and restart it and notify clients of the countdown */
 	void CheckRestartTime();
@@ -342,8 +351,11 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	FString mReplicatedSessionName;
 	
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OnlineSessionName)
 	FString mReplicatedOnlineSessionName = "Auto"; //A value of auto should be evaluated to a generated name on first use/at session creation
+
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OnlineSessionVisibility)
+	int8 mReplicadedOnlineNumPubliclConnections = 0; 
 
 	/*
 	 *	Array of primary building color slots as Linear Colors. Note: This used to be handled with FColor which resulted in unneeded conversions back and forth

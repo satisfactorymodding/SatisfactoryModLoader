@@ -384,6 +384,14 @@ public:
 	// Debug command to show all hotbars
 	void DumpHotbars();
 
+	/** Returns how many inventory slots the player has observed that they have */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Inventory" )
+	int32 GetNumObservedInventorySlots() const { return mNumObservedInventorySlots; }
+
+	/** Update the number of observed slots to how many we have unlocked */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Inventory" )
+	void UpdateNumObservedInventorySlots();
+
 protected:
 	// Client get notified that the hotbar has changed
 	UFUNCTION()
@@ -392,6 +400,11 @@ protected:
 	// Client get notified that the hotbar index has changed
 	UFUNCTION()
 	void OnRep_CurrentHotbarIndex();
+
+private:
+	/** Server function for updating number observed inventory slots */
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_UpdateNumObservedInventorySlots();
 
 public:
 	/** Broadcast when a buildable or decor has been constructed. */
@@ -479,6 +492,10 @@ private:
 	/** The last selected category in the resource sink shop so we can open the shop at the same category later */
 	UPROPERTY( Transient )
 	TSubclassOf< UFGSchematicCategory > mLastSelectedResourceSinkShopCategory;
+
+	/** How many inventory slots the player has observed that they have. Used to show when we have new available slots in the UI  */
+	UPROPERTY( SaveGame, Replicated )
+	int32 mNumObservedInventorySlots;
 
 public:
 	FORCEINLINE ~AFGPlayerState() = default;

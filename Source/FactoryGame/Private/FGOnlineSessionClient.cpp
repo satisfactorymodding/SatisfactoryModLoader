@@ -12,6 +12,7 @@ void UFGOnlineSessionClient::GetPendingInvites(TArray<FPendingInvite>& out_invit
 void UFGOnlineSessionClient::AcceptInvite(const FPendingInvite& invite){ }
 void UFGOnlineSessionClient::JoinGameSession(const FOnlineSessionSearchResult& gameSession){ }
 void UFGOnlineSessionClient::DiscardInvite(const FPendingInvite& invite){ }
+void UFGOnlineSessionClient::OnSessionInviteAccepted(bool bWasSuccess, int32 controllerId, TSharedPtr<const FUniqueNetId> userId, const FOnlineSessionSearchResult& inviteResult){ }
 void UFGOnlineSessionClient::BroadcastInviteReceived(int32 localUserNum, const FPendingInvite& invite){ }
 int32 UFGOnlineSessionClient::GetLocalUserId() const{ return int32(); }
 void UFGOnlineSessionClient::OnQueryUserInfoComplete(int32 localUserNum, bool wasSuccessful, const TArray< TSharedRef<const FUniqueNetId> >& userIds, const FString& errorStr){ }

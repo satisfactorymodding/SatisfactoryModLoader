@@ -38,11 +38,13 @@ bool UFGLocalPlayer::HasReceivedProductUserId() const{ return bool(); }
 TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerId() const{ return TSharedPtr<const FUniqueNetId>(); }
 TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerIdSteam() const{ return TSharedPtr<const FUniqueNetId>(); }
 void UFGLocalPlayer::ConnectAccount(const FName currentPlatform){ }
+void UFGLocalPlayer::LogOutEpicAndCreateNewAccountConnection(const FName currentPlatform){ }
 void UFGLocalPlayer::CreateNewAccountConnection(const FName currentPlatform){ }
 void UFGLocalPlayer::LoginAndConnectAccount(const FName currentPlatform){ }
 void UFGLocalPlayer::ContinueWithoutConnectingAccount(const FName currentPlatform){ }
 void UFGLocalPlayer::SwitchController( APlayerController* PC){ }
 void UFGLocalPlayer::LoginAndConnectOtherEpicAccount(){ }
+void UFGLocalPlayer::ContinueWithAndHookUpSteamToEOSAfterEpicLogout(){ }
 void UFGLocalPlayer::LogoutEpicAccountAndContinue(){ }
 void UFGLocalPlayer::LoginEpicAccountPortal(){ }
 void UFGLocalPlayer::LogoutEpicAccountPortal(){ }
@@ -73,6 +75,7 @@ void UFGLocalPlayer::CreateOfflineSession_SetupServer(bool startOffline){ }
 bool UFGLocalPlayer::CanAutoLoginEpic() const{ return bool(); }
 bool UFGLocalPlayer::CanAutoLoginSteam() const{ return bool(); }
 FString UFGLocalPlayer::GetPresenceString() const{ return FString(); }
+void UFGLocalPlayer::GetPresenceState(FPlayerPresenceState& outState) const{ }
 ELoginState UFGLocalPlayer::FromLoginStatus(ELoginStatus::Type from) const{ return ELoginState(); }
 void UFGLocalPlayer::OpenMap_WaitForPresence(){ }
 void UFGLocalPlayer::OpenMap_WaitForProductUserId(){ }
@@ -84,3 +87,4 @@ void UFGLocalPlayer::SetLoginStateSteam(ELoginState newLoginState){ }
 void UFGLocalPlayer::GetFriendsWithNoData(TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData){ }
 bool UFGLocalPlayer::PresenceHasSessionId() const{ return bool(); }
 void UFGLocalPlayer::PushErrorAndAutosave(TSubclassOf<class UFGErrorMessage> errorMessage){ }
+void UFGLocalPlayer::OnComandlineInviteSearchComplete(FBlueprintSessionResult result){ }
