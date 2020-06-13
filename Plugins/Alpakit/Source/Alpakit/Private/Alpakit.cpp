@@ -18,6 +18,7 @@
 #include "ContentBrowserDelegates.h"
 #include "ContentBrowserModule.h"
 #include "PropertyEditorModule.h"
+#include "GenericPlatform/GenericPlatformProcess.h"
 
 static const FName AlpakitTabName("Alpakit");
 static const FName AlpakitOverwriteTabName("AlpakitOverwrite");
@@ -89,6 +90,18 @@ void FAlpakitModule::StartupModule()
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(AlpakitOverwriteTabName, FOnSpawnTab::CreateRaw(this, &FAlpakitModule::SpawnAlpakitOverwriteTab))
 		.SetDisplayName(LOCTEXT("AlpakitOverwriteTitle", "Overwrite in mod"))
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
+	
+	IConsoleManager::Get().RegisterConsoleCommand(TEXT("Alpakit"), TEXT("Executes Alpakit!"), FConsoleCommandDelegate::CreateStatic(([]() {
+		UE_LOG(LogTemp, Warning, TEXT("Start Alpakit"));
+		TPromise<void> promise;
+		TFuture<void> future = promise.GetFuture();
+        SAlpakaWidget::Alpakit([&promise]() {
+        	UE_LOG(LogTemp, Warning, TEXT("Alpakit Finishing..."));
+			promise.EmplaceValue();
+        });
+		future.Wait();
+		UE_LOG(LogTemp, Warning, TEXT("Alpakit Done"));
+    })));
 }
 
 void FAlpakitModule::ShutdownModule()

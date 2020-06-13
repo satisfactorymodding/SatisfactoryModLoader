@@ -46,6 +46,8 @@ private:
 	TSharedRef<FExtender> OnExtendContentBrowserPathSelectionMenu(const TArray<FString>& SelectedPaths);
 	TSharedRef<FExtender> OnExtendAssetEditor(const TSharedRef<FUICommandList> CommandList, const TArray<UObject*> ContextSensitiveObjects);
 
+	FConsoleCommandDelegate ConsoleCommandAlpakit;
+
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
 	bool HandleSettingsSaved();
