@@ -244,7 +244,9 @@ void FModHandler::PostInitializeModActors() {
 }
 
 void FModHandler::HandlePlayerJoin(AFGPlayerController* PlayerController) {
-	SML::Logging::info(TEXT("HandlePlayerJoin "), *PlayerController->PlayerState->GetPlayerName());
+	if (PlayerController->PlayerState != nullptr) {
+		SML::Logging::info(TEXT("HandlePlayerJoin "), *PlayerController->PlayerState->GetPlayerName());
+	}
 	for (const TWeakObjectPtr<AActor>& Actor : this->ModInitializerActorList) {
 		if (Actor->IsValidLowLevel()) {
 			if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
