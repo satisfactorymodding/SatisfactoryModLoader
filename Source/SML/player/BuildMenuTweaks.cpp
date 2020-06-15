@@ -19,7 +19,7 @@ void GRegisterBuildMenuHooks() {
 		checkf(RootWidget, TEXT("CategoryButtonsContainer widget root widget is not a size box!"));
 		UWidget* ContentWidget = RootWidget->GetContent();
 
-		RootWidget->SetMaxDesiredHeight(6	00);
+		RootWidget->SetMaxDesiredHeight(600);
 		RootWidget->bOverride_MaxDesiredHeight = true;
 		
 		//Create scroll box, populate it and set content
