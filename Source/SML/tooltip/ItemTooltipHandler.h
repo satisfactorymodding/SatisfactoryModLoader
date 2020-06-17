@@ -26,7 +26,7 @@ class SML_API UItemTooltipHandler: public UBlueprintFunctionLibrary {
     GENERATED_BODY()
 public:
     //Internal usage only, called by SML on startup
-    NO_API static void GRegisterHooking();
+    NO_API static void RegisterHooking();
 
     /**
      * Register tooltip provider that will be called for all items registered

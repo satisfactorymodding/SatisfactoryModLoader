@@ -147,26 +147,26 @@ void FModHandler::LoadMods(const BootstrapAccessors& accessors) {
 }
 
 void FModHandler::AttachLoadingHooks() {
-	SUBSCRIBE_METHOD_AFTER(FG_GAME_STATE_INIT_FUNC_DESC, AFGGameState::Init, [](AFGGameState* GameState) {
+	SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
 		SML::GetModHandler().PreInitializeModActors();
 		SML::Logging::info(TEXT("Finished pre-subsystem-initializing mod actors"));
 	});
 	
-	SUBSCRIBE_METHOD(GAME_STATE_RECEIVE_GAME_MODE_CLASS_FUNC_DESC, AGameStateBase::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
+	SUBSCRIBE_METHOD(AGameStateBase::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
 		UWorld* World = gameMode->GetWorld();
         const FString MapName = World->GetPathName();
-		SML::Logging::info(TEXT("Initializing on map "), *MapName, TEXT(". Is Menu? "), SML::IsMenuMapName(MapName));
+		SML::Logging::info(TEXT("Initializing on map "), *MapName);
 		SML::GetModHandler().SpawnModActors(World, SML::IsMenuMapName(MapName));
 		SML::GetModHandler().InitializeModActors();
 		SML::Logging::info(TEXT("Finished initializing mod actors"));
 	});
 	
-	SUBSCRIBE_METHOD(GAME_INSTANCE_LOAD_COMPLETE_FUNC_DESC, UFGGameInstance::LoadComplete, [](auto&, UFGGameInstance*, const float, const FString& MapName) {
+	SUBSCRIBE_METHOD(UFGGameInstance::LoadComplete, [](auto&, UFGGameInstance*, const float, const FString& MapName) {
 		SML::GetModHandler().PostInitializeModActors();
 		SML::Logging::info(TEXT("Finished post initializing mod actors"));
 	});
 
-	SUBSCRIBE_METHOD(PLAYER_CONTROLLER_BEGIN_PLAY_FUNC_DESC, AFGPlayerController::BeginPlay, [](auto&, AFGPlayerController* controller) {
+	SUBSCRIBE_METHOD(AFGPlayerController::BeginPlay, [](auto&, AFGPlayerController* controller) {
 		SML::GetModHandler().HandlePlayerJoin(controller);
 	});
 }
@@ -244,7 +244,6 @@ void FModHandler::PostInitializeModActors() {
 }
 
 void FModHandler::HandlePlayerJoin(AFGPlayerController* PlayerController) {
-	SML::Logging::info(TEXT("HandlePlayerJoin "), *PlayerController->PlayerState->GetPlayerName());
 	for (const TWeakObjectPtr<AActor>& Actor : this->ModInitializerActorList) {
 		if (Actor->IsValidLowLevel()) {
 			if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {

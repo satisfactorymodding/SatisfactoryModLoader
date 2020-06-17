@@ -63,7 +63,7 @@ FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
 
 static TArray<ISMLItemTooltipProvider*> GlobalTooltipProviders;
 
-void UItemTooltipHandler::GRegisterHooking() {
+void UItemTooltipHandler::RegisterHooking() {
     //Hook into InventorySlot widget to apply tooltip overrides
     UClass* InventorySlot = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/InGame/InventorySlots/Widget_InventorySlot.Widget_InventorySlot_C"));
     check(InventorySlot);

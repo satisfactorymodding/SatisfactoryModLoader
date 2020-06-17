@@ -21,6 +21,15 @@ AFGPlayerController* UPlayerCommandSender::GetPlayer() const {
 	return Controller;
 }
 
+bool USMLPlayerComponent::IsClientModInstalled(const FString& ModId) const {
+	return ClientInstalledMods.Contains(ModId);
+}
+
+FVersion USMLPlayerComponent::GetClientModVersion(const FString& ModId) const {
+	const FVersion* Result = ClientInstalledMods.Find(ModId);
+	return Result ? *Result : FVersion{};
+}
+
 USMLPlayerComponent::USMLPlayerComponent() {
 	CommandSender = CreateDefaultSubobject<UPlayerCommandSender>(TEXT("CommandSender"));
 }

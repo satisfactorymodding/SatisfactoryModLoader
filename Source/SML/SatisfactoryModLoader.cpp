@@ -26,13 +26,14 @@
 #include "util/Console.h"
 #include "player/PlayerUtility.h"
 #include "mod/hooking.h"
-#include "player/VersionCheck.h"
+#include "network/RemoteVersionChecker.h"
 #include "player/MainMenuMixin.h"
 #include "mod/toolkit/FGAssetDumper.h"
 #include "mod/ModSubsystems.h"
 #include "player/BuildMenuTweaks.h"
 #include "tooltip/ItemTooltipHandler.h"
 #include "util/FuncNames.h"
+#include "network/NetworkHandler.h"
 
 bool CheckGameVersion(const long TargetVersion) {
 	const FString& BuildVersion = FString(FApp::GetBuildVersion());
@@ -65,6 +66,7 @@ void ParseConfig(const TSharedRef<FJsonObject>& JSON, SML::FSMLConfiguration& Co
 	Config.bConsoleWindow = JSON->GetBoolField(TEXT("consoleWindow"));
 	Config.bDumpGameAssets = JSON->GetBoolField(TEXT("dumpGameAssets"));
 	Config.DisabledCommands = SML::Map(JSON->GetArrayField(TEXT("disabledCommands")), [](auto It) { return It->AsString(); });
+	Config.bEnableCheatConsoleCommands = JSON->GetBoolField(TEXT("enableCheatConsoleCommands"));
 }
 
 TSharedRef<FJsonObject> CreateConfigDefaults() {
@@ -75,6 +77,7 @@ TSharedRef<FJsonObject> CreateConfigDefaults() {
 	Ref->SetBoolField(TEXT("debug"), false);
 	Ref->SetBoolField(TEXT("consoleWindow"), false);
 	Ref->SetBoolField(TEXT("dumpGameAssets"), false);
+	Ref->SetBoolField(TEXT("enableCheatConsoleCommands"), false);
 	return Ref;
 }
 
@@ -84,7 +87,7 @@ namespace SML {
 	//version of the SML mod loader, as specified in the SML.h
 	static FVersion* modLoaderVersion = new FVersion(modLoaderVersionString);
 
-	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.8");
+	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.10");
 
 	//target (minimum) version of the bootstrapper we are capable running on
 	static FVersion* targetBootstrapperVersion = new FVersion(targetBootstrapperVersionString);
@@ -167,7 +170,8 @@ namespace SML {
 		//C++ hooks can be registered very early in the engine initialization
 		modHandlerPtr->AttachLoadingHooks();
 		InitializePlayerComponent();
-		RegisterVersionCheckHooks();
+		UModNetworkHandler::Register();
+		FRemoteVersionChecker::Register();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
@@ -181,13 +185,12 @@ namespace SML {
 	
 	//Register hooks for symbol resolution and enhanced crash info
 	void RegisterCrashContextHooks() {
-		SUBSCRIBE_METHOD(WIN_STACK_WALK_GET_DOWNSTREAM_STORAGE_FUNC_DESC, FWindowsPlatformStackWalk::GetDownstreamStorage, [](auto& Call) {
+		SUBSCRIBE_METHOD(FWindowsPlatformStackWalk::GetDownstreamStorage, [](auto& Call) {
             FString OriginalResult = Call();
             AppendSymbolSearchPaths(OriginalResult);
             Call.Override(OriginalResult);
         });
-
-		SUBSCRIBE_METHOD_AFTER(CRASH_CONTEXT_ADD_CALL_STACK_FUNC_DESC, FGenericCrashContextProto::AddPortableCallStack, [](void* ProtoContext) {
+		SUBSCRIBE_METHOD_AFTER_MANUAL("FGenericCrashContext::AddPortableCallStack", FGenericCrashContextProto::AddPortableCallStack, [](void* ProtoContext) {
             FGenericCrashContext* Context = static_cast<FGenericCrashContext*>(ProtoContext);
             BeginCrashReportSection(Context, TEXT("ModdingProperties"));
             Context->AddCrashProperty(TEXT("BootstrapperVersion"), *GetBootstrapperVersion().String());
@@ -240,7 +243,8 @@ namespace SML {
 		//Blueprint hooks are registered here, after engine initialization
 		GRegisterBuildMenuHooks();
 		GRegisterMainMenuHooks();
-		UItemTooltipHandler::GRegisterHooking();
+		UItemTooltipHandler::RegisterHooking();
+		UModNetworkHandler::Register();
 		
 		if (GetSmlConfig().bDumpGameAssets) {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
@@ -258,6 +262,10 @@ namespace SML {
 
 	SML_API FString GetCacheDirectory() {
 		return *rootGamePath / TEXT(".cache");
+	}
+
+	BootstrapAccessors& GetBootstrapperAccessors() {
+		return *bootstrapAccessors;
 	}
 
 	SML_API const SML::FSMLConfiguration& GetSmlConfig() {

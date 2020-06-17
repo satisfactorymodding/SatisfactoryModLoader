@@ -10,6 +10,11 @@ struct FModResources {
 	FString ModIconPath;
 };
 
+struct FModRemoteVersion {
+	FVersionRange RemoteVersion;
+	bool bAcceptAnyRemoteVersion;
+};
+
 /**
  * Describes general purpose information about the mod loaded
  */
@@ -35,6 +40,8 @@ struct FModInfo {
 	/** Credits provided in data.json */
 	UPROPERTY(BlueprintReadOnly)
 	FString Credits;
+	/** Predicate specifying which remote mod version are accepted */
+	FModRemoteVersion RemoteVersion;
 	
 	/** General-purpose resources of the mod specified in data.json */
 	FModResources ModResources;

@@ -3,6 +3,7 @@
 
 #include "mod/SemVersion.h"
 #include "mod/ModHandler.h"
+#include "util/bootstrapper_exports.h"
 
 namespace SML {
 	struct FSMLConfiguration {
@@ -45,6 +46,12 @@ namespace SML {
 		 * Note that this setting will only affect players, other command senders will still be able to use it
 		 */
 		TArray<FString> DisabledCommands;
+
+		/**
+		 * Whenever to enable console commands which are considered cheat and disabled by default
+		 * See UFGCheatManager for command list
+		 */
+		bool bEnableCheatConsoleCommands;
 	};
 };
 
@@ -104,5 +111,6 @@ namespace SML {
 	 */
 	SML_API extern FString GetCacheDirectory();
 
-	void* ResolveGameSymbol(const char* SymbolName);
+	/** @deprectated Internal usage only */
+	BootstrapAccessors& GetBootstrapperAccessors();
 };

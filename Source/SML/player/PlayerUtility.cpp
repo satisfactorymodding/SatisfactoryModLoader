@@ -5,17 +5,23 @@
 #include "Engine.h"
 #include "mod/hooking.h"
 #include "player/component/SMLPlayerComponent.h"
-#include "util/FuncNames.h"
+#include "util/Logging.h"
 
 namespace SML {
+	
 	void InitializePlayerComponent() {
-		SUBSCRIBE_METHOD(PLAYER_CONTROLLER_BEGIN_PLAY_FUNC_DESC, AFGPlayerController::BeginPlay, [](auto& scope, AFGPlayerController* controller) {
-			USMLPlayerComponent* Component = NewObject<USMLPlayerComponent>(controller, TEXT("SML_PlayerComponent"));
+		SUBSCRIBE_METHOD(AFGPlayerController::BeginPlay, [](auto& Scope, AFGPlayerController* Controller) {
+			USMLPlayerComponent* Component = NewObject<USMLPlayerComponent>(Controller, TEXT("SML_PlayerComponent"));
 			Component->RegisterComponent();
 			Component->SetNetAddressable();
 			Component->SetIsReplicated(true);
+			
+			if (SML::GetSmlConfig().bEnableCheatConsoleCommands) {
+				Controller->AddCheats(true);
+			}
 		});
-		SUBSCRIBE_METHOD(ENTER_CHAT_MESSAGE_FUNC_DESC, AFGPlayerController::EnterChatMessage, [](auto& scope, AFGPlayerController* player, const FString& message) {
+		
+		SUBSCRIBE_METHOD(AFGPlayerController::EnterChatMessage, [](auto& scope, AFGPlayerController* player, const FString& message) {
 			if (message.StartsWith(TEXT("/"))) {
 				const FString CommandLine = message.TrimStartAndEnd().RightChop(1);
 				USMLPlayerComponent* Component = USMLPlayerComponent::Get(player);
@@ -32,7 +38,7 @@ namespace SML {
 	SML_API TArray<AFGPlayerController*> GetConnectedPlayers(const UWorld* World) {
 		TArray<AFGPlayerController*> Result;
 		//iterate connected players
-		for (FConstPlayerControllerIterator iterator = World->GetPlayerControllerIterator(); iterator; iterator++) {
+		for (FConstPlayerControllerIterator iterator = World->GetPlayerControllerIterator(); iterator; ++iterator) {
 			APlayerController* controller = (*iterator).Get();
 			if (controller == nullptr) continue;
 			Result.Add(static_cast<AFGPlayerController*>(controller));

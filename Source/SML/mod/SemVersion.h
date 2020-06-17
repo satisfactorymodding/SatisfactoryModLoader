@@ -45,6 +45,7 @@ private:
 	FVersion MyVersion;
 public:
     FVersionRange();
+	inline FVersionRange(FVersion Version, EVersionComparisonOp Operator) : MyVersion(Version), Op(Operator) {}
 	FVersionRange(const FString& string);
 
 	FString String() const;

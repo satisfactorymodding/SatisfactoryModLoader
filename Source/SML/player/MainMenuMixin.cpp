@@ -42,9 +42,9 @@ void GRegisterMainMenuHooks() {
 		UUserWidget* MenuWidget = Cast<UUserWidget>(HookHelper.GetContext());
 		UTextBlock* UsernameLabel = FReflectionHelper::GetObjectPropertyValue<UTextBlock>(MenuWidget, TEXT("UsernameLabel"));
 		checkf(UsernameLabel, TEXT("UsernameLabel not found"));
-		UCanvasPanel* ParentCanvas = Cast<UCanvasPanel>(UsernameLabel->GetParent());
-		UCanvasPanelSlot* UsernameSlot = Cast<UCanvasPanelSlot>(UsernameLabel->Slot);
-
+		UVerticalBox* ParentVerticalBox = Cast<UVerticalBox>(UsernameLabel->GetParent());
+		checkf(ParentVerticalBox, TEXT("UsernameLabel parent is not a vertical box"));
+		
 		UUserWidget* OptionsButton = FReflectionHelper::GetObjectPropertyValue<UUserWidget>(MenuWidget, TEXT("mButtonOptions"));
 		UPanelWidget* SwitcherWidget = FReflectionHelper::GetObjectPropertyValue<UPanelWidget>(MenuWidget, TEXT("mSwitcher"));
 		checkf(OptionsButton, TEXT("OptionsButton not found"));
@@ -67,17 +67,12 @@ void GRegisterMainMenuHooks() {
 		}
 		ParentPanel->AddChild(ButtonWidget);
 		
-		UTextBlock* SMLTextBlock = NewObject<UTextBlock>(ParentCanvas);
+		UTextBlock* SMLTextBlock = NewObject<UTextBlock>(ParentVerticalBox);
 		SMLTextBlock->Text = FText::FromString(FString::Join(CreateMenuInfoText(), TEXT("\n")));
 		SMLTextBlock->SetFont(UsernameLabel->Font);
 		SMLTextBlock->SetColorAndOpacity(UsernameLabel->ColorAndOpacity);
-		UCanvasPanelSlot* Slot = ParentCanvas->AddChildToCanvas(SMLTextBlock);
+		ParentVerticalBox->AddChild(SMLTextBlock);
 		
-		Slot->SetAnchors(UsernameSlot->GetAnchors());
-		Slot->SetAlignment(FVector2D{0.0f, 1.0f});
-		const FVector2D UsernamePos = UsernameSlot->GetPosition();
-		Slot->SetPosition(FVector2D{UsernamePos.X, -120.0f});
-		Slot->ZOrder = UsernameSlot->ZOrder;
 	}, EPredefinedHookOffset::Return);
 }
 

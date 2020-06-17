@@ -11,7 +11,7 @@ void FSubsystemInfoHolder::RegisterSubsystemHolder(TSubclassOf<UModSubsystemHold
 }
 
 void FSubsystemInfoHolder::SetupHooks() {
-	SUBSCRIBE_METHOD_AFTER(FG_GAME_STATE_INIT_FUNC_DESC, AFGGameState::Init, [](AFGGameState* GameState) {
+	SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
 		RegisterSubsystemHolder(USMLSubsystemHolder::StaticClass());
 		InitializeSubsystems(GameState);
 	});

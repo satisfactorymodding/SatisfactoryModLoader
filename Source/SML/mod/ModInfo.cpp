@@ -63,9 +63,25 @@ FModInfo FModInfo::CreateFromJson(const FJsonObject& object) {
 		*object.GetStringField(TEXT("description")),
 		readAuthors(object.GetArrayField(TEXT("authors")))
 	};
+	
+	//By default, we require mod to be installed on client side with version >=ServerVersion
+	modInfo.RemoteVersion.bAcceptAnyRemoteVersion = false;
+	modInfo.RemoteVersion.RemoteVersion = FVersionRange(modInfo.Version, EVersionComparisonOp::GREATER_EQUALS);
+	
 	if (object.HasField(TEXT("credits"))) {
 		modInfo.Credits = object.GetStringField(TEXT("credits"));
 	}
+	
+	if (object.HasField(TEXT("remote_version"))) {
+		const FString RemoteVersion = object.GetStringField(TEXT("remote_version"));
+		if (RemoteVersion == TEXT("*")) {
+			modInfo.RemoteVersion.bAcceptAnyRemoteVersion = true;
+		} else {
+			modInfo.RemoteVersion.bAcceptAnyRemoteVersion = false;
+			modInfo.RemoteVersion.RemoteVersion = FVersionRange(RemoteVersion);
+		}
+	}
+	
 	if (object.HasField(TEXT("resources"))) {
 		FModResources ModResources{};
 		const TSharedPtr<FJsonObject>& ResourcesObject = object.GetObjectField(TEXT("resources"));
