@@ -30,6 +30,7 @@ void UModNetworkHandler::CloseWithFailureMessage(UNetConnection* Connection, con
 
 void UModNetworkHandler::SendMessage(UNetConnection* Connection, FMessageType MessageType, FString Data) {
     FNetControlMessage<NMT_ModMessage>::Send(Connection, MessageType.ModId, MessageType.MessageId, Data);
+    Connection->FlushNet(true);
 }
 
 void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const {
@@ -65,24 +66,27 @@ void UModNetworkHandler::Register() {
     });
     SUBSCRIBE_METHOD_AFTER(UWorld::WelcomePlayer, [=](UWorld* ServerWorld, UNetConnection* Connection) {
         GNetworkHandler->OnWelcomePlayer().Broadcast(ServerWorld, Connection);
-        Connection->FlushNet();
     });
     SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [=](UPendingNetGame* NetGame) {
         if (NetGame->NetDriver != nullptr) {
             UNetConnection* ServerConnection = NetGame->NetDriver->ServerConnection;
             if (ServerConnection != nullptr) {
                 GNetworkHandler->OnClientInitialJoin().Broadcast(ServerConnection);
-                ServerConnection->FlushNet();
             }
         }
     });
-    auto MessageHandler = [](auto& Call, void*, UNetConnection* Connection, uint8 MessageType, class FInBunch& Bunch) {
+    auto MessageHandler = [=](auto& Call, void*, UNetConnection* Connection, uint8 MessageType, class FInBunch& Bunch) {
+        SML::Logging::error("Custom!!!");
         if (MessageType == NMT_ModMessage) {
+            SML::Logging::error("Message!!!");
             FString ModId; int32 MessageId; FString Content;
             if (FNetControlMessage<NMT_ModMessage>::Receive(Bunch, ModId, MessageId, Content)) {
+                SML::Logging::error("Hell jeah!!!");
                 GNetworkHandler->ReceiveMessage(Connection, ModId, MessageId, Content);
                 Call.Cancel();
             }
+        }
+    };
     SUBSCRIBE_VIRTUAL_FUNCTION(UWorld, FNetworkNotify::NotifyControlMessage, MessageHandler);
     SUBSCRIBE_VIRTUAL_FUNCTION(UPendingNetGame, FNetworkNotify::NotifyControlMessage, MessageHandler);
 }
