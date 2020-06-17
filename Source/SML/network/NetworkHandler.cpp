@@ -9,9 +9,9 @@
 //Type of NMT_GameSpecific used by SML messaging
 #define SML_MESSAGE_TYPE 100
 
-static UModNetworkHandler* GNetworkHandler = nullptr;
-
 UModNetworkHandler* UModNetworkHandler::Get() {
+    static UModNetworkHandler* GNetworkHandler = nullptr;
+    if (!GNetworkHandler) GNetworkHandler = NewObject<UModNetworkHandler>();
     return GNetworkHandler;
 }
 
@@ -61,7 +61,7 @@ void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FStrin
             const bool bIsClientSide = Connection->ClientLoginState == EClientLoginState::Invalid;
             const bool bCanBeHandled = (bIsClientSide && MessageEntry->bClientHandled) || (!bIsClientSide && MessageEntry->bServerHandled);
             if (bCanBeHandled) {
-                MessageEntry->MessageReceived.ExecuteIfBound(Content);
+                MessageEntry->MessageReceived.ExecuteIfBound(Connection, Content);
             }
         }
     }
@@ -79,17 +79,16 @@ UObjectMetadata* UModNetworkHandler::GetMetadataForConnection(UNetConnection* Co
 }
 
 void UModNetworkHandler::Register() {
-    check(!GNetworkHandler);
-    GNetworkHandler = NewObject<UModNetworkHandler>();
+    UModNetworkHandler* GNetworkHandler = Get();
     GNetworkHandler->AddToRoot();
-    SUBSCRIBE_METHOD_AFTER(UNetConnection::CleanUp, [](UNetConnection* Connection) {
+    SUBSCRIBE_METHOD_AFTER(UNetConnection::CleanUp, [=](UNetConnection* Connection) {
         GNetworkHandler->Metadata.Remove(Connection);
     });
-    SUBSCRIBE_METHOD_AFTER(UWorld::WelcomePlayer, [](UWorld* ServerWorld, UNetConnection* Connection) {
+    SUBSCRIBE_METHOD_AFTER(UWorld::WelcomePlayer, [=](UWorld* ServerWorld, UNetConnection* Connection) {
         GNetworkHandler->OnWelcomePlayer().Broadcast(ServerWorld, Connection);
         Connection->FlushNet();
     });
-    SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [](UPendingNetGame* NetGame) {
+    SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [=](UPendingNetGame* NetGame) {
         if (NetGame->NetDriver != nullptr) {
             UNetConnection* ServerConnection = NetGame->NetDriver->ServerConnection;
             if (ServerConnection != nullptr) {
@@ -98,7 +97,7 @@ void UModNetworkHandler::Register() {
             }
         }
     });
-    SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(UFGGameInstance, UGameInstance::HandleGameNetControlMessage, [](UGameInstance* Self, class UNetConnection* Connection, uint8 MessageId, const FString& MessageStr) {
+    SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(UFGGameInstance, UGameInstance::HandleGameNetControlMessage, [=](UGameInstance* Self, class UNetConnection* Connection, uint8 MessageId, const FString& MessageStr) {
         const uint8 TargetMessageId = SML_MESSAGE_TYPE;
         if (MessageId == TargetMessageId) {
             GNetworkHandler->ReceiveMessage(Connection, MessageStr);

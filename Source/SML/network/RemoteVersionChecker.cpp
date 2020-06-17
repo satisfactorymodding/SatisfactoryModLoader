@@ -101,7 +101,7 @@ void FRemoteVersionChecker::Register() {
         const FString InitialData = SerializeModInitData();
         NetworkHandler->SendMessage(Connection, MessageTypeSMLInit, InitialData);
     });
-    NetworkHandler->OnWelcomePlayer().AddLambda([=](UNetConnection* Connection) {
+    NetworkHandler->OnWelcomePlayer().AddLambda([=](UWorld* Context, UNetConnection* Connection) {
         UObjectMetadata* Metadata = NetworkHandler->GetMetadataForConnection(Connection);
         USMLConnectionMetadata* SMLMetadata = Metadata->GetOrCreateSubObject<USMLConnectionMetadata>(TEXT("SML"));
         ValidateSMLInitData(Connection, SMLMetadata);

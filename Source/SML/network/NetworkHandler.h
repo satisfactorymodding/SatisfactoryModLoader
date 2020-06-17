@@ -4,7 +4,7 @@
 #include "mod/ObjectMetadata.h"
 #include "NetworkHandler.generated.h"
 
-DECLARE_DELEGATE_OneParam(FMessageReceived, FString /*Data*/);
+DECLARE_DELEGATE_TwoParams(FMessageReceived, class UNetConnection* /*Connection*/, FString /*Data*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FWelcomePlayer, UWorld* /*ServerWorld*/, class UNetConnection* /*Connection*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FClientInitialJoin, class UNetConnection* /*Connection*/);
 
@@ -60,13 +60,13 @@ public:
      * You can send additional information to client here, or check information received by client
      * before to perform any required validation
      */
-    FORCEINLINE FWelcomePlayer OnWelcomePlayer() const { return WelcomePlayerDelegate; }
+    FORCEINLINE FWelcomePlayer& OnWelcomePlayer() { return WelcomePlayerDelegate; }
 
     /**
      * Delegate called when client has sent initial join request to remote side
      * Here you can send additional information to be acknowledged by the server via SendMessage
      */
-    FORCEINLINE FClientInitialJoin OnClientInitialJoin() const { return ClientLoginDelegate; }
+    FORCEINLINE FClientInitialJoin& OnClientInitialJoin() { return ClientLoginDelegate; }
 
     /**
      * Register new mod message type and return message entry which can be used
