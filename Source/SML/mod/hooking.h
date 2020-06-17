@@ -344,6 +344,19 @@ R(* HookInvoker<R(*)(A...), PMF, None>::functionPtr)(A...) = nullptr;
 template <typename R, typename... A, R(*PMF)(A...)>
 bool HookInvoker<R(*)(A...), PMF, None>::bHookInitialized = false;
 
+#if WITH_EDITOR
+
+// Begin Dummy hook macros for editor mode
+#define SUBSCRIBE_METHOD(MethodReference, Handler)
+#define SUBSCRIBE_METHOD_AFTER(MethodReference, Handler)
+#define SUBSCRIBE_VIRTUAL_FUNCTION(TargetClass, MethodReference, Handler)
+#define SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(TargetClass, MethodReference, Handler)
+#define SUBSCRIBE_METHOD_MANUAL(MethodName, MethodReference, Handler)
+#define SUBSCRIBE_METHOD_AFTER_MANUAL(MethodName, MethodReference, Handler)
+// End Dummy hook macros
+
+#else
+
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(#MethodReference); \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerBefore(Handler);
@@ -367,3 +380,5 @@ HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerBefor
 #define SUBSCRIBE_METHOD_AFTER_MANUAL(MethodName, MethodReference, Handler) \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(MethodName); \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerAfter(Handler);
+
+#endif
