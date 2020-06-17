@@ -38,6 +38,7 @@ public:
 	// Functions
 	FReply Pakit();
 
-	void CookContent();
-	void CookDone(FString result, double runtime);
+	static void Alpakit(TFunction<void()> Done);
+	static void CookContent(UAlpakitSettings* Settings, TFunction<void()> Done);
+	static void CookDone(FString result, double runtime, UAlpakitSettings* Settings, TFunction<void()> Done);
 };

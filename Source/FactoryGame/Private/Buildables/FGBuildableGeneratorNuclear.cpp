@@ -3,10 +3,8 @@
 #include "FGBuildableGeneratorNuclear.h"
 #include "FGFactoryHologram.h"
 #include "FGPowerInfoComponent.h"
-#include "FGReplicationDetailInventoryComponent.h"
 
 AFGBuildableGeneratorNuclear::AFGBuildableGeneratorNuclear() : Super() {
-	this->mOutputInventoryHandler = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT("WasteInventoryHandler"));
 	this->mFuelResourceForm = EResourceForm::RF_SOLID;
 	this->mPowerProductionExponent = 1.29999995231628;
 	this->mPowerConsumptionExponent = 1.60000002384186;

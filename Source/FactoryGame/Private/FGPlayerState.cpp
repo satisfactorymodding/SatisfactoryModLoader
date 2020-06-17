@@ -69,5 +69,8 @@ void AFGPlayerState::Server_SetCompassFilter_Implementation(ERepresentationType 
 bool AFGPlayerState::Server_SetCompassFilter_Validate(ERepresentationType representationType, bool visible){ return bool(); }
 void AFGPlayerState::UpdateOwningPawnActorRepresentation() const{ }
 void AFGPlayerState::DumpHotbars(){ }
+void AFGPlayerState::UpdateNumObservedInventorySlots(){ }
 void AFGPlayerState::OnRep_HotbarShortcuts(){ }
 void AFGPlayerState::OnRep_CurrentHotbarIndex(){ }
+void AFGPlayerState::Server_UpdateNumObservedInventorySlots_Implementation(){ }
+bool AFGPlayerState::Server_UpdateNumObservedInventorySlots_Validate(){ return bool(); }

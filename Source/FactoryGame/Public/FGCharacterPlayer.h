@@ -38,10 +38,9 @@ struct FACTORYGAME_API FDisabledInputGate
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FDisabledInputGate() : FDisabledInputGate( false )
-	{}
+	FDisabledInputGate();
 
-	FDisabledInputGate( bool disabled ) :
+	FORCEINLINE FDisabledInputGate( bool disabled ) :
 		mBuildGun( disabled ),
 		mDismantle( disabled ),
 		mFlashLight( disabled ),
@@ -84,6 +83,7 @@ public:
 public:
 	FORCEINLINE ~FDisabledInputGate() = default;
 };
+FORCEINLINE FDisabledInputGate::FDisabledInputGate() : FDisabledInputGate( false ) {}
 
 /**
 * not dead, cant revive
@@ -93,11 +93,12 @@ class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead : public UFGUseSta
 {
 	GENERATED_BODY()
 public:
-	UFGUseState_ReviveInvalid_PlayerNotDead() : Super() { mIsUsableState = false; }
+	UFGUseState_ReviveInvalid_PlayerNotDead();
 
 public:
 	FORCEINLINE ~UFGUseState_ReviveInvalid_PlayerNotDead() = default;
 };
+FORCEINLINE UFGUseState_ReviveInvalid_PlayerNotDead::UFGUseState_ReviveInvalid_PlayerNotDead() { mIsUsableState = false; }
 
 /**
 * Revive valid
@@ -107,11 +108,12 @@ class FACTORYGAME_API UFGUseState_ReviveValid : public UFGUseState
 {
 	GENERATED_BODY()
 public:
-	UFGUseState_ReviveValid() : Super() { mIsUsableState = true; }
+	UFGUseState_ReviveValid();
 
 public:
 	FORCEINLINE ~UFGUseState_ReviveValid() = default;
 };
+FORCEINLINE UFGUseState_ReviveValid::UFGUseState_ReviveValid() { mIsUsableState = true; }
 
 /**
  * Base class for all player characters in the game.
@@ -683,6 +685,11 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "Radiation" )
 	FORCEINLINE float GetRadiationDamageAngle() const { return mRadiationDamageAngle; }
 
+	bool IsInRadioActiveZone()
+	{
+		return mInRadioactiveZone;
+	}
+
 	/** Start the pending removal of the character */
 	virtual void TornOff() override;
 
@@ -797,6 +804,9 @@ private:
 	
 	/** Migrate number of inventory and arm equipment slots saved before BU3 to unlock subsystem */
 	void MigrateNumSavedSlots();
+
+	/** Check if we have items picked up that isn't registered as picked up. Fixes issues on old saves before we saved picked up items */
+	void CheckItemPickedUp();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */

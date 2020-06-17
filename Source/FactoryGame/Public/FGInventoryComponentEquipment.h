@@ -69,6 +69,8 @@ private:
 	class AFGCharacterPlayer* GetOwningCharacter();
 
 private:
+	friend class AFGCharacterPlayer;
+
 	/**
 	 * If the equipment in the slot has been overridden, this is the equipment.
 	 * No need to save this, the kinds of equipments that are placed here are not good candidates for saving (e.g. build gun)

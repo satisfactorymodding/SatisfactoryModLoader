@@ -10,3 +10,5 @@ void UFGPopupConnectAccounts::CreateNewAccountConnection(){ }
 void UFGPopupConnectAccounts::ContinueWithoutConnectingAccount(){ }
 void UFGPopupConnectAccounts::LoginAndConnectOtherEpicAccount(){ }
 void UFGPopupConnectAccounts::LogoutEpicAccountAndContinue(){ }
+void UFGPopupConnectAccounts::ContinueWithAndHookUpSteamToEOSAfterEpicLogout(){ }
+void UFGPopupConnectAccounts::LogOutEpicAndCreateNewAccountConnection(){ }

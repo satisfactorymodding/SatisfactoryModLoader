@@ -12,9 +12,6 @@
 struct FACTORYGAME_API FFactoryStats
 {
 public:
-	FFactoryStats();
-
-public:
 	/**
 	 * All length measurements are in cm.
 	 * All area measurements are in cm2.
@@ -26,15 +23,18 @@ public:
 	int32 NumVehicles;
 	TMap< TSubclassOf< AFGVehicle >, int32 > NumVehiclesByClass;
 
-	float TotalConveyorLength;
-	float TotalRailroadTrackLength;
-	float TotalRoadLength;
-	float TotalWireLength;
+	float TotalConveyorLength = 0.f;
+	float TotalConveyorLiftHeight = 0.f;
+	float TotalPipelineLength = 0.f;
+	float TotalRailroadTrackLength = 0.f;
+	float TotalRoadLength = 0.f;
+	float TotalWireLength = 0.f;
+	float TotalHyperTubeLength = 0.f;
 
 	TArray< FItemAmount > SpentOnBuilding;
 	TArray< FItemAmount > StockInventory;
 
-	int32 NumRemovedFoliageInstances;
+	int32 NumRemovedFoliageInstances = 0;
 	//int32 NumCircuits;
 	//int32 NumTrains;
 	//int32 NumSelfDrivingTrucks;

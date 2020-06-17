@@ -23,7 +23,6 @@ class FACTORYGAME_API UFGSplineComponent : public USplineComponent
 	GENERATED_BODY()
 	
 public:
-	/** Ctor */
 	UFGSplineComponent();
 
 	/** Set the override material to use on the spline meshes, otherwise the default is used. */
@@ -65,12 +64,6 @@ public:
 private:
 	/** Generate the box corresponding to collision index idx */
 	void GenerateCollisionIdx( int32 idx, float splineLength, int32 numCollisions );
-
-	/**
-	 * Check if a segment is a bend or straight (in 2D).
-	 * @return true if straight; false if bend.
-	 */
-	bool IsSegmentStraight( int32 fromPointIdx, int32 toPointIdx ) const;
 
 	/** Place box collisions along the spline. */
 	void GenerateSplineCollisions();

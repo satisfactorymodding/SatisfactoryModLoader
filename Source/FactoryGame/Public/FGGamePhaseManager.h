@@ -163,6 +163,7 @@ public:
 	/** Resets the game phases to the defaults. Used for resetting progression for testing. */
 	void ResetGamePhase();
 
+	int32 GetLastTechTierForGamePhase(EGamePhase phase) const;
 protected:
 	/** Current GamePhase */
 	UPROPERTY( EditDefaultsOnly, SaveGame, ReplicatedUsing = OnRep_GamePhase, Category = "Progression" )

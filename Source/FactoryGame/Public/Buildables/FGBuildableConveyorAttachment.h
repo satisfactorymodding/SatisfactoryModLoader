@@ -81,6 +81,7 @@ public:
 	virtual void Dismantle_Implementation() override;
 	//~ End IFGDismantleInferface
 
+	FORCEINLINE class UFGInventoryComponent* GetBufferInventory() const { return mBufferInventory; }
 protected:
 	friend class AFGReplicationDetailActor_Storage;
 
@@ -88,8 +89,11 @@ protected:
 	virtual void Factory_CollectInput_Implementation() override;
 	// End Factory_ interface
 
+	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual void OnRep_ReplicationDetailActor() override;
-
+	virtual void OnBuildableReplicationDetailStateChange( bool newStateIsActive ) override;
+	virtual class AFGReplicationDetailActor* GetOrCreateReplicationDetailActor() override;
+	// End IFGReplicationDetailActorOwnerInterface
 public:
 	/** The size of the inventory for this attachment. Used to hold a buffer of incoming items */
 	int32 mInventorySizeX;
@@ -102,9 +106,6 @@ protected:
 	/** The inventory to store everything in. Don't use this directly, use mStorageInventoryHandler->GetActiveInventoryComponent() */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mBufferInventory;
-
-	/** Maintainer of the active storage component for this actor. Use this to get the active inventory component. */
-	class UFGReplicationDetailInventoryComponent* mBufferInventoryHandler;
 
 	/** Cached input connections for faster lookup. */
 	TArray< UFGFactoryConnectionComponent* > mInputs;

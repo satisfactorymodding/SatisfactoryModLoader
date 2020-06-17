@@ -10,6 +10,7 @@
 #include "FGBuildableFactory.h"
 #include "Resources/FGExtractableResourceInterface.h"
 #include "Resources/FGResourceDescriptor.h"
+#include "Replication/FGRepDetailActor_Extractor.h"
 #include "../Resources/FGItemDescriptor.h"
 #include "FGBuildableResourceExtractor.generated.h"
 
@@ -28,6 +29,10 @@ public:
 
 	/** Ctor */
 	AFGBuildableResourceExtractor();
+
+	// Begin IFGReplicationDetailActorOwnerInterface
+	virtual UClass* GetReplicationDetailActorClass() const override { return AFGRepDetailActor_Extractor::StaticClass(); };
+	// End IFGReplicationDetailActorOwnerInterface
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
@@ -58,7 +63,7 @@ public:
 
 	/** Get the inventory we output the extracted resources to */
 	UFUNCTION( BlueprintPure, Category = "Resource" )
-	class UFGInventoryComponent* GetOutputInventory() const{ return mOutputInventory; }
+	class UFGInventoryComponent* GetOutputInventory() const{ return mInventoryOutputHandler->GetActiveInventoryComponent(); }
 
 	/** Get the quantity of items mined each production cycle */
 	UFUNCTION( BlueprintPure, Category = "Extraction" )
@@ -112,8 +117,12 @@ protected:
 	virtual void Factory_PushPipeOutput_Implementation( float dt ) override;
 	// End Factory_ Interface
 
+	virtual void OnRep_ReplicationDetailActor() override;
 protected:
 	friend class AFGResourceExtractorHologram;
+	friend class AFGRepDetailActor_Extractor;
+
+	class UFGReplicationDetailInventoryComponent* mInventoryOutputHandler;
 
 	/** Power up time for the extraction process, e.g. the time it takes for a drill to start spinning. */
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
@@ -191,7 +200,7 @@ protected:
 	TArray< class UFGPipeConnectionComponent* > mPipeOutputConnections;
 
 	/** Our output inventory, */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mOutputInventory;
 
 	//******* Begin Pipe Flow Output params *******/

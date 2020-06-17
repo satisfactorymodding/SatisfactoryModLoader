@@ -23,6 +23,7 @@ TArray< FItemAmount > UFGRecipe::GetIngredients(TSubclassOf< UFGRecipe > inClass
 		return inClass.GetDefaultObject()->mIngredients;
 	else
 		return TArray<FItemAmount>();
+
 }
 TArray< FItemAmount > UFGRecipe::GetProducts(TSubclassOf< UFGRecipe > inClass, bool allowChildRecipes){ 
 	if (inClass)

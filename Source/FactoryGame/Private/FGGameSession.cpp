@@ -25,11 +25,11 @@ void AFGGameSession::SetTemporaryCSSSessionID(FString tempID){ }
 void AFGGameSession::ClearTemporaryCSSSessionID(){ }
 FString AFGGameSession::GetCSSSessionID(UWorld* forWorld, const FString &saveSessionName){ return FString(); }
 void AFGGameSession::SetSessionVisibility(ESessionVisibility visibility){ }
+int32 AFGGameSession::GetNumPrivateConnections() const{ return int32(); }
+int32 AFGGameSession::GetNumPublicConnections() const{ return int32(); }
 void AFGGameSession::ListenForIntroSequenceUpdated(){ }
 bool AFGGameSession::AllowsLoginAttempts(const  APlayerController* PC) const{ return bool(); }
 void AFGGameSession::ClearFailTracking(const  APlayerController* PC){ }
 void AFGGameSession::IntroSequenceUpdated(){ }
 void AFGGameSession::SetRandomAdminPassword(){ }
-int32 AFGGameSession::GetNumPrivateConnections() const{ return int32(); }
-int32 AFGGameSession::GetNumPublicConnections() const{ return int32(); }
 void AFGGameSession::OnUpdateSessionComplete(FName sessionName, bool wasSuccessful){ }

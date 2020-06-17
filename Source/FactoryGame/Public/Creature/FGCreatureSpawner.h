@@ -146,11 +146,18 @@ public:
 	float GetSpawnerWeight();
 
 	/** The distance at which this spawner can activate */
-	float GetSpawnerDistance() { return mSpawnerDistance; }
+	float GetSpawnerDistance() const { return mSpawnerDistance; }
 
 	/** Returns the cached value for isNearBase */
 	UFUNCTION( BlueprintPure, Category = "Spawning" ) 
 	FORCEINLINE bool IsNearBase() { return mCachedIsNearBase; }
+
+	/** Setup the initial spawn distance of this spawner */
+	void SetupSpawnDistance();
+
+	/** Returns the cached value for isNearBase */
+	UFUNCTION()
+	FORCEINLINE bool VisualizeSpawnDistance() const { return mVisualizeSpawnDistance; }
 
 	/** Try and recouple creatures that are in this instances mSpawnData but has no spawner set */
 	void TryRecoupleCreatureAndSpawner();
@@ -166,9 +173,6 @@ protected:
 
 	/** Setup the initial weight of this spawner */
 	void SetupSpawnWeight();
-
-	/** Setup the initial spawn distance of this spawner */
-	void SetupSpawnDistance();
 
 	UFUNCTION()
 	void TryDestroyCreatures();
@@ -233,10 +237,30 @@ protected:
 
 	UPROPERTY()
 	FTimerHandle mPendingDestroyTimer;
+
+	/** Is this spawner a monster closet? (spawning one creature at a time ) */
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	bool mIsMonsterCloset;
+
+	/** Delay in seconds when next creature spawns after current creature died */
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	float mMonsterClosetSpawnDelay;
+
+	/** Timer handle for monster closet spawning */
+	UPROPERTY()
+	FTimerHandle mMonsterClosetTimerHandle;
+
+	/** This spawn distance will override both the one set in creature and the one in aisystem */
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	float mSpawnDistanceOverride;
 private:
 	UPROPERTY( SaveGame )
 	int32 mRandomSeed;
 public: 
+	/** Should this spawner draw a sphere showing its spawn distance in editor */
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
+	bool mVisualizeSpawnDistance;
+
 	/** How many days should pass before creatures start to respawn ( -1 means never ) */
 	UPROPERTY( EditInstanceOnly, Category = "Spawning" )
 	int32 mRespawnTimeIndays;
@@ -256,6 +280,7 @@ public:
 	/** Delegate fired when we're done with the async check for overlapping actors */
 	FOverlapDelegate mOverlapDelegate;
 
+	/** Is the async overlap done? */
 	bool mOverlapCheckIsReady;
 
 public:

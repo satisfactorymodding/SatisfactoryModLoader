@@ -18,7 +18,6 @@ void AFGBuildableHologram::BeginPlay(){ }
 void AFGBuildableHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 bool AFGBuildableHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGBuildableHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
-bool AFGBuildableHologram::ApplyBuildingClearnaceSnapping(FRotator &newRotation, FVector &newLocation, AFGBuildable* snapTarget, FVector traceStart, FVector traceEnd){ return bool(); }
 void AFGBuildableHologram::AdjustForGround(const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
 AActor* AFGBuildableHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
 void AFGBuildableHologram::ScrollRotate(int32 delta, int32 step){ }
@@ -34,13 +33,13 @@ void AFGBuildableHologram::ConfigureSnappedBuilding( AFGBuildable* inBuildable) 
 void AFGBuildableHologram::ConfigureSnappedPower( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
-void AFGBuildableHologram::OnHologramTransformUpdated(){ }
 void AFGBuildableHologram::ConfigureBuildEffect( AFGBuildable* inBuildable){ }
 void AFGBuildableHologram::SetupClearance( UBoxComponent* boxComponent){ }
 void AFGBuildableHologram::SetMaterial( UMaterialInterface* material){ }
 void AFGBuildableHologram::SetupFactoryConnectionMesh( UFGFactoryConnectionComponent* connectionComponent){ }
 void AFGBuildableHologram::SetupPowerConnectionMesh( UFGPowerConnectionComponent* connectionComponent){ }
 void AFGBuildableHologram::SetupPipeConnectionMesh( UFGPipeConnectionComponentBase* connectionComponent){ }
+bool AFGBuildableHologram::ApplyBuildingClearnaceSnapping(FRotator& newRotation, FVector& newLocation, AFGBuildable* snapTarget, FVector traceStart, FVector traceEnd){ return bool(); }
 FName AFGBuildableHologram::mInputConnectionMeshTag = FName();
 FName AFGBuildableHologram::mOutputConnectionMeshTag = FName();
 FName AFGBuildableHologram::mNeutralConnectionMeshTag = FName();
