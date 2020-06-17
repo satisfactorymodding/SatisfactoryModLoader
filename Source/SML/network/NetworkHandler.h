@@ -40,8 +40,7 @@ private:
     FWelcomePlayer WelcomePlayerDelegate;
     FClientInitialJoin ClientLoginDelegate;
 private:
-    void ReceiveMessage(class UNetConnection* Connection, const FString& RawMessageData) const;
-    
+    void ReceiveMessage(class UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const;
 public:
     /**
      * Retrieves global network handler instance
@@ -60,13 +59,13 @@ public:
      * You can send additional information to client here, or check information received by client
      * before to perform any required validation
      */
-    FORCEINLINE FWelcomePlayer OnWelcomePlayer() const { return WelcomePlayerDelegate; }
+    FORCEINLINE FWelcomePlayer& OnWelcomePlayer() { return WelcomePlayerDelegate; }
 
     /**
      * Delegate called when client has sent initial join request to remote side
      * Here you can send additional information to be acknowledged by the server via SendMessage
      */
-    FORCEINLINE FClientInitialJoin OnClientInitialJoin() const { return ClientLoginDelegate; }
+    FORCEINLINE FClientInitialJoin& OnClientInitialJoin() { return ClientLoginDelegate; }
 
     /**
      * Register new mod message type and return message entry which can be used
@@ -79,7 +78,7 @@ public:
     /**
      * Send registered mod message to this connection to be processed on the remote side
      */
-    void SendMessage(class UNetConnection* Connection, const FMessageType& MessageType, const FString& Data) const;
+    static void SendMessage(class UNetConnection* Connection, FMessageType MessageType, FString Data);
 
     //Internal usage only, called by SML on startup
     NO_API static void Register();

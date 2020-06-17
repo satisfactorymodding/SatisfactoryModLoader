@@ -246,6 +246,7 @@ namespace SML {
 		UItemTooltipHandler::RegisterHooking();
 		UModNetworkHandler::Register();
 		
+		
 		if (GetSmlConfig().bDumpGameAssets) {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
 			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));

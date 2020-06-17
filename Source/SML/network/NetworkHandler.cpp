@@ -4,10 +4,9 @@
 #include "FGGameMode.h"
 #include "mod/hooking.h"
 #include "Engine/NetConnection.h"
-#include "Json.h"
 #include "util/Logging.h"
-//Type of NMT_GameSpecific used by SML messaging
-#define SML_MESSAGE_TYPE 100
+
+DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);
 
 static UModNetworkHandler* GNetworkHandler = nullptr;
 
@@ -29,31 +28,11 @@ void UModNetworkHandler::CloseWithFailureMessage(UNetConnection* Connection, con
     Connection->FlushNet(true);
 }
 
-void UModNetworkHandler::SendMessage(UNetConnection* Connection, const FMessageType& MessageType, const FString& Data) const {
-    TSharedRef<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
-    JsonObject->SetStringField(TEXT("ModId"), MessageType.ModId);
-    JsonObject->SetNumberField(TEXT("MsgId"), MessageType.MessageId);
-    JsonObject->SetStringField(TEXT("Content"), Data);
-    FJsonSerializer Serializer;
-    FString ResultMessage{};
-    const TSharedRef<TJsonWriter<>> Writer = TJsonStringWriter<>::Create(&ResultMessage);
-    Serializer.Serialize(JsonObject, Writer);
-    uint8 MessageId = SML_MESSAGE_TYPE;
-    FNetControlMessage<NMT_GameSpecific>::Send(Connection,  MessageId, ResultMessage);
+void UModNetworkHandler::SendMessage(UNetConnection* Connection, FMessageType MessageType, FString Data) {
+    FNetControlMessage<NMT_ModMessage>::Send(Connection, MessageType.ModId, MessageType.MessageId, Data);
 }
 
-void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FString& RawMessageData) const {
-    TSharedPtr<FJsonObject> ResultObject;
-    FJsonSerializer Serializer;
-    const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(RawMessageData);
-    if (!Serializer.Deserialize(Reader, ResultObject)) {
-        SML::Logging::warning(TEXT("Invalid SML control message received from "), *Connection->Describe());
-        Connection->Close();
-        return;
-    }
-    const FString ModId = ResultObject->GetStringField(TEXT("ModId"));
-    const int32 MessageId = ResultObject->GetIntegerField(TEXT("MsgId"));
-    const FString Content = ResultObject->GetStringField(TEXT("Content"));
+void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const {
     const TMap<int32, FMessageEntry>* Result = MessageHandlers.Find(ModId);
     if (Result != nullptr) {
         const FMessageEntry* MessageEntry = Result->Find(MessageId);
@@ -98,10 +77,15 @@ void UModNetworkHandler::Register() {
             }
         }
     });
-    SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(UFGGameInstance, UGameInstance::HandleGameNetControlMessage, [](UGameInstance* Self, class UNetConnection* Connection, uint8 MessageId, const FString& MessageStr) {
-        const uint8 TargetMessageId = SML_MESSAGE_TYPE;
-        if (MessageId == TargetMessageId) {
-            GNetworkHandler->ReceiveMessage(Connection, MessageStr);
+    auto MessageHandler = [](auto& Call, void*, UNetConnection* Connection, uint8 MessageType, class FInBunch& Bunch) {
+        if (MessageType == NMT_ModMessage) {
+            FString ModId; int32 MessageId; FString Content;
+            if (FNetControlMessage<NMT_ModMessage>::Receive(Bunch, ModId, MessageId, Content)) {
+                GNetworkHandler->ReceiveMessage(Connection, ModId, MessageId, Content);
+                Call.Cancel();
+            }
         }
-    });
+    };
+    SUBSCRIBE_VIRTUAL_FUNCTION(UWorld, FNetworkNotify::NotifyControlMessage, MessageHandler);
+    SUBSCRIBE_VIRTUAL_FUNCTION(UPendingNetGame, FNetworkNotify::NotifyControlMessage, MessageHandler);
 }
