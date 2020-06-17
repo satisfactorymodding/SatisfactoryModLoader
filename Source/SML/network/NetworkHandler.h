@@ -4,7 +4,7 @@
 #include "mod/ObjectMetadata.h"
 #include "NetworkHandler.generated.h"
 
-DECLARE_DELEGATE_OneParam(FMessageReceived, FString /*Data*/);
+DECLARE_DELEGATE_TwoParams(FMessageReceived, class UNetConnection* /*Connection*/, FString /*Data*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FWelcomePlayer, UWorld* /*ServerWorld*/, class UNetConnection* /*Connection*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FClientInitialJoin, class UNetConnection* /*Connection*/);
 

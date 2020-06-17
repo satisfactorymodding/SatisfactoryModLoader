@@ -8,9 +8,9 @@
 
 DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);
 
-static UModNetworkHandler* GNetworkHandler = nullptr;
-
 UModNetworkHandler* UModNetworkHandler::Get() {
+    static UModNetworkHandler* GNetworkHandler = nullptr;
+    if (!GNetworkHandler) GNetworkHandler = NewObject<UModNetworkHandler>();
     return GNetworkHandler;
 }
 
@@ -40,7 +40,7 @@ void UModNetworkHandler::ReceiveMessage(UNetConnection* Connection, const FStrin
             const bool bIsClientSide = Connection->ClientLoginState == EClientLoginState::Invalid;
             const bool bCanBeHandled = (bIsClientSide && MessageEntry->bClientHandled) || (!bIsClientSide && MessageEntry->bServerHandled);
             if (bCanBeHandled) {
-                MessageEntry->MessageReceived.ExecuteIfBound(Content);
+                MessageEntry->MessageReceived.ExecuteIfBound(Connection, Content);
             }
         }
     }
@@ -58,17 +58,16 @@ UObjectMetadata* UModNetworkHandler::GetMetadataForConnection(UNetConnection* Co
 }
 
 void UModNetworkHandler::Register() {
-    check(!GNetworkHandler);
-    GNetworkHandler = NewObject<UModNetworkHandler>();
+    UModNetworkHandler* GNetworkHandler = Get();
     GNetworkHandler->AddToRoot();
-    SUBSCRIBE_METHOD_AFTER(UNetConnection::CleanUp, [](UNetConnection* Connection) {
+    SUBSCRIBE_METHOD_AFTER(UNetConnection::CleanUp, [=](UNetConnection* Connection) {
         GNetworkHandler->Metadata.Remove(Connection);
     });
-    SUBSCRIBE_METHOD_AFTER(UWorld::WelcomePlayer, [](UWorld* ServerWorld, UNetConnection* Connection) {
+    SUBSCRIBE_METHOD_AFTER(UWorld::WelcomePlayer, [=](UWorld* ServerWorld, UNetConnection* Connection) {
         GNetworkHandler->OnWelcomePlayer().Broadcast(ServerWorld, Connection);
         Connection->FlushNet();
     });
-    SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [](UPendingNetGame* NetGame) {
+    SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [=](UPendingNetGame* NetGame) {
         if (NetGame->NetDriver != nullptr) {
             UNetConnection* ServerConnection = NetGame->NetDriver->ServerConnection;
             if (ServerConnection != nullptr) {
@@ -84,8 +83,6 @@ void UModNetworkHandler::Register() {
                 GNetworkHandler->ReceiveMessage(Connection, ModId, MessageId, Content);
                 Call.Cancel();
             }
-        }
-    };
     SUBSCRIBE_VIRTUAL_FUNCTION(UWorld, FNetworkNotify::NotifyControlMessage, MessageHandler);
     SUBSCRIBE_VIRTUAL_FUNCTION(UPendingNetGame, FNetworkNotify::NotifyControlMessage, MessageHandler);
 }

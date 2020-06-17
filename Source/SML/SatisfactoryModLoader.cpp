@@ -170,8 +170,6 @@ namespace SML {
 		//C++ hooks can be registered very early in the engine initialization
 		modHandlerPtr->AttachLoadingHooks();
 		InitializePlayerComponent();
-		UModNetworkHandler::Register();
-		FRemoteVersionChecker::Register();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
@@ -245,6 +243,7 @@ namespace SML {
 		GRegisterMainMenuHooks();
 		UItemTooltipHandler::RegisterHooking();
 		UModNetworkHandler::Register();
+		FRemoteVersionChecker::Register();
 		
 		
 		if (GetSmlConfig().bDumpGameAssets) {

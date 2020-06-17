@@ -152,7 +152,7 @@ void FModHandler::AttachLoadingHooks() {
 		SML::Logging::info(TEXT("Finished pre-subsystem-initializing mod actors"));
 	});
 	
-	SUBSCRIBE_METHOD(AGameStateBase::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
+	SUBSCRIBE_METHOD( AGameState::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
 		UWorld* World = gameMode->GetWorld();
         const FString MapName = World->GetPathName();
 		SML::Logging::info(TEXT("Initializing on map "), *MapName);
