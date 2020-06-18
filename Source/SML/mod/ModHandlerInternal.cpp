@@ -50,6 +50,8 @@ FModLoadingEntry CreateSmlLoadingEntry() {
 	entry.ModInfo.Version = GetModLoaderVersion();
 	entry.ModInfo.Description = TEXT("Mod Loading & Compatibility layer for Satisfactory");
 	entry.ModInfo.Authors = {TEXT("Archengius"), TEXT("Brabb3l"), TEXT("Mircea"), TEXT("Panakotta00"), TEXT("SuperCoder79"), TEXT("Vilsol")};
+	entry.ModInfo.RemoteVersion.bAcceptAnyRemoteVersion = false;
+	entry.ModInfo.RemoteVersion.RemoteVersion = FVersionRange(entry.ModInfo.Version, EVersionComparisonOp::GREATER_EQUALS);
 	const FString SMLPakFilePath = FPaths::Combine(FPaths::GetPath(SML::GetModDirectory()), TEXT("loaders"), TEXT("SML.pak"));
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 	if (PlatformFile.FileExists(*SMLPakFilePath)) {

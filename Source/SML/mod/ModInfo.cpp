@@ -109,7 +109,9 @@ FModInfo FModInfo::CreateDummyInfo(const FString& modid) {
 		modid, modid,
 		FVersion(TEXT("1.0.0")),
 		TEXT("No description provided"),
-		{TEXT("Unknown")}
+		{TEXT("Unknown")},
+		TEXT("No credits provided"),
+		FModRemoteVersion{FVersionRange{}, true}	
 	};
 }
 

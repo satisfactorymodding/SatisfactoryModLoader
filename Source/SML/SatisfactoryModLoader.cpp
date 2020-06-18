@@ -87,7 +87,7 @@ namespace SML {
 	//version of the SML mod loader, as specified in the SML.h
 	static FVersion* modLoaderVersion = new FVersion(modLoaderVersionString);
 
-	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.10");
+	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
 
 	//target (minimum) version of the bootstrapper we are capable running on
 	static FVersion* targetBootstrapperVersion = new FVersion(targetBootstrapperVersionString);

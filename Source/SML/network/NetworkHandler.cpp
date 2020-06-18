@@ -7,6 +7,7 @@
 #include "util/Logging.h"
 
 DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);
+IMPLEMENT_CONTROL_CHANNEL_MESSAGE(ModMessage);
 
 UModNetworkHandler* UModNetworkHandler::Get() {
     static UModNetworkHandler* GNetworkHandler = nullptr;
@@ -76,17 +77,14 @@ void UModNetworkHandler::Register() {
         }
     });
     auto MessageHandler = [=](auto& Call, void*, UNetConnection* Connection, uint8 MessageType, class FInBunch& Bunch) {
-        SML::Logging::error("Custom!!!");
         if (MessageType == NMT_ModMessage) {
-            SML::Logging::error("Message!!!");
             FString ModId; int32 MessageId; FString Content;
             if (FNetControlMessage<NMT_ModMessage>::Receive(Bunch, ModId, MessageId, Content)) {
-                SML::Logging::error("Hell jeah!!!");
                 GNetworkHandler->ReceiveMessage(Connection, ModId, MessageId, Content);
                 Call.Cancel();
             }
         }
     };
-    SUBSCRIBE_VIRTUAL_FUNCTION(UWorld, FNetworkNotify::NotifyControlMessage, MessageHandler);
-    SUBSCRIBE_VIRTUAL_FUNCTION(UPendingNetGame, FNetworkNotify::NotifyControlMessage, MessageHandler);
+    SUBSCRIBE_METHOD(UWorld::NotifyControlMessage, MessageHandler);
+    SUBSCRIBE_METHOD(UPendingNetGame::NotifyControlMessage, MessageHandler);
 }
