@@ -198,6 +198,7 @@ public:
 	//This hook invoker is for global non-member static functions, so we don't have to deal with
 	//member function pointers and virtual functions here
 	static void InstallHook(const FString& SymbolName) {
+#if !WITH_EDITOR
 		if (!bHookInitialized) {
 			bHookInitialized = true;
 			void* HookFunctionPointer = static_cast<void*>(getApplyCall());
@@ -206,14 +207,19 @@ public:
 			handlersBefore = &HandlerLists->HandlersBefore;
 			handlersAfter = &HandlerLists->HandlersAfter;
 		}
+#endif
 	}
 public:
 	static void addHandlerBefore(Handler handler) {
+#if !WITH_EDITOR
 		handlersBefore->Add(handler);
+#endif
 	}
 
 	static void addHandlerAfter(HandlerAfter handler) {
+#if !WITH_EDITOR
 		handlersAfter->Add(handler);
+#endif
 	}
 };
 
@@ -279,6 +285,7 @@ private:
 public:
 	//Handles normal member function hooking, e.g hooking fixed symbol implementation in executable
 	static void InstallHook(const FString& SymbolSearchName) {
+#if !WITH_EDITOR
 		if (!bHookInitialized) {
 			bHookInitialized = true;
 			void* HookFunctionPointer = static_cast<void*>(getApplyCall());
@@ -287,6 +294,7 @@ public:
 			handlersBefore = &HandlerLists->HandlersBefore;
 			handlersAfter = &HandlerLists->HandlersAfter;
 		}
+#endif
 	}
 
 	//Handles virtual function hooking, which only requires correct function pointer for given class
@@ -294,6 +302,7 @@ public:
 	////and be able to override any virtual function for the class
 	template<typename T>
 	static void InstallVirtualFunctionHook(const FString& SymbolDisplayName, T MemberFunctionPointer) {
+#if !WITH_EDITOR
 		//TargetClass parameter matters when hooking virtual functions
 		static_assert(std::is_base_of<C, TargetClass>::value, "SUBSCRIBE_VIRTUAL_FUNCTION: TargetClass is not a child of function pointer class");
 		FMemberFunctionStruct<T> MemberStruct{MemberFunctionPointer};
@@ -310,14 +319,19 @@ public:
 		auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(SymbolKey);
 		handlersBefore = &HandlerLists->HandlersBefore;
 		handlersAfter = &HandlerLists->HandlersAfter;
+#endif
 	}
 public:
 	static void addHandlerBefore(Handler handler) {
+#if !WITH_EDITOR
 		handlersBefore->Add(handler);
+#endif
 	}
 
 	static void addHandlerAfter(HandlerAfter handler) {
+#if !WITH_EDITOR
 		handlersAfter->Add(handler);
+#endif
 	}
 };
 
@@ -344,19 +358,6 @@ R(* HookInvoker<R(*)(A...), PMF, None>::functionPtr)(A...) = nullptr;
 template <typename R, typename... A, R(*PMF)(A...)>
 bool HookInvoker<R(*)(A...), PMF, None>::bHookInitialized = false;
 
-#if WITH_EDITOR
-
-// Begin Dummy hook macros for editor mode
-#define SUBSCRIBE_METHOD(MethodReference, Handler)
-#define SUBSCRIBE_METHOD_AFTER(MethodReference, Handler)
-#define SUBSCRIBE_VIRTUAL_FUNCTION(TargetClass, MethodReference, Handler)
-#define SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(TargetClass, MethodReference, Handler)
-#define SUBSCRIBE_METHOD_MANUAL(MethodName, MethodReference, Handler)
-#define SUBSCRIBE_METHOD_AFTER_MANUAL(MethodName, MethodReference, Handler)
-// End Dummy hook macros
-
-#else
-
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(#MethodReference); \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerBefore(Handler);
@@ -380,5 +381,3 @@ HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerBefor
 #define SUBSCRIBE_METHOD_AFTER_MANUAL(MethodName, MethodReference, Handler) \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(MethodName); \
 HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerAfter(Handler);
-
-#endif
