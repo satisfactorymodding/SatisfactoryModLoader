@@ -1,5 +1,3 @@
-#include "MainMenuMixin.h"
-
 #include "RichTextBlock.h"
 #include "mod/blueprint_hooking.h"
 #include "util/Logging.h"

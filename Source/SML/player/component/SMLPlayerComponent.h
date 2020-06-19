@@ -55,4 +55,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure)
 	static USMLPlayerComponent* Get(APlayerController* Player);
+
+	/* Internal usage only */
+	static void Register();
 };

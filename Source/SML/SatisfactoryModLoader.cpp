@@ -24,16 +24,14 @@
 #include "WindowsPlatformCrashContext.h"
 #include "mod/ModHandler.h"
 #include "util/Console.h"
-#include "player/PlayerUtility.h"
+#include "player/component/SMLPlayerComponent.h"
 #include "mod/hooking.h"
 #include "network/RemoteVersionChecker.h"
-#include "player/MainMenuMixin.h"
 #include "mod/toolkit/FGAssetDumper.h"
 #include "mod/ModSubsystems.h"
-#include "player/BuildMenuTweaks.h"
 #include "tooltip/ItemTooltipHandler.h"
-#include "util/FuncNames.h"
 #include "network/NetworkHandler.h"
+#include "util/FuncNames.h"
 
 bool CheckGameVersion(const long TargetVersion) {
 	const FString& BuildVersion = FString(FApp::GetBuildVersion());
@@ -80,6 +78,13 @@ TSharedRef<FJsonObject> CreateConfigDefaults() {
 	Ref->SetBoolField(TEXT("enableCheatConsoleCommands"), false);
 	return Ref;
 }
+
+/* MainMenuCustomization.cpp declaration - Main Menu Customization */
+extern void GRegisterMainMenuHooks();
+/* BuildMenuTweaks.cpp declaration - Build Menu Sub Category Scroll Bar Fix */
+extern void GRegisterBuildMenuHooks();
+/* OfflinePlayHandler.cpp declaration - Offline Play Username & GUID Fix */
+extern void GRegisterOfflinePlayHandler();
 
 namespace SML {
 	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.1.3");
@@ -169,7 +174,7 @@ namespace SML {
 
 		//C++ hooks can be registered very early in the engine initialization
 		modHandlerPtr->AttachLoadingHooks();
-		InitializePlayerComponent();
+		USMLPlayerComponent::Register();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
@@ -239,6 +244,7 @@ namespace SML {
 		FlushDebugSymbols();
 
 		//Blueprint hooks are registered here, after engine initialization
+		GRegisterOfflinePlayHandler();
 		GRegisterBuildMenuHooks();
 		GRegisterMainMenuHooks();
 		UItemTooltipHandler::RegisterHooking();

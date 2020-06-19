@@ -2,7 +2,7 @@
 
 #include "mod/ModHandler.h"
 #include "util/Utility.h"
-#include "player/PlayerUtility.h"
+#include "player/PlayerControllerHelper.h"
 #include "player/component/SMLPlayerComponent.h"
 #include "SMLChatCommands.h"
 #include "mod/ModSubsystems.h"
@@ -76,9 +76,9 @@ TArray<AFGPlayerController*> AChatCommandSubsystem::ParsePlayerName(UCommandSend
 		return SML::ArrayOfNullable<AFGPlayerController*>(CallerPlayer);
 	
 	if (Name == TEXT("@all") || Name == TEXT("@a"))
-		return SML::GetConnectedPlayers(WorldObject);
+		return FPlayerControllerHelper::GetConnectedPlayers(WorldObject);
 
-	AFGPlayerController* FoundPlayer = SML::GetPlayerByName(WorldObject, Name);
+	AFGPlayerController* FoundPlayer = FPlayerControllerHelper::GetPlayerByName(WorldObject, Name);
 	return SML::ArrayOfNullable<AFGPlayerController*>(FoundPlayer);
 }
 

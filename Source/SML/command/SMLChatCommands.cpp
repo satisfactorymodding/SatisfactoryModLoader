@@ -1,7 +1,7 @@
 #include "SMLChatCommands.h"
 #include "ChatCommandLibrary.h"
 #include "SatisfactoryModLoader.h"
-#include "player/PlayerUtility.h"
+#include "player/PlayerControllerHelper.h"
 #include "AkComponent.h"
 
 AHelpCommandInstance::AHelpCommandInstance() {
@@ -61,7 +61,7 @@ APlayerListCommandInstance::APlayerListCommandInstance() {
 
 EExecutionStatus APlayerListCommandInstance::ExecuteCommand_Implementation(UCommandSender* Sender, const TArray<FString>& Arguments, const FString& Label) {
 	TArray<FString> PlayersList;
-	for (AFGPlayerController* Controller : SML::GetConnectedPlayers(GetWorld())) {
+	for (AFGPlayerController* Controller : FPlayerControllerHelper::GetConnectedPlayers(GetWorld())) {
 		PlayersList.Add(Controller->PlayerState->GetPlayerName());
 	}
 	Sender->SendChatMessage(FString(TEXT("Players Online: ")) += FString::Join(PlayersList, TEXT(", ")));
