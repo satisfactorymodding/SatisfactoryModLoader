@@ -59,7 +59,7 @@ bool FVersionRange::Matches(const FVersion& version) const {
 	case EVersionComparisonOp::GREATER: return result > 0;
 	case EVersionComparisonOp::LESS_EQUALS: return result <= 0;
 	case EVersionComparisonOp::LESS: return result < 0;
-	case EVersionComparisonOp::CARET:
+	case EVersionComparisonOp::CARET: {
 		if(result < 0) {
 			return false;
 		}
@@ -76,6 +76,7 @@ bool FVersionRange::Matches(const FVersion& version) const {
 			maxVersion.Major = MyVersion.Major + 1;
 		}
 		return version.Compare(maxVersion) < 0;
+	}
 	default: return result == 0;
 	}
 }
