@@ -71,4 +71,11 @@ public:
 	 */
 	UPROPERTY(EditDefaultsOnly, Category = Advanced)
 	TArray<UClass*> GlobalItemTooltipProviders;
+
+	/**
+	 * Table to use for obtaining AWESOME resource sink item point values
+	 * for items added by this mod
+	 */
+	UPROPERTY(EditDefaultsOnly, Category = Advanced)
+	TSoftObjectPtr<UDataTable> mResourceSinkItemPointsTable;
 };
