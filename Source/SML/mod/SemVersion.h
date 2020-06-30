@@ -4,10 +4,11 @@
 
 enum EVersionComparisonOp {
 	EQUALS,
-    GREATER,
-    GREATER_EQUALS,
-    LESS,
-    LESS_EQUALS
+	GREATER,
+	GREATER_EQUALS,
+	LESS,
+	LESS_EQUALS,
+	CARET
 };
 
 USTRUCT(BlueprintType)

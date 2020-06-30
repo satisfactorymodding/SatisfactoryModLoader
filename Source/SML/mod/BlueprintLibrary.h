@@ -7,7 +7,7 @@
 #include "BlueprintLibrary.generated.h"
 
 UCLASS()
-class USMLBlueprintLibrary : public UBlueprintFunctionLibrary {
+class SML_API USMLBlueprintLibrary : public UBlueprintFunctionLibrary {
 	GENERATED_BODY()
 
 public:

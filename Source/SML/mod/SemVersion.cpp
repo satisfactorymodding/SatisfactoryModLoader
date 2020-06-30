@@ -17,6 +17,8 @@ EVersionComparisonOp parseComparisonOp(const FString& type) {
 		return EVersionComparisonOp::GREATER_EQUALS;
 	if (type == TEXT(">"))
 		return EVersionComparisonOp::GREATER;
+	if (type == TEXT("^"))
+		return EVersionComparisonOp::CARET;
 	return EVersionComparisonOp::EQUALS;
 }
 
@@ -27,6 +29,7 @@ const TCHAR* comparisonString(const EVersionComparisonOp op) {
 	case EVersionComparisonOp::GREATER_EQUALS: return TEXT(">=");
 	case EVersionComparisonOp::LESS: return TEXT("<");
 	case EVersionComparisonOp::LESS_EQUALS: return TEXT("<=");
+	case EVersionComparisonOp::CARET: return TEXT("^");
 	default: return TEXT("");
 	}	
 }
@@ -56,6 +59,24 @@ bool FVersionRange::Matches(const FVersion& version) const {
 	case EVersionComparisonOp::GREATER: return result > 0;
 	case EVersionComparisonOp::LESS_EQUALS: return result <= 0;
 	case EVersionComparisonOp::LESS: return result < 0;
+	case EVersionComparisonOp::CARET: {
+		if(result < 0) {
+			return false;
+		}
+		FVersion maxVersion;
+		if(MyVersion.Major == 0) {
+			if(MyVersion.Minor == 0) {
+				maxVersion.Patch = MyVersion.Patch + 1;
+			}
+			else {
+				maxVersion.Minor = MyVersion.Minor + 1;
+			}
+		}
+		else {
+			maxVersion.Major = MyVersion.Major + 1;
+		}
+		return version.Compare(maxVersion) < 0;
+	}
 	default: return result == 0;
 	}
 }
