@@ -133,7 +133,7 @@ public:
 	
 	/** Get the total mass (gross) of this vehicle, tare + payload. [kg] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	float GetMass() const { return mMass + mPayloadMass; }
+	FORCEINLINE float GetMass() const { return mMass + mPayloadMass; }
 
 	/** Get the unloaded mass of this vehicle, tare. [kg] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -167,7 +167,7 @@ public:
 	FORCEINLINE void SetForwardSpeed( float velocity ) { mVelocity = velocity; }
 
 	/** Get the gravitational force acting on this vehicle. [N] [kg cm/s^2] */
-	float GetGravitationalForce() const { return GetMass() * -GetGravityZ(); }
+	FORCEINLINE float GetGravitationalForce() const { return GetMass() * -GetGravityZ(); }
 
 	/** Get the tractive force for this vehicle, this have a direction. [N] [kg cm/s^2] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -233,7 +233,7 @@ public:
 
 	/** Get number of wheel sets */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	int32 GetNumWheelsets() const { return mWheelsetSetups.Num(); };
+	FORCEINLINE int32 GetNumWheelsets() const { return mWheelsetSetups.Num(); };
 
 	/** Get the rotation for a wheelset. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -241,7 +241,7 @@ public:
 
 	/** Get the rotation for the wheels around the axle. [degrees]. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	float GetWheelRotation() const { return mWheelRotation; }
+	FORCEINLINE float GetWheelRotation() const { return mWheelRotation; }
 
 	/** Get the offset for a wheelset relative to the root bone along the forward (X) axis. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )

@@ -26,6 +26,7 @@ public:
 	float Duration = 0.0f;
 
 public:
+	FORCEINLINE FTimeTableStop() = default;
 	FORCEINLINE ~FTimeTableStop() = default;
 };
 

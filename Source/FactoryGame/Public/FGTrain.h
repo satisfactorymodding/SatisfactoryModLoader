@@ -341,7 +341,7 @@ public:
 
 	/** Get the name of this train. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Train" )
-	FText GetTrainName() const { return mTrainName; }
+	FORCEINLINE FText GetTrainName() const { return mTrainName; }
 
 	/** Get the name of this train, must be called on server. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Train" )
@@ -349,7 +349,7 @@ public:
 
 	/** Get the track for this train. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Train" )
-	int32 GetTrackGraphID() const { return mTrackGraphID; }
+	FORCEINLINE int32 GetTrackGraphID() const { return mTrackGraphID; }
 
 	/** Is this train driven by a player. */
 	bool IsPlayerDriven() const;
@@ -364,7 +364,7 @@ public:
 
 	/** Get the self driving error for this locomotive. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|SelfDriving" )
-	ESelfDrivingLocomotiveError GetSelfDrivingError() const { return mSelfDrivingError; }
+	FORCEINLINE ESelfDrivingLocomotiveError GetSelfDrivingError() const { return mSelfDrivingError; }
 
 	/** @return The master locomotive in the train; nullptr if MU is disabled. */
 	class AFGLocomotive* GetMultipleUnitMaster() const;
@@ -411,11 +411,11 @@ public:
 
 	/** Get the current status on the docking. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Train" )
-	ETrainDockingState GetDockingState() const { return mDockingState; }
+	FORCEINLINE ETrainDockingState GetDockingState() const { return mDockingState; }
 
 	/** If this train has docked at a station. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Train" )
-	bool IsDocked() const { return mDockingState == ETrainDockingState::TDS_Docked; }
+	FORCEINLINE bool IsDocked() const { return mDockingState == ETrainDockingState::TDS_Docked; }
 
 	/** Callbacks from the station with regards to docking. */
 	void OnDocked( AFGBuildableRailroadStation* station );

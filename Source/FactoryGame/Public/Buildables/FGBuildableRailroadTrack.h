@@ -26,7 +26,7 @@ public:
 	static const FRailroadTrackPosition InvalidTrackPosition;
 
 	FRailroadTrackPosition();
-	FRailroadTrackPosition( class AFGBuildableRailroadTrack* track, float offset, float forward );
+	FORCEINLINE FRailroadTrackPosition( class AFGBuildableRailroadTrack* track, float offset, float forward );
 	FRailroadTrackPosition( const FRailroadTrackPosition& position );
 	~FRailroadTrackPosition();
 
