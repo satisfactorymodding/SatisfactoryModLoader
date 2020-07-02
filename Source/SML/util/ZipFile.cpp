@@ -1,4 +1,4 @@
-﻿#include "ZipFile.h"
+#include "ZipFile.h"
 
 size_t ReadZipArchiveFunc(void* Opaque, mz_uint64 FileOffset, void* ReadBuffer, size_t Amount) {
 	IFileHandle* FileHandle = static_cast<IFileHandle*>(Opaque);
@@ -45,14 +45,14 @@ FZipFile::~FZipFile() {
 }
 
 bool FZipFile::InitArchive() {
-	InitSuccess = mz_zip_reader_init(&ZipArchive, FileHandle->Size(), 0);
+	InitSuccess = static_cast<bool>(mz_zip_reader_init(&ZipArchive, FileHandle->Size(), 0));
 	return InitSuccess;
 }
 
 
 uint32 FZipFile::ComputeFileIndex(const ANSICHAR* FileName) {
 	uint32 ResultFileIndex;
-	bool Result = mz_zip_reader_locate_file_v2(&ZipArchive, FileName, NULL, 0, &ResultFileIndex);
+	bool Result = static_cast<bool>(mz_zip_reader_locate_file_v2(&ZipArchive, FileName, NULL, 0, &ResultFileIndex));
 	return Result ? ResultFileIndex : ZIP_NO_FILE_INDEX;
 }
 	
@@ -81,7 +81,7 @@ bool FZipFile::ExtractFile(const FString& FilePath, IFileHandle* OutFileHandle) 
 	const uint32 FileIndex = LocateFileIndex(FilePath);
 	if (FileIndex == ZIP_NO_FILE_INDEX)
 		return false;
-	bool Result = mz_zip_reader_extract_to_callback(&ZipArchive, FileIndex, &ExtractZipArchiveFunc, OutFileHandle, 0);
+	bool Result = static_cast<bool>(mz_zip_reader_extract_to_callback(&ZipArchive, FileIndex, &ExtractZipArchiveFunc, OutFileHandle, 0));
 	return Result && OutFileHandle->Flush();
 }
 
@@ -89,7 +89,7 @@ bool FZipFile::ReadFileToBuffer(const FString& FilePath, void* Buffer, SIZE_T Bu
 	const uint32 FileIndex = LocateFileIndex(FilePath);
 	if (FileIndex == ZIP_NO_FILE_INDEX)
 		return false;
-	return mz_zip_reader_extract_to_mem(&ZipArchive, FileIndex, Buffer, BufferSize, 0);
+	return static_cast<bool>(mz_zip_reader_extract_to_mem(&ZipArchive, FileIndex, Buffer, BufferSize, 0));
 }
 
 bool FZipFile::ReadFileToString(const FString& FilePath, FString& OutString) {
