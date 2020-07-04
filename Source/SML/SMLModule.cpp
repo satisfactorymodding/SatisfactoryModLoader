@@ -5,6 +5,7 @@
 #if WITH_EDITOR
 #include "ContentBrowserModule.h"
 #include "LevelEditor.h"
+#include "SatisfactoryModLoader.h"
 #include "Framework/Commands/Commands.h"
 #include "MultiBoxBuilder.h"
 #include "AssetRegistryModule.h"
@@ -27,7 +28,8 @@ public:
 };
 
 void SMLDebugButtonClicked() {
-	SML::generateSatisfactoryAssets(TEXT("D:/SatisfactoryExperimental/configs/FGDataAssets.json"));
+	FString path = SML::GetConfigDirectory() / "BPdump" / "";
+	SML::generateSatisfactoryAssets(path);
 }
 
 #endif

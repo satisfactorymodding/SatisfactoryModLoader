@@ -238,10 +238,21 @@ namespace SML {
 	//to load modules, mount paks and access most of the engine systems here
 	//however note that level could still be not loaded at that moment
 	void PostInitializeSML() {
+
+		if (GetSmlConfig().bDumpGameAssets && GetSmlConfig().bDevelopmentMode) {
+			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
+			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
+		}
+
 		SML::Logging::info(TEXT("Loading Mods..."));
 		modHandlerPtr->LoadMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Post Initialization finished!"));
 		FlushDebugSymbols();
+
+		if (GetSmlConfig().bDumpGameAssets && !GetSmlConfig().bDevelopmentMode) {
+			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
+			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
+		}
 
 		//Blueprint hooks are registered here, after engine initialization
 		GRegisterOfflinePlayHandler();
@@ -250,24 +261,33 @@ namespace SML {
 		UItemTooltipHandler::RegisterHooking();
 		UModNetworkHandler::Register();
 		FRemoteVersionChecker::Register();
-		
-		
-		if (GetSmlConfig().bDumpGameAssets) {
-			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
-			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
-		}
 	}
 
 	SML_API FString GetModDirectory() {
+#if WITH_EDITOR
+		*rootGamePath = FPaths::GetProjectFilePath();
 		return *rootGamePath / TEXT("mods");
+#else
+		return *rootGamePath / TEXT("mods");
+#endif
 	}
 
 	SML_API FString GetConfigDirectory() {
+#if WITH_EDITOR
+		*rootGamePath = FPaths::GetProjectFilePath();
 		return *rootGamePath / TEXT("configs");
+#else
+		return *rootGamePath / TEXT("configs");
+#endif
 	}
 
 	SML_API FString GetCacheDirectory() {
+		#if WITH_EDITOR
+		*rootGamePath = FPaths::GetProjectFilePath();
 		return *rootGamePath / TEXT(".cache");
+#else
+		return *rootGamePath / TEXT(".cache");
+#endif
 	}
 
 	BootstrapAccessors& GetBootstrapperAccessors() {
@@ -275,7 +295,12 @@ namespace SML {
 	}
 
 	SML_API const SML::FSMLConfiguration& GetSmlConfig() {
+#if WITH_EDITOR
+		activeConfiguration = new SML::FSMLConfiguration();
 		return *activeConfiguration;
+#else
+		return *activeConfiguration;
+#endif
 	}
 
 	SML_API FModHandler& GetModHandler() {

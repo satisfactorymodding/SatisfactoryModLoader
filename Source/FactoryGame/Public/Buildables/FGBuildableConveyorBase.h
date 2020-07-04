@@ -672,7 +672,7 @@ public:
 	/** Returns how much room there was on the belt after the last factory tick. If the belt is empty it will return the length of the belt */
 	float GetCachedAvailableSpace_Threadsafe() const;
 
-protected:
+public:
 	// Begin Factory_ interface
 	virtual bool Factory_PeekOutput_Implementation( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const override;
 	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
@@ -698,7 +698,7 @@ protected:
 	/** Remove an item from the belt at index. */
 	void Factory_RemoveItemAt( int32 index );
 
-private:
+public:
 	/** Take the first element on the belt. */
 	void Factory_DequeueItem();
 	/** Put a new item onto the belt. */
@@ -731,7 +731,7 @@ public:
 	UPROPERTY( )
 	UPresistentConveyorPackagingData* PresistentConveyorPackagingDataObject = nullptr; //held here, but created by conveyors when replicated, as we don't want to create it unless it's used.
 
-protected:
+public:
 
 	/** Speed of this conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor" )
