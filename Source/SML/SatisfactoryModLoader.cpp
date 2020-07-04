@@ -265,7 +265,7 @@ namespace SML {
 
 	SML_API FString GetModDirectory() {
 #if WITH_EDITOR
-		*rootGamePath = FPaths::GetProjectFilePath();
+		*rootGamePath = FPaths::GetPath(FPaths::GetProjectFilePath());
 		return *rootGamePath / TEXT("mods");
 #else
 		return *rootGamePath / TEXT("mods");
@@ -274,7 +274,7 @@ namespace SML {
 
 	SML_API FString GetConfigDirectory() {
 #if WITH_EDITOR
-		*rootGamePath = FPaths::GetProjectFilePath();
+		*rootGamePath = FPaths::GetPath(FPaths::GetProjectFilePath());
 		return *rootGamePath / TEXT("configs");
 #else
 		return *rootGamePath / TEXT("configs");
@@ -283,7 +283,7 @@ namespace SML {
 
 	SML_API FString GetCacheDirectory() {
 		#if WITH_EDITOR
-		*rootGamePath = FPaths::GetProjectFilePath();
+		*rootGamePath = FPaths::GetPath(FPaths::GetProjectFilePath());
 		return *rootGamePath / TEXT(".cache");
 #else
 		return *rootGamePath / TEXT(".cache");

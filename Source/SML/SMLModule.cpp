@@ -5,7 +5,6 @@
 #if WITH_EDITOR
 #include "ContentBrowserModule.h"
 #include "LevelEditor.h"
-#include "SatisfactoryModLoader.h"
 #include "Framework/Commands/Commands.h"
 #include "MultiBoxBuilder.h"
 #include "AssetRegistryModule.h"
@@ -28,7 +27,7 @@ public:
 };
 
 void SMLDebugButtonClicked() {
-	FString path = SML::GetConfigDirectory() / "BPdump" / "";
+	FString path = FPaths::GetPath(FPaths::GetProjectFilePath()) / "BPdump" / "";
 	SML::generateSatisfactoryAssets(path);
 }
 
