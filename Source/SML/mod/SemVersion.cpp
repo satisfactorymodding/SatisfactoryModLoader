@@ -85,7 +85,7 @@ void parseVersion(const FString& string, FVersion& version, FString* compareOp) 
 	std::wsmatch Match;
 	const std::wstring WideString(*string);
 	if (!std::regex_match(WideString, Match, VersionRegex)) {
-		SML::Logging::error(*FString::Printf(TEXT("Version string \"%s\" doesn't match the pattern"), *version.String()));
+		SML::Logging::error(*FString::Printf(TEXT("Version string \"%s\" doesn't match the pattern"), *string));
 		return;
 	}
 	if (compareOp != nullptr)
