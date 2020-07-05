@@ -278,6 +278,34 @@ void SAlpakaWidget::CookDone(FString result, double runtime,UAlpakitSettings* Se
 				// Copy to Satisfactory mods folder
 				PlatformFile.CopyFile(*(gameModsDir / FString::Printf(TEXT("%s.pak"), *pakName)), *pakFilePath);
 				UE_LOG(LogTemp, Log, TEXT("Copied %s to game dir"), *mod.Name);
+
+				if (Settings->CopyDllsToGame) {
+					FString modFileNameWithoutExtension = FString::Printf(TEXT("UE4-%s-Win64-Shipping"), *mod.Name);
+					FString buildDirectory = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir(), FString(TEXT("Binaries/Win64")));
+					FString dllPath = FPaths::Combine(*buildDirectory, *modFileNameWithoutExtension);
+					dllPath = FPaths::SetExtension(dllPath, FString(TEXT(".dll")));
+
+					if (!FPaths::FileExists(dllPath)) {
+						UE_LOG(LogTemp, Error, TEXT("Did not copy mod dll to game, file not found: %s"), *dllPath);
+					}
+					else {
+						PlatformFile.CopyFile(*(gameModsDir / FString::Printf(TEXT("%s.dll"), *modFileNameWithoutExtension)), *dllPath);
+						UE_LOG(LogTemp, Log, TEXT("Copied %s to game dir"), *FPaths::GetCleanFilename(dllPath));
+					}
+
+					if (Settings->CopyDebugSymbolsToGame) {
+						FString pdbPath = FPaths::Combine(*buildDirectory, *modFileNameWithoutExtension);
+						pdbPath = FPaths::SetExtension(pdbPath, FString(TEXT(".pdb")));
+
+						if (!FPaths::FileExists(pdbPath)) {
+							UE_LOG(LogTemp, Error, TEXT("Did not copy mod pdb to game, file not found: %s"), *dllPath);
+						}
+						else {
+							PlatformFile.CopyFile(*(gameModsDir / FString::Printf(TEXT("%s.pdb"), *modFileNameWithoutExtension)), *pdbPath);
+							UE_LOG(LogTemp, Log, TEXT("Copied %s to game dir"), *FPaths::GetCleanFilename(pdbPath));
+						}
+					}
+				}
 			}
 		}
 		if (Settings->CopyModsToGame && modsCopied > 0) {
