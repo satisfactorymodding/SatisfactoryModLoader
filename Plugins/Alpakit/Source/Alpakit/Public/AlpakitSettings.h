@@ -54,9 +54,16 @@ public:
 	TArray<FAlpakitMod> Mods;
 
 	UPROPERTY(EditAnywhere, config, Category = Config)
-	bool StartGame;
-
-	UPROPERTY(EditAnywhere, config, Category = Config)
 	bool CopyModsToGame;
 
+	/** If enabled the shipping dll files will be copied to the game if found. This is required if your mod has a custom module. */
+	UPROPERTY(EditAnywhere, config, Category = Config, meta = (EditCondition = "CopyModsToGame"))
+	bool CopyDllsToGame;
+
+	/** If enabled the .pdb files for the shipping dll files will be copied to the game if found. The game's crash reporter will then be able to show more accurate crash stack traces. */
+	UPROPERTY(EditAnywhere, config, Category = Config, meta = (EditCondition = "CopyDllsToGame"))
+	bool CopyDebugSymbolsToGame;
+
+	UPROPERTY(EditAnywhere, config, Category = Config)
+	bool StartGame;
 };
