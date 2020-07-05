@@ -44,6 +44,10 @@
 		{
 			"Name": "Alpakit",
 			"Enabled": true
+		},
+		{
+			"Name": "SteamVR",
+			"Enabled": false
 		}
 	]
 }
