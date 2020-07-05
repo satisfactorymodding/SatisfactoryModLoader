@@ -286,7 +286,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime,UAlpakitSettings* Se
 					dllPath = FPaths::SetExtension(dllPath, FString(TEXT(".dll")));
 
 					if (!FPaths::FileExists(dllPath)) {
-						UE_LOG(LogTemp, Error, TEXT("Did not copy mod dll to game, file not found: %s"), *dllPath);
+						UE_LOG(LogTemp, Warning, TEXT("Did not copy mod dll to game, file not found: %s. This may not be a problem if this mod does not have a custom module."), *dllPath);
 					}
 					else {
 						PlatformFile.CopyFile(*(gameModsDir / FString::Printf(TEXT("%s.dll"), *modFileNameWithoutExtension)), *dllPath);
@@ -298,7 +298,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime,UAlpakitSettings* Se
 						pdbPath = FPaths::SetExtension(pdbPath, FString(TEXT(".pdb")));
 
 						if (!FPaths::FileExists(pdbPath)) {
-							UE_LOG(LogTemp, Error, TEXT("Did not copy mod pdb to game, file not found: %s"), *dllPath);
+							UE_LOG(LogTemp, Warning, TEXT("Did not copy mod pdb to game, file not found: %s. This may not be a problem if this mod does not have a custom module."), *dllPath);
 						}
 						else {
 							PlatformFile.CopyFile(*(gameModsDir / FString::Printf(TEXT("%s.pdb"), *modFileNameWithoutExtension)), *pdbPath);
