@@ -87,7 +87,7 @@ extern void GRegisterBuildMenuHooks();
 extern void GRegisterOfflinePlayHandler();
 
 namespace SML {
-	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.1.3");
+	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.2.0");
 	
 	//version of the SML mod loader, as specified in the SML.h
 	static FVersion* modLoaderVersion = new FVersion(modLoaderVersionString);
