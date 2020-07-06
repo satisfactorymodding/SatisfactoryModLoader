@@ -50,6 +50,7 @@ void UFGBlueprintFunctionLibrary::GetAllWidgetsOfClassInHierarchy(UWidget* hiera
 TArray< TSubclassOf< class UFGItemDescriptor > > UFGBlueprintFunctionLibrary::GetAllItemsInCategory(UObject* worldContext, TSubclassOf< UFGItemCategory > itemCategory){ return TArray<TSubclassOf<class UFGItemDescriptor> >(); }
 TArray< TSubclassOf< class UFGItemCategory > > UFGBlueprintFunctionLibrary::GetCategoriesWithAffordableRecipes(AFGCharacterPlayer* playerPawn, TSubclassOf< UObject > forProducer){ return TArray<TSubclassOf<class UFGItemCategory> >(); }
 bool UFGBlueprintFunctionLibrary::IsLocationNearABase(const UObject* worldContext, FVector inLocation, float closeDistance){ return bool(); }
+bool UFGBlueprintFunctionLibrary::IsLocationNearABaseFromResult(const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results){ return bool(); }
 void UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMap(APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility){ }
 void UFGBlueprintFunctionLibrary::TravelToMainMenu(APlayerController* playerController){ }
 void UFGBlueprintFunctionLibrary::SendLocalPlayerToMainMenu(UWorld* world){ }

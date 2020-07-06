@@ -26,7 +26,7 @@ class SML_API UItemTooltipHandler: public UBlueprintFunctionLibrary {
     GENERATED_BODY()
 public:
     //Internal usage only, called by SML on startup
-    NO_API static void GRegisterHooking();
+    NO_API static void RegisterHooking();
 
     /**
      * Register tooltip provider that will be called for all items registered
@@ -51,7 +51,7 @@ public:
     UFUNCTION(BlueprintPure)
     static FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
-    static TArray<UUserWidget*> CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    static TArray<UWidget*> CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 };
 
 UINTERFACE( Blueprintable )
@@ -73,7 +73,7 @@ public:
     FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
     UFUNCTION( BlueprintNativeEvent )
-    UUserWidget* CreateDescriptionWidget(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    UWidget* CreateDescriptionWidget(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 };
 
 UINTERFACE( Blueprintable )
@@ -90,13 +90,11 @@ class SML_API ISMLItemDisplayInterface {
 	GENERATED_BODY()
 public:
     UFUNCTION( BlueprintNativeEvent )
-    FText GetItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    FText GetOverridenItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
     UFUNCTION( BlueprintNativeEvent )
-    FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    FText GetOverridenItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
     UFUNCTION( BlueprintNativeEvent )
-    UUserWidget* CreateDescriptionWidget(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    UWidget* CreateDescriptionWidget(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 };
-
-

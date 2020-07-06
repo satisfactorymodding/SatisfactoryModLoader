@@ -1,4 +1,5 @@
 #pragma once
+#include "CoreMinimal.h"
 
 namespace SML {
 	/**
@@ -14,4 +15,10 @@ namespace SML {
 	* All standard output streams will get cloned to the console.
 	*/
 	void EnableConsole();
+
+	/**
+	 * Notify fatal error has occured to the user UI outside of the game
+	 * On Win32 it will show message box
+	 */
+	SML_API void NotifyFatalError(const FString& Message);
 }

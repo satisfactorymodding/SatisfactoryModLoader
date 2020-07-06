@@ -1,4 +1,3 @@
-#include "BuildMenuTweaks.h"
 #include "mod/blueprint_hooking.h"
 #include "util/Logging.h"
 
@@ -18,6 +17,9 @@ void GRegisterBuildMenuHooks() {
 		USizeBox* RootWidget = Cast<USizeBox>(CategoryButtonsContainer->WidgetTree->RootWidget);
 		checkf(RootWidget, TEXT("CategoryButtonsContainer widget root widget is not a size box!"));
 		UWidget* ContentWidget = RootWidget->GetContent();
+
+		RootWidget->SetMaxDesiredHeight(600);
+		RootWidget->bOverride_MaxDesiredHeight = true;
 		
 		//Create scroll box, populate it and set content
 		UScrollBox* ScrollBox = NewObject<UScrollBox>(RootWidget);

@@ -33,5 +33,6 @@ int32 AFGCircuitSubsystem::GenerateUniqueCircuitID(){ return int32(); }
 void AFGCircuitSubsystem::MergeCircuits(int32 first, int32 second){ }
 int32 AFGCircuitSubsystem::CreateCircuit(TSubclassOf<  UFGCircuit > circuitClass){ return int32(); }
 void AFGCircuitSubsystem::RemoveCircuit(int32 circuitID){ }
+void AFGCircuitSubsystem::RebuildCircuit(int32 circuitID){ }
 void AFGCircuitSubsystem::AddComponentToCircuit( UFGCircuitConnectionComponent* component, int32 circuitID){ }
 void AFGCircuitSubsystem::RemoveComponentFromCircuit( UFGCircuitConnectionComponent* component){ }

@@ -80,8 +80,8 @@ DECLARE_LOG_CATEGORY_EXTERN( LogGame, Log, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogFactory, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogNetConveyorBelt, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogNetFoliageRemoval, Warning, All );
-DECLARE_LOG_CATEGORY_EXTERN( LogPower, Log, All ); //@todoG2 Put back to Warning when circuit crash is fixed
-DECLARE_LOG_CATEGORY_EXTERN( LogCircuit, Log, All ); //@todoG2 Put back to Warning when circuit crash is fixed
+DECLARE_LOG_CATEGORY_EXTERN( LogPower, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogCircuit, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogRailroad, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogBuildGun, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogHologram, Warning, All );
@@ -159,15 +159,15 @@ static const ECollisionChannel OC_VehicleWheelQuery( ECC_GameTraceChannel7 );
 /** Input Actions */
 static const FName PrimaryFireAction( TEXT( "PrimaryFire" ) );
 static const FName SecondaryFireAction( TEXT( "SecondaryFire" ) );
-static const FName  ReloadAction( TEXT( "Reload" ) );
+static const FName ReloadAction( TEXT( "Reload" ) );
 static const FName BuildGunScrollDownAction( TEXT( "BuildGunScrollDown_PhotoModeFOVDown" ) );
 static const FName BuildGunScrollUpAction( TEXT( "BuildGunScrollUp_PhotoModeFOVUp" ) );
 static const FName BuildGunScrollModeAction( TEXT( "BuildGunScrollMode" ) );
 static const FName BuildGunNoSnapModeAction( TEXT( "ToggleMap_BuildGunNoSnapMode" ) );
-static const FName BuildGunSnapToGuideLinesAction( TEXT( "BuildGunSnapToGuideLines" ) );
-static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT( "BuildGunDismantle_ToggleMultiSelectState" ) );
+static const FName BuildGunSnapToGuideLinesAction( TEXT( "BuildGunSnapToGuideLines_ToggleMultiSelectDismantle" ) );
+static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT( "BuildGunSnapToGuideLines_ToggleMultiSelectDismantle" ) );
 static const FName AttentionPingAction( TEXT( "AttentionPing" ) );
-static const FName BuildingSampleAction( TEXT( "BuildingSample" ) );
+static const FName BuildingSampleAction( TEXT( "TogglePhotoModeUIVisibility_BuildingSample" ) );
 static const FName CycleToNextHotbarAction( TEXT( "CycleToNextHotbar" ) );
 static const FName CycleToPreviousHotbarAction( TEXT( "CycleToPreviousHotbar" ) );
 
@@ -191,21 +191,13 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 -----------------------------------------------------------------------------*/
 #define SHOWVAR( x ) *FString::Printf( TEXT( "%s = %s" ), TEXT( #x ), *VarToFString( x ) )
 
-// Enums are just integer values and need a special case.
-// You also need to provide the enum's type name as we can't get that using code.
+// Show for enums. Note that you need to provide the enum's type name as we can't get that using code.
 #define SHOWENUM( name, x ) *FString::Printf( TEXT( "%s = %s" ), TEXT( #x ), *EnumToFString( FString( #name ), ( int32 )x ) )
-
 #define ENUM_TO_FSTRING( name, x ) EnumToFString( FString( #name ), ( uint32 )x )
 
-//Appends NetMode on quicklog macro
-#define QUICKLOG_NETMODE( x, ... ) UE_LOG( LogTemp, Log, TEXT("(%s) %s"), NETMODE_STRING, *FString::Printf(x), __VA_ARGS__ );
-
-#define ENUM_TO_DISPLAYNAME( name, x ) EnumToDisplayNameFString( FString( #name ), ( int32 )x )
-
+// Show for container types.
 #define SHOWARRAY( x ) *FString::Printf( TEXT( "%s [%i]:\n%s" ), TEXT( #x ), x.Num(), *ArrayToFString< decltype( x ) >( x ) )
-
 #define SHOWSET( x ) *FString::Printf( TEXT( "%s [%i]:\n%s" ), TEXT( #x ), x.Num(), *SetToFString< decltype( x ) >( x ) )
-
 #define SHOWMAP( x ) *FString::Printf( TEXT( "%s \n%s" ), TEXT( #x ), *MapToFString< decltype( x ) >( x ) )
 
 /** Use this to log larger arrays, SHOWARRAY might not show the entire array. */
@@ -222,12 +214,15 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 #define QUICKLOG( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: %s" ), TEXT( x ), __VA_ARGS__ );
 
 /** QUICKLOG that marks output with authority/remote depending on the actors role. Note that this is not always synonymous with server/client, use the net mode in that case. */
-#define QUICKLOG_AUTHORITY_MARKING( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: [%s] %s" ) ,*FString::Printf( TEXT( x ), HasAuthority() ? TEXT( "Authority" ) : TEXT( "Remote" ), __VA_ARGS__ ) );
+#define QUICKLOG_AUTHORITY_MARKING( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: [%s] %s" ), HasAuthority() ? TEXT( "Authority" ) : TEXT( "Remote" ), *FString::Printf( TEXT( x ), __VA_ARGS__ ) );
 
 /** Similar to QUICKLOG but for single variables. */
 #define QUICKSHOW( x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), SHOWVAR( x ) ); 
-#define QUICKSHOWENUM( name, x ) UE_LOG( LogTemp, Log, TEXT("QUICKSHOW (%s)   %s"), TEXT( __FUNCTION__ ), SHOWENUM( name, x ) );
+#define QUICKSHOWENUM( name, x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW (%s)   %s" ), TEXT( __FUNCTION__ ), SHOWENUM( name, x ) );
 #define QUICKSHOWARRAY( x ) LOGARRAY( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), x );
+
+/** QUICKLOG that appends the net mode. Requires GetWorld(). */
+#define QUICKLOG_NETMODE( x, ... ) UE_LOG( LogTemp, Log, TEXT( "(%s) %s" ), NETMODE_STRING, *FString::Printf( x ), __VA_ARGS__ );
 
 inline FString NetmodeToString( ENetMode NM )
 {
@@ -258,13 +253,13 @@ inline FString NetmodeToString( ENetMode NM )
 
 /** Analytics Helper Macros */
 #define SEND_TOTAL_TRACK_COUNTER_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__, __STAT_ID__ , __COUNT__)	\
-if( UAnalyticsService* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendTotalTrackedCounterAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __COUNT__ )
+if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendTotalTrackedCounterAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __COUNT__ )
 
 #define SEND_COUNTER_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__ , __COUNT__)	\
-if( UAnalyticsService* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendCounterAnalytic( __SERVICE__, __STAT_KEY__, __COUNT__ )
+if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendCounterAnalytic( __SERVICE__, __STAT_KEY__, __COUNT__ )
 
 #define SEND_VALUE_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__) \
-if( UAnalyticsService* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendValueAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__ )
+if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendValueAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__ )
 
 FORCEINLINE FString VarToFString( FVector2D var ) { return FString::Printf( TEXT( "(X=%f,Y=%f)" ), var.X, var.Y ); }
 FORCEINLINE FString VarToFString( FVector var ){ return FString::Printf( TEXT( "(X=%f,Y=%f,Z=%f)" ), var.X, var.Y, var.Z ); }
@@ -306,16 +301,23 @@ FORCEINLINE FString VarToFString( TArray< T > var )
 
 FORCEINLINE FString EnumToFString( const FString& name, int32 var )
 {
-	UEnum* EnumObject = FindObject< UEnum >( ANY_PACKAGE, *name, true );
+	if( UEnum* EnumObject = FindObject< UEnum >( ANY_PACKAGE, *name, true ) )
+	{
+#if WITH_EDITOR
+		return EnumObject->GetDisplayNameTextByValue( var ).ToString();
+#else
+		return EnumObject->GetNameStringByValue( var );
+#endif
+	}
 
-	return EnumObject ? EnumObject->GetNameByIndex( var ).ToString() : TEXT( "invalid enum" );
+	return TEXT( "Invalid Enum" );
 }
 
 FORCEINLINE bool IsValidEnumValue( const TCHAR* enumName, const FString& enumValue )
 {
 	if( UEnum* enumObject = FindObject< UEnum >( ANY_PACKAGE, enumName, true ) )
 	{
-		return enumObject->IsValidEnumName(FName(*enumValue));
+		return enumObject->IsValidEnumName( FName( *enumValue ) );
 	}
 
 	return false;
@@ -329,17 +331,6 @@ FORCEINLINE T StringToEnumChecked( const TCHAR* enumName, const FString& enumVal
 
 	int32 index = enumObject->GetIndexByName(FName(*enumValue));
 	return T((uint8)index);
-}
-
-FORCEINLINE FString EnumToDisplayNameFString( const FString& name, int32 var )
-{
-#if WITH_EDITOR
-	UEnum* EnumObject = FindObject< UEnum >( ANY_PACKAGE, *name, true );
-
-	return EnumObject ? EnumObject->GetDisplayNameTextByValue( var ).ToString() : TEXT( "invalid enum" );
-#else
-	return EnumToFString( name, var );
-#endif
 }
 
 template< class TArrayType >
@@ -399,9 +390,7 @@ FString RemoveStandalonePrefix( const FString& string );
 #else
 	#define VISUAL_LOG( LOG_CATEGORY, WARNING_LEVEL, MESSAGE, ... ) \
 		UE_LOG( LOG_CATEGORY, WARNING_LEVEL, MESSAGE, __VA_ARGS__ ); 
-#endif
-
-#endif
+#endif //WITH_EDITOR
 
 #if UE_BUILD_DEBUG
 #define DO_CHECK_DEV									1
@@ -421,7 +410,6 @@ FString RemoveStandalonePrefix( const FString& string );
 	#define checkfDev(expr, format,  ...)				{ CA_ASSUME(expr); }
 #endif
 
-
-#ifndef WITH_CHEATS
 #define WITH_CHEATS	(!IS_PUBLIC_BUILD)
-#endif
+
+#endif //__FACTORYGAME_H__

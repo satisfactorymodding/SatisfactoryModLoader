@@ -2,7 +2,7 @@
 
 #include "mod/ModHandler.h"
 #include "util/Utility.h"
-#include "player/PlayerUtility.h"
+#include "player/PlayerControllerHelper.h"
 #include "player/component/SMLPlayerComponent.h"
 #include "SMLChatCommands.h"
 #include "mod/ModSubsystems.h"
@@ -68,7 +68,6 @@ void AChatCommandSubsystem::Init() {
 	RegisterCommand(APlayerListCommandInstance::StaticClass());
 }
 
-
 TArray<AFGPlayerController*> AChatCommandSubsystem::ParsePlayerName(UCommandSender* Caller, const FString& Name, UObject* WorldContext) {
 	check(WorldContext->ImplementsGetWorld());
 	const UWorld* WorldObject = WorldContext->GetWorld();
@@ -77,9 +76,9 @@ TArray<AFGPlayerController*> AChatCommandSubsystem::ParsePlayerName(UCommandSend
 		return SML::ArrayOfNullable<AFGPlayerController*>(CallerPlayer);
 	
 	if (Name == TEXT("@all") || Name == TEXT("@a"))
-		return SML::GetConnectedPlayers(WorldObject);
+		return FPlayerControllerHelper::GetConnectedPlayers(WorldObject);
 
-	AFGPlayerController* FoundPlayer = SML::GetPlayerByName(WorldObject, Name);
+	AFGPlayerController* FoundPlayer = FPlayerControllerHelper::GetPlayerByName(WorldObject, Name);
 	return SML::ArrayOfNullable<AFGPlayerController*>(FoundPlayer);
 }
 
@@ -88,11 +87,11 @@ FString MakeFQCommandName(const FString& ModId, const FString& Name) {
 }
 
 void AChatCommandSubsystem::RegisterCommand(TSubclassOf<AChatCommandInstance> CommandClass) {
-	const SML::Mod::FModHandler& ModHandler = SML::getModHandler();
+	const FModHandler& ModHandler = SML::GetModHandler();
 	//Ensure that mod with specified ModId is loaded and active
 
 	AChatCommandInstance* CommandCDO = CommandClass->GetDefaultObject<AChatCommandInstance>();
-	checkf(ModHandler.isModLoaded(CommandCDO->ModId), TEXT("Invalid ModId provided for RegisterCommand: %s"), *CommandCDO->ModId);
+	checkf(ModHandler.IsModLoaded(CommandCDO->ModId), TEXT("Invalid ModId provided for RegisterCommand: %s"), *CommandCDO->ModId);
 	const FString FqCommandName = MakeFQCommandName(CommandCDO->ModId, CommandCDO->CommandName);
 	//Only register command if it's not already registered
 	if (!CommandByNameMap.Contains(FqCommandName)) {
@@ -131,13 +130,18 @@ EExecutionStatus AChatCommandSubsystem::RunChatCommand(const FString& CommandLin
 		ResultArgArray.Add(resultArg);
 		Offset++; //skip argument separator
 	}
-	const FString CommandName = ResultArgArray[0];
+	const FString CommandAliasUsed = ResultArgArray[0];
 	//Remove command name from arguments array
 	ResultArgArray.RemoveAt(0);
-	AChatCommandInstance* CommandEntry = FindCommandByName(CommandName);
+	AChatCommandInstance* CommandEntry = FindCommandByName(CommandAliasUsed);
 	if (CommandEntry == nullptr) {
 		PrintCommandNotFound(Sender);
 		return EExecutionStatus::BAD_ARGUMENTS;
+	}
+	const FString CommandFQName = MakeFQCommandName(CommandEntry->ModId, CommandEntry->CommandName);
+	if (SML::GetSmlConfig().DisabledCommands.Contains(CommandFQName) && Sender->IsPlayerSender()) {
+		Sender->SendChatMessage(TEXT("This command has been disabled by server owner."), FLinearColor::Red);
+		return EExecutionStatus::INSUFFICIENT_PERMISSIONS;
 	}
 	if (CommandEntry->bOnlyUsableByPlayer && !Sender->IsPlayerSender()) {
 		PrintCommandOnlyUsableByPlayer(Sender);
@@ -147,7 +151,7 @@ EExecutionStatus AChatCommandSubsystem::RunChatCommand(const FString& CommandLin
 		CommandEntry->PrintCommandUsage(Sender);
 		return EExecutionStatus::BAD_ARGUMENTS;
 	}
-	return CommandEntry->ExecuteCommand(Sender, ResultArgArray, CommandName);
+	return CommandEntry->ExecuteCommand(Sender, ResultArgArray, CommandAliasUsed);
 }
 
 FString ParseCommandArgument(const FString& Line, int32& Off) {

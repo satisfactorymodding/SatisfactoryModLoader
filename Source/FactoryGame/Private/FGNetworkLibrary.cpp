@@ -6,45 +6,47 @@ bool UFGPresenceLibrary::IsOnline(const FOnlinePresence& presence){ return bool(
 FOnlinePresence UFGPresenceLibrary::GetPresenceFromNetId(UObject* worldContext, const FUniqueNetIdRepl& netId){ return FOnlinePresence(); }
 bool UFGPresenceLibrary::NetIdHasValidPresence(UObject* worldContext, const FUniqueNetIdRepl& netId){ return bool(); }
 FString UFGPresenceLibrary::GetPresenceString(const FOnlinePresence& presence){ return FString(); }
+FString UFGPresenceLibrary::GetSessionIDFromPresence(const FOnlinePresence& presence){ return FString(); }
 bool UFGPresenceLibrary::IsPlayingThisGame(const FOnlinePresence& presence){ return bool(); }
 bool UFGPresenceLibrary::IsPlayingOtherGame(const FOnlinePresence& presence){ return bool(); }
-FBlueprintSessionResult UFGPresenceLibrary::GetSessionFromPresence(const FOnlinePresence& presence){ return FBlueprintSessionResult(); }
 bool UFGPresenceLibrary::IsValid_OnlinePresence(const FOnlinePresence& a){ return bool(); }
 bool UFGFriendsLibrary::EqualEqual_FriendFriend(const FFGOnlineFriend& A, const FFGOnlineFriend& B){ return bool(); }
 FUniqueNetIdRepl UFGFriendsLibrary::GetFriendUniqueNetId(const FFGOnlineFriend& onlineFriend){ return FUniqueNetIdRepl(); }
 FFGOnlineFriend UFGFriendsLibrary::GetFriendFromNetId(ULocalPlayer* friendOf, const FUniqueNetIdRepl& netId){ return FFGOnlineFriend(); }
-TEnumAsByte<ECantJoinReason> UFGFriendsLibrary::IsFriendJoinable(ULocalPlayer* friendOf, const FFGOnlineFriend& onlineFriend){ return TEnumAsByte<ECantJoinReason>(); }
 bool UFGFriendsLibrary::GetFriendName(ULocalPlayer* friendOf,  const FFGOnlineFriend& onlineFriend, FString& out_displayName){ return bool(); }
 bool UFGFriendsLibrary::IsWaitingForData(ULocalPlayer* friendOf, const FFGOnlineFriend& onlineFriend){ return bool(); }
 bool UFGFriendsLibrary::IsValid_Friend(const FFGOnlineFriend& a){ return bool(); }
 FFGOnlineSessionSettings UFGSessionLibrary::GetSessionSettings(const FBlueprintSessionResult& session){ return FFGOnlineSessionSettings(); }
 TEnumAsByte<ESessionVisibility> UFGSessionLibrary::GetSessionVisibility(const FBlueprintSessionResult& session){ return TEnumAsByte<ESessionVisibility>(); }
-void UFGSessionLibrary::SetSessionVisibility(UObject* worldContext, TEnumAsByte<ESessionVisibility> visibility){ }
 FBlueprintSessionResult UFGSessionLibrary::GetMySession(ULocalPlayer* localPlayer){ return FBlueprintSessionResult(); }
+void UFGSessionLibrary::GetPlayersInMySession(ULocalPlayer* localPlayer, TArray< FUniqueNetIdRepl >& out_playersInSession){ }
 bool UFGSessionLibrary::IsInGameSession(ULocalPlayer* localPlayer){ return bool(); }
 bool UFGSessionLibrary::IsSessionValid(FBlueprintSessionResult session){ return bool(); }
-bool UFGSessionLibrary::InOnlineSession(UObject* worldContext, const FUniqueNetIdRepl& playerId){ return bool(); }
+TEnumAsByte<ECantJoinReason> UFGSessionLibrary::IsSessionJoinable(const FBlueprintSessionResult& session){ return TEnumAsByte<ECantJoinReason>(); }
 void UFGSessionLibrary::JoinSession(UObject* worldContext, const FBlueprintSessionResult& session){ }
-void UFGSessionLibrary::JoinSessionByID(UObject* worldContext, const FString sessionID){ }
 int32 UFGSessionLibrary::GetMaxNumberOfPlayers(const FBlueprintSessionResult& session){ return int32(); }
-FString UFGSessionLibrary::GetSessionID(ULocalPlayer* localPlayer){ return FString(); }
+bool UFGSessionLibrary::QuerySessionByFriend(UObject* worldContext, const FUniqueNetIdRepl& playerId, const FFGOnlineFriend& targetFriend, FSearchQueryCompleteDelegate onComplete){ return bool(); }
+bool UFGSessionLibrary::QuerySessionByID(UObject* worldContext, const FUniqueNetIdRepl& playerId, FString sessionOnlineID, FSearchQueryCompleteDelegate onComplete){ return bool(); }
+void UFGSessionLibrary::SetSessionID(UObject* worldContext, const FUniqueNetIdRepl& playerId, const FString requestedID, FChangeSessionIDDelegate onComplete){ }
 bool UFGSessionLibrary::CheckIsCompatibleVersion(const FFGOnlineSessionSettings& session){ return bool(); }
 void UFGSessionLibrary::UpdateSessionFromSessionSettings(FOnlineSessionSettings& session, const FFGOnlineSessionSettings& sessionSettings){ }
 void UFGSessionLibrary::SessionSettingsFromSession(const FOnlineSessionSettings& session, FFGOnlineSessionSettings& sessionSettings){ }
+void UFGSessionLibrary::OnFindCompleteDelicgateFunction(bool wasSucsessful){ }
 FUniqueNetIdRepl UFGInviteLibrary::GetInviteSenderUniqueNetId(const FPendingInvite& invite){ return FUniqueNetIdRepl(); }
+FBlueprintSessionResult UFGInviteLibrary::GetSessionFromInvite(const FPendingInvite& invite){ return FBlueprintSessionResult(); }
 void UFGInviteLibrary::GetPendingInvites(UObject* worldContext, TArray<FPendingInvite>& out_invites){ }
 FPendingInvite UFGInviteLibrary::GetInviteFromSender(UObject* worldContext, const FUniqueNetIdRepl& sender){ return FPendingInvite(); }
 void UFGInviteLibrary::SendInviteToFriend(ULocalPlayer* fromPlayer, const FFGOnlineFriend& toFriend){ }
 void UFGInviteLibrary::JoinInvite(UObject* worldContext, const FPendingInvite& invite){ }
 void UFGInviteLibrary::DiscardInvite(UObject* worldContext, const FPendingInvite& invite){ }
-bool UFGNetworkLibrary::IsServer( UObject* worldContext){ return bool(); }
 bool UFGNetworkLibrary::OpenWebURL(const FString& Url){ return bool(); }
 bool UFGNetworkLibrary::SubmitFeedback(FUserFeedbackFrontEndData frontEndFeedbackData,  APlayerController* playerController){ return bool(); }
 bool UFGNetworkLibrary::GetNameFromUniqueNetId(const ULocalPlayer* querier, const FUniqueNetIdRepl& netId, FString& out_name){ return bool(); }
+ENetIdType UFGNetworkLibrary::GetUniqueNetIdType(const FUniqueNetIdRepl& netId){ return ENetIdType(); }
 bool UFGNetworkLibrary::EqualEqual_NetIdNetId(const FUniqueNetIdRepl& a, const FUniqueNetIdRepl& b){ return bool(); }
 bool UFGNetworkLibrary::IsValid_UniqueNetId(const FUniqueNetIdRepl& a){ return bool(); }
 void UFGNetworkLibrary::QueryNATType(UObject* worldContext){ }
 ECachedNATType UFGNetworkLibrary::GetCachedNATType(UObject* worldContext){ return ECachedNATType(); }
 FText UFGNetworkLibrary::NATTypeToText(ECachedNATType NatType){ return FText(); }
 FString UFGNetworkLibrary::GetLocalBuildVersion(){ return FString(); }
-bool UFGNetworkLibrary::CheckIsCompatibleVersion(const FFGOnlineSessionSettings& session){ return bool(); }
+FUniqueNetIdRepl UFGNetworkLibrary::GetUniqueID(UFGLocalPlayer* localPlayer){ return FUniqueNetIdRepl(); }

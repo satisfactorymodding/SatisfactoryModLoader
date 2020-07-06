@@ -27,4 +27,5 @@ AFGCircuitSubsystem* UFGCircuit::GetOwningCircuitSubsystem() const{ return nullp
 void UFGCircuit::TickCircuit(float dt){ }
 void UFGCircuit::OnCircuitChanged(){ }
 void UFGCircuit::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }
+void UFGCircuit::Debug_LogState() const{ }
 void UFGCircuit::SetReplicateDetails(bool replicateDetails){ }

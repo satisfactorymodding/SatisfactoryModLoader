@@ -20,3 +20,6 @@
 
 /** FWindowsPlatformStackWalk::GetDownstreamStorage */
 #define WIN_STACK_WALK_GET_DOWNSTREAM_STORAGE_FUNC_DESC "?GetDownstreamStorage@FWindowsPlatformStackWalk@@SA?AVFString@@XZ"
+/** FGenericCrashContext::AddPortableCallStack */
+#define CRASH_CONTEXT_ADD_CALL_STACK_FUNC_DESC "?AddPortableCallStack@FGenericCrashContext@@AEBAXXZ"
+class FGenericCrashContextProto { public: void AddPortableCallStack() {} };

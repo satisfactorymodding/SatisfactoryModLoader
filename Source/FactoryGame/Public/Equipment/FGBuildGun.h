@@ -28,6 +28,8 @@ enum class EBuildGunState : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildGunStateChanged, EBuildGunState, newState );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildGunRecipeChanged, TSubclassOf< class UFGRecipe >, newRecipe );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRecipeSampled, TSubclassOf< class UFGRecipe >, newRecipe );
+
 
 /**
  * Represents a state in the build gun, e.g. build, dismantle etc.
@@ -370,6 +372,10 @@ public:
 	/** Called when the build gun build state receives a new recipe. This May be called prior to OnStateChanged. */
 	UPROPERTY( BlueprintAssignable, Category = "BuildGun|Recipe" )
 	FOnBuildGunRecipeChanged mOnRecipeChanged;
+
+	/** Called when the build gun have sampled a new recipe. */
+	UPROPERTY( BlueprintAssignable, Category = "BuildGun|Recipe" )
+	FOnRecipeSampled mOnRecipeSampled;
 
 protected:
 	/** Trace distance for this build gun when building and dismantling. */

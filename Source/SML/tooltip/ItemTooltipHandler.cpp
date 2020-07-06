@@ -31,8 +31,8 @@ void ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* Owni
     DescriptionBlock->TextDelegate.BindUFunction(ContextWidget, TEXT("GetItemDescription"));
     
     //Append custom widgets to description
-    TArray<UUserWidget*> Widgets = UItemTooltipHandler::CreateDescriptionWidgets(OwningPlayer, InventoryStack);
-    for (UUserWidget* Widget : Widgets) {
+    TArray<UWidget*> Widgets = UItemTooltipHandler::CreateDescriptionWidgets(OwningPlayer, InventoryStack);
+    for (UWidget* Widget : Widgets) {
         ParentPanel->AddChild(Widget);
     }
 }
@@ -63,7 +63,7 @@ FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
 
 static TArray<ISMLItemTooltipProvider*> GlobalTooltipProviders;
 
-void UItemTooltipHandler::GRegisterHooking() {
+void UItemTooltipHandler::RegisterHooking() {
     //Hook into InventorySlot widget to apply tooltip overrides
     UClass* InventorySlot = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/InGame/InventorySlots/Widget_InventorySlot.Widget_InventorySlot_C"));
     check(InventorySlot);
@@ -96,8 +96,7 @@ FText UItemTooltipHandler::GetItemName(APlayerController* OwningPlayer, const FI
     UClass* InterfaceClass = USMLItemDisplayInterface::StaticClass();
     if (ItemClass->ImplementsInterface(InterfaceClass)) {
         UObject* ItemObject = ItemClass->GetDefaultObject();
-        ISMLItemDisplayInterface* Result = static_cast<ISMLItemDisplayInterface*>(ItemObject->GetInterfaceAddress(InterfaceClass));
-        return Result->GetItemName(OwningPlayer, InventoryStack);
+        return ISMLItemDisplayInterface::Execute_GetOverridenItemName(ItemObject, OwningPlayer, InventoryStack);
     }
     return UFGItemDescriptor::GetItemName(ItemClass);
 }
@@ -111,8 +110,7 @@ FText UItemTooltipHandler::GetItemDescription(APlayerController* OwningPlayer, c
     APPEND_IF_NOT_EMPTY(UFGItemDescriptor::GetItemDescription(ItemClass).ToString());
     if (ItemClass->ImplementsInterface(InterfaceClass)) {
         UObject* ItemObject = ItemClass->GetDefaultObject();
-        ISMLItemDisplayInterface* Result = static_cast<ISMLItemDisplayInterface*>(ItemObject->GetInterfaceAddress(InterfaceClass));
-        APPEND_IF_NOT_EMPTY(Result->GetItemDescription(OwningPlayer, InventoryStack).ToString());
+        APPEND_IF_NOT_EMPTY(ISMLItemDisplayInterface::Execute_GetOverridenItemDescription(ItemObject, OwningPlayer, InventoryStack).ToString());
     }
     for (ISMLItemTooltipProvider* Provider : GlobalTooltipProviders) {
         APPEND_IF_NOT_EMPTY(Provider->GetItemDescription(OwningPlayer, InventoryStack).ToString());
@@ -120,20 +118,19 @@ FText UItemTooltipHandler::GetItemDescription(APlayerController* OwningPlayer, c
     return FText::FromString(FString::Join(DescriptionText, TEXT("\n")));
 }
 
-TArray<UUserWidget*> UItemTooltipHandler::CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
-    TArray<UUserWidget*> ResultWidgets;
+TArray<UWidget*> UItemTooltipHandler::CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
+    TArray<UWidget*> ResultWidgets;
     UClass* ItemClass = InventoryStack.Item.ItemClass;
     UClass* InterfaceClass = USMLItemDisplayInterface::StaticClass();
     if (ItemClass->ImplementsInterface(InterfaceClass)) {
         UObject* ItemObject = ItemClass->GetDefaultObject();
-        ISMLItemDisplayInterface* Result = static_cast<ISMLItemDisplayInterface*>(ItemObject->GetInterfaceAddress(InterfaceClass));
-        UUserWidget* NewWidget = Result->CreateDescriptionWidget(OwningPlayer, InventoryStack);
+        UWidget* NewWidget = ISMLItemDisplayInterface::Execute_CreateDescriptionWidget(ItemObject, OwningPlayer, InventoryStack);
         if (NewWidget) {
             ResultWidgets.Add(NewWidget);
         }
     }
     for (ISMLItemTooltipProvider* Provider : GlobalTooltipProviders) {
-        UUserWidget* ProviderWidget = Provider->CreateDescriptionWidget(OwningPlayer, InventoryStack);
+        UWidget* ProviderWidget = Provider->CreateDescriptionWidget(OwningPlayer, InventoryStack);
         if (ProviderWidget) {
             ResultWidgets.Add(ProviderWidget);
         }

@@ -1,7 +1,7 @@
 #include "SMLChatCommands.h"
 #include "ChatCommandLibrary.h"
 #include "SatisfactoryModLoader.h"
-#include "player/PlayerUtility.h"
+#include "player/PlayerControllerHelper.h"
 #include "AkComponent.h"
 
 AHelpCommandInstance::AHelpCommandInstance() {
@@ -39,14 +39,14 @@ AInfoCommandInstance::AInfoCommandInstance() {
 }
 
 EExecutionStatus AInfoCommandInstance::ExecuteCommand_Implementation(UCommandSender* Sender, const TArray<FString>& Arguments, const FString& Label) {
-	Sender->SendChatMessage(FString::Printf(TEXT("Running SML v.%s"), *SML::getModLoaderVersion().string()));
-	Sender->SendChatMessage(FString::Printf(TEXT("Powered by Bootstrapper v.%s"), *SML::getBootstrapperVersion().string()));
-	SML::Mod::FModHandler& ModHandler = SML::getModHandler();
-	auto LoadedModsVector = ModHandler.getLoadedMods();
+	Sender->SendChatMessage(FString::Printf(TEXT("Running SML v.%s"), *SML::GetModLoaderVersion().String()));
+	Sender->SendChatMessage(FString::Printf(TEXT("Powered by Bootstrapper v.%s"), *SML::GetBootstrapperVersion().String()));
+	FModHandler& ModHandler = SML::GetModHandler();
+	auto LoadedModsVector = ModHandler.GetLoadedMods();
 	TArray<FString> LoadedMods;
 	for (const FString& LoadedModId : LoadedModsVector) {
-		const SML::Mod::FModContainer& ModContainer = ModHandler.getLoadedMod(LoadedModId);
-		LoadedMods.Add(ModContainer.modInfo.name);
+		const FModContainer& ModContainer = ModHandler.GetLoadedMod(LoadedModId);
+		LoadedMods.Add(ModContainer.ModInfo.Name);
 	}
 	Sender->SendChatMessage(FString::Printf(TEXT("Loaded Mods: %s"), *FString::Join(LoadedMods, TEXT(", "))));
 	return EExecutionStatus::COMPLETED;
@@ -61,7 +61,7 @@ APlayerListCommandInstance::APlayerListCommandInstance() {
 
 EExecutionStatus APlayerListCommandInstance::ExecuteCommand_Implementation(UCommandSender* Sender, const TArray<FString>& Arguments, const FString& Label) {
 	TArray<FString> PlayersList;
-	for (AFGPlayerController* Controller : SML::GetConnectedPlayers(GetWorld())) {
+	for (AFGPlayerController* Controller : FPlayerControllerHelper::GetConnectedPlayers(GetWorld())) {
 		PlayersList.Add(Controller->PlayerState->GetPlayerName());
 	}
 	Sender->SendChatMessage(FString(TEXT("Players Online: ")) += FString::Join(PlayersList, TEXT(", ")));

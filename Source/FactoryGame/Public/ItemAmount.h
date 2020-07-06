@@ -16,13 +16,13 @@ struct FACTORYGAME_API FItemAmount
 {
 	GENERATED_BODY()
 
-	FItemAmount() :
+	FORCEINLINE FItemAmount() :
 		ItemClass( nullptr ),
 		Amount( 0 )
 	{
 	}
 
-	FItemAmount( TSubclassOf< class UFGItemDescriptor > inClass, int32 inAmount ) :
+	FORCEINLINE FItemAmount( TSubclassOf< class UFGItemDescriptor > inClass, int32 inAmount ) :
 		ItemClass( inClass ),
 		Amount( inAmount )
 	{

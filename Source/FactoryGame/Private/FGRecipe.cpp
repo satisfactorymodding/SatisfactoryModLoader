@@ -23,6 +23,7 @@ TArray< FItemAmount > UFGRecipe::GetIngredients(TSubclassOf< UFGRecipe > inClass
 		return inClass.GetDefaultObject()->mIngredients;
 	else
 		return TArray<FItemAmount>();
+
 }
 TArray< FItemAmount > UFGRecipe::GetProducts(TSubclassOf< UFGRecipe > inClass, bool allowChildRecipes){ 
 	if (inClass)
@@ -46,7 +47,7 @@ TArray< TSubclassOf< UObject > > UFGRecipe::GetProducedIn(TSubclassOf< UFGRecipe
 	TArray<TSubclassOf<UObject>>   out;
 	if (!inClass)
 		return TArray< TSubclassOf< UObject > >();
-	
+
 	TArray<TSoftClassPtr<UObject>> In = inClass.GetDefaultObject()->mProducedIn;
 	if (In.Num() > 0)
 	{

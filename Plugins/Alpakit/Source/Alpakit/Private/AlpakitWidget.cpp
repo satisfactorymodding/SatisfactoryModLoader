@@ -82,10 +82,17 @@ TSharedRef<SWidget> SAlpakaWidget::AsWidget()
 
 FReply SAlpakaWidget::Pakit()
 {
-	Settings->SaveConfig();
 	AlpakitButton.Get()->SetEnabled(false);
-	CookContent();
+	Alpakit([this]() {
+		AlpakitButton.Get()->SetEnabled(true);
+	});
 	return FReply::Handled();
+}
+
+void SAlpakaWidget::Alpakit(TFunction<void()> Done) {
+	UAlpakitSettings* Settings = GetMutableDefault<UAlpakitSettings>();
+	Settings->SaveConfig();
+	CookContent(Settings, Done);
 }
 
 FString GetAutomationLogDirV1() {
@@ -137,7 +144,7 @@ void ClearAutomationLogForVersionCheck() {
 	}	
 }
 
-void SAlpakaWidget::CookDone(FString result, double runtime)
+void SAlpakaWidget::CookDone(FString result, double runtime,UAlpakitSettings* Settings, TFunction<void()> Done)
 {
 	if (result.Equals("completed", ESearchCase::IgnoreCase))
 	{
@@ -161,8 +168,9 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 		// Get list of all cooked assets
 		TArray<FString> FilesToPak;
 		FFileHelper::LoadFileToStringArray(FilesToPak, *PakListPath);
-		FVersion smlVersion = SML::getModLoaderVersion();
-		FString smlVersionString = FString::Printf(TEXT("%d.%d.%d"), smlVersion.major, smlVersion.minor, smlVersion.patch);
+		FVersion smlVersion = SML::GetModLoaderVersion();
+		FString smlVersionString = FString::Printf(TEXT("%llu.%llu.%llu"), smlVersion.Major, smlVersion.Minor, smlVersion.Patch);
+
 		int modsCopied = 0;
 		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
@@ -253,7 +261,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 			// Run the paker and wait
 			FString FullCommandLine = FString::Printf(TEXT("/c \"\"%s\" %s\""), *UPakPath, *FString::Printf(TEXT("\"%s\" -create=\"%s\""), *pakFilePath, *ModPakListPath));
 			TSharedPtr<FMonitoredProcess> PakingProcess = MakeShareable(new FMonitoredProcess(CmdExe, FullCommandLine, true));
-			PakingProcess->OnOutput().BindLambda([this, mod](FString output) { UE_LOG(LogTemp, Log, TEXT("Paking %s: %s"), *mod.Name, *output); });
+			PakingProcess->OnOutput().BindLambda([mod](FString output) { UE_LOG(LogTemp, Log, TEXT("Paking %s: %s"), *mod.Name, *output); });
 			PakingProcess->Launch();
 
 			UE_LOG(LogTemp, Log, TEXT("Packing %s"), *mod.Name);
@@ -308,7 +316,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime)
 	}
 	else
 		UE_LOG(LogTemp, Error, TEXT("Error while running Aplakit. Cooking returned: %s"), *result);
-	AlpakitButton.Get()->SetEnabled(true);
+	Done();
 }
 
 // https://answers.unrealengine.com/questions/500324/how-create-folder-when-my-game-is-running.html
@@ -334,7 +342,7 @@ static FORCEINLINE bool VerifyOrCreateDirectory(const FString& TestDir)
 	return true;
 }
 
-void SAlpakaWidget::CookContent()
+void SAlpakaWidget::CookContent(UAlpakitSettings* Settings, TFunction<void()> Done)
 {
 	// Create WwiseAudio folder if it doesn't exist
 	VerifyOrCreateDirectory(FPaths::ConvertRelativePathToFull(FPaths::ProjectContentDir()) / TEXT("WwiseAudio"));
@@ -344,5 +352,7 @@ void SAlpakaWidget::CookContent()
 	FString ProjectPath = FPaths::IsProjectFilePathSet() ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath()) : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
 	FString CommandLine = FString::Printf(TEXT("BuildCookRun -nop4 -project=\"%s\" -cook -package -pak -skipstage -iterate"), *ProjectPath);
 
-	IUATHelperModule::Get().CreateUatTask(CommandLine, FText::FromString("Windows"), FText::FromString("Cooking content"), FText::FromString("Cooking"), nullptr, [this](FString result, double runtime) { CookDone(result, runtime); });
+	IUATHelperModule::Get().CreateUatTask(CommandLine, FText::FromString("Windows"), FText::FromString("Cooking content"), FText::FromString("Cooking"), nullptr, [Settings, Done](FString result, double runtime) {
+		CookDone(result, runtime, Settings, Done);
+	});
 }

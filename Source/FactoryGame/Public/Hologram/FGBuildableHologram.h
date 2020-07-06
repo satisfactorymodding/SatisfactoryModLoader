@@ -28,12 +28,10 @@ public:
 	static FName mClearanceComponentName;
 	static FName mPowerConnectionMeshTag;
 
-
 public:
 	/** Replication */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
-	/** Ctor */
 	AFGBuildableHologram();
 
 	/** Set the buildable class for this hologram. Called from when spawning an hologram, before before BeginPlay is called. */
@@ -44,25 +42,16 @@ public:
 	// End AActor interface
 
 	// AFGHologram interface
-
 	/** Net Construction Messages */
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
-
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-
-	bool ApplyBuildingClearnaceSnapping( FRotator &newRotation, FVector &newLocation, AFGBuildable* snapTarget, FVector traceStart, FVector traceEnd );
-
-	//Let holograms adjust legs of the building. If no legs are defined this function does nothing.
 	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
-
-
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	// End AFGHologram interface
 
 	class AFGBuildable* GetSnappedBuilding() { return mSnappedBuilding; }
-
 
 protected:
 	// Begin AFGHologram interface
@@ -81,10 +70,7 @@ protected:
 	virtual void CheckValidFloor();
 
 	/** Minimum Z value for a floor normal. If less the hologram is not placeable. */
-	FORCEINLINE float GetMinPlacementFloorZ() const
-	{
-		return FMath::Cos( FMath::DegreesToRadians( mMaxPlacementFloorAngle ) );
-	}
+	FORCEINLINE float GetMinPlacementFloorZ() const { return FMath::Cos( FMath::DegreesToRadians( mMaxPlacementFloorAngle ) ); }
 
 	/**
 	 * Helper to check if we stay clear of other buildings.
@@ -198,13 +184,6 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Hologram" )
 	void ReceiveConfigureComponents( class AFGBuildable* inBuildable );
 
-
-	/** OnHologramTransformUpdated
-	 * Let's holograms react to rotation and location chnages applied after the initial move. Currently used for stuff like snapping and having sub holograms like hub parts update.
-	 * 
-	 */
-	 virtual void OnHologramTransformUpdated();
-
 	/** Configures the build effect for the constructed actor. */
 	void ConfigureBuildEffect( class AFGBuildable* inBuildable );
 
@@ -227,6 +206,8 @@ protected:
 		return cdo;
 	}
 
+private:
+	bool ApplyBuildingClearnaceSnapping( FRotator& newRotation, FVector& newLocation, AFGBuildable* snapTarget, FVector traceStart, FVector traceEnd );
 
 protected:
 	/** The maximum allowed angle on the floor for this hologram to be placed on (in degrees). */

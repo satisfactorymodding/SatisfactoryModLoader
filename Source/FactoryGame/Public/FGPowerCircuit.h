@@ -211,6 +211,10 @@ private:
 	UPROPERTY()
 	float mPowerConsumed;
 
+	/** The maximum power that can be demanded by all connected infos. */
+	UPROPERTY()
+	float mMaximumPowerDemand;
+
 	//@optimize This should preferably not be replicated always.
 	/** true if the fuse was triggered. */
 	UPROPERTY( Replicated )

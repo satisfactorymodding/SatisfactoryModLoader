@@ -22,40 +22,69 @@ UFGLocalPlayer::UFGLocalPlayer() : Super() {
 }
 void UFGLocalPlayer::PlayerAdded( UGameViewportClient* inViewportClient, int32 inControllerID){ }
 void UFGLocalPlayer::PlayerRemoved(){ }
+TEnumAsByte<ELoginState> UFGLocalPlayer::GetLoginState() const{ return TEnumAsByte<ELoginState>(); }
 FString UFGLocalPlayer::GetUsername() const{ return FString(); }
+FString UFGLocalPlayer::GetUsernameEpic() const{ return FString(); }
+FString UFGLocalPlayer::GetUsernameSteam() const{ return FString(); }
 bool UFGLocalPlayer::GetFriendList(TArray<FFGOnlineFriend>& out_friends){ return bool(); }
 void UFGLocalPlayer::AutoLogin(){ }
 void UFGLocalPlayer::SetupServerAndTravelToMap(const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility){ }
-void UFGLocalPlayer::CopySessionPresence(const TSharedRef<FOnlineUserPresence>& presence){ }
+void UFGLocalPlayer::CopyPresenceDataToLocalPresenceAndPushToServer(const TSharedRef<FOnlineUserPresence>& presence){ }
 void UFGLocalPlayer::UpdatePresence(){ }
+void UFGLocalPlayer::SetNextUpdatePresenceTime(float timeTillNextUpdate){ }
 void UFGLocalPlayer::OnInviteReceived(const FPendingInvite& invite){ }
-void UFGLocalPlayer::RefreshRecentRegisteredEpicIdLogin(){ }
+void UFGLocalPlayer::RefreshRecentRegisteredSocialAccountID(){ }
 bool UFGLocalPlayer::HasReceivedProductUserId() const{ return bool(); }
 TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerId() const{ return TSharedPtr<const FUniqueNetId>(); }
+TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerIdSteam() const{ return TSharedPtr<const FUniqueNetId>(); }
+void UFGLocalPlayer::ConnectAccount(const FName currentPlatform){ }
+void UFGLocalPlayer::LogOutEpicAndCreateNewAccountConnection(const FName currentPlatform){ }
+void UFGLocalPlayer::CreateNewAccountConnection(const FName currentPlatform){ }
+void UFGLocalPlayer::LoginAndConnectAccount(const FName currentPlatform){ }
+void UFGLocalPlayer::ContinueWithoutConnectingAccount(const FName currentPlatform){ }
+void UFGLocalPlayer::SwitchController( APlayerController* PC){ }
+void UFGLocalPlayer::LoginAndConnectOtherEpicAccount(){ }
+void UFGLocalPlayer::ContinueWithAndHookUpSteamToEOSAfterEpicLogout(){ }
+void UFGLocalPlayer::LogoutEpicAccountAndContinue(){ }
+void UFGLocalPlayer::LoginEpicAccountPortal(){ }
+void UFGLocalPlayer::LogoutEpicAccountPortal(){ }
 void UFGLocalPlayer::OnLoginStatusChanged(int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId){ }
+void UFGLocalPlayer::OnLoginStatusChangedSteam(int32 localUserNum, ELoginStatus::Type previous, ELoginStatus::Type current, const FUniqueNetId& userId){ }
+void UFGLocalPlayer::SteamTaskRetryWaiter(){ }
+void UFGLocalPlayer::StartSteamEOSConnect(){ }
 void UFGLocalPlayer::OnLoginComplete(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error){ }
+void UFGLocalPlayer::OnLoginCompleteSteam(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error){ }
 void UFGLocalPlayer::OnAutoLoginComplete(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error){ }
+void UFGLocalPlayer::OnAutoLoginCompleteSteam(int32 localUserNum, bool wasSuccessful, const FUniqueNetId& userId, const FString& error){ }
 void UFGLocalPlayer::OnConnectionStatusChanged(const FString& serviceName, EOnlineServerConnectionStatus::Type lastConnectionState, EOnlineServerConnectionStatus::Type connectionState){ }
+void UFGLocalPlayer::OnConnectionStatusChangedSteam(const FString& serviceName, EOnlineServerConnectionStatus::Type lastConnectionState, EOnlineServerConnectionStatus::Type connectionState){ }
 void UFGLocalPlayer::OnReadFriendsListComplete(int32 localUserNum, bool wasSuccessful, const FString& listName, const FString& errorStr){ }
+void UFGLocalPlayer::OnReadFriendsListCompleteSteam(int32 localUserNum, bool wasSuccessful, const FString& listName, const FString& errorStr){ }
 void UFGLocalPlayer::OnFriendsChange(){ }
+void UFGLocalPlayer::OnFriendsChangeSteam(){ }
 void UFGLocalPlayer::OnQueryUserInfoForFriendListComplete(int32 localUSerNum, bool wasSuccessful, const TArray< TSharedRef<const FUniqueNetId> >& userIds, const FString& errorString){ }
 void UFGLocalPlayer::OnPresenceReceived(const  FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence){ }
-void UFGLocalPlayer::OnSessionCleanup_SetupServer(FName sessionName, bool wasSuccessful){ }
+void UFGLocalPlayer::OnPresenceReceivedSteam(const  FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence){ }
+void UFGLocalPlayer::OnPreviousSessionCleanedup_SetupServer(FName sessionName, bool wasSuccessful){ }
 void UFGLocalPlayer::OnSessionCreated_SetupServer(FName sessionName, bool wasSuccessful){ }
 void UFGLocalPlayer::OnPresenceUpdated_SetupServer(const  FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence){ }
 void UFGLocalPlayer::OnLoginFailed_OpenMap(bool confirmClicked){ }
 void UFGLocalPlayer::OnPresenceFailedToUpdate_OpenMap(bool confirmClicked){ }
 void UFGLocalPlayer::UpdateLoginState(){ }
 void UFGLocalPlayer::CreateOfflineSession_SetupServer(bool startOffline){ }
-bool UFGLocalPlayer::CanAutoLogin() const{ return bool(); }
+bool UFGLocalPlayer::CanAutoLoginEpic() const{ return bool(); }
+bool UFGLocalPlayer::CanAutoLoginSteam() const{ return bool(); }
 FString UFGLocalPlayer::GetPresenceString() const{ return FString(); }
+void UFGLocalPlayer::GetPresenceState(FPlayerPresenceState& outState) const{ }
 ELoginState UFGLocalPlayer::FromLoginStatus(ELoginStatus::Type from) const{ return ELoginState(); }
 void UFGLocalPlayer::OpenMap_WaitForPresence(){ }
 void UFGLocalPlayer::OpenMap_WaitForProductUserId(){ }
 void UFGLocalPlayer::OpenMap(){ }
 ECreateSessionState UFGLocalPlayer::GetCurrentCreateSessionState() const{ return ECreateSessionState(); }
 void UFGLocalPlayer::OnLoggedIn(){ }
-void UFGLocalPlayer::SetLoginState(ELoginState newLoginState){ }
-void UFGLocalPlayer::GetUsersWithNoData(TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData){ }
+void UFGLocalPlayer::SetLoginStateEpic(ELoginState newLoginState){ }
+void UFGLocalPlayer::SetLoginStateSteam(ELoginState newLoginState){ }
+void UFGLocalPlayer::GetFriendsWithNoData(TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData){ }
 bool UFGLocalPlayer::PresenceHasSessionId() const{ return bool(); }
 void UFGLocalPlayer::PushErrorAndAutosave(TSubclassOf<class UFGErrorMessage> errorMessage){ }
+void UFGLocalPlayer::OnComandlineInviteSearchComplete(FBlueprintSessionResult result){ }

@@ -166,11 +166,12 @@ private:
 
 	/** The timer handle that is used to trigger updates of the global points history of the resource sink subsystem */
 	FTimerHandle mCalculateHistoryTimer;
-
+//MODDING EDIT:
+public:
 	/** Cached points per itemdescriptor */
 	UPROPERTY( Transient )
 	TMap< TSubclassOf< class UFGItemDescriptor >, int32 > mResourceSinkPoints;
-	
+private:
 	/** Cached number of points we need to reach to unlock a new coupon */
 	TArray<int64> mRewardLevels;
 	

@@ -18,7 +18,6 @@ UCLASS( ClassGroup = ( Custom ), meta = ( BlueprintSpawnableComponent ) )
 class FACTORYGAME_API UFGPowerInfoComponent : public UActorComponent, public IFGSaveInterface
 {
 	GENERATED_BODY()
-
 public:
 	/** Replication */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
@@ -27,7 +26,6 @@ public:
 	/** If we should replicate detailed information, use this to optimize replication of inventories not actively used by client. */
 	FORCEINLINE void SetReplicateDetails( bool replicateDetails ) { mReplicateDetails = replicateDetails; }
 
-	/** Ctor */
 	UFGPowerInfoComponent();
 
 	// Begin IFGSaveInterface
@@ -74,6 +72,16 @@ public:
 	/** Get the target power consumption. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
 	float GetTargetConsumption() const;
+
+	//@todopower DO NOT EXPOSE TO BLUEPRINT
+	//           They need more work to function with power graph, client, etc. -G2
+	/**
+	 * Set the maximum power we might want from the circuit under normal conditions, i.e. no potential set.
+	 * @note This is an informative value for the subsystem and is not used in any of the power calculations.
+	 */
+	void SetMaximumTargetConsumption( float maxConsumption );
+	/** Get the maximum target power consumption under normal conditions, i.e. no potential set. */
+	float GetMaximumTargetConsumption() const;
 
 	/**
 	 * Get the power we actually got for this frame.
@@ -145,6 +153,9 @@ private:
 	/** Power to draw from the circuit. */
 	UPROPERTY( SaveGame, Replicated )
 	float mTargetConsumption;
+
+	/** Maximum power consumption under normal conditions. */
+	float mMaximumTargetConsumption;
 
 	/** The actual power we got from the circuit (updated each frame). */
 	UPROPERTY( Replicated )

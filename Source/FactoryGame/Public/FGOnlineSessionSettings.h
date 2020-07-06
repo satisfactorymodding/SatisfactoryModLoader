@@ -44,7 +44,11 @@ struct FACTORYGAME_API FFGOnlineSessionSettings
 
 	/** Name of the session, same as the name exposed in the Save/Load menus */
 	UPROPERTY(BlueprintReadOnly)
-	FString				SessionName;
+	FString				SaveSessionName;
+
+	/** A unique identifier of a game session */
+	UPROPERTY(BlueprintReadOnly)
+	FString				CSS_SessionId;
 
 	/** Hosts nat type */
 	UPROPERTY(BlueprintReadOnly)

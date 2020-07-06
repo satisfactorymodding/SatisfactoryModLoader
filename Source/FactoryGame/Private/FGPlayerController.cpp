@@ -70,6 +70,7 @@ bool AFGPlayerController::DestroyNetworkActorHandled(){ return bool(); }
 void AFGPlayerController::AcknowledgePossession( APawn* P){ }
 void AFGPlayerController::CycleToNextHotbar(){ }
 void AFGPlayerController::CycleToPreviousHotbar(){ }
+bool AFGPlayerController::GetPresenceState(FPlayerPresenceState& outState) const{ return bool(); }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }

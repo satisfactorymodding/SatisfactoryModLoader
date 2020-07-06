@@ -447,6 +447,12 @@ public:
 	/** Duplicates and overrides all relevant values from the other component */
 	void CopyFromOtherComponent( UFGInventoryComponent* otherComponent );
 
+	/** Notify component its owning buildable is dismantled (or is dismantling), don't allow movement in or out of this inventory */
+	FORCEINLINE void SetLocked( bool isLocked ) { mIsLocked = isLocked; }
+
+	UFUNCTION( BlueprintPure, Category = "Inventory ")
+	FORCEINLINE bool IsLocked() const { return mIsLocked; }
+
 protected:
 	/** Used to call OnItemAdded/OnItemRemoved on clients */
 	UFUNCTION()
@@ -495,6 +501,10 @@ protected:
 	/** When we resize the inventory we save how much bigger or smaller the inventory was made */
 	UPROPERTY( SaveGame )
 	int32 mAdjustedSizeDiff;
+
+	/** Locks the inventory. Indicating that no items are allowed and you should not be able to drag stuff from it either */
+	bool mIsLocked;
+
 private:
 	/** All items in the inventory */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_InventoryStacks )

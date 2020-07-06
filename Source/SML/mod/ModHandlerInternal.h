@@ -1,16 +1,25 @@
 #pragma once
 #include "ModHandler.h"
 #include "Json.h"
-#include "zip/ttvfs/ttvfs.h"
-#include "hooking.h"
 #include "util/TopologicalSort.h"
+#include "util/ZipFile.h"
 
 using namespace SML;
-using namespace Mod;
 
-typedef std::string FileHash;
+struct FFileHash {
+	uint64 FileSize;
+	int64 ModificationTime;
 
-void iterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
+	FORCEINLINE bool operator==(const FFileHash& Other) const {
+		return FileSize == Other.FileSize && ModificationTime == Other.ModificationTime;
+	}
+
+	FORCEINLINE bool operator!=(const FFileHash& Other) const {
+		return !operator==(Other);
+	}
+};
+
+void IterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 	TMap<FString, uint64_t>& modIndices,
 	const FModInfo& selfInfo,
 	TArray<FString>& missingDependencies,
@@ -18,29 +27,29 @@ void iterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 	const TMap<FString, FVersionRange>& dependencies,
 	bool optional);
 
-void finalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
+void FinalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
 	TMap<FString, FModLoadingEntry>& loadingEntries,
 	TArray<uint64_t>& sortedIndices);
 
-void populateSortedModList(TMap<uint64_t, FString>& modByIndex,
+void PopulateSortedModList(TMap<uint64_t, FString>& modByIndex,
 	TMap<FString, FModLoadingEntry>& loadingEntries,
 	TArray<uint64_t>& sortedIndices,
 	TArray<FModLoadingEntry>& sortedModLoadingList);
 
 IModuleInterface* InitializeSMLModule();
 
-FModPakLoadEntry CreatePakLoadEntry(const FString& modid);
+FModPakLoadEntry CreatePakLoadEntry(const FString& Modid);
 
-FModLoadingEntry createSMLLoadingEntry();
+FModLoadingEntry CreateSmlLoadingEntry();
 
-FString getModIdFromFile(const FString& filePath);
+FString GetModIdFromFile(const FString& FilePath);
 
-bool extractArchiveFile(const FString& outFilePath, ttvfs::File* obj);
+TSharedPtr<FJsonObject> ReadArchiveDataJson(FZipFile& ZipFile);
 
-TSharedPtr<FJsonObject> readArchiveJson(ttvfs::File* obj);
+struct FArchiveObjectInfo {
+	FString ObjectPath;
+	FString ObjectType;
+	TSharedRef<FJsonObject> Metadata;
+};
 
-FileHash hashArchiveFileContents(ttvfs::File* obj);
-
-bool extractArchiveObject(ttvfs::Dir& root, const std::string& objectType, const std::string& archivePath, SML::Mod::FModLoadingEntry& loadingEntry, const FJsonObject* metadata);
-
-bool extractArchiveObjects(ttvfs::Dir& root, const FJsonObject& dataJson, SML::Mod::FModLoadingEntry& loadingEntry);
+bool ExtractArchiveObjects(FZipFile& ZipHandle, const FJsonObject& DataJson, FModLoadingEntry& LoadingEntry);

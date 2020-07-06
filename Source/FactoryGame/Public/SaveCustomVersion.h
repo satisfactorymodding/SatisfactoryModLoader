@@ -87,6 +87,9 @@ struct FACTORYGAME_API FSaveCustomVersion
 		// 2020-04-21 Lizard doggos that had the friend status set but did not have a valid spawner saved will be recoupled with their spawner so that they are not killed bc of orphan status
 		RescuedFriendDoggos,
 
+		// 2020-06-02 Check if we have saved items in our inventory that is relevant to know if they are picked up
+		CheckPickedUpItems,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

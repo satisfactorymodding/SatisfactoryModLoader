@@ -27,7 +27,8 @@ public:
 };
 
 void SMLDebugButtonClicked() {
-	SML::generateSatisfactoryAssets(TEXT("D:/SatisfactoryExperimental/configs/FGDataAssets.json"));
+	FString path = FPaths::GetPath(FPaths::GetProjectFilePath()) / "BPdump" / "";
+	SML::generateSatisfactoryAssets(path);
 }
 
 #endif

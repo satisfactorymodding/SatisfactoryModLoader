@@ -9,3 +9,4 @@ AFGReplicationDetailActor_Storage::AFGReplicationDetailActor_Storage() : Super()
 void AFGReplicationDetailActor_Storage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGReplicationDetailActor_Storage::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_Storage::FlushReplicationActorStateToOwner(){ }
+bool AFGReplicationDetailActor_Storage::HasCompletedInitialReplication() const{ return bool(); }

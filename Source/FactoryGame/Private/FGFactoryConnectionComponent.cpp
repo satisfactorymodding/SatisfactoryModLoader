@@ -6,6 +6,7 @@ UFGFactoryConnectionComponent::UFGFactoryConnectionComponent() : Super() {
 	this->mConnectorClearance = 100;
 	this->mInventoryAccessIndex = -1;
 	this->bReplicates = true;
+	this->bNetAddressable = true;
 }
 void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
@@ -26,20 +27,23 @@ bool UFGFactoryConnectionComponent::Factory_GrabOutput(FInventoryItem& out_item,
 bool UFGFactoryConnectionComponent::Factory_Internal_PeekOutputInventory(TArray< FInventoryItem >& out_items, TSubclassOf<  UFGItemDescriptor > type) const{ return bool(); }
 bool UFGFactoryConnectionComponent::Factory_Internal_GrabOutputInventory(FInventoryItem& out_item, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 void UFGFactoryConnectionComponent::DisplayDebug(int32 connectionIndex,  UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
-void UFGFactoryConnectionComponent::SortComponentList(TInlineComponentArray<UFGFactoryConnectionComponent*>& io_components){ }
+void UFGFactoryConnectionComponent::SortComponentList(TInlineComponentArray< UFGFactoryConnectionComponent* >& io_components){ }
 uint8 UFGFactoryConnectionComponent::MaxNumGrab(float delta) const{ return uint8(); }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindCompatibleOverlappingConnections( UFGFactoryConnectionComponent* component,
 		const FVector& location,
-		float radius, UFGFactoryConnectionComponent* lowPrioConnection){ return nullptr; }
+		float radius,
+		UFGFactoryConnectionComponent* lowPrioConnection){ return nullptr; }
 UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::FindOverlappingConnections(UWorld* world,
 		const FVector& location,
 		float radius,
 		EFactoryConnectionConnector connector,
-		EFactoryConnectionDirection direction, UFGFactoryConnectionComponent* lowPrioConnection){ return nullptr; }
-int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(TArray<UFGFactoryConnectionComponent*> out_Connection,
+		EFactoryConnectionDirection direction,
+		UFGFactoryConnectionComponent* lowPrioConnection){ return nullptr; }
+int32 UFGFactoryConnectionComponent::FindAllOverlappingConnections(TArray< UFGFactoryConnectionComponent* > out_Connection,
 		UWorld* world,
 		const FVector& location,
 		float radius,
 		EFactoryConnectionConnector connector,
 		EFactoryConnectionDirection direction){ return int32(); }
-UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::CheckIfSnapOnlyIsBlockedbyOtherConnection(UFGFactoryConnectionComponent* connectionToCheck, TArray<FOverlapResult> potentialBlockers){ return nullptr; }
+UFGFactoryConnectionComponent* UFGFactoryConnectionComponent::CheckIfSnapOnlyIsBlockedByOtherConnection(UFGFactoryConnectionComponent* connectionToCheck,
+		TArray< FOverlapResult > potentialBlockers){ return nullptr; }

@@ -387,7 +387,6 @@ protected:
 
 	/** OnDismantle check to see if the buildable subsystem has any BlockedSharing material instance references that were only relevent to this object and remove them from the master material manager map */
 	void CleanUpMaterialInstanceMappingsInSubsystem();
-
 private:
 	/** Create a stat for the buildable */
 	void CreateFactoryStatID() const;
@@ -620,6 +619,10 @@ private:
 
 	/** Has this buildable created its material dynamic material instances for shared coloring? */
 	bool mHasInitializedMaterialManagers;
+
+	/** Should the building start as hidden when playing the build effect */
+	UPROPERTY( EditDefaultsOnly, Category = "Build Effect" )
+    bool mHideOnBuildEffectStart;
 
 public:
 	FORCEINLINE ~AFGBuildable() = default;

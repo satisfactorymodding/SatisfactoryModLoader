@@ -86,25 +86,69 @@ inline uint64 AddPackageDependencies(const FString& ObjectPath, const TArray<FSt
 	return ObjectIndex;
 }
 
+TArray<TSharedPtr<FJsonValue>> FindBlueprintDumps(FString FolderPath) {
+	FString LoadedJsonFileText;
+	TArray<TSharedPtr<FJsonValue>> Blueprints;
+	TArray<FString> Result;
+	IFileManager& FileManager = IFileManager::Get();
+	FString FinalPath = FolderPath;
+	FileManager.FindFilesRecursive(Result, *FinalPath, TEXT("*.json"), true, false);
+
+	for (int32 i = 0; i < Result.Num(); i++)
+	{
+		const bool result = FFileHelper::LoadFileToString(LoadedJsonFileText, *Result[i]);
+		if (!result) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to load FG Blueprints definitions json file"));
+			return TArray<TSharedPtr<FJsonValue>>();
+		}
+		const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(LoadedJsonFileText);
+		FJsonSerializer Serializer;
+		TSharedPtr<FJsonValue> ResultJsonObject;
+		if (!Serializer.Deserialize(Reader, ResultJsonObject)) {
+			UE_LOG(LogTemp, Error, TEXT("Failed to parse FG Blueprints definitions json file"));
+			return TArray<TSharedPtr<FJsonValue>>();
+		}
+		TSharedPtr<FJsonObject> StructJson = ResultJsonObject->AsObject();
+		FString ObjectPath = StructJson->GetStringField(TEXT("Blueprint"));
+		if (ObjectPath == "")
+			ObjectPath = StructJson->GetStringField(TEXT("StructName"));
+		if(ObjectPath != "")
+		{
+			FString left;
+			FString right;
+			ObjectPath.Split("Game/", &left, &right);
+			right.Split(".", &left, &right, ESearchCase::Type::CaseSensitive, ESearchDir::Type::FromEnd);
+			FString finalpath = FPaths::ProjectContentDir();
+			finalpath.Append(left);
+			finalpath.Append(".uasset");
+			if(!FileManager.FileExists(*finalpath))
+				Blueprints.Add(ResultJsonObject);
+		}
+	}
+	return Blueprints;
+}
+
 void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	FString LoadedJsonFileText;
 	SML::Logging::info(TEXT("Generating assets from dump "), *DataJsonFilePath);
-	const bool result = FFileHelper::LoadFileToString(LoadedJsonFileText, *DataJsonFilePath);
-	if (!result) {
-		UE_LOG(LogTemp, Error, TEXT("Failed to load FG Blueprints definitions json file"));
-		return;
-	}
-	const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(LoadedJsonFileText);
-	FJsonSerializer Serializer;
-	TSharedPtr<FJsonObject> ResultJsonObject;
-	if (!Serializer.Deserialize(Reader, ResultJsonObject)) {
-		UE_LOG(LogTemp, Error, TEXT("Failed to parse FG Blueprints definitions json file"));
-		return;
-	}
+
+	//const bool result = FFileHelper::LoadFileToString(LoadedJsonFileText, *DataJsonFilePath);
+	//if (!result) {
+	//	UE_LOG(LogTemp, Error, TEXT("Failed to load FG Blueprints definitions json file"));
+	//	return;
+	//}
+	//const TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(LoadedJsonFileText);
+	//FJsonSerializer Serializer;
+	//TSharedPtr<FJsonObject> ResultJsonObject;
+	//if (!Serializer.Deserialize(Reader, ResultJsonObject)) {
+	//	UE_LOG(LogTemp, Error, TEXT("Failed to parse FG Blueprints definitions json file"));
+	//	return;
+	//}
 	
 	SML::Logging::info(TEXT("Generating user defined enumerations..."));
 	TArray<UPackage*> DefinedPackages;
-	const TArray<TSharedPtr<FJsonValue>>& UserDefinedEnums = ResultJsonObject->GetArrayField(TEXT("UserDefinedEnums"));
+	//const TArray<TSharedPtr<FJsonValue>>& UserDefinedEnums = ResultJsonObject->GetArrayField(TEXT("UserDefinedEnums"));
+	TArray<TSharedPtr<FJsonValue>> UserDefinedEnums = FindBlueprintDumps(DataJsonFilePath / "BPdump" / "Enums");
 	for (const TSharedPtr<FJsonValue>& Value : UserDefinedEnums) {
 		UPackage* Package = CreateEnumerationFromJson(Value->AsObject().ToSharedRef());
 		if (Package != nullptr) {
@@ -113,16 +157,16 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 		}
 	}
 
-	//UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
-	
-	const TArray<TSharedPtr<FJsonValue>>& UserDefinedStructs = ResultJsonObject->GetArrayField(TEXT("UserDefinedStructs"));
-	const TArray<TSharedPtr<FJsonValue>>& Blueprints = ResultJsonObject->GetArrayField(TEXT("Blueprints"));
-
 	SML::TopologicalSort::DirectedGraph<uint64> DependencyGraph;
 	TMap<uint64, FPackageObjectData> ObjectHeaders;
 	TMap<FString, uint64> ObjectPathToIndex;
 	TMap<uint64, bool> HasDependentsMap;
 	uint64 LastObjectIndex = 2;
+
+	//UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
+	//const TArray<TSharedPtr<FJsonValue>>& UserDefinedStructs = ResultJsonObject->GetArrayField(TEXT("UserDefinedStructs"));
+	TArray<TSharedPtr<FJsonValue>> UserDefinedStructs = FindBlueprintDumps(DataJsonFilePath / "BPdump" / "Structs");
+
 
 	SML::Logging::info(TEXT("Building structure dependency graph..."));
 	//Gather UserStruct and Blueprint dependencies now
@@ -137,6 +181,9 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 			ObjectHeaders.Add(ObjectIndex, ObjectData);
 		}
 	}
+
+	//const TArray<TSharedPtr<FJsonValue>>& Blueprints = ResultJsonObject->GetArrayField(TEXT("Blueprints"));
+	TArray<TSharedPtr<FJsonValue>> Blueprints = FindBlueprintDumps(DataJsonFilePath / "BPdump" / "Blueprints");
 	
 	SML::Logging::info(TEXT("Building blueprint dependency graph..."));
 	for (const TSharedPtr<FJsonValue>& Value : Blueprints) {
@@ -292,7 +339,7 @@ void PostInitializeObject(UObject* Object, const TSharedPtr<FJsonObject>& JsonOb
 	}
 	
 	UBlueprint* Blueprint = Cast<UBlueprint>(Object);
-	if (Blueprint && JsonObject->HasField(TEXT("Fields"))) {
+	if (Blueprint && JsonObject->HasField(TEXT("Fields")) && !Blueprint->IsA<UAnimBlueprint>()) {
 		const TArray<TSharedPtr<FJsonValue>> Fields = JsonObject->GetArrayField(TEXT("Fields"));
 		//Blueprint should have been already compiled at that moment
 		check(Blueprint->GeneratedClass != nullptr);
@@ -756,7 +803,7 @@ void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& B
 	}
 
 	//Generate blueprint own properties (only properties with specified pin type)
-	if (BlueprintJson->HasField(TEXT("Fields"))) {
+	if (BlueprintJson->HasField(TEXT("Fields")) && !Blueprint->IsA<UAnimBlueprint>()) {
 		const TArray<TSharedPtr<FJsonValue>> Fields = BlueprintJson->GetArrayField(TEXT("Fields"));
 		for (const TSharedPtr<FJsonValue>& Value : Fields) {
 			const TSharedPtr<FJsonObject>& FieldObject = Value.Get()->AsObject();

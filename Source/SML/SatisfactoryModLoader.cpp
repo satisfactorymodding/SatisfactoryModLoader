@@ -16,94 +16,100 @@
 */
 #include "SatisfactoryModLoader.h"
 #include "util/bootstrapper_exports.h"
-#include <fstream>
-#include <functional>
 #include "util/Logging.h"
 #include "Misc/App.h"
 #include "util/Internal.h"
 #include "CoreDelegates.h"
 #include "FGGameMode.h"
+#include "WindowsPlatformCrashContext.h"
 #include "mod/ModHandler.h"
 #include "util/Console.h"
-#include "player/PlayerUtility.h"
-#include "command/SMLChatCommands.h"
+#include "player/component/SMLPlayerComponent.h"
 #include "mod/hooking.h"
-#include "player/VersionCheck.h"
-#include "player/MainMenuMixin.h"
+#include "network/RemoteVersionChecker.h"
 #include "mod/toolkit/FGAssetDumper.h"
 #include "mod/ModSubsystems.h"
-#include "player/BuildMenuTweaks.h"
 #include "tooltip/ItemTooltipHandler.h"
+#include "network/NetworkHandler.h"
 #include "util/FuncNames.h"
 
-bool checkGameVersion(const long targetVersion) {
-	const FString& buildVersion = FString(FApp::GetBuildVersion());
-	int32 charIndex = -1;
-	buildVersion.FindLastChar('-', charIndex);
-	const long version = FCString::Atoi(*buildVersion.Mid(charIndex + 1));
-	if (targetVersion > version) {
-		SML::Logging::fatal(*FString::Printf(TEXT("Version check failed: Satisfactory version CL-%ld is outdated. SML requires at least CL-%ld. Things are not going to work."), version, targetVersion));
+bool CheckGameVersion(const long TargetVersion) {
+	const FString& BuildVersion = FString(FApp::GetBuildVersion());
+	int32 CharIndex = -1;
+	BuildVersion.FindLastChar('-', CharIndex);
+	const long Version = FCString::Atoi(*BuildVersion.Mid(CharIndex + 1));
+	if (TargetVersion > Version) {
+		SML::Logging::fatal(*FString::Printf(TEXT("Version check failed: Satisfactory version CL-%ld is outdated. SML requires at least CL-%ld. Things are not going to work."), Version, TargetVersion));
 		return false;
 	}
-	if (targetVersion < version) {
+	if (TargetVersion < Version) {
 		SML::Logging::warning(TEXT("Detected game version newer than one SML was built for. Things can break or work in unexpected way. Proceed with caution."));
 		return true;
 	}
 	return true;
 }
 
-bool checkBootstrapperVersion(SML::Versioning::FVersion target, SML::Versioning::FVersion actual) {
-	if (actual.compare(target) < 0) {
-		SML::Logging::fatal(*FString::Printf(TEXT("Bootstrapper version check failed: Bootstrapper version %s is outdated. SML requires at least %s"), *actual.string(), *target.string()));
+bool CheckBootstrapperVersion(const FVersion& Target, const FVersion& Actual) {
+	if (Actual.Compare(Target) < 0) {
+		SML::Logging::fatal(*FString::Printf(TEXT("Bootstrapper version check failed: Bootstrapper version %s is outdated. SML requires at least %s"), *Actual.String(), *Target.String()));
 		return false;
 	}
 	return true;
 }
 
-void parseConfig(const TSharedRef<FJsonObject>& json, SML::FSMLConfiguration& config) {
-	config.enableSMLChatCommands = json->GetBoolField(TEXT("enableSMLCommands"));
-	config.enableCrashReporter = json->GetBoolField(TEXT("enableCrashReporter"));
-	config.developmentMode = json->GetBoolField(TEXT("developmentMode"));
-	config.debugLogOutput = json->GetBoolField(TEXT("debug"));
-	config.consoleWindow = json->GetBoolField(TEXT("consoleWindow"));
-	config.dumpGameAssets = json->GetBoolField(TEXT("dumpGameAssets"));
+void ParseConfig(const TSharedRef<FJsonObject>& JSON, SML::FSMLConfiguration& Config) {
+	Config.bEnableCrashReporter = JSON->GetBoolField(TEXT("enableCrashReporter"));
+	Config.bDevelopmentMode = JSON->GetBoolField(TEXT("developmentMode"));
+	Config.bDebugLogOutput = JSON->GetBoolField(TEXT("debug"));
+	Config.bConsoleWindow = JSON->GetBoolField(TEXT("consoleWindow"));
+	Config.bDumpGameAssets = JSON->GetBoolField(TEXT("dumpGameAssets"));
+	Config.DisabledCommands = SML::Map(JSON->GetArrayField(TEXT("disabledCommands")), [](auto It) { return It->AsString(); });
+	Config.bEnableCheatConsoleCommands = JSON->GetBoolField(TEXT("enableCheatConsoleCommands"));
 }
 
-TSharedRef<FJsonObject> createConfigDefaults() {
-	TSharedRef<FJsonObject> ref = MakeShareable(new FJsonObject());
-	ref->SetBoolField(TEXT("enableSMLCommands"), true);
-	ref->SetBoolField(TEXT("enableCrashReporter"), true);
-	ref->SetBoolField(TEXT("developmentMode"), false);
-	ref->SetBoolField(TEXT("debug"), false);
-	ref->SetBoolField(TEXT("consoleWindow"), false);
-	ref->SetBoolField(TEXT("dumpGameAssets"), false);
-	return ref;
+TSharedRef<FJsonObject> CreateConfigDefaults() {
+	TSharedRef<FJsonObject> Ref = MakeShareable(new FJsonObject());
+	Ref->SetBoolField(TEXT("enableSMLCommands"), true);
+	Ref->SetBoolField(TEXT("enableCrashReporter"), true);
+	Ref->SetBoolField(TEXT("developmentMode"), false);
+	Ref->SetBoolField(TEXT("debug"), false);
+	Ref->SetBoolField(TEXT("consoleWindow"), false);
+	Ref->SetBoolField(TEXT("dumpGameAssets"), false);
+	Ref->SetBoolField(TEXT("enableCheatConsoleCommands"), false);
+	return Ref;
 }
+
+/* MainMenuCustomization.cpp declaration - Main Menu Customization */
+extern void GRegisterMainMenuHooks();
+/* BuildMenuTweaks.cpp declaration - Build Menu Sub Category Scroll Bar Fix */
+extern void GRegisterBuildMenuHooks();
+/* OfflinePlayHandler.cpp declaration - Offline Play Username & GUID Fix */
+extern void GRegisterOfflinePlayHandler();
 
 namespace SML {
-	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.1.2");
+	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.2.0");
 	
 	//version of the SML mod loader, as specified in the SML.h
-	static SML::Versioning::FVersion* modLoaderVersion = new SML::Versioning::FVersion(modLoaderVersionString);
+	static FVersion* modLoaderVersion = new FVersion(modLoaderVersionString);
 
-	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.8");
+	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
 
 	//target (minimum) version of the bootstrapper we are capable running on
-	static SML::Versioning::FVersion* targetBootstrapperVersion = new SML::Versioning::FVersion(targetBootstrapperVersionString);
+	static FVersion* targetBootstrapperVersion = new FVersion(targetBootstrapperVersionString);
 
 	//version of the bootstrapper we are running on
-	static SML::Versioning::FVersion* bootstrapperVersion;
+	static FVersion* bootstrapperVersion;
 	
 	//name of the file which will be used for logging purposes
 	static const TCHAR* logFileName = TEXT("SatisfactoryModLoader.log");
 	
 	//CL of Satisfactory we want to target
 	//SML will be unable to load in production mode if it doesn't match actual game version
-	extern "C" DLLEXPORT const long targetGameVersion = 120739;
+	extern "C" DLLEXPORT const long targetGameVersion = 124066;
 	
 	//Pointer to the active mod handler object
 	//Initialized early during the process attach
-	static Mod::FModHandler* modHandlerPtr;
+	static FModHandler* modHandlerPtr;
 
 	//Pointer to the active configuration object
 	//Initialized early during process attach
@@ -118,73 +124,94 @@ namespace SML {
 	//FString to the root of the game
 	static FString* rootGamePath;
 
-	void* ResolveGameSymbol(const char* symbolName) {
-		return bootstrapAccessors->ResolveGameSymbol(symbolName);
+	void* ResolveGameSymbol(const char* SymbolName) {
+		return bootstrapAccessors->ResolveGameSymbol(SymbolName);
 	}
 
-	void postInitializeSML();
+	void PostInitializeSML();
 
 	void AppendSymbolSearchPaths(FString& OutSearchPaths);
-
+	void RegisterCrashContextHooks();
+	
 	//called by a bootstrapper off the engine thread during process initialization
 	//you should not access engine at that point since for now no engine code was executed
-	void bootstrapSML(BootstrapAccessors& accessors) {
+	void BootstrapSML(BootstrapAccessors& accessors) {
 		bootstrapAccessors = new BootstrapAccessors(accessors);
 		logOutputStream = new std::wofstream();
 		logOutputStream->open(*(FString(accessors.gameRootDirectory) / logFileName), std::ios_base::out | std::ios_base::trunc);
 
 		SML::Logging::info(TEXT("Log System Initialized!"));
-		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), *modLoaderVersion->string());
-		bootstrapperVersion = new SML::Versioning::FVersion(accessors.version);
+		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), *modLoaderVersion->String());
+		bootstrapperVersion = new FVersion(accessors.version);
 		
 		rootGamePath = new FString(accessors.gameRootDirectory);
 		SML::Logging::info(TEXT("Game root directory: "), **rootGamePath);
 
 		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 
-		PlatformFile.CreateDirectoryTree(*getModDirectory());
-		PlatformFile.CreateDirectoryTree(*getConfigDirectory());
-		PlatformFile.CreateDirectoryTree(*getCacheDirectory());
+		PlatformFile.CreateDirectoryTree(*GetModDirectory());
+		PlatformFile.CreateDirectoryTree(*GetConfigDirectory());
+		PlatformFile.CreateDirectoryTree(*GetCacheDirectory());
 
-		if (!checkBootstrapperVersion(*targetBootstrapperVersion, *bootstrapperVersion)) {
-			SML::shutdownEngine(TEXT("Incompatible bootstrapper version."));
+		if (!CheckBootstrapperVersion(*targetBootstrapperVersion, *bootstrapperVersion)) {
+			SML::ShutdownEngine(TEXT("Incompatible bootstrapper version."));
 		}
-		if (!checkGameVersion(targetGameVersion)) {
-			SML::shutdownEngine(TEXT("Game version check failed."));
+		if (!CheckGameVersion(targetGameVersion)) {
+			SML::ShutdownEngine(TEXT("Game version check failed."));
 		}
 		
-		const TSharedRef<FJsonObject>& configJson = readModConfig(TEXT("SML"), createConfigDefaults());
+		const TSharedRef<FJsonObject>& configJson = ReadModConfig(TEXT("SML"), CreateConfigDefaults());
 		activeConfiguration = new FSMLConfiguration;
-		parseConfig(configJson, *activeConfiguration);
+		ParseConfig(configJson, *activeConfiguration);
 
 		InitConsole();
 
-		modHandlerPtr = new Mod::FModHandler();
+		modHandlerPtr = new FModHandler();
 		SML::Logging::info(TEXT("Performing mod discovery"));
-		modHandlerPtr->discoverMods();
+		modHandlerPtr->DiscoverMods();
 		SML::Logging::info(TEXT("Resolving mod dependencies"));
-		modHandlerPtr->checkDependencies();
+		modHandlerPtr->CheckDependencies();
 
 		//C++ hooks can be registered very early in the engine initialization
-		modHandlerPtr->attachLoadingHooks();
-		InitializePlayerComponent();
-		RegisterVersionCheckHooks();
-		RegisterMainMenuHooks();
+		modHandlerPtr->AttachLoadingHooks();
+		USMLPlayerComponent::Register();
 		FSubsystemInfoHolder::SetupHooks();
-		
-		SUBSCRIBE_METHOD(WIN_STACK_WALK_GET_DOWNSTREAM_STORAGE_FUNC_DESC, FWindowsPlatformStackWalk::GetDownstreamStorage, [](auto& Call) {
-			FString OriginalResult = Call();
-			AppendSymbolSearchPaths(OriginalResult);
-			Call.Override(OriginalResult);
-		});
-		
-		modHandlerPtr->loadDllMods(*bootstrapAccessors);
-
+		RegisterCrashContextHooks();
+		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Construction phase finished!"));
 		
-		FCoreDelegates::OnPostEngineInit.AddStatic(postInitializeSML);
+		FCoreDelegates::OnPostEngineInit.AddStatic(PostInitializeSML);
 	}
 
+	void BeginCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName);
+	void EndCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName);
+	
+	//Register hooks for symbol resolution and enhanced crash info
+	void RegisterCrashContextHooks() {
+		SUBSCRIBE_METHOD(FWindowsPlatformStackWalk::GetDownstreamStorage, [](auto& Call) {
+            FString OriginalResult = Call();
+            AppendSymbolSearchPaths(OriginalResult);
+            Call.Override(OriginalResult);
+        });
+		SUBSCRIBE_METHOD_AFTER_MANUAL("FGenericCrashContext::AddPortableCallStack", FGenericCrashContextProto::AddPortableCallStack, [](void* ProtoContext) {
+            FGenericCrashContext* Context = static_cast<FGenericCrashContext*>(ProtoContext);
+            BeginCrashReportSection(Context, TEXT("ModdingProperties"));
+            Context->AddCrashProperty(TEXT("BootstrapperVersion"), *GetBootstrapperVersion().String());
+            Context->AddCrashProperty(TEXT("ModLoaderVersion"), *GetModLoaderVersion().String());
+            BeginCrashReportSection(Context, TEXT("LoadedMods"));
+            const FModHandler& ModHandler = GetModHandler();
+            for (const FString& ModId : ModHandler.GetLoadedMods()) {
+                FString VersionString = ModHandler.GetLoadedMod(ModId).ModInfo.Version.String();
+                BeginCrashReportSection(Context, TEXT("Mod"));
+                Context->AddCrashProperty(TEXT("ModReference"), *ModId);
+                Context->AddCrashProperty(TEXT("Version"), *VersionString);
+                EndCrashReportSection(Context, TEXT("Mod"));
+            }
+            EndCrashReportSection(Context, TEXT("LoadedMods"));
+            EndCrashReportSection(Context, TEXT("ModdingProperties"));
+        });
+	}
+	
 	//Wrapper for bootstrapper functions allocating memory with prototype void*(*)(unsigned long long)
 	void* BootstrapperFMemoryMallocWrapper(uint64 Size) {
 		return FMemory::Malloc(Size);
@@ -198,7 +225,7 @@ namespace SML {
 		FMemory::Free(SymbolFileRoots);
 	}
 
-	void flushDebugSymbols() {
+	void FlushDebugSymbols() {
 		//ensure StackWalker is initialized before flushing symbols
 		ANSICHAR tmpBuffer[100];
 		FGenericPlatformStackWalk::StackWalkAndDump(tmpBuffer, 100, 0);		
@@ -210,55 +237,105 @@ namespace SML {
 	//called after primary engine initialization, it is safe
 	//to load modules, mount paks and access most of the engine systems here
 	//however note that level could still be not loaded at that moment
-	void postInitializeSML() {
-		SML::Logging::info(TEXT("Loading Mods..."));
-		modHandlerPtr->loadMods(*bootstrapAccessors);
-		SML::Logging::info(TEXT("Post Initialization finished!"));
-		flushDebugSymbols();
+	void PostInitializeSML() {
 
-		//Blueprint hooks are registered here, after engine initialization
-		GRegisterBuildMenuHooks();
-		UItemTooltipHandler::GRegisterHooking();
-		
-		if (getSMLConfig().dumpGameAssets) {
+		if (GetSmlConfig().bDumpGameAssets && GetSmlConfig().bDevelopmentMode) {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
 			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
 		}
+
+		SML::Logging::info(TEXT("Loading Mods..."));
+		modHandlerPtr->LoadMods(*bootstrapAccessors);
+		SML::Logging::info(TEXT("Post Initialization finished!"));
+		FlushDebugSymbols();
+
+		if (GetSmlConfig().bDumpGameAssets && !GetSmlConfig().bDevelopmentMode) {
+			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
+			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
+		}
+
+		//Blueprint hooks are registered here, after engine initialization
+		GRegisterOfflinePlayHandler();
+		GRegisterBuildMenuHooks();
+		GRegisterMainMenuHooks();
+		UItemTooltipHandler::RegisterHooking();
+		UModNetworkHandler::Register();
+		FRemoteVersionChecker::Register();
 	}
 
-	SML_API FString getModDirectory() {
+	SML_API FString GetModDirectory() {
+#if WITH_EDITOR
+		*rootGamePath = FPaths::GetPath(FPaths::GetProjectFilePath());
 		return *rootGamePath / TEXT("mods");
+#else
+		return *rootGamePath / TEXT("mods");
+#endif
 	}
 
-	SML_API FString getConfigDirectory() {
+	SML_API FString GetConfigDirectory() {
+#if WITH_EDITOR
+		*rootGamePath = FPaths::GetPath(FPaths::GetProjectFilePath());
 		return *rootGamePath / TEXT("configs");
+#else
+		return *rootGamePath / TEXT("configs");
+#endif
 	}
 
-	SML_API FString getCacheDirectory() {
+	SML_API FString GetCacheDirectory() {
+		#if WITH_EDITOR
+		*rootGamePath = FPaths::GetPath(FPaths::GetProjectFilePath());
 		return *rootGamePath / TEXT(".cache");
+#else
+		return *rootGamePath / TEXT(".cache");
+#endif
 	}
 
-	SML_API const SML::FSMLConfiguration& getSMLConfig() {
+	BootstrapAccessors& GetBootstrapperAccessors() {
+		return *bootstrapAccessors;
+	}
+
+	SML_API const SML::FSMLConfiguration& GetSmlConfig() {
+#if WITH_EDITOR
+		activeConfiguration = new SML::FSMLConfiguration();
 		return *activeConfiguration;
+#else
+		return *activeConfiguration;
+#endif
 	}
 
-	SML_API Mod::FModHandler& getModHandler() {
+	SML_API FModHandler& GetModHandler() {
 		return *modHandlerPtr;
 	}
 
-	SML_API std::wofstream& getLogFile() {
+	SML_API std::wofstream& GetLogFile() {
 		return *logOutputStream;
 	}
 
-	SML_API const SML::Versioning::FVersion& getModLoaderVersion() {
+	SML_API const FVersion& GetModLoaderVersion() {
 		return *modLoaderVersion;
 	}
 
-	SML_API const SML::Versioning::FVersion& getBootstrapperVersion() {
+	SML_API const FVersion& GetBootstrapperVersion() {
 		return *bootstrapperVersion;
+	}
+
+	void BeginCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName) {
+		FString& CommonBuffer = Context->GetBuffer();
+		CommonBuffer += TEXT( "<" );
+		CommonBuffer += SectionName;
+		CommonBuffer += TEXT( ">" );
+		CommonBuffer += LINE_TERMINATOR;
+	}
+
+	void EndCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName) {
+		FString& CommonBuffer = Context->GetBuffer();
+		CommonBuffer += TEXT( "</" );
+		CommonBuffer += SectionName;
+		CommonBuffer += TEXT( ">" );
+		CommonBuffer += LINE_TERMINATOR;
 	}
 }
 
 extern "C" SML_API void BootstrapModule(BootstrapAccessors& accessors) {
-	return SML::bootstrapSML(accessors);
+	return SML::BootstrapSML(accessors);
 }

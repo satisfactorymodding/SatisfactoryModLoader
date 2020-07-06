@@ -158,9 +158,9 @@ FTransform UFGItemDescriptor::GetIconCameraTransform(TSubclassOf< UFGItemDescrip
 		return FTransform();
 #endif
 	else
-		return FTransform(); 
+		return FTransform();
 }
-void UFGItemDescriptor::SetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass, FTransform cameraTransform){
+void UFGItemDescriptor::SetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass, FTransform cameraTransform){ 
 #if WITH_EDITOR
 	if (inClass)
 		inClass.GetDefaultObject()->mIconCameraTransform = cameraTransform;
@@ -176,7 +176,7 @@ float UFGItemDescriptor::GetIconFOV(TSubclassOf< UFGItemDescriptor > inClass){
 	else
 		return float();
 }
-void UFGItemDescriptor::SetIconFOV(TSubclassOf< UFGItemDescriptor > inClass, float iconFOV){
+void UFGItemDescriptor::SetIconFOV(TSubclassOf< UFGItemDescriptor > inClass, float iconFOV){ 
 #if WITH_EDITOR
 	if (inClass)
 		inClass.GetDefaultObject()->mIconFOV = iconFOV;
@@ -190,15 +190,15 @@ FRotator UFGItemDescriptor::GetIconObjectOrientation(TSubclassOf< UFGItemDescrip
 		return FRotator();
 #endif
 	else
-		return FRotator(); 
+		return FRotator();
 }
-void UFGItemDescriptor::SetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator objectOrientation){
+void UFGItemDescriptor::SetIconObjectOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator objectOrientation){ 
 #if WITH_EDITOR
 	if (inClass)
 		inClass.GetDefaultObject()->mIconObjectOrientation = objectOrientation;
 #endif
 }
-float UFGItemDescriptor::GetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass){
+float UFGItemDescriptor::GetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass){ 
 	if (inClass)
 #if WITH_EDITOR
 		return inClass.GetDefaultObject()->mIconCameraDistance;
@@ -206,7 +206,7 @@ float UFGItemDescriptor::GetIconCameraDistance(TSubclassOf< UFGItemDescriptor > 
 		return float();
 #endif
 	else
-		return  float(); 
+		return  float();
 }
 void UFGItemDescriptor::SetIconCameraDistance(TSubclassOf< UFGItemDescriptor > inClass, float cameraDistance){ 
 #if WITH_EDITOR
@@ -214,7 +214,7 @@ void UFGItemDescriptor::SetIconCameraDistance(TSubclassOf< UFGItemDescriptor > i
 		inClass.GetDefaultObject()->mIconCameraDistance = cameraDistance;
 #endif
 }
-FRotator UFGItemDescriptor::GetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass){
+FRotator UFGItemDescriptor::GetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass){ 
 	if (inClass)
 #if WITH_EDITOR
 		return inClass.GetDefaultObject()->mIconSkyOrientation;
@@ -222,13 +222,8 @@ FRotator UFGItemDescriptor::GetIconSkyOrientation(TSubclassOf< UFGItemDescriptor
 		return FRotator();
 #endif
 	else
-		return FRotator(); 
+		return FRotator();
 }
-void UFGItemDescriptor::SetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation){
-#if WITH_EDITOR
-	if (inClass)
-		inClass.GetDefaultObject()->mIconSkyOrientation = skyOrientation;
-#endif
-}
+void UFGItemDescriptor::SetIconSkyOrientation(TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation){ }
 FText UFGItemDescriptor::GetItemNameInternal() const{ return FText(); }
 FText UFGItemDescriptor::GetItemDescriptionInternal() const{ return FText(); }

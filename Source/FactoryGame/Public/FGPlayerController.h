@@ -9,6 +9,7 @@
 #include "FGChatManager.h"
 #include "FGCharacterPlayer.h"
 #include "FGPlayerState.h"
+#include "PlayerPresenceState.h"
 #include "FGPlayerController.generated.h"
 
 
@@ -288,7 +289,11 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Hotbar" )
 	void CycleToPreviousHotbar();
 
-protected:
+
+	virtual bool GetPresenceState(FPlayerPresenceState& outState) const override;
+
+// Modding Edit: make public
+public:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 
@@ -467,6 +472,9 @@ protected:
 	float mMovementWindInAirTimer;
 	float mMovementSpeedSoft; //Used to detect changes in movement speed
 
+
+	float mNoMovementTime; //Used to detect if player has been idling for a long time.. idealy we should cehck for input too, but this should be good enough for now
+
 private:
 	/** If we're currently in the state of respawning */
 	UPROPERTY( ReplicatedUsing = OnRep_IsRespawning )
@@ -480,6 +488,7 @@ private:
 	class UFGMapAreaTexture* mCachedMapAreaTexture;
 
 	/** If the tutorial is currently active and affecting the player controller */
+	UPROPERTY( Replicated )
 	bool mInTutorialMode;
 
 	/** Did we died */

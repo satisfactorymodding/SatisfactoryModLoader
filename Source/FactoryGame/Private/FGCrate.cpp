@@ -3,7 +3,6 @@
 #include "FGCrate.h"
 
 AFGCrate::AFGCrate() : Super() {
-	this->bReplicateMovement = true;
 	this->bReplicates = true;
 }
 void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }

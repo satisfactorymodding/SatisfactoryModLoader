@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 #include "CoreUObject.h"
 #include "command/ChatCommandLibrary.h"
+#include "mod/SemVersion.h"
+
 #include "SMLPlayerComponent.generated.h"
 
 UCLASS()
@@ -19,8 +21,20 @@ UCLASS(BlueprintType)
 class SML_API USMLPlayerComponent : public UActorComponent {
 	GENERATED_BODY()
 public:
+	/* Command sender used for given player */
 	UPROPERTY(BlueprintReadOnly)
 	UCommandSender* CommandSender;
+	/* List of mods installed on the client side */
+	UPROPERTY()
+	TMap<FString, FVersion> ClientInstalledMods;
+
+	/** Returns true whenever provided mod is installed on client side */
+	UFUNCTION(BlueprintPure)
+	bool IsClientModInstalled(const FString& ModId) const;
+
+	/** Returns version of the mod installed on client side. Returns 0.0.0 if mod is not installed */
+	UFUNCTION(BlueprintPure)
+	FVersion GetClientModVersion(const FString& ModId) const;
 	
 	USMLPlayerComponent();
 	
@@ -41,4 +55,7 @@ public:
 	 */
 	UFUNCTION(BlueprintPure)
 	static USMLPlayerComponent* Get(APlayerController* Player);
+
+	/* Internal usage only */
+	static void Register();
 };

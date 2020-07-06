@@ -136,15 +136,15 @@ public:
 	
 	/**
 	 * Place parts of the hologram/performs a step in the build process for each call to this function.
-	 * For everu build execute input this function is called till it returns true to indicate that it's done.
+	 * For every build execute input this function is called till it returns true to indicate that it's done.
 	 * When it returns true, Construct can be called to construct the actor.
 	 *
-	 *There are two modes on the build gun. 
+	 * There are two modes on the build gun. 
 	 * One mode where each placement requires a primary fire execution, 
 	 * but also one where a step is executed on press and release.
 	 * 
-	 * //[DavalliusA:Wed/20-11-2019] might not need this. We might simply block other function calls during the initial time in these cases... or we can have problem relying on "ValidatePlacementAndCost" based on input, and then executing with this varaible true....
-	 * @param useDefaultValueINsteadOfInput - will be true if the hold mode is executed very quickly, as it's likely a user didn't intend to change the input. Enabling quick placement of the default settings.
+	 * //[DavalliusA:Wed/20-11-2019] might not need this. We might simply block other function calls during the initial time in these cases... or we can have problem relying on "ValidatePlacementAndCost" based on input, and then executing with this variable true....
+	 * @param isInputFromARelease - will be true if the hold mode is executed very quickly, as it's likely a user didn't intend to change the input. Enabling quick placement of the default settings.
 	 *
 	 * @return - true if placement is finished and Construct can be called; false if placement is not finished.
 	 */
@@ -364,6 +364,12 @@ public:
 	void SetBuildClass( TSubclassOf< class AActor > buildClass );
 
 protected:
+	/** OnHologramTransformUpdated
+	 * Let's holograms react to rotation and location chnages applied after the initial move. Currently used for stuff like snapping and having sub holograms like hub parts update.
+	 *
+	 */
+	virtual void OnHologramTransformUpdated();
+
 	/**
 	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
 	* Called for every boxComponent in the actor.

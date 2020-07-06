@@ -27,10 +27,11 @@ public class SML : ModuleRules
             "AnimGraphRuntime",
             "Slate", "SlateCore",
             "Json", "PropertyPath" });
-			
+
 		if (Target.Type == TargetRules.TargetType.Editor) {
 			PublicDependencyModuleNames.AddRange(new string[] {"OnlineBlueprintSupport", "AnimGraph", "UnrealEd", "BlueprintGraph", "Kismet", "UMGEditor", "MovieScene"});
 		}
+        bEnableUndefinedIdentifierWarnings = false;
 
         PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});
         string platformName = Enum.GetName(typeof(UnrealTargetPlatform), Target.Platform);
@@ -39,9 +40,7 @@ public class SML : ModuleRules
         string fullLibPath = Path.Combine(projectRootPath, "Library", platformName);
         Console.WriteLine("Full Library Path: " + fullLibPath);
         PublicAdditionalLibraries.AddRange(new string[] {
-            Path.Combine(fullLibPath, "ttvfs.lib"),
-            Path.Combine(fullLibPath, "ttvfs_zip.lib"),
-			Path.Combine(fullLibPath, "funchook.lib") });
+	        Path.Combine(fullLibPath, "funchook.lib") });
         bEnableExceptions = true;
     }
 }

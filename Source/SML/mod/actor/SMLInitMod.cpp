@@ -2,6 +2,8 @@
 #include "FGSchematicManager.h"
 #include "SML/util/Logging.h"
 #include "FGResearchManager.h"
+#include "FGResourceSinkSettings.h"
+#include "FGResourceSinkSubsystem.h"
 #include "tooltip/ItemTooltipHandler.h"
 
 void ASMLInitMod::Init_Implementation() {
@@ -63,6 +65,19 @@ void ASMLInitMod::LoadModContent() {
 			UObject* ProviderObject = NewObject<UObject>(UItemTooltipHandler::StaticClass(), ProviderClass);
 			UItemTooltipHandler::RegisterGlobalTooltipProvider(ProviderObject);
 		}
+	}
+	UDataTable* ModResourceSinkPointsTable = mResourceSinkItemPointsTable.LoadSynchronous();
+	AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
+	if (ResourceSinkSubsystem != NULL && ModResourceSinkPointsTable != NULL) {
+		checkf(ModResourceSinkPointsTable->RowStruct != nullptr &&
+			ModResourceSinkPointsTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
+			TEXT("Invalid AWESOME Sink item points table in mod %s: Row Type should be Resource Sink Points Data"), *this->GetClass()->GetPathName());
+		TArray<FResourceSinkPointsData*> OutModPointsData;
+		ModResourceSinkPointsTable->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
+		for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
+			ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints));
+		}
+		SML::Logging::info(TEXT("Registered %d AWESOME sink entries for mod %s"), *this->GetClass()->GetPathName());
 	}
 }
 

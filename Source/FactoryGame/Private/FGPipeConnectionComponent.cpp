@@ -5,6 +5,7 @@
 UFGPipeConnectionComponentBase::UFGPipeConnectionComponentBase() : Super() {
 	this->mPipeType = "Base";
 	this->bReplicates = true;
+	this->bNetAddressable = true;
 }
 void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPipeConnectionComponentBase::OnComponentDestroyed(bool isDestroyingHierarchy){ }
@@ -22,9 +23,9 @@ UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindCompatibleOv
 UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
 void UFGPipeConnectionComponentBase::UpdateClientCachedConnection(){ }
 UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
-	this->mPipeNetworkID = -1;
 	this->mPipeType = "Fluid";
 	this->bReplicates = true;
+	this->bNetAddressable = true;
 }
 void UFGPipeConnectionComponent::BeginPlay(){ }
 void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }

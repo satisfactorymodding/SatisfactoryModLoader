@@ -10,6 +10,8 @@ bool UFGAISystem::IsTickable() const{ return bool(); }
 UFGAISystem* UFGAISystem::GetCurrentFG(UWorld* world){ return nullptr; }
 UFGAISystem* UFGAISystem::GetCurrentFGSafe(UWorld* world){ return nullptr; }
 void UFGAISystem::TickSpawners(float dt){ }
+void UFGAISystem::TickSpawnerActivationList(){ }
+void UFGAISystem::AddPendingActiveSpawner( AFGCreatureSpawner* inSpawner){ }
 void UFGAISystem::AddToTargetableList(TScriptInterface<class IFGAggroTargetInterface> aggroTarget){ }
 void UFGAISystem::RemoveFromTargetableList(TScriptInterface<class IFGAggroTargetInterface> aggroTarget){ }
 const TArray< class TScriptInterface< IFGAggroTargetInterface > >& UFGAISystem::GetAggroTargetList() const{ return *(new TArray< class TScriptInterface< IFGAggroTargetInterface > >); }
@@ -24,5 +26,5 @@ void UFGAISystem::OnActorSpawned(AActor* spawnedActor){ }
 void UFGAISystem::AggroTargetDestroyed(AActor* destroyedActor){ }
 void UFGAISystem::CreatureDestroyed(AActor* destroyedEnemy){ }
 void UFGAISystem::PlayerDestroyed(AActor* destroyedPlayer){ }
-void UFGAISystem::UpdatePotentialSpawners( AFGCreatureSpawner* inSpawner, bool withinDistance, float closeSqDistance){ }
+void UFGAISystem::UpdatePotentialSpawners( AFGCreatureSpawner* inSpawner, bool withinSpawnRange, float closeSqDistance){ }
 void UFGAISystem::ManagePotentialSpawners(){ }

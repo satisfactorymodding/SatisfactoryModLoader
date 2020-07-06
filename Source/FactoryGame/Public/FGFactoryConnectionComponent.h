@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 #include "Engine/World.h"
@@ -23,6 +23,7 @@
 	UFGFactoryConnectionComponent::SortComponentList( connections ); \
 	for( UFGFactoryConnectionComponent* COMPONENT_NAME : connections )
 
+//@todo This is unused and is only confusing, remove it later -G2 2020-05-29
 /**
  * Type of connections in the game.
  * @todoPipes - This is old, we're shifting to a different connection component type for pipes as they don't need most of the special logic in the factory connection
@@ -115,22 +116,22 @@ public:
 	 * Is this connection connected to anything.
 	 * @return - true if connected; otherwise false. Always false if attached to hologram, snap only or bad index configuration.
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Connection" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
 	bool IsConnected() const;
 
 	/** Return the inventory associated with this connection. */
-	UFUNCTION( BlueprintPure, Category = "Connection" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
 	FORCEINLINE class UFGInventoryComponent* GetInventory() const { return mConnectionInventory; }
 
 	/** Return the direction for this connection. */
-	UFUNCTION( BlueprintPure, Category = "Connection" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
 	FORCEINLINE EFactoryConnectionDirection GetDirection() const { return mDirection; }
 
 	/** Get the direction needed to be able to connect to this connection, ANY if anything is valid. */
 	EFactoryConnectionDirection GetCompatibleSnapDirection() const;
 
 	/** Return the connector used for this connection. */
-	UFUNCTION( BlueprintPure, Category = "Connection" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
 	FORCEINLINE EFactoryConnectionConnector GetConnector() const { return mConnector; }
 
 	/** Check if the given connection can snap to this. */
@@ -142,7 +143,7 @@ public:
 	FORCEINLINE void SetForwardPeekAndGrabToBuildable( bool forwardPeekAndGrab ){ mForwardPeekAndGrabToBuildable = forwardPeekAndGrab; }
 
 	/** Return the clearance needed when routing a conveyor belt from this connection. */
-	UFUNCTION( BlueprintPure, Category = "Connection" )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
 	FORCEINLINE float GetConnectorClearance() const { return mConnectorClearance; }
 
 	/** Return the connectors world location with or without considering the clearance. */
@@ -155,7 +156,7 @@ public:
 	 * @param type - Optionally check the type of the output, nullptr for any.
 	 * @return true if it has output; false if no output or
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Connection" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
 	bool Factory_PeekOutput( TArray< FInventoryItem >& out_items, TSubclassOf< class UFGItemDescriptor > type = nullptr ) const;
 
 	/**
@@ -164,19 +165,19 @@ public:
 	 * @param offset - if we are grabbing from a belt the item might have an offset beyond the belt's length
 	 * @return valid resource descriptor on success; nullptr if no output of given type exists.
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Connection" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
 	bool Factory_GrabOutput( FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type = nullptr );
 
 	/**
 	 * Internal function, for when overloading how to handle a peek, peeks our output from a inventory
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Connection" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
 	bool Factory_Internal_PeekOutputInventory( TArray< FInventoryItem >& out_items, TSubclassOf< class UFGItemDescriptor > type ) const;
 
 	/**
 	 * Internal function, for when overloading how to handle a grab, grabs our output from a inventory
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Connection" )
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
 	bool Factory_Internal_GrabOutputInventory( FInventoryItem& out_item, TSubclassOf< UFGItemDescriptor > type );
 
 	/** Debug */
@@ -189,7 +190,7 @@ public:
 	 * 
 	 * @param io_components - List to be sorted
 	 */
-	static void SortComponentList( TInlineComponentArray<UFGFactoryConnectionComponent*>& io_components );
+	static void SortComponentList( TInlineComponentArray< UFGFactoryConnectionComponent* >& io_components );
 
 	/**
 	 * This function tells us the maximum amounts of grabs this building can make this frame
@@ -200,7 +201,8 @@ public:
 	static UFGFactoryConnectionComponent* FindCompatibleOverlappingConnections(
 		class UFGFactoryConnectionComponent* component,
 		const FVector& location,
-		float radius, UFGFactoryConnectionComponent* lowPrioConnection = nullptr );
+		float radius,
+		UFGFactoryConnectionComponent* lowPrioConnection = nullptr );
 
 	/** Find the closest overlapping connection matching all search criteria. */
 	static UFGFactoryConnectionComponent* FindOverlappingConnections(
@@ -208,19 +210,29 @@ public:
 		const FVector& location,
 		float radius,
 		EFactoryConnectionConnector connector,
-		EFactoryConnectionDirection direction, UFGFactoryConnectionComponent* lowPrioConnection = nullptr );
+		EFactoryConnectionDirection direction,
+		UFGFactoryConnectionComponent* lowPrioConnection = nullptr );
 
-	/** Fin all overlapping connections and returns them in a list. Filters to not include blocks connections or other incompatible connections*/
+	/**
+	 * Find all overlapping connections and returns them in a list.
+	 * Filters to not include blocked connections or incompatible connections.
+	 */
 	static int32 FindAllOverlappingConnections(
-		TArray<UFGFactoryConnectionComponent*> out_Connection,
+		TArray< UFGFactoryConnectionComponent* > out_Connection,
 		UWorld* world,
 		const FVector& location,
 		float radius,
 		EFactoryConnectionConnector connector,
 		EFactoryConnectionDirection direction );
 
-	//checks if a connection is blocked by another connection in a list of building overlaps. If not blocked it returns null, if blocked it returns the blocking connection. Intended for internal use in finding connections but left exposed for potential general usefulness
-	static UFGFactoryConnectionComponent* CheckIfSnapOnlyIsBlockedbyOtherConnection( UFGFactoryConnectionComponent* connectionToCheck, TArray<FOverlapResult> potentialBlockers );
+private:
+	/**
+	 * Checks if a connection is blocked by another connection in a list of building overlaps.
+	 * If not blocked it returns null, if blocked it returns the blocking connection.
+	 */
+	static UFGFactoryConnectionComponent* CheckIfSnapOnlyIsBlockedByOtherConnection(
+		UFGFactoryConnectionComponent* connectionToCheck,
+		TArray< FOverlapResult > potentialBlockers );
 
 protected:
 	/** Physical type of connector used for this connection. */
@@ -257,7 +269,7 @@ protected:
 
 	/** Forward implementation details to our owner. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
-	uint8 mForwardPeekAndGrabToBuildable:1;
+	bool mForwardPeekAndGrabToBuildable;
 
 public:
 	FORCEINLINE ~UFGFactoryConnectionComponent() = default;
