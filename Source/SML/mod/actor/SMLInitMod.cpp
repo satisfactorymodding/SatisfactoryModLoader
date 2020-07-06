@@ -66,8 +66,9 @@ void ASMLInitMod::LoadModContent() {
 			UItemTooltipHandler::RegisterGlobalTooltipProvider(ProviderObject);
 		}
 	}
-	UDataTable* ModResourceSinkPointsTable = mResourceSinkItemPointsTable.Get();
-	AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this); 
+	UDataTable* ModResourceSinkPointsTable = mResourceSinkItemPointsTable.LoadSynchronous();
+	AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
+	SML::Logging::error("Awsome: ", ModResourceSinkPointsTable, " ", ResourceSinkSubsystem);
 	if (ResourceSinkSubsystem != NULL && ModResourceSinkPointsTable != NULL) {
 		checkf(ModResourceSinkPointsTable->RowStruct != nullptr &&
 			ModResourceSinkPointsTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
