@@ -24,6 +24,8 @@ struct FSerializationContext {
 	uint32 CurrentObjectIndex = 1;
 };
 
+bool DumpSingleFile(TSharedRef<FJsonObject> ResultJson, FString Path, FString Folder);
+
 //Defined Originally In EDGraphSchema_K2.h, re-implemented below to work out of Editor.
 //Note that some information cannot be recovered because UObject metadata is missing
 bool ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType& TypeOut);
@@ -199,10 +201,10 @@ bool isBlacklistedClass(const FString& classPath) {
 }
 
 TSharedRef<FJsonObject> dumpUserDefinedEnum(UUserDefinedEnum* definedEnum) {
-	TSharedRef<FJsonObject> resultJson = MakeShareable(new FJsonObject());
+	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
 	SML::Logging::info(TEXT("Dumping user defined enum "), *definedEnum->GetFullName());
 
-	resultJson->SetStringField(TEXT("StructName"), definedEnum->GetPathName());
+	ResultJson->SetStringField(TEXT("StructName"), definedEnum->GetPathName());
 	TArray<TSharedPtr<FJsonValue>> enumValues;
 	for (int64 i = 0; i <= definedEnum->GetMaxEnumValue(); i++) {
 		if (definedEnum->IsValidEnumValue(i)) {
@@ -217,16 +219,17 @@ TSharedRef<FJsonObject> dumpUserDefinedEnum(UUserDefinedEnum* definedEnum) {
 			enumValues.Add(MakeShareable(new FJsonValueObject(entryJson)));
 		}
 	}
-	resultJson->SetArrayField(TEXT("Values"), enumValues);
-	return resultJson;
+	ResultJson->SetArrayField(TEXT("Values"), enumValues);
+	DumpSingleFile(ResultJson, definedEnum->GetPathName(), "Enums");
+	return ResultJson;
 }
 
 TSharedRef<FJsonObject> dumpUserDefinedStruct(UUserDefinedStruct* definedStruct) {
-	TSharedRef<FJsonObject> resultJson = MakeShareable(new FJsonObject());
+	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
 	SML::Logging::info(TEXT("Dumping user defined struct "), *definedStruct->GetFullName());
 
-	resultJson->SetStringField(TEXT("StructName"), definedStruct->GetPathName());
-	resultJson->SetStringField(TEXT("Guid"), definedStruct->Guid.ToString());
+	ResultJson->SetStringField(TEXT("StructName"), definedStruct->GetPathName());
+	ResultJson->SetStringField(TEXT("Guid"), definedStruct->Guid.ToString());
 
 	FSerializationContext Context;
 	void* allocatedDefaultInstance = FMemory::Malloc(definedStruct->GetStructureSize());
@@ -240,8 +243,9 @@ TSharedRef<FJsonObject> dumpUserDefinedStruct(UUserDefinedStruct* definedStruct)
 		}
 	}
 	FMemory::Free(allocatedDefaultInstance);
-	resultJson->SetArrayField(TEXT("Fields"), fields);
-	return resultJson;
+	ResultJson->SetArrayField(TEXT("Fields"), fields);
+	DumpSingleFile(ResultJson, definedStruct->GetPathName(), "Structs");
+	return ResultJson;
 }
 
 UClass* GetOverridenFunctionSource(UFunction* Function) {
@@ -553,6 +557,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	if (BlueprintDelegateBindings.Num() > 0) {
 		ResultJson->SetArrayField(TEXT("DynamicBindings"), BlueprintDelegateBindings);
 	}
+	DumpSingleFile(ResultJson, GeneratedClass->GetPathName(), "Blueprints");
 	return ResultJson;
 }
 
@@ -576,7 +581,25 @@ TSharedRef<FJsonObject> dumpClassContent(UClass* NativeClass) {
 	if (Fields.Num() > 0) {
 		ResultJson->SetArrayField(TEXT("Fields"), Fields);
 	}
+	DumpSingleFile(ResultJson, NativeClass->GetPathName(), "Class");
 	return ResultJson;
+}
+
+bool DumpSingleFile(TSharedRef<FJsonObject> ResultJson, FString Path, FString Folder)
+{
+	FString right;
+	FString left;
+	Path.Split("/", &left, &right, ESearchCase::Type::IgnoreCase, ESearchDir::Type::FromEnd);
+	if (right != "")
+	{
+		const FString& resultPath = SML::GetConfigDirectory() / "BPdump" / Folder / *left / "/" / right.Append(".json");
+		FString resultString;
+		TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+		FJsonSerializer Serializer;
+		Serializer.Serialize(ResultJson, writer);
+		return FFileHelper::SaveStringToFile(resultString, *resultPath, FFileHelper::EEncodingOptions::ForceUTF8);
+	}
+	return false;
 }
 
 FString CreateClassPathFromPackageName(const FString& PackagePath) {

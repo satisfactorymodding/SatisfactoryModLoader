@@ -39,7 +39,7 @@ public:
 
 	/** Get the name of this station. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
-	FText GetStationName() const { return mStationName; }
+	FORCEINLINE FText GetStationName() const { return mStationName; }
 
 	/** Set the name of this station, must be called on server. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|StationIdentifier" )
@@ -47,7 +47,7 @@ public:
 
 	/** Get the track this station belongs to. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
-	int32 GetTrackGraphID() const { return mTrackGraphID; }
+	FORCEINLINE int32 GetTrackGraphID() const { return mTrackGraphID; }
 
 private:
 	UFUNCTION()
