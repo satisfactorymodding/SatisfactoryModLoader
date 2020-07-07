@@ -9,6 +9,10 @@ void SML::InitConsole() {
 	}
 }
 
+void SML::NotifyFatalError(const FString& Message) {
+	FPlatformMisc::MessageBoxExt(EAppMsgType::Ok, *FString::Printf(TEXT("%s\nClick OK to exit."), *Message), TEXT("SatisfactoryModLoader"));
+}
+
 #ifdef PLATFORM_WINDOWS
 #define WIN32_LEAN_AND_MEAN
 #include "Windows.h"
@@ -22,14 +26,7 @@ void SML::EnableConsole() {
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 	SML::Logging::info(TEXT("Console Window enabled!"));
 }
-
-void SML::NotifyFatalError(const FString& Message) {
-	MessageBoxA(NULL, TCHAR_TO_ANSI(*FString::Printf(TEXT("%s\nClick OK to exit."), *Message)), "SatisfactoryModLoader", MB_ICONERROR);
-}
 #else
 void SML::EnableConsole() {
-	//TODO: Implementation for other platforms
-}
-void SML::NotifyFatalError(const FString& Message) {
 }
 #endif

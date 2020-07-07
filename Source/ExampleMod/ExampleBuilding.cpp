@@ -18,8 +18,14 @@ void AExampleBuilding::OnRep_ReplicationDetailActor() {
         //Cast replication detail actor, set active replication inventory component
         //On client these will be used for UI and other logic run on client side
         AReplicationDetailActor_ExampleBuilding* DetailActor = Cast<AReplicationDetailActor_ExampleBuilding>(mReplicationDetailActor);
-        LeftInventoryHandler->SetReplicationInventoryComponent(DetailActor->InventoryComponentLeft);
-        RightInventoryHandler->SetReplicationInventoryComponent(DetailActor->InventoryComponentRight);
+        if (DetailActor->HasCompletedInitialReplication()) {
+            LeftInventoryHandler->SetReplicationInventoryComponent(DetailActor->InventoryComponentLeft);
+            RightInventoryHandler->SetReplicationInventoryComponent(DetailActor->InventoryComponentRight);
+        } else {
+            FTimerManager& TimerManager = this->GetWorldTimerManager();
+            FTimerHandle TimerHandle;
+            TimerManager.SetTimer(TimerHandle, this, &AExampleBuilding::OnRep_ReplicationDetailActor, 0.5f, false);
+        }
     }
 }
 

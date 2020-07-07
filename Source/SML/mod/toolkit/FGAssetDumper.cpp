@@ -681,7 +681,6 @@ void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileNa
 	resultObject->SetArrayField(TEXT("Blueprints"), blueprints);
 	resultObject->SetArrayField(TEXT("Classes"), classes);
 
-
 	const FString& resultPath = SML::GetConfigDirectory() / *fileName;
 	FString resultString;
 	TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
@@ -693,96 +692,6 @@ void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileNa
 
 void SML::dumpSatisfactoryAssets(const FName& rootPath, const FString& fileName) {
 	dumpSatisfactoryAssetsInternal(rootPath, fileName);
-}
-
-//------------------------------------------------------------------
-//CODE BELOW IS STRAIGHT COPIED FROM EDGraphSchema_K2.cpp
-//BECAUSE IT IS EDITOR-ONLY MODULE WHICH DOESN'T EXIST IN SHIPPING
-//Some code was cut off because we don't have editor-only data like function object metadata
-//------------------------------------------------------------------
-
-const FName PC_Exec(TEXT("exec"));
-const FName PC_Boolean(TEXT("bool"));
-const FName PC_Byte(TEXT("byte"));
-const FName PC_Class(TEXT("class"));
-const FName PC_Int(TEXT("int"));
-const FName PC_Int64(TEXT("int64"));
-const FName PC_Float(TEXT("float"));
-const FName PC_Name(TEXT("name"));
-const FName PC_Delegate(TEXT("delegate"));
-const FName PC_MCDelegate(TEXT("mcdelegate"));
-const FName PC_Object(TEXT("object"));
-const FName PC_Interface(TEXT("interface"));
-const FName PC_String(TEXT("string"));
-const FName PC_Text(TEXT("text"));
-const FName PC_Struct(TEXT("struct"));
-const FName PC_Wildcard(TEXT("wildcard"));
-const FName PC_Enum(TEXT("enum"));
-const FName PC_SoftObject(TEXT("softobject"));
-const FName PC_SoftClass(TEXT("softclass"));
-const FName PSC_Self(TEXT("self"));
-const FName PSC_Index(TEXT("index"));
-const FName PSC_Bitmask(TEXT("bitmask"));
-const FName PN_Execute(TEXT("execute"));
-
-bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer);
-
-bool ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType& TypeOut) {
-	if (Property == nullptr) {
-		TypeOut.PinCategory = TEXT("bad_type");
-		return false;
-	}
-
-	TypeOut.PinSubCategory = NAME_None;
-
-	// Handle whether or not this is an array property
-	const UMapProperty* MapProperty = Cast<const UMapProperty>(Property);
-	const USetProperty* SetProperty = Cast<const USetProperty>(Property);
-	const UArrayProperty* ArrayProperty = Cast<const UArrayProperty>(Property);
-	const UProperty* TestProperty = Property;
-	if (MapProperty) {
-		TestProperty = MapProperty->KeyProp;
-
-		// set up value property:
-		UObject* SubCategoryObject = nullptr;
-		bool bIsWeakPtr = false;
-		bool bResult = GetPropertyCategoryInfo(MapProperty->ValueProp, TypeOut.PinValueType.TerminalCategory, TypeOut.PinValueType.TerminalSubCategory, SubCategoryObject, bIsWeakPtr);
-		TypeOut.PinValueType.TerminalSubCategoryObject = SubCategoryObject;
-
-		if (bIsWeakPtr) {
-			return false;
-		}
-
-		if (!bResult) {
-			return false;
-		}
-	} else if (SetProperty) {
-		TestProperty = SetProperty->ElementProp;
-	} else if (ArrayProperty) {
-		TestProperty = ArrayProperty->Inner;
-	}
-	TypeOut.ContainerType = FEdGraphPinType::ToPinContainerType(ArrayProperty != nullptr, SetProperty != nullptr, MapProperty != nullptr);
-	TypeOut.bIsReference = Property->HasAllPropertyFlags(CPF_OutParm | CPF_ReferenceParm);
-	TypeOut.bIsConst = Property->HasAllPropertyFlags(CPF_ConstParm);
-
-	// Check to see if this is the wildcard property for the target container type
-	if (const UMulticastDelegateProperty* MulticastDelegateProperty = Cast<const UMulticastDelegateProperty>(TestProperty)) {
-		TypeOut.PinCategory = PC_MCDelegate;
-		FMemberReference::FillSimpleMemberReference<UFunction>(MulticastDelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
-	} else if (const UDelegateProperty* DelegateProperty = Cast<const UDelegateProperty>(TestProperty)) {
-		TypeOut.PinCategory = PC_Delegate;
-		FMemberReference::FillSimpleMemberReference<UFunction>(DelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
-	} else {
-		UObject* SubCategoryObject = nullptr;
-		bool bIsWeakPointer = false;
-		bool bResult = GetPropertyCategoryInfo(TestProperty, TypeOut.PinCategory, TypeOut.PinSubCategory, SubCategoryObject, bIsWeakPointer);
-		TypeOut.bIsWeakPointer = bIsWeakPointer;
-		TypeOut.PinSubCategoryObject = SubCategoryObject;
-		if (!bResult) {
-			return false;
-		}
-	}
-	return true;
 }
 
 //Note that CDO's don't call this method, they call SerializePropertyValue directly,
@@ -906,13 +815,6 @@ TSharedPtr<FJsonValue> SerializePropertyValue(const UProperty* Property, const v
 	return Result;
 }
 
-//Copies data layout of FMulticastScriptDelegate, because Epic is retarded and made this field private
-//Since TMulticastScriptDelegate doesn't have any virtual methods (so no vtable), it is (mostly) safe to assume that layout is the same
-class FMulticastScriptDelegateAccessor {
-	/** Ordered list functions to invoke when the Broadcast function is called */
-public: TArray<FScriptDelegate> InvocationList;
-};
-
 TSharedPtr<FJsonValue> SerializePropertyValueInternal(const UProperty* TestProperty, const void* Value, FSerializationContext& Context) {
 	if (TestProperty->IsA<UMulticastDelegateProperty>()) {
 		//Delegates should not be serialized directly
@@ -986,59 +888,4 @@ TSharedPtr<FJsonValue> SerializePropertyValueInternal(const UProperty* TestPrope
 		SML::Logging::fatal(TEXT("Found unsupported property type when serializing value: "), *TestProperty->GetClass()->GetName());
 		return TSharedPtr<FJsonValue>();
 	}
-}
-
-bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer) {
-	if (const UInterfaceProperty* InterfaceProperty = Cast<const UInterfaceProperty>(TestProperty)) {
-		OutCategory = PC_Interface;
-		OutSubCategoryObject = InterfaceProperty->InterfaceClass;
-	} else if (const UClassProperty* ClassProperty = Cast<const UClassProperty>(TestProperty)) {
-		OutCategory = PC_Class;
-		OutSubCategoryObject = ClassProperty->MetaClass;
-	} else if (const USoftClassProperty* SoftClassProperty = Cast<const USoftClassProperty>(TestProperty)) {
-		OutCategory = PC_SoftClass;
-		OutSubCategoryObject = SoftClassProperty->MetaClass;
-	} else if (const USoftObjectProperty* SoftObjectProperty = Cast<const USoftObjectProperty>(TestProperty)) {
-		OutCategory = PC_SoftObject;
-		OutSubCategoryObject = SoftObjectProperty->PropertyClass;
-	} else if (const UObjectPropertyBase* ObjectProperty = Cast<const UObjectPropertyBase>(TestProperty)) {
-		OutCategory = PC_Object;
-		OutSubCategoryObject = ObjectProperty->PropertyClass;
-		bOutIsWeakPointer = TestProperty->IsA(UWeakObjectProperty::StaticClass());
-	} else if (const UStructProperty* StructProperty = Cast<const UStructProperty>(TestProperty)) {
-		OutCategory = PC_Struct;
-		OutSubCategoryObject = StructProperty->Struct;
-	} else if (TestProperty->IsA<UFloatProperty>()) {
-		OutCategory = PC_Float;
-	} else if (TestProperty->IsA<UInt64Property>()) {
-		OutCategory = PC_Int64;
-	} else if (TestProperty->IsA<UIntProperty>()) {
-		OutCategory = PC_Int;
-	} else if (const UByteProperty* ByteProperty = Cast<const UByteProperty>(TestProperty)) {
-		OutCategory = PC_Byte;
-		OutSubCategoryObject = ByteProperty->Enum;
-	} else if (const UEnumProperty* EnumProperty = Cast<const UEnumProperty>(TestProperty)) {
-		// K2 only supports byte enums right now - any violations should have been caught by UHT or the editor
-		if (!EnumProperty->GetUnderlyingProperty()->IsA<UByteProperty>()) {
-			OutCategory = TEXT("unsupported_enum_type");
-			return false;
-		}
-
-		OutCategory = PC_Byte;
-		OutSubCategoryObject = EnumProperty->GetEnum();
-		
-	} else if (TestProperty->IsA<UNameProperty>()) {
-		OutCategory = PC_Name;
-	} else if (TestProperty->IsA<UBoolProperty>()) {
-		OutCategory = PC_Boolean;
-	} else if (TestProperty->IsA<UStrProperty>()) {
-		OutCategory = PC_String;
-	} else if (TestProperty->IsA<UTextProperty>()) {
-		OutCategory = PC_Text;
-	} else {
-		OutCategory = TEXT("bad_type");
-		return false;
-	}
-
-	return true;
 }
