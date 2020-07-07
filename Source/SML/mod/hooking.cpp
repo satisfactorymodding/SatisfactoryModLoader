@@ -27,7 +27,8 @@ struct ConstructorHookInfoHolder {
 static TMap<void*, ConstructorHookInfoHolder> InstalledConstructorThunks;
 
 void* GetHandlerListInternal(const FString& SymbolId) {
-	return RegisteredListenerMap.Find(SymbolId);
+	void** ExistingMapEntry = RegisteredListenerMap.Find(SymbolId);
+	return ExistingMapEntry ? *ExistingMapEntry : nullptr;
 }
 
 void SetHandlerListInstanceInternal(const FString& SymbolId, void* HandlerList) {

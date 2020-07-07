@@ -239,9 +239,10 @@ public:
 
 //Hook invoker for member functions
 template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass>
-struct HookInvoker<R(C::*)(A...), PMF, TargetClass> {
+struct HookInvoker<R(C::*)(A...), PMF, TargetClass>
+{
 public:
-	typedef CallScope<R(*)(C*, A...)> ScopeType;
+    typedef CallScope<R(*)(C*, A...)> ScopeType;
 	// mod handler function
 	typedef void HandlerSignature(ScopeType&, C*, A...);
 	typedef typename HandlerAfterFunc<R, C*, A...>::Value HandlerSignatureAfter;
@@ -252,35 +253,69 @@ public:
 	typedef std::function<HandlerSignature> Handler;
 	typedef std::function<HandlerSignatureAfter> HandlerAfter;
 private:
-	static TArray<Handler>* handlersBefore;
+    static TArray<Handler>* handlersBefore;
 	static TArray<HandlerAfter>* handlersAfter;
 	static HookType* functionPtr;
 	static bool bHookInitialized;
 public:
-	static R applyCall(C* self, A... args) {
-		ScopeType scope(handlersBefore, functionPtr);
-		scope(self, args...);
-		if (handlersAfter) for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
-		return scope.getResult();
+	//Trampoline function using internal implementation of functions returning class/union type
+	//Used to re-oder function parameter order.
+	//When calling *static* functions returning by value, first argument is pointer to memory allocated by caller for storing return value.
+	//But for calling *member* functions, first argument is always this pointer, so 
+	static R* TrampolineFunctionCall(R* OutReturnValue, C* self, A... args) {
+		return (reinterpret_cast<R*(*)(C*, R*, A...)>(functionPtr))(self, OutReturnValue, args...);
 	}
+	
+    //Methods which return class/struct/union by value have out pointer inserted
+    //as first parameter after this pointer, with all arguments shifted right by 1 for it
+    static R* applyCallUserTypeByValue(C* self, R* outReturnValue, A... args) {
+    	ScopeType scope(handlersBefore, reinterpret_cast<R(*)(C*, A...)>(&TrampolineFunctionCall));
+    	scope(self, args...);
+    	for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
+    	//We always return outReturnValue, so copy our result to output variable and return it
+    	*outReturnValue = scope.getResult();
+    	return outReturnValue;
+    }
 
+	//Normal scalar type call, where no additional arguments are inserted
+	//If it were returning user type by value, first argument would be R*, which is incorrect - that's why we need separate
+	//applyCallUserType with correct argument order
+	static R applyCallScalar(C* self, A... args) {
+    	ScopeType scope(handlersBefore, functionPtr);
+    	scope(self, args...);
+    	for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
+    	return scope.getResult();
+    }
+
+	//Call for void return type - nothing special to do with void
 	static void applyCallVoid(C* self, A... args) {
-		ScopeType scope(handlersBefore, functionPtr);
-		scope(self, args...);
-		if (handlersAfter) for (HandlerAfter& handler : *handlersAfter) handler(self, args...);
-	}
+    	ScopeType scope(handlersBefore, functionPtr);
+    	scope(self, args...);
+    	for (HandlerAfter& handler : *handlersAfter) handler(self, args...);
+    }
 
 private:
-	static HookType* getApplyRef(std::true_type) {
-		return &applyCallVoid;
-	}
-
-	static HookType* getApplyRef(std::false_type) {
-		return &applyCall;
-	}
-
-	static HookType* getApplyCall() {
-		return getApplyRef(std::is_same<R, void>{});
+    static void* getApplyCall1(std::true_type) {
+    	return (void*) applyCallVoid; //true - type is void
+    }
+	static void* getApplyCall1(std::false_type) {
+	    return getApplyCall2(std::is_class<R>{}); //not a void, try call 2
+    }
+	static void* getApplyCall2(std::true_type) {
+	    return (void*) applyCallUserTypeByValue; //true - type is class
+    }
+	static void* getApplyCall2(std::false_type) {
+	    return getApplyCall3(std::is_union<R>{});
+    }
+	static void* getApplyCall3(std::true_type) {
+    	return (void*) applyCallUserTypeByValue; //true - type is union
+    }
+	static void* getApplyCall3(std::false_type) {
+    	return (void*) applyCallScalar; //false - type is scalar type
+    }
+	
+	static void* getApplyCall() {
+    	return getApplyCall1(std::is_same<R, void>{});
 	}
 public:
 	//Handles normal member function hooking, e.g hooking fixed symbol implementation in executable
@@ -336,10 +371,10 @@ public:
 };
 
 template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass>
-TArray<std::function<void(CallScope<R(*)(C*,A...)>&, C*, A...)>>* HookInvoker<R(C::*)(A...), PMF, TargetClass>::handlersBefore = nullptr;
+TArray<typename HookInvoker<R(C::*)(A...), PMF, TargetClass>::Handler>* HookInvoker<R(C::*)(A...), PMF, TargetClass>::handlersBefore = nullptr;
 
 template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass>
-TArray<std::function<typename HandlerAfterFunc<R, C*, A...>::Value>>* HookInvoker<R(C::*)(A...), PMF, TargetClass>::handlersAfter = nullptr;
+TArray<typename HookInvoker<R(C::*)(A...), PMF, TargetClass>::HandlerAfter>* HookInvoker<R(C::*)(A...), PMF, TargetClass>::handlersAfter = nullptr;
 
 template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass>
 R(* HookInvoker<R(C::*)(A...), PMF, TargetClass>::functionPtr)(C*,A...) = nullptr;
@@ -348,10 +383,10 @@ template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename Targ
 bool HookInvoker<R(C::*)(A...), PMF, TargetClass>::bHookInitialized = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
-TArray<std::function<void(CallScope<R(*)(A...)>&, A...)>>* HookInvoker<R(*)(A...), PMF, None>::handlersBefore = nullptr;
+TArray<typename HookInvoker<R(*)(A...), PMF, None>::Handler>* HookInvoker<R(*)(A...), PMF, None>::handlersBefore = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
-TArray<std::function<typename HandlerAfterFunc<R, A...>::Value>>* HookInvoker<R(*)(A...), PMF, None>::handlersAfter = nullptr;
+TArray<typename HookInvoker<R(*)(A...), PMF, None>::HandlerAfter>* HookInvoker<R(*)(A...), PMF, None>::handlersAfter = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
 R(* HookInvoker<R(*)(A...), PMF, None>::functionPtr)(A...) = nullptr;
