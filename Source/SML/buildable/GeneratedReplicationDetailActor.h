@@ -43,6 +43,8 @@ struct FReplicatedInventoryProperty {
 
 USTRUCT()
 struct SML_API FReplicatedInventoryInfo {
+    GENERATED_BODY()
+public:
     UPROPERTY()
     UFGInventoryComponent* InventoryComponent;
     UPROPERTY()
@@ -51,7 +53,7 @@ struct SML_API FReplicatedInventoryInfo {
 
 UCLASS(Abstract)
 class SML_API ABuildableFactory_Replicated : public AFGBuildableFactory {
-    GENERATED_BODY();
+    GENERATED_BODY()
 public:
     ABuildableFactory_Replicated();
     virtual void BeginPlay() override;
@@ -64,7 +66,7 @@ public:
 
 UCLASS()
 class SML_API AReplicationDetailActor_Generated : public AFGReplicationDetailActor_BuildableFactory {
-    GENERATED_BODY();
+    GENERATED_BODY()
 public:
     void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
     void InitReplicationDetailActor(AFGBuildable* owningActor) override;

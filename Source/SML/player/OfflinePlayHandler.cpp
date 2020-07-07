@@ -14,7 +14,7 @@ extern void GRegisterOfflinePlayHandler() {
     FParse::Value(FCommandLine::Get(), TEXT("-Username="), UsernameOverride);
     if (!UsernameOverride.IsEmpty()) {
         SML::Logging::info(TEXT("Offline Username Override: "), *UsernameOverride);
-        SUBSCRIBE_METHOD_MANUAL("ULocalPlayer::GetNickname", IFuckingHateConstMethods::ShittyMethod, [=](auto& Call, IFuckingHateConstMethods* Player, FString* OutReturnValue) {
+        SUBSCRIBE_METHOD_MANUAL("ULocalPlayer::GetNickname", IFuckingHateConstMethods::ShittyMethod, [=](auto& Call, auto* Player, FString* OutReturnValue) {
             FString* ReturnedParentValue = Call(Player, OutReturnValue);
             if (ReturnedParentValue->IsEmpty()) {
                 SML::Logging::info(TEXT("Online Subsystem Nickname not provided, falling back to -Username"));
@@ -23,7 +23,7 @@ extern void GRegisterOfflinePlayHandler() {
             }
             SML::Logging::info(TEXT("Parent GetNickname: "), **ReturnedParentValue);
         });
-        SUBSCRIBE_METHOD_MANUAL("ULocalPlayer::GetUniqueNetIdFromCachedControllerId", IFuckingHateConstMethods::ShittyMethod2, [=](auto& Call, IFuckingHateConstMethods* Player, FUniqueNetIdRepl* OutReturnValue) {
+        SUBSCRIBE_METHOD_MANUAL("ULocalPlayer::GetUniqueNetIdFromCachedControllerId", IFuckingHateConstMethods::ShittyMethod2, [=](auto& Call, auto* Player, FUniqueNetIdRepl* OutReturnValue) {
             FUniqueNetIdRepl* ReturnedParentValue = Call(Player, OutReturnValue);
             if (!ReturnedParentValue->IsValid()) {
                 SML::Logging::info(TEXT("Online Subsystem UniqueNotId not provided, falling back to -Username-generated UniqueId"));

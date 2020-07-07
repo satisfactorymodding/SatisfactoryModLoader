@@ -71,6 +71,7 @@ void AReplicationDetailActor_Generated::InitReplicationDetailActor(AFGBuildable*
             ComponentHandler->SetReplicationInventoryComponent(NewInventoryComponent);
             InventoryInfos.Add(FReplicatedInventoryInfo{NewInventoryComponent, InventoryPair.Key});
         }
+        ExpectedNumberOfEntries = InventoryInfos.Num();
     }
 }
 
@@ -97,7 +98,7 @@ void AReplicationDetailActor_Generated::GetLifetimeReplicatedProps(TArray<FLifet
 }
 
 bool AReplicationDetailActor_Generated::HasCompletedInitialReplication() const {
-    return Super::HasCompletedInitialReplication() && InventoryInfos.Num() == ExpectedNumberOfEntries;
+    return Super::HasCompletedInitialReplication() && ExpectedNumberOfEntries > 0 && InventoryInfos.Num() == ExpectedNumberOfEntries;
 }
 
 
