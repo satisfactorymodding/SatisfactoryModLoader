@@ -3,8 +3,8 @@
 #include "FGBuildableFactory.h"
 #include "GameFramework/Actor.h"
 #include "Replication/FGReplicationDetailActor_BuildableFactory.h"
-#include "GeneratedReplicationDetailActor.generated.h"
 #include "FGInventoryLibrary.h"
+#include "GeneratedReplicationDetailActor.generated.h"
 
 #define REPLICATE_INVENTORY_INNER(Class, InventoryTitle, InventoryName, HandlerName) \
     OutReplicatedProps.Add(TEXT(#InventoryTitle), FReplicatedInventoryProperty{\
@@ -40,11 +40,6 @@ struct FReplicatedInventoryProperty {
     UProperty* InventoryComponentProperty;
     UProperty* InventoryComponentHandlerProperty;
 };
-
-void foo()
-{
-
-}
 
 USTRUCT()
 struct SML_API FReplicatedInventoryInfo {

@@ -11,6 +11,7 @@
 #include "Engine/ComponentDelegateBinding.h"
 #include "WidgetAnimationDelegateBinding.h"
 #include "BPCodeDumper.h"
+#include "toolkit/PropertyTypeHandler.h"
 
 #define DEFAULT_ITERATOR_FLAGS EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces
 
@@ -26,10 +27,6 @@ struct FSerializationContext {
 
 bool DumpSingleFile(TSharedRef<FJsonObject> ResultJson, FString Path, FString Folder);
 
-//Defined Originally In EDGraphSchema_K2.h, re-implemented below to work out of Editor.
-//Note that some information cannot be recovered because UObject metadata is missing
-bool ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType& TypeOut);
-
 //Performs property serialization. Defined below.
 TSharedPtr<FJsonValue> SerializePropertyValue(const UProperty* TestProperty, const void* Value, FSerializationContext& Context);
 
@@ -39,7 +36,7 @@ TSharedPtr<FJsonValue> SerializeStruct(UScriptStruct* StructType, const void* St
 
 TSharedRef<FJsonObject> CreatePropertyTypeDescriptor(UProperty* Property) {
 	FEdGraphPinType graphPinType;
-	ConvertPropertyToPinType(Property, graphPinType);
+	FPropertyTypeHelper::ConvertPropertyToPinType(Property, graphPinType);
 	TSharedRef<FJsonObject> typeEntry = MakeShareable(new FJsonObject());
 	typeEntry->SetStringField(TEXT("PinCategory"), graphPinType.PinCategory.ToString());
 	typeEntry->SetStringField(TEXT("PinSubCategory"), graphPinType.PinCategory.ToString());
