@@ -144,7 +144,7 @@ void ClearAutomationLogForVersionCheck() {
 	}	
 }
 
-void SAlpakaWidget::CookDone(FString result, double runtime,UAlpakitSettings* Settings, TFunction<void()> Done)
+void SAlpakaWidget::CookDone(FString result, double runtime, UAlpakitSettings* Settings, TFunction<void()> Done)
 {
 	if (result.Equals("completed", ESearchCase::IgnoreCase))
 	{
@@ -169,7 +169,7 @@ void SAlpakaWidget::CookDone(FString result, double runtime,UAlpakitSettings* Se
 		TArray<FString> FilesToPak;
 		FFileHelper::LoadFileToStringArray(FilesToPak, *PakListPath);
 		FVersion smlVersion = SML::GetModLoaderVersion();
-		FString smlVersionString = FString::Printf(TEXT("%llu.%llu.%llu"), smlVersion.Major, smlVersion.Minor, smlVersion.Patch);
+		FString smlVersionString = FString::Printf(TEXT("^%llu.%llu.%llu"), smlVersion.Major, smlVersion.Minor, smlVersion.Patch);
 
 		int modsCopied = 0;
 		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
@@ -232,24 +232,39 @@ void SAlpakaWidget::CookDone(FString result, double runtime,UAlpakitSettings* Se
 				PlatformFile.CreateDirectory(*modPakFolder);
 			FString localModFolderPath = FPaths::ConvertRelativePathToFull(FPaths::ProjectDir() / TEXT("Mods") / mod.Name);
 			FString pakFilePath = localModFolderPath / FString::Printf(TEXT("%s.pak"), *pakName);
-			FString dataJsonPath = localModFolderPath / TEXT("incomplete-data.json");
+			FString dataJsonPath = localModFolderPath / TEXT("data.json");
 			
 			TSharedPtr<FJsonObject> dataJson = MakeShared<FJsonObject>(FJsonObject());
 			dataJson->SetStringField(TEXT("mod_reference"), mod.Name);
 			dataJson->SetStringField(TEXT("name"), mod.DisplayName);
 			dataJson->SetStringField(TEXT("description"), mod.Description);
 			dataJson->SetStringField(TEXT("version"), mod.Version);
-			dataJson->SetStringField(TEXT("sml_version"), smlVersionString);
+			
 			TArray<TSharedPtr<FJsonValue>> authorsJson;
 			for (FString author : mod.Authors) {
 				authorsJson.Add(MakeShared<FJsonValueString>(FJsonValueString(author)));
 			}
 			dataJson->SetArrayField(TEXT("authors"), authorsJson);
+
+			TSharedPtr<FJsonObject> dependenciesJson = MakeShared<FJsonObject>(FJsonObject());
+			for (FAlpakitModDependency dep : mod.Dependencies) {
+				dependenciesJson->SetStringField(dep.Mod, dep.Constraint);
+			}
+			dependenciesJson->SetStringField(TEXT("SML"), smlVersionString);
+			dataJson->SetObjectField(TEXT("dependencies"), dependenciesJson);
+			
+			TSharedPtr<FJsonObject> optionalDependenciesJson = MakeShared<FJsonObject>(FJsonObject());
+			for (FAlpakitModDependency dep : mod.OptionalDependencies) {
+				optionalDependenciesJson->SetStringField(dep.Mod, dep.Constraint);
+			}
+			dataJson->SetObjectField(TEXT("optional_dependencies"), optionalDependenciesJson);
+			
 			TArray<TSharedPtr<FJsonValue>> objectsJson;
 			TSharedPtr<FJsonObject> objectJson = MakeShared<FJsonObject>(FJsonObject());
 			objectJson->SetStringField(TEXT("type"), TEXT("pak"));
 			objectJson->SetStringField(TEXT("path"), FString::Printf(TEXT("%s.pak"), *pakName));
 			objectsJson.Add(MakeShared<FJsonValueObject>(FJsonValueObject(objectJson)));
+			if(FPaths::FileExists(FPaths::Combine(FPaths::ProjectDir(), TEXT("Binaries"), TEXT("Win64"), FString::Printf(TEXT("UE4-%s-Win64-Shipping.dll"), *mod.Name))))
 			dataJson->SetArrayField(TEXT("objects"), objectsJson);
 
 			FString resultString;
