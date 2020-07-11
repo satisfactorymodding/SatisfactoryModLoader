@@ -260,11 +260,16 @@ void SAlpakaWidget::CookDone(FString result, double runtime, UAlpakitSettings* S
 			dataJson->SetObjectField(TEXT("optional_dependencies"), optionalDependenciesJson);
 			
 			TArray<TSharedPtr<FJsonValue>> objectsJson;
-			TSharedPtr<FJsonObject> objectJson = MakeShared<FJsonObject>(FJsonObject());
-			objectJson->SetStringField(TEXT("type"), TEXT("pak"));
-			objectJson->SetStringField(TEXT("path"), FString::Printf(TEXT("%s.pak"), *pakName));
-			objectsJson.Add(MakeShared<FJsonValueObject>(FJsonValueObject(objectJson)));
-			if(FPaths::FileExists(FPaths::Combine(FPaths::ProjectDir(), TEXT("Binaries"), TEXT("Win64"), FString::Printf(TEXT("UE4-%s-Win64-Shipping.dll"), *mod.Name))))
+			TSharedPtr<FJsonObject> pakObjectJson = MakeShared<FJsonObject>(FJsonObject());
+			pakObjectJson->SetStringField(TEXT("type"), TEXT("pak"));
+			pakObjectJson->SetStringField(TEXT("path"), FString::Printf(TEXT("%s.pak"), *pakName));
+			objectsJson.Add(MakeShared<FJsonValueObject>(FJsonValueObject(pakObjectJson)));
+			if(FPaths::FileExists(FPaths::Combine(FPaths::ProjectDir(), TEXT("Binaries"), TEXT("Win64"), FString::Printf(TEXT("UE4-%s-Win64-Shipping.dll"), *mod.Name)))) {
+				TSharedPtr<FJsonObject> dllObjectJson = MakeShared<FJsonObject>(FJsonObject());
+				dllObjectJson->SetStringField(TEXT("type"), TEXT("sml_mod"));
+				dllObjectJson->SetStringField(TEXT("path"), FString::Printf(TEXT("UE4-%s-Win64-Shipping.dll"), *mod.Name));
+				objectsJson.Add(MakeShared<FJsonValueObject>(FJsonValueObject(dllObjectJson)));
+			}
 			dataJson->SetArrayField(TEXT("objects"), objectsJson);
 
 			FString resultString;
