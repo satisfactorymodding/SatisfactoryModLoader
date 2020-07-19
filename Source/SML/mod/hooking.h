@@ -85,20 +85,21 @@ public:
 template <typename Result, typename... Args>
 struct CallScope<Result(*)(Args...)> {
 public:
-	typedef Result HookType(Args...);
+	// typedef Result HookType(Args...);
 	typedef void HookFuncSig(CallScope<Result(*)(Args...)>&, Args...);
 	typedef std::function<HookFuncSig> HookFunc;
 
+    typedef std::function<Result(Args...)> HookType;
 private:
 	TArray<HookFunc>* functionList;
 	size_t handlerPtr = 0;
-	HookType* function;
+	HookType function;
 	
 	bool forwardCall = true;
 	Result result;
 
 public:
-	CallScope(TArray<HookFunc>* functionList, HookType* function) : functionList(functionList), function(function) {}
+	CallScope(TArray<HookFunc>* functionList, HookType function) : functionList(functionList), function(function) {}
 
 	inline bool shouldForwardCall() {
 		return forwardCall;
@@ -269,7 +270,14 @@ public:
     //Methods which return class/struct/union by value have out pointer inserted
     //as first parameter after this pointer, with all arguments shifted right by 1 for it
     static R* applyCallUserTypeByValue(C* self, R* outReturnValue, A... args) {
-    	ScopeType scope(handlersBefore, reinterpret_cast<R(*)(C*, A...)>(&TrampolineFunctionCall));
+        // Capture the pointer of the return value
+        // so ScopeType does not have to know about that special case
+        auto myTrampoline = [&](C* self_, A... args_) -> R {
+            (reinterpret_cast<R*(*)(C*, R*, A...)>(functionPtr))(self_, outReturnValue, args_...);
+            return *outReturnValue;
+        };
+
+    	ScopeType scope(handlersBefore, myTrampoline);
     	scope(self, args...);
     	for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
     	//We always return outReturnValue, so copy our result to output variable and return it
