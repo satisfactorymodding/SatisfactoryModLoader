@@ -150,7 +150,7 @@ void FModHandler::AttachLoadingHooks() {
 	SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
 		SML::GetModHandler().PreInitializeModActors();
 		SML::Logging::info(TEXT("Finished pre-subsystem-initializing mod actors"));
-	});
+	}); 
 	
 	SUBSCRIBE_METHOD( AGameState::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
 		UWorld* World = gameMode->GetWorld();

@@ -401,26 +401,42 @@ R(* HookInvoker<R(*)(A...), PMF, None>::functionPtr)(A...) = nullptr;
 template <typename R, typename... A, R(*PMF)(A...)>
 bool HookInvoker<R(*)(A...), PMF, None>::bHookInitialized = false;
 
+// Retrieve the HookInvoker we should use
+template <typename TCallable, TCallable Callable, typename TargetClass>
+struct HookInvokerFetcher {
+	typedef HookInvoker<TCallable, Callable, TargetClass> HookInvoker;
+};
+
+// Erase the constness of the method
+// This could cause issue if a method has both const/non-const version
+// For C++ those are two different methods but here we merge them together
+template <typename R, typename C, typename... A, R(C::*PMF)(A...) const, typename TargetClass>
+struct HookInvokerFetcher<R(C::*)(A...) const, PMF, TargetClass> {
+	typedef R(C::*MethodType)(A...);
+	typedef R(C::*OriginalType)(A...) const;
+	typedef HookInvoker<MethodType, (MethodType)PMF, TargetClass> HookInvoker;
+};
+
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(#MethodReference); \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerBefore(Handler);
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::InstallHook(#MethodReference); \
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_METHOD_AFTER(MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(#MethodReference); \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerAfter(Handler);
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::InstallHook(#MethodReference); \
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::addHandlerAfter(Handler);
 
 #define SUBSCRIBE_VIRTUAL_FUNCTION(TargetClass, MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference, TargetClass>::InstallVirtualFunctionHook<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value>(#MethodReference, &MethodReference); \
-HookInvoker<decltype(&MethodReference), &MethodReference, TargetClass>::addHandlerBefore(Handler);
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, TargetClass>::HookInvoker::InstallVirtualFunctionHook<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value>(#MethodReference, &MethodReference); \
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, TargetClass>::HookInvoker::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(TargetClass, MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference, TargetClass>::InstallVirtualFunctionHook<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value>(#MethodReference, &MethodReference); \
-HookInvoker<decltype(&MethodReference), &MethodReference, TargetClass>::addHandlerAfter(Handler);
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, TargetClass>::HookInvoker::InstallVirtualFunctionHook<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value>(#MethodReference, &MethodReference); \
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, TargetClass>::HookInvoker::addHandlerAfter(Handler);
 
 #define SUBSCRIBE_METHOD_MANUAL(MethodName, MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(MethodName); \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerBefore(Handler);
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::InstallHook(MethodName); \
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_METHOD_AFTER_MANUAL(MethodName, MethodReference, Handler) \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::InstallHook(MethodName); \
-HookInvoker<decltype(&MethodReference), &MethodReference, None>::addHandlerAfter(Handler);
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::InstallHook(MethodName); \
+HookInvokerFetcher<decltype(&MethodReference), &MethodReference, None>::HookInvoker::addHandlerAfter(Handler);
