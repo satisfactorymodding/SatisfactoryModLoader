@@ -718,7 +718,6 @@ void SerializeFieldsInternal(UStruct* Struct, const void* Object, const void* De
 
 TSharedPtr<FJsonValue> SerializeStruct(UScriptStruct* StructType, const void* StructValue, FSerializationContext& Context) {
 	const TSharedRef<FJsonObject> Object = MakeShareable(new FJsonObject());
-	SML::Logging::info(TEXT("Serializing struct "), *StructType->GetPathName(), TEXT(" Address "), StructValue);
 	void* DefaultObject = nullptr;
 	if (UUserDefinedStruct* UserDefinedStruct = Cast<UUserDefinedStruct>(StructType)) {
 		DefaultObject = FMemory::Malloc(StructType->GetStructureSize());
@@ -768,7 +767,6 @@ TSharedPtr<FJsonValue> SerializeUObject(const UObject* Object, FSerializationCon
 TSharedPtr<FJsonValue> SerializePropertyValueInternal(const UProperty* TestProperty, const void* Value, FSerializationContext& Context);
 
 TSharedPtr<FJsonValue> SerializePropertyValue(const UProperty* Property, const void* Value, FSerializationContext& Context) {
-	SML::Logging::info(TEXT("Serialize property "), *Property->GetFName().ToString(), TEXT(" of class "), *Property->GetOuter()->GetPathName(), TEXT(" value with type "), *Property->GetClass()->GetName());
 	const UMapProperty* MapProperty = Cast<const UMapProperty>(Property);
 	const USetProperty* SetProperty = Cast<const USetProperty>(Property);
 	const UArrayProperty* ArrayProperty = Cast<const UArrayProperty>(Property);

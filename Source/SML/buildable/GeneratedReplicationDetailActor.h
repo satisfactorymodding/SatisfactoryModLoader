@@ -25,8 +25,7 @@
 
 #define INITIALIZE_INVENTORY_COMPONENT_INNER(InventoryClass, InventoryName, InventoryHandlerName) \
     InventoryName = UFGInventoryLibrary::CreateInventoryComponentOfClass(this, InventoryClass::StaticClass(), TEXT(PREPROCESSOR_TO_STRING(InventoryName))); \
-    InventoryHandlerName = NewObject<UFGReplicationDetailInventoryComponent>(this, TEXT(PREPROCESSOR_TO_STRING(InventoryHandlerName))); \
-    InventoryHandlerName->RegisterComponent(); \
+    InventoryHandlerName = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT(PREPROCESSOR_TO_STRING(InventoryHandlerName))); \
     InventoryHandlerName->SetMainInventoryComponent(InventoryName);
 
 #define INITIALIZE_INVENTORY_COMPONENT(InventoryName, InventoryClass) \
@@ -55,8 +54,6 @@ UCLASS(Abstract)
 class SML_API ABuildableFactory_Replicated : public AFGBuildableFactory {
     GENERATED_BODY()
 public:
-    ABuildableFactory_Replicated();
-    virtual void BeginPlay() override;
     virtual void GetReplicatedInventoryComponents(TMap<FName, struct FReplicatedInventoryProperty>& OutReplicatedProps);
 
     virtual UClass* GetReplicationDetailActorClass() const override;

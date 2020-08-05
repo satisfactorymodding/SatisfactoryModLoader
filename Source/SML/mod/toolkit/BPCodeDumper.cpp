@@ -433,7 +433,6 @@ INSTRUCTION_HANDLER(EX_TextConst)
 		
 	}
 	break;
-
 	case EBlueprintTextLiteralType::LocalizedText:
 	{
 		Result->SetObjectField("SrcStr", Stack.Step(nullptr));

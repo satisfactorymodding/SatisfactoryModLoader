@@ -4,13 +4,6 @@
 #include "FGInventoryLibrary.h"
 #include "UnrealNetwork.h"
 
-ABuildableFactory_Replicated::ABuildableFactory_Replicated() {
-}
-
-void ABuildableFactory_Replicated::BeginPlay() {
-    Super::BeginPlay();
-}
-
 void ABuildableFactory_Replicated::GetReplicatedInventoryComponents(
     TMap<FName, FReplicatedInventoryProperty>& OutReplicatedProps)
 {
