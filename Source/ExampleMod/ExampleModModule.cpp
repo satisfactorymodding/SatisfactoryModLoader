@@ -1,6 +1,4 @@
 #include "ExampleModModule.h"
-#include "mod/blueprint_hooking.h"
-#include "util/Logging.h"
 
 void FExampleModModule::StartupModule() {
 }
