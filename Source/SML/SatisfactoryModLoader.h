@@ -72,17 +72,18 @@ namespace SML {
 
 	/**
 	 * Returns output stream used for global SML log
-	 * throws std::invalid_argument if called too early in the initialization process
+	 * returns nullptr if called too early in the initialization process
 	 */
-	SML_API extern std::wofstream& GetLogFile();
+	SML_API extern std::wofstream* GetLogFile();
 
 	/**
 	 * Retrieves mod handler global object
 	 * It manages mod loading and can be used to retrieve information
 	 * about loading progress and active mods
 	 * Use it to enable optional features depending on the mods installed
+	 * returns nullptr if called too early or in the editor (no mod loading is performed in the editor)
 	 */
-	SML_API extern FModHandler& GetModHandler();
+	SML_API extern FModHandler* GetModHandler();
 
 	/**
 	 * Retrieves active SML configuration object
@@ -112,5 +113,5 @@ namespace SML {
 	SML_API extern FString GetCacheDirectory();
 
 	/** @deprectated Internal usage only */
-	BootstrapAccessors& GetBootstrapperAccessors();
+	BootstrapAccessors* GetBootstrapperAccessors();
 };

@@ -11,6 +11,7 @@
 #include "Engine/ComponentDelegateBinding.h"
 #include "WidgetAnimationDelegateBinding.h"
 #include "BPCodeDumper.h"
+#include "ConsoleManager.h"
 #include "toolkit/PropertyTypeHandler.h"
 
 #define DEFAULT_ITERATOR_FLAGS EFieldIteratorFlags::IncludeSuper, EFieldIteratorFlags::IncludeDeprecated, EFieldIteratorFlags::IncludeInterfaces
@@ -25,7 +26,7 @@ struct FSerializationContext {
 	uint32 CurrentObjectIndex = 1;
 };
 
-bool DumpSingleFile(TSharedRef<FJsonObject> ResultJson, FString Path, FString Folder);
+bool DumpSingleFile(const TSharedRef<FJsonObject>& ResultJson, const FString& ObjectPath, const TCHAR* FolderName);
 
 //Performs property serialization. Defined below.
 TSharedPtr<FJsonValue> SerializePropertyValue(const UProperty* TestProperty, const void* Value, FSerializationContext& Context);
@@ -217,7 +218,7 @@ TSharedRef<FJsonObject> dumpUserDefinedEnum(UUserDefinedEnum* definedEnum) {
 		}
 	}
 	ResultJson->SetArrayField(TEXT("Values"), enumValues);
-	DumpSingleFile(ResultJson, definedEnum->GetPathName(), "Enums");
+	DumpSingleFile(ResultJson, definedEnum->GetPathName(), TEXT("Enums"));
 	return ResultJson;
 }
 
@@ -241,7 +242,7 @@ TSharedRef<FJsonObject> dumpUserDefinedStruct(UUserDefinedStruct* definedStruct)
 	}
 	FMemory::Free(allocatedDefaultInstance);
 	ResultJson->SetArrayField(TEXT("Fields"), fields);
-	DumpSingleFile(ResultJson, definedStruct->GetPathName(), "Structs");
+	DumpSingleFile(ResultJson, definedStruct->GetPathName(), TEXT("Structs"));
 	return ResultJson;
 }
 
@@ -554,7 +555,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 	if (BlueprintDelegateBindings.Num() > 0) {
 		ResultJson->SetArrayField(TEXT("DynamicBindings"), BlueprintDelegateBindings);
 	}
-	DumpSingleFile(ResultJson, GeneratedClass->GetPathName(), "Blueprints");
+	DumpSingleFile(ResultJson, GeneratedClass->GetPathName(), TEXT("Blueprints"));
 	return ResultJson;
 }
 
@@ -578,25 +579,32 @@ TSharedRef<FJsonObject> dumpClassContent(UClass* NativeClass) {
 	if (Fields.Num() > 0) {
 		ResultJson->SetArrayField(TEXT("Fields"), Fields);
 	}
-	DumpSingleFile(ResultJson, NativeClass->GetPathName(), "Class");
+	DumpSingleFile(ResultJson, NativeClass->GetPathName(), TEXT("Classes"));
 	return ResultJson;
 }
 
-bool DumpSingleFile(TSharedRef<FJsonObject> ResultJson, FString Path, FString Folder)
-{
-	FString right;
-	FString left;
-	Path.Split("/", &left, &right, ESearchCase::Type::IgnoreCase, ESearchDir::Type::FromEnd);
-	if (right != "")
-	{
-		const FString& resultPath = SML::GetConfigDirectory() / "BPdump" / Folder / *left / "/" / right.Append(".json");
-		FString resultString;
-		TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
-		FJsonSerializer Serializer;
-		Serializer.Serialize(ResultJson, writer);
-		return FFileHelper::SaveStringToFile(resultString, *resultPath, FFileHelper::EEncodingOptions::ForceUTF8);
-	}
-	return false;
+FString GetBaseAssetDumpPath() {
+	return FPaths::Combine(SML::GetConfigDirectory(), TEXT("BlueprintDump"));
+}
+
+bool DumpSingleFile(const TSharedRef<FJsonObject>& ResultJson, const FString& ObjectPath, const TCHAR* FolderName) {
+	int32 LastIndexOfSlash;
+	ObjectPath.FindLastChar(TEXT('/'), LastIndexOfSlash);
+	checkf(LastIndexOfSlash != INDEX_NONE, TEXT("Object Name has no first path: %s"), *ObjectPath);
+	//ObjectPath is /Game/FactoryGame/Example/ExampleObject.ExampleObject_C or /Script/Engine.Blueprint
+	//So first slash is always path prefix, and last is target folder
+	const FString FolderPath = FPaths::Combine(GetBaseAssetDumpPath(), FolderName, ObjectPath.Mid(1, LastIndexOfSlash));
+	const FString FileName = ObjectPath.Mid(LastIndexOfSlash + 1).Append(".json");
+	//Compute resulting path now
+	const FString ResultPath = FPaths::Combine(FolderPath, FileName);
+	//Serialize JSON now into string
+	FString ResultJsonString;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&ResultJsonString);
+	FJsonSerializer Serializer;
+	Serializer.Serialize(ResultJson, Writer);
+	//Save file onto the disk and return true if it was successful
+	FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*FolderPath);
+	return FFileHelper::SaveStringToFile(ResultJsonString, *ResultPath, FFileHelper::EEncodingOptions::ForceUTF8);
 }
 
 FString CreateClassPathFromPackageName(const FString& PackagePath) {
@@ -607,8 +615,11 @@ FString CreateClassPathFromPackageName(const FString& PackagePath) {
 	return FString::Printf(TEXT("%s.%s_C"), *PackagePath, *ResultFileName);
 }
 
-void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileName) {
-	SML::Logging::info(TEXT("Dumping assets on path "), *rootPath.ToString(), TEXT(" to json file "), *fileName);
+void SML::DumpSatisfactoryAssets() {
+	const FString BlueprintDumpFolder = GetBaseAssetDumpPath();
+	FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*BlueprintDumpFolder);
+	const FString CombinedJsonPath = FPaths::Combine(BlueprintDumpFolder, TEXT("FGAssetsDump.json"));
+	SML::Logging::info(TEXT("Dumping game assets into "), *CombinedJsonPath);
 	TArray<TSharedPtr<FJsonValue>> blueprints;
 	TArray<TSharedPtr<FJsonValue>> userDefinedStructs;
 	TArray<TSharedPtr<FJsonValue>> userDefinedEnums;
@@ -656,39 +667,83 @@ void dumpSatisfactoryAssetsInternal(const FName& rootPath, const FString& fileNa
 		}
 	}
 
-	for (TObjectIterator<UClass> ClassIt; ClassIt; ++ClassIt)
-	{
+	for (TObjectIterator<UClass> ClassIt; ClassIt; ++ClassIt) {
 		UClass* Class = *ClassIt;
-
 		// Only interested in native C++ classes
-		if (!Class->IsNative())
-		{
+		if (!Class->IsNative()) {
 			continue;
 		}
-
 		if (Class->GetPathName().StartsWith(TEXT("/Script/FactoryGame."))) {
 			const TSharedRef<FJsonObject>& classJson = dumpClassContent(Class);
 			classes.Add(MakeShareable(new FJsonValueObject(classJson)));
 		}
 	}
 
-	TSharedRef<FJsonObject> resultObject = MakeShareable(new FJsonObject());
-	resultObject->SetArrayField(TEXT("UserDefinedEnums"), userDefinedEnums);
-	resultObject->SetArrayField(TEXT("UserDefinedStructs"), userDefinedStructs);
-	resultObject->SetArrayField(TEXT("Blueprints"), blueprints);
-	resultObject->SetArrayField(TEXT("Classes"), classes);
+	TSharedRef<FJsonObject> ResultObject = MakeShareable(new FJsonObject());
+	ResultObject->SetArrayField(TEXT("UserDefinedEnums"), userDefinedEnums);
+	ResultObject->SetArrayField(TEXT("UserDefinedStructs"), userDefinedStructs);
+	ResultObject->SetArrayField(TEXT("Blueprints"), blueprints);
+	ResultObject->SetArrayField(TEXT("Classes"), classes);
 
-	const FString& resultPath = SML::GetConfigDirectory() / *fileName;
-	FString resultString;
-	TSharedRef<TJsonWriter<>> writer = TJsonWriterFactory<>::Create(&resultString);
+	FString ResultString;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&ResultString);
 	FJsonSerializer Serializer;
-	Serializer.Serialize(resultObject, writer);
-	FFileHelper::SaveStringToFile(resultString, *resultPath, FFileHelper::EEncodingOptions::ForceUTF8);
+	Serializer.Serialize(ResultObject, Writer);
+	FFileHelper::SaveStringToFile(ResultString, *CombinedJsonPath, FFileHelper::EEncodingOptions::ForceUTF8);
 	SML::Logging::info(TEXT("Dumping finished!"));
 }
 
-void SML::dumpSatisfactoryAssets(const FName& rootPath, const FString& fileName) {
-	dumpSatisfactoryAssetsInternal(rootPath, fileName);
+bool SML::DumpSingleAssetObject(UObject* ObjectToDump) {
+	if (ObjectToDump->IsA(UUserDefinedStruct::StaticClass())) {
+		UUserDefinedStruct* definedStruct = Cast<UUserDefinedStruct>(ObjectToDump);
+		if (definedStruct != nullptr) {
+			dumpUserDefinedStruct(definedStruct);
+		}
+	} else if (ObjectToDump->IsA(UUserDefinedEnum::StaticClass())) {
+		UUserDefinedEnum* definedEnum = Cast<UUserDefinedEnum>(ObjectToDump);
+		if (definedEnum != nullptr) {
+			dumpUserDefinedEnum(definedEnum);
+			return true;
+		}
+	} else if (ObjectToDump->IsA(UBlueprintGeneratedClass::StaticClass())) {
+		UBlueprintGeneratedClass* generatedClass = Cast<UBlueprintGeneratedClass>(ObjectToDump);
+		if (generatedClass != nullptr) {
+			dumpBlueprintContent(generatedClass);
+			return true;
+		}
+	} else if (ObjectToDump->IsA(UClass::StaticClass())) {
+		UClass* ObjectClass = Cast<UClass>(ObjectToDump);
+		if (ObjectClass != nullptr) {
+			dumpClassContent(ObjectClass);
+			return true;
+		}
+	} 
+	return false;
+}
+
+void DumpGameAssetConsoleCommand(const TArray<FString>& Arguments) {
+	if (Arguments.Num() != 1) {
+		SML::Logging::info(TEXT("Usage: DumpGameAsset <AssetPath>"));
+		return;
+	}
+	const FString AssetPath = Arguments[0];
+	UObject* ObjectToDump = StaticLoadObject(UObject::StaticClass(), NULL, *AssetPath);
+	if (ObjectToDump == nullptr) {
+		SML::Logging::info(TEXT("Object with provided path is not found"));
+		return;
+	}
+	const bool bResult = SML::DumpSingleAssetObject(ObjectToDump);
+	if (!bResult) {
+		SML::Logging::info(TEXT("Object with provided path cannot be dumped: Unsupported type. Only Classes/Structs/Blueprints/Enums are supported"));
+		return;
+	}
+	SML::Logging::info(TEXT("Asset dumped successfully with path equal to it's name in configs game directory"));
+}
+
+void SML::RegisterConsoleCommands() {
+	FConsoleCommandWithArgsDelegate CommandDelegate;
+	CommandDelegate.BindStatic(DumpGameAssetConsoleCommand);
+	FConsoleManager::Get().RegisterConsoleCommand(TEXT("DumpGameAsset"), TEXT("DumpGameAsset <AssetPath>"), CommandDelegate);
 }
 
 //Note that CDO's don't call this method, they call SerializePropertyValue directly,

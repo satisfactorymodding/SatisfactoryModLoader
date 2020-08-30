@@ -87,7 +87,8 @@ void UItemTooltipHandler::RegisterGlobalTooltipProvider(UObject* TooltipProvider
         //Pin UObject implementing interface so it won't be garbage collected
         TooltipProvider->AddToRoot();
         ISMLItemTooltipProvider* Provider = static_cast<ISMLItemTooltipProvider*>(InterfaceAddress);
-        GlobalTooltipProviders.Add(Provider);
+        //Avoid adding same tooltip provider twice
+        GlobalTooltipProviders.AddUnique(Provider);
     }
 }
 

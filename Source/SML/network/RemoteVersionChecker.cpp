@@ -10,7 +10,7 @@ void ValidateSMLInitData(UNetConnection* Connection, USMLConnectionMetadata* Met
         UModNetworkHandler::CloseWithFailureMessage(Connection, TEXT("This server is running Satisfactory Mod Loader, and your client doesn't have it installed."));
         return;
     }
-    FModHandler& ModHandler = SML::GetModHandler();
+    FModHandler& ModHandler = *SML::GetModHandler();
     TArray<FString> ClientMissingMods;
     for (const FString& Modid : ModHandler.GetLoadedMods()) {
         const FModInfo& Info = ModHandler.GetLoadedMod(Modid).ModInfo;
@@ -24,7 +24,7 @@ void ValidateSMLInitData(UNetConnection* Connection, USMLConnectionMetadata* Met
         }
         const FVersionRange& RemoteVersion = Info.RemoteVersion.RemoteVersion;
         if (!RemoteVersion.Matches(*ClientVersion)) {
-            const FString VersionText = FString::Printf(TEXT("required: %s, client: %s"), *RemoteVersion.String(), *ClientVersion->String());
+            const FString VersionText = FString::Printf(TEXT("required: %s, client: %s"), *RemoteVersion.ToString(), *ClientVersion->ToString());
             ClientMissingMods.Add(FString::Printf(TEXT("%s: %s"), *ModName, *VersionText));
         }
     }
@@ -39,10 +39,10 @@ FString SerializeModInitData() {
     TSharedRef<FJsonObject> MetadataObject = MakeShareable(new FJsonObject());
     
     TSharedRef<FJsonObject> ModListObject = MakeShareable(new FJsonObject());
-    FModHandler& ModHandler = SML::GetModHandler();
+    FModHandler& ModHandler = *SML::GetModHandler();
     for (const FString& Modid : ModHandler.GetLoadedMods()) {
         const FModInfo& Info = ModHandler.GetLoadedMod(Modid).ModInfo;
-        ModListObject->SetStringField(Modid, Info.Version.String());
+        ModListObject->SetStringField(Modid, Info.Version.ToString());
     }
     
     MetadataObject->SetObjectField(TEXT("ModList"), ModListObject);
@@ -62,8 +62,12 @@ bool HandleModInitData(USMLConnectionMetadata* Metadata, const FString& Data) {
     }
     const TSharedPtr<FJsonObject>& ModList = MetadataObject->GetObjectField(TEXT("ModList"));
     for (const auto& Pair : ModList->Values) {
-        FVersion ModVersion = FVersion(Pair.Value->AsString());
-        Metadata->InstalledClientMods.Add(Pair.Key, ModVersion);
+        FVersion ModVersion = FVersion{};
+        FString FailureReason;
+        const bool bParseSuccess = ModVersion.ParseVersion(Pair.Value->AsString(), FailureReason);
+        if (bParseSuccess) {
+            Metadata->InstalledClientMods.Add(Pair.Key, ModVersion);
+        }
     }
     return true;
 }
@@ -73,7 +77,7 @@ void CopyDataToPlayerComponent(USMLPlayerComponent* Component, USMLConnectionMet
     Component->ClientInstalledMods.Empty();
     if (Metadata == nullptr) {
         //This is a local player, so installed mods are our local mod list
-        FModHandler& ModHandler = SML::GetModHandler();
+        FModHandler& ModHandler = *SML::GetModHandler();
         for (const FString& Modid : ModHandler.GetLoadedMods()) {
             const FModInfo& Info = ModHandler.GetLoadedMod(Modid).ModInfo;
             Component->ClientInstalledMods.Add(Modid, Info.Version);

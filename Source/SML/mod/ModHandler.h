@@ -2,9 +2,10 @@
 
 #include "mod/ModInfo.h"
 #include "CoreTypes.h"
-#include "actor/SMLInitMod.h"
-#include "actor/SMLInitMenu.h"
 
+class AInitGameWorld;
+class AInitMenuWorld;
+class UInitGameInstance;
 class AFGPlayerController;
 class UClass;
 class IModuleInterface;
@@ -33,9 +34,10 @@ struct FModContainer {
 };
 
 struct FModPakLoadEntry {
-	FString Modid;
-	TSubclassOf<ASMLInitMod> ModInitClass;
-	TSubclassOf<ASMLInitMenu> MenuInitClass;
+	FString ModReference;
+	TSubclassOf<UInitGameInstance> InitGameInstanceClass;
+	TSubclassOf<AInitGameWorld> InitGameWorldClass;
+	TSubclassOf<AInitMenuWorld> InitMenuWorldClass;
 };
 
 /**

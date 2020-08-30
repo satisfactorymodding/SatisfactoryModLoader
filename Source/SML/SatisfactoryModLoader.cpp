@@ -20,6 +20,7 @@
 #include "Misc/App.h"
 #include "util/Internal.h"
 #include "CoreDelegates.h"
+#include "CoreRedirects.h"
 #include "FGGameMode.h"
 #include "WindowsPlatformCrashContext.h"
 #include "mod/ModHandler.h"
@@ -31,7 +32,13 @@
 #include "mod/ModSubsystems.h"
 #include "tooltip/ItemTooltipHandler.h"
 #include "network/NetworkHandler.h"
+#include "keybind/ModKeyBindRegistry.h"
 #include "util/FuncNames.h"
+
+namespace SML {
+	/** Performs basic initialization of mod loader for both editor and shipping if it's not initialized already */
+	void EnsureModLoaderIsInitialized(const FString& GameRootDirectory);
+};
 
 bool CheckGameVersion(const long TargetVersion) {
 	const FString& BuildVersion = FString(FApp::GetBuildVersion());
@@ -51,7 +58,7 @@ bool CheckGameVersion(const long TargetVersion) {
 
 bool CheckBootstrapperVersion(const FVersion& Target, const FVersion& Actual) {
 	if (Actual.Compare(Target) < 0) {
-		SML::Logging::fatal(*FString::Printf(TEXT("Bootstrapper version check failed: Bootstrapper version %s is outdated. SML requires at least %s"), *Actual.String(), *Target.String()));
+		SML::Logging::fatal(*FString::Printf(TEXT("Bootstrapper version check failed: Bootstrapper version %s is outdated. SML requires at least %s"), *Actual.ToString(), *Target.ToString()));
 		return false;
 	}
 	return true;
@@ -87,15 +94,15 @@ extern void GRegisterBuildMenuHooks();
 extern void GRegisterOfflinePlayHandler();
 
 namespace SML {
-	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.2.1");
+	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.3.0");
 	
 	//version of the SML mod loader, as specified in the SML.h
-	static FVersion* modLoaderVersion = new FVersion(modLoaderVersionString);
+	static FVersion* modLoaderVersion;
 
 	extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
 
 	//target (minimum) version of the bootstrapper we are capable running on
-	static FVersion* targetBootstrapperVersion = new FVersion(targetBootstrapperVersionString);
+	static FVersion* targetBootstrapperVersion;
 
 	//version of the bootstrapper we are running on
 	static FVersion* bootstrapperVersion;
@@ -116,7 +123,7 @@ namespace SML {
 	static FSMLConfiguration* activeConfiguration;
 
 	//Pointer to the SML log file
-	static std::wofstream* logOutputStream;
+	static std::wofstream* logOutputStream = nullptr;
 
 	//Holds pointers to the bootstrapper functions used for loading modules
 	static BootstrapAccessors* bootstrapAccessors;
@@ -129,43 +136,89 @@ namespace SML {
 	}
 
 	void PostInitializeSML();
-
+	void InitializeBasicModLoader(const FString& GameRootDirectory);
 	void AppendSymbolSearchPaths(FString& OutSearchPaths);
 	void RegisterCrashContextHooks();
+
+	void EnsureModLoaderIsInitialized(const FString& GameRootDirectory) {
+		static volatile bool bIsModLoaderInitialized = false;
+		if (!bIsModLoaderInitialized) {
+			InitializeBasicModLoader(GameRootDirectory);
+			bIsModLoaderInitialized = true;
+		}
+	}
+
+	void PostInitializeBasicModLoader();
+
+	//Performs basic initialization of global variables both in editor and shipping
+	//Can be called on various phases of game setup so be careful at what you do
+	void InitializeBasicModLoader(const FString& GameRootDirectory) {
+		FString OutFailureReason;
+		targetBootstrapperVersion = new FVersion();
+		targetBootstrapperVersion->ParseVersion(targetBootstrapperVersionString, OutFailureReason);
+		modLoaderVersion = new FVersion();
+		modLoaderVersion->ParseVersion(modLoaderVersionString, OutFailureReason);
+
+		logOutputStream = new std::wofstream();
+		logOutputStream->open(*(GameRootDirectory / logFileName), std::ios_base::out | std::ios_base::trunc);
+
+		SML::Logging::info(TEXT("Log System Initialized!"));
+		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), *modLoaderVersion->ToString());
+		
+		rootGamePath = new FString(GameRootDirectory);
+		SML::Logging::info(TEXT("Game root directory: "), **rootGamePath);
+
+		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
+		PlatformFile.CreateDirectoryTree(*GetModDirectory());
+		PlatformFile.CreateDirectoryTree(*GetConfigDirectory());
+		PlatformFile.CreateDirectoryTree(*GetCacheDirectory());
+
+		const TSharedRef<FJsonObject>& configJson = ReadModConfig(TEXT("SML"), CreateConfigDefaults());
+		activeConfiguration = new FSMLConfiguration;
+		ParseConfig(configJson, *activeConfiguration);
+		SML::Logging::info(TEXT("Basic Initialization Done!"));
+
+		if (GEngine != NULL && GEngine->IsInitialized()) {
+			//Engine is already initialized, call post initialize directly
+			PostInitializeBasicModLoader();
+		} else {
+			//Engine is not initialized yet, subscribe to post engine init
+			FCoreDelegates::OnPostEngineInit.AddStatic(PostInitializeBasicModLoader);
+		}
+	}
+
+	//Called both in editor and in shipping to finish basic mod loader initialization
+	void PostInitializeBasicModLoader() {
+		//Register SML InitMod and InitMenu redirects
+		TArray<FCoreRedirect> InitModRedirects;
+		InitModRedirects.Add(FCoreRedirect{ECoreRedirectFlags::Type_Class, TEXT("/Script/SML.SMLInitMenu"), TEXT("/Script/SML.InitMenuWorld")});
+		InitModRedirects.Add(FCoreRedirect{ECoreRedirectFlags::Type_Class, TEXT("/Script/SML.SMLInitMod"), TEXT("/Script/SML.InitGameWorld")});
+		FCoreRedirects::AddRedirectList(InitModRedirects, TEXT("SMLInitModRedirects"));
+	}
 	
 	//called by a bootstrapper off the engine thread during process initialization
 	//you should not access engine at that point since for now no engine code was executed
 	void BootstrapSML(BootstrapAccessors& accessors) {
 		bootstrapAccessors = new BootstrapAccessors(accessors);
-		logOutputStream = new std::wofstream();
-		logOutputStream->open(*(FString(accessors.gameRootDirectory) / logFileName), std::ios_base::out | std::ios_base::trunc);
+		//Perform basic initialization using root directory provided by bootstrapper
+		const FString BootstrapperRootDirectory = accessors.gameRootDirectory;
+		EnsureModLoaderIsInitialized(BootstrapperRootDirectory);
 
-		SML::Logging::info(TEXT("Log System Initialized!"));
-		SML::Logging::info(TEXT("Constructing SatisfactoryModLoader v"), *modLoaderVersion->String());
-		bootstrapperVersion = new FVersion(accessors.version);
+		//Check bootstrapper and game versions, not really actual in editor, so not in basic initialize
+		FString OutFailureReason;
+		bootstrapperVersion = new FVersion();
+		bootstrapperVersion->ParseVersion(accessors.version, OutFailureReason);
 		
-		rootGamePath = new FString(accessors.gameRootDirectory);
-		SML::Logging::info(TEXT("Game root directory: "), **rootGamePath);
-
-		IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-
-		PlatformFile.CreateDirectoryTree(*GetModDirectory());
-		PlatformFile.CreateDirectoryTree(*GetConfigDirectory());
-		PlatformFile.CreateDirectoryTree(*GetCacheDirectory());
-
 		if (!CheckBootstrapperVersion(*targetBootstrapperVersion, *bootstrapperVersion)) {
 			SML::ShutdownEngine(TEXT("Incompatible bootstrapper version."));
 		}
 		if (!CheckGameVersion(targetGameVersion)) {
 			SML::ShutdownEngine(TEXT("Game version check failed."));
 		}
-		
-		const TSharedRef<FJsonObject>& configJson = ReadModConfig(TEXT("SML"), CreateConfigDefaults());
-		activeConfiguration = new FSMLConfiguration;
-		ParseConfig(configJson, *activeConfiguration);
-
+		//Initialize console if required
 		InitConsole();
 
+		//Initialize mod loading in shipping
 		modHandlerPtr = new FModHandler();
 		SML::Logging::info(TEXT("Performing mod discovery"));
 		modHandlerPtr->DiscoverMods();
@@ -177,6 +230,7 @@ namespace SML {
 		USMLPlayerComponent::Register();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
+		//Load DLL mods very early for UObjects stuff to get registered
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Construction phase finished!"));
 		
@@ -196,12 +250,12 @@ namespace SML {
 		SUBSCRIBE_METHOD_AFTER_MANUAL("FGenericCrashContext::AddPortableCallStack", FGenericCrashContextProto::AddPortableCallStack, [](void* ProtoContext) {
             FGenericCrashContext* Context = static_cast<FGenericCrashContext*>(ProtoContext);
             BeginCrashReportSection(Context, TEXT("ModdingProperties"));
-            Context->AddCrashProperty(TEXT("BootstrapperVersion"), *GetBootstrapperVersion().String());
-            Context->AddCrashProperty(TEXT("ModLoaderVersion"), *GetModLoaderVersion().String());
+            Context->AddCrashProperty(TEXT("BootstrapperVersion"), *GetBootstrapperVersion().ToString());
+            Context->AddCrashProperty(TEXT("ModLoaderVersion"), *GetModLoaderVersion().ToString());
             BeginCrashReportSection(Context, TEXT("LoadedMods"));
-            const FModHandler& ModHandler = GetModHandler();
+            const FModHandler& ModHandler = *GetModHandler();
             for (const FString& ModId : ModHandler.GetLoadedMods()) {
-                FString VersionString = ModHandler.GetLoadedMod(ModId).ModInfo.Version.String();
+                FString VersionString = ModHandler.GetLoadedMod(ModId).ModInfo.Version.ToString();
                 BeginCrashReportSection(Context, TEXT("Mod"));
                 Context->AddCrashProperty(TEXT("ModReference"), *ModId);
                 Context->AddCrashProperty(TEXT("Version"), *VersionString);
@@ -238,10 +292,11 @@ namespace SML {
 	//to load modules, mount paks and access most of the engine systems here
 	//however note that level could still be not loaded at that moment
 	void PostInitializeSML() {
-
+		SML::RegisterConsoleCommands();
+		
 		if (GetSmlConfig().bDumpGameAssets && GetSmlConfig().bDevelopmentMode) {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
-			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
+			SML::DumpSatisfactoryAssets();
 		}
 
 		SML::Logging::info(TEXT("Loading Mods..."));
@@ -251,7 +306,7 @@ namespace SML {
 
 		if (GetSmlConfig().bDumpGameAssets && !GetSmlConfig().bDevelopmentMode) {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
-			SML::dumpSatisfactoryAssets(TEXT("/Game/FactoryGame/"), TEXT("FGBlueprints.json"));
+			SML::DumpSatisfactoryAssets();
 		}
 
 		//Blueprint hooks are registered here, after engine initialization
@@ -260,52 +315,36 @@ namespace SML {
 		GRegisterMainMenuHooks();
 		UItemTooltipHandler::RegisterHooking();
 		UModNetworkHandler::Register();
+		UModKeyBindRegistry::RegisterHooking();
 		FRemoteVersionChecker::Register();
 	}
 
 	SML_API FString GetModDirectory() {
-#if WITH_EDITOR
-		return FPaths::RootDir() / TEXT("mods");
-#else
 		return *rootGamePath / TEXT("mods");
-#endif
 	}
 
 	SML_API FString GetConfigDirectory() {
-#if WITH_EDITOR
-		return FPaths::RootDir() / TEXT("configs");
-#else
 		return *rootGamePath / TEXT("configs");
-#endif
 	}
 
 	SML_API FString GetCacheDirectory() {
-#if WITH_EDITOR
-		return FPaths::RootDir() / TEXT(".cache");
-#else
 		return *rootGamePath / TEXT(".cache");
-#endif
 	}
 
-	BootstrapAccessors& GetBootstrapperAccessors() {
-		return *bootstrapAccessors;
+	BootstrapAccessors* GetBootstrapperAccessors() {
+		return bootstrapAccessors;
 	}
 
 	SML_API const SML::FSMLConfiguration& GetSmlConfig() {
-#if WITH_EDITOR
-		activeConfiguration = new SML::FSMLConfiguration();
 		return *activeConfiguration;
-#else
-		return *activeConfiguration;
-#endif
 	}
 
-	SML_API FModHandler& GetModHandler() {
-		return *modHandlerPtr;
+	SML_API FModHandler* GetModHandler() {
+		return modHandlerPtr;
 	}
 
-	SML_API std::wofstream& GetLogFile() {
-		return *logOutputStream;
+	SML_API std::wofstream* GetLogFile() {
+		return logOutputStream;
 	}
 
 	SML_API const FVersion& GetModLoaderVersion() {

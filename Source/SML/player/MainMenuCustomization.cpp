@@ -7,12 +7,12 @@
 #include "util/ReflectionHelper.h"
 
 TArray<FString> CreateMenuInfoText() {
-	const FModHandler& modHandler = SML::GetModHandler();
+	const FModHandler& modHandler = *SML::GetModHandler();
 	const int32 modsLoaded = modHandler.GetLoadedMods().Num();
 	TArray<FString> resultText;
-	resultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *SML::GetModLoaderVersion().String()));
+	resultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *SML::GetModLoaderVersion().ToString()));
 	resultText.Add(FString::Printf(TEXT("%lu mod(s) loaded"), modsLoaded));
-	resultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), *SML::GetBootstrapperVersion().String()));
+	resultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), *SML::GetBootstrapperVersion().ToString()));
 	if (SML::GetSmlConfig().bDevelopmentMode) {
 		resultText.Add(TEXT("Development mode enabled."));
 	}

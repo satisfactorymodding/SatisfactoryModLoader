@@ -39,9 +39,9 @@ AInfoCommandInstance::AInfoCommandInstance() {
 }
 
 EExecutionStatus AInfoCommandInstance::ExecuteCommand_Implementation(UCommandSender* Sender, const TArray<FString>& Arguments, const FString& Label) {
-	Sender->SendChatMessage(FString::Printf(TEXT("Running SML v.%s"), *SML::GetModLoaderVersion().String()));
-	Sender->SendChatMessage(FString::Printf(TEXT("Powered by Bootstrapper v.%s"), *SML::GetBootstrapperVersion().String()));
-	FModHandler& ModHandler = SML::GetModHandler();
+	Sender->SendChatMessage(FString::Printf(TEXT("Running SML v.%s"), *SML::GetModLoaderVersion().ToString()));
+	Sender->SendChatMessage(FString::Printf(TEXT("Powered by Bootstrapper v.%s"), *SML::GetBootstrapperVersion().ToString()));
+	FModHandler& ModHandler = *SML::GetModHandler();
 	auto LoadedModsVector = ModHandler.GetLoadedMods();
 	TArray<FString> LoadedMods;
 	for (const FString& LoadedModId : LoadedModsVector) {

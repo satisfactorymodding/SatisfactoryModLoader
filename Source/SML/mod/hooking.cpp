@@ -59,7 +59,7 @@ bool HookStandardFunction(const FString& SymbolId, void* OriginalFunctionPointer
 FString HookVirtualFunction(void* ConstructorAddress, void* HookFunctionAddress, void** OutTrampolineFunction, const MemberFunctionPointerInfo& SearchInfo) {
 	if (!InstalledConstructorThunks.Contains(ConstructorAddress)) {
 		//No hook installed on this constructor, install one and populate map
-		const ConstructorHookThunk NewThunk = SML::GetBootstrapperAccessors().CreateConstructorHookThunk();
+		const ConstructorHookThunk NewThunk = SML::GetBootstrapperAccessors()->CreateConstructorHookThunk();
 		const FString ConstructorSymbolId = FString::Printf(TEXT("ConstructorThunk_%llu"), (uint64_t) ConstructorAddress);
 		HookStandardFunction(ConstructorSymbolId, ConstructorAddress, NewThunk.GeneratedThunkAddress, NewThunk.OutTrampolineAddress);
 		InstalledConstructorThunks.Add(ConstructorAddress, ConstructorHookInfoHolder{NewThunk});
@@ -67,7 +67,7 @@ FString HookVirtualFunction(void* ConstructorAddress, void* HookFunctionAddress,
 	}
 	
 	ConstructorHookInfoHolder& InfoHolder = InstalledConstructorThunks.FindChecked(ConstructorAddress);
-	const MemberFunctionPointerDigestInfo DigestInfo = SML::GetBootstrapperAccessors().DigestMemberFunctionPointer(SearchInfo);
+	const MemberFunctionPointerDigestInfo DigestInfo = SML::GetBootstrapperAccessors()->DigestMemberFunctionPointer(SearchInfo);
 	FString SymbolId = FString::Printf(TEXT("VirtualFunction_Constructor_%llu_Offset_%s"), (uint64) ConstructorAddress, DigestInfo.UniqueName.String);
 	DigestInfo.UniqueName.Free();
 
@@ -80,7 +80,7 @@ FString HookVirtualFunction(void* ConstructorAddress, void* HookFunctionAddress,
 		VirtualFunctionHookInfo.PointerInfo = SearchInfo;
 		VirtualFunctionHookInfo.FunctionToCallInstead = HookFunctionAddress;
 		VirtualFunctionHookInfo.OutOriginalFunctionPtr = OutTrampolineFunction;
-		SML::GetBootstrapperAccessors().AddConstructorHook(InfoHolder.ConstructorHookThunk, VirtualFunctionHookInfo);
+		SML::GetBootstrapperAccessors()->AddConstructorHook(InfoHolder.ConstructorHookThunk, VirtualFunctionHookInfo);
 		SML::Logging::info(TEXT("Hooking virtual function for constructor at "), ConstructorAddress, TEXT(" with name "), *SymbolId, TEXT(", Member Function Pointer Size: "), SearchInfo.MemberFunctionPointerSize);
 		InfoHolder.AlreadyHookedFunctions.Add(SymbolId);
 	}
@@ -99,7 +99,7 @@ SML_API FString RegisterVirtualHookFunction(const VirtualFunctionOverrideInfo& S
 	const FString ConstructorName = FString::Printf(TEXT("%s::%s"), *ClassName, *ConstructorFunctionName);
 	//Resolve constructor symbol
 	SML::Logging::info(*FString::Printf(TEXT("Hooking virtual function %s of class %s"), *SearchInfo.SymbolSearchName, *SearchInfo.ClassTypeName));
-	const SymbolDigestInfo DigestInfo = SML::GetBootstrapperAccessors().DigestGameSymbol(*ConstructorName);
+	const SymbolDigestInfo DigestInfo = SML::GetBootstrapperAccessors()->DigestGameSymbol(*ConstructorName);
 	if (DigestInfo.bSymbolNotFound || DigestInfo.bSymbolOptimizedAway) {
 		SML::Logging::fatal(*FString::Printf(TEXT("Hooking virtual function symbol %s failed: class constructor %s not found in executable"), *SymbolSearchName, *ConstructorName));
 	}
@@ -114,7 +114,7 @@ SML_API FString RegisterVirtualHookFunction(const VirtualFunctionOverrideInfo& S
 }
 
 SML_API FString RegisterHookFunction(const FString& SymbolSearchName, void* HookFunctionPointer, void** OutTrampolineFunction) {
-	const SymbolDigestInfo DigestInfo = SML::GetBootstrapperAccessors().DigestGameSymbol(*SymbolSearchName);
+	const SymbolDigestInfo DigestInfo = SML::GetBootstrapperAccessors()->DigestGameSymbol(*SymbolSearchName);
 	SML::Logging::info(*FString::Printf(TEXT("Hooking symbol with search name %s"), *SymbolSearchName));
 	if (DigestInfo.bSymbolNotFound) {
 		SML::Logging::fatal(*FString::Printf(TEXT("Hooking symbol %s failed: symbol not found in game executable"), *SymbolSearchName));

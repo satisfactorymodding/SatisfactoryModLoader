@@ -13,7 +13,9 @@
 #include "FGPlayerController.h"
 #include "ModHandlerInternal.h"
 #include "FGGameInstance.h"
-#include "util/FuncNames.h"
+#include "FGGameState.h"
+#include "actor/InitGameWorld.h"
+#include "actor/InitMenuWorld.h"
 
 using namespace SML;
 
@@ -62,12 +64,12 @@ void FModHandler::LoadDllMods(const BootstrapAccessors& accessors) {
 }
 
 void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, TMap<FString, IModuleInterface*>& loadedModules) {
-	TMap<FString, FName> registeredModules;
+	TMap<FString, FName> RegisteredModules;
 	
 	//register SML module manually as it is already loaded into the process
-	FName smlModuleName = FName(TEXT("SML"));
-	IModuleInterface* smlModule = FModuleManagerHack::LoadModuleFromInitializerFunc(smlModuleName, &InitializeSMLModule);
-	loadedModules.Add(TEXT("SML"), smlModule);
+	const FName SmlModuleName = FName(TEXT("SML"));
+	IModuleInterface* SmlModule = FModuleManagerHack::LoadModuleFromInitializerFunc(SmlModuleName, &InitializeSMLModule);
+	loadedModules.Add(TEXT("SML"), SmlModule);
 
 	//Populate loaded modules map
 	for (auto& pair : loadedModuleDlls) {
@@ -81,22 +83,22 @@ void FModHandler::LoadModLibraries(const BootstrapAccessors& accessors, TMap<FSt
 			LoadingProblems.Add(message);
 			continue;
 		}
-		FName moduleName = FName(*modid);
-		IModuleInterface* moduleInterface = FModuleManagerHack::LoadModuleFromInitializerFunc(moduleName, initModule);
+		const FName ModuleName = FName(*modid);
+		IModuleInterface* moduleInterface = FModuleManagerHack::LoadModuleFromInitializerFunc(ModuleName, initModule);
 		loadedModules.Add(modid, moduleInterface);
 	}
 }
 
 void FModHandler::PopulateModList(const TMap<FString, IModuleInterface*>& loadedModules) {
 	for (auto& loadingEntry : SortedModLoadList) {
-		auto moduleInterface = loadedModules.Find(loadingEntry.ModInfo.Modid);
+		const auto moduleInterface = loadedModules.Find(loadingEntry.ModInfo.Modid);
 		FModContainer* modContainer;
 		if (moduleInterface != nullptr) {
 			//mod has DLL, so we reference module loaded from it here
 			IModuleInterface* interface = *moduleInterface;
 			modContainer = new FModContainer{ loadingEntry.ModInfo, interface, loadingEntry.CustomFilePaths };
 		} else {
-			//mod has no DLL, it is pak-only mod, construct default mode implementation
+			//mod has no DLL, it is pak-only mod, construct default module implementation
 			IModuleInterface* interface = new FDefaultModuleImpl();
 			modContainer = new FModContainer{ loadingEntry.ModInfo, interface };
 		}
@@ -107,12 +109,13 @@ void FModHandler::PopulateModList(const TMap<FString, IModuleInterface*>& loaded
 }
 
 void FModHandler::MountModPaks() {
-	FPakPlatformFile* pakPlatformFile = static_cast<FPakPlatformFile*>(FPlatformFileManager::Get().FindPlatformFile(TEXT("PakFile")));
+	FPakPlatformFile* PakPlatformFile = static_cast<FPakPlatformFile*>(FPlatformFileManager::Get().FindPlatformFile(TEXT("PakFile")));
 	TArray<FString> mountedPakNames;
-	pakPlatformFile->GetMountedPakFilenames(mountedPakNames);
-	FString platformPakFileName = GetData(mountedPakNames[0]);
-	const FString gamePakSignaturePath = FPaths::ChangeExtension(platformPakFileName, TEXT("sig"));
-	
+	PakPlatformFile->GetMountedPakFilenames(mountedPakNames);
+	const FString PlatformPakFileName = GetData(mountedPakNames[0]);
+	const FString gamePakSignaturePath = FPaths::ChangeExtension(PlatformPakFileName, TEXT("sig"));
+
+	//Mount all paks in the order specified by dependencies, but don't actually load anything from them
 	for (auto& loadingEntry : SortedModLoadList) {
 		for (auto& pakFileDef : loadingEntry.PakFiles) {
 			FString pakFilePathStr = pakFileDef.PakFilePath;
@@ -121,9 +124,12 @@ void FModHandler::MountModPaks() {
 			if (!FPaths::FileExists(modPakSignaturePath)) {
 				FPlatformFileManager::Get().GetPlatformFile().CopyFile(*modPakSignaturePath, *gamePakSignaturePath);
 			}
-
 			FCoreDelegates::OnMountPak.Execute(pakFilePathStr, pakFileDef.LoadingPriority, nullptr);
 		}
+	}
+
+	//Initialize UClasses for InitMod and InitMenu for each mod, preload their contents on the start and pin them in GC Root
+	for (auto& loadingEntry : SortedModLoadList) {
 		if (loadingEntry.PakFiles.Num() > 0) {
 			const FModPakLoadEntry pakEntry = CreatePakLoadEntry(loadingEntry.ModInfo.Modid);
 			ModPakInitializers.Add(pakEntry);
@@ -146,39 +152,38 @@ void FModHandler::LoadMods(const BootstrapAccessors& accessors) {
 	CheckStageErrors(TEXT("mod initialization"));
 }
 
+#pragma optimize("", off)
+
 void FModHandler::AttachLoadingHooks() {
 	SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
-		SML::GetModHandler().PreInitializeModActors();
+		SML::GetModHandler()->PreInitializeModActors();
 		SML::Logging::info(TEXT("Finished pre-subsystem-initializing mod actors"));
 	});
-	
-	SUBSCRIBE_METHOD( AGameState::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
+	SUBSCRIBE_METHOD(AGameState::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
 		UWorld* World = gameMode->GetWorld();
         const FString MapName = World->GetPathName();
 		SML::Logging::info(TEXT("Initializing on map "), *MapName);
-		SML::GetModHandler().SpawnModActors(World, SML::IsMenuMapName(MapName));
-		SML::GetModHandler().InitializeModActors();
+		SML::GetModHandler()->SpawnModActors(World, SML::IsMenuMapName(MapName));
+		SML::GetModHandler()->InitializeModActors();
 		SML::Logging::info(TEXT("Finished initializing mod actors"));
 	});
 	
 	SUBSCRIBE_METHOD(UFGGameInstance::LoadComplete, [](auto&, UFGGameInstance*, const float, const FString& MapName) {
-		SML::GetModHandler().PostInitializeModActors();
+		SML::GetModHandler()->PostInitializeModActors();
 		SML::Logging::info(TEXT("Finished post initializing mod actors"));
 	});
 
 	SUBSCRIBE_METHOD(AFGPlayerController::BeginPlay, [](auto&, AFGPlayerController* controller) {
-		SML::GetModHandler().HandlePlayerJoin(controller);
+		SML::GetModHandler()->HandlePlayerJoin(controller);
 	});
 }
 
-UClass* GetActiveLoadClass(const FModPakLoadEntry& entry, bool isMenuWorld) {
-	return isMenuWorld ? static_cast<UClass*>(entry.MenuInitClass) : static_cast<UClass*>(entry.ModInitClass);
-}
+#pragma optimize("", on)
 
 void FModHandler::SpawnModActors(UWorld* World, bool bIsMenuWorld) {
 	ModInitializerActorList.Empty();
 	for (const auto& initializer : ModPakInitializers) {
-		UClass* targetClass = GetActiveLoadClass(initializer, bIsMenuWorld);
+		UClass* targetClass = bIsMenuWorld ? *initializer.InitMenuWorldClass : *initializer.InitGameWorldClass;
 		if (targetClass == nullptr) {
 			continue;
 		}
@@ -195,7 +200,7 @@ void FModHandler::PreInitializeModActors() {
 	for (const TWeakObjectPtr<AActor> ActorPtr : this->ModInitializerActorList) {
 		if (AActor* Actor = ActorPtr.Get()) {
 			if (Actor->IsValidLowLevel()) {
-				if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+				if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
 					SML::Logging::info(TEXT("Preinitializing mod "), *Actor->GetClass()->GetPathName());
 					InitMod->PreInit();
 					InitMod->PreLoadModContent();
@@ -212,12 +217,12 @@ void FModHandler::InitializeModActors() {
 	for (const TWeakObjectPtr<AActor> ActorPtr : this->ModInitializerActorList) {
 		if (AActor* Actor = ActorPtr.Get()) {
 			if (Actor->IsValidLowLevel()) {
-				if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+				if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
 					SML::Logging::info(TEXT("Initializing mod "), *Actor->GetClass()->GetPathName());
 					InitMod->Init();
 					SML::Logging::debug(TEXT("Done initializing mod "), *Actor->GetClass()->GetPathName());
 				}
-				if (ASMLInitMenu* InitMenu = Cast<ASMLInitMenu>(Actor)) {
+				if (AInitMenuWorld* InitMenu = Cast<AInitMenuWorld>(Actor)) {
 					SML::Logging::info(TEXT("Initializing menu of mod "), *Actor->GetClass()->GetPathName());
 					InitMenu->Init();
 					SML::Logging::debug(TEXT("Done initializing menu of mod "), *Actor->GetClass()->GetPathName());
@@ -232,7 +237,7 @@ void FModHandler::PostInitializeModActors() {
 	SML::Logging::info(TEXT("Post-initializing mod content packages..."));
 	for (const TWeakObjectPtr<AActor> ActorPtr : this->ModInitializerActorList) {
 		if (AActor* Actor = ActorPtr.Get()) {
-			if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+			if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
 				SML::Logging::info(TEXT("Post-initializing mod "), *Actor->GetClass()->GetPathName());
 				InitMod->LoadModContent();
 				InitMod->PostInit();
@@ -246,7 +251,7 @@ void FModHandler::PostInitializeModActors() {
 void FModHandler::HandlePlayerJoin(AFGPlayerController* PlayerController) {
 	for (const TWeakObjectPtr<AActor>& Actor : this->ModInitializerActorList) {
 		if (Actor->IsValidLowLevel()) {
-			if (ASMLInitMod* InitMod = Cast<ASMLInitMod>(Actor)) {
+			if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
 				InitMod->PlayerJoined(PlayerController);
 			}
 		}
@@ -306,7 +311,7 @@ void FModHandler::CheckDependencies() {
 
 void FModHandler::DiscoverMods() {
 	LoadingEntries.Add(TEXT("SML"), CreateSmlLoadingEntry());
-	FString modsPath = SML::GetModDirectory();
+	const FString modsPath = SML::GetModDirectory();
 	auto directoryVisitor = MakeDirectoryVisitor([this](const TCHAR* filepath, bool isDir) {
 		if (!isDir) {
 			if (FPaths::GetExtension(filepath) == TEXT("smod") ||
@@ -334,12 +339,19 @@ void FModHandler::ConstructZipMod(const FString& FilePath) {
 		return;
 	}
 	const TSharedPtr<FJsonObject> DataJsonObj = ReadArchiveDataJson(*ModArchive);
-	if (!DataJsonObj.IsValid() || !FModInfo::IsValid(*DataJsonObj.Get(), FilePath)) {
-		ReportBrokenZipMod(FilePath, TEXT("Invalid data.json"));
+	if (!DataJsonObj.IsValid()) {
+		ReportBrokenZipMod(FilePath, TEXT("Invalid data.json: Malformed JSON file"));
 		return;
 	}
-	const FModInfo ModInfo = FModInfo::CreateFromJson(*DataJsonObj.Get());
-	FModLoadingEntry& LoadingEntry = CreateLoadingEntry(ModInfo, FilePath);
+	FModInfo ResultModInfo;
+	FString FailureReason;
+	const bool bModInfoSucceed = FModInfo::CreateFromJson(*DataJsonObj.Get(), ResultModInfo, FailureReason);
+	if (!bModInfoSucceed) {
+		const FString ReasonText = FString::Printf(TEXT("Invalid data.json: %s"), *FailureReason);
+		ReportBrokenZipMod(FilePath, ReasonText);
+		return;
+	}
+	FModLoadingEntry& LoadingEntry = CreateLoadingEntry(ResultModInfo, FilePath);
 	if (!LoadingEntry.bIsValid) return;
 	if (!ExtractArchiveObjects(*ModArchive, *DataJsonObj, LoadingEntry)) {
 		const FString Message = TEXT("Failed to extract data objects");
@@ -431,7 +443,7 @@ FModLoadingEntry& FModHandler::CreateRawModLoadingEntry(const FString& modId, co
 	if (!loadingEntry.bIsValid) {
 		loadingEntry.bIsValid = true;
 		loadingEntry.ModInfo = FModInfo::CreateDummyInfo(modId);
-		loadingEntry.ModInfo.Dependencies.Add(TEXT("@ORDER:LAST"), FVersionRange(TEXT("1.0.0")));
+		loadingEntry.ModInfo.Dependencies.Add(TEXT("@ORDER:LAST"), FVersionRange::CreateAnyVersionRange());
 		loadingEntry.VirtualModFilePath = filePath;
 		loadingEntry.bIsRawMod = true;
 	}

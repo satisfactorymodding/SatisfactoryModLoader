@@ -6,6 +6,19 @@
 
 class FReflectionHelper {
 public:
+    template <typename T>
+    static T* FindPropertyByShortName(UStruct* Class, const TCHAR* PropertyName) {
+        for(UProperty* Property = Class->PropertyLink; Property; Property = Property->PropertyLinkNext) {
+            if (Property->GetName().StartsWith(PropertyName)) {
+                if (T* CastedProperty = Cast<T>(Property)) {
+                    return CastedProperty;
+                }
+            }
+        }
+        checkf(false, TEXT("Property with given name not found in class: %s"), PropertyName);
+        return nullptr;
+    }
+    
     template<typename T>
     static typename T::TCppType GetPropertyValue(const UObject* Object, const TCHAR* PropertyName, int32 ArrayIndex = 0) {
         T* Property = Cast<T>(Object->GetClass()->FindPropertyByName(PropertyName));
@@ -20,6 +33,13 @@ public:
         checkf(CastedValue, TEXT("Cannot cast class property %s:%s value to type %s"), *Object->GetClass()->GetPathName(), PropertyName, *T::StaticClass()->GetName());
         return CastedValue;
     }
+
+    static void SetStructPropertyValue(UObject* Object, const TCHAR* PropertyName, const void* ValuePointer, int32 ArrayIndex = 0) {
+        UStructProperty* Property = Cast<UStructProperty>(Object->GetClass()->FindPropertyByName(PropertyName));
+        checkf(Property, TEXT("Property not found in class %s: %s"), *Object->GetClass()->GetPathName(), PropertyName);
+        void* DestAddress = Property->ContainerPtrToValuePtr<void>(Object, ArrayIndex);
+        Property->CopyValuesInternal(DestAddress, ValuePointer, 1);
+    } 
 
     template<typename T>
     static void SetPropertyValue(UObject* Object, const TCHAR* PropertyName, const typename T::TCppType& Value, int32 ArrayIndex = 0) {

@@ -3,8 +3,8 @@
 #include "UObjectGlobals.h"
 #include "util/Utility.h"
 #include "util/Logging.h"
-#include "actor/SMLInitMod.h"
-#include "actor/SMLInitMenu.h"
+#include "actor/InitGameWorld.h"
+#include "actor/InitMenuWorld.h"
 #include "zip/miniz.h"
 
 void IterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
@@ -13,22 +13,31 @@ void IterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 	TArray<FString>& missingDependencies,
 	SML::TopologicalSort::DirectedGraph<uint64_t>& sortGraph,
 	const TMap<FString, FVersionRange>& dependencies,
-	bool optional);
+	bool bOptional);
 
-void FinalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
-	TMap<FString, FModLoadingEntry>& loadingEntries,
-	TArray<uint64_t>& sortedIndices) {
-	TArray<uint64_t> modsToMoveInTheEnd;
+void FinalizeSortingResults(TMap<uint64_t, FString>& modByIndex, TMap<FString, FModLoadingEntry>& loadingEntries, TArray<uint64_t>& sortedIndices) {
+	TArray<uint64_t> ModsToMoveInTheEnd;
+	TArray<uint64_t> ModsToMoveInTheStart;
+	
 	for (uint64_t i = 0; i < sortedIndices.Num(); i++) {
 		const uint64_t modIndex = sortedIndices[i];
 		const FModLoadingEntry& loadingEntry = loadingEntries[modByIndex[modIndex]];
 		auto dependencies = loadingEntry.ModInfo.Dependencies;
-		if (dependencies.Find(TEXT("@ORDER:LAST")) != nullptr)
-			modsToMoveInTheEnd.Add(sortedIndices[i]);
+		if (dependencies.Contains(TEXT("@ORDER:LAST"))) {
+			ModsToMoveInTheEnd.Add(sortedIndices[i]);
+		}
+		if (dependencies.Contains(TEXT("@ORDER:FIRST"))) {
+			ModsToMoveInTheStart.Add(sortedIndices[i]);
+		}
 	}
-	for (auto& modIndex : modsToMoveInTheEnd) {
-		sortedIndices.Remove(modIndex);
-		sortedIndices.Add(modIndex);
+
+	for (uint64_t ModIndex : ModsToMoveInTheStart) {
+		sortedIndices.Remove(ModIndex);
+		sortedIndices.Insert(ModIndex, 0);
+	}
+	for (uint64_t ModIndex : ModsToMoveInTheEnd) {
+		sortedIndices.Remove(ModIndex);
+		sortedIndices.Add(ModIndex);
 	}
 }
 
@@ -51,7 +60,7 @@ FModLoadingEntry CreateSmlLoadingEntry() {
 	entry.ModInfo.Description = TEXT("Mod Loading & Compatibility layer for Satisfactory");
 	entry.ModInfo.Authors = {TEXT("Archengius"), TEXT("Brabb3l"), TEXT("Mircea"), TEXT("Panakotta00"), TEXT("SuperCoder79"), TEXT("Vilsol")};
 	entry.ModInfo.RemoteVersion.bAcceptAnyRemoteVersion = false;
-	entry.ModInfo.RemoteVersion.RemoteVersion = FVersionRange(entry.ModInfo.Version, EVersionComparisonOp::GREATER_EQUALS);
+	entry.ModInfo.RemoteVersion.RemoteVersion = FVersionRange::CreateRangeWithMinVersion(entry.ModInfo.Version);
 	const FString SMLPakFilePath = FPaths::Combine(FPaths::GetPath(SML::GetModDirectory()), TEXT("loaders"), TEXT("SML.pak"));
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 	if (PlatformFile.FileExists(*SMLPakFilePath)) {
@@ -64,24 +73,44 @@ FModLoadingEntry CreateSmlLoadingEntry() {
 	return entry;
 }
 
-FModPakLoadEntry CreatePakLoadEntry(const FString& Modid) {
-	const FString modInitPath = FString::Printf(TEXT("/Game/%s/InitMod.InitMod_C"), *Modid);
-	const FString menuInitPath = FString::Printf(TEXT("/Game/%s/InitMenu.InitMenu_C"), *Modid);
-	TSubclassOf<ASMLInitMod> modInitializerClass = LoadClass<ASMLInitMod>(nullptr, *modInitPath);
-	TSubclassOf<ASMLInitMenu> menuInitializerClass = LoadClass<ASMLInitMenu>(nullptr, *menuInitPath);
+template<typename ClassType, typename ...Args>
+TSubclassOf<ClassType> FindClassByNames(const FString& ModReference, const TArray<FString>& NamesToCheck) {
+	for (const FString& PathTemplate : NamesToCheck) {
+		const FString FinalPath = FString::Printf(*PathTemplate, *ModReference);
+		TSubclassOf<ClassType> ClassLoaded = LoadClass<ClassType>(NULL, *FinalPath);
+		if (ClassLoaded != NULL) {
+			return ClassLoaded;
+		}
+	}
+	return NULL;
+}
 
-	FModPakLoadEntry pakEntry{Modid};
-	if (modInitializerClass != nullptr) {
-		//Prevent UClass Garbage Collection
-		modInitializerClass->AddToRoot();
-		pakEntry.ModInitClass = modInitializerClass;
+FModPakLoadEntry CreatePakLoadEntry(const FString& ModReference) {
+	UClass* InitGameInstanceClass = FindClassByNames<UInitGameInstance>(ModReference,
+		{TEXT("/Game/%s/InitGameInstance.InitGameInstance_C")});
+	
+	UClass* InitGameWorldClass = FindClassByNames<AInitGameWorld>(ModReference,
+		{TEXT("/Game/%s/InitGameWorld.InitGameWorld_C"),
+		TEXT("/Game/%s/InitMod.InitMod_C"}));
+	
+	UClass* InitMenuWorldClass = FindClassByNames<AInitMenuWorld>(ModReference,
+		{TEXT("/Game/%s/InitMenuWorld.InitMenuWorld_C"),
+		TEXT("/Game/%s/InitMenu.InitMenu_C"}));
+
+	FModPakLoadEntry LoadEntry{ModReference};
+	if (InitGameInstanceClass != NULL) {
+		InitGameInstanceClass->AddToRoot();
+		LoadEntry.InitGameInstanceClass = InitGameInstanceClass;
 	}
-	if (menuInitializerClass != nullptr) {
-		//Prevent UClass Garbage Collection
-		menuInitializerClass->AddToRoot();
-		pakEntry.MenuInitClass = menuInitializerClass;
+	if (InitGameWorldClass != NULL) {
+		InitGameWorldClass->AddToRoot();
+		LoadEntry.InitGameWorldClass = InitGameWorldClass;
 	}
-	return pakEntry;
+	if (InitMenuWorldClass != NULL) {
+		InitMenuWorldClass->AddToRoot();
+		LoadEntry.InitMenuWorldClass = InitMenuWorldClass;
+	}
+	return LoadEntry;
 }
 
 FString GetModIdFromFile(const FString& FilePath) {
@@ -256,8 +285,7 @@ bool ExtractArchiveObjects(FZipFile& ZipHandle, const FJsonObject& DataJson, FMo
 	const TArray<TSharedPtr<FJsonValue>>& Objects = DataJson.GetArrayField(TEXT("objects"));
 	
 	if (Objects.Num() == 0) {
-		SML::Logging::error(TEXT("missing `objects` array in data.json, or it is empty for mod: "), *LoadingEntry.ModInfo.Modid);
-		return false;
+		SML::Logging::error(TEXT("Empty `objects` in data.json for mod: "), *LoadingEntry.ModInfo.Modid, TEXT(". It may be intentional, but most likely indicates an error"));
 	}
 	for (auto& Value : Objects) {
 		const TSharedPtr<FJsonObject>& JSONObject = Value.Get()->AsObject();
@@ -295,21 +323,28 @@ void IterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 	TArray<FString>& missingDependencies,
 	TopologicalSort::DirectedGraph<uint64_t>& sortGraph,
 	const TMap<FString, FVersionRange>& dependencies,
-	bool optional) {
+	const bool bOptional) {
 
-	for (auto& pair : dependencies) {
-		FModLoadingEntry& dependencyEntry = loadingEntries[pair.Key];
-		FModInfo& depInfo = dependencyEntry.ModInfo;
-		if (pair.Key != "@ORDER:LAST") {
-			if (!dependencyEntry.bIsValid || !pair.Value.Matches(depInfo.Version)) {
-				const FString reason = dependencyEntry.bIsValid ? FString::Printf(TEXT("unsupported version: %s"), *depInfo.Version.String()) : TEXT("not installed");
-				const FString message = FString::Printf(TEXT("%s requires %s(%s): %s"), *selfInfo.Modid, *pair.Key, *pair.Value.String(), *reason);
-				if (!optional) missingDependencies.Add(message);
+	for (auto& Pair : dependencies) {
+		const FString& DependencyModId = Pair.Key;
+		FModLoadingEntry& DependencyEntry = loadingEntries[Pair.Key];
+		FModInfo& DepInfo = DependencyEntry.ModInfo;
+		if (!IsVirtualDependency(DependencyModId)) {
+			if (!DependencyEntry.bIsValid || !Pair.Value.Matches(DepInfo.Version)) {
+				const FString Reason = DependencyEntry.bIsValid ? FString::Printf(TEXT("unsupported version: %s"), *DepInfo.Version.ToString()) : TEXT("not installed");
+				const FString Message = FString::Printf(TEXT("%s requires %s(%s): %s"), *selfInfo.Modid, *DependencyModId, *Pair.Value.ToString(), *Reason);
+				if (!bOptional) {
+					missingDependencies.Add(Message);
+				}
 				continue;
 			}
-			sortGraph.addEdge(modIndices[depInfo.Modid], modIndices[selfInfo.Modid]);
+			sortGraph.addEdge(modIndices[DepInfo.Modid], modIndices[selfInfo.Modid]);
 		}
 	}
+}
+
+bool IsVirtualDependency(const FString& DependencyModId) {
+	return DependencyModId.StartsWith(TEXT("@ORDER:"));
 }
 
 IModuleInterface* InitializeSMLModule() {

@@ -68,36 +68,50 @@ void USMLBlueprintLibrary::ConvertJsonValueToUProperty(TSharedPtr<FJsonValue> js
 	}
 }
 
-FVersion USMLBlueprintLibrary::ParseVersionString(const FString& String) {
-	return FVersion{String};
+bool USMLBlueprintLibrary::ParseVersionString(const FString& String, FVersion& OutVersion, FString& OutFailureReason) {
+	return OutVersion.ParseVersion(String, OutFailureReason);
+}
+
+bool USMLBlueprintLibrary::ParseVersionRangeString(const FString& String, FVersionRange& OutVersionRange, FString& OutFailureReason) {
+	return OutVersionRange.ParseVersionRange(String, OutFailureReason);
+}
+
+FString USMLBlueprintLibrary::Conv_VersionRangeToString(const FVersionRange& VersionRange) {
+	return VersionRange.ToString();
 }
 
 FString USMLBlueprintLibrary::Conv_VersionToString(const FVersion& Version) {
-	return Version.String();
+	return Version.ToString();
 }
 
 bool USMLBlueprintLibrary::IsModLoaded(const FString& ModId) {
-	return SML::GetModHandler().IsModLoaded(ModId);
+	FModHandler* ModHandler = SML::GetModHandler();
+	return ModHandler != nullptr && ModHandler->IsModLoaded(ModId);
 }
 
-const TArray<FString>& USMLBlueprintLibrary::GetLoadedMods() {
-	return SML::GetModHandler().GetLoadedMods();
+TArray<FString> USMLBlueprintLibrary::GetLoadedMods() {
+	FModHandler* ModHandler = SML::GetModHandler();
+	return ModHandler != nullptr ? ModHandler->GetLoadedMods() : TArray<FString>();
 }
 
 FModInfo USMLBlueprintLibrary::GetLoadedModInfo(const FString& ModId) {
-	FModHandler& ModHandler = SML::GetModHandler();
-	if (!ModHandler.IsModLoaded(ModId))
+	FModHandler* ModHandler = SML::GetModHandler();
+	if (ModHandler == nullptr)
 		return FModInfo{};
-	const FModContainer& ModContainer = ModHandler.GetLoadedMod(ModId);
+	if (!ModHandler->IsModLoaded(ModId))
+		return FModInfo{};
+	const FModContainer& ModContainer = ModHandler->GetLoadedMod(ModId);
 	return ModContainer.ModInfo;
 }
 
 UTexture2D* LoadModIconInternal(const FString& ModId) {
-	FModHandler& ModHandler = SML::GetModHandler();
-	if (!ModHandler.IsModLoaded(ModId)) {
+	FModHandler* ModHandler = SML::GetModHandler();
+	if (ModHandler == nullptr)
+		return NULL;
+	if (!ModHandler->IsModLoaded(ModId)) {
 		return NULL;
 	}
-	const FModContainer& ModContainer = ModHandler.GetLoadedMod(ModId);
+	const FModContainer& ModContainer = ModHandler->GetLoadedMod(ModId);
 	const FString& IconPath = ModContainer.ModInfo.ModResources.ModIconPath;
 	if (IconPath.IsEmpty()) {
 		//Icon path not set, mod doesn't have any icon

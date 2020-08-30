@@ -6,13 +6,24 @@
 class SML_API FBlueprintHookHelper {
 public:
 	FFrame& FramePointer;
+private:
+	int32 ReturnInstructionOffset;
 public:
-	FORCEINLINE FBlueprintHookHelper(FFrame& Frame) : FramePointer(Frame) {}
+	FORCEINLINE FBlueprintHookHelper(FFrame& Frame, const int32 MyReturnInstructionOffset) : FramePointer(Frame), ReturnInstructionOffset(MyReturnInstructionOffset) {}
 
 	FORCEINLINE UObject* GetContext() const { return FramePointer.Object; }
+
+	/**
+	 * Jumps to function's EX_Return instruction to terminate function execution
+	 * Function execution will be finished after all hooks are processed, so other
+	 * hooks registered for same offset will be called anyway
+	 */
+	void JumpToFunctionReturn() const {
+		FramePointer.Code = &FramePointer.Node->Script[ReturnInstructionOffset];
+	}
 	
 	template<typename T>
-	typename T::TCppType* GetLocalVarPtr(const TCHAR* ParameterName, int32 ArrayIndex = 0) {
+	typename T::TCppType* GetLocalVarPtr(const TCHAR* ParameterName, int32 ArrayIndex = 0) const {
 		T* Property = Cast<T>(FramePointer.Node->FindPropertyByName(ParameterName));
 		check(Property);
 		return Property->GetPropertyValuePtr_InContainer(FramePointer.Locals, ArrayIndex);
@@ -23,7 +34,7 @@ public:
 	//These variables are stored separately from other local variables, so
 	//GetLocalVarPtr won't work on them, you should use this method instead
 	template<typename T>
-	typename T::TCppType* GetOutVariablePtr(const TCHAR* VariableName = TEXT("ReturnValue")) {
+	typename T::TCppType* GetOutVariablePtr(const TCHAR* VariableName = TEXT("ReturnValue")) const {
 		FOutParmRec* Out = FramePointer.OutParms;
 		check(Out);
 		while (Out->Property->GetName() != VariableName) {
@@ -39,7 +50,7 @@ public:
 
 typedef void(HookSignature)(FBlueprintHookHelper& HookHelper);
 
-SML_API void HandleHookedFunctionCall(FFrame& Stack, int64 HookFunctionAddress, int32 HookOffset);
+SML_API void HandleHookedFunctionCall(FFrame& Stack, int32 HookOffset);
 
 enum EPredefinedHookOffset: int32 {
 	Start = 0,

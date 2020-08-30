@@ -16,13 +16,21 @@ public:
 	static void ConvertJsonObjectToUStruct(TSharedPtr<FJsonObject> Json, UStruct* Struct, void* PtrToStruct, bool UsePrettyName = true);
 	static void ConvertJsonValueToUProperty(TSharedPtr<FJsonValue> Json, UProperty* Prop, void* PtrToProp);
 
-	/** Constructs sem version from version string */
+	/** Constructs SemVer Version from version string */
 	UFUNCTION(BlueprintPure, Category = "SML|Version")
-    static FVersion ParseVersionString(const FString& String);
+    static bool ParseVersionString(const FString& String, FVersion& OutVersion, FString& FailureReason);
 
 	/** Converts version data to the string */
 	UFUNCTION(BlueprintPure, Category = "SML|Version", meta = (DisplayName = "ToString (Version)", CompactNodeTitle = "->", ScriptMethod="ToString"))
 	static FString Conv_VersionToString(const FVersion& Version);
+
+	/** Constructs SemVer Version Range from version string */
+	UFUNCTION(BlueprintPure, Category = "SML|Version")
+    static bool ParseVersionRangeString(const FString& String, FVersionRange& OutVersionRange, FString& OutFailureReason);
+
+	/** Converts version data to the string */
+	UFUNCTION(BlueprintPure, Category = "SML|Version", meta = (DisplayName = "ToString (VersionRange)", CompactNodeTitle = "->", ScriptMethod="ToString"))
+    static FString Conv_VersionRangeToString(const FVersionRange& VersionRange);
 	
 	/** Returns true when mod with provided ModId is loaded */
 	UFUNCTION(BlueprintPure, Category = "SML|ModLoading")
@@ -30,7 +38,7 @@ public:
 
 	/** Returns list of loaded mods (their ModIds actually) */
 	UFUNCTION(BlueprintPure, Category = "SML|ModLoading")
-	static const TArray<FString>& GetLoadedMods();
+	static TArray<FString> GetLoadedMods();
 
 	/** Retrieves information about loaded mod by it's ModId. Returns empty struct if mod is not loaded */
 	UFUNCTION(BlueprintPure, Category = "SML|ModLoading")

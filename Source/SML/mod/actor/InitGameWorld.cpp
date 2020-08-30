@@ -1,4 +1,4 @@
-#include "SMLInitMod.h"
+#include "InitGameWorld.h"
 #include "FGSchematicManager.h"
 #include "SML/util/Logging.h"
 #include "FGResearchManager.h"
@@ -6,25 +6,25 @@
 #include "FGResourceSinkSubsystem.h"
 #include "tooltip/ItemTooltipHandler.h"
 
-void ASMLInitMod::Init_Implementation() {
+void AInitGameWorld::Init_Implementation() {
 }
 
-void ASMLInitMod::PostInit_Implementation() {
+void AInitGameWorld::PostInit_Implementation() {
 }
 
-void ASMLInitMod::PreInit_Implementation() {
+void AInitGameWorld::PreInit_Implementation() {
 }
 
-void ASMLInitMod::PreLoadModContent() {
+void AInitGameWorld::PreLoadModContent() {
 	//Register subsystem holders
-	for (const TSubclassOf<UModSubsystemHolder> SubsystemHolder : mModSubsystems) {
+	for (const TSubclassOf<UModSubsystemHolder> SubsystemHolder : mModSubsystems_DEPRECATED) {
 		FSubsystemInfoHolder::RegisterSubsystemHolder(SubsystemHolder);
 	}
 }
 
 static TArray<FString> ProviderClassNamesRegistered;
 
-void ASMLInitMod::LoadModContent() {
+void AInitGameWorld::LoadModContent() {
 	AFGSchematicManager* schematicManager = AFGSchematicManager::Get(this);
 	//No need to register AvailableSchematics on client side, they are replicated
 	if (schematicManager->HasAuthority()) {
@@ -57,15 +57,6 @@ void ASMLInitMod::LoadModContent() {
 			ChatCommandSubsystem->RegisterCommand(RegistrarEntry);
 		}
 	}
-	//Register tooltip providers
-	for (UClass* ProviderClass : GlobalItemTooltipProviders) {
-		FString ClassName = ProviderClass->GetPathName();
-		if (!ProviderClassNamesRegistered.Contains(ClassName)) {
-			ProviderClassNamesRegistered.Add(ClassName);
-			UObject* ProviderObject = NewObject<UObject>(UItemTooltipHandler::StaticClass(), ProviderClass);
-			UItemTooltipHandler::RegisterGlobalTooltipProvider(ProviderObject);
-		}
-	}
 	UDataTable* ModResourceSinkPointsTable = mResourceSinkItemPointsTable.LoadSynchronous();
 	AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
 	if (ResourceSinkSubsystem != NULL && ModResourceSinkPointsTable != NULL) {
@@ -79,7 +70,16 @@ void ASMLInitMod::LoadModContent() {
 		}
 		SML::Logging::info(TEXT("Registered %d AWESOME sink entries for mod %s"), *this->GetClass()->GetPathName());
 	}
+	//Register tooltip providers
+	for (UClass* ProviderClass : GlobalItemTooltipProviders_DEPRECATED) {
+		FString ClassName = ProviderClass->GetPathName();
+		if (!ProviderClassNamesRegistered.Contains(ClassName)) {
+			ProviderClassNamesRegistered.Add(ClassName);
+			UObject* ProviderObject = NewObject<UObject>(UItemTooltipHandler::StaticClass(), ProviderClass);
+			UItemTooltipHandler::RegisterGlobalTooltipProvider(ProviderObject);
+		}
+	}
 }
 
-void ASMLInitMod::PlayerJoined_Implementation(AFGPlayerController* Player) {
+void AInitGameWorld::PlayerJoined_Implementation(AFGPlayerController* Player) {
 }

@@ -87,7 +87,7 @@ FString MakeFQCommandName(const FString& ModId, const FString& Name) {
 }
 
 void AChatCommandSubsystem::RegisterCommand(TSubclassOf<AChatCommandInstance> CommandClass) {
-	const FModHandler& ModHandler = SML::GetModHandler();
+	const FModHandler& ModHandler = *SML::GetModHandler();
 	//Ensure that mod with specified ModId is loaded and active
 
 	AChatCommandInstance* CommandCDO = CommandClass->GetDefaultObject<AChatCommandInstance>();

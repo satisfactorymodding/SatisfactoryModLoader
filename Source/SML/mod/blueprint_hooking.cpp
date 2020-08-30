@@ -17,6 +17,10 @@ struct FHookEntry {
 //NULL even when fucking keys were invalid. so fuck it, we will use double map instead
 static TMap<int64, TMap<int32, FHookEntry>> RegisteredHooks;
 
+//Map of return byte code instruction offset for given FHookKey.FunctionAddress
+//Since function can only have one return instruction, we don't need to store all of them
+static TMap<int64, int32> ReturnInstructionOffsets;
+
 FHookEntry& GetOrAddHookEntry(const FHookKey& SearchKey, bool& EntryAdded) {
 	TMap<int32, FHookEntry>& FunctionHooks = RegisteredHooks.FindOrAdd(SearchKey.HookFunctionAddress);
 	FHookEntry* ExistingEntry = FunctionHooks.Find(SearchKey.HookOffset);
@@ -26,13 +30,14 @@ FHookEntry& GetOrAddHookEntry(const FHookKey& SearchKey, bool& EntryAdded) {
 	return FunctionHooks.Add(SearchKey.HookOffset);
 }
 
-SML_API void HandleHookedFunctionCall(FFrame& Stack, int64 HookedFunctionAddress, int32 HookOffset) {
+SML_API void HandleHookedFunctionCall(FFrame& Stack, int32 HookOffset) {
+	//Retrieve hooked function address from UFunction object inside FFrame
+	const int64 HookedFunctionAddress = reinterpret_cast<int64>(Stack.Node);
 	const FHookKey SearchKey{ HookedFunctionAddress, HookOffset };
 	bool KeyAdded;
 	FHookEntry& HookEntry = GetOrAddHookEntry(SearchKey, KeyAdded);
-	FBlueprintHookHelper HookHelper{ Stack };
-	SML::Logging::info(TEXT("HandleHookedFunctionCall: Hooked Function Address: "),
-		HookedFunctionAddress, TEXT(", Hook Offset: "), HookOffset, TEXT(", Hook Entry Size: "), HookEntry.Hooks.Num());
+	const int32 ReturnInstructionOffset = ReturnInstructionOffsets.FindChecked(HookedFunctionAddress);
+	FBlueprintHookHelper HookHelper{ Stack, ReturnInstructionOffset };
 	for (const std::function<HookSignature>& Hook : HookEntry.Hooks) {
 		Hook(HookHelper);
 	}
@@ -70,9 +75,7 @@ void InstallBlueprintHook(UFunction* Function, const FHookKey& HookKey) {
 	//EX_CallMath opcode to call static function & write it's address
 	AppendedCode.Add(EX_CallMath);
 	WRITE_UNALIGNED(AppendedCode, ScriptPointerType, HookCallFunction);
-	//Pass hook function address & hook offset
-	AppendedCode.Add(EX_Int64Const);
-	WRITE_UNALIGNED(AppendedCode, int64, HookKey.HookFunctionAddress);
+	//Pass hook hook offset - we don't need to pass function address since we can get it from FFrame object
 	AppendedCode.Add(EX_IntConst);
 	WRITE_UNALIGNED(AppendedCode, int32, HookKey.HookOffset);
 	//Indicate end of function parameters
@@ -112,7 +115,7 @@ int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 }
 
 SML_API void HookBlueprintFunction(UFunction* Function, std::function<HookSignature> Hook, int32 HookOffset) {
-#if !WITH_EDITOR
+//#if !WITH_EDITOR
 	checkf(Function->Script.Num(), TEXT("HookBPFunction: Function provided is not implemented in BP"));
 	//Make sure to add outer UClass to root set to avoid it being Garbage Collected
 	//Because otherwise after GC script byte code will be reloaded, without our hooks applied
@@ -136,8 +139,13 @@ SML_API void HookBlueprintFunction(UFunction* Function, std::function<HookSignat
 	if (HookEntryAdded) {
 		//Entry was just added, we need to install hook now
 		InstallBlueprintHook(Function, SearchKey);
+		//Record return address to blueprint helper can jump to it without computing it over and over again
+		//Note that multiple hooks can be present on same function, so we may need to overwrite return instruction index
+		//But only need to store one per function, because function can have only one return
+		const int32 ReturnInstructionOffset = SML::FindReturnStatementOffset(Function);
+		ReturnInstructionOffsets.Add(SearchKey.HookFunctionAddress, ReturnInstructionOffset);
 	}
 	//Register our provided hook now
 	HookEntry.Hooks.Add(Hook);
-#endif
+//#endif
 }

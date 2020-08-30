@@ -1,6 +1,10 @@
 #include "SMLModule.h"
-
 #define LOCTEXT_NAMESPACE "FSMLModule"
+
+namespace SML {
+	/** Performs basic initialization of mod loader for both editor and shipping if it's not initialized already */
+	extern void EnsureModLoaderIsInitialized(const FString& GameRootDirectory);
+};
 
 #if WITH_EDITOR
 #include "ContentBrowserModule.h"
@@ -31,29 +35,43 @@ void SMLDebugButtonClicked() {
 	SML::generateSatisfactoryAssets(path);
 }
 
-#endif
-
-void FSMLModule::StartupModule() {
-#if WITH_EDITOR
+void EditorInitializeModule() {
 	TSharedRef<FUICommandList> PluginCommands = MakeShareable(new FUICommandList);
 	FSMLCommands::Register();
 	PluginCommands->MapAction(
-		FSMLCommands::Get().DebugBlueprintsCommand,
-		FExecuteAction::CreateStatic(&SMLDebugButtonClicked),
-		FCanExecuteAction());
+        FSMLCommands::Get().DebugBlueprintsCommand,
+        FExecuteAction::CreateStatic(&SMLDebugButtonClicked),
+        FCanExecuteAction());
 	
 	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
 	TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
 	MenuExtender->AddMenuExtension("FileProject", EExtensionHook::After, PluginCommands, FMenuExtensionDelegate::CreateLambda([](FMenuBuilder& Builder) {
-		Builder.AddMenuEntry(FSMLCommands::Get().DebugBlueprintsCommand);
-	}));
+        Builder.AddMenuEntry(FSMLCommands::Get().DebugBlueprintsCommand);
+    }));
 	LevelEditorModule.GetMenuExtensibilityManager()->AddExtender(MenuExtender);
+}
+
+void EditorShutdownModule() {
+	FSMLCommands::Unregister();
+}
+
+#endif
+
+void FSMLModule::StartupModule() {
+	//Ensure basic mod loader stuff is initialized even inside editor
+	//We use project root directory as game directory for now
+	const FString& GameDirectory = FPaths::ProjectDir();
+	SML::EnsureModLoaderIsInitialized(GameDirectory);
+	//Initialize editor-specific stuff only inside editor
+#if WITH_EDITOR
+	EditorInitializeModule();
 #endif
 }
 
 void FSMLModule::ShutdownModule() {
+	//Shutdown editor-specific stuff only inside editor
 #if WITH_EDITOR
-	FSMLCommands::Unregister();
+	EditorShutdownModule();
 #endif
 }
 

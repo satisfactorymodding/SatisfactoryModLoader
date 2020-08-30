@@ -19,13 +19,16 @@ struct FFileHash {
 	}
 };
 
+/** Returns true if provided dependency is "virtual": e.g it's used only for sorting */
+bool IsVirtualDependency(const FString& DependencyModId);
+
 void IterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 	TMap<FString, uint64_t>& modIndices,
 	const FModInfo& selfInfo,
 	TArray<FString>& missingDependencies,
 	TopologicalSort::DirectedGraph<uint64_t>& sortGraph,
 	const TMap<FString, FVersionRange>& dependencies,
-	bool optional);
+	bool bOptional);
 
 void FinalizeSortingResults(TMap<uint64_t, FString>& modByIndex,
 	TMap<FString, FModLoadingEntry>& loadingEntries,

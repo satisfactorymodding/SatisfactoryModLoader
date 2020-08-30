@@ -1,11 +1,10 @@
 #pragma once
 
-#include <iostream>
 #include "util/Utility.h"
 #include "SatisfactoryModLoader.h"
 #include "CoreTypes.h"
-#include <winuser.h>
 #include <fstream>
+#include <iostream>
 
 #include "Console.h"
 
@@ -37,16 +36,29 @@ namespace SML {
 		template<typename First, typename ...Args>
 		void log(LogType type, First &&arg0, Args &&...args) {
 			const FString Message = formatStr(arg0, args...);
-#if !WITH_EDITOR
+
 			const FString Result = FString::Printf(TEXT("[%s] %s"), getLogTypeStr(type), *Message);
 			std::wcout << *Result << std::endl;
-			GetLogFile() << *Result << std::endl;
-#endif
+			std::wofstream* LoggingStream = SML::GetLogFile();
+			//Only use logging stream if it's not null pointer.
+			//It can be null pointer in editor build in some cases.
+			if (LoggingStream != nullptr) {
+				*LoggingStream << *Result << std::endl;
+			}
+
 			if (type == LogType::Fatal) {
 				SML::NotifyFatalError(Message);
 			}
 			const ELogVerbosity::Type Verbosity = logTypeToVerbosity(type);
-			FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), Verbosity, TEXT("%s"), *Message);
+			//Only use logger when engine is initialized to avoid accidentally initializing it too early
+			//In the wrong thread and then experiencing issues at the shutdown
+			if (GEngine != nullptr && GEngine->IsInitialized()) {
+				FMsg::Logf(nullptr, 0, FName(TEXT("SatisfactoryModLoader")), Verbosity, TEXT("%s"), *Message);
+			}
+			if (type == LogType::Fatal) {
+				//Make sure we crash on fatal even if Engine is not initialized and standard crashing doesn't work
+				exit(1);
+			}
 		}
 
 		template<typename First, typename ...Args>

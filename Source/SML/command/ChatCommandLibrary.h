@@ -68,7 +68,6 @@ public:
 	
 	/**
 	* ModId of the mod registering the command
-	* Assigned automatically by call stack analysis for both blueprints and C++ code
 	*/
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	FString ModId;
