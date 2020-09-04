@@ -4,6 +4,8 @@
 namespace SML {
 	/** Performs basic initialization of mod loader for both editor and shipping if it's not initialized already */
 	extern void EnsureModLoaderIsInitialized(const FString& GameRootDirectory);
+	/** Finishes basic initialization of mod loader for both editor and shipping */
+	extern void EnsureModLoaderIsPostInitialized();
 };
 
 #if WITH_EDITOR
@@ -62,6 +64,11 @@ void FSMLModule::StartupModule() {
 	//We use project root directory as game directory for now
 	const FString& GameDirectory = FPaths::ProjectDir();
 	SML::EnsureModLoaderIsInitialized(GameDirectory);
+	//Since SML module is loaded after engine initialization, we can call post init in place
+	//Although we will call it much earlier in shipping because we need core redirects setup before
+	//we try to access and mount legacy mod paks
+	SML::EnsureModLoaderIsPostInitialized();
+	
 	//Initialize editor-specific stuff only inside editor
 #if WITH_EDITOR
 	EditorInitializeModule();

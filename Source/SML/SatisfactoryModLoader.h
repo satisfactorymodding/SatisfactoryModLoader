@@ -114,4 +114,7 @@ namespace SML {
 
 	/** @deprectated Internal usage only */
 	BootstrapAccessors* GetBootstrapperAccessors();
+
+	/** Returns raw mod loader version string as it is stored in DLL, requires no mod loader initialization */
+	SML_API extern FString GetRawModLoaderVersionString();
 };

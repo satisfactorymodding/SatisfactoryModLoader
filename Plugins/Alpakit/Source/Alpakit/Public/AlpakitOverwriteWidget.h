@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "Slate.h"
@@ -8,30 +6,27 @@
 #include "AlpakitSettings.h"
 #include "AssetData.h"
 
-class FModIndex
-{
-public:
-	int idx;
+struct FSelectedModInfo {
+	FString ModReference;
+	FString ModDisplayName;
 };
 
-class ALPAKIT_API SAlpakitOverwriteWidget : public SCompoundWidget
-{
+class ALPAKIT_API SAlpakitOverwriteWidget : public SCompoundWidget {
 public:
-	SLATE_BEGIN_ARGS(SAlpakitOverwriteWidget)
-	{}
+	SLATE_BEGIN_ARGS(SAlpakitOverwriteWidget) {}
 	SLATE_END_ARGS()
 
-	/** Constructs this widget with InArgs */
 	void Construct(const FArguments& InArgs);
 	void SetPathsToOverwrite(TArray<FAssetIdentifier> SelectedIdentifiers);
-
+	void SaveSettings() const;
 private:
-	UAlpakitSettings* Settings;
-
+	UAlpakitSettings* AlpakitSettings;
 	TArray<FAssetIdentifier> SelectedPaths;
+	TSharedPtr<SListView<TSharedPtr<FSelectedModInfo>>> ListViewWidget;
+	TArray<TSharedPtr<FSelectedModInfo>> Items;
 
-	TSharedPtr<SListView<TSharedPtr<FModIndex>>> ListViewWidget;
+	ECheckBoxState DoesModHaveAllOverwrites(const FSelectedModInfo& ModInfo);
+	void ToggleOverwritesForMod(const FSelectedModInfo& ModInfo, bool bRemoveOverwrites);
 	
-	TArray<TSharedPtr<FModIndex>> Items;
-	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FModIndex> Item, const TSharedRef<STableViewBase>& OwnerTable);
+	TSharedRef<ITableRow> OnGenerateRowForList(TSharedPtr<FSelectedModInfo> Item, const TSharedRef<STableViewBase>& OwnerTable);
 };

@@ -17,9 +17,6 @@ void AInitGameWorld::PreInit_Implementation() {
 
 void AInitGameWorld::PreLoadModContent() {
 	//Register subsystem holders
-	for (const TSubclassOf<UModSubsystemHolder> SubsystemHolder : mModSubsystems_DEPRECATED) {
-		FSubsystemInfoHolder::RegisterSubsystemHolder(SubsystemHolder);
-	}
 }
 
 static TArray<FString> ProviderClassNamesRegistered;
@@ -69,15 +66,6 @@ void AInitGameWorld::LoadModContent() {
 			ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints));
 		}
 		SML::Logging::info(TEXT("Registered %d AWESOME sink entries for mod %s"), *this->GetClass()->GetPathName());
-	}
-	//Register tooltip providers
-	for (UClass* ProviderClass : GlobalItemTooltipProviders_DEPRECATED) {
-		FString ClassName = ProviderClass->GetPathName();
-		if (!ProviderClassNamesRegistered.Contains(ClassName)) {
-			ProviderClassNamesRegistered.Add(ClassName);
-			UObject* ProviderObject = NewObject<UObject>(UItemTooltipHandler::StaticClass(), ProviderClass);
-			UItemTooltipHandler::RegisterGlobalTooltipProvider(ProviderObject);
-		}
 	}
 }
 

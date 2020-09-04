@@ -82,22 +82,6 @@ public:
 	TArray<TSubclassOf<AChatCommandInstance>> mChatCommands;
 
 	/**
-	 * List of subsystem holders to register
-	 * @deprecated Use InitGameInstance instead, this will be removed soon
-	 */
-	UPROPERTY()
-	TArray<TSubclassOf<UModSubsystemHolder>> mModSubsystems_DEPRECATED;
-
-	/**
-	 * List of classes for objects implementing ISMLItemTooltipProvider
-	 * These will be registered on startup and used to obtain additional description
-	 * text/widget for all items
-	 * @deprecated Use InitGameInstance instead, this will be removed soon
-	 */
-	UPROPERTY()
-	TArray<UClass*> GlobalItemTooltipProviders_DEPRECATED;
-
-	/**
 	 * Table to use for obtaining AWESOME resource sink item point values
 	 * for items added by this mod
 	 */
