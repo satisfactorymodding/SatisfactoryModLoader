@@ -298,6 +298,13 @@ void IterateDependencies(TMap<FString, FModLoadingEntry>& loadingEntries,
 	bool optional) {
 
 	for (auto& pair : dependencies) {
+		if (!loadingEntries.Contains(pair.Key) && !optional)
+		{
+			const FString reason = TEXT("not installed");
+			const FString message = FString::Printf(TEXT("%s requires %s(%s): %s"), *selfInfo.Modid, *pair.Key, *pair.Value.String(), *reason);
+			missingDependencies.Add(message);
+			continue;
+		}
 		FModLoadingEntry& dependencyEntry = loadingEntries[pair.Key];
 		FModInfo& depInfo = dependencyEntry.ModInfo;
 		if (pair.Key != "@ORDER:LAST") {

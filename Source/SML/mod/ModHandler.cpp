@@ -277,13 +277,15 @@ void FModHandler::CheckDependencies() {
 	}
 	//check for missing dependencies
 	if (missingDependencies.Num() > 0) {
-		LoadingProblems.Add(TEXT("Found missing dependencies:"));
+		LoadingProblems.Add(TEXT("\nFound missing dependencies:"));
 		SML::Logging::error(TEXT("Found missing dependencies:"));
 		for (auto& dependencyLine : missingDependencies) {
 			SML::Logging::error(*dependencyLine);
 			LoadingProblems.Add(dependencyLine);
 		}
-		SML::ShutdownEngine(TEXT("Cannot continue loading without dependencies"));
+		FString out = "Cannot continue loading without dependencies \n";
+		out = out.Append(FString::Join(LoadingProblems, TEXT("\n"))).Append("\n");
+		SML::ShutdownEngine(*out);
 		return;
 	}
 	//perform initial dependency sorting
