@@ -50,6 +50,16 @@ class SML_API AChatCommandInstance : public AInfo {
 	GENERATED_BODY()
 public:
 	AChatCommandInstance();
+private:
+	friend class AChatCommandSubsystem;
+	
+	UPROPERTY(BlueprintReadOnly)
+    FString ModReference;
+public:
+	/**
+    * ModId of the mod registering the command
+    */
+	FORCEINLINE FString GetOwnerModReference() const { return ModReference; }
 	
 	/**
 	 * Whenever this command can only be used by player sender
@@ -65,12 +75,6 @@ public:
 	 */
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	int32 MinNumberOfArguments;
-	
-	/**
-	* ModId of the mod registering the command
-	*/
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	FString ModId;
 
 	/**
 	 * Name of the command
@@ -155,9 +159,10 @@ public:
 	* Will return silently if command with same qualified name already exists
 	*
 	* @param Command Command data to register
+	* @param ModReference mod reference
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Utilities|ChatCommand")
-	void RegisterCommand(TSubclassOf<AChatCommandInstance> Command);
+	void RegisterCommand(const FString& ModReference, TSubclassOf<AChatCommandInstance> Command);
 
 	/**
 	* Parses command line and executes given command from the face of the given player

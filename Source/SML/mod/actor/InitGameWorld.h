@@ -1,5 +1,6 @@
 #pragma once
 
+#include "BasicModInit.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "FGSchematic.h"
@@ -8,6 +9,8 @@
 #include "mod/ModSubsystems.h"
 #include "InitGameWorld.generated.h"
 
+enum class ELifecyclePhase : uint8;
+
 /**
  * This actor is spawned every time game world is loaded
  * It will load schematics, resource trees, commands and other things your mod adds
@@ -15,51 +18,40 @@
  * For SML to load your InitGameWorld subclass, it should be located exactly at
  * /Game/YourModReference/InitGameWorld
  */
-UCLASS(Abstract, Blueprintable, HideCategories = ("Actor Tick", Rendering, Replication, Input, Actor, Collision, LOD, Cooking))
-class SML_API AInitGameWorld : public AActor {
+UCLASS(Abstract, Blueprintable)
+class SML_API AInitGameWorld : public ABasicModInit {
 	GENERATED_BODY()
 public:
 	/**
-	 * Called before subsystem initialization early during the world init
-	 * Most things are unsafe to do here, so use carefully
-	 * @deprecated Due to presence of InitGameInstance and not obvious ordering behavior
+	 * Called after UWorld has been populated with actors for play
+	 * Only basic initialization of world and actors has been performed at this point,
+	 * so be very careful at what you do.
 	 */
-	UFUNCTION(BlueprintNativeEvent, meta = (DeprecatedFunction, DeprecationMessage = "Use InitGameInstance instead."))
-	void PreInit();
-
-	/**
-	 * Called at the same time as PreInit, and initializes
-	 * schematic holders.
-	 * @deprecated Due to presence of InitGameInstance and not obvious ordering behavior
-	 */
-	UE_DEPRECATED(4.23, "Use InitGameInstance for early initialization instead")
-	virtual void PreLoadModContent();
-	
-	/**
-	 * Called after map has been loaded and subsystems are initialized
-	 */
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintImplementableEvent)
 	void Init();
 
 	/**
-	 * Called when the game save is fully loaded and the player is spawned
-	 * You don't have to load your schematics in here, they are loaded by SML
+	 * Called when map has been fully loaded by the engine
+	 * WARNING! Do not try to use PlayerController at this point -
+	 * It's not initialized for clients connecting to the remote host yet
 	 */
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintImplementableEvent)
 	void PostInit();
 
 	/**
-	 * Called roughly in the same time as PostInit, and handles
+	 * Called prior to PostInit, and handles
 	 * registering content in fields declared below automatically
 	 */
-	virtual void LoadModContent();
+	virtual void InitDefaultContent();
 
-	/**
-	 * Called when player controller is created
-	 * Called on both client and server
-	 */
-	UFUNCTION(BlueprintNativeEvent)
-	void PlayerJoined(AFGPlayerController* Player);
+	/** Called at the same time as Init(), can be overriden in C++ */
+	virtual void InitNative();
+
+	/** Called at the same time as PostInit(), can be overriden in C++ */
+	virtual void PostInitNative();
+private:
+    /** Called when mod loader dispatches new lifecycle phase */
+    virtual void DispatchLifecyclePhase(ELifecyclePhase LifecyclePhase) override;
 public:
 	/**
 	 * List of schematics that will be automatically registered

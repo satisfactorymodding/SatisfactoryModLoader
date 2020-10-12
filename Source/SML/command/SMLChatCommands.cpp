@@ -2,10 +2,8 @@
 #include "ChatCommandLibrary.h"
 #include "SatisfactoryModLoader.h"
 #include "player/PlayerControllerHelper.h"
-#include "AkComponent.h"
 
 AHelpCommandInstance::AHelpCommandInstance() {
-	ModId = TEXT("SML");
 	CommandName = TEXT("help");
 	Usage = TEXT("/help - Command help");
 	Aliases.Add(TEXT("?"));
@@ -32,7 +30,6 @@ EExecutionStatus AHelpCommandInstance::ExecuteCommand_Implementation(UCommandSen
 }
 
 AInfoCommandInstance::AInfoCommandInstance() {
-	ModId = TEXT("SML");
 	CommandName = TEXT("info");
 	Usage = TEXT("/info - Information about environment");
 	Aliases.Add(TEXT("version"));
@@ -53,7 +50,6 @@ EExecutionStatus AInfoCommandInstance::ExecuteCommand_Implementation(UCommandSen
 }
 
 APlayerListCommandInstance::APlayerListCommandInstance() {
-	ModId = TEXT("SML");
 	CommandName = TEXT("list");
 	Usage = TEXT("/list - List players online");
 	Aliases.Add(TEXT("players"));

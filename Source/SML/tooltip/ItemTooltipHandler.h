@@ -34,7 +34,7 @@ public:
      * Object should implement ISMLItemTooltipProvider
      */
     UFUNCTION(BlueprintCallable)
-    static void RegisterGlobalTooltipProvider(UObject* TooltipProvider);
+    static void RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider);
     
     /**
      * Returns formatted item name obtained from InventoryStack
@@ -52,6 +52,10 @@ public:
     static FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
     static TArray<UWidget*> CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+private:
+    /** Array of registered tooltip providers, UPROPERTY to avoid garbage collection */
+    UPROPERTY()
+    TArray<UObject*> GlobalTooltipProviders;
 };
 
 UINTERFACE( Blueprintable )

@@ -20,7 +20,6 @@
 #include "Misc/App.h"
 #include "util/Internal.h"
 #include "CoreDelegates.h"
-#include "CoreRedirects.h"
 #include "FGGameMode.h"
 #include "WindowsPlatformCrashContext.h"
 #include "mod/ModHandler.h"
@@ -193,7 +192,7 @@ namespace SML {
 	void PostInitializeBasicModLoader() {
 		SML::Logging::info(TEXT("Basic Post-Initialization Done!"));
 	}
-	
+
 	//called by a bootstrapper off the engine thread during process initialization
 	//you should not access engine at that point since for now no engine code was executed
 	void BootstrapSML(BootstrapAccessors& accessors) {
@@ -224,10 +223,10 @@ namespace SML {
 		modHandlerPtr->CheckDependencies();
 
 		//C++ hooks can be registered very early in the engine initialization
-		modHandlerPtr->AttachLoadingHooks();
 		USMLPlayerComponent::Register();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
+
 		//Load DLL mods very early for UObjects stuff to get registered
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Construction phase finished!"));
@@ -251,6 +250,9 @@ namespace SML {
 			SML::DumpSatisfactoryAssets();
 		}
 
+		//Subscribe to engine delegates related to lifecycle prior to loading mods
+		modHandlerPtr->SubscribeToLifecycleEvents();
+		
 		SML::Logging::info(TEXT("Loading Mods..."));
 		modHandlerPtr->LoadMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Post Initialization finished!"));
@@ -260,6 +262,9 @@ namespace SML {
 			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
 			SML::DumpSatisfactoryAssets();
 		}
+
+		//Spawn game instance global actors at this point
+		modHandlerPtr->InitializeGameInstance();
 
 		//Blueprint hooks are registered here, after engine initialization
 		GRegisterOfflinePlayHandler();

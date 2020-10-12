@@ -115,10 +115,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, bool accessedViaCheats = false );
 
+//MODDING EDIT: hide AddAvailableSchematic to force ContentRegistry usage
+private:
 	/** adds a schematic to available schematics */
-	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+	UFUNCTION(BlueprintCallable, Category = "Schematic", BlueprintInternalUseOnly)
 	void AddAvailableSchematic( TSubclassOf< UFGSchematic > schematicClassToAdd );
-	
+public:
 	/** Gives you the base cost, after random, for a schematic */
 	UFUNCTION( BlueprintPure, DisplayName = "GetCostFor_Deprecated", Category = "Schematic", meta = ( DeprecatedFunction, DeprecationMessage = "Get the cost from the Schematic directly" ) )
 	TArray< FItemAmount > GetCostFor( TSubclassOf< UFGSchematic > schematic );
@@ -204,7 +206,10 @@ private:
 	void AddSchematicPayOff( TSubclassOf< class UFGSchematic > schematic, const TArray< FItemAmount >& amount );
 	void RemoveSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
 
-protected:	
+protected:
+	//MODDING EDIT: expose access to internal state to content registry
+	friend class AModContentRegistry;
+	
 	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */
 	UPROPERTY()
 	TArray< TSubclassOf< UFGSchematic > > mAllSchematics;
