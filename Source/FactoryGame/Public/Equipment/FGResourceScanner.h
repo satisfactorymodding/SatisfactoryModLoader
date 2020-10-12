@@ -94,6 +94,9 @@ protected:
 	virtual void OnScanPressed();
 	virtual void OnScanReleased();
 
+public:
+	FORCEINLINE void GenerateNodeClustersAccessor() { GenerateNodeClusters(); }
+protected:
 	/** Constructs the list of nodes cluster used when scanning */
 	void GenerateNodeClusters();
 
