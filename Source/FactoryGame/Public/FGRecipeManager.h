@@ -84,6 +84,9 @@ private:
 	void FilterRecipesByProducer( const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes );
 
 private:
+	//MODDING EDIT: Expose to AModContentRegistry
+	friend class AModContentRegistry;
+	
 	/** All recipes that are available to the producers, i.e. build gun, workbench, manufacturers etc. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< UFGRecipe > > mAvailableRecipes;

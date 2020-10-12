@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "FGGameInstance.h"
 #include "Object.h"
 #include "GameFramework/PlayerInput.h"
 
@@ -6,49 +7,41 @@
 
 class UModSubsystemHolder;
 
-/* Holds information about individual key binding registration */
+/** Holds information about individual key binding registration */
 USTRUCT(BlueprintType)
-struct FModKeyBindingInfo {
+struct SML_API FModKeyBindingInfo {
     GENERATED_BODY()
     
-    /** Mod reference of the mod this key binding belongs to */
-    UPROPERTY(EditAnywhere)
-    FString ModReference;
-    
-    /* Information about key binding being registered. ActionName should be prefixed with ModReference. */
+    /** Information about key binding being registered. ActionName should be prefixed with ModReference. */
     UPROPERTY(EditAnywhere)
     FInputActionKeyMapping KeyMapping;
     
-    /* Display name of Key Binding in Options|Controls menu */
+    /** Display name of Key Binding in Options|Controls menu */
     UPROPERTY(EditAnywhere)
     FText DisplayName;
 };
 
-/* Holds information about individual axis binding registration */
+/** Holds information about individual axis binding registration */
 USTRUCT(BlueprintType)
-struct FModAxisBindingInfo {
+struct SML_API FModAxisBindingInfo {
     GENERATED_BODY()
     
-    /** Mod reference of the mod this key binding belongs to */
-    UPROPERTY(EditAnywhere)
-    FString ModReference;
-    
-    /* Information about Positive (Scale > 0) axis mapping. AxisNames should be the same and prefixed with ModReference. */
+    /** Information about Positive (Scale > 0) axis mapping. AxisName should be the same and prefixed with ModReference. */
     UPROPERTY(EditAnywhere)
     FInputAxisKeyMapping PositiveAxisMapping;
-    /* Information about Negative (Scale < 0) axis mapping. AxisNames should be the same and prefixed with ModReference. */
+    /** Information about Negative (Scale < 0) axis mapping. AxisName should be the same and prefixed with ModReference. */
     UPROPERTY(EditAnywhere)
     FInputAxisKeyMapping NegativeAxisMapping;
     
-    /* Display name of *Positive* Axis Binding in Options|Controls menu */
+    /** Display name of *Positive* Axis Binding in Options|Controls menu */
     UPROPERTY(EditAnywhere)
     FText PositiveAxisDisplayName;
-    /* Display name of *Negative* Axis Binding in Options|Controls menu */
+    /** Display name of *Negative* Axis Binding in Options|Controls menu */
     UPROPERTY(EditAnywhere)
     FText NegativeAxisDisplayName;
 };
 
-UCLASS(Abstract, Blueprintable, HideCategories = ("Actor Tick", Rendering, Replication, Input, Actor, Collision, LOD, Cooking))
+UCLASS(Abstract, Blueprintable)
 class SML_API UInitGameInstance : public UObject {
     GENERATED_BODY()
 public:
@@ -59,11 +52,29 @@ public:
      * subset of functions you can call here is pretty limited
      * Notice that it will be called once per game startup, unlike InitGame/MenuWorld
      */
-    UFUNCTION(BlueprintNativeEvent)
+    UFUNCTION(BlueprintImplementableEvent)
     void Init();
 
-    /* Called along with Init at the same time, used to register stuff in fields below automatically */
-    void LoadModContent();
+    /** Initializes default content registered in fields of init object. Called before Init */
+    virtual void InitDefaultContent();
+
+    /** ModReference of the mod this Init Object belongs to */
+    UFUNCTION(BlueprintPure)
+    FORCEINLINE FString GetOwnerModReference() const { return OwnerModReference; }
+
+    /** GameInstance this Init Object is attached to */
+    UFUNCTION(BlueprintPure)
+    FORCEINLINE UFGGameInstance* GetOwnerGameInstance() const { return OwnerGameInstance; }
+private:
+    friend class UGameInstanceInitSubsystem;
+    /** Private field holding owner mod reference, accessible directly only by mod loader */
+    FString OwnerModReference;
+    /** Private field holding owner game instance object. */
+    UPROPERTY()
+    UFGGameInstance* OwnerGameInstance;
+
+    /** Dispatches initialization to class functions. */
+    void DispatchInitialize();
 public:
     /** Key Bindings for this mod to be registered */
     UPROPERTY(EditDefaultsOnly, Category = "Key Bindings")

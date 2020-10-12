@@ -88,6 +88,36 @@ namespace SML {
 			log(LogType::Fatal, arg0, args...);
 		}
 
+		/** Family of logging functions that automatically apply Printf-style formatting to the input message */
+		namespace Format {
+			template <typename FmtType, typename... Types>
+			void debug(const FmtType& Fmt, Types... Args) {
+				if (GetSmlConfig().bDebugLogOutput) {
+					log(LogType::Debug, *FString::Printf(Fmt, Args...));
+				}
+			}
+
+			template <typename FmtType, typename... Types>
+            void info(const FmtType& Fmt, Types... Args) {
+				log(LogType::Info, *FString::Printf(Fmt, Args...));
+			}
+
+			template <typename FmtType, typename... Types>
+            void warning(const FmtType& Fmt, Types... Args) {
+				log(LogType::Warning, *FString::Printf(Fmt, Args...));
+			}
+
+			template <typename FmtType, typename... Types>
+            void error(const FmtType& Fmt, Types... Args) {
+				log(LogType::Error, *FString::Printf(Fmt, Args...));
+			}
+
+			template <typename FmtType, typename... Types>
+            void fatal(const FmtType& Fmt, Types... Args) {
+				log(LogType::Fatal, *FString::Printf(Fmt, Args...));
+			}
+		}
+
 		inline const TCHAR* getLogTypeStr(LogType type) {
 			switch (type) {
 			case Debug: return TEXT("DEBUG");

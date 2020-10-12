@@ -1,56 +1,67 @@
-// Copyright 1998-2018 Epic Games, Inc. All Rights Reserved.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "ContentBrowserDelegates.h"
-#include "Modules/ModuleManager.h"
 #include "AlpakitSettings.h"
 #include "AssetData.h"
-#include "AssetRegistryModule.h"
-#include "ContentBrowserDelegates.h"
+#include "JsonObject.h"
 
-class FToolBarBuilder;
-class FMenuBuilder;
+DECLARE_LOG_CATEGORY_EXTERN(LogAlpakit, Verbose, Verbose);
 
-class FAlpakitModule : public IModuleInterface
-{
+struct FPakListEntry {
+	FString AssetFilePathOnDisk;
+	FString AssetPathInPakFile;
+	FString ToString() const;
+};
+
+struct FModPackingProgress {
+	TArray<FAlpakitMod> ModsToPack;
+	int32 CurrentModIndex;
+	TArray<FPakListEntry> PakListEntries;
+	TFunction<void(bool bSuccess, const FString& FailureReason)> OriginalFinishCallback;
+};
+
+class FAlpakitModule : public IModuleInterface {
 public:
-
 	/** IModuleInterface implementation */
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
-	
-	/** This function will be bound to Command (by default it will bring up plugin window) */
-	void PluginButtonClicked();
-	
+
+	/** Packs mod assets according to UAlpakitSettings configuration */
+	virtual void PackModAssets(TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinished);
 private:
-
-	void AddToolbarExtension(FToolBarBuilder& Builder);
-	void AddMenuExtension(FMenuBuilder& Builder);
-
-	TSharedRef<class SDockTab> OnSpawnPluginTab(const class FSpawnTabArgs& SpawnTabArgs);
-	TSharedRef<class SDockTab> SpawnAlpakitOverwriteTab(const class FSpawnTabArgs& SpawnTabArgs);
-	void OnExtendContentBrowserCommands(TSharedRef<FUICommandList> CommandList, FOnContentBrowserGetSelection GetSelectionDelegate);
-	void OpenAlpakitOverwriteUI(TArray<FName> SelectedPackages);
-	void OpenAlpakitOverwriteUI(TArray<FAssetIdentifier> SelectedIdentifiers);
-	TArray<FName> GetContentBrowserSelectedAssetPackages(FOnContentBrowserGetSelection GetSelectionDelegate);
-	void GetAssetDataInPaths(const TArray<FString>& Paths, TArray<FAssetData>& OutAssetData);
-	IAssetRegistry* AssetRegistry;
+	TSharedPtr<class FUICommandList> PluginCommands;
 	FDelegateHandle ContentBrowserCommandExtenderDelegateHandle;
 	FDelegateHandle ContentBrowserAssetExtenderDelegateHandle;
 	FDelegateHandle ContentBrowserPathExtenderDelegateHandle;
 	FDelegateHandle AssetEditorExtenderDelegateHandle;
-	void CreateAssetContextMenu(FMenuBuilder& MenuBuilder);
-	TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FAssetData>& SelectedAssets);
-	TSharedRef<FExtender> OnExtendContentBrowserPathSelectionMenu(const TArray<FString>& SelectedPaths);
-	TSharedRef<FExtender> OnExtendAssetEditor(const TSharedRef<FUICommandList> CommandList, const TArray<UObject*> ContextSensitiveObjects);
-
 	FConsoleCommandDelegate ConsoleCommandAlpakit;
 
-private:
-	TSharedPtr<class FUICommandList> PluginCommands;
-	bool HandleSettingsSaved();
-	void RegisterSettings();
-	void UnregisterSettings();
+	void FinishModAssetPacking(const FString& AutomationToolLogDir, const FString& AutomationToolReturnCode, TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinishedCallback);
+	static void RunUnrealPak(const FString& PakListFilePath, const FString& OutputPakFilePath, TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinishedCallback);
+	static void ProcessSingleModPackage(const TSharedPtr<FModPackingProgress>& PackingProgress);
+	static void PerformPostProcessTasks(const TSharedPtr<FModPackingProgress>& PackingProgress);
+	static void SerializeModInfoToDataJson(const TSharedRef<FJsonObject>& DataJson, const FAlpakitMod& ModInfo);
+
+	/** Returns automation tool log directory path used by UAT used with current engine */
+	static FString GetAutomationToolLogDir();
+	/** Returns project directory path, falling back to engine root with project name if necessary */
+	static FString GetProjectPathWithFallback();
+
+	void RegisterConsoleCommands();
+	void HandleAlpakitConsoleCommand();
+	
+	void OnExtendContentBrowserCommands(TSharedRef<FUICommandList> CommandList, FOnContentBrowserGetSelection GetSelectionDelegate);
+	void OpenAlpakitOverwriteUI(TArray<FName> SelectedPackages) const;
+	void OpenAlpakitOverwriteUI(TArray<FAssetIdentifier> SelectedIdentifiers) const;
+	TArray<FName> GetContentBrowserSelectedAssetPackages(FOnContentBrowserGetSelection GetSelectionDelegate) const;
+	void GetAssetDataInPaths(const TArray<FString>& Paths, TArray<FAssetData>& OutAssetData) const;
+
+	static void CreateAssetContextMenu(FMenuBuilder& MenuBuilder);
+	static TSharedRef<FExtender> OnExtendContentBrowserAssetSelectionMenu(const TArray<FAssetData>& SelectedAssets);
+	static TSharedRef<FExtender> OnExtendContentBrowserPathSelectionMenu(const TArray<FString>& SelectedPaths);
+	TSharedRef<FExtender> OnExtendAssetEditor(const TSharedRef<FUICommandList> CommandList, const TArray<UObject*> ContextSensitiveObjects);
+
+	void RegisterSettings() const;
+	void UnregisterSettings() const;
 };

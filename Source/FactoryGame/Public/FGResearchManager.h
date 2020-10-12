@@ -266,10 +266,13 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Research" )
 	bool mCanConductMultipleResearch;
 
-public: // MODDING EDIT
+protected:
+	// MODDING EDIT: expose access to internal state to content registry
+	friend class AModContentRegistry;
+	
 	UPROPERTY( Transient )
 	TArray<TSubclassOf<class UFGResearchTree>> mAllResearchTrees;
-protected:
+	
 	UPROPERTY( SaveGame, Replicated )
 	TArray<TSubclassOf<class UFGResearchTree>> mUnlockedResearchTrees;
 

@@ -7,6 +7,13 @@
 class FReflectionHelper {
 public:
     template <typename T>
+    static T* FindPropertyChecked(UStruct* Class, const TCHAR* PropertyName) {
+        T* Property = Cast<T>(Class->FindPropertyByName(PropertyName));
+        checkf(Property, TEXT("Property with given name not found in class: %s"), PropertyName);
+        return nullptr;
+    }
+    
+    template <typename T>
     static T* FindPropertyByShortName(UStruct* Class, const TCHAR* PropertyName) {
         for(UProperty* Property = Class->PropertyLink; Property; Property = Property->PropertyLinkNext) {
             if (Property->GetName().StartsWith(PropertyName)) {

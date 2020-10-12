@@ -3,6 +3,7 @@
 #include "mod/ModInfo.h"
 #include "CoreTypes.h"
 
+class ABasicModInit;
 class AInitGameWorld;
 class AInitMenuWorld;
 class UInitGameInstance;
@@ -38,6 +39,16 @@ struct FModPakLoadEntry {
 	TSubclassOf<UInitGameInstance> InitGameInstanceClass;
 	TSubclassOf<AInitGameWorld> InitGameWorldClass;
 	TSubclassOf<AInitMenuWorld> InitMenuWorldClass;
+	UClass* LegacyInitModClass;
+};
+
+enum class ELifecyclePhase : uint8 {
+	/** Dispatched right after mod actor is spawned */
+	CONSTRUCTION,
+	/** Dispatched when all mod actors are spawned in dependency order */
+    INITIALIZATION,
+	/** Dispatched when world is initialized in dependency order */
+    POST_INITIALIZATION
 };
 
 /**
@@ -53,7 +64,7 @@ private:
 
 	TMap<FString, FModContainer*> LoadedMods;
 	TArray<FModContainer*> LoadedModsList;
-	TArray<FString> LoadedModsModIDs;
+	TArray<FString> LoadedModReferences;
 	TArray<TWeakObjectPtr<AActor>> ModInitializerActorList;
 public:
     //we shouldn't be able to copy FModHandler, or move it
@@ -88,12 +99,8 @@ private:
 	void MountModPaks();
 	void LoadModLibraries(const BootstrapAccessors& Accessors, TMap<FString, IModuleInterface*>& LoadedModules);
 	void PopulateModList(const TMap<FString, IModuleInterface*>& LoadedModules);
-
-	void SpawnModActors(UWorld* World, bool bIsMenuWorld);
-	void PreInitializeModActors();
-	void InitializeModActors();
-	void PostInitializeModActors();
-	void HandlePlayerJoin(AFGPlayerController* PlayerController);
+    static void FindModActors(UWorld* World, TMap<FString, ABasicModInit*>& OutActorMap);
+	void SpawnModActors(UWorld* World, bool bIsMenuWorld, TMap<FString, ABasicModInit*>& OutActorMap);
 public:
     /**
 	* Load all mods from the given FString.
@@ -115,5 +122,14 @@ public:
 	*/
 	void LoadDllMods(const BootstrapAccessors& Accessors);
 
-	static void AttachLoadingHooks();
+	/**
+	 * Subscribes to engine/world lifetime events
+	 */
+	void SubscribeToLifecycleEvents();
+
+	/**
+	 * Performs InitGameInstance objects loading and initialization
+	 * Call only after mods have been loaded
+	 */
+	void InitializeGameInstance();
 };;

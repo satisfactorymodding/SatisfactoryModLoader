@@ -20,7 +20,6 @@
 #include "Misc/App.h"
 #include "util/Internal.h"
 #include "CoreDelegates.h"
-#include "CoreRedirects.h"
 #include "FGGameMode.h"
 #include "WindowsPlatformCrashContext.h"
 #include "mod/ModHandler.h"
@@ -38,6 +37,8 @@
 namespace SML {
 	/** Performs basic initialization of mod loader for both editor and shipping if it's not initialized already */
 	void EnsureModLoaderIsInitialized(const FString& GameRootDirectory);
+	/** Finishes basic initialization of mod loader for both editor and shipping */
+	void EnsureModLoaderIsPostInitialized();
 };
 
 bool CheckGameVersion(const long TargetVersion) {
@@ -70,8 +71,8 @@ void ParseConfig(const TSharedRef<FJsonObject>& JSON, SML::FSMLConfiguration& Co
 	Config.bDebugLogOutput = JSON->GetBoolField(TEXT("debug"));
 	Config.bConsoleWindow = JSON->GetBoolField(TEXT("consoleWindow"));
 	Config.bDumpGameAssets = JSON->GetBoolField(TEXT("dumpGameAssets"));
-	Config.DisabledCommands = SML::Map(JSON->GetArrayField(TEXT("disabledCommands")), [](auto It) { return It->AsString(); });
 	Config.bEnableCheatConsoleCommands = JSON->GetBoolField(TEXT("enableCheatConsoleCommands"));
+	Config.DisabledCommands = SML::Map(JSON->GetArrayField(TEXT("disabledChatCommands")), [](auto It) { return It->AsString(); });
 }
 
 TSharedRef<FJsonObject> CreateConfigDefaults() {
@@ -83,6 +84,7 @@ TSharedRef<FJsonObject> CreateConfigDefaults() {
 	Ref->SetBoolField(TEXT("consoleWindow"), false);
 	Ref->SetBoolField(TEXT("dumpGameAssets"), false);
 	Ref->SetBoolField(TEXT("enableCheatConsoleCommands"), false);
+	Ref->SetArrayField(TEXT("disabledChatCommands"), TArray<TSharedPtr<FJsonValue>>());
 	return Ref;
 }
 
@@ -94,6 +96,17 @@ extern void GRegisterBuildMenuHooks();
 extern void GRegisterOfflinePlayHandler();
 
 namespace SML {
+	//Forward declarations
+	void InitializeBasicModLoader(const FString& GameRootDirectory);
+	void PostInitializeBasicModLoader();
+	void AppendSymbolSearchPaths(FString& OutSearchPaths);
+	void RegisterCrashContextHooks();
+	void RegisterSMLCoreRedirects();
+	void PostInitializeSML();
+	void BeginCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName);
+	void EndCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName);
+	void FlushDebugSymbols();
+	
 	extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.3.0");
 	
 	//version of the SML mod loader, as specified in the SML.h
@@ -131,15 +144,6 @@ namespace SML {
 	//FString to the root of the game
 	static FString* rootGamePath;
 
-	void* ResolveGameSymbol(const char* SymbolName) {
-		return bootstrapAccessors->ResolveGameSymbol(SymbolName);
-	}
-
-	void PostInitializeSML();
-	void InitializeBasicModLoader(const FString& GameRootDirectory);
-	void AppendSymbolSearchPaths(FString& OutSearchPaths);
-	void RegisterCrashContextHooks();
-
 	void EnsureModLoaderIsInitialized(const FString& GameRootDirectory) {
 		static volatile bool bIsModLoaderInitialized = false;
 		if (!bIsModLoaderInitialized) {
@@ -148,7 +152,13 @@ namespace SML {
 		}
 	}
 
-	void PostInitializeBasicModLoader();
+	void EnsureModLoaderIsPostInitialized() {
+		static volatile bool bIsModLoaderPostInitialized = false;
+		if (!bIsModLoaderPostInitialized) {
+			PostInitializeBasicModLoader();
+			bIsModLoaderPostInitialized = true;
+		}
+	}
 
 	//Performs basic initialization of global variables both in editor and shipping
 	//Can be called on various phases of game setup so be careful at what you do
@@ -177,25 +187,12 @@ namespace SML {
 		activeConfiguration = new FSMLConfiguration;
 		ParseConfig(configJson, *activeConfiguration);
 		SML::Logging::info(TEXT("Basic Initialization Done!"));
-
-		if (GEngine != NULL && GEngine->IsInitialized()) {
-			//Engine is already initialized, call post initialize directly
-			PostInitializeBasicModLoader();
-		} else {
-			//Engine is not initialized yet, subscribe to post engine init
-			FCoreDelegates::OnPostEngineInit.AddStatic(PostInitializeBasicModLoader);
-		}
 	}
 
-	//Called both in editor and in shipping to finish basic mod loader initialization
 	void PostInitializeBasicModLoader() {
-		//Register SML InitMod and InitMenu redirects
-		TArray<FCoreRedirect> InitModRedirects;
-		InitModRedirects.Add(FCoreRedirect{ECoreRedirectFlags::Type_Class, TEXT("/Script/SML.SMLInitMenu"), TEXT("/Script/SML.InitMenuWorld")});
-		InitModRedirects.Add(FCoreRedirect{ECoreRedirectFlags::Type_Class, TEXT("/Script/SML.SMLInitMod"), TEXT("/Script/SML.InitGameWorld")});
-		FCoreRedirects::AddRedirectList(InitModRedirects, TEXT("SMLInitModRedirects"));
+		SML::Logging::info(TEXT("Basic Post-Initialization Done!"));
 	}
-	
+
 	//called by a bootstrapper off the engine thread during process initialization
 	//you should not access engine at that point since for now no engine code was executed
 	void BootstrapSML(BootstrapAccessors& accessors) {
@@ -226,10 +223,10 @@ namespace SML {
 		modHandlerPtr->CheckDependencies();
 
 		//C++ hooks can be registered very early in the engine initialization
-		modHandlerPtr->AttachLoadingHooks();
 		USMLPlayerComponent::Register();
 		FSubsystemInfoHolder::SetupHooks();
 		RegisterCrashContextHooks();
+
 		//Load DLL mods very early for UObjects stuff to get registered
 		modHandlerPtr->LoadDllMods(*bootstrapAccessors);
 		SML::Logging::info(TEXT("Construction phase finished!"));
@@ -237,8 +234,47 @@ namespace SML {
 		FCoreDelegates::OnPostEngineInit.AddStatic(PostInitializeSML);
 	}
 
-	void BeginCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName);
-	void EndCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName);
+	//called after primary engine initialization, it is safe
+	//to load modules, mount content packages and access most of the engine systems here
+	//however note that level could still be not loaded at that moment
+	void PostInitializeSML() {
+		//Ensure basic mod loader stuff is initialized earlier than mod loading,
+		//Since otherwise it will be triggered too late for core redirects to take effect
+		EnsureModLoaderIsPostInitialized();
+
+		//Register shipping console commands
+		RegisterConsoleCommands();
+
+		if (GetSmlConfig().bDumpGameAssets && GetSmlConfig().bDevelopmentMode) {
+			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
+			SML::DumpSatisfactoryAssets();
+		}
+
+		//Subscribe to engine delegates related to lifecycle prior to loading mods
+		modHandlerPtr->SubscribeToLifecycleEvents();
+		
+		SML::Logging::info(TEXT("Loading Mods..."));
+		modHandlerPtr->LoadMods(*bootstrapAccessors);
+		SML::Logging::info(TEXT("Post Initialization finished!"));
+		FlushDebugSymbols();
+
+		if (GetSmlConfig().bDumpGameAssets && !GetSmlConfig().bDevelopmentMode) {
+			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
+			SML::DumpSatisfactoryAssets();
+		}
+
+		//Spawn game instance global actors at this point
+		modHandlerPtr->InitializeGameInstance();
+
+		//Blueprint hooks are registered here, after engine initialization
+		GRegisterOfflinePlayHandler();
+		GRegisterBuildMenuHooks();
+		GRegisterMainMenuHooks();
+		UItemTooltipHandler::RegisterHooking();
+		UModNetworkHandler::Register();
+		UModKeyBindRegistry::RegisterHooking();
+		FRemoteVersionChecker::Register();
+	}
 	
 	//Register hooks for symbol resolution and enhanced crash info
 	void RegisterCrashContextHooks() {
@@ -287,36 +323,9 @@ namespace SML {
 		SML::Logging::info(TEXT("Flushing debug symbols"));
 		bootstrapAccessors->FlushDebugSymbols();
 	}
-	
-	//called after primary engine initialization, it is safe
-	//to load modules, mount paks and access most of the engine systems here
-	//however note that level could still be not loaded at that moment
-	void PostInitializeSML() {
-		SML::RegisterConsoleCommands();
-		
-		if (GetSmlConfig().bDumpGameAssets && GetSmlConfig().bDevelopmentMode) {
-			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
-			SML::DumpSatisfactoryAssets();
-		}
 
-		SML::Logging::info(TEXT("Loading Mods..."));
-		modHandlerPtr->LoadMods(*bootstrapAccessors);
-		SML::Logging::info(TEXT("Post Initialization finished!"));
-		FlushDebugSymbols();
-
-		if (GetSmlConfig().bDumpGameAssets && !GetSmlConfig().bDevelopmentMode) {
-			SML::Logging::info(TEXT("Game Asset Dump requested in configuration, performing..."));
-			SML::DumpSatisfactoryAssets();
-		}
-
-		//Blueprint hooks are registered here, after engine initialization
-		GRegisterOfflinePlayHandler();
-		GRegisterBuildMenuHooks();
-		GRegisterMainMenuHooks();
-		UItemTooltipHandler::RegisterHooking();
-		UModNetworkHandler::Register();
-		UModKeyBindRegistry::RegisterHooking();
-		FRemoteVersionChecker::Register();
+	void* ResolveGameSymbol(const char* SymbolName) {
+		return bootstrapAccessors->ResolveGameSymbol(SymbolName);
 	}
 
 	SML_API FString GetModDirectory() {
@@ -333,6 +342,10 @@ namespace SML {
 
 	BootstrapAccessors* GetBootstrapperAccessors() {
 		return bootstrapAccessors;
+	}
+
+	FString GetRawModLoaderVersionString() {
+		return modLoaderVersionString;
 	}
 
 	SML_API const SML::FSMLConfiguration& GetSmlConfig() {

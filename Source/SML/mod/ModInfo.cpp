@@ -114,8 +114,8 @@ bool FModInfo::CreateFromJson(const FJsonObject& Object, FModInfo& ModInfo, FStr
 	ModInfo.RemoteVersion.RemoteVersion = FVersionRange::CreateRangeWithMinVersion(ModInfo.Version);
 
 	//True if we can accept any remote version, even if mod doesn't exist on remote
-	if (Object.GetBoolField(TEXT("accept_any_remote_version"))) {
-		ModInfo.RemoteVersion.bAcceptAnyRemoteVersion = true;
+	if (Object.HasTypedField<EJson::Boolean>(TEXT("accept_any_remote_version"))) {
+		ModInfo.RemoteVersion.bAcceptAnyRemoteVersion = Object.GetBoolField(TEXT("accept_any_remote_version"));
 	}
 	//Remote version overrides accept any remote version and allows any predicate for remote version
 	if (Object.HasTypedField<EJson::String>(TEXT("remote_version"))) {

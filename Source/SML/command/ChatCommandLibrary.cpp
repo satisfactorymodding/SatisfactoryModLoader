@@ -63,9 +63,9 @@ AChatCommandSubsystem* AChatCommandSubsystem::Get(UObject* WorldContext) {
 }
 
 void AChatCommandSubsystem::Init() {
-	RegisterCommand(AHelpCommandInstance::StaticClass());
-	RegisterCommand(AInfoCommandInstance::StaticClass());
-	RegisterCommand(APlayerListCommandInstance::StaticClass());
+	RegisterCommand(TEXT("SML"), AHelpCommandInstance::StaticClass());
+	RegisterCommand(TEXT("SML"), AInfoCommandInstance::StaticClass());
+	RegisterCommand(TEXT("SML"), APlayerListCommandInstance::StaticClass());
 }
 
 TArray<AFGPlayerController*> AChatCommandSubsystem::ParsePlayerName(UCommandSender* Caller, const FString& Name, UObject* WorldContext) {
@@ -86,29 +86,27 @@ FString MakeFQCommandName(const FString& ModId, const FString& Name) {
 	return FString::Printf(TEXT("%s:%s"), *ModId, *Name);
 }
 
-void AChatCommandSubsystem::RegisterCommand(TSubclassOf<AChatCommandInstance> CommandClass) {
-	const FModHandler& ModHandler = *SML::GetModHandler();
+void AChatCommandSubsystem::RegisterCommand(const FString& ModReference, TSubclassOf<AChatCommandInstance> CommandClass) {
 	//Ensure that mod with specified ModId is loaded and active
-
 	AChatCommandInstance* CommandCDO = CommandClass->GetDefaultObject<AChatCommandInstance>();
-	checkf(ModHandler.IsModLoaded(CommandCDO->ModId), TEXT("Invalid ModId provided for RegisterCommand: %s"), *CommandCDO->ModId);
-	const FString FqCommandName = MakeFQCommandName(CommandCDO->ModId, CommandCDO->CommandName);
+	const FString FqCommandName = MakeFQCommandName(ModReference, CommandCDO->CommandName);
 	//Only register command if it's not already registered
 	if (!CommandByNameMap.Contains(FqCommandName)) {
-		const FString ActorName = FString::Printf(TEXT("ChatCommand_%s_%s"), *CommandCDO->ModId, *CommandCDO->CommandName);
+		const FString ActorName = FString::Printf(TEXT("ChatCommand_%s_%s"), *ModReference, *CommandCDO->CommandName);
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Name = *ActorName;
 		AChatCommandInstance* Command = GetWorld()->SpawnActor<AChatCommandInstance>(CommandClass, SpawnParams);
 		check(Command);
+		Command->ModReference = ModReference;
 		TArray<FString> AllCommandNames;
 		AllCommandNames.Add(Command->CommandName);
 		AllCommandNames.Append(Command->Aliases);
 		//register all command aliases
 		for (const FString& CommandAlias : AllCommandNames) {
-			const FString FqCommandAlias = MakeFQCommandName(CommandCDO->ModId, CommandAlias);
+			const FString FqCommandAlias = MakeFQCommandName(ModReference, CommandAlias);
 			CommandByNameMap.Add(CommandAlias.ToLower(), Command);
 			CommandByNameMap.Add(FqCommandAlias.ToLower(), Command);
-			SML::Logging::info(TEXT("Registering chat command with name "), *FqCommandAlias, TEXT(" from mod "), *CommandCDO->ModId);
+			SML::Logging::info(TEXT("Registering chat command with name "), *FqCommandAlias, TEXT(" from mod "), *ModReference);
 		}
 		//Register command entry
 		RegisteredCommands.Add(Command);
@@ -138,7 +136,7 @@ EExecutionStatus AChatCommandSubsystem::RunChatCommand(const FString& CommandLin
 		PrintCommandNotFound(Sender);
 		return EExecutionStatus::BAD_ARGUMENTS;
 	}
-	const FString CommandFQName = MakeFQCommandName(CommandEntry->ModId, CommandEntry->CommandName);
+	const FString CommandFQName = MakeFQCommandName(CommandEntry->GetOwnerModReference(), CommandEntry->CommandName);
 	if (SML::GetSmlConfig().DisabledCommands.Contains(CommandFQName) && Sender->IsPlayerSender()) {
 		Sender->SendChatMessage(TEXT("This command has been disabled by server owner."), FLinearColor::Red);
 		return EExecutionStatus::INSUFFICIENT_PERMISSIONS;

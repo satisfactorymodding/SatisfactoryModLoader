@@ -12,10 +12,10 @@
 #include "hooking.h"
 #include "FGPlayerController.h"
 #include "ModHandlerInternal.h"
-#include "FGGameInstance.h"
 #include "FGGameState.h"
-#include "actor/InitGameWorld.h"
-#include "actor/InitMenuWorld.h"
+#include "GameInstanceInitSubsystem.h"
+#include "actor/SMLInitMod.h"
+#include "SML/registry/ModContentRegistry.h"
 
 using namespace SML;
 
@@ -104,7 +104,7 @@ void FModHandler::PopulateModList(const TMap<FString, IModuleInterface*>& loaded
 		}
 		LoadedModsList.Add(modContainer);
 		LoadedMods.Add(loadingEntry.ModInfo.Modid, modContainer);
-		LoadedModsModIDs.Add(loadingEntry.ModInfo.Modid);
+		LoadedModReferences.Add(loadingEntry.ModInfo.Modid);
 	}
 }
 
@@ -126,6 +126,11 @@ void FModHandler::MountModPaks() {
 			}
 			FCoreDelegates::OnMountPak.Execute(pakFilePathStr, pakFileDef.LoadingPriority, nullptr);
 		}
+	}
+
+	//Initialize overwrite lists for mods prior to loading anything
+	for (auto& loadingEntry : SortedModLoadList) {
+		AModContentRegistry::DiscoverOverwriteListForModReference(loadingEntry.ModInfo.Modid);
 	}
 
 	//Initialize UClasses for InitMod and InitMenu for each mod, preload their contents on the start and pin them in GC Root
@@ -152,109 +157,117 @@ void FModHandler::LoadMods(const BootstrapAccessors& accessors) {
 	CheckStageErrors(TEXT("mod initialization"));
 }
 
-#pragma optimize("", off)
+#define FOR_EACH_MOD_INITIALIZER_ORDERED(ActorMap, Action) \
+	for (const FString& ModReference : LoadedModReferences) { \
+		ABasicModInit* const* ModInitializer = ActorMap.Find(ModReference); \
+		if (ModInitializer != nullptr) { \
+			Action(*ModInitializer); \
+		} \
+	}
 
-void FModHandler::AttachLoadingHooks() {
-	SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
-		SML::GetModHandler()->PreInitializeModActors();
-		SML::Logging::info(TEXT("Finished pre-subsystem-initializing mod actors"));
-	});
-	SUBSCRIBE_METHOD(AGameState::ReceivedGameModeClass, [](auto&, AGameStateBase* gameMode) {
-		UWorld* World = gameMode->GetWorld();
-        const FString MapName = World->GetPathName();
-		SML::Logging::info(TEXT("Initializing on map "), *MapName);
-		SML::GetModHandler()->SpawnModActors(World, SML::IsMenuMapName(MapName));
-		SML::GetModHandler()->InitializeModActors();
-		SML::Logging::info(TEXT("Finished initializing mod actors"));
-	});
-	
-	SUBSCRIBE_METHOD(UFGGameInstance::LoadComplete, [](auto&, UFGGameInstance*, const float, const FString& MapName) {
-		SML::GetModHandler()->PostInitializeModActors();
-		SML::Logging::info(TEXT("Finished post initializing mod actors"));
+UClass* GetActiveInitializerClass(const FModPakLoadEntry& Initializer, const bool bIsMenuWorld) {
+	UClass* TargetActorClass;
+	if (!bIsMenuWorld) {
+		TargetActorClass = Initializer.InitGameWorldClass;
+		if (TargetActorClass == NULL) {
+			TargetActorClass = Initializer.LegacyInitModClass;
+		}
+	} else {
+		TargetActorClass = Initializer.InitMenuWorldClass;
+	}
+	return TargetActorClass;
+}
+
+FString FormatModActorName(const FString& ModReference, const bool bIsMenuWorld) {
+	if (!bIsMenuWorld) {
+		return FString::Printf(TEXT("InitGameWorld_%s"), *ModReference);
+	}
+	return FString::Printf(TEXT("InitMenuWorld_%s"), *ModReference);
+}
+
+bool IsMenuWorldObject(UWorld* World) {
+	return IsMenuMapName(World->GetMapName());
+}
+
+void FModHandler::SubscribeToLifecycleEvents() {
+	//Spawn mod actors as soon as world actors are initialized (e.g static map objects are spawned)
+	FWorldDelegates::OnWorldInitializedActors.AddLambda([this](const UWorld::FActorsInitializedParams Params){
+		UWorld* World = Params.World;
+		const bool bIsMenuWorld = IsMenuWorldObject(World);
+		TMap<FString, ABasicModInit*> SpawnedActorMap;
+		//Construct mod actors and dispatch CONSTRUCTION on them immediately
+		Logging::info(TEXT("Constructing mod actors on map "), *World->GetMapName());
+		SpawnModActors(World, bIsMenuWorld, SpawnedActorMap);
+		//Initialize mod actors and dispatch INITIALIZATION on them
+		Logging::info(TEXT("Initializing mod actors"));
+		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
+			ModInit->DispatchLifecyclePhase(ELifecyclePhase::INITIALIZATION);
+		});
+		Logging::info(TEXT("Finished initializing mod actors"));
 	});
 
-	SUBSCRIBE_METHOD(AFGPlayerController::BeginPlay, [](auto&, AFGPlayerController* controller) {
-		SML::GetModHandler()->HandlePlayerJoin(controller);
+	//Post initialize mod actors when world is fully loaded and is ready to be used
+	FCoreUObjectDelegates::PostLoadMapWithWorld.AddLambda([this](UWorld* World){
+		//Find spawned mod actors and dispatch POST_INITIALIZATION on them
+		TMap<FString, ABasicModInit*> SpawnedActorMap;
+		FindModActors(World, SpawnedActorMap);
+		Logging::info(TEXT("Post-initializing mod actors"));
+		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
+            ModInit->DispatchLifecyclePhase(ELifecyclePhase::POST_INITIALIZATION);
+        });
+		Logging::info(TEXT("Finished post-initializing mod actors"));
 	});
 }
 
-#pragma optimize("", on)
+void FModHandler::InitializeGameInstance() {
+	UGameEngine* GameEngine = Cast<UGameEngine>(GEngine);
+	checkf(GameEngine, TEXT("Attempt to call FModHandler::InitializeGameInstance() in editor. This is not supported."));
+	UFGGameInstance* GameInstance = Cast<UFGGameInstance>(GameEngine->GameInstance);
+	checkf(GameInstance, TEXT("GameInstance set is not UFGGameInstance"));
+	UGameInstanceInitSubsystem* InitSubsystem = GameInstance->GetSubsystem<UGameInstanceInitSubsystem>();
+	check(InitSubsystem);
+	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
+		const FString& ModReference = LoadEntry.ModReference;
+		UClass* InitClass = LoadEntry.InitGameInstanceClass;
+		if (InitClass != nullptr) {
+			InitSubsystem->CreateInitObjectForMod(ModReference, InitClass);
+		}
+	}
+	InitSubsystem->InitializeInitObjects();
 
-void FModHandler::SpawnModActors(UWorld* World, bool bIsMenuWorld) {
-	ModInitializerActorList.Empty();
-	for (const auto& initializer : ModPakInitializers) {
-		UClass* targetClass = bIsMenuWorld ? *initializer.InitMenuWorldClass : *initializer.InitGameWorldClass;
-		if (targetClass == nullptr) {
+	//Pre-Initialize old SMLInitMod content that should be registered prior to world loading
+	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
+		if (LoadEntry.LegacyInitModClass != NULL) {
+			UObject* DefaultObject = LoadEntry.LegacyInitModClass->GetDefaultObject();
+			ASMLInitMod* InitMod = Cast<ASMLInitMod>(DefaultObject);
+			if (InitMod) {
+				InitMod->RegisterEarlyLoadContent(LoadEntry.ModReference);
+			}
+		}
+	}
+}
+
+
+void FModHandler::SpawnModActors(UWorld* World, bool bIsMenuWorld, TMap<FString, ABasicModInit*>& OutActorMap) {
+	for (const FModPakLoadEntry& Initializer : ModPakInitializers) {
+		UClass* SpawnActorClass = GetActiveInitializerClass(Initializer, bIsMenuWorld);
+		if (SpawnActorClass == nullptr) {
 			continue;
 		}
-		FVector position = FVector::ZeroVector;
-		FRotator rotation = FRotator::ZeroRotator;
-		FActorSpawnParameters spawnParams{};
-		AActor* actor = World->SpawnActor(targetClass, &position, &rotation, spawnParams);
-		ModInitializerActorList.Add(TWeakObjectPtr<AActor>(actor));
+		FActorSpawnParameters SpawnParams{};
+		SpawnParams.Name = *FormatModActorName(Initializer.ModReference, bIsMenuWorld);
+		ABasicModInit* SpawnedActor = Cast<ABasicModInit>(World->SpawnActor(SpawnActorClass, &FTransform::Identity, SpawnParams));
+		checkf(SpawnedActor, TEXT("Couldn't spawn InitActor for mod %s"), *Initializer.ModReference);
+		SpawnedActor->OwnerModReference = Initializer.ModReference;
+		SpawnedActor->DispatchLifecyclePhase(ELifecyclePhase::CONSTRUCTION);
+		OutActorMap.Add(Initializer.ModReference, SpawnedActor);
 	}
 }
 
-void FModHandler::PreInitializeModActors() {
-	SML::Logging::info(TEXT("Preinitializing mod content packages..."));
-	for (const TWeakObjectPtr<AActor> ActorPtr : this->ModInitializerActorList) {
-		if (AActor* Actor = ActorPtr.Get()) {
-			if (Actor->IsValidLowLevel()) {
-				if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
-					SML::Logging::info(TEXT("Preinitializing mod "), *Actor->GetClass()->GetPathName());
-					InitMod->PreInit();
-					InitMod->PreLoadModContent();
-					SML::Logging::debug(TEXT("Done preinitializing mod "), *Actor->GetClass()->GetPathName());
-				}
-			}
-		}
-	}
-	SML::Logging::debug(TEXT("Done preinitializing mod content packages"));
-}
-
-void FModHandler::InitializeModActors() {
-	SML::Logging::info(TEXT("Initializing mod content packages..."));
-	for (const TWeakObjectPtr<AActor> ActorPtr : this->ModInitializerActorList) {
-		if (AActor* Actor = ActorPtr.Get()) {
-			if (Actor->IsValidLowLevel()) {
-				if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
-					SML::Logging::info(TEXT("Initializing mod "), *Actor->GetClass()->GetPathName());
-					InitMod->Init();
-					SML::Logging::debug(TEXT("Done initializing mod "), *Actor->GetClass()->GetPathName());
-				}
-				if (AInitMenuWorld* InitMenu = Cast<AInitMenuWorld>(Actor)) {
-					SML::Logging::info(TEXT("Initializing menu of mod "), *Actor->GetClass()->GetPathName());
-					InitMenu->Init();
-					SML::Logging::debug(TEXT("Done initializing menu of mod "), *Actor->GetClass()->GetPathName());
-				}
-			}
-		}
-	}
-	SML::Logging::debug(TEXT("Done initializing mod content packages"));
-}
-
-void FModHandler::PostInitializeModActors() {
-	SML::Logging::info(TEXT("Post-initializing mod content packages..."));
-	for (const TWeakObjectPtr<AActor> ActorPtr : this->ModInitializerActorList) {
-		if (AActor* Actor = ActorPtr.Get()) {
-			if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
-				SML::Logging::info(TEXT("Post-initializing mod "), *Actor->GetClass()->GetPathName());
-				InitMod->LoadModContent();
-				InitMod->PostInit();
-				SML::Logging::debug(TEXT("Done post-initializing mod "), *Actor->GetClass()->GetPathName());
-			}
-		}
-	}
-	SML::Logging::debug(TEXT("Done post-initializing mod content packages"));
-}
-
-void FModHandler::HandlePlayerJoin(AFGPlayerController* PlayerController) {
-	for (const TWeakObjectPtr<AActor>& Actor : this->ModInitializerActorList) {
-		if (Actor->IsValidLowLevel()) {
-			if (AInitGameWorld* InitMod = Cast<AInitGameWorld>(Actor)) {
-				InitMod->PlayerJoined(PlayerController);
-			}
-		}
+void FModHandler::FindModActors(UWorld* World, TMap<FString, ABasicModInit*>& OutActorMap) {
+	for(TActorIterator<ABasicModInit> Iterator(World); Iterator; ++Iterator) {
+		ABasicModInit* BasicModInit = *Iterator;
+		OutActorMap.Add(BasicModInit->GetOwnerModReference(), BasicModInit);
 	}
 }
 
@@ -378,7 +391,7 @@ void FModHandler::ConstructPakMod(const FString& filePath) {
 }
 
 const TArray<FString>& FModHandler::GetLoadedMods() const {
-	return LoadedModsModIDs;
+	return LoadedModReferences;
 }
 
 bool FModHandler::IsModLoaded(const FString& ModId) const {
