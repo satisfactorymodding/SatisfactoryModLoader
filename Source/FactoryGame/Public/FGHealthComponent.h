@@ -156,21 +156,25 @@ protected:
 	 * @param forceNotifies Forces our notifies to be sent anyway
 	 */
 	void Died( bool forceNotifies = false );
-protected:
+	//MODDING EDIT protected->public
+public:
 	// Interested listeners for the adjust damage delegates
 	UPROPERTY()
 	TArray< FAdjustDamageDelegate > mOnAdjustDamage;
 
 	/** Our maximum health */
-	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" , BlueprintReadOnly)
 	float mMaxHealth;
 
 	/** Our current health */
-	UPROPERTY( SaveGame, Replicated)
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, Replicated , BlueprintReadOnly)
 	float mCurrentHealth;
 
 	/** Scale of max health to use when respawning */
-	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health", BlueprintReadOnly)
 	float mRespawnHealthFactor;
 
 	/** If true, then we are dead. This is replicated to clients and they get the death event based on this. */

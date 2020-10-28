@@ -50,7 +50,10 @@ protected:
 
 	/** Try to produce nuclear waste and put it in the output inventory */
 	void TryProduceWaste();
-
+	// MODDING EDIT Accessor
+public:
+	FORCEINLINE class UFGInventoryComponent* GetWasteInventoryAccessor() const { return GetWasteInventory(); };
+private:
 	/** Returns the inventory for waste in the nuclear generator */
 	UFUNCTION( BlueprintPure, Category = "Nuclear" )
 	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventoryHandler->GetActiveInventoryComponent(); }

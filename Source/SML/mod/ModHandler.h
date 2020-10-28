@@ -45,15 +45,18 @@ struct FModPakLoadEntry {
 SML_API class FModHandler {
 private:
     TArray<FModLoadingEntry> SortedModLoadList;
+public:
 	TMap<FString, FModLoadingEntry> LoadingEntries;
 	TArray<FModPakLoadEntry> ModPakInitializers;
+private:
 	TArray<FString> LoadingProblems;
 
 	TMap<FString, FModContainer*> LoadedMods;
 	TArray<FModContainer*> LoadedModsList;
 	TArray<FString> LoadedModsModIDs;
-	TArray<TWeakObjectPtr<AActor>> ModInitializerActorList;
 public:
+	TArray<TWeakObjectPtr<AActor>> ModInitializerActorList;
+
     //we shouldn't be able to copy FModHandler, or move it
     FModHandler(FModHandler&) = delete; //delete copy constructor
 	FModHandler(FModHandler&&) = delete; //delete move constructor

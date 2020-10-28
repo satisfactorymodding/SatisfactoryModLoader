@@ -672,7 +672,7 @@ public:
 	/** Returns how much room there was on the belt after the last factory tick. If the belt is empty it will return the length of the belt */
 	float GetCachedAvailableSpace_Threadsafe() const;
 
-public: // MODDING EDIT
+protected:
 	// Begin Factory_ interface
 	virtual bool Factory_PeekOutput_Implementation( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const override;
 	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
@@ -686,6 +686,10 @@ public: // MODDING EDIT
 
 	/** Called when the visuals, radiation etc need to be updated. */
 	virtual void TickItemTransforms( float dt ) PURE_VIRTUAL(,);
+	// MODDING EDIT Accessor
+public:
+	FORCEINLINE int32 FindItemClosestToLocationAccessor(const FVector& location) const { return FindItemClosestToLocation(location); };
+protected:
 
 	//@todonow These can possibly be moved to private once Belt::OnUse has been moved to base.
 	/** Find the item closest to the given location. */
@@ -695,12 +699,20 @@ public: // MODDING EDIT
 	bool Factory_HasItemAt( int32 index ) const;
 	/** Lets you know what type of item is on a specific index. */
 	const FConveyorBeltItem& Factory_PeekItemAt( int32 index ) const;
+	// MODDING EDIT Accessor
+public:
+	FORCEINLINE void Factory_RemoveItemAtAccessor(int32 index) { Factory_RemoveItemAt(index);};
+protected:
 	/** Remove an item from the belt at index. */
 	void Factory_RemoveItemAt( int32 index );
 
-public: // MODDING EDIT
+private:
 	/** Take the first element on the belt. */
 	void Factory_DequeueItem();
+	// MODDING EDIT Accessor
+public:
+	FORCEINLINE void Factory_EnqueueItemAccessor(const FInventoryItem& item, float initialOffset) { Factory_EnqueueItem(item, initialOffset); };
+private:
 	/** Put a new item onto the belt. */
 	void Factory_EnqueueItem( const FInventoryItem& item, float initialOffset );
 

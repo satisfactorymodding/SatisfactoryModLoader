@@ -284,7 +284,9 @@ public: // MODDING EDIT
 	/** Used save the current ongoing research, saved research is restarted on load */
 	UPROPERTY( SaveGame )
 	TArray<FResearchTime> mSavedOngoingResearch;
-
+	// MODDING EDDIT Accessor
+public:
+	FORCEINLINE void OnResearchTimerCompleteAccessor(TSubclassOf<class UFGSchematic> schematic) { OnResearchTimerComplete(schematic); };
 private:
 	UFUNCTION()
 	void OnResearchTimerComplete( TSubclassOf<class UFGSchematic> schematic );
