@@ -15,4 +15,6 @@ bool FFluidBox::operator==(const FFluidBox& other) const{
 bool FFluidBox::operator!=(const FFluidBox& other) const{ 
 	return (bool)FPlatformMemory::Memcmp(this, &other, sizeof(FFluidBox));
 }
+float FFluidBox::OVERFILL_USED_FOR_PRESSURE_PCT = float();
+float FFluidBox::PRESSURE_LOSS = float();
 void IFGFluidIntegrantInterface::OnFluidDescriptorSet(){ }

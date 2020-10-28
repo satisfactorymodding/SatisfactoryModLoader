@@ -4,7 +4,7 @@
 
 #if WITH_EDITOR
 void UFGSchematicPurchasedDependency::Init(TArray< TSubclassOf<  UFGSchematic > > schematics, bool requireAllSchematicsToBePurchased){ 
-  this->mSchematics = schematics;
+	this->mSchematics = schematics;
     this->mRequireAllSchematicsToBePurchased = requireAllSchematicsToBePurchased;
 }
 #endif 

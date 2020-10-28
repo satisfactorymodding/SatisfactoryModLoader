@@ -23,7 +23,6 @@ TArray< FItemAmount > UFGRecipe::GetIngredients(TSubclassOf< UFGRecipe > inClass
 		return inClass.GetDefaultObject()->mIngredients;
 	else
 		return TArray<FItemAmount>();
-
 }
 TArray< FItemAmount > UFGRecipe::GetProducts(TSubclassOf< UFGRecipe > inClass, bool allowChildRecipes){ 
 	if (inClass)
@@ -62,6 +61,7 @@ TArray< TSubclassOf< UObject > > UFGRecipe::GetProducedIn(TSubclassOf< UFGRecipe
 	else
 		return TArray<TSubclassOf<UObject>>();
 }
+bool UFGRecipe::HasAnyProducers(TSubclassOf< UFGRecipe > inClass){ return bool(); }
 bool UFGRecipe::IsRecipeAffordable( AFGCharacterPlayer* player, TSubclassOf<  UFGRecipe > recipe){ return bool(); }
 void UFGRecipe::SortByName(TArray< TSubclassOf< UFGRecipe > >& recipes){ }
 TSubclassOf< class UFGItemDescriptor > UFGRecipe::GetDescriptorForRecipe(TSubclassOf<  UFGRecipe > recipe){ return TSubclassOf<class UFGItemDescriptor>(); }

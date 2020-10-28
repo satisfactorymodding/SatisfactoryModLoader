@@ -5,7 +5,7 @@
 void AFGCreature::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGCreature::AFGCreature(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
 void AFGCreature::BeginPlay(){ }
-void AFGCreature::PreInitializeComponents(){ }
+void AFGCreature::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGCreature::Tick(float deltaTime){ }
 bool AFGCreature::ShouldSave_Implementation() const{ return bool(); }
 void AFGCreature::Died(AActor* died){ }

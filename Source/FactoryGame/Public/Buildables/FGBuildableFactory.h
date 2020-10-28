@@ -492,7 +492,7 @@ protected:
 	UPROPERTY( BlueprintAssignable, Category = "Replication Detail Actor Owner Interface" )
 	FOnReplicationDetailActorCreated OnReplicationDetailActorCreatedEvent;
 
-private:
+public: // AA EDIT
 	/** The input we place a crystal in to unlock the potential */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mInventoryPotential;

@@ -293,6 +293,8 @@ public:
 	UFUNCTION()
 	void UpdatePresence();
 
+	void TestSteamCommandLineArgs(FString &sessionId);
+
 	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
 	UFUNCTION()
 	void SetNextUpdatePresenceTime(float timeTillNextUpdate);
@@ -320,6 +322,8 @@ public:
 
 	/** Create a new account connection without connection to an existing account */
 	void CreateNewAccountConnection( const FName currentPlatform );
+
+	void BroadcastAccountConnectionStepResult(const FName currentPlatform, EEosAccountConnectionResult result);
 
 	/** Prompt the user to login and link that account */
 	void LoginAndConnectAccount( const FName currentPlatform );

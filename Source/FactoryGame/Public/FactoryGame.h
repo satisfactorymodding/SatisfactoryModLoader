@@ -43,11 +43,13 @@ static const FName SHOWDEBUG_RESOURCESINK( TEXT( "ResourceSink" ) );
 static const FName SHOWDEBUG_AKAUDIOSOURCES( TEXT( "AkAudioSources" ) );
 static const FName SHOWDEBUG_AKAUDIOSOURCEATTENUATIONS( TEXT( "AkAudioSourceAttenuations" ) );
 static const FName SHOWDEBUG_PIPE_NETWORKS( TEXT( "PipeNetworks" ) );
+static const FName SHOWDEBUG_PIPE_PROBING( TEXT( "PipeProbing" ) );
 static const FName SHOWDEBUG_PIPE_DETAILS( TEXT( "PipeDetails" ) );
 static const FName SHOWDEBUG_PIPE_PRESSURE( TEXT( "PipePressure" ) );
 static const FName SHOWDEBUG_PIPE_PRESSURE_GROUPS( TEXT( "PipePressureGroups" ) );
 static const FName SHOWDEBUG_PIPE_DELTA_PRESSURE( TEXT( "PipeDeltaPressure" ) );
 static const FName SHOWDEBUG_PIPE_FLOW( TEXT( "PipeFlow" ) );
+static const FName SHOWDEBUG_PIPE_MOVE_TO_OVERFILL_RATIO( TEXT( "PipeMoveToOverfillRatio" ) );
 static const FName SHOWDEBUG_CREATURES( TEXT( "Creatures" ) );
 
 /** Common show debug colors */
@@ -82,6 +84,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogNetConveyorBelt, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogNetFoliageRemoval, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogPower, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogCircuit, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogSchematics, Log, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogRailroad, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogBuildGun, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogHologram, Warning, All );

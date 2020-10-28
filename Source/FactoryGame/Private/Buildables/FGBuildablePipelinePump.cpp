@@ -11,10 +11,11 @@ float FQuantizedPumpIndicatorData::GetPressurePct() const{ return float(); }
 AFGBuildablePipelinePump::AFGBuildablePipelinePump() : Super() {
 	this->mMaxPressure = 22;
 	this->mDesignPressure = 20;
-	this->mFlowLimit = 5;
+	this->mDefaultFlowLimit = 10;
+	this->mUserFlowLimit = -1;
 	this->mMinimumFlowPercentForStandby = 0.0500000007450581;
 	this->mRadius = 75;
-	this->mFluidBoxVolumeScale = 1;
+	this->mFluidBoxVolume = 5;
 	this->mPowerConsumptionExponent = 1.60000002384186;
 	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
 	this->mMinimumProducingTime = 2;
@@ -26,6 +27,7 @@ AFGBuildablePipelinePump::AFGBuildablePipelinePump() : Super() {
 	this->mMaxPotential = 1;
 	this->mMaxPotentialIncreasePerCrystal = 0.5;
 	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
+	this->mFluidStackSizeMultiplier = 1;
 	this->mSignificanceRange = 18000;
 	this->mHologramClass = AFGPipelineAttachmentHologram::StaticClass();
 	this->MaxRenderDistance = -1;
@@ -51,8 +53,12 @@ void AFGBuildablePipelinePump::StopIsLookedAtForDismantle_Implementation( AFGCha
 void AFGBuildablePipelinePump::SetMaxHeadLift(float design, float max){ }
 float AFGBuildablePipelinePump::GetMaxHeadLift() const{ return float(); }
 float AFGBuildablePipelinePump::GetDesignHeadLift() const{ return float(); }
-void AFGBuildablePipelinePump::SetFlowLimit(float rate){ }
+void AFGBuildablePipelinePump::SetUserFlowLimit(float rate){ }
+float AFGBuildablePipelinePump::GetFlowLimit() const{ return float(); }
+float AFGBuildablePipelinePump::GetFlowLimitPct() const{ return float(); }
 float AFGBuildablePipelinePump::GetIndicatorFlowPct() const{ return float(); }
 float AFGBuildablePipelinePump::GetIndicatorFlow() const{ return float(); }
 float AFGBuildablePipelinePump::GetIndicatorHeadLiftPct() const{ return float(); }
 float AFGBuildablePipelinePump::GetIndicatorHeadLift() const{ return float(); }
+void AFGBuildablePipelinePump::UpdateDefaultFlowLimit(){ }
+void AFGBuildablePipelinePump::UpdateFlowLimitOnFluidBox(){ }

@@ -24,7 +24,7 @@ public:
 	bool operator!=( const FFluidBox& other ) const;
 
 public:
-	static float constexpr DEFAULT_FLOW_LIMIT = 5.f;
+	static float constexpr DEFAULT_FLOW_LIMIT = 10.f;
 
 	// The Z mid point for this box. [meters][world space]
 	float Z = 0.f;
@@ -39,6 +39,12 @@ public:
 	 */
 	float LaminarHeight = 1.f;
 
+	/**
+	 * Minimum allowed volume (max content) for any fluid box.
+	 * This is to ensure simulation stability with high flow rates.
+	 */
+	static constexpr float MINIMUM_VOLUME = 5.f;
+	
 	/** The current content of this fluid box. [m^3] */
 	float Content = 0.f;
 	/** The max content this fluid box can hold. [m^3] */
@@ -53,7 +59,11 @@ public:
 	 *
 	 * This value is in the range (0,1] normalized percent.
 	 */
-	static constexpr float OVERFILL_USED_FOR_PRESSURE_PCT = 0.75f;
+	static float OVERFILL_USED_FOR_PRESSURE_PCT; //@todo-Pipes: Tunable "const" for now
+	/**
+	 * A small damping factor is needed so we cannot use our own pressure to pump up ourselves.
+	 */
+	static float PRESSURE_LOSS; //@todo-Pipes: Tunable "const" for now
 
 	/**
 	 * The following flow values are not used for any simulations only for feedback.
@@ -82,13 +92,15 @@ public:
 	/** Toggle to allow disabling added pressure ( currently used by pumps ) */
 	float AddedPressureToggle = 1.f;
 
-	//@todoPipes WITH_EDITORONLY_DATA maybe
+	//@todo-Pipes WITH_EDITORONLY_DATA maybe
 	bool Debug_EnableVerboseLogging = false;
 	int32 Debug_PressureGroup = INDEX_NONE;
 	float Debug_DP = 0.f;
 	float Debug_SmoothedFlow = 0.f;
+	float Debug_FlowLimit = 0.f;
+	float Debug_MoveLimit = 0.f;
 
-	//** Call to get the current added pressure taking into account the pressure toggle. */
+	/** Call to get the current added pressure taking into account the pressure toggle. */
 	float GetCurrentAddedPressure()
 	{
 		return AddedPressure * AddedPressureToggle;

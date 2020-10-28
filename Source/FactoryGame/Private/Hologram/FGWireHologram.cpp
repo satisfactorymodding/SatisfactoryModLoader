@@ -19,6 +19,7 @@ void AFGWireHologram::Tick(float dt){ }
 AActor* AFGWireHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
 int32 AFGWireHologram::GetBaseCostMultiplier() const{ return int32(); }
 bool AFGWireHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
+bool AFGWireHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGWireHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 void AFGWireHologram::OnInvalidHitResult(){ }
 void AFGWireHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
@@ -30,6 +31,7 @@ void AFGWireHologram::SetupDepthMeshComponent(USceneComponent* attachParent, UMe
 void AFGWireHologram::CheckClearance(){ }
 void AFGWireHologram::CheckValidSnap(){ }
 void AFGWireHologram::CheckLength(){ }
+void AFGWireHologram::SetActiveAutomaticPoleHologram( AFGPowerPoleHologram* poleHologram){ }
 UFGCircuitConnectionComponent* AFGWireHologram::FindOverlappingCircuitConnectionComponent(const FVector& location,  AActor* actor,  UFGCircuitConnectionComponent* ignoredConnectionComponent){ return nullptr; }
 void AFGWireHologram::StartLookAtBuilding(UFGCircuitConnectionComponent* overlappingComponent){ }
 void AFGWireHologram::StopLookAtBuilding(){ }

@@ -231,10 +231,6 @@ public:
 	/** Set hologram to snap to guide lines */
 	virtual void SetSnapToGuideLines( bool isEnabled );
 
-	/** Set hologram to snap to guide lines on server */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_SetSnapToGuideLines( bool isEnabled );
-
 	/** @return true if no snap mode is enabled; false otherwise. */
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	FORCEINLINE bool GetNoSnapMode() const { return mNoSnapMode; }

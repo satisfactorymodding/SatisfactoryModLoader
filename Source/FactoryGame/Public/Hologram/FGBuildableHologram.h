@@ -63,6 +63,11 @@ protected:
 	/** Helper function to snap to the factory building grid. */
 	void SnapToFloor( class AFGBuildable* floor, FVector& location, FRotator& rotation );
 
+	/** Helper function to snap to any side of a foundation.
+	 *  "location" should start as the position you want to snap.
+	 *  Both "location" and "rotation" will contain the result once done. */
+	void SnapToFoundationSide( class AFGBuildableFoundation* foundation, const FVector& localSideNormal, FVector& location, FRotator& rotation );
+
 	/**
 	 * Helper to check if the floor is valid.
 	 * @return - true if the floor is valid; false if the floor is to steep, another building etc.

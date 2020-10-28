@@ -28,6 +28,14 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	bool mIsRotationAllowed;
 
+	/** Whether or not it is possible to snap to the ceiling. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	bool mCanSnapToFoundationCeiling;
+
+	/** Whether or not it is possible to snap to the side of foundations. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	bool mCanSnapToFoundationSide;
+
 	/** The rotation step for when rotating, if 0 then use the default granularity. */
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	int32 mRotationStep;
@@ -35,6 +43,10 @@ private:
 	/** Snapping offset of this attachment on the walls surface. */
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	FVector2D mSnapOffset;
+
+	/** Distance to inset the hologram when attaching to a foundation. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	float mFoundationSnappingInset;
 
 public:
 	FORCEINLINE ~AFGWallAttachmentHologram() = default;

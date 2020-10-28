@@ -4,7 +4,7 @@
 #include "Components/SceneComponent.h"
 
 #if WITH_EDITOR
-void AFGBuildable::CheckForErrors(){ }
+void AFGBuildable::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 #if STATS
 #endif 
@@ -67,7 +67,7 @@ void AFGBuildable::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildable::Dismantle_Implementation(){ }
 void AFGBuildable::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildable::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
-void AFGBuildable::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildable::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter,  UFGCircuitConnectionComponent* overlappingConnection){ }
 void AFGBuildable::StopIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
 TSubclassOf< class UFGItemDescriptor > AFGBuildable::GetBuiltWithDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 void AFGBuildable::TurnOffAndDestroy(){ }

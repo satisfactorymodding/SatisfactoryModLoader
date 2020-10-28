@@ -18,6 +18,9 @@ UCLASS()
 class FACTORYGAME_API AFGBuildablePipeHyper : public AFGBuildablePipeBase, public IFGPipeHyperInterface
 {
 	GENERATED_BODY()
+
+	AFGBuildablePipeHyper();
+	
 public:
 
 	// Begin FGHyperTube Interface

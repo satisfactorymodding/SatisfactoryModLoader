@@ -19,6 +19,7 @@ AFGBuildableConverter::AFGBuildableConverter() : Super() {
 	this->mMaxPotential = 1;
 	this->mMaxPotentialIncreasePerCrystal = 0.5;
 	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
+	this->mFluidStackSizeMultiplier = 1;
 	this->mSignificanceRange = 18000;
 	this->mHologramClass = AFGFactoryHologram::StaticClass();
 	this->MaxRenderDistance = -1;

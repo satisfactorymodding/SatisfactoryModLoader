@@ -162,18 +162,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static TSubclassOf< UFGItemCategory > GetItemCategory( TSubclassOf< UFGItemDescriptor > inClass );
 
-	/** Returns the density if this is a fluid. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
-	static float GetFluidDensity( TSubclassOf< UFGItemDescriptor > inClass );
-
-	/** Returns the viscosity if this is a fluid. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
-	static float GetFluidViscosity( TSubclassOf< UFGItemDescriptor > inClass );
-
-	/** Returns the friction of this fluid. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
-	static float GetFluidFriction( TSubclassOf< UFGItemDescriptor > inClass );
-
 	/** Returns the color of this is a fluid. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
 	static FColor GetFluidColor( TSubclassOf< UFGItemDescriptor > inClass );
@@ -388,26 +376,6 @@ public: // MODDING EDIT: protected -> public
 #endif
 
 	// NOTE: Ideally we want a fluid descriptor but some fluids are already a raw resource so we cannot do multiple inheritance, so either we need refactor how descriptors work or we put them here for now.
-	/**
-	 * @todoPipes Removing this for now, it was always 1 anyway.
-	 * Density for this fluid.
-	 * Form must be liquid or gas for this to be useful.
-	 */
-	UPROPERTY()
-	float mFluidDensity;
-	/**
-	 * @todoPipes Removing this for now, caused more issues than it fixed, the back flow in junctions issue.
-	 * Friction for this fluid, this is the friction inside the fluid itself.
-	 * Form must be liquid or gas for this to be useful.
-	 */
-	UPROPERTY()
-	float mFluidViscosity;
-	/**
-	 * Friction for this fluid, this is the friction between the fluid and the pipe.
-	 * Form must be liquid or gas for this to be useful.
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
-	float mFluidFriction;
 	/**
 	 * Color for this fluid, RGB is the color and A is the transparency of the fluid.
 	 * Form must be liquid or gas for this to be useful.

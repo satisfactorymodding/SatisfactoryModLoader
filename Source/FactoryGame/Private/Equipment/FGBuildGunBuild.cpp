@@ -32,6 +32,8 @@ AFGHologram* UFGBuildGunStateBuild::SpawnChildHologram(AFGHologram* parent, TSub
 void UFGBuildGunStateBuild::Server_ConstructHologram_Implementation(FNetConstructionID clientNetConstructID, FConstructHologramMessage data){ }
 bool UFGBuildGunStateBuild::Server_ConstructHologram_Validate(FNetConstructionID clientNetConstructID, FConstructHologramMessage data){ return bool(); }
 void UFGBuildGunStateBuild::InternalConstructHologram(FNetConstructionID clientNetConstructID){ }
+void UFGBuildGunStateBuild::Server_ChangeGuideLinesSnapMode_Implementation(bool enabled){ }
+bool UFGBuildGunStateBuild::Server_ChangeGuideLinesSnapMode_Validate(bool enabled){ return bool(); }
 TArray< EHologramSplinePathMode > UFGBuildGunStateBuild::GetSupportedSplineModes(){ return TArray<EHologramSplinePathMode>(); }
 void UFGBuildGunStateBuild::SetActiveSplineMode(EHologramSplinePathMode mode){ }
 void UFGBuildGunStateBuild::HookUpUserSettings(){ }

@@ -77,7 +77,7 @@ public:
 	static constexpr float DEFAULT_PIPE_HEIGHT = 175.f;
 
 	const static float PIPE_COST_LENGTH_MULTIPLIER;
-// MODDING EDIT protected:
+protected:
 	/** Mesh to use for his conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	class UStaticMesh* mMesh;
@@ -88,6 +88,9 @@ public:
 
 	/** Length of the pipe in centimeters. */
 	float mLength;
+
+	/** Should we use per segment or should we try to scale the mesh to fit. **/
+	bool mUsePerSegmentSplining;
 
 	/**
 	 * First connection on the pipe (can be an input and an output, because, again, pipes)

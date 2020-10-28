@@ -5,6 +5,7 @@
 
 AFGManta::AFGManta() : Super() {
 	this->mSecondsPerLoop = 900;
+	this->mSignificanceRange = 130000;
 	this->mTickTransform = true;
 	this->mIsClosedSplineLoop = true;
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;

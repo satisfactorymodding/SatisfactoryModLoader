@@ -3,7 +3,7 @@
 #include "FGEnvironmentSettings.h"
 
 #if WITH_EDITOR
-void UFGEnvironmentSettings::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
+void UFGEnvironmentSettings::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
 UMaterialParameterCollection* UFGEnvironmentSettings::GetWorldBoundsParameters(){ return nullptr; }
 FName UFGEnvironmentSettings::WorldBoundsMinName = FName();

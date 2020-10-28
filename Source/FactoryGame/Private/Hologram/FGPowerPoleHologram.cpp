@@ -3,6 +3,8 @@
 #include "FGPowerPoleHologram.h"
 
 void AFGPowerPoleHologram::BeginPlay(){ }
+void AFGPowerPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
+USceneComponent* AFGPowerPoleHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 bool AFGPowerPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 AActor* AFGPowerPoleHologram::GetUpgradedActor() const{ return nullptr; }
 bool AFGPowerPoleHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }

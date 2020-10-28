@@ -9,7 +9,7 @@ void FQuantizedPipelineIndicatorData::SetContentPct(float pct){ }
 float FQuantizedPipelineIndicatorData::GetContentPct() const{ return float(); }
 AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 	this->mRadius = 65;
-	this->mFlowLimit = 5;
+	this->mFlowLimit = 10;
 	this->mMaxIndicatorTurnAngle = 3;
 	this->mRattleLimit = 0.5;
 	this->mHologramClass = AFGPipelineHologram::StaticClass();
@@ -36,6 +36,7 @@ TSubclassOf< UFGPipeConnectionComponentBase > AFGBuildablePipeline::GetConnectio
 FFluidBox* AFGBuildablePipeline::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipeline::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }
 void AFGBuildablePipeline::OnFluidDescriptorSet(){ }
+void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
 TArray< AFGBuildablePipeline* > AFGBuildablePipeline::Split(AFGBuildablePipeline* pipeline, float offset, bool connectNewPipelines, AActor* instigator){ return TArray<AFGBuildablePipeline*>(); }
 AFGBuildablePipeline* AFGBuildablePipeline::Merge(TArray< AFGBuildablePipeline* > pipelines, AActor* instigator){ return nullptr; }
 float AFGBuildablePipeline::GetIndicatorContentPct() const{ return float(); }

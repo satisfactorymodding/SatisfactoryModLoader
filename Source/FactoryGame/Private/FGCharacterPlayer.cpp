@@ -2,9 +2,9 @@
 
 #include "FGCharacterPlayer.h"
 
-AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer.SetDefaultSubobjectClass<UFGCharacterMovementComponent>(ACharacter::CharacterMovementComponentName)) { }
 void AFGCharacterPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGCharacterPlayer::PostActorCreated(){ }
+void AFGCharacterPlayer::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGCharacterPlayer::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGCharacterPlayer::BeginPlay(){ }
 void AFGCharacterPlayer::EndPlay(const EEndPlayReason::Type endPlayReason){ }

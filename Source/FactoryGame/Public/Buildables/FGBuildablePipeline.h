@@ -95,6 +95,10 @@ public:
 	virtual void OnFluidDescriptorSet() override;
 	// End FluidIntegrant Interface
 
+	// Begin IFGDismantleInterface
+	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	// End IFGDismantleInterface
+
 	/**
 	 * Split this pipeline in two.
 	 * Copied from the conveyor splitting, some modifications
@@ -153,7 +157,7 @@ public:
 	class UFGPipelineFlowIndicatorComponent* GetFlowIndicatorComponent() const;
 
 	/** 
-	* @todoPipes DEPRICATED - Invoke server call on Remote Call Object instead. 
+	* @todo-Pipes DEPRICATED - Invoke server call on Remote Call Object instead. 
 	* Call this to flush the network.
 	*/
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Pipes|Pipeline", meta=( DeprecatedFunction, DeprecationMessage = "Invoke server call on Remote Call Object instead." ) )

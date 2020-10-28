@@ -160,8 +160,7 @@ protected:
 	// Interested listeners for the adjust damage delegates
 	UPROPERTY()
 	TArray< FAdjustDamageDelegate > mOnAdjustDamage;
-//MODDING EDIT
-public:
+
 	/** Our maximum health */
 	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" )
 	float mMaxHealth;

@@ -269,7 +269,7 @@ protected:
 public: // MODDING EDIT
 	UPROPERTY( Transient )
 	TArray<TSubclassOf<class UFGResearchTree>> mAllResearchTrees;
-protected:
+	
 	UPROPERTY( SaveGame, Replicated )
 	TArray<TSubclassOf<class UFGResearchTree>> mUnlockedResearchTrees;
 

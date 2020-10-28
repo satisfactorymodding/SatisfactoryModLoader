@@ -83,6 +83,9 @@ private:
 	/** Filters recipes for a given producer. */
 	void FilterRecipesByProducer( const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes );
 
+	/** Checks if a recipe is valid for addition to the available recipes list. */
+	bool CanAddToAvailableRecipes( TSubclassOf< UFGRecipe > recipe ) const;
+	
 private:
 	/** All recipes that are available to the producers, i.e. build gun, workbench, manufacturers etc. */
 	UPROPERTY( SaveGame, Replicated )

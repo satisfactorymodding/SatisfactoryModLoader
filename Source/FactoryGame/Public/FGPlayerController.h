@@ -292,8 +292,7 @@ public:
 
 	virtual bool GetPresenceState(FPlayerPresenceState& outState) const override;
 
-// Modding Edit: make public
-public:
+public: // MODDING EDIT
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 

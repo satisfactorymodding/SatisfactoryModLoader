@@ -34,7 +34,7 @@ public:
 	/** Adds a popup to the queue */
 	void AddPopupToQueue( FPopupData inPopupData );
 
-	/** Adds a popup to the qu� */
+	/** Adds a popup to the queue */
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "ConfirmClickDelegate", DeprecatedFunction, DeprecationMessage="Use AddPopupWithCloseDelegate instead" ) )
 	void AddPopup( FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID = PID_OK, TSubclassOf< UUserWidget > popupClass = nullptr );
 	
@@ -56,6 +56,11 @@ public:
 	/** Closes a popup */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
 	void ClosePopup();
+
+	/** Clear the popup queue of all popups of the given class */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	void ClearPopupQueueOfClass( TSubclassOf< UUserWidget > widgetClass );
+
 protected:
 	/** Can a popup be displayed at this moment? */
 	bool mCanDisplayPopup;
