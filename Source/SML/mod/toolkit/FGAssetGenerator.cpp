@@ -109,9 +109,16 @@ TArray<TSharedPtr<FJsonValue>> FindBlueprintDumps(FString FolderPath) {
 			return TArray<TSharedPtr<FJsonValue>>();
 		}
 		TSharedPtr<FJsonObject> StructJson = ResultJsonObject->AsObject();
-		FString ObjectPath = StructJson->GetStringField(TEXT("Blueprint"));
-		if (ObjectPath == "")
+		FString ObjectPath = "";
+		if (StructJson->HasField("Blueprint"))
+		{
+			ObjectPath = StructJson->GetStringField(TEXT("Blueprint"));
+		}
+		else if(StructJson->HasField("StructName"))
+		{
 			ObjectPath = StructJson->GetStringField(TEXT("StructName"));
+		}
+	
 		if(ObjectPath != "")
 		{
 			FString left;
@@ -148,7 +155,7 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	SML::Logging::info(TEXT("Generating user defined enumerations..."));
 	TArray<UPackage*> DefinedPackages;
 	//const TArray<TSharedPtr<FJsonValue>>& UserDefinedEnums = ResultJsonObject->GetArrayField(TEXT("UserDefinedEnums"));
-	TArray<TSharedPtr<FJsonValue>> UserDefinedEnums = FindBlueprintDumps(DataJsonFilePath / "BPdump" / "Enums");
+	TArray<TSharedPtr<FJsonValue>> UserDefinedEnums = FindBlueprintDumps(DataJsonFilePath / "Enums");
 	for (const TSharedPtr<FJsonValue>& Value : UserDefinedEnums) {
 		UPackage* Package = CreateEnumerationFromJson(Value->AsObject().ToSharedRef());
 		if (Package != nullptr) {
@@ -165,7 +172,7 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 
 	//UEditorLoadingAndSavingUtils::SavePackages(DefinedPackages, false);
 	//const TArray<TSharedPtr<FJsonValue>>& UserDefinedStructs = ResultJsonObject->GetArrayField(TEXT("UserDefinedStructs"));
-	TArray<TSharedPtr<FJsonValue>> UserDefinedStructs = FindBlueprintDumps(DataJsonFilePath / "BPdump" / "Structs");
+	TArray<TSharedPtr<FJsonValue>> UserDefinedStructs = FindBlueprintDumps(DataJsonFilePath / "Structs");
 
 
 	SML::Logging::info(TEXT("Building structure dependency graph..."));
@@ -183,7 +190,7 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	}
 
 	//const TArray<TSharedPtr<FJsonValue>>& Blueprints = ResultJsonObject->GetArrayField(TEXT("Blueprints"));
-	TArray<TSharedPtr<FJsonValue>> Blueprints = FindBlueprintDumps(DataJsonFilePath / "BPdump" / "Blueprints");
+	TArray<TSharedPtr<FJsonValue>> Blueprints = FindBlueprintDumps(DataJsonFilePath  / "Blueprints");
 	
 	SML::Logging::info(TEXT("Building blueprint dependency graph..."));
 	for (const TSharedPtr<FJsonValue>& Value : Blueprints) {
@@ -205,6 +212,12 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	//Load assets in sorted order now
 	for (int32 i = 0; i < SortingResult.Num(); i++) {
 		uint64 ObjectIndex = SortingResult[i];
+		if (!ObjectHeaders.Contains(ObjectIndex))
+		{
+			SML::Logging::info(TEXT("Invalid ObjectHeader Index in SortingRule"), i);
+			SML::Logging::info(TEXT("Invalid ObjectHeader Index in SortingRule ObjectIndex: "), ObjectIndex);
+			continue;
+		}
 		const FPackageObjectData& ObjectData = ObjectHeaders.FindChecked(ObjectIndex);
 		check(!ObjectData.ObjectPath.IsEmpty());
 		SML::Logging::info(TEXT("Loading object "), *ObjectData.ObjectPath, TEXT(" ("), i, TEXT("/"), SortingResult.Num(), TEXT(")"));
@@ -233,6 +246,12 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	//Finish blueprint construction once all dependencies have been defined and saved
 	for (int32 i = 0; i < SortingResult.Num(); i++) {
 		uint64 ObjectIndex = SortingResult[i];
+		if (!ObjectHeaders.Contains(ObjectIndex))
+		{
+			SML::Logging::info(TEXT("Invalid ObjectHeader Index in SortingRule"), i);
+			SML::Logging::info(TEXT("Invalid ObjectHeader Index in SortingRule ObjectIndex: "), ObjectIndex);
+			continue;
+		}
 		const FPackageObjectData& ObjectData = ObjectHeaders[ObjectIndex];
 		if (ObjectData.bIsBlueprint) {
 			const FString& ObjectPath = ObjectData.ObjectPath.LeftChop(2);
@@ -252,6 +271,12 @@ void generateSatisfactoryAssetsInternal(const FString& DataJsonFilePath) {
 	//Now, post initialize delayed default properties
 	for (int32 i = 0; i < SortingResult.Num(); i++) {
 		uint64 ObjectIndex = SortingResult[i];
+		if (!ObjectHeaders.Contains(ObjectIndex))
+		{
+			SML::Logging::info(TEXT("Invalid ObjectHeader Index in SortingRule"), i);
+			SML::Logging::info(TEXT("Invalid ObjectHeader Index in SortingRule ObjectIndex: "), ObjectIndex);
+			continue;
+		}
 		const FPackageObjectData& ObjectData = ObjectHeaders[ObjectIndex];
 		UObject* Object = nullptr;
 		if (ObjectData.bIsBlueprint) {
@@ -850,6 +875,11 @@ void InitializeBlueprint(UBlueprint* Blueprint, const TSharedPtr<FJsonObject>& B
 				check(Function != nullptr);
 				ResultEntryNode = CreateFunctionOverride(Blueprint, Function);
 			} else {
+				//
+				if (Cast<IInterface>(Blueprint))
+				{
+					continue;
+				}
 				ResultEntryNode = CreateCustomFunction(Blueprint, MethodName, MethodObject);
 			}
 			if (ResultEntryNode != nullptr) {
@@ -1112,8 +1142,15 @@ FEdGraphPinType CreateGraphPinType(const TSharedRef<FJsonObject>& PinJson) {
 	if (PinJson->HasField(TEXT("PinSubCategoryObject"))) {
 		const FString& ObjectPath = PinJson->GetStringField(TEXT("PinSubCategoryObject"));
 		UObject* PinSubCategoryObject = LoadObject<UObject>(GetTransientPackage(), *ObjectPath);
-		check(PinSubCategoryObject != nullptr);
-		GraphPinType.PinSubCategoryObject = PinSubCategoryObject;
+		//check(PinSubCategoryObject != nullptr);
+		if (PinSubCategoryObject)
+		{
+			GraphPinType.PinSubCategoryObject = PinSubCategoryObject;
+		}
+		else
+		{
+			SML::Logging::info(TEXT("Soft Asset Dependency Missing:  "), *ObjectPath);
+		}
 	}
 	if (PinJson->HasField(TEXT("PinSubCategoryMemberReference"))) {
 		FSimpleMemberReference& MemberRef = GraphPinType.PinSubCategoryMemberReference;
