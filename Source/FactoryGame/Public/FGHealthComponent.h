@@ -156,8 +156,7 @@ protected:
 	 * @param forceNotifies Forces our notifies to be sent anyway
 	 */
 	void Died( bool forceNotifies = false );
-	//MODDING EDIT protected->public
-public:
+public: //MODDING EDIT protected->public
 	// Interested listeners for the adjust damage delegates
 	UPROPERTY()
 	TArray< FAdjustDamageDelegate > mOnAdjustDamage;

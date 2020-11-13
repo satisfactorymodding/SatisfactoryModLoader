@@ -293,6 +293,9 @@ public:
 	UFUNCTION()
 	void UpdatePresence();
 
+	UFUNCTION()
+	void CheckForStartupArguments();
+
 	void TestSteamCommandLineArgs(FString &sessionId);
 
 	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
@@ -481,6 +484,8 @@ protected:
 	FTimerHandle mPresenceUpdateHandle;
 	FTimerHandle mPresenceUpdateHandleSteam;
 	FTimerHandle mSteamConnectyAccountDelayHandle;
+
+	FTimerHandle mCheckStartupArgumentsHanlde;
 
 	// For detecting player disconnects from services
 	FDelegateHandle mOnConnectionStatusChangedHandle;

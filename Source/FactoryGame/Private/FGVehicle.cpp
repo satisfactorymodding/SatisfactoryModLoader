@@ -16,6 +16,7 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mSubmergedAngularDamping = 6;
 	this->mSubmergedLinearDamping = 15;
 	this->mSubmergedBouyantForce = 1000;
+	this->mJumpPadForceMultiplier = 1;
 	this->mSignificanceRange = 20000;
 	this->mSimulationDistance = 20000;
 	this->mShouldAttachDriver = true;

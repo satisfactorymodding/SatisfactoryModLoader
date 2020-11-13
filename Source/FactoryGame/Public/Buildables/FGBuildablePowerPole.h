@@ -8,6 +8,14 @@
 #include "FGBuildable.h"
 #include "FGBuildablePowerPole.generated.h"
 
+UENUM( BlueprintType )
+enum class EPowerPoleType : uint8
+{
+	PPT_POLE 			UMETA( DisplayName = "Pole" ),
+	PPT_WALL 			UMETA( DisplayName = "Wall Plug" ),
+	PPT_WALL_DOUBLE 	UMETA( DisplayName = "Wall Plug Double" )
+};
+
 /**
  * Base class for all power poles.
  */
@@ -39,6 +47,9 @@ public:
 	class UFGPowerCircuit* GetPowerCircuit() const;
 
 	UFUNCTION( BlueprintPure, Category = "PowerPole" )
+	EPowerPoleType GetPowerPoleType() const { return mPowerPoleType; }
+
+	UFUNCTION( BlueprintPure, Category = "PowerPole" )
 	class UFGPowerConnectionComponent* GetPowerConnection(int32 index) const { return mPowerConnections[index]; }
 
 	void OnPowerConnectionChanged(class UFGCircuitConnectionComponent* connection);
@@ -61,6 +72,10 @@ private:
 	/** The mesh component for this pole. */
 	UPROPERTY( VisibleAnywhere )
 	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
+
+	/** What kind of power pole this is. */
+	UPROPERTY( EditDefaultsOnly, Category = "PowerPole" )
+	EPowerPoleType mPowerPoleType;
 
 	bool mIsDismantled;
 	bool mIsShowingDismantleOutline;

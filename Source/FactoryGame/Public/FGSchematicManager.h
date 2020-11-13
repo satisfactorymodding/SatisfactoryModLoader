@@ -203,8 +203,8 @@ private:
 	FSchematicCost* FindSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
 	void AddSchematicPayOff( TSubclassOf< class UFGSchematic > schematic, const TArray< FItemAmount >& amount );
 	void RemoveSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
-	// MODDING EDIT protected -> public
-public:	
+
+public:	// MODDING EDIT protected -> public
 	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */
 	UPROPERTY()
 	TArray< TSubclassOf< UFGSchematic > > mAllSchematics;

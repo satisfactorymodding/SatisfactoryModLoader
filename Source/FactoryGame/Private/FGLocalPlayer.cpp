@@ -31,6 +31,7 @@ void UFGLocalPlayer::AutoLogin(){ }
 void UFGLocalPlayer::SetupServerAndTravelToMap(const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility){ }
 void UFGLocalPlayer::CopyPresenceDataToLocalPresenceAndPushToServer(const TSharedRef<FOnlineUserPresence>& presence){ }
 void UFGLocalPlayer::UpdatePresence(){ }
+void UFGLocalPlayer::CheckForStartupArguments(){ }
 void UFGLocalPlayer::TestSteamCommandLineArgs(FString &sessionId){ }
 void UFGLocalPlayer::SetNextUpdatePresenceTime(float timeTillNextUpdate){ }
 void UFGLocalPlayer::OnInviteReceived(const FPendingInvite& invite){ }

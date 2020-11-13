@@ -166,6 +166,8 @@ public:
 	virtual float GetSignificanceRange() override;
 	//End IFGSignificanceInterface
 
+	float GetJumpPadForceMultiplier() const { return mJumpPadForceMultiplier; }
+
 	//~ Begin IFGColorInterface
 	FLinearColor GetPrimaryColor_Implementation();
 	FLinearColor GetSecondaryColor_Implementation();
@@ -459,6 +461,10 @@ private:
 	/** Gas damage typ that should be redirected to the driver*/
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	TSubclassOf< class UFGDamageType > mGasDamageType; 
+	
+	/** How much to to multiply the jump pad force with. */
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	float mJumpPadForceMultiplier;
 
 	/** Indicates if the vehicle is within significance distance */
 	uint8 mIsSignificant : 1;

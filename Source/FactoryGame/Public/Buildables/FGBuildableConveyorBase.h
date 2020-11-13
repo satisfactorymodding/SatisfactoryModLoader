@@ -686,8 +686,8 @@ protected:
 
 	/** Called when the visuals, radiation etc need to be updated. */
 	virtual void TickItemTransforms( float dt ) PURE_VIRTUAL(,);
-	// MODDING EDIT Accessor
-public:
+
+public: // MODDING EDIT accessor
 	FORCEINLINE int32 FindItemClosestToLocationAccessor(const FVector& location) const { return FindItemClosestToLocation(location); };
 protected:
 
@@ -699,8 +699,8 @@ protected:
 	bool Factory_HasItemAt( int32 index ) const;
 	/** Lets you know what type of item is on a specific index. */
 	const FConveyorBeltItem& Factory_PeekItemAt( int32 index ) const;
-	// MODDING EDIT Accessor
-public:
+
+public: // MODDING EDIT accessor
 	FORCEINLINE void Factory_RemoveItemAtAccessor(int32 index) { Factory_RemoveItemAt(index);};
 protected:
 	/** Remove an item from the belt at index. */
@@ -709,8 +709,8 @@ protected:
 private:
 	/** Take the first element on the belt. */
 	void Factory_DequeueItem();
-	// MODDING EDIT Accessor
-public:
+
+public: // MODDING EDIT accessor
 	FORCEINLINE void Factory_EnqueueItemAccessor(const FInventoryItem& item, float initialOffset) { Factory_EnqueueItem(item, initialOffset); };
 private:
 	/** Put a new item onto the belt. */
@@ -766,7 +766,7 @@ public: // MODDING EDIT
 	/** Stores how much space is available on this belt after its tick runs (thread safe way to access how much space there is to enqueue new items) */
 	float mCachedAvailableBeltSpace;
 
-public: // AA EDIT
+private:
 	int16 mLastItemsDirtyKey = -2;
 	bool mPendingUpdateItemTransforms;
 
