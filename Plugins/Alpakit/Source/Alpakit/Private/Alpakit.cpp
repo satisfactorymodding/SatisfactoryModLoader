@@ -124,7 +124,7 @@ struct FNotificationItemHolder {
 	TWeakPtr<SNotificationItem> NotificationItem;
 };
 
-TFunction<void(bool bSuccess, const FString& FailureReason)> SpawnModContentPackingNotification() {
+TFunction<void(bool bSuccess, const FString& ErrorMessage)> SpawnModContentPackingNotification() {
 	const TStatId StatIdEmpty;
 	TSharedPtr<FNotificationItemHolder> NotificationItemHolder = MakeShareable(new FNotificationItemHolder());
 
@@ -146,8 +146,8 @@ TFunction<void(bool bSuccess, const FString& FailureReason)> SpawnModContentPack
 	FTaskGraphInterface::Get().WaitUntilTaskCompletes(TaskRef);
 	check(NotificationItemHolder->NotificationItem.IsValid());
 	
-	return [NotificationItemHolder, StatIdEmpty](bool bSuccess, const FString& FailureReason){
-		FFunctionGraphTask::CreateAndDispatchWhenReady([NotificationItemHolder, bSuccess, FailureReason](){
+	return [NotificationItemHolder, StatIdEmpty](bool bSuccess, const FString& ErrorMessage){
+		FFunctionGraphTask::CreateAndDispatchWhenReady([NotificationItemHolder, bSuccess, ErrorMessage](){
 			if (NotificationItemHolder->NotificationItem.IsValid()) {
 				TSharedPtr<SNotificationItem> NotificationItem = NotificationItemHolder->NotificationItem.Pin();
                 if (bSuccess) {
@@ -158,7 +158,7 @@ TFunction<void(bool bSuccess, const FString& FailureReason)> SpawnModContentPack
                     GEditor->PlayEditorSound(TEXT("/Engine/EditorSounds/Notifications/CompileFailed_Cue.CompileFailed_Cue"));
                     NotificationItem->SetCompletionState(SNotificationItem::CS_Fail);
                     FFormatNamedArguments Arguments;
-                    Arguments.Add(TEXT("Reason"), FText::FromString(FailureReason));
+                    Arguments.Add(TEXT("Reason"), FText::FromString(ErrorMessage));
                     NotificationItem->SetText(FText::Format(LOCTEXT("PackingFailure", "Failed to pack mod assets: {Reason}"), Arguments));
                 }
                 NotificationItem->SetExpireDuration(3.0f);
@@ -169,7 +169,7 @@ TFunction<void(bool bSuccess, const FString& FailureReason)> SpawnModContentPack
 	};
 }
 
-void FAlpakitModule::PackModAssets(TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinished) {
+void FAlpakitModule::PackModAssets(TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinished) {
 	//Make sure Settings are saved at this point
 	UAlpakitSettings::Get()->SaveSettings();
 	
@@ -204,13 +204,13 @@ FString FPakListEntry::ToString() const {
 	return FString::Printf(TEXT("\"%s\" \"%s\""), *AssetFilePathOnDisk, *AssetPathInPakFile);
 }
 
-void FAlpakitModule::FinishModAssetPacking(const FString& AutomationToolLogDir, const FString& AutomationToolReturnCode, TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinishedCallback) {
+void FAlpakitModule::FinishModAssetPacking(const FString& AutomationToolLogDir, const FString& AutomationToolReturnCode, TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinishedCallback) {
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 	auto NotificationFuture = SpawnModContentPackingNotification();
 	
-	const TFunction<void(bool, const FString&)> CombinedFuture = [NotificationFuture, PackingFinishedCallback](bool bSuccess, const FString& FailureReason){
-		NotificationFuture(bSuccess, FailureReason);
-		PackingFinishedCallback(bSuccess, FailureReason);
+	const TFunction<void(bool, const FString&)> CombinedFuture = [NotificationFuture, PackingFinishedCallback](bool bSuccess, const FString& ErrorMessage){
+		NotificationFuture(bSuccess, ErrorMessage);
+		PackingFinishedCallback(bSuccess, ErrorMessage);
 	};
 	
 	if (!AutomationToolReturnCode.Equals(TEXT("Completed"), ESearchCase::IgnoreCase)) {
@@ -553,13 +553,13 @@ void FAlpakitModule::ProcessSingleModPackage(const TSharedPtr<FModPackingProgres
 		return;
 	}
 	
-	RunUnrealPak(ModListFilePath, OutputPakFilePath, [PackingProgress, ModPakFileName](bool bSuccess, const FString& FailureReason){
+	RunUnrealPak(ModListFilePath, OutputPakFilePath, [PackingProgress, ModPakFileName](bool bSuccess, const FString& ErrorMessage){
 		if (bSuccess) {
 			UE_LOG(LogAlpakit, Display, TEXT("Succesfully packaged mod %s"), *ModPakFileName);
 			ProcessSingleModPackage(PackingProgress);
 		} else {
-			UE_LOG(LogAlpakit, Error, TEXT("Failed to package mod %s: %s"), *ModPakFileName, *FailureReason);
-			PackingProgress->OriginalFinishCallback(false, FailureReason);
+			UE_LOG(LogAlpakit, Error, TEXT("Failed to package mod %s: %s"), *ModPakFileName, *ErrorMessage);
+			PackingProgress->OriginalFinishCallback(false, ErrorMessage);
 		}
 	});
 }
@@ -568,7 +568,7 @@ struct FProcessPointerHolder {
 	TSharedPtr<FMonitoredProcess> ProcessPtr;
 };
 
-void FAlpakitModule::RunUnrealPak(const FString& PakListFilePath, const FString& OutputPakFilePath, TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinishedCallback) {
+void FAlpakitModule::RunUnrealPak(const FString& PakListFilePath, const FString& OutputPakFilePath, TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinishedCallback) {
 	const FString CommandLineExecutable = TEXT("cmd.exe");
 	const FString UnrealPakPath = FPaths::ConvertRelativePathToFull(FPaths::Combine(FPaths::EngineDir(), TEXT("Binaries"), TEXT("Win64"), TEXT("UnrealPak.exe")));
 
@@ -590,8 +590,8 @@ void FAlpakitModule::RunUnrealPak(const FString& PakListFilePath, const FString&
 				PackingFinishedCallback(true, TEXT(""));
 			} else {
 				UE_LOG(LogAlpakit, Error, TEXT("UnrealPak for file %s failed. Exit Code: %d"), *OutputPakFilePath, ExitCode);
-				const FString FailureReason = FString::Printf(TEXT("UnrealPak exited with code %d"), ExitCode);
-				PackingFinishedCallback(false, FailureReason);
+				const FString ErrorMessage = FString::Printf(TEXT("UnrealPak exited with code %d"), ExitCode);
+				PackingFinishedCallback(false, ErrorMessage);
 			}
 			//Reset shared pointer to the process so it can be destroyed
 			//Note that our outer scope will be destroyed too, as this object actually owns thread instance
@@ -617,11 +617,11 @@ void FAlpakitModule::HandleAlpakitConsoleCommand() {
 	TPromise<FString> PackingResultPromise;
 	const TFuture<FString> PackingResultFuture = PackingResultPromise.GetFuture();
 	UE_LOG(LogAlpakit, Display, TEXT("Starting packing mod assets"));
-	PackModAssets([&](const bool bSuccess, const FString& FailureReason){
+	PackModAssets([&](const bool bSuccess, const FString& ErrorMessage){
 		if (bSuccess) {
 			PackingResultPromise.SetValue(TEXT(""));
 		} else {
-			PackingResultPromise.SetValue(FailureReason);
+			PackingResultPromise.SetValue(ErrorMessage);
 		}
 	});
 	PackingResultFuture.Wait();

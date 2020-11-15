@@ -2,6 +2,7 @@
 
 #pragma once
 #include "Array.h"
+#include "AssetBundleData.h"
 #include "SubclassOf.h"
 #include "UObject/Class.h"
 

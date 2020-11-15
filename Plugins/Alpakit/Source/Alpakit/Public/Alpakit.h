@@ -18,7 +18,7 @@ struct FModPackingProgress {
 	TArray<FAlpakitMod> ModsToPack;
 	int32 CurrentModIndex;
 	TArray<FPakListEntry> PakListEntries;
-	TFunction<void(bool bSuccess, const FString& FailureReason)> OriginalFinishCallback;
+	TFunction<void(bool bSuccess, const FString& ErrorMessage)> OriginalFinishCallback;
 };
 
 class FAlpakitModule : public IModuleInterface {
@@ -28,7 +28,7 @@ public:
 	virtual void ShutdownModule() override;
 
 	/** Packs mod assets according to UAlpakitSettings configuration */
-	virtual void PackModAssets(TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinished);
+	virtual void PackModAssets(TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinished);
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
 	FDelegateHandle ContentBrowserCommandExtenderDelegateHandle;
@@ -37,8 +37,8 @@ private:
 	FDelegateHandle AssetEditorExtenderDelegateHandle;
 	FConsoleCommandDelegate ConsoleCommandAlpakit;
 
-	void FinishModAssetPacking(const FString& AutomationToolLogDir, const FString& AutomationToolReturnCode, TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinishedCallback);
-	static void RunUnrealPak(const FString& PakListFilePath, const FString& OutputPakFilePath, TFunction<void(bool bSuccess, const FString& FailureReason)> PackingFinishedCallback);
+	void FinishModAssetPacking(const FString& AutomationToolLogDir, const FString& AutomationToolReturnCode, TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinishedCallback);
+	static void RunUnrealPak(const FString& PakListFilePath, const FString& OutputPakFilePath, TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinishedCallback);
 	static void ProcessSingleModPackage(const TSharedPtr<FModPackingProgress>& PackingProgress);
 	static void PerformPostProcessTasks(const TSharedPtr<FModPackingProgress>& PackingProgress);
 	static void SerializeModInfoToDataJson(const TSharedRef<FJsonObject>& DataJson, const FAlpakitMod& ModInfo);

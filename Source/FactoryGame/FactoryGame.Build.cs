@@ -8,39 +8,24 @@ public class FactoryGame : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-       PublicDependencyModuleNames.AddRange(new string[] {
+        //FactoryGame transitive dependencies
+        PublicDependencyModuleNames.AddRange(new[] {
             "Core", "CoreUObject",
             "Engine",
             "InputCore",
-            "OnlineSubsystem", "OnlineSubsystemUtils", "OnlineSubsystemNULL", "OnlineSubsystemEOS",
+            "OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemEOS", "OnlineSubsystemUtils",
             "SignificanceManager",
-            "PhysX", "APEX", "PhysXVehicles", "ApexDestruction",
-            "AkAudio",
-            "ReplicationGraph",
-            "UMG",
-            "AIModule",
-            "NavigationSystem",
+            "APEX", "ApexDestruction",
+            "AnimGraphRuntime",
+            "AkAudio", 
+            "PhysXVehicles",
             "AssetRegistry",
+            "NavigationSystem",
+            "ReplicationGraph",
+            "AIModule",
             "GameplayTasks",
-			"AnimGraphRuntime",
-            "Slate", "SlateCore",
+            "SlateCore", "Slate", "UMG",
             "InstancedSplines"
-			});
-
-        if (Target.Type == TargetRules.TargetType.Editor)
-        {
-            PublicDependencyModuleNames.AddRange(new string[] { "OnlineBlueprintSupport", "AnimGraph" });
-        }
-
-
-        PrivateDependencyModuleNames.AddRange(new string[] { });
-
-        // Uncomment if you are using Slate UI
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-
-        // Uncomment if you are using online features
-        PrivateDependencyModuleNames.Add("OnlineSubsystem");
-
-        // To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+        });
     }
 }

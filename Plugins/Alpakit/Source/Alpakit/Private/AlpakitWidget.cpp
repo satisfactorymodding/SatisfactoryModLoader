@@ -85,7 +85,7 @@ FReply SAlpakitWidget::SavedSettingsTriggered() const {
 FReply SAlpakitWidget::PackButtonTriggered() {
 	AlpakitButton->SetEnabled(false);
 	FAlpakitModule& AlpakitModule = FModuleManager::GetModuleChecked<FAlpakitModule>(TEXT("Alpakit"));
-	AlpakitModule.PackModAssets([=](bool /*bSuccess*/, const FString& /*FailureReason*/){
+	AlpakitModule.PackModAssets([=](bool /*bSuccess*/, const FString& /*ErrorMessage*/){
 		AlpakitButton->SetEnabled(true);
 	});
 	return FReply::Handled();
