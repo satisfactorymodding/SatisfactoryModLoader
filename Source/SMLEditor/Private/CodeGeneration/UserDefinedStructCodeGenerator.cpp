@@ -1,4 +1,4 @@
-﻿#include "Configuration/CodeGeneration/UserDefinedStruct/UserDefinedStructCodeGenerator.h"
+﻿#include "CodeGeneration/UserDefinedStructCodeGenerator.h"
 #include "AssetToolsModule.h"
 #include "EdGraphSchema_K2.h"
 #include "FileHelpers.h"
@@ -12,7 +12,6 @@
 #define LOCTEXT_NAMESPACE "SML"
 
 bool FUserDefinedStructCodeGenerator::GenerateConfigurationStruct(const FString& PackageName, UConfigGenerationContext* Context) {
-#if WITH_EDITOR
     //Load required modules and create factories for making new struct assets
     UStructureFactory* StructureFactory = NewObject<UStructureFactory>();
     FAssetToolsModule& Module = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools");
@@ -47,14 +46,10 @@ bool FUserDefinedStructCodeGenerator::GenerateConfigurationStruct(const FString&
     //Save packages that we just created
     FEditorFileUtils::PromptForCheckoutAndSave(PackagesToSave, /*bCheckDirty*/false, /*bPromptToSave*/false);
     return true;
-#endif
-    checkf(false, TEXT("Cannot generated user defined structs outside of editor"));
-    return false;
 }
 
 void FUserDefinedStructCodeGenerator::PopulateGeneratedStruct(UConfigGeneratedStruct* GeneratedStruct, UUserDefinedStruct* UserStruct,
     const TMap<UConfigGeneratedStruct*, UUserDefinedStruct*>& GeneratedStructs) {
-#if WITH_EDITOR
     //Generate each config variable
     for (const TPair<FString, FConfigVariableDescriptor>& Pair : GeneratedStruct->GetVariables()) {
         //Creates new variable with specified type
@@ -65,7 +60,6 @@ void FUserDefinedStructCodeGenerator::PopulateGeneratedStruct(UConfigGeneratedSt
         const FStructVariableDescription& Description = FStructureEditorUtils::GetVarDesc(UserStruct).Last();
         FStructureEditorUtils::RenameVariable(UserStruct, Description.VarGuid, Pair.Key);
     }
-#endif
 }
 
 FEdGraphPinType FUserDefinedStructCodeGenerator::CreatePinTypeForVariable(const FConfigVariableDescriptor& Descriptor,

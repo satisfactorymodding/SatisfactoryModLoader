@@ -1,8 +1,8 @@
 #pragma once
 #include "UnrealString.h"
 
-#if WITH_EDITOR
-namespace SML {
+class SMLEDITOR_API FGameAssetGenerator {
+public:
 	/**
 	 * Generates Satisfactory Data Assets from FG Data Dump Json File
 	 * WARNING! It takes some time, happens in multiple phases and is prone to multiple errors
@@ -12,5 +12,4 @@ namespace SML {
 	 * SML::generateSatisfactoryAssets(TEXT("D:/SatisfactoryExperimental/configs/FGDataAssets.json"));
 	 */
 	void GenerateSatisfactoryAssets(const FString& DataJsonFilePath);
-}
-#endif
+};

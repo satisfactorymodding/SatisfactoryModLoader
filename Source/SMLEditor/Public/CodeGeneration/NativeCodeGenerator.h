@@ -11,7 +11,7 @@ struct FReferencedClassesData {
     bool bUsedClassPropertyWithLimitedType = false;
 };
 
-class SML_API FNativeCodeGenerator {
+class SMLEDITOR_API FNativeCodeGenerator {
 
     /**
      * Checks if native configuration can be generated from a given context

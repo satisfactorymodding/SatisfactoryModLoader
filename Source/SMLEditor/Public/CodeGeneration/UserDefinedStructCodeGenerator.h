@@ -3,7 +3,7 @@
 #include "Configuration/CodeGeneration/ConfigGeneratedStruct.h"
 #include "EdGraph/EdGraphPin.h"
 
-class SML_API FUserDefinedStructCodeGenerator {
+class SMLEDITOR_API FUserDefinedStructCodeGenerator {
 
     /**
      * Generates user defined configuration struct inside of the given package name

@@ -1,6 +1,4 @@
-#include "FGAssetGenerator.h"
-#if WITH_EDITOR
-#include "K2Node_MakeArray.h"
+/*#include "K2Node_MakeArray.h"
 #include "K2Node_MakeMap.h"
 #include "K2Node_MakeSet.h"
 #include "K2Node_Self.h"
@@ -15,7 +13,6 @@
 #include "EdGraphSchema_K2.h"
 #include "UserDefinedStructure/UserDefinedStructEditorData.h"
 #include "BlueprintEditorUtils.h"
-#include "util/TopologicalSort.h"
 #include "Json.h"
 #include "FileHelpers.h"
 #include "BlueprintCompilationManager.h"
@@ -674,7 +671,7 @@ UK2Node* CreateFunctionOverride(UBlueprint* Blueprint, UFunction* OverrideFunc) 
 	} else {
 		// Implement the function graph
 		UEdGraph* const NewGraph = FBlueprintEditorUtils::CreateNewGraph(Blueprint, OverrideFunc->GetFName(), UEdGraph::StaticClass(), UEdGraphSchema_K2::StaticClass());
-		FBlueprintEditorUtils::AddFunctionGraph(Blueprint, NewGraph, /*bIsUserCreated=*/ false, FunctionClass);
+		FBlueprintEditorUtils::AddFunctionGraph(Blueprint, NewGraph, false, FunctionClass);
 		TArray<UK2Node_FunctionEntry*> ResultArray;
 		NewGraph->GetNodesOfClass<UK2Node_FunctionEntry>(ResultArray);
 		return ResultArray.Num() > 0 ? ResultArray[0] : nullptr;
@@ -923,10 +920,10 @@ UWidgetBlueprint* CreateWidgetBlueprint(UPackage* Package, const FString& Name, 
 	UWidgetBlueprint* WidgetBlueprint = Cast<UWidgetBlueprint>(Blueprint);
 	check(WidgetBlueprint != nullptr);
 	//TODO not always correct for inherited widgets, need to figure out when exactly it is needed
-	/*if (WidgetBlueprint->WidgetTree->RootWidget == nullptr) {
-		UWidget* Root = WidgetBlueprint->WidgetTree->ConstructWidget<UWidget>(UCanvasPanel::StaticClass());
-		WidgetBlueprint->WidgetTree->RootWidget = Root;
-	}*/
+	if (WidgetBlueprint->WidgetTree->RootWidget == nullptr) {
+	//	UWidget* Root = WidgetBlueprint->WidgetTree->ConstructWidget<UWidget>(UCanvasPanel::StaticClass());
+	//	WidgetBlueprint->WidgetTree->RootWidget = Root;
+	}
 	return WidgetBlueprint;
 }
 
@@ -1386,4 +1383,4 @@ void DeserializePropertyValueInternal(const UProperty* TestProperty, void* Value
 	}
 }
 
-#endif
+*/

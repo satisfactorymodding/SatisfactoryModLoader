@@ -1,4 +1,4 @@
-﻿#include "Configuration/CodeGeneration/Native/NativeCodeGenerator.h"
+﻿#include "CodeGeneration/NativeCodeGenerator.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Object.h"
 
@@ -180,7 +180,7 @@ FString FNativeCodeGenerator::GetIncludePathForClass(UStruct* Class) {
     //and even on function and property objects. According to UHT source, only difference
     //between these two is that include path has Public/Private/Classes prefixes stripped. We can
     //mimic that behavior and get uniform include paths for all defined objects
-#if WITH_EDITOR
+
     FString IncludePath = Class->GetMetaData(TEXT("ModuleRelativePath"));
     checkf(!IncludePath.IsEmpty(), TEXT("ModuleRelativePath metadata not found on object %s"), *Class->GetPathName());
     // Walk over the first potential slash
@@ -201,9 +201,6 @@ FString FNativeCodeGenerator::GetIncludePathForClass(UStruct* Class) {
         IncludePath.RemoveAt(0, ARRAY_COUNT(ClassesFolderName) - 1);
     }
     return IncludePath;
-#endif
-    checkf(0, TEXT("GetIncludePathForClass: metadata is not supported outside of editor."));
-    return TEXT("");
 }
 
 int FNativeCodeGenerator::GetNestedLevelOfStruct(const UConfigGeneratedStruct* Struct) {
