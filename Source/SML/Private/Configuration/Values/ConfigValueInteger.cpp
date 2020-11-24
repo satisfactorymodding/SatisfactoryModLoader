@@ -7,7 +7,7 @@ FString UConfigValueInteger::DescribeValue_Implementation() const {
 
 URawFormatValue* UConfigValueInteger::Serialize_Implementation(UObject* Outer) const {
     URawFormatValueNumber* NumberValue = NewObject<URawFormatValueNumber>(Outer);
-    NumberValue->SetValue(Value);
+    NumberValue->SetValueInt(Value);
     return NumberValue;
 }
 

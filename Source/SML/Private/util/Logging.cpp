@@ -6,6 +6,8 @@
 #include "Engine/Engine.h"
 #include "Private/Misc/VarargsHelper.h"
 
+TSharedPtr<FOutputDevice> FSMLLoggingInternal::FileOutputDevice = NULL;
+
 bool FSMLLoggingInternal::IsEngineInitialized() {
     return GEngine && GEngine->IsInitialized();
 }

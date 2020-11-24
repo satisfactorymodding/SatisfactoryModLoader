@@ -16,7 +16,9 @@
 #include "SMLSubsystemHolder.h"
 #include "Engine/AssetManager.h"
 
-IMPLEMENT_FG_SAVE_INTERFACE(AModContentRegistry, false, true);
+DEFINE_LOG_CATEGORY(LogContentRegistry);
+
+TMap<FString, FString> AModContentRegistry::ModOverwriteMap;
 
 void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
     const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);

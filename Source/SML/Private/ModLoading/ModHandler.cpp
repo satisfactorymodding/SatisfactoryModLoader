@@ -18,6 +18,8 @@
 #include "TopologicalSort.h"
 #include "ZipFile.h"
 
+DEFINE_LOG_CATEGORY(LogModLoading);
+
 //No need to handle ELogVerbosity::Fatal here because it's an instant crash
 #define MOD_LOADING_LOG(Verbosity, Message, ...) \
 	SML_LOG(LogModLoading, Verbosity, Message, ##__VA_ARGS__); \

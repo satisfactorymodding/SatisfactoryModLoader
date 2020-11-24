@@ -145,9 +145,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRecipeRegistered, TSubclassOf<UF
  * after that moment registry is frozen and no changes can be made after that
  */
 UCLASS()
-class SML_API AModContentRegistry : public AFGSubsystem, public IFGSaveInterface {
+class SML_API AModContentRegistry : public AFGSubsystem {
     GENERATED_BODY()
-    DECLARE_FG_SAVE_INTERFACE()
 public:
     AModContentRegistry();
     

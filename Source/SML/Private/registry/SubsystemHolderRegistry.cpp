@@ -3,6 +3,8 @@
 #include "Logging.h"
 #include "NativeHookManager.h"
 
+DEFINE_LOG_CATEGORY(LogSubsystemHolderRegistry);
+
 USubsystemHolderRegistry::USubsystemHolderRegistry() {
     bIsRegistryFrozen = false;
 }
@@ -46,6 +48,9 @@ void USubsystemHolderRegistry::RegisterSubsystemHolder(const FString& ModReferen
     USubsystemHolderRegistry* Registry = GetMutableDefault<USubsystemHolderRegistry>();
     Registry->RegisteredSubsystemHolders.Add(FSubsystemHolderRegistrarEntry{ModReference, SubsystemHolderClass});
 }
+
+
+bool USubsystemHolderRegistry::bIsRegistryFrozen = false;
 
 void USubsystemHolderRegistry::FreezeRegistry() {
     checkf(!bIsRegistryFrozen, TEXT("Attempt to re-freeze already frozen registry"));

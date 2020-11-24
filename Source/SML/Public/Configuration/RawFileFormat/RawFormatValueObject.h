@@ -94,11 +94,11 @@ FORCEINLINE void URawFormatValueObject::SetString(const FString& Key, const FStr
 }
 
 FORCEINLINE void URawFormatValueObject::SetInteger(const FString& Key, const int32 Value) {
-    AddNewValue<URawFormatValueNumber>(Key)->SetValue(Value);
+    AddNewValue<URawFormatValueNumber>(Key)->SetValueInt(Value);
 }
 
 FORCEINLINE void URawFormatValueObject::SetFloat(const FString& Key, const float Value) {
-    AddNewValue<URawFormatValueNumber>(Key)->SetValue(Value);
+    AddNewValue<URawFormatValueNumber>(Key)->SetValueFloat(Value);
 }
 
 FORCEINLINE void URawFormatValueObject::AddValue(const FString& Key, URawFormatValue* ValueClass) {

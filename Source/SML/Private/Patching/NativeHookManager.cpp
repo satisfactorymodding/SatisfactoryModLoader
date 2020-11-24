@@ -6,6 +6,8 @@
 
 DEFINE_LOG_CATEGORY(LogNativeHookManager);
 
+TSharedPtr<BootstrapAccessors> FNativeHookManagerInternal::BootstrapAccessorsPtr = NULL;
+
 //since templates are actually compiled for each module separately,
 //we need to have a global handler map which will be shared by all hook invoker templates available in all modules
 //to keep single hook instance for each method

@@ -38,7 +38,7 @@ public:
 	 * Whenever this command can only be used by player sender
 	 * Trying to run it from non-player sender will print error message
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	uint8 bOnlyUsableByPlayer: 1;
 
 	/**
@@ -46,20 +46,20 @@ public:
 	 * actually giving execution control to the command
 	 * Providing less will instead print command usage
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	int32 MinNumberOfArguments;
 
 	/**
 	 * Name of the command
 	 * Not limited in any way, but consider using only ASCII chars there
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FString CommandName;
 
 	/**
 	 * List of the additional names command can be referenced by
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FString> Aliases;
 	/**
 	 * Usage of the command
@@ -67,9 +67,11 @@ public:
 	 * msg <username> <message>
 	 * give <username> <item> [amount] [extra_data]
 	 */
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FString Usage;
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	/**
 	 * Command handler function to be called when command is executed
 	 *

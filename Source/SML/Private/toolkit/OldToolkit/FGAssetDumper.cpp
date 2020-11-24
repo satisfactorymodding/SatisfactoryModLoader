@@ -354,7 +354,8 @@ TArray<TSharedPtr<FJsonValue>> WriteDelegateBindings(UBlueprintGeneratedClass* G
 
 FString PropertyPathToString(const FCachedPropertyPath& Path) {
 	FString OutString;
-	UProperty* Property = FCachedPropertyPath::StaticStruct()->FindPropertyByName(TEXT("Segments"));
+	UStruct* StructObject = FindObjectChecked<UStruct>(NULL, TEXT("/Script/PropertyPath.CachedPropertyPath"));
+	UProperty* Property = StructObject->FindPropertyByName(TEXT("Segments"));
 	check(Property != nullptr);
 	const TArray<FPropertyPathSegment>* Segments = Property->ContainerPtrToValuePtr<const TArray<FPropertyPathSegment>>(&Path);
 	
@@ -916,11 +917,7 @@ TSharedPtr<FJsonValue> SerializePropertyValueInternal(const UProperty* TestPrope
 		
 	} else if (const UEnumProperty* EnumProperty = Cast<const UEnumProperty>(TestProperty)) {
 		// K2 only supports byte enums right now - any violations should have been caught by UHT or the editor
-		if (!EnumProperty->GetUnderlyingProperty()->IsA<UByteProperty>()) {
-			SML::Logging::fatal(TEXT("Unsupported Underlying Enum Property Found: "), *EnumProperty->GetUnderlyingProperty()->GetClass()->GetName());
-		}
-		//Prefer readable enum names in result json to raw numbers
-		const uint8 UnderlyingValue = *reinterpret_cast<const uint8*>(Value);
+		const int64 UnderlyingValue = EnumProperty->GetUnderlyingProperty()->GetSignedIntPropertyValue(Value);
 		const FString EnumName = EnumProperty->GetEnum()->GetNameByValue(UnderlyingValue).ToString();
 		return MakeShareable(new FJsonValueString(EnumName));
 

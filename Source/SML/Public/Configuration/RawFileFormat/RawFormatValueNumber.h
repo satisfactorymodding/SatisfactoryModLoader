@@ -13,19 +13,25 @@ public:
 
     /** Retrieves number value as floating point */
     UFUNCTION(BlueprintPure)
-    FORCEINLINE float AsFloat() const { return Value; };
+    FORCEINLINE float AsFloat() const { return (float) Value; };
 
     /** Updates raw value to specified floating point value */
-    FORCEINLINE
     UFUNCTION(BlueprintCallable)
-    void SetValue(float Value) { this->Value = Value; }
+    void SetValueFloat(float NewValue);
     
     /** Retrieves number value as 32-bit signed integer */
     UFUNCTION(BlueprintPure)
     FORCEINLINE int32 AsInt() const { return (int32) Value; }
 
     /** Updates raw value to specified 32-bit signed integer */
-    FORCEINLINE
     UFUNCTION(BlueprintCallable)
-    void SetValue(int32 Value) { this->Value = Value; }
+    void SetValueInt(int32 NewValue);
 };
+
+FORCEINLINE void URawFormatValueNumber::SetValueFloat(float NewValue) {
+    this->Value = NewValue;
+}
+
+FORCEINLINE void URawFormatValueNumber::SetValueInt(int32 NewValue) {
+    this->Value = NewValue;
+}

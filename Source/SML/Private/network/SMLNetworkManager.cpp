@@ -1,6 +1,4 @@
 ﻿#include "Network/SMLConnection/SMLNetworkManager.h"
-
-
 #include "FGPlayerController.h"
 #include "ModHandler.h"
 #include "NetworkHandler.h"
@@ -9,6 +7,8 @@
 #include "SMLConnectionMetadata.h"
 #include "SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
+
+TSharedPtr<FMessageType> FSMLNetworkManager::MessageTypeModInit = NULL;
 
 void FSMLNetworkManager::RegisterMessageTypeAndHandlers() {
     UModNetworkHandler* NetworkHandler = UModNetworkHandler::Get();

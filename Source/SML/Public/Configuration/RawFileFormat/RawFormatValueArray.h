@@ -107,11 +107,11 @@ FORCEINLINE void URawFormatValueArray::AddString(const FString& Value) {
 }
 
 FORCEINLINE void URawFormatValueArray::AddInteger(int32 Value) {
-    AddNewValue<URawFormatValueNumber>()->SetValue(Value);
+    AddNewValue<URawFormatValueNumber>()->SetValueInt(Value);
 }
 
 FORCEINLINE void URawFormatValueArray::AddFloat(float Value) {
-    AddNewValue<URawFormatValueNumber>()->SetValue(Value);
+    AddNewValue<URawFormatValueNumber>()->SetValueFloat(Value);
 }
 
 FORCEINLINE void URawFormatValueArray::AddValue(URawFormatValue* ValueClass) {

@@ -6,6 +6,8 @@
 #include "SatisfactoryModLoader.h"
 #include "WindowsPlatformStackWalk.h"
 
+TSharedPtr<BootstrapAccessors> FCrashContextPatch::BootstrapperAccessors = NULL;
+
 void FCrashContextPatch::ApplyModdedProperties(const FGenericCrashContext* CrashContext) {
     CrashContext->BeginSection(TEXT("ModdingProperties"));
         

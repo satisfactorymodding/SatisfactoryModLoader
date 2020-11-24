@@ -10,6 +10,8 @@
 #include "SatisfactoryModLoader.h"
 #include "UPropertySerializer.h"
 
+DEFINE_LOG_CATEGORY(LogBlueprintLegacy);
+
 bool USMLBlueprintLibrary::ParseVersionString(const FString& String, FVersion& OutVersion, FString& ErrorMessage) {
 	return UBlueprintVersionLibrary::ParseVersionString(String, OutVersion, ErrorMessage);
 }
