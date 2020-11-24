@@ -15,6 +15,7 @@
 #include "FGGameInstance.h"
 #include "SatisfactoryModLoader.h"
 #include "SMLInitMod.h"
+#include "SMLModule.h"
 #include "TopologicalSort.h"
 #include "ZipFile.h"
 
@@ -29,33 +30,40 @@ DEFINE_LOG_CATEGORY(LogModLoading);
 
 bool GIsStartingUpModules = false;
 
-//InitializeModule is implemented by IMPLEMENT_MODULE macro in SMLModule.cpp
-extern "C" DLLEXPORT IModuleInterface* InitializeModule();
-
 //needed here because FModuleInfo constructor references it
-int32 FModuleManager::FModuleInfo::CurrentLoadOrder = 1;
+int32 FModuleManager::FModuleInfo::CurrentLoadOrder = 10000;
 
-//We override FModuleManager to access it's protected data members
-class FModuleManagerHack : FModuleManager {
-public:
-	static IModuleInterface* LoadModuleFromInitializerFunc(const FName ModuleName, const FInitializeModuleFunctionPtr& ModuleInitializer) {
-		FModuleManager& ModuleManager = FModuleManager::Get();
-		if (ModuleManager.IsModuleLoaded(ModuleName)) {
-			return ModuleManager.GetModule(ModuleName);
-		}
-		ModuleManager.OnModulesChanged().Broadcast(ModuleName, EModuleChangeReason::PluginDirectoryChanged);
-		ModuleInfoRef ModuleInfo(new FModuleInfo());
-		ModuleInfo->Module = TUniquePtr<IModuleInterface>(ModuleInitializer());
-		ModuleInfo->Module->StartupModule();
-		{
-			FScopeLock Lock(&ModuleManager.ModulesCriticalSection);
-			// Update hash table
-			ModuleManager.Modules.Add(ModuleName, ModuleInfo);
-		}
-		ModuleManager.OnModulesChanged().Broadcast(ModuleName, EModuleChangeReason::ModuleLoaded);
-		return ModuleInfo->Module.Get();
+IModuleInterface* FModHandler::LoadModuleChecked(FName ModuleName, const FInitializeModuleFunctionPtr& ModuleInitializer) {
+	FModuleManager& ModuleManager = FModuleManager::Get();
+
+	//If module is already loaded, just return pointer to it
+	if (ModuleManager.IsModuleLoaded(ModuleName)) {
+		return ModuleManager.GetModule(ModuleName);
 	}
-};
+
+	//Broadcast delegate indicating that new plugin directory has been mounted
+	ModuleManager.OnModulesChanged().Broadcast(ModuleName, EModuleChangeReason::PluginDirectoryChanged);
+
+	//Startup module and add it into the module manager hash table
+	FModuleManager::ModuleInfoRef ModuleInfo(new FModuleManager::FModuleInfo());
+	ModuleInfo->Module = TUniquePtr<IModuleInterface>(ModuleInitializer());
+	ModuleInfo->Module->StartupModule();
+	{
+		FScopeLock Lock(&ModuleManager.ModulesCriticalSection);
+		// Update hash table
+		ModuleManager.Modules.Add(ModuleName, ModuleInfo);
+	}
+
+	//Broadcast delegate indicating that module has been loaded
+	ModuleManager.OnModulesChanged().Broadcast(ModuleName, EModuleChangeReason::ModuleLoaded);
+	
+	if (ModuleManager.bCanProcessNewlyLoadedObjects)
+	{
+		//Process newly loaded UObjects if we are allowed to
+		ModuleManager.StartProcessingNewlyLoadedObjects();
+	}
+    return ModuleInfo->Module.Get();
+}
 
 
 bool FModHandler::IsModLoaded(const FString& ModReference) const {
@@ -109,10 +117,10 @@ void FModHandler::InitializeNativeModules() {
 	//Set global indicating that we are performing module startup
 	GIsStartingUpModules = true;
 	
-	//register SML module manually as it is already loaded into the process
+	//SML Module should be already loaded to the process at this point, because it is the one triggering mod loading
 	const FString SMLModuleName = TEXT("SML");
-	IModuleInterface* SMLModule = FModuleManagerHack::LoadModuleFromInitializerFunc(*SMLModuleName, &InitializeModule);
-	InitializedNativeModModules.Add(SMLModuleName, SMLModule);
+	FSMLModule& SMLModule = FModuleManager::Get().GetModuleChecked<FSMLModule>(*SMLModuleName);
+	InitializedNativeModModules.Add(SMLModuleName, &SMLModule);
 
 	//FactoryGame module should be initialized already at this point, so we just query loaded module interface
 	const FString FactoryGameModuleName = TEXT("FactoryGame");
@@ -129,7 +137,7 @@ void FModHandler::InitializeNativeModules() {
 			MOD_LOADING_LOG(Error, TEXT("Failed to initialize module for %s, InitializeModule function not found"), *ModReference);
 			continue;
 		}
-		IModuleInterface* ModuleInterface = FModuleManagerHack::LoadModuleFromInitializerFunc(*ModReference, InitModule);
+		IModuleInterface* ModuleInterface = LoadModuleChecked(*ModReference, InitModule);
 		InitializedNativeModModules.Add(ModReference, ModuleInterface);
 	}
 
@@ -166,7 +174,7 @@ void FModHandler::MountModPaks() {
 			if (!FPaths::FileExists(ModPakSignaturePath)) {
 				FPlatformFileManager::Get().GetPlatformFile().CopyFile(*ModPakSignaturePath, *GamePakSignaturePath);
 			}
-			SML_LOG(LogModLoading, Log, TEXT("Mounting mod package %s with priority %d"), *PakFilePathStr, PakFileDef.LoadingPriority);
+			SML_LOG(LogModLoading, Display, TEXT("Mounting mod package %s with priority %d"), *PakFilePathStr, PakFileDef.LoadingPriority);
 			FCoreDelegates::OnMountPak.Execute(PakFilePathStr, PakFileDef.LoadingPriority, nullptr);
 		}
 	}
@@ -223,15 +231,15 @@ void FModHandler::SubscribeToLifecycleEvents() {
 		TMap<FString, ABasicModInit*> SpawnedActorMap;
 		
 		//Construct mod actors and dispatch CONSTRUCTION on them immediately
-		SML_LOG(LogModLoading, Log, TEXT("Constructing mod actors on map %s"), *World->GetMapName());
+		SML_LOG(LogModLoading, Display, TEXT("Constructing mod actors on map %s"), *World->GetMapName());
 		SpawnModActors(World, bIsMenuWorld, SpawnedActorMap);
 		
 		//Initialize mod actors and dispatch INITIALIZATION on them
-		SML_LOG(LogModLoading, Log, TEXT("Initializing mod actors"));
+		SML_LOG(LogModLoading, Display, TEXT("Initializing mod actors"));
 		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
 			ModInit->DispatchLifecyclePhase(ELifecyclePhase::INITIALIZATION);
 		});
-		SML_LOG(LogModLoading, Log, TEXT("Finished initializing mod actors"));
+		SML_LOG(LogModLoading, Display, TEXT("Finished initializing mod actors"));
 	});
 
 	//Post initialize mod actors when world is fully loaded and is ready to be used
@@ -240,11 +248,11 @@ void FModHandler::SubscribeToLifecycleEvents() {
 		TMap<FString, ABasicModInit*> SpawnedActorMap;
 		FindModActors(World, SpawnedActorMap);
 		
-		SML_LOG(LogModLoading, Log, TEXT("Post-initializing mod actors"));
+		SML_LOG(LogModLoading, Display, TEXT("Post-initializing mod actors"));
 		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
             ModInit->DispatchLifecyclePhase(ELifecyclePhase::POST_INITIALIZATION);
         });
-		SML_LOG(LogModLoading, Log, TEXT("Finished post-initializing mod actors"));
+		SML_LOG(LogModLoading, Display, TEXT("Finished post-initializing mod actors"));
 	});
 }
 
@@ -377,7 +385,7 @@ void FModHandler::InitializeMods() {
 
 
 void FModHandler::ConstructZipMod(const FString& FilePath) {
-	SML_LOG(LogModLoading, Log, TEXT("Constructing mod file %s"), *FilePath);
+	SML_LOG(LogModLoading, Display, TEXT("Constructing mod file %s"), *FilePath);
 
 	//First, create zip archive reader to unpack mod files
 	FString OutArchiveOpenErrorMessage;
@@ -406,7 +414,7 @@ void FModHandler::ConstructZipMod(const FString& FilePath) {
 }
 
 void FModHandler::ConstructDllMod(const FString& FilePath) {
-	SML_LOG(LogModLoading, Log, TEXT("Constructing raw DLL mod file %s"), *FilePath);
+	SML_LOG(LogModLoading, Display, TEXT("Constructing raw DLL mod file %s"), *FilePath);
 	
 	if (CheckAndNotifyRawMod(FilePath)) {
 		const FString ModReference = FModHandlerHelper::GetModReferenceFromFile(FilePath);
@@ -418,7 +426,7 @@ void FModHandler::ConstructDllMod(const FString& FilePath) {
 }
 
 void FModHandler::ConstructPakMod(const FString& FilePath) {
-	SML_LOG(LogModLoading, Log, TEXT("Constructing raw pak mod file %s"), *FilePath);
+	SML_LOG(LogModLoading, Display, TEXT("Constructing raw pak mod file %s"), *FilePath);
 	
 	if (CheckAndNotifyRawMod(FilePath)) {
 		const FString ModReference = FModHandlerHelper::GetModReferenceFromFile(FilePath);

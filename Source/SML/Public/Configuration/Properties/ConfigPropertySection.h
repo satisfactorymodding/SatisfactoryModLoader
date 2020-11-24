@@ -25,7 +25,7 @@ public:
 };
 
 /** Describes a single configuration section with nested properties */
-UCLASS()
+UCLASS(EditInlineNew)
 class SML_API UConfigPropertySection : public UConfigProperty {
     GENERATED_BODY()
 public:

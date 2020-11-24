@@ -3,7 +3,7 @@
 #include "ConfigPropertyArray.generated.h"
 
 /** Describes array configuration property with single nested element type */
-UCLASS()
+UCLASS(EditInlineNew)
 class SML_API UConfigPropertyArray : public UConfigProperty {
     GENERATED_BODY()
 public:

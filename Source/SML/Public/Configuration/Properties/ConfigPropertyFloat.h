@@ -2,7 +2,7 @@
 #include "Configuration/ConfigProperty.h"
 #include "ConfigPropertyFloat.generated.h"
 
-UCLASS()
+UCLASS(EditInlineNew)
 class SML_API UConfigPropertyFloat : public UConfigProperty {
     GENERATED_BODY()
 public:

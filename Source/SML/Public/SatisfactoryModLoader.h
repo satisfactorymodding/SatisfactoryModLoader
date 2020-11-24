@@ -30,6 +30,8 @@ public:
 	/** Returns active SML configuration. If not loaded, it will return empty struct */
 	FORCEINLINE static FSMLConfiguration GetSMLConfiguration() { return SMLConfigurationPrivate; }
 private:
+	friend class FSatisfactoryModLoaderInternal;
+	
 	static TSharedPtr<struct BootstrapAccessors> BootstrapperAccessors;
 	static TSharedPtr<FModHandler> ModHandlerPrivate;
 	static FSMLConfiguration SMLConfigurationPrivate;

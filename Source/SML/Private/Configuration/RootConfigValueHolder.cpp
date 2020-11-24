@@ -1,5 +1,4 @@
 ﻿#include "Configuration/RootConfigValueHolder.h"
-
 #include "ConfigValueSection.h"
 
 void URootConfigValueHolder::MarkDirty_Implementation() {

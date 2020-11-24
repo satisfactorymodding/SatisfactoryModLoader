@@ -27,7 +27,7 @@ void InstallBlueprintHook(UFunction* Function, int32 HookOffset) {
 	//basically EX_Jump + CodeSkipSizeType;
 	const int32 MinBytesRequired = 1 + sizeof(CodeSkipSizeType);
 	int32 BytesToMove = FKismetByteCodeSerializer::GetMinInstructionReplaceLength(Function, MinBytesRequired, HookOffset);
-	SML_LOG(LogBlueprintHookManager, Log, TEXT("Installing blueprint hook at function %s, offset %d. Code Size: %d"), *Function->GetPathName(), HookOffset, Function->Script.Num());
+	SML_LOG(LogBlueprintHookManager, Display, TEXT("Installing blueprint hook at function %s, offset %d. Code Size: %d"), *Function->GetPathName(), HookOffset, Function->Script.Num());
 	
 	if (BytesToMove < 0) {
 		//Not enough bytes in method body to fit jump into, append required amount of bytes and fill them with EX_EndOfScript
@@ -39,8 +39,8 @@ void InstallBlueprintHook(UFunction* Function, int32 HookOffset) {
 		BytesToMove = MinBytesRequired;
 	}
 	const int32 JumpDestination = HookOffset + BytesToMove;
-	SML_LOG(LogBlueprintHookManager, Log, TEXT("InstallBlueprintHook: Verified Code Size: %d"), OriginalCode.Num());
-	SML_LOG(LogBlueprintHookManager, Log, TEXT("InstallBlueprintHook: Min Bytes: %d, Hook Offset: %d, Jump Dest: %d"), MinBytesRequired, HookOffset, JumpDestination);
+	SML_LOG(LogBlueprintHookManager, Display, TEXT("InstallBlueprintHook: Verified Code Size: %d"), OriginalCode.Num());
+	SML_LOG(LogBlueprintHookManager, Display, TEXT("InstallBlueprintHook: Min Bytes: %d, Hook Offset: %d, Jump Dest: %d"), MinBytesRequired, HookOffset, JumpDestination);
 
 	//Generate code to call function & code we stripped by jump
 	TArray<uint8> AppendedCode;
@@ -71,7 +71,7 @@ void InstallBlueprintHook(UFunction* Function, int32 HookOffset) {
 	FPlatformMemory::Memset(&OriginalCode[HookOffset], EX_EndOfScript, BytesToMove);
 	OriginalCode[HookOffset] = EX_Jump;
 	FPlatformMemory::WriteUnaligned<CodeSkipSizeType>(&OriginalCode[HookOffset + 1], StartOfAppendedCode);
-	SML_LOG(LogBlueprintHookManager, Log, TEXT("Inserted EX_Jump at %d to %d (Appended Code Size: %d)"), HookOffset, StartOfAppendedCode, AppendedCode.Num());
+	SML_LOG(LogBlueprintHookManager, Display, TEXT("Inserted EX_Jump at %d to %d (Appended Code Size: %d)"), HookOffset, StartOfAppendedCode, AppendedCode.Num());
 }
 
 int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
@@ -81,8 +81,8 @@ int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 		//So we need to hook only in one place to handle all possible execution paths
 		const int32 ReturnOffset = FKismetByteCodeSerializer::FindReturnStatementOffset(Function);
 		checkf(ReturnOffset != -1, TEXT("EX_Return not found for function"));
-		SML_LOG(LogBlueprintHookManager, Log, TEXT("Return Offset for function %s: %d"), *Function->GetPathName(), ReturnOffset);
-		SML_LOG(LogBlueprintHookManager, Log, TEXT("Instruction at Offset: %X, Excpected: %X"), Function->Script[ReturnOffset], EX_Return);
+		SML_LOG(LogBlueprintHookManager, Display, TEXT("Return Offset for function %s: %d"), *Function->GetPathName(), ReturnOffset);
+		SML_LOG(LogBlueprintHookManager, Display, TEXT("Instruction at Offset: %X, Excpected: %X"), Function->Script[ReturnOffset], EX_Return);
 		return ReturnOffset;
 	}
 	return HookOffset;
@@ -95,7 +95,7 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 	//Because otherwise after GC script byte code will be reloaded, without our hooks applied
 	Function->GetTypedOuter<UClass>()->AddToRoot();
 	
-	SML_LOG(LogBlueprintHookManager, Log, TEXT("Hooking blueprint implemented function %s"), *Function->GetPathName());
+	SML_LOG(LogBlueprintHookManager, Display, TEXT("Hooking blueprint implemented function %s"), *Function->GetPathName());
 	HookOffset = PreProcessHookOffset(Function, HookOffset);
 #if UE_BLUEPRINT_EVENTGRAPH_FASTCALLS
 	if (Function->EventGraphFunction != nullptr) {

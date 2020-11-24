@@ -217,15 +217,24 @@ FString UConfigManager::GetConfigurationFilePath(const FConfigId& ConfigId) {
     return ConfigDirectory + FString::Printf(TEXT("%s/%s.cfg"), *ConfigId.ModReference, *ConfigId.ConfigCategory);
 }
 
+#pragma optimize("", off)
+
 void UConfigManager::RegisterConfigurationManager() {
     //Subscribe to exit event so we make sure that pending saves are written to filesystem
+    SML_LOG(LogConfigManager, Display, TEXT("Fuck 1"));
     FCoreDelegates::OnPreExit.AddLambda([](){
         SML_LOG(LogConfigManager, Display, TEXT("Flushing configuration caches into file system"));
         FlushPendingSaves();
     });
+    SML_LOG(LogConfigManager, Display, TEXT("Fuck 2"));
     //Setup a timer which will force all changes into filesystem every 10 seconds
     FTimerManager* TimerManager = FEngineUtil::GetGlobalTimerManager();
+    SML_LOG(LogConfigManager, Display, TEXT("Fuck 3"));
     check(TimerManager);
+    SML_LOG(LogConfigManager, Display, TEXT("Fuck 4"));
     FTimerHandle OutTimerHandle;
     TimerManager->SetTimer(OutTimerHandle, [](){ UConfigManager::FlushPendingSaves(); }, 10.0f, true);
+    SML_LOG(LogConfigManager, Display, TEXT("Fuck 5"));
 }
+
+#pragma optimize("", on)

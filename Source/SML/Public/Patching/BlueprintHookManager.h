@@ -2,7 +2,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BlueprintHookManager.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogBlueprintHookManager, Warning, Log);
+DECLARE_LOG_CATEGORY_EXTERN(LogBlueprintHookManager, Log, Log);
 
 using HookFunctionSignature = void(class FBlueprintHookHelper& HookHelper);
 

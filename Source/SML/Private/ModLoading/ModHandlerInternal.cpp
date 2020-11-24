@@ -398,7 +398,7 @@ bool FModHandlerHelper::ExtractArchiveFile(FZipFile& ZipHandle, const FString& O
 		//Hashes match, no extraction needed
 		return true;
 	}
-	SML_LOG(LogModLoading, Log, TEXT("Extracting archive file: %s -> %s [%s]"), *ArchiveFilePath, *OutFilePath, *ModReference);
+	SML_LOG(LogModLoading, Display, TEXT("Extracting archive file: %s -> %s [%s]"), *ArchiveFilePath, *OutFilePath, *ModReference);
 	//Ensure parent directories exist
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 	const FString ParentFile = FPaths::GetPath(OutFilePath);

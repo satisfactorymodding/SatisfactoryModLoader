@@ -100,7 +100,7 @@ void AChatCommandSubsystem::RegisterCommand(const FString& ModReference, TSubcla
 		}
 		//Add command actor to the registered actor list
 		RegisteredCommands.Add(Command);
-		SML_LOG(LogChatCommand, Log, TEXT("Registered chat command %s:%s"), *ModReference, *Command->CommandName);
+		SML_LOG(LogChatCommand, Display, TEXT("Registered chat command %s:%s"), *ModReference, *Command->CommandName);
 	}
 }
 

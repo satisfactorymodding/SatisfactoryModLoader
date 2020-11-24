@@ -4,6 +4,7 @@
 #include "SubclassOf.h"
 
 class ABasicModInit;
+typedef class IModuleInterface* ( *FInitializeModuleFunctionPtr )( void );
 
 DECLARE_LOG_CATEGORY_EXTERN(LogModLoading, Log, Log);
 
@@ -112,9 +113,13 @@ private:
 	
 private:
 	friend class FSatisfactoryModLoader;
+	friend class FSatisfactoryModLoaderInternal;
 
 	/** Setups mod handler with accessors needed for loading DLL mods */
 	void SetupWithAccessors(const BootstrapAccessors& Accessors);
+
+	/** Loads module into module manager and initializes it */
+	static IModuleInterface* LoadModuleChecked(FName ModuleName, const FInitializeModuleFunctionPtr& ModuleInitializer);
 	
     /** Scans file system for mod package files and populates loading entries map with basic information for mod loading */
     void DiscoverMods();

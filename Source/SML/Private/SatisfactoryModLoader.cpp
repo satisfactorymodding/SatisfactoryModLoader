@@ -11,6 +11,7 @@
 #include "NativeHookManager.h"
 #include "NetworkHandler.h"
 #include "RemoteCallObjectRegistry.h"
+#include "SMLModule.h"
 #include "SMLNetworkManager.h"
 #include "SMLRemoteCallObject.h"
 #include "SMLSubsystemHolder.h"
@@ -31,6 +32,8 @@ const FName FModLoaderExtraAttributes::EA_BootstrapperVersion = TEXT("Bootstrapp
 TSharedPtr<FModHandler> FSatisfactoryModLoader::ModHandlerPrivate = NULL;
 TSharedPtr<BootstrapAccessors> FSatisfactoryModLoader::BootstrapperAccessors = NULL;
 FSMLConfiguration FSatisfactoryModLoader::SMLConfigurationPrivate;
+
+#pragma optimize("", off)
 
 FVersion FSatisfactoryModLoader::GetModLoaderVersion() {
     static FVersion* ModLoaderVersion = NULL;
@@ -68,7 +71,7 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
             
             if (FJsonSerializer::Deserialize(JsonReader, OutJsonObject)) {
                 FSMLConfiguration::ReadFromJson(OutJsonObject, SMLConfigurationPrivate, &bShouldWriteConfiguration);
-                SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Successfully loaded SML configuration from disk"));
+                SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully loaded SML configuration from disk"));
                 
             } else {
                 SML_LOG(LogSatisfactoryModLoader, Warning, TEXT("Failed to load SML configuration, JSON is malformed"));
@@ -78,7 +81,7 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
             SML_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to load SML configuration from %s"), *ConfigLocation);   
         }
     } else {
-        SML_LOG(LogSatisfactoryModLoader, Log, TEXT("SML configuration file is missing, saving new one"));
+        SML_LOG(LogSatisfactoryModLoader, Display, TEXT("SML configuration file is missing, saving new one"));
         bShouldWriteConfiguration = true;
     }
 
@@ -95,7 +98,7 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
 
         //Write file onto the disk now
         if (FFileHelper::SaveStringToFile(OutSerializedConfiguration, *ConfigLocation)) {
-            SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Successfully saved SML configuration"));
+            SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully saved SML configuration"));
         } else {
             SML_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to save SML configuration to %s"), *ConfigLocation);
         }
@@ -121,7 +124,7 @@ void FSatisfactoryModLoader::CheckGameAndBootstrapperVersion() {
             SML_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Bootstrapp version check failed: Bootstrapper version is %s, but this SML version only supports %s"), *BootstrapperVersion.ToString(), *MinSupportedBootstrapperVersion.ToString());
         }
     }
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);
 }
 
 void FSatisfactoryModLoader::InitializeSubsystems() {
@@ -168,14 +171,14 @@ void FSatisfactoryModLoader::InitializeSubsystems() {
 void FSatisfactoryModLoader::PreInitializeModLoading() {
     //Initialize logging first
     FSMLLoggingInternal::InitializeLogging();
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Satisfactory Mod Loader v.%s pre-initializing..."), modLoaderVersionString);
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Satisfactory Mod Loader v.%s pre-initializing..."), modLoaderVersionString);
 
     //Don't try to save configuration in the editor, because it will make new folders with no real reason
     const bool bAllowSavingConfiguration = !WITH_EDITOR;
     LoadSMLConfiguration(bAllowSavingConfiguration);
 
     if (BootstrapperAccessors.IsValid()) {
-        SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Using bootstrapper v.%s for mod loading"), BootstrapperAccessors->version);
+        SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Using bootstrapper v.%s for mod loading"), BootstrapperAccessors->version);
     }
 
     //Check versions before actually trying to load mods
@@ -194,38 +197,38 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     }
     
     //Perform mod discovery and check for stage errors
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Performing mod discovery"));
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod discovery"));
     ModHandlerPrivate->DiscoverMods();
 
     //Perform mods pre initialization (load native module DLLs into process)
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Pre-initializing mods"));
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initializing mods"));
     ModHandlerPrivate->PreInitializeMods();
 
     //Register crash context patch very early, but after mod loading
     //So debug symbols can be flushed now from loaded native modules
     FCrashContextPatch::RegisterPatch();
 
-    //Delay initialization to post engine init and finish pre-initialization
-    FCoreDelegates::OnPostEngineInit.AddStatic(InitializeModLoading);
-    
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Pre-initialization finished!"));
+    //Show console if we have been asked to in configuration
+    //Console can also be shown using -LOG command line switch
+    if (GetSMLConfiguration().bConsoleWindow) {
+        GLogConsole->Show(true);
+    }
+
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initialization finished!"));
 }
 
 void FSatisfactoryModLoader::InitializeModLoading() {
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Performing mod loader initialization"));
-    
-    //Finish logging initialization and open console if requested by user
-    FSMLLoggingInternal::HandlePostEngineInit();
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod loader initialization"));
 
     //Setup SML subsystems and custom content registries
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Setting up SML subsystems"));
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Setting up SML subsystems"));
     InitializeSubsystems();
 
     //Subscribe to world lifecycle event for mod initializers
     ModHandlerPrivate->SubscribeToLifecycleEvents();
 
     //Perform actual mod loading
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Initializing mods"));
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Initializing mods"));
     ModHandlerPrivate->InitializeMods();
 
     //Initialize game instance subsystems and give mods opportunity to register global content
@@ -234,5 +237,36 @@ void FSatisfactoryModLoader::InitializeModLoading() {
     //Reload configuration manager to handle mod configs
     UConfigManager::ReloadModConfigurations(true);
 
-    SML_LOG(LogSatisfactoryModLoader, Log, TEXT("Initialization finished!"));
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
 }
+
+//Helper to access private methods from mod loader class without exposing them to everyone
+class FSatisfactoryModLoaderInternal {
+public:
+    static void EnsureSMLModuleInitialized() {
+        //Make sure SML module is already loaded at this point because mod loading depends on it
+        FModHandler::LoadModuleChecked(TEXT("SML"), InitializeModule);
+    }
+    
+    static void BootstrapModLoaderHelper(BootstrapAccessors& BootstrapAccessors) { 
+        //Set bootstrapper accessors
+        FSatisfactoryModLoader::SetupBootstrapperAccessors(BootstrapAccessors);
+
+        //Make sure SML module is already loaded at this point because mod loading depends on it
+        FCoreDelegates::OnInit.AddStatic(EnsureSMLModuleInitialized);
+        
+        //Basic subsystems like logging are initialized on OnInit
+        FCoreDelegates::OnInit.AddStatic(FSatisfactoryModLoader::PreInitializeModLoading);
+        
+        //UObject subsystem and Engine are initialized on PostEngineInit
+        FCoreDelegates::OnPostEngineInit.AddStatic(FSatisfactoryModLoader::InitializeModLoading);
+    }
+};
+
+
+//Called by bootstrapper very early to initialize mod loader
+extern "C" SML_API void BootstrapModule(BootstrapAccessors& Accessors) {
+	FSatisfactoryModLoaderInternal::BootstrapModLoaderHelper(Accessors);
+}
+
+#pragma optimize("", on)

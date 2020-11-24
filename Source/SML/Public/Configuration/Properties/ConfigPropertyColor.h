@@ -2,7 +2,7 @@
 #include "Configuration/ConfigProperty.h"
 #include "ConfigPropertyColor.generated.h"
 
-UCLASS()
+UCLASS(EditInlineNew)
 class SML_API UConfigPropertyColor : public UConfigProperty {
     GENERATED_BODY()
 public:
