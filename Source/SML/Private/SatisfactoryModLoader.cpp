@@ -20,13 +20,17 @@
 #include "Patch/OfflinePlayerHandler.h"
 #include "Patch/OptionsKeybindPatch.h"
 
+extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.3.0");
+extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
+extern "C" DLLEXPORT const long targetGameVersion = 124066;
+
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
 const FName FModLoaderExtraAttributes::EA_BootstrapperVersion = TEXT("BootstrapperVersion");
 
-extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.4.0");
-extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
-extern "C" DLLEXPORT const long targetGameVersion = 124066;
+TSharedPtr<FModHandler> FSatisfactoryModLoader::ModHandlerPrivate = NULL;
+TSharedPtr<BootstrapAccessors> FSatisfactoryModLoader::BootstrapperAccessors = NULL;
+FSMLConfiguration FSatisfactoryModLoader::SMLConfigurationPrivate;
 
 FVersion FSatisfactoryModLoader::GetModLoaderVersion() {
     static FVersion* ModLoaderVersion = NULL;
