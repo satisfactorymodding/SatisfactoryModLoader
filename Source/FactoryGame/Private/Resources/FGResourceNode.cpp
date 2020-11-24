@@ -4,8 +4,8 @@
 
 #if WITH_EDITOR
 bool AFGResourceNode::IsGeyserDescButNotGeyserNode(){ return bool(); }
-void AFGResourceNode::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
-void AFGResourceNode::CheckForErrors(){ }
+void AFGResourceNode::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
+void AFGResourceNode::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 void AFGResourceNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 AFGResourceNode::AFGResourceNode() : Super() {

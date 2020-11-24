@@ -57,16 +57,10 @@ public:
 	/** Get the RCO of the given class. */
 	UFUNCTION( BlueprintPure, Category = "Remote Call Object", meta = ( DeterminesOutputType = "inClass" ) )
 	class UFGRemoteCallObject* GetRemoteCallObjectOfClass( TSubclassOf< UFGRemoteCallObject > inClass );
-	
+
 	UFUNCTION( BlueprintPure, Category = "Remote Call Object", meta = ( DeterminesOutputType = "inClass" ) )
 	class UFGRemoteCallObject* RegisterRemoteCallObjectClass( TSubclassOf< UFGRemoteCallObject > inClass );
 
-	//MODDING EDIT: template function to get RCO of type in C++ and Cast it automatically
-	template<typename T>
-    FORCEINLINE T* GetRemoteCallObjectOfClass() {
-		return Cast<T>(GetRemoteCallObjectOfClass(T::StaticClass()));
-    }
-	
 	/**
 	* Called on Server and Owning client when the character we controlled died
 	*
@@ -298,8 +292,7 @@ public:
 
 	virtual bool GetPresenceState(FPlayerPresenceState& outState) const override;
 
-// Modding Edit: make public
-public:
+public: // MODDING EDIT
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 

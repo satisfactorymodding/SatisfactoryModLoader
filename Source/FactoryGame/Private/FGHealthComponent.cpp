@@ -3,7 +3,7 @@
 #include "FGHealthComponent.h"
 
 #if WITH_EDITOR
-void UFGHealthComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ }
+void UFGHealthComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 void UFGHealthComponent::BeginPlay(){ }
 void UFGHealthComponent::PostLoad(){ Super::PostLoad(); }

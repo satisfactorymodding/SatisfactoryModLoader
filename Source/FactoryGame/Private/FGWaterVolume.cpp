@@ -6,8 +6,8 @@
 #if WITH_EDITOR
 void AFGWaterVolume::PostLoad(){ Super::PostLoad(); }
 void AFGWaterVolume::PreSave(const  ITargetPlatform* targetPlatform){ }
-void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ }
-void AFGWaterVolume::CheckForErrors(){ }
+void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
+void AFGWaterVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGWaterVolume::AFGWaterVolume() : Super() {
 	this->mAreaClass = UFGNavArea_Water::StaticClass();

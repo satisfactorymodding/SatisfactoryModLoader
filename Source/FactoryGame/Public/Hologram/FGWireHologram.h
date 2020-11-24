@@ -34,6 +34,7 @@ public:
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
@@ -43,6 +44,9 @@ public:
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
+
+	UFUNCTION(BlueprintPure, Category = "Power Pole")
+	class AFGPowerPoleHologram* GetActiveAutomaticPoleHologram() const { return mActivePoleHologram; }
 
 protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Hologram" )
@@ -59,6 +63,8 @@ protected:
 private:
 	void CheckValidSnap();
 	void CheckLength();
+
+	void SetActiveAutomaticPoleHologram( class AFGPowerPoleHologram* poleHologram );
 
 	/**
 	 * Check for nearby connectors.
@@ -84,8 +90,19 @@ private:
 	UPROPERTY( Replicated )
 	class AFGPowerPoleHologram* mPowerPole;
 
+	UPROPERTY( Replicated )
+	class AFGPowerPoleWallHologram* mPowerPoleWall;
+
+	class AFGPowerPoleHologram* mActivePoleHologram;
+
 	UPROPERTY( EditDefaultsOnly, Category = "Power pole" )
 	TSubclassOf<class UFGRecipe> mDefaultPowerPoleRecipe;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Power pole" )
+	TSubclassOf<class UFGRecipe> mDefaultPowerPoleWallRecipe;
+
+	/** Whether or not it's possible to place automatic power poles on the wall. */
+	bool mAutomaticWallPoleEnabled;
 
 	/** The start location of this wire */
 	UPROPERTY( Replicated )

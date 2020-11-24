@@ -4,6 +4,7 @@
 
 UFGInventoryComponentBeltSlot::UFGInventoryComponentBeltSlot() : Super() {
 	this->mDefaultInventorySize = 1;
+	this->mCanBeRearrange = true;
 	this->bReplicates = true;
 }
 bool UFGInventoryComponentBeltSlot::ContainsStackItemTypeAndHasEnoughRoom(FInventoryStack itemStack){ return bool(); }

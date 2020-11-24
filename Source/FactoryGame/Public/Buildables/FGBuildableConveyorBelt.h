@@ -150,7 +150,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Build" )
 	FORCEINLINE class USplineComponent* GetSplineComponent() { return mSplineComponent; }
 
-	void OnUseServerRepInput( class AFGCharacterPlayer* byCharacter, int32 itemIndex, int8 repVersion );
+	void OnUseServerRepInput( class AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset);
 protected:
 	// Begin AFGBuildableFactory interface
 	virtual bool VerifyDefaults( FString& out_message ) override;

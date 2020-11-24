@@ -281,6 +281,9 @@ private:
 
 	/** Initializes the Game Analytics Service. Requires that the Epic Online Services handle has been created beforehand. */
 	void InitGameAnalytics();
+
+	void JoinSession_Internal();
+	
 protected:
 	/** The global save system */
 	UPROPERTY()
@@ -331,6 +334,7 @@ protected:
 	///** The handle for the Epic Online Services manager. Is initialized in Init(). */
 	//UPROPERTY()
 	//class UEOSManager* mCachedEOSManager;
+	
 public:
 	// Mod packages found - valid or invalid
 	UPROPERTY( BlueprintReadOnly, Category = "Modding" )
@@ -342,6 +346,9 @@ public:
 
 	/** Has the player seen the alpha info screen, used to only show it once per session */
 	bool mHasSeenAlphaInfo;
+	
 private:
-	void JoinSession_Internal();
+	UPROPERTY()
+	class UFGDebugOverlayWidget* mDebugOverlayWidget;
+	
 };

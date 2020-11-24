@@ -3,10 +3,8 @@
 #include "FGBuildablePowerPole.h"
 #include "FGBuildableHologram.h"
 #include "FGColoredInstanceMeshProxy.h"
-#include "FGPowerConnectionComponent.h"
 
 AFGBuildablePowerPole::AFGBuildablePowerPole() : Super() {
-	this->mPowerConnection = CreateDefaultSubobject<UFGPowerConnectionComponent>(TEXT("PowerConnection")); this->mPowerConnection->SetupAttachment(this->RootComponent);
 	this->mMeshComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleMeshProxy")); this->mMeshComponentProxy->SetupAttachment(this->RootComponent);
 	this->mHologramClass = AFGBuildableHologram::StaticClass();
 	this->MaxRenderDistance = -1;
@@ -21,9 +19,9 @@ AFGBuildablePowerPole::AFGBuildablePowerPole() : Super() {
 }
 void AFGBuildablePowerPole::BeginPlay(){ }
 void AFGBuildablePowerPole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void AFGBuildablePowerPole::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildablePowerPole::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter,  UFGCircuitConnectionComponent* overlappingConnection){ }
 void AFGBuildablePowerPole::StopIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
-void AFGBuildablePowerPole::ShowConnectionFeedback(){ }
+void AFGBuildablePowerPole::ShowConnectionFeedback( UFGCircuitConnectionComponent* overlappingConnection){ }
 void AFGBuildablePowerPole::HideConnectionFeedback(){ }
 void AFGBuildablePowerPole::Dismantle_Implementation(){ }
 void AFGBuildablePowerPole::OnBuildEffectFinished(){ }

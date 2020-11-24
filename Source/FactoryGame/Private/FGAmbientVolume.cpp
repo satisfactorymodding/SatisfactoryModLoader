@@ -5,7 +5,7 @@
 #include "AkAudio/Classes/AkComponent.h"
 
 #if WITH_EDITOR
-void AFGAmbientVolume::CheckForErrors(){ }
+void AFGAmbientVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGAmbientVolume::AFGAmbientVolume() : Super() {
 	this->mAudioComponent = CreateDefaultSubobject<UAkComponent>(TEXT("AudioComponent")); this->mAudioComponent->SetupAttachment(this->GetBrushComponent());

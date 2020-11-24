@@ -3,7 +3,7 @@
 #include "FGItemDescriptor.h"
 
 #if WITH_EDITOR
-void UFGItemDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
+void UFGItemDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
 #if WITH_EDITOR
 void UFGItemDescriptor::DeleteAllIcons(){ }
@@ -119,24 +119,6 @@ TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< U
 		return inClass.GetDefaultObject()->mItemCategory;
 	else
 		return TSubclassOf< UFGItemCategory >();
-}
-float UFGItemDescriptor::GetFluidDensity(TSubclassOf< UFGItemDescriptor > inClass){ 
-	if (inClass)
-		return inClass.GetDefaultObject()->mFluidDensity;
-	else
-		return float();
-}
-float UFGItemDescriptor::GetFluidViscosity(TSubclassOf< UFGItemDescriptor > inClass){ 
-	if (inClass)
-		return inClass.GetDefaultObject()->mFluidViscosity;
-	else
-		return float();
-}
-float UFGItemDescriptor::GetFluidFriction(TSubclassOf< UFGItemDescriptor > inClass){ 
-	if (inClass)
-		return inClass.GetDefaultObject()->mFluidFriction;
-	else
-		return float();
 }
 FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass){ 
 	if (inClass)

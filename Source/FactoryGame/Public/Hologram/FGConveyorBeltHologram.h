@@ -127,7 +127,8 @@ private:
 
 	/** What is the maximum length of one segment. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
-	int32 mMaxLength;
+	float mMaxSplineLength = 5600.1f;
+
 
 	/** What is the maximum incline of the conveyor belt (degrees). */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )

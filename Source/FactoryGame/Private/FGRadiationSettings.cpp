@@ -3,6 +3,6 @@
 #include "FGRadiationSettings.h"
 
 #if WITH_EDITOR
-void UFGRadiationSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ }
+void UFGRadiationSettings::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 void UFGRadiationSettings::PostInitProperties(){ Super::PostInitProperties(); }
 #endif 

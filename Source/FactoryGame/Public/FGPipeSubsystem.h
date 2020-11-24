@@ -44,6 +44,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGPipeSubsystem* GetPipeSubsystem( UObject* worldContext );
 
+	
 	/***************************************************************************************************
 	 * Functions to manage the fluid networks.
 	 */
@@ -111,6 +112,16 @@ public:
 	/** Remove a fluid integrant. Called when the owning actor is dismantled */
 	void UnregisterFluidIntegrant( class IFGFluidIntegrantInterface* fluidIntegrant );
 
+
+	/***************************************************************************************************
+	 * Functions for debugging fluid networks.
+	 */
+	void Debug_ClearDisplayDebugList();
+	void Debug_AddToDisplayDebugList( int32 networkID );
+	void Debug_AddProbedFluidIntegrant( class IFGFluidIntegrantInterface* integrant );
+	void Debug_RemoveProbedFluidIntegrant( class IFGFluidIntegrantInterface* integrant );
+	void Debug_ClearProbedFluidIntegrants();
+
 private:
 	int32 GenerateUniqueID();
 
@@ -132,12 +143,63 @@ private:
 	/** Adds a fluid integrant to an existing network. Performs a merge on the network if its already connected */
 	void AddFluidIntegrantToNetwork( class IFGFluidIntegrantInterface* fluidIntegrant, int32 networkID );
 
+	/** Function that handle the pipe probing. */
+	void Debug_ProbeIntegrant( float dt, int32 substeps );
+	/** Struct containing all data for one pipe probe. */
+	struct ProbeData
+	{
+		class IFGFluidIntegrantInterface* Integrant;
+
+		/** Graph points */
+		static const int32 POINTS_TO_KEEP = 600;
+		
+		TArray< float > ContentPoints;
+		FVector2D ContentRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > ContentLimits;
+		
+		TArray< float > FlowPoints;
+		FVector2D FlowRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > FlowLimits;
+
+		TArray< float > FlowLimitPoints;
+		FVector2D FlowLimitRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > FlowLimitLimits;
+
+		TArray< float > PressurePoints;
+		FVector2D PressureRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > PressureLimits;
+
+		TArray< float > DeltaPressurePoints;
+		FVector2D DeltaPressureRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > DeltaPressureLimits;
+
+		TArray< float > PressureGroupPoints;
+		FVector2D PressureGroupRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > PressureGroupLimits;
+
+		TArray< float > DeltaPoints;
+		FVector2D DeltaRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > DeltaLimits;
+	};
+	
+public:
+	//@todo-Pipes: These as tunable "consts" for now
+	static float TARGET_DELTA_SECONDS;
+	static int32 MAX_SUBSTEPS;
+	
 private:
 	int32 mIDCounter;
 
 	/** Map with all circuits and the circuit ID as the key. */
 	UPROPERTY()
 	TMap< int32, class AFGPipeNetwork* > mNetworks;
+
+	/** List of networks to show debug for, if empty all networks are displayed. */
+	UPROPERTY()
+	TArray< class AFGPipeNetwork* > mDisplayDebugNetworkList;
+
+	/** Data for probed pipes. */
+	TArray< ProbeData > mProbeData;
 
 public:
 	FORCEINLINE ~AFGPipeSubsystem() = default;

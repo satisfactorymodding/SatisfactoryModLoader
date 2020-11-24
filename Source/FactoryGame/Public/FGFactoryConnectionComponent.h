@@ -26,7 +26,7 @@
 //@todo This is unused and is only confusing, remove it later -G2 2020-05-29
 /**
  * Type of connections in the game.
- * @todoPipes - This is old, we're shifting to a different connection component type for pipes as they don't need most of the special logic in the factory connection
+ * @todo-Pipes - This is old, we're shifting to a different connection component type for pipes as they don't need most of the special logic in the factory connection
  */
 UENUM( BlueprintType )
 enum class EFactoryConnectionConnector : uint8

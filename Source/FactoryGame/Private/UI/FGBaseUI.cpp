@@ -9,3 +9,4 @@ void UFGBaseUI::AddPopupToQueue(FPopupData inPopupData){ }
 void UFGBaseUI::AddPopup(FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass){ }
 void UFGBaseUI::PopPopupQueue(){ }
 void UFGBaseUI::ShowPopup(){ }
+void UFGBaseUI::ClearPopupQueueOfClass(TSubclassOf< UUserWidget > widgetClass){ }

@@ -44,6 +44,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	static TArray< TSubclassOf< UObject > > GetProducedIn( TSubclassOf< UFGRecipe > inClass );
 
+	/** True if this recipe can be produced in the game. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+    static bool HasAnyProducers( TSubclassOf< UFGRecipe > inClass );
+
 	/** Can the given player afford the recipe. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	static bool IsRecipeAffordable( class AFGCharacterPlayer* player, TSubclassOf< class UFGRecipe > recipe );
@@ -52,7 +56,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	static void SortByName( UPARAM(ref) TArray< TSubclassOf< UFGRecipe > >& recipes );
 
-	/** Get descriptor for recipe specified */
+	/** Get descriptor for recipe specified 
+	* @note - This will only return the first product so recipes that produce more than one will only return the first in the array.
+	*/
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	static TSubclassOf< class UFGItemDescriptor > GetDescriptorForRecipe( TSubclassOf< class UFGRecipe > recipe );
 

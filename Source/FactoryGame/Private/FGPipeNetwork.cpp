@@ -37,6 +37,7 @@ void AFGPipeNetwork::UpdateFluidDescriptor(TSubclassOf< UFGItemDescriptor > desc
 int32 AFGPipeNetwork::CreatePressureGroup(){ return int32(); }
 int32 AFGPipeNetwork::FindTopMostPressureGroupIndex(int32 index){ return int32(); }
 void AFGPipeNetwork::UpdatePressureGroups(PipeJunction& junction, float dt){ }
+void AFGPipeNetwork::UpdatePropagatedPressure(PipeJunction& junction, float dt){ }
 void AFGPipeNetwork::UpdatePressure(PipeJunction& junction, float dt){ }
 void AFGPipeNetwork::PostUpdatePressureGroups(PipeJunction& junction){ }
 void AFGPipeNetwork::PreUpdateFlow(PipeJunction& junction){ }

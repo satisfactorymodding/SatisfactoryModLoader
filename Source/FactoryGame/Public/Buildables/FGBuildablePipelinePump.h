@@ -87,15 +87,26 @@ public:
 	/** Get the amount of meters up this pump is designed to push fluid. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Pump" )
 	float GetDesignHeadLift() const;
-
-	//@todoPipes Setting a limit does not work on client right now, if we want that make it work. (For the check valves later)
-	/** Set the maximum flow rate through this pump. [m3/s] */
+	
+	/** Set the limited flow through this pump. Set this to -1 to use the max limit, i.e. valve is fully opened. [m3/s] */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Pipes|Pump" )
-	void SetFlowLimit( float rate );
+	void SetUserFlowLimit( float rate );
+
+	/** Get the limited flow through this pump. -1 if max is used, i.e. valve is fully opened. [m3/s] */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Pump" )
+    float GetUserFlowLimit() const { return mUserFlowLimit; }
+
+	/** Get the limited flow through this pump. [m3/s] */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Pump" )
+	float GetFlowLimit() const;
+	
+	/** Get the limited flow through this pump in percent of the max. [0,1]  */
+    UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Pump" )
+    float GetFlowLimitPct() const;
 
 	/** Get the set maximum flow rate through this pump. [m3/s] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Pump" )
-	float GetFlowLimit() const { return mFlowLimit; }
+    float GetDefaultFlowLimit() const { return mDefaultFlowLimit; }
 
 	/** Get the replicated flow rate through this pump from 0 to MAX in the range. [0,1] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Pump" )
@@ -121,6 +132,12 @@ protected:
 	void FluidDescriptorSetNotify( TSubclassOf< class UFGItemDescriptor > fluidDesc );
 
 private:
+	/** Updates the maximum flow limit from the neighbouring pipes. */
+	void UpdateDefaultFlowLimit();
+	/** Updates the flow limit on the fluid box. */
+	void UpdateFlowLimitOnFluidBox();
+	
+private:
 	/** Maximum pressure this pump applies. [meters] */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump" )
 	float mMaxPressure;
@@ -129,8 +146,11 @@ private:
 	float mDesignPressure;
 
 	/** Maximum flow rate of this pump. [m3/s] */
-	UPROPERTY( EditDefaultsOnly, Category = "Pump" )
-	float mFlowLimit;
+	UPROPERTY( SaveGame, Replicated, VisibleInstanceOnly, Category = "Pump" )
+	float mDefaultFlowLimit;
+	/** The user set flow limit used for this pump. If this is negative the max limit is used, otherwise the value is treated as a limit. */
+	UPROPERTY( SaveGame, Replicated, VisibleInstanceOnly, Category = "Pump" )
+	float mUserFlowLimit;
 
 	/** Minimum Flow percent acceptable before entering StandBy mode on indicator */
 	UPROPERTY( EditDefaultsOnly, Category = "Pump", meta = ( ClampMin = "0.0", ClampMax = "1.0" ) )

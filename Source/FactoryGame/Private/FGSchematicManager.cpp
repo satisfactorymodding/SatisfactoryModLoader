@@ -14,7 +14,7 @@ AFGSchematicManager::AFGSchematicManager() : Super() {
 	this->bReplicates = true;
 }
 void AFGSchematicManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGSchematicManager::PreInitializeComponents(){ }
+void AFGSchematicManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGSchematicManager::BeginPlay(){ }
 void AFGSchematicManager::Tick(float dt){ }
 void AFGSchematicManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

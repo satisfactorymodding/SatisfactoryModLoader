@@ -3,6 +3,7 @@
 #include "FGPipeConnectionFactory.h"
 
 UFGPipeConnectionFactory::UFGPipeConnectionFactory() : Super() {
+	this->mFluidBoxVolume = 5;
 	this->mApplyAdditionalPressure = true;
 	this->mPipeType = "Fluid";
 	this->bReplicates = true;

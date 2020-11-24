@@ -6,7 +6,7 @@
 
 AFGBuildablePipelineAttachment::AFGBuildablePipelineAttachment() : Super() {
 	this->mRadius = 75;
-	this->mFluidBoxVolumeScale = 1;
+	this->mFluidBoxVolume = 5;
 	this->mPowerConsumptionExponent = 1.60000002384186;
 	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
 	this->mMinimumProducingTime = 2;
@@ -18,6 +18,7 @@ AFGBuildablePipelineAttachment::AFGBuildablePipelineAttachment() : Super() {
 	this->mMaxPotential = 1;
 	this->mMaxPotentialIncreasePerCrystal = 0.5;
 	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
+	this->mFluidStackSizeMultiplier = 1;
 	this->mSignificanceRange = 18000;
 	this->mHologramClass = AFGPipelineAttachmentHologram::StaticClass();
 	this->MaxRenderDistance = -1;

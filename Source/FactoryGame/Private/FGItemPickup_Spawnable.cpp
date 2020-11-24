@@ -8,6 +8,7 @@ AFGItemPickup_Spawnable::AFGItemPickup_Spawnable() : Super() {
 	this->mDestroyOnPickup = true;
 	this->bReplicates = true;
 }
+void AFGItemPickup_Spawnable::PostLoad(){ Super::PostLoad(); }
 void AFGItemPickup_Spawnable::BeginPlay(){ }
 bool AFGItemPickup_Spawnable::ShouldSave_Implementation() const{ return bool(); }
 bool AFGItemPickup_Spawnable::NeedTransform_Implementation(){ return bool(); }

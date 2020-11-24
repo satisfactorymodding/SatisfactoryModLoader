@@ -15,13 +15,17 @@ AFGPipelineAttachmentHologram::AFGPipelineAttachmentHologram() : Super() {
 	this->mUseProducerDirectionalArrow = true;
 	this->mProducerArrowRelativeLocation.X = 0; this->mProducerArrowRelativeLocation.Y = 0; this->mProducerArrowRelativeLocation.Z = 200;
 	this->mWallSnapOffset.X = 0; this->mWallSnapOffset.Y = 75;
+	this->mHasPipeRotationBuildStep = true;
 	this->mMaxPlacementFloorAngle = 35;
 	this->mValidHitClasses.Add(AFGBuildableFoundation::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRailroadTrack::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRoad::StaticClass()); this->mValidHitClasses.Add(AFGBuildablePipeline::StaticClass()); this->mValidHitClasses.Add(AFGBuildablePipelineAttachment::StaticClass()); this->mValidHitClasses.Add(AFGBuildableWall::StaticClass());
 	this->mUseBuildClearanceOverlapSnapp = true;
 	this->bHidden = true;
 	this->bReplicates = true;
 }
+void AFGPipelineAttachmentHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGPipelineAttachmentHologram::BeginPlay(){ }
+bool AFGPipelineAttachmentHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
+bool AFGPipelineAttachmentHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGPipelineAttachmentHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 bool AFGPipelineAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineAttachmentHologram::ScrollRotate(int32 delta, int32 step){ }

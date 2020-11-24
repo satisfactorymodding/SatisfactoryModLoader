@@ -505,7 +505,7 @@ protected:
 	/** Locks the inventory. Indicating that no items are allowed and you should not be able to drag stuff from it either */
 	bool mIsLocked;
 
-private:
+public: //MODDING EDIT private->public
 	/** All items in the inventory */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_InventoryStacks )
 	TArray< FInventoryStack > mInventoryStacks;
@@ -514,15 +514,18 @@ private:
 	TArray< FInventoryStack > mClientLastFrameStacks;
 
 	/** In some rare cases we don't want to use the StackSize to limit the slot, so this way we can have larger or smaller slots */
-	UPROPERTY( SaveGame, Replicated )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, Replicated, BlueprintReadOnly )
 	TArray< int32 > mArbitrarySlotSizes;
 
 	/** This are the allowed inventory items, this we we can "filter" in BluePrint as well. */
-	UPROPERTY( SaveGame, Replicated )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, Replicated , BlueprintReadOnly)
 	TArray< TSubclassOf < UFGItemDescriptor > > mAllowedItemDescriptors;
 
 	/** Can stuff in this inventory be rearranged, that is moved from one slot to the other? */
-	UPROPERTY( SaveGame, Replicated )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, Replicated , BlueprintReadOnly)
 	bool mCanBeRearrange;
 
 public:
