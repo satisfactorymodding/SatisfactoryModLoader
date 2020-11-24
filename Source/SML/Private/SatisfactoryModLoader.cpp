@@ -22,7 +22,7 @@
 
 extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.3.0");
 extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
-extern "C" DLLEXPORT const long targetGameVersion = 124066;
+extern "C" DLLEXPORT const long targetGameVersion = 137570;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
