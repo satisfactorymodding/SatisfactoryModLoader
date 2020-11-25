@@ -1,7 +1,14 @@
 #include "Patching/BlueprintHookManager.h"
 #include "BlueprintHookHelper.h"
-#include "Toolkit/KismetByteCodeSerializer.h"
+#include "FileHelper.h"
+#include "JsonSerializer.h"
+#include "JsonWriter.h"
+#include "Paths.h"
+#include "Toolkit/KismetBytecodeDisassemblerJson.h"
 #include "util/Logging.h"
+
+//Whenever to debug blueprint hooking. When enabled, JSON files with script bytecode before and after installing hook will be generated
+#define DEBUG_BLUEPRINT_HOOKING 0
 
 DEFINE_LOG_CATEGORY(LogBlueprintHookManager);
 
@@ -21,57 +28,104 @@ void UBlueprintHookManager::HandleHookedFunctionCall(FFrame& Stack, int32 HookOf
 	}
 }
 
+#if DEBUG_BLUEPRINT_HOOKING
+void DebugDumpFunctionScriptCode(UFunction* Function, int32 HookOffset, const FString& Postfix) {
+	const FString FileLocation = FPaths::RootDir() + FString::Printf(TEXT("BlueprintHookingDebug_%s_%s_at_%d_%s.json"), *Function->GetOuter()->GetName(), *Function->GetName(), HookOffset, *Postfix);
+
+	FKismetBytecodeDisassemblerJson Disassembler;
+	const TArray<TSharedPtr<FJsonValue>> Statements = Disassembler.SerializeFunction(Function);
+
+	FString OutJsonString;
+	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutJsonString);
+	FJsonSerializer::Serialize(Statements, Writer);
+
+	FFileHelper::SaveStringToFile(OutJsonString, *FileLocation);
+	SML_LOG(LogBlueprintHookManager, Display, TEXT("Dumped hooked function bytecode to %s (%s)"), *FileLocation, *Postfix);
+}
+#endif
+
 void InstallBlueprintHook(UFunction* Function, int32 HookOffset) {
 	TArray<uint8>& OriginalCode = Function->Script;
 	checkf(OriginalCode.Num() > HookOffset, TEXT("Invalid hook: HookOffset > Script.Num()"));
-	//basically EX_Jump + CodeSkipSizeType;
-	const int32 MinBytesRequired = 1 + sizeof(CodeSkipSizeType);
-	int32 BytesToMove = FKismetByteCodeSerializer::GetMinInstructionReplaceLength(Function, MinBytesRequired, HookOffset);
-	SML_LOG(LogBlueprintHookManager, Display, TEXT("Installing blueprint hook at function %s, offset %d. Code Size: %d"), *Function->GetPathName(), HookOffset, Function->Script.Num());
+
+#if DEBUG_BLUEPRINT_HOOKING
+	DebugDumpFunctionScriptCode(Function, HookOffset, TEXT("BeforeHook"));
+#endif
 	
-	if (BytesToMove < 0) {
-		//Not enough bytes in method body to fit jump into, append required amount of bytes and fill them with EX_EndOfScript
-		const int32 BytesToAppend = -BytesToMove;
+	//Minimum amount of bytes required to insert unconditional jump with code offset
+	const int32 MinBytesRequired = 1 + sizeof(CodeSkipSizeType);
+
+	FKismetBytecodeDisassemblerJson Disassembler;
+	int32 BytesAvailable = 0;
+	
+	//Walk over statements until we collect enough bytes for a replacement
+	//(or until we consumed all statements in the function's code)
+	while (BytesAvailable < MinBytesRequired && (HookOffset + BytesAvailable) < OriginalCode.Num()) {
+		const int32 CurrentStatementIndex = HookOffset + BytesAvailable;
+		int32 OutStatementLength;
+		
+		const bool bValid = Disassembler.GetStatementLength(Function, CurrentStatementIndex, OutStatementLength);
+		checkf(bValid, TEXT("Provided hook offset is not a valid statement index: %d"), HookOffset);
+		BytesAvailable += OutStatementLength;
+	}
+
+	//Check that we collected enough bytes
+	if (BytesAvailable < MinBytesRequired) {
+		//If we are here, it means we consumed all the statements in the function's code
+		//And still don't have enough space for inserting a jump. In that case, we append additional
+		//EX_EndOfScript instructions until we have enough place
+		const int32 BytesToAppend = MinBytesRequired - BytesAvailable;
 		OriginalCode.AddUninitialized(BytesToAppend);
 		FPlatformMemory::Memset(&OriginalCode[OriginalCode.Num() - BytesToAppend], EX_EndOfScript, BytesToAppend);
-		//If we are here, that means Script.Num() - HookOffset is less than MinBytesRequired
-		//So to move instructions properly, we just move MinBytesRequired
-		BytesToMove = MinBytesRequired;
+		BytesAvailable = MinBytesRequired;
 	}
-	const int32 JumpDestination = HookOffset + BytesToMove;
-	SML_LOG(LogBlueprintHookManager, Display, TEXT("InstallBlueprintHook: Verified Code Size: %d"), OriginalCode.Num());
-	SML_LOG(LogBlueprintHookManager, Display, TEXT("InstallBlueprintHook: Min Bytes: %d, Hook Offset: %d, Jump Dest: %d"), MinBytesRequired, HookOffset, JumpDestination);
 
-	//Generate code to call function & code we stripped by jump
+	//Generate code required for calling our hook
+	//We use EX_CallMath for speed since our inserted function doesn't need context, and is fine with being called on CDO
 	TArray<uint8> AppendedCode;
+
+	//Make sure hook function is not NULL, otherwise we may experience weird crashes later
 	UFunction* HookCallFunction = UBlueprintHookManager::StaticClass()->FindFunctionByName(TEXT("ExecuteBPHook"));
 	check(HookCallFunction);
-	//EX_CallMath opcode to call static function & write it's address
+
+	//We use EX_CallMath for speed since our inserted function doesn't need context, and is fine with being called on CDO
+	//EX_CallMath requires just UFunction object pointer and argument list
 	AppendedCode.Add(EX_CallMath);
 	WRITE_UNALIGNED(AppendedCode, ScriptPointerType, HookCallFunction);
-	//Pass hook hook offset - we don't need to pass function address since we can get it from FFrame object
+	
+	//Begin writing function parameters - we have just hook offset constant
 	AppendedCode.Add(EX_IntConst);
 	WRITE_UNALIGNED(AppendedCode, int32, HookOffset);
-	//Indicate end of function parameters
 	AppendedCode.Add(EX_EndFunctionParms);
-	//Append original code we stripped
-	AppendedCode.AddUninitialized(BytesToMove);
-	FPlatformMemory::Memcpy(&AppendedCode[AppendedCode.Num() - BytesToMove], &OriginalCode[HookOffset], BytesToMove);
-	//And then jump to the original location
+
+
+	//Append original code that we replaced earlier with unconditional jump
+	AppendedCode.AddUninitialized(BytesAvailable);
+	FPlatformMemory::Memcpy(&AppendedCode[AppendedCode.Num() - BytesAvailable], &OriginalCode[HookOffset], BytesAvailable);
+
+	//Insert jump to original location for running code after hook
 	AppendedCode.Add(EX_Jump);
+	const int32 JumpDestination = HookOffset + BytesAvailable;
 	WRITE_UNALIGNED(AppendedCode, CodeSkipSizeType, JumpDestination);
-	//Also EX_EndOfScript in the end for safety
+
+	//Finish generated code with EX_EndOfScript to avoid any surprises
 	AppendedCode.Add(EX_EndOfScript);
 
-	//Now, append our code to the end of the function
+
+	//Append generated code to the end of the function's original code now
 	const int32 StartOfAppendedCode = OriginalCode.Num();
 	OriginalCode.Append(AppendedCode);
-	//And actually replace start code with jump
-	//But first, fill it all with EX_EndOfScript (for safety, again)
-	FPlatformMemory::Memset(&OriginalCode[HookOffset], EX_EndOfScript, BytesToMove);
+
+	//Fill space with EX_EndOfScript before replacement for safety
+	FPlatformMemory::Memset(&OriginalCode[HookOffset], EX_EndOfScript, BytesAvailable);
+
+	//Actually insert jump to the start of appended code to original hook location
 	OriginalCode[HookOffset] = EX_Jump;
 	FPlatformMemory::WriteUnaligned<CodeSkipSizeType>(&OriginalCode[HookOffset + 1], StartOfAppendedCode);
-	SML_LOG(LogBlueprintHookManager, Display, TEXT("Inserted EX_Jump at %d to %d (Appended Code Size: %d)"), HookOffset, StartOfAppendedCode, AppendedCode.Num());
+
+#if DEBUG_BLUEPRINT_HOOKING
+	DebugDumpFunctionScriptCode(Function, HookOffset, TEXT("AfterHook"));
+#endif
 }
 
 int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
@@ -79,10 +133,10 @@ int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 		//For now Kismet Compiler will always generate only one Return node, so all
 		//execution paths will end up either with executing it directly or jumping to it
 		//So we need to hook only in one place to handle all possible execution paths
-		const int32 ReturnOffset = FKismetByteCodeSerializer::FindReturnStatementOffset(Function);
-		checkf(ReturnOffset != -1, TEXT("EX_Return not found for function"));
-		SML_LOG(LogBlueprintHookManager, Display, TEXT("Return Offset for function %s: %d"), *Function->GetPathName(), ReturnOffset);
-		SML_LOG(LogBlueprintHookManager, Display, TEXT("Instruction at Offset: %X, Excpected: %X"), Function->Script[ReturnOffset], EX_Return);
+		FKismetBytecodeDisassemblerJson Disassembler;
+		int32 ReturnOffset;
+		const bool bIsValid = Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ReturnOffset);
+		checkf(bIsValid, TEXT("EX_Return not found for function %s"), *Function->GetPathName());
 		return ReturnOffset;
 	}
 	return HookOffset;
@@ -95,8 +149,8 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 	//Because otherwise after GC script byte code will be reloaded, without our hooks applied
 	Function->GetTypedOuter<UClass>()->AddToRoot();
 	
-	SML_LOG(LogBlueprintHookManager, Display, TEXT("Hooking blueprint implemented function %s"), *Function->GetPathName());
 	HookOffset = PreProcessHookOffset(Function, HookOffset);
+	
 #if UE_BLUEPRINT_EVENTGRAPH_FASTCALLS
 	if (Function->EventGraphFunction != nullptr) {
 		SML_LOG(LogBlueprintHookManager, Warning, TEXT("Attempt to hook event graph call stub function with fast-call enabled, disabling fast call for that function"));
@@ -109,11 +163,14 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 	UBlueprintHookManager* HookManager = GetMutableDefault<UBlueprintHookManager>();
 	FFunctionHookInfo& FunctionHookInfo = HookManager->HookedFunctions.FindOrAdd(Function);
 	TArray<TFunction<HookFunctionSignature>>& InstalledHooks = FunctionHookInfo.CodeOffsetByHookList.FindOrAdd(HookOffset);
+
 	if (InstalledHooks.Num() == 0) {
 		//First time function is hooked at this offset, call InstallBlueprintHook
 		InstallBlueprintHook(Function, HookOffset);
 		//Update cached return instruction offset
-		const int32 ReturnInstructionOffset = FKismetByteCodeSerializer::FindReturnStatementOffset(Function);
+		FKismetBytecodeDisassemblerJson Disassembler;
+		int32 ReturnInstructionOffset;
+		Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ReturnInstructionOffset);
 		HookManager->ReturnInstructionOffsets.Add(Function, ReturnInstructionOffset);
 	}
 	

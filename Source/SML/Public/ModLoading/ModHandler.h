@@ -124,7 +124,7 @@ private:
     /** Scans file system for mod package files and populates loading entries map with basic information for mod loading */
     void DiscoverMods();
 	/** Performs sorting of the loading entries and population of final list prior to mod loading */
-	void CheckDependencies();
+	void PerformModListSorting();
 	/** Performs mods pre-initialization, which in our context means loading mod DLLs into process address space */
 	void PreInitializeMods();
 	

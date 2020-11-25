@@ -33,8 +33,6 @@ TSharedPtr<FModHandler> FSatisfactoryModLoader::ModHandlerPrivate = NULL;
 TSharedPtr<BootstrapAccessors> FSatisfactoryModLoader::BootstrapperAccessors = NULL;
 FSMLConfiguration FSatisfactoryModLoader::SMLConfigurationPrivate;
 
-#pragma optimize("", off)
-
 FVersion FSatisfactoryModLoader::GetModLoaderVersion() {
     static FVersion* ModLoaderVersion = NULL;
     if (ModLoaderVersion == NULL) {
@@ -200,12 +198,18 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod discovery"));
     ModHandlerPrivate->DiscoverMods();
 
+    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod sorting"));
+    ModHandlerPrivate->PerformModListSorting();
+
     //Perform mods pre initialization (load native module DLLs into process)
     SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initializing mods"));
     ModHandlerPrivate->PreInitializeMods();
 
     //Register crash context patch very early, but after mod loading
     //So debug symbols can be flushed now from loaded native modules
+    if (BootstrapperAccessors.IsValid()) {
+        FCrashContextPatch::SetupWithAccessors(*BootstrapperAccessors);
+    }
     FCrashContextPatch::RegisterPatch();
 
     //Show console if we have been asked to in configuration
@@ -268,5 +272,3 @@ public:
 extern "C" SML_API void BootstrapModule(BootstrapAccessors& Accessors) {
 	FSatisfactoryModLoaderInternal::BootstrapModLoaderHelper(Accessors);
 }
-
-#pragma optimize("", on)

@@ -341,7 +341,7 @@ void FModHandler::DiscoverMods() {
 	CheckStageErrors(TEXT("mod discovery"));
 };
 
-void FModHandler::CheckDependencies() {
+void FModHandler::PerformModListSorting() {
 	FModSortingSet ModSortingSet{};
 	FModHandlerHelper::PopulateModSortingSet(ModSortingSet, LoadingEntries);
 	
@@ -363,7 +363,14 @@ void FModHandler::CheckDependencies() {
 	}
 
 	FModHandlerHelper::FinalizeSortingResults(ModSortingSet, LoadingEntries);
+
+	SortedModLoadList.Empty();
+	for (uint64 ModIndex : ModSortingSet.SortedIndices) {
+		const FString& ModReference = ModSortingSet.ModByIndex.FindChecked(ModIndex);
+		SortedModLoadList.Add(LoadingEntries.FindChecked(ModReference));
+	}
 	LoadingEntries.Empty();
+	
 	CheckStageErrors(TEXT("dependency resolution"));
 }
 

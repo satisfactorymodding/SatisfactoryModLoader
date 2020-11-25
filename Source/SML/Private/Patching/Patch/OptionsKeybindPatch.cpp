@@ -11,17 +11,13 @@
 #include "WidgetBlueprintLibrary.h"
 #include "Engine/UserDefinedStruct.h"
 
-void* GetArrayElementPtr(const FScriptArray& ScriptArray, int32 Index, int32 BytesPerElement) {
-    return (uint8*)ScriptArray.GetData() + Index * BytesPerElement;
-}
-
-void FOptionsKeybindPatch::CategorizeKeyBindingsByModReference(const FScriptArray& InKeyBindings, UScriptStruct* KeyBindStructClass, TMap<FString, FScriptArray>& OutCategorizedNames) {
-    UNameProperty* ActionNameProperty = FReflectionHelper::FindPropertyByShortName<UNameProperty>(KeyBindStructClass, TEXT("ActionName"));
+void FOptionsKeybindPatch::CategorizeKeyBindingsByModReference(FScriptArrayHelper& InKeyBindings, UScriptStruct* KeyBindStructClass, TMap<FString, TArray<int32>>& OutCategorizedNames) {
+    UNameProperty* ActionNameProperty = FReflectionHelper::FindPropertyByShortNameChecked<UNameProperty>(KeyBindStructClass, TEXT("ActionName"));
     check(ActionNameProperty);
-    
+
     for (int32 i = 0; i < InKeyBindings.Num(); i++) {
         //Retrieve action name from script struct
-        void* KeyBindData = GetArrayElementPtr(InKeyBindings, i, KeyBindStructClass->GetStructureSize());
+        void* KeyBindData = InKeyBindings.GetRawPtr(i);
         const FString ActionName = ActionNameProperty->GetPropertyValue_InContainer(KeyBindData).ToString();
         int32 FirstDotIndex;
         ActionName.FindChar(TEXT('.'), FirstDotIndex);
@@ -34,10 +30,8 @@ void FOptionsKeybindPatch::CategorizeKeyBindingsByModReference(const FScriptArra
             ResultModReference = ActionName.Mid(0, FirstDotIndex);
         }
         //Add resulting key binding into array
-        FScriptArray& ResultArray = OutCategorizedNames.FindOrAdd(ResultModReference);
-        const int32 ElementIndex = ResultArray.AddZeroed(1, KeyBindStructClass->GetStructureSize());
-        void* NewElementPointer = GetArrayElementPtr(ResultArray, ElementIndex, KeyBindStructClass->GetStructureSize());
-        KeyBindStructClass->CopyScriptStruct(NewElementPointer, KeyBindData);
+        TArray<int32>& ResultArray = OutCategorizedNames.FindOrAdd(ResultModReference);
+        ResultArray.Add(i);
     }
 }
 
@@ -45,7 +39,7 @@ void FOptionsKeybindPatch::SortModReferencesByDisplayName(TArray<FString>& InMod
     FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
     for (const FString& ModReference : InModReferences) {
         const FModContainer* ModContainer = ModHandler->GetLoadedMod(ModReference);
-        check(ModContainer);
+        checkf(ModContainer, TEXT("%s"), *ModReference);
         OutDisplayNames.Add(ModReference, ModContainer->ModInfo.Name);
     }
     InModReferences.StableSort([&](const FString& A, const FString& B){
@@ -55,7 +49,7 @@ void FOptionsKeybindPatch::SortModReferencesByDisplayName(TArray<FString>& InMod
     });
 }
 
-void FOptionsKeybindPatch::PopulateKeyBindButtonList(UUserWidget* ContextWidget, UScriptStruct* KeyBindStructClass, const TArray<FString>& SortedModReferences, const TMap<FString, FString> DisplayNames, const TMap<FString, FScriptArray>& CategorizedKeyBinds) {
+void FOptionsKeybindPatch::PopulateKeyBindButtonList(UUserWidget* ContextWidget, FScriptArrayHelper& KeyBindingsArray, const TArray<FString>& SortedModReferences, const TMap<FString, FString> DisplayNames, const TMap<FString, TArray<int32>>& CategorizedKeyBinds) {
     UClass* KeyBindButtonWidgetClass = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/Menu/Widget_KeybindButton.Widget_KeybindButton_C"));
     check(KeyBindButtonWidgetClass);
     
@@ -63,7 +57,7 @@ void FOptionsKeybindPatch::PopulateKeyBindButtonList(UUserWidget* ContextWidget,
     UVerticalBox* ButtonBox = FReflectionHelper::GetObjectPropertyValue<UVerticalBox>(ContextWidget, TEXT("mButtonBox"));
     
     for (const FString& ModReference : SortedModReferences) {
-        const FScriptArray& KeyBindingsArray = CategorizedKeyBinds.FindChecked(ModReference);
+        const TArray<int32>& KeyBindingIndices = CategorizedKeyBinds.FindChecked(ModReference);
         APlayerController* OwningController = ContextWidget->GetOwningPlayer();
         //Add display name on top of key bindings
         UTextBlock* TitleTextBlock = NewObject<UTextBlock>(OwningController);
@@ -73,9 +67,8 @@ void FOptionsKeybindPatch::PopulateKeyBindButtonList(UUserWidget* ContextWidget,
         ButtonBox->AddChildToVerticalBox(TitleTextBlock);
 
         //Construct widget, set relevant properties and add it into the box directly
-        for (int32 i = 0; i < KeyBindingsArray.Num(); i++) {
-            void* KeyBindDataPtr = GetArrayElementPtr(KeyBindingsArray, i, KeyBindStructClass->GetStructureSize());
-            
+        for (int32 KeyBindIndex : KeyBindingIndices) {
+            void* KeyBindDataPtr = KeyBindingsArray.GetRawPtr(KeyBindIndex);
             UUserWidget* ButtonWidget = UWidgetBlueprintLibrary::Create(ContextWidget, KeyBindButtonWidgetClass, OwningController);
             FReflectionHelper::SetStructPropertyValue(ButtonWidget, TEXT("mKeyBindData"), KeyBindDataPtr);
             FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mKeyBindParent"), ContextWidget);
@@ -92,11 +85,13 @@ void FOptionsKeybindPatch::HandleRefreshKeyBindingsHook(FBlueprintHookHelper& Ho
     
     //Retrieve key bindings by calling blueprint method
     FScriptArray OutKeyBindDataArray;
-    FReflectionHelper::CallScriptFunction(HookHelper.GetContext(), TEXT("GetKeybindData"), OutKeyBindDataArray);
+    UFunction* Function = FReflectionHelper::CallScriptFunction(HookHelper.GetContext(), TEXT("GetKeybindData"), OutKeyBindDataArray);
+    UArrayProperty* FirstParameter = Cast<UArrayProperty>(FReflectionHelper::FindParameterByIndex(Function, 0));
+    FScriptArrayHelper KeyBindingsArrayHelper(FirstParameter, &OutKeyBindDataArray);
     
     //KeyBind data is returned in the array, process each element and divide them by mod display name
-    TMap<FString, FScriptArray> OutCategorizedKeyBinds;
-    CategorizeKeyBindingsByModReference(OutKeyBindDataArray, KeyBindStructClass, OutCategorizedKeyBinds);
+    TMap<FString, TArray<int32>> OutCategorizedKeyBinds;
+    CategorizeKeyBindingsByModReference(KeyBindingsArrayHelper, KeyBindStructClass, OutCategorizedKeyBinds);
     
     //Generate ModReference array and sort it by display name
     TMap<FString, FString> OutDisplayNameByModReference;
@@ -105,7 +100,10 @@ void FOptionsKeybindPatch::HandleRefreshKeyBindingsHook(FBlueprintHookHelper& Ho
     SortModReferencesByDisplayName(SortedModReferences, OutDisplayNameByModReference);
 
     //Now we have sorted out key bindings array. Add them in given order to the vertical box.
-    PopulateKeyBindButtonList(ContextWidget, KeyBindStructClass, SortedModReferences, OutDisplayNameByModReference, OutCategorizedKeyBinds);
+    PopulateKeyBindButtonList(ContextWidget, KeyBindingsArrayHelper, SortedModReferences, OutDisplayNameByModReference, OutCategorizedKeyBinds);
+
+    //Empty script array and deallocate all structures
+    KeyBindingsArrayHelper.EmptyValues();
     
     //Skip normal function code because it is unnecessary to run
     HookHelper.JumpToFunctionReturn();

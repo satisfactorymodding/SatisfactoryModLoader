@@ -29,20 +29,24 @@ void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSu
     }
 }
 
-void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree,
-                                       TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
-    static UStructProperty* NodeDataStructProperty;
-    static UClassProperty* SchematicStructProperty;
+#pragma optimize("", off)
+
+void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
+    
+    static UStructProperty* NodeDataStructProperty = NULL;
+    static UClassProperty* SchematicStructProperty = NULL;
     static UClass* ResearchTreeNodeClass = NULL;
+    
     //Lazily initialize research tree node reflection properties for faster access
     if (ResearchTreeNodeClass == NULL) {
-        ResearchTreeNodeClass = LoadClass<UFGResearchTreeNode>(
-            NULL, TEXT("/Game/FactoryGame/Schematics/Research/BPD_ResearchTreeNode.BPD_ResearchTreeNode_C"));
-        ResearchTreeNodeClass->AddToRoot(); //Make sure class is not garbage collected
-        NodeDataStructProperty = FReflectionHelper::FindPropertyChecked<UStructProperty>(
-            ResearchTreeNodeClass, TEXT("mNodeDataStruct"));
-        SchematicStructProperty = FReflectionHelper::FindPropertyByShortName<UClassProperty>(
-            NodeDataStructProperty->Struct, TEXT("Schematic"));
+        ResearchTreeNodeClass = LoadClass<UFGResearchTreeNode>(NULL, TEXT("/Game/FactoryGame/Schematics/Research/BPD_ResearchTreeNode.BPD_ResearchTreeNode_C"));
+        check(ResearchTreeNodeClass);
+        //Make sure class is not garbage collected
+        ResearchTreeNodeClass->AddToRoot();
+        
+        NodeDataStructProperty = FReflectionHelper::FindPropertyChecked<UStructProperty>(ResearchTreeNodeClass, TEXT("mNodeDataStruct"));
+        SchematicStructProperty = FReflectionHelper::FindPropertyByShortNameChecked<UClassProperty>(NodeDataStructProperty->Struct, TEXT("Schematic"));
+        
         check(SchematicStructProperty->MetaClass->IsChildOf(UFGSchematic::StaticClass()));
     }
 
@@ -66,19 +70,30 @@ void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree
     }
 }
 
+#pragma optimize("", on)
+
 template<typename T>
 TArray<TSubclassOf<T>> DiscoverVanillaContentOfType() {
     UClass* PrimaryAssetClass = T::StaticClass();
     UAssetManager& AssetManager = UAssetManager::Get();
     
     const FPrimaryAssetType AssetType = PrimaryAssetClass->GetFName();
+    SML_LOG(LogContentRegistry, Display, TEXT("Primary asset type: %s"), *AssetType.GetName().ToString());
     TArray<FAssetData> FoundVanillaAssets;
     AssetManager.GetPrimaryAssetDataList(AssetType, FoundVanillaAssets);
     TArray<TSubclassOf<T>> OutVanillaContent;
-    
+
     for (const FAssetData& AssetData : FoundVanillaAssets) {
-        SML_LOG(LogContentRegistry, Log, TEXT("VANILLA ASSET DISCOVERY %s %s %s"), *PrimaryAssetClass->GetName(), *AssetData.AssetClass.ToString(), *AssetData.AssetName.ToString());
+        FAssetDataTagMapSharedView::FFindTagResult GeneratedClassTextPath = AssetData.TagsAndValues.FindTag(TEXT("GeneratedClass"));
+        if (GeneratedClassTextPath.IsSet()) {
+            const FString BlueprintClassPath = FPackageName::ExportTextPathToObjectPath(GeneratedClassTextPath.GetValue());
+            UClass* LoadedClass = LoadClass<T>(NULL, *BlueprintClassPath);
+            if (LoadedClass != NULL) {
+                OutVanillaContent.Add(LoadedClass);
+            }
+        }
     }
+    SML_LOG(LogContentRegistry, Display, TEXT("Discovered %d vanilla assets of type %s"), OutVanillaContent.Num(), *PrimaryAssetClass->GetName());
     return OutVanillaContent;
 }
 
@@ -152,6 +167,7 @@ void AModContentRegistry::Init() {
     //Register vanilla content in the registry
     const FString FactoryGame = FACTORYGAME_MOD_REFERENCE;
 
+    SML_LOG(LogContentRegistry, Display, TEXT("Initializing mod content registry"));
     const TArray<TSubclassOf<UFGSchematic>> AllSchematics = DiscoverVanillaContentOfType<UFGSchematic>();
     const TArray<TSubclassOf<UFGResearchTree>> AllResearchTrees = DiscoverVanillaContentOfType<UFGResearchTree>();
     
@@ -476,7 +492,7 @@ void AModContentRegistry::RegisterOverwriteForMod(const FString& ModReference, c
 }
 
 FString AModContentRegistry::FindOverwriteOwner(UClass* Class, const TCHAR* Fallback) {
-    const FString PackageName = Class->GetOuterUPackage()->GetPathName();
+    const FString PackageName = Class->GetOutermost()->GetPathName();
     if (ModOverwriteMap.Contains(PackageName)) {
         return ModOverwriteMap.FindChecked(PackageName);
     }

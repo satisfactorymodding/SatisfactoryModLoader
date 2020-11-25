@@ -2,8 +2,6 @@
 #include "Class.h"
 #include "UObjectAllocator.h"
 
-#pragma optimize("", off)
-
 UClass* FClassGenerator::GenerateSimpleClass(const TCHAR* PackageName, const TCHAR* ClassName, UClass* ParentClass) {
 	//Flags to assign to newly created class
 	const EClassFlags ParamsClassFlags = CLASS_Native|CLASS_MatchedSerializers;
@@ -42,5 +40,3 @@ UClass* FClassGenerator::GenerateSimpleClass(const TCHAR* PackageName, const TCH
     ConstructedClassObject->GetDefaultObject();
     return ConstructedClassObject;
 }
-
-#pragma optimize("", on)

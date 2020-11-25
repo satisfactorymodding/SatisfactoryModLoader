@@ -18,15 +18,15 @@ void USubsystemHolderRegistry::InitializeRegistry() {
 void USubsystemHolderRegistry::InitializeSubsystems(AFGGameState* GameState) {
     const USubsystemHolderRegistry* Registry = GetDefault<USubsystemHolderRegistry>();
     const bool bIsAuthority = GameState->Role == ENetRole::ROLE_Authority;
-    SML_LOG(LogSubsystemHolderRegistry, Log, TEXT("Initializing modded subsystem holders"));
+    SML_LOG(LogSubsystemHolderRegistry, Display, TEXT("Initializing modded subsystem holders"));
 	
     for (const FSubsystemHolderRegistrarEntry& RegistrarEntry : Registry->RegisteredSubsystemHolders) {
         UClass* SubsystemHolderClass = RegistrarEntry.SubsystemHolderClass;
         check(SubsystemHolderClass->IsChildOf<UModSubsystemHolder>());
-        SML_LOG(LogSubsystemHolderRegistry, Log, TEXT("Initializing subsystem holder %s, owned by %s"), *SubsystemHolderClass->GetPathName(), *RegistrarEntry.OwnerModReference);
+        SML_LOG(LogSubsystemHolderRegistry, Display, TEXT("Initializing subsystem holder %s, owned by %s"), *SubsystemHolderClass->GetPathName(), *RegistrarEntry.OwnerModReference);
         const FString SubsystemComponentName = FString::Printf(TEXT("%s_%s"), *RegistrarEntry.OwnerModReference, *SubsystemHolderClass->GetName());
         
-        UModSubsystemHolder* Component = NewObject<UModSubsystemHolder>(SubsystemHolderClass, *SubsystemComponentName);
+        UModSubsystemHolder* Component = NewObject<UModSubsystemHolder>(GameState, SubsystemHolderClass, *SubsystemComponentName);
         Component->SetNetAddressable();
         Component->SetIsReplicated(true);
         Component->RegisterComponent();

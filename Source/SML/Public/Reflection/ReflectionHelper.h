@@ -43,11 +43,11 @@ public:
     static T* FindPropertyChecked(UStruct* Class, const TCHAR* PropertyName) {
         T* Property = Cast<T>(Class->FindPropertyByName(PropertyName));
         checkf(Property, TEXT("Property with given name not found in class: %s"), PropertyName);
-        return nullptr;
+        return Property;
     }
     
     template <typename T>
-    static T* FindPropertyByShortName(UStruct* Class, const TCHAR* PropertyName) {
+    static T* FindPropertyByShortNameChecked(UStruct* Class, const TCHAR* PropertyName) {
         for(UProperty* Property = Class->PropertyLink; Property; Property = Property->PropertyLinkNext) {
             if (Property->GetName().StartsWith(PropertyName)) {
                 if (T* CastedProperty = Cast<T>(Property)) {
@@ -88,13 +88,23 @@ public:
         Property->SetPropertyValue_InContainer(Object, Value, ArrayIndex);
     }
 
+    static UProperty* FindParameterByIndex(UFunction* Function, int32 Index) {
+        int32 CurrentIndex = 0;
+        for(TFieldIterator<UProperty> It(Function); It && (It->PropertyFlags & CPF_Parm); ++It) {
+            if (CurrentIndex++ == Index)
+                return *It;
+        }
+        return NULL;
+    }
+
     template <typename T>
-    static void CallScriptFunction(UObject* Object, const TCHAR* FunctionName, T& ParamStruct) {
+    static UFunction* CallScriptFunction(UObject* Object, const TCHAR* FunctionName, T& ParamStruct) {
         UFunction* Function = Object->FindFunction(FunctionName);
         checkf(Function, TEXT("Function not found: %s"), FunctionName);
         checkf(Function->ParmsSize == static_cast<uint16>(sizeof(T)),
             TEXT("Function parameter layout doesn't match provided parameter struct: Expected %d bytes, got %llu"),
             Function->ParmsSize, sizeof(ParamStruct));
         Object->ProcessEvent(Function, &ParamStruct);
+        return Function;
     }
 };

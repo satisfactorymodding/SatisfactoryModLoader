@@ -15,7 +15,7 @@ UModNetworkHandler* UModNetworkHandler::Get() {
 }
 
 FMessageEntry& UModNetworkHandler::RegisterMessageType(const FMessageType& MessageType) {
-    SML_LOG(LogModNetworkHandler, Log, TEXT("Registering message type %s:%d"), *MessageType.ModReference, MessageType.MessageId);
+    SML_LOG(LogModNetworkHandler, Display, TEXT("Registering message type %s:%d"), *MessageType.ModReference, MessageType.MessageId);
     TMap<int32, FMessageEntry>& ModEntries = MessageHandlers.FindOrAdd(MessageType.ModReference);
     if (ModEntries.Contains(MessageType.MessageId)) {
         SML_LOG(LogModNetworkHandler, Fatal, TEXT("Tried to register mod message with duplicate identifier %d for mod %s"), MessageType.MessageId, *MessageType.ModReference);

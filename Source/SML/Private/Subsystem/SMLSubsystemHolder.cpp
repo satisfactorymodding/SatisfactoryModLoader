@@ -10,6 +10,7 @@ void USMLSubsystemHolder::InitSubsystems() {
 
 void USMLSubsystemHolder::InitLocalSubsystems() {
     SpawnSubsystem(ModContentRegistry, AModContentRegistry::StaticClass(), TEXT("ModContentRegistry"));
+    ModContentRegistry->Init();
 }
 
 void USMLSubsystemHolder::RegisterSubsystemHolder() {

@@ -10,13 +10,13 @@
 #include "Engine/ComponentDelegateBinding.h"
 #include "WidgetAnimationDelegateBinding.h"
 #include "ConsoleManager.h"
-#include "KismetByteCodeSerializer.h"
 #include "WidgetTree.h"
 #include "Animation/AnimBlueprintGeneratedClass.h"
 #include "Engine/SCS_Node.h"
 #include "Engine/TimelineTemplate.h"
 #include "toolkit/PropertyTypeHandler.h"
 #include "PackageName.h"
+#include "Toolkit/KismetBytecodeDisassemblerJson.h"
 
 DEFINE_LOG_CATEGORY(LogAssetDumper)
 
@@ -196,7 +196,8 @@ TSharedRef<FJsonObject> CreateFunctionSignature(UFunction* function) {
 		accessRights = TEXT("private");
 	resultJson->SetStringField(TEXT("Access"), accessRights);
 	resultJson->SetNumberField(TEXT("FunctionFlags"), function->FunctionFlags);
-	resultJson->SetArrayField(TEXT("Code"), FKismetByteCodeSerializer::CreateFunctionCode(function));
+	FKismetBytecodeDisassemblerJson Disassembler;
+	resultJson->SetArrayField(TEXT("Code"), Disassembler.SerializeFunction(function));
 	return resultJson;
 }
 
@@ -206,7 +207,7 @@ bool isBlacklistedClass(const FString& classPath) {
 
 TSharedRef<FJsonObject> dumpUserDefinedEnum(UUserDefinedEnum* definedEnum) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Log, TEXT("Dumping user defined enum %s"), *definedEnum->GetFullName());
+	SML_LOG(LogAssetDumper, Display, TEXT("Dumping user defined enum %s"), *definedEnum->GetFullName());
 
 	ResultJson->SetStringField(TEXT("StructName"), definedEnum->GetPathName());
 	TArray<TSharedPtr<FJsonValue>> enumValues;
@@ -230,7 +231,7 @@ TSharedRef<FJsonObject> dumpUserDefinedEnum(UUserDefinedEnum* definedEnum) {
 
 TSharedRef<FJsonObject> dumpUserDefinedStruct(UUserDefinedStruct* definedStruct) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Log, TEXT("Dumping user defined struct %s"), *definedStruct->GetFullName());
+	SML_LOG(LogAssetDumper, Display, TEXT("Dumping user defined struct %s"), *definedStruct->GetFullName());
 
 	ResultJson->SetStringField(TEXT("StructName"), definedStruct->GetPathName());
 	ResultJson->SetStringField(TEXT("Guid"), definedStruct->Guid.ToString());
@@ -316,7 +317,7 @@ TSharedRef<FJsonObject> WriteConstructionScript(USimpleConstructionScript* SCS, 
 TArray<TSharedPtr<FJsonValue>> WriteDelegateBindings(UBlueprintGeneratedClass* GeneratedClass) {
 	TArray<TSharedPtr<FJsonValue>> BlueprintDelegateBindings;
 	for (const UDynamicBlueprintBinding* Binding : GeneratedClass->DynamicBindingObjects) {
-		SML_LOG(LogAssetDumper, Log, TEXT("Serializing delegate binding %s"), *Binding->GetClass()->GetName());
+		SML_LOG(LogAssetDumper, Display, TEXT("Serializing delegate binding %s"), *Binding->GetClass()->GetName());
 		if (Binding->GetClass()->GetName() == TEXT("ComponentDelegateBinding")) {
 			const UComponentDelegateBinding* ComponentBinding = static_cast<const UComponentDelegateBinding*>(Binding);
 			TSharedRef<FJsonObject> BindingObject = MakeShareable(new FJsonObject());
@@ -434,7 +435,7 @@ void IterateArray(const TArray<TSharedPtr<FJsonValue>>& code, TFunctionRef<void(
 
 TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* GeneratedClass) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Log, TEXT("Dumping blueprint class %s"), *GeneratedClass->GetFullName());
+	SML_LOG(LogAssetDumper, Display, TEXT("Dumping blueprint class %s"), *GeneratedClass->GetFullName());
 
 	ResultJson->SetStringField(TEXT("Blueprint"), GeneratedClass->GetPathName());
 	ResultJson->SetStringField(TEXT("ParentClass"), GeneratedClass->GetSuperClass()->GetPathName());
@@ -499,7 +500,8 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 		UFunction* Function = *It;
 		if (Function->GetFName().ToString().StartsWith(TEXT("ExecuteUbergraph_"))) {
 			TSharedPtr<FJsonObject> MethodEntry = MakeShareable(new FJsonObject());
-			TArray<TSharedPtr<FJsonValue>> code = FKismetByteCodeSerializer::CreateFunctionCode(Function);
+			FKismetBytecodeDisassemblerJson Disassembler;
+			TArray<TSharedPtr<FJsonValue>> code = Disassembler.SerializeFunction(Function);
 			if (code.Num() > 0) code.RemoveAt(0);
 			MethodEntry->SetStringField(TEXT("Name"), Function->GetName());
 			MethodEntry->SetArrayField(TEXT("Code"), code);
@@ -518,7 +520,8 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 			MethodEntry->SetStringField(TEXT("SuperClass"), FunctionOverrideSrc->GetPathName());
 			MethodEntry->SetBoolField(TEXT("IsOverride"), true);
 			if (Function->FunctionFlags & FUNC_BlueprintEvent) {
-				TArray<TSharedPtr<FJsonValue>> code = FKismetByteCodeSerializer::CreateFunctionCode(Function);
+				FKismetBytecodeDisassemblerJson Disassembler;
+				TArray<TSharedPtr<FJsonValue>> code = Disassembler.SerializeFunction(Function);
 				MethodEntry->SetArrayField(TEXT("Code"), code);
 			}
 			Methods.Add(MakeShareable(new FJsonValueObject(MethodEntry)));
@@ -568,7 +571,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 
 TSharedRef<FJsonObject> dumpClassContent(UClass* NativeClass) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Log, TEXT("Dumping class %s"), *NativeClass->GetFullName());
+	SML_LOG(LogAssetDumper, Display, TEXT("Dumping class %s"), *NativeClass->GetFullName());
 
 	ResultJson->SetStringField(TEXT("Class"), NativeClass->GetPathName());
 	
@@ -626,7 +629,7 @@ void DumpSatisfactoryAssets() {
 	const FString BlueprintDumpFolder = GetBaseAssetDumpPath();
 	FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*BlueprintDumpFolder);
 	const FString CombinedJsonPath = FPaths::Combine(BlueprintDumpFolder, TEXT("FGAssetsDump.json"));
-	SML_LOG(LogAssetDumper, Log, TEXT("Dumping game assets into %s"), *CombinedJsonPath);
+	SML_LOG(LogAssetDumper, Display, TEXT("Dumping game assets into %s"), *CombinedJsonPath);
 	TArray<TSharedPtr<FJsonValue>> blueprints;
 	TArray<TSharedPtr<FJsonValue>> userDefinedStructs;
 	TArray<TSharedPtr<FJsonValue>> userDefinedEnums;
@@ -697,7 +700,7 @@ void DumpSatisfactoryAssets() {
 	FJsonSerializer Serializer;
 	Serializer.Serialize(ResultObject, Writer);
 	FFileHelper::SaveStringToFile(ResultString, *CombinedJsonPath, FFileHelper::EEncodingOptions::ForceUTF8);
-	SML_LOG(LogAssetDumper, Log, TEXT("Dumping finished!"));
+	SML_LOG(LogAssetDumper, Display, TEXT("Dumping finished!"));
 }
 
 bool DumpSingleAssetObject(UObject* ObjectToDump) {
@@ -799,7 +802,7 @@ TSharedPtr<FJsonValue> SerializeUObject(const UObject* Object, FSerializationCon
 		ObjectInfo->bIsReferenced = true;
 	} else {
 		//Object is not written, write it
-		SML_LOG(LogAssetDumper, Log, TEXT("Recursively serializing object %s"), *Object->GetPathName());
+		SML_LOG(LogAssetDumper, Display, TEXT("Recursively serializing object %s"), *Object->GetPathName());
 		UClass* ObjectClass = Object->GetClass();
 		const void* DefaultObject = ObjectClass->GetDefaultObject();
 		//Start name with $ which cannot appear in UE property names to avoid conflicts
