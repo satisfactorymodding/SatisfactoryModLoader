@@ -4,7 +4,7 @@
 
 FExponentialFogSettings::FExponentialFogSettings(){ }
 #if WITH_EDITOR
-void AFGAtmosphereVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ }
+void AFGAtmosphereVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
 #if WITH_EDITOR
 float AFGAtmosphereVolume::GetViewMinInput() const{ return float(); }

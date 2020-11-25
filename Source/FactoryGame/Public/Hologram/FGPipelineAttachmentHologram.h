@@ -9,6 +9,13 @@
 #include "Hologram/FGFactoryHologram.h"
 #include "FGPipelineAttachmentHologram.generated.h"
 
+UENUM()
+enum class EPipelineAttachmentBuildStep : uint8
+{
+	PABS_PlacementAndDirection,
+	PABS_AdjustRotation
+};
+
 /**
  * Base attachment class for buildables built onto pipelines
  */
@@ -20,11 +27,16 @@ class FACTORYGAME_API AFGPipelineAttachmentHologram : public AFGFactoryHologram
 public:
 	AFGPipelineAttachmentHologram();
 
+	/** Replication */
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	
 	// Begin Actor Interface
 	virtual void BeginPlay() override;
 	// End Actor Interface
 
 	// Begin AFGHologram Interface
+	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	// End AFGHologram Interface
@@ -59,6 +71,10 @@ public:
 	static FName mConnection1;
 
 protected:
+	/** The current build step of the attachment. */
+	UPROPERTY()
+	EPipelineAttachmentBuildStep mBuildStep = EPipelineAttachmentBuildStep::PABS_PlacementAndDirection;
+
 	/** Used to limit the placement in turns. What's the maximum offset to check from center to detect the curve. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
 	float mMaxValidTurnOffset;
@@ -87,12 +103,19 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
 	FVector2D mWallSnapOffset;
 
+	/** Whether or not this hologram uses the second build step, where it rotates around the pipe. */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
+	bool mHasPipeRotationBuildStep;
+
+	/** Cache the upvector when switching build step, we use this to rotate around the pipe. */
+	FVector mBuildStepUpVector;
+
 	/** Directional indicator. Added to visualize "Producer" type pipe connection components direction */
 	UPROPERTY()
 	TArray< class UStaticMeshComponent* > mProducerComponentArrows;
 	
 	/** The pipeline we snapped to. */
-	UPROPERTY()
+	UPROPERTY( Replicated )
 	class AFGBuildablePipeline* mSnappedPipeline;
 
 	/** Cached list of all connections in this attachment hologram */

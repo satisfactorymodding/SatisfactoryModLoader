@@ -22,3 +22,4 @@ TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByProduct(TSubcl
 void AFGRecipeManager::ResetAllRecipes(){ }
 void AFGRecipeManager::Debug_DumpStateToLog() const{ }
 void AFGRecipeManager::FilterRecipesByProducer(const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes){ }
+bool AFGRecipeManager::CanAddToAvailableRecipes(TSubclassOf< UFGRecipe > recipe) const{ return bool(); }

@@ -3,7 +3,7 @@
 #include "FGBuildDescriptor.h"
 
 #if WITH_EDITOR
-void UFGBuildDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ }
+void UFGBuildDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
 UFGBuildDescriptor::UFGBuildDescriptor() : Super() {
 	this->mUseDisplayNameAndDescription = true;

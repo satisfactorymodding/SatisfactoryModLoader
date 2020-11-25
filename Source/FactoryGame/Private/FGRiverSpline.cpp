@@ -3,7 +3,7 @@
 #include "FGRiverSpline.h"
 
 #if WITH_EDITOR
-void AFGRiverSpline::CheckForErrors(){ }
+void AFGRiverSpline::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGRiverSpline::AFGRiverSpline() : Super() {
 	this->mEmitterInterval = 600;

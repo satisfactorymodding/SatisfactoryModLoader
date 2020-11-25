@@ -142,6 +142,9 @@ public:
 	void Server_ConstructHologram( FNetConstructionID clientNetConstructID, FConstructHologramMessage data );
 	void InternalConstructHologram( FNetConstructionID clientNetConstructID );
 
+	UFUNCTION( Server, Reliable, WithValidation )
+    void Server_ChangeGuideLinesSnapMode( bool enabled );
+
 	/**Get a list of the currently supported build modes for the current hologram.*/
 	UFUNCTION(BlueprintCallable, Category = "SplineModeSelect")
 	TArray< EHologramSplinePathMode > GetSupportedSplineModes();

@@ -25,6 +25,7 @@ USceneComponent* AFGBuildableHologram::SetupComponent(USceneComponent* attachPar
 void AFGBuildableHologram::CheckValidPlacement(){ }
 int32 AFGBuildableHologram::GetRotationStep() const{ return int32(); }
 void AFGBuildableHologram::SnapToFloor( AFGBuildable* floor, FVector& location, FRotator& rotation){ }
+void AFGBuildableHologram::SnapToFoundationSide( AFGBuildableFoundation* foundation, const FVector& localSideNormal, FVector& location, FRotator& rotation){ }
 void AFGBuildableHologram::CheckValidFloor(){ }
 void AFGBuildableHologram::CheckClearance(){ }
 bool AFGBuildableHologram::CheckClearanceForPrimitive(UPrimitiveComponent* comp, const FComponentQueryParams& params , bool allowSnapAndMoveAlongBuildings){ return bool(); }

@@ -22,6 +22,8 @@ UFGLocalPlayer::UFGLocalPlayer() : Super() {
 }
 void UFGLocalPlayer::PlayerAdded( UGameViewportClient* inViewportClient, int32 inControllerID){ }
 void UFGLocalPlayer::PlayerRemoved(){ }
+void UFGLocalPlayer::SubscribeToOptionUpdates(){ }
+void UFGLocalPlayer::OnMaintainYAxisFOVUpdated(){ }
 TEnumAsByte<ELoginState> UFGLocalPlayer::GetLoginState() const{ return TEnumAsByte<ELoginState>(); }
 FString UFGLocalPlayer::GetUsername() const{ return FString(); }
 FString UFGLocalPlayer::GetUsernameEpic() const{ return FString(); }
@@ -31,6 +33,8 @@ void UFGLocalPlayer::AutoLogin(){ }
 void UFGLocalPlayer::SetupServerAndTravelToMap(const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility){ }
 void UFGLocalPlayer::CopyPresenceDataToLocalPresenceAndPushToServer(const TSharedRef<FOnlineUserPresence>& presence){ }
 void UFGLocalPlayer::UpdatePresence(){ }
+void UFGLocalPlayer::CheckForStartupArguments(){ }
+void UFGLocalPlayer::TestSteamCommandLineArgs(FString &sessionId){ }
 void UFGLocalPlayer::SetNextUpdatePresenceTime(float timeTillNextUpdate){ }
 void UFGLocalPlayer::OnInviteReceived(const FPendingInvite& invite){ }
 void UFGLocalPlayer::RefreshRecentRegisteredSocialAccountID(){ }
@@ -40,6 +44,7 @@ TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerIdSteam() const{ return 
 void UFGLocalPlayer::ConnectAccount(const FName currentPlatform){ }
 void UFGLocalPlayer::LogOutEpicAndCreateNewAccountConnection(const FName currentPlatform){ }
 void UFGLocalPlayer::CreateNewAccountConnection(const FName currentPlatform){ }
+void UFGLocalPlayer::BroadcastAccountConnectionStepResult(const FName currentPlatform, EEosAccountConnectionResult result){ }
 void UFGLocalPlayer::LoginAndConnectAccount(const FName currentPlatform){ }
 void UFGLocalPlayer::ContinueWithoutConnectingAccount(const FName currentPlatform){ }
 void UFGLocalPlayer::SwitchController( APlayerController* PC){ }

@@ -41,7 +41,7 @@ void AFGBuildableConveyorBelt::Upgrade_Implementation(AActor* newActor){ }
 TArray< AFGBuildableConveyorBelt* > AFGBuildableConveyorBelt::Split(AFGBuildableConveyorBelt* conveyor, float offset, bool connectNewConveyors){ return TArray<AFGBuildableConveyorBelt*>(); }
 AFGBuildableConveyorBelt* AFGBuildableConveyorBelt::Merge(TArray< AFGBuildableConveyorBelt* > conveyors){ return nullptr; }
 AFGBuildableConveyorBelt* AFGBuildableConveyorBelt::Respline(AFGBuildableConveyorBelt* conveyor, const TArray< FSplinePointData >& newSplineData){ return nullptr; }
-void AFGBuildableConveyorBelt::OnUseServerRepInput( AFGCharacterPlayer* byCharacter, int32 itemIndex, int8 repVersion){ }
+void AFGBuildableConveyorBelt::OnUseServerRepInput( AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset){ }
 bool AFGBuildableConveyorBelt::VerifyDefaults(FString& out_message){ return bool(); }
 void AFGBuildableConveyorBelt::TickItemTransforms(float dt){ }
 void AFGBuildableConveyorBelt::TickSingleItemTransform(const FConveyorBeltItem& item, TMap< FName, int32 >& instanceCounts,  AFGRadioactivitySubsystem* radioactiveSubsystem){ }

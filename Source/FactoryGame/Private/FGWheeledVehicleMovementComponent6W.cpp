@@ -4,7 +4,7 @@
 
 float FVehicleEngineData6W::FindPeakTorque() const{ return float(); }
 #if WITH_EDITOR
-void UFGWheeledVehicleMovementComponent6W::PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent){ }
+void UFGWheeledVehicleMovementComponent6W::PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 void UFGWheeledVehicleMovementComponent6W::Serialize(FArchive & Ar){ Super::Serialize(Ar); }
 void UFGWheeledVehicleMovementComponent6W::ComputeConstants(){ }

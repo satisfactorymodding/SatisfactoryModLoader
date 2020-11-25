@@ -7,6 +7,7 @@ void AFGBuildableCheatFluidSpawner::EndPlay(const EEndPlayReason::Type endPlayRe
 FFluidBox* AFGBuildableCheatFluidSpawner::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildableCheatFluidSpawner::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }
 bool AFGBuildableCheatFluidSpawner::CanProduce_Implementation() const{ return bool(); }
+void AFGBuildableCheatFluidSpawner::SetEnabled(bool isEnabled){ }
 void AFGBuildableCheatFluidSpawner::SetResourceType(TSubclassOf< UFGItemDescriptor > type){ }
 void AFGBuildableCheatFluidSpawner::Factory_Tick(float dt){ }
 void AFGBuildableCheatFluidSpawner::Factory_TickProducing(float dt){ }

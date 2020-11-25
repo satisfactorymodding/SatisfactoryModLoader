@@ -33,6 +33,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Foundation" )
 	FFoundationSideSelectionFlags mDisableSnapOn;
 
+	/** Disable attachment snapping on specific sides. */
+	UPROPERTY( EditDefaultsOnly, Category = "Foundation" )
+	FFoundationSideSelectionFlags mDisableAttachmentSnapOn;
+
 public:
 	FORCEINLINE ~AFGBuildableFoundation() = default;
 };

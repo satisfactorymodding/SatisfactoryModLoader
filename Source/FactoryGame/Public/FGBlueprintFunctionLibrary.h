@@ -296,6 +296,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void ClosePopup( APlayerController* controller );
 
+	/** Clear the popup queue of all popups of the given class */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static void ClearPopupQueueOfClass( APlayerController* controller, TSubclassOf< UUserWidget > widgetClass );
+
 	/** Copies the given text to the users clipboard */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void CopyTextToClipboard( FText textToCopy );
@@ -313,6 +317,10 @@ public:
 	**/
 	UFUNCTION( BlueprintCallable, Category = "Math" )
 	static bool EvaluateMathExpression( const FString& expression, UPARAM( DisplayName = "Result" ) FText& out_Result );
+
+	/** Convert a number of seconds into hour:minutes:seconds format string (including leading zeroes) */
+	UFUNCTION(BlueprintPure,  Category = "Utilities|String")
+    static FString SecondsToTimeString( float inSeconds );
 
 	/** Does the same thing as UEditorAssetLibrary::SetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )

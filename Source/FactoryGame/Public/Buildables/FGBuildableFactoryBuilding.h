@@ -6,6 +6,49 @@
 #include "FGBuildable.h"
 #include "FGBuildableFactoryBuilding.generated.h"
 
+UENUM()
+enum class EFoundationSide : uint8
+{
+	FoundationFront UMETA(DisplayName = "Front"),
+	FoundationRight UMETA( DisplayName = "Right" ),
+	FoundationBack UMETA( DisplayName = "Back" ),
+	FoundationLeft UMETA( DisplayName = "Left" ),
+	FoundationTop UMETA( DisplayName = "Top" ),
+	FoundationBottom UMETA( DisplayName = "Bottom" ),
+
+	FoundationNumSides UMETA( DisplayName = "Num Sides" )
+};
+
+static FVector GetLocalSpaceNormalFromFoundationSide(EFoundationSide Side)
+{
+	switch( Side )
+	{
+		case EFoundationSide::FoundationFront:
+			return FVector::ForwardVector;
+
+		case EFoundationSide::FoundationRight:
+			return FVector::RightVector;
+		
+		case EFoundationSide::FoundationBack:
+			return FVector::BackwardVector;
+		
+		case EFoundationSide::FoundationLeft:
+			return FVector::LeftVector;
+			
+		case EFoundationSide::FoundationTop:
+			return FVector::UpVector;
+		
+		case EFoundationSide::FoundationBottom:
+			return FVector::DownVector;
+		
+		default:
+			// Is our game 4D now, wtf?
+			break;
+	}
+
+	return FVector::ZeroVector;
+}
+
 /** Disable snapping on specific sides. */
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FFoundationSideSelectionFlags
@@ -18,6 +61,8 @@ public:
 public:
 	FFoundationSideSelectionFlags();
 	FFoundationSideSelectionFlags( bool defaults );
+
+	bool GetValueForSide( EFoundationSide Side );
 
 	FFoundationSideSelectionFlags RotateEdges( int32 steps ) const;
 

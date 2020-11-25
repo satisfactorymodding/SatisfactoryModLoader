@@ -26,6 +26,10 @@ public:
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	// End Buildable interface
+	
+	// Begin IFGDismantleInterface
+	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	// End IFGDismantleInterface
 
 	/** Get the height for this lift. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }

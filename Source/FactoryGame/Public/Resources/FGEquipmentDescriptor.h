@@ -27,7 +27,5 @@ public:
 	TSubclassOf< class AFGEquipment > mEquipmentClass;
 
 public:
-	UFGEquipmentDescriptor();
 	FORCEINLINE ~UFGEquipmentDescriptor() = default;
 };
-FORCEINLINE UFGEquipmentDescriptor::UFGEquipmentDescriptor() = default;

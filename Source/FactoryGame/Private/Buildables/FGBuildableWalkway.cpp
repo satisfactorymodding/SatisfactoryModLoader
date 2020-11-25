@@ -4,6 +4,7 @@
 #include "FGWalkwayHologram.h"
 
 AFGBuildableWalkway::AFGBuildableWalkway() : Super() {
+	this->mSize = 200;
 	this->mDisableSnapOn.Front = false; this->mDisableSnapOn.Right = false; this->mDisableSnapOn.Back = false; this->mDisableSnapOn.Left = false; this->mDisableSnapOn.Top = true; this->mDisableSnapOn.Bottom = true;
 	this->mHologramClass = AFGWalkwayHologram::StaticClass();
 	this->MaxRenderDistance = -1;

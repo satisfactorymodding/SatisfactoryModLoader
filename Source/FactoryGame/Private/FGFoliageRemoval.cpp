@@ -14,7 +14,7 @@ AFGFoliageRemoval::AFGFoliageRemoval() : Super() {
 	this->NetPriority = 0.5;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
 }
-void AFGFoliageRemoval::PostActorCreated(){ }
+void AFGFoliageRemoval::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGFoliageRemoval::BeginPlay(){ }
 void AFGFoliageRemoval::Destroyed(){ }
 void AFGFoliageRemoval::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

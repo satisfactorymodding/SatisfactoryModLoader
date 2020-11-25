@@ -31,7 +31,7 @@ enum class EPipeConnectionType : uint8
 
 
 
-//@todoPipes Move the base to its own header file
+//@todo-Pipes Move the base to its own header file
 
 /**
  * Connection base used to link generic pipes together
@@ -49,10 +49,6 @@ public:
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 	// End ActorComponent interface
-
-	// Begin save interface
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	// End save interface
 
 	/** Set the conveyor clearance for this connection. */
 	FORCEINLINE void SetConnectorClearance( float clearance ){ mConnectorClearance = clearance; }
@@ -153,12 +149,8 @@ protected:
 	FName mPipeType = "Base"; //used to find matching types for snapping and so on
 
 	/** Connection to another component. If this is set we're connected. */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	class UFGPipeConnectionComponentBase* mConnectedComponent;
-
-	/** Light-weight connected indication for clients. */
-	UPROPERTY( Replicated )
-	bool mHasConnectedComponent = false;
 
 public:
 	FORCEINLINE ~UFGPipeConnectionComponentBase() = default;
@@ -255,7 +247,7 @@ private:
 	void SetPipeNetworkID( int32 networkID );
 
 	/** OnRep to track changes and notify outer actors of changes 
-	*@todoPipes This is a rather ugly necessity of the fluid descriptor residing on connections and being needed by pipelines
+	*@todo-Pipes This is a rather ugly necessity of the fluid descriptor residing on connections and being needed by pipelines
 	*			The way its set up there is no reliable way for client pipelines to know when their fluid descriptor has been set				
 	*/
 	UFUNCTION()
@@ -288,7 +280,7 @@ public: // MODDING EDIT: protected -> public
 	/**
 	 * The Fluid Descriptor class this connection has. This is defined network wide. This is merely a cached value to save frequent lookups when pushing and pulling liquids
 	 */
-	//@todoPipes This is ugly and bad for performance.
+	//@todo-Pipes This is ugly and bad for performance.
 	//           But on the server the descriptor is pushed from the subsystem when it changes.
 	//           We cannot do that on the client cause it does not have a graph built.
 	//           And the pipe network id gets wonky on the client as well... and

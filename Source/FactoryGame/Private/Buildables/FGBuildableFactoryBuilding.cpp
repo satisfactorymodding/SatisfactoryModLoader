@@ -5,6 +5,7 @@
 
 FFoundationSideSelectionFlags::FFoundationSideSelectionFlags(){ }
 FFoundationSideSelectionFlags::FFoundationSideSelectionFlags(bool defaults){ }
+bool FFoundationSideSelectionFlags::GetValueForSide(EFoundationSide Side){ return bool(); }
 FFoundationSideSelectionFlags FFoundationSideSelectionFlags::RotateEdges(int32 steps) const{ return FFoundationSideSelectionFlags(); }
 const FFoundationSideSelectionFlags FFoundationSideSelectionFlags::NoEdges = FFoundationSideSelectionFlags();
 const FFoundationSideSelectionFlags FFoundationSideSelectionFlags::AllEdges = FFoundationSideSelectionFlags();

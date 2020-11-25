@@ -5,7 +5,7 @@
 #include "FGDotComponent.h"
 
 #if WITH_EDITOR
-void AFGDamageOverTimeVolume::CheckForErrors(){ }
+void AFGDamageOverTimeVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGDamageOverTimeVolume::AFGDamageOverTimeVolume() : Super() {
 	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent")); this->mDotComponent->SetupAttachment(this->GetBrushComponent());

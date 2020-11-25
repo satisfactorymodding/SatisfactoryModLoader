@@ -49,8 +49,6 @@ void AFGHologram::GetSupportedSplineModes_Implementation(TArray< EHologramSpline
 EHologramSplinePathMode AFGHologram::GetSplineMode(){ return EHologramSplinePathMode(); }
 void AFGHologram::SetSplineMode(EHologramSplinePathMode  mode){ }
 void AFGHologram::SetSnapToGuideLines(bool isEnabled){ }
-void AFGHologram::Server_SetSnapToGuideLines_Implementation(bool isEnabled){ }
-bool AFGHologram::Server_SetSnapToGuideLines_Validate(bool isEnabled){ return bool(); }
 void AFGHologram::SetPlacementMaterial(bool material){ }
 bool AFGHologram::IsChanged() const{ return bool(); }
 AActor* AFGHologram::GetUpgradedActor() const{ return nullptr; }

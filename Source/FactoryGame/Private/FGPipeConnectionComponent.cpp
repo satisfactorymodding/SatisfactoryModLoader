@@ -11,7 +11,6 @@ void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetim
 void UFGPipeConnectionComponentBase::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGPipeConnectionComponentBase::OnRegister(){ Super::OnRegister(); }
 void UFGPipeConnectionComponentBase::OnUnregister(){ Super::OnUnregister(); }
-void UFGPipeConnectionComponentBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGPipeConnectionComponentBase::SetConnection( UFGPipeConnectionComponentBase* toComponent){ }
 void UFGPipeConnectionComponentBase::ClearConnection(){ }
 bool UFGPipeConnectionComponentBase::IsConnected() const{ return bool(); }

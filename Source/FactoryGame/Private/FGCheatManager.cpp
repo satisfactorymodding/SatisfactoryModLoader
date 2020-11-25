@@ -119,10 +119,30 @@ void UFGCheatManager::RebuildFactoryLegsOneTileAroundPlayer(){ }
 void UFGCheatManager::ResetGamePhases(){ }
 void UFGCheatManager::DumpGamePhases(){ }
 void UFGCheatManager::ToggleTrainSelfDriving(){ }
-void UFGCheatManager::FillFirstPipeInEachNetwork(){ }
-void UFGCheatManager::EmptyAllPipes(){ }
-void UFGCheatManager::ResetAllPipes(){ }
-void UFGCheatManager::ToggleDebuggingOnPipe(){ }
+void UFGCheatManager::PipeFillFirstInEachNetwork(){ }
+void UFGCheatManager::PipeEmptyAll(){ }
+void UFGCheatManager::PipeResetAll(){ }
+void UFGCheatManager::PipePrintMinSizes(){ }
+void UFGCheatManager::PipeSetVerboseLoggingOnAimedFluidBox(bool enabled){ }
+void UFGCheatManager::PipeEnableProbingOnAimedIntegrant(){ }
+void UFGCheatManager::PipeDisableProbingOnAimedIntegrant(){ }
+void UFGCheatManager::PipeClearProbingOnAllPipe(){ }
+void UFGCheatManager::PipeAddSelectedNetworkToDisplayDebugList(){ }
+void UFGCheatManager::PipeClearDisplayDebugList(){ }
+void UFGCheatManager::PipePrintTweakables(){ }
+void UFGCheatManager::PipeTweakMaximumFlow(float rate){ }
+void UFGCheatManager::PipeTweakMinimumMaxContent(float minimumMaxContent, bool keepRelativeContent){ }
+void UFGCheatManager::PipeTweakPressureLoss(float pressureLoss){ }
+void UFGCheatManager::PipeTweakOverfill(float maxOverfillPct, float maxOverfillForPressure){ }
+void UFGCheatManager::PipeTweakGravity(float gravity){ }
+void UFGCheatManager::PipeTweakFluidFriction(float fluidFriction){ }
+void UFGCheatManager::PipeTweakFluidDensity(float fluidDensity){ }
+void UFGCheatManager::PipeTweakFluidViscosity(float fluidViscosity){ }
+void UFGCheatManager::PipeTweakSubStepping(float targetDeltaSeconds, int32 maxSubSteps){ }
 void UFGCheatManager::DupeComponentInCircuit(int32 target){ }
 void UFGCheatManager::DupeComponentToAnotherCircuit(int32 source, int32 target){ }
 void UFGCheatManager::DumpConnectionString(){ }
+UActorComponent* UFGCheatManager::GetOuterPlayersUseComponent() const{ return nullptr; }
+AActor* UFGCheatManager::GetOuterPlayersUseActor() const{ return nullptr; }
+AActor* UFGCheatManager::GetOuterPlayersAimedAtActor(FVector& out_aimLocation) const{ return nullptr; }
+IFGFluidIntegrantInterface* UFGCheatManager::GetOuterPlayerAimedAtFluidInterface() const{ return nullptr; }

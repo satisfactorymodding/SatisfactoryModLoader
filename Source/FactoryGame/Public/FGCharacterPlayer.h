@@ -14,6 +14,7 @@
 #include "Equipment/FGEquipment.h"
 #include "FGHUD.h"
 #include "FGOutlineComponent.h"
+#include "FGCharacterMovementComponent.h" // MODDING EDIT
 
 #include "FGCharacterPlayer.generated.h"
 
@@ -38,9 +39,10 @@ struct FACTORYGAME_API FDisabledInputGate
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FDisabledInputGate();
+	MODDING_SHIPPING_FORCEINLINE FDisabledInputGate() : FDisabledInputGate( false )
+	{}
 
-	FORCEINLINE FDisabledInputGate( bool disabled ) :
+	MODDING_SHIPPING_FORCEINLINE FDisabledInputGate( bool disabled ) :
 		mBuildGun( disabled ),
 		mDismantle( disabled ),
 		mFlashLight( disabled ),
@@ -83,7 +85,6 @@ public:
 public:
 	FORCEINLINE ~FDisabledInputGate() = default;
 };
-FORCEINLINE FDisabledInputGate::FDisabledInputGate() : FDisabledInputGate( false ) {}
 
 /**
 * not dead, cant revive
@@ -93,12 +94,11 @@ class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead : public UFGUseSta
 {
 	GENERATED_BODY()
 public:
-	UFGUseState_ReviveInvalid_PlayerNotDead();
+	MODDING_SHIPPING_FORCEINLINE UFGUseState_ReviveInvalid_PlayerNotDead() : Super() { mIsUsableState = false; }
 
 public:
 	FORCEINLINE ~UFGUseState_ReviveInvalid_PlayerNotDead() = default;
 };
-FORCEINLINE UFGUseState_ReviveInvalid_PlayerNotDead::UFGUseState_ReviveInvalid_PlayerNotDead() { mIsUsableState = false; }
 
 /**
 * Revive valid
@@ -108,12 +108,11 @@ class FACTORYGAME_API UFGUseState_ReviveValid : public UFGUseState
 {
 	GENERATED_BODY()
 public:
-	UFGUseState_ReviveValid();
+	MODDING_SHIPPING_FORCEINLINE UFGUseState_ReviveValid() : Super() { mIsUsableState = true; }
 
 public:
 	FORCEINLINE ~UFGUseState_ReviveValid() = default;
 };
-FORCEINLINE UFGUseState_ReviveValid::UFGUseState_ReviveValid() { mIsUsableState = true; }
 
 /**
  * Base class for all player characters in the game.

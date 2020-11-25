@@ -247,6 +247,13 @@ public:
 	virtual void PlayerRemoved() override;
 	//~End ULocalPlayer interface
 
+	/** Listen to option changes we care about */
+	void SubscribeToOptionUpdates();
+	
+	/** Triggered when Maintain Y Axis FOV option have changed */
+	UFUNCTION()
+    void OnMaintainYAxisFOVUpdated();
+
 	/** Get in what state our login is */
 	UFUNCTION(BlueprintPure,Category="Online")
 	TEnumAsByte<ELoginState> GetLoginState() const;
@@ -293,6 +300,11 @@ public:
 	UFUNCTION()
 	void UpdatePresence();
 
+	UFUNCTION()
+	void CheckForStartupArguments();
+
+	void TestSteamCommandLineArgs(FString &sessionId);
+
 	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
 	UFUNCTION()
 	void SetNextUpdatePresenceTime(float timeTillNextUpdate);
@@ -320,6 +332,8 @@ public:
 
 	/** Create a new account connection without connection to an existing account */
 	void CreateNewAccountConnection( const FName currentPlatform );
+
+	void BroadcastAccountConnectionStepResult(const FName currentPlatform, EEosAccountConnectionResult result);
 
 	/** Prompt the user to login and link that account */
 	void LoginAndConnectAccount( const FName currentPlatform );
@@ -477,6 +491,8 @@ protected:
 	FTimerHandle mPresenceUpdateHandle;
 	FTimerHandle mPresenceUpdateHandleSteam;
 	FTimerHandle mSteamConnectyAccountDelayHandle;
+
+	FTimerHandle mCheckStartupArgumentsHanlde;
 
 	// For detecting player disconnects from services
 	FDelegateHandle mOnConnectionStatusChangedHandle;

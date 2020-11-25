@@ -30,12 +30,14 @@ public:
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
+	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 
 	void RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal );
 
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease )  override;
 	virtual int32 GetBaseCostMultiplier() const override;
+	virtual AActor* GetUpgradedActor() const override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void GetSupportedScrollModes( TArray< EHologramScrollMode >* out_modes ) const override;
 	virtual void GetSupportedSplineModes_Implementation( TArray< EHologramSplinePathMode >& out_splineModes ) const override;
@@ -90,6 +92,8 @@ private:
 	/** Update the spline on the client. */
 	UFUNCTION()
 	void UpdateSplineComponent();
+
+	float GetSplineLength();
 
 	void UpdateConnectionComponentsFromSplineData();
 
@@ -180,6 +184,10 @@ private:
 	UPROPERTY()
 	class UFGPipeConnectionComponentBase* mSnappedConnectionComponents[ 2 ];
 
+	/** If we upgrade another pipeline this is the pipeline we replace. */
+	UPROPERTY()
+	class AFGBuildablePipeline* mUpgradedPipeline;
+	
 	/** Class of conveyor pole to place at the end. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	TSubclassOf< class UFGRecipe > mDefaultPipelineSupportRecipe;
@@ -197,8 +205,9 @@ private:
 	float mMinBendRadius = 75;
 
 	/** Maximum number of meshes per pipe */
-	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
-	int32 mMaxLength;
+	UPROPERTY(EditDefaultsOnly, Category = "Pipeline")
+	float mMaxSplineLength = 5600.1f;
+
 
 	/** Arrow to indicate the direction of the conveyor while placing it. */
 	UPROPERTY()

@@ -33,6 +33,13 @@ public:
 	virtual bool CanProduce_Implementation() const override;
 	// End AFGBuildableFactory interface
 
+	/** Set this spawner enabled/disabled */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat|CheatFluidSpawner" )
+	void SetEnabled( bool isEnabled );
+	/** true if this spawner is enabled. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat|CheatFluidSpawner" )
+    bool IsEnabled() const { return mIsEnabled; }
+	
 	/** Allow blueprint to set the resource type. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat|CheatFluidSpawner" )
 	void SetResourceType( TSubclassOf< UFGItemDescriptor > type );
@@ -44,6 +51,10 @@ protected:
 	// End AFGBuildableFactory interface
 
 protected:
+	/** Is the spawner outputting anything, useful for testing setups where multiple spawners are used. */
+	UPROPERTY( SaveGame )
+	bool mIsEnabled = true;
+	
 	/** Resource type to spawn. */
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	TSubclassOf< UFGItemDescriptor > mResourceType;

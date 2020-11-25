@@ -37,6 +37,10 @@ protected:
 	/** Fluid box managed by this connection. This is special to PipeConnectionFactory as other connections do not have their own fluid box */
 	FFluidBox mFluidBox;
 
+	/** Volume of the fluid box inside this attachment. [m3] */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
+	float mFluidBoxVolume;
+
 private:
 	/** If this connection is a producer type, should it apply the factory settings default pressure? */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )

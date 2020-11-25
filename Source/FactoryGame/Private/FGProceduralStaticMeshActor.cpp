@@ -4,7 +4,7 @@
 
 #if WITH_EDITOR
 void AFGProceduralStaticMeshActor::PreEditChange(UProperty* PropertyThatWillChange){ }
-void AFGProceduralStaticMeshActor::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ }
+void AFGProceduralStaticMeshActor::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 void AFGProceduralStaticMeshActor::PostEditMove(bool bFinished){ }
 #endif 
 #if WITH_EDITOR

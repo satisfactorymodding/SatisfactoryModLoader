@@ -6,6 +6,7 @@
 #include "FGBuildableFoundation.h"
 
 AFGRoadHologram::AFGRoadHologram() : Super() {
+	this->mSplineData.SetNum(2); this->mSplineData[0].Location.X = 0; this->mSplineData[0].Location.Y = 0; this->mSplineData[0].Location.Z = 0; this->mSplineData[0].ArriveTangent.X = 1; this->mSplineData[0].ArriveTangent.Y = 0; this->mSplineData[0].ArriveTangent.Z = 0; this->mSplineData[0].LeaveTangent.X = 1; this->mSplineData[0].LeaveTangent.Y = 0; this->mSplineData[0].LeaveTangent.Z = 0; this->mSplineData[1].Location.X = 0; this->mSplineData[1].Location.Y = 0; this->mSplineData[1].Location.Z = 0; this->mSplineData[1].ArriveTangent.X = 1; this->mSplineData[1].ArriveTangent.Y = 0; this->mSplineData[1].ArriveTangent.Z = 0; this->mSplineData[1].LeaveTangent.X = 1; this->mSplineData[1].LeaveTangent.Y = 0; this->mSplineData[1].LeaveTangent.Z = 0;
 	this->mMaxPlacementFloorAngle = 35;
 	this->mValidHitClasses.Add(AFGBuildableFoundation::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRailroadTrack::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRoad::StaticClass());
 	this->mUseBuildClearanceOverlapSnapp = true;

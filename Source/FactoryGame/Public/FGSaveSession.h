@@ -227,7 +227,7 @@ protected:
 	/** Called when a save actor placed in the level is destroyed */
 	UFUNCTION()
 	void OnActorDestroyed( AActor* destroyedActor );
-protected:
+public: // MODDING EDIT protected->public
 	/** Actors in the world that's destroyed */
 	TArray< FObjectReferenceDisc > mDestroyedActors;
 

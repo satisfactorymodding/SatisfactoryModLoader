@@ -17,6 +17,7 @@ public:
 	AFGItemPickup_Spawnable();
 
 	//~ Begin AActor interface
+	virtual void PostLoad() override;
 	virtual void BeginPlay() override;
 	//~ End AActor interface
 

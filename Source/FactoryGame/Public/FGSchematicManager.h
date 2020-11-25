@@ -209,17 +209,19 @@ private:
 protected:
 	//MODDING EDIT: expose access to internal state to content registry
 	friend class AModContentRegistry;
-	
+
 	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */
 	UPROPERTY()
 	TArray< TSubclassOf< UFGSchematic > > mAllSchematics;
 
 	/** All schematics that are available to the player */
-	UPROPERTY( SaveGame, Replicated )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, Replicated , BlueprintReadOnly)
 	TArray< TSubclassOf< UFGSchematic > > mAvailableSchematics;
 
 	/** Once schematic is purchased it ends up here */
-	UPROPERTY( EditDefaultsOnly, SaveGame, ReplicatedUsing = OnRep_PurchasedSchematic, Category = "Schematic" )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( EditDefaultsOnly, SaveGame, ReplicatedUsing = OnRep_PurchasedSchematic, Category = "Schematic" , BlueprintReadOnly)
 	TArray< TSubclassOf< UFGSchematic > > mPurchasedSchematics;
 
 	/* This keeps track of what players have paid off on different schematics */
@@ -227,7 +229,8 @@ protected:
 	TArray< FSchematicCost > mPaidOffSchematic;
 	
 	/** The active schematic the resources is being sold towards. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ActiveSchematic )
+	// MODDING EDIT BlueprintReadOnly
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ActiveSchematic, BlueprintReadOnly)
 	TSubclassOf< UFGSchematic > mActiveSchematic;
 
 	/** Called when we the schematic has been changed . */

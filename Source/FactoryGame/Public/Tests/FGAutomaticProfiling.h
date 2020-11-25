@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 // @Ben de Hullu
 #pragma once
 #include "UnrealString.h"
@@ -7,7 +7,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 
-#if WITH_DEV_AUTOMATION_TESTS
+#if WITH_PERF_AUTOMATION_TESTS
 
 /* Latent action for running the capture spline */
 

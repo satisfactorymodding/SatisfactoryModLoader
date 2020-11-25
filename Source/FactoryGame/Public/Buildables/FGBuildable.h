@@ -29,6 +29,7 @@
 //@todonow These should CAPS_CASE according to the coding standard
 static const FString MainMeshName( TEXT( "MainMesh" ) );
 static const FName ClearanceVolumeName( TEXT( "Clearance" ) ); //@todo There's a duplicate of this in the CPP file.
+static const FName ClearanceDetectorVolumeName( TEXT( "ClearanceDetector" ) ); //@todo There's a duplicate of this in the CPP file.
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FBuildableDismantledSignature );
 
@@ -134,7 +135,7 @@ public:
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	//~ End IFGDismantleInferface
 
-	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter );
+	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter, class UFGCircuitConnectionComponent* overlappingConnection );
 	virtual void StopIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter );
 
 	/** Called in ConfigureActor from the hologram. */
