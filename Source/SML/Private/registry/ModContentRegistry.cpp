@@ -29,8 +29,6 @@ void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSu
     }
 }
 
-#pragma optimize("", off)
-
 void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
     
     static UStructProperty* NodeDataStructProperty = NULL;
@@ -70,15 +68,12 @@ void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree
     }
 }
 
-#pragma optimize("", on)
-
 template<typename T>
 TArray<TSubclassOf<T>> DiscoverVanillaContentOfType() {
     UClass* PrimaryAssetClass = T::StaticClass();
     UAssetManager& AssetManager = UAssetManager::Get();
     
     const FPrimaryAssetType AssetType = PrimaryAssetClass->GetFName();
-    SML_LOG(LogContentRegistry, Display, TEXT("Primary asset type: %s"), *AssetType.GetName().ToString());
     TArray<FAssetData> FoundVanillaAssets;
     AssetManager.GetPrimaryAssetDataList(AssetType, FoundVanillaAssets);
     TArray<TSubclassOf<T>> OutVanillaContent;
