@@ -21,7 +21,7 @@ enum class EVersionComparisonOp : uint8 {
 
 /* Struct describing versioning information */
 USTRUCT(BlueprintType)
-struct FVersion {
+struct SML_API FVersion {
 	GENERATED_USTRUCT_BODY()
 public:
 	/** Major version number. */
@@ -58,7 +58,7 @@ public:
 
 /** A single version comparator of version range */
 USTRUCT(BlueprintType)
-struct FVersionComparator {
+struct SML_API FVersionComparator {
 	GENERATED_USTRUCT_BODY()
 public:
 	/* Comparison operator used for this comparator */
@@ -87,7 +87,7 @@ public:
 
 /** Represents AND-joined version comparator collection. It evaluates to true if all comparators do */
 USTRUCT(BlueprintType)
-struct FVersionComparatorCollection {
+struct SML_API FVersionComparatorCollection {
 	GENERATED_USTRUCT_BODY()
 public:
 	/* List of comparators to join */
@@ -110,7 +110,7 @@ public:
 
 /* Represents version constraints that version can be matched against */
 USTRUCT(BlueprintType)
-struct FVersionRange {
+struct SML_API FVersionRange {
 	GENERATED_USTRUCT_BODY()
 public:
 	/* List of collections to check for. Any of them can return true for range to succeed */
