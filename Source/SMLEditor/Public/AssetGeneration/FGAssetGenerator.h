@@ -11,5 +11,5 @@ public:
 	 * Example Usage:
 	 * SML::generateSatisfactoryAssets(TEXT("D:/SatisfactoryExperimental/configs/FGDataAssets.json"));
 	 */
-	void GenerateSatisfactoryAssets(const FString& DataJsonFilePath);
+	static void GenerateSatisfactoryAssets(const FString& DataJsonFilePath);
 };

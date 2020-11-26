@@ -36,6 +36,10 @@ public class SML : ModuleRules
             "InstancedSplines"
         });
 
+        if (Target.bBuildEditor) {
+            PublicDependencyModuleNames.Add("UnrealEd");
+        }
+
         var platformName = Enum.GetName(typeof(UnrealTargetPlatform), Target.Platform);
         var projectFilePath = Target.ProjectFile.ToString();
         var projectRootPath = projectFilePath.Substring(0, projectFilePath.LastIndexOf(Path.DirectorySeparatorChar));

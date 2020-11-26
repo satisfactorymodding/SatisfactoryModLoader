@@ -7,7 +7,7 @@ public class SMLEditor : ModuleRules
     public SMLEditor(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-        PublicDependencyModuleNames.AddRange(new string[] {"SML", "FactoryGame", "UnrealEd"});
+        PublicDependencyModuleNames.AddRange(new string[] {"SML", "FactoryGame", "UnrealEd", "BlueprintGraph"});
         
         //SML transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {

@@ -1,5 +1,4 @@
 #include "Alpakit.h"
-
 #include "AlpakitStyle.h"
 #include "AlpakitCommands.h"
 #include "AlpakitWidget.h"
@@ -408,7 +407,7 @@ void EnsureModHasSMLDependency(TArray<FAlpakitModDependency>& ModDependencies) {
 	if (!bFoundSMLDependency) {
 		//Add SML dependency ourselves if user hasn't specified one
 		FAlpakitModDependency SMLDependency;
-		const FString ModLoaderVersion = SML::GetRawModLoaderVersionString();
+		const FString ModLoaderVersion = FSatisfactoryModLoader::GetModLoaderVersion().ToString();
 		SMLDependency.Mod = TEXT("SML");
 		SMLDependency.Constraint = FString::Printf(TEXT("^%s"), *ModLoaderVersion);
 		ModDependencies.Add(SMLDependency);

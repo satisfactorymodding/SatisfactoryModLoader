@@ -1,11 +1,6 @@
 #include "AlpakitWidget.h"
-
 #include "Alpakit.h"
-#include "Developer/DesktopPlatform/Public/IDesktopPlatform.h"
 #include "Developer/DesktopPlatform/Public/DesktopPlatformModule.h"
-#include "Editor/UATHelper/Public/IUATHelperModule.h"
-#include "Dom/JsonObject.h"
-#include "SML/SatisfactoryModLoader.h"
 #include "PropertyEditorModule.h"
 
 void SAlpakitWidget::Construct(const FArguments& InArgs) {

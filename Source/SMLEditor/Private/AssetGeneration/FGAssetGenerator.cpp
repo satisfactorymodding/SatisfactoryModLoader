@@ -1,3 +1,8 @@
+#include "FGAssetGenerator.h"
+
+void FGameAssetGenerator::GenerateSatisfactoryAssets(const FString& DataJsonFilePath) {
+}
+
 /*#include "K2Node_MakeArray.h"
 #include "K2Node_MakeMap.h"
 #include "K2Node_MakeSet.h"

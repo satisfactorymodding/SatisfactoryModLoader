@@ -44,9 +44,9 @@ void FNativeCodeGenerator::GenerateConfigurationCodeHeader(const FString& Header
 
     //Sort structs in the level of their nesting
     TArray<UConfigGeneratedStruct*> GeneratedStructs = Context->GetAllGeneratedStructs();
-    GeneratedStructs.StableSort([](const UConfigGeneratedStruct* First, const UConfigGeneratedStruct* Second){
-        const int32 NestedCountFirst = GetNestedLevelOfStruct(First);
-        const int32 NestedCountSecond = GetNestedLevelOfStruct(Second);
+    GeneratedStructs.StableSort([](const UConfigGeneratedStruct& First, const UConfigGeneratedStruct& Second){
+        const int32 NestedCountFirst = GetNestedLevelOfStruct(&First);
+        const int32 NestedCountSecond = GetNestedLevelOfStruct(&Second);
         return NestedCountFirst > NestedCountSecond;
     });
     
