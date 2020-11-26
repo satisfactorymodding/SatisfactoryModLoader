@@ -45,11 +45,11 @@ void FSMLNetworkManager::HandleWelcomePlayer(UWorld* World, UNetConnection* Conn
 
 void FSMLNetworkManager::HandleGameModePostLogin(AGameModeBase* GameMode, APlayerController* Controller) {
     UModNetworkHandler* NetworkHandler = UModNetworkHandler::Get();
-    AFGPlayerController* FGPlayerController = Cast<AFGPlayerController>(Controller);
-    if (FGPlayerController) {
-        USMLRemoteCallObject* RemoteCallObject = FGPlayerController->GetRemoteCallObjectOfClass<USMLRemoteCallObject>();
+    AFGPlayerController* CastedPlayerController = Cast<AFGPlayerController>(Controller);
+    if (CastedPlayerController) {
+        USMLRemoteCallObject* RemoteCallObject = Cast<USMLRemoteCallObject>(CastedPlayerController->GetRemoteCallObjectOfClass(USMLRemoteCallObject::StaticClass()));
 
-        if (FGPlayerController->IsLocalController()) {
+        if (CastedPlayerController->IsLocalController()) {
             //This is a local player, so installed mods are our local mod list
             FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
             for (const FModContainer* ModContainer : ModHandler->GetLoadedMods()) {

@@ -16,7 +16,7 @@ FString UPlayerCommandSender::GetSenderName() const {
 void UPlayerCommandSender::SendChatMessage(const FString& Message, const FLinearColor PrefixColor) {
     AFGPlayerController* PlayerController = GetPlayer();
     if (PlayerController != NULL) {
-        USMLRemoteCallObject* RemoteCallObject = PlayerController->GetRemoteCallObjectOfClass<USMLRemoteCallObject>();
+        USMLRemoteCallObject* RemoteCallObject = Cast<USMLRemoteCallObject>(PlayerController->GetRemoteCallObjectOfClass(USMLRemoteCallObject::StaticClass()));
         if (RemoteCallObject != NULL) {
             RemoteCallObject->SendChatMessage(Message, PrefixColor);
         }
