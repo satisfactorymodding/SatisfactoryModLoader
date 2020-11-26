@@ -14,7 +14,7 @@ public:
     static FReflectedObject ReflectObject(UObject* Object);
 
     /** Allocates reflected object wrapper for given struct value */
-    UFUNCTION(BlueprintPure, Category = "Reflection", CustomThunk)
+    UFUNCTION(BlueprintPure, Category = "Reflection", CustomThunk, meta = (CustomStructureParam = "StructInfo"))
     static FReflectedObject ReflectStruct(const FDynamicStructInfo& StructInfo);
 
     /** Deflects reflected object into the raw UObject* pointer */
@@ -22,7 +22,7 @@ public:
     static UObject* DeflectObject(const FReflectedObject& ReflectedObject);
 
     /** Deflects reflected object into the passed struct out variable */
-    UFUNCTION(BlueprintCallable, Category = "Reflection", CustomThunk)
+    UFUNCTION(BlueprintCallable, Category = "Reflection", CustomThunk, meta = (CustomStructureParam = "StructInfo"))
     static void DeflectStruct(const FReflectedObject& ReflectedObject, UPARAM(Ref) const FDynamicStructInfo& StructInfo);
 
     /** Returns a list of reflected properties for provided object */

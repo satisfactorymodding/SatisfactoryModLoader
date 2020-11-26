@@ -11,6 +11,7 @@
 #define OPTIMIZE_FILL_CONFIGURATION_STRUCT 1
 
 class UUserWidget;
+class URootConfigValueHolder;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogConfigManager, Log, Log)
 
@@ -38,6 +39,28 @@ FORCEINLINE bool FConfigId::operator==(const FConfigId& ConfigId) const {
     return ConfigId.ModReference == ModReference && ConfigId.ConfigCategory == ConfigCategory;
 }
 
+/** Describes active configuration data */
+USTRUCT()
+struct SML_API FRegisteredConfigurationData {
+    GENERATED_BODY()
+public:
+    /** Identifier of configuration being handled */
+    UPROPERTY()
+    FConfigId ConfigId;
+
+    /** Descriptor of this configuration */
+    UPROPERTY()
+    TSubclassOf<UModConfiguration> ConfigurationClass;
+
+    /** Root value in this configuration value hierarchy */
+    UPROPERTY()
+    URootConfigValueHolder* RootValue;
+
+    /** Cached structs populated with this configuration values. Used for faster FillConfigStruct implementation */
+    UPROPERTY()
+    TMap<UScriptStruct*, FReflectedObject> CachedValues;
+};
+
 /** Manages mod configuration states */
 UCLASS()
 class SML_API UConfigManager : public UBlueprintFunctionLibrary {
@@ -56,7 +79,7 @@ public:
     static void MarkConfigurationDirty(const FConfigId& ConfigId);
     
     /** Fills passed struct with a data obtained from active configuration identified by passed config id */
-    UFUNCTION(BlueprintPure)
+    UFUNCTION(BlueprintCallable, CustomThunk, meta = (CustomStructureParam = "StructInfo"))
     static void FillConfigurationStruct(const FConfigId& ConfigId, UPARAM(Ref) const FDynamicStructInfo& StructInfo);
 
     /** Creates a configuration widget hierarchy for active configuration specified by passed id */
@@ -90,12 +113,14 @@ private:
     /** Array of all configurations pending save */
     TArray<FConfigId> PendingSaveConfigurations;
     
-    /** Registered configuration schemas */
-    TMap<FConfigId, TSubclassOf<UModConfiguration>> RegisteredConfigs;
-    
-    /** Active configuration values, either default populated or loaded from disk */
-    TMap<FConfigId, class URootConfigValueHolder*> ActiveConfigValues;
-    
-    /** Cached values of struct types passed to FillConfigurationStruct, used for quickly copying them for better performance */
-    TMap<FConfigId, TMap<UScriptStruct*, FReflectedObject>> CachedStructValues;
+    /** Registered configurations */
+    UPROPERTY()
+    TMap<FConfigId, FRegisteredConfigurationData> Configurations;
+
+    DECLARE_FUNCTION(execFillConfigurationStruct) {
+        P_GET_STRUCT(FConfigId, ConfigId);
+        const FDynamicStructInfo StructInfo = FReflectionHelper::CheckStructParameter(Context, Stack);
+        P_FINISH;
+        FillConfigurationStruct(ConfigId, StructInfo);
+    }
 };

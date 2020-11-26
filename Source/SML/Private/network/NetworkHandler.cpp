@@ -4,7 +4,6 @@
 #include "FGGameMode.h"
 #include "NativeHookManager.h"
 #include "Engine/NetConnection.h"
-#include "util/Logging.h"
 
 DEFINE_LOG_CATEGORY(LogModNetworkHandler);
 DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);
@@ -15,10 +14,10 @@ UModNetworkHandler* UModNetworkHandler::Get() {
 }
 
 FMessageEntry& UModNetworkHandler::RegisterMessageType(const FMessageType& MessageType) {
-    SML_LOG(LogModNetworkHandler, Display, TEXT("Registering message type %s:%d"), *MessageType.ModReference, MessageType.MessageId);
+    UE_LOG(LogModNetworkHandler, Display, TEXT("Registering message type %s:%d"), *MessageType.ModReference, MessageType.MessageId);
     TMap<int32, FMessageEntry>& ModEntries = MessageHandlers.FindOrAdd(MessageType.ModReference);
     if (ModEntries.Contains(MessageType.MessageId)) {
-        SML_LOG(LogModNetworkHandler, Fatal, TEXT("Tried to register mod message with duplicate identifier %d for mod %s"), MessageType.MessageId, *MessageType.ModReference);
+        UE_LOG(LogModNetworkHandler, Fatal, TEXT("Tried to register mod message with duplicate identifier %d for mod %s"), MessageType.MessageId, *MessageType.ModReference);
         check(0);
     }
     return ModEntries.Add(MessageType.MessageId, FMessageEntry{});

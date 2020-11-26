@@ -2,9 +2,11 @@
 #include "Configuration/ConfigProperty.h"
 #include "ConfigPropertySection.generated.h"
 
+//Needs to be UObject because UE is retarded, EditInline is deprecated and cannot be used, and Instanced doesn't work on structs
+
 /** Describes single section property */
-USTRUCT(BlueprintType)
-struct SML_API FSectionProperty {
+UCLASS(EditInlineNew)
+class SML_API USectionProperty : public UObject {
     GENERATED_BODY()
 public:
     /** Name of this property inside the configuration file. Consider using alphanumerical characters only */
@@ -20,7 +22,7 @@ public:
     FString Tooltip;
 
     /** Property describing this property of this section */
-    UPROPERTY(Instanced, BlueprintReadOnly)
+    UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly)
     UConfigProperty* Property;
 };
 
@@ -30,8 +32,8 @@ class SML_API UConfigPropertySection : public UConfigProperty {
     GENERATED_BODY()
 public:
     /** All properties contained in this section */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    TArray<FSectionProperty> SectionProperties;
+    UPROPERTY(EditAnywhere, Instanced, BlueprintReadOnly)
+    TArray<USectionProperty*> SectionProperties;
 
     void ApplyDefaultPropertyValue_Implementation(UConfigValue* Value) const override;
     TSubclassOf<UConfigValue> GetValueClass_Implementation() const override;

@@ -1,5 +1,4 @@
 ﻿#include "BlueprintModLoadingLibrary.h"
-#include "Logging.h"
 #include "ModHandler.h"
 #include "SatisfactoryModLoader.h"
 #include "Util/ImageLoadingUtil.h"
@@ -80,7 +79,7 @@ UTexture2D* UBlueprintModLoadingLibrary::LoadModIconTexture(const FString& ModRe
 
     //Failed to load mod icon, fallback to default
     if (LoadedModIcon == NULL) {
-        SML_LOG(LogModLoading, Error, TEXT("Failed to load icon for mod %s at file %s: %s"), *ModReference, **IconFileLocation, *OutErrorMessage);
+        UE_LOG(LogModLoading, Error, TEXT("Failed to load icon for mod %s at file %s: %s"), *ModReference, **IconFileLocation, *OutErrorMessage);
         LoadedModIcon = FallbackIcon;
     }
 

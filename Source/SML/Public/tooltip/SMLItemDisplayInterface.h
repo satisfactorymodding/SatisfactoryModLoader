@@ -4,7 +4,7 @@
 #include "Widget.h"
 #include "SMLItemDisplayInterface.generated.h"
 
-UINTERFACE( Blueprintable )
+UINTERFACE(Blueprintable)
 class SML_API USMLItemDisplayInterface : public UInterface {
     GENERATED_BODY()
 };
@@ -17,12 +17,12 @@ class SML_API USMLItemDisplayInterface : public UInterface {
 class SML_API ISMLItemDisplayInterface {
     GENERATED_BODY()
 public:
-    UFUNCTION( BlueprintNativeEvent )
+    UFUNCTION(BlueprintNativeEvent)
     FText GetOverridenItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
-    UFUNCTION( BlueprintNativeEvent )
+    UFUNCTION(BlueprintNativeEvent)
     FText GetOverridenItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
-    UFUNCTION( BlueprintNativeEvent )
+    UFUNCTION(BlueprintNativeEvent)
     UWidget* CreateDescriptionWidget(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 };

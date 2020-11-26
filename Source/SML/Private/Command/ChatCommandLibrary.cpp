@@ -3,7 +3,6 @@
 #include "FGPlayerController.h"
 #include "HelpCommandInstance.h"
 #include "InfoCommandInstance.h"
-#include "Logging.h"
 #include "PlayerListCommandInstance.h"
 #include "SatisfactoryModLoader.h"
 #include "SMLSubsystemHolder.h"
@@ -43,8 +42,8 @@ void AChatCommandSubsystem::Init() {
 }
 
 TArray<AFGPlayerController*> AChatCommandSubsystem::ParsePlayerName(UCommandSender* Caller, const FString& Name, UObject* WorldContext) {
-	check(WorldContext->ImplementsGetWorld());
 	UWorld* World = WorldContext->GetWorld();
+	check(World);
 	TArray<AFGPlayerController*> PlayerControllers;
 	
 	if (Name == TEXT("@self") || Name == TEXT("@s")) {
@@ -100,7 +99,7 @@ void AChatCommandSubsystem::RegisterCommand(const FString& ModReference, TSubcla
 		}
 		//Add command actor to the registered actor list
 		RegisteredCommands.Add(Command);
-		SML_LOG(LogChatCommand, Display, TEXT("Registered chat command %s:%s"), *ModReference, *Command->CommandName);
+		UE_LOG(LogChatCommand, Display, TEXT("Registered chat command %s:%s"), *ModReference, *Command->CommandName);
 	}
 }
 
@@ -159,7 +158,7 @@ EExecutionStatus AChatCommandSubsystem::RunChatCommand(const FString& CommandLin
 	//Print some logging information about command executed and response
 	UEnum* ExecutionStatusEnum = StaticEnum<EExecutionStatus>();
 	const FString StatusString = ExecutionStatusEnum->GetNameStringByValue((int64) ExecutionStatus);
-	SML_LOG(LogChatCommand, Display, TEXT("%s: /%s [%s]"), *Sender->GetSenderName(), *CommandLine, *StatusString);
+	UE_LOG(LogChatCommand, Display, TEXT("%s: /%s [%s]"), *Sender->GetSenderName(), *CommandLine, *StatusString);
 
 	return ExecutionStatus;
 }

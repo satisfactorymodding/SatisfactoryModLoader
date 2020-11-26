@@ -6,7 +6,6 @@
 #include "JsonObject.h"
 #include "JsonSerializer.h"
 #include "LegacyConfigurationHelper.h"
-#include "Logging.h"
 #include "SatisfactoryModLoader.h"
 #include "UPropertySerializer.h"
 
@@ -69,23 +68,23 @@ bool USMLBlueprintLibrary::GetDevelopmentModeEnabled() {
 
 
 void USMLBlueprintLibrary::LogDebug(const FString& Str, bool bIgnoreDebugMode) {
-	SML_LOG(LogBlueprintLegacy, Verbose, TEXT("%s"), *Str);
+	UE_LOG(LogBlueprintLegacy, Verbose, TEXT("%s"), *Str);
 }
 
 void USMLBlueprintLibrary::LogInfo(const FString& Str) {
-	SML_LOG(LogBlueprintLegacy, Display, TEXT("%s"), *Str);
+	UE_LOG(LogBlueprintLegacy, Display, TEXT("%s"), *Str);
 }
 
 void USMLBlueprintLibrary::LogWarning(const FString& Str) {
-	SML_LOG(LogBlueprintLegacy, Warning, TEXT("%s"), *Str);
+	UE_LOG(LogBlueprintLegacy, Warning, TEXT("%s"), *Str);
 }
 
 void USMLBlueprintLibrary::LogError(const FString& Str) {
-	SML_LOG(LogBlueprintLegacy, Error, TEXT("%s"), *Str);
+	UE_LOG(LogBlueprintLegacy, Error, TEXT("%s"), *Str);
 }
 
 void USMLBlueprintLibrary::LogFatal(const FString& Str) {
-	SML_LOG(LogBlueprintLegacy, Fatal, TEXT("%s"), *Str);
+	UE_LOG(LogBlueprintLegacy, Fatal, TEXT("%s"), *Str);
 }
 
 void USMLBlueprintLibrary::SaveConfig(const FString& ModReference, const FDynamicStructInfo& Config) {
@@ -93,7 +92,7 @@ void USMLBlueprintLibrary::SaveConfig(const FString& ModReference, const FDynami
 	FString OutSerializedJson;
 	StructToJson(OutSerializedJson, true, Config);
 	if (!FFileHelper::SaveStringToFile(OutSerializedJson, *ModConfigFilePath)) {
-		SML_LOG(LogBlueprintLegacy, Error, TEXT("Failed to save mod configuration to %s"), *ModConfigFilePath);
+		UE_LOG(LogBlueprintLegacy, Error, TEXT("Failed to save mod configuration to %s"), *ModConfigFilePath);
 	}
 }
 
@@ -103,7 +102,7 @@ void USMLBlueprintLibrary::LoadConfig(const FString& ModReference, const FDynami
 	if (FPlatformFileManager::Get().GetPlatformFile().FileExists(*ModConfigFilePath)) {
 		FString InSerializedJson;
 		if (!FFileHelper::LoadFileToString(InSerializedJson, *ModConfigFilePath)) {
-			SML_LOG(LogBlueprintLegacy, Error, TEXT("Failed to load mod configuration from %s"), *ModConfigFilePath);
+			UE_LOG(LogBlueprintLegacy, Error, TEXT("Failed to load mod configuration from %s"), *ModConfigFilePath);
 			return;
 		}
 		StructFromJson(InSerializedJson, true, Config);

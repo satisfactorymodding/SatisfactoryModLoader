@@ -1,7 +1,6 @@
 #include "ModHandler.h"
 #include "BasicModInit.h"
 #include "bootstrapper_exports.h"
-#include "util/Logging.h"
 #include "Engine/World.h"
 #include "PlatformFilemanager.h"
 #include "IPlatformFilePak.h"
@@ -23,7 +22,7 @@ DEFINE_LOG_CATEGORY(LogModLoading);
 
 //No need to handle ELogVerbosity::Fatal here because it's an instant crash
 #define MOD_LOADING_LOG(Verbosity, Message, ...) \
-	SML_LOG(LogModLoading, Verbosity, Message, ##__VA_ARGS__); \
+	UE_LOG(LogModLoading, Verbosity, Message, ##__VA_ARGS__); \
 	if (ELogVerbosity::Verbosity == ELogVerbosity::Error) {\
 		LoadingProblems.Add(FString::Printf(Message, ##__VA_ARGS__)); \
 	}
@@ -174,7 +173,7 @@ void FModHandler::MountModPaks() {
 			if (!FPaths::FileExists(ModPakSignaturePath)) {
 				FPlatformFileManager::Get().GetPlatformFile().CopyFile(*ModPakSignaturePath, *GamePakSignaturePath);
 			}
-			SML_LOG(LogModLoading, Display, TEXT("Mounting mod package %s with priority %d"), *PakFilePathStr, PakFileDef.LoadingPriority);
+			UE_LOG(LogModLoading, Display, TEXT("Mounting mod package %s with priority %d"), *PakFilePathStr, PakFileDef.LoadingPriority);
 			FCoreDelegates::OnMountPak.Execute(PakFilePathStr, PakFileDef.LoadingPriority, nullptr);
 		}
 	}
@@ -231,15 +230,15 @@ void FModHandler::SubscribeToLifecycleEvents() {
 		TMap<FString, ABasicModInit*> SpawnedActorMap;
 		
 		//Construct mod actors and dispatch CONSTRUCTION on them immediately
-		SML_LOG(LogModLoading, Display, TEXT("Constructing mod actors on map %s"), *World->GetMapName());
+		UE_LOG(LogModLoading, Display, TEXT("Constructing mod actors on map %s"), *World->GetMapName());
 		SpawnModActors(World, bIsMenuWorld, SpawnedActorMap);
 		
 		//Initialize mod actors and dispatch INITIALIZATION on them
-		SML_LOG(LogModLoading, Display, TEXT("Initializing mod actors"));
+		UE_LOG(LogModLoading, Display, TEXT("Initializing mod actors"));
 		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
 			ModInit->DispatchLifecyclePhase(ELifecyclePhase::INITIALIZATION);
 		});
-		SML_LOG(LogModLoading, Display, TEXT("Finished initializing mod actors"));
+		UE_LOG(LogModLoading, Display, TEXT("Finished initializing mod actors"));
 	});
 
 	//Post initialize mod actors when world is fully loaded and is ready to be used
@@ -248,11 +247,11 @@ void FModHandler::SubscribeToLifecycleEvents() {
 		TMap<FString, ABasicModInit*> SpawnedActorMap;
 		FindModActors(World, SpawnedActorMap);
 		
-		SML_LOG(LogModLoading, Display, TEXT("Post-initializing mod actors"));
+		UE_LOG(LogModLoading, Display, TEXT("Post-initializing mod actors"));
 		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
             ModInit->DispatchLifecyclePhase(ELifecyclePhase::POST_INITIALIZATION);
         });
-		SML_LOG(LogModLoading, Display, TEXT("Finished post-initializing mod actors"));
+		UE_LOG(LogModLoading, Display, TEXT("Finished post-initializing mod actors"));
 	});
 }
 
@@ -375,24 +374,24 @@ void FModHandler::PerformModListSorting() {
 }
 
 void FModHandler::PreInitializeMods() {
-	SML_LOG(LogModLoading, Display, TEXT("Loading native mod libraries into process address space..."));
+	UE_LOG(LogModLoading, Display, TEXT("Loading native mod libraries into process address space..."));
 	LoadNativeModLibraries();
 	CheckStageErrors(TEXT("pre initialization"));
 };
 
 void FModHandler::InitializeMods() {
-	SML_LOG(LogModLoading, Display, TEXT("Starting up native mod modules..."));
+	UE_LOG(LogModLoading, Display, TEXT("Starting up native mod modules..."));
 	InitializeNativeModules();
-	SML_LOG(LogModLoading, Display, TEXT("Populating mod list"));
+	UE_LOG(LogModLoading, Display, TEXT("Populating mod list"));
 	PopulateModList();
-	SML_LOG(LogModLoading, Display, TEXT("Mounting mod packages"));
+	UE_LOG(LogModLoading, Display, TEXT("Mounting mod packages"));
 	MountModPaks();
 	CheckStageErrors(TEXT("initialization"));
 }
 
 
 void FModHandler::ConstructZipMod(const FString& FilePath) {
-	SML_LOG(LogModLoading, Display, TEXT("Constructing mod file %s"), *FilePath);
+	UE_LOG(LogModLoading, Display, TEXT("Constructing mod file %s"), *FilePath);
 
 	//First, create zip archive reader to unpack mod files
 	FString OutArchiveOpenErrorMessage;
@@ -421,7 +420,7 @@ void FModHandler::ConstructZipMod(const FString& FilePath) {
 }
 
 void FModHandler::ConstructDllMod(const FString& FilePath) {
-	SML_LOG(LogModLoading, Display, TEXT("Constructing raw DLL mod file %s"), *FilePath);
+	UE_LOG(LogModLoading, Display, TEXT("Constructing raw DLL mod file %s"), *FilePath);
 	
 	if (CheckAndNotifyRawMod(FilePath)) {
 		const FString ModReference = FModHandlerHelper::GetModReferenceFromFile(FilePath);
@@ -433,7 +432,7 @@ void FModHandler::ConstructDllMod(const FString& FilePath) {
 }
 
 void FModHandler::ConstructPakMod(const FString& FilePath) {
-	SML_LOG(LogModLoading, Display, TEXT("Constructing raw pak mod file %s"), *FilePath);
+	UE_LOG(LogModLoading, Display, TEXT("Constructing raw pak mod file %s"), *FilePath);
 	
 	if (CheckAndNotifyRawMod(FilePath)) {
 		const FString ModReference = FModHandlerHelper::GetModReferenceFromFile(FilePath);
@@ -453,7 +452,7 @@ void FModHandler::CheckStageErrors(const TCHAR* stageName) {
 		FString Message = FString::Printf(TEXT("Errors occurred during mod loading stage '%s'. Loading cannot continue:\n"), stageName);
 		for (auto& Problem : LoadingProblems)
 			Message.Append(Problem).Append(TEXT("\n"));
-		SML_LOG(LogModLoading, Fatal, TEXT("%s"), *Message);
+		UE_LOG(LogModLoading, Fatal, TEXT("%s"), *Message);
 	}
 }
 
@@ -462,7 +461,7 @@ bool FModHandler::CheckAndNotifyRawMod(const FString& FilePath) {
 		MOD_LOADING_LOG(Error, TEXT("Found raw mod in mods directory: %s, Raw mods cannot be used without development mode enabled."), *FilePath);
 		return false;
 	}
-	SML_LOG(LogModLoading, Warning, TEXT("Loading raw mod %s. Dependencies and versioning won't work!"), *FilePath);
+	UE_LOG(LogModLoading, Warning, TEXT("Loading raw mod %s. Dependencies and versioning won't work!"), *FilePath);
 	return true;
 }
 
@@ -475,7 +474,7 @@ FModLoadingEntry* FModHandler::CreateLoadingEntry(const FModInfo& ModInfo, const
 		ModLoadingEntry->bIsRawMod = false;
 	}
 	if (ModLoadingEntry->bIsRawMod) {
-		SML_LOG(LogModLoading, Error, TEXT("Packed mod file %s conflicts with raw mod %s (identical Mod Reference: %s)"),
+		UE_LOG(LogModLoading, Error, TEXT("Packed mod file %s conflicts with raw mod %s (identical Mod Reference: %s)"),
             *FilePath, *ModLoadingEntry->VirtualModFilePath, *ModInfo.ModReference);
 		return NULL;
 	}

@@ -11,7 +11,7 @@ UInitGameInstance* UGameInstanceInitSubsystem::GetInitGameInstanceByModReference
 }
 
 void UGameInstanceInitSubsystem::CreateInitObjectForMod(const FString& ModReference, TSubclassOf<UInitGameInstance> ObjectClass) {
-    UFGGameInstance* GameInstance = Cast<UFGGameInstance>(GetGameInstance());
+    UFGGameInstance* GameInstance = Cast<UFGGameInstance>(GetOuter());
     checkf(GameInstance, TEXT("Outer GameInstance is not UFGGameInstance"));
     
     const FString ObjectName = FString::Printf(TEXT("InitGameInstance_%s"), *ModReference);

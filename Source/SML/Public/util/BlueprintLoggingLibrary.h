@@ -1,6 +1,5 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "Logging.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BlueprintLoggingLibrary.generated.h"
 

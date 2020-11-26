@@ -9,7 +9,6 @@
 #include "PlatformFilemanager.h"
 #include "Kismet/GameplayStatics.h"
 #include "IPlatformFilePak.h"
-#include "Logging.h"
 #include "ModSubsystemHolder.h"
 #include "NativeHookManager.h"
 #include "ReflectionHelper.h"
@@ -19,6 +18,8 @@
 DEFINE_LOG_CATEGORY(LogContentRegistry);
 
 TMap<FString, FString> AModContentRegistry::ModOverwriteMap;
+
+#pragma optimize("", off)
 
 void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
     const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);
@@ -51,7 +52,7 @@ void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree
     const TArray<UFGResearchTreeNode*> Nodes = UFGResearchTree::GetNodes(ResearchTree);
     for (UFGResearchTreeNode* Node : Nodes) {
         if (!Node->IsA(ResearchTreeNodeClass)) {
-            SML_LOG(LogContentRegistry, Warning,
+            UE_LOG(LogContentRegistry, Warning,
                 TEXT("Unsupported node class %s for research tree %s"), *Node->GetClass()->GetPathName(),
                 *ResearchTree->GetPathName());
             continue;
@@ -59,7 +60,7 @@ void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree
         const void* NodeDataStructPtr = NodeDataStructProperty->ContainerPtrToValuePtr<void>(Node);
         UClass* SchematicClass = Cast<UClass>(SchematicStructProperty->GetPropertyValue_InContainer(NodeDataStructPtr));
         if (SchematicClass == NULL) {
-            SML_LOG(LogContentRegistry, Warning,
+            UE_LOG(LogContentRegistry, Warning,
                 TEXT("Schematic not set on research tree %s, node %s"), *ResearchTree->GetPathName(),
                 *Node->GetClass()->GetPathName());
             continue;
@@ -88,11 +89,11 @@ TArray<TSubclassOf<T>> DiscoverVanillaContentOfType() {
             }
         }
     }
-    SML_LOG(LogContentRegistry, Display, TEXT("Discovered %d vanilla assets of type %s"), OutVanillaContent.Num(), *PrimaryAssetClass->GetName());
+    UE_LOG(LogContentRegistry, Display, TEXT("Discovered %d vanilla assets of type %s"), OutVanillaContent.Num(), *PrimaryAssetClass->GetName());
     return OutVanillaContent;
 }
 
-void AModContentRegistry::InjectIntoVanillaManagers() {
+void AModContentRegistry::DisableVanillaContentRegistration() {
     //Prevent unnecessary vanilla schematic list population -
     //we are overriding it from content registry anyway, so let's save some processing time
     SUBSCRIBE_METHOD(AFGSchematicManager::PopulateSchematicsLists,
@@ -101,33 +102,6 @@ void AModContentRegistry::InjectIntoVanillaManagers() {
         [](auto& Call, AFGSchematicManager*) { Call.Cancel(); });
     SUBSCRIBE_METHOD(AFGResearchManager::PopulateResearchTreeList,
         [](auto& Call, AFGResearchManager*) { Call.Cancel(); });
-    
-    //Make sure vanilla states are up to date with registry
-    SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(AFGSchematicManager, AActor::Tick, [](AFGSchematicManager* SchematicManager, float) {
-        AModContentRegistry* ContentRegistry = AModContentRegistry::Get(SchematicManager);
-        if (ContentRegistry != NULL) {
-            const int64 SchematicRegistryCounter = ContentRegistry->SchematicRegistryState.GetRegistrationCounter();
-            int64& SchematicManagerState = ContentRegistry->SchematicManagerInternalState;
-            
-            if (SchematicRegistryCounter > SchematicManagerState) {
-                ContentRegistry->FlushStateToSchematicManager(SchematicManager);
-                SchematicManagerState = SchematicRegistryCounter;
-            }
-        }
-    });
-
-    SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(AFGResearchManager, AActor::Tick, [](AFGResearchManager* ResearchManager, float) {
-        AModContentRegistry* ContentRegistry = AModContentRegistry::Get(ResearchManager);
-        if (ContentRegistry != NULL) {
-            const int64 ResearchTreeRegistryCounter = ContentRegistry->ResearchTreeRegistryState.GetRegistrationCounter();
-            int64& ResearchManagerState = ContentRegistry->ResearchManagerInternalState;
-
-            if (ResearchTreeRegistryCounter > ResearchManagerState) {
-                ContentRegistry->FlushStateToResearchManager(ResearchManager);
-                ResearchManagerState = ResearchTreeRegistryCounter;
-            }
-        }
-    });
 }
 
 void AModContentRegistry::FlushStateToSchematicManager(AFGSchematicManager* SchematicManager) const {
@@ -156,18 +130,28 @@ void AModContentRegistry::FlushStateToResearchManager(AFGResearchManager* Resear
         TSubclassOf<UFGResearchTree> ResearchTree = RegistrationInfo->RegisteredObject;
         ResearchManager->mAllResearchTrees.Add(ResearchTree);
     }
+    //Update unlocked research trees
+    ResearchManager->UpdateUnlockedResearchTrees();
+}
+
+void AModContentRegistry::SubscribeToSchematicManager(AFGSchematicManager* SchematicManager) {
+    FScriptDelegate ScriptDelegate;
+    ScriptDelegate.BindUFunction(this, GET_FUNCTION_NAME_STRING_CHECKED(AModContentRegistry, OnSchematicPurchased));
+    SchematicManager->PurchasedSchematicDelegate.AddUnique(ScriptDelegate);
 }
 
 void AModContentRegistry::Init() {
     //Register vanilla content in the registry
     const FString FactoryGame = FACTORYGAME_MOD_REFERENCE;
 
-    SML_LOG(LogContentRegistry, Display, TEXT("Initializing mod content registry"));
+    UE_LOG(LogContentRegistry, Display, TEXT("Initializing mod content registry"));
     const TArray<TSubclassOf<UFGSchematic>> AllSchematics = DiscoverVanillaContentOfType<UFGSchematic>();
     const TArray<TSubclassOf<UFGResearchTree>> AllResearchTrees = DiscoverVanillaContentOfType<UFGResearchTree>();
     
     for (const TSubclassOf<UFGSchematic>& Schematic : AllSchematics) {
-        RegisterSchematic(FactoryGame, Schematic);
+        if (UFGSchematic::GetType(Schematic) != ESchematicType::EST_Alternate) {
+            RegisterSchematic(FactoryGame, Schematic);
+        }
     }
     
     for (const TSubclassOf<UFGResearchTree>& ResearchTree : AllResearchTrees) {
@@ -178,13 +162,13 @@ void AModContentRegistry::Init() {
 void AModContentRegistry::FreezeRegistryState() {
     checkf(!bIsRegistryFrozen, TEXT("Attempt to re-freeze already frozen registry"));
 
-    SML_LOG(LogContentRegistry, Display, TEXT("Freezing content registry"));
+    UE_LOG(LogContentRegistry, Display, TEXT("Freezing content registry"));
     this->bIsRegistryFrozen = true;
 }
 
 void AModContentRegistry::EnsureRegistryUnfrozen() const {
     if (bIsRegistryFrozen) {
-        SML_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register object in frozen mod content registry"));
+        UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register object in frozen mod content registry"));
     }
 }
 
@@ -206,6 +190,14 @@ void AModContentRegistry::CheckSavedDataForMissingObjects() {
 
     if (MissingObjects.Num() > 0) {
         WarnAboutMissingObjects(MissingObjects);
+    }
+}
+
+void AModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schematic) {
+    //Update research trees in case they depend on schematic unlocked dependency
+    AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
+    if (ResearchManager != NULL && ResearchManager->HasAuthority()) {
+        ResearchManager->UpdateUnlockedResearchTrees();
     }
 }
 
@@ -283,13 +275,13 @@ void AModContentRegistry::FindMissingRecipes(AFGRecipeManager* RecipeManager,
 }
 
 void AModContentRegistry::WarnAboutMissingObjects(const TArray<FMissingObjectStruct>& MissingObjects) {
-    SML_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
-    SML_LOG(LogContentRegistry, Error, TEXT("Found unregistered objects referenced in savegame:"));
+    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
+    UE_LOG(LogContentRegistry, Error, TEXT("Found unregistered objects referenced in savegame:"));
     for (const FMissingObjectStruct& ObjectStruct : MissingObjects) {
-        SML_LOG(LogContentRegistry, Error, TEXT("%s: %s"), *ObjectStruct.ObjectType, *ObjectStruct.ObjectPath);
+        UE_LOG(LogContentRegistry, Error, TEXT("%s: %s"), *ObjectStruct.ObjectType, *ObjectStruct.ObjectPath);
     }
-    SML_LOG(LogContentRegistry, Error, TEXT("They will be cleared out"));
-    SML_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
+    UE_LOG(LogContentRegistry, Error, TEXT("They will be cleared out"));
+    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
 }
 
 void AModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector) {
@@ -306,8 +298,6 @@ void AModContentRegistry::RegisterSchematic(const FString& ModReference, TSubcla
 
     if (!SchematicRegistryState.ContainsObject(Schematic)) {
         EnsureRegistryUnfrozen();
-        AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
-        check(SchematicManager);
 
         //Create registration entry and register
         const TSharedPtr<FSchematicRegistrationInfo> RegistrationInfo = SchematicRegistryState.RegisterObject(
@@ -332,13 +322,11 @@ void AModContentRegistry::RegisterResearchTree(const FString& ModReference, TSub
 
     if (!ResearchTreeRegistryState.ContainsObject(ResearchTree)) {
         EnsureRegistryUnfrozen();
-        AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
-        check(ResearchManager);
 
         //Create registration entry and register
         const TSharedPtr<FResearchTreeRegistrationInfo> RegistrationInfo = ResearchTreeRegistryState.RegisterObject(
             MakeRegistrationInfo<FResearchTreeRegistrationInfo>(ResearchTree, ModReference));
-
+        
         //Register referenced schematics automatically and associate research tree with them
         TArray<TSubclassOf<UFGSchematic>> OutReferencedSchematics;
         ExtractSchematicsFromResearchTree(ResearchTree, OutReferencedSchematics);
@@ -347,6 +335,7 @@ void AModContentRegistry::RegisterResearchTree(const FString& ModReference, TSub
             const TSharedPtr<FSchematicRegistrationInfo> SchematicRegistrationInfo = SchematicRegistryState.FindObject(Schematic);
             SchematicRegistrationInfo->ReferencedBy.Add(ResearchTree);
         }
+        
         //Process registration callback
         OnResearchTreeRegistered.Broadcast(ResearchTree, *RegistrationInfo);
     }
@@ -367,7 +356,6 @@ void AModContentRegistry::RegisterRecipe(const FString& ModReference, TSubclassO
     }
 }
 
-//TODO should this be callable only on host and then replicated down to clients, like with all other methods here?
 void AModContentRegistry::RegisterResourceSinkItemPointTable(const FString& ModReference, UDataTable* PointTable) {
     AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
 
@@ -432,6 +420,8 @@ AModContentRegistry::AModContentRegistry() {
     bIsRegistryFrozen = false;
     SchematicManagerInternalState = -1;
     ResearchManagerInternalState = -1;
+    bSubscribedToSchematicManager = false;
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 AModContentRegistry* AModContentRegistry::Get(UObject* WorldContext) {
@@ -445,9 +435,38 @@ void AModContentRegistry::BeginPlay() {
     CheckSavedDataForMissingObjects();
 }
 
+void AModContentRegistry::Tick(float DeltaSeconds) {
+    //Make sure vanilla states are up to date with registry
+    AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
+    AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
+    
+    if (SchematicManager != NULL) {
+        const int64 SchematicRegistryCounter = SchematicRegistryState.GetRegistrationCounter();
+        
+        if (SchematicRegistryCounter > SchematicManagerInternalState) {
+            FlushStateToSchematicManager(SchematicManager);
+            SchematicManagerInternalState = SchematicRegistryCounter;
+        }
+
+        if (!bSubscribedToSchematicManager) {
+            SubscribeToSchematicManager(SchematicManager);
+            bSubscribedToSchematicManager = true;
+        }
+    }
+    
+    if (ResearchManager != NULL) {
+        const int64 ResearchTreeRegistryCounter = ResearchTreeRegistryState.GetRegistrationCounter();
+        
+        if (ResearchTreeRegistryCounter > ResearchManagerInternalState) {
+            FlushStateToResearchManager(ResearchManager);
+            ResearchManagerInternalState = ResearchTreeRegistryCounter;
+        }
+    }
+}
+
 FString AModContentRegistry::GetClassOwnerModReference(UClass* ClassObject) {
     check(ClassObject);
-    const FString& PackagePathName = ClassObject->GetOuterUPackage()->GetPathName();
+    const FString& PackagePathName = ClassObject->GetOutermost()->GetPathName();
 
     if (PackagePathName.StartsWith(TEXT("/Game/"))) {
         //Class is blueprint class located inside game's content directory
@@ -476,12 +495,12 @@ FString AModContentRegistry::GetClassOwnerModReference(UClass* ClassObject) {
 void AModContentRegistry::RegisterOverwriteForMod(const FString& ModReference, const FString& OverwritePath) {
     if (ModOverwriteMap.Contains(OverwritePath)) {
         const FString OldModReference = ModOverwriteMap.FindChecked(OverwritePath);
-        SML_LOG(LogContentRegistry, Error,
+        UE_LOG(LogContentRegistry, Error,
             TEXT("SML detected two mods trying to overwrite same asset at path '"), *OverwritePath, TEXT("': "),
             *ModReference, TEXT(" and "), *OldModReference);
-        SML_LOG(LogContentRegistry, Error,
+        UE_LOG(LogContentRegistry, Error,
             TEXT("This setup is not stable, and mods can break depending on which overwrite takes precedence"));
-        SML_LOG(LogContentRegistry, Error, TEXT("Proceed with caution, and make sure to report to mod authors about the conflict"));
+        UE_LOG(LogContentRegistry, Error, TEXT("Proceed with caution, and make sure to report to mod authors about the conflict"));
     }
     ModOverwriteMap.Add(OverwritePath, ModReference);
 }
@@ -501,7 +520,9 @@ void AModContentRegistry::DiscoverOverwriteListForModReference(const FString& Mo
     PlatformFile.IterateDirectory(*DirectoryPath, [&ResultOverwriteArray](const TCHAR* FilenameOrDirectory, bool bIsDirectory) {
         const FString FilenameString = FilenameOrDirectory;
         if (!bIsDirectory && FPaths::GetExtension(FilenameOrDirectory) == TEXT("txt")) {
-            FFileHelper::LoadFileToStringArray(ResultOverwriteArray, FilenameOrDirectory);
+            FString ResultOverwriteString;
+            FFileHelper::LoadFileToString(ResultOverwriteString, FilenameOrDirectory);
+            ResultOverwriteString.ParseIntoArrayLines(ResultOverwriteArray);
         }
         return true;
     });
@@ -511,3 +532,5 @@ void AModContentRegistry::DiscoverOverwriteListForModReference(const FString& Mo
         RegisterOverwriteForMod(ModReference, ResultString);
     }
 }
+
+#pragma optimize("", on)

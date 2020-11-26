@@ -273,6 +273,7 @@ public:
     }
 
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
 
     //Add objects from registry states to reference collector
     static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
@@ -287,6 +288,9 @@ private:
     /** Internal state counters for vanilla managers */
     int64 SchematicManagerInternalState;
     int64 ResearchManagerInternalState;
+
+    /** True when we have subscribed to schematic manager delegates already */
+    bool bSubscribedToSchematicManager;
 
     ///Callbacks to be fired when new entries are registered
     UPROPERTY()
@@ -319,8 +323,11 @@ private:
     /** Flushes research tree registry state into research manager */
     void FlushStateToResearchManager(class AFGResearchManager* ResearchManager) const;
 
+    /** Subscribes to schematic manager delegates */
+    void SubscribeToSchematicManager(AFGSchematicManager* SchematicManager);
+
     /** Injects into vanilla schematic/research managers to override vanilla content registration to registry usage */
-    static void InjectIntoVanillaManagers();
+    static void DisableVanillaContentRegistration();
     
     /** Called early when subsystem is spawned */
     void Init();
@@ -330,6 +337,10 @@ private:
     void EnsureRegistryUnfrozen() const;
     /** Checks SaveGame fields for unregistered objects and NULLs */
     void CheckSavedDataForMissingObjects();
+
+    /** Called when schematic is purchased in schematic manager */
+    UFUNCTION()
+    void OnSchematicPurchased(TSubclassOf<UFGSchematic> Schematic);
     
     /** Associate items referenced in recipe with given mod reference if they are not associated already */
     void MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FString& ModReference);

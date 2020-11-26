@@ -1,6 +1,5 @@
 #include "FGAssetDumper.h"
 #include "Engine/BlueprintGeneratedClass.h"
-#include "util/Logging.h"
 #include "Json.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Engine/UserDefinedEnum.h"
@@ -207,7 +206,7 @@ bool isBlacklistedClass(const FString& classPath) {
 
 TSharedRef<FJsonObject> dumpUserDefinedEnum(UUserDefinedEnum* definedEnum) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping user defined enum %s"), *definedEnum->GetFullName());
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping user defined enum %s"), *definedEnum->GetFullName());
 
 	ResultJson->SetStringField(TEXT("StructName"), definedEnum->GetPathName());
 	TArray<TSharedPtr<FJsonValue>> enumValues;
@@ -231,7 +230,7 @@ TSharedRef<FJsonObject> dumpUserDefinedEnum(UUserDefinedEnum* definedEnum) {
 
 TSharedRef<FJsonObject> dumpUserDefinedStruct(UUserDefinedStruct* definedStruct) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping user defined struct %s"), *definedStruct->GetFullName());
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping user defined struct %s"), *definedStruct->GetFullName());
 
 	ResultJson->SetStringField(TEXT("StructName"), definedStruct->GetPathName());
 	ResultJson->SetStringField(TEXT("Guid"), definedStruct->Guid.ToString());
@@ -317,7 +316,7 @@ TSharedRef<FJsonObject> WriteConstructionScript(USimpleConstructionScript* SCS, 
 TArray<TSharedPtr<FJsonValue>> WriteDelegateBindings(UBlueprintGeneratedClass* GeneratedClass) {
 	TArray<TSharedPtr<FJsonValue>> BlueprintDelegateBindings;
 	for (const UDynamicBlueprintBinding* Binding : GeneratedClass->DynamicBindingObjects) {
-		SML_LOG(LogAssetDumper, Display, TEXT("Serializing delegate binding %s"), *Binding->GetClass()->GetName());
+		UE_LOG(LogAssetDumper, Display, TEXT("Serializing delegate binding %s"), *Binding->GetClass()->GetName());
 		if (Binding->GetClass()->GetName() == TEXT("ComponentDelegateBinding")) {
 			const UComponentDelegateBinding* ComponentBinding = static_cast<const UComponentDelegateBinding*>(Binding);
 			TSharedRef<FJsonObject> BindingObject = MakeShareable(new FJsonObject());
@@ -435,7 +434,7 @@ void IterateArray(const TArray<TSharedPtr<FJsonValue>>& code, TFunctionRef<void(
 
 TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* GeneratedClass) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping blueprint class %s"), *GeneratedClass->GetFullName());
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping blueprint class %s"), *GeneratedClass->GetFullName());
 
 	ResultJson->SetStringField(TEXT("Blueprint"), GeneratedClass->GetPathName());
 	ResultJson->SetStringField(TEXT("ParentClass"), GeneratedClass->GetSuperClass()->GetPathName());
@@ -571,7 +570,7 @@ TSharedRef<FJsonObject> dumpBlueprintContent(UBlueprintGeneratedClass* Generated
 
 TSharedRef<FJsonObject> dumpClassContent(UClass* NativeClass) {
 	TSharedRef<FJsonObject> ResultJson = MakeShareable(new FJsonObject());
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping class %s"), *NativeClass->GetFullName());
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping class %s"), *NativeClass->GetFullName());
 
 	ResultJson->SetStringField(TEXT("Class"), NativeClass->GetPathName());
 	
@@ -629,7 +628,7 @@ void DumpSatisfactoryAssets() {
 	const FString BlueprintDumpFolder = GetBaseAssetDumpPath();
 	FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*BlueprintDumpFolder);
 	const FString CombinedJsonPath = FPaths::Combine(BlueprintDumpFolder, TEXT("FGAssetsDump.json"));
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping game assets into %s"), *CombinedJsonPath);
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping game assets into %s"), *CombinedJsonPath);
 	TArray<TSharedPtr<FJsonValue>> blueprints;
 	TArray<TSharedPtr<FJsonValue>> userDefinedStructs;
 	TArray<TSharedPtr<FJsonValue>> userDefinedEnums;
@@ -700,7 +699,7 @@ void DumpSatisfactoryAssets() {
 	FJsonSerializer Serializer;
 	Serializer.Serialize(ResultObject, Writer);
 	FFileHelper::SaveStringToFile(ResultString, *CombinedJsonPath, FFileHelper::EEncodingOptions::ForceUTF8);
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping finished!"));
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping finished!"));
 }
 
 bool DumpSingleAssetObject(UObject* ObjectToDump) {
@@ -733,21 +732,21 @@ bool DumpSingleAssetObject(UObject* ObjectToDump) {
 
 void DumpGameAssetConsoleCommand(const TArray<FString>& Arguments) {
 	if (Arguments.Num() != 1) {
-		SML_LOG(LogAssetDumper, Display, TEXT("Usage: DumpGameAsset <AssetPath>"));
+		UE_LOG(LogAssetDumper, Display, TEXT("Usage: DumpGameAsset <AssetPath>"));
 		return;
 	}
 	const FString AssetPath = Arguments[0];
 	UObject* ObjectToDump = StaticLoadObject(UObject::StaticClass(), NULL, *AssetPath);
 	if (ObjectToDump == nullptr) {
-		SML_LOG(LogAssetDumper, Display, TEXT("Object with provided path is not found"));
+		UE_LOG(LogAssetDumper, Display, TEXT("Object with provided path is not found"));
 		return;
 	}
 	const bool bResult = DumpSingleAssetObject(ObjectToDump);
 	if (!bResult) {
-		SML_LOG(LogAssetDumper, Display, TEXT("Object with provided path cannot be dumped: Unsupported type. Only Classes/Structs/Blueprints/Enums are supported"));
+		UE_LOG(LogAssetDumper, Display, TEXT("Object with provided path cannot be dumped: Unsupported type. Only Classes/Structs/Blueprints/Enums are supported"));
 		return;
 	}
-	SML_LOG(LogAssetDumper, Display, TEXT("Asset dumped successfully with path equal to it's name in configs game directory"));
+	UE_LOG(LogAssetDumper, Display, TEXT("Asset dumped successfully with path equal to it's name in configs game directory"));
 }
 
 //Note that CDO's don't call this method, they call SerializePropertyValue directly,
@@ -802,7 +801,7 @@ TSharedPtr<FJsonValue> SerializeUObject(const UObject* Object, FSerializationCon
 		ObjectInfo->bIsReferenced = true;
 	} else {
 		//Object is not written, write it
-		SML_LOG(LogAssetDumper, Display, TEXT("Recursively serializing object %s"), *Object->GetPathName());
+		UE_LOG(LogAssetDumper, Display, TEXT("Recursively serializing object %s"), *Object->GetPathName());
 		UClass* ObjectClass = Object->GetClass();
 		const void* DefaultObject = ObjectClass->GetDefaultObject();
 		//Start name with $ which cannot appear in UE property names to avoid conflicts
@@ -935,16 +934,16 @@ TSharedPtr<FJsonValue> SerializePropertyValueInternal(const UProperty* TestPrope
 		FTextStringHelper::WriteToBuffer(ResultValue, TextValue);
 		return MakeShareable(new FJsonValueString(ResultValue));
 	} else {
-		SML_LOG(LogAssetDumper, Fatal, TEXT("Found unsupported property type when serializing value: "), *TestProperty->GetClass()->GetName());
+		UE_LOG(LogAssetDumper, Fatal, TEXT("Found unsupported property type when serializing value: "), *TestProperty->GetClass()->GetName());
 		return TSharedPtr<FJsonValue>();
 	}
 }
 
 void ExecuteDumpAllGameAssets() {
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping all game assets..."));
-	SML_LOG(LogAssetDumper, Display, TEXT("Warning! It may take noticable amount of time!"));
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping all game assets..."));
+	UE_LOG(LogAssetDumper, Display, TEXT("Warning! It may take noticable amount of time!"));
 	DumpSatisfactoryAssets();
-	SML_LOG(LogAssetDumper, Display, TEXT("Dumping game assets finished!"));
+	UE_LOG(LogAssetDumper, Display, TEXT("Dumping game assets finished!"));
 }
 
 void FGameAssetDumper::RegisterConsoleCommands() {

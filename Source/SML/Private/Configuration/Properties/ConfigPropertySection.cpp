@@ -10,10 +10,10 @@ void UConfigPropertySection::ApplyDefaultPropertyValue_Implementation(UConfigVal
     //It can be still called for resetting configuration value to default though
     UConfigValueSection* SectionValue = Cast<UConfigValueSection>(Value);
     if (SectionValue != NULL) {
-        for (const FSectionProperty& Property : SectionProperties) {
-            UConfigValue* ChildValue = SectionValue->GetValueForProperty(Property.Name);
+        for (const USectionProperty* Property : SectionProperties) {
+            UConfigValue* ChildValue = SectionValue->GetValueForProperty(Property->Name);
             if (ChildValue != NULL) {
-                Property.Property->ApplyDefaultPropertyValue(ChildValue);
+                Property->Property->ApplyDefaultPropertyValue(ChildValue);
             }
         }
     }
@@ -26,10 +26,10 @@ TSubclassOf<UConfigValue> UConfigPropertySection::GetValueClass_Implementation()
 FConfigVariableDescriptor UConfigPropertySection::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {
     UConfigGeneratedStruct* GeneratedStruct = Context->CreateNewConfigStruct(OuterPath);
-    for (const FSectionProperty& Property : SectionProperties) {
-        const FString InnerPath = FString::Printf(TEXT("%s_%s"), *OuterPath, *Property.Name);
-        const FConfigVariableDescriptor Descriptor = Property.Property->CreatePropertyDescriptor(Context, InnerPath);
-        GeneratedStruct->AddConfigVariable(Descriptor, Property.Name);
+    for (const USectionProperty* Property : SectionProperties) {
+        const FString InnerPath = FString::Printf(TEXT("%s_%s"), *OuterPath, *Property->Name);
+        const FConfigVariableDescriptor Descriptor = Property->Property->CreatePropertyDescriptor(Context, InnerPath);
+        GeneratedStruct->AddConfigVariable(Descriptor, Property->Name);
     }
     return UConfigVariableLibrary::MakeConfigVariableGeneratedStruct(GeneratedStruct);
 }

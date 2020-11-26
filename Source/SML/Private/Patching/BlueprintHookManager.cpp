@@ -5,7 +5,6 @@
 #include "JsonWriter.h"
 #include "Paths.h"
 #include "Toolkit/KismetBytecodeDisassemblerJson.h"
-#include "util/Logging.h"
 
 //Whenever to debug blueprint hooking. When enabled, JSON files with script bytecode before and after installing hook will be generated
 #define DEBUG_BLUEPRINT_HOOKING 0
@@ -40,7 +39,7 @@ void DebugDumpFunctionScriptCode(UFunction* Function, int32 HookOffset, const FS
 	FJsonSerializer::Serialize(Statements, Writer);
 
 	FFileHelper::SaveStringToFile(OutJsonString, *FileLocation);
-	SML_LOG(LogBlueprintHookManager, Display, TEXT("Dumped hooked function bytecode to %s (%s)"), *FileLocation, *Postfix);
+	UE_LOG(LogBlueprintHookManager, Display, TEXT("Dumped hooked function bytecode to %s (%s)"), *FileLocation, *Postfix);
 }
 #endif
 
@@ -153,9 +152,9 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 	
 #if UE_BLUEPRINT_EVENTGRAPH_FASTCALLS
 	if (Function->EventGraphFunction != nullptr) {
-		SML_LOG(LogBlueprintHookManager, Warning, TEXT("Attempt to hook event graph call stub function with fast-call enabled, disabling fast call for that function"));
-		SML_LOG(LogBlueprintHookManager, Warning, TEXT("It may result in performance regression for called function, if you need highest performance possible, consider hooking event graph function"));
-		SML_LOG(LogBlueprintHookManager, Warning, TEXT("Event graph function: "), *Function->EventGraphFunction->GetPathName(), TEXT(", From Offset: "), Function->EventGraphCallOffset);
+		UE_LOG(LogBlueprintHookManager, Warning, TEXT("Attempt to hook event graph call stub function with fast-call enabled, disabling fast call for that function"));
+		UE_LOG(LogBlueprintHookManager, Warning, TEXT("It may result in performance regression for called function, if you need highest performance possible, consider hooking event graph function"));
+		UE_LOG(LogBlueprintHookManager, Warning, TEXT("Event graph function: "), *Function->EventGraphFunction->GetPathName(), TEXT(", From Offset: "), Function->EventGraphCallOffset);
 		Function->EventGraphFunction = nullptr;
 	}
 #endif

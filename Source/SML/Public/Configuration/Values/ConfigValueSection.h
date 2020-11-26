@@ -9,7 +9,7 @@ class SML_API UConfigValueSection : public UConfigValue {
 public:
     /** Returns section properties list this state has */
     UFUNCTION(BlueprintPure)
-    TArray<FSectionProperty> GetProperties() const;
+    TArray<USectionProperty*> GetProperties() const;
 
     /** Returns configuration state for given property name */
     UFUNCTION(BlueprintPure)

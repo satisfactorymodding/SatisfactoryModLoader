@@ -1,6 +1,5 @@
 ﻿#include "Patching/Patch/OfflinePlayerHandler.h"
 #include "FGLocalPlayer.h"
-#include "Logging.h"
 #include "NativeHookManager.h"
 #include "OnlineEngineInterface.h"
 #include "SatisfactoryModLoader.h"
@@ -31,7 +30,7 @@ FString FOfflinePlayerHandler::GetOfflineUsernameOverride() {
     static bool bReadFromCommandLine = false;
     if (!bReadFromCommandLine) {
         FParse::Value(FCommandLine::Get(), TEXT("-Username="), UsernameOverride);
-        SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Offline username override: %s"), *UsernameOverride);
+        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Offline username override: %s"), *UsernameOverride);
         bReadFromCommandLine = true;
     }
     return UsernameOverride;

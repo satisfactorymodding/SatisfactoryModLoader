@@ -2,7 +2,6 @@
 #include "bootstrapper_exports.h"
 #include "CoreMinimal.h"
 #include "funchook.h"
-#include "Logging.h"
 
 DEFINE_LOG_CATEGORY(LogNativeHookManager);
 
@@ -36,7 +35,7 @@ void FNativeHookManagerInternal::SetHandlerListInstanceInternal(const FString& S
 }
 
 #define CHECK_FUNCHOOK_ERR(arg) \
-	if (arg != FUNCHOOK_ERROR_SUCCESS) SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: funchook failed: %hs"), *SymbolId, funchook_error_message(funchook));
+	if (arg != FUNCHOOK_ERROR_SUCCESS) UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: funchook failed: %hs"), *SymbolId, funchook_error_message(funchook));
 
 bool HookStandardFunction(const FString& SymbolId, void* OriginalFunctionPointer, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	if (InstalledHookMap.Contains(SymbolId)) {
@@ -46,7 +45,7 @@ bool HookStandardFunction(const FString& SymbolId, void* OriginalFunctionPointer
 	}
 	funchook* funchook = funchook_create();
 	if (funchook == nullptr) {
-		SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: funchook_create() returned NULL"), *SymbolId);
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: funchook_create() returned NULL"), *SymbolId);
 		return false;
 	}
 	*OutTrampolineFunction = OriginalFunctionPointer;
@@ -63,7 +62,7 @@ FString HookVirtualFunction(void* ConstructorAddress, void* HookFunctionAddress,
 		const FString ConstructorSymbolId = FString::Printf(TEXT("ConstructorThunk_%llu"), (uint64_t) ConstructorAddress);
 		HookStandardFunction(ConstructorSymbolId, ConstructorAddress, NewThunk.GeneratedThunkAddress, NewThunk.OutTrampolineAddress);
 		InstalledConstructorThunks.Add(ConstructorAddress, ConstructorHookInfoHolder{NewThunk});
-		SML_LOG(LogNativeHookManager, Display, TEXT("Installed constructor thunk on constructor at %llu"), (uint64_t) ConstructorAddress);
+		UE_LOG(LogNativeHookManager, Display, TEXT("Installed constructor thunk on constructor at %llu"), (uint64_t) ConstructorAddress);
 	}
 	
 	ConstructorHookInfoHolder& InfoHolder = InstalledConstructorThunks.FindChecked(ConstructorAddress);
@@ -72,7 +71,7 @@ FString HookVirtualFunction(void* ConstructorAddress, void* HookFunctionAddress,
 	DigestInfo.UniqueName.Free();
 
 	if (!DigestInfo.bIsVirtualFunctionPointer) {
-		SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Provided member function pointer does not point to valid virtual function call thunk"), *SymbolId);
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Provided member function pointer does not point to valid virtual function call thunk"), *SymbolId);
 	}
 	if (!InfoHolder.AlreadyHookedFunctions.Contains(SymbolId)) {
 		//Function is not hooked yet, add constructor hook to thunk
@@ -81,7 +80,7 @@ FString HookVirtualFunction(void* ConstructorAddress, void* HookFunctionAddress,
 		VirtualFunctionHookInfo.FunctionToCallInstead = HookFunctionAddress;
 		VirtualFunctionHookInfo.OutOriginalFunctionPtr = OutTrampolineFunction;
 		Accessors.AddConstructorHook(InfoHolder.ConstructorHookThunk, VirtualFunctionHookInfo);
-		SML_LOG(LogNativeHookManager, Display, TEXT("Hooking virtual function for constructor at %llu with name %s, Member Function Pointer Size: %d"), ConstructorAddress, *SymbolId, SearchInfo.MemberFunctionPointerSize);
+		UE_LOG(LogNativeHookManager, Display, TEXT("Hooking virtual function for constructor at %llu with name %s, Member Function Pointer Size: %d"), ConstructorAddress, *SymbolId, SearchInfo.MemberFunctionPointerSize);
 		InfoHolder.AlreadyHookedFunctions.Add(SymbolId);
 	}
 	return SymbolId;
@@ -98,40 +97,40 @@ SML_API FString FNativeHookManagerInternal::RegisterVirtualHookFunction(const Vi
 	//ExampleNamespace::AFGPlayerController::AFGPlayerController
 	const FString ConstructorName = FString::Printf(TEXT("%s::%s"), *ClassName, *ConstructorFunctionName);
 	//Resolve constructor symbol
-	SML_LOG(LogNativeHookManager, Display, TEXT("Hooking virtual function %s of class %s"), *SearchInfo.SymbolSearchName, *SearchInfo.ClassTypeName);
+	UE_LOG(LogNativeHookManager, Display, TEXT("Hooking virtual function %s of class %s"), *SearchInfo.SymbolSearchName, *SearchInfo.ClassTypeName);
 	const SymbolDigestInfo DigestInfo = BootstrapAccessorsPtr->DigestGameSymbol(*ConstructorName);
 	if (DigestInfo.bSymbolNotFound || DigestInfo.bSymbolOptimizedAway) {
-		SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking virtual function symbol %s failed: class constructor %s not found in executable"), *SymbolSearchName, *ConstructorName);
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking virtual function symbol %s failed: class constructor %s not found in executable"), *SymbolSearchName, *ConstructorName);
 	}
 	if (DigestInfo.bMultipleSymbolsMatch) {
-		SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Multiple constructors found. This is not supported for now"), *SymbolSearchName);
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Multiple constructors found. This is not supported for now"), *SymbolSearchName);
 	}
 	const MemberFunctionPointerInfo PointerInfo{SearchInfo.MemberFunctionPtr, SearchInfo.MemberFunctionPtrSize};
 	const FString SymbolId = HookVirtualFunction(DigestInfo.SymbolImplementationPointer, HookFunctionPointer, OutTrampolineFunction, PointerInfo, *BootstrapAccessorsPtr);
-	SML_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked virtual function %s with constructor %s"), *SymbolSearchName, *ConstructorName);
+	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked virtual function %s with constructor %s"), *SymbolSearchName, *ConstructorName);
 	DigestInfo.SymbolName.Free();
 	return SymbolId;
 }
 
 SML_API FString FNativeHookManagerInternal::RegisterHookFunction(const FString& SymbolSearchName, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	const SymbolDigestInfo DigestInfo = BootstrapAccessorsPtr->DigestGameSymbol(*SymbolSearchName);
-	SML_LOG(LogNativeHookManager, Display, TEXT("Hooking symbol with search name %s"), *SymbolSearchName);
+	UE_LOG(LogNativeHookManager, Display, TEXT("Hooking symbol with search name %s"), *SymbolSearchName);
 	if (DigestInfo.bSymbolNotFound) {
-		SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: symbol not found in game executable"), *SymbolSearchName);
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: symbol not found in game executable"), *SymbolSearchName);
 	}
 	if (DigestInfo.bSymbolOptimizedAway) {
-		SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Symbol is not present in game executable as it was optimized away (inlined/stripped)"), *SymbolSearchName);
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Symbol is not present in game executable as it was optimized away (inlined/stripped)"), *SymbolSearchName);
 	}
 	if (DigestInfo.bMultipleSymbolsMatch) {
-		SML_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Multiple symbols matching that name found. Please use exact decorated name with MANUAL macros instead"), *SymbolSearchName);
+		UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking symbol %s failed: Multiple symbols matching that name found. Please use exact decorated name with MANUAL macros instead"), *SymbolSearchName);
 	}
 	FString SymbolId = DigestInfo.SymbolName.String;
 	if (DigestInfo.bSymbolVirtual) {
 		//Warn about hooking virtual function implementation without using SUBSCRIBE_VIRTUAL_METHOD
-		SML_LOG(LogNativeHookManager, Warning, TEXT("Warning: Hooking virtual function implementation with SUBSCRIBE_METHOD macro. You are hooking it for all classes who don't specifically have overrides, so be very careful with it. Use SUBSCRIBE_VIRTUAL_METHOD for more wise control and ability to override virtual function for exact class directly. Function: %s"), *SymbolSearchName);
+		UE_LOG(LogNativeHookManager, Warning, TEXT("Warning: Hooking virtual function implementation with SUBSCRIBE_METHOD macro. You are hooking it for all classes who don't specifically have overrides, so be very careful with it. Use SUBSCRIBE_VIRTUAL_METHOD for more wise control and ability to override virtual function for exact class directly. Function: %s"), *SymbolSearchName);
 	}
 	HookStandardFunction(SymbolId, DigestInfo.SymbolImplementationPointer, HookFunctionPointer, OutTrampolineFunction);
-	SML_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked normal function %s"), *SymbolId);
+	UE_LOG(LogNativeHookManager, Display, TEXT("Successfully hooked normal function %s"), *SymbolId);
 	DigestInfo.SymbolName.Free();
 	return SymbolId;
 }

@@ -5,7 +5,6 @@
 #include "FGPlayerController.h"
 #include "ItemTooltipHandler.h"
 #include "LegacyConfigurationHelper.h"
-#include "Logging.h"
 #include "ModContentRegistry.h"
 #include "ModHandler.h"
 #include "NativeHookManager.h"
@@ -20,6 +19,7 @@
 #include "Patch/MainMenuPatch.h"
 #include "Patch/OfflinePlayerHandler.h"
 #include "Patch/OptionsKeybindPatch.h"
+#include "Player/PlayerCheatManagerHandler.h"
 
 extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.3.0");
 extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
@@ -69,17 +69,17 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
             
             if (FJsonSerializer::Deserialize(JsonReader, OutJsonObject)) {
                 FSMLConfiguration::ReadFromJson(OutJsonObject, SMLConfigurationPrivate, &bShouldWriteConfiguration);
-                SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully loaded SML configuration from disk"));
+                UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully loaded SML configuration from disk"));
                 
             } else {
-                SML_LOG(LogSatisfactoryModLoader, Warning, TEXT("Failed to load SML configuration, JSON is malformed"));
+                UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Failed to load SML configuration, JSON is malformed"));
                 bShouldWriteConfiguration = true;
             }
         } else {
-            SML_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to load SML configuration from %s"), *ConfigLocation);   
+            UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to load SML configuration from %s"), *ConfigLocation);   
         }
     } else {
-        SML_LOG(LogSatisfactoryModLoader, Display, TEXT("SML configuration file is missing, saving new one"));
+        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("SML configuration file is missing, saving new one"));
         bShouldWriteConfiguration = true;
     }
 
@@ -96,9 +96,9 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
 
         //Write file onto the disk now
         if (FFileHelper::SaveStringToFile(OutSerializedConfiguration, *ConfigLocation)) {
-            SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully saved SML configuration"));
+            UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Successfully saved SML configuration"));
         } else {
-            SML_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to save SML configuration to %s"), *ConfigLocation);
+            UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to save SML configuration to %s"), *ConfigLocation);
         }
     }
 }
@@ -108,7 +108,7 @@ void FSatisfactoryModLoader::CheckGameAndBootstrapperVersion() {
     const uint32 MinChangelistSupported = (uint32) targetGameVersion;
     
     if (!(CurrentChangelist >= MinChangelistSupported)) {
-        SML_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Game version check failed: Game version is %d, but this SML version is built for %d"), CurrentChangelist, MinChangelistSupported);
+        UE_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Game version check failed: Game version is %d, but this SML version is built for %d"), CurrentChangelist, MinChangelistSupported);
     }
 
     FString OutErrorMessage;
@@ -119,10 +119,10 @@ void FSatisfactoryModLoader::CheckGameAndBootstrapperVersion() {
         FVersion BootstrapperVersion;
         BootstrapperVersion.ParseVersion(BootstrapperAccessors->version, OutErrorMessage);
         if (BootstrapperVersion.Compare(MinSupportedBootstrapperVersion) < 0) {
-            SML_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Bootstrapp version check failed: Bootstrapper version is %s, but this SML version only supports %s"), *BootstrapperVersion.ToString(), *MinSupportedBootstrapperVersion.ToString());
+            UE_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Bootstrapp version check failed: Bootstrapper version is %s, but this SML version only supports %s"), *BootstrapperVersion.ToString(), *MinSupportedBootstrapperVersion.ToString());
         }
     }
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);
 }
 
 void FSatisfactoryModLoader::InitializeSubsystems() {
@@ -136,7 +136,7 @@ void FSatisfactoryModLoader::InitializeSubsystems() {
     USMLSubsystemHolder::RegisterSubsystemHolder();
     
     //Override vanilla managers content resolution and make them follow mod content registry
-    AModContentRegistry::InjectIntoVanillaManagers();
+    AModContentRegistry::DisableVanillaContentRegistration();
     
     //Initialize remote call object registry
     URemoteCallObjectRegistry::InitializeRegistry();
@@ -156,6 +156,9 @@ void FSatisfactoryModLoader::InitializeSubsystems() {
     //Register offline player handler, providing ability to fallback to offline username and net id
     FOfflinePlayerHandler::RegisterHandler();
 
+    //Register cheat manager handling, allowing access to cheat commands if desired
+    FPlayerCheatManagerHandler::RegisterHandler();
+
     //Register asset dumping related console commands
     FGameAssetDumper::RegisterConsoleCommands();
 
@@ -167,16 +170,14 @@ void FSatisfactoryModLoader::InitializeSubsystems() {
 }
 
 void FSatisfactoryModLoader::PreInitializeModLoading() {
-    //Initialize logging first
-    FSMLLoggingInternal::InitializeLogging();
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Satisfactory Mod Loader v.%s pre-initializing..."), modLoaderVersionString);
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Satisfactory Mod Loader v.%s pre-initializing..."), modLoaderVersionString);
 
     //Don't try to save configuration in the editor, because it will make new folders with no real reason
     const bool bAllowSavingConfiguration = !WITH_EDITOR;
     LoadSMLConfiguration(bAllowSavingConfiguration);
 
     if (BootstrapperAccessors.IsValid()) {
-        SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Using bootstrapper v.%s for mod loading"), BootstrapperAccessors->version);
+        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Using bootstrapper v.%s for mod loading"), BootstrapperAccessors->version);
     }
 
     //Check versions before actually trying to load mods
@@ -195,14 +196,14 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     }
     
     //Perform mod discovery and check for stage errors
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod discovery"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod discovery"));
     ModHandlerPrivate->DiscoverMods();
 
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod sorting"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod sorting"));
     ModHandlerPrivate->PerformModListSorting();
 
     //Perform mods pre initialization (load native module DLLs into process)
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initializing mods"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initializing mods"));
     ModHandlerPrivate->PreInitializeMods();
 
     //Register crash context patch very early, but after mod loading
@@ -218,21 +219,21 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
         GLogConsole->Show(true);
     }
 
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initialization finished!"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initialization finished!"));
 }
 
 void FSatisfactoryModLoader::InitializeModLoading() {
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod loader initialization"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod loader initialization"));
 
     //Setup SML subsystems and custom content registries
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Setting up SML subsystems"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Setting up SML subsystems"));
     InitializeSubsystems();
 
     //Subscribe to world lifecycle event for mod initializers
     ModHandlerPrivate->SubscribeToLifecycleEvents();
 
     //Perform actual mod loading
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Initializing mods"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initializing mods"));
     ModHandlerPrivate->InitializeMods();
 
     //Initialize game instance subsystems and give mods opportunity to register global content
@@ -241,7 +242,7 @@ void FSatisfactoryModLoader::InitializeModLoading() {
     //Reload configuration manager to handle mod configs
     UConfigManager::ReloadModConfigurations(true);
 
-    SML_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
 }
 
 //Helper to access private methods from mod loader class without exposing them to everyone

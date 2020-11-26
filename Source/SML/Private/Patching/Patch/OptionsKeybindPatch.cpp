@@ -61,7 +61,7 @@ void FOptionsKeybindPatch::PopulateKeyBindButtonList(UUserWidget* ContextWidget,
         APlayerController* OwningController = ContextWidget->GetOwningPlayer();
         //Add display name on top of key bindings
         UTextBlock* TitleTextBlock = NewObject<UTextBlock>(OwningController);
-        TitleTextBlock->Font.Size = 18;
+        TitleTextBlock->Font.Size = 16;
         const FString ModDisplayName = DisplayNames.FindChecked(ModReference);
         TitleTextBlock->SetText(FText::FromString(ModDisplayName));
         ButtonBox->AddChildToVerticalBox(TitleTextBlock);

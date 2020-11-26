@@ -4,7 +4,7 @@
 #include "Widget.h"
 #include "SMLItemTooltipProvider.generated.h"
 
-UINTERFACE( Blueprintable )
+UINTERFACE(Blueprintable)
 class SML_API USMLItemTooltipProvider : public UInterface {
     GENERATED_BODY()
 };
@@ -19,9 +19,9 @@ class SML_API USMLItemTooltipProvider : public UInterface {
 class SML_API ISMLItemTooltipProvider {
     GENERATED_BODY()
 public:
-    UFUNCTION( BlueprintNativeEvent )
+    UFUNCTION(BlueprintNativeEvent)
     FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
-    UFUNCTION( BlueprintNativeEvent )
+    UFUNCTION(BlueprintNativeEvent)
     UWidget* CreateDescriptionWidget(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 };

@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "ModConfiguration.h"
 #include "Object.h"
 #include "GameFramework/PlayerInput.h"
 #include "InitGameInstance.generated.h"
@@ -6,12 +7,30 @@
 class UModSubsystemHolder;
 class UFGGameInstance;
 
+/** Holds information about a single configuration registered by the mod */
+USTRUCT(BlueprintType)
+struct SML_API FModConfigurationEntry {
+    GENERATED_BODY()
+
+    /** Type of the configuration you are registering */
+    UPROPERTY(EditAnywhere, Category = Default)
+    TSubclassOf<UModConfiguration> Configuration;
+
+    /** Category of this configuration. If your mod has one configuration only, leave it empty */
+    UPROPERTY(EditAnywhere, Category = Advanced)
+    FString ConfigurationCategory;
+};
+
 /** Holds information about individual key binding registration */
 USTRUCT(BlueprintType)
 struct SML_API FModKeyBindingInfo {
     GENERATED_BODY()
+
+    /** Name of the action this key bindings corresponds to. Should be prefixed with ModReference. */
+    UPROPERTY(EditAnywhere)
+    FName ActionName;
     
-    /** Information about key binding being registered. ActionName should be prefixed with ModReference. */
+    /** Information about key binding being registered */
     UPROPERTY(EditAnywhere)
     FInputActionKeyMapping KeyMapping;
     
@@ -24,6 +43,10 @@ struct SML_API FModKeyBindingInfo {
 USTRUCT(BlueprintType)
 struct SML_API FModAxisBindingInfo {
     GENERATED_BODY()
+
+    /** Name of the axis this key bindings corresponds to. Should be prefixed with ModReference. */
+    UPROPERTY(EditAnywhere)
+    FName AxisName;
     
     /** Information about Positive (Scale > 0) axis mapping. AxisName should be the same and prefixed with ModReference. */
     UPROPERTY(EditAnywhere)
@@ -75,26 +98,20 @@ private:
     /** Dispatches initialization to class functions. */
     void DispatchInitialize();
 public:
+    /** Configurations defined and used by this mod */
+    UPROPERTY(EditDefaultsOnly, Category = Default)
+    TArray<FModConfigurationEntry> ModConfigurations;
+    
     /** Key Bindings for this mod to be registered */
-    UPROPERTY(EditDefaultsOnly, Category = "Key Bindings")
+    UPROPERTY(EditDefaultsOnly, Category = Default)
     TArray<FModKeyBindingInfo> ModKeyBindings;
-
-    /**
-     * Axis Bindings for this mod to be registered
-     * They are very similar to key bindings in behavior, but there are some differences:
-     *  - Axis Bindings provide /degrees of input/ and not discrete 0/1 values
-     *  - Axis Bindings are continuously polled and not triggered on action (so they are good for movement)
-     *  So use them for movement basically
-     */
-    UPROPERTY(EditDefaultsOnly, Category = "Key Bindings")
-    TArray<FModAxisBindingInfo> ModAxisBindings;
     
     /**
     * List of subsystem holders to register
     * Subsystem holders are created for each game world initialized
     * and hold references to custom mod subsystems
     */
-    UPROPERTY(EditDefaultsOnly, Category = Advanced)
+    UPROPERTY(EditDefaultsOnly, Category = Default)
     TArray<TSubclassOf<UModSubsystemHolder>> ModSubsystems;
 
     /**
@@ -104,4 +121,14 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = Advanced)
     TArray<UClass*> GlobalItemTooltipProviders;
+
+    /**
+    * Axis Bindings for this mod to be registered
+    * They are very similar to key bindings in behavior, but there are some differences:
+    *  - Axis Bindings provide /degrees of input/ and not discrete 0/1 values
+    *  - Axis Bindings are continuously polled and not triggered on action (so they are good for movement)
+    *  So use them for movement basically
+    */
+    UPROPERTY(EditDefaultsOnly, Category = Advanced)
+    TArray<FModAxisBindingInfo> ModAxisBindings;
 };

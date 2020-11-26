@@ -10,7 +10,6 @@
 #include "SMLInitMod.h"
 #include "UObjectGlobals.h"
 #include "ZipFile.h"
-#include "util/Logging.h"
 
 FFileHash HashArchiveFileAttributes(FZipFile& ZipHandle, const FString& FilePath) {
 	const FZipFileStat FileStat = ZipHandle.StatFile(FilePath);
@@ -155,7 +154,7 @@ FModLoadingEntry FModHandlerHelper::CreateSMLLoadingEntry() {
 	const FString SMLPakFilePath = FPaths::RootDir() + TEXT("loaders/SML.pak");
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 	if (!PlatformFile.FileExists(*SMLPakFilePath)) {
-		SML_LOG(LogModLoading, Fatal, TEXT("SML.pak not found at %s. This installation is corrupted, please re-install."), *SMLPakFilePath);
+		UE_LOG(LogModLoading, Fatal, TEXT("SML.pak not found at %s. This installation is corrupted, please re-install."), *SMLPakFilePath);
 	}
 	
 	FModLoadingEntry ModLoadingEntry{};
@@ -282,13 +281,13 @@ bool FModHandlerHelper::ExtractArchiveObjects(const TSharedPtr<class FZipFile>& 
 	const FString& ModReference = LoadingEntry.ModInfo.ModReference;
 	
 	if (JsonObjects.Num() == 0) {
-		SML_LOG(LogModLoading, Warning, TEXT("Empty objects array in data.json for mod %s. It may be intentional, but in most cases indicates a broken mod"), *ModReference);
+		UE_LOG(LogModLoading, Warning, TEXT("Empty objects array in data.json for mod %s. It may be intentional, but in most cases indicates a broken mod"), *ModReference);
 	}
 	for (const TSharedPtr<FJsonValue>& Value : JsonObjects) {
 		const TSharedPtr<FJsonObject>& JSONObject = Value.Get()->AsObject();
 		if (!JSONObject.IsValid() || !JSONObject->HasTypedField<EJson::String>(TEXT("path"))) {
 			OutErrorMessage = TEXT("Invalid object entry in mod object definitions");
-			SML_LOG(LogModLoading, Error, TEXT("Invalid object entry found in mod %s object definitions"), *ModReference);
+			UE_LOG(LogModLoading, Error, TEXT("Invalid object entry found in mod %s object definitions"), *ModReference);
 			return false;
 		}
 		const FString OBJType = JSONObject->GetStringField(TEXT("type"));
@@ -301,7 +300,7 @@ bool FModHandlerHelper::ExtractArchiveObjects(const TSharedPtr<class FZipFile>& 
 		FString OutObjectExtractErrorMessage;
 		if (!ExtractArchiveObject(*ZipFile, ObjectInfo, LoadingEntry, OutObjectExtractErrorMessage)) {
 			OutErrorMessage = FString::Printf(TEXT("Failed to extract object %s: %s"), *Path, *OutObjectExtractErrorMessage);
-			SML_LOG(LogModLoading, Error, TEXT("Failed to extract object %s for mod %s: %s"), *Path, *ModReference, *OutObjectExtractErrorMessage);
+			UE_LOG(LogModLoading, Error, TEXT("Failed to extract object %s for mod %s: %s"), *Path, *ModReference, *OutObjectExtractErrorMessage);
 			return false;
 		}
 	}
@@ -312,7 +311,7 @@ bool FModHandlerHelper::ExtractArchiveObjects(const TSharedPtr<class FZipFile>& 
 		const FArchiveObjectInfo IconObjectInfo{ModResources.ModIconPath, TEXT("custom"), MakeShareable(new FJsonObject())};
 		FString ModIconExtractionErrorMessage;
 		if (!ExtractArchiveObject(*ZipFile, IconObjectInfo, LoadingEntry, ModIconExtractionErrorMessage)) {
-			SML_LOG(LogModLoading, Warning, TEXT("Failed to extract mod icon at %s for mod %s: %s"), *ModResources.ModIconPath, *ModReference, *ModIconExtractionErrorMessage);
+			UE_LOG(LogModLoading, Warning, TEXT("Failed to extract mod icon at %s for mod %s: %s"), *ModResources.ModIconPath, *ModReference, *ModIconExtractionErrorMessage);
 		}
 	}
 	return true;
@@ -346,7 +345,7 @@ bool FModHandlerHelper::ExtractArchiveObject(FZipFile& ZipHandle, const FArchive
 			FString OutPDBExtractionErrorMessage;
 			const bool bExtractedPDB = ExtractArchiveFile(ZipHandle, PdbFileLocation, ArchivePdbFilePath, ModReference, OutPDBExtractionErrorMessage);
 			if (!bExtractedPDB) {
-				SML_LOG(LogModLoading, Warning, TEXT("Couldn't extract PDB file from %s to %s, for mod %s: %s"), *ArchivePdbFilePath, *PdbFileLocation, *LoadingEntry.ModInfo.ModReference, *OutPDBExtractionErrorMessage);
+				UE_LOG(LogModLoading, Warning, TEXT("Couldn't extract PDB file from %s to %s, for mod %s: %s"), *ArchivePdbFilePath, *PdbFileLocation, *LoadingEntry.ModInfo.ModReference, *OutPDBExtractionErrorMessage);
 			}
 		}
 	}
@@ -398,7 +397,7 @@ bool FModHandlerHelper::ExtractArchiveFile(FZipFile& ZipHandle, const FString& O
 		//Hashes match, no extraction needed
 		return true;
 	}
-	SML_LOG(LogModLoading, Display, TEXT("Extracting archive file: %s -> %s [%s]"), *ArchiveFilePath, *OutFilePath, *ModReference);
+	UE_LOG(LogModLoading, Display, TEXT("Extracting archive file: %s -> %s [%s]"), *ArchiveFilePath, *OutFilePath, *ModReference);
 	//Ensure parent directories exist
 	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
 	const FString ParentFile = FPaths::GetPath(OutFilePath);
@@ -419,10 +418,10 @@ bool FModHandlerHelper::ExtractArchiveFile(FZipFile& ZipHandle, const FString& O
 
 	DiskFileHash = HashFileAttributes(*OutFilePath);
 	if (DiskFileHash != ArchiveFileHash) {
-		SML_LOG(LogModLoading, Error, TEXT("File hashes don't match after extraction for file %s"), *OutFilePath);
-		SML_LOG(LogModLoading, Error, TEXT("That probably means zip is corrupted because actual length doesn't match expected one"));
-		SML_LOG(LogModLoading, Error, TEXT("Actual Size: %llu, Actual Timestamp: %llu"), DiskFileHash.FileSize, DiskFileHash.ModificationTime);
-		SML_LOG(LogModLoading, Error, TEXT("Expected Size: %llu, Expected Timestamp: %llu"), ArchiveFileHash.FileSize, ArchiveFileHash.ModificationTime);
+		UE_LOG(LogModLoading, Error, TEXT("File hashes don't match after extraction for file %s"), *OutFilePath);
+		UE_LOG(LogModLoading, Error, TEXT("That probably means zip is corrupted because actual length doesn't match expected one"));
+		UE_LOG(LogModLoading, Error, TEXT("Actual Size: %llu, Actual Timestamp: %llu"), DiskFileHash.FileSize, DiskFileHash.ModificationTime);
+		UE_LOG(LogModLoading, Error, TEXT("Expected Size: %llu, Expected Timestamp: %llu"), ArchiveFileHash.FileSize, ArchiveFileHash.ModificationTime);
 	}
 	
 	if (!Result) {

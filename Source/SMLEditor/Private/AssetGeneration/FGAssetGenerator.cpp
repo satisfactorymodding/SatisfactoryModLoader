@@ -26,7 +26,6 @@ void FGameAssetGenerator::GenerateSatisfactoryAssets(const FString& DataJsonFile
 #include "K2Node_CallFunction.h"
 #include "K2Node_Event.h"
 #include "K2Node_CustomEvent.h"
-#include "util/Logging.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "EdGraphSchema_K2_Actions.h"
 #include "UMGEditor/Public/WidgetBlueprint.h"

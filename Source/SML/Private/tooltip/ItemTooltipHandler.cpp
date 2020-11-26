@@ -6,7 +6,6 @@
 #include "Tooltip/ItemStackContextWidget.h"
 #include "Tooltip/SMLItemDisplayInterface.h"
 #include "Tooltip/SMLItemTooltipProvider.h"
-#include "util/Logging.h"
 
 //Overwrites delegates bound to title & description widgets to use FTooltipHookHelper, add custom item widget
 void ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {

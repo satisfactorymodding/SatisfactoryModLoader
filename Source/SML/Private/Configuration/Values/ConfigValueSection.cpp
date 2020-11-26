@@ -1,12 +1,12 @@
 ﻿#include "Configuration/Values/ConfigValueSection.h"
 #include "RawFormatValueObject.h"
 
-TArray<FSectionProperty> UConfigValueSection::GetProperties() const {
+TArray<USectionProperty*> UConfigValueSection::GetProperties() const {
     const UConfigPropertySection* SectionProperty = Cast<UConfigPropertySection>(GetAssociatedProperty());
     if (SectionProperty != NULL) {
         return SectionProperty->SectionProperties;
     }
-    return TArray<FSectionProperty>();
+    return TArray<USectionProperty*>();
 }
 
 UConfigValue* UConfigValueSection::GetValueForProperty(const FString& PropertyName) const {
@@ -15,10 +15,10 @@ UConfigValue* UConfigValueSection::GetValueForProperty(const FString& PropertyNa
 }
 
 void UConfigValueSection::FillConfigStructSelf(const FReflectedObject& ReflectedObject) const {
-    for (const FSectionProperty& Property : GetProperties()) {
-        UConfigValue* ChildValue = GetValueForProperty(Property.Name);
+    for (const USectionProperty* Property : GetProperties()) {
+        UConfigValue* ChildValue = GetValueForProperty(Property->Name);
         if (ChildValue != NULL) {
-            ChildValue->FillConfigStruct(ReflectedObject, Property.Name);
+            ChildValue->FillConfigStruct(ReflectedObject, Property->Name);
         }
     }
 }
@@ -28,28 +28,28 @@ void UConfigValueSection::InitializedFromProperty_Implementation() {
     //First we need to populate our map with child value section objects
     //and since we are creating default value objects, they already have defaults applied
     //Applying defaults is still possible though, for example for resetting configuration
-    for (const FSectionProperty& Property : GetProperties()) {
-        UConfigValue* ChildValue = Property.Property->CreateNewValue(this);
-        ConfigurationValues.Add(Property.Name, ChildValue);
+    for (const USectionProperty* Property : GetProperties()) {
+        UConfigValue* ChildValue = Property->Property->CreateNewValue(this);
+        ConfigurationValues.Add(Property->Name, ChildValue);
     }
 }
 
 FString UConfigValueSection::DescribeValue_Implementation() const {
-    const FString ElementsString = FString::JoinBy(GetProperties(), TEXT(", "), [this](const FSectionProperty& Property) {
-        UConfigValue* PropertyValue = this->GetValueForProperty(Property.Name);
-        return FString::Printf(TEXT("%s = %s"), *Property.Name, *PropertyValue->DescribeValue());
+    const FString ElementsString = FString::JoinBy(GetProperties(), TEXT(", "), [this](const USectionProperty* Property) {
+        UConfigValue* PropertyValue = this->GetValueForProperty(Property->Name);
+        return FString::Printf(TEXT("%s = %s"), *Property->Name, *PropertyValue->DescribeValue());
     });
     return FString::Printf(TEXT("[section %s]"), *ElementsString);
 }
 
 URawFormatValue* UConfigValueSection::Serialize_Implementation(UObject* Outer) const {
     URawFormatValueObject* ObjectValue = NewObject<URawFormatValueObject>(Outer);
-    for (const FSectionProperty& Property : GetProperties()) {
-        UConfigValue* ChildValue = GetValueForProperty(Property.Name);
+    for (const USectionProperty* Property : GetProperties()) {
+        UConfigValue* ChildValue = GetValueForProperty(Property->Name);
         if (ChildValue != NULL) {
             URawFormatValue* RawChildValue = ChildValue->Serialize(ObjectValue);
             if (RawChildValue != NULL) {
-                ObjectValue->AddValue(Property.Name, RawChildValue);
+                ObjectValue->AddValue(Property->Name, RawChildValue);
             }
         }
     }
@@ -59,9 +59,9 @@ URawFormatValue* UConfigValueSection::Serialize_Implementation(UObject* Outer) c
 void UConfigValueSection::Deserialize_Implementation(const URawFormatValue* Value) {
     const URawFormatValueObject* ObjectValue = Cast<URawFormatValueObject>(Value);
     if (ObjectValue != NULL) {
-        for (const FSectionProperty& Property : GetProperties()) {
-            UConfigValue* ChildValue = GetValueForProperty(Property.Name);
-            const URawFormatValue* RawChildValue = ObjectValue->GetValue(Property.Name);
+        for (const USectionProperty* Property : GetProperties()) {
+            UConfigValue* ChildValue = GetValueForProperty(Property->Name);
+            const URawFormatValue* RawChildValue = ObjectValue->GetValue(Property->Name);
             if (ChildValue != NULL && RawChildValue != NULL) {
                 ChildValue->Deserialize(RawChildValue);
             }
