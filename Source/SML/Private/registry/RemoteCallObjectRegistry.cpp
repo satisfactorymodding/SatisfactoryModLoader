@@ -1,17 +1,20 @@
 ﻿#include "Registry/RemoteCallObjectRegistry.h"
-
-
 #include "FGGameMode.h"
+#include "SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
 
 void URemoteCallObjectRegistry::RegisterRemoteCallObject(TSubclassOf<UFGRemoteCallObject> RemoteCallObject) {
-    URemoteCallObjectRegistry* Registry = GetMutableDefault<URemoteCallObjectRegistry>();
     check(RemoteCallObject);
-    Registry->RegisteredRCOs.AddUnique(RemoteCallObject);
+    RegisteredRCOs.AddUnique(RemoteCallObject);
+}
+
+void URemoteCallObjectRegistry::Initialize(FSubsystemCollectionBase& Collection) {
+    RegisterRemoteCallObject(USMLRemoteCallObject::StaticClass());
 }
 
 void URemoteCallObjectRegistry::RegisterRCOsOnGameMode(AGameModeBase* GameMode) {
-    const URemoteCallObjectRegistry* Registry = GetDefault<URemoteCallObjectRegistry>();
+    UGameInstance* OwnerGameInstance = GameMode->GetWorld()->GetGameInstance();
+    URemoteCallObjectRegistry* Registry = OwnerGameInstance->GetSubsystem<URemoteCallObjectRegistry>();
     AFGGameMode* FactoryGameMode = Cast<AFGGameMode>(GameMode);
     if (FactoryGameMode != NULL) {
         for (const TSubclassOf<UFGRemoteCallObject>& RCO : Registry->RegisteredRCOs) {
@@ -20,6 +23,6 @@ void URemoteCallObjectRegistry::RegisterRCOsOnGameMode(AGameModeBase* GameMode) 
     }
 }
 
-void URemoteCallObjectRegistry::InitializeRegistry() {
+void URemoteCallObjectRegistry::InitializePatches() {
     FGameModeEvents::GameModeInitializedEvent.AddStatic(URemoteCallObjectRegistry::RegisterRCOsOnGameMode);
 }

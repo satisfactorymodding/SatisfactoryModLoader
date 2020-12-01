@@ -16,9 +16,14 @@ class SML_API URootConfigValueHolder : public UObject, public IConfigValueDirtyH
     FORCEINLINE UConfigValueSection* GetWrappedValue() const { return RootWrappedValue; }
 private:
     friend class UConfigManager;
-    void SetupRootValue(const FConfigId ConfigId, UConfigValueSection* ConfigValue);
+    
+    void SetupRootValue(UConfigManager* ConfigManager, const FConfigId& ConfigId, UConfigValueSection* ConfigValue);
+
+    void UpdateWrappedValue(UConfigValueSection* NewWrappedRootValue);
     
     FConfigId ConfigId;
     UPROPERTY()
     UConfigValueSection* RootWrappedValue;
+    UPROPERTY()
+    UConfigManager* ConfigManager;
 };

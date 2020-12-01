@@ -1,21 +1,18 @@
 ﻿#include "Registry/SubsystemHolderRegistry.h"
 #include "FGGameState.h"
 #include "NativeHookManager.h"
+#include "SMLSubsystemHolder.h"
 
 DEFINE_LOG_CATEGORY(LogSubsystemHolderRegistry);
 
 USubsystemHolderRegistry::USubsystemHolderRegistry() {
-    bIsRegistryFrozen = false;
-}
-
-void USubsystemHolderRegistry::InitializeRegistry() {
-    SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
-        InitializeSubsystems(GameState);
-    });
+    bRegistryFrozen = false;
 }
 
 void USubsystemHolderRegistry::InitializeSubsystems(AFGGameState* GameState) {
-    const USubsystemHolderRegistry* Registry = GetDefault<USubsystemHolderRegistry>();
+    UGameInstance* GameInstance = GameState->GetWorld()->GetGameInstance();
+    const USubsystemHolderRegistry* Registry = GameInstance->GetSubsystem<USubsystemHolderRegistry>();
+    
     const bool bIsAuthority = GameState->Role == ENetRole::ROLE_Authority;
     UE_LOG(LogSubsystemHolderRegistry, Display, TEXT("Initializing modded subsystem holders"));
 	
@@ -41,19 +38,25 @@ void USubsystemHolderRegistry::InitializeSubsystems(AFGGameState* GameState) {
 }
 
 void USubsystemHolderRegistry::RegisterSubsystemHolder(const FString& ModReference, TSubclassOf<UModSubsystemHolder> SubsystemHolderClass) {
-    if (bIsRegistryFrozen) {
+    if (bRegistryFrozen) {
         UE_LOG(LogSubsystemHolderRegistry, Fatal, TEXT("Attempt to register object in frozen subsystem holder registry"));
     }
-    USubsystemHolderRegistry* Registry = GetMutableDefault<USubsystemHolderRegistry>();
-    Registry->RegisteredSubsystemHolders.Add(FSubsystemHolderRegistrarEntry{ModReference, SubsystemHolderClass});
+    RegisteredSubsystemHolders.Add(FSubsystemHolderRegistrarEntry{ModReference, SubsystemHolderClass});
 }
 
+void USubsystemHolderRegistry::Initialize(FSubsystemCollectionBase& Collection) {
+    RegisterSubsystemHolder(TEXT("SML"), USMLSubsystemHolder::StaticClass());
+}
 
-bool USubsystemHolderRegistry::bIsRegistryFrozen = false;
+void USubsystemHolderRegistry::InitializePatches() {
+    SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
+        InitializeSubsystems(GameState);
+    });
+}
 
 void USubsystemHolderRegistry::FreezeRegistry() {
-    checkf(!bIsRegistryFrozen, TEXT("Attempt to re-freeze already frozen registry"));
+    checkf(!bRegistryFrozen, TEXT("Attempt to re-freeze already frozen registry"));
 
     UE_LOG(LogSubsystemHolderRegistry, Display, TEXT("Freezing subsystem holder registry"));
-    bIsRegistryFrozen = true;
+    bRegistryFrozen = true;
 }

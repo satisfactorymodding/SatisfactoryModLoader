@@ -26,13 +26,13 @@ private:
 
 	//Replicated in case of command actor wanting to replicate
 	UPROPERTY(Replicated)
-    FString ModReference;
+    FName ModReference;
 public:
 	/**
     * ModId of the mod registering the command
     */
 	UFUNCTION(BlueprintPure)
-	FORCEINLINE FString GetOwnerModReference() const { return ModReference; }
+	FORCEINLINE FName GetOwnerModReference() const { return ModReference; }
 	
 	/**
 	 * Whenever this command can only be used by player sender

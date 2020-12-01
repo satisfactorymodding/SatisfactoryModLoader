@@ -12,7 +12,3 @@ void USMLSubsystemHolder::InitLocalSubsystems() {
     SpawnSubsystem(ModContentRegistry, AModContentRegistry::StaticClass(), TEXT("ModContentRegistry"));
     ModContentRegistry->Init();
 }
-
-void USMLSubsystemHolder::RegisterSubsystemHolder() {
-    USubsystemHolderRegistry::RegisterSubsystemHolder(TEXT("SML"), USMLSubsystemHolder::StaticClass());
-}

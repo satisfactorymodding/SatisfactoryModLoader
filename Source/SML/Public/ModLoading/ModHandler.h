@@ -2,11 +2,16 @@
 #include "CoreMinimal.h"
 #include "ModInfo.h"
 #include "SubclassOf.h"
+#include "Engine/GameInstance.h"
 
-class ABasicModInit;
 typedef class IModuleInterface* ( *FInitializeModuleFunctionPtr )( void );
 
 DECLARE_LOG_CATEGORY_EXTERN(LogModLoading, Log, Log);
+
+/** Whenever deprecated SMLInitMod actor support is enabled in this version of SML */
+#ifndef ENABLE_DEPRECATED_INIT_MOD_SUPPORT
+#define ENABLE_DEPRECATED_INIT_MOD_SUPPORT 1
+#endif
 
 /** true when we are are calling StartupModule() on native mod libraries as the part of mod initialization routine */
 extern SML_API bool GIsStartingUpModules;
@@ -14,10 +19,12 @@ extern SML_API bool GIsStartingUpModules;
 /** Describes mod package loading entry with mod reference associated to initializer classes */
 struct FModPakLoadEntry {
 	FString ModReference;
-	TSubclassOf<class UInitGameInstance> InitGameInstanceClass;
-	TSubclassOf<class AInitGameWorld> InitGameWorldClass;
-	TSubclassOf<class AInitMenuWorld> InitMenuWorldClass;
+	TSubclassOf<class UGameInstanceModule> InitGameInstanceClass;
+	TSubclassOf<class UWorldModule> InitGameWorldClass;
+	TSubclassOf<class UWorldModule> InitMenuWorldClass;
+#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
 	UClass* LegacyInitModClass;
+#endif
 };
 
 /** Describes information about mod package required for mod loading */
@@ -105,12 +112,6 @@ private:
 	void InitializeNativeModules();
 	/** Performs loading of the native mod libraries into the process address space. Needs to happen earlier than actual mod loading due to UE reasons */
 	void LoadNativeModLibraries();
-	
-	/** Iterates world actor list and finds initializer actor for each mod reference loaded */
-    static void FindModActors(UWorld* World, TMap<FString, ABasicModInit*>& OutActorMap);
-	/** Spawns initializer actors for every loaded mod reference, deciding actor type from bIsMenuWorld and passing loaded actor pointers to OutActorMap */
-	void SpawnModActors(UWorld* World, bool bIsMenuWorld, TMap<FString, ABasicModInit*>& OutActorMap);
-	
 private:
 	friend class FSatisfactoryModLoader;
 	friend class FSatisfactoryModLoaderInternal;
@@ -127,13 +128,28 @@ private:
 	void PerformModListSorting();
 	/** Performs mods pre-initialization, which in our context means loading mod DLLs into process address space */
 	void PreInitializeMods();
+
+	/**
+	 * Determines whenever we should initialize modules on given world.
+	 * For example, in Editor, we have many worlds, and we only want to initialize modules in PIE or Game worlds
+	 * We don't want to perform any initialization in Editor worlds (worlds being edited) or preview worlds
+	 */
+    static bool ShouldInitializeModulesOnWorld(UWorld* World);
 	
 	/** Subscribes to engine/world lifecycle events required for allocation and triggering of world-related Initializer mod actors */
-	void SubscribeToLifecycleEvents();
+	void SubscribeToWorldEvents();
 	/** Actually performs loading of the mods. It initializes mod modules, populates mod list and then mounts mod packages */
 	void InitializeMods();
 	/** Initializes GameInstance mod Initializers at the start of the game, before any world has been loaded */
-	void InitializeGameInstance();
+	void InitializeGameInstanceModules(UGameInstance* GameInstance);
+	/** Post-initializes game instance modules */
+	void PostInitializeGameInstanceModules(UGameInstance* GameInstance);
+
+	/** Called when world actors initialization is performed */
+	void OnWorldActorsInitialization(UWorld* World);
+
+	/** Called when world is fully initialized and loaded */
+	void OnWorldLoadComplete(UWorld* World);
 	
 private:
 	FModHandler(FModHandler&) = delete; //delete copy constructor 

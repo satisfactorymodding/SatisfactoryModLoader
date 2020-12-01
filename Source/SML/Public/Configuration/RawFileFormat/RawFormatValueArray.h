@@ -30,17 +30,6 @@ public:
     FORCEINLINE URawFormatValueArray* AddArray() {
         return AddNewValue<URawFormatValueArray>();
     }
-
-    /** Retrieves value at the given index as object */
-    UFUNCTION(BlueprintPure)
-    FORCEINLINE class URawFormatValueObject* GetObject(int32 Index) const {
-        return Cast<URawFormatValueObject>(GetValue(Index));
-    }
-
-    UFUNCTION(BlueprintCallable)
-    FORCEINLINE URawFormatValueObject* AddObject() {
-        return AddNewValue<URawFormatValueObject>();
-    }
     
     /** Retrieves value at the given index as string, falling back to empty string if it's not a string */
     UFUNCTION(BlueprintPure)

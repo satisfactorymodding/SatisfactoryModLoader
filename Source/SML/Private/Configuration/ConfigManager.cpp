@@ -7,6 +7,7 @@
 #include "TimerManager.h"
 #include "Configuration/RootConfigValueHolder.h"
 #include "Configuration/Values/ConfigValueSection.h"
+#include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/Engine.h"
 #include "Json/JsonRawFormatConverter.h"
 #include "Util/EngineUtil.h"
@@ -15,23 +16,19 @@ DEFINE_LOG_CATEGORY(LogConfigManager);
 
 const TCHAR* SMLConfigModVersionField = TEXT("SML_ModVersion_DoNotChange");
 
-#pragma optimize("", off)
-
 void UConfigManager::ReloadModConfigurations(bool bSaveOnSchemaChange) {
-    UConfigManager* ConfigManager = GetMutableDefault<UConfigManager>();
-
     UE_LOG(LogConfigManager, Display, TEXT("Reloading mod configurations..."));
-    for (const TPair<FConfigId, FRegisteredConfigurationData>& Pair : ConfigManager->Configurations) {
+    
+    for (const TPair<FConfigId, FRegisteredConfigurationData>& Pair : Configurations) {
         LoadConfigurationInternal(Pair.Key, Pair.Value.RootValue, bSaveOnSchemaChange);
     }
 }
 
 void UConfigManager::SaveConfigurationInternal(const FConfigId& ConfigId) {
-    UConfigManager* ConfigManager = GetMutableDefault<UConfigManager>();
-    const FRegisteredConfigurationData& ConfigurationData = ConfigManager->Configurations.FindChecked(ConfigId);
+    const FRegisteredConfigurationData& ConfigurationData = Configurations.FindChecked(ConfigId);
     
     const URootConfigValueHolder* RootValue = ConfigurationData.RootValue;
-    URawFormatValue* RawFormatValue = RootValue->GetWrappedValue()->Serialize(ConfigManager);
+    URawFormatValue* RawFormatValue = RootValue->GetWrappedValue()->Serialize(GetTransientPackage());
     checkf(RawFormatValue, TEXT("Root RawFormatValue returned NULL for config %s"), *ConfigId.ModReference);
     
     //Root value should always be JsonObject, since root property is section property
@@ -39,17 +36,17 @@ void UConfigManager::SaveConfigurationInternal(const FConfigId& ConfigId) {
     check(JsonValue->Type == EJson::Object);
     TSharedRef<FJsonObject> UnderlyingObject = JsonValue->AsObject().ToSharedRef();
     
-    //Serialize resulting JSON to string
-    FString JsonOutputString;
-    const TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&JsonOutputString);
-    FJsonSerializer::Serialize(UnderlyingObject, JsonWriter);
-            
     //Record mod version so we can keep file system file schema up to date
     FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
     if (ModHandler != NULL && ModHandler->IsModLoaded(ConfigId.ModReference)) {
         const FVersion ModVersion = ModHandler->GetLoadedMod(ConfigId.ModReference)->ModInfo.Version;
         UnderlyingObject->SetStringField(SMLConfigModVersionField, ModVersion.ToString());
     }
+
+    //Serialize resulting JSON to string
+    FString JsonOutputString;
+    const TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&JsonOutputString);
+    FJsonSerializer::Serialize(UnderlyingObject, JsonWriter);
 
     //Write configuration into the file system now at the generated path
     const FString ConfigurationFilePath = GetConfigurationFilePath(ConfigId);
@@ -124,6 +121,12 @@ void UConfigManager::FlushPendingSaves() {
     ConfigManager->PendingSaveConfigurations.Empty();
 }
 
+void UConfigManager::OnTimerManagerAvailable(FTimerManager* TimerManager) {
+    //Setup a timer which will force all changes into filesystem every 10 seconds
+    FTimerHandle OutTimerHandle;
+    TimerManager->SetTimer(OutTimerHandle, FTimerDelegate::CreateUObject(this, &UConfigManager::FlushPendingSaves), 10.0f, true);
+}
+
 void UConfigManager::MarkConfigurationDirty(const FConfigId& ConfigId) {
     UConfigManager* ConfigManager = GetMutableDefault<UConfigManager>();
     ConfigManager->PendingSaveConfigurations.AddUnique(ConfigId);
@@ -133,8 +136,7 @@ void UConfigManager::MarkConfigurationDirty(const FConfigId& ConfigId) {
 
 void UConfigManager::ReinitializeCachedStructs(const FConfigId& ConfigId) {
 #if OPTIMIZE_FILL_CONFIGURATION_STRUCT
-    UConfigManager* ConfigManager = GetMutableDefault<UConfigManager>();
-    const FRegisteredConfigurationData& ConfigurationData = ConfigManager->Configurations.FindChecked(ConfigId);
+    const FRegisteredConfigurationData& ConfigurationData = Configurations.FindChecked(ConfigId);
     URootConfigValueHolder* RootConfigValue = ConfigurationData.RootValue;
     
     for (const TPair<UScriptStruct*, FReflectedObject>& Pair : ConfigurationData.CachedValues) {
@@ -144,8 +146,7 @@ void UConfigManager::ReinitializeCachedStructs(const FConfigId& ConfigId) {
 }
 
 void UConfigManager::FillConfigurationStruct(const FConfigId& ConfigId, const FDynamicStructInfo& StructInfo) {
-    UConfigManager* ConfigManager = GetMutableDefault<UConfigManager>();
-    FRegisteredConfigurationData& ConfigurationData = ConfigManager->Configurations.FindChecked(ConfigId);
+    FRegisteredConfigurationData& ConfigurationData = Configurations.FindChecked(ConfigId);
 
 #if OPTIMIZE_FILL_CONFIGURATION_STRUCT
     //If this struct type is cached, just copy it from the cache directly
@@ -168,15 +169,12 @@ void UConfigManager::FillConfigurationStruct(const FConfigId& ConfigId, const FD
 #if OPTIMIZE_FILL_CONFIGURATION_STRUCT
     //Store cached struct reflection in the cache
     ConfigurationData.CachedValues.Add(StructInfo.Struct, StructReflection);
-
-    //Because for some retarded reason UPROPERTY on Configurations doesn't prevent garbage collection hello????
-    StructInfo.Struct->AddToRoot();
 #endif
 }
 
 UUserWidget* UConfigManager::CreateConfigurationWidget(const FConfigId& ConfigId, UUserWidget* Outer) {
-    UConfigManager* ConfigManager = GetMutableDefault<UConfigManager>();
-    FRegisteredConfigurationData& ConfigurationData = ConfigManager->Configurations.FindChecked(ConfigId);
+    FRegisteredConfigurationData& ConfigurationData = Configurations.FindChecked(ConfigId);
+    
     const TSubclassOf<UModConfiguration> ConfigurationType = ConfigurationData.ConfigurationClass;
     UConfigPropertySection* RootProperty = ConfigurationType.GetDefaultObject()->RootSection;
     UConfigValueSection* RootValue = ConfigurationData.RootValue->GetWrappedValue();
@@ -184,24 +182,77 @@ UUserWidget* UConfigManager::CreateConfigurationWidget(const FConfigId& ConfigId
     return RootProperty->CreateEditorWidget(Outer, RootValue);
 }
 
+void UConfigManager::ReplaceConfigurationClass(FRegisteredConfigurationData* ExistingData, TSubclassOf<UModConfiguration> NewConfiguration) {
+    //Dump current configuration data into temporary raw format value chain
+    URawFormatValue* TempDataObject = ExistingData->RootValue->GetWrappedValue()->Serialize(this);
+
+    //Create new root section value from new configuration class
+    URootConfigValueHolder* RootConfigValueHolder = ExistingData->RootValue;
+    UConfigValueSection* RootSectionValue = CastChecked<UConfigValueSection>(NewConfiguration.GetDefaultObject()->RootSection->CreateNewValue(RootConfigValueHolder));
+
+    //Replace wrapped configuration section value with new root section, replace old configuration class
+    RootConfigValueHolder->UpdateWrappedValue(RootSectionValue);
+    ExistingData->ConfigurationClass = NewConfiguration;
+
+    //Populate new configuration with data from previous one
+    RootConfigValueHolder->GetWrappedValue()->Deserialize(TempDataObject);
+    
+    //Refresh all cached struct values with new data
+    ReinitializeCachedStructs(ExistingData->ConfigId);
+
+    //Force configuration save into filesystem with new schema
+    SaveConfigurationInternal(ExistingData->ConfigId);
+}
+
+bool IsCompatibleConfigurationClassChange(UClass* OldConfigurationClass, UClass* NewConfigurationClass) {
+    //If class object is the same, this change is compatible
+    if (OldConfigurationClass == NewConfigurationClass) {
+        return true;
+    }
+    
+    //If never version of old configuration class exists, and it is new class, replace is compatible
+    if (OldConfigurationClass->HasAnyClassFlags(EClassFlags::CLASS_NewerVersionExists)) {
+        UBlueprint* GeneratedByBP = Cast<UBlueprint>(OldConfigurationClass->ClassGeneratedBy);
+        if (GeneratedByBP) {
+            UClass* NewBlueprintClass = GeneratedByBP->GeneratedClass;
+            return NewBlueprintClass == NewConfigurationClass;
+        }
+    }
+    
+    //Otherwise, replace is not compatible
+    return false;
+}
+
 void UConfigManager::RegisterModConfiguration(const FConfigId& ConfigId, TSubclassOf<UModConfiguration> Configuration) {
     checkf(Configuration.Get(), TEXT("Attempt to register NULL configuration"));
+    FRegisteredConfigurationData* ExistingData = Configurations.Find(ConfigId);
 
-    UConfigManager* ConfigManager = GetMutableDefault<UConfigManager>();
-    checkf(ConfigManager->Configurations.Find(ConfigId) == NULL, TEXT("Configuration already registered: %s:%s"), *ConfigId.ModReference, *ConfigId.ConfigCategory);
+    //Registration already exists for this configuration ID
+    //It can totally happen since we are an engine level subsystem and in editor multiple PIE launches can happen
+    if (ExistingData != NULL) {
+        //Check if replacement is compatible though, and if it's not, log warning
+        if (!IsCompatibleConfigurationClassChange(ExistingData->ConfigurationClass, Configuration)) {
+            UE_LOG(LogConfigManager, Warning, TEXT("Replacing configuration %s:%s with new class %s"), *ConfigId.ModReference, *ConfigId.ConfigCategory, *Configuration->GetPathName());
+        }
+        //Run configuration replacement schedule
+        ReplaceConfigurationClass(ExistingData, Configuration);
+        return;
+    }
     
     //Create root value and wrap it into config root handling marking config dirty
-    URootConfigValueHolder* RootConfigValueHolder = NewObject<URootConfigValueHolder>(ConfigManager);
-
-    //Because for some retarded reason UPROPERTY on Configurations doesn't prevent garbage collection hello????
-    RootConfigValueHolder->AddToRoot();
-    Configuration->AddToRoot();
-    
+    URootConfigValueHolder* RootConfigValueHolder = NewObject<URootConfigValueHolder>(this);
     UConfigValueSection* RootSectionValue = CastChecked<UConfigValueSection>(Configuration.GetDefaultObject()->RootSection->CreateNewValue(RootConfigValueHolder));
-    RootConfigValueHolder->SetupRootValue(ConfigId, RootSectionValue);
+    RootConfigValueHolder->SetupRootValue(this, ConfigId, RootSectionValue);
     
     //Register configuration inside all of the internal properties
-    ConfigManager->Configurations.Add(ConfigId, FRegisteredConfigurationData{ConfigId, Configuration, RootConfigValueHolder});
+    Configurations.Add(ConfigId, FRegisteredConfigurationData{ConfigId, Configuration, RootConfigValueHolder});
+}
+
+void UConfigManager::Initialize(FSubsystemCollectionBase& Collection) {
+    //Subscribe to exit event so we make sure that pending saves are written to filesystem
+    FCoreDelegates::OnPreExit.AddUObject(this, &UConfigManager::FlushPendingSaves);
+    //Subscribe to timer manager availability delegate to be able to do periodic auto-saves
+    FEngineUtil::DispatchWhenTimerManagerIsReady(TBaseDelegate<void, FTimerManager*>::CreateUObject(this, &UConfigManager::OnTimerManagerAvailable));
 }
 
 FString UConfigManager::GetConfigurationFolderPath() {
@@ -217,19 +268,3 @@ FString UConfigManager::GetConfigurationFilePath(const FConfigId& ConfigId) {
     //We have a category, so mod reference is a folder and category is a file name
     return ConfigDirectory + FString::Printf(TEXT("%s/%s.cfg"), *ConfigId.ModReference, *ConfigId.ConfigCategory);
 }
-
-void UConfigManager::RegisterConfigurationManager() {
-    //Subscribe to exit event so we make sure that pending saves are written to filesystem
-    FCoreDelegates::OnPreExit.AddLambda([](){
-        UE_LOG(LogConfigManager, Display, TEXT("Flushing configuration caches into file system"));
-        FlushPendingSaves();
-    });
-
-    //Setup a timer which will force all changes into filesystem every 10 seconds
-    FTimerManager* TimerManager = FEngineUtil::GetGlobalTimerManager();
-    check(TimerManager);
-    FTimerHandle OutTimerHandle;
-    TimerManager->SetTimer(OutTimerHandle, [](){ UConfigManager::FlushPendingSaves(); }, 10.0f, true);
-}
-
-#pragma optimize("", on)

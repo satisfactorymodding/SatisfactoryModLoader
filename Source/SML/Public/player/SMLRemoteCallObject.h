@@ -47,6 +47,6 @@ private:
     UPROPERTY(Replicated)
     int32 DummyReplicatedField;
 
-    /** Registers RCO inside of game mode defaults */
-    static void RegisterRemoteCallObject();
+    /** Registers chat command patch for routing chat commands through SML RCO */
+    static void RegisterChatCommandPatch();
 };

@@ -1,6 +1,5 @@
 #include "BlueprintLibrary.h"
 #include "BlueprintModLoadingLibrary.h"
-#include "BlueprintVersionLibrary.h"
 #include "IImageWrapperModule.h"
 #include "IImageWrapper.h"
 #include "JsonObject.h"
@@ -10,22 +9,6 @@
 #include "UPropertySerializer.h"
 
 DEFINE_LOG_CATEGORY(LogBlueprintLegacy);
-
-bool USMLBlueprintLibrary::ParseVersionString(const FString& String, FVersion& OutVersion, FString& ErrorMessage) {
-	return UBlueprintVersionLibrary::ParseVersionString(String, OutVersion, ErrorMessage);
-}
-
-FString USMLBlueprintLibrary::Conv_VersionToString(const FVersion& Version) {
-	return UBlueprintVersionLibrary::Conv_VersionToString(Version);
-}
-
-bool USMLBlueprintLibrary::ParseVersionRangeString(const FString& String, FVersionRange& OutVersionRange, FString& OutErrorMessage) {
-	return UBlueprintVersionLibrary::ParseVersionRangeString(String, OutVersionRange, OutErrorMessage);
-}
-
-FString USMLBlueprintLibrary::Conv_VersionRangeToString(const FVersionRange& VersionRange) {
-	return UBlueprintVersionLibrary::Conv_VersionRangeToString(VersionRange);
-}
 
 bool USMLBlueprintLibrary::IsModLoaded(const FString& ModReference) {
 	return UBlueprintModLoadingLibrary::IsModLoaded(ModReference);
@@ -37,10 +20,6 @@ TArray<FString> USMLBlueprintLibrary::GetLoadedMods() {
 
 FModInfo USMLBlueprintLibrary::GetLoadedModInfo(const FString& ModReference) {
 	return UBlueprintModLoadingLibrary::GetLoadedModInfo(ModReference);
-}
-
-UTexture2D* USMLBlueprintLibrary::LoadModIconTexture(const FString& ModReference, UTexture2D* FallbackIcon) {
-	return UBlueprintModLoadingLibrary::LoadModIconTexture(ModReference, FallbackIcon);
 }
 
 FVersion USMLBlueprintLibrary::GetSMLVersion() {

@@ -9,6 +9,7 @@
 #include "UserWidget.h"
 #include "VerticalBox.h"
 #include "WidgetBlueprintLibrary.h"
+#include "Engine/Engine.h"
 #include "Engine/UserDefinedStruct.h"
 
 void FOptionsKeybindPatch::CategorizeKeyBindingsByModReference(FScriptArrayHelper& InKeyBindings, UScriptStruct* KeyBindStructClass, TMap<FString, TArray<int32>>& OutCategorizedNames) {
@@ -113,6 +114,7 @@ void FOptionsKeybindPatch::RegisterPatch() {
     UClass* WidgetKeyBindClass = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/Menu/PauseMenu/Widget_KeyBind.Widget_KeyBind_C"));
     check(WidgetKeyBindClass);
     UFunction* RefreshKeyBindingsFunction = WidgetKeyBindClass->FindFunctionByName(TEXT("RefreshKeyBindings"));
-    UBlueprintHookManager::HookBlueprintFunction(RefreshKeyBindingsFunction, HandleRefreshKeyBindingsHook, EPredefinedHookOffset::Start);
+    UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
+    HookManager->HookBlueprintFunction(RefreshKeyBindingsFunction, HandleRefreshKeyBindingsHook, EPredefinedHookOffset::Start);
 }
 

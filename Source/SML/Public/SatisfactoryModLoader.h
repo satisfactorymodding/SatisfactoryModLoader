@@ -46,7 +46,10 @@ private:
 	static void CheckGameAndBootstrapperVersion();
 
 	/** Registers SML subsystems */
-	static void InitializeSubsystems();
+	static void RegisterSubsystemPatches();
+
+	/** Registers global SML subsystems that are registered only once */
+	static void RegisterSubsystems();
 
 	/** Does early mod loading initialization like allocating mod handler, discovering mods and loading DLLs */
 	static void PreInitializeModLoading();

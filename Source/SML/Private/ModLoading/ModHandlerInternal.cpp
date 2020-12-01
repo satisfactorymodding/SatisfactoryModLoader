@@ -192,9 +192,9 @@ UClass* LoadInitializerClass(const FString& ModReference, const FString& Initial
 }
 
 FModPakLoadEntry FModHandlerHelper::DiscoverModInitializers(const FString& ModReference) {
-	UClass* InitGameInstanceClass = LoadInitializerClass<UInitGameInstance>(ModReference, TEXT("InitGameInstance"));
-	UClass* InitGameWorldClass = LoadInitializerClass<AInitGameWorld>(ModReference, TEXT("InitGameWorld"));
-	UClass* InitMenuWorldClass = LoadInitializerClass<AInitMenuWorld>(ModReference, TEXT("InitMenuWorld"));
+	UClass* InitGameInstanceClass = LoadInitializerClass<UGameInstanceModule>(ModReference, TEXT("InitGameInstance"));
+	UClass* InitGameWorldClass = LoadInitializerClass<UWorldModule>(ModReference, TEXT("InitGameWorld"));
+	UClass* InitMenuWorldClass = LoadInitializerClass<UWorldModule>(ModReference, TEXT("InitMenuWorld"));
 
 	FModPakLoadEntry LoadEntry{ModReference};
 	bool bFoundNewInitializer = false;
@@ -223,8 +223,12 @@ FModPakLoadEntry FModHandlerHelper::DiscoverModInitializers(const FString& ModRe
 		const uint32 LoadFlags = LOAD_NoWarn | LOAD_Quiet;
 		UClass* InitModClass = LoadClass<ASMLInitMod>(NULL, *LegacyInitModClassPath, NULL, LoadFlags);
 		if (InitModClass != NULL) {
+#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
 			InitModClass->AddToRoot();
 			LoadEntry.LegacyInitModClass = InitModClass;
+#else
+			UE_LOG(LogModLoading, Fatal, TEXT("Found unsupported SMLInitMod class: %s. SMLInitMod is not supported in this version of SML."), *LegacyInitModClassPath);
+#endif
 		}
 	}
 	return LoadEntry;

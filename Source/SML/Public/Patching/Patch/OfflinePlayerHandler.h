@@ -9,5 +9,5 @@ public:
 private:
     friend class FSatisfactoryModLoader;
 
-    static void RegisterHandler();
+    static void RegisterHandlerPatches();
 };

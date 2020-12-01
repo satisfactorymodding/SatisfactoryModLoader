@@ -4,7 +4,7 @@
 #include "OnlineEngineInterface.h"
 #include "SatisfactoryModLoader.h"
 
-void FOfflinePlayerHandler::RegisterHandler() {
+void FOfflinePlayerHandler::RegisterHandlerPatches() {
     SUBSCRIBE_METHOD(ULocalPlayer::GetNickname, [](auto& Call, const ULocalPlayer* Player) {
         const FString ReturnedParentValue = Call(Player);
         if (ReturnedParentValue.IsEmpty()) {

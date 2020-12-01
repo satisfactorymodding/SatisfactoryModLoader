@@ -5,11 +5,13 @@
 #include "RemoteCallObjectRegistry.generated.h"
 
 UCLASS()
-class SML_API URemoteCallObjectRegistry : public UBlueprintFunctionLibrary {
+class SML_API URemoteCallObjectRegistry : public UGameInstanceSubsystem {
     GENERATED_BODY()
 public:
     UFUNCTION(BlueprintCallable)
-    static void RegisterRemoteCallObject(TSubclassOf<UFGRemoteCallObject> RemoteCallObject);
+    void RegisterRemoteCallObject(TSubclassOf<UFGRemoteCallObject> RemoteCallObject);
+
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 private:
     friend class FSatisfactoryModLoader;
     
@@ -19,5 +21,5 @@ private:
     static void RegisterRCOsOnGameMode(class AGameModeBase* GameMode);
     
     /** Registers this registry related hooks */
-    static void InitializeRegistry();
+    static void InitializePatches();
 };

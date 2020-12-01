@@ -1,5 +1,4 @@
 #include "ModHandler.h"
-#include "BasicModInit.h"
 #include "bootstrapper_exports.h"
 #include "Engine/World.h"
 #include "PlatformFilemanager.h"
@@ -9,14 +8,16 @@
 #include "FactoryGameModule.h"
 #include "ModHandlerInternal.h"
 #include "FGGameState.h"
-#include "GameInstanceInitSubsystem.h"
+#include "GameInstanceModuleManager.h"
 #include "ModContentRegistry.h"
-#include "FGGameInstance.h"
 #include "SatisfactoryModLoader.h"
-#include "SMLInitMod.h"
 #include "SMLModule.h"
 #include "TopologicalSort.h"
+#include "WorldModuleManager.h"
 #include "ZipFile.h"
+#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
+#include "SMLInitMod.h"
+#endif
 
 DEFINE_LOG_CATEGORY(LogModLoading);
 
@@ -192,124 +193,115 @@ void FModHandler::MountModPaks() {
 	}
 }
 
-#define FOR_EACH_MOD_INITIALIZER_ORDERED(ActorMap, Action) \
-	for (const TSharedPtr<FModContainer>& ModContainer : LoadedModsList) { \
-		const FString& ModReference = ModContainer->ModInfo.ModReference; \
-		ABasicModInit* const* ModInitializer = ActorMap.Find(ModReference); \
-		if (ModInitializer != nullptr) { \
-			Action(*ModInitializer); \
-		} \
-	}
-
-UClass* GetActiveInitializerClass(const FModPakLoadEntry& Initializer, const bool bIsMenuWorld) {
-	UClass* TargetActorClass;
-	if (!bIsMenuWorld) {
-		TargetActorClass = Initializer.InitGameWorldClass;
-		if (TargetActorClass == NULL) {
-			TargetActorClass = Initializer.LegacyInitModClass;
-		}
-	} else {
-		TargetActorClass = Initializer.InitMenuWorldClass;
-	}
-	return TargetActorClass;
-}
-
-FString FormatModActorName(const FString& ModReference, const bool bIsMenuWorld) {
-	if (!bIsMenuWorld) {
-		return FString::Printf(TEXT("InitGameWorld_%s"), *ModReference);
-	}
-	return FString::Printf(TEXT("InitMenuWorld_%s"), *ModReference);
-}
-
-void FModHandler::SubscribeToLifecycleEvents() {
+void FModHandler::SubscribeToWorldEvents() {
 	//Spawn mod actors as soon as world actors are initialized (e.g static map objects are spawned)
-	FWorldDelegates::OnWorldInitializedActors.AddLambda([this](const UWorld::FActorsInitializedParams Params){
-		UWorld* World = Params.World;
-		AFGGameMode* GameMode = Cast<AFGGameMode>(World->GetAuthGameMode());
-		const bool bIsMenuWorld = GameMode && GameMode->IsMainMenuGameMode();
-		TMap<FString, ABasicModInit*> SpawnedActorMap;
-		
-		//Construct mod actors and dispatch CONSTRUCTION on them immediately
-		UE_LOG(LogModLoading, Display, TEXT("Constructing mod actors on map %s"), *World->GetMapName());
-		SpawnModActors(World, bIsMenuWorld, SpawnedActorMap);
-		
-		//Initialize mod actors and dispatch INITIALIZATION on them
-		UE_LOG(LogModLoading, Display, TEXT("Initializing mod actors"));
-		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
-			ModInit->DispatchLifecyclePhase(ELifecyclePhase::INITIALIZATION);
-		});
-		UE_LOG(LogModLoading, Display, TEXT("Finished initializing mod actors"));
+	FWorldDelegates::OnWorldInitializedActors.AddLambda([this](const UWorld::FActorsInitializedParams Params) {
+		if (ShouldInitializeModulesOnWorld(Params.World)) {
+			OnWorldActorsInitialization(Params.World);
+		}
 	});
-
 	//Post initialize mod actors when world is fully loaded and is ready to be used
 	FCoreUObjectDelegates::PostLoadMapWithWorld.AddLambda([this](UWorld* World){
-		//Find spawned mod actors and dispatch POST_INITIALIZATION on them
-		TMap<FString, ABasicModInit*> SpawnedActorMap;
-		FindModActors(World, SpawnedActorMap);
-		
-		UE_LOG(LogModLoading, Display, TEXT("Post-initializing mod actors"));
-		FOR_EACH_MOD_INITIALIZER_ORDERED(SpawnedActorMap, [](ABasicModInit* ModInit) {
-            ModInit->DispatchLifecyclePhase(ELifecyclePhase::POST_INITIALIZATION);
-        });
-		UE_LOG(LogModLoading, Display, TEXT("Finished post-initializing mod actors"));
+		if (ShouldInitializeModulesOnWorld(World)) {
+			OnWorldLoadComplete(World);
+		}
 	});
 }
 
-void FModHandler::InitializeGameInstance() {
-	UGameEngine* GameEngine = Cast<UGameEngine>(GEngine);
-	checkf(GameEngine, TEXT("Attempt to call FModHandler::InitializeGameInstance() in editor. This is not supported."));
-	UFGGameInstance* GameInstance = Cast<UFGGameInstance>(GameEngine->GameInstance);
-	checkf(GameInstance, TEXT("GameInstance set is not UFGGameInstance"));
-	UGameInstanceInitSubsystem* InitSubsystem = GameInstance->GetSubsystem<UGameInstanceInitSubsystem>();
-	check(InitSubsystem);
+void FModHandler::OnWorldActorsInitialization(UWorld* World) {
+	AWorldModuleManager* ModuleManager = AWorldModuleManager::Get(World);
+	check(ModuleManager);
 
-	//Create InitGameInstance objects for each mod loaded
+	AFGGameMode* GameMode = Cast<AFGGameMode>(World->GetAuthGameMode());
+	const bool bIsMenuGameMode = GameMode && GameMode->IsMainMenuGameMode();
+
+	//Create modules for each world module registered
 	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
 		const FString& ModReference = LoadEntry.ModReference;
-		UClass* InitClass = LoadEntry.InitGameInstanceClass;
-		if (InitClass != nullptr) {
-			InitSubsystem->CreateInitObjectForMod(ModReference, InitClass);
+		UClass* WorldModuleClass = bIsMenuGameMode ? LoadEntry.InitMenuWorldClass : LoadEntry.InitGameWorldClass;
+		if (WorldModuleClass != NULL && WorldModuleClass->IsChildOf<UWorldModule>()) {
+			ModuleManager->CreateRootModule(*ModReference, WorldModuleClass);
 		}
 	}
-	InitSubsystem->InitializeInitObjects();
 
+	//Process construction and initialization
+	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::CONSTRUCTION);
+	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
+
+#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
+	//Spawn deprecated ASMLInitMod actors
+	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
+		const FString& ModReference = LoadEntry.ModReference;
+		UClass* DeprecatedInitModClass = LoadEntry.LegacyInitModClass;
+		if (DeprecatedInitModClass != NULL && DeprecatedInitModClass->IsChildOf<ASMLInitMod>()) {
+			FActorSpawnParameters SpawnParameters;
+			SpawnParameters.Name = *FString::Printf(TEXT("InitMod_%s"), *ModReference);
+			ASMLInitMod* InitMod = World->SpawnActor<ASMLInitMod>(DeprecatedInitModClass, SpawnParameters);
+			check(InitMod);
+			InitMod->ModReference = ModReference;
+			InitMod->PreInit();
+			InitMod->Init();
+		}
+	}
+#endif
+}
+
+void FModHandler::OnWorldLoadComplete(UWorld* World) {
+	AWorldModuleManager* ModuleManager = AWorldModuleManager::Get(World);
+	check(ModuleManager);
+
+	//Just dispatch post initialization on module manager now
+	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
+
+#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
+	//Dispatch content registration and PostInit on old InitMod actors
+	for (TActorIterator<ASMLInitMod> It(World); It; ++It) {
+		ASMLInitMod* SMLInitMod = *It;
+		SMLInitMod->InitDefaultContent();
+		SMLInitMod->PostInit();
+	}
+#endif
+}
+
+void FModHandler::InitializeGameInstanceModules(UGameInstance* GameInstance) {
+	UGameInstanceModuleManager* ModuleManager = GameInstance->GetSubsystem<UGameInstanceModuleManager>();
+	check(ModuleManager);
+
+	//Create modules for each game instance module registered
+	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
+		const FString& ModReference = LoadEntry.ModReference;
+		UClass* GameInstanceModuleClass = LoadEntry.InitGameInstanceClass;
+		if (GameInstanceModuleClass != NULL && GameInstanceModuleClass->IsChildOf<UGameInstanceModule>()) {
+			ModuleManager->CreateRootModule(*ModReference, GameInstanceModuleClass);
+		}
+	}
+
+	//Run construction and initialization, post init will be run after configuration reload
+	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::CONSTRUCTION);
+	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
+
+#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
 	//Pre-Initialize old SMLInitMod content that should be registered prior to world loading
 	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
 		if (LoadEntry.LegacyInitModClass != NULL) {
 			UObject* DefaultObject = LoadEntry.LegacyInitModClass->GetDefaultObject();
 			ASMLInitMod* InitMod = Cast<ASMLInitMod>(DefaultObject);
 			if (InitMod) {
-				InitMod->RegisterEarlyLoadContent(LoadEntry.ModReference);
+				InitMod->RegisterEarlyLoadContent(LoadEntry.ModReference, GameInstance);
 			}
 		}
 	}
+#endif
 }
 
-void FModHandler::SpawnModActors(UWorld* World, bool bIsMenuWorld, TMap<FString, ABasicModInit*>& OutActorMap) {
-	for (const FModPakLoadEntry& Initializer : ModPakInitializers) {
-		UClass* SpawnActorClass = GetActiveInitializerClass(Initializer, bIsMenuWorld);
-		if (SpawnActorClass == nullptr) {
-			continue;
-		}
-		FActorSpawnParameters SpawnParams{};
-		SpawnParams.Name = *FormatModActorName(Initializer.ModReference, bIsMenuWorld);
-		ABasicModInit* SpawnedActor = Cast<ABasicModInit>(World->SpawnActor(SpawnActorClass, &FTransform::Identity, SpawnParams));
-		checkf(SpawnedActor, TEXT("Couldn't spawn InitActor for mod %s"), *Initializer.ModReference);
-		SpawnedActor->OwnerModReference = Initializer.ModReference;
-		SpawnedActor->DispatchLifecyclePhase(ELifecyclePhase::CONSTRUCTION);
-		OutActorMap.Add(Initializer.ModReference, SpawnedActor);
-	}
+void FModHandler::PostInitializeGameInstanceModules(UGameInstance* GameInstance) {
+	UGameInstanceModuleManager* ModuleManager = GameInstance->GetSubsystem<UGameInstanceModuleManager>();
+	check(ModuleManager);
+	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
 }
 
 void FModHandler::SetupWithAccessors(const BootstrapAccessors& Accessors) {
 	this->BootstrapperAccessors = MakeShareable(new BootstrapAccessors(Accessors));
-}
-
-void FModHandler::FindModActors(UWorld* World, TMap<FString, ABasicModInit*>& OutActorMap) {
-	for(TActorIterator<ABasicModInit> Iterator(World); Iterator; ++Iterator) {
-		ABasicModInit* BasicModInit = *Iterator;
-		OutActorMap.Add(BasicModInit->GetOwnerModReference(), BasicModInit);
-	}
 }
 
 void FModHandler::DiscoverMods() {
@@ -377,6 +369,10 @@ void FModHandler::PreInitializeMods() {
 	UE_LOG(LogModLoading, Display, TEXT("Loading native mod libraries into process address space..."));
 	LoadNativeModLibraries();
 	CheckStageErrors(TEXT("pre initialization"));
+}
+
+bool FModHandler::ShouldInitializeModulesOnWorld(UWorld* World) {
+	return World->WorldType == EWorldType::Game || World->WorldType == EWorldType::PIE;
 };
 
 void FModHandler::InitializeMods() {

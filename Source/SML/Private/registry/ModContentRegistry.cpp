@@ -142,7 +142,7 @@ void AModContentRegistry::SubscribeToSchematicManager(AFGSchematicManager* Schem
 
 void AModContentRegistry::Init() {
     //Register vanilla content in the registry
-    const FString FactoryGame = FACTORYGAME_MOD_REFERENCE;
+    const FName FactoryGame = FACTORYGAME_MOD_REFERENCE;
 
     UE_LOG(LogContentRegistry, Display, TEXT("Initializing mod content registry"));
     const TArray<TSubclassOf<UFGSchematic>> AllSchematics = DiscoverVanillaContentOfType<UFGSchematic>();
@@ -202,7 +202,7 @@ void AModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schemat
 }
 
 void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe,
-                                                        const FString& ModReference) {
+                                                        FName ModReference) {
     TArray<FItemAmount> AllReferencedItems;
     AllReferencedItems.Append(UFGRecipe::GetIngredients(Recipe));
     AllReferencedItems.Append(UFGRecipe::GetProducts(Recipe));
@@ -218,7 +218,7 @@ void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRec
     }
 }
 
-TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(const FString& ModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor) {
+TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(FName ModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor) {
     return ItemRegistryState.RegisterObject(MakeRegistrationInfo<FItemRegistrationInfo>(ItemDescriptor, ModReference));
 }
 
@@ -293,7 +293,7 @@ void AModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollec
     ModContentRegistry->ResearchTreeRegistryState.AddReferencedObjects(InThis, Collector);
 }
 
-void AModContentRegistry::RegisterSchematic(const FString& ModReference, TSubclassOf<UFGSchematic> Schematic) {
+void AModContentRegistry::RegisterSchematic(FName ModReference, TSubclassOf<UFGSchematic> Schematic) {
     check(Schematic.Get() != NULL);
 
     if (!SchematicRegistryState.ContainsObject(Schematic)) {
@@ -317,7 +317,7 @@ void AModContentRegistry::RegisterSchematic(const FString& ModReference, TSubcla
     }
 }
 
-void AModContentRegistry::RegisterResearchTree(const FString& ModReference, TSubclassOf<UFGResearchTree> ResearchTree) {
+void AModContentRegistry::RegisterResearchTree(FName ModReference, TSubclassOf<UFGResearchTree> ResearchTree) {
     check(ResearchTree.Get() != NULL);
 
     if (!ResearchTreeRegistryState.ContainsObject(ResearchTree)) {
@@ -341,7 +341,7 @@ void AModContentRegistry::RegisterResearchTree(const FString& ModReference, TSub
     }
 }
 
-void AModContentRegistry::RegisterRecipe(const FString& ModReference, TSubclassOf<UFGRecipe> Recipe) {
+void AModContentRegistry::RegisterRecipe(FName ModReference, TSubclassOf<UFGRecipe> Recipe) {
     check(Recipe.Get() != NULL);
 
     if (!RecipeRegistryState.ContainsObject(Recipe)) {
@@ -356,14 +356,15 @@ void AModContentRegistry::RegisterRecipe(const FString& ModReference, TSubclassO
     }
 }
 
-void AModContentRegistry::RegisterResourceSinkItemPointTable(const FString& ModReference, UDataTable* PointTable) {
+void AModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable) {
     AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
 
     if (ResourceSinkSubsystem != NULL && PointTable != NULL) {
         checkf(PointTable->RowStruct != nullptr &&
                PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
                TEXT("Invalid AWESOME Sink item points table in mod %s: Row Type should be Resource Sink Points Data"),
-               *ModReference);
+               *ModReference.ToString());
+        
         TArray<FResourceSinkPointsData*> OutModPointsData;
         PointTable->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
         for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
@@ -409,7 +410,7 @@ FItemRegistrationInfo AModContentRegistry::GetItemDescriptorInfo(TSubclassOf<UFG
         return *CachedRegistrationInfo;
     }
     //Item descriptor was not referenced in any registered recipe, generate dummy registration info in runtime
-    const FString GuessedModReference = GetClassOwnerModReference(ItemDescriptor);
+    const FName GuessedModReference = GetClassOwnerModReference(ItemDescriptor);
     return *RegisterItemDescriptor(GuessedModReference, ItemDescriptor);
 }
 
@@ -464,7 +465,7 @@ void AModContentRegistry::Tick(float DeltaSeconds) {
     }
 }
 
-FString AModContentRegistry::GetClassOwnerModReference(UClass* ClassObject) {
+FName AModContentRegistry::GetClassOwnerModReference(UClass* ClassObject) {
     check(ClassObject);
     const FString& PackagePathName = ClassObject->GetOutermost()->GetPathName();
 
@@ -476,13 +477,13 @@ FString AModContentRegistry::GetClassOwnerModReference(UClass* ClassObject) {
         if (FirstSlashIndex == INDEX_NONE)
             FirstSlashIndex = TrimmedPathName.Len();
         //Take second part between two slashes, so /Game/SML/Example will evaluate to SML
-        return TrimmedPathName.Mid(0, FirstSlashIndex);
+        return *TrimmedPathName.Mid(0, FirstSlashIndex);
     }
     if (PackagePathName.StartsWith(TEXT("/Script/"))) {
         //Class is defined in native package, their names follow pattern /Script/ModuleName
         //And usually ModuleName matches ModReference
         const FString OwnerModuleName = PackagePathName.Mid(8);
-        return OwnerModuleName;
+        return *OwnerModuleName;
     }
     if (PackagePathName.StartsWith(TEXT("/Engine/"))) {
         //We assume all engine files to be owned by FactoryGame directly
@@ -496,8 +497,8 @@ void AModContentRegistry::RegisterOverwriteForMod(const FString& ModReference, c
     if (ModOverwriteMap.Contains(OverwritePath)) {
         const FString OldModReference = ModOverwriteMap.FindChecked(OverwritePath);
         UE_LOG(LogContentRegistry, Error,
-            TEXT("SML detected two mods trying to overwrite same asset at path '"), *OverwritePath, TEXT("': "),
-            *ModReference, TEXT(" and "), *OldModReference);
+            TEXT("SML detected two mods trying to overwrite same asset at path '%s': %s and %s"),
+            *OverwritePath, *ModReference, *OldModReference);
         UE_LOG(LogContentRegistry, Error,
             TEXT("This setup is not stable, and mods can break depending on which overwrite takes precedence"));
         UE_LOG(LogContentRegistry, Error, TEXT("Proceed with caution, and make sure to report to mod authors about the conflict"));

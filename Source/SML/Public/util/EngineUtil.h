@@ -11,4 +11,7 @@ public:
      * In Game, it will return global game instance timer manager (ticked by currently loaded world)
      */
     static class FTimerManager* GetGlobalTimerManager();
+
+    /** Dispatches passed delegate when timer manager instance is ready */
+    static void DispatchWhenTimerManagerIsReady(const TBaseDelegate<void, FTimerManager*>& Delegate);
 };

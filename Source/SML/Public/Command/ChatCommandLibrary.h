@@ -78,8 +78,6 @@ public:
 private:
 	friend class USMLSubsystemHolder;
 
-	/**
-	* Initializes builtin commands for the command subsystem
-	*/
+	/** Initializes builtin commands for the command subsystem */
 	void Init();
 };

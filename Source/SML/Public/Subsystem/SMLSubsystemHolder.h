@@ -17,8 +17,4 @@ public:
 	
     void InitSubsystems() override;
     void InitLocalSubsystems() override;
-private:
-    friend class FSatisfactoryModLoader;
-
-    static void RegisterSubsystemHolder();
 };

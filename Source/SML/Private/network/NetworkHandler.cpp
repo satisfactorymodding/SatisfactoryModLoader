@@ -3,15 +3,12 @@
 #include "FGGameInstance.h"
 #include "FGGameMode.h"
 #include "NativeHookManager.h"
+#include "Engine/Engine.h"
 #include "Engine/NetConnection.h"
 
 DEFINE_LOG_CATEGORY(LogModNetworkHandler);
 DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);
 IMPLEMENT_CONTROL_CHANNEL_MESSAGE(ModMessage);
-
-UModNetworkHandler* UModNetworkHandler::Get() {
-    return GetMutableDefault<UModNetworkHandler>();
-}
 
 FMessageEntry& UModNetworkHandler::RegisterMessageType(const FMessageType& MessageType) {
     UE_LOG(LogModNetworkHandler, Display, TEXT("Registering message type %s:%d"), *MessageType.ModReference, MessageType.MessageId);
@@ -59,20 +56,21 @@ UObjectMetadata* UModNetworkHandler::GetMetadataForConnection(UNetConnection* Co
     return *ObjectMetadata;
 }
 
-void UModNetworkHandler::Initialize() {
-    UModNetworkHandler* GNetworkHandler = Get();
-    GNetworkHandler->AddToRoot();
+void UModNetworkHandler::InitializePatches() {
     SUBSCRIBE_METHOD_AFTER(UNetConnection::CleanUp, [=](UNetConnection* Connection) {
-        GNetworkHandler->Metadata.Remove(Connection);
+        UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
+        NetworkHandler->Metadata.Remove(Connection);
     });
     SUBSCRIBE_METHOD_AFTER(UWorld::WelcomePlayer, [=](UWorld* ServerWorld, UNetConnection* Connection) {
-        GNetworkHandler->OnWelcomePlayer().Broadcast(ServerWorld, Connection);
+        UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
+        NetworkHandler->OnWelcomePlayer().Broadcast(ServerWorld, Connection);
     });
     SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [=](UPendingNetGame* NetGame) {
         if (NetGame->NetDriver != nullptr) {
             UNetConnection* ServerConnection = NetGame->NetDriver->ServerConnection;
             if (ServerConnection != nullptr) {
-                GNetworkHandler->OnClientInitialJoin().Broadcast(ServerConnection);
+                UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
+                NetworkHandler->OnClientInitialJoin().Broadcast(ServerConnection);
             }
         }
     });
@@ -80,7 +78,8 @@ void UModNetworkHandler::Initialize() {
         if (MessageType == NMT_ModMessage) {
             FString ModId; int32 MessageId; FString Content;
             if (FNetControlMessage<NMT_ModMessage>::Receive(Bunch, ModId, MessageId, Content)) {
-                GNetworkHandler->ReceiveMessage(Connection, ModId, MessageId, Content);
+                UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
+                NetworkHandler->ReceiveMessage(Connection, ModId, MessageId, Content);
                 Call.Cancel();
             }
         }

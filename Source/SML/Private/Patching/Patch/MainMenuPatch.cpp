@@ -7,6 +7,7 @@
 #include "TextBlock.h"
 #include "VerticalBox.h"
 #include "WidgetBlueprintLibrary.h"
+#include "Engine/Engine.h"
 
 UWidget* CreateModSubMenuWidget(UUserWidget* OwningWidget) {
 	UClass* MenuBaseClass = LoadObject<UClass>(NULL, TEXT("/Game/SML/Widget_ModList.Widget_ModList_C"));
@@ -76,8 +77,9 @@ void FMainMenuPatch::RegisterPatch() {
 	UClass* MenuWidgetClass = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/Menu/MainMenu/BP_MainMenuWidget.BP_MainMenuWidget_C"));
 	checkf(MenuWidgetClass, TEXT("MainMenuWidget blueprint not found"));
 	UFunction* ConstructFunction = MenuWidgetClass->FindFunctionByName(TEXT("Construct"));
-	
-	UBlueprintHookManager::HookBlueprintFunction(ConstructFunction, [](FBlueprintHookHelper& HookHelper) {
+
+	UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
+	HookManager->HookBlueprintFunction(ConstructFunction, [](FBlueprintHookHelper& HookHelper) {
         FMainMenuPatch::ApplyMainMenuPatch(CastChecked<UUserWidget>(HookHelper.GetContext()));
     }, EPredefinedHookOffset::Return);
 }

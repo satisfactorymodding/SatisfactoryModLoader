@@ -1,11 +1,13 @@
 ﻿#pragma once
-#include "ModConfiguration.h"
-#include "Object.h"
+#include "ModModule.h"
 #include "GameFramework/PlayerInput.h"
-#include "InitGameInstance.generated.h"
+#include "SubclassOf.h"
+#include "Engine/GameInstance.h"
+
+#include "GameInstanceModule.generated.h"
 
 class UModSubsystemHolder;
-class UFGGameInstance;
+class UModConfiguration;
 
 /** Holds information about a single configuration registered by the mod */
 USTRUCT(BlueprintType)
@@ -63,40 +65,23 @@ struct SML_API FModAxisBindingInfo {
     FText NegativeAxisDisplayName;
 };
 
-UCLASS(Abstract, Blueprintable)
-class SML_API UInitGameInstance : public UObject {
+/** Describes module loaded with game instance and active as long as game instance is loaded */
+UCLASS(Blueprintable)
+class SML_API UGameInstanceModule : public UModModule {
     GENERATED_BODY()
 public:
-    /**
-     * Called after game instance is initialized
-     * This has nothing to do with UWorld objects and they may be not created yet
-     * at this point, so this is UObject and not an Actor, so
-     * subset of functions you can call here is pretty limited
-     * Notice that it will be called once per game startup, unlike InitGame/MenuWorld
-     */
-    UFUNCTION(BlueprintImplementableEvent)
-    void Init();
-
-    /** Initializes default content registered in fields of init object. Called before Init */
-    virtual void InitDefaultContent();
-
-    /** ModReference of the mod this Init Object belongs to */
+    /** Allow SetOwnerModReference access to game instance module manager */
+    friend class UGameInstanceModuleManager;
+    
+    /** Returns game instance this module is attached to */
     UFUNCTION(BlueprintPure)
-    FORCEINLINE FString GetOwnerModReference() const { return OwnerModReference; }
+    UGameInstance* GetGameInstance() const;
 
-    /** GameInstance this Init Object is attached to */
-    UFUNCTION(BlueprintPure)
-    FORCEINLINE UFGGameInstance* GetOwnerGameInstance() const { return OwnerGameInstance; }
-private:
-    friend class UGameInstanceInitSubsystem;
-    /** Private field holding owner mod reference, accessible directly only by mod loader */
-    FString OwnerModReference;
-    /** Private field holding owner game instance object. */
-    UPROPERTY()
-    UFGGameInstance* OwnerGameInstance;
+    /** Game instance modules can access world context from game instance */
+    virtual UWorld* GetWorld() const override;
 
-    /** Dispatches initialization to class functions. */
-    void DispatchInitialize();
+    /** Register content from properties here */
+    virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
 public:
     /** Configurations defined and used by this mod */
     UPROPERTY(EditDefaultsOnly, Category = Default)

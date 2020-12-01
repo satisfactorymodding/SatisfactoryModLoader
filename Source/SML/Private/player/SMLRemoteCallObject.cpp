@@ -43,17 +43,15 @@ void USMLRemoteCallObject::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&
 	DOREPLIFETIME(USMLRemoteCallObject, DummyReplicatedField);
 }
 
-void USMLRemoteCallObject::RegisterRemoteCallObject() {
-	URemoteCallObjectRegistry::RegisterRemoteCallObject(USMLRemoteCallObject::StaticClass());
-	
+void USMLRemoteCallObject::RegisterChatCommandPatch() {
 	SUBSCRIBE_METHOD(AFGPlayerController::EnterChatMessage, [](auto& Scope, AFGPlayerController* PlayerController, const FString& Message) {
-        if (Message.StartsWith(TEXT("/"))) {
-            const FString CommandLine = Message.TrimStartAndEnd().RightChop(1);
-        	USMLRemoteCallObject* RemoteCallObject = Cast<USMLRemoteCallObject>(PlayerController->GetRemoteCallObjectOfClass(USMLRemoteCallObject::StaticClass()));
-        	if (RemoteCallObject != NULL) {
-        		RemoteCallObject->HandleChatCommand(CommandLine);
-        	}
-            Scope.Cancel();
+    if (Message.StartsWith(TEXT("/"))) {
+        const FString CommandLine = Message.TrimStartAndEnd().RightChop(1);
+        USMLRemoteCallObject* RemoteCallObject = Cast<USMLRemoteCallObject>(PlayerController->GetRemoteCallObjectOfClass(USMLRemoteCallObject::StaticClass()));
+        if (RemoteCallObject != NULL) {
+            RemoteCallObject->HandleChatCommand(CommandLine);
         }
-    });
+        Scope.Cancel();
+    }
+});
 }

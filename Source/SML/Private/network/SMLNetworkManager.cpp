@@ -11,7 +11,7 @@
 TSharedPtr<FMessageType> FSMLNetworkManager::MessageTypeModInit = NULL;
 
 void FSMLNetworkManager::RegisterMessageTypeAndHandlers() {
-    UModNetworkHandler* NetworkHandler = UModNetworkHandler::Get();
+    UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
     MessageTypeModInit = MakeShareable(new FMessageType{TEXT("SML"), 1});
     
     FMessageEntry& MessageEntry = NetworkHandler->RegisterMessageType(*MessageTypeModInit);
@@ -24,7 +24,7 @@ void FSMLNetworkManager::RegisterMessageTypeAndHandlers() {
 }
 
 void FSMLNetworkManager::HandleMessageReceived(UNetConnection* Connection, FString Data) {
-    UModNetworkHandler* NetworkHandler = UModNetworkHandler::Get();
+    UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
     UObjectMetadata* Metadata = NetworkHandler->GetMetadataForConnection(Connection);
     USMLConnectionMetadata* SMLMetadata = Metadata->GetOrCreateSubObject<USMLConnectionMetadata>(TEXT("SML"));
     SMLMetadata->bIsInitialized = true;
@@ -34,7 +34,7 @@ void FSMLNetworkManager::HandleMessageReceived(UNetConnection* Connection, FStri
 }
 
 void FSMLNetworkManager::HandleInitialClientJoin(UNetConnection* Connection) {
-    UModNetworkHandler* NetworkHandler = UModNetworkHandler::Get();
+    UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
     const FString LocalModList = SerializeLocalModList();
     NetworkHandler->SendMessage(Connection, *MessageTypeModInit, LocalModList);
 }
@@ -44,7 +44,7 @@ void FSMLNetworkManager::HandleWelcomePlayer(UWorld* World, UNetConnection* Conn
 }
 
 void FSMLNetworkManager::HandleGameModePostLogin(AGameModeBase* GameMode, APlayerController* Controller) {
-    UModNetworkHandler* NetworkHandler = UModNetworkHandler::Get();
+    UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
     AFGPlayerController* CastedPlayerController = Cast<AFGPlayerController>(Controller);
     if (CastedPlayerController) {
         USMLRemoteCallObject* RemoteCallObject = Cast<USMLRemoteCallObject>(CastedPlayerController->GetRemoteCallObjectOfClass(USMLRemoteCallObject::StaticClass()));
@@ -107,7 +107,7 @@ bool FSMLNetworkManager::HandleModListObject(USMLConnectionMetadata* Metadata, c
 
 void FSMLNetworkManager::ValidateSMLConnectionData(UNetConnection* Connection) {
     FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
-    UModNetworkHandler* NetworkHandler = UModNetworkHandler::Get();
+    UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
     UObjectMetadata* Metadata = NetworkHandler->GetMetadataForConnection(Connection);
     USMLConnectionMetadata* SMLMetadata = Metadata->GetOrCreateSubObject<USMLConnectionMetadata>(TEXT("SML"));
     TArray<FString> ClientMissingMods;

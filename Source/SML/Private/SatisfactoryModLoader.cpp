@@ -3,7 +3,7 @@
 #include "ConfigManager.h"
 #include "FGAssetDumper.h"
 #include "FGPlayerController.h"
-#include "ItemTooltipHandler.h"
+#include "ItemTooltipSubsystem.h"
 #include "LegacyConfigurationHelper.h"
 #include "ModContentRegistry.h"
 #include "ModHandler.h"
@@ -125,48 +125,44 @@ void FSatisfactoryModLoader::CheckGameAndBootstrapperVersion() {
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);
 }
 
-void FSatisfactoryModLoader::InitializeSubsystems() {
-    //First initialize Configuration Manager
-    UConfigManager::RegisterConfigurationManager();
+void FSatisfactoryModLoader::RegisterSubsystemPatches() {
+    //Initialize patches required for subsystem holder registry to function
+    USubsystemHolderRegistry::InitializePatches();
     
-    //Then subsystem holder registry, as other subsystems depend on it
-    USubsystemHolderRegistry::InitializeRegistry();
-
-    //Register SML subsystem holder, holding content registry and chat command subsystem
-    USMLSubsystemHolder::RegisterSubsystemHolder();
-    
-    //Override vanilla managers content resolution and make them follow mod content registry
+    //Disable vanilla content resolution by patching vanilla lookup methods
     AModContentRegistry::DisableVanillaContentRegistration();
+
+    //Register remote call object registry hook
+    URemoteCallObjectRegistry::InitializePatches();
     
-    //Initialize remote call object registry
-    URemoteCallObjectRegistry::InitializeRegistry();
-    
-    //Register SML Remote Call Object
-    USMLRemoteCallObject::RegisterRemoteCallObject();
+    //Register SML chat commands subsystem patch (should actually be in CommandSubsystem i guess)
+    USMLRemoteCallObject::RegisterChatCommandPatch();
 
     //Initialize network manager handling mod packets
-    UModNetworkHandler::Initialize();
-    
-    //Register version checker for remote connections
-    FSMLNetworkManager::RegisterMessageTypeAndHandlers();
+    UModNetworkHandler::InitializePatches();
 
     //Initialize tooltip handler
-    UItemTooltipHandler::Initialize();
+    UItemTooltipSubsystem::InitializePatches();
 
     //Register offline player handler, providing ability to fallback to offline username and net id
-    FOfflinePlayerHandler::RegisterHandler();
-
-    //Register cheat manager handling, allowing access to cheat commands if desired
-    FPlayerCheatManagerHandler::RegisterHandler();
-
-    //Register asset dumping related console commands
-    FGameAssetDumper::RegisterConsoleCommands();
+    FOfflinePlayerHandler::RegisterHandlerPatches();
 
     //Register main menu additions, like mod list and labels
     FMainMenuPatch::RegisterPatch();
 
     //Register options menu key bindings patch, providing better keybind categorization
     FOptionsKeybindPatch::RegisterPatch();
+}
+
+void FSatisfactoryModLoader::RegisterSubsystems() {
+    //Register cheat manager handling, allowing access to cheat commands if desired
+    FPlayerCheatManagerHandler::RegisterHandler();
+
+    //Register version checker for remote connections
+    FSMLNetworkManager::RegisterMessageTypeAndHandlers();
+
+    //Register asset dumping related console commands
+    FGameAssetDumper::RegisterConsoleCommands();
 }
 
 void FSatisfactoryModLoader::PreInitializeModLoading() {
@@ -226,21 +222,26 @@ void FSatisfactoryModLoader::InitializeModLoading() {
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod loader initialization"));
 
     //Setup SML subsystems and custom content registries
-    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Setting up SML subsystems"));
-    InitializeSubsystems();
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Registering subsystem patches..."));
+    RegisterSubsystemPatches();
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Registering global subsystems..."));
+    RegisterSubsystems();
 
     //Subscribe to world lifecycle event for mod initializers
-    ModHandlerPrivate->SubscribeToLifecycleEvents();
+    ModHandlerPrivate->SubscribeToWorldEvents();
 
     //Perform actual mod loading
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initializing mods"));
     ModHandlerPrivate->InitializeMods();
 
     //Initialize game instance subsystems and give mods opportunity to register global content
-    ModHandlerPrivate->InitializeGameInstance();
+    UGameInstance* GameInstance = Cast<UGameEngine>(GEngine)->GameInstance;
+    ModHandlerPrivate->InitializeGameInstanceModules(GameInstance);
 
     //Reload configuration manager to handle mod configs
-    UConfigManager::ReloadModConfigurations(true);
+    UConfigManager* ConfigManager = GEngine->GetEngineSubsystem<UConfigManager>();
+    ConfigManager->ReloadModConfigurations(true);
+    ModHandlerPrivate->PostInitializeGameInstanceModules(GameInstance);
 
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
 }

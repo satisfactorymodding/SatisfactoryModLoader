@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "EngineSubsystem.h"
 #include "Object.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "NetworkHandler.generated.h"
@@ -32,7 +33,7 @@ struct FMessageEntry {
  * Most of the time you want to use normal replication for gameplay-related stuff
  */
 UCLASS()
-class SML_API UModNetworkHandler : public UBlueprintFunctionLibrary {
+class SML_API UModNetworkHandler : public UEngineSubsystem {
     GENERATED_BODY()
 private:
     UPROPERTY()
@@ -43,11 +44,6 @@ private:
 private:
     void ReceiveMessage(class UNetConnection* Connection, const FString& ModId, int32 MessageId, const FString& Content) const;
 public:
-    /**
-     * Retrieves global network handler instance
-     */
-    static UModNetworkHandler* Get();
-
     /**
      * Retrieves metadata object for given connection
      * Metadata object can be used to store information related to given connection before
@@ -84,5 +80,5 @@ private:
     friend class FSatisfactoryModLoader;
 
     /** Registers hooks associated with network handler */
-    static void Initialize();
+    static void InitializePatches();
 };

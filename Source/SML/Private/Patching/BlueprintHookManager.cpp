@@ -3,7 +3,6 @@
 #include "FileHelper.h"
 #include "JsonSerializer.h"
 #include "JsonWriter.h"
-#include "Paths.h"
 #include "Toolkit/KismetBytecodeDisassemblerJson.h"
 
 //Whenever to debug blueprint hooking. When enabled, JSON files with script bytecode before and after installing hook will be generated
@@ -12,19 +11,12 @@
 DEFINE_LOG_CATEGORY(LogBlueprintHookManager);
 
 #define WRITE_UNALIGNED(Arr, Type, Value) \
-Arr.AddUninitialized(sizeof(Type)); \
-FPlatformMemory::WriteUnaligned<Type>(&AppendedCode[Arr.Num() - sizeof(Type)], (Type) Value);
+	Arr.AddUninitialized(sizeof(Type)); \
+	FPlatformMemory::WriteUnaligned<Type>(&AppendedCode[Arr.Num() - sizeof(Type)], (Type) Value);
 
 void UBlueprintHookManager::HandleHookedFunctionCall(FFrame& Stack, int32 HookOffset) {
-	const UBlueprintHookManager* HookManager = GetDefault<UBlueprintHookManager>();
-	const FFunctionHookInfo& FunctionHookInfo = HookManager->HookedFunctions.FindChecked(Stack.Node);
-	const int32 ReturnInstructionOffset = HookManager->ReturnInstructionOffsets.FindChecked(Stack.Node);
-	const TArray<TFunction<HookFunctionSignature>>& Hooks = FunctionHookInfo.CodeOffsetByHookList.FindChecked(HookOffset);
-	FBlueprintHookHelper HookHelper{Stack, ReturnInstructionOffset};
-	
-	for (const TFunction<HookFunctionSignature>& Hook : Hooks) {
-		Hook(HookHelper);
-	}
+	FFunctionHookInfo& FunctionHookInfo = HookedFunctions.FindChecked(Stack.Node);
+	FunctionHookInfo.InvokeBlueprintHook(Stack, HookOffset);
 }
 
 #if DEBUG_BLUEPRINT_HOOKING
@@ -43,7 +35,7 @@ void DebugDumpFunctionScriptCode(UFunction* Function, int32 HookOffset, const FS
 }
 #endif
 
-void InstallBlueprintHook(UFunction* Function, int32 HookOffset) {
+void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, int32 HookOffset) {
 	TArray<uint8>& OriginalCode = Function->Script;
 	checkf(OriginalCode.Num() > HookOffset, TEXT("Invalid hook: HookOffset > Script.Num()"));
 
@@ -127,7 +119,7 @@ void InstallBlueprintHook(UFunction* Function, int32 HookOffset) {
 #endif
 }
 
-int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
+int32 UBlueprintHookManager::PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 	if (HookOffset == EPredefinedHookOffset::Return) {
 		//For now Kismet Compiler will always generate only one Return node, so all
 		//execution paths will end up either with executing it directly or jumping to it
@@ -141,12 +133,30 @@ int32 PreProcessHookOffset(UFunction* Function, int32 HookOffset) {
 	return HookOffset;
 }
 
+void FFunctionHookInfo::InvokeBlueprintHook(FFrame& Frame, int32 HookOffset) {
+	FBlueprintHookHelper HookHelper{Frame, ReturnStatementOffset};
+	const TArray<TFunction<HookFunctionSignature>>& Hooks = this->CodeOffsetByHookList.FindChecked(HookOffset);
+	for (const TFunction<HookFunctionSignature>& Hook : Hooks) {
+		Hook(HookHelper);
+	}
+}
+
+void FFunctionHookInfo::RecalculateReturnStatementOffset(UFunction* Function) {
+	FKismetBytecodeDisassemblerJson Disassembler;
+	int32 ReturnInstructionOffset;
+	Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ReturnInstructionOffset);
+	this->ReturnStatementOffset = ReturnInstructionOffset;
+}
+
 void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFunction<HookFunctionSignature>& Hook, int32 HookOffset) {
 #if !WITH_EDITOR
 	checkf(Function->Script.Num(), TEXT("HookBPFunction: Function provided is not implemented in BP"));
+	
 	//Make sure to add outer UClass to root set to avoid it being Garbage Collected
 	//Because otherwise after GC script byte code will be reloaded, without our hooks applied
-	Function->GetTypedOuter<UClass>()->AddToRoot();
+	UClass* OuterUClass = Function->GetTypedOuter<UClass>();
+	check(OuterUClass);
+	HookedClasses.AddUnique(OuterUClass);
 	
 	HookOffset = PreProcessHookOffset(Function, HookOffset);
 	
@@ -154,25 +164,20 @@ void UBlueprintHookManager::HookBlueprintFunction(UFunction* Function, const TFu
 	if (Function->EventGraphFunction != nullptr) {
 		UE_LOG(LogBlueprintHookManager, Warning, TEXT("Attempt to hook event graph call stub function with fast-call enabled, disabling fast call for that function"));
 		UE_LOG(LogBlueprintHookManager, Warning, TEXT("It may result in performance regression for called function, if you need highest performance possible, consider hooking event graph function"));
-		UE_LOG(LogBlueprintHookManager, Warning, TEXT("Event graph function: "), *Function->EventGraphFunction->GetPathName(), TEXT(", From Offset: "), Function->EventGraphCallOffset);
+		UE_LOG(LogBlueprintHookManager, Warning, TEXT("Event graph function: %s, From Offset: %d"), *Function->EventGraphFunction->GetPathName(), Function->EventGraphCallOffset);
 		Function->EventGraphFunction = nullptr;
 	}
 #endif
 
-	UBlueprintHookManager* HookManager = GetMutableDefault<UBlueprintHookManager>();
-	FFunctionHookInfo& FunctionHookInfo = HookManager->HookedFunctions.FindOrAdd(Function);
+	FFunctionHookInfo& FunctionHookInfo = HookedFunctions.FindOrAdd(Function);
 	TArray<TFunction<HookFunctionSignature>>& InstalledHooks = FunctionHookInfo.CodeOffsetByHookList.FindOrAdd(HookOffset);
 
 	if (InstalledHooks.Num() == 0) {
 		//First time function is hooked at this offset, call InstallBlueprintHook
 		InstallBlueprintHook(Function, HookOffset);
 		//Update cached return instruction offset
-		FKismetBytecodeDisassemblerJson Disassembler;
-		int32 ReturnInstructionOffset;
-		Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ReturnInstructionOffset);
-		HookManager->ReturnInstructionOffsets.Add(Function, ReturnInstructionOffset);
+		FunctionHookInfo.RecalculateReturnStatementOffset(Function);
 	}
-	
 	//Add provided hook into the array
 	InstalledHooks.Add(Hook);
 #endif

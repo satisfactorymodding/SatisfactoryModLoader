@@ -42,8 +42,7 @@ void AChatCommandSubsystem::Init() {
 }
 
 TArray<AFGPlayerController*> AChatCommandSubsystem::ParsePlayerName(UCommandSender* Caller, const FString& Name, UObject* WorldContext) {
-	UWorld* World = WorldContext->GetWorld();
-	check(World);
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::Assert);
 	TArray<AFGPlayerController*> PlayerControllers;
 	
 	if (Name == TEXT("@self") || Name == TEXT("@s")) {
@@ -85,7 +84,7 @@ void AChatCommandSubsystem::RegisterCommand(const FString& ModReference, TSubcla
 		AChatCommandInstance* Command = GetWorld()->SpawnActor<AChatCommandInstance>(CommandClass, SpawnParams);
 		check(Command);
 		//Make sure ModReference is set for spawned command actor
-		Command->ModReference = ModReference;
+		Command->ModReference = *ModReference;
 
 		//register all command aliases
 		TArray<FString> AllCommandNames;
@@ -131,7 +130,7 @@ EExecutionStatus AChatCommandSubsystem::RunChatCommand(const FString& CommandLin
 		return EExecutionStatus::BAD_ARGUMENTS;
 	}
 	
-	const FString CommandFQName = MakeFQCommandName(CommandEntry->GetOwnerModReference(), CommandEntry->CommandName);
+	const FString CommandFQName = MakeFQCommandName(CommandEntry->GetOwnerModReference().ToString(), CommandEntry->CommandName);
 	const FSMLConfiguration Configuration = FSatisfactoryModLoader::GetSMLConfiguration();
 
 	//Check if command has been disabled in SML configuration

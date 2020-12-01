@@ -1,4 +1,4 @@
-﻿#include "ItemTooltipHandler.h"
+﻿#include "ItemTooltipSubsystem.h"
 #include "BlueprintHookHelper.h"
 #include "BlueprintHookManager.h"
 #include "TextBlock.h"
@@ -8,7 +8,7 @@
 #include "Tooltip/SMLItemTooltipProvider.h"
 
 //Overwrites delegates bound to title & description widgets to use FTooltipHookHelper, add custom item widget
-void ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
+void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
     //Gather UProperty exposed by tooltip widget
     UClass* TooltipWidgetClass = TooltipWidget->GetClass();
     UObjectProperty* TitleWidgetProperty = Cast<UObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mTitle")));
@@ -23,6 +23,7 @@ void ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* Owni
     
     //Spawn custom widget in parent panel and add it
     UItemStackContextWidget* ContextWidget = NewObject<UItemStackContextWidget>(ParentPanel);
+    ContextWidget->ItemTooltipSubsystem = this;
     ContextWidget->InventoryStack = InventoryStack;
     ContextWidget->PlayerController = OwningPlayer;
     ContextWidget->Visibility = ESlateVisibility::Collapsed;
@@ -32,7 +33,7 @@ void ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* Owni
     DescriptionBlock->TextDelegate.BindUFunction(ContextWidget, TEXT("GetItemDescription"));
     
     //Append custom widgets to description
-    TArray<UWidget*> Widgets = UItemTooltipHandler::CreateDescriptionWidgets(OwningPlayer, InventoryStack);
+    TArray<UWidget*> Widgets = CreateDescriptionWidgets(OwningPlayer, InventoryStack);
     for (UWidget* Widget : Widgets) {
         ParentPanel->AddChild(Widget);
     }
@@ -54,32 +55,37 @@ FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
     return ResultStack;
 }
 
-void UItemTooltipHandler::Initialize() {
+void UItemTooltipSubsystem::InitializePatches() {
     //Hook into InventorySlot widget to apply tooltip overrides
     UClass* InventorySlot = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/InGame/InventorySlots/Widget_InventorySlot.Widget_InventorySlot_C"));
     check(InventorySlot);
     UFunction* Function = InventorySlot->FindFunctionByName(TEXT("GetTooltipWidget"));
-    UBlueprintHookManager::HookBlueprintFunction(Function, [](FBlueprintHookHelper& HookHelper) {
+
+    UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
+    HookManager->HookBlueprintFunction(Function, [](FBlueprintHookHelper& HookHelper) {
         UUserWidget* TooltipWidget = Cast<UUserWidget>(*HookHelper.GetOutVariablePtr<UObjectProperty>());
         UUserWidget* SlotWidget = Cast<UUserWidget>(HookHelper.GetContext());
+        
         if (TooltipWidget != nullptr) {
             APlayerController* OwningPlayer = SlotWidget->GetOwningPlayer();
             const FInventoryStack InventoryStack = GetStackFromSlot(SlotWidget);
+            
             if (InventoryStack.Item.IsValid()) {
-                ApplyItemOverridesToTooltip(TooltipWidget, OwningPlayer, InventoryStack);
+                UGameInstance* GameInstance = SlotWidget->GetWorld()->GetGameInstance();
+                UItemTooltipSubsystem* TooltipSubsystem = GameInstance->GetSubsystem<UItemTooltipSubsystem>();
+                TooltipSubsystem->ApplyItemOverridesToTooltip(TooltipWidget, OwningPlayer, InventoryStack);
             }
         }
     }, EPredefinedHookOffset::Return);
 }
 
-void UItemTooltipHandler::RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider) {
-    UItemTooltipHandler* TooltipHandler = GetMutableDefault<UItemTooltipHandler>();
+void UItemTooltipSubsystem::RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider) {
     if (ItemTooltipProvider->Implements<USMLItemTooltipProvider>()) {
-        TooltipHandler->GlobalTooltipProviders.AddUnique(ItemTooltipProvider);
+        GlobalTooltipProviders.AddUnique(ItemTooltipProvider);
     }
 }
 
-FText UItemTooltipHandler::GetItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
+FText UItemTooltipSubsystem::GetItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
     UClass* ItemClass = InventoryStack.Item.ItemClass;
     if (ItemClass != NULL) {
         UObject* ItemObject = ItemClass->GetDefaultObject();
@@ -90,8 +96,7 @@ FText UItemTooltipHandler::GetItemName(APlayerController* OwningPlayer, const FI
     return UFGItemDescriptor::GetItemName(ItemClass);
 }
 
-FText UItemTooltipHandler::GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
-    const UItemTooltipHandler* TooltipHandler = GetDefault<UItemTooltipHandler>();
+FText UItemTooltipSubsystem::GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
     UClass* ItemClass = InventoryStack.Item.ItemClass;
     TArray<FString> DescriptionText;
 
@@ -110,7 +115,7 @@ FText UItemTooltipHandler::GetItemDescription(APlayerController* OwningPlayer, c
         }
     }
     
-    for (UObject* GlobalTooltipProvider : TooltipHandler->GlobalTooltipProviders) {
+    for (UObject* GlobalTooltipProvider : GlobalTooltipProviders) {
         const FString GlobalItemDescription = ISMLItemTooltipProvider::Execute_GetItemDescription(GlobalTooltipProvider, OwningPlayer, InventoryStack).ToString();
         if (!GlobalItemDescription.IsEmpty()) {
             DescriptionText.Add(GlobalItemDescription);
@@ -120,7 +125,7 @@ FText UItemTooltipHandler::GetItemDescription(APlayerController* OwningPlayer, c
     return FText::FromString(FString::Join(DescriptionText, TEXT("\n")));
 }
 
-TArray<UWidget*> UItemTooltipHandler::CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
+TArray<UWidget*> UItemTooltipSubsystem::CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
     TArray<UWidget*> ResultWidgets;
     UClass* ItemClass = InventoryStack.Item.ItemClass;
     
@@ -134,8 +139,7 @@ TArray<UWidget*> UItemTooltipHandler::CreateDescriptionWidgets(APlayerController
         }
     }
     
-    const UItemTooltipHandler* TooltipHandler = GetDefault<UItemTooltipHandler>();
-    for (UObject* GlobalTooltipProvider : TooltipHandler->GlobalTooltipProviders) {
+    for (UObject* GlobalTooltipProvider : GlobalTooltipProviders) {
         UWidget* ProviderWidget = ISMLItemTooltipProvider::Execute_CreateDescriptionWidget(GlobalTooltipProvider, OwningPlayer, InventoryStack);
         if (ProviderWidget) {
             ResultWidgets.Add(ProviderWidget);
@@ -144,4 +148,3 @@ TArray<UWidget*> UItemTooltipHandler::CreateDescriptionWidgets(APlayerController
     
     return ResultWidgets;
 }
-

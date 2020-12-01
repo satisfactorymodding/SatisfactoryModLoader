@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "GameInstanceSubsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Subsystem/ModSubsystemHolder.h"
 #include "SubsystemHolderRegistry.generated.h"
@@ -17,7 +18,7 @@ public:
 };
 
 UCLASS()
-class SML_API USubsystemHolderRegistry : public UBlueprintFunctionLibrary {
+class SML_API USubsystemHolderRegistry : public UGameInstanceSubsystem {
     GENERATED_BODY()
 public:
     USubsystemHolderRegistry();
@@ -28,21 +29,24 @@ public:
     * If registration is attempted after that, registry will throw an exception instead
     */
     UFUNCTION(BlueprintCallable)
-    static void RegisterSubsystemHolder(const FString& ModReference, TSubclassOf<UModSubsystemHolder> SubsystemHolderClass);
+    void RegisterSubsystemHolder(const FString& ModReference, TSubclassOf<UModSubsystemHolder> SubsystemHolderClass);
+
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 private:
     friend class FSatisfactoryModLoader;
 
-    /** Setups hooking required for registry functionality */
-    static void InitializeRegistry();
+    /** True if registry is frozen and no longer accepts registrations */
+    bool bRegistryFrozen;
 
     /** Freezes registry so it no longer accepts further registrations */
-    static void FreezeRegistry();
+    void FreezeRegistry();
 
     /** Initializes and attaches all mod subsystems */
     static void InitializeSubsystems(class AFGGameState* GameState);
+
+    /** Setups hooking required for registry functionality */
+    static void InitializePatches();
     
-    /** True if registry is frozen and no longer accepts registrations */
-    static bool bIsRegistryFrozen;
     
     /** Array with all registered holders, need to be property to avoid garbage collection of UClasses */
     UPROPERTY()

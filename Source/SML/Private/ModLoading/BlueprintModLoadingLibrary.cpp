@@ -42,36 +42,60 @@ TMap<FName, FString> UBlueprintModLoadingLibrary::GetExtraModLoaderAttributes() 
     return FSatisfactoryModLoader::GetExtraAttributes();
 }
 
-UTexture2D* UBlueprintModLoadingLibrary::LoadModIconTexture(const FString& ModReference, UTexture2D* FallbackIcon) {
-    UBlueprintModLoadingLibrary* ModLoadingLibrary = GetMutableDefault<UBlueprintModLoadingLibrary>();
-    FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
-
-    //Icon is already loaded and cached
-    if (ModLoadingLibrary->LoadedModIcons.Contains(ModReference)) {
-        return ModLoadingLibrary->LoadedModIcons.FindChecked(ModReference);
+UModIconStorage* UBlueprintModLoadingLibrary::GetModIconStorage() {
+    static UModIconStorage* IconStorage = NULL;
+    if (IconStorage == NULL) {
+        IconStorage = NewObject<UModIconStorage>(GetTransientPackage(), NAME_None, RF_MarkAsRootSet);
     }
+    check(IconStorage);
+    return IconStorage;
+}
+
+UModIconStorage::UModIconStorage() {
+    this->BlankTexture = UTexture2D::CreateTransient(256, 256);
+}
+
+UTexture2D* UModIconStorage::FindOrLoadModIcon(const FString& ModReference, bool& bOutIsBlankTexture) {
+    //Icon is already loaded and cached
+    if (LoadedModIcons.Contains(ModReference)) {
+        UTexture2D* LoadedIcon = LoadedModIcons.FindChecked(ModReference);
+        bOutIsBlankTexture = LoadedIcon == BlankTexture;
+    }
+
+    UTexture2D* ActuallyLoadedTexture = LoadModIcon(ModReference);
+    if (ActuallyLoadedTexture == NULL) {
+        ActuallyLoadedTexture = BlankTexture;
+    }
+
+    LoadedModIcons.Add(ModReference, ActuallyLoadedTexture);
+    bOutIsBlankTexture = ActuallyLoadedTexture == BlankTexture;
+    return ActuallyLoadedTexture;
+}
+
+UTexture2D* UModIconStorage::LoadModIcon(const FString& ModReference) {
+    FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
     
     //ModHandler is not available, function is called from editor
     if (ModHandler == NULL) {
-        return FallbackIcon;
+        return NULL;
     }
 
     //Mod is not installed, fallback to icon provided
     const FModContainer* ModContainer = ModHandler->GetLoadedMod(ModReference);
     if (ModContainer == NULL) {
-        return FallbackIcon;
+        return NULL;
     }
 
     //Icon path is not set in the data.json
     const FString& IconPath = ModContainer->ModInfo.ModResources.ModIconPath;
     if (IconPath.IsEmpty()) {
-        return FallbackIcon;
+        return NULL;
     }
 
     //Mod has icon path set, but file extraction failed and icon is not available
     const FString* IconFileLocation = ModContainer->CustomFilePaths.Find(IconPath);
     if (IconFileLocation == NULL) {
-        return FallbackIcon;
+        return NULL;
     }
 
     FString OutErrorMessage;
@@ -80,10 +104,14 @@ UTexture2D* UBlueprintModLoadingLibrary::LoadModIconTexture(const FString& ModRe
     //Failed to load mod icon, fallback to default
     if (LoadedModIcon == NULL) {
         UE_LOG(LogModLoading, Error, TEXT("Failed to load icon for mod %s at file %s: %s"), *ModReference, **IconFileLocation, *OutErrorMessage);
-        LoadedModIcon = FallbackIcon;
+        return NULL;
     }
-
-    //Cache obtained texture object for faster access
-    ModLoadingLibrary->LoadedModIcons.Add(ModReference, LoadedModIcon);
     return LoadedModIcon;
+}
+
+UTexture2D* UBlueprintModLoadingLibrary::LoadModIconTexture(const FString& ModReference, UTexture2D* FallbackIcon) {
+    UModIconStorage* ModIconStorage = GetModIconStorage();
+    bool bIsBlankTexture = false;
+    UTexture2D* ModIconTexture = ModIconStorage->FindOrLoadModIcon(ModReference, bIsBlankTexture);
+    return bIsBlankTexture ? FallbackIcon : ModIconTexture;
 }

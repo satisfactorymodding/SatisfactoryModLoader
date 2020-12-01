@@ -4,10 +4,10 @@
 #include "VerticalBox.h"
 #include "Widget.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "ItemTooltipHandler.generated.h"
+#include "ItemTooltipSubsystem.generated.h"
 
 UCLASS()
-class SML_API UItemTooltipHandler: public UBlueprintFunctionLibrary {
+class SML_API UItemTooltipSubsystem: public UGameInstanceSubsystem {
     GENERATED_BODY()
 public:
     /**
@@ -16,7 +16,7 @@ public:
      * Object should implement ISMLItemTooltipProvider
      */
     UFUNCTION(BlueprintCallable)
-    static void RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider);
+    void RegisterGlobalTooltipProvider(const FString& ModReference, UObject* ItemTooltipProvider);
     
     /**
      * Returns formatted item name obtained from InventoryStack
@@ -24,20 +24,22 @@ public:
      * For items implementing ISMLItemDisplayInterface, this is routed to GetItemName
      */
     UFUNCTION(BlueprintPure)
-    static FText GetItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    FText GetItemName(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
     /**
      * Retrieves correct item description for given inventory stack
      * Call semantics are similar to GetItemName()
      */
     UFUNCTION(BlueprintPure)
-    static FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    FText GetItemDescription(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 
-    static TArray<UWidget*> CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+    TArray<UWidget*> CreateDescriptionWidgets(APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
 private:
     friend class FSatisfactoryModLoader;
 
-    static void Initialize();
+    void ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack);
+
+    static void InitializePatches();
     
     /** Array of registered tooltip providers, UPROPERTY to avoid garbage collection */
     UPROPERTY()
