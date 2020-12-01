@@ -15,6 +15,12 @@ struct FACTORYGAME_API FSignWallData
 {
 	GENERATED_BODY()
 public: // MODDING EDIT?
+	FSignWallData() :
+		TextColorIndex( 0 ),
+		BackgroundColorIndex( 2 ),
+		SignText( "THIS IS A WALL SIGN" )
+	{}
+	
 	/** Index of the selected color for the text from the FGSignSettings color data array  */
 	UPROPERTY(SaveGame, BlueprintReadWrite, Category = "SignWall")
 	int32 TextColorIndex;
@@ -26,13 +32,6 @@ public: // MODDING EDIT?
 	/** Text to be displayed on the sign */
 	UPROPERTY(SaveGame, BlueprintReadWrite, Category = "SignWall")
 		FString SignText;
-
-	FSignWallData() :
-		TextColorIndex( 0 ),
-		BackgroundColorIndex( 2 ),
-		SignText( "THIS IS A WALL SIGN" )
-	{}
-
 
 public:
 	FORCEINLINE ~FSignWallData() = default;

@@ -22,6 +22,8 @@ UFGLocalPlayer::UFGLocalPlayer() : Super() {
 }
 void UFGLocalPlayer::PlayerAdded( UGameViewportClient* inViewportClient, int32 inControllerID){ }
 void UFGLocalPlayer::PlayerRemoved(){ }
+void UFGLocalPlayer::SubscribeToOptionUpdates(){ }
+void UFGLocalPlayer::OnMaintainYAxisFOVUpdated(){ }
 TEnumAsByte<ELoginState> UFGLocalPlayer::GetLoginState() const{ return TEnumAsByte<ELoginState>(); }
 FString UFGLocalPlayer::GetUsername() const{ return FString(); }
 FString UFGLocalPlayer::GetUsernameEpic() const{ return FString(); }

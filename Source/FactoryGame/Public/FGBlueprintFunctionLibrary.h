@@ -318,6 +318,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Math" )
 	static bool EvaluateMathExpression( const FString& expression, UPARAM( DisplayName = "Result" ) FText& out_Result );
 
+	/** Convert a number of seconds into hour:minutes:seconds format string (including leading zeroes) */
+	UFUNCTION(BlueprintPure,  Category = "Utilities|String")
+    static FString SecondsToTimeString( float inSeconds );
+
 	/** Does the same thing as UEditorAssetLibrary::SetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
 	static void SetMetadataTag( UObject* object, FName tag, const FString& value );

@@ -51,6 +51,7 @@ void AFGGameState::ClaimPlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ReleasePlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ItemPickedUp(TSubclassOf<  UFGItemDescriptor > itemClass){ }
 void AFGGameState::SetPlannedServerRestartWorldTime(float worldTimeSeconds){ }
+FDateTime AFGGameState::GetServerUTCNow() const{ return FDateTime(); }
 void AFGGameState::OnRep_OnlineSessionName(){ }
 void AFGGameState::OnRep_OnlineSessionVisibility(){ }
 void AFGGameState::CheckRestartTime(){ }

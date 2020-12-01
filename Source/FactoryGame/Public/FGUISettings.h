@@ -24,6 +24,10 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TSubclassOf<UUserWidget> mConnectAccountsWidget;
 
+	/** Widget used to show the user when enabling the debug overlay */
+	UPROPERTY( EditAnywhere, config, Category = UI )
+	TSubclassOf< class UFGDebugOverlayWidget > mDebugOverlayWidgetClass;
+
 public:
 	FORCEINLINE ~UFGUISettings() = default;
 };

@@ -247,6 +247,13 @@ public:
 	virtual void PlayerRemoved() override;
 	//~End ULocalPlayer interface
 
+	/** Listen to option changes we care about */
+	void SubscribeToOptionUpdates();
+	
+	/** Triggered when Maintain Y Axis FOV option have changed */
+	UFUNCTION()
+    void OnMaintainYAxisFOVUpdated();
+
 	/** Get in what state our login is */
 	UFUNCTION(BlueprintPure,Category="Online")
 	TEnumAsByte<ELoginState> GetLoginState() const;

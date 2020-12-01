@@ -63,5 +63,6 @@ void UFGBlueprintFunctionLibrary::CopyTextToClipboard(FText textToCopy){ }
 FText UFGBlueprintFunctionLibrary::CopyTextFromClipboard(){ return FText(); }
 AFGPlayerController* UFGBlueprintFunctionLibrary::GetLocalPlayerController(const UObject* worldContext){ return nullptr; }
 bool UFGBlueprintFunctionLibrary::EvaluateMathExpression(const FString& expression,  FText& out_Result){ return bool(); }
+FString UFGBlueprintFunctionLibrary::SecondsToTimeString(float inSeconds){ return FString(); }
 void UFGBlueprintFunctionLibrary::SetMetadataTag(UObject* object, FName tag, const FString& value){ }
 FString UFGBlueprintFunctionLibrary::GetMetadataTag(UObject* object, FName tag){ return FString(); }

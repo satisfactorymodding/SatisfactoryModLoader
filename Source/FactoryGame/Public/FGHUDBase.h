@@ -21,6 +21,10 @@ public:
 	/** Returns base ui */
 	UFUNCTION( BlueprintPure, Category = "HUD" )
 	FORCEINLINE class UFGBaseUI* GetBaseUI() { return mBaseUI; }
+
+	UFUNCTION( Exec )
+	void ToggleDebugOverlay();
+	
 private:
 	/** Reference to the UI widget */
 	UPROPERTY()
