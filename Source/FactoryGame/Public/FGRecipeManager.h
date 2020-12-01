@@ -90,9 +90,6 @@ private:
 	bool ShouldAddRecipeByEvent( TSubclassOf< UFGRecipe > recipe ) const;
 	
 private:
-	//MODDING EDIT: Expose to AModContentRegistry
-	friend class AModContentRegistry;
-
 	/** All recipes that are available to the producers, i.e. build gun, workbench, manufacturers etc. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< UFGRecipe > > mAvailableRecipes;
