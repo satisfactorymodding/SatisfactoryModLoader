@@ -17,6 +17,14 @@ UCLASS(Abstract, BlueprintType, Blueprintable)
 class SML_API UConfigProperty : public UObject {
     GENERATED_BODY()
 public:
+    /** Display name of this property as it is visible to the user */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FString DisplayName;
+
+    /** Tooltip visible to user hovering over this property */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FString Tooltip;
+    
     /** Retrieves type of the configuration state this value is operating on */
     UFUNCTION(BlueprintPure, BlueprintNativeEvent)
     TSubclassOf<UConfigValue> GetValueClass() const;
