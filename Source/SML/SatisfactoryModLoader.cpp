@@ -317,7 +317,7 @@ namespace SML {
 	}
 
 	void BeginCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName) {
-		FString& CommonBuffer = Context->GetBuffer();
+		FString& CommonBuffer = const_cast<FString&>(Context->GetBuffer());
 		CommonBuffer += TEXT( "<" );
 		CommonBuffer += SectionName;
 		CommonBuffer += TEXT( ">" );
@@ -325,7 +325,7 @@ namespace SML {
 	}
 
 	void EndCrashReportSection(FGenericCrashContext* Context, const TCHAR* SectionName) {
-		FString& CommonBuffer = Context->GetBuffer();
+		FString& CommonBuffer = const_cast<FString&>(Context->GetBuffer());
 		CommonBuffer += TEXT( "</" );
 		CommonBuffer += SectionName;
 		CommonBuffer += TEXT( ">" );
