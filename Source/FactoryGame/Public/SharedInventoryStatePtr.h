@@ -221,8 +221,7 @@ private:
 	{
 		return new TReferenceControllerWithNextFrameDeleter( inActorPtr );
 	}
-// MODDING EDIT
-public: // VarToFString requires this
+public: // MODDING EDIT: VarToFString requires this
 	/**
 	 * Private constructor to create a pointer with reference counting enabled.
 	 *

@@ -103,7 +103,7 @@ protected:
 	/** Setup so that we get calls to UpdatePreview whenever time of day is updated in the editor */
 	void SetupPreviewDelegate();
 #endif
-public: // MODDING EDIT
+public: // MODDING EDIT protected -> public
 	/** How the sunlight changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="Curves|Sun")
 	FRuntimeCurveLinearColor mSunLightColorCurve;

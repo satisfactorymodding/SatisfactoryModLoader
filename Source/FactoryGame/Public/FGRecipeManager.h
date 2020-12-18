@@ -85,6 +85,9 @@ private:
 
 	/** Checks if a recipe is valid for addition to the available recipes list. */
 	bool CanAddToAvailableRecipes( TSubclassOf< UFGRecipe > recipe ) const;
+
+	/** Checks if a recipe is valid for addition depending on it relevant events  */
+	bool ShouldAddRecipeByEvent( TSubclassOf< UFGRecipe > recipe ) const;
 	
 private:
 	//MODDING EDIT: Expose to AModContentRegistry

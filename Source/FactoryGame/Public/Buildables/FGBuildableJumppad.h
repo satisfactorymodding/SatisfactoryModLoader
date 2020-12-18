@@ -25,6 +25,23 @@ public:
 	FORCEINLINE ~FTrajectoryData() = default;
 };
 
+struct FACTORYGAME_API TrackedJumpPadPlayer
+{
+	TrackedJumpPadPlayer( class AFGCharacterPlayer* PlayerToTrack, float InitialTimeStamp )
+		: pPlayer( PlayerToTrack )
+		, NumChainedJumps( 0 )
+		, LastJumpTimeStamp( InitialTimeStamp )
+	{}
+	
+	class AFGCharacterPlayer* pPlayer;
+	
+	int32 NumChainedJumps;
+	float LastJumpTimeStamp;
+
+public:
+	FORCEINLINE ~TrackedJumpPadPlayer() = default;
+};
+
 DECLARE_LOG_CATEGORY_EXTERN( LogJumpPad, Log, All );
 
 /**
@@ -43,6 +60,10 @@ public:
 	/** Called when a launch is triggered. Highest Launch Speed is set to whichever object was launched fastest out of those in the trigger box. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "JumpPad" )
 	void OnLaunch( float HighestLaunchSpeed );
+
+	/** Called for every player launched. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "JumpPad" )
+    void OnPlayerLaunched( class AFGCharacterPlayer* pPlayer, int32 NumChainedBounces );
 
 	UFUNCTION( BlueprintPure, Category = "JumpPad" )
 	float GetPowerBankCapacity() const { return mPowerBankCapacity; }
@@ -168,6 +189,10 @@ protected:
 	/** Angle at which objects are launched. This doesn't 100% represent how an object flies, since that can change depending on their gravity. */
 	UPROPERTY( VisibleAnywhere, SaveGame, ReplicatedUsing = OnRep_LaunchAngle, Category = "JumpPad" )
 	float mLaunchAngle;
+	
+	/** How much time has to pass for a players chain jump counter to be reset. */
+    UPROPERTY( EditDefaultsOnly, Category = "JumpPad", meta = ( ClampMin = "0.0" ) )
+    float mPlayerChainJumpResetTime;
 
 	/** Whether or not there's enough power in the battery to launch. */
 	UPROPERTY( VisibleAnywhere, Replicated, Category = "JumpPad" )
@@ -244,6 +269,10 @@ protected:
 	Not using a bool because several objects could request us to show the trajectory at the same time. */
 	UPROPERTY( VisibleAnywhere, Category = "Trajectory" )
 	int32 mShowTrajectoryCounter;
+
+	/** Used to track players and how many jumps theyve done. Initially intended for playing sounds in a sequence for christmas event.*/
+	// TODO: This isn't very clean, as it will keep old data between sessions and only really reset once the game shuts down
+	static TArray<TrackedJumpPadPlayer> mTrackedPlayers;
 
 	private:
 		friend class AFGJumpPadLauncherHologram;

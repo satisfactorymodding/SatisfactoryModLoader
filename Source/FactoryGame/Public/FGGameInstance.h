@@ -251,11 +251,17 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="FactoryGame|Online")
 	EJoinSessionState GetCurrentJoinSessionState() const;
-public:
-	//MODDING EDIT
+
+	/* Set if we should enable navigation with tab and arrow keys. Stops UE4 to hog tab and arrow key input bindings in widgets. Doesn't do anything in PIE */
+	void EnableTabAndNavKeys( bool enable );
+
+	/** Get the instance of the debug overlay widget. Will create one if it doesn't exists. Might return null if we don't have a specificed debug overlay widget class */
+	class UFGDebugOverlayWidget* GetDebugOverlayWidget();
+
+public: //MODDING EDIT protected -> public
 	// Called when a map has loaded properly in Standalone
 	virtual void LoadComplete( const float loadTime, const FString& mapName ) override;
-protected:
+protected: // MODDING EDIT
 	/** Called after we have destroyed a old session for joining a new session */
 	virtual void OnDestroyOldSessionComplete_JoinSession( FName gameSessionName, bool wasSuccessful );
 
@@ -267,11 +273,17 @@ protected:
 	virtual void PollHostProductUserId_JoinSession();
 
 	// MODDING EDIT: Online not working
-	///** Called when we receive a callback about our current NAT-type */
-	//void OnNATQueryCompleted( const struct FOnlineError& requestStatus, TOptional<ENATType> foundNATType );
-	//
+	///** Forward function when nat query is completed */
+	//static void _OnNATUpdatedCallback( void* userData, ECachedNATType Data);
+
+	///** Called when we receive a callback about our current NAT-type  */
+	//void OnNATUpdated( ECachedNATType Data);
+
 	///** Called after we have joined a session, makes sure we copy the session settings from the host */
 	//void OnJoinSessionComplete( FName sessionName, EOnJoinSessionCompleteResult::Type joinResult );
+
+	//void SendRecievedNetworkErrorOnDelegate( UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg );
+
 private:
 	void OnPreLoadMap( const FString& levelName );
 	void OnPostLoadMap( UWorld* loadedWorld );
@@ -294,6 +306,11 @@ protected:
 	///** Called whenever a new error is added that doesn't send you to main menu */
 	//UPROPERTY(BlueprintAssignable)
 	//FOnNewError mOnNewError;
+
+	TArray< FFGGameNetworkErrorMsg > mNetworkErrorQueue;
+
+	UPROPERTY( BlueprintAssignable )
+	FOnNetworkErrorRecieved mOnNetworkErrorRecieved;
 
 	// MODDING EDIT
 	///** The global Analytics Service */
@@ -318,14 +335,13 @@ protected:
 	/** Has the player chosen to skip the onboarding? */
 	bool mSkipOnboarding;
 
-	// MODDING EDIT: Online not working
-	///** Called when nat-type is updated */
-	//UPROPERTY(BlueprintAssignable)
-	//FOnNatTypeUpdated mOnNatTypeUpdated;
+	/** Called when nat-type is updated */
+	UPROPERTY(BlueprintAssignable)
+	FOnNatTypeUpdated mOnNatTypeUpdated;
 
 	// MODDING EDIT: Online not working
 	///** Used to query NAT type, nothing more */
-	//TUniquePtr<class FEpicPeerManager> mEpicPeerManager;
+	//EOS_HP2P mP2PHandle;
 
 	/** Our last seen NAT-type */
 	ECachedNATType mCachedNATType;

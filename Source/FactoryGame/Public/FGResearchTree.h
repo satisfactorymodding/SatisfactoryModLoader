@@ -11,6 +11,7 @@
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
 #include "IncludeInBuild.h"
 #include "Styling/SlateBrush.h"
+#include "FGEventSubsystem.h"
 #include "FGResearchTree.generated.h"
 
 /**
@@ -26,6 +27,7 @@ public:
 	void PostLoad() override;
 #if WITH_EDITOR
 	virtual void PreSave( const class ITargetPlatform* targetPlatform ) override;
+	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif
 	// End UObject interface
 
@@ -66,6 +68,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Research Tree" )
 	static TArray<class UFGAvailabilityDependency *> GetUnlockDependencies( TSubclassOf <UFGResearchTree> inClass );
 
+	/** Returns the relevant events this schematic is present in. */
+	UFUNCTION( BlueprintPure, Category = "Research Tree" )
+    static TArray< EEvents > GetRelevantEvents( TSubclassOf< UFGResearchTree > inClass );
+
 public: // MODDING EDIT: protected -> public
 	/** The name to be displayed to the player before the tree is unlocked */
 	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )
@@ -94,6 +100,10 @@ public: // MODDING EDIT: protected -> public
 	/** The dependencies that needs to be satisfied before the player can see the tree */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Research Tree" )
 	TArray< class UFGAvailabilityDependency* > mVisibilityDependencies;
+
+	/** The events this schematic are present in */
+	UPROPERTY( EditDefaultsOnly, Category = "Events" )
+	TArray< EEvents > mRelevantEvents;
 	
 	/** The nodes that this tree is made up of */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Research Tree" )

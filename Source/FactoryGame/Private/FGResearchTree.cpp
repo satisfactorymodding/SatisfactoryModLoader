@@ -4,6 +4,7 @@
 
 #if WITH_EDITOR
 void UFGResearchTree::PreSave(const  ITargetPlatform* targetPlatform){ }
+EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult(); }
 #endif 
 #if WITH_EDITOR
 void UFGResearchTree::UpdateAssetBundleData(){ }
@@ -34,3 +35,4 @@ TArray< class UFGResearchTreeNode* > UFGResearchTree::GetNodes(TSubclassOf <UFGR
 TArray<class UFGAvailabilityDependency *> UFGResearchTree::GetUnlockDependencies(TSubclassOf <UFGResearchTree> inClass){ 
 	return inClass.GetDefaultObject()->mUnlockDependencies;
 }
+TArray< EEvents > UFGResearchTree::GetRelevantEvents(TSubclassOf< UFGResearchTree > inClass){ return TArray<EEvents>(); }

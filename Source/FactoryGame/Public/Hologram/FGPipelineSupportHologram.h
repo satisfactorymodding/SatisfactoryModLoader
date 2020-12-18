@@ -86,7 +86,7 @@ private:
 	UFGPipeConnectionComponentBase* mSnapConnection;
 
 	//Used to rotate the connection and top part vetically
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( /*CustomSerialization*/ ) // MODDING EDIT: Another CSS custom engine thing
 	float mVerticalAngle = 0.0f;
 
 	/** True if we've placed it on the ground and is working with the height */

@@ -174,7 +174,7 @@ private:
 
 	class AFGReplicationDetailActor_GeneratorFuel* GetCastRepDetailsActor() const;
 
-public: // MODDING EDIT
+public: // MODDING EDIT protected -> public
 	friend class AFGReplicationDetailActor_GeneratorFuel;
 
 	/** Maintainer of the active storage component for this actor. Use this to get the active inventory component. */
