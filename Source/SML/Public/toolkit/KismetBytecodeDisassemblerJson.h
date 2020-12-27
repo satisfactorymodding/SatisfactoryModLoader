@@ -9,13 +9,13 @@ public:
 	TSharedPtr<FJsonObject> SerializeExpression(int32& ScriptIndex);
 
 	/** Parses a block of statements until it hits return */
-	TArray<TSharedPtr<FJsonValue>> SerializeFunction(UFunction* Function);
+	TArray<TSharedPtr<FJsonValue>> SerializeFunction(UStruct* Function);
 
 	/** Computes length of the statement in bytes and returns it. Returns false if given index does not correspond to any statement (e.g if it is inside of some statement) */
-	bool GetStatementLength(UFunction* Function, int32 StatementIndex, int32& OutStatementLength);
+	bool GetStatementLength(UStruct* Function, int32 StatementIndex, int32& OutStatementLength);
 
 	/** Returns index of the first statement using given opcode */
-	bool FindFirstStatementOfType(UFunction* Function, int32 StartIndex, uint8 StatementOpcode, int32& OutStatementIndex);
+	bool FindFirstStatementOfType(UStruct* Function, int32 StartIndex, uint8 StatementOpcode, int32& OutStatementIndex);
 private:
 	TArray<uint8> Script;
 

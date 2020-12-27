@@ -1,0 +1,12 @@
+﻿#pragma once
+#include "AssetTypeSerializer.h"
+#include "PhysicalMaterialAssetSerializer.generated.h"
+
+UCLASS()
+class SML_API UPhysicalMaterialAssetSerializer : public UAssetTypeSerializer {
+    GENERATED_BODY()
+public:
+    virtual void SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const override;
+
+    virtual EAssetCategory GetAssetCategory() const override;
+};

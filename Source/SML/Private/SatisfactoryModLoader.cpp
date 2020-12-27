@@ -1,10 +1,13 @@
 #include "SatisfactoryModLoader.h"
+#include "AssetHelper.h"
 #include "bootstrapper_exports.h"
 #include "ConfigManager.h"
+#include "FbxMeshExporter.h"
 #include "FGAssetDumper.h"
 #include "FGPlayerController.h"
 #include "ItemTooltipSubsystem.h"
 #include "LegacyConfigurationHelper.h"
+#include "MaterialAssetSerializer.h"
 #include "ModContentRegistry.h"
 #include "ModHandler.h"
 #include "NativeHookManager.h"
@@ -13,7 +16,6 @@
 #include "SMLModule.h"
 #include "SMLNetworkManager.h"
 #include "SMLRemoteCallObject.h"
-#include "SMLSubsystemHolder.h"
 #include "SubsystemHolderRegistry.h"
 #include "Patch/CrashContextPatch.h"
 #include "Patch/MainMenuPatch.h"
@@ -161,6 +163,9 @@ void FSatisfactoryModLoader::RegisterSubsystems() {
     //Register version checker for remote connections
     FSMLNetworkManager::RegisterMessageTypeAndHandlers();
 
+    //Make sure asset helper is set up correctly as it is needed for asset dumping
+    FAssetHelper::RunStaticTests();
+
     //Register asset dumping related console commands
     FGameAssetDumper::RegisterConsoleCommands();
 }
@@ -208,6 +213,14 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
         FCrashContextPatch::SetupWithAccessors(*BootstrapperAccessors);
     }
     FCrashContextPatch::RegisterPatch();
+
+    //Register these patches early so no materials/meshes loaded will skip them
+    //They will slow down game performance because of hooking in hot spots + extra memory consumption of CPU
+    //Same goes with UStaticMesh patch, it will increase memory usage on CPU and decrease loading speed
+    if (SMLConfigurationPrivate.bDevelopmentMode) {
+        UMaterialAssetSerializer::RegisterShaderInitRHIHook();
+        FFbxMeshExporter::RegisterStaticMeshCPUAccessHook();
+    }
 
     //Show console if we have been asked to in configuration
     //Console can also be shown using -LOG command line switch

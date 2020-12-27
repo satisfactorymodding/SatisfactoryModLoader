@@ -3,7 +3,7 @@
 #include "JsonObject.h"
 #include "EdGraph/EdGraphPin.h"
 
-class FPropertyTypeHelper {
+class SML_API FPropertyTypeHelper {
 public:
     static FEdGraphPinType DeserializeGraphPinType(const TSharedRef<FJsonObject>& PinJson);
     static TSharedRef<FJsonObject> SerializeGraphPinType(const FEdGraphPinType& GraphPinType);

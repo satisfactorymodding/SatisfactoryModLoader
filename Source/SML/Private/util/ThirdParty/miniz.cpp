@@ -4343,7 +4343,7 @@ mz_bool mz_zip_reader_locate_file_v2(mz_zip_archive *pZip, const char *pName, co
     {
         const mz_uint8 *pHeader = &MZ_ZIP_ARRAY_ELEMENT(&pZip->m_pState->m_central_dir, mz_uint8, MZ_ZIP_ARRAY_ELEMENT(&pZip->m_pState->m_central_dir_offsets, mz_uint32, file_index));
         mz_uint filename_len = MZ_READ_LE16(pHeader + MZ_ZIP_CDH_FILENAME_LEN_OFS);
-        const char *pFilename = (const char *)pHeader + MZ_ZIP_CENTRAL_DIR_HEADER_SIZE;
+        const char *pFilename = (const char *)pHeader + (int32_t) MZ_ZIP_CENTRAL_DIR_HEADER_SIZE;
         if (filename_len < name_len)
             continue;
         if (comment_len)

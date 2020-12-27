@@ -57,7 +57,7 @@ struct SymbolDigestInfo {
     bool bMultipleSymbolsMatch;
     void* SymbolImplementationPointer;
     BootstrapperString SymbolName;
-};
+}; 
 
 struct ConstructorHookThunk {
     void* OpaquePointer;

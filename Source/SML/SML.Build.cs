@@ -10,13 +10,16 @@ public class SML : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         PublicDependencyModuleNames.AddRange(new string[] {"FactoryGame"});
-        
+
         //SML transitive dependencies
-        PublicDependencyModuleNames.AddRange(new[] {
-            "Json"
+        PublicDependencyModuleNames.AddRange(new[]
+        {
+            "Json",
+            "MovieScene"
         });
-        
-        //FactoryGame transitive dependencies
+        PrivateDependencyModuleNames.AddRange(new[] {"RenderCore"});
+
+    //FactoryGame transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Core", "CoreUObject",
             "Engine",
@@ -46,5 +49,9 @@ public class SML : ModuleRules
         var fullLibPath = Path.Combine(projectRootPath, "Library", platformName);
         Console.WriteLine("Full Library Path: " + fullLibPath);
         PublicAdditionalLibraries.Add(Path.Combine(fullLibPath, "funchook.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(fullLibPath, "detex.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(fullLibPath, "libfbxsdk-md.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(fullLibPath, "libxml2-md.lib"));
+        PublicAdditionalLibraries.Add(Path.Combine(fullLibPath, "zlib-md.lib"));
     }
 }

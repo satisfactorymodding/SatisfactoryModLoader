@@ -6,7 +6,7 @@
 #include "JsonSerializer.h"
 #include "LegacyConfigurationHelper.h"
 #include "SatisfactoryModLoader.h"
-#include "UPropertySerializer.h"
+#include "Toolkit/PropertySerializer.h"
 
 DEFINE_LOG_CATEGORY(LogBlueprintLegacy);
 

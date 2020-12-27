@@ -1,4 +1,5 @@
 ﻿#include "Toolkit/KismetBytecodeDisassemblerJson.h"
+#include "JsonSerializer.h"
 #include "PropertyTypeHandler.h"
 
 TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int32& ScriptIndex) {
@@ -150,9 +151,11 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			Result->SetStringField(TEXT("Inst"), TEXT("Let"));
 
 			UProperty* VariableType = ReadPointer<UProperty>(ScriptIndex);
-			FEdGraphPinType VariableTypePinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(VariableType, VariableTypePinType);
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(VariableTypePinType));
+			if (VariableType != NULL) {
+				FEdGraphPinType VariableTypePinType;
+				FPropertyTypeHelper::ConvertPropertyToPinType(VariableType, VariableTypePinType);
+				Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(VariableTypePinType));
+			}
 
 			Result->SetObjectField(TEXT("Variable"), SerializeExpression(ScriptIndex));
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
@@ -555,6 +558,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 				checkf(false, TEXT("Unknown EBlueprintTextLiteralType! Please update FKismetBytecodeDisassembler::ProcessCommon to handle this type of text."));
 				break;
 			}
+			break;
 		}
 	case EX_ObjectConst:
 		{
@@ -920,23 +924,26 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	return Result;
 }
 
-TArray<TSharedPtr<FJsonValue>> FKismetBytecodeDisassemblerJson::SerializeFunction(UFunction* Function) {
+TArray<TSharedPtr<FJsonValue>> FKismetBytecodeDisassemblerJson::SerializeFunction(UStruct* Function) {
 	Script.Empty();
 	Script.Append(Function->Script);
 
 	TArray<TSharedPtr<FJsonValue>> Statements;
 	int32 ScriptIndex = 0;
+
 	while (ScriptIndex < Script.Num()) {
 		const int32 StatementIndex = ScriptIndex;
 		TSharedPtr<FJsonObject> StatementObject = SerializeExpression(ScriptIndex);
+		
 		//Append statement index because several instructions can jump to statements (but not to separate expressions inside of statements!)
 		StatementObject->SetNumberField(TEXT("StatementIndex"), StatementIndex);
 		Statements.Add(MakeShareable(new FJsonValueObject(StatementObject)));
 	}
+	
 	return Statements;
 }
 
-bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UFunction* Function, int32 StartScriptIndex, uint8 ExpectedStatementOpcode, int32& OutStatementIndex) {
+bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UStruct* Function, int32 StartScriptIndex, uint8 ExpectedStatementOpcode, int32& OutStatementIndex) {
 	Script.Empty();
 	Script.Append(Function->Script);
 
@@ -955,7 +962,7 @@ bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UFunction* Functi
 	return false;
 }
 
-bool FKismetBytecodeDisassemblerJson::GetStatementLength(UFunction* Function, int32 ExpectedStatementIndex, int32& OutStatementLength) {
+bool FKismetBytecodeDisassemblerJson::GetStatementLength(UStruct* Function, int32 ExpectedStatementIndex, int32& OutStatementLength) {
 	Script.Empty();
 	Script.Append(Function->Script);
 

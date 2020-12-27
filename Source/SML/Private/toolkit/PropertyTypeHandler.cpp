@@ -1,5 +1,4 @@
 ﻿#include "PropertyTypeHandler.h"
-
 #include "Engine/MemberReference.h"
 
 const FName PC_Exec(TEXT("exec"));
