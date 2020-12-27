@@ -12,9 +12,6 @@ void UFGSchematic::MigrateDataToNewDependencySystem(){ }
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }
 #endif 
-#if WITH_EDITORONLY_DATA
-void UFGSchematic::MigrateDataToNewSchematicCategory(){ }
-#endif 
 UFGSchematic::UFGSchematic() : Super() {
 	this->mTimeToComplete = 600;
 }
@@ -73,6 +70,7 @@ FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass){
 bool UFGSchematic::AreSchematicDependenciesMet(TSubclassOf< UFGSchematic > inClass, UObject* worldContext){ return bool(); }
 void UFGSchematic::GetSchematicDependencies(TSubclassOf< UFGSchematic > inClass, TArray<  UFGAvailabilityDependency* >& out_schematicDependencies){ }
 bool UFGSchematic::IsRepeatPurchasesAllowed(TSubclassOf< UFGSchematic > inClass){ return bool(); }
+TArray< EEvents > UFGSchematic::GetRelevantEvents(TSubclassOf< UFGSchematic > inClass){ return TArray<EEvents>(); }
 bool UFGSchematic::IsIncludedInBuild(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 void UFGSchematic::PostLoad(){ Super::PostLoad(); }
 void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar); }

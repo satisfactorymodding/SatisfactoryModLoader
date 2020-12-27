@@ -121,6 +121,7 @@ public:
 	FORCEINLINE class AFGPipeSubsystem* GetPipeSubsystem() const { return mPipeSubsystem; }
 	FORCEINLINE class AFGResourceSinkSubsystem* GetResourceSinkSubsystem() const { return mResourceSinkSubsystem; }
 	FORCEINLINE class AFGItemRegrowSubsystem* GetItemRegrowSubsystem() const { return mItemRegrowSubsystem; }
+	FORCEINLINE class AFGEventSubsystem* GetEventSubsystem() const { return mEventSubsystem; }
 
 	/** Helper to access the actor representation manager */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation", meta = ( DeprecatedFunction, DeprecationMessage = "Use global getter instead" ) )
@@ -238,6 +239,10 @@ public:
 
 	/** Set the planned restart in time seconds */
 	void SetPlannedServerRestartWorldTime( float worldTimeSeconds );
+
+	/** Gets the UTC date and time on the server */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|DateTime" )
+    FDateTime GetServerUTCNow() const;
 	
 	/** Called both on client and server for syncing session names for connected players*/
 	UFUNCTION()
@@ -335,6 +340,8 @@ private:
 	class AFGItemRegrowSubsystem* mItemRegrowSubsystem;
 	UPROPERTY()
 	class AFGVehicleSubsystem* mVehicleSubsystem;
+	UPROPERTY( Replicated )
+	class AFGEventSubsystem* mEventSubsystem;
 
 	/** This array keeps track of what map areas have been visited this game */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapAreaVisited )
@@ -417,6 +424,10 @@ private:
 	/** There can only be one tow truck in the game, so we keep track it here so that we also can replicate it to client */
 	UPROPERTY( SaveGame, Replicated )
 	bool mIsSpaceElevatorBuilt;
+
+	/** The UTC date and time represented in ticks at the time of the init of this game state. */
+	UPROPERTY( Replicated )
+	int64 mUTCDateTimeTicksAtInit;
 
 
 public:

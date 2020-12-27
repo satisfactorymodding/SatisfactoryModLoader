@@ -292,6 +292,17 @@ public:
 
 	virtual bool GetPresenceState(FPlayerPresenceState& outState) const override;
 
+	/** Templated getter for RCO */
+	template<typename T>
+	FORCEINLINE T* GetRemoteCallObjectOfClass() 
+	{ 
+		return Cast<T>(GetRemoteCallObjectOfClass(T::StaticClass()));
+	}
+
+	/** Returns the map area that the pawn is currently in */
+	UFUNCTION( BlueprintPure, Category = "Map" )
+    TSubclassOf< UFGMapArea > GetCurrentMapArea() const;
+
 public: // MODDING EDIT
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
@@ -346,10 +357,6 @@ public: // MODDING EDIT
 
 	/** Caches a lot off stuff needed for the map area checks */
 	bool InitMapAreaCheckFunction();
-
-	/** Returns the map area that the pawn is currently in */
-	UFUNCTION( BlueprintPure, Category = "Map" )
-	TSubclassOf< UFGMapArea > GetCurrentMapArea() const;
 
 public: // MODDING EDIT
 	UFUNCTION( BlueprintCallable, Category = "Chat" )

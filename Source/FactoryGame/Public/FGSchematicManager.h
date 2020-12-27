@@ -83,9 +83,13 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
-	/** Returns the available schematics in the game. */
+	/** Returns the available schematics in the game that have meet their dependencies. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAvailableSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
+
+	/** Returns the available schematics in the game of the given types that have meet their dependencies. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
+	void GetAvailableSchematicsOfTypes( TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
 	/** Returns the schematics the players have purchased of the given types. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
@@ -183,6 +187,9 @@ public:
 	/** Debug stuff */
 	void Debug_DumpStateToLog() const;
 	TArray< TSubclassOf< class UFGRecipe > > Debug_GetAllRecipes() const;
+
+	/** Checks if it's valid to give access to the given schematic */
+	bool CanGiveAccessToSchematic( TSubclassOf< UFGSchematic > schematic ) const;
 
 private:
 	/** Populate list with all schematics */

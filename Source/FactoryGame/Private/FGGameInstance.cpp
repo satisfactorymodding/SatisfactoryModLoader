@@ -25,6 +25,8 @@ void UFGGameInstance::QueryNATType(){ }
 bool UFGGameInstance::GetLatestNetworkError(FFGGameNetworkErrorMsg& msg){ return bool(); }
 bool UFGGameInstance::PopLatestNetworkError(){ return bool(); }
 EJoinSessionState UFGGameInstance::GetCurrentJoinSessionState() const{ return EJoinSessionState(); }
+void UFGGameInstance::EnableTabAndNavKeys(bool enable){ }
+UFGDebugOverlayWidget* UFGGameInstance::GetDebugOverlayWidget(){ return nullptr; }
 void UFGGameInstance::LoadComplete(const float loadTime, const FString& mapName){ }
 void UFGGameInstance::OnDestroyOldSessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
 void UFGGameInstance::OnQueryFriendProductIdCompleted_JoinSession(bool wasSuccessful, FString EpicId, EOS_ProductUserId ProductId){ }

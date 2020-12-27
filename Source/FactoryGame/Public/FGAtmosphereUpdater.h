@@ -17,7 +17,7 @@ class FACTORYGAME_API UFGAtmosphereUpdater : public UObject
 public:
 	/** Update the value of the height fog in each world */
 	void Tick( float dt );
-public: //MODDING EDIT
+public: //MODDING EDIT protected -> public
 	/** Apply the fog settings to the current world */
 	void ApplyFogSettings( const FExponentialFogSettings& fogSettings, class UWorld* world );
 protected: // MODDING EDIT

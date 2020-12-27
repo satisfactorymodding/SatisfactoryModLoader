@@ -71,6 +71,7 @@ void AFGPlayerController::AcknowledgePossession( APawn* P){ }
 void AFGPlayerController::CycleToNextHotbar(){ }
 void AFGPlayerController::CycleToPreviousHotbar(){ }
 bool AFGPlayerController::GetPresenceState(FPlayerPresenceState& outState) const{ return bool(); }
+TSubclassOf< UFGMapArea > AFGPlayerController::GetCurrentMapArea() const{ return TSubclassOf<UFGMapArea>(); }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
@@ -82,7 +83,6 @@ void AFGPlayerController::OnDismantlePortableMiner_Implementation( AFGPortableMi
 void AFGPlayerController::OnDismantleGolfCart_Implementation( AFGWheeledVehicle* inGolfCart){ }
 void AFGPlayerController::CheckPawnMapArea(){ }
 bool AFGPlayerController::InitMapAreaCheckFunction(){ return bool(); }
-TSubclassOf< UFGMapArea > AFGPlayerController::GetCurrentMapArea() const{ return TSubclassOf<UFGMapArea>(); }
 void AFGPlayerController::EnterChatMessage(const FString& inMessage){ }
 void AFGPlayerController::OnDisabledInputGateChanged_Implementation(){ }
 void AFGPlayerController::EnablePhotoMode(bool isEnabled){ }

@@ -65,6 +65,7 @@ bool UFGRecipe::HasAnyProducers(TSubclassOf< UFGRecipe > inClass){ return bool()
 bool UFGRecipe::IsRecipeAffordable( AFGCharacterPlayer* player, TSubclassOf<  UFGRecipe > recipe){ return bool(); }
 void UFGRecipe::SortByName(TArray< TSubclassOf< UFGRecipe > >& recipes){ }
 TSubclassOf< class UFGItemDescriptor > UFGRecipe::GetDescriptorForRecipe(TSubclassOf<  UFGRecipe > recipe){ return TSubclassOf<class UFGItemDescriptor>(); }
+TArray< EEvents > UFGRecipe::GetRelevantEvents(TSubclassOf< UFGRecipe > inClass){ return TArray<EEvents>(); }
 FText UFGRecipe::GetDisplayName() const{ return FText(); }
 void UFGRecipe::GetProducedIn(TArray< TSubclassOf< UObject > >& out_producedIn) const{ 
 	out_producedIn = UFGRecipe::GetProducedIn(this->GetClass());

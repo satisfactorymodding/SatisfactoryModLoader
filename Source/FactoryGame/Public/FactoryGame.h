@@ -100,6 +100,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, NoLogging, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, NoLogging, All );
 #endif
 DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogSeasonalEvents, Log, All );
 
 
 /** Helpers when using interfaces */

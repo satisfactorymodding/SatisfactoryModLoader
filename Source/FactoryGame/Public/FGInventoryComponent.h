@@ -505,7 +505,7 @@ protected:
 	/** Locks the inventory. Indicating that no items are allowed and you should not be able to drag stuff from it either */
 	bool mIsLocked;
 
-public: //MODDING EDIT private->public
+public: //MODDING EDIT private -> public
 	/** All items in the inventory */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_InventoryStacks )
 	TArray< FInventoryStack > mInventoryStacks;
