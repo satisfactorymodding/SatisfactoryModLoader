@@ -31,11 +31,6 @@ public:
 	virtual void PackModAssets(TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinished);
 private:
 	TSharedPtr<class FUICommandList> PluginCommands;
-	FDelegateHandle ContentBrowserCommandExtenderDelegateHandle;
-	FDelegateHandle ContentBrowserAssetExtenderDelegateHandle;
-	FDelegateHandle ContentBrowserPathExtenderDelegateHandle;
-	FDelegateHandle AssetEditorExtenderDelegateHandle;
-	FConsoleCommandDelegate ConsoleCommandAlpakit;
 
 	void FinishModAssetPacking(const FString& AutomationToolLogDir, const FString& AutomationToolReturnCode, TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinishedCallback);
 	static void RunUnrealPak(const FString& PakListFilePath, const FString& OutputPakFilePath, TFunction<void(bool bSuccess, const FString& ErrorMessage)> PackingFinishedCallback);

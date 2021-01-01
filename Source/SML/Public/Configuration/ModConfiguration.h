@@ -16,5 +16,5 @@ public:
 
     /** Root property of this configuration describing it's values */
     UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly)
-    UConfigPropertySection* RootSection;
+    UConfigPropertySection* RootSection;   
 };

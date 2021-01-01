@@ -22,7 +22,7 @@ bool FUserDefinedStructCodeGenerator::GenerateConfigurationStruct(const FString&
     //Generate asset for each struct we have
     for (UConfigGeneratedStruct* GeneratedStruct : Context->GetAllGeneratedStructs()) {
         UObject* AssetObject = AssetTools.CreateAsset(GeneratedStruct->GetStructName(), PackageName, NULL, StructureFactory);
-        if (AssetObject != NULL) {
+        if (AssetObject == NULL) {
             FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NameOccupied", "Couldn't create config struct due already existing asset with the same name"));
             return false;
         }

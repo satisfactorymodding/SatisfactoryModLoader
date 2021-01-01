@@ -150,13 +150,6 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("Let"));
 
-			UProperty* VariableType = ReadPointer<UProperty>(ScriptIndex);
-			if (VariableType != NULL) {
-				FEdGraphPinType VariableTypePinType;
-				FPropertyTypeHelper::ConvertPropertyToPinType(VariableType, VariableTypePinType);
-				Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(VariableTypePinType));
-			}
-
 			Result->SetObjectField(TEXT("Variable"), SerializeExpression(ScriptIndex));
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;
@@ -190,9 +183,6 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			Result->SetStringField(TEXT("Inst"), TEXT("LetValueOnPersistentFrame"));
 
 			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
-			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
-			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
 			Result->SetStringField(TEXT("PropertyName"), Property->GetName());
 				
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
@@ -319,7 +309,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	case EX_InterfaceContext:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("InterfaceContext"));
-			Result->SetObjectField(TEXT("Context"), SerializeExpression(ScriptIndex));
+			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;
 		}
 	case EX_DeprecatedOp4A:
@@ -451,7 +441,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 				Result->SetStringField(TEXT("Inst"), TEXT("Context_FailSilent"));
 			}
 
-			Result->SetObjectField(TEXT("Object"), SerializeExpression(ScriptIndex));
+			Result->SetObjectField(TEXT("Context"), SerializeExpression(ScriptIndex));
 
 			// Code offset for NULL expressions	
 			CodeSkipSizeType SkipCount = ReadSkipCount(ScriptIndex);
@@ -646,6 +636,8 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("StructConst"));
 			UScriptStruct* Struct = ReadPointer<UScriptStruct>(ScriptIndex);
+			Result->SetStringField(TEXT("Struct"), Struct->GetPathName());
+				
 			ReadInt(ScriptIndex); //Skip serialized structure size (not particularly useful really)
 
 			// TODO: Change this once structs/classes can be declared as explicitly editor only
@@ -801,7 +793,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("PushExecutionFlow"));
 			CodeSkipSizeType SkipCount = ReadSkipCount(ScriptIndex);
-			Result->SetNumberField(TEXT("SkipCount"), SkipCount);
+			Result->SetNumberField(TEXT("Offset"), SkipCount);
 			break;
 		}
 	case EX_PopExecutionFlow:

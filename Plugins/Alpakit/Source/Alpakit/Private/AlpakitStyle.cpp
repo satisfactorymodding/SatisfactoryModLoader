@@ -33,11 +33,19 @@ FName FAlpakitStyle::GetStyleSetName() {
 const FVector2D Icon16x16(16.0f, 16.0f);
 const FVector2D Icon20x20(20.0f, 20.0f);
 const FVector2D Icon40x40(40.0f, 40.0f);
+const FVector2D Icon128x128(40.0f, 40.0f);
+
+bool ShouldUseHatIcon() {
+	const FDateTime DateTime = FDateTime::Now();
+	return (DateTime.GetMonthOfYear() == EMonthOfYear::December && DateTime.GetDay() >= 15) ||
+		(DateTime.GetMonthOfYear() == EMonthOfYear::January && DateTime.GetDay() <= 15);
+}
 
 TSharedRef<FSlateStyleSet> FAlpakitStyle::Create() {
 	TSharedRef<FSlateStyleSet> Style = MakeShareable(new FSlateStyleSet(StyleSetName));
 	Style->SetContentRoot(IPluginManager::Get().FindPlugin("Alpakit")->GetBaseDir() / TEXT("Resources"));
-	Style->Set("Alpakit.OpenPluginWindow", new IMAGE_BRUSH(TEXT("Alpakit40"), Icon40x40));
+	const FString IconName = ShouldUseHatIcon() ? TEXT("AlpakitHat40") : TEXT("Alpakit40");
+	Style->Set("Alpakit.OpenPluginWindow", new IMAGE_BRUSH(IconName, Icon40x40));
 	return Style;
 }
 
