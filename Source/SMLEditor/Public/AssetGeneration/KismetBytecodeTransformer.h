@@ -9,20 +9,28 @@
  */
 class SMLEDITOR_API FKismetBytecodeTransformer {
 public:
-    FKismetBytecodeTransformer();
+    /** Class specified by this string should exist and be loadable for EX_Self resolution */
+    FKismetBytecodeTransformer(const FString& SelfClassPath);
+
+    /** Begins statement generation by populating transformer with serialized bytecode */
     void SetSourceStatements(const TArray<TSharedPtr<FJsonObject>>& Statements);
-    void FinishGeneration();
+
+    /** Finishes generation and returns result statements */
+    TArray<TSharedPtr<FKismetCompiledStatement>> FinishGeneration();
 private:
-    static bool IsContextExpression(const FString& InstructionName);
+    /** Class path of the class this bytecode belongs to. Should exist and be populated with function stubs */
+    FString SelfClassPath;
+    
+    static bool IsContextInstruction(const FString& InstructionName);
     static bool IsCallFunctionInstruction(const FString& InstructionName);
-    static bool IsCallFunctionInstruction(TSharedPtr<FJsonObject> Expression);
+    static bool IsVariableInstruction(const FString& InstructionName);
     
     TSharedPtr<FKismetCompiledStatement> ProcessStatement(TSharedPtr<FJsonObject> Statement);
     TSharedPtr<FKismetTerminal> ProcessExpression(TSharedPtr<FJsonObject> Expression);
+    TSharedPtr<FKismetTerminal> ProcessLiteralExpression(TSharedPtr<FJsonObject> Expression, bool bIsDelimited);
     TSharedPtr<FKismetCompiledStatement> ProcessFunctionCallStatement(TSharedPtr<FJsonObject> Statement);
-    TSharedPtr<FKismetTerminal> ResolveContext(TSharedPtr<FJsonObject> Expression, TSharedPtr<FJsonObject>& OutResultExpression, bool& bOutIsInterfaceContext);
-    UFunction* ResolveFunctionByNameFromContext(TSharedPtr<FKismetTerminal> Context, const FString& FunctionName);
-    
+    TSharedPtr<FKismetTerminal> ProcessFunctionParameter(TSharedPtr<FJsonObject> Expression);
+
     TMap<int32, TSharedPtr<FKismetCompiledStatement>> StatementsByOffset;
     TArray<TSharedPtr<FKismetCompiledStatement>> ResultStatements;
 

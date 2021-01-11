@@ -3,7 +3,7 @@
 #include "EdGraph/EdGraphPin.h"
 
 /** Basically mimics EKismetCompiledStatementType in KismetCompiler module */
-enum EKismetCompiledStatementType {
+enum ECompiledStatementType {
 	KCST_Nop,
 	// [wiring =] TargetObject->FunctionToCall(wiring)
 	KCST_CallFunction,
@@ -67,12 +67,11 @@ struct FKismetCompiledStatement {
         , TargetLabel(NULL)
         , UbergraphCallIndex(-1)
         , LHS(NULL)
-        , bIsJumpTarget(false)
         , bIsInterfaceContext(false)
         , bIsParentContext(false)
 	{}
 
-	EKismetCompiledStatementType Type;
+	ECompiledStatementType Type;
 
 	// Object that the function should be called on, or NULL to indicate self (KCST_CallFunction)
 	TSharedPtr<struct FKismetTerminal> FunctionContext;
@@ -101,11 +100,9 @@ struct FKismetCompiledStatement {
 
 /** A terminal in the graph (literal or variable reference) */
 struct FKismetTerminal {
-	
+
+	FEdGraphPinType Type;
 	bool bIsLiteral; 
-	bool bIsConst;
-	bool bIsSavePersistent;
-	bool bPassedByReference;
 	
 	// Context->
 	TSharedPtr<FKismetTerminal> Context;
@@ -114,6 +111,7 @@ struct FKismetTerminal {
 	FString StringLiteral;
 
 	// For non-literal terms, this is the UProperty being referenced (in the stack if bIsLocal set, or on the context otherwise)
+	//TODO not UProperty because local properties are not reconstructed as UProperty objects, but rather as simple FEdGraphPinTypes
 	FString AssociatedVarProperty;
 
 	/** Pointer to an object literal */
@@ -132,9 +130,6 @@ struct FKismetTerminal {
 
 	FORCEINLINE FKismetTerminal()
 		: bIsLiteral(false)
-		, bIsConst(false)
-		, bIsSavePersistent(false)
-		, bPassedByReference(false)
 		, Context(nullptr)
 		, AssociatedVarProperty(TEXT(""))
 		, ObjectLiteral(nullptr)

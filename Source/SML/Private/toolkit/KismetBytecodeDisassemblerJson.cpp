@@ -9,7 +9,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	switch (Opcode) {
 		case EX_PrimitiveCast:
 		{
-			Result->SetStringField(TEXT("Inst"), TEXT("EX_PrimitiveCast"));
+			Result->SetStringField(TEXT("Inst"), TEXT("PrimitiveCast"));
 			// A type conversion.
 			uint8 ConversionType = ReadByte(ScriptIndex);
 
@@ -34,7 +34,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		}
 	case EX_SetSet:
 		{
-			Result->SetStringField(TEXT("Inst"), TEXT("EX_SetSet"));
+			Result->SetStringField(TEXT("Inst"), TEXT("SetSet"));
 			Result->SetObjectField(TEXT("LeftSideExpression"), SerializeExpression(ScriptIndex));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
@@ -54,7 +54,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
 
-			Result->SetStringField(TEXT("Inst"), TEXT("EX_SetConst"));
+			Result->SetStringField(TEXT("Inst"), TEXT("SetConst"));
 			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
@@ -70,7 +70,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		}
 	case EX_SetMap:
 		{
-			Result->SetStringField(TEXT("Inst"), TEXT("EX_SetMap"));
+			Result->SetStringField(TEXT("Inst"), TEXT("SetMap"));
 			Result->SetObjectField(TEXT("LeftSideExpression"), SerializeExpression(ScriptIndex));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
@@ -184,6 +184,10 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 
 			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
 			Result->SetStringField(TEXT("PropertyName"), Property->GetName());
+
+			FEdGraphPinType PropertyType;
+			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyType);
+			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyType));
 				
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;	
@@ -265,6 +269,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	case EX_LocalVariable:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("LocalVariable"));
+			
 			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
@@ -276,10 +281,11 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	case EX_DefaultVariable:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("DefaultVariable"));
+			
 			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
-				
+			
 			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
@@ -287,6 +293,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	case EX_InstanceVariable:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("InstanceVariable"));
+			
 			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
@@ -298,6 +305,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	case EX_LocalOutVariable:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("LocalOutVariable"));
+			
 			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
@@ -659,6 +667,8 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 				}
 				Properties->SetArrayField(StructProp->GetName(), PropertyValue);
 			}
+
+			Result->SetObjectField(TEXT("Properties"), Properties);
 			ScriptIndex++; //Skip over EX_EndStructConst
 			break;
 		}
@@ -682,7 +692,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
 
-			Result->SetStringField(TEXT("Inst"), TEXT("EX_ArrayConst"));
+			Result->SetStringField(TEXT("Inst"), TEXT("ArrayConst"));
 			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
@@ -717,7 +727,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			UClass* Class = ReadPointer<UClass>(ScriptIndex);
 
 			Result->SetStringField(TEXT("Class"), Class->GetPathName());
-			Result->SetObjectField(TEXT("Castee"), SerializeExpression(ScriptIndex));	
+			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));	
 			break;
 		}
 	case EX_DynamicCast:
@@ -727,7 +737,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			UClass* Class = ReadPointer<UClass>(ScriptIndex);
 
 			Result->SetStringField(TEXT("Class"), Class->GetPathName());
-			Result->SetObjectField(TEXT("Castee"), SerializeExpression(ScriptIndex));
+			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;
 		}
 	case EX_JumpIfNot:
