@@ -9,18 +9,30 @@
  */
 class SMLEDITOR_API FKismetBytecodeTransformer {
 public:
-    /** Class specified by this string should exist and be loadable for EX_Self resolution */
-    FKismetBytecodeTransformer(const FString& SelfClassPath);
+    /** Blueprint should have a valid skeleton class generated for the resolution of EX_Self and referenced functions */
+    FKismetBytecodeTransformer(UBlueprint* Blueprint);
+
+    /** Sets transformer to look up instruction by offset inside of the uber graph */
+    void SetUberGraphTransformer(TSharedPtr<FKismetBytecodeTransformer> Transformer);
 
     /** Begins statement generation by populating transformer with serialized bytecode */
-    void SetSourceStatements(const TArray<TSharedPtr<FJsonObject>>& Statements);
+    void SetSourceStatements(const FString& FunctionName, const TArray<TSharedPtr<FJsonObject>>& Statements);
 
     /** Finishes generation and returns result statements */
     TArray<TSharedPtr<FKismetCompiledStatement>> FinishGeneration();
+
+    /** Returns true if we are currently processing ubergraph function */
+    FORCEINLINE bool IsUberGraphFunction() const { return CurrentFunctionName == ExecuteUbergraphFunctionName; } 
 private:
     /** Class path of the class this bytecode belongs to. Should exist and be populated with function stubs */
-    FString SelfClassPath;
-    
+    UBlueprint* OwnerBlueprint;
+    /** Name of the ExecuteUbergraph function associated with the current blueprint. It is used to determine whenever function is the ubergraph call */
+    FString ExecuteUbergraphFunctionName;
+    /** Transformer used to parse ubergraph code, used to resolve references into ubergraph */
+    TSharedPtr<FKismetBytecodeTransformer> UberGraphTransformer;
+    /** Name of the function we are currently transforming */
+    FString CurrentFunctionName;
+
     static bool IsContextInstruction(const FString& InstructionName);
     static bool IsCallFunctionInstruction(const FString& InstructionName);
     static bool IsVariableInstruction(const FString& InstructionName);
@@ -39,4 +51,5 @@ private:
     //It might also end up converting statement type if referenced statement is happens to be Return
     //then jump is converted to KCST_GotoReturn
     TMap<TSharedPtr<FKismetCompiledStatement>, int32> JumpPatchUpTable;
+
 };

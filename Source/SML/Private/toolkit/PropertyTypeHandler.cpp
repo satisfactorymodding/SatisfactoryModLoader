@@ -25,24 +25,34 @@ const FName PSC_Index(TEXT("index"));
 const FName PSC_Bitmask(TEXT("bitmask"));
 const FName PN_Execute(TEXT("execute"));
 
-FEdGraphPinType FPropertyTypeHelper::DeserializeGraphPinType(const TSharedRef<FJsonObject>& PinJson) {
+UObject* DeserializeObjectRef(const FString& ObjectPath, UClass* SelfScope) {
+	if (ObjectPath == TEXT("<SELF>")) {
+		checkf(SelfScope, TEXT("Attempt to deserialize <SELF> object reference, but no scope was provided for self"));
+		return SelfScope;
+		
+	}
+	UObject* LoadedObject = LoadObject<UObject>(NULL, *ObjectPath);
+	checkf(LoadedObject, TEXT("Failed to deserializeo object reference %s"), *ObjectPath);
+	return LoadedObject;
+}
+
+FEdGraphPinType FPropertyTypeHelper::DeserializeGraphPinType(const TSharedRef<FJsonObject>& PinJson, UClass* SelfScope) {
+
 	FEdGraphPinType GraphPinType;
 	GraphPinType.PinCategory = *PinJson->GetStringField(TEXT("PinCategory"));
 	GraphPinType.PinSubCategory = *PinJson->GetStringField(TEXT("PinSubCategory"));
+	
 	if (PinJson->HasField(TEXT("PinSubCategoryObject"))) {
 		const FString& ObjectPath = PinJson->GetStringField(TEXT("PinSubCategoryObject"));
-		UObject* PinSubCategoryObject = LoadObject<UObject>(NULL, *ObjectPath);
-		check(PinSubCategoryObject != nullptr);
-		GraphPinType.PinSubCategoryObject = PinSubCategoryObject;
+		GraphPinType.PinSubCategoryObject = DeserializeObjectRef(*ObjectPath, SelfScope);
 	}
+	
 	if (PinJson->HasField(TEXT("PinSubCategoryMemberReference"))) {
 		FSimpleMemberReference& MemberRef = GraphPinType.PinSubCategoryMemberReference;
 		const TSharedPtr<FJsonObject>& MemberJson = PinJson->GetObjectField(TEXT("PinSubCategoryMemberReference"));
 		if (MemberJson->HasField("MemberParent")) {
 			const FString& ObjectPath = MemberJson->GetStringField(TEXT("MemberParent"));
-			UObject* MemberParentObject = LoadObject<UObject>(NULL, *ObjectPath);
-			check(MemberParentObject != nullptr);
-			MemberRef.MemberParent = MemberParentObject;
+			MemberRef.MemberParent = DeserializeObjectRef(*ObjectPath, SelfScope);
 		}
 		MemberRef.MemberName = *MemberJson->GetStringField(TEXT("MemberName"));
 		FGuid::Parse(MemberJson->GetStringField(TEXT("MemberGuid")), MemberRef.MemberGuid);
@@ -55,9 +65,7 @@ FEdGraphPinType FPropertyTypeHelper::DeserializeGraphPinType(const TSharedRef<FJ
 		ValueType.TerminalSubCategory = *ValueJson->GetStringField(TEXT("TerminalSubCategory"));
 		if (ValueJson->HasField(TEXT("TerminalSubCategoryObject"))) {
 			const FString& ObjectPath = ValueJson->GetStringField(TEXT("TerminalSubCategoryObject"));
-			UObject* TerminalSubCategoryObject = LoadObject<UObject>(NULL, *ObjectPath);
-			check(TerminalSubCategoryObject != nullptr);
-			ValueType.TerminalSubCategoryObject = TerminalSubCategoryObject;
+			ValueType.TerminalSubCategoryObject = DeserializeObjectRef(*ObjectPath, SelfScope);
 		}
 		ValueType.bTerminalIsConst = ValueJson->GetBoolField(TEXT("TerminalIsConst"));
 		ValueType.bTerminalIsWeakPointer = ValueJson->GetBoolField(TEXT("TerminalIsWeakPointer"));
@@ -66,33 +74,43 @@ FEdGraphPinType FPropertyTypeHelper::DeserializeGraphPinType(const TSharedRef<FJ
 	if (PinJson->HasField(TEXT("ContainerType"))) {
 		GraphPinType.ContainerType = static_cast<EPinContainerType>(PinJson->GetIntegerField(TEXT("ContainerType")));
 	}
+	
 	if (PinJson->HasField(TEXT("IsReference"))) {
 		GraphPinType.bIsReference = PinJson->GetBoolField(TEXT("IsReference"));
 	}
+	
 	if (PinJson->HasField(TEXT("IsConst"))) {
 		GraphPinType.bIsConst = PinJson->GetBoolField(TEXT("IsConst"));
 	}
+	
 	if (PinJson->HasField(TEXT("IsWeakPointer"))) {
 		GraphPinType.bIsWeakPointer = PinJson->GetBoolField(TEXT("IsWeakPointer"));
 	}
+	
 	return GraphPinType;
 }
 
-TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGraphPinType& GraphPinType) {
+FString SerializeObjectRef(UObject* Object, UClass* SelfScope) {
+	return SelfScope && Object == SelfScope ? TEXT("<SELF>") : Object->GetPathName();
+}
+
+TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGraphPinType& GraphPinType, UClass* SelfScope) {
+
 	TSharedRef<FJsonObject> TypeEntry = MakeShareable(new FJsonObject());
 	TypeEntry->SetStringField(TEXT("PinCategory"), GraphPinType.PinCategory.ToString());
 	TypeEntry->SetStringField(TEXT("PinSubCategory"), GraphPinType.PinCategory.ToString());
 
-	UObject* subCategoryObject = GraphPinType.PinSubCategoryObject.Get();
-	if (subCategoryObject != nullptr) {
-		TypeEntry->SetStringField(TEXT("PinSubCategoryObject"), subCategoryObject->GetPathName());
+	UObject* SubCategoryObject = GraphPinType.PinSubCategoryObject.Get();
+	if (SubCategoryObject != nullptr) {
+		TypeEntry->SetStringField(TEXT("PinSubCategoryObject"), SerializeObjectRef(SubCategoryObject, SelfScope));
 	}
 
 	const FSimpleMemberReference& memberRef = GraphPinType.PinSubCategoryMemberReference;
+	
 	if (memberRef.MemberGuid.IsValid()) {
 		TSharedRef<FJsonObject> memberReference = MakeShareable(new FJsonObject());
 		if (memberRef.MemberParent != nullptr) {
-			memberReference->SetStringField(TEXT("MemberParent"), memberRef.MemberParent->GetPathName());
+			memberReference->SetStringField(TEXT("MemberParent"), SerializeObjectRef(memberRef.MemberParent, SelfScope));
 		}
 		memberReference->SetStringField(TEXT("MemberName"), memberRef.MemberName.ToString());
 		memberReference->SetStringField(TEXT("MemberGuid"), memberRef.MemberGuid.ToString());
@@ -105,7 +123,7 @@ TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGrap
 		pinValueType->SetStringField(TEXT("TerminalSubCategory"), GraphPinType.PinValueType.TerminalSubCategory.ToString());
 		UObject* terminalSubCategoryObject = GraphPinType.PinValueType.TerminalSubCategoryObject.Get();
 		if (terminalSubCategoryObject != nullptr) {
-			pinValueType->SetStringField(TEXT("TerminalSubCategoryObject"), terminalSubCategoryObject->GetPathName());
+			pinValueType->SetStringField(TEXT("TerminalSubCategoryObject"), SerializeObjectRef(terminalSubCategoryObject, SelfScope));
 		}
 		pinValueType->SetBoolField(TEXT("TerminalIsConst"), GraphPinType.PinValueType.bTerminalIsConst);
 		pinValueType->SetBoolField(TEXT("TerminalIsWeakPointer"), GraphPinType.PinValueType.bTerminalIsWeakPointer);
@@ -115,15 +133,19 @@ TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGrap
 	if (GraphPinType.ContainerType != EPinContainerType::None) {
 		TypeEntry->SetNumberField(TEXT("ContainerType"), static_cast<uint8>(GraphPinType.ContainerType));
 	}
+	
 	if (GraphPinType.bIsReference) {
 		TypeEntry->SetBoolField(TEXT("IsReference"), GraphPinType.bIsReference);
 	}
+	
 	if (GraphPinType.bIsConst) {
 		TypeEntry->SetBoolField(TEXT("IsConst"), GraphPinType.bIsConst);
 	}
+	
 	if (GraphPinType.bIsWeakPointer) {
 		TypeEntry->SetBoolField(TEXT("IsWeakPointer"), GraphPinType.bIsWeakPointer);
 	}
+	
 	return TypeEntry;
 }
 

@@ -55,7 +55,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
 
 			Result->SetStringField(TEXT("Inst"), TEXT("SetConst"));
-			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
+			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
 			ReadInt(ScriptIndex); //Skip element amount
@@ -96,12 +96,12 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			UProperty* KeyProp = ReadPointer<UProperty>(ScriptIndex);
 			FEdGraphPinType KeyPropPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(KeyProp, KeyPropPinType);
-			Result->SetObjectField(TEXT("KeyProperty"), FPropertyTypeHelper::SerializeGraphPinType(KeyPropPinType));
+			Result->SetObjectField(TEXT("KeyProperty"), FPropertyTypeHelper::SerializeGraphPinType(KeyPropPinType, SelfScope.Get()));
 				
 			UProperty* ValProp = ReadPointer<UProperty>(ScriptIndex);
 			FEdGraphPinType ValuePropPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(ValProp, ValuePropPinType);
-			Result->SetObjectField(TEXT("ValueProperty"), FPropertyTypeHelper::SerializeGraphPinType(ValuePropPinType));
+			Result->SetObjectField(TEXT("ValueProperty"), FPropertyTypeHelper::SerializeGraphPinType(ValuePropPinType, SelfScope.Get()));
 				
 			TArray<TSharedPtr<FJsonValue>> Values;
 			ReadInt(ScriptIndex); //Skip element amount
@@ -187,7 +187,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 
 			FEdGraphPinType PropertyType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyType);
-			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyType));
+			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyType, SelfScope.Get()));
 				
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;	
@@ -199,7 +199,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
-			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
+			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("PropertyName"), Property->GetName());
 				
 			Result->SetObjectField(TEXT("StructExpression"), SerializeExpression(ScriptIndex));
@@ -232,7 +232,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("LocalFinalFunction"));
 			UFunction* StackNode = ReadPointer<UFunction>(ScriptIndex);
-			Result->SetStringField(TEXT("Function"), StackNode->GetPathName());
+			Result->SetStringField(TEXT("Function"), StackNode->GetName());
 
 			TArray<TSharedPtr<FJsonValue>> Parameters;
 			while (Script[ScriptIndex] != EX_EndFunctionParms) {
@@ -274,7 +274,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 				
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
+			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -286,7 +286,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 			
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
+			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -298,7 +298,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 				
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
+			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -310,7 +310,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FEdGraphPinType PropertyPinType;
 			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 				
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
+			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -379,8 +379,16 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	case EX_CallMath:
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("CallMath"));
+				
 			UFunction* StackNode = ReadPointer<UFunction>(ScriptIndex);
-			Result->SetStringField(TEXT("Function"), StackNode->GetPathName());
+			Result->SetStringField(TEXT("Function"), StackNode->GetName());
+
+			//EX_CallMath will never have EX_Context instructions because they don't need any context,
+			//And because of that we need to record context type manually. It should always be a native class though.
+			UClass* MemberParentClass = StackNode->GetOuterUClass();
+			check(MemberParentClass->HasAllClassFlags(CLASS_Native));
+
+			Result->SetStringField(TEXT("ContextClass"), MemberParentClass->GetPathName());
 
 			TArray<TSharedPtr<FJsonValue>> Parameters;
 			while (Script[ScriptIndex] != EX_EndFunctionParms) {
@@ -395,7 +403,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("FinalFunction"));
 			UFunction* StackNode = ReadPointer<UFunction>(ScriptIndex);
-			Result->SetStringField(TEXT("Function"), StackNode->GetPathName());
+			Result->SetStringField(TEXT("Function"), StackNode->GetName());
 
 			TArray<TSharedPtr<FJsonValue>> Parameters;
 			while (Script[ScriptIndex] != EX_EndFunctionParms) {
@@ -410,7 +418,17 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("CallMulticastDelegate"));
 			UFunction* StackNode = ReadPointer<UFunction>(ScriptIndex);
-			Result->SetStringField(TEXT("DelegateSignatureFunction"), StackNode->GetPathName());
+			UClass* DelegateSignatureParent = StackNode->GetOuterUClass();
+			const bool bIsSelfContext = DelegateSignatureParent == SelfScope;
+			
+			TSharedPtr<FJsonObject> DelegateSignatureFunction = MakeShareable(new FJsonObject());
+				
+			DelegateSignatureFunction->SetBoolField(TEXT("IsSelfContext"), bIsSelfContext);
+			DelegateSignatureFunction->SetStringField("MemberParent", DelegateSignatureParent->GetPathName());
+			DelegateSignatureFunction->SetStringField(TEXT("MemberName"), StackNode->GetName());
+				
+			Result->SetObjectField(TEXT("DelegateSignatureFunction"), DelegateSignatureFunction);
+				
 			Result->SetObjectField(TEXT("Delegate"), SerializeExpression(ScriptIndex));
 
 			TArray<TSharedPtr<FJsonValue>> Parameters;
@@ -426,7 +444,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("VirtualFunction"));
 			FString FunctionName = ReadName(ScriptIndex);
-			Result->SetStringField(TEXT("FunctionName"), FunctionName);
+			Result->SetStringField(TEXT("Function"), FunctionName);
 
 			TArray<TSharedPtr<FJsonValue>> Parameters;
 			while (Script[ScriptIndex] != EX_EndFunctionParms) {
@@ -460,7 +478,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			if (Field) {
 				FEdGraphPinType FieldPinType;
 				FPropertyTypeHelper::ConvertPropertyToPinType(Field, FieldPinType);
-				Result->SetObjectField(TEXT("RValuePropertyType"), FPropertyTypeHelper::SerializeGraphPinType(FieldPinType));
+				Result->SetObjectField(TEXT("RValuePropertyType"), FPropertyTypeHelper::SerializeGraphPinType(FieldPinType, SelfScope.Get()));
 				Result->SetStringField(TEXT("RValuePropertyName"), Field->GetName());
 			}
 			
@@ -693,7 +711,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			FPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
 
 			Result->SetStringField(TEXT("Inst"), TEXT("ArrayConst"));
-			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType));
+			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
 			ReadInt(ScriptIndex); //Skip element amount
@@ -927,8 +945,8 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 }
 
 TArray<TSharedPtr<FJsonValue>> FKismetBytecodeDisassemblerJson::SerializeFunction(UStruct* Function) {
-	Script.Empty();
-	Script.Append(Function->Script);
+	this->Script = Function->Script;
+	this->SelfScope = Function->GetTypedOuter<UClass>();
 
 	TArray<TSharedPtr<FJsonValue>> Statements;
 	int32 ScriptIndex = 0;
@@ -946,8 +964,8 @@ TArray<TSharedPtr<FJsonValue>> FKismetBytecodeDisassemblerJson::SerializeFunctio
 }
 
 bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UStruct* Function, int32 StartScriptIndex, uint8 ExpectedStatementOpcode, int32& OutStatementIndex) {
-	Script.Empty();
-	Script.Append(Function->Script);
+	this->Script = Function->Script;
+	this->SelfScope = Function->GetTypedOuter<UClass>();
 
 	int32 ScriptIndex = StartScriptIndex;
 	while (ScriptIndex < Script.Num()) {
@@ -965,8 +983,8 @@ bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UStruct* Function
 }
 
 bool FKismetBytecodeDisassemblerJson::GetStatementLength(UStruct* Function, int32 ExpectedStatementIndex, int32& OutStatementLength) {
-	Script.Empty();
-	Script.Append(Function->Script);
+	this->Script = Function->Script;
+	this->SelfScope = Function->GetTypedOuter<UClass>();
 
 	int32 ScriptIndex = 0;
 	while (ScriptIndex < Script.Num()) {

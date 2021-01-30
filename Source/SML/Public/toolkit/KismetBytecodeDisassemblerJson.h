@@ -17,6 +17,7 @@ public:
 	/** Returns index of the first statement using given opcode */
 	bool FindFirstStatementOfType(UStruct* Function, int32 StartIndex, uint8 StatementOpcode, int32& OutStatementIndex);
 private:
+	TWeakObjectPtr<UClass> SelfScope;
 	TArray<uint8> Script;
 
 	//Begin script bytecode parsing methods

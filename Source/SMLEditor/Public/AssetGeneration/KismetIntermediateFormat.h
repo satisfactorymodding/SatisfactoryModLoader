@@ -4,11 +4,11 @@
 
 /** Basically mimics EKismetCompiledStatementType in KismetCompiler module */
 enum ECompiledStatementType {
-	KCST_Nop,
+	KCST_Nop, //TODO X
 	// [wiring =] TargetObject->FunctionToCall(wiring)
 	KCST_CallFunction,
 	// TargetObject->TargetProperty = [wiring]
-	KCST_Assignment,
+	KCST_Assignment, //TODO X
 	// goto TargetLabel
 	KCST_UnconditionalGoto,
 	// FlowStack.Push(TargetLabel)
@@ -24,38 +24,38 @@ enum ECompiledStatementType {
 	// [if (!TargetObject->TargetProperty)] { same as KCST_EndOfThread; }
 	KCST_EndOfThreadIfNot,
 	// TargetInterface(TargetObject)
-	KCST_CastObjToInterface,
+	KCST_CastObjToInterface, //TODO X
 	// Cast<TargetClass>(TargetObject)
-	KCST_DynamicCast,
+	KCST_DynamicCast, //TODO X
 	// (TargetObject != None)
-	KCST_ObjectToBool,
+	KCST_ObjectToBool, //TODO X
 	// TargetDelegate->Add(EventDelegate)
-	KCST_AddMulticastDelegate,
+	KCST_AddMulticastDelegate, //TODO X
 	// TargetDelegate->Clear()
-	KCST_ClearMulticastDelegate,
+	KCST_ClearMulticastDelegate, //TODO X
 	// Creates simple delegate
-	KCST_BindDelegate,
+	KCST_BindDelegate, //TODO X
 	// TargetDelegate->Remove(EventDelegate)
-	KCST_RemoveMulticastDelegate,
+	KCST_RemoveMulticastDelegate, //TODO X
 	// TargetDelegate->Broadcast(...)
 	KCST_CallDelegate,
 	// Creates and sets an array literal term
-	KCST_CreateArray,
+	KCST_CreateArray, //TODO X
 	// TargetInterface(Interface)
-	KCST_CrossInterfaceCast,
+	KCST_CrossInterfaceCast, //TODO X
 	// Cast<TargetClass>(TargetObject)
-	KCST_MetaCast,
+	KCST_MetaCast, //TODO X
 	KCST_AssignmentOnPersistentFrame,
 	// Cast<TargetClass>(TargetInterface)
-	KCST_CastInterfaceToObj,
+	KCST_CastInterfaceToObj, //TODO X
 	// goto ReturnLabel
 	KCST_GotoReturn,
 	// [if (!TargetObject->TargetProperty)] goto TargetLabel
 	KCST_GotoReturnIfNot,
-	KCST_SwitchValue,
-	KCST_ArrayGetByRef,
-	KCST_CreateSet,
-	KCST_CreateMap,
+	KCST_SwitchValue, //Can only appear as the InlineGeneratedParameter in FKismetTerminal
+	KCST_ArrayGetByRef, //Can only appear as the InlineGeneratedParameter in FKismetTerminal
+	KCST_CreateSet, //TODO X
+	KCST_CreateMap, //TODO X
 };
 
 struct FKismetCompiledStatement {
@@ -96,6 +96,9 @@ struct FKismetCompiledStatement {
 
 	// Is this function called on a parent class (super, etc)?  (KCST_CallFunction)
 	bool bIsParentContext;
+
+	// True if this function call is actually a call into ubergraph, and TargetLabel will belong to the ubergraph and not this function
+	bool bIsCallIntoUbergraph;
 };
 
 /** A terminal in the graph (literal or variable reference) */
@@ -156,4 +159,11 @@ struct FKismetTerminal {
 	// Variable reference types (mutually-exclusive)
 	// If this term is also a context, this indicates which type of context it is
 	EContextType ContextType;
+
+	FORCEINLINE bool operator==(const FKismetTerminal& Terminal) const {
+		
+	}
 };
+
+FORCEINLINE uint32 GetTypeHash(const FKismetTerminal& Terminal) {
+}

@@ -4,7 +4,7 @@
 #include "Casts.h"
 #include "ReflectionHelper.generated.h"
 
-USTRUCT(BlueprintType)
+USTRUCT(BlueprintInternalUseOnly)
 struct SML_API FDynamicStructInfo {
     GENERATED_BODY()
 public:

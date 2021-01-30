@@ -5,12 +5,21 @@
 #include "PropertyPortFlags.h"
 #include "PropertyTypeHandler.h"
 #include "TextProperty.h"
+#include "Engine/Blueprint.h"
+#include "Engine/LatentActionManager.h"
 
-FKismetBytecodeTransformer::FKismetBytecodeTransformer(const FString& SelfClassPath) {
-    this->SelfClassPath = SelfClassPath;
+FKismetBytecodeTransformer::FKismetBytecodeTransformer(UBlueprint* Blueprint) {
+    this->OwnerBlueprint = Blueprint;
+    this->ExecuteUbergraphFunctionName = UEdGraphSchema_K2::FN_ExecuteUbergraphBase.ToString() + TEXT("_") + Blueprint->GetName();
 }
 
-void FKismetBytecodeTransformer::SetSourceStatements(const TArray<TSharedPtr<FJsonObject>>& Statements) {
+void FKismetBytecodeTransformer::SetUberGraphTransformer(TSharedPtr<FKismetBytecodeTransformer> Transformer) {
+    check(Transformer->IsUberGraphFunction());
+    this->UberGraphTransformer = Transformer;
+}
+
+void FKismetBytecodeTransformer::SetSourceStatements(const FString& FunctionName, const TArray<TSharedPtr<FJsonObject>>& Statements) {
+    this->CurrentFunctionName = FunctionName;
     this->ResultStatements.Reserve(Statements.Num());
     
     for (const TSharedPtr<FJsonObject> StatementObject : Statements) {
@@ -67,7 +76,6 @@ bool FKismetBytecodeTransformer::IsVariableInstruction(const FString& Instructio
 }
 
 TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessStatement(TSharedPtr<FJsonObject> Statement) {
-    const int32 StatementIndex = Statement->GetIntegerField(TEXT("StatementIndex"));
     const FString InstructionName = Statement->GetStringField(TEXT("Inst"));
 
     if (InstructionName == TEXT("Nothing")) {
@@ -267,7 +275,7 @@ TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessStatemen
         //Deserialize type from instruction data directly, because figuring out persistent frame layout is hard
         //from this point by variable name inside it. It's much easier just to read pre-recorded information
         Result->LHS = MakeShareable(new FKismetTerminal());
-        Result->LHS->Type = FPropertyTypeHelper::DeserializeGraphPinType(PropertyType.ToSharedRef());
+        Result->LHS->Type = FPropertyTypeHelper::DeserializeGraphPinType(PropertyType.ToSharedRef(), OwnerBlueprint->SkeletonGeneratedClass);
         Result->LHS->AssociatedVarProperty = PropertyName;
 
         Result->RHS.Add(ProcessExpression(Expression));
@@ -288,9 +296,28 @@ TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessStatemen
         Result->Type = ECompiledStatementType::KCST_CallDelegate;
         Result->FunctionContext = ProcessExpression(Statement->GetObjectField(TEXT("Delegate")));
 
-        const FString FunctionObjectPath = Statement->GetStringField(TEXT("DelegateSignatureFunction"));
-        UFunction* Function = LoadObject<UFunction>(NULL, *FunctionObjectPath);
-        check(Function && Function->HasAnyFunctionFlags(FUNC_Delegate));
+        const TSharedPtr<FJsonObject> DelegateSignatureFunctionRef = Statement->GetObjectField(TEXT("DelegateSignatureFunction"));
+
+        const bool bIsSelfContext = DelegateSignatureFunctionRef->GetBoolField(TEXT("IsSelfContext"));
+        const FString MemberName = DelegateSignatureFunctionRef->GetStringField(TEXT("MemberName"));
+
+        UClass* MemberParentClass;
+
+        //Resolve MemberParent class in respect to Self Context
+        if (!bIsSelfContext) {
+            const FString MemberParentPath = DelegateSignatureFunctionRef->GetStringField(TEXT("MemberParent"));
+            MemberParentClass = LoadObject<UClass>(NULL, *MemberParentPath);
+            checkf(MemberParentClass, TEXT("Couldn't resolve delegate signature parent class %s"), *MemberParentPath);
+
+        } else {
+            //In self context, we should use skeleton blueprint class as a member parent
+            MemberParentClass = OwnerBlueprint->SkeletonGeneratedClass;
+        }
+        
+        UFunction* Function = MemberParentClass->FindFunctionByName(*MemberName);
+        checkf(Function, TEXT("Cannot resolve delegate signature member %s in parent scope %s"), *MemberName, *MemberParentClass->GetPathName());
+        checkf(Function->HasAnyFunctionFlags(FUNC_Delegate), TEXT("Delegate signature function %s is not marked as delegate"), *MemberName);
+        
         Result->FunctionToCall = Function;
 
         //Do argument processing that is common for all function call instructions
@@ -417,7 +444,7 @@ TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessStatemen
         //Create string literal with function name and add it as the first argument
         TSharedPtr<FKismetTerminal> FunctionNameTerminal = MakeShareable(new FKismetTerminal());
         FunctionNameTerminal->bIsLiteral = true;
-        FunctionNameTerminal->Type.PinCategory = UEdGraphSchema_K2::PC_String;
+        FunctionNameTerminal->Type.PinCategory = UEdGraphSchema_K2::PC_Name;
         FunctionNameTerminal->StringLiteral = FunctionName;
         Result->RHS.Add(FunctionNameTerminal);
         
@@ -453,7 +480,7 @@ TSharedPtr<FKismetTerminal> FKismetBytecodeTransformer::ProcessExpression(TShare
         ContextTerminal->ContextType = FKismetTerminal::EContextType_Struct;
         
         TSharedPtr<FKismetTerminal> StructMemberTerminal = MakeShareable(new FKismetTerminal());
-        StructMemberTerminal->Type = FPropertyTypeHelper::DeserializeGraphPinType(PropertyType.ToSharedRef());
+        StructMemberTerminal->Type = FPropertyTypeHelper::DeserializeGraphPinType(PropertyType.ToSharedRef(), OwnerBlueprint->SkeletonGeneratedClass);
         StructMemberTerminal->AssociatedVarProperty = PropertyName;
 
         StructMemberTerminal->Context = ContextTerminal;
@@ -482,7 +509,7 @@ TSharedPtr<FKismetTerminal> FKismetBytecodeTransformer::ProcessExpression(TShare
 
         //We can resolve type of variable by simply looking up through properties associated with UFunction, but it's much easier to read pre-recorded information
         TSharedPtr<FKismetTerminal> VariableTerminal = MakeShareable(new FKismetTerminal());
-        VariableTerminal->Type = FPropertyTypeHelper::DeserializeGraphPinType(VariableType.ToSharedRef());
+        VariableTerminal->Type = FPropertyTypeHelper::DeserializeGraphPinType(VariableType.ToSharedRef(), OwnerBlueprint->SkeletonGeneratedClass);
         VariableTerminal->AssociatedVarProperty = VariableName;
 
         if (InstructionName == TEXT("DefaultVariable")) {
@@ -582,7 +609,7 @@ TSharedPtr<FKismetTerminal> FKismetBytecodeTransformer::ProcessLiteralExpression
         return LiteralTerminal;
     }
     
-    //Integer number contant (in terminal form, it is stored in string literal field)
+    //Integer number constant (in terminal form, it is stored in string literal field)
     if (InstructionName == TEXT("IntConst")) {
         LiteralTerminal->Type.PinCategory = UEdGraphSchema_K2::PC_Int;
         LiteralTerminal->StringLiteral = FString::FromInt(Expression->GetIntegerField(TEXT("Value")));
@@ -819,7 +846,7 @@ TSharedPtr<FKismetTerminal> FKismetBytecodeTransformer::ProcessLiteralExpression
         const TArray<TSharedPtr<FJsonValue>> Values = Expression->GetArrayField(TEXT("Values"));
 
         //Set array type from recorded instruction, container type is either a set or an array (depending on the opcode)
-        FEdGraphPinType ArrayPropertyType = FPropertyTypeHelper::DeserializeGraphPinType(InnerPropertyObject.ToSharedRef());
+        FEdGraphPinType ArrayPropertyType = FPropertyTypeHelper::DeserializeGraphPinType(InnerPropertyObject.ToSharedRef(), OwnerBlueprint->SkeletonGeneratedClass);
         if (InstructionName == TEXT("ArrayConst")) {
             ArrayPropertyType.ContainerType = EPinContainerType::Array;
         } else {
@@ -855,8 +882,8 @@ TSharedPtr<FKismetTerminal> FKismetBytecodeTransformer::ProcessLiteralExpression
         const TArray<TSharedPtr<FJsonValue>> Values = Expression->GetArrayField(TEXT("Values"));
 
         //Set map type from two recorded key and value pin types
-        FEdGraphPinType ValuePropertyType = FPropertyTypeHelper::DeserializeGraphPinType(ValuePropertyObject.ToSharedRef());
-        FEdGraphPinType KeyPropertyType = FPropertyTypeHelper::DeserializeGraphPinType(KeyPropertyObject.ToSharedRef());
+        FEdGraphPinType ValuePropertyType = FPropertyTypeHelper::DeserializeGraphPinType(ValuePropertyObject.ToSharedRef(), OwnerBlueprint->SkeletonGeneratedClass);
+        FEdGraphPinType KeyPropertyType = FPropertyTypeHelper::DeserializeGraphPinType(KeyPropertyObject.ToSharedRef(), OwnerBlueprint->SkeletonGeneratedClass);
         
         FEdGraphPinType MapPropertyType = KeyPropertyType;
         MapPropertyType.PinValueType = FEdGraphTerminalType::FromPinType(ValuePropertyType);
@@ -901,7 +928,8 @@ TSharedPtr<FKismetTerminal> FKismetBytecodeTransformer::ProcessLiteralExpression
     return NULL;
 }
 
-TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessFunctionCallStatement(TSharedPtr<FJsonObject> Statement) {
+TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessFunctionCallStatement(TSharedPtr<FJsonObject> Statement)
+{
     TSharedPtr<FKismetTerminal> Context;
     bool bIsInterfaceContext = false;
 
@@ -933,54 +961,51 @@ TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessFunction
     Result->FunctionContext = Context;
     Result->bIsInterfaceContext = bIsInterfaceContext;
 
-    if (InstructionName == TEXT("LocalVirtualFunction") || InstructionName == TEXT("VirtualFunction")) {
-        //This is a virtual function call, we have just a function name that needs to be resolved
-        const FString FunctionName = Statement->GetStringField(TEXT("FunctionName"));
+    //Resolve UFunction object by name and provided context 
+    const FString FunctionName = Statement->GetStringField(TEXT("Function"));
 
-        //Good thing though, we know the exact type of the context term, so we can just
-        //verify that it's good (Category == PC_Object) and retrieve object class from it
-        check(Context->Type.PinCategory == UEdGraphSchema_K2::PC_Object);
+    //Resolve context class for querying function by name
+    UClass* ContextObjectClass;
 
-        UClass* ContextObjectClass;
-        
+    if (InstructionName != TEXT("CallMath")) {
+        //All function calls will have proper context object set, and it will be either an object or class
+        //Either way, PSC_Self handling is equal for both of these cases, and resulting class will be
+        //class of the object on which function will be called (for static functions, it will be class CDO)
+
+        //Resolve Context class, for Self, use skeleton generated class
         if (Context->Type.PinSubCategory == UEdGraphSchema_K2::PSC_Self) {
-            ContextObjectClass = LoadObject<UClass>(NULL, *SelfClassPath);
-            checkf(ContextObjectClass, TEXT("Cannot load Self class from path %s"), *SelfClassPath);
+            ContextObjectClass = OwnerBlueprint->SkeletonGeneratedClass;
         } else {
             ContextObjectClass = CastChecked<UClass>(Context->Type.PinSubCategoryObject);
-            checkf(ContextObjectClass, TEXT("Cannot resolve Context from pin category type. Sub category type = %s"), *Context->Type.PinSubCategory.ToString());
         }
+    } else {
+        //CallMath is special - it does not have any kind of context, so to resolve
+        //function we have to look up context class recorded in instruction data
+        const FString ContextClassPath = Statement->GetStringField(TEXT("ContextClass"));
+        
+        ContextObjectClass = LoadObject<UClass>(NULL, *ContextClassPath);
+        checkf(ContextObjectClass, TEXT("Failed to resolve context class for math function, class: %s"), *ContextClassPath);
+    }
 
-        //Resolve function by looking it through context class        
-        UFunction* ResolvedFunction = ContextObjectClass->FindFunctionByName(*FunctionName);
-        checkf(ResolvedFunction, TEXT("Cannot resolve virtual function in context %s, name %s"), *ContextObjectClass->GetPathName(), *FunctionName);
+    UFunction* ResolvedFunction = ContextObjectClass->FindFunctionByName(*FunctionName);
+    checkf(ResolvedFunction, TEXT("Couldn't resolve function %s in context of class %s"), *FunctionName, *ContextObjectClass->GetPathName());
 
+    if (InstructionName == TEXT("LocalVirtualFunction") || InstructionName == TEXT("VirtualFunction")) {
         //Obviously it is not a parent context for a virtual function
         Result->FunctionToCall = ResolvedFunction;
         Result->bIsParentContext = false;
-    }
-    else if (InstructionName == TEXT("CallMath")) {
-        //CallMath functions should never have any context, so check this
-        check(!Context.IsValid());
-
-        const FString FunctionObjectPath = Statement->GetStringField(TEXT("Function"));
-        UFunction* Function = LoadObject<UFunction>(NULL, *FunctionObjectPath);
-        check(Function);
         
-        Result->FunctionToCall = Function;
-        Result->bIsParentContext = false;
-    }
-    else if (InstructionName == TEXT("LocalFinalFunction") || InstructionName == TEXT("FinalFunction")) {
+    } else if (InstructionName == TEXT("LocalFinalFunction") || InstructionName == TEXT("FinalFunction")) {
         //Final function call, possibly in the parent context
         //We set parent context flag if function in question is not final, but is called with FinalFunction opcode
-        const FString FunctionObjectPath = Statement->GetStringField(TEXT("Function"));
-        UFunction* Function = LoadObject<UFunction>(NULL, *FunctionObjectPath);
-        check(Function);
-
-        Result->FunctionToCall = Function;
-        Result->bIsParentContext = !Function->HasAnyFunctionFlags(EFunctionFlags::FUNC_Final);
-    }
-    else {
+        Result->FunctionToCall = ResolvedFunction;
+        Result->bIsParentContext = !ResolvedFunction->HasAnyFunctionFlags(EFunctionFlags::FUNC_Final);
+        
+    } else if (InstructionName == TEXT("CallMath")) {
+        Result->FunctionToCall = ResolvedFunction;
+        Result->bIsParentContext = false;
+        
+    } else {
         checkf(0, TEXT("Unhandled function call opcode: %s"), *InstructionName);
     }
 
@@ -988,17 +1013,67 @@ TSharedPtr<FKismetCompiledStatement> FKismetBytecodeTransformer::ProcessFunction
     TArray<TSharedPtr<FJsonValue>> Parameters = Statement->GetArrayField(TEXT("Parameters"));
 
     int32 NumParams = 0;
+    int32 LatentInfoParameterIndex = -1;
+    
     for (TFieldIterator<UProperty> PropIt(Result->FunctionToCall); PropIt && (PropIt->PropertyFlags & CPF_Parm); ++PropIt) {
         UProperty* FuncParamProperty = *PropIt;
 
         //Skip return values because they are handled in a special way when we happened to be an expression in EX_Let statement
         if (!FuncParamProperty->HasAnyPropertyFlags(CPF_ReturnParm)) {
+            
+            //Record LatentInfo parameter which we will resolve later
+            if (FuncParamProperty->GetName() == Result->FunctionToCall->GetMetaData("LatentInfo")) {
+                LatentInfoParameterIndex = NumParams;
+            }
+            
             const TSharedPtr<FJsonObject> ParameterExpression = Parameters[NumParams++]->AsObject();
             TSharedPtr<FKismetTerminal> ParameterTerminal = ProcessFunctionParameter(ParameterExpression);
-
+            
             Result->RHS.Add(ParameterTerminal);
         }
     }
+
+    //Detect calls into ubergraph. They need special handling because first parameter
+    //Is the offset to jump on to start execution of the given event this function is the stub for,
+    //and since we do not really expose offsets in compiled statement representation, we need to find
+    //compiled statement inside of the ubergraph object and set is as target for this statement
+    if (FunctionName == ExecuteUbergraphFunctionName) {
+        check(ContextObjectClass == OwnerBlueprint->SkeletonGeneratedClass);
+        
+        //Calls into ubergraph should never appear inside of the ubergraph itself
+        checkf(!IsUberGraphFunction(), TEXT("Encountered a call into ubergraph inside of the ubergraph itself. This should never happen"));
+        check(UberGraphTransformer.IsValid());
+
+        const int32 OffsetIntoUbergraph = FCString::Atoi(*Result->RHS[0]->StringLiteral);
+        const TSharedPtr<FKismetCompiledStatement> UberGraphStatement = UberGraphTransformer->StatementsByOffset.FindChecked(OffsetIntoUbergraph);
+
+        Result->TargetLabel = UberGraphStatement;
+        Result->bIsCallIntoUbergraph = true;
+    }
+
+    //Detect latent function calls that have next statement index to execute in this function
+    //After completing async operation inside of the LatentInfo structure parameter. We need to extract it and set as TargetLabel
+    if (LatentInfoParameterIndex != -1) {
+        //Latent Actions can only appear inside of the uber graph function
+        checkf(IsUberGraphFunction(), TEXT("Encountered latent action outside of the uber graph function: %s"), *CurrentFunctionName);
+        
+        UScriptStruct* LatentActionInfoStruct = FLatentActionInfo::StaticStruct();
+        const TSharedPtr<FKismetTerminal> LatentInfoTerminal = Result->RHS[LatentInfoParameterIndex];
+
+        //Export textual representation of latent action info into the proper struct
+        FLatentActionInfo LatentActionInfo;
+        LatentActionInfoStruct->ImportText(*LatentInfoTerminal->StringLiteral, &LatentActionInfo, NULL, 0, GError, TEXT("LatentActionInfo"));
+
+        //Latent actions should never point outside of the function they are appearing in
+        check(LatentActionInfo.ExecutionFunction.ToString() == CurrentFunctionName);
+        
+        //We cannot really resolve pointed compiled statement right now since we haven't finished transforming of the current function yet
+        //Kind of patch up we need is essentially the same as for normal goto, so we just schedule a patch up in jump patch up map
+        const int32 ResumeOffsetInUberGraph = LatentActionInfo.Linkage;
+        this->JumpPatchUpTable.Add(Result, ResumeOffsetInUberGraph);
+        Result->bIsCallIntoUbergraph = false;
+    }
+    
     return Result;
 }
 
