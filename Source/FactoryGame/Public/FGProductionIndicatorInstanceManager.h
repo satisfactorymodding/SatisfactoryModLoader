@@ -1,13 +1,10 @@
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
 //<CSS>
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
-#include "Buildables/FGBuildableFactory.h"
+#include "FGBuildableFactory.h"
 #include "FGProductionIndicatorInstanceManager.generated.h"
 
 
@@ -54,9 +51,6 @@ private:
 	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ EProductionStatus::IS_MAX ];
 	TArray< InstanceHandle* > mHandles[ EProductionStatus::IS_MAX ];
 
-
-public:
-	FORCEINLINE ~UFGProductionIndicatorInstanceManager() = default;
 };
 
 //</CSS>

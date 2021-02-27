@@ -1,7 +1,4 @@
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
 //<CSS>
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
@@ -66,9 +63,6 @@ private:
 
 	TArray< InstanceHandle* > mHandles[ BUILDABLE_COLORS_MAX_SLOTS ];
 
-
-public:
-	FORCEINLINE ~UFGColoredInstanceManager() = default;
 };
 
 //</CSS>

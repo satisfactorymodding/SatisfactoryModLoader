@@ -1,13 +1,11 @@
 #pragma once
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "Curves/CurveLinearColor.h"
-#include "Curves/CurveFloat.h"
 #include "FGSkySphere.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSkySphereSettings
+struct FSkySphereSettings
 {
 	GENERATED_BODY()
 	
@@ -51,9 +49,6 @@ struct FACTORYGAME_API FSkySphereSettings
 	bool OverrideSunIntensity;
 	bool OverrideMoonLightColor;
 	bool OverrideMoonIntensity;
-
-public:
-	FORCEINLINE ~FSkySphereSettings() = default;
 };
 
 UCLASS(HideCategories=(Input,Rendering))
@@ -61,7 +56,6 @@ class FACTORYGAME_API AFGSkySphere : public AActor, public ICurvePanningInterfac
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	AFGSkySphere();
 
 	// Begin AActor interface
@@ -143,11 +137,11 @@ public: // MODDING EDIT protected -> public
 	/** How does the occlusion tint intensity change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkyLight" )
 	FRuntimeCurveLinearColor mOcclusionTintColor;
-	
+
 	/** How the color of the horizon changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
 	FRuntimeCurveLinearColor mHorizonColorCurve;
-	
+
 	/** How the color of the zenith changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
 	FRuntimeCurveLinearColor mZenithColorCurve;
@@ -184,7 +178,4 @@ public: // MODDING EDIT protected -> public
 	float mViewMinInput;
 	float mViewMaxInput;
 #endif
-
-public:
-	FORCEINLINE ~AFGSkySphere() = default;
 };

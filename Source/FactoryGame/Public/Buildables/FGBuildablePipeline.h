@@ -1,14 +1,8 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "../FGFluidIntegrantInterface.h"
+#include "FGFluidIntegrantInterface.h"
 #include "FGBuildablePipeBase.h"
 #include "FGBuildablePipeline.generated.h"
 
@@ -17,7 +11,7 @@
  * Struct containing quantized fluid content for a more optimized replication.
  */
 USTRUCT()
-struct FACTORYGAME_API FQuantizedPipelineIndicatorData
+struct FQuantizedPipelineIndicatorData
 {
 	GENERATED_BODY()
 public:
@@ -33,13 +27,10 @@ private:
 	int8 PackedFlow = 0;
 	UPROPERTY()
 	uint8 PackedContent = 0;
-
-public:
-	FORCEINLINE ~FQuantizedPipelineIndicatorData() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FStringPair
+struct FStringPair
 {
 	GENERATED_BODY()
 public:
@@ -53,9 +44,6 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, Category = "String Pair" )
 	FString ActualName;
-
-public:
-	FORCEINLINE ~FStringPair() = default;
 };
 
 /**
@@ -268,7 +256,4 @@ private:
 	/** Stop rattle sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	class UAkAudioEvent* mStopRattleSoundEvent;
-
-public:
-	FORCEINLINE ~AFGBuildablePipeline() = default;
 };

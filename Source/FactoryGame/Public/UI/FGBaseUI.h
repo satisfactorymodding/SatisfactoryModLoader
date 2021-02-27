@@ -1,31 +1,27 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UMG.h"
 #include "Blueprint/UserWidget.h"
-#include "FGPopupWidget.h"
+#include "UI/FGPopupWidget.h"
 #include "FGBaseUI.generated.h"
 
 /**
- * 
+ * @todo Please comment me
  */
 UCLASS()
 class FACTORYGAME_API UFGBaseUI : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	UFGBaseUI( const FObjectInitializer& ObjectInitializer );
 
-	virtual void NativeConstruct();
-
-	/** Tick tock */
-	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime );
+	// Begin UUserWidget interface
+	virtual void NativeConstruct() override;
+	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
+	// End UUserWidget interface
 
 	/** Creates a popup */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
@@ -71,7 +67,4 @@ protected:
 
 	/** Queue with popups to show */
 	TArray< FPopupData > mPopupDataQueue;
-
-public:
-	FORCEINLINE ~UFGBaseUI() = default;
 };

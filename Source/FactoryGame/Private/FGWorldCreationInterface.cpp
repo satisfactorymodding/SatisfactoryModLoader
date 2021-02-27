@@ -2,3 +2,4 @@
 
 #include "FGWorldCreationInterface.h"
 
+UFGWorldCreationInterface::UFGWorldCreationInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

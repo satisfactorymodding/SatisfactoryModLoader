@@ -7,16 +7,19 @@ FReply SFGCheatBoardWidget::OnKeyDown(const FGeometry& myGeometry, const FKeyEve
 bool SFGCheatBoardWidget::SupportsKeyboardFocus() const{ return bool(); }
 void SFGCheatBoardWidget::CloseCheatBoard(){ }
 FReply SFGCheatBoardWidget::OnFocusReceived(const FGeometry& MyGeometry, const FFocusEvent& InFocusEvent){ return FReply::Unhandled(); }
-void SFGCheatBoardWidget::ShowInputWindowFor(UProperty* prop){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(UBoolProperty* prop){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(UNumericProperty* prop){ }
+void SFGCheatBoardWidget::ShowInputWindowFor(FProperty* prop){ }
+void SFGCheatBoardWidget::ShowInputWindowFor(FBoolProperty* prop){ }
+void SFGCheatBoardWidget::ShowInputWindowFor(FNumericProperty* prop){ }
 void SFGCheatBoardWidget::ShowInputWindowFor(UClass* inClass){ }
-void SFGCheatBoardWidget::ShowInputWindowFor(UStrProperty* prop){ }
+void SFGCheatBoardWidget::ShowInputWindowFor(FStrProperty* prop){ }
 void SFGCheatBoardWidget::ShowInputWindowFor(FLinearColor color){ }
 void SFGCheatBoardWidget::ShowInputWindowFor(UEnum* enumProp){ }
 void SFGCheatBoardWidget::SetFilterTextboxFocus() const{ }
 void SFGCheatBoardWidget::ResetMenu(){ }
+void SFGCheatBoardWidget::ShowMenu(CheatMenuCategory* newMenu, FString title, FString filtervalue){ }
 TArray< UFunction* > SFGCheatBoardWidget::GetAllCheats(){ return TArray<UFunction*>(); }
+FReply SFGCheatBoardWidget::OnCheatClicked(CheatMenuElementPtr cheat){ return FReply::Unhandled(); }
+FReply SFGCheatBoardWidget::OnCheatFavoriteToggle(CheatMenuElementPtr cheat){ return FReply::Unhandled(); }
 void SFGCheatBoardWidget::OnInputTextCommited(const FText& InText, ETextCommit::Type InCommitType){ }
 FReply SFGCheatBoardWidget::OnInputFilterKeyDown(const FGeometry&, const FKeyEvent& InKeyEv){ return FReply::Unhandled(); }
 void SFGCheatBoardWidget::OnInputFilterChanged(const FText& InText){ }
@@ -29,5 +32,10 @@ FReply SFGCheatBoardWidget::OnClassParm(UClass* inClass){ return FReply::Unhandl
 FReply SFGCheatBoardWidget::OnNumInputClicked(int32 value){ return FReply::Unhandled(); }
 void SFGCheatBoardWidget::OnClassParmAction(UClass* inClass){ }
 void SFGCheatBoardWidget::OnSetColorFromColorPicker(FLinearColor newColor){ }
-UProperty* SFGCheatBoardWidget::GetNextProperty(){ return nullptr; }
+FProperty* SFGCheatBoardWidget::GetNextProperty(){ return nullptr; }
+TSharedRef<ITableRow> SFGCheatBoardWidget::CheatMenu_OnGenerateRow(CheatMenuElementPtr Item, const TSharedRef<STableViewBase>& OwnerTable){ return TSharedRef<ITableRow>(); }
+void SFGCheatBoardWidget::GetVisibleChildren(CheatMenuElement* Item, TArray< CheatMenuElementPtr >& OutChildren){ }
+void SFGCheatBoardWidget::CheatMenu_OnGetChildren(CheatMenuElementPtr Item, TArray< CheatMenuElementPtr >& OutChildren){ }
+void SFGCheatBoardWidget::CheatMenu_OnSelectionChanged(CheatMenuElementPtr Item, ESelectInfo::Type SelectInfo){ }
+void SFGCheatBoardWidget::CheatMenu_OnMouseClick(CheatMenuElementPtr Item){ }
 #endif

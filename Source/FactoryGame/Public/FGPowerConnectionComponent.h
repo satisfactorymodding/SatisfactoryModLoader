@@ -1,7 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "FGCircuitConnectionComponent.h"
 #include "FGPowerConnectionComponent.generated.h"
@@ -42,7 +41,4 @@ private:
 	 */
 	UPROPERTY()
 	class UFGPowerInfoComponent* mPowerInfo;
-
-public:
-	FORCEINLINE ~UFGPowerConnectionComponent() = default;
 };

@@ -1,13 +1,10 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "../FGFluidIntegrantInterface.h"
+#include "FGFluidIntegrantInterface.h"
 #include "FGBuildablePipelineAttachment.generated.h"
 
 /**
@@ -57,7 +54,4 @@ protected:
 	*/
 	UPROPERTY()
 	TSubclassOf< class UFGItemDescriptor > mCachedFluidDescriptor;
-
-public:
-	FORCEINLINE ~AFGBuildablePipelineAttachment() = default;
 };

@@ -1,9 +1,4 @@
 #pragma once
-#include "Misc/Guid.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Object.h"
 #include "FGOnlineSessionSettings.h"
@@ -14,11 +9,13 @@ namespace SaveSystemConstants
 	// Several locations require the . in the extension
 	static FString SaveExtension( TEXT( ".sav" ) );
 
+	static FString BackupSuffix( TEXT("_BAK" ) );
+
 	// Custom name for the custom version when setting versions of archives
-	static const TCHAR* CustomVersionFriendlyName = TEXT( "SaveVersion" );
+	static const TCHAR CustomVersionFriendlyName[] = TEXT( "SaveVersion" );
 
 	// Custom name for the save header
-	static const TCHAR* HeaderCustomVersionFriendlyName = TEXT( "SaveHeaderVersion" );
+	static const TCHAR HeaderCustomVersionFriendlyName[] = TEXT( "SaveHeaderVersion" );
 }
 
 UENUM( BlueprintType )
@@ -42,7 +39,7 @@ typedef FString SessionNameType;
 
 /** The header with information about a save game */
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSaveHeader
+struct FSaveHeader
 {
 	GENERATED_BODY()
 
@@ -70,6 +67,9 @@ struct FACTORYGAME_API FSaveHeader
 		// @2019-06-19 This was put in the wrong save version thingy and is now on experimental so can't remove it.
 		LookAtTheComment,
 
+		// @2021-01-22 UE4.25 Engine Upgrade. FEditorObjectVersion Changes occurred (notably with FText serialization)
+		UE425EngineUpdate,
+
 		// -----<new versions can be added above this line>-----
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1 // Last version to use
@@ -77,7 +77,7 @@ struct FACTORYGAME_API FSaveHeader
 
 	FSaveHeader();
 
-	FSaveHeader( int32 saveVersion, int32 buildVersion, FString mapName, FString mapOptions, FString sessionName, int32 playDurationSeconds, FDateTime saveDateTime, ESessionVisibility sessionVisibility ) :
+	FSaveHeader( int32 saveVersion, int32 buildVersion, FString mapName, FString mapOptions, FString sessionName, int32 playDurationSeconds, FDateTime saveDateTime, ESessionVisibility sessionVisibility, int32 editorObjectVersion ) :
 		SaveVersion( saveVersion ),
 		BuildVersion( buildVersion ),
 		MapName( mapName ),
@@ -85,7 +85,8 @@ struct FACTORYGAME_API FSaveHeader
 		SessionName( sessionName ),
 		PlayDurationSeconds( playDurationSeconds ),
 		SaveDateTime( saveDateTime ),
-		SessionVisibility( sessionVisibility )
+		SessionVisibility( sessionVisibility ),
+		EditorObjectVersion( editorObjectVersion )
 	{
 	}
 
@@ -116,6 +117,9 @@ struct FACTORYGAME_API FSaveHeader
 	/** What was the last visibility of the game when we played it */
 	TEnumAsByte<ESessionVisibility> SessionVisibility;
 
+	/** Save the FEditorObjectVersion that this save file was written with */
+	int32 EditorObjectVersion;
+
 	// @todosave: Add LastPlayDate as uint64 (Timestamp)
 	// @todosave: Add if it's a autosave
 
@@ -127,22 +131,16 @@ struct FACTORYGAME_API FSaveHeader
 
 	// The GUID for this custom version number
 	const static FGuid GUID;
-
-public:
-	FORCEINLINE ~FSaveHeader() = default;
 };
 
 /** Enable custom net delta serialization for the above struct. */
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FSaveHeader > : public TStructOpsTypeTraitsBase2< FSaveHeader >
+struct TStructOpsTypeTraits< FSaveHeader > : public TStructOpsTypeTraitsBase2< FSaveHeader >
 {
 	enum
 	{
 		WithNetSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FSaveHeader >() = default;
 };
 
 
@@ -164,7 +162,7 @@ enum class ESaveSortDirection : uint8
  * For when a artist/LD has changed the name of a map
  */
 USTRUCT()
-struct FACTORYGAME_API FMapRedirector
+struct FMapRedirector
 {
 	GENERATED_BODY()
 
@@ -175,16 +173,13 @@ struct FACTORYGAME_API FMapRedirector
 	/** New map name */
 	UPROPERTY()
 	FString NewMapName;
-
-public:
-	FORCEINLINE ~FMapRedirector() = default;
 };
 
 DECLARE_DELEGATE_ThreeParams( FOnEnumerateSaveGamesComplete, bool, const TArray<FSaveHeader>&, void* );
 DECLARE_DELEGATE_TwoParams( FOnDeleteSaveGameComplete, bool, void* );
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSessionSaveStruct
+struct FSessionSaveStruct
 {
 	GENERATED_BODY()
 
@@ -204,9 +199,6 @@ struct FACTORYGAME_API FSessionSaveStruct
 	/** The saves that are in this session */
 	UPROPERTY( BlueprintReadOnly )
 	TArray< FSaveHeader > SaveHeaders;		
-
-public:
-	FORCEINLINE ~FSessionSaveStruct() = default;
 };
 
 /**
@@ -219,7 +211,7 @@ public:
  * BlueprintCallable function in this class.
  */
 UCLASS(Config=Engine)
-class FACTORYGAME_API UFGSaveSystem : public UObject
+class UFGSaveSystem : public UObject
 {
 	GENERATED_BODY()
 public:
@@ -234,6 +226,9 @@ public:
 
 	/** Get the path to the save folder for saves not connected to an EPIC user ID (offline play, PIE, etc) */
 	static FString GetCommonSaveDirectoryPath();
+
+	/** Get the path to save backup folder. This is for storing files outside the Cloud Sync location */
+	static FString GetBackupSaveDirectoryPath();
 
 	/** All directories to find save data from */
 	static void GetSourceSaveDirectoriesPaths( const UWorld* world, TArray<FString>& out_sourceSaves );
@@ -365,6 +360,7 @@ public:
 
 	static bool SaveFileExistsInCommonSaveDirectory( const FString& saveName );
 
+
 	/** Set so that we use our internal saves */
 	static FORCEINLINE void SetUseBundledSaves( bool useInternal ){ mIsUsingBundledSaves = useInternal; }
 
@@ -376,7 +372,16 @@ public:
 
 	/** Set if we are currently verifying the save system, @todo: This should check so that we don't switch at bad times */
 	static FORCEINLINE void SetIsVerifyingSaveSystem( bool inVerifying ){ mIsVerifyingSaveSystem = inVerifying; }
+
+	/** Get the max number of saves allowed for backup */
+	FORCEINLINE int32 GetMaxNumBackupSaves() { return mMaxNumBackupSaves; }
+
 protected:
+	/** 
+	* Checks the local backup directory for saves and if their are too many it deletes the oldest ones
+	*/
+	void BackupSaveCleanup();
+
 	/** Migrate saves to new save location */
 	void MigrateSavesToNewLocation( const FString& oldSaveLocation );
 
@@ -402,12 +407,13 @@ protected:
 	UPROPERTY( GlobalConfig )
 	TArray<FMapRedirector> mMapRedirectors;
 
+	/** Maximum Number of Backup saves (will cull to this number on application startup, not during sessions while saving) */
+	UPROPERTY( Config )
+	int32 mMaxNumBackupSaves;
+
 	/** We are currently running verification tests on the save system */
 	static bool mIsVerifyingSaveSystem;
 
 	/** We are currently using internal saves */
 	static bool mIsUsingBundledSaves;
-
-public:
-	FORCEINLINE ~UFGSaveSystem() = default;
 };

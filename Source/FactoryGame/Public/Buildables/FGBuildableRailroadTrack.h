@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGBuildable.h"
 #include "Components/SplineComponent.h"
@@ -26,7 +22,7 @@ public:
 	static const FRailroadTrackPosition InvalidTrackPosition;
 
 	FRailroadTrackPosition();
-	FORCEINLINE FRailroadTrackPosition( class AFGBuildableRailroadTrack* track, float offset, float forward );
+	FRailroadTrackPosition( class AFGBuildableRailroadTrack* track, float offset, float forward );
 	FRailroadTrackPosition( const FRailroadTrackPosition& position );
 	~FRailroadTrackPosition();
 
@@ -71,15 +67,12 @@ public:
 
 /** Enable custom serialization of FRailroadTrackPosition */
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FRailroadTrackPosition > : public TStructOpsTypeTraitsBase2< FRailroadTrackPosition >
+struct TStructOpsTypeTraits< FRailroadTrackPosition > : public TStructOpsTypeTraitsBase2< FRailroadTrackPosition >
 {
 	enum
 	{
 		WithSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FRailroadTrackPosition >() = default;
 };
 
 
@@ -151,28 +144,6 @@ public:
 	/** @return The track graph this track belongs to. */
 	FORCEINLINE int32 GetTrackGraphID() const { return mTrackGraphID; }
 
-	//@todoconveyor This could be shared with conveyors later.
-	template< typename MeshConstructor >
-	static void BuildSplineMeshes(
-		class USplineComponent* spline,
-		UStaticMesh* mesh,
-		float meshLength,
-		TArray< USplineMeshComponent* >& meshPool,
-		MeshConstructor meshConstructor );
-
-	static void BuildSplineMeshes(
-		class USplineComponent* spline,
-        UStaticMesh* mesh,
-		float meshLength,
-		UFGInstancedSplineMeshComponent* splineInstances );
-
-	static void BuildSplineCollisions(
-		class USplineComponent* spline,
-		const FVector& collisionExtent,
-		float collisionSpacing,
-		const FVector& collisionOffset,
-		FName collisionProfile );
-
 private:
 	void SetTrackGraphID( int32 trackGraphID );
 
@@ -192,7 +163,7 @@ private:
 	/** The spline component for this train track. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class USplineComponent* mSplineComponent;
-	
+
 	/** The spline meshes for this train track. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
@@ -214,7 +185,4 @@ private:
 
 	/** Length of this track. [cm] */
 	float mLength;
-
-public:
-	FORCEINLINE ~AFGBuildableRailroadTrack() = default;
 };

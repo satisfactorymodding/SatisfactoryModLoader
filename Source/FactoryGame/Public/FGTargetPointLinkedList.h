@@ -1,8 +1,6 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -86,7 +84,4 @@ private:
 	/** Max length that the linked list can be */
 	UPROPERTY( EditDefaultsOnly, Category = "LinkedList" )
 	int32 mMaxLength;
-
-public:
-	FORCEINLINE ~UFGTargetPointLinkedList() = default;
 };

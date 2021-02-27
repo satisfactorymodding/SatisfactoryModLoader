@@ -5,14 +5,7 @@
 void FAnimInstanceProxyFactory::PreUpdate(UAnimInstance* InAnimInstance, float DeltaSeconds){ }
 void FAnimInstanceProxyFactory::Update(float DeltaSeconds){ }
 void FAnimInstanceProxyFactory::Initialize(UAnimInstance* InAnimInstance){ }
-UFGFAnimInstanceFactory::UFGFAnimInstanceFactory() : Super() {
-	this->mRampUpTime = 2;
-	this->mRampDownTime = 2;
-	this->mDefaultCycleTime = 12;
-	this->mSoundSpeedRTPCInterval = 0.5;
-	this->mSoundSpeedRTPCMinValue = 25;
-	this->mSoundSpeedRTPCMaxValue = 400;
-}
+UFGFAnimInstanceFactory::UFGFAnimInstanceFactory(){ }
 void UFGFAnimInstanceFactory::NativeUpdateAnimation(float DeltaSeconds){ }
 void UFGFAnimInstanceFactory::NativeInitializeAnimation(){ }
 void UFGFAnimInstanceFactory::UpdateSoundRTPC(float DeltaSeconds){ }

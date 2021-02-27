@@ -2,10 +2,7 @@
 
 #include "FGCircuitConnectionComponent.h"
 
-UFGCircuitConnectionComponent::UFGCircuitConnectionComponent() : Super() {
-	this->mMaxNumConnectionLinks = 1;
-	this->mCircuitID = -1;
-}
+UFGCircuitConnectionComponent::UFGCircuitConnectionComponent(){ }
 void UFGCircuitConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGCircuitConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGCircuitConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

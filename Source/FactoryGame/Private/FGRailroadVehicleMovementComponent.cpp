@@ -23,3 +23,4 @@ float UFGRailroadVehicleMovementComponent::GetWheelsetOffset(int32 index) const{
 FVector UFGRailroadVehicleMovementComponent::GetCouplerRotationAndExtention(int32 index,  float& out_extention) const{ return FVector(); }
 UFGRailroadVehicleMovementComponent* UFGRailroadVehicleMovementComponent::GetCoupledMovementAt(ERailroadVehicleCoupler coupler) const{ return nullptr; }
 FVector UFGRailroadVehicleMovementComponent::CalcCouplerDistance(ERailroadVehicleCoupler coupler) const{ return FVector(); }
+UFGRailroadVehicleMovementComponent::UFGRailroadVehicleMovementComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

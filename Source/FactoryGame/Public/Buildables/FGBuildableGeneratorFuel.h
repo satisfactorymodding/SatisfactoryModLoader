@@ -1,16 +1,11 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableGenerator.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActorOwnerInterface.h"
-#include "../Replication/FGReplicationDetailActor_GeneratorFuel.h"
+#include "Buildables/FGBuildableGenerator.h"
+#include "FGReplicationDetailInventoryComponent.h"
+#include "FGReplicationDetailActorOwnerInterface.h"
+#include "FGReplicationDetailActor_GeneratorFuel.h"
 #include "FGBuildableGeneratorFuel.generated.h"
 
 /**
@@ -39,6 +34,7 @@ public:
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_GeneratorFuel::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
 	// Begin IFGDismantleInterface
@@ -218,7 +214,7 @@ public: // MODDING EDIT protected -> public
 	float mSupplementalToPowerRatio;
 
 	/** @todo: Cleanup, this shouldn't need to be replicated, clients should be able to fetch this anyway. Static index of fuel slot? */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_FuelInventory )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mFuelInventory;
 
 	/** Cached input connections */
@@ -254,7 +250,4 @@ public: // MODDING EDIT protected -> public
 	/** Type of the currently burned piece of fuel. */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	TSubclassOf< class UFGItemDescriptor > mCurrentFuelClass;
-
-public:
-	FORCEINLINE ~AFGBuildableGeneratorFuel() = default;
 };

@@ -1,10 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
@@ -50,9 +46,6 @@ struct FACTORYGAME_API FSimpleDate
 		mMonth = 1;
 		mDay = 1;
 	}
-
-public:
-	FORCEINLINE ~FSimpleDate() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -71,9 +64,6 @@ struct FACTORYGAME_API FFGEventData
 		mStartDate = FSimpleDate();
 		mEndDate = FSimpleDate();
 	}
-
-public:
-	FORCEINLINE ~FFGEventData() = default;
 };
 
 USTRUCT()
@@ -81,7 +71,6 @@ struct FACTORYGAME_API FCalendarData
 {
 	GENERATED_BODY()
 public:
-	
 	UPROPERTY( SaveGame )
 	TArray< FInventoryStack > InventoryStacks;
 
@@ -92,24 +81,18 @@ public:
 	TMap< int32, int32 > InventoryIndexToRandomRewardIndexMapping;
 
 	FCalendarData(){}
-
-public:
-	FORCEINLINE ~FCalendarData() = default;
 };
 
 /**
- * 
+ * @todo Please comment me
  */
 UCLASS( Blueprintable )
 class FACTORYGAME_API AFGEventSubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
-	
+public:	
 	AFGEventSubsystem();
 
-	
-public:
-	
 	//~ Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	//~ End AActor interface
@@ -131,6 +114,7 @@ public:
 
 	static bool GetOverridenEventDateTime( EEvents event, FDateTime& out_OverriddenDateTime );
 
+public:
 	UPROPERTY( Replicated )
 	TArray< EEvents > mCurrentEvents;
 	
@@ -144,26 +128,20 @@ private:
 
 	UPROPERTY( SaveGame )
 	TMap< EEvents, FCalendarData > mStoredCalendarData;
-
-public:
-	FORCEINLINE ~AFGEventSubsystem() = default;
 };
-
 
 UCLASS( config = EditorPerProjectUserSettings, meta = ( DisplayName = "Satisfactory Local Event settings" ) )
 class FACTORYGAME_API UFGEventDeveloperSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
-
 private:
 	UPROPERTY( EditDefaultsOnly, Config )
 	bool mDisableEvents;
 	
 	UPROPERTY( EditDefaultsOnly, Config )
 	EEvents mOverwrittenEvent;
-
-public:
 	
+public:
 	static bool ShouldOverwriteEvent()
 	{
 		return !GetDefault< UFGEventDeveloperSettings >()->mDisableEvents && GetDefault< UFGEventDeveloperSettings >()->mOverwrittenEvent != EEvents::EV_None ;
@@ -178,7 +156,4 @@ public:
 		}
 		return result;
 	}
-
-public:
-	FORCEINLINE ~UFGEventDeveloperSettings() = default;
 };

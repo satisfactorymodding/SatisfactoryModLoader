@@ -1,16 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Object.h"
 #include "Styling/SlateBrush.h"
-#include "Templates/SubclassOf.h"
 #include "FGItemDescriptor.generated.h"
 
 /**
@@ -43,7 +36,7 @@ enum class EStackSize : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FItemView
+struct FItemView
 {
 	GENERATED_BODY()
 
@@ -65,9 +58,6 @@ struct FACTORYGAME_API FItemView
 	/** How much "down or up" the camera should be angeled (in degrees) when crating the view */
 	UPROPERTY( EditDefaultsOnly, Category = "View" )
 	float CameraPitch;
-
-public:
-	FORCEINLINE ~FItemView() = default;
 };
 
 /**
@@ -254,7 +244,7 @@ public:
 	 * This is specified in the native constructor and is meant to be per class.
 	 * E.g. vehicle descriptors get name and description from the vehicle class so the defaults are useless.
 	 */
-	UPROPERTY( EditDefaultsOnly, Transient ) // MODDING EDIT
+	UPROPERTY( Transient )
 	bool mUseDisplayNameAndDescription;
 
 	/** Readable name of the item */
@@ -392,9 +382,4 @@ public: // MODDING EDIT: protected -> public
 private:
 	friend class FItemDescriptorDetails;
 	friend class FFGItemDescriptorPropertyHandle;
-
-public:
-	FORCEINLINE ~UFGItemDescriptor() = default;
 };
-
-FORCEINLINE FString VarToFString(const TSubclassOf<UFGItemDescriptor>& var) { return FString::Printf( TEXT("") ); }

@@ -2,12 +2,7 @@
 
 #include "FGFactoryConnectionComponent.h"
 
-UFGFactoryConnectionComponent::UFGFactoryConnectionComponent() : Super() {
-	this->mConnectorClearance = 100;
-	this->mInventoryAccessIndex = -1;
-	this->bReplicates = true;
-	this->bNetAddressable = true;
-}
+UFGFactoryConnectionComponent::UFGFactoryConnectionComponent(){ }
 void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister(); }

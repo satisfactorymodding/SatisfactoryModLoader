@@ -1,17 +1,15 @@
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Components/SceneComponent.h"
 #include "FGSaveInterface.h"
 #include "DefaultValueHelper.h"
 #include "FGFactoryLegsComponent.generated.h"
 
+/**
+ * Information about one leg on a factory.
+ */
 USTRUCT()
-struct FACTORYGAME_API FFeetOffset
+struct FFeetOffset
 {
 	GENERATED_BODY()
 public:
@@ -22,7 +20,7 @@ public:
 
 	FName GetSocket() const;
 public:
-	/** The name of the foot's socket. */
+	/** The index from the foot's socket name, i.e. foot_04 would be 4. */
 	UPROPERTY( SaveGame )
 	uint8 FeetIndex;
 
@@ -33,11 +31,15 @@ public:
 	/** Does this foot have a valid offset, only used during hologram placement. */
 	UPROPERTY( NotReplicated )
 	bool IsValidOffset;
-
-public:
-	FORCEINLINE ~FFeetOffset() = default;
 };
 
+/**
+ * Class that manages the legs on a factory.
+ * This component does:
+ *   Trace for foot offsets for each leg.
+ *   Save the offsets in the save game.
+ *   Auto-create the legs on register and remove them on unregister.
+ */
 UCLASS( ClassGroup = ( Custom ), meta = ( BlueprintSpawnableComponent ) )
 class FACTORYGAME_API UFGFactoryLegsComponent : public USceneComponent, public IFGSaveInterface
 {
@@ -137,7 +139,4 @@ private:
 	/** Stored so that we know the offset of the feet */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< FFeetOffset > mCachedFeetOffset;
-
-public:
-	FORCEINLINE ~UFGFactoryLegsComponent() = default;
 };

@@ -1,18 +1,15 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
 #include "FGRadioactivitySubsystem.h"
-#include "Resources/FGResourceNode.h"
+#include "FGResourceNode.h"
 #include "FGRadiationSettings.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FRadiationVisualization
+struct FRadiationVisualization
 {
 	GENERATED_BODY()
 public:
@@ -59,9 +56,6 @@ public:
 	UPROPERTY( BlueprintReadOnly, VisibleAnywhere )
 	float DistanceForNoticableIntensity;
 
-
-public:
-	FORCEINLINE ~FRadiationVisualization() = default;
 };
 
 /**
@@ -122,7 +116,4 @@ private:
 	TArray<FRadiationVisualization> mVisualizations;
 #endif
 
-
-public:
-	FORCEINLINE ~UFGRadiationSettings() = default;
 };

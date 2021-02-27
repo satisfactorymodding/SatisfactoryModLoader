@@ -1,7 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildablePipelineAttachment.h"
@@ -16,7 +15,4 @@ class FACTORYGAME_API AFGBuildablePipelineJunction : public AFGBuildablePipeline
 {
 	GENERATED_BODY()
 public:
-
-public:
-	FORCEINLINE ~AFGBuildablePipelineJunction() = default;
 };

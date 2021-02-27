@@ -1,13 +1,8 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Resources/FGResourceDescriptor.h"
-#include "../Resources/FGItemDescriptor.h"
 #include "FGFactoryHologram.h"
 #include "FGResourceExtractorHologram.generated.h"
 
@@ -89,7 +84,4 @@ protected:
 	/** Origin Offset when performing minimum depth traces. Assigned from the buildable */
 	FVector mDepthTraceOriginOffset;
 
-
-public:
-	FORCEINLINE ~AFGResourceExtractorHologram() = default;
 };

@@ -1,16 +1,13 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Hologram/FGPipelineAttachmentHologram.h"
 #include "FGPipelinePumpHologram.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FPumpHeadLiftLocationPath
+struct FPumpHeadLiftLocationPath
 {
 	GENERATED_BODY()
 public:
@@ -37,9 +34,6 @@ private:
 	bool ReverseSplineDirection;
 
 	TArray<FPumpHeadLiftLocationPath> NextPaths;
-
-public:
-	FORCEINLINE ~FPumpHeadLiftLocationPath() = default;
 };
 
 /**
@@ -109,7 +103,4 @@ private:
 	// How far we're allowed to travel along the pipe before we stop looking for headlift end locations along the current path.
 	UPROPERTY( EditDefaultsOnly, Category = "HeadLift" )
 	float mMaxTraversalDistance;
-
-public:
-	FORCEINLINE ~AFGPipelinePumpHologram() = default;
 };

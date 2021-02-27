@@ -1,26 +1,19 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGFoundationSubsystem.generated.h"
 
 USTRUCT()
-struct FACTORYGAME_API FBuilding
+struct FBuilding
 {
 	GENERATED_BODY();
 public:
 	/** Which buildables belong to this building. */
 	UPROPERTY( SaveGame )
 	TArray< class AFGBuildable* > Buildables;
-
-public:
-	FORCEINLINE ~FBuilding() = default;
 };
 
 /**
@@ -79,9 +72,6 @@ private:
 	/** All the buildings in the game, map with foundation ID and the building struct. */
 	UPROPERTY( SaveGame )
 	TMap< int32, FBuilding > mBuildings;
-
-public:
-	FORCEINLINE ~AFGFoundationSubsystem() = default;
 };
 
 template< typename T >

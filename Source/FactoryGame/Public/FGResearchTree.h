@@ -1,14 +1,11 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "FGResearchTreeNode.h"
-#include "AvailabilityDependencies/FGAvailabilityDependency.h"
+#include "FGAvailabilityDependency.h"
 #include "IncludeInBuild.h"
 #include "Styling/SlateBrush.h"
 #include "FGEventSubsystem.h"
@@ -120,7 +117,4 @@ private:
 	EIncludeInBuilds mIncludeInBuilds;
 #endif
 
-
-public:
-	FORCEINLINE ~UFGResearchTree() = default;
 };

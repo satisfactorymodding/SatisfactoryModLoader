@@ -1,7 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
@@ -145,37 +144,27 @@ public:
 		Debug_PressureGroup = INDEX_NONE;
 		Debug_DP = 0.f;
 	}
-
-public:
-	FORCEINLINE ~FFluidBox() = default;
 };
 
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FFluidBox > : public TStructOpsTypeTraitsBase2< FFluidBox >
+struct TStructOpsTypeTraits< FFluidBox > : public TStructOpsTypeTraitsBase2< FFluidBox >
 {
 	enum
 	{
 		WithSerializer = true,
 		WithIdenticalViaEquality = true,
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FFluidBox >() = default;
-};
-
-// This class does not need to be modified.
-UINTERFACE(MinimalAPI)
-class UFGFluidIntegrantInterface : public UInterface
-{
-	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFluidIntegrantInterface() = default;
 };
 
 /**
- * Interface for providing consistent access to all properties and components that will be needed to modify and update different aspects of fluid simulation across different buildables
+ * Interface for providing consistent access to all properties and components that will be needed to modify and update different aspects of fluid simulation across different buildables.
  */
+UINTERFACE()
+class FACTORYGAME_API UFGFluidIntegrantInterface : public UInterface
+{
+	GENERATED_BODY()
+};
+
 class FACTORYGAME_API IFGFluidIntegrantInterface
 {
 	GENERATED_BODY()
@@ -188,7 +177,4 @@ public:
 
 	/** Notify that the network this fluid integrant belongs to has set its fluid descriptor */
 	virtual void OnFluidDescriptorSet();
-
-public:
-	FORCEINLINE IFGFluidIntegrantInterface() = default;
 };

@@ -1,10 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
@@ -97,7 +93,4 @@ protected:
 	/** Ladder component on the back. */
 	UPROPERTY( VisibleAnywhere )
 	class UFGLadderComponent* mBackLadderComponent;
-
-public:
-	FORCEINLINE ~AFGBuildableLadder() = default;
 };

@@ -1,17 +1,10 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGUseableInterface.h"
 #include "FGInventoryComponent.h"
-#include "UI/FGPopupWidget.h"
+#include "FGPopupWidget.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGRecipe.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
@@ -322,6 +315,10 @@ public:
 	UFUNCTION(BlueprintPure,  Category = "Utilities|String")
     static FString SecondsToTimeString( float inSeconds );
 
+	/** Converts an 64-bit integer value to a string */
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "ToString (integer64)", CompactNodeTitle = "->", BlueprintAutocast), Category="Utilities|String")
+    static FString Conv_IntToString(int64 InInt);
+
 	/** Does the same thing as UEditorAssetLibrary::SetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
 	static void SetMetadataTag( UObject* object, FName tag, const FString& value );
@@ -330,7 +327,4 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
 	static FString GetMetadataTag( UObject* object, FName tag );
 
-
-public:
-	FORCEINLINE ~UFGBlueprintFunctionLibrary() = default;
 };

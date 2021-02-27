@@ -1,9 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -40,9 +37,6 @@ public:
 	/** Dumps the top playing components to log, grouped either by class or actor playing. */
 	UFUNCTION( exec )
 	void TrackAkComponents( bool byClass = true );
-	/** Dumps the stats for wwise memory pools to the log. */
-	UFUNCTION( exec )
-	void TrackAkMemoryPools();
 	/** Dumps all ak components with no position (0,0,0) or owner to the log. */
 	UFUNCTION( exec )
 	void TrackAkComponentsWithNoPositionOrOwner();
@@ -67,7 +61,7 @@ public:
 	void FixupBuiltByRecipeInOldSave( bool reapplyRecipeIfBetterMatchFound = false );
 
 	/** Dump some stats about the factory to the log such as number of buildings and kilometers of railway built. */
-	UFUNCTION( exec, category = "Log" )
+	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void DumpFactoryStatsToLog();
 
 	/** Copy the player coordinates to cliboard */
@@ -77,7 +71,4 @@ public:
 	/** Dumps the player coordinates to log, potentially with a label and copy to clipboard */
 	UFUNCTION( exec )
 	void DumpPlayerCoordinates( const FString& label = TEXT(""), bool copyToClipboard = false );
-
-public:
-	FORCEINLINE ~UFGConsoleCommandManager() = default;
 };

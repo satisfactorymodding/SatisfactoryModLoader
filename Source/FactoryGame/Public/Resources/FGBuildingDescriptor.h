@@ -1,11 +1,8 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildDescriptor.h"
+#include "Resources/FGBuildDescriptor.h"
 #include "FGBuildingDescriptor.generated.h"
 
 /**
@@ -57,7 +54,4 @@ protected:
 	/** The class to build. */
 	UPROPERTY( EditDefaultsOnly, Category = "Building" )
 	TSubclassOf< class AFGBuildable > mBuildableClass;
-
-public:
-	FORCEINLINE ~UFGBuildingDescriptor() = default;
 };

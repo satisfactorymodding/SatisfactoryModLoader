@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -114,7 +110,4 @@ private:
 	/** All players interacting with a building that's connected to this circuit */
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
-
-public:
-	FORCEINLINE ~UFGCircuit() = default;
 };

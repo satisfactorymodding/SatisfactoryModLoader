@@ -1,12 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "ItemAmount.h"
-#include "Hologram/HologramSplinePathMode.h"
+#include "HologramSplinePathMode.h"
 #include "FGEventSubsystem.h"
 #include "FGRecipe.generated.h"
 
@@ -83,7 +80,6 @@ public:
 
 	EHologramSplinePathMode GetLastSplineMode();
 	void SetLastSplineMode( EHologramSplinePathMode mode );
-
 public: // MODDING EDIT: protected -> public
 	friend class FRecipeDetails;
 
@@ -120,6 +116,4 @@ public: // MODDING EDIT: protected -> public
 	/** The events this recipe are present in */
 	UPROPERTY( EditDefaultsOnly, Category = "Events" )
 	TArray< EEvents > mRelevantEvents;
-public:
-	FORCEINLINE ~UFGRecipe() = default;
 };

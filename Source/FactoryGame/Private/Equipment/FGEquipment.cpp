@@ -2,12 +2,7 @@
 
 #include "FGEquipment.h"
 
-AFGEquipment::AFGEquipment() : Super() {
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bOnlyRelevantToOwner = true;
-	this->bNetUseOwnerRelevancy = true;
-	this->bReplicates = true;
-}
+AFGEquipment::AFGEquipment(){ }
 void AFGEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGEquipment::PreReplication(IRepChangedPropertyTracker & ChangedPropertyTracker){ }
 void AFGEquipment::BeginPlay(){ }

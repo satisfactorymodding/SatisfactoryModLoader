@@ -1,8 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Components/SceneComponent.h"
 #include "FGDotComponent.generated.h"
@@ -16,7 +12,6 @@ class FACTORYGAME_API UFGDotComponent : public USceneComponent
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	UFGDotComponent();
 
 	//~ Begin UObject interface
@@ -59,7 +54,4 @@ protected:
 
 	/** handle to keep track of when we want to damage actors */
 	FTimerHandle mDamageTimerHandle;
-
-public:
-	FORCEINLINE ~UFGDotComponent() = default;
 };

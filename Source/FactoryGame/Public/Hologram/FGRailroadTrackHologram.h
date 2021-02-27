@@ -1,14 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGSplineHologram.h"
-#include "FGBuildableHologram.h"
 #include "Components/SplineComponent.h"
-#include "Components/SplineMeshComponent.h"
 #include "FGRailroadTrackHologram.generated.h"
 
 
@@ -103,7 +98,4 @@ private:
 	UPROPERTY()
 	class UStaticMesh* mMesh;
 	float mMeshLength;
-
-public:
-	FORCEINLINE ~AFGRailroadTrackHologram() = default;
 };

@@ -1,9 +1,4 @@
 #pragma once
-#include "Engine/DeveloperSettings.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGGameUserSettings.h"
 #include "FGOptionsSettings.generated.h"
@@ -45,7 +40,7 @@ enum class EGamemodeAvailability : uint8
 
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FOptionRowData
+struct FOptionRowData
 {
 	GENERATED_BODY()
 
@@ -123,19 +118,16 @@ public:
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	EGamemodeAvailability GamemodeAvailability;
-
-public:
-	FORCEINLINE ~FOptionRowData() = default;
 };
 
 USTRUCT( BlueprintType, meta = ( ShowOnlyInnerProperties ) )
-struct FACTORYGAME_API FActionMappingDisplayName
+struct FActionMappingDisplayName
 {
 	GENERATED_BODY()
 	
-	MODDING_SHIPPING_FORCEINLINE FActionMappingDisplayName(){}
+	FActionMappingDisplayName(){}
 
-	MODDING_SHIPPING_FORCEINLINE FActionMappingDisplayName( FName keyBidningName ) :
+	FActionMappingDisplayName( FName keyBidningName ) :
 		ActionMappingName( keyBidningName )
 	{}
 
@@ -144,20 +136,16 @@ struct FACTORYGAME_API FActionMappingDisplayName
 
 	UPROPERTY( BlueprintReadOnly, EditAnywhere )
 	FText DisplayName;
-
-public:
-	FORCEINLINE ~FActionMappingDisplayName() = default;
-	MODDING_SHIPPING_FORCEINLINE FActionMappingDisplayName(const FActionMappingDisplayName&) = default;
 };
 
 USTRUCT( BlueprintType, meta = ( ShowOnlyInnerProperties ) )
-struct FACTORYGAME_API FAxisMappingDisplayName
+struct FAxisMappingDisplayName
 {
 	GENERATED_BODY()
 
-	MODDING_SHIPPING_FORCEINLINE FAxisMappingDisplayName(){}
+	FAxisMappingDisplayName(){}
 
-	MODDING_SHIPPING_FORCEINLINE FAxisMappingDisplayName( FName axisMappingName ) :
+	FAxisMappingDisplayName( FName axisMappingName ) :
 		AxisMappingName( axisMappingName )
 	{}
 
@@ -169,10 +157,6 @@ struct FACTORYGAME_API FAxisMappingDisplayName
 
 	UPROPERTY( BlueprintReadOnly, EditAnywhere )
 	FText DisplayNameNegativeScale;
-
-public:
-	FORCEINLINE ~FAxisMappingDisplayName() = default;
-	MODDING_SHIPPING_FORCEINLINE FAxisMappingDisplayName(const FAxisMappingDisplayName&) = default;
 };
 
 UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Satisfactory User Options" ) )
@@ -261,8 +245,5 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
 	TSubclassOf< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
 
-
-public:
-	FORCEINLINE ~UFGOptionsSettings() = default;
 };
 

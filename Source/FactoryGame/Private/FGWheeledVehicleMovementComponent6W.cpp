@@ -29,3 +29,4 @@ void UFGWheeledVehicleMovementComponent6W::GetVehicleAutoBoxSetup(const FVehicle
 void UFGWheeledVehicleMovementComponent6W::GetVehicleGearSetup(const FVehicleTransmissionData6W& Setup, PxVehicleGearsData& PxSetup){ }
 void UFGWheeledVehicleMovementComponent6W::ComputeAckermannSteerAngles(const float steer, const float steerGain, const float ackermannAccuracy, const float width, const float axleSeparation, float* leftAckermannSteerAngle, float* rightAckermannSteerAngle){ }
 void UFGWheeledVehicleMovementComponent6W::ComputeAckermannCorrectedSteerAngles(PxVehicleDriveSimDataNW& driveSimData, PxVehicleWheelsSimData& wheelsSimData, const float steer){ }
+UFGWheeledVehicleMovementComponent6W::UFGWheeledVehicleMovementComponent6W(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

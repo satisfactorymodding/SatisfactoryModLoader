@@ -1,9 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "ObjectMacros.h"
@@ -38,7 +35,4 @@ protected:
 	/** The random rewards for a calendar. Used when no reward is available for a slot in the Slot Rewards*/
 	UPROPERTY( EditDefaultsOnly, Category = "Calendar" )
 	TArray< FItemAmount > mRandomRewards;
-
-public:
-	FORCEINLINE ~UFGCalendarRewards() = default;
 };

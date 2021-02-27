@@ -1,11 +1,7 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
-#include "RHI.h"
+
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"
@@ -16,7 +12,7 @@ DECLARE_STATS_GROUP( TEXT( "MapManager" ), STATGROUP_MapManager, STATCAT_Advance
 DECLARE_LOG_CATEGORY_EXTERN( LogMapManager, Log, All );
 
 USTRUCT()
-struct FACTORYGAME_API FFogOfWarQueuePair
+struct FFogOfWarQueuePair
 {
 	GENERATED_BODY()
 
@@ -30,9 +26,6 @@ struct FACTORYGAME_API FFogOfWarQueuePair
 	class AFGPlayerController* playerController;
 
 	int32 currentPackageIndex;
-
-public:
-	FORCEINLINE ~FFogOfWarQueuePair() = default;
 };
 
 /**
@@ -153,7 +146,4 @@ private:
 	/** The pixel data array contains 4 uint8 per pixel. We only need to change 1 during runtime and the red channel is used in the material.
 	So we stick with an offset of 2 for now. */
 	const static int32 PIXEL_OFFSET;
-
-public:
-	FORCEINLINE ~AFGMapManager() = default;
 };

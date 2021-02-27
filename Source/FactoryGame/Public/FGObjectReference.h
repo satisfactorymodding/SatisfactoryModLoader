@@ -1,12 +1,8 @@
 #pragma once
-#include "Engine/Level.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
 
 #include "Templates/TypeHash.h"
 
-struct FACTORYGAME_API FObjectRedirect
+struct FObjectRedirect
 {
 	/**
 	 * Creates a redirector
@@ -18,13 +14,10 @@ struct FACTORYGAME_API FObjectRedirect
 
 	/** New Name for the redirector */
 	FString Destination;
-
-public:
-	FORCEINLINE ~FObjectRedirect() = default;
 };
 
 /** Level agnostic object reference */
-struct FACTORYGAME_API FObjectReferenceDisc
+struct FObjectReferenceDisc
 {
 	// Name of the level we reside in, if empty, PathName is a absolute path
 	FString LevelName;
@@ -111,13 +104,13 @@ struct FACTORYGAME_API FObjectReferenceDisc
 	/** For comparisons of references */
 	FORCEINLINE bool operator ==( const FObjectReferenceDisc& other ) const { return LevelName == other.LevelName && PathName == other.PathName; }
 
-private:
-	friend UObject* InternalResolve( const FObjectReferenceDisc& reference, UWorld* world, UObject* searchOuter, UObject* outer );
-
 	/**
 	 * Add a redirector from a object name to a new object name
 	 */
 	static void AddRedirector( const FString& source, const FString& destination );
+
+private:
+	friend UObject* InternalResolve( const FObjectReferenceDisc& reference, UWorld* world, UObject* searchOuter, UObject* outer );
 
 	/**
 	 * Redirects done during this latest session
@@ -128,9 +121,6 @@ private:
 	* Does the internal level finding logic
 	*/
 	ULevel* InternalFindLevel( UWorld* world, const FString& levelName ) const;
-
-public:
-	FORCEINLINE ~FObjectReferenceDisc() = default;
 };
 
 /**

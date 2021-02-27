@@ -1,15 +1,10 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
-#include "Resources/FGItemDescriptor.h"
+#include "FGItemDescriptor.h"
 #include "FGSaveInterface.h"
 #include "FGFluidIntegrantInterface.h"
 #include "FGPipeNetwork.generated.h"
@@ -29,7 +24,7 @@ enum class EDebugPipeVisualization
 /**
  * Contains all info needed to update a fluid box.
  */
-struct FACTORYGAME_API PipeJunction
+struct PipeJunction
 {
 	PipeJunction( class UFGPipeConnectionComponent* previous, class UFGPipeConnectionComponent* current );
 
@@ -65,9 +60,6 @@ struct FACTORYGAME_API PipeJunction
 	FVector Debug_Location;
 	FString Debug_Name;
 	FString Debug_String;
-
-public:
-	FORCEINLINE ~PipeJunction() = default;
 };
 
 /**
@@ -226,7 +218,4 @@ private:
 	 * See comments in implementation for details.
 	 */
 	TArray< FPressureGroup > mPressureGroups;
-
-public:
-	FORCEINLINE ~AFGPipeNetwork() = default;
 };

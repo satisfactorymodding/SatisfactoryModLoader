@@ -1,10 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "CoreMinimal.h"
@@ -16,7 +12,7 @@
 #include "FGStorySubsystem.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FMapAreaVisitedData
+struct FMapAreaVisitedData
 {
 	GENERATED_BODY()
 
@@ -37,28 +33,10 @@ private:
 	/** Schematic to unlock ( if any ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< class UFGSchematic > SchematicClass;
-
-public:
-	FORCEINLINE ~FMapAreaVisitedData() = default;
-};
-
-struct FACTORYGAME_API FFindByMapAreFound
-{
-	TSubclassOf< UObject > MapAreaFound;
-
-	FFindByMapAreFound( TSubclassOf< UObject > InMapAreaFound ) : MapAreaFound( InMapAreaFound ) { }
-
-	bool operator() ( const FMapAreaVisitedData Element ) const
-	{
-		return ( MapAreaFound == Element.MapAreaClass );
-	}
-
-public:
-	FORCEINLINE ~FFindByMapAreFound() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FItemFoundData
+struct FItemFoundData
 {
 	GENERATED_BODY()
 
@@ -86,28 +64,10 @@ private:
 	/** Item descriptor we are looking for */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< class UFGItemDescriptor > ItemClass;
-
-public:
-	FORCEINLINE ~FItemFoundData() = default;
-};
-
-struct FACTORYGAME_API FFindByItemFound
-{
-	TSubclassOf< UObject > ItemFound;
-
-	FFindByItemFound( TSubclassOf< UObject > InItemFound ) : ItemFound( InItemFound ) { }
-
-	bool operator() ( const FItemFoundData Element ) const
-	{
-		return ( ItemFound == Element.GetItemDescriptor() && !Element.WasFound );
-	}
-
-public:
-	FORCEINLINE ~FFindByItemFound() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSchematicMessagePair
+struct FSchematicMessagePair
 {
 	GENERATED_BODY()
 
@@ -121,13 +81,10 @@ private:
 	/** Associated schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< UFGSchematic > SchematicUnlocked;
-
-public:
-	FORCEINLINE ~FSchematicMessagePair() = default;
 };
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FResearchTreeMessageData
+struct FResearchTreeMessageData
 {
 	GENERATED_BODY()
 
@@ -145,15 +102,12 @@ private:
 	/** Associated research tree */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr<class UFGResearchTree> ResearchTree;
-
-public:
-	FORCEINLINE ~FResearchTreeMessageData() = default;
 };
 
 /**
  * 
  */
-UCLASS( abstract, Blueprintable )
+UCLASS( abstract )
 class FACTORYGAME_API AFGStorySubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -216,9 +170,6 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Story|Research" )
 	TSubclassOf<class UFGMessageBase> mResearchTimerCompleteMessage;
-
-public:
-	FORCEINLINE ~AFGStorySubsystem() = default;
 };
 
 FORCEINLINE TSubclassOf< UFGSchematic > FSchematicMessagePair::GetSchematic() const
@@ -233,8 +184,7 @@ FORCEINLINE bool FItemFoundData::IsSchematicValid() const
 
 FORCEINLINE TSubclassOf< UFGSchematic > FItemFoundData::GetSchematic() const
 {
-	// MODDING EDIT
-	//checkDev(SchematicClass.IsValid());
+	checkDev(SchematicClass.IsValid());
 	return SchematicClass.Get();
 }
 
@@ -250,7 +200,6 @@ FORCEINLINE bool FMapAreaVisitedData::IsSchematicValid() const
 
 FORCEINLINE TSubclassOf< UFGSchematic > FMapAreaVisitedData::GetSchematic() const
 {
-	// MODDING EDIT
-	//checkDev(SchematicClass.IsValid());
+	checkDev(SchematicClass.IsValid());
 	return SchematicClass.Get();
 }

@@ -3,7 +3,7 @@
 #include "FGRemoteCallObject.h"
 
 bool UFGRemoteCallObject::IsSupportedForNetworking() const{ return bool(); }
-int32 UFGRemoteCallObject::GetFunctionCallspace(UFunction* Function, void* Parameters, FFrame* Stack){ return int32(); }
+int32 UFGRemoteCallObject::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGRemoteCallObject::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
 AFGGameState* UFGRemoteCallObject::GetGameState(){ return nullptr; }
 void UFGRemoteCallObject::SendHologramConstructMessage( AFGBuildGun* buildGun,  AFGHologram* hologram, AActor* upgradedActor){ }

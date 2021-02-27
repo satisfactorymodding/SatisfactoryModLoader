@@ -1,7 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/GameUserSettings.h"
 #include "GameFramework/PlayerInput.h"
@@ -15,7 +12,7 @@ DECLARE_DYNAMIC_DELEGATE( FOptionUpdated );
  * Name and value combination for the options with audio
  */
 USTRUCT()
-struct FACTORYGAME_API FAudioVolumeMap
+struct FAudioVolumeMap
 {
 	GENERATED_BODY()
 	
@@ -26,29 +23,23 @@ struct FACTORYGAME_API FAudioVolumeMap
 	/** The stored value of the RTPC */
 	UPROPERTY()
 	float Value;
-
-public:
-	FORCEINLINE ~FAudioVolumeMap() = default;
 };
 
 /**
 * Holds delegates to be called when a specific option is changed 
 */
 USTRUCT()
-struct FACTORYGAME_API FOptionUpdateDelegateData
+struct FOptionUpdateDelegateData
 {
 	GENERATED_BODY();
 public:
 
 	UPROPERTY()
 	TArray<FOptionUpdated> OptionUpdatedDelegates;
-
-public:
-	FORCEINLINE ~FOptionUpdateDelegateData() = default;
 };
 
 UCLASS(BlueprintType)
-class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings
+class UFGGameUserSettings : public UGameUserSettings
 {
 	GENERATED_BODY()
 public:
@@ -59,6 +50,7 @@ public:
 	virtual void ResetToCurrentSettings() override; // Only video settings
 	virtual void ValidateSettings() override;
 	virtual void LoadSettings( bool bForceReload = false ) override;
+	virtual float GetEffectiveFrameRateLimit() override;
 	//~End GameUserSettings interfaces
 
 	/** Reset audio settings to default settings */
@@ -153,11 +145,22 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
 	FORCEINLINE int32 GetNeworkQuality() { return mNetworkQuality;  }
 
+	/** Sets the user setting for network quality */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+    void SetFPSCap( int32 newFPSCap );
+
+	/** Returns the user setting for FPS Cap */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+    FORCEINLINE int32 GetFPSCap() const { return mFPSCap;  }
+
 	/** Update network values in config files */
 	void RefreshNetworkQualityValues();
 
 	/** Update if a restart is required for setttings to take full effect */
 	void UpdateIsRestartRequired();
+
+	/** Update if a restart of the game is required for setttings to take full effect */
+	void UpdateIsRestartOfGameRequired();
 
 	/** Is the provided setting using a custom quality setting  */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
@@ -194,18 +197,25 @@ public:
 	UFUNCTION(BlueprintPure, Category = "FactoryGame|Settings")
 	FORCEINLINE bool GetAnalyticsDisabled() { return mAnalyticsDisabled; }
 
-	// MODDING EDIT
-	///** Updates the GameUserSettings for analytics and updates the analytics to respond to this change. */
-	//UFUNCTION( BlueprintCallable, Category = "Settings" )
-	//void SetAnalyticsDisabled( bool isDisabled, UAnalyticsService* analyticsService );
+	/** Updates the GameUserSettings for analytics and updates the analytics to respond to this change. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void SetAnalyticsDisabled( bool isDisabled, class UAnalyticsService* analyticsService );
 
 	/** Get if we require restart for the setting to apply */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Settings")
 	bool GetRequireRestart() const{ return mRestartRequired; }
 
-	/** Clear that we require restart for setting to apply */
+	/** Clear that we require restart of session for settings to apply */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Settings")
 	void ClearRequireRestart(){ mRestartRequired = false; }
+
+	/** Get if we require restart of the game for settings to apply */
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Settings")
+    bool GetRequireRestartOfGame() const { return mRestartOfGameRequired; }
+
+	/** Clear that we require restart of the game for settings to apply */
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Settings")
+    void ClearRequireRestartOfGame(){ mRestartOfGameRequired = false; }
 
 	/** Gets the autosave interval */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
@@ -321,6 +331,10 @@ protected:
 	UPROPERTY( Config )
 	int32 mFOV;
 
+	/** FPS settings */
+	UPROPERTY( Config )
+	int32 mFPSCap;
+
 	/** Motion blur quality. 0 = off */
 	UPROPERTY( Config )
 	int32 mMotionBlurQuality;
@@ -363,8 +377,11 @@ protected:
 	UPROPERTY( Config )
 	uint8 mAnalyticsDisabled:1;
 
-	/** If true, then we require a restart to properly apply the settings */
+	/** If true, then we require a restart of the session to properly apply the settings */
 	uint8 mRestartRequired:1;
+
+	/** If true, then we require a restart of the game to properly apply the settings */
+	uint8 mRestartOfGameRequired:1;
 
 	/** How often in seconds to autosave */
 	UPROPERTY( Config )
@@ -408,7 +425,4 @@ private:
 	static const FString MOTION_BLUR_QUALITY;
 	static const FString HZBO_SETTING;
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
-
-public:
-	FORCEINLINE ~UFGGameUserSettings() = default;
 };

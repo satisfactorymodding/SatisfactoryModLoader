@@ -1,9 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
@@ -175,9 +172,6 @@ public:
 		uint8 fineTuningIterations = 5,
 		float minStepFactor = 0.5f,
 		ESplineCoordinateSpace::Type space = ESplineCoordinateSpace::World );
-
-public:
-	FORCEINLINE ~UFGSplineMeshGenerationLibrary() = default;
 };
 
 /**

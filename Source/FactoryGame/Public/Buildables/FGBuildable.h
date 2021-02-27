@@ -1,29 +1,20 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "../FGUseableInterface.h"
-#include "../ItemAmount.h"
-#include "../FGDismantleInterface.h"
-#include "../FGBlueprintFunctionLibrary.h"
+#include "FGUseableInterface.h"
+#include "ItemAmount.h"
+#include "FGDismantleInterface.h"
+#include "FGBlueprintFunctionLibrary.h"
 #include "Animation/AnimInstance.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/SCS_Node.h"
-#include "../FGSaveInterface.h"
-#include "../FactoryTick.h"
-#include "../FGColorInterface.h"
-#include "../Replication/FGReplicationDetailActorOwnerInterface.h"
-#include "../FGBuildableSubsystem.h"
-#include "../FGSaveInterface.h"
-#include "../FactoryTick.h"
-#include "../FGColorInterface.h"
-#include "../Replication/FGReplicationDetailActorOwnerInterface.h"
+#include "FGSaveInterface.h"
+#include "FactoryTick.h"
+#include "FGColorInterface.h"
+#include "FGReplicationDetailActorOwnerInterface.h"
+#include "FGBuildableSubsystem.h"
 #include "FGBuildable.generated.h"
 
 //@todonow These should CAPS_CASE according to the coding standard
@@ -308,14 +299,14 @@ protected:
 	 * For custom connections, if we want a custom implementation for
 	 * Called if mForwardPeekAndGrabToProxy is set in the connection.
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Connections" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing=mHasFactory_PeekOutput, Category = "Buildable|Connections" )
 	bool Factory_PeekOutput( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const;
 
 	/**
 	 * For custom connections, if we want a custom implementation for peek
 	 * Called if mForwardPeekAndGrabToProxy is set in the connection.
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Connections" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing=mHasFactory_GrabOutput, Category = "Buildable|Connections" )
 	bool Factory_GrabOutput( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type );
 
 	/**
@@ -624,9 +615,6 @@ private:
 	/** Should the building start as hidden when playing the build effect */
 	UPROPERTY( EditDefaultsOnly, Category = "Build Effect" )
     bool mHideOnBuildEffectStart;
-
-public:
-	FORCEINLINE ~AFGBuildable() = default;
 };
 
 /** Definition for GetDefaultComponents. */

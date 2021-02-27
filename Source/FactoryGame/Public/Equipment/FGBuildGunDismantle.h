@@ -1,13 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildGun.h"
-#include "../FGInventoryComponent.h"
+#include "Equipment/FGBuildGun.h"
+#include "FGInventoryComponent.h"
 #include "FGBuildGunDismantle.generated.h"
 
 static const int MAX_DISMANTLE_LIMIT = 50;
@@ -16,8 +12,7 @@ USTRUCT()
 struct FACTORYGAME_API FDismantleRefunds
 {
 	GENERATED_BODY()
-
-	/** Ctor */
+	
 	FDismantleRefunds()
 	{
 		NumPendingActors = 0;
@@ -28,9 +23,6 @@ struct FACTORYGAME_API FDismantleRefunds
 
 	UPROPERTY()
 	TArray<FInventoryStack> PeekDismantleRefund;
-
-public:
-	FORCEINLINE ~FDismantleRefunds() = default;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDismantleRefundsChanged, class UFGBuildGunStateDismantle*, dismantleGun );
@@ -45,7 +37,6 @@ UCLASS()
 class FACTORYGAME_API UFGBuildGunStateDismantle : public UFGBuildGunState
 {
 	GENERATED_BODY()
-
 public:
 	UFGBuildGunStateDismantle();
 
@@ -171,7 +162,4 @@ private:
 	/** Cached dismantle refunds on server that is replicated */
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_PeekDismantleRefund )
 	FDismantleRefunds mPeekDismantleRefund;
-
-public:
-	FORCEINLINE ~UFGBuildGunStateDismantle() = default;
 };

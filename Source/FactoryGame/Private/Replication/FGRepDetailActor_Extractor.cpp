@@ -2,11 +2,9 @@
 
 #include "FGRepDetailActor_Extractor.h"
 
-AFGRepDetailActor_Extractor::AFGRepDetailActor_Extractor() : Super() {
-	this->bHidden = true;
-	this->bReplicates = true;
-}
+AFGRepDetailActor_Extractor::AFGRepDetailActor_Extractor(){ }
 void AFGRepDetailActor_Extractor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGRepDetailActor_Extractor::InitReplicationDetailActor( AFGBuildable* owningActor){ }
+void AFGRepDetailActor_Extractor::RemoveDetailActorFromOwner(){ }
 void AFGRepDetailActor_Extractor::FlushReplicationActorStateToOwner(){ }
 bool AFGRepDetailActor_Extractor::HasCompletedInitialReplication() const{ return bool(); }

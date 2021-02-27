@@ -1,9 +1,8 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
-#include "FGWallHologram.h"
+#include "Hologram/FGWallHologram.h"
 #include "FGPoweredWallHologram.generated.h"
 
 /**
@@ -17,7 +16,4 @@ public:
 	// Begin AFGBuildableHologram interface
 	virtual void ConfigureSnappedPower( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram interface
-
-public:
-	FORCEINLINE ~AFGPoweredWallHologram() = default;
 };

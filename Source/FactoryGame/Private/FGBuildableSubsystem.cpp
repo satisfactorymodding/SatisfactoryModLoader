@@ -4,22 +4,7 @@
 
 #if STATS
 #endif 
-AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
-	this->mDistanceConsideredClose = 30000;
-	this->mNumFactoriesNeededForCloseCheck = 5;
-	this->mColorSlotsPrimary[0].B = 39; this->mColorSlotsPrimary[0].G = 112; this->mColorSlotsPrimary[0].R = 255; this->mColorSlotsPrimary[0].A = 255;
-	this->mColorSlotsSecondary[0].B = 67; this->mColorSlotsSecondary[0].G = 34; this->mColorSlotsSecondary[0].R = 29; this->mColorSlotsSecondary[0].A = 255;
-	this->mNbPlayerExposedSlots = 16;
-	this->mUseFixedFactoryTick = true;
-	this->mMinFactoryTickRate = 30;
-	this->mMaxFactoryTickRate = 62;
-	this->mFactoryOptimizationEnabled = true;
-	this->mReplayEffecTimeDilation = 0.100000001490116;
-	this->mReplayEffectTimerDefault = 0.5;
-	this->PrimaryActorTick.TickGroup = TG_DuringPhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
-}
+AFGBuildableSubsystem::AFGBuildableSubsystem(){ }
 void AFGBuildableSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableSubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

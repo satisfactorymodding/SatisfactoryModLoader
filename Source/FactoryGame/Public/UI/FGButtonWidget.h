@@ -1,7 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "Blueprint/UserWidget.h"
 #include "FGButtonWidget.generated.h"
@@ -23,7 +22,4 @@ public:
 private:
 	/** Reference to the UButton we have internally */
 	class UButton* mInternalButton;
-
-public:
-	FORCEINLINE ~UFGButtonWidget() = default;
 };

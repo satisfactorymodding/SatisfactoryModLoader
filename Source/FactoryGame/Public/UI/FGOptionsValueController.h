@@ -1,12 +1,10 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../FGOptionsSettings.h"
+#include "FGOptionsSettings.h"
 #include "FGOptionsValueController.generated.h"
 
 /**
@@ -48,7 +46,4 @@ protected:
 	UPROPERTY( BlueprintReadOnly )
 	bool mIsDynamicOption;
 
-
-public:
-	FORCEINLINE ~UFGOptionsValueController() = default;
 };

@@ -1,9 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGEquipment.h"
@@ -131,7 +128,4 @@ protected:
 	/** integer used for animation states */
 	UPROPERTY( ReplicatedUsing = OnRep_OnAnimationStateUpdated )
 	int32 mAnimationState;
-
-public:
-	FORCEINLINE ~AFGEquipmentAttachment() = default;
 };

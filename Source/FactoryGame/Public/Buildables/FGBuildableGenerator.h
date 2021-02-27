@@ -1,9 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGBuildableFactory.h"
 #include "FGBuildableGenerator.generated.h"
@@ -18,6 +15,7 @@ class FACTORYGAME_API AFGBuildableGenerator : public AFGBuildableFactory
 public:
 	/** Decide on what properties to replicate */
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 
 	/** Constructor */
 	AFGBuildableGenerator();
@@ -102,7 +100,4 @@ public: //MODDING EDIT private -> public
 	/** Is the fuse triggered. */
 	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
 	bool mIsFuseTriggered;
-
-public:
-	FORCEINLINE ~AFGBuildableGenerator() = default;
 };

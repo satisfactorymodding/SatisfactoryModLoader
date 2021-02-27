@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGBuildable.h"
 #include "FGBuildableWire.generated.h"
@@ -104,7 +100,4 @@ private:
 	/** The two locations this wire span. */
 	UPROPERTY( ReplicatedUsing = OnRep_Locations, Meta = (NoAutoJson = true))
 	FVector mLocations[ 2 ];
-
-public:
-	FORCEINLINE ~AFGBuildableWire() = default;
 };

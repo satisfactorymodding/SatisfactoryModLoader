@@ -2,9 +2,7 @@
 
 #include "FGFactoryMaterialInstanceManager.h"
 
-UFGFactoryMaterialInstanceManager::UFGFactoryMaterialInstanceManager() : Super() {
-	this->mMaterialInstances.SetNum(18);
-}
+UFGFactoryMaterialInstanceManager::UFGFactoryMaterialInstanceManager(){ }
 void UFGFactoryMaterialInstanceManager::Init(UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, UWorld* worldContext, bool canBeColored ,  AFGBuildable* forBuildable){ }
 void UFGFactoryMaterialInstanceManager::RefreshMaterialColors(){ }
 void UFGFactoryMaterialInstanceManager::RefreshMaterialColorForIndex(int32 index){ }

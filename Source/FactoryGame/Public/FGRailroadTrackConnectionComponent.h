@@ -1,12 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGConnectionComponent.h"
-#include "Buildables/FGBuildableRailroadTrack.h"
-#include "Buildables/FGBuildableRailroadTrack.h"
+#include "FGBuildableRailroadTrack.h"
 #include "FGRailroadTrackConnectionComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRailRoadConnectionSwitched, int32, newSwitch );
@@ -181,7 +178,4 @@ private:
 	/** The signal associated with this connection, if any. */
 	UPROPERTY()
 	class AFGBuildableRailroadSignal* mSignal; //@todotrains
-
-public:
-	FORCEINLINE ~UFGRailroadTrackConnectionComponent() = default;
 };

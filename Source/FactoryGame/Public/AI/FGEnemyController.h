@@ -1,14 +1,8 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGCreatureController.h"
-#include "FGAggroTargetInterface.h"
-#include "Curves/CurveFloat.h"
 #include "FGEnemyController.generated.h"
 
 class FGAggroTargetInterface;
@@ -71,37 +65,16 @@ struct FACTORYGAME_API FAggroEntry
 	UPROPERTY( BlueprintReadWrite, Category = "Aggro" )
 	EIgnore						Ignore;
 	float						LastIgnoreTime;
-
-public:
-	FORCEINLINE ~FAggroEntry() = default;
-};
-
-struct FACTORYGAME_API FFindByAggroTarget
-{
-	TScriptInterface< IFGAggroTargetInterface >	AggroTarget;
-
-	FFindByAggroTarget( TScriptInterface< IFGAggroTargetInterface > InAggroTarget ) : AggroTarget( InAggroTarget ) { }
-
-	bool operator() ( const FAggroEntry Element ) const
-	{
-		return ( AggroTarget == Element.AggroTarget );
-	}
-
-
-public:
-	FORCEINLINE ~FFindByAggroTarget() = default;
 };
 
 /**
- * 
+ * Base class for hostile creatures.
  */
 UCLASS()
 class FACTORYGAME_API AFGEnemyController : public AFGCreatureController
 {
 	GENERATED_BODY()
-
 public:
-	/** ctor */
 	AFGEnemyController( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 
 	//~ Begin AController Interface
@@ -109,8 +82,9 @@ public:
 	virtual void OnUnPossess() override;
 	//~ End AController Interface
 
-	/** Override the startpanic */
-	virtual void StartPanic_Implementation();
+	// Begin AFGCreatureController interface
+	virtual void StartPanic_Implementation() override;
+	// End AFGCreatureController interface
 
 	/**
 	 * Removes specified target from Aggro list                                                                    
@@ -468,7 +442,4 @@ private:
 	/** Time we should ignore targets when panicking */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	float mPanicIgnoreTime;
-
-public:
-	FORCEINLINE ~AFGEnemyController() = default;
 };

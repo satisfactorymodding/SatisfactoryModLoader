@@ -15,6 +15,8 @@ public class FactoryGameTarget : TargetRules
 
 		//Add your Mod modules here after FactoryGame and SML
 		ExtraModuleNames.AddRange(new[] {"FactoryGame", "SML", "ExampleMod"});
+		
+		CppStandard = CppStandardVersion.Cpp17;
 
 		bUseChecksInShipping = true;
 		bUseLoggingInShipping = true;

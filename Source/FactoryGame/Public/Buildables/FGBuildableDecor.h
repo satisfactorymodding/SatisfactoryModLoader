@@ -1,7 +1,4 @@
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGBuildable.h"
 #include "FGBuildableDecor.generated.h" 
@@ -32,7 +29,4 @@ protected:
 	/** The mesh we want to have for the decor */
 	UPROPERTY( SaveGame, Replicated )
 	class UStaticMesh* mDecorMesh;
-
-public:
-	FORCEINLINE ~AFGBuildableDecor() = default;
 };

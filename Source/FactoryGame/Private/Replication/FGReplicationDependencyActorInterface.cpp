@@ -2,3 +2,4 @@
 
 #include "FGReplicationDependencyActorInterface.h"
 
+UFGReplicationDependencyActorInterface::UFGReplicationDependencyActorInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

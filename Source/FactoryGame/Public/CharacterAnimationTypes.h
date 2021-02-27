@@ -1,5 +1,4 @@
 #pragma once
-#include "UObject/Class.h"
 
 UENUM( BlueprintType )
 enum class EArmEquipment : uint8

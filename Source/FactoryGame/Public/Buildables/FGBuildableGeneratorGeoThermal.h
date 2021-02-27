@@ -1,11 +1,8 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableGenerator.h"
+#include "Buildables/FGBuildableGenerator.h"
 #include "FGBuildableGeneratorGeoThermal.generated.h"
 
 /**
@@ -47,7 +44,4 @@ private:
 
 	UPROPERTY( SaveGame, Replicated )
 	AActor* mExtractableResource;
-
-public:
-	FORCEINLINE ~AFGBuildableGeneratorGeoThermal() = default;
 };

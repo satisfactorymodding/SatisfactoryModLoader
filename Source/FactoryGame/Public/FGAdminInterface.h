@@ -1,8 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGOnlineSessionSettings.h"
 #include "FGSaveSystem.h"
@@ -117,7 +113,4 @@ protected:
 
 	/** @SERVER: Return true if our owner is logged in */
 	bool IsOwnerAdmin() const;
-
-public:
-	FORCEINLINE ~AFGAdminInterface() = default;
 };

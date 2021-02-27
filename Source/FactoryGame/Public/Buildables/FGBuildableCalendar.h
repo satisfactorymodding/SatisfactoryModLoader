@@ -1,15 +1,11 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "../FGCalendarRewards.h"
+#include "FGCalendarRewards.h"
 #include "Buildables/FGBuildable.h"
-#include "../FGEventSubsystem.h"
+#include "FGEventSubsystem.h"
 #include "FGBuildableCalendar.generated.h"
 
 /**
@@ -88,7 +84,4 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Calendar - DEBUG" )
 	TSubclassOf<UFGItemDescriptor> mSlotFillerItemClass;
 	
-
-public:
-	FORCEINLINE ~AFGBuildableCalendar() = default;
 };

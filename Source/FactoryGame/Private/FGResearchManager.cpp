@@ -2,12 +2,10 @@
 
 #include "FGResearchManager.h"
 
-AFGResearchManager::AFGResearchManager() : Super() {
-	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
-}
+AFGResearchManager::AFGResearchManager(){ }
 void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGResearchManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
+AFGResearchManager* AFGResearchManager::Get(UWorld* world) { return nullptr; }
 AFGResearchManager* AFGResearchManager::Get( UObject* worldContext){ return nullptr; }
 void AFGResearchManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGResearchManager::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

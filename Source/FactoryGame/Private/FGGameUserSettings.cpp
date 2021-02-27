@@ -7,6 +7,7 @@ void UFGGameUserSettings::SetToDefaults(){ }
 void UFGGameUserSettings::ResetToCurrentSettings(){ }
 void UFGGameUserSettings::ValidateSettings(){ }
 void UFGGameUserSettings::LoadSettings(bool bForceReload){ }
+float UFGGameUserSettings::GetEffectiveFrameRateLimit(){ return float(); }
 void UFGGameUserSettings::SetAudioToDefaults(){ }
 void UFGGameUserSettings::ResetAudioToCurrentSettings(){ }
 UFGGameUserSettings* UFGGameUserSettings::GetFGGameUserSettings(){ return nullptr; }
@@ -25,8 +26,10 @@ bool UFGGameUserSettings::IsHZBOEnabled(){ return bool(); }
 bool UFGGameUserSettings::IsHZBODirty() const{ return bool(); }
 int32 UFGGameUserSettings::GetDefaultQualitySetting(FString settingName){ return int32(); }
 void UFGGameUserSettings::SetNeworkQuality(int32 newNetworkQuality){ }
+void UFGGameUserSettings::SetFPSCap(int32 newFPSCap){ }
 void UFGGameUserSettings::RefreshNetworkQualityValues(){ }
 void UFGGameUserSettings::UpdateIsRestartRequired(){ }
+void UFGGameUserSettings::UpdateIsRestartOfGameRequired(){ }
 bool UFGGameUserSettings::IsUsingCustomQualitySetting(FString settingName){ return bool(); }
 bool UFGGameUserSettings::IsPostProcessUsingCustomSettings(){ return bool(); }
 void UFGGameUserSettings::SetPostProcessingQuality(int32 Value){ }
@@ -34,6 +37,7 @@ void UFGGameUserSettings::UpdatePostProcessSettings(){ }
 void UFGGameUserSettings::AddCustomActionMapping(FFGKeyMapping newMapping){ }
 void UFGGameUserSettings::RemoveAllCustomActionMappings(){ }
 void UFGGameUserSettings::SetHeadBobScale(float newHeadBobScale){ }
+void UFGGameUserSettings::SetAnalyticsDisabled(bool isDisabled,  UAnalyticsService* analyticsService){ }
 void UFGGameUserSettings::SetAutosaveInterval(int32 newInterval){ }
 void UFGGameUserSettings::ApplyAutosaveInterval(){ }
 void UFGGameUserSettings::SetShowBreakNotification(bool enabled){ }

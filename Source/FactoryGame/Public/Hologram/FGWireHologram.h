@@ -1,15 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableHologram.h"
-#include "../FGCircuitConnectionComponent.h"
-#include "Components/MeshComponent.h"
+#include "Hologram/FGBuildableHologram.h"
+#include "FGCircuitConnectionComponent.h"
 #include "FGWireHologram.generated.h"
 
 #define NUM_CONNECTIONS 2
@@ -39,6 +33,8 @@ public:
 	virtual void OnInvalidHitResult() override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
+	virtual AActor* GetUpgradedActor() const override;
+	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	// End AFGHologram Interface
 
 	// Begin AFGBuildableHologram Interface
@@ -79,6 +75,8 @@ private:
 
 	float GetLength() const;
 
+	void SetUpgradeTarget( AFGBuildableWire* target );
+
 private:
 	float mMaxLength;
 	float mLengthPerCost;
@@ -116,6 +114,5 @@ private:
 	UPROPERTY()
 	UStaticMeshComponent* mWireMesh;
 
-public:
-	FORCEINLINE ~AFGWireHologram() = default;
+	TWeakObjectPtr< class AFGBuildableWire > mUpgradeTarget;
 };

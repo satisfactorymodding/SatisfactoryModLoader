@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGEquipment.h"
@@ -205,9 +201,6 @@ protected:
 	/** A cast reference to the spawned child equipment, if it exists*/
 	class AFGWeaponChild* mChildWeapon;
 
-
-public:
-	FORCEINLINE ~AFGWeapon() = default;
 };
 
 

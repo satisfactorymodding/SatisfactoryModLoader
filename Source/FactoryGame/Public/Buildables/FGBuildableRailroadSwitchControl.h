@@ -1,12 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGBuildableFactory.h"
-#include "../FGUseableInterface.h"
+#include "FGUseableInterface.h"
 #include "FGBuildableRailroadSwitchControl.generated.h"
 
 /**
@@ -69,7 +66,4 @@ private:
 	/** Current switch position read from the controlled connection, polled each tick. */
 	UPROPERTY( ReplicatedUsing = OnRep_SwitchPosition, Meta = (NoAutoJson = true) )
 	int32 mSwitchPosition;
-
-public:
-	FORCEINLINE ~AFGBuildableRailroadSwitchControl() = default;
 };

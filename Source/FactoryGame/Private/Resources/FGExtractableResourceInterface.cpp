@@ -2,3 +2,4 @@
 
 #include "FGExtractableResourceInterface.h"
 
+UFGExtractableResourceInterface::UFGExtractableResourceInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

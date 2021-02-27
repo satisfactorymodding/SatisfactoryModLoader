@@ -1,10 +1,8 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGFactoryBuildingHologram.h"
+#include "Hologram/FGFactoryBuildingHologram.h"
 #include "FGFoundationHologram.generated.h"
 
 /**
@@ -43,7 +41,4 @@ protected:
 	/** Ratios for the snapping zones, how much of the wall to hit for snap to either direction. */
 	float mSnapVerticalHitZoneRatio = 0.25f;
 	float mSnapCenterHitZoneRatio = 0.33f; // This ratio is measured from the center.
-
-public:
-	FORCEINLINE ~AFGFoundationHologram() = default;
 };

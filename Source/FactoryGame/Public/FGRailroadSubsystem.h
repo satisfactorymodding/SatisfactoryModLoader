@@ -1,19 +1,10 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGRailroadVehicle.h"
-#include "Buildables/FGBuildableRailroadTrack.h"
-#include "GraphAStar.h"
-#include "RailroadNavigation.h"
 #include "FGRailroadSubsystem.generated.h"
 
 
@@ -22,7 +13,7 @@
  * Struct representing a set of interconnected tracks.
  */
 USTRUCT()
-struct FACTORYGAME_API FTrackGraph
+struct FTrackGraph
 {
 	GENERATED_BODY()
 public:
@@ -43,9 +34,6 @@ public:
 	//@todotrains Signaling, consider if this and mHasTrackGraphsChanged is needed.
 	/** Has this track graph changed, tracks connected, rolling stock added or removed. */
 	uint8 HasChanged:1;
-
-public:
-	FORCEINLINE ~FTrackGraph() = default;
 };
 
 
@@ -412,7 +400,4 @@ private:
 	/** All the trains in the world. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGTrain* > mTrains;
-
-public:
-	FORCEINLINE ~AFGRailroadSubsystem() = default;
 };

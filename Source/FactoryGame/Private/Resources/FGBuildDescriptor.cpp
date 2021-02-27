@@ -5,11 +5,7 @@
 #if WITH_EDITOR
 void UFGBuildDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
-UFGBuildDescriptor::UFGBuildDescriptor() : Super() {
-	this->mUseDisplayNameAndDescription = true;
-	this->mStackSize = EStackSize::SS_MEDIUM;
-	this->mCanBeDiscarded = true;
-}
+UFGBuildDescriptor::UFGBuildDescriptor(){ }
 TSubclassOf< class UFGBuildCategory > UFGBuildDescriptor::GetBuildCategory(TSubclassOf< UFGBuildDescriptor > inClass){ return TSubclassOf<class UFGBuildCategory>(); }
 void UFGBuildDescriptor::GetSubCategories(TSubclassOf< UFGBuildDescriptor > inClass,  TArray< TSubclassOf<  UFGBuildSubCategory > >& out_subCategories){ }
 float UFGBuildDescriptor::GetBuildMenuPriority(TSubclassOf< UFGBuildDescriptor > inClass){ return float(); }

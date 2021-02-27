@@ -2,11 +2,7 @@
 
 #include "FGRailroadTrackConnectionComponent.h"
 
-UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Super() {
-	this->mSwitchPosition = -1;
-	this->bReplicates = true;
-	this->bNetAddressable = true;
-}
+UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent(){ }
 void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGRailroadTrackConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

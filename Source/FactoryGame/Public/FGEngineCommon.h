@@ -1,7 +1,4 @@
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
 
 #include "FGWorldCreationInterface.h"
 #include "FGEngineCommon.generated.h"
@@ -9,7 +6,7 @@
 /**
  * Filtered and gathered stats we get during each frame
  */
-struct FACTORYGAME_API FCollectedStats
+struct FCollectedStats
 {
 	// How long was the frame
 	float FrameTime;
@@ -22,15 +19,12 @@ struct FACTORYGAME_API FCollectedStats
 
 	// The amount of triangles drawn this frame
 	int32 TrianglesDrawn;
-
-public:
-	FORCEINLINE ~FCollectedStats() = default;
 };
 
 /** 
  * Interface for stats collectors for our nightly stats gathering from maps
  */
-struct FACTORYGAME_API IStatCollector
+struct IStatCollector
 {
 	virtual ~IStatCollector(){}
 
@@ -182,7 +176,4 @@ private:
 	/** If true, then we are collecting stats */
 	bool mCollectStats;
 #endif
-
-public:
-	FORCEINLINE ~FFGEngineCommon() = default;
 };

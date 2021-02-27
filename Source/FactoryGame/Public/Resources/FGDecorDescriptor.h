@@ -1,9 +1,6 @@
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildingDescriptor.h"
+#include "Resources/FGBuildingDescriptor.h"
 #include "FGDecorDescriptor.generated.h"
 
 /**
@@ -24,7 +21,4 @@ protected:
 	/** The static mesh for the decor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Decor" )
 	class UStaticMesh* mDecorMesh;
-
-public:
-	FORCEINLINE ~UFGDecorDescriptor() = default;
 };

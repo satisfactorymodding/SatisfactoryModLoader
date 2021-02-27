@@ -2,3 +2,4 @@
 
 #include "FGSaveInterface.h"
 
+UFGSaveInterface::UFGSaveInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

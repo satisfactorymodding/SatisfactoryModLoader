@@ -1,17 +1,12 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGBuildable.h"
-#include "../FGRecipeProducerInterface.h"
-#include "../FGSignificanceInterface.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActor_BuildableFactory.h"
+#include "FGRecipeProducerInterface.h"
+#include "FGSignificanceInterface.h"
+#include "FGReplicationDetailInventoryComponent.h"
+#include "FGReplicationDetailActor_BuildableFactory.h"
 #include "FGBuildableFactory.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams( EProductionStatusChange, class AFGBuildable*, EProductionStatus /*oldStatus*/, EProductionStatus /*newStatus*/);
@@ -77,14 +72,31 @@ public:
 	virtual void Factory_Tick( float dt ) override;
 	// End Factory_ interface
 
+	// Begin IFGUseableInterface
+	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+	virtual bool IsUseable_Implementation() const override;
+	// End IFGUseableInterface
+
 	// Begin IFGDismantleInterface
 	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
 	// End IFGDismantleInterface
 
 	// Begin IFGReplicationDetailActorOwnerInterface
-	virtual AFGReplicationDetailActor* GetReplicationDetailActor() override { return GetOrCreateReplicationDetailActor(); };
+	virtual AFGReplicationDetailActor* GetReplicationDetailActor( bool tryCreate = false ) override 
+	{
+		if( tryCreate )
+		{
+			return GetOrCreateReplicationDetailActor(); 
+		}
+		else
+		{
+			return mReplicationDetailActor;
+		}
+	};
 	virtual void OnBuildableReplicationDetailStateChange( bool newStateIsActive ) override;
 	virtual void OnReplicationDetailActorCreated() override;
+	virtual void OnReplicationDetailActorRemoved() override;
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_BuildableFactory::StaticClass(); };
 	// End IFGReplicationDetailActorOwnerInterface
 
@@ -158,7 +170,7 @@ public:
 	 *
 	 * @return - true if we can start production; otherwise false.
 	 */
-	UFUNCTION( BlueprintPure, BlueprintNativeEvent, Category = "FactoryGame|Factory|Production" )
+	UFUNCTION( BlueprintPure, BlueprintNativeEvent, CustomEventUsing=mHasCanProduce, Category = "FactoryGame|Factory|Production" )
 	bool CanProduce() const;
 
 	/** Set if this factory should pause it's production or not. */
@@ -288,13 +300,14 @@ public:
 	  */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Effects" )
 	void TryStopProductionLoopEffects( bool didStopProducing );
+
 protected:
 	/** Called whenever HasPower has changed, exposed here for cleaner/more optimized ways of changing state when the factory has power */
-	UFUNCTION( BlueprintImplementableEvent, Category="FactoryGame|Factory|Power")
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasOnHasPowerChanged, Category="FactoryGame|Factory|Power")
 	void OnHasPowerChanged( bool newHasPower );
 
 	/** Called whenever IsProducing has changed, exposed here for cleaner/more optimized ways of changing state when the factory is producing */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Production" )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasOnIsProducingChanged, Category = "FactoryGame|Factory|Production" )
 	void OnIsProducingChanged( bool newIsProducing );
 
 	/** Native version of OnIsProducingChanged */
@@ -313,25 +326,25 @@ protected:
 	virtual void Factory_ProductionCycleCompleted( float overProductionRate );
 
 	/** Try to collect input from connected buildings. */
-	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Factory|Production" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHasFactory_CollectInput, Category = "FactoryGame|Factory|Production" )
 	void Factory_CollectInput();
 
 	/** Try to collect input from connected pipes */
-	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Factory|Production" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHasFactory_PullPipeInput, Category = "FactoryGame|Factory|Production" )
 	void Factory_PullPipeInput( float dt );
 
 	/** Try to push fluid inventory to connected pipes 
 	*	This is contrary to always pulling like FactoryConnections. Pipes are handled very differently from buildings
 	*	so a push occurs so that each pipe doesn't need to differentiate between objects its connected to.
 	*/
-	UFUNCTION( BlueprintNativeEvent, Category = "FactoryGame|Factory|Production" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHasFactory_PushPipeOutput, Category = "FactoryGame|Factory|Production" )
 	void Factory_PushPipeOutput( float dt );
 
 	/** Start the production, client get this call replicated after the server. You must call Super if overriding this. */
 	virtual void Factory_StartProducing();
 
 	/** Calls blueprint when we start producing. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StartProducing") )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing=mHasFactory_StartProducing, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StartProducing") )
 	void Factory_ReceiveStartProducing();
 
 	/** Tick the production. */
@@ -341,21 +354,21 @@ protected:
 	virtual void Factory_TickProductivity( float dt );
 
 	/** Calls blueprint when we tick production. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Production", meta=(DisplayName="Factory_TickProducing") )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasFactory_TickProducing, Category = "FactoryGame|Factory|Production", meta=(DisplayName="Factory_TickProducing") )
 	void Factory_ReceiveTickProducing( float deltaTime );
 
 	/** Stops the production, client get this call replicated after the server. You must call Super if overriding this. */
 	virtual void Factory_StopProducing();
 
 	/** Calls blueprint when we stop producing. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StopProducing") )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasFactory_StopProducing, Category = "FactoryGame|Factory|Production", meta = (DisplayName = "Factory_StopProducing") )
 	void Factory_ReceiveStopProducing();
 
 	/** Function for updating sfx/vfx at intervals */
 	virtual void NativeUpdateEffects( float DeltaSeconds );
 
 	/** Calls blueprint when we update effects. */
-	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Factory|Effects", meta = ( DisplayName = "UpdateEffects" ) )
+	UFUNCTION( BlueprintImplementableEvent, CustomEventUsing = mHasUpdateEffects, Category = "FactoryGame|Factory|Effects", meta = ( DisplayName = "UpdateEffects" ) )
 	void ReceiveUpdateEffects( float DeltaSeconds );
 
 	UFUNCTION()
@@ -577,7 +590,4 @@ protected:
 	/** The range to keep the factory in significance */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	float mSignificanceRange;
-
-public:
-	FORCEINLINE ~AFGBuildableFactory() = default;
 };

@@ -2,3 +2,4 @@
 
 #include "FGVehicleDestroyableInterface.h"
 
+UFGVehicleDestroyableInterface::UFGVehicleDestroyableInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

@@ -1,9 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -32,7 +29,4 @@ public:
 
 private:
 	FTimerHandle mUpdateDebugOverlayTimerHandle;
-
-public:
-	FORCEINLINE ~UFGDebugOverlayWidget() = default;
 };

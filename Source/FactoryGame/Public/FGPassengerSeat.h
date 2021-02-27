@@ -1,7 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGDriveablePawn.h"
 #include "FGPassengerSeat.generated.h"
@@ -36,7 +33,4 @@ public:
 	/** Instance of the vehicle this passenger seat belongs to */
 	UPROPERTY( SaveGame, Replicated )
 	class AFGVehicle* mOuterVehicle; 
-
-public:
-	FORCEINLINE ~AFGPassengerSeat() = default;
 };

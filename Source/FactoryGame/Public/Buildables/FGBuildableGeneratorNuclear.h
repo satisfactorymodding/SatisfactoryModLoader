@@ -1,13 +1,10 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableGeneratorFuel.h"
-#include "../Replication/FGReplicationDetailActor_GeneratorNuclear.h"
-#include "FGBuildableGeneratorFuel.h"
+#include "FGReplicationDetailActor_GeneratorNuclear.h"
 #include "FGBuildableGeneratorNuclear.generated.h"
 
 /**
@@ -41,6 +38,7 @@ protected:
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_GeneratorNuclear::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
 	bool IsWasteFull() const;
@@ -53,7 +51,7 @@ protected:
 
 public: // MODDING EDIT accessor
 	FORCEINLINE class UFGInventoryComponent* GetWasteInventoryAccessor() const { return GetWasteInventory(); };
-private:
+protected:
 	/** Returns the inventory for waste in the nuclear generator */
 	UFUNCTION( BlueprintPure, Category = "Nuclear" )
 	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventoryHandler->GetActiveInventoryComponent(); }
@@ -63,19 +61,17 @@ private:
 	virtual void OnRep_ReplicationDetailActor() override;
 
 	class AFGReplicationDetailActor_GeneratorNuclear* GetCastRepDetailsActor() const;
-public: //MODDING EDIT
+
+public: //MODDING EDIT public
 	/** Spent fuel rods goes here. */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mOutputInventory;
 
 	UPROPERTY()
 	UFGReplicationDetailInventoryComponent* mOutputInventoryHandler;
-private: //MODDING EDIT
+
 	/** Waste left to produce from the current fuel rod*/
 	UPROPERTY( SaveGame )
 	int32 mWasteLeftFromCurrentFuel;
 
-
-public:
-	FORCEINLINE ~AFGBuildableGeneratorNuclear() = default;
 };

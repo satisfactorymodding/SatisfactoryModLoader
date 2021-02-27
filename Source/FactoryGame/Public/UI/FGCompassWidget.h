@@ -1,9 +1,6 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -127,7 +124,4 @@ protected:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Compass" )
 	float mThresholdForCenteredResourceObjects;
-
-public:
-	FORCEINLINE ~UFGCompassWidget() = default;
 };

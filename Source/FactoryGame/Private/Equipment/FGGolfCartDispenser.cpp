@@ -2,14 +2,7 @@
 
 #include "FGGolfCartDispenser.h"
 
-AFGGolfCartDispenser::AFGGolfCartDispenser() : Super() {
-	this->mPlaceDistanceMax = 1000;
-	this->mArmAnimation = EArmEquipment::AE_PortableMiner;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bOnlyRelevantToOwner = true;
-	this->bNetUseOwnerRelevancy = true;
-	this->bReplicates = true;
-}
+AFGGolfCartDispenser::AFGGolfCartDispenser(){ }
 void AFGGolfCartDispenser::Tick(float DeltaSeconds){ }
 void AFGGolfCartDispenser::BeginPlay(){ }
 void AFGGolfCartDispenser::SetMaterial( UMaterialInterface* material){ }

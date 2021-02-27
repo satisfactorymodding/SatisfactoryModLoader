@@ -19,7 +19,9 @@ public class SML : ModuleRules
         });
         PrivateDependencyModuleNames.AddRange(new[] {"RenderCore"});
 
-    //FactoryGame transitive dependencies
+        PrivatePCHHeaderFile = "SMLPCH.h";
+        
+        //FactoryGame transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Core", "CoreUObject",
             "Engine",
@@ -43,10 +45,11 @@ public class SML : ModuleRules
             PublicDependencyModuleNames.Add("UnrealEd");
         }
 
-        var platformName = Enum.GetName(typeof(UnrealTargetPlatform), Target.Platform);
+        var platformName = Target.Platform.ToString();
         var projectFilePath = Target.ProjectFile.ToString();
         var projectRootPath = projectFilePath.Substring(0, projectFilePath.LastIndexOf(Path.DirectorySeparatorChar));
         var fullLibPath = Path.Combine(projectRootPath, "Library", platformName);
+        
         Console.WriteLine("Full Library Path: " + fullLibPath);
         PublicAdditionalLibraries.Add(Path.Combine(fullLibPath, "funchook.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(fullLibPath, "detex.lib"));

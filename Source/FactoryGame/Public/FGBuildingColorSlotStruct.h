@@ -31,8 +31,5 @@ struct FACTORYGAME_API FFGBuildingColorSlotStruct
 		primary = prim;
 		secondary = sec;
 	}
-
-public:
-	FORCEINLINE ~FFGBuildingColorSlotStruct() = default;
 };
 

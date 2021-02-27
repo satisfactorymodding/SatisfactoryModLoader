@@ -1,7 +1,4 @@
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "Object.h"
 #include "FGAtmosphereVolume.h"
@@ -17,10 +14,10 @@ class FACTORYGAME_API UFGAtmosphereUpdater : public UObject
 public:
 	/** Update the value of the height fog in each world */
 	void Tick( float dt );
-public: //MODDING EDIT protected -> public
+protected:
 	/** Apply the fog settings to the current world */
 	void ApplyFogSettings( const FExponentialFogSettings& fogSettings, class UWorld* world );
-protected: // MODDING EDIT
+
 	/** Interpolate in src settings into destination, when alpha is 1, then take entire src */
 	void InterpolateFogSettings( FExponentialFogSettings& dest, const FExponentialFogSettings& src, float alpha ) const;
 
@@ -36,7 +33,4 @@ protected:
 	/** The worlds we want to affect */
 	UPROPERTY()
 	TArray< class UWorld* > mActiveWorlds;
-
-public:
-	FORCEINLINE ~UFGAtmosphereUpdater() = default;
 };

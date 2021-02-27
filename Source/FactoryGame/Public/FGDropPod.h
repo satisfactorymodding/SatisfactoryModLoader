@@ -1,7 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGDropPodSettings.h"
 #include "FGSaveInterface.h"
@@ -21,7 +18,6 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual void PostLoad() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Tick( float DeltaSeconds ) override;
@@ -127,7 +123,4 @@ private:
 	/** Contains the loot if any */
 	UPROPERTY( SaveGame, Replicated )
 	class UFGInventoryComponent* mInventory;
-
-public:
-	FORCEINLINE ~AFGDropPod() = default;
 };

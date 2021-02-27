@@ -1,8 +1,4 @@
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #include "FactoryGame.h"
@@ -83,7 +79,4 @@ private:
 	/** Is this manager shared across multiple buildables? */
 	bool mIsShared;
 
-
-public:
-	FORCEINLINE ~UFGFactoryMaterialInstanceManager() = default;
 };

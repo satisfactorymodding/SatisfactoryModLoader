@@ -1,20 +1,13 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 #include "FGCharacterBase.h"
-#include "AI/FGAggroTargetInterface.h"
+#include "FGAggroTargetInterface.h"
 #include "FGInventoryComponent.h"
 #include "FGUseableInterface.h"
 #include "FGRadiationInterface.h"
 #include "Equipment/FGEquipment.h"
 #include "FGHUD.h"
 #include "FGOutlineComponent.h"
-#include "FGCharacterMovementComponent.h" // MODDING EDIT
 
 #include "FGCharacterPlayer.generated.h"
 
@@ -39,10 +32,10 @@ struct FACTORYGAME_API FDisabledInputGate
 	GENERATED_USTRUCT_BODY()
 
 public:
-	MODDING_SHIPPING_FORCEINLINE FDisabledInputGate() : FDisabledInputGate( false )
+	FDisabledInputGate() : FDisabledInputGate( false )
 	{}
 
-	MODDING_SHIPPING_FORCEINLINE FDisabledInputGate( bool disabled ) :
+	FDisabledInputGate( bool disabled ) :
 		mBuildGun( disabled ),
 		mDismantle( disabled ),
 		mFlashLight( disabled ),
@@ -81,9 +74,6 @@ public:
 	uint8 mUse : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
 	uint8 mVehicleRecording : 1;
-
-public:
-	FORCEINLINE ~FDisabledInputGate() = default;
 };
 
 /**
@@ -94,10 +84,7 @@ class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead : public UFGUseSta
 {
 	GENERATED_BODY()
 public:
-	MODDING_SHIPPING_FORCEINLINE UFGUseState_ReviveInvalid_PlayerNotDead() : Super() { mIsUsableState = false; }
-
-public:
-	FORCEINLINE ~UFGUseState_ReviveInvalid_PlayerNotDead() = default;
+	UFGUseState_ReviveInvalid_PlayerNotDead() : Super() { mIsUsableState = false; }
 };
 
 /**
@@ -108,10 +95,7 @@ class FACTORYGAME_API UFGUseState_ReviveValid : public UFGUseState
 {
 	GENERATED_BODY()
 public:
-	MODDING_SHIPPING_FORCEINLINE UFGUseState_ReviveValid() : Super() { mIsUsableState = true; }
-
-public:
-	FORCEINLINE ~UFGUseState_ReviveValid() = default;
+	UFGUseState_ReviveValid() : Super() { mIsUsableState = true; }
 };
 
 /**
@@ -194,6 +178,9 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	//~End IFGSaveInterface
+
+	// Setup run when this player ahve been possessed.
+	void OnPossessedSetup();
 
 	/** Blueprint function that ticks visual things not needed on dedicated server */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
@@ -1141,7 +1128,4 @@ private:
 public:
 	UPROPERTY( BlueprintReadWrite, Category = "FactoryGame|Movement|Crouch" )
 	bool mNoUpdate;
-
-public:
-	FORCEINLINE ~AFGCharacterPlayer() = default;
 };

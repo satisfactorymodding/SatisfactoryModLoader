@@ -1,5 +1,4 @@
 #pragma once
-#include "UObject/Class.h"
 
 
 #pragma once
@@ -33,7 +32,4 @@ public:
 	{
 		return mStackHeight;
 	}
-
-public:
-	FORCEINLINE ~AFGBuildablePoleBase() = default;
 };

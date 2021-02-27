@@ -1,11 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGInstancedSplineMeshComponent.h"
@@ -20,9 +15,6 @@ struct FACTORYGAME_API FTrajectoryData
 	FVector ImpactLocation;
 	float PeakHeight;
 	TArray<FVector> TrajectoryPoints;
-
-public:
-	FORCEINLINE ~FTrajectoryData() = default;
 };
 
 struct FACTORYGAME_API TrackedJumpPadPlayer
@@ -37,15 +29,12 @@ struct FACTORYGAME_API TrackedJumpPadPlayer
 	
 	int32 NumChainedJumps;
 	float LastJumpTimeStamp;
-
-public:
-	FORCEINLINE ~TrackedJumpPadPlayer() = default;
 };
 
 DECLARE_LOG_CATEGORY_EXTERN( LogJumpPad, Log, All );
 
 /**
- * 
+ * Base class for the jump pads.
  */
 UCLASS()
 class FACTORYGAME_API AFGBuildableJumppad : public AFGBuildableFactory
@@ -276,7 +265,4 @@ protected:
 
 	private:
 		friend class AFGJumpPadLauncherHologram;
-
-public:
-	FORCEINLINE ~AFGBuildableJumppad() = default;
 };

@@ -3,5 +3,5 @@
 #include "SaveCollectorArchive.h"
 
 FArchive& FSaveCollectorArchive::operator<<( UObject*& Obj){ return *(new FArchive); }
-FSaveCollectorArchive::FSaveCollectorArchive(TArray<class UObject*>& toFill){ }
+FSaveCollectorArchive::FSaveCollectorArchive(TArray<class UObject*>& toFill):mObjectsToSave(toFill) {}
 void FSaveCollectorArchive::GenerateSaveObjects(const TArray<class UObject*>& rootSet){ }

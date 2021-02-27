@@ -1,7 +1,6 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Resources/FGResourceNode.h"
@@ -22,7 +21,4 @@ public:
 	// Begin IFGUseableInterface
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
 	// End IFGUseableInterface
-
-public:
-	FORCEINLINE ~AFGResourceNodeGeyser() = default;
 };

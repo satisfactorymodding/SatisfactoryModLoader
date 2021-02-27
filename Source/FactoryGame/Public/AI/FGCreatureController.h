@@ -1,8 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "AIController.h"
 #include "Perception/AIPerceptionTypes.h"
@@ -35,7 +33,4 @@ public:
 
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(  AActor* inActor,  struct FAIStimulus Stimulus );
-
-public:
-	FORCEINLINE ~AFGCreatureController() = default;
 };

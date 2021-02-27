@@ -1,8 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGPipeConnectionComponent.h"
@@ -45,7 +43,4 @@ private:
 	/** If this connection is a producer type, should it apply the factory settings default pressure? */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	bool mApplyAdditionalPressure;
-
-public:
-	FORCEINLINE ~UFGPipeConnectionFactory() = default;
 };

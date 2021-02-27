@@ -1,12 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGVehicle.h"
-#include "Buildables/FGBuildableRailroadTrack.h"
+#include "FGBuildableRailroadTrack.h"
 #include "FGRailroadVehicle.generated.h"
 
 
@@ -159,7 +156,4 @@ private:
 	UPROPERTY( SaveGame )
 	FRailroadTrackPosition mTrackPosition;
 
-
-public:
-	FORCEINLINE ~AFGRailroadVehicle() = default;
 };

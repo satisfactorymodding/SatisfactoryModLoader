@@ -1,10 +1,9 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "../FGSignificanceInterface.h"
+#include "FGSignificanceInterface.h"
 #include "Buildables/FGBuildable.h"
 #include "FGBuildableSnowDispenser.generated.h"
 
@@ -18,7 +17,4 @@ UCLASS()
 class FACTORYGAME_API AFGBuildableSnowDispenser : public AFGBuildable, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~AFGBuildableSnowDispenser() = default;
 };

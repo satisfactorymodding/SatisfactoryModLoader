@@ -1,9 +1,6 @@
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGEquipment.h"
+#include "Equipment/FGEquipment.h"
 #include "FGResourceScanner.generated.h"
 
 /** Holds information about resource node clusters. This could be saved in actors on the level for optimization. */
@@ -29,9 +26,6 @@ struct FACTORYGAME_API FNodeClusterData
 	/** The resource descriptor of this cluster */
 	UPROPERTY( BluePrintReadOnly )
 	TSubclassOf< class UFGResourceDescriptor > ResourceDescriptor;
-
-public:
-	FORCEINLINE ~FNodeClusterData() = default;
 };
 
 
@@ -139,7 +133,4 @@ protected:
 private:
 	// Temp fix for avoiding scanning when opening CheatBoard, function is bound to CheatBoard input
 	void OnCheatBoardOpened();
-
-public:
-	FORCEINLINE ~AFGResourceScanner() = default;
 };

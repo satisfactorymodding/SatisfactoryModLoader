@@ -2,9 +2,7 @@
 
 #include "FGDecorationActor.h"
 
-AFGDecorationActor::AFGDecorationActor() : Super() {
-	this->bReplicates = true;
-}
+AFGDecorationActor::AFGDecorationActor(){ }
 void AFGDecorationActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGDecorationActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDecorationActor::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

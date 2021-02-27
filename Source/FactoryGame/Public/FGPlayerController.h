@@ -1,9 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGPlayerControllerBase.h"
 #include "FGChatManager.h"
@@ -303,7 +298,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Map" )
     TSubclassOf< UFGMapArea > GetCurrentMapArea() const;
 
-public: // MODDING EDIT
+public: // MODDING EDIT protected -> public
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 
@@ -527,7 +522,4 @@ private:
 	/** Subsystem that keeps track of effects in proximity to the player */
 	UPROPERTY()
 	class AFGProximitySubsystem* mProximitySubsystem;
-
-public:
-	FORCEINLINE ~AFGPlayerController() = default;
 };

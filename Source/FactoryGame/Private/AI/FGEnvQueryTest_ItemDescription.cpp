@@ -3,3 +3,4 @@
 #include "FGEnvQueryTest_ItemDescription.h"
 
 void UFGEnvQueryTest_ItemDescription::RunTest(FEnvQueryInstance& QueryInstance) const{ }
+UFGEnvQueryTest_ItemDescription::UFGEnvQueryTest_ItemDescription(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

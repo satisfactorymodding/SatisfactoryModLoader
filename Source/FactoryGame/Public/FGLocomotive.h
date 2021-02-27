@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGRailroadVehicle.h"
 #include "FGLocomotiveMovementComponent.h"
@@ -123,7 +119,4 @@ private:
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )
 	class UFGLocomotiveMovementComponent* mVehicleMovement;
-
-public:
-	FORCEINLINE ~AFGLocomotive() = default;
 };

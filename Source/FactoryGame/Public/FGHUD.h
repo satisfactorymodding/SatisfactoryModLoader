@@ -1,18 +1,9 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
 #pragma once 
-#include "Engine/World.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 #include "GameFramework/HUD.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGHUDBase.h"
 #include "FGHUD.generated.h"
-
-// MODDING EDIT: doesn't inherit the one from FactoryGame.h
-#ifndef WITH_CHEATS
-#define WITH_CHEATS 0
-#endif
 
 UENUM( BlueprintType )
 enum class ECrosshairState : uint8
@@ -272,7 +263,4 @@ private:
 	/** The latest created pawn HUD widget */
 	UPROPERTY()
 	UUserWidget* mPawnHUD;
-
-public:
-	FORCEINLINE ~AFGHUD() = default;
 };

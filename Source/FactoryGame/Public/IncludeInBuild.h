@@ -1,5 +1,4 @@
 #pragma once
-#include "UObject/Class.h"
 
 static const FName INCLUDE_IN_BUILD_ASSET_TAG( TEXT( "mIncludeInBuilds" ) );
 static const FName TECH_TIER_ASSET_TAG( TEXT( "mTechTier" ) );

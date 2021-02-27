@@ -1,6 +1,4 @@
 #pragma once
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "FGAnimNotify_Landed.generated.h"
@@ -17,7 +15,4 @@ public:
 	virtual FString GetNotifyName_Implementation() const override;
 	virtual void Notify( USkeletalMeshComponent* meshComp, UAnimSequenceBase* animation ) override;
 	//~ End UAnimNotify interface
-
-public:
-	FORCEINLINE ~UFGAnimNotify_Landed() = default;
 };

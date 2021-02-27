@@ -1,9 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGBuildable.h"
 #include "FGBuildablePowerPole.generated.h"
@@ -80,7 +77,4 @@ private:
 	bool mIsDismantled;
 	bool mIsShowingDismantleOutline;
 	bool mIsShowingConnectionOutline;
-
-public:
-	FORCEINLINE ~AFGBuildablePowerPole() = default;
 };

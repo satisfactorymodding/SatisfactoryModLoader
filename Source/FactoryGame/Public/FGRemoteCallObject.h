@@ -1,8 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "UObject/NoExportTypes.h"
 #include "FGConstructionMessageInterface.h"
@@ -21,7 +19,7 @@ public:
 	virtual bool IsSupportedForNetworking() const override;
 
 	/** This is overloaded so that we can call Server/Client functions in this object by using the Callspace of the outer PlayerController. */
-	int32 GetFunctionCallspace( UFunction* Function, void* Parameters, FFrame* Stack ) override;
+	int32 GetFunctionCallspace( UFunction* Function, FFrame* Stack ) override;
 
 	/** This is overloaded so that we can call Server/Client functions in this object by using the NetDriver of the outer PlayerController.*/
 	bool CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack ) override;
@@ -38,7 +36,4 @@ protected:
 
 	/** Returns the cast outer as a FGPlayerControlelr */
 	class AFGPlayerController* GetOuterFGPlayerController();
-
-public:
-	FORCEINLINE ~UFGRemoteCallObject() = default;
 };

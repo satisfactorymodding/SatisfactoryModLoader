@@ -1,18 +1,12 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include <type_traits>
 #include "GameFramework/PlayerState.h"
 #include "FGCharacterPlayer.h"
-#include "UI/Message/FGMessageBase.h"
+#include "FGMessageBase.h"
 #include "FGActorRepresentation.h"
-#include "UI/Message/FGMessageBase.h"
 #include "FGPlayerState.generated.h"
 
 typedef TSharedPtr<class IHttpRequest> FHttpRequestPtr;
@@ -41,10 +35,6 @@ struct FACTORYGAME_API FSlotData
 	FORCEINLINE bool operator==( const FSlotData& other ) const{
 		return other.PingColor == PingColor && other.NametagColor == NametagColor;
 	}
-
-
-public:
-	FORCEINLINE ~FSlotData() = default;
 };
 
 /**
@@ -68,9 +58,6 @@ struct FACTORYGAME_API FMessageData
 	/** What class is the message */
 	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > MessageClass;
-
-public:
-	FORCEINLINE ~FMessageData() = default;
 };
 
 /**
@@ -82,16 +69,11 @@ struct FACTORYGAME_API FHotbar
 	GENERATED_BODY();
 
 	FHotbar(){}
-
 	FHotbar( class AFGPlayerState* owningState, const FHotbar& hotbar );
-
 	FHotbar( TArray< class UFGHotbarShortcut* > hotbarShortcuts );
 
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	TArray< class UFGHotbarShortcut* > HotbarShortcuts;
-
-public:
-	FORCEINLINE ~FHotbar() = default;
 };
 
 /**
@@ -103,9 +85,7 @@ struct FACTORYGAME_API FPresetHotbar
 	GENERATED_BODY();
 
 	FPresetHotbar(){}
-
 	FPresetHotbar( class AFGPlayerState* owningState, const FPresetHotbar& presetHotbar );
-
 	FPresetHotbar( FText presetName, uint8 iconIndex, FHotbar hotbar ) :
 		PresetName( presetName ),
 		IconIndex( iconIndex ),
@@ -122,9 +102,6 @@ struct FACTORYGAME_API FPresetHotbar
 	/** The hotbar shortcuts for this preset */
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	FHotbar Hotbar;
-
-public:
-	FORCEINLINE ~FPresetHotbar() = default;
 };
 
 UCLASS()
@@ -240,7 +217,6 @@ public:
 		check( T::StaticClass()->IsChildOf( UFGHotbarShortcut::StaticClass() ) );
 		return Cast< T >( CreateShortcut( shortcutClass ) );
 	}
-
 
 	/** Get current shortcuts */
 	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
@@ -496,7 +472,4 @@ private:
 	/** How many inventory slots the player has observed that they have. Used to show when we have new available slots in the UI  */
 	UPROPERTY( SaveGame, Replicated )
 	int32 mNumObservedInventorySlots;
-
-public:
-	FORCEINLINE ~AFGPlayerState() = default;
 };

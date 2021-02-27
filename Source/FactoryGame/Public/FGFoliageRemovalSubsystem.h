@@ -1,11 +1,4 @@
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/Level.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
@@ -135,9 +128,9 @@ public:
 	void UnRegister( class AFGFoliageRemoval* actor );
 
 	/**
-	 * @return true if the static mesh is removable
+	 * @return true if the foliage type is removable
 	 */
-	virtual bool IsRemovable( class UStaticMesh* staticMesh ) const;
+	bool IsRemovable( class UFoliageType* foliageType ) const;
 
 	// Begin FactoryStatHelpers functions
 	int32 Stat_NumRemovedInstances() const;
@@ -271,7 +264,4 @@ protected:
 
 	/** All foliage mesh components that have potential for contain instances to remove */
 	TArray<class UHierarchicalInstancedStaticMeshComponent*> mFoilageMeshComponents; // @todogc: Verify that this is safe have without UPROPERTY
-
-public:
-	FORCEINLINE ~AFGFoliageRemovalSubsystem() = default;
 };

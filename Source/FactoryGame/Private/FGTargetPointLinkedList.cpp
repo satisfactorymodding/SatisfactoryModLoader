@@ -2,9 +2,7 @@
 
 #include "FGTargetPointLinkedList.h"
 
-UFGTargetPointLinkedList::UFGTargetPointLinkedList() : Super() {
-	this->mMaxLength = 2000;
-}
+UFGTargetPointLinkedList::UFGTargetPointLinkedList(){ }
 void UFGTargetPointLinkedList::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGTargetPointLinkedList::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGTargetPointLinkedList::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

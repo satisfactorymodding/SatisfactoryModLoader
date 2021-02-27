@@ -1,7 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
@@ -9,7 +8,7 @@
 #include "FGFAnimInstanceFactory.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FAnimInstanceProxyFactory : public FAnimInstanceProxy
+struct FAnimInstanceProxyFactory : public FAnimInstanceProxy
 {
 	GENERATED_BODY()
 
@@ -129,9 +128,6 @@ public:
 	/** True if generator has power and is producing */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	uint8 mIsFuelGeneratorOnline : 1;
-
-public:
-	FORCEINLINE ~FAnimInstanceProxyFactory() = default;
 };
 
 /**
@@ -206,7 +202,4 @@ public:
 	/** Max value for RTPC range */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
 	float mSoundSpeedRTPCMaxValue;
-
-public:
-	FORCEINLINE ~UFGFAnimInstanceFactory() = default;
 };

@@ -1,13 +1,9 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGFactoryHologram.h"
+#include "Hologram/FGFactoryHologram.h"
 #include "FGTrainPlatformHologram.generated.h"
 
 /**
@@ -87,7 +83,4 @@ private:
 
 	/** Track changes to the scroll direction */
 	int32 mPreviousScrollTrackDirection;
-
-public:
-	FORCEINLINE ~AFGTrainPlatformHologram() = default;
 };

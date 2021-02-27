@@ -2,9 +2,7 @@
 
 #include "FGWidgetSwitcher.h"
 
-UFGWidgetSwitcher::UFGWidgetSwitcher() : Super() {
-	this->mFadeOutTime = 0.25;
-}
+UFGWidgetSwitcher::UFGWidgetSwitcher(){ }
 void UFGWidgetSwitcher::ReleaseSlateResources(bool bReleaseChildren){ }
 void UFGWidgetSwitcher::RemoveFromParent(){ }
 void UFGWidgetSwitcher::SetActiveWidgetIndex(int32 index){ }

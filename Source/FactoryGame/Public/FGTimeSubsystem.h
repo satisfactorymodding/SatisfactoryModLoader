@@ -1,8 +1,4 @@
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
@@ -44,8 +40,6 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
-	
-	virtual void GetLifetimeReplicatedProps(class TArray<class FLifetimeProperty, class FDefaultAllocator> & OutReplicatedProps) const override; // MODDING EDIT
 
 	/** Set the value of daySeconds, most useful for editor preview */
 	void SetDaySeconds( float daySeconds );
@@ -211,7 +205,4 @@ public:
 	/** Server and Client | Called when a new day starts */
 	UPROPERTY( BlueprintAssignable, Category = "Events|Time", DisplayName = "OnNewDay" )
 	FNewDayDelegate mOnNewDayDelegate;
-
-public:
-	FORCEINLINE ~AFGTimeOfDaySubsystem() = default;
 };

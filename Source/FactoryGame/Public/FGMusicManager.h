@@ -1,11 +1,18 @@
 #pragma once
-#include "Engine/World.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGMusicManager.generated.h"
 
+// MODDING EDIT
+UCLASS()
+class UAkObject : public UObject
+{
+	GENERATED_BODY()
+};
+
+/**
+ * Handles playing the music in game, this is created really early and is available across loading screens.
+ */
 UCLASS(Blueprintable,Config=Engine)
 class FACTORYGAME_API UFGMusicManager : public UObject
 {
@@ -14,14 +21,17 @@ public:
 	/** Create a music manager from the specified class in a config */
 	static class UFGMusicManager* CreateMusicManager( class UFGGameInstance* gameInstance );
 
+	/** Get the music manager, can return null if world context is invalid or no music manager is spawned. */
 	static UFGMusicManager* Get( UWorld* world );
-
-	/** To easy access the music manager from anywhere, can return null if world context is invalid or no music manager is spawned. */
+	/** Get the music manager, can return null if world context is invalid or no music manager is spawned. */
 	UFUNCTION( BlueprintPure, Category = "Music", DisplayName = "GetMusicManager", Meta = ( DefaultToSelf = "worldContext" ) )
 	static UFGMusicManager* Get( UObject* worldContext );
 
+	// Begin UObject interface
 	virtual UWorld* GetWorld() const override;
+	// End UObject interface
 
+	/** Let us know when a player controller enters play. */
 	void OnPlayerControllerBeginPlay( class AFGPlayerControllerBase* pc );
 
 	/** Start/Continue music playback. */
@@ -67,10 +77,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
 	float mFactoryCloseDistance;
 
-	// MODDING EDIT
-	///** Object we post event on, set RTPC on etc. */
-	//UPROPERTY( BlueprintReadOnly, Transient )
-	//class UAkObject* mAkObject;
+	/** Object we post event on, set RTPC on etc. */
+	UPROPERTY( BlueprintReadOnly, Transient )
+	class UAkObject* mAkObject;
 
 private:
 	/** Music manager class name */
@@ -82,7 +91,4 @@ private:
 
 	/** If the player is in his factory. */
 	uint8 mIsPlayerNearBase : 1;
-
-public:
-	FORCEINLINE ~UFGMusicManager() = default;
 };

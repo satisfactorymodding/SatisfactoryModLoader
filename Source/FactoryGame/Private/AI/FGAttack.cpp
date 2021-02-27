@@ -2,8 +2,4 @@
 
 #include "FGAttack.h"
 
-UFGAttack::UFGAttack() : Super() {
-	this->mAttackRange = 100;
-	this->mDamage = 10;
-	this->mAttackAngle = 60;
-}
+UFGAttack::UFGAttack(){ }

@@ -1,12 +1,13 @@
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSaveInterface.h"
 #include "Styling/SlateBrush.h"
 #include "FGHotbarShortcut.generated.h"
 
+/**
+ * Base class for items that can be put in the players hotbar, e.g. recipe shortcuts.
+ */
 UCLASS(abstract,Blueprintable)
 class FACTORYGAME_API UFGHotbarShortcut : public UObject, public IFGSaveInterface
 {
@@ -42,7 +43,4 @@ protected:
 
 	/** Get a valid player that can use the shortcut, will be null if it's not allowed for some reason */
 	class AFGCharacterPlayer* GetValidPlayerCharacter( class AFGPlayerController* playerController ) const;
-
-public:
-	FORCEINLINE ~UFGHotbarShortcut() = default;
 };

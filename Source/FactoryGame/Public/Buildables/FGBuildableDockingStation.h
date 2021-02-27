@@ -1,14 +1,9 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGBuildableFactory.h"
-#include "../Replication/FGReplicationDetailActor_DockingStation.h"
+#include "FGReplicationDetailActor_DockingStation.h"
 #include "FGBuildableDockingStation.generated.h"
 
 /**
@@ -30,6 +25,7 @@ public:
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_DockingStation::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
 	/** @return a valid pointer to the fuel inventory */
@@ -198,9 +194,6 @@ private:
 	class UFGInventoryComponent* mInventory;
 
 	/** Inventory for refueling the trucks. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_FuelInventory )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mFuelInventory;
-
-public:
-	FORCEINLINE ~AFGBuildableDockingStation() = default;
 };

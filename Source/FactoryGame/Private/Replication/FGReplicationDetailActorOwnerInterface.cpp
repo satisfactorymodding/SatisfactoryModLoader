@@ -2,3 +2,4 @@
 
 #include "FGReplicationDetailActorOwnerInterface.h"
 
+UFGReplicationDetailActorOwnerInterface::UFGReplicationDetailActorOwnerInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

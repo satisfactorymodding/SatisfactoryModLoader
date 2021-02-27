@@ -1,6 +1,4 @@
 #pragma once
-#include "Engine/World.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGAudioVolumeSubsystem.generated.h"
@@ -24,7 +22,4 @@ protected:
 
 	/** Get the distance where we assume that we are "close" to the volume */
 	float GetCloseDistance( class AFGAmbientVolume* ambientVolume ) const;
-
-public:
-	FORCEINLINE ~AFGAudioVolumeSubsystem() = default;
 };

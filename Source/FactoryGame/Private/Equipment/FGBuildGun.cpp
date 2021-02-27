@@ -2,12 +2,10 @@
 
 #include "FGBuildGun.h"
 
-UFGBuildGunState::UFGBuildGunState() : Super() {
-	
-}
+UFGBuildGunState::UFGBuildGunState(){ }
 bool UFGBuildGunState::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 bool UFGBuildGunState::IsSupportedForNetworking() const{ return bool(); }
-int32 UFGBuildGunState::GetFunctionCallspace(UFunction* Function, void* Parameters, FFrame* Stack){ return int32(); }
+int32 UFGBuildGunState::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGBuildGunState::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
 bool UFGBuildGunState::HasAuthority() const{ return bool(); }
 UWorld* UFGBuildGunState::GetWorld() const{ return nullptr; }
@@ -34,15 +32,7 @@ void UFGBuildGunState::BeginBuildGunDelay(){ }
 void UFGBuildGunState::ResetBuildGunDelay(){ }
 bool UFGBuildGunState::BuildGunDelayIsComplete(){ return bool(); }
 bool UFGBuildGunState::HasBuildGunDelay(){ return bool(); }
-AFGBuildGun::AFGBuildGun() : Super() {
-	this->mBuildDistanceMax = 10000;
-	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
-	this->mArmAnimation = EArmEquipment::AE_BuildGun;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bOnlyRelevantToOwner = true;
-	this->bNetUseOwnerRelevancy = true;
-	this->bReplicates = true;
-}
+AFGBuildGun::AFGBuildGun(){ }
 void AFGBuildGun::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool AFGBuildGun::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGBuildGun::BeginPlay(){ }

@@ -32,7 +32,4 @@ private:
 
 	/** The single analog cursor we allow in the game */
 	static TSharedPtr< FFGGamepadCursor > AnalogCursor;
-
-public:
-	FORCEINLINE ~FFGGamepadCursor() = default;
 };

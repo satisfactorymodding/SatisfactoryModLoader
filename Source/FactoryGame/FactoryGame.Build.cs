@@ -27,5 +27,9 @@ public class FactoryGame : ModuleRules
             "SlateCore", "Slate", "UMG",
             "InstancedSplines"
         });
+        
+        PrivatePCHHeaderFile = "Public/FactoryGame.h";
+        
+        PrivateDefinitions.Add( "IS_PUBLIC_BUILD=1" ); 
     }
 }

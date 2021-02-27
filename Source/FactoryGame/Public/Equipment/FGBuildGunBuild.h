@@ -3,19 +3,11 @@
 #pragma once
 
 #include "Equipment/FGBuildGun.h"
-#include "../ItemAmount.h"
-#include "../FGBuildableSubsystem.h"
-#include "../FGConstructionMessageInterface.h"
-#include "../Hologram/HologramSplinePathMode.h"
+#include "ItemAmount.h"
+#include "FGBuildableSubsystem.h"
+#include "FGConstructionMessageInterface.h"
+#include "HologramSplinePathMode.h"
 #include "DelegateCombinations.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
-
-#include "FGBuildGun.h"
-#include "../ItemAmount.h"
 #include "FGBuildGunBuild.generated.h"
 
 
@@ -23,7 +15,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FSplineModeChangedDelegate, EHologramSplinePathMode, newMode );
 
 USTRUCT()
-struct FACTORYGAME_API FConnectionRepresentation
+struct FConnectionRepresentation
 {
 	GENERATED_BODY()
 
@@ -44,13 +36,10 @@ struct FACTORYGAME_API FConnectionRepresentation
 
 	UPROPERTY()
 	class UStaticMeshComponent* mConnectionRepresentation;
-
-public:
-	FORCEINLINE ~FConnectionRepresentation() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FFactoryClearanceData
+struct FFactoryClearanceData
 {
 	GENERATED_BODY()
 
@@ -76,9 +65,6 @@ struct FACTORYGAME_API FFactoryClearanceData
 	TArray< FConnectionRepresentation > mConnectionComponents;
 
 	uint8 ParticipatedInCleranceEncroachFrameCountDownLast = 0;
-
-public:
-	FORCEINLINE ~FFactoryClearanceData() = default;
 };
 
 /**
@@ -304,7 +290,7 @@ private:
 
 	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** The actor to replace (dismantle) when upgrading. */
-	UPROPERTY( Replicated )
+	UPROPERTY()
 	class AActor* mUpgradedActor;
 
 	/** Moves the clearance box collision to where we are aiming */
@@ -324,7 +310,4 @@ private:
 
 	/** All building locations spawned during this frame. Will be cleared at the start of every new frame to avoid spawning multiple buildings at the same location. */
 	TArray<FVector> mConstructionLocationDuringFrame;
-
-public:
-	FORCEINLINE ~UFGBuildGunStateBuild() = default;
 };

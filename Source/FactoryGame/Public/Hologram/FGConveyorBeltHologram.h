@@ -1,17 +1,10 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Components/SplineMeshComponent.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Hologram/FGSplineHologram.h"
-#include "FGFactoryHologram.h"
 #include "Components/SplineComponent.h"
-#include "../FGFactoryConnectionComponent.h"
+#include "FGFactoryConnectionComponent.h"
 #include "FGConveyorBeltHologram.generated.h"
 
 /**
@@ -109,7 +102,7 @@ private:
 	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	class UFGFactoryConnectionComponent* mSnappedConnectionComponents[ 2 ];
 
 
@@ -142,10 +135,10 @@ private:
 	UPROPERTY()
 	class UStaticMeshComponent* mConnectionArrowComponent;
 
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	FVector mConstructionPoleLocations[ 2 ];
 
-	UPROPERTY(/*CustomSerialization*/)
+	UPROPERTY(CustomSerialization)
 	FRotator mConstructionPoleRotations[ 2 ];
 
 	/** All the generated spline meshes. */
@@ -160,7 +153,4 @@ private:
 	UPROPERTY()
 	class UStaticMesh* mMesh;
 	float mMeshLength;
-
-public:
-	FORCEINLINE ~AFGConveyorBeltHologram() = default;
 };

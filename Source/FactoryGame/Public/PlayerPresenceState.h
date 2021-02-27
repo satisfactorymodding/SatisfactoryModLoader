@@ -1,6 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
 
 #include "CoreMinimal.h"
 #include "ObjectMacros.h"
@@ -10,7 +8,7 @@
 //Considering moving it to an engine level plugin. So that's why it's not using the FG prefix.
 //As we currently need to do the steam specific stuff in local player, instead of the steam OSS. As the OSS has no knowledge about this struct.
 USTRUCT()
-struct FACTORYGAME_API FPlayerPresenceState
+struct FPlayerPresenceState
 {
 	GENERATED_BODY()
 
@@ -25,8 +23,5 @@ struct FACTORYGAME_API FPlayerPresenceState
 	FString mPresenceString;
 	FString mSteamTagString;
 	TArray<SubParameter> mParameters;
-
-public:
-	FORCEINLINE ~FPlayerPresenceState() = default;
 };
 

@@ -1,7 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGUseableInterface.h"
@@ -125,7 +122,4 @@ private:
 	bool mIsProducing;
 
 
-
-public:
-	FORCEINLINE ~AFGPortableMiner() = default;
 };

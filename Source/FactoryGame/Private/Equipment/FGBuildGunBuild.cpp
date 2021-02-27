@@ -2,10 +2,7 @@
 
 #include "FGBuildGunBuild.h"
 
-UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
-	this->mSplineModeSelectHoldDownDurationForUI = 0.180000007152557;
-	this->mIsUsingPressAndReleaseAsBuildSteps = true;
-}
+UFGBuildGunStateBuild::UFGBuildGunStateBuild(){ }
 void UFGBuildGunStateBuild::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGBuildGunStateBuild::PreNetReceive(){ }
 void UFGBuildGunStateBuild::BeginState_Implementation(){ }

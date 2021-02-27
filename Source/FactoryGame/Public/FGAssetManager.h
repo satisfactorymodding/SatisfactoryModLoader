@@ -1,7 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Engine/AssetManager.h"
 #include "IncludeInBuild.h"
@@ -9,7 +6,7 @@
 
 /** Help us discard packages that shouldn't be cooked and add assets that's should always be cooked */
 UCLASS()
-class FACTORYGAME_API UFGAssetManager : public UAssetManager
+class UFGAssetManager : public UAssetManager
 {
 	GENERATED_BODY()
 public:
@@ -33,7 +30,4 @@ protected:
 	/** During cooking step, what's the minimum value of EIncludeInBuild on asset for it to be included in cooks */
 	EIncludeInBuilds mMinimumIncludeInBuildFlag;
 #endif
-
-public:
-	FORCEINLINE ~UFGAssetManager() = default;
 };

@@ -1,12 +1,10 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGWeapon.h"
-#include "../DamageTypes/FGDamageType.h"
+#include "Equipment/FGWeapon.h"
+#include "FGDamageType.h"
 #include "FGWeaponProjectileFire.generated.h"
 
 USTRUCT()
@@ -73,9 +71,6 @@ struct FACTORYGAME_API FProjectileData
 		DamageType = UFGDamageType::StaticClass();
 		DamageTypeExplode = UFGDamageType::StaticClass();
 	}
-
-public:
-	FORCEINLINE ~FProjectileData() = default;
 };
 
 /**
@@ -85,12 +80,12 @@ UCLASS()
 class FACTORYGAME_API AFGWeaponProjectileFire : public AFGWeapon
 {
 	GENERATED_BODY()
-	
 public:
-
 	AFGWeaponProjectileFire();
 
+	// Begin AFGWeapon
 	virtual void FireAmmunition_Implementation() override;
+	// End AFGWeapon
 
 	/** apply config on projectile */
 	void GetProjectileData( FProjectileData& out_data );
@@ -102,7 +97,4 @@ protected:
 	/** weapon config */
 	UPROPERTY( EditDefaultsOnly, Category = "Weapon" )
 	FProjectileData mProjectileData;
-
-public:
-	FORCEINLINE ~AFGWeaponProjectileFire() = default;
 };

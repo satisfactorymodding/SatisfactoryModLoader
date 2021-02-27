@@ -1,8 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "Animation/AnimInstance.h"
 #include "FGCharacterAnimInstance.generated.h"
@@ -246,7 +244,4 @@ public:
 	/** What to collide against in pre land */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
 	TArray< TEnumAsByte< ECollisionChannel > > mPreLandCollisionChannels;
-
-public:
-	FORCEINLINE ~UFGCharacterAnimInstance() = default;
 };

@@ -5,7 +5,7 @@
 
 FInventoryItem::FInventoryItem(){ }
 FInventoryItem::FInventoryItem(TSubclassOf<  UFGItemDescriptor > itemClass){ }
-bool FInventoryItem::Serialize(FArchive& ar){ 
+bool FInventoryItem::Serialize(FArchive& ar) {
 	ar.UsingCustomVersion(FFactoryGameCustomVersion::GUID);
 	if (ar.CustomVer(FFactoryGameCustomVersion::GUID) >= 2) {
 		ar << ItemClass;
@@ -20,10 +20,7 @@ FInventoryStack::FInventoryStack(int32 numItems, TSubclassOf<  UFGItemDescriptor
 void UFGInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGInventoryComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void UFGInventoryComponent::PreNetReceive(){ }
-UFGInventoryComponent::UFGInventoryComponent() : Super() {
-	this->mDefaultInventorySize = 1;
-	this->mCanBeRearrange = true;
-}
+UFGInventoryComponent::UFGInventoryComponent(){ }
 void UFGInventoryComponent::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGInventoryComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGInventoryComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -33,6 +30,7 @@ void UFGInventoryComponent::GatherDependencies_Implementation(TArray< UObject* >
 bool UFGInventoryComponent::NeedTransform_Implementation(){ return bool(); }
 bool UFGInventoryComponent::ShouldSave_Implementation() const{ return bool(); }
 void UFGInventoryComponent::OnRegister(){ Super::OnRegister(); }
+void UFGInventoryComponent::BeginPlay(){ }
 void UFGInventoryComponent::SetDefaultSize(int32 defaultSize){ }
 void UFGInventoryComponent::Resize(int32 newSize){ }
 void UFGInventoryComponent::SortInventory(){ }

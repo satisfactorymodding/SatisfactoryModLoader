@@ -2,9 +2,8 @@
 
 #include "FGSoundSplineComponent.h"
 
-UFGSoundSplineComponent::UFGSoundSplineComponent() : Super() {
-	this->mEmitterInterval = 200;
-}
+UFGSoundSplineComponent::UFGSoundSplineComponent(){ }
 void UFGSoundSplineComponent::Activate(bool reset){ }
 void UFGSoundSplineComponent::SetAutoActivate(bool newAutoActivate){ }
 void UFGSoundSplineComponent::SetEmitterInterval(float newEmitterInterval){ }
+void UFGSoundSplineComponent::UpdateGameObjectPosition(){ }

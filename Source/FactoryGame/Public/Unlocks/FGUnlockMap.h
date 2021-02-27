@@ -1,7 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGUnlock.h"
@@ -19,7 +18,4 @@ public:
 	// Begin FGUnlock interface
 	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
-
-public:
-	FORCEINLINE ~UFGUnlockMap() = default;
 };

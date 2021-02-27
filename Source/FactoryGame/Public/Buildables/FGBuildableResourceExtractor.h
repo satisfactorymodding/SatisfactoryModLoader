@@ -1,17 +1,11 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGBuildableFactory.h"
 #include "Resources/FGExtractableResourceInterface.h"
 #include "Resources/FGResourceDescriptor.h"
 #include "Replication/FGRepDetailActor_Extractor.h"
-#include "../Resources/FGItemDescriptor.h"
 #include "FGBuildableResourceExtractor.generated.h"
 
 /**
@@ -32,6 +26,7 @@ public:
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGRepDetailActor_Extractor::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
 	// Begin AActor interface
@@ -185,7 +180,7 @@ protected:
 	/** DEPRICATED - Only used for old save support. Use mExtractableResource instead.
 	*   The resource node we want to extract from.
 	*/
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame )
 	class AFGResourceNode* mExtractResourceNode;
 
 	UPROPERTY( SaveGame, Replicated )
@@ -223,7 +218,4 @@ protected:
 
 	/******** End Pipe Flow Output Params ********/
 
-
-public:
-	FORCEINLINE ~AFGBuildableResourceExtractor() = default;
 };

@@ -1,6 +1,4 @@
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGEquipmentAttachment.h"
 #include "FGWeaponAttachment.generated.h"
@@ -38,7 +36,4 @@ protected:
 	/** Location that was hit ( or sometimes shoot direction ) */
 	FVector mFlashLocation;
 
-
-public:
-	FORCEINLINE ~AFGWeaponAttachment() = default;
 };

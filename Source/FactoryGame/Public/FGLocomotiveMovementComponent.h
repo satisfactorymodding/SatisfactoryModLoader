@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "Curves/CurveFloat.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "FGRailroadVehicleMovementComponent.h"
 #include "FGLocomotiveMovementComponent.generated.h"
@@ -27,7 +23,7 @@ enum class EMultipleUnitControl : uint8
  * Some replicated state for this movement component.
  */
 USTRUCT()
-struct FACTORYGAME_API FReplicatedRailroadVehicleState
+struct FReplicatedRailroadVehicleState
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -52,9 +48,6 @@ struct FACTORYGAME_API FReplicatedRailroadVehicleState
 	float AirBrakeInput;
 
 	//@todotrains Tooot input
-
-public:
-	FORCEINLINE ~FReplicatedRailroadVehicleState() = default;
 };
 
 USTRUCT()
@@ -85,9 +78,6 @@ struct FACTORYGAME_API FRailroadVehicleInputRate
 		const float clampedDeltaValue = FMath::Clamp( deltaValue, -maxDeltaValue, maxDeltaValue );
 		return currentValue + clampedDeltaValue;
 	}
-
-public:
-	FORCEINLINE ~FRailroadVehicleInputRate() = default;
 };
 
 /**
@@ -97,15 +87,12 @@ public:
 UCLASS()
 class FACTORYGAME_API UFGLocomotiveMovementComponent : public UFGRailroadVehicleMovementComponent
 {
-	// MODDING EDIT
-	GENERATED_BODY()
-	UFGLocomotiveMovementComponent(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}	
+	GENERATED_UCLASS_BODY()
+	
 public:
 	// Begin UActorComponent Interface
 	virtual void TickComponent( float dt, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction ) override;
 	// End UActorComponent Interface
-	
-	virtual void GetLifetimeReplicatedProps(class TArray<class FLifetimeProperty, class FDefaultAllocator> & OutReplicatedProps) const override; // MODDING EDIT
 
 	//~ Begin UFGRailroadVehicleMovementComponent interface
 	virtual void ComputeConstants() override;
@@ -287,9 +274,6 @@ protected:
 
 	/** How much power do we get [0,1] */
 	float mPowerFactor;
-
-public:
-	FORCEINLINE ~UFGLocomotiveMovementComponent() = default;
 };
 
 // Some helper functions for converting units

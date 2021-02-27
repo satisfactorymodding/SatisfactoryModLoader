@@ -10,9 +10,7 @@ FPowerGraphPoint& FPowerCircuitStats::MakeAndAddGraphPoint(){ return *(new FPowe
 FPowerGraphPoint& FPowerCircuitStats::AdvanceToNextGraphPoint(){ return *(new FPowerGraphPoint); }
 void UFGPowerCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPowerCircuit::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
-UFGPowerCircuit::UFGPowerCircuit() : Super() {
-	this->mCircuitID = -1;
-}
+UFGPowerCircuit::UFGPowerCircuit(){ }
 void UFGPowerCircuit::ResetFuse(){ }
 void UFGPowerCircuit::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }
 void UFGPowerCircuit::TickCircuit(float dt){ }

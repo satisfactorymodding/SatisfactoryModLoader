@@ -2,9 +2,7 @@
 
 #include "FGBuildGunDismantle.h"
 
-UFGBuildGunStateDismantle::UFGBuildGunStateDismantle() : Super() {
-	
-}
+UFGBuildGunStateDismantle::UFGBuildGunStateDismantle(){ }
 void UFGBuildGunStateDismantle::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const{ }
 void UFGBuildGunStateDismantle::BeginState_Implementation(){ }
 void UFGBuildGunStateDismantle::EndState_Implementation(){ }

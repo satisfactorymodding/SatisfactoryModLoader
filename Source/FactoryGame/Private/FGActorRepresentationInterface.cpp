@@ -2,3 +2,4 @@
 
 #include "FGActorRepresentationInterface.h"
 
+UFGActorRepresentationInterface::UFGActorRepresentationInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

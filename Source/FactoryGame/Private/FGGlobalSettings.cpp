@@ -2,8 +2,6 @@
 
 #include "FGGlobalSettings.h"
 
-void UFGGlobalSettings::Initialize(){ }
-void UFGGlobalSettings::Shutdown(){ }
 UFGGlobalSettings* UFGGlobalSettings::GetGlobalSettingsClassCDO(){ return nullptr; }
 UFGResourceSettings* UFGGlobalSettings::GetResourceSettingsCDO(){ return nullptr; }
 UFGFactorySettings* UFGGlobalSettings::GetFactorySettingsCDO(){ return nullptr; }

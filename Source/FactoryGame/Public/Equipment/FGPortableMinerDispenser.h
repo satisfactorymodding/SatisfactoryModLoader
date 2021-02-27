@@ -1,11 +1,9 @@
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "../Resources/FGItemDescriptor.h"
-#include "FGEquipment.h"
-#include "../Buildables/FGBuildable.h"
+#include "FGItemDescriptor.h"
+#include "Equipment/FGEquipment.h"
+#include "FGBuildable.h"
 #include "FGPortableMinerDispenser.generated.h"
 
 UCLASS()
@@ -50,7 +48,4 @@ public:
 	/** Material on hologram for invalid placement. */
 	UPROPERTY()
 	class UMaterialInstance* mInvalidPlacementMaterial;
-
-public:
-	FORCEINLINE ~AFGPortableMinerDispenser() = default;
 };

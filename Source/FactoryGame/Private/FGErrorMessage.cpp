@@ -2,6 +2,4 @@
 
 #include "FGErrorMessage.h"
 
-UFGErrorMessage::UFGErrorMessage() : Super() {
-	this->mErrorMessage = INVTEXT("UNSET ERROR");
-}
+UFGErrorMessage::UFGErrorMessage(){ }

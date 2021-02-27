@@ -1,12 +1,10 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../FGOptionsSettings.h"
+#include "FGOptionsSettings.h"
 #include "FGDynamicOptionsRow.generated.h"
 
 /**
@@ -49,7 +47,4 @@ private:
 
 	UPROPERTY()
 	UFGOptionsValueController* mValueControllerWidget;
-
-public:
-	FORCEINLINE ~UFGDynamicOptionsRow() = default;
 };

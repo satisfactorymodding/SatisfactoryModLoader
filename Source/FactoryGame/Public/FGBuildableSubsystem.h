@@ -1,20 +1,12 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UnrealString.h"
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "BuildableColorSlotBase.h"
 #include "FGSaveInterface.h"
 #include "FGBuildingColorSlotStruct.h"
 #include "FactoryTick.h"
-#include "Materials/Material.h"
 #include "FGBuildableSubsystem.generated.h"
 
 class UFGProductionIndicatorInstanceManager;
@@ -23,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedGlobal, AFGB
 
 /** Used to track constructed (spawned) buildables matched with their holograms between client and server */
 USTRUCT()
-struct FACTORYGAME_API FNetConstructionID
+struct FNetConstructionID
 {
 	GENERATED_BODY()
 
@@ -52,14 +44,11 @@ struct FACTORYGAME_API FNetConstructionID
 	{
 		return NetPlayerID >= 0 && Server_ID > 0 && Client_ID > 0;
 	}
-
-public:
-	FORCEINLINE ~FNetConstructionID() = default;
 };
 
 /** Distances where we switch tick rate */
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FDistanceBasedTickRate
+struct FDistanceBasedTickRate
 {
 	GENERATED_BODY()
 
@@ -68,13 +57,10 @@ struct FACTORYGAME_API FDistanceBasedTickRate
 
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
 	float TickRate;
-
-public:
-	FORCEINLINE ~FDistanceBasedTickRate() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FBuildableBucket
+struct FBuildableBucket
 {
 	GENERATED_BODY()
 
@@ -83,13 +69,10 @@ struct FACTORYGAME_API FBuildableBucket
 
 	UPROPERTY()
 	TArray< class AFGBuildable* > Buildables;
-
-public:
-	FORCEINLINE ~FBuildableBucket() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FConveyorBucket
+struct FConveyorBucket
 {
 	GENERATED_BODY()
 
@@ -97,13 +80,10 @@ struct FACTORYGAME_API FConveyorBucket
 
 	UPROPERTY()
 	TArray< class AFGBuildableConveyorBase* > Conveyors;
-
-public:
-	FORCEINLINE ~FConveyorBucket() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FBuildableGroupTimeData
+struct FBuildableGroupTimeData
 {
 	GENERATED_BODY()
 	
@@ -118,16 +98,13 @@ struct FACTORYGAME_API FBuildableGroupTimeData
 	int32 RealSeconds;
 
 	float RealPartialSeconds;
-
-public:
-	FORCEINLINE ~FBuildableGroupTimeData() = default;
 };
 
 /**
  * Subsystem responsible for spawning and maintaining buildables.
  * This enables and disables ticks on the buildable.
  */
-UCLASS(Blueprintable, config = Game, defaultconfig, meta = ( DisplayName = "Buildable Subsystem" ) )
+UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Buildable Subsystem" ) )
 class FACTORYGAME_API AFGBuildableSubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -396,7 +373,6 @@ private:
 	/** Hierarchical instances for the factory buildings. */
 	UPROPERTY()
 	AActor* mBuildableInstancesActor;
-	
 	UPROPERTY()
 	TMap< class UStaticMesh*, class UProxyHierarchicalInstancedStaticMeshComponent* > mBuildableMeshInstances;
 
@@ -518,9 +494,6 @@ private:
 
 	/** Holograms simulated on client to indicate any pending constructions from server */
 	TMap<int16, class AFGHologram*> mPendingConstructionHolograms;
-
-public:
-	FORCEINLINE ~AFGBuildableSubsystem() = default;
 };
 
 template< typename T >

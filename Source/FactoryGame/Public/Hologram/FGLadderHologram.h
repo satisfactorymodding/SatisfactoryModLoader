@@ -1,9 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Hologram/FGBuildableHologram.h"
@@ -88,7 +85,4 @@ private:
 
 	UPROPERTY( Replicated )
 	ELadderHologramBuildStep mBuildStep = ELadderHologramBuildStep::LHBS_SnapToActor;
-
-public:
-	FORCEINLINE ~AFGLadderHologram() = default;
 };

@@ -1,9 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Object.h"
 #include "ItemAmount.h"
@@ -39,18 +36,16 @@ enum class ESchematicType :uint8
 	EST_Prototype			UMETA( DisplayName = "Prototype" )
 };
 
+//@todo-cleanup Is this used? I cannot find any references to it
 /** Holds info about a schematic cost. */
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FMultipleItemStruct
+struct FMultipleItemStruct
 {
 	GENERATED_BODY()
 
 	/** Cost of schematic if there are more than once item in this array the true cost will be randomly selected. */
 	UPROPERTY( EditDefaultsOnly )
 	TArray< FItemAmount > ItemCost;
-
-public:
-	FORCEINLINE ~FMultipleItemStruct() = default;
 };
 
 /**
@@ -216,7 +211,4 @@ private:
 	EIncludeInBuilds mIncludeInBuilds;
 #endif
 
-
-public:
-	FORCEINLINE ~UFGSchematic() = default;
 };

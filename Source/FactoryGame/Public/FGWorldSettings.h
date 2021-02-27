@@ -1,13 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #if WITH_EDITOR
 #include "UnrealEdMisc.h"
@@ -190,7 +183,4 @@ private:
 	/** For updateing time of day when map changes in editor */
 	FDelegateHandle mOnMapChangedDelegateHandle;
 #endif
-
-public:
-	FORCEINLINE ~AFGWorldSettings() = default;
 };

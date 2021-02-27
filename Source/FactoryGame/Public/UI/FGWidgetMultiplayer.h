@@ -1,6 +1,4 @@
 #pragma once
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Blueprint/UserWidget.h"
 #include "FGWidgetMultiplayer.generated.h"
@@ -15,7 +13,7 @@ enum class EMultiplayerButtonType : uint8
 };
 
 UCLASS()
-class FACTORYGAME_API UFGWidgetMultiplayer : public UUserWidget
+class UFGWidgetMultiplayer : public UUserWidget
 {
 	GENERATED_BODY()
 public:
@@ -30,7 +28,4 @@ public:
 
 	UPROPERTY( BlueprintReadWrite )
 	EMultiplayerButtonType mMultiplayerButtonType;
-
-public:
-	FORCEINLINE ~UFGWidgetMultiplayer() = default;
 };

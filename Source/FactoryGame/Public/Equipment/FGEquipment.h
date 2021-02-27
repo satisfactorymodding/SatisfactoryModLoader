@@ -1,19 +1,12 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "../ItemAmount.h"
-#include "../FGSaveInterface.h"
-#include "../CharacterAnimationTypes.h"
-#include "../Replication/FGReplicationDependencyActorInterface.h"
-#include "Components/InputComponent.h"
-#include "Blueprint/UserWidget.h"
+#include "ItemAmount.h"
+#include "FGSaveInterface.h"
+#include "CharacterAnimationTypes.h"
+#include "FGReplicationDependencyActorInterface.h"
 #include "FGEquipment.generated.h"
 
 //Equipments are equip on different slots on the player. One EQ per slot. These are the slots.
@@ -88,7 +81,7 @@ public:
 	 * @return - true if equiped; otherwise false.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-	FORCEINLINE bool IsEquipped() const { return Instigator != nullptr; }
+	FORCEINLINE bool IsEquipped() const { return GetInstigator() != nullptr; }
 
 	/**
 	 * Convenience blueprint function to return Instigator as a FGCharacterPlayer
@@ -161,7 +154,7 @@ public:
 	 * @param damageCauser - the actor who damaged us
 	 * @return the adjusted damage
 	 **/
-	UFUNCTION( BlueprintNativeEvent, Category = "Damage" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_AdjustDamage, Category = "Damage" )
 	float AdjustDamage( float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
 
 	/** Returns the enum for the equipment slot, ARMS, BACK etc. */
@@ -324,7 +317,4 @@ private:
 	/** Should we use the default primary fire implementation */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	bool mUseDefaultPrimaryFire;
-
-public:
-	FORCEINLINE ~AFGEquipment() = default;
 };

@@ -1,7 +1,4 @@
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "UndefinedBool.h"
 #include "GameFramework/Volume.h"
@@ -87,7 +84,4 @@ private:
 	/** Range that this volume should be significant within */
 	UPROPERTY( EditInstanceOnly, Category = "Significance" )
 	float mSignificanceRange;
-
-public:
-	FORCEINLINE ~AFGAmbientVolume() = default;
 };

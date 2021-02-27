@@ -1,7 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Hologram/FGBuildableHologram.h"
@@ -47,7 +46,4 @@ private:
 	/** Distance to inset the hologram when attaching to a foundation. */
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	float mFoundationSnappingInset;
-
-public:
-	FORCEINLINE ~AFGWallAttachmentHologram() = default;
 };

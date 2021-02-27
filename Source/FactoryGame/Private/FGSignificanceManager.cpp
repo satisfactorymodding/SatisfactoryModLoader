@@ -2,9 +2,7 @@
 
 #include "FGSignificanceManager.h"
 
-UFGSignificanceManager::UFGSignificanceManager() : Super() {
-	this->mIsEnabled = true;
-}
+UFGSignificanceManager::UFGSignificanceManager(){ }
 void UFGSignificanceManager::RegisterSignificanceObject(UObject* Object, EFGSignificanceType SignificanceType){ }
 void UFGSignificanceManager::RegisterObject(UObject* Object, FName Tag, FManagedObjectSignificanceFunction SignificanceFunction, EPostSignificanceType InPostSignificanceType , FManagedObjectPostSignificanceFunction InPostSignificanceFunction){ }
 void UFGSignificanceManager::UnregisterObject(UObject* Object){ }

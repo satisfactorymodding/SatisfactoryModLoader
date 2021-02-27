@@ -1,11 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGSplineHologram.h"
+#include "Hologram/FGSplineHologram.h"
 #include "FGRoadHologram.generated.h"
 
 //@todonow Broke this when making the lifts
@@ -59,7 +56,4 @@ private:
 	/** The connection we snapped to. */
 	UPROPERTY()
 	class UFGRoadConnectionComponent* mSnappedConnectionComponents[ 2 ];
-
-public:
-	FORCEINLINE ~AFGRoadHologram() = default;
 };

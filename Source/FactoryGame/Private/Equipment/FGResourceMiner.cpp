@@ -2,14 +2,7 @@
 
 #include "FGResourceMiner.h"
 
-AFGResourceMiner::AFGResourceMiner() : Super() {
-	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
-	this->mArmAnimation = EArmEquipment::AE_ResourceCollector;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bOnlyRelevantToOwner = true;
-	this->bNetUseOwnerRelevancy = true;
-	this->bReplicates = true;
-}
+AFGResourceMiner::AFGResourceMiner(){ }
 void AFGResourceMiner::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGResourceMiner::Tick(float DeltaSeconds){ }
 void AFGResourceMiner::UnEquip(){ }

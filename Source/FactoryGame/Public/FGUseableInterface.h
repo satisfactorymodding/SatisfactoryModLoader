@@ -1,12 +1,8 @@
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "Templates/SubclassOf.h"
-#include "UObject/Interface.h"
 #include "FGUseableInterface.generated.h"
 
-UCLASS(Blueprintable,abstract)
+UCLASS( abstract, Blueprintable )
 class FACTORYGAME_API UFGUseState : public UObject
 {
 	GENERATED_BODY()
@@ -27,9 +23,6 @@ protected:
 	/** If true, we will allocate a instance of the state, so we can store information in the state */
 	UPROPERTY( EditDefaultsOnly, Category="Use" )
 	bool mIsUsableState;
-
-public:
-	FORCEINLINE ~UFGUseState() = default;
 };
 
 /**
@@ -41,9 +34,6 @@ class FACTORYGAME_API UFGUseState_Valid : public UFGUseState
 	GENERATED_BODY()
 
 	UFGUseState_Valid() : Super() { mIsUsableState = true; }
-
-public:
-	FORCEINLINE ~UFGUseState_Valid() = default;
 };
 
 /**
@@ -74,29 +64,17 @@ protected:
 	/** Contains the usable state of the object, might be a error code */
 	UPROPERTY( BlueprintReadOnly )
 	TSubclassOf< UFGUseState > State;
-
-public:
-	FORCEINLINE ~FUseState() = default;
 };
 
 /**
- * For blueprint support of the interface, we will never add anything to it, just use it to
- * have a UCLASS to be able to access
+ * Interface for all actors that the player can use with the use button.
  */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGUseableInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGUseableInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGUseableInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
-/**
- * @brief Interface for all useable classes out there
- */
 class FACTORYGAME_API IFGUseableInterface
 {
 	GENERATED_IINTERFACE_BODY()
@@ -168,7 +146,4 @@ class FACTORYGAME_API IFGUseableInterface
 	/** Called from widgets that are opened by the use functionality */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Use" )
 	void UnregisterInteractingPlayer( class AFGCharacterPlayer* player );
-
-public:
-	FORCEINLINE IFGUseableInterface() = default;
 };

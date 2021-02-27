@@ -5,9 +5,7 @@
 #if WITH_CHEATS
 void AFGHUD::PonderOpeningCheatBoard(){ }
 #endif 
-AFGHUD::AFGHUD() : Super() {
-	
-}
+AFGHUD::AFGHUD(){ }
 void AFGHUD::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGHUD::BeginPlay(){ }
 void AFGHUD::EndPlay(const EEndPlayReason::Type endPlayReason){ }

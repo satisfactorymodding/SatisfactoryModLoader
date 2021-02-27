@@ -2,10 +2,7 @@
 
 #include "FGFoliageRemovalSubsystem.h"
 
-AFGFoliageRemovalSubsystem::AFGFoliageRemovalSubsystem() : Super() {
-	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
-}
+AFGFoliageRemovalSubsystem::AFGFoliageRemovalSubsystem(){ }
 void AFGFoliageRemovalSubsystem::Destroyed(){ }
 void AFGFoliageRemovalSubsystem::Init(){ }
 AFGFoliageRemovalSubsystem* AFGFoliageRemovalSubsystem::Get(UWorld* world){ return nullptr; }
@@ -20,7 +17,7 @@ bool AFGFoliageRemovalSubsystem::GetFoliageWithinRadius(const FVector& location,
 bool AFGFoliageRemovalSubsystem::HasIdentifier(const  UHierarchicalInstancedStaticMeshComponent* component, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier){ return bool(); }
 void AFGFoliageRemovalSubsystem::Register( AFGFoliageRemoval* actor){ }
 void AFGFoliageRemovalSubsystem::UnRegister( AFGFoliageRemoval* actor){ }
-bool AFGFoliageRemovalSubsystem::IsRemovable( UStaticMesh* staticMesh) const{ return bool(); }
+bool AFGFoliageRemovalSubsystem::IsRemovable( UFoliageType* foliageType) const{ return bool(); }
 int32 AFGFoliageRemovalSubsystem::Stat_NumRemovedInstances() const{ return int32(); }
 void AFGFoliageRemovalSubsystem::LevelFound(ULevel* level){ }
 void AFGFoliageRemovalSubsystem::MarkAsLevelAsWithoutRemovableFoliage(const FName& levelName){ }

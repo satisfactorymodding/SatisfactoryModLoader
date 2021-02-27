@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGInteractActor.h"
 #include "FGSaveInterface.h"
@@ -21,7 +17,7 @@ enum class EFGCrateIconType : uint8
 /**
  * @todo Comment me please!
  */
-UCLASS(Blueprintable)
+UCLASS()
 class FACTORYGAME_API AFGCrate : public AFGInteractActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -74,7 +70,4 @@ protected:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Compass" )
 	EFGCrateIconType mIconType;
 
-
-public:
-	FORCEINLINE ~AFGCrate() = default;
 };

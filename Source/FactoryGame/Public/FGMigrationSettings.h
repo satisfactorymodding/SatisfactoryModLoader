@@ -1,7 +1,4 @@
 #pragma once
-#include "Engine/DeveloperSettings.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSchematic.h"
 #include "FGMigrationSettings.generated.h"
@@ -33,7 +30,4 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Dependency class for migrating to new dependency system" )
 	TSubclassOf< class UFGSchematicPurchasedDependency > mSchematicPurchasedDependencyClass;
 
-
-public:
-	FORCEINLINE ~UFGMigrationSettings() = default;
 };

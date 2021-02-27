@@ -1,6 +1,4 @@
 #pragma once
-#include "Engine/DeveloperSettings.h"
-#include "UObject/Class.h"
 
 #include "FGActorRepresentation.h"
 #include "FGMapCompassSettings.generated.h"
@@ -37,7 +35,4 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = FogOfWar, meta = ( ToolTip = "" ) )
 	bool mForceSingleThreadedCalculations;
 
-
-public:
-	FORCEINLINE ~UFGMapCompassSettings() = default;
 };

@@ -1,16 +1,13 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "UndefinedBool.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "AI/Navigation/NavRelevantInterface.h"
 #include "NavAreas/NavArea.h"
-#include "Resources/FGExtractableResourceInterface.h"
+#include "FGExtractableResourceInterface.h"
 #include "FGSignificanceInterface.h"
 #include "FGWaterVolume.generated.h"
 
@@ -139,7 +136,4 @@ private:
 	/** Significance range of water volume */
 	float mSignificanceRange;
 
-
-public:
-	FORCEINLINE ~AFGWaterVolume() = default;
 };

@@ -10,6 +10,8 @@ public class ExampleMod : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
+        PrivatePCHHeaderFile = "ExampleModPCH.h";
+        
 		PublicDependencyModuleNames.AddRange(new string[] {
             "Core", "CoreUObject",
             "Engine",

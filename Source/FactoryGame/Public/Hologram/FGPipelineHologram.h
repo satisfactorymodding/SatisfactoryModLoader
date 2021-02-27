@@ -1,12 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "Components/SplineMeshComponent.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "HologramHelpers.h"
@@ -233,7 +227,4 @@ private:
 	float mMeshLength;
 
 	bool mPoleSnappedToActor = false;
-
-public:
-	FORCEINLINE ~AFGPipelineHologram() = default;
 };

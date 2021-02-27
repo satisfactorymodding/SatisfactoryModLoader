@@ -1,8 +1,6 @@
 // Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGGameplayTask_Attack.h"
@@ -49,8 +47,5 @@ public:
 
 	/** Saving previous stepheight */
 	float mPrevStepHeight; 
-
-public:
-	FORCEINLINE ~UFGGameplayTask_AttackJump() = default;
 };
 

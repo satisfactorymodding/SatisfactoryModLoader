@@ -1,8 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
@@ -23,12 +21,10 @@ class UFGListViewSlot;
  * * Selection Functionality
  */
 UCLASS()
-class FACTORYGAME_API UFGListView : public UPanelWidget
+class UFGListView : public UPanelWidget
 {
-	// MODDING EDIT
-	GENERATED_BODY()
-	UFGListView(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
-	
+	GENERATED_UCLASS_BODY()
+
 	/** Delegate for constructing a UWidget for an item to display. */
 	DECLARE_DYNAMIC_DELEGATE_RetVal_OneParam( UWidget*, FOnGenerateRow, int32, item );
 
@@ -86,7 +82,4 @@ protected:
 	// UWidget interface
 	virtual TSharedRef< SWidget > RebuildWidget() override;
 	// End of UWidget interface
-
-public:
-	FORCEINLINE ~UFGListView() = default;
 };

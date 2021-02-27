@@ -1,11 +1,10 @@
 #pragma once
-#include "UObject/Class.h"
 
 #include "Blueprint/UserWidget.h"
 #include "FGMenuBase.generated.h"
 
 UCLASS(meta=(DisableNativeTick))
-class FACTORYGAME_API UFGMenuBase : public UUserWidget
+class UFGMenuBase : public UUserWidget
 {
 	GENERATED_BODY()
 public:
@@ -34,7 +33,4 @@ protected:
 	/** Cached switcher owning this widget */
 	UPROPERTY()
 	class UFGWidgetSwitcher* mCachedOwner;
-
-public:
-	FORCEINLINE ~UFGMenuBase() = default;
 };

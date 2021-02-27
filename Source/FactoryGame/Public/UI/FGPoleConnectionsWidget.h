@@ -1,7 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -27,7 +26,4 @@ public:
 protected:
 	UPROPERTY()
 	class UFGCircuitConnectionComponent* mConnection;
-
-public:
-	FORCEINLINE ~UFGPoleConnectionsWidget() = default;
 };

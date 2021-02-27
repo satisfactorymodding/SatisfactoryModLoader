@@ -1,15 +1,10 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UnrealString.h"
-#include "Array.h"
-#include "UObject/Class.h"
-#include "GameFramework/Actor.h"
+
 #include "FGConnectionComponent.h"
 #include "FGSaveInterface.h"
 #include "FGCircuitConnectionComponent.generated.h"
-
-#define IS_PUBLIC_BUILD 1
 
 DECLARE_MULTICAST_DELEGATE_OneParam( FConnectionChanged, class UFGCircuitConnectionComponent* );
 
@@ -165,7 +160,4 @@ private:
 	 */
 	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_CircuitIDChanged, Category = "Connection" )
 	int32 mCircuitID;
-
-public:
-	FORCEINLINE ~UFGCircuitConnectionComponent() = default;
 };

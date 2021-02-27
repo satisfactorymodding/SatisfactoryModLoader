@@ -1,6 +1,4 @@
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Engine/DeveloperSettings.h"
 #include "FGUISettings.generated.h"
@@ -27,7 +25,4 @@ public:
 	/** Widget used to show the user when enabling the debug overlay */
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TSubclassOf< class UFGDebugOverlayWidget > mDebugOverlayWidgetClass;
-
-public:
-	FORCEINLINE ~UFGUISettings() = default;
 };

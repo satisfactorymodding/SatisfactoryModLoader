@@ -2,11 +2,7 @@
 
 #include "FGPipeConnectionComponent.h"
 
-UFGPipeConnectionComponentBase::UFGPipeConnectionComponentBase() : Super() {
-	this->mPipeType = "Base";
-	this->bReplicates = true;
-	this->bNetAddressable = true;
-}
+UFGPipeConnectionComponentBase::UFGPipeConnectionComponentBase(){ }
 void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPipeConnectionComponentBase::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGPipeConnectionComponentBase::OnRegister(){ Super::OnRegister(); }
@@ -21,11 +17,7 @@ FVector UFGPipeConnectionComponentBase::GetConnectorLocation(bool withClearance)
 UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindCompatibleOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
 UFGPipeConnectionComponentBase* UFGPipeConnectionComponentBase::FindOverlappingConnection( UFGPipeConnectionComponentBase* component, const FVector& location, float radius, UFGPipeConnectionComponentBase* lowPriorityConnection){ return nullptr; }
 void UFGPipeConnectionComponentBase::UpdateClientCachedConnection(){ }
-UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
-	this->mPipeType = "Fluid";
-	this->bReplicates = true;
-	this->bNetAddressable = true;
-}
+UFGPipeConnectionComponent::UFGPipeConnectionComponent(){ }
 void UFGPipeConnectionComponent::BeginPlay(){ }
 void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool UFGPipeConnectionComponent::CheckCompatibility(UFGPipeConnectionComponentBase* otherConnection,  AFGHologram* buildStepOwner){ return bool(); }

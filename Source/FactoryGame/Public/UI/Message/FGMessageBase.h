@@ -1,9 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "UMG.h"
 #include "CoreMinimal.h"
@@ -57,7 +54,4 @@ public:
 	/** Images to display in the codex */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	TArray< class UTexture2D* > mImages;
-
-public:
-	FORCEINLINE ~UFGMessageBase() = default;
 };

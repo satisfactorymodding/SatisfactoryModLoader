@@ -3,11 +3,7 @@
 #include "FGEquipmentAttachment.h"
 
 void AFGEquipmentAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-AFGEquipmentAttachment::AFGEquipmentAttachment() : Super() {
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bNetUseOwnerRelevancy = true;
-	this->bReplicates = true;
-}
+AFGEquipmentAttachment::AFGEquipmentAttachment(){ }
 void AFGEquipmentAttachment::BeginPlay(){ }
 void AFGEquipmentAttachment::Attach( AFGCharacterPlayer* character){ }
 void AFGEquipmentAttachment::OnAttach_Implementation(){ }

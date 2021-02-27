@@ -3,12 +3,7 @@
 #include "FGRailroadSubsystem.h"
 
 FTrackGraph::FTrackGraph(){ }
-AFGRailroadSubsystem::AFGRailroadSubsystem() : Super() {
-	this->mConnectDistance = 200;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
-}
+AFGRailroadSubsystem::AFGRailroadSubsystem(){ }
 void AFGRailroadSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGRailroadSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGRailroadSubsystem::BeginPlay(){ }

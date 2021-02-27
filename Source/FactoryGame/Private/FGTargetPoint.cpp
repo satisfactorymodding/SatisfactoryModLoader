@@ -2,11 +2,7 @@
 
 #include "FGTargetPoint.h"
 
-AFGTargetPoint::AFGTargetPoint() : Super() {
-	this->mWaitTime = 3;
-	this->mDefaultWaitTime = 3;
-	this->mTargetSpeed = -1;
-}
+AFGTargetPoint::AFGTargetPoint(){ }
 void AFGTargetPoint::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGTargetPoint::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTargetPoint::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

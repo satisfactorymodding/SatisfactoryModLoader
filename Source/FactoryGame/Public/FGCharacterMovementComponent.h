@@ -1,13 +1,10 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "FGCharacterMovementComponent.generated.h"
 
-class AFGBuildablePipeBase;
 
 
 USTRUCT( BlueprintType )
@@ -92,9 +89,6 @@ struct FACTORYGAME_API FPlayerPipeHyperData
 	FVector mSoftVelocity;
 	FVector mCameraPush;
 	float mCamFovMod;
-
-public:
-	FORCEINLINE ~FPlayerPipeHyperData() = default;
 };
 
 
@@ -383,7 +377,7 @@ public:
 
 private:
 	friend class FSavedMove_FGMovement;
-public: // MODDING EDIT public
+
 	/** A cached instance of the equipment that issued jet pack thrust */
 	UPROPERTY()
 	class AFGJetPack* mCachedJetPack;
@@ -457,12 +451,9 @@ public: // MODDING EDIT public
 	float CheatFlySpeedVertical;
 	void ZeroOutFallVelocity();
 	//end Cheat
-
-public:
-	FORCEINLINE ~UFGCharacterMovementComponent() = default;
 };
 
-class FACTORYGAME_API FSavedMove_FGMovement : public FSavedMove_Character
+class FSavedMove_FGMovement : public FSavedMove_Character
 {
 	typedef FSavedMove_Character Super;
 public:
@@ -495,13 +486,9 @@ public:
 	float mPipeMoveVel;
 	float mPipeMoveTime;
 	AActor* mPipeMovePipe = nullptr;
-
-public:
-	FORCEINLINE ~FSavedMove_FGMovement() = default;
-	FORCEINLINE FSavedMove_FGMovement() = default;
 };
 
-class FACTORYGAME_API FNetworkPredictionData_Client_FGMovement : public FNetworkPredictionData_Client_Character
+class FNetworkPredictionData_Client_FGMovement : public FNetworkPredictionData_Client_Character
 {
 public:
 	FNetworkPredictionData_Client_FGMovement(const UCharacterMovementComponent& clientMovement);
@@ -510,7 +497,4 @@ public:
 
 	///@brief Allocates a new copy of our custom saved move
 	virtual FSavedMovePtr AllocateNewMove() override;
-
-public:
-	FORCEINLINE ~FNetworkPredictionData_Client_FGMovement() = default;
 };

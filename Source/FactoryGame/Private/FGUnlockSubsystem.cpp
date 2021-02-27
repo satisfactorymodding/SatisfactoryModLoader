@@ -2,12 +2,7 @@
 
 #include "FGUnlockSubsystem.h"
 
-AFGUnlockSubsystem::AFGUnlockSubsystem() : Super() {
-	this->mNumTotalInventorySlots = 16;
-	this->mNumTotalArmEquipmentSlots = 1;
-	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
-}
+AFGUnlockSubsystem::AFGUnlockSubsystem(){ }
 void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGUnlockSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UWorld* world){ return nullptr; }

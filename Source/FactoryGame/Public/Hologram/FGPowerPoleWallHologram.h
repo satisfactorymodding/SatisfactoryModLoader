@@ -1,7 +1,6 @@
 // Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Hologram/FGPowerPoleHologram.h"
@@ -46,7 +45,4 @@ private:
 
 	/** Whether or not we are currently snapping to a ceiling, used to move the power connection mesh so it doesn't clip with the ceiling. */
 	bool mIsOnCeiling;
-
-public:
-	FORCEINLINE ~AFGPowerPoleWallHologram() = default;
 };

@@ -2,3 +2,4 @@
 
 #include "FGRadiationInterface.h"
 
+UFGRadiationInterface::UFGRadiationInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

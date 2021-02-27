@@ -2,11 +2,7 @@
 
 #include "FGGameState.h"
 
-AFGGameState::AFGGameState() : Super() {
-	this->mReplicatedOnlineSessionName = "Auto";
-	this->mPlannedRestartTime = 24;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = true; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 5;
-}
+AFGGameState::AFGGameState(){ }
 void AFGGameState::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGGameState::Tick(float delta){ }
@@ -51,7 +47,7 @@ void AFGGameState::ClaimPlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ReleasePlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ItemPickedUp(TSubclassOf<  UFGItemDescriptor > itemClass){ }
 void AFGGameState::SetPlannedServerRestartWorldTime(float worldTimeSeconds){ }
-FDateTime AFGGameState::GetServerUTCNow() const{ return FDateTime(); }
+FDateTime AFGGameState::GetServerLocalDateTime() const{ return FDateTime(); }
 void AFGGameState::OnRep_OnlineSessionName(){ }
 void AFGGameState::OnRep_OnlineSessionVisibility(){ }
 void AFGGameState::CheckRestartTime(){ }

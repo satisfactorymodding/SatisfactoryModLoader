@@ -1,10 +1,4 @@
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGItemPickup.h"
 #include "FGItemPickup_Spawnable.generated.h"
@@ -147,7 +141,4 @@ private:
 	/** Should we play a spawn effect? */
 	UPROPERTY( SaveGame )
 	bool mPlaySpawnEffect;
-
-public:
-	FORCEINLINE ~AFGItemPickup_Spawnable() = default;
 };

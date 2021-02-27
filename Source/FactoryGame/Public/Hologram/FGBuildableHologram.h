@@ -1,12 +1,8 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGHologram.h"
+#include "Hologram/FGHologram.h"
 #include "FGBuildableHologram.generated.h"
 
 /**
@@ -251,12 +247,9 @@ protected:
 	class UBoxComponent* mClearanceBox;
 
 	/** If we have snapped to another buildable, i.e. foundation, floor etc, this is it. */
-	UPROPERTY( /*CustomSerialization*/ ) // MODDING EDIT: Another CSS custom engine thing
+	UPROPERTY( CustomSerialization )
 	class AFGBuildable* mSnappedBuilding;
 
 	bool mIsAimingAtOtherBuilding = false;
 	bool mDidSnapDuetoClearance = false;
-
-public:
-	FORCEINLINE ~AFGBuildableHologram() = default;
 };

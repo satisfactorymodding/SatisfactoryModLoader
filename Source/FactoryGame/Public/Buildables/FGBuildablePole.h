@@ -1,10 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGBuildable.h"
 #include "FGBuildablePoleBase.h"
@@ -65,7 +61,4 @@ public:
 protected:
 	//virtual void TogglePendingDismantleMaterial( bool enabled ) override;
 	//virtual void OnBuildEffectFinished() override;
-
-public:
-	FORCEINLINE ~AFGBuildablePole() = default;
 };

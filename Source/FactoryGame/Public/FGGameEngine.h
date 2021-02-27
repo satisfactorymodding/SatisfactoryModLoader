@@ -1,7 +1,4 @@
 #pragma once
-#include "Engine/World.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Engine/GameEngine.h"
 #include "FGEngineCommon.h"
@@ -11,7 +8,7 @@
 
 
 UCLASS()
-class FACTORYGAME_API UFGGameEngine : public UGameEngine, public IFGWorldCreationInterface
+class UFGGameEngine : public UGameEngine, public IFGWorldCreationInterface
 {
 	GENERATED_BODY()
 public:
@@ -32,7 +29,4 @@ protected:
 	/** Shared implementation for world creation */
 	UPROPERTY()
 	FFGEngineCommon mEngineCommonImp;
-
-public:
-	FORCEINLINE ~UFGGameEngine() = default;
 };

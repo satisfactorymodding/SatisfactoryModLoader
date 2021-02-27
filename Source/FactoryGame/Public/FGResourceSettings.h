@@ -1,18 +1,13 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSettings.h"
-#include "Resources/FGItemDescriptor.h"
+#include "FGItemDescriptor.h"
 #include "FGResourceSettings.generated.h"
 
 USTRUCT()
-struct FACTORYGAME_API FItemSettings
+struct FItemSettings
 {
 	GENERATED_BODY()
 
@@ -42,9 +37,6 @@ struct FACTORYGAME_API FItemSettings
 	class UMaterial* MasterMaterial;
 
 	// Might be a idea to put the stage class here if we want some really special icons...
-
-public:
-	FORCEINLINE ~FItemSettings() = default;
 };
 
 /**  */
@@ -72,9 +64,6 @@ struct FACTORYGAME_API FResourceDepositPackage
 	/** How much to get per "mine cycle" */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
 	int32 MiningAmount;
-
-public:
-	FORCEINLINE ~FResourceDepositPackage() = default;
 };
 
 /**
@@ -144,7 +133,4 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Icon")
 	TArray< FItemSettings > mIconSettings;
 #endif
-
-public:
-	FORCEINLINE ~UFGResourceSettings() = default;
 };

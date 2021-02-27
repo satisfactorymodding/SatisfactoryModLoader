@@ -1,18 +1,10 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGBuildable.h"
-#include "../FGRemoteCallObject.h"
-#include "../FGSignificanceInterface.h"
-#include "../FGRemoteCallObject.h"
-#include "../FGFactoryConnectionComponent.h"
+#include "FGRemoteCallObject.h"
+#include "FGSignificanceInterface.h"
 #include "FGBuildableConveyorBase.generated.h"
 
 
@@ -44,9 +36,6 @@ class FACTORYGAME_API UFGConveyorRemoteCallObject : public UFGRemoteCallObject
 
 	//UFUNCTION( Reliable, Server, WithValidation, Category = "Sync" )
 	//void Server_RequestCleanSync( class AFGBuildableConveyorBelt* target );
-
-public:
-	FORCEINLINE ~UFGConveyorRemoteCallObject() = default;
 };
 
 
@@ -158,7 +147,7 @@ private:
 
 
 /** Custom INetDeltaBaseState used by our custom NetDeltaSerialize. Representing a snapshot of the state, enough to calculate a delta between this state and another.*/
-class FACTORYGAME_API FConveyorBeltItemsBaseState : public INetDeltaBaseState
+class FConveyorBeltItemsBaseState : public INetDeltaBaseState
 {
 public:
 
@@ -200,7 +189,8 @@ public:
 		lastSentSpacing = other.lastSentSpacing;
 		NewestItemID = other.NewestItemID;
 		ConveyorVersion = other.ConveyorVersion;
-		return *this; // MODDING EDIT: why did it ever work without this?
+		
+		return *this; // MODDING EDIT: how does it work without this?
 	}
 
 	const FConveyorBeltItemsBaseState& operator=( FConveyorBeltItemsBaseState&& other )
@@ -212,7 +202,8 @@ public:
 
 		NewestItemID = other.NewestItemID;
 		ConveyorVersion = other.ConveyorVersion;
-		return *this; // MODDING EDIT: why did it ever work without this?
+		
+		return *this; // MODDING EDIT: how does it work without this?
 	}
 
 	//must be implemented
@@ -300,7 +291,7 @@ public:
 *   - Mapping of object references (objects that are replicated that is). Look at fast TArray replication on how to implement this if needed.
 */
 USTRUCT()
-struct FACTORYGAME_API FConveyorBeltItems
+struct FConveyorBeltItems
 {
 
 	enum class EConveyorSpawnStyle : int8
@@ -479,26 +470,19 @@ private:
 
 
 	class AFGBuildableConveyorBase* Owner = nullptr;
-
-	friend FConveyorBeltItemsBaseState;
+	
 	friend class AFGBuildableConveyorBelt;
-
-public:
-	FORCEINLINE ~FConveyorBeltItems() = default;
 };
 
 
 /** Enable custom net delta serialization for the above struct. */
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FConveyorBeltItems > : public TStructOpsTypeTraitsBase2< FConveyorBeltItems >
+struct TStructOpsTypeTraits< FConveyorBeltItems > : public TStructOpsTypeTraitsBase2< FConveyorBeltItems >
 {
 	enum
 	{
 		WithNetDeltaSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FConveyorBeltItems >() = default;
 };
 
 
@@ -515,6 +499,7 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Serialize( FArchive& ar ) override;
@@ -553,8 +538,6 @@ public:
 	virtual float FindOffsetClosestToLocation( const FVector& location ) const PURE_VIRTUAL( , return 0.0f; );
 	/** Get the location and direction of the conveyor at the given offset. */
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const PURE_VIRTUAL( , );
-
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 
 	void SetConveyorBucketID( int32 ID );
 
@@ -635,7 +618,7 @@ public:
 	/** Spacing between each conveyor item, from origo to origo. */
 	static constexpr float ITEM_SPACING = 120.0f;
 
-public: // MODDING EDIT
+public: // MODDING EDIT protected -> public
 
 	/** Speed of this conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor" )
@@ -668,7 +651,4 @@ private:
 	/** The id for the conveyor bucket this conveyor belongs to */
 	int32 mConveyorBucketID;
 
-
-public:
-	FORCEINLINE ~AFGBuildableConveyorBase() = default;
 };

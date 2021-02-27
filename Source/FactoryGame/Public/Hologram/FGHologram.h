@@ -1,18 +1,13 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "../ItemAmount.h"
-#include "../FGBuildableSubsystem.h"
-#include "../FGConstructionMessageInterface.h"
+#include "ItemAmount.h"
+#include "FGBuildableSubsystem.h"
+#include "FGConstructionMessageInterface.h"
 #include "HologramSplinePathMode.h"
 #include "Script.h"
-#include "../ItemAmount.h"
-#include "Components/MeshComponent.h"
 #include "FGHologram.generated.h"
 
 //For UE4 Profiler ~ Stat Group
@@ -561,11 +556,11 @@ protected:
 
 private:
 	/** Who is building */
-	UPROPERTY( Replicated /*, CustomSerialization*/ )
+	UPROPERTY( Replicated, CustomSerialization )
 	APawn* mConstructionInstigator;
 
 	/** If this hologram is disabled and should not be visible or constructed. */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	bool mIsDisabled;
 
 	/** If the hologram has changed, i.e. multi step placement or rotation. */
@@ -580,16 +575,13 @@ private:
 	bool mIsPendingToBeConstructed = false;
 
 	/** Temp memory holders for when holograms are serialized for construction messages (replication) */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	FVector mConstructionPosition;
 
 	/** Temp memory holders for when holograms are serialized for construction messages (replication) */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	FRotator mConstructionRotation;
 public:
-
-public:
-	FORCEINLINE ~AFGHologram() = default;
 };
 
 template<typename T>

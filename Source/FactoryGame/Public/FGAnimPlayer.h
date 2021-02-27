@@ -1,7 +1,6 @@
 // Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "CharacterAnimationTypes.h"
@@ -44,7 +43,4 @@ public:
 	/** Character this anim belongs to */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
 	class AFGCharacterPlayer* mCharacter;
-
-public:
-	FORCEINLINE ~UFGAnimPlayer() = default;
 };

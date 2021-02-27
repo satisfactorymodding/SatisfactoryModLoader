@@ -1,12 +1,6 @@
 // Copyright 2016 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
@@ -26,7 +20,6 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
 	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-    
 	virtual void CallPreReplication(UNetDriver* NetDriver) override;
 
 	/** Get the circuit subsystem. */
@@ -152,7 +145,4 @@ private:
 
 	/** Counter for generating new circuit ids. */
 	int32 IDCounter;
-
-public:
-	FORCEINLINE ~AFGCircuitSubsystem() = default;
 };

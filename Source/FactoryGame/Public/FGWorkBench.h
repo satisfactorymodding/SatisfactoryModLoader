@@ -1,8 +1,5 @@
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Components/SceneComponent.h"
 #include "FGSaveInterface.h"
@@ -182,7 +179,4 @@ private:
 
 	/** Fatigue added based on how much of the fatigue interval we are currently in */
 	float mAdditionalFatigue;
-
-public:
-	FORCEINLINE ~UFGWorkBench() = default;
 };

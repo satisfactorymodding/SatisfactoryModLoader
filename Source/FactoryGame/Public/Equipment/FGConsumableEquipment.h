@@ -1,6 +1,4 @@
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGEquipment.h"
 #include "FGConsumableEquipment.generated.h"
@@ -41,7 +39,4 @@ protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
 protected:
-
-public:
-	FORCEINLINE ~AFGConsumableEquipment() = default;
 };
