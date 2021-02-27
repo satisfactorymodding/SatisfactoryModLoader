@@ -77,7 +77,7 @@ void ASMLInitMod::LoadModContent() {
 		for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
 			ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints));
 		}
-		SML::Logging::info(TEXT("Registered %d AWESOME sink entries for mod %s"), *this->GetClass()->GetPathName());
+		SML::Logging::info(*FString::Printf(TEXT("Registered %d AWESOME sink entries for mod %s"), OutModPointsData.Num(), *this->GetClass()->GetPathName()));
 	}
 }
 
