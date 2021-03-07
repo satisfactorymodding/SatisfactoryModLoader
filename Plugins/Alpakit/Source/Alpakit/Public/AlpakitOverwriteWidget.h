@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Slate.h"
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"

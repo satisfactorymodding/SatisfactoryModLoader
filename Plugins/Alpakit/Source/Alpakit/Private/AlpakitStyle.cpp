@@ -1,8 +1,6 @@
 #include "AlpakitStyle.h"
-#include "Styling/SlateStyleRegistry.h"
-#include "Framework/Application/SlateApplication.h"
-#include "Slate/SlateGameResources.h"
 #include "Interfaces/IPluginManager.h"
+#include "Styling/SlateStyleRegistry.h"
 
 static FName StyleSetName(TEXT("AlpakitStyle"));
 TSharedPtr< FSlateStyleSet > FAlpakitStyle::StyleInstance = NULL;

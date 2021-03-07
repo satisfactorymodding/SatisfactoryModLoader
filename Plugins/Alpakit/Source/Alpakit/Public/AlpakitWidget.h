@@ -3,7 +3,7 @@
 #include "AlpakitSettings.h"
 #include "Slate.h"
 #include "IDetailsView.h"
-#include "Widget.h"
+#include "Components/Widget.h"
 
 class SAlpakitWidget : public SCompoundWidget {
 public:

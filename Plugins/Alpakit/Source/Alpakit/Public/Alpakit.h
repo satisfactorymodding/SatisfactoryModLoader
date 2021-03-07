@@ -1,10 +1,9 @@
 #pragma once
-
 #include "CoreMinimal.h"
 #include "ContentBrowserDelegates.h"
 #include "AlpakitSettings.h"
 #include "AssetData.h"
-#include "JsonObject.h"
+#include "Dom/JsonObject.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogAlpakit, Verbose, Verbose);
 

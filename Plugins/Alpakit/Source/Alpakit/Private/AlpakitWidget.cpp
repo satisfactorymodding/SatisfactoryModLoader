@@ -1,7 +1,5 @@
 #include "AlpakitWidget.h"
 #include "Alpakit.h"
-#include "Developer/DesktopPlatform/Public/DesktopPlatformModule.h"
-#include "PropertyEditorModule.h"
 
 void SAlpakitWidget::Construct(const FArguments& InArgs) {
 	AlpakitSettings = GetMutableDefault<UAlpakitSettings>();
