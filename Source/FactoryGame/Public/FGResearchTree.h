@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "FGResearchTreeNode.h"
-#include "FGAvailabilityDependency.h"
+#include "AvailabilityDependencies/FGAvailabilityDependency.h"
 #include "IncludeInBuild.h"
 #include "Styling/SlateBrush.h"
 #include "FGEventSubsystem.h"

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Equipment/FGWeapon.h"
-#include "FGDamageType.h"
+#include "DamageTypes/FGDamageType.h"
 #include "FGWeaponProjectileFire.generated.h"
 
 USTRUCT()

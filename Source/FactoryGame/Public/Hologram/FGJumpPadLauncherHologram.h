@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Hologram/FGJumpPadHologram.h"
-#include "FGBuildableJumpPad.h"
+#include "Buildables/FGBuildableJumppad.h"
 
 #include "FGJumpPadLauncherHologram.generated.h"
 

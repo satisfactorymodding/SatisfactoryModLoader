@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "FGConstructDisqualifier.generated.h"
 
 #define LOCTEXT_NAMESPACE "Construct Disqualifiers" 

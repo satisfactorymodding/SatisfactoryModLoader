@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "WorldModule.h"
+#include "Module/WorldModule.h"
 #include "GameWorldModule.generated.h"
 
 /** World module initialized for normal game world only (e.g skipped for menu world) */

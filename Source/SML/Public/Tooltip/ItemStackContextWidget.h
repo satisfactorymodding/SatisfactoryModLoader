@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "Widget.h"
+#include "Components/Widget.h"
 #include "Inventory.h"
-#include "ItemTooltipSubsystem.h"
+#include "Tooltip/ItemTooltipSubsystem.h"
 
 #include "ItemStackContextWidget.generated.h"
 

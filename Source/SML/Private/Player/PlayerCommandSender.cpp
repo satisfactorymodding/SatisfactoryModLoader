@@ -1,6 +1,6 @@
-﻿#include "PlayerCommandSender.h"
+#include "Player/PlayerCommandSender.h"
 #include "FGPlayerController.h"
-#include "SMLRemoteCallObject.h"
+#include "Player/SMLRemoteCallObject.h"
 
 FString UPlayerCommandSender::GetSenderName() const {
     AFGPlayerController* PlayerController = GetPlayer();

@@ -1,7 +1,7 @@
-﻿#include "Toolkit/AssetTypes/CurveLinearColorAtlasAssetSerializer.h"
+#include "Toolkit/AssetTypes/CurveLinearColorAtlasAssetSerializer.h"
 
-#include "AssetHelper.h"
-#include "TextureAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetTypes/TextureAssetSerializer.h"
 #include "Curves/CurveLinearColor.h"
 #include "Curves/CurveLinearColorAtlas.h"
 
@@ -20,7 +20,6 @@ void UCurveLinearColorAtlasAssetSerializer::SerializeColorAtlas(UCurveLinearColo
 
     //Serialize some extra properties added by UCurveLinearColorAtlas
     OutObject->SetNumberField(TEXT("TextureSize"), LinearColorAtlas->TextureSize);
-    OutObject->SetNumberField(TEXT("GradientPixelSize"), LinearColorAtlas->GradientPixelSize);
 
     //Theoretically referenced curves should be separate external assets
     //I haven't found a single place where such curves are added internally and are owned by this asset

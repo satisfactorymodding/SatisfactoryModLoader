@@ -9,8 +9,8 @@ public class ExampleMod : ModuleRules
     public ExampleMod(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
-
         PrivatePCHHeaderFile = "ExampleModPCH.h";
+        bLegacyPublicIncludePaths = false;
         
 		PublicDependencyModuleNames.AddRange(new string[] {
             "Core", "CoreUObject",

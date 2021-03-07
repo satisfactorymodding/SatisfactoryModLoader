@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "Class.h"
+#include "UObject/Class.h"
 #include "ConfigVariableDescriptor.generated.h"
 
 UENUM(BlueprintType)

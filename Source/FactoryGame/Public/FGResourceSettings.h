@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FGSettings.h"
-#include "FGItemDescriptor.h"
+#include "Resources/FGItemDescriptor.h"
 #include "FGResourceSettings.generated.h"
 
 USTRUCT()

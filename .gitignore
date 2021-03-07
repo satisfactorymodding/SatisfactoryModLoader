@@ -68,6 +68,7 @@ DerivedDataCache/*
 # Wwise
 *_WwiseProject/*
 Plugins/Wwise/*
+Plugins/Developer/RiderLink/*
 
 # Alpakit Mods folder
 Mods/*

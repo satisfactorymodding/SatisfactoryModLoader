@@ -2,7 +2,7 @@
 
 #include "GameFramework/Actor.h"
 #include "FGUseableInterface.h"
-#include "FGStaticReplicatedActor.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGInteractActor.generated.h"
 
 UCLASS( abstract )

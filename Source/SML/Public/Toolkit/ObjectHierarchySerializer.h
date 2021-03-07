@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "Object.h"
+#pragma once
+#include "UObject/Object.h"
 #include "Json.h"
 #include "ObjectHierarchySerializer.generated.h"
 

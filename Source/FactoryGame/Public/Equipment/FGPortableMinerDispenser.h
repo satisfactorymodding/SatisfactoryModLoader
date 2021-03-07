@@ -1,9 +1,9 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "FGItemDescriptor.h"
+#include "Resources/FGItemDescriptor.h"
 #include "Equipment/FGEquipment.h"
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGPortableMinerDispenser.generated.h"
 
 UCLASS()

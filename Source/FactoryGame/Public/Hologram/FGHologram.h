@@ -6,8 +6,8 @@
 #include "ItemAmount.h"
 #include "FGBuildableSubsystem.h"
 #include "FGConstructionMessageInterface.h"
-#include "HologramSplinePathMode.h"
-#include "Script.h"
+#include "Hologram/HologramSplinePathMode.h"
+#include "UObject/Script.h"
 #include "FGHologram.generated.h"
 
 //For UE4 Profiler ~ Stat Group

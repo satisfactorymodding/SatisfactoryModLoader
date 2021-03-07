@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "DirectedGraph.h"
+#include "Util/TopologicalSort/DirectedGraph.h"
 
 /**
  * Handles topological sorting of the directed graph

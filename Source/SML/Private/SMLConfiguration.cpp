@@ -1,5 +1,5 @@
-﻿#include "SMLConfiguration.h"
-#include "JsonObject.h"
+#include "SMLConfiguration.h"
+#include "Dom/JsonObject.h"
 
 FSMLConfiguration::FSMLConfiguration() :
     bDevelopmentMode(false),

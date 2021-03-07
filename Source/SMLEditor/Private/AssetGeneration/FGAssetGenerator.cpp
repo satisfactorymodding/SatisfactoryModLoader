@@ -1,4 +1,4 @@
-#include "FGAssetGenerator.h"
+#include "AssetGeneration/FGAssetGenerator.h"
 
 void FGameAssetGenerator::GenerateSatisfactoryAssets(const FString& DataJsonFilePath) {
 }
@@ -9,15 +9,15 @@ void FGameAssetGenerator::GenerateSatisfactoryAssets(const FString& DataJsonFile
 #include "K2Node_Self.h"
 #include "K2Node_DynamicCast.h" 
 #include "K2Node_MakeStruct.h" 
-#include "FileHelper.h"
+#include "Misc/FileHelper.h"
 #include "AssetRegistryModule.h"
-#include "EnumEditorUtils.h"
+#include "Kismet2/EnumEditorUtils.h"
 #include "Engine/UserDefinedEnum.h"
-#include "StructureEditorUtils.h"
+#include "Kismet2/StructureEditorUtils.h"
 #include "Engine/UserDefinedStruct.h"
 #include "EdGraphSchema_K2.h"
 #include "UserDefinedStructure/UserDefinedStructEditorData.h"
-#include "BlueprintEditorUtils.h"
+#include "Kismet2/BlueprintEditorUtils.h"
 #include "Json.h"
 #include "FileHelpers.h"
 #include "BlueprintCompilationManager.h"

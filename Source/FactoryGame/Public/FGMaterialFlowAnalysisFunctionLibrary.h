@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "SharedPointer.h"
+#include "Templates/SharedPointer.h"
 #include "FGMaterialFlowAnalysisFunctionLibrary.generated.h"
 
 class UFGRecipe;

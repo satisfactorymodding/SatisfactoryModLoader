@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FGBuildableConveyorBase.h"
+#include "Buildables/FGBuildableConveyorBase.h"
 #include "FGBuildableConveyorLift.generated.h"
 
 /** Base for conveyor lifts. */

@@ -1,5 +1,5 @@
-﻿#include "ConfigValueBool.h"
-#include "RawFormatValueBool.h"
+#include "Configuration/Values/ConfigValueBool.h"
+#include "Configuration/RawFileFormat/RawFormatValueBool.h"
 
 FString UConfigValueBool::DescribeValue_Implementation() const {
     return FString::Printf(TEXT("[bool %s]"), Value ? TEXT("true") : TEXT("false"));
@@ -11,8 +11,8 @@ URawFormatValue* UConfigValueBool::Serialize_Implementation(UObject* Outer) cons
     return BoolValue;
 }
 
-void UConfigValueBool::Deserialize_Implementation(const URawFormatValue* Value) {
-    const URawFormatValueBool* BoolValue = Cast<URawFormatValueBool>(Value);
+void UConfigValueBool::Deserialize_Implementation(const URawFormatValue* RawValue) {
+    const URawFormatValueBool* BoolValue = Cast<URawFormatValueBool>(RawValue);
     if (BoolValue) {
         this->Value = BoolValue->Value;
     }

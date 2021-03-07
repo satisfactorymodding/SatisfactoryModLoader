@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "FGBuildableRailroadTrack.h"
+#include "Buildables/FGBuildableRailroadTrack.h"
 #include "RailroadNavigation.h"
 #include "FGRailroadFunctionLibrary.generated.h"
 

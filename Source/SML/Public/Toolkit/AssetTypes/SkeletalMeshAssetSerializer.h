@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "AssetTypeSerializer.h"
+#pragma once
+#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
 #include "SkeletalMeshAssetSerializer.generated.h"
 
 UCLASS()

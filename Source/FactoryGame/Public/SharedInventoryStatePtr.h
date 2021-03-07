@@ -4,7 +4,7 @@
 
 #include "FGSaveSession.h"
 #include "GameFramework/Actor.h"
-#include "SharedPointer.h"
+#include "Templates/SharedPointer.h"
 #include "Engine/PackageMapClient.h"
 #include "Engine/NetConnection.h"
 #include "SharedInventoryStatePtr.generated.h"

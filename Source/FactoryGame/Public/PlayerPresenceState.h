@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ObjectMacros.h"
+#include "UObject/ObjectMacros.h"
 #include "PlayerPresenceState.generated.h"
 
 //[Gafgar:Thu/28-05-2020] a struct used to populate presence strings and parameters to various platforms. Currently only for epic and Steam. 

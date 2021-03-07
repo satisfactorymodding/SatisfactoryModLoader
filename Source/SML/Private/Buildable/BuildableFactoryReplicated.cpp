@@ -1,5 +1,5 @@
-﻿#include "BuildableFactoryReplicated.h"
-#include "ReplicationDetailActorGenerated.h"
+#include "Buildable/BuildableFactoryReplicated.h"
+#include "Buildable/ReplicationDetailActorGenerated.h"
 
 void ABuildableFactoryReplicated::GetReplicatedInventoryComponents(
     TMap<FName, FReplicatedInventoryProperty>& OutReplicatedProps)

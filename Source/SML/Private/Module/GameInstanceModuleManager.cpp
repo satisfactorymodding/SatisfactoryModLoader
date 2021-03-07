@@ -1,4 +1,4 @@
-#include "GameInstanceModuleManager.h"
+#include "Module/GameInstanceModuleManager.h"
 
 UGameInstanceModule* UGameInstanceModuleManager::FindModule(const FName& ModReference) const {
     UGameInstanceModule* const* GameInstanceModule = RootModuleMap.Find(ModReference);

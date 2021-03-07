@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FGEquipment.h"
+#include "Equipment/FGEquipment.h"
 #include "FGInventoryComponent.h"
 #include "FGChainsaw.generated.h"
 

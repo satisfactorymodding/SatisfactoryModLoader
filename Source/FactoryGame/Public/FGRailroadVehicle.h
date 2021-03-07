@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FGVehicle.h"
-#include "FGBuildableRailroadTrack.h"
+#include "Buildables/FGBuildableRailroadTrack.h"
 #include "FGRailroadVehicle.generated.h"
 
 

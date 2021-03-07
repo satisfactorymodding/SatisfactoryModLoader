@@ -1,14 +1,14 @@
-#include "FGAssetDumper.h"
-#include "AssetTypeSerializer.h"
+#include "Toolkit/OldToolkit/FGAssetDumper.h"
+#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
 #include "Json.h"
 #include "IPlatformFilePak.h"
-#include "ConsoleManager.h"
+#include "HAL/ConsoleManager.h"
 #include "toolkit/PropertyTypeHandler.h"
-#include "PackageName.h"
-#include "UObjectHash.h"
+#include "Misc/PackageName.h"
+#include "UObject/UObjectHash.h"
 #include "Toolkit/PropertySerializer.h"
 #include "Toolkit/AssetTypes/AssetCategory.h"
-#include "Package.h"
+#include "UObject/Package.h"
 
 DEFINE_LOG_CATEGORY(LogAssetDumper)
 

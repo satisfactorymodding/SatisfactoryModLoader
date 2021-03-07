@@ -1,6 +1,6 @@
-﻿#pragma once
-#include "Object.h"
-#include "Stack.h"
+#pragma once
+#include "UObject/Object.h"
+#include "UObject/Stack.h"
 
 /** 
  * Holds contextual information about function execution by the time hook is called

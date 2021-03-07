@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "FGBuildableFactory.h"
-#include "FGBuildableGenerator.h"
+#include "Buildables/FGBuildableFactory.h"
+#include "Buildables/FGBuildableGenerator.h"
 #include "FGBuildableTradingPost.generated.h"
 
 /**

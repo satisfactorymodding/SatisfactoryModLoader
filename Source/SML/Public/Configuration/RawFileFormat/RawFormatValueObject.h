@@ -1,6 +1,6 @@
-﻿#pragma once
-#include "SubclassOf.h"
-#include "RawFormatValueArray.h"
+#pragma once
+#include "Templates/SubclassOf.h"
+#include "Configuration/RawFileFormat/RawFormatValueArray.h"
 #include "RawFormatValueObject.generated.h"
 
 /** Describes raw map (also known as object) value */

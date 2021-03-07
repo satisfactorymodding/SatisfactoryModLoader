@@ -3,7 +3,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "FGCreature.h"
+#include "Creature/FGCreature.h"
 #include "FGSaveInterface.h"
 #include "FGCreatureSpawner.generated.h"
 

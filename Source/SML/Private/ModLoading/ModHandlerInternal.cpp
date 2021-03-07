@@ -1,15 +1,14 @@
-#include "ModHandlerInternal.h"
+#include "ModLoading/ModHandlerInternal.h"
 #include "FGInventoryComponent.h"
-#include "GenericPlatformFile.h"
-#include "JsonReader.h"
-#include "JsonSerializer.h"
-#include "LegacyConfigurationHelper.h"
-#include "Paths.h"
-#include "PlatformFilemanager.h"
+#include "GenericPlatform/GenericPlatformFile.h"
+#include "Serialization/JsonReader.h"
+#include "Serialization/JsonSerializer.h"
+#include "Configuration/Legacy/LegacyConfigurationHelper.h"
+#include "Misc/Paths.h"
+#include "HAL/PlatformFilemanager.h"
 #include "SatisfactoryModLoader.h"
-#include "SMLInitMod.h"
-#include "UObjectGlobals.h"
-#include "ZipFile.h"
+#include "UObject/UObjectGlobals.h"
+#include "Util/ZipFile/ZipFile.h"
 
 FFileHash HashArchiveFileAttributes(FZipFile& ZipHandle, const FString& FilePath) {
 	const FZipFileStat FileStat = ZipHandle.StatFile(FilePath);
@@ -197,40 +196,22 @@ FModPakLoadEntry FModHandlerHelper::DiscoverModInitializers(const FString& ModRe
 	UClass* InitMenuWorldClass = LoadInitializerClass<UWorldModule>(ModReference, TEXT("InitMenuWorld"));
 
 	FModPakLoadEntry LoadEntry{ModReference};
-	bool bFoundNewInitializer = false;
-	
+
 	if (InitGameInstanceClass != NULL) {
 		InitGameInstanceClass->AddToRoot();
 		LoadEntry.InitGameInstanceClass = InitGameInstanceClass;
-		bFoundNewInitializer = true;
 	}
 	
 	if (InitGameWorldClass != NULL) {
 		InitGameWorldClass->AddToRoot();
 		LoadEntry.InitGameWorldClass = InitGameWorldClass;
-		bFoundNewInitializer = true;
 	}
 	
 	if (InitMenuWorldClass != NULL) {
 		InitMenuWorldClass->AddToRoot();
 		LoadEntry.InitMenuWorldClass = InitMenuWorldClass;
-		bFoundNewInitializer = true;
 	}
 	
-	if (!bFoundNewInitializer) {
-		//Try legacy mod initializer
-		const FString LegacyInitModClassPath = FString::Printf(TEXT("/Game/%s/InitMod.InitMod_C"), *ModReference);
-		const uint32 LoadFlags = LOAD_NoWarn | LOAD_Quiet;
-		UClass* InitModClass = LoadClass<ASMLInitMod>(NULL, *LegacyInitModClassPath, NULL, LoadFlags);
-		if (InitModClass != NULL) {
-#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
-			InitModClass->AddToRoot();
-			LoadEntry.LegacyInitModClass = InitModClass;
-#else
-			UE_LOG(LogModLoading, Fatal, TEXT("Found unsupported SMLInitMod class: %s. SMLInitMod is not supported in this version of SML."), *LegacyInitModClassPath);
-#endif
-		}
-	}
 	return LoadEntry;
 }
 

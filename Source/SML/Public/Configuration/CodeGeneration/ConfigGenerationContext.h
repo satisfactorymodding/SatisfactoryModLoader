@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "Object.h"
-#include "ConfigGeneratedStruct.h"
+#include "UObject/Object.h"
+#include "Configuration/CodeGeneration/ConfigGeneratedStruct.h"
 #include "ConfigGenerationContext.generated.h"
 
 UCLASS(BlueprintType)

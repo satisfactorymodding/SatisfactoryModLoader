@@ -1,9 +1,9 @@
 ﻿#include "Toolkit/AssetTypes/MaterialInstanceAssetSerializer.h"
-#include "AssetHelper.h"
-#include "MaterialAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
-#include "PropertySerializer.h"
+#include "Toolkit/PropertySerializer.h"
 
 void UMaterialInstanceAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
     const TArray<UObject*> RootObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
@@ -41,7 +41,7 @@ void UMaterialInstanceAssetSerializer::SerializeMaterialInstance(UMaterialInstan
         TArray<TSharedPtr<FJsonValue>> MaterialResourcesArray;
         for (FMaterialResource* MaterialResource : MaterialResources) {
             const TSharedPtr<FJsonObject> ResourceObject = MakeShareable(new FJsonObject());
-            UMaterialAssetSerializer::SerializeMaterialResource(MaterialResource, ResourceObject, ObjectHierarchySerializer, SerializationContext);
+            //UMaterialAssetSerializer::SerializeMaterialResource(MaterialResource, ResourceObject, ObjectHierarchySerializer, SerializationContext);
             MaterialResourcesArray.Add(MakeShareable(new FJsonValueObject(ResourceObject)));
         }
         OutJson->SetArrayField(TEXT("MaterialResources"), MaterialResourcesArray);

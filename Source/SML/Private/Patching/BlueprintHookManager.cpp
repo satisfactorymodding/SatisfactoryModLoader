@@ -1,8 +1,8 @@
 #include "Patching/BlueprintHookManager.h"
-#include "BlueprintHookHelper.h"
-#include "FileHelper.h"
-#include "JsonSerializer.h"
-#include "JsonWriter.h"
+#include "Patching/BlueprintHookHelper.h"
+#include "Misc/FileHelper.h"
+#include "Serialization/JsonSerializer.h"
+#include "Serialization/JsonWriter.h"
 #include "Toolkit/KismetBytecodeDisassemblerJson.h"
 
 //Whenever to debug blueprint hooking. When enabled, JSON files with script bytecode before and after installing hook will be generated

@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "ModSubsystemHolder.h"
+#include "Subsystem/ModSubsystemHolder.h"
 #include "SMLSubsystemHolder.generated.h"
 
 UCLASS()

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGWeapon.h"
+#include "Equipment/FGWeapon.h"
 #include "FGWeaponInstantFire.generated.h"
 
 UCLASS()

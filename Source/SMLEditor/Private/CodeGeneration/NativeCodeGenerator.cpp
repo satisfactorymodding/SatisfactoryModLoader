@@ -1,6 +1,6 @@
-﻿#include "CodeGeneration/NativeCodeGenerator.h"
+#include "CodeGeneration/NativeCodeGenerator.h"
 #include "Engine/UserDefinedStruct.h"
-#include "Object.h"
+#include "UObject/Object.h"
 
 bool FNativeCodeGenerator::CanGenerateNativeConfiguration(UConfigGenerationContext* Context, FString& OutFailureMessage) {
     for (UConfigGeneratedStruct* GeneratedStruct : Context->GetAllGeneratedStructs()) {

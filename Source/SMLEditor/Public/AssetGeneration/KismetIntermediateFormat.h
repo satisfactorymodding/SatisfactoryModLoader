@@ -3,7 +3,7 @@
 #include "EdGraph/EdGraphPin.h"
 
 /** Basically mimics EKismetCompiledStatementType in KismetCompiler module */
-enum ECompiledStatementType {
+enum class ECompiledStatementType : uint8 {
 	KCST_Nop, //TODO X
 	// [wiring =] TargetObject->FunctionToCall(wiring)
 	KCST_CallFunction,
@@ -61,7 +61,7 @@ enum ECompiledStatementType {
 struct FKismetCompiledStatement {
 	
 	FORCEINLINE FKismetCompiledStatement()
-        : Type(KCST_Nop)
+        : Type(ECompiledStatementType::KCST_Nop)
         , FunctionContext(NULL)
         , FunctionToCall(NULL)
         , TargetLabel(NULL)
@@ -161,9 +161,12 @@ struct FKismetTerminal {
 	EContextType ContextType;
 
 	FORCEINLINE bool operator==(const FKismetTerminal& Terminal) const {
-		
+		checkf(0, TEXT("Should implement it later"));
+		return true;
 	}
 };
 
 FORCEINLINE uint32 GetTypeHash(const FKismetTerminal& Terminal) {
+	checkf(0, TEXT("Should implement it later"));
+	return 0;
 }

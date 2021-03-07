@@ -1,7 +1,7 @@
-﻿#include "Toolkit/AssetTypes/StringTableAssetSerializer.h"
-#include "AssetHelper.h"
-#include "StringTable.h"
-#include "StringTableCore.h"
+#include "Toolkit/AssetTypes/StringTableAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Internationalization/StringTable.h"
+#include "Internationalization/StringTableCore.h"
 
 void UStringTableAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
     const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);

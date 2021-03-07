@@ -1,7 +1,7 @@
-﻿#include "Toolkit/ObjectHierarchySerializer.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
 #include "Toolkit/PropertySerializer.h"
-#include "AssetHelper.h"
-#include "Package.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "UObject/Package.h"
 #include "Toolkit/DefaultSerializableNativeClasses.h"
 
 DECLARE_LOG_CATEGORY_CLASS(LogObjectHierarchySerializer, Warning, Log);
@@ -15,13 +15,13 @@ UObjectHierarchySerializer::UObjectHierarchySerializer() {
     APPEND_DEFAULT_SERIALIZABLE_NATIVE_CLASSES(AllowedNativeSerializeClasses.Add);
 }
 
-void UObjectHierarchySerializer::Initialize(UPackage* SourcePackage, UObject* Serializer) {
-    check(SourcePackage);
-    this->SourcePackage = SourcePackage;
-    UPropertySerializer* PropertySerializer = Cast<UPropertySerializer>(Serializer);
-    check(PropertySerializer);
-    this->PropertySerializer = PropertySerializer;
-    PropertySerializer->ObjectHierarchySerializer = this;
+void UObjectHierarchySerializer::Initialize(UPackage* NewSourcePackage, UObject* Serializer) {
+    check(NewSourcePackage);
+    this->SourcePackage = NewSourcePackage;
+    UPropertySerializer* NewPropertySerializer = Cast<UPropertySerializer>(Serializer);
+    check(NewPropertySerializer);
+    this->PropertySerializer = NewPropertySerializer;
+    NewPropertySerializer->ObjectHierarchySerializer = this;
 }
 
 void UObjectHierarchySerializer::AllowNativeClassSerialization(UClass* ClassToAllow) {
@@ -130,27 +130,27 @@ TSharedRef<FJsonObject> UObjectHierarchySerializer::SerializeObjectProperties(UO
 }
 
 void UObjectHierarchySerializer::SerializeObjectPropertiesIntoObject(UObject* Object, TSharedPtr<FJsonObject> Properties) {
-    UPropertySerializer* PropertySerializer = GetPropertySerializer<UPropertySerializer>();
+    UPropertySerializer* CastedPropertySerializer = GetPropertySerializer<UPropertySerializer>();
     UClass* ObjectClass = Object->GetClass();
     for (UProperty* Property = ObjectClass->PropertyLink; Property; Property = Property->PropertyLinkNext) {
-        if (PropertySerializer->ShouldSerializeProperty(Property)) {
+        if (CastedPropertySerializer->ShouldSerializeProperty(Property)) {
             const void* PropertyValue = Property->ContainerPtrToValuePtr<void>(Object);
-            TSharedRef<FJsonValue> PropertyValueJson = Cast<UPropertySerializer>(PropertySerializer)->SerializePropertyValue(Property, PropertyValue);
+            TSharedRef<FJsonValue> PropertyValueJson = CastedPropertySerializer->SerializePropertyValue(Property, PropertyValue);
             Properties->SetField(Property->GetName(), PropertyValueJson);
         }
     }
 }
 
 void UObjectHierarchySerializer::DeserializeObjectProperties(const TSharedRef<FJsonObject>& Properties, UObject* Object) {
-    UPropertySerializer* PropertySerializer = GetPropertySerializer<UPropertySerializer>();
+    UPropertySerializer* CastedPropertySerializer = GetPropertySerializer<UPropertySerializer>();
     UClass* ObjectClass = Object->GetClass();
     for (UProperty* Property = ObjectClass->PropertyLink; Property; Property = Property->PropertyLinkNext) {
         const FString PropertyName = Property->GetName();
-        if (PropertySerializer->ShouldSerializeProperty(Property) && Properties->HasField(PropertyName)) {
+        if (CastedPropertySerializer->ShouldSerializeProperty(Property) && Properties->HasField(PropertyName)) {
             void* PropertyValue = Property->ContainerPtrToValuePtr<void>(Object);
             const TSharedPtr<FJsonValue>& ValueObject = Properties->Values.FindChecked(PropertyName);
             if (ValueObject.IsValid()) {
-                Cast<UPropertySerializer>(PropertySerializer)->DeserializePropertyValue(Property, ValueObject.ToSharedRef(), PropertyValue);
+                CastedPropertySerializer->DeserializePropertyValue(Property, ValueObject.ToSharedRef(), PropertyValue);
             }
         }
     }

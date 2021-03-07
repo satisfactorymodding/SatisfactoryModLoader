@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimInstanceProxy.h"
-#include "FGBuildableTrainPlatform.h"
+#include "Buildables/FGBuildableTrainPlatform.h"
 #include "FGAnimInstanceTrainDocking.generated.h"
 
 USTRUCT( BlueprintType )

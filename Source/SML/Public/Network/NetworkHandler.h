@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "EngineSubsystem.h"
-#include "Object.h"
+#include "Subsystems/EngineSubsystem.h"
+#include "UObject/Object.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "NetworkHandler.generated.h"
 

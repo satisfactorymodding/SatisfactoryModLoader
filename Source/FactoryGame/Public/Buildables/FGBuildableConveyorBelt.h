@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FGUseableInterface.h"
-#include "FGBuildableConveyorBase.h"
+#include "Buildables/FGBuildableConveyorBase.h"
 #include "Components/SplineComponent.h"
 #include "FGBuildableConveyorBelt.generated.h"
 

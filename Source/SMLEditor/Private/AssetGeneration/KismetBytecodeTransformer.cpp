@@ -1,12 +1,9 @@
 ﻿#include "AssetGeneration/KismetBytecodeTransformer.h"
 #include "BPTerminal.h"
 #include "EdGraphSchema_K2.h"
-#include "Interface.h"
-#include "PropertyPortFlags.h"
-#include "PropertyTypeHandler.h"
-#include "TextProperty.h"
 #include "Engine/Blueprint.h"
 #include "Engine/LatentActionManager.h"
+#include "toolkit/PropertyTypeHandler.h"
 
 FKismetBytecodeTransformer::FKismetBytecodeTransformer(UBlueprint* Blueprint) {
     this->OwnerBlueprint = Blueprint;

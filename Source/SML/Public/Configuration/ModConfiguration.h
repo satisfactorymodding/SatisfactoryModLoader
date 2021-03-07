@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "ConfigPropertySection.h"
+#pragma once
+#include "Configuration/Properties/ConfigPropertySection.h"
 #include "ModConfiguration.generated.h"
 
 UCLASS(Blueprintable)

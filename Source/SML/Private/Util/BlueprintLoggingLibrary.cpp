@@ -1,5 +1,5 @@
-﻿#include "BlueprintLoggingLibrary.h"
-#include "Package.h"
+#include "Util/BlueprintLoggingLibrary.h"
+#include "UObject/Package.h"
 
 DEFINE_LOG_CATEGORY(LogBlueprintLogging);
 

@@ -1,11 +1,11 @@
-#include "ChatCommandLibrary.h"
-#include "CommandSender.h"
+#include "Command/ChatCommandLibrary.h"
+#include "Command/CommandSender.h"
 #include "FGPlayerController.h"
-#include "HelpCommandInstance.h"
-#include "InfoCommandInstance.h"
-#include "PlayerListCommandInstance.h"
+#include "Command/SMLCommands/HelpCommandInstance.h"
+#include "Command/SMLCommands/InfoCommandInstance.h"
+#include "Command/SMLCommands/PlayerListCommandInstance.h"
 #include "SatisfactoryModLoader.h"
-#include "SMLSubsystemHolder.h"
+#include "Subsystem/SMLSubsystemHolder.h"
 
 DEFINE_LOG_CATEGORY(LogChatCommand);
 

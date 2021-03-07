@@ -1,5 +1,5 @@
-﻿#include "Configuration/Values/ConfigValueColor.h"
-#include "RawFormatValueObject.h"
+#include "Configuration/Values/ConfigValueColor.h"
+#include "Configuration/RawFileFormat/RawFormatValueObject.h"
 
 FString UConfigValueColor::DescribeValue_Implementation() const {
     return FString::Printf(TEXT("[color %s]"), *Value.ToString());
@@ -15,8 +15,8 @@ URawFormatValue* UConfigValueColor::Serialize_Implementation(UObject* Outer) con
     return ObjectValue;
 }
 
-void UConfigValueColor::Deserialize_Implementation(const URawFormatValue* Value) {
-    const URawFormatValueObject* ObjectValue = Cast<URawFormatValueObject>(Value);
+void UConfigValueColor::Deserialize_Implementation(const URawFormatValue* RawValue) {
+    const URawFormatValueObject* ObjectValue = Cast<URawFormatValueObject>(RawValue);
     if (ObjectValue != NULL) {
         this->Value.R = ObjectValue->GetFloat(TEXT("R"));
         this->Value.G = ObjectValue->GetFloat(TEXT("G"));

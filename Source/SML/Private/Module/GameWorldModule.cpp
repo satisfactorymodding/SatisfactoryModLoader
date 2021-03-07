@@ -1,6 +1,6 @@
-﻿#include "Module/GameWorldModule.h"
-#include "ChatCommandLibrary.h"
-#include "ModContentRegistry.h"
+#include "Module/GameWorldModule.h"
+#include "Command/ChatCommandLibrary.h"
+#include "Registry/ModContentRegistry.h"
 
 void UGameWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     Super::DispatchLifecycleEvent(Phase);

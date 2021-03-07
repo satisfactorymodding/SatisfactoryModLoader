@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGTutorialSubsystem.h"
-#include "FGResourceDescriptor.h"
+#include "Resources/FGResourceDescriptor.h"
 #include "FGTutorialIntroManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FIntroSequenceStateUpdate );

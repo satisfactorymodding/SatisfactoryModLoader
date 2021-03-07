@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGBuildableTrainPlatform.h"
+#include "Buildables/FGBuildableTrainPlatform.h"
 #include "FGBuildableRailroadStation.generated.h"
 
 

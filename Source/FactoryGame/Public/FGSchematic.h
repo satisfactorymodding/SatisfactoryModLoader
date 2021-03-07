@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "ItemAmount.h"
 #include "AssetBundleData.h"
 #include "IncludeInBuild.h"

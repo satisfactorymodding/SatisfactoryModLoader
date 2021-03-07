@@ -5,7 +5,7 @@
 #include <type_traits>
 #include "GameFramework/PlayerState.h"
 #include "FGCharacterPlayer.h"
-#include "FGMessageBase.h"
+#include "UI/Message/FGMessageBase.h"
 #include "FGActorRepresentation.h"
 #include "FGPlayerState.generated.h"
 

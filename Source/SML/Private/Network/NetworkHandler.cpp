@@ -1,10 +1,11 @@
-﻿#include "NetworkHandler.h"
-#include "DataChannel.h"
+#include "Network/NetworkHandler.h"
+#include "Net/DataChannel.h"
 #include "FGGameInstance.h"
 #include "FGGameMode.h"
-#include "NativeHookManager.h"
+#include "Patching/NativeHookManager.h"
 #include "Engine/Engine.h"
 #include "Engine/NetConnection.h"
+#include "Util/ObjectMetadata.h"
 
 DEFINE_LOG_CATEGORY(LogModNetworkHandler);
 DEFINE_CONTROL_CHANNEL_MESSAGE_THREEPARAM(ModMessage, 40, FString, int32, FString);

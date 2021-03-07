@@ -2,7 +2,7 @@
 
 #include "FGSchematic.h"
 #include "FGTutorialIntroManager.h"
-#include "FGBaseUI.h"
+#include "UI/FGBaseUI.h"
 #include "FGGameUI.generated.h"
 
 class UFGInteractWidget;

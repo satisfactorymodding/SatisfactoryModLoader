@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FGConnectionComponent.h"
-#include "FGBuildableRailroadTrack.h"
+#include "Buildables/FGBuildableRailroadTrack.h"
 #include "FGRailroadTrackConnectionComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRailRoadConnectionSwitched, int32, newSwitch );

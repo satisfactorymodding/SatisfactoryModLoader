@@ -1,8 +1,8 @@
-﻿#include "Module/GameInstanceModule.h"
-#include "ConfigManager.h"
-#include "ItemTooltipSubsystem.h"
-#include "ModKeyBindRegistry.h"
-#include "SubsystemHolderRegistry.h"
+#include "Module/GameInstanceModule.h"
+#include "Configuration/ConfigManager.h"
+#include "Tooltip/ItemTooltipSubsystem.h"
+#include "Registry/ModKeyBindRegistry.h"
+#include "Registry/SubsystemHolderRegistry.h"
 #include "Engine/Engine.h"
 
 UGameInstance* UGameInstanceModule::GetGameInstance() const {

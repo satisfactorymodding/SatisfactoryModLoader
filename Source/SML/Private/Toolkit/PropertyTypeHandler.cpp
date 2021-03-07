@@ -1,4 +1,4 @@
-﻿#include "PropertyTypeHandler.h"
+#include "Toolkit/PropertyTypeHandler.h"
 #include "Engine/MemberReference.h"
 
 const FName PC_Exec(TEXT("exec"));
@@ -195,7 +195,7 @@ bool FPropertyTypeHelper::ConvertPropertyToPinType(const UProperty* Property, /*
 	if (const UMulticastDelegateProperty* MulticastDelegateProperty = Cast<const UMulticastDelegateProperty>(TestProperty)) {
 		TypeOut.PinCategory = PC_MCDelegate;
 		FMemberReference::FillSimpleMemberReference<UFunction>(MulticastDelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
-	} else if (const UDelegateProperty* DelegateProperty = Cast<const UDelegateProperty>(TestProperty)) {
+	} else if (const FDelegateProperty* DelegateProperty = Cast<const FDelegateProperty>(TestProperty)) {
 		TypeOut.PinCategory = PC_Delegate;
 		FMemberReference::FillSimpleMemberReference<UFunction>(DelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
 	} else {

@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "RawFormatValue.h"
+#pragma once
+#include "Configuration/RawFileFormat/RawFormatValue.h"
 #include "RawFormatValueString.generated.h"
 
 /** Describes raw string value */

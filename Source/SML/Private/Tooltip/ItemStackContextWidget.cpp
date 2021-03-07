@@ -1,5 +1,5 @@
-﻿#include "Tooltip/ItemStackContextWidget.h"
-#include "ItemTooltipSubsystem.h"
+#include "Tooltip/ItemStackContextWidget.h"
+#include "Tooltip/ItemTooltipSubsystem.h"
 
 FText UItemStackContextWidget::GetItemName() const {
     return ItemTooltipSubsystem->GetItemName(PlayerController, InventoryStack);

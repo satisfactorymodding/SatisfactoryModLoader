@@ -4,7 +4,7 @@
 
 #include "FGUseableInterface.h"
 #include "FGInventoryComponent.h"
-#include "FGPopupWidget.h"
+#include "UI/FGPopupWidget.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGRecipe.h"
 #include "FGBlueprintFunctionLibrary.generated.h"

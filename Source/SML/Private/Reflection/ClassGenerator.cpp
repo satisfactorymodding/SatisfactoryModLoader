@@ -1,6 +1,6 @@
-#include "ClassGenerator.h"
-#include "Class.h"
-#include "UObjectAllocator.h"
+#include "Reflection/ClassGenerator.h"
+#include "UObject/Class.h"
+#include "UObject/UObjectAllocator.h"
 
 UClass* FClassGenerator::GenerateSimpleClass(const TCHAR* PackageName, const TCHAR* ClassName, UClass* ParentClass) {
 	//Flags to assign to newly created class
@@ -13,6 +13,7 @@ UClass* FClassGenerator::GenerateSimpleClass(const TCHAR* PackageName, const TCH
         EC_StaticConstructor,
         ClassName,
         ParentClass->GetStructureSize(),
+        ParentClass->GetMinAlignment(),
         CLASS_Intrinsic,
         CASTCLASS_None,
         UObject::StaticConfigName(),

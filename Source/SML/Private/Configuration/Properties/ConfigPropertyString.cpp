@@ -1,5 +1,5 @@
 ﻿#include "Configuration/Properties/ConfigPropertyString.h"
-#include "CodeGeneration/ConfigVariableLibrary.h"
+#include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/Values/ConfigValueString.h"
 
 UConfigPropertyString::UConfigPropertyString() {

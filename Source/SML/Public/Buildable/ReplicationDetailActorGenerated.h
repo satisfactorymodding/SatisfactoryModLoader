@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "FGReplicationDetailActor_BuildableFactory.h"
+#include "Replication/FGReplicationDetailActor_BuildableFactory.h"
 #include "ReplicationDetailActorGenerated.generated.h"
 
 USTRUCT()

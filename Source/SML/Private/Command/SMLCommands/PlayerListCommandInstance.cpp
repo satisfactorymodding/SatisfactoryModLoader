@@ -1,5 +1,5 @@
-﻿#include "PlayerListCommandInstance.h"
-#include "CommandSender.h"
+#include "Command/SMLCommands/PlayerListCommandInstance.h"
+#include "Command/CommandSender.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/PlayerState.h"
 #include "UnrealEngine.h"

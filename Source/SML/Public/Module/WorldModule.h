@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "ModModule.h"
+#include "Module/ModModule.h"
 #include "WorldModule.generated.h"
 
 /** World modules are initialized when world is initialized and are bound to world lifetime */

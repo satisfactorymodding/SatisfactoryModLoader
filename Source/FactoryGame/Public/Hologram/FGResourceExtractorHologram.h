@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Resources/FGResourceDescriptor.h"
-#include "FGFactoryHologram.h"
+#include "Hologram/FGFactoryHologram.h"
 #include "FGResourceExtractorHologram.generated.h"
 
 /**

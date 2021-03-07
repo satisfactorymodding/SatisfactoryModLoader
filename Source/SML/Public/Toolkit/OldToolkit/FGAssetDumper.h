@@ -1,6 +1,6 @@
 #pragma once
-#include "LogMacros.h"
-#include "UnrealString.h"
+#include "Logging/LogMacros.h"
+#include "Containers/UnrealString.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogAssetDumper, Log, Log);
 

@@ -1,6 +1,6 @@
-﻿#pragma once
-#include "AssetTypeSerializer.h"
-#include "BlueprintAssetSerializer.h"
+#pragma once
+#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
+#include "Toolkit/AssetTypes/BlueprintAssetSerializer.h"
 #include "UserWidgetAssetSerializer.generated.h"
 
 UCLASS()

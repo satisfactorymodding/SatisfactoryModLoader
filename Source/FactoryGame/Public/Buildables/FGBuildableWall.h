@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGBuildableFactoryBuilding.h"
+#include "Buildables/FGBuildableFactoryBuilding.h"
 #include "FGBuildableWall.generated.h"
 
 /**

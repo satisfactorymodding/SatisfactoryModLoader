@@ -2,11 +2,11 @@
 
 #pragma once
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGRecipeProducerInterface.h"
 #include "FGSignificanceInterface.h"
-#include "FGReplicationDetailInventoryComponent.h"
-#include "FGReplicationDetailActor_BuildableFactory.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "Replication/FGReplicationDetailActor_BuildableFactory.h"
 #include "FGBuildableFactory.generated.h"
 
 DECLARE_MULTICAST_DELEGATE_ThreeParams( EProductionStatusChange, class AFGBuildable*, EProductionStatus /*oldStatus*/, EProductionStatus /*newStatus*/);

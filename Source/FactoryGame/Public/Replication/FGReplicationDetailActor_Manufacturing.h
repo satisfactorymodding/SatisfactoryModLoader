@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGReplicationDetailActor_BuildableFactory.h"
+#include "Replication/FGReplicationDetailActor_BuildableFactory.h"
 #include "FGReplicationDetailActor_Manufacturing.generated.h"
 
 UCLASS()

@@ -376,8 +376,8 @@ FString RemoveStandalonePrefix( const FString& string );
 #if WITH_EDITOR
 // These includes are needed for VISUAL_LOG to work
 #include "SlateBasics.h"
-#include "Notifications/SNotificationList.h"
-#include "NotificationManager.h"
+#include "Widgets/Notifications/SNotificationList.h"
+#include "Framework/Notifications/NotificationManager.h"
 #define VISUAL_LOG( LOG_CATEGORY, WARNING_LEVEL, MESSAGE, ... ) \
 	{ \
 		UE_LOG( LOG_CATEGORY, WARNING_LEVEL, MESSAGE, __VA_ARGS__ ); \

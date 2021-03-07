@@ -1,6 +1,6 @@
-﻿#pragma once
-#include "Object.h"
-#include "JsonObject.h"
+#pragma once
+#include "UObject/Object.h"
+#include "Dom/JsonObject.h"
 #include "EdGraph/EdGraphPin.h"
 
 class SML_API FPropertyTypeHelper {

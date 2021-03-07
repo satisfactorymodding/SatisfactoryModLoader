@@ -1,6 +1,6 @@
-﻿#include "Registry/RemoteCallObjectRegistry.h"
+#include "Registry/RemoteCallObjectRegistry.h"
 #include "FGGameMode.h"
-#include "SMLRemoteCallObject.h"
+#include "Player/SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
 
 void URemoteCallObjectRegistry::RegisterRemoteCallObject(TSubclassOf<UFGRemoteCallObject> RemoteCallObject) {

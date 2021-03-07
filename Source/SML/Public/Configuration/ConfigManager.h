@@ -1,9 +1,9 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "ConfigValue.h"
-#include "EngineSubsystem.h"
-#include "ModConfiguration.h"
-#include "ReflectionHelper.h"
+#include "Configuration/ConfigValue.h"
+#include "Subsystems/EngineSubsystem.h"
+#include "Configuration/ModConfiguration.h"
+#include "Reflection/ReflectionHelper.h"
 #include "ConfigManager.generated.h"
 
 //Whenever to use FillConfigStruct optimization caching results in a single struct and then copying it

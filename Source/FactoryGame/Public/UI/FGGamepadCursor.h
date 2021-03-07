@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AnalogCursor.h"
+#include "Framework/Application/AnalogCursor.h"
 #include "Engine/LocalPlayer.h"
 //#include "FGGamepadCursor.generated.h"
 

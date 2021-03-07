@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "FGBuildableFactory.h"
+#pragma once
+#include "Buildables/FGBuildableFactory.h"
 #include "FGInventoryLibrary.h"
 #include "BuildableFactoryReplicated.generated.h"
 

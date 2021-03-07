@@ -1,9 +1,9 @@
-﻿#include "SMLRemoteCallObject.h"
-#include "ChatCommandLibrary.h"
+#include "Player/SMLRemoteCallObject.h"
+#include "Command/ChatCommandLibrary.h"
 #include "FGChatManager.h"
 #include "FGPlayerController.h"
-#include "NativeHookManager.h"
-#include "UnrealNetwork.h"
+#include "Patching/NativeHookManager.h"
+#include "Net/UnrealNetwork.h"
 #include "Registry/RemoteCallObjectRegistry.h"
 
 USMLRemoteCallObject::USMLRemoteCallObject() {

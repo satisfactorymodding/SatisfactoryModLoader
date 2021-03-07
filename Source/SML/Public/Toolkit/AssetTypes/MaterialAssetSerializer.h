@@ -1,6 +1,8 @@
-﻿#pragma once
-#include "AssetTypeSerializer.h"
-#include "MaterialAssetSerializer.generated.h"
+#pragma once
+//#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
+//#include "MaterialAssetSerializer.generated.h"
+
+/*class UPropertySerializer;
 
 UCLASS()
 class SML_API UMaterialAssetSerializer : public UAssetTypeSerializer {
@@ -31,4 +33,4 @@ public:
     static FString ShaderFrequencyToString(uint8 ShaderFrequency);
     
     virtual EAssetCategory GetAssetCategory() const override;
-};
+};*/

@@ -4,12 +4,12 @@
 
 #include "GameFramework/Actor.h"
 #include "FGSaveInterface.h"
-#include "FGResourceDescriptor.h"
+#include "Resources/FGResourceDescriptor.h"
 #include "FGUseableInterface.h"
-#include "FGExtractableResourceInterface.h"
+#include "Resources/FGExtractableResourceInterface.h"
 #include "FGActorRepresentationInterface.h"
 #include "FGSignificanceInterface.h"
-#include "FGStaticReplicatedActor.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGResourceNode.generated.h"
 
 class UFGResourceDescriptor;

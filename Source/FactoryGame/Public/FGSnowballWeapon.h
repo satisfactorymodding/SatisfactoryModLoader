@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Equipment/FGWeapon.h"
-#include "FGWeaponProjectileFire.h"
+#include "Equipment/FGWeaponProjectileFire.h"
 #include "FGSnowballWeapon.generated.h"
 
 /**

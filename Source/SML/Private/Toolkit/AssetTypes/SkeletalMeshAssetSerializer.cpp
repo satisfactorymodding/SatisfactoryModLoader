@@ -1,8 +1,8 @@
-﻿#include "Toolkit/AssetTypes/SkeletalMeshAssetSerializer.h"
-#include "AssetHelper.h"
-#include "FbxMeshExporter.h"
-#include "PropertySerializer.h"
-#include "StaticMeshAssetSerializer.h"
+#include "Toolkit/AssetTypes/SkeletalMeshAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetTypes/FbxMeshExporter.h"
+#include "Toolkit/PropertySerializer.h"
+#include "Toolkit/AssetTypes/StaticMeshAssetSerializer.h"
 #include "Engine/SkeletalMesh.h"
 
 void USkeletalMeshAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

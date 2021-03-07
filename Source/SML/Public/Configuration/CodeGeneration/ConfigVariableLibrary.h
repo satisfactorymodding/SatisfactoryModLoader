@@ -1,6 +1,6 @@
-﻿#pragma once
-#include "ConfigVariableDescriptor.h"
-#include "ReflectionHelper.h"
+#pragma once
+#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
+#include "Reflection/ReflectionHelper.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ConfigVariableLibrary.generated.h"
 

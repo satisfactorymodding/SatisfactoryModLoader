@@ -1,7 +1,7 @@
-﻿#include "Toolkit/AssetTypes/AnimationSequenceAssetSerializer.h"
-#include "AssetHelper.h"
-#include "FbxMeshExporter.h"
-#include "PropertySerializer.h"
+#include "Toolkit/AssetTypes/AnimationSequenceAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetTypes/FbxMeshExporter.h"
+#include "Toolkit/PropertySerializer.h"
 #include "Animation/AnimSequenceBase.h"
 #include "Animation/AnimSequence.h"
 

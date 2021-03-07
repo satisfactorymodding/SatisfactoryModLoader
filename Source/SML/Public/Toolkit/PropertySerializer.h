@@ -1,7 +1,7 @@
-﻿#pragma once
-#include "JsonObject.h"
-#include "Object.h"
-#include "ObjectHierarchySerializer.h"
+#pragma once
+#include "Dom/JsonObject.h"
+#include "UObject/Object.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
 #include "PropertySerializer.generated.h"
 
 UCLASS()

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "FGBuildable.h"
-#include "FGBuildablePoleBase.h"
+#include "Buildables/FGBuildable.h"
+#include "Buildables/FGBuildablePoleBase.h"
 #include "FGBuildablePole.generated.h"
 
 

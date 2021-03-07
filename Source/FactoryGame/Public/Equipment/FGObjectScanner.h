@@ -4,7 +4,7 @@
 
 #include "Equipment/FGEquipment.h"
 #include "FGSchematic.h"
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "FGObjectScanner.generated.h"
 
 UENUM()

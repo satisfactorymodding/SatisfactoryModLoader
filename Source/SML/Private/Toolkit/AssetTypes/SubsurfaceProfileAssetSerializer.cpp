@@ -1,5 +1,5 @@
-﻿#include "Toolkit/AssetTypes/SubsurfaceProfileAssetSerializer.h"
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/SubsurfaceProfileAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Engine/SubsurfaceProfile.h"
 
 void USubsurfaceProfileAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

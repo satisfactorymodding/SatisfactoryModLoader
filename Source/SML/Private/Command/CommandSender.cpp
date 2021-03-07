@@ -1,4 +1,4 @@
-﻿#include "CommandSender.h"
+#include "Command/CommandSender.h"
 
 AFGPlayerController* UCommandSender::GetPlayer() const {
     checkf(false, TEXT("GetPlayer not implemented by CommandSource %s"));

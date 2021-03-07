@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "Styling/SlateBrush.h"
 #include "FGItemDescriptor.generated.h"
 

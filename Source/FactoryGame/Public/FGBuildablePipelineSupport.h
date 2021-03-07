@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
-#include "FGBuildablePoleBase.h"
+#include "Buildables/FGBuildablePoleBase.h"
 #include "FGBuildablePipelineSupport.generated.h"
 
 class UFGPipeConnectionComponentBase;

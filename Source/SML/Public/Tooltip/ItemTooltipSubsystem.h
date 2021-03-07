@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "FGInventoryComponent.h"
-#include "Text.h"
-#include "VerticalBox.h"
-#include "Widget.h"
+#include "Internationalization/Text.h"
+#include "Components/VerticalBox.h"
+#include "Components/Widget.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ItemTooltipSubsystem.generated.h"
 

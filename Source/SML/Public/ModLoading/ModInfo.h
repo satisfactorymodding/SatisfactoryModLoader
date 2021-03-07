@@ -1,5 +1,5 @@
 #pragma once
-#include "SemVersion.h"
+#include "Util/SemVersion.h"
 #include "ModInfo.generated.h"
 
 /** Structure holding information about resources used by mod. Not exposed to BPs directly */

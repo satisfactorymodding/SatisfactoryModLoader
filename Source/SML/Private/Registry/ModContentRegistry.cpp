@@ -1,18 +1,18 @@
-#include "ModContentRegistry.h"
+#include "Registry/ModContentRegistry.h"
 #include "FGRecipeManager.h"
 #include "FGResearchManager.h"
 #include "FGResourceSinkSettings.h"
 #include "FGResourceSinkSubsystem.h"
 #include "FGSchematicManager.h"
-#include "FGUnlockRecipe.h"
-#include "FileHelper.h"
-#include "PlatformFilemanager.h"
+#include "Unlocks/FGUnlockRecipe.h"
+#include "Misc/FileHelper.h"
+#include "HAL/PlatformFilemanager.h"
 #include "Kismet/GameplayStatics.h"
 #include "IPlatformFilePak.h"
-#include "ModSubsystemHolder.h"
-#include "NativeHookManager.h"
-#include "ReflectionHelper.h"
-#include "SMLSubsystemHolder.h"
+#include "Subsystem/ModSubsystemHolder.h"
+#include "Patching/NativeHookManager.h"
+#include "Reflection/ReflectionHelper.h"
+#include "Subsystem/SMLSubsystemHolder.h"
 #include "Engine/AssetManager.h"
 
 DEFINE_LOG_CATEGORY(LogContentRegistry);
@@ -124,11 +124,11 @@ void AModContentRegistry::FlushStateToResearchManager(AFGResearchManager* Resear
     const TArray<TSharedPtr<FResearchTreeRegistrationInfo>> RegisteredResearchTrees = ResearchTreeRegistryState.GetAllObjects();
 
     //Empty lists while maintaining enough capacity to re-populate it later
-    ResearchManager->mAllResearchTrees.Empty(RegisteredResearchTrees.Num());
+    ResearchManager->mAvailableResearchTrees.Empty(RegisteredResearchTrees.Num());
 
     for (const TSharedPtr<FResearchTreeRegistrationInfo>& RegistrationInfo : RegisteredResearchTrees) {
         TSubclassOf<UFGResearchTree> ResearchTree = RegistrationInfo->RegisteredObject;
-        ResearchManager->mAllResearchTrees.Add(ResearchTree);
+        ResearchManager->mAvailableResearchTrees.Add(ResearchTree);
     }
     //Update unlocked research trees
     ResearchManager->UpdateUnlockedResearchTrees();

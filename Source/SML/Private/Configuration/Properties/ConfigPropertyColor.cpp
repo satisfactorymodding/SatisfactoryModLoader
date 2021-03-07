@@ -1,6 +1,6 @@
 ﻿#include "Configuration/Properties/ConfigPropertyColor.h"
-#include "CodeGeneration/ConfigVariableDescriptor.h"
-#include "CodeGeneration/ConfigVariableLibrary.h"
+#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
+#include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/Values/ConfigValueColor.h"
 
 UConfigPropertyColor::UConfigPropertyColor() {

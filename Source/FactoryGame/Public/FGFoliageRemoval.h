@@ -5,7 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "FGSaveInterface.h"
 #include "Engine/NetSerialization.h"
-#include "FGStaticReplicatedActor.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGFoliageRemoval.generated.h"
 
 /** Data about removed instances */

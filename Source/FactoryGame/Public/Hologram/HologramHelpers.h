@@ -2,9 +2,9 @@
 
 #pragma once
 
-#include "FGHologramGraphAStar.h"
+#include "Hologram/FGHologramGraphAStar.h"
 #include "Components/SplineComponent.h"
-#include "Stats.h"
+#include "Stats/Stats.h"
 
 DECLARE_STATS_GROUP( TEXT( "Hologram Helpers" ), STATGROUP_HologramHelpers, STATCAT_Advanced );
 

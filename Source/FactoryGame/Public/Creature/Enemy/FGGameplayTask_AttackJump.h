@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FGGameplayTask_Attack.h"
+#include "Creature/Enemy/FGGameplayTask_Attack.h"
 #include "FGGameplayTask_Attackjump.generated.h"
 
 /**

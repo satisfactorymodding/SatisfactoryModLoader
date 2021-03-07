@@ -1,23 +1,19 @@
-#include "ModHandler.h"
-#include "bootstrapper_exports.h"
+#include "ModLoading/ModHandler.h"
 #include "Engine/World.h"
-#include "PlatformFilemanager.h"
+#include "HAL/PlatformFilemanager.h"
 #include "IPlatformFilePak.h"
 #include "FGGameMode.h"
-#include "CoreDelegates.h"
+#include "Misc/CoreDelegates.h"
 #include "FactoryGameModule.h"
-#include "ModHandlerInternal.h"
+#include "ModLoading/ModHandlerInternal.h"
 #include "FGGameState.h"
-#include "GameInstanceModuleManager.h"
-#include "ModContentRegistry.h"
+#include "Module/GameInstanceModuleManager.h"
+#include "Registry/ModContentRegistry.h"
 #include "SatisfactoryModLoader.h"
 #include "SMLModule.h"
-#include "TopologicalSort.h"
-#include "WorldModuleManager.h"
-#include "ZipFile.h"
-#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
-#include "SMLInitMod.h"
-#endif
+#include "Util/TopologicalSort/TopologicalSort.h"
+#include "Module/WorldModuleManager.h"
+#include "Util/ZipFile/ZipFile.h"
 
 DEFINE_LOG_CATEGORY(LogModLoading);
 
@@ -27,44 +23,6 @@ DEFINE_LOG_CATEGORY(LogModLoading);
 	if (ELogVerbosity::Verbosity == ELogVerbosity::Error) {\
 		LoadingProblems.Add(FString::Printf(Message, ##__VA_ARGS__)); \
 	}
-
-bool GIsStartingUpModules = false;
-
-//needed here because FModuleInfo constructor references it
-int32 FModuleManager::FModuleInfo::CurrentLoadOrder = 10000;
-
-IModuleInterface* FModHandler::LoadModuleChecked(FName ModuleName, const FInitializeModuleFunctionPtr& ModuleInitializer) {
-	FModuleManager& ModuleManager = FModuleManager::Get();
-
-	//If module is already loaded, just return pointer to it
-	if (ModuleManager.IsModuleLoaded(ModuleName)) {
-		return ModuleManager.GetModule(ModuleName);
-	}
-
-	//Broadcast delegate indicating that new plugin directory has been mounted
-	ModuleManager.OnModulesChanged().Broadcast(ModuleName, EModuleChangeReason::PluginDirectoryChanged);
-
-	//Startup module and add it into the module manager hash table
-	FModuleManager::ModuleInfoRef ModuleInfo(new FModuleManager::FModuleInfo());
-	ModuleInfo->Module = TUniquePtr<IModuleInterface>(ModuleInitializer());
-	ModuleInfo->Module->StartupModule();
-	{
-		FScopeLock Lock(&ModuleManager.ModulesCriticalSection);
-		// Update hash table
-		ModuleManager.Modules.Add(ModuleName, ModuleInfo);
-	}
-
-	//Broadcast delegate indicating that module has been loaded
-	ModuleManager.OnModulesChanged().Broadcast(ModuleName, EModuleChangeReason::ModuleLoaded);
-	
-	if (ModuleManager.bCanProcessNewlyLoadedObjects)
-	{
-		//Process newly loaded UObjects if we are allowed to
-		ModuleManager.StartProcessingNewlyLoadedObjects();
-	}
-    return ModuleInfo->Module.Get();
-}
-
 
 bool FModHandler::IsModLoaded(const FString& ModReference) const {
 	return LoadedMods.Contains(ModReference);
@@ -86,37 +44,28 @@ TArray<const FModContainer*> FModHandler::GetLoadedMods() const {
 	return OutLoadedMods;
 }
 
-void FModHandler::LoadNativeModLibraries() {
-	for (const FModLoadingEntry& LoadingEntry : SortedModLoadList) {
-		const FString& ModReference = LoadingEntry.ModInfo.ModReference;
-		if (!LoadingEntry.DLLFilePath.IsEmpty()) {
-			void* LoadedModule;
-
-			//We cannot use #if IS_MONOLITHIC here because we are never building monolithic -
-			//Mod modules and SML are always build for modular build, just linked differently according to game distribution
-			if (BootstrapperAccessors.IsValid()) {
-				//Standard bootstrapper linking is available, use it (needed in Shipping because of monolithic build)
-				LoadedModule = BootstrapperAccessors->LoadModule(NULL, *LoadingEntry.DLLFilePath);
-			} else {
-				//We don't have bootstrapper accessors, try to use standard OpenLibraryW to load DLL file
-				//It should be fine because in shipping bootstrapper accessors should be always set,
-				//so this case can only happen when loading inside of the editor (where no bootstrapper is available)
-				LoadedModule = FPlatformProcess::GetDllHandle(*LoadingEntry.DLLFilePath);
-			}
-
-			if (LoadedModule == NULL) {
-				MOD_LOADING_LOG(Error, TEXT("Failed to load native mod library %s for mod %s"), *LoadingEntry.DLLFilePath, *ModReference);
-				continue;
-			}
-			LoadedNativeModLibraries.Add(ModReference, LoadedModule);
-		}
+FString ConvertFailureReasonToString(EModuleLoadResult FailureReason) {
+	if (FailureReason == EModuleLoadResult::FileNotFound) {
+		return TEXT("Module file cannot be found");
 	}
+	
+	if (FailureReason == EModuleLoadResult::FileIncompatible) {
+		return TEXT("Module is not compatible with the current version by the engine");
+	}
+	
+	if (FailureReason == EModuleLoadResult::CouldNotBeLoadedByOS) {
+		return TEXT("Module could not be loaded by the underlying operational system");
+	}
+	
+	if (FailureReason == EModuleLoadResult::FailedToInitialize) {
+		return TEXT("Module failed to initialize properly after being loaded");
+	}
+	
+	ensure(0);	// If this goes off, the error handling code should be updated for the new enum values!
+	return TEXT("Unknown module loading failure");
 }
 
 void FModHandler::InitializeNativeModules() {
-	//Set global indicating that we are performing module startup
-	GIsStartingUpModules = true;
-	
 	//SML Module should be already loaded to the process at this point, because it is the one triggering mod loading
 	const FString SMLModuleName = TEXT("SML");
 	FSMLModule& SMLModule = FModuleManager::Get().GetModuleChecked<FSMLModule>(*SMLModuleName);
@@ -126,23 +75,26 @@ void FModHandler::InitializeNativeModules() {
 	const FString FactoryGameModuleName = TEXT("FactoryGame");
 	FFactoryGameModule& FactoryGameModule = FModuleManager::Get().GetModuleChecked<FFactoryGameModule>(*FactoryGameModuleName);
 	InitializedNativeModModules.Add(FactoryGameModuleName, &FactoryGameModule);
-	
-	//Populate loaded modules map
-	for (const TPair<FString, void*>& Pair : LoadedNativeModLibraries) {
-		const FString& ModReference = Pair.Key;
-		void* NativeModulePtr = Pair.Value;
-		void* RawInitializeModulePtr = FPlatformProcess::GetDllExport(NativeModulePtr, TEXT("InitializeModule"));
-		const FInitializeModuleFunctionPtr InitModule = static_cast<FInitializeModuleFunctionPtr>(RawInitializeModulePtr);
-		if (InitModule == NULL) {
-			MOD_LOADING_LOG(Error, TEXT("Failed to initialize module for %s, InitializeModule function not found"), *ModReference);
-			continue;
-		}
-		IModuleInterface* ModuleInterface = LoadModuleChecked(*ModReference, InitModule);
-		InitializedNativeModModules.Add(ModReference, ModuleInterface);
-	}
 
-	//Reset global as we finish setting up native modules
-	GIsStartingUpModules = false;
+	FModuleManager& ModuleManager = FModuleManager::Get();
+	
+	for (const FModLoadingEntry& LoadingEntry : SortedModLoadList) {
+		const FString& ModReference = LoadingEntry.ModInfo.ModReference;
+		if (!LoadingEntry.DLLFilePath.IsEmpty()) {
+
+			//We cannot use #if IS_MONOLITHIC here because we are never building monolithic -
+			//Mod modules and SML are always build for modular build, just linked differently according to game distribution
+			ModuleManager.AddBinariesDirectory(*FPaths::GetPath(LoadingEntry.DLLFilePath), false);
+			EModuleLoadResult LoadResult;
+			IModuleInterface* ModuleInterface = ModuleManager.LoadModuleWithFailureReason(*ModReference, LoadResult);
+			if (ModuleInterface == NULL) {
+				const FString FailureReason = ConvertFailureReasonToString(LoadResult);
+				MOD_LOADING_LOG(Error, TEXT("Failed to load module for mod %s: %s"), *ModReference, *FailureReason);
+				continue;
+			}
+			InitializedNativeModModules.Add(ModReference, ModuleInterface);
+		}
+	}
 }
 
 void FModHandler::PopulateModList() {
@@ -227,23 +179,6 @@ void FModHandler::OnWorldActorsInitialization(UWorld* World) {
 	//Process construction and initialization
 	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::CONSTRUCTION);
 	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
-
-#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
-	//Spawn deprecated ASMLInitMod actors
-	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
-		const FString& ModReference = LoadEntry.ModReference;
-		UClass* DeprecatedInitModClass = LoadEntry.LegacyInitModClass;
-		if (DeprecatedInitModClass != NULL && DeprecatedInitModClass->IsChildOf<ASMLInitMod>()) {
-			FActorSpawnParameters SpawnParameters;
-			SpawnParameters.Name = *FString::Printf(TEXT("InitMod_%s"), *ModReference);
-			ASMLInitMod* InitMod = World->SpawnActor<ASMLInitMod>(DeprecatedInitModClass, SpawnParameters);
-			check(InitMod);
-			InitMod->ModReference = ModReference;
-			InitMod->PreInit();
-			InitMod->Init();
-		}
-	}
-#endif
 }
 
 void FModHandler::OnWorldLoadComplete(UWorld* World) {
@@ -252,15 +187,6 @@ void FModHandler::OnWorldLoadComplete(UWorld* World) {
 
 	//Just dispatch post initialization on module manager now
 	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
-
-#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
-	//Dispatch content registration and PostInit on old InitMod actors
-	for (TActorIterator<ASMLInitMod> It(World); It; ++It) {
-		ASMLInitMod* SMLInitMod = *It;
-		SMLInitMod->InitDefaultContent();
-		SMLInitMod->PostInit();
-	}
-#endif
 }
 
 void FModHandler::InitializeGameInstanceModules(UGameInstance* GameInstance) {
@@ -279,29 +205,12 @@ void FModHandler::InitializeGameInstanceModules(UGameInstance* GameInstance) {
 	//Run construction and initialization, post init will be run after configuration reload
 	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::CONSTRUCTION);
 	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
-
-#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
-	//Pre-Initialize old SMLInitMod content that should be registered prior to world loading
-	for (const FModPakLoadEntry& LoadEntry : ModPakInitializers) {
-		if (LoadEntry.LegacyInitModClass != NULL) {
-			UObject* DefaultObject = LoadEntry.LegacyInitModClass->GetDefaultObject();
-			ASMLInitMod* InitMod = Cast<ASMLInitMod>(DefaultObject);
-			if (InitMod) {
-				InitMod->RegisterEarlyLoadContent(LoadEntry.ModReference, GameInstance);
-			}
-		}
-	}
-#endif
 }
 
 void FModHandler::PostInitializeGameInstanceModules(UGameInstance* GameInstance) {
 	UGameInstanceModuleManager* ModuleManager = GameInstance->GetSubsystem<UGameInstanceModuleManager>();
 	check(ModuleManager);
 	ModuleManager->DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
-}
-
-void FModHandler::SetupWithAccessors(const BootstrapAccessors& Accessors) {
-	this->BootstrapperAccessors = MakeShareable(new BootstrapAccessors(Accessors));
 }
 
 void FModHandler::DiscoverMods() {
@@ -363,12 +272,6 @@ void FModHandler::PerformModListSorting() {
 	LoadingEntries.Empty();
 	
 	CheckStageErrors(TEXT("dependency resolution"));
-}
-
-void FModHandler::PreInitializeMods() {
-	UE_LOG(LogModLoading, Display, TEXT("Loading native mod libraries into process address space..."));
-	LoadNativeModLibraries();
-	CheckStageErrors(TEXT("pre initialization"));
 }
 
 bool FModHandler::ShouldInitializeModulesOnWorld(UWorld* World) {

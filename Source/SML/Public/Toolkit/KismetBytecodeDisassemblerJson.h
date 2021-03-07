@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "CoreNetTypes.h"
-#include "JsonObject.h"
+#include "UObject/CoreNetTypes.h"
+#include "Dom/JsonObject.h"
 
 class SML_API FKismetBytecodeDisassemblerJson {
 public:

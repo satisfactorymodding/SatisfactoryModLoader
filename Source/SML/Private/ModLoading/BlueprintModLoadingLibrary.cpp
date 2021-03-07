@@ -1,5 +1,5 @@
-﻿#include "BlueprintModLoadingLibrary.h"
-#include "ModHandler.h"
+#include "ModLoading/BlueprintModLoadingLibrary.h"
+#include "ModLoading/ModHandler.h"
 #include "SatisfactoryModLoader.h"
 #include "Util/ImageLoadingUtil.h"
 

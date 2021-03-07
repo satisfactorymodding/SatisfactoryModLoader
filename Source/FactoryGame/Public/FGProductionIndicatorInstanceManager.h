@@ -4,7 +4,7 @@
 
 
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
-#include "FGBuildableFactory.h"
+#include "Buildables/FGBuildableFactory.h"
 #include "FGProductionIndicatorInstanceManager.generated.h"
 
 

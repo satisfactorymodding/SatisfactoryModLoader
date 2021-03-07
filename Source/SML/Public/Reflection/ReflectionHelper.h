@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "Class.h"
-#include "Casts.h"
+#include "UObject/Class.h"
+#include "Templates/Casts.h"
 #include "ReflectionHelper.generated.h"
 
 USTRUCT(BlueprintInternalUseOnly)

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGBuildableDecor.generated.h" 
 
 

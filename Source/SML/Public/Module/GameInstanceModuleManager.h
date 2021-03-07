@@ -1,5 +1,5 @@
 #pragma once
-#include "GameInstanceSubsystem.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "Module/GameInstanceModule.h"
 #include "GameInstanceModuleManager.generated.h"
 

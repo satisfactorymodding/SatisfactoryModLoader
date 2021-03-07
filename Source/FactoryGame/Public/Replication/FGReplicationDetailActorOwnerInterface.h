@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FGReplicationDetailActor.h"
+#include "Replication/FGReplicationDetailActor.h"
 #include "FGReplicationDetailActorOwnerInterface.generated.h"
 
 /**

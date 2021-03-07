@@ -1,12 +1,12 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "KismetIntermediateFormat.h"
+#include "AssetGeneration/KismetIntermediateFormat.h"
 #include "EdGraphSchema_K2.h"
 
 class UK2Node_CreateDelegate;
 class UK2Node_BaseMCDelegate;
 
-struct SML_API FKismetTerminalAsKeyType {
+struct SMLEDITOR_API FKismetTerminalAsKeyType {
 public:
     TSharedPtr<FKismetTerminal> Terminal;
     FORCEINLINE FKismetTerminalAsKeyType(const TSharedPtr<FKismetTerminal>& Terminal) : Terminal(Terminal) {}
@@ -20,7 +20,7 @@ FORCEINLINE uint32 GetTypeHash(const FKismetTerminalAsKeyType& Key) {
     return GetTypeHash(*Key.Terminal);
 }
 
-class SML_API FKismetGraphDecompiler {
+class SMLEDITOR_API FKismetGraphDecompiler {
 public:
     /** Constructs decompiler object for provided function and graph */
     FKismetGraphDecompiler(UFunction* Function, UEdGraph* Graph);
@@ -106,5 +106,4 @@ private:
 
     /** Map of create delegate nodes to patch up after terminals have been connected */
     TMap<UK2Node_CreateDelegate*, FName> CreateDelegatePatchUpMap;
-    
 };

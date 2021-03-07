@@ -2,12 +2,9 @@
 #include "AssetToolsModule.h"
 #include "EdGraphSchema_K2.h"
 #include "FileHelpers.h"
-#include "MessageDialog.h"
-#include "StructureEditorUtils.h"
-#include "CodeGeneration/ConfigGenerationContext.h"
+#include "Configuration/CodeGeneration/ConfigGenerationContext.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Factories/StructureFactory.h"
-#include "Private/AssetTools.h"
 #include "UserDefinedStructure/UserDefinedStructEditorData.h"
 #define LOCTEXT_NAMESPACE "SML"
 

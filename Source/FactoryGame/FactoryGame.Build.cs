@@ -7,6 +7,8 @@ public class FactoryGame : ModuleRules
     public FactoryGame(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        bLegacyPublicIncludePaths = false;
+        ShadowVariableWarningLevel = WarningLevel.Warning;
 
         //FactoryGame transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
@@ -30,6 +32,6 @@ public class FactoryGame : ModuleRules
         
         PrivatePCHHeaderFile = "Public/FactoryGame.h";
         
-        PrivateDefinitions.Add( "IS_PUBLIC_BUILD=1" ); 
+        PublicDefinitions.Add( "IS_PUBLIC_BUILD=1" ); 
     }
 }

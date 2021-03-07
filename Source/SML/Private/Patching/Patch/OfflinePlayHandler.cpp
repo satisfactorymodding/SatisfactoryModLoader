@@ -1,7 +1,7 @@
-﻿#include "Patching/Patch/OfflinePlayerHandler.h"
+#include "Patching/Patch/OfflinePlayerHandler.h"
 #include "FGLocalPlayer.h"
-#include "NativeHookManager.h"
-#include "OnlineEngineInterface.h"
+#include "Patching/NativeHookManager.h"
+#include "Net/OnlineEngineInterface.h"
 #include "SatisfactoryModLoader.h"
 
 void FOfflinePlayerHandler::RegisterHandlerPatches() {

@@ -1,5 +1,5 @@
-﻿#include "Public/Reflection/BlueprintReflectedObject.h"
-#include "TextProperty.h"
+#include "Reflection/BlueprintReflectedObject.h"
+#include "UObject/TextProperty.h"
 
 #define GET_PROPERTY(PropertyType, bCheckWriteable) \
     PropertyType* Property = Cast<PropertyType>(FindProperty(PropertyName, bCheckWriteable)); \

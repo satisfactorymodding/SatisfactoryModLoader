@@ -1,5 +1,5 @@
-﻿#include "Toolkit/AssetTypes/UserDefinedEnumAssetSerializer.h"
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/UserDefinedEnumAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Engine/UserDefinedEnum.h"
 
 void UUserDefinedEnumAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

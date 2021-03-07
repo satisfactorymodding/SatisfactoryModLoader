@@ -1,14 +1,14 @@
-﻿#pragma once
+#pragma once
 #include "Patching/Patch/OptionsKeybindPatch.h"
-#include "BlueprintHookHelper.h"
-#include "BlueprintHookManager.h"
-#include "ModHandler.h"
-#include "ReflectionHelper.h"
+#include "Patching/BlueprintHookHelper.h"
+#include "Patching/BlueprintHookManager.h"
+#include "ModLoading/ModHandler.h"
+#include "Reflection/ReflectionHelper.h"
 #include "SatisfactoryModLoader.h"
-#include "TextBlock.h"
-#include "UserWidget.h"
-#include "VerticalBox.h"
-#include "WidgetBlueprintLibrary.h"
+#include "Components/TextBlock.h"
+#include "Blueprint/UserWidget.h"
+#include "Components/VerticalBox.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/UserDefinedStruct.h"
 

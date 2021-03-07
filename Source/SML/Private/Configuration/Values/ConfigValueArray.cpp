@@ -1,5 +1,5 @@
-﻿#include "Configuration/Values/ConfigValueArray.h"
-#include "RawFormatValueArray.h"
+#include "Configuration/Values/ConfigValueArray.h"
+#include "Configuration/RawFileFormat/RawFormatValueArray.h"
 
 int32 UConfigValueArray::ElementCount() const {
     return Values.Num();

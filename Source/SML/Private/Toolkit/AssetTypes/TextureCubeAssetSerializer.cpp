@@ -1,7 +1,7 @@
-﻿#include "Toolkit/AssetTypes/TextureCubeAssetSerializer.h"
+#include "Toolkit/AssetTypes/TextureCubeAssetSerializer.h"
 #include "Engine/TextureCube.h"
-#include "AssetHelper.h"
-#include "AssetTypes/TextureAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetTypes/TextureAssetSerializer.h"
 
 void UTextureCubeAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
     const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);

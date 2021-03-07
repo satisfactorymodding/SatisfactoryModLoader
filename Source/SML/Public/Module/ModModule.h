@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "Object.h"
-#include "SubclassOf.h"
-#include "SoftObjectPtr.h"
+#include "UObject/Object.h"
+#include "Templates/SubclassOf.h"
+#include "UObject/SoftObjectPtr.h"
 #include "ModModule.generated.h"
 
 /** Describes lifecycle phase of mod module */
@@ -53,5 +53,5 @@ protected:
     void K2_OnLifecycleEvent(ELifecyclePhase Phase);
 
     /** Updates associated mod reference. !!! DO NOT CALL DIRECTLY !!! */
-    FORCEINLINE void SetOwnerModReference(const FName& OwnerModReference) { this->OwnerModReference = OwnerModReference; }
+    FORCEINLINE void SetOwnerModReference(const FName NewOwnerModReference) { this->OwnerModReference = NewOwnerModReference; }
 };

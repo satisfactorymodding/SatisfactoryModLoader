@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "CommandSender.h"
+#include "Command/CommandSender.h"
 #include "PlayerCommandSender.generated.h"
 
 /**

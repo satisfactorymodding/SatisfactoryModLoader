@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FGEquipment.h"
+#include "Equipment/FGEquipment.h"
 #include "FGConsumableEquipment.generated.h"
 
 /** Used to hold consumeables, so we can eat berries, and consume medpacks a.s.o */

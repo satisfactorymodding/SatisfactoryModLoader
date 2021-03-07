@@ -8,7 +8,7 @@
 #include "Engine/LocalPlayer.h"
 #include "OnlineSubsystemTypes.h"
 #include "FGErrorMessage.h"
-#include "CoreOnline.h"
+#include "UObject/CoreOnline.h"
 #include "FindSessionsCallbackProxy.h"
 // MODDING EDIT: Online stuff...
 //#include "EOSSDKForwards.h"

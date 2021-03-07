@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FGEquipmentDescriptor.h"
+#include "Resources/FGEquipmentDescriptor.h"
 #include "FGConsumableDescriptor.generated.h"
 
 /**

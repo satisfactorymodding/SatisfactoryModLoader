@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
 #include "FGRemoteCallObject.h"
-#include "PlayerCommandSender.h"
-#include "SemVersion.h"
+#include "Player/PlayerCommandSender.h"
+#include "Util/SemVersion.h"
 #include "SMLRemoteCallObject.generated.h"
 
 UCLASS(NotBlueprintable)

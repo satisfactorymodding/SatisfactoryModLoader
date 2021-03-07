@@ -1,8 +1,8 @@
-#include "ZipFile.h"
+#include "Util/ZipFile/ZipFile.h"
 
-#include "FileHelper.h"
+#include "Misc/FileHelper.h"
 #include "miniz.h"
-#include "PlatformFilemanager.h"
+#include "HAL/PlatformFilemanager.h"
 
 #define ZipArchive static_cast<mz_zip_archive*>(ZipArchiveHandle)
 

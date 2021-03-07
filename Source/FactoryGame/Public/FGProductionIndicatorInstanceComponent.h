@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGBuildableFactory.h"
+#include "Buildables/FGBuildableFactory.h"
 #include "Components/SceneComponent.h"
 #include "FGProductionIndicatorInstanceManager.h"
 #include "FGProductionIndicatorInstanceComponent.generated.h"

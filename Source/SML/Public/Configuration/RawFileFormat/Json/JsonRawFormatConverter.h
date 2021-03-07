@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "RawFormatValue.h"
+#include "Configuration/RawFileFormat/RawFormatValue.h"
 #include "Json.h"
 
 /**

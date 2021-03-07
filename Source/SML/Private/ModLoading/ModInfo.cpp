@@ -1,7 +1,7 @@
-#include "ModInfo.h"
-#include "JsonTypes.h"
+#include "ModLoading/ModInfo.h"
+#include "Serialization/JsonTypes.h"
 #include "SatisfactoryModLoader.h"
-#include "JsonObject.h"
+#include "Dom/JsonObject.h"
 #include <regex>
 
 bool ReadDependenciesInfo(TMap<FString, FVersionRange>& ResultDependenciesMap, const FJsonObject& DependenciesObject, const FString& ModReference, FString& OutErrorMessage) {

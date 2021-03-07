@@ -1,6 +1,6 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "ModInfo.h"
+#include "ModLoading/ModInfo.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BlueprintModLoadingLibrary.generated.h"
 

@@ -1,12 +1,11 @@
-﻿#include "Toolkit/AssetTypes/FbxMeshExporter.h"
+#include "Toolkit/AssetTypes/FbxMeshExporter.h"
 #include "AnimEncoding.h"
-#include "AnimSequenceDecompressionContext.h"
-#include "NativeHookManager.h"
+#include "Patching/NativeHookManager.h"
 #include "SatisfactoryModLoader.h"
-#include "SkeletalMeshLODRenderData.h"
-#include "SkeletalMeshRenderData.h"
+#include "Rendering/SkeletalMeshLODRenderData.h"
+#include "Rendering/SkeletalMeshRenderData.h"
 #include "Animation/AnimSequence.h"
-#include "AssetTypes/FbxDataConverter.h"
+#include "Toolkit/AssetTypes/FbxDataConverter.h"
 #include "Engine/SkeletalMesh.h"
 #include "Engine/StaticMesh.h"
 
@@ -19,25 +18,17 @@ FString GetNameForUVChannel(uint32 Index) {
     return FString::Printf(TEXT("uv%d"), Index + 1);
 }
 
-static bool GAllowMeshDataCPUAccess = false;
+void WrappedStaticMeshConstructor(const FObjectInitializer& Initializer) {
+	new((EInternal*)Initializer.GetObj()) UStaticMesh(Initializer);
+	UStaticMesh* StaticMesh = static_cast<UStaticMesh*>(Initializer.GetObj());
+	StaticMesh->bAllowCPUAccess = true;
+	UE_LOG(LogTemp, Fatal, TEXT("Poggers, constructor is called!~"));
+}
 
 void FFbxMeshExporter::RegisterStaticMeshCPUAccessHook() {
-    GAllowMeshDataCPUAccess = true;
-    SUBSCRIBE_METHOD(FStaticMeshLODResources::Serialize, [](auto& Call, FStaticMeshLODResources* Resources, FArchive& Ar, UObject* Owner, int32 Index) {
-        UStaticMesh* OwnerStaticMesh = Cast<UStaticMesh>(Owner);
-        bool bOldAllowCPUAccess = false;
-        //Set bAllowCPUAccess to true before calling parent function
-        if (OwnerStaticMesh) {
-            bOldAllowCPUAccess = OwnerStaticMesh->bAllowCPUAccess;
-            OwnerStaticMesh->bAllowCPUAccess = true;
-        }
-        //Call parent function with overriden allow CPU access
-        Call(Resources, Ar, Owner, Index);
-        //Reset bAllowCPUAccess value
-        if (OwnerStaticMesh) {
-            OwnerStaticMesh->bAllowCPUAccess = bOldAllowCPUAccess;
-        }
-    });
+	//UObject system should be initialized at this point so we can change UStaticMesh CDO
+	check(UObjectInitialized());
+	GetMutableDefault<UStaticMesh>()->bAllowCPUAccess = true;
 }
 
 FbxManager* AllocateFbxManagerForExport() {
@@ -115,7 +106,7 @@ bool ExportFbxSceneToFileByPath(const FString& OutFileName, FbxScene* Scene, boo
 
 bool FFbxMeshExporter::ExportStaticMeshIntoFbxFile(UStaticMesh* StaticMesh, const FString& OutFileName, const bool bExportAsText, FString* OutErrorMessage) {
     //Make sure we either force static mesh data on CPU globally or mesh has it set locally
-    check(GAllowMeshDataCPUAccess || StaticMesh->bAllowCPUAccess);
+    check(StaticMesh->bAllowCPUAccess);
     FbxManager* FbxManager = AllocateFbxManagerForExport();
     check(FbxManager);
 
@@ -281,45 +272,6 @@ bool FFbxMeshExporter::ExportAnimSequenceIntoFbxFile(UAnimSequence* AnimSequence
 	return bResult;
 }
 
-int32 Skeleton_GetSkeletonBoneIndexFromMeshBoneIndex(USkeleton* Skeleton, const USkeletalMesh* InSkelMesh, const int32 MeshBoneIndex) {
-	check(MeshBoneIndex != INDEX_NONE);
-	const int32 LinkupCacheIdx = Skeleton->GetMeshLinkupIndex(InSkelMesh);
-	const FSkeletonToMeshLinkup& LinkupTable = Skeleton->LinkupCache[LinkupCacheIdx];
-
-	return LinkupTable.MeshToSkeletonTable[MeshBoneIndex];
-}
-
-int32 Skeleton_GetAnimationTrackIndex(const int32 InSkeletonBoneIndex, const UAnimSequence* InAnimSeq, const bool bUseRawData) {
-	const TArray<FTrackToSkeletonMap>& TrackToSkelMap = bUseRawData ? InAnimSeq->GetRawTrackToSkeletonMapTable() : InAnimSeq->GetCompressedTrackToSkeletonMapTable();
-	if( InSkeletonBoneIndex != INDEX_NONE )
-	{
-		for (int32 TrackIndex = 0; TrackIndex<TrackToSkelMap.Num(); ++TrackIndex)
-		{
-			const FTrackToSkeletonMap& TrackToSkeleton = TrackToSkelMap[TrackIndex];
-			if( TrackToSkeleton.BoneTreeIndex == InSkeletonBoneIndex )
-			{
-				return TrackIndex;
-			}
-		}
-	}
-
-	return INDEX_NONE;
-}
-
-void AnimSequence_GetBoneTransform(const UAnimSequence* AnimSequence, FTransform& OutAtom, int32 TrackIndex, float Time, bool bUseRawData) {
-	// If the caller didn't request that raw animation data be used . . .
-	if ( !bUseRawData && AnimSequence->IsCompressedDataValid() )
-	{
-		FAnimSequenceDecompressionContext DecompContext(AnimSequence);
-		DecompContext.Seek(Time);
-		checkSlow(DecompContext.GetRotationCodec() != nullptr);
-		DecompContext.GetRotationCodec()->GetBoneAtom(OutAtom, DecompContext, TrackIndex);
-		return;
-	}
-
-	AnimSequence->ExtractBoneTransform(AnimSequence->GetRawAnimationData(), OutAtom, TrackIndex, Time);
-}
-
 void FFbxMeshExporter::ExportAnimSequence(const UAnimSequence* AnimSeq, TArray<FbxNode*>& BoneNodes, USkeletalMesh* SkeletalMesh, FbxAnimStack* AnimStack, FbxAnimLayer* InAnimLayer, float AnimStartOffset, float AnimEndOffset, float AnimPlayRate, float StartTime) {
 	USkeleton* Skeleton = AnimSeq->GetSkeleton();
 
@@ -406,8 +358,8 @@ void FFbxMeshExporter::ExportAnimSequence(const UAnimSequence* AnimSeq, TArray<F
 		FbxTime ExportTimeIncrement;
 		ExportTimeIncrement.SetSecondDouble(TimePerKey);
 
-		int32 BoneTreeIndex = SkeletalMesh ? Skeleton_GetSkeletonBoneIndexFromMeshBoneIndex(Skeleton, SkeletalMesh, BoneIndex) : BoneIndex;
-		int32 BoneTrackIndex = Skeleton_GetAnimationTrackIndex(BoneTreeIndex, AnimSeq, false);
+		int32 BoneTreeIndex = SkeletalMesh ? Skeleton->GetSkeletonBoneIndexFromMeshBoneIndex(SkeletalMesh, BoneIndex) : BoneIndex;
+		int32 BoneTrackIndex = Skeleton->GetRawAnimationTrackIndex(BoneTreeIndex, AnimSeq);
 		if(BoneTrackIndex == INDEX_NONE) {
 			// If this sequence does not have a track for the current bone, then skip it
 			continue;
@@ -421,7 +373,7 @@ void FFbxMeshExporter::ExportAnimSequence(const UAnimSequence* AnimSeq, TArray<F
 		// Step through each frame and add the bone's transformation data
 		while (!bLastKey) {
 			FTransform BoneAtom;
-			AnimSequence_GetBoneTransform(AnimSeq, BoneAtom, BoneTrackIndex, AnimTime, false);
+			AnimSeq->GetBoneTransform(BoneAtom, BoneTrackIndex, AnimTime, false);
 
 			FbxVector4 Translation = FFbxDataConverter::ConvertToFbxPos(BoneAtom.GetTranslation());
 			FbxVector4 Rotation = FFbxDataConverter::ConvertToFbxRot(BoneAtom.GetRotation().Euler());
@@ -671,25 +623,6 @@ int32 ExportDummyMaterialIntoFbxScene(const FString& MaterialSlotName, FbxNode* 
     return Node->AddMaterial(DummySectionMaterial);
 }
 
-template<bool bHasExtraInfluences>
-FORCEINLINE uint8 GetSkinWeightForVertex_Impl(const FSkinWeightVertexBuffer& SkinWeightVertexBuffer, uint32 VertexIndex, uint8* OutInfluenceBones, uint8* OutInfluenceWeights) {
-    using SkinWeightInfoStruct = TSkinWeightInfo<bHasExtraInfluences>;
-    const SkinWeightInfoStruct* SkinWeightInfo = SkinWeightVertexBuffer.GetSkinWeightPtr<bHasExtraInfluences>(VertexIndex);
-        
-    //We have 4 influences per vertex, just fill out buffers using memcpy directly
-    FPlatformMemory::Memcpy(OutInfluenceBones, SkinWeightInfo->InfluenceBones, SkinWeightInfoStruct::NumInfluences);
-    FPlatformMemory::Memcpy(OutInfluenceWeights, SkinWeightInfo->InfluenceWeights, SkinWeightInfoStruct::NumInfluences);
-    return SkinWeightInfoStruct::NumInfluences;
-}
-
-FORCEINLINE uint8 GetSkinWeightForVertex(const FSkinWeightVertexBuffer& SkinWeightVertexBuffer, uint32 VertexIndex, uint8* OutInfluenceBones, uint8* OutInfluenceWeights) {
-    if (SkinWeightVertexBuffer.HasExtraBoneInfluences()) {
-        return GetSkinWeightForVertex_Impl<true>(SkinWeightVertexBuffer, VertexIndex, OutInfluenceBones, OutInfluenceWeights);
-    } else {
-        return GetSkinWeightForVertex_Impl<false>(SkinWeightVertexBuffer, VertexIndex, OutInfluenceBones, OutInfluenceWeights);
-    }
-}
-
 void AddNodeRecursively(TArray<FbxNode*>& OutNodeArray, FbxNode* Node) {
 	if (Node) {
 		AddNodeRecursively(OutNodeArray, Node->GetParent());
@@ -763,6 +696,67 @@ void FFbxMeshExporter::CreateBindPose(FbxNode* MeshRootNode) {
 	}
 }
 
+uint32 FSkinWeightDataVertexBuffer_GetBoneIndex(const FSkinWeightDataVertexBuffer& VertexBuffer, uint32 VertexWeightOffset, uint32 VertexInfluenceCount, uint32 InfluenceIndex) {	
+	if (InfluenceIndex < VertexInfluenceCount) {
+		const uint8* BoneData = VertexBuffer.GetData() + VertexWeightOffset;
+		if (VertexBuffer.Use16BitBoneIndex()) {
+			FBoneIndex16* BoneIndex16Ptr = (FBoneIndex16*)BoneData;
+			return BoneIndex16Ptr[InfluenceIndex];
+		}
+		return BoneData[InfluenceIndex];
+	}
+	return 0;
+}
+
+uint8 FSkinWeightDataVertexBuffer_GetBoneWeight(const FSkinWeightDataVertexBuffer& VertexBuffer, uint32 VertexWeightOffset, uint32 VertexInfluenceCount, uint32 InfluenceIndex) {
+	if (InfluenceIndex < VertexInfluenceCount){
+		const uint8* BoneData = VertexBuffer.GetData() + VertexWeightOffset;
+		uint32 BoneWeightOffset = VertexBuffer.GetBoneIndexByteSize() * VertexInfluenceCount;
+		return BoneData[BoneWeightOffset + InfluenceIndex];
+	}
+	return 0;
+}
+
+void FSkinWeightLookupVertexBuffer_GetWeightOffsetAndInfluenceCount(const FSkinWeightLookupVertexBuffer& VertexBuffer, uint32 VertexIndex, uint32& OutWeightOffset, uint32& OutInfluenceCount) {
+	uint32 Offset = VertexIndex * 4;
+	uint32 DataUInt32 = *((const uint32*)(&VertexBuffer.GetData()[Offset]));
+	OutWeightOffset = DataUInt32 >> 8;
+	OutInfluenceCount = DataUInt32 & 0xff;
+}
+
+//Copied from FSkinWeightVertexBuffer methods because they are not exported by the engine
+void FSkinWeightVertexBuffer_GetVertexInfluenceOffsetCount(const FSkinWeightVertexBuffer& Buffer, uint32 VertexIndex, uint32& VertexWeightOffset, uint32& VertexInfluenceCount) {
+	if (Buffer.GetVariableBonesPerVertex()) {
+		FSkinWeightLookupVertexBuffer_GetWeightOffsetAndInfluenceCount(*Buffer.GetLookupVertexBuffer(), VertexIndex, VertexWeightOffset, VertexInfluenceCount);
+	} else {
+		VertexWeightOffset = Buffer.GetConstantInfluencesVertexStride() * VertexIndex;
+		VertexInfluenceCount = Buffer.GetMaxBoneInfluences();
+	}
+}
+
+uint32 FSkinWeightVertexBuffer_GetBoneIndex(const FSkinWeightVertexBuffer& Buffer, uint32 VertexIndex, uint32 InfluenceIndex) {
+	uint32 VertexWeightOffset = 0;
+	uint32 VertexInfluenceCount = 0;
+	FSkinWeightVertexBuffer_GetVertexInfluenceOffsetCount(Buffer, VertexIndex, VertexWeightOffset, VertexInfluenceCount);
+	return FSkinWeightDataVertexBuffer_GetBoneIndex(*Buffer.GetDataVertexBuffer(), VertexWeightOffset, VertexInfluenceCount, InfluenceIndex);
+}
+
+uint8 FSkinWeightVertexBuffer_GetBoneWeight(const FSkinWeightVertexBuffer& Buffer, uint32 VertexIndex, uint32 InfluenceIndex) {
+	uint32 VertexWeightOffset = 0;
+	uint32 VertexInfluenceCount = 0;
+	FSkinWeightVertexBuffer_GetVertexInfluenceOffsetCount(Buffer, VertexIndex, VertexWeightOffset, VertexInfluenceCount);
+	return FSkinWeightDataVertexBuffer_GetBoneWeight(*Buffer.GetDataVertexBuffer(), VertexWeightOffset, VertexInfluenceCount, InfluenceIndex);
+}
+
+FSkinWeightInfo FSkinWeightVertexBuffer_GetVertexSkinWeights(const FSkinWeightVertexBuffer& Buffer, uint32 VertexIndex) {
+	FSkinWeightInfo OutVertex;
+	for (int32 InfluenceIdx = 0; InfluenceIdx < MAX_TOTAL_INFLUENCES; InfluenceIdx++) {
+		OutVertex.InfluenceBones[InfluenceIdx] = FSkinWeightVertexBuffer_GetBoneIndex(Buffer, VertexIndex, InfluenceIdx);
+		OutVertex.InfluenceWeights[InfluenceIdx] = FSkinWeightVertexBuffer_GetBoneWeight(Buffer, VertexIndex, InfluenceIdx);
+	}
+	return OutVertex;
+}
+
 void FFbxMeshExporter::BindSkeletalMeshToSkeleton(const FSkeletalMeshLODRenderData& SkeletalMeshLOD, const TArray<FbxNode*>& BoneNodes, FbxNode* MeshRootNode) {
 	FbxScene* Scene = MeshRootNode->GetScene();
 	FbxAMatrix MeshMatrix = MeshRootNode->EvaluateGlobalTransform();
@@ -771,9 +765,6 @@ void FFbxMeshExporter::BindSkeletalMeshToSkeleton(const FSkeletalMeshLODRenderDa
 	FbxSkin* Skin = FbxSkin::Create(Scene, "");
     const FSkinWeightVertexBuffer& SkinWeightVertexBuffer = SkeletalMeshLOD.SkinWeightVertexBuffer;
 
-    uint8 OutInfluenceBones[MAX_TOTAL_INFLUENCES];
-    uint8 OutInfluenceWeights[MAX_TOTAL_INFLUENCES];
-	
 	const int32 BoneCount = BoneNodes.Num();
 	for(int32 BoneIndex = 0; BoneIndex < BoneCount; ++BoneIndex) {
 		FbxNode* BoneNode = BoneNodes[BoneIndex];
@@ -791,11 +782,11 @@ void FFbxMeshExporter::BindSkeletalMeshToSkeleton(const FSkeletalMeshLODRenderDa
 	        
 	        for (uint32 VertexIndex = BaseVertexIndex; VertexIndex < MaxVertexIndex; VertexIndex++) {
 	            //Retrieve influences for this exact vertex
-                const uint8 NumInfluencesForVertex = GetSkinWeightForVertex(SkinWeightVertexBuffer, VertexIndex, OutInfluenceBones, OutInfluenceWeights);
+	        	FSkinWeightInfo WeightInfo = FSkinWeightVertexBuffer_GetVertexSkinWeights(SkinWeightVertexBuffer, VertexIndex);
 
-	            for (int32 InfluenceIndex = 0; InfluenceIndex < NumInfluencesForVertex; InfluenceIndex++) {
-                    const int32 InfluenceBone = RenderSection.BoneMap[OutInfluenceBones[InfluenceIndex]];
-                    const float InfluenceWeight = OutInfluenceWeights[InfluenceIndex] / 255.f;
+	            for (int32 InfluenceIndex = 0; InfluenceIndex < MAX_TOTAL_INFLUENCES; InfluenceIndex++) {
+                    const int32 InfluenceBone = RenderSection.BoneMap[WeightInfo.InfluenceBones[InfluenceIndex]];
+                    const float InfluenceWeight = WeightInfo.InfluenceWeights[InfluenceIndex] / 255.f;
 
 	                if(InfluenceBone == BoneIndex && InfluenceWeight > 0.0f) {
 	                    CurrentCluster->AddControlPointIndex(VertexIndex, InfluenceWeight);

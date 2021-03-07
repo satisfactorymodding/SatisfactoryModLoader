@@ -1,9 +1,9 @@
-﻿#include "Toolkit/AssetTypes/SkeletonAssetSerializer.h"
-#include "AssetHelper.h"
-#include "FbxMeshExporter.h"
-#include "PropertySerializer.h"
-#include "ReflectionHelper.h"
-#include "SkeletalMeshAssetSerializer.h"
+#include "Toolkit/AssetTypes/SkeletonAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetTypes/FbxMeshExporter.h"
+#include "Toolkit/PropertySerializer.h"
+#include "Reflection/ReflectionHelper.h"
+#include "Toolkit/AssetTypes/SkeletalMeshAssetSerializer.h"
 #include "Animation/Skeleton.h"
 
 void USkeletonAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
@@ -60,27 +60,35 @@ void USkeletonAssetSerializer::SerializeSkeleton(USkeleton* Skeleton, TSharedPtr
 void USkeletonAssetSerializer::SerializeSmartNameContainer(const FSmartNameContainer& Container, TSharedPtr<FJsonObject> OutObject) {
     //Serialize smart name mappings
     TArray<TSharedPtr<FJsonValue>> NameMappings;
-    for (const TPair<FName, FSmartNameMapping>& Pair : Container.GetNameMappings()) {
+    for (FName SmartNameId : Container.GetMappingNames()) {
+        const FSmartNameMapping* Mapping = Container.GetContainer(SmartNameId);
+        
         TSharedPtr<FJsonObject> NameMapping = MakeShareable(new FJsonObject());
-        NameMapping->SetStringField(TEXT("Name"), Pair.Key.ToString());
+        NameMapping->SetStringField(TEXT("Name"), SmartNameId.ToString());
+        
         TArray<FName> MetaDataKeys;
-        Pair.Value.FillUIDToNameArray(MetaDataKeys);
+        Mapping->FillUIDToNameArray(MetaDataKeys);
 
         TArray<TSharedPtr<FJsonValue>> CurveMetaDataMap;
+        
         for (const FName& MetaDataKey : MetaDataKeys) {
             const TSharedPtr<FJsonObject> MetaDataObject = MakeShareable(new FJsonObject());
-            const FCurveMetaData* MetaData = Pair.Value.GetCurveMetaData(MetaDataKey);
+            const FCurveMetaData* MetaData = Mapping->GetCurveMetaData(MetaDataKey);
+            
             MetaDataObject->SetStringField(TEXT("MetaDataKey"), MetaDataKey.ToString());
             MetaDataObject->SetBoolField(TEXT("bMaterial"), MetaData->Type.bMaterial);
             MetaDataObject->SetBoolField(TEXT("bMorphtarget"), MetaData->Type.bMorphtarget);
             MetaDataObject->SetNumberField(TEXT("MaxLOD"), MetaData->MaxLOD);
+            
             TArray<TSharedPtr<FJsonValue>> LinkedBones;
             for (const FBoneReference& BoneReference : MetaData->LinkedBones) {
                 LinkedBones.Add(MakeShareable(new FJsonValueString(BoneReference.BoneName.ToString())));
             }
+            
             MetaDataObject->SetArrayField(TEXT("LinkedBones"), LinkedBones);
             CurveMetaDataMap.Add(MakeShareable(new FJsonValueObject(MetaDataObject)));
         }
+        
         NameMapping->SetArrayField(TEXT("CurveMetaDataMap"), CurveMetaDataMap);
         NameMappings.Add(MakeShareable(new FJsonValueObject(NameMapping)));
     }

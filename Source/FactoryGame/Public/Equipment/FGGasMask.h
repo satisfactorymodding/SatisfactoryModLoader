@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipment.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "FGGasMask.generated.h"
 
 UCLASS()

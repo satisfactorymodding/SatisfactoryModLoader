@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGBuildableFactory.h"
+#include "Buildables/FGBuildableFactory.h"
 #include "Resources/FGExtractableResourceInterface.h"
 #include "Resources/FGResourceDescriptor.h"
 #include "Replication/FGRepDetailActor_Extractor.h"

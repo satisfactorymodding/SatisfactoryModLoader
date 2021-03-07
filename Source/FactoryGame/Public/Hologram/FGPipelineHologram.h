@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "HologramHelpers.h"
+#include "Hologram/HologramHelpers.h"
 #include "Hologram/FGSplineHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGPipelineHologram.generated.h"

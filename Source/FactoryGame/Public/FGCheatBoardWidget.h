@@ -4,7 +4,7 @@
 
 #include "FGCheatManager.h"
 #include "SlateBasics.h"
-#include "STreeView.h"
+#include "Widgets/Views/STreeView.h"
 
 #if WITH_CHEATS
 

@@ -1,6 +1,6 @@
-﻿#include "ReplicationDetailActorGenerated.h"
-#include "BuildableFactoryReplicated.h"
-#include "UnrealNetwork.h"
+#include "Buildable/ReplicationDetailActorGenerated.h"
+#include "Buildable/BuildableFactoryReplicated.h"
+#include "Net/UnrealNetwork.h"
 
 void AReplicationDetailActorGenerated::InitReplicationDetailActor(AFGBuildable* owningActor) {
     Super::InitReplicationDetailActor(owningActor);

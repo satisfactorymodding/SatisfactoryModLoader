@@ -1,9 +1,9 @@
-﻿#include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
-#include "RawFormatValueObject.h"
-#include "RawFormatValueArray.h"
-#include "RawFormatValueNumber.h"
-#include "RawFormatValueString.h"
-#include "RawFileFormat/RawFormatValueBool.h"
+#include "Configuration/RawFileFormat/Json/JsonRawFormatConverter.h"
+#include "Configuration/RawFileFormat/RawFormatValueObject.h"
+#include "Configuration/RawFileFormat/RawFormatValueArray.h"
+#include "Configuration/RawFileFormat/RawFormatValueNumber.h"
+#include "Configuration/RawFileFormat/RawFormatValueString.h"
+#include "Configuration/RawFileFormat/RawFormatValueBool.h"
 
 TSharedPtr<FJsonValue> FJsonRawFormatConverter::ConvertToJson(const URawFormatValue* RawFormatValue) {
     if (const URawFormatValueNumber* Number = Cast<URawFormatValueNumber>(RawFormatValue)) {

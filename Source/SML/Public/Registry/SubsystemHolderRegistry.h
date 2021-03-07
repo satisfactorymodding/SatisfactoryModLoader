@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "GameInstanceSubsystem.h"
+#include "Subsystems/GameInstanceSubsystem.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Subsystem/ModSubsystemHolder.h"
 #include "SubsystemHolderRegistry.generated.h"

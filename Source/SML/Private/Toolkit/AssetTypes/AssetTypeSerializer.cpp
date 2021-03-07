@@ -1,5 +1,5 @@
-﻿#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
-#include "UObjectIterator.h"
+#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
+#include "UObject/UObjectIterator.h"
 
 #pragma optimize("", off)
 

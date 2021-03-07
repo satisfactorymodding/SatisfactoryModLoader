@@ -1,7 +1,7 @@
 ﻿#include "Configuration/Properties/ConfigPropertyBool.h"
-#include "CodeGeneration/ConfigVariableDescriptor.h"
-#include "CodeGeneration/ConfigVariableLibrary.h"
-#include "Values/ConfigValueBool.h"
+#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
+#include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
+#include "Configuration/Values/ConfigValueBool.h"
 
 UConfigPropertyBool::UConfigPropertyBool() {
     this->DefaultValue = false;

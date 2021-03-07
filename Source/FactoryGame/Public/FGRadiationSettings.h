@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
 #include "FGRadioactivitySubsystem.h"
-#include "FGResourceNode.h"
+#include "Resources/FGResourceNode.h"
 #include "FGRadiationSettings.generated.h"
 
 USTRUCT( BlueprintType )

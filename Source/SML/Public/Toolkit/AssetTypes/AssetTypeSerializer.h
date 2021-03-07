@@ -1,7 +1,7 @@
-﻿#pragma once
-#include "Object.h"
-#include "AssetCategory.h"
-#include "JsonObject.h"
+#pragma once
+#include "UObject/Object.h"
+#include "Toolkit/AssetTypes/AssetCategory.h"
+#include "Dom/JsonObject.h"
 #include "Toolkit/ObjectHierarchySerializer.h"
 #include "AssetTypeSerializer.generated.h"
 
@@ -19,7 +19,7 @@ public:
     * as specified by Extension argument
     * Mostly intended for saving binary files, like images, models and raw data blobs
     */
-    FORCEINLINE bool SaveAdditionalAssetFile(const FString& FileExtension, const TArray<uint8>& Data, const FString& FilenamePostfix = TEXT("")) {
+    FORCEINLINE bool SaveAdditionalAssetFile(const FString& FileExtension, const TArray64<uint8>& Data, const FString& FilenamePostfix = TEXT("")) {
         const FString OutFileName = GetAdditionalFilePath(FilenamePostfix, FileExtension);
         return FFileHelper::SaveArrayToFile(Data, *OutFileName);
     }

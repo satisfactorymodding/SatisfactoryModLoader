@@ -1,7 +1,7 @@
-﻿#include "Registry/SubsystemHolderRegistry.h"
+#include "Registry/SubsystemHolderRegistry.h"
 #include "FGGameState.h"
-#include "NativeHookManager.h"
-#include "SMLSubsystemHolder.h"
+#include "Patching/NativeHookManager.h"
+#include "Subsystem/SMLSubsystemHolder.h"
 
 DEFINE_LOG_CATEGORY(LogSubsystemHolderRegistry);
 
@@ -13,7 +13,7 @@ void USubsystemHolderRegistry::InitializeSubsystems(AFGGameState* GameState) {
     UGameInstance* GameInstance = GameState->GetWorld()->GetGameInstance();
     const USubsystemHolderRegistry* Registry = GameInstance->GetSubsystem<USubsystemHolderRegistry>();
     
-    const bool bIsAuthority = GameState->Role == ENetRole::ROLE_Authority;
+    const bool bIsAuthority = GameState->HasAuthority();
     UE_LOG(LogSubsystemHolderRegistry, Display, TEXT("Initializing modded subsystem holders"));
 	
     for (const FSubsystemHolderRegistrarEntry& RegistrarEntry : Registry->RegisteredSubsystemHolders) {

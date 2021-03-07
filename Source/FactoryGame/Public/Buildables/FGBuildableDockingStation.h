@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "FGBuildableFactory.h"
-#include "FGReplicationDetailActor_DockingStation.h"
+#include "Buildables/FGBuildableFactory.h"
+#include "Replication/FGReplicationDetailActor_DockingStation.h"
 #include "FGBuildableDockingStation.generated.h"
 
 /**

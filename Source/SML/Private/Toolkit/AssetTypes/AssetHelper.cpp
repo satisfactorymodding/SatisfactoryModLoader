@@ -1,9 +1,9 @@
-﻿#include "Toolkit/AssetTypes/AssetHelper.h"
-#include "Class.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "UObject/Class.h"
 #include "FGCharacterPlayer.h"
 #include "FGHealthComponent.h"
 #include "FGRemoteCallObject.h"
-#include "KismetBytecodeDisassemblerJson.h"
+#include "Toolkit/KismetBytecodeDisassemblerJson.h"
 #include "Engine/Texture2D.h"
 #include "Toolkit/ObjectHierarchySerializer.h"
 
@@ -55,7 +55,7 @@ bool FAssetHelper::IsSerializeImplementationDifferent(UClass* Class1, UClass* Cl
 }
 
 bool FAssetHelper::HasCustomSerializeOnStruct(UScriptStruct* Struct) {
-    return (Struct->StructFlags & (STRUCT_SerializeNative | STRUCT_SerializeNativeStructured)) != 0;
+    return (Struct->StructFlags & STRUCT_SerializeNative) != 0;
 }
 
 TArray<UObject*> FAssetHelper::GetRootPackageObjects(UPackage* Package) {
@@ -119,24 +119,39 @@ void FAssetHelper::SerializeStruct(TSharedPtr<FJsonObject> OutObject, UStruct* S
     const int32 SuperStructIndex = ObjectHierarchySerializer->SerializeObject(Struct->GetSuperStruct());
     OutObject->SetNumberField(TEXT("SuperStruct"), SuperStructIndex);
 
-    //Serialize Child fields now (they can be both UProperties and UFunctions)
-    TArray<TSharedPtr<FJsonValue>> ChildProperties;
+    //Serialize Children now (these can only be UFunctions, properties are no longer UObjects)
+    TArray<TSharedPtr<FJsonValue>> Children;
     UField* Child = Struct->Children;
     while (Child) {
         const TSharedPtr<FJsonObject> FieldObject = MakeShareable(new FJsonObject());
 
-        if (Child->IsA<UProperty>()) {
-            SerializeProperty(FieldObject, Cast<UProperty>(Child), ObjectHierarchySerializer);
-        } else if (Child->IsA<UFunction>()) {
+        if (Child->IsA<UFunction>()) {
             SerializeFunction(FieldObject, Cast<UFunction>(Child), ObjectHierarchySerializer);
         } else {
             checkf(0, TEXT("Unsupported Children object type: %s"), *Child->GetClass()->GetPathName());
         }
         
-        ChildProperties.Add(MakeShareable(new FJsonValueObject(FieldObject)));
+        Children.Add(MakeShareable(new FJsonValueObject(FieldObject)));
         Child = Child->Next;
     }
-    OutObject->SetArrayField(TEXT("Children"), ChildProperties);
+    OutObject->SetArrayField(TEXT("Children"), Children);
+
+    //Serialize ChildProperties (these can only be FProperties, representing what old UProperties used to)
+    TArray<TSharedPtr<FJsonValue>> ChildProperties;
+    FField* ChildField = Struct->ChildProperties;
+    while (ChildField) {
+        const TSharedPtr<FJsonObject> FieldObject = MakeShareable(new FJsonObject());
+
+        if (ChildField->IsA<FProperty>()) {
+            SerializeProperty(FieldObject, Cast<FProperty>(ChildField), ObjectHierarchySerializer);
+        } else {
+            checkf(0, TEXT("Unsupported ChildProperties object type: %s"), *ChildField->GetClass()->GetName());
+        }
+        
+        ChildProperties.Add(MakeShareable(new FJsonValueObject(FieldObject)));
+        ChildField = ChildField->Next;
+    }
+    OutObject->SetArrayField(TEXT("ChildProperties"), ChildProperties);
 
     //Serialize script bytecode now
     //but only if we actually have some, since normal classes and script structs never have any
@@ -206,7 +221,7 @@ void FAssetHelper::SerializeProperty(TSharedPtr<FJsonObject> OutObject, UPropert
         const int32 MetaClassIndex = ObjectHierarchySerializer->SerializeObject(ClassProperty->MetaClass);
         OutObject->SetNumberField(TEXT("MetaClass"), MetaClassIndex);
         
-    } else if (UDelegateProperty* DelegateProperty = Cast<UDelegateProperty>(Property)) {
+    } else if (FDelegateProperty* DelegateProperty = Cast<FDelegateProperty>(Property)) {
         //For delegate properties, we need to serialize signature function
         //Since it will always be present in the Child array too, we serialize just it's name
         //and not actual full UFunction object
@@ -241,6 +256,10 @@ void FAssetHelper::SerializeProperty(TSharedPtr<FJsonObject> OutObject, UPropert
         //For soft class property, we serialize MetaClass
         const int32 MetaClassIndex = ObjectHierarchySerializer->SerializeObject(SoftClassProperty->MetaClass);
         OutObject->SetNumberField(TEXT("MetaClass"), MetaClassIndex);
+    
+    } else if (FFieldPathProperty* FieldPathProperty = Cast<FFieldPathProperty>(Property)) {
+        //Serialize field class
+        OutObject->SetStringField(TEXT("PropertyClass"), FieldPathProperty->PropertyClass->GetName());
         
     } else {
         //Other property classes don't override Serialize, so do nothing

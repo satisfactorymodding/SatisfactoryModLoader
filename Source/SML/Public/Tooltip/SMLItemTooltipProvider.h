@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
 #include "Inventory.h"
-#include "Widget.h"
+#include "Components/Widget.h"
 #include "SMLItemTooltipProvider.generated.h"
 
 UINTERFACE(Blueprintable)

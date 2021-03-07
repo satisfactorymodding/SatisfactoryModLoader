@@ -1,8 +1,8 @@
-﻿#include "Toolkit/AssetTypes/UserWidgetAssetSerializer.h"
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/UserWidgetAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Blueprint/WidgetBlueprintGeneratedClass.h"
-#include "BlueprintAssetSerializer.h"
-#include "WidgetTree.h"
+#include "Toolkit/AssetTypes/BlueprintAssetSerializer.h"
+#include "Blueprint/WidgetTree.h"
 
 void UUserWidgetAssetSerializer::SerializeClassInternal(TSharedPtr<FJsonObject> OutObject, UBlueprintGeneratedClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer) const {
     //Make sure we are serialized this exact generated class type and not some child

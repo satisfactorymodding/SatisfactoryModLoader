@@ -1,7 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 #include "FGCharacterBase.h"
-#include "FGAggroTargetInterface.h"
+#include "AI/FGAggroTargetInterface.h"
 #include "FGInventoryComponent.h"
 #include "FGUseableInterface.h"
 #include "FGRadiationInterface.h"

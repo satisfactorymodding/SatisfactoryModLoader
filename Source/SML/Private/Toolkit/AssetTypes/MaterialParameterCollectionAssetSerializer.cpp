@@ -1,6 +1,6 @@
-﻿#include "Toolkit/AssetTypes/MaterialParameterCollectionAssetSerializer.h"
+#include "Toolkit/AssetTypes/MaterialParameterCollectionAssetSerializer.h"
 
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Materials/MaterialParameterCollection.h"
 
 void UMaterialParameterCollectionAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

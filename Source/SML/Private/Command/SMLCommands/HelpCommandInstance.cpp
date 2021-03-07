@@ -1,6 +1,6 @@
-﻿#include "HelpCommandInstance.h"
-#include "ChatCommandLibrary.h"
-#include "CommandSender.h"
+#include "Command/SMLCommands/HelpCommandInstance.h"
+#include "Command/ChatCommandLibrary.h"
+#include "Command/CommandSender.h"
 
 AHelpCommandInstance::AHelpCommandInstance() {
 	CommandName = TEXT("help");
@@ -12,10 +12,10 @@ EExecutionStatus AHelpCommandInstance::ExecuteCommand_Implementation(UCommandSen
 	AChatCommandSubsystem* CommandSubsystem = AChatCommandSubsystem::Get(this);
 	check(CommandSubsystem);
 	if (Arguments.Num() >= 2) {
-		const FString& CommandName = Arguments[1];
-		AChatCommandInstance* CommandEntry = CommandSubsystem->FindCommandByName(CommandName);
+		const FString& TargetCommandName = Arguments[1];
+		AChatCommandInstance* CommandEntry = CommandSubsystem->FindCommandByName(TargetCommandName);
 		if (!CommandEntry) {
-			Sender->SendChatMessage(FString(TEXT("Command not found: ")) += CommandName, FLinearColor::Red);
+			Sender->SendChatMessage(FString(TEXT("Command not found: ")) += TargetCommandName, FLinearColor::Red);
 			return EExecutionStatus::BAD_ARGUMENTS;
 		}
 		Sender->SendChatMessage(CommandEntry->Usage);

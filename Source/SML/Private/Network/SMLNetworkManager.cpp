@@ -1,11 +1,11 @@
-﻿#include "Network/SMLConnection/SMLNetworkManager.h"
+#include "Network/SMLConnection/SMLNetworkManager.h"
 #include "FGPlayerController.h"
-#include "ModHandler.h"
-#include "NetworkHandler.h"
-#include "ObjectMetadata.h"
+#include "ModLoading/ModHandler.h"
+#include "Network/NetworkHandler.h"
+#include "Util/ObjectMetadata.h"
 #include "SatisfactoryModLoader.h"
-#include "SMLConnectionMetadata.h"
-#include "SMLRemoteCallObject.h"
+#include "Network/SMLConnection/SMLConnectionMetadata.h"
+#include "Player/SMLRemoteCallObject.h"
 #include "GameFramework/GameModeBase.h"
 
 TSharedPtr<FMessageType> FSMLNetworkManager::MessageTypeModInit = NULL;

@@ -72,8 +72,8 @@ void FConfigVariableDescriptor::AddStructReferencedObjects(FReferenceCollector& 
     }
 }
 
-void FConfigVariableDescriptor::SetupAsPrimitive(EConfigVariableType VariableType) {
-    this->VariableType = VariableType;
+void FConfigVariableDescriptor::SetupAsPrimitive(EConfigVariableType NewVariableType) {
+    this->VariableType = NewVariableType;
 }
 
 void FConfigVariableDescriptor::SetupAsArray(const FConfigVariableDescriptor& ElementType) {
@@ -97,14 +97,14 @@ void FConfigVariableDescriptor::SetupAsConfigGeneratedStruct(UConfigGeneratedStr
     this->ConfigGeneratedStructType = ConfigStruct;
 }
 
-void FConfigVariableDescriptor::SetupAsClass(UClass* BaseClassType) {
+void FConfigVariableDescriptor::SetupAsClass(UClass* NewBaseClassType) {
     this->VariableType = EConfigVariableType::ECVT_Class;
-    this->BaseClassType = BaseClassType;
+    this->BaseClassType = NewBaseClassType;
 }
 
-void FConfigVariableDescriptor::SetupAsObject(UClass* BaseObjectClass) {
+void FConfigVariableDescriptor::SetupAsObject(UClass* NewBaseObjectClass) {
     this->VariableType = EConfigVariableType::ECVT_Object;
-    this->BaseObjectClass = BaseObjectClass;   
+    this->BaseObjectClass = NewBaseObjectClass;   
 }
 
 UScriptStruct* FConfigVariableDescriptor::GetCustomStructType() const {

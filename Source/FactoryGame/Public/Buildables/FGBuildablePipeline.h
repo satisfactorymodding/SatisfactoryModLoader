@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FGFluidIntegrantInterface.h"
-#include "FGBuildablePipeBase.h"
+#include "Buildables/FGBuildablePipeBase.h"
 #include "FGBuildablePipeline.generated.h"
 
 

@@ -2,8 +2,8 @@
 
 #pragma once
 
-#include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipment.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "Camera/CameraShake.h"
 #include "FGParachute.generated.h"
 

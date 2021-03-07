@@ -1,8 +1,8 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "BlueprintReflectedObject.h"
-#include "ReflectionHelper.h"
+#include "Reflection/BlueprintReflectedObject.h"
+#include "Reflection/ReflectionHelper.h"
 #include "BlueprintReflectionLibrary.generated.h"
 
 UCLASS()

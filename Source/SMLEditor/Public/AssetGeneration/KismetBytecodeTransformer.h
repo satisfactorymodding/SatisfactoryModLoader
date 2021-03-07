@@ -1,6 +1,6 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
-#include "KismetIntermediateFormat.h"
+#include "AssetGeneration/KismetIntermediateFormat.h"
 #include "Json.h"
 
 /**

@@ -1,5 +1,5 @@
-﻿#pragma once
-#include "Object.h"
+#pragma once
+#include "UObject/Object.h"
 #include "ObjectMetadata.generated.h"
 
 UCLASS()

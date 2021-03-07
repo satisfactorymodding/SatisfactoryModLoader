@@ -1,6 +1,6 @@
-﻿#include "Toolkit/AssetTypes/DataTableAssetSerializer.h"
-#include "AssetHelper.h"
-#include "PropertySerializer.h"
+#include "Toolkit/AssetTypes/DataTableAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/PropertySerializer.h"
 #include "Engine/DataTable.h"
 
 void UDataTableAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

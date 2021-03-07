@@ -1,7 +1,7 @@
-﻿#include "Toolkit/AssetTypes/TextureAssetSerializer.h"
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/TextureAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "IImageWrapperModule.h"
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 #include "Engine/Texture2D.h"
 #include "Toolkit/AssetTypes/TextureDecompressor.h"
 #include "IImageWrapper.h"
@@ -37,6 +37,7 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
     const FString PixelFormatName = PixelFormatEnum->GetNameStringByValue((int64) PixelFormat);
     
     //Lock mipmap data and obtain pointer to compressed data
+    const int32 NumSlices = PlatformData->GetNumSlices();
     const uint8* CompressedData = (const uint8*) FirstMipMap.BulkData.LockReadOnly();
     const int32 TextureWidth = FirstMipMap.SizeX;
     const int32 TextureHeight = FirstMipMap.SizeY;
@@ -45,17 +46,17 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
     //Write basic information about texture
     OutObject->SetNumberField(TEXT("TextureWidth"), TextureWidth);
     OutObject->SetNumberField(TEXT("TextureHeight"), TextureHeight);
-    OutObject->SetNumberField(TEXT("NumSlices"), PlatformData->NumSlices);
+    OutObject->SetNumberField(TEXT("NumSlices"), NumSlices);
     OutObject->SetStringField(TEXT("CookedPixelFormat"), PixelFormatName);
 
     TArray<uint8> CombinedDecompressedData;
 
     //When we are operating on one slice only, we can perform some optimizations to avoid unnecessary copying
-    const int32 NumBytesPerSlice = FirstMipMap.BulkData.GetBulkDataSize() / PlatformData->NumSlices;
-    const bool bHaveOnlyOneSlice = PlatformData->NumSlices == 1;
+    const int32 NumBytesPerSlice = FirstMipMap.BulkData.GetBulkDataSize() / NumSlices;
+    const bool bHaveOnlyOneSlice = NumSlices == 1;
     
     //Extract every slice and stitch them into the single texture
-    for (int i = 0; i < PlatformData->NumSlices; i++) {
+    for (int i = 0; i < NumSlices; i++) {
         TArray<uint8> OutDecompressedData;
         FString OutErrorMessage;
         
@@ -84,7 +85,7 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
 
     if (bResetAlpha) {
         //Reset alpha if we have been requested to
-        const int32 TotalPixelsWithSlices = TextureWidth * TextureHeight * PlatformData->NumSlices;
+        const int32 TotalPixelsWithSlices = TextureWidth * TextureHeight * NumSlices;
         ClearAlphaFromBGRA8Texture(CombinedDecompressedData.GetData(), TotalPixelsWithSlices);
     }
 
@@ -93,9 +94,9 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
     TSharedPtr<IImageWrapper> ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
 
     //TextureHeight should be multiplied by amount of splices because we basically stack textures vertically by appending data to the end of buffer
-    const int32 ActualTextureHeight = TextureHeight * PlatformData->NumSlices;
+    const int32 ActualTextureHeight = TextureHeight * NumSlices;
     check(ImageWrapper->SetRaw(CombinedDecompressedData.GetData(), CombinedDecompressedData.Num(), TextureWidth, ActualTextureHeight, ERGBFormat::BGRA, 8));
-    const TArray<uint8>& PNGResultData = ImageWrapper->GetCompressed();
+    const TArray64<uint8>& PNGResultData = ImageWrapper->GetCompressed();
 
     //Store data in serialization context
     SerializationContext.SaveAdditionalAssetFile(TEXT("png"), PNGResultData, FileNamePostfix);    

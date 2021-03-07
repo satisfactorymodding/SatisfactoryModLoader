@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FGBuildableHologram.h"
+#include "Hologram/FGBuildableHologram.h"
 #include "FGCircuitConnectionComponent.h"
 #include "FGPowerPoleHologram.generated.h"
 

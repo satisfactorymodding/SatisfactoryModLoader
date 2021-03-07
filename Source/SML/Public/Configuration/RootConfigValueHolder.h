@@ -1,6 +1,6 @@
-﻿#pragma once
-#include "ConfigManager.h"
-#include "ConfigValue.h"
+#pragma once
+#include "Configuration/ConfigManager.h"
+#include "Configuration/ConfigValue.h"
 #include "RootConfigValueHolder.generated.h"
 
 class UConfigValueSection;

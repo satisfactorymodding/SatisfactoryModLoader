@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "FGSharedPostProcessSettings.generated.h"
 
 void InsertPPVolume( IInterface_PostProcessVolume* volume, TArray< IInterface_PostProcessVolume* >& out_volumeArray );

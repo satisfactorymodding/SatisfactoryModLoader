@@ -1,5 +1,5 @@
 #include "AssetGeneration/KismetGraphDecompiler.h"
-#include "BlueprintEditorUtils.h"
+#include "Kismet2/BlueprintEditorUtils.h"
 #include "EdGraphSchema_K2_Actions.h"
 #include "K2Node_AddDelegate.h"
 #include "K2Node_CallParentFunction.h"
@@ -681,9 +681,9 @@ UEdGraphNode* FKismetGraphDecompiler::CreateMulticastDelegateNode(TSubclassOf<UK
             [NodeClass](UEdGraph* InParentGraph){
                 return NewObject<UK2Node>(InParentGraph, NodeClass);
             },
-            [DelegateProperty, bIsSelfContext](UK2Node* NewNode){
+            [DelegateProperty, bIsSelfContext, ContextTerminalClassType](UK2Node* NewNode){
                 UK2Node_BaseMCDelegate* DelegateNode = CastChecked<UK2Node_BaseMCDelegate>(NewNode);
-                DelegateNode->SetFromProperty(DelegateProperty, bIsSelfContext);
+                DelegateNode->SetFromProperty(DelegateProperty, bIsSelfContext, ContextTerminalClassType);
             },
             EK2NewNodeFlags::None));
 
@@ -725,9 +725,7 @@ UEdGraphNode* FKismetGraphDecompiler::CreateFunctionCallNode() {
     const TSharedPtr<FKismetCompiledStatement> CallFunctionStatement = PopStatement();
     check(CallFunctionStatement->Type == ECompiledStatementType::KCST_CallFunction);
 
-    UK2Node_CallParentFunction
-    
-    
+    return NULL;
 }
 
 UEdGraphNode* FKismetGraphDecompiler::GenerateNodeForStatement() {
@@ -835,7 +833,7 @@ UEdGraphNode* FKismetGraphDecompiler::GenerateNodeForStatement() {
         
     }
 
-    
+    return NULL;
 }
 
 UStruct* FKismetGraphDecompiler::ResolveContextTerminalType(TSharedPtr<FKismetTerminal> Terminal) {

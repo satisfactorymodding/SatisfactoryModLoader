@@ -7,7 +7,7 @@
 #include "GameFramework/PhysicsVolume.h"
 #include "AI/Navigation/NavRelevantInterface.h"
 #include "NavAreas/NavArea.h"
-#include "FGExtractableResourceInterface.h"
+#include "Resources/FGExtractableResourceInterface.h"
 #include "FGSignificanceInterface.h"
 #include "FGWaterVolume.generated.h"
 

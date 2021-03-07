@@ -3,7 +3,7 @@
 #pragma once
 
 #include "FGUseableInterface.h"
-#include "FGCreature.h"
+#include "Creature/FGCreature.h"
 #include "FGEnemy.generated.h"
 
 /**

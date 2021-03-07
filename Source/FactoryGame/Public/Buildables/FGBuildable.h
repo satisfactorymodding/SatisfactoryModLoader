@@ -13,7 +13,7 @@
 #include "FGSaveInterface.h"
 #include "FactoryTick.h"
 #include "FGColorInterface.h"
-#include "FGReplicationDetailActorOwnerInterface.h"
+#include "Replication/FGReplicationDetailActorOwnerInterface.h"
 #include "FGBuildableSubsystem.h"
 #include "FGBuildable.generated.h"
 

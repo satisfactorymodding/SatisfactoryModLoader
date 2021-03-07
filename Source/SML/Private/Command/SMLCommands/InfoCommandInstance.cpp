@@ -1,6 +1,6 @@
-﻿ #include "InfoCommandInstance.h"
-#include "CommandSender.h"
-#include "ModHandler.h"
+ #include "Command/SMLCommands/InfoCommandInstance.h"
+#include "Command/CommandSender.h"
+#include "ModLoading/ModHandler.h"
 #include "SatisfactoryModLoader.h"
 
 AInfoCommandInstance::AInfoCommandInstance() {

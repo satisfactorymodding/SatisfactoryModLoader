@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGBuildablePoleBase.generated.h"
 
 

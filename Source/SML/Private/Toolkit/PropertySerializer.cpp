@@ -1,5 +1,5 @@
-﻿#include "Toolkit/PropertySerializer.h"
-#include "TextProperty.h"
+#include "Toolkit/PropertySerializer.h"
+#include "UObject/TextProperty.h"
 
 DECLARE_LOG_CATEGORY_CLASS(LogPropertySerializer, Error, Log);
 
@@ -100,7 +100,7 @@ void UPropertySerializer::DeserializePropertyValueInner(UProperty* Property, con
 			}
 		}
 
-	} else if (Property->IsA<UDelegateProperty>()) {
+	} else if (Property->IsA<FDelegateProperty>()) {
 		FScriptDelegate* ScriptDelegate = (FScriptDelegate*) Value;
 		TSharedPtr<FJsonObject> Element = JsonValue->AsObject();
 
@@ -194,6 +194,10 @@ void UPropertySerializer::DeserializePropertyValueInner(UProperty* Property, con
 		if (!SerializedValue.IsEmpty()) {
 			FTextStringHelper::ReadFromBuffer(*SerializedValue, *static_cast<FText*>(Value));
 		}
+	} else if (const FFieldPathProperty* FieldPathProperty = Cast<const FFieldPathProperty>(Property)) {
+		FFieldPath FieldPath;
+		FieldPath.Generate(*JsonValue->AsString());
+		*static_cast<FFieldPath*>(Value) = FieldPath;
 	} else {
 		UE_LOG(LogPropertySerializer, Fatal, TEXT("Found unsupported property type when deserializing value: %s"), *Property->GetClass()->GetName());
 	}
@@ -327,7 +331,7 @@ TSharedRef<FJsonValue> UPropertySerializer::SerializePropertyValueInner(UPropert
 		return MakeShareable(new FJsonValueArray(DelegatesArray));
 	}
 	
-	if (Property->IsA<UDelegateProperty>()) {
+	if (Property->IsA<FDelegateProperty>()) {
 		FScriptDelegate* ScriptDelegate = (FScriptDelegate*) Value;
 		TSharedPtr<FJsonObject> DelegateObject = MakeShareable(new FJsonObject());
 
@@ -417,6 +421,11 @@ TSharedRef<FJsonValue> UPropertySerializer::SerializePropertyValueInner(UPropert
 		const FText& TextValue = TextProperty->GetPropertyValue(Value);
 		FTextStringHelper::WriteToBuffer(ResultValue, TextValue);
 		return MakeShareable(new FJsonValueString(ResultValue));
+	}
+
+	if (Property->IsA<FFieldPathProperty>()) {
+		FFieldPath* Temp = ((FFieldPath*) Value);
+		return MakeShareable(new FJsonValueString(Temp->ToString()));
 	}
 	
 	UE_LOG(LogPropertySerializer, Fatal, TEXT("Found unsupported property type when serializing value: %s"), *Property->GetClass()->GetName());

@@ -1,6 +1,6 @@
 ﻿#include "Toolkit/AssetTypes/StaticMeshAssetSerializer.h"
-#include "AssetHelper.h"
-#include "AssetTypes/FbxMeshExporter.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetTypes/FbxMeshExporter.h"
 #include "Engine/StaticMesh.h"
 #include "PhysicsEngine/BodySetup.h"
 #include "AI/Navigation/NavCollisionBase.h"

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
-#include "FGItemDescriptor.h"
+#include "Resources/FGItemDescriptor.h"
 #include "FGSaveInterface.h"
 #include "FGFluidIntegrantInterface.h"
 #include "FGPipeNetwork.generated.h"

@@ -1,5 +1,5 @@
-﻿#include "Toolkit/AssetTypes/AnimationMontageAssetSerializer.h"
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/AnimationMontageAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Animation/AnimMontage.h"
 
 void UAnimationMontageAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

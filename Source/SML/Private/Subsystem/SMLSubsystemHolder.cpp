@@ -1,7 +1,7 @@
-﻿#include "Subsystem/SMLSubsystemHolder.h"
-#include "ChatCommandLibrary.h"
-#include "ModContentRegistry.h"
-#include "SubsystemHolderRegistry.h"
+#include "Subsystem/SMLSubsystemHolder.h"
+#include "Command/ChatCommandLibrary.h"
+#include "Registry/ModContentRegistry.h"
+#include "Registry/SubsystemHolderRegistry.h"
 
 void USMLSubsystemHolder::InitSubsystems() {
     SpawnSubsystem(ChatCommandSubsystem, AChatCommandSubsystem::StaticClass(), TEXT("ChatCommandSubsystem"));

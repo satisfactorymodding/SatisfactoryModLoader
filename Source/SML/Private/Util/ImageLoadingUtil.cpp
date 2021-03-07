@@ -1,9 +1,9 @@
-﻿#include "Util/ImageLoadingUtil.h"
+#include "Util/ImageLoadingUtil.h"
 
-#include "FileHelper.h"
+#include "Misc/FileHelper.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 
 UTexture2D* FImageLoadingUtil::LoadImageFromByteArray(const TArray<uint8>& InByteArray, FString& OutErrorMessage) {
 	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
@@ -24,7 +24,7 @@ UTexture2D* FImageLoadingUtil::LoadImageFromByteArray(const TArray<uint8>& InByt
 
 	//Data equal to EPixelFormat::PF_B8G8R8A8 used below - BGRA, 8 bits depth
 	//Malformed image file - decompression failed
-	const TArray<uint8>* UncompressedBGRA = NULL;
+	TArray<uint8> UncompressedBGRA;
 	if (!ImageWrapper->GetRaw(ERGBFormat::BGRA, 8, UncompressedBGRA)) {
 		OutErrorMessage = TEXT("Malformed image data (decompression failed)");
 		return NULL;
@@ -42,7 +42,7 @@ UTexture2D* FImageLoadingUtil::LoadImageFromByteArray(const TArray<uint8>& InByt
 	//Lock initial mip map, copy texture data, and then unlock it
 	FTexture2DMipMap& PrimaryMipMap = TextureObject->PlatformData->Mips[0];
 	void* TextureDataPtr = PrimaryMipMap.BulkData.Lock(LOCK_READ_WRITE);
-	FMemory::Memcpy(TextureDataPtr, UncompressedBGRA->GetData(), UncompressedBGRA->Num());
+	FMemory::Memcpy(TextureDataPtr, UncompressedBGRA.GetData(), UncompressedBGRA.Num());
 	PrimaryMipMap.BulkData.Unlock();
 	//Update resources to see our changes
 	TextureObject->UpdateResource(); 

@@ -6,7 +6,7 @@
 #include "ItemAmount.h"
 #include "FGSaveInterface.h"
 #include "CharacterAnimationTypes.h"
-#include "FGReplicationDependencyActorInterface.h"
+#include "Replication/FGReplicationDependencyActorInterface.h"
 #include "FGEquipment.generated.h"
 
 //Equipments are equip on different slots on the player. One EQ per slot. These are the slots.

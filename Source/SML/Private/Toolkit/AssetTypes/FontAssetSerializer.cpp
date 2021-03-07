@@ -1,7 +1,7 @@
-﻿#include "Toolkit/AssetTypes/FontAssetSerializer.h"
-#include "AssetHelper.h"
-#include "PropertySerializer.h"
-#include "TextureAssetSerializer.h"
+#include "Toolkit/AssetTypes/FontAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/PropertySerializer.h"
+#include "Toolkit/AssetTypes/TextureAssetSerializer.h"
 #include "Engine/Font.h"
 #include "Engine/Texture2D.h"
 

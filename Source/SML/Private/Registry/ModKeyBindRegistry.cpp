@@ -1,8 +1,8 @@
-﻿#include "ModKeyBindRegistry.h"
+#include "Registry/ModKeyBindRegistry.h"
 #include "FGOptionsSettings.h"
-#include "ModHandler.h"
-#include "VerticalBox.h"
-#include "WidgetBlueprintLibrary.h"
+#include "ModLoading/ModHandler.h"
+#include "Components/VerticalBox.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "GameFramework/InputSettings.h"
 
 void UModKeyBindRegistry::RegisterModKeyBind(const FString& ModReference, const FInputActionKeyMapping& KeyMapping, const FText& DisplayName) {

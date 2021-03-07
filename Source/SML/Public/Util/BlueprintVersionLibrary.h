@@ -1,7 +1,7 @@
-﻿#pragma once
+#pragma once
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "SemVersion.h"
+#include "Util/SemVersion.h"
 #include "BlueprintVersionLibrary.generated.h"
 
 UCLASS()

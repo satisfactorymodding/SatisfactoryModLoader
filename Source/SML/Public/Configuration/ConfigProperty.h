@@ -1,8 +1,8 @@
-﻿#pragma once
-#include "ConfigVariableDescriptor.h"
+#pragma once
+#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "CoreMinimal.h"
-#include "Object.h"
-#include "SubclassOf.h"
+#include "UObject/Object.h"
+#include "Templates/SubclassOf.h"
 #include "ConfigProperty.generated.h"
 
 class UConfigValue;

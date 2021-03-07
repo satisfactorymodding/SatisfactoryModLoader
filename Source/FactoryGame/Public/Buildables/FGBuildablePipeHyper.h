@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "FGBuildablePipeBase.h"
+#include "Buildables/FGBuildablePipeBase.h"
 #include "FGPipeHyperInterface.h"
 #include "FGBuildablePipeHyper.generated.h"
 

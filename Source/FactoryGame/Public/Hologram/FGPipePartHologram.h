@@ -2,9 +2,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "FGFactoryHologram.h"
+#include "Hologram/FGFactoryHologram.h"
 #include "FGPipeConnectionComponent.h"
-#include "FGPoleDescriptor.h"
+#include "Resources/FGPoleDescriptor.h"
 #include "FGPipePartHologram.generated.h"
 
 

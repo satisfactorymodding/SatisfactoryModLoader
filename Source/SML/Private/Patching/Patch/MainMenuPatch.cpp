@@ -1,12 +1,12 @@
 #include "Patching/Patch/MainMenuPatch.h"
-#include "BlueprintHookHelper.h"
-#include "BlueprintHookManager.h"
-#include "ModHandler.h"
-#include "ReflectionHelper.h"
+#include "Patching/BlueprintHookHelper.h"
+#include "Patching/BlueprintHookManager.h"
+#include "ModLoading/ModHandler.h"
+#include "Reflection/ReflectionHelper.h"
 #include "SatisfactoryModLoader.h"
-#include "TextBlock.h"
-#include "VerticalBox.h"
-#include "WidgetBlueprintLibrary.h"
+#include "Components/TextBlock.h"
+#include "Components/VerticalBox.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Engine/Engine.h"
 
 UWidget* CreateModSubMenuWidget(UUserWidget* OwningWidget) {
@@ -25,13 +25,10 @@ TArray<FString> FMainMenuPatch::CreateMenuInformationText() {
 	const FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
 	const int32 ModsLoaded = ModHandler->GetLoadedMods().Num();
 	TArray<FString> ResultText;
+	
 	ResultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *FSatisfactoryModLoader::GetModLoaderVersion().ToString()));
 	ResultText.Add(FString::Printf(TEXT("%lu mod(s) loaded"), ModsLoaded));
-	const TMap<FName, FString> ExtraAttributes = FSatisfactoryModLoader::GetExtraAttributes();
-	if (ExtraAttributes.Contains(FModLoaderExtraAttributes::EA_BootstrapperVersion)) {
-		const FString BootstrapperVersion = ExtraAttributes.FindChecked(FModLoaderExtraAttributes::EA_BootstrapperVersion);
-		ResultText.Add(FString::Printf(TEXT("Bootstrapper v.%s"), *BootstrapperVersion));
-	}
+
 	if (FSatisfactoryModLoader::GetSMLConfiguration().bDevelopmentMode) {
 		ResultText.Add(TEXT("Development mode enabled."));
 	}

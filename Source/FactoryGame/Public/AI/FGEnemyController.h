@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGCreatureController.h"
+#include "AI/FGCreatureController.h"
 #include "FGEnemyController.generated.h"
 
 class FGAggroTargetInterface;

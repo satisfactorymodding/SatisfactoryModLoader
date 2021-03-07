@@ -1,38 +1,31 @@
 #include "SatisfactoryModLoader.h"
-#include "AssetHelper.h"
-#include "bootstrapper_exports.h"
-#include "ConfigManager.h"
-#include "FbxMeshExporter.h"
-#include "FGAssetDumper.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Configuration/ConfigManager.h"
+#include "Toolkit/AssetTypes/FbxMeshExporter.h"
+#include "Toolkit/OldToolkit/FGAssetDumper.h"
 #include "FGPlayerController.h"
-#include "ItemTooltipSubsystem.h"
-#include "LegacyConfigurationHelper.h"
-#include "MaterialAssetSerializer.h"
-#include "ModContentRegistry.h"
-#include "ModHandler.h"
-#include "NativeHookManager.h"
-#include "NetworkHandler.h"
-#include "RemoteCallObjectRegistry.h"
-#include "SMLModule.h"
-#include "SMLNetworkManager.h"
-#include "SMLRemoteCallObject.h"
-#include "SubsystemHolderRegistry.h"
-#include "Patch/CrashContextPatch.h"
-#include "Patch/MainMenuPatch.h"
-#include "Patch/OfflinePlayerHandler.h"
-#include "Patch/OptionsKeybindPatch.h"
+#include "Tooltip/ItemTooltipSubsystem.h"
+#include "Configuration/Legacy/LegacyConfigurationHelper.h"
+#include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
+#include "Registry/ModContentRegistry.h"
+#include "ModLoading/ModHandler.h"
+#include "Network/NetworkHandler.h"
+#include "Registry/RemoteCallObjectRegistry.h"
+#include "Network/SMLConnection/SMLNetworkManager.h"
+#include "Player/SMLRemoteCallObject.h"
+#include "Registry/SubsystemHolderRegistry.h"
+#include "Patching/Patch/CrashContextPatch.h"
+#include "Patching/Patch/MainMenuPatch.h"
+#include "Patching/Patch/OfflinePlayerHandler.h"
+#include "Patching/Patch/OptionsKeybindPatch.h"
 #include "Player/PlayerCheatManagerHandler.h"
 
-extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("2.3.0");
-extern "C" DLLEXPORT const TCHAR* targetBootstrapperVersionString = TEXT("2.0.11");
+extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.0.0");
 extern "C" DLLEXPORT const long targetGameVersion = 137570;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
-const FName FModLoaderExtraAttributes::EA_BootstrapperVersion = TEXT("BootstrapperVersion");
-
 TSharedPtr<FModHandler> FSatisfactoryModLoader::ModHandlerPrivate = NULL;
-TSharedPtr<BootstrapAccessors> FSatisfactoryModLoader::BootstrapperAccessors = NULL;
 FSMLConfiguration FSatisfactoryModLoader::SMLConfigurationPrivate;
 
 FVersion FSatisfactoryModLoader::GetModLoaderVersion() {
@@ -47,14 +40,7 @@ FVersion FSatisfactoryModLoader::GetModLoaderVersion() {
 
 TMap<FName, FString> FSatisfactoryModLoader::GetExtraAttributes() {
     TMap<FName, FString> OutExtraAttributes;
-    if (BootstrapperAccessors.IsValid()) {
-        OutExtraAttributes.Add(FModLoaderExtraAttributes::EA_BootstrapperVersion, BootstrapperAccessors->version);
-    }
     return OutExtraAttributes;
-}
-
-void FSatisfactoryModLoader::SetupBootstrapperAccessors(const BootstrapAccessors& Accessors) {
-    BootstrapperAccessors = MakeShareable(new BootstrapAccessors(Accessors));
 }
 
 void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
@@ -105,24 +91,12 @@ void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
     }
 }
 
-void FSatisfactoryModLoader::CheckGameAndBootstrapperVersion() {
+void FSatisfactoryModLoader::CheckGameVersion() {
     const uint32 CurrentChangelist = FEngineVersion::Current().GetChangelist();
     const uint32 MinChangelistSupported = (uint32) targetGameVersion;
     
     if (!(CurrentChangelist >= MinChangelistSupported)) {
         UE_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Game version check failed: Game version is %d, but this SML version is built for %d"), CurrentChangelist, MinChangelistSupported);
-    }
-
-    FString OutErrorMessage;
-    FVersion MinSupportedBootstrapperVersion;
-    MinSupportedBootstrapperVersion.ParseVersion(targetBootstrapperVersionString, OutErrorMessage);
-
-    if (BootstrapperAccessors.IsValid()) {
-        FVersion BootstrapperVersion;
-        BootstrapperVersion.ParseVersion(BootstrapperAccessors->version, OutErrorMessage);
-        if (BootstrapperVersion.Compare(MinSupportedBootstrapperVersion) < 0) {
-            UE_LOG(LogSatisfactoryModLoader, Fatal, TEXT("Bootstrapp version check failed: Bootstrapper version is %s, but this SML version only supports %s"), *BootstrapperVersion.ToString(), *MinSupportedBootstrapperVersion.ToString());
-        }
     }
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Version check passed successfully! Game Changelist: %d"), CurrentChangelist);
 }
@@ -163,11 +137,14 @@ void FSatisfactoryModLoader::RegisterSubsystems() {
     //Register version checker for remote connections
     FSMLNetworkManager::RegisterMessageTypeAndHandlers();
 
-    //Make sure asset helper is set up correctly as it is needed for asset dumping
-    FAssetHelper::RunStaticTests();
+    //Initialize asset dumping and asset related stuff in cooked builds only
+    if (FPlatformProperties::RequiresCookedData()) {
+        //Make sure asset helper is set up correctly as it is needed for asset dumping
+        FAssetHelper::RunStaticTests();
 
-    //Register asset dumping related console commands
-    FGameAssetDumper::RegisterConsoleCommands();
+        //Register asset dumping related console commands
+        FGameAssetDumper::RegisterConsoleCommands();
+    }
 }
 
 void FSatisfactoryModLoader::PreInitializeModLoading() {
@@ -177,24 +154,14 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     const bool bAllowSavingConfiguration = !WITH_EDITOR;
     LoadSMLConfiguration(bAllowSavingConfiguration);
 
-    if (BootstrapperAccessors.IsValid()) {
-        UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Using bootstrapper v.%s for mod loading"), BootstrapperAccessors->version);
-    }
-
-    //Check versions before actually trying to load mods
-    CheckGameAndBootstrapperVersion();
-
-    //Setup hooking with bootstrapper accessors if we have them
-    //TODO hooking should be perfectly capable of working without accessors or PDB loading
-    if (BootstrapperAccessors.IsValid()) {
-        FNativeHookManagerInternal::SetupWithAccessors(*BootstrapperAccessors);
+    //Check game version only on shipping platform, because in editor builds
+    //changelist number is not actually correctly set, since it is built from scratch
+    if (FPlatformProperties::RequiresCookedData()) {
+        CheckGameVersion();
     }
 
     //Initialize ModHandler and perform mods discovery and pre initialization
     ModHandlerPrivate = MakeShareable(new FModHandler());
-    if (BootstrapperAccessors.IsValid()) {
-        ModHandlerPrivate->SetupWithAccessors(*BootstrapperAccessors);
-    }
     
     //Perform mod discovery and check for stage errors
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod discovery"));
@@ -203,23 +170,19 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Performing mod sorting"));
     ModHandlerPrivate->PerformModListSorting();
 
-    //Perform mods pre initialization (load native module DLLs into process)
-    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Pre-initializing mods"));
-    ModHandlerPrivate->PreInitializeMods();
-
     //Register crash context patch very early, but after mod loading
     //So debug symbols can be flushed now from loaded native modules
-    if (BootstrapperAccessors.IsValid()) {
-        FCrashContextPatch::SetupWithAccessors(*BootstrapperAccessors);
-    }
     FCrashContextPatch::RegisterPatch();
 
     //Register these patches early so no materials/meshes loaded will skip them
-    //They will slow down game performance because of hooking in hot spots + extra memory consumption of CPU
+    //They will slow down game performance because of hooking in hot spots + extra memory consumption on CPU
     //Same goes with UStaticMesh patch, it will increase memory usage on CPU and decrease loading speed
-    if (SMLConfigurationPrivate.bDevelopmentMode) {
-        UMaterialAssetSerializer::RegisterShaderInitRHIHook();
-        FFbxMeshExporter::RegisterStaticMeshCPUAccessHook();
+    //We also do not need them in editor because asset dumping is cooked data-only
+    if (FPlatformProperties::RequiresCookedData()) {
+        if (SMLConfigurationPrivate.bDevelopmentMode) {
+            //UMaterialAssetSerializer::RegisterShaderInitRHIHook();
+            FFbxMeshExporter::RegisterStaticMeshCPUAccessHook();
+        }
     }
 
     //Show console if we have been asked to in configuration
@@ -257,33 +220,4 @@ void FSatisfactoryModLoader::InitializeModLoading() {
     ModHandlerPrivate->PostInitializeGameInstanceModules(GameInstance);
 
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Initialization finished!"));
-}
-
-//Helper to access private methods from mod loader class without exposing them to everyone
-class FSatisfactoryModLoaderInternal {
-public:
-    static void EnsureSMLModuleInitialized() {
-        //Make sure SML module is already loaded at this point because mod loading depends on it
-        FModHandler::LoadModuleChecked(TEXT("SML"), InitializeModule);
-    }
-    
-    static void BootstrapModLoaderHelper(BootstrapAccessors& BootstrapAccessors) { 
-        //Set bootstrapper accessors
-        FSatisfactoryModLoader::SetupBootstrapperAccessors(BootstrapAccessors);
-
-        //Make sure SML module is already loaded at this point because mod loading depends on it
-        FCoreDelegates::OnInit.AddStatic(EnsureSMLModuleInitialized);
-        
-        //Basic subsystems like logging are initialized on OnInit
-        FCoreDelegates::OnInit.AddStatic(FSatisfactoryModLoader::PreInitializeModLoading);
-        
-        //UObject subsystem and Engine are initialized on PostEngineInit
-        FCoreDelegates::OnPostEngineInit.AddStatic(FSatisfactoryModLoader::InitializeModLoading);
-    }
-};
-
-
-//Called by bootstrapper very early to initialize mod loader
-extern "C" SML_API void BootstrapModule(BootstrapAccessors& Accessors) {
-	FSatisfactoryModLoaderInternal::BootstrapModLoaderHelper(Accessors);
 }

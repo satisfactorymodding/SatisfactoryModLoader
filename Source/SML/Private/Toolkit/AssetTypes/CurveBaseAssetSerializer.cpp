@@ -1,5 +1,5 @@
-﻿#include "Toolkit/AssetTypes/CurveBaseAssetSerializer.h"
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/CurveBaseAssetSerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Curves/CurveBase.h"
 
 void UCurveBaseAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

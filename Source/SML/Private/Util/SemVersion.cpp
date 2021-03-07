@@ -1,5 +1,5 @@
 #pragma once
-#include "SemVersion.h"
+#include "Util/SemVersion.h"
 #include <regex>
 
 //Use stdlib regex here because UE Regex(which is ICU regex wrapper) requires initialized localization system, and our versioning can be called much earlier than that

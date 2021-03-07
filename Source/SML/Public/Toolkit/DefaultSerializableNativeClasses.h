@@ -1,6 +1,6 @@
-﻿#pragma once
-#include "ScaleBox.h"
-#include "UserWidget.h"
+#pragma once
+#include "Components/ScaleBox.h"
+#include "Blueprint/UserWidget.h"
 #include "Animation/AnimInstance.h"
 #include "Components/PointLightComponent.h"
 #include "Components/PostProcessComponent.h"
@@ -54,4 +54,4 @@
     Appender(UMovieScene::StaticClass()); \
     Appender(AFGCircuitSubsystem::StaticClass()); \
     Appender(AFGGameMode::StaticClass()); \
-    Appender(AFGGameState::StaticClass()); \
+    Appender(AFGGameState::StaticClass());

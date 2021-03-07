@@ -1,6 +1,6 @@
 ﻿#include "Toolkit/AssetTypes/FontFaceAssetSerializer.h"
-#include "AssetHelper.h"
-#include "PropertySerializer.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/PropertySerializer.h"
 #include "Engine/FontFace.h"
 
 void UFontFaceAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
@@ -15,7 +15,7 @@ void UFontFaceAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr
     ObjectHierarchySerializer->SerializeObjectPropertiesIntoObject(FontFace, OutObject);
 
     //What we do next depends on loading policy specified
-    TArray<uint8> FontRawData;
+    TArray64<uint8> FontRawData;
     if (FontFace->LoadingPolicy == EFontLoadingPolicy::Inline) {
         //Font is inlined into this font face asset, retrieve data directly
         FontRawData = FontFace->FontFaceData.Get().GetData();

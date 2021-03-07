@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "FGSaveInterface.h"
 #include "UObject/Interface.h"
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGSignInterface.generated.h"
 
 

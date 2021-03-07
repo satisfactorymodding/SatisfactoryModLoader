@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGBuildableSpeedSign.generated.h"
 
 

@@ -1,6 +1,6 @@
-﻿#include "ChatCommandInstance.h"
-#include "CommandSender.h"
-#include "UnrealNetwork.h"
+#include "Command/ChatCommandInstance.h"
+#include "Command/CommandSender.h"
+#include "Net/UnrealNetwork.h"
 
 AChatCommandInstance::AChatCommandInstance() {
 	bOnlyUsableByPlayer = false;

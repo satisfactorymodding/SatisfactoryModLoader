@@ -8,7 +8,7 @@
 #include "FGSignificanceInterface.h"
 #include "FGExplosiveDestroyableInterface.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
-#include "FGStaticReplicatedActor.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGGasPillar.generated.h"
 
 UCLASS()

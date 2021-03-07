@@ -1,6 +1,6 @@
-﻿#include "Toolkit/AssetTypes/UserDefinedStructAssetSerializer.h"
+#include "Toolkit/AssetTypes/UserDefinedStructAssetSerializer.h"
 #include "Engine/UserDefinedStruct.h"
-#include "AssetHelper.h"
+#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Toolkit/PropertySerializer.h"
 
 void UUserDefinedStructAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {

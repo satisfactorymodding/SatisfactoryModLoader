@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GameFramework/Actor.h"
-#include "FGItemDescriptor.h"
+#include "Resources/FGItemDescriptor.h"
 #include "FGRenderTargetStage.generated.h"
 
 //@todo-cleanup Part of an old system not used for years, should be cleaned out probably.

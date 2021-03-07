@@ -1,8 +1,8 @@
-﻿#pragma once
-#include "ConfigProperty.h"
+#pragma once
+#include "Configuration/ConfigProperty.h"
 #include "CoreMinimal.h"
-#include "Interface.h"
-#include "Object.h"
+#include "UObject/Interface.h"
+#include "UObject/Object.h"
 #include "RawFileFormat/RawFormatValue.h"
 #include "Reflection/BlueprintReflectedObject.h"
 #include "ConfigValue.generated.h"

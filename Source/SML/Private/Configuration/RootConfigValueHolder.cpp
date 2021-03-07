@@ -1,5 +1,5 @@
-﻿#include "Configuration/RootConfigValueHolder.h"
-#include "ConfigValueSection.h"
+#include "Configuration/RootConfigValueHolder.h"
+#include "Configuration/Values/ConfigValueSection.h"
 
 void URootConfigValueHolder::MarkDirty_Implementation() {
     if (ConfigManager != NULL) {
@@ -7,10 +7,10 @@ void URootConfigValueHolder::MarkDirty_Implementation() {
     }
 }
 
-void URootConfigValueHolder::SetupRootValue(UConfigManager* ConfigManager, const FConfigId& ConfigId, UConfigValueSection* ConfigValue) {
-    this->ConfigManager = ConfigManager;
-    this->ConfigId = ConfigId;
-    this->RootWrappedValue = ConfigValue;
+void URootConfigValueHolder::SetupRootValue(UConfigManager* NewConfigManager, const FConfigId& NewConfigId, UConfigValueSection* NewConfigValue) {
+    this->ConfigManager = NewConfigManager;
+    this->ConfigId = NewConfigId;
+    this->RootWrappedValue = NewConfigValue;
 }
 
 void URootConfigValueHolder::UpdateWrappedValue(UConfigValueSection* NewWrappedRootValue) {

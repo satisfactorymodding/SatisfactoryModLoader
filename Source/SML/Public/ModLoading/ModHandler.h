@@ -1,20 +1,9 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "ModInfo.h"
-#include "SubclassOf.h"
-#include "Engine/GameInstance.h"
-
-typedef class IModuleInterface* ( *FInitializeModuleFunctionPtr )( void );
+#include "ModLoading/ModInfo.h"
+#include "Templates/SubclassOf.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogModLoading, Log, Log);
-
-/** Whenever deprecated SMLInitMod actor support is enabled in this version of SML */
-#ifndef ENABLE_DEPRECATED_INIT_MOD_SUPPORT
-#define ENABLE_DEPRECATED_INIT_MOD_SUPPORT 1
-#endif
-
-/** true when we are are calling StartupModule() on native mod libraries as the part of mod initialization routine */
-extern SML_API bool GIsStartingUpModules;
 
 /** Describes mod package loading entry with mod reference associated to initializer classes */
 struct FModPakLoadEntry {
@@ -22,9 +11,6 @@ struct FModPakLoadEntry {
 	TSubclassOf<class UGameInstanceModule> InitGameInstanceClass;
 	TSubclassOf<class UWorldModule> InitGameWorldClass;
 	TSubclassOf<class UWorldModule> InitMenuWorldClass;
-#if ENABLE_DEPRECATED_INIT_MOD_SUPPORT
-	UClass* LegacyInitModClass;
-#endif
 };
 
 /** Describes information about mod package required for mod loading */
@@ -67,9 +53,7 @@ private:
 	TMap<FString, FModLoadingEntry> LoadingEntries;
 	TArray<FModPakLoadEntry> ModPakInitializers;
 	TArray<FString> LoadingProblems;
-	TSharedPtr<struct BootstrapAccessors> BootstrapperAccessors;
 	TMap<FString, IModuleInterface*> InitializedNativeModModules;
-	TMap<FString, void*> LoadedNativeModLibraries;
 
 	TMap<FString, TSharedPtr<FModContainer>> LoadedMods;
 	TArray<TSharedPtr<FModContainer>> LoadedModsList;
@@ -84,6 +68,8 @@ public:
 	/** Returns an array of all loaded mods */
 	FORCEINLINE TArray<const FModContainer*> GetLoadedMods() const;
 private:
+	friend class FSatisfactoryModLoader;
+	
 	/** Private constructor to avoid external creation of mod handler */
 	FModHandler() = default;
 
@@ -110,24 +96,11 @@ private:
 	void PopulateModList();
 	/** Initializes native modules prior to mounting any packages */
 	void InitializeNativeModules();
-	/** Performs loading of the native mod libraries into the process address space. Needs to happen earlier than actual mod loading due to UE reasons */
-	void LoadNativeModLibraries();
-private:
-	friend class FSatisfactoryModLoader;
-	friend class FSatisfactoryModLoaderInternal;
 
-	/** Setups mod handler with accessors needed for loading DLL mods */
-	void SetupWithAccessors(const BootstrapAccessors& Accessors);
-
-	/** Loads module into module manager and initializes it */
-	static IModuleInterface* LoadModuleChecked(FName ModuleName, const FInitializeModuleFunctionPtr& ModuleInitializer);
-	
     /** Scans file system for mod package files and populates loading entries map with basic information for mod loading */
     void DiscoverMods();
 	/** Performs sorting of the loading entries and population of final list prior to mod loading */
 	void PerformModListSorting();
-	/** Performs mods pre-initialization, which in our context means loading mod DLLs into process address space */
-	void PreInitializeMods();
 
 	/**
 	 * Determines whenever we should initialize modules on given world.

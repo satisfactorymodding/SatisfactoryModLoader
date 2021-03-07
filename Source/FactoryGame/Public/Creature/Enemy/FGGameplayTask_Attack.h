@@ -3,8 +3,8 @@
 #pragma once
 
 #include "Animation/AnimInstance.h"
-#include "FGGameplayTask_Base.h"
-#include "FGAttack.h"
+#include "Creature/Enemy/FGGameplayTask_Base.h"
+#include "AI/FGAttack.h"
 #include "FGGameplayTask_Attack.generated.h"
 
 

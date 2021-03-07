@@ -1,6 +1,6 @@
 #pragma once
-#include "ModHandler.h"
-#include "TopologicalSort/DirectedGraph.h"
+#include "ModLoading/ModHandler.h"
+#include "Util/TopologicalSort/DirectedGraph.h"
 
 class FJsonValue;
 

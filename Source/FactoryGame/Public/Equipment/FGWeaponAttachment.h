@@ -1,6 +1,6 @@
 #pragma once
 
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "FGWeaponAttachment.generated.h"
 
 UCLASS()

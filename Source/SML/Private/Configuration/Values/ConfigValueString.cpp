@@ -1,5 +1,5 @@
-﻿#include "Configuration/Values/ConfigValueString.h"
-#include "RawFormatValueString.h"
+#include "Configuration/Values/ConfigValueString.h"
+#include "Configuration/RawFileFormat/RawFormatValueString.h"
 
 FString UConfigValueString::DescribeValue_Implementation() const {
     return FString::Printf(TEXT("[string \"%s\"]"), *Value.ReplaceQuotesWithEscapedQuotes());
@@ -11,8 +11,8 @@ URawFormatValue* UConfigValueString::Serialize_Implementation(UObject* Outer) co
     return StringValue;
 }
 
-void UConfigValueString::Deserialize_Implementation(const URawFormatValue* Value) {
-    const URawFormatValueString* StringValue = Cast<URawFormatValueString>(Value);
+void UConfigValueString::Deserialize_Implementation(const URawFormatValue* RawValue) {
+    const URawFormatValueString* StringValue = Cast<URawFormatValueString>(RawValue);
     if (StringValue != NULL) {
         this->Value = StringValue->Value;
     }

@@ -4,27 +4,43 @@
 #include <type_traits>
 
 DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
-struct BootstrapAccessors;
+
+//NOTE: This struct does not actually fully represent member function pointer even on MSVC,
+//because it does not contain additional information for handling virtual inheritance
+//Besides, MSVC layout for "unknown inheritance" and "virtual inheritance" is different
+//See https://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible
+//So yeah, casting function pointer to this struct is not really safe on other compilers
+template<typename T>
+union TMemberFunctionPointer {
+	T MemberFunctionPointer;
+	struct {
+		void* FunctionAddress;
+		int ThisAdjustment;
+	} Value;
+};
+
+template<typename T>
+FORCEINLINE TMemberFunctionPointer<T> ConvertFunctionPointer(T SourcePointer) {
+	const SIZE_T FunctionPointerSize = sizeof(SourcePointer);
+	
+	//We only support non-virtual inheritance, so assert on virtual inheritance and unknown inheritance cases
+	//Note that it might also mean that we are dealing with "proper" compiler with static function pointer size
+	//(e.g anything different from Intel C++ and MSVC)
+	checkf(FunctionPointerSize == 8 || FunctionPointerSize == 12, TEXT("Unsupported function pointer size received: \
+		Hooking can only support non-virtual multiple inheritence. \
+		This might be also caused by unsupported compiler. Currently, only MSVC and Intel C++ are supported\
+		Function pointer size: %d bytes."), FunctionPointerSize);
+
+	TMemberFunctionPointer<T> MemberFunctionPointer{};
+	MemberFunctionPointer.MemberFunctionPointer = SourcePointer;
+	return MemberFunctionPointer;
+}
 
 class SML_API FNativeHookManagerInternal {
 public:
-	static void* GetHandlerListInternal(const FString& SymbolName);
-	static void SetHandlerListInstanceInternal(const FString& SymbolName, void* handlerList);
-
-	static FString RegisterVirtualHookFunction(const struct VirtualFunctionOverrideInfo& SearchInfo, void* HookFunctionPointer, void** OutTrampolineFunction);
-	static FString RegisterHookFunction(const FString& SymbolSearchName, void* HookFunctionPointer, void** OutTrampolineFunction);
-private:
-	friend class FSatisfactoryModLoader;
-	static TSharedPtr<BootstrapAccessors> BootstrapAccessorsPtr;
-
-	static void SetupWithAccessors(const BootstrapAccessors& Accessors);
-};
-
-struct VirtualFunctionOverrideInfo {
-	FString SymbolSearchName;
-	FString ClassTypeName;
-	void* MemberFunctionPtr;
-	size_t MemberFunctionPtrSize;
+	static void* GetHandlerListInternal(void* RealFunctionAddress);
+	static void SetHandlerListInstanceInternal(void* RealFunctionAddress, void* handlerList);
+	static void* RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction);
 };
 
 template <typename T, typename E>
@@ -34,11 +50,11 @@ struct THandlerLists {
 };
 
 template <typename T, typename E>
-THandlerLists<T, E>* createHandlerLists(const FString& identifier) {
-	void* handlerListRaw = FNativeHookManagerInternal::GetHandlerListInternal(identifier);
+THandlerLists<T, E>* createHandlerLists(void* RealFunctionAddress) {
+	void* handlerListRaw = FNativeHookManagerInternal::GetHandlerListInternal(RealFunctionAddress);
 	if (handlerListRaw == nullptr) {
 		handlerListRaw = new THandlerLists<T, E>();
-		FNativeHookManagerInternal::SetHandlerListInstanceInternal(identifier, handlerListRaw);
+		FNativeHookManagerInternal::SetHandlerListInstanceInternal(RealFunctionAddress, handlerListRaw);
 	}
 	return static_cast<THandlerLists<T, E>*>(handlerListRaw);
 }
@@ -204,44 +220,24 @@ private:
 public:
 	//This hook invoker is for global non-member static functions, so we don't have to deal with
 	//member function pointers and virtual functions here
-	static void InstallHook(const FString& SymbolName) {
-#if !WITH_EDITOR
+	static void InstallHook(const FString& DebugSymbolName) {
 		if (!bHookInitialized) {
 			bHookInitialized = true;
 			void* HookFunctionPointer = static_cast<void*>(getApplyCall());
-			const FString SymbolKey = FNativeHookManagerInternal::RegisterHookFunction(SymbolName, HookFunctionPointer, (void**) &functionPtr);
-			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(SymbolKey);
+			void* RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName, PMF, NULL, 0, HookFunctionPointer, (void**) &functionPtr);
+			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(RealFunctionAddress);
 			handlersBefore = &HandlerLists->HandlersBefore;
 			handlersAfter = &HandlerLists->HandlersAfter;
 		}
-#endif
 	}
-public:
+
 	static void addHandlerBefore(Handler handler) {
-#if !WITH_EDITOR
 		handlersBefore->Add(handler);
-#endif
 	}
 
 	static void addHandlerAfter(HandlerAfter handler) {
-#if !WITH_EDITOR
 		handlersAfter->Add(handler);
-#endif
 	}
-};
-
-template<typename CallableType, typename NewTarget>
-struct RetargetFuncType;
-
-//Template which purpose is re-targeting member function signature from type C to type NewTarget
-//It is needed because when function is not overriden in child class,
-//compiler will treat ChildClass::Function type as ParentClass::Function type, producing
-//incorrect member function pointer and class name. Re-targeting to parent solves this,
-//and function always gets correct child class this type
-template <typename R, typename C, typename... A, typename NewTarget>
-struct RetargetFuncType<R(C::*)(A...), NewTarget> {
-public:
-	typedef R(NewTarget::*Value)(A...);
 };
 
 //Template which is used for erasing const from method pointer
@@ -257,15 +253,6 @@ struct HookInvokerWrapper<R(C::*)(A...) const, PMF, TargetClass> {
 public:
 	using FunctionType = R(C::*)(A...);
     using Value = HookInvoker<FunctionType, (FunctionType) PMF, TargetClass, true>;
-};
-
-template <typename TCallable, TCallable Callable>
-struct HookInvokerTest;
-
-//Hook invoker for member functions
-template <typename R, typename C, typename... A, R(C::*PMF)(A...)>
-struct HookInvokerTest<R(C::*)(A...), PMF>
-{
 };
 
 //Hook invoker for member functions
@@ -296,12 +283,12 @@ public:
     static R* applyCallUserTypeByValue(C* self, R* outReturnValue, A... args) {
         // Capture the pointer of the return value
         // so ScopeType does not have to know about that special case
-        auto myTrampoline = [&](ConstCorrectThisPtr self_, A... args_) -> R {
+        auto Trampoline = [&](ConstCorrectThisPtr self_, A... args_) -> R {
             (reinterpret_cast<R*(*)(ConstCorrectThisPtr, R*, A...)>(functionPtr))(self_, outReturnValue, args_...);
             return *outReturnValue;
         };
 
-    	ScopeType scope(handlersBefore, myTrampoline);
+    	ScopeType scope(handlersBefore, Trampoline);
     	scope(self, args...);
     	for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
     	//We always return outReturnValue, so copy our result to output variable and return it
@@ -351,54 +338,30 @@ private:
 	}
 public:
 	//Handles normal member function hooking, e.g hooking fixed symbol implementation in executable
-	static void InstallHook(const FString& SymbolSearchName) {
-#if !WITH_EDITOR
+	static void InstallHook(const FString& DebugSymbolName, void* SampleObjectInstance = NULL) {
 		if (!bHookInitialized) {
 			bHookInitialized = true;
 			void* HookFunctionPointer = static_cast<void*>(getApplyCall());
-			const FString SymbolKey = FNativeHookManagerInternal::RegisterHookFunction(SymbolSearchName, HookFunctionPointer, (void**) &functionPtr);
-			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(SymbolKey);
+			TMemberFunctionPointer<decltype(PMF)> MemberFunctionPointer = ConvertFunctionPointer(PMF);
+			
+			void* RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName,
+				MemberFunctionPointer.Value.FunctionAddress,
+				SampleObjectInstance,
+				MemberFunctionPointer.Value.ThisAdjustment,
+				HookFunctionPointer, (void**) &functionPtr);
+			
+			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(RealFunctionAddress);
 			handlersBefore = &HandlerLists->HandlersBefore;
 			handlersAfter = &HandlerLists->HandlersAfter;
 		}
-#endif
 	}
-
-	//Handles virtual function hooking, which only requires correct function pointer for given class
-	//To automatically infer class name, virtual table offset and this adjustment
-	////and be able to override any virtual function for the class
-	template<typename T>
-	static void InstallVirtualFunctionHook(const FString& SymbolDisplayName, T MemberFunctionPointer) {
-#if !WITH_EDITOR
-		//TargetClass parameter matters when hooking virtual functions
-		static_assert(std::is_base_of<C, TargetClass>::value, "SUBSCRIBE_VIRTUAL_FUNCTION: TargetClass is not a child of function pointer class");
-		FMemberFunctionStruct<T> MemberStruct{MemberFunctionPointer};
-		FString ClassName = typeid(TargetClass).name();
-		//Strip (class | struct | union ) from type name
-		int32 FirstSpaceIndex;
-		ClassName.FindChar(' ', FirstSpaceIndex);
-		if (FirstSpaceIndex != INDEX_NONE) {
-			ClassName = ClassName.Mid(FirstSpaceIndex + 1);
-		}
-		const VirtualFunctionOverrideInfo OverrideInfo{SymbolDisplayName, ClassName, &MemberStruct, sizeof(MemberStruct)};
-		void* HookFunctionPointer = static_cast<void*>(getApplyCall());
-		const FString SymbolKey = FNativeHookManagerInternal::RegisterVirtualHookFunction(OverrideInfo, HookFunctionPointer, (void**) &functionPtr);
-		auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(SymbolKey);
-		handlersBefore = &HandlerLists->HandlersBefore;
-		handlersAfter = &HandlerLists->HandlersAfter;
-#endif
-	}
-public:
+	
 	static void addHandlerBefore(Handler handler) {
-#if !WITH_EDITOR
 		handlersBefore->Add(handler);
-#endif
 	}
 
 	static void addHandlerAfter(HandlerAfter handler) {
-#if !WITH_EDITOR
 		handlersAfter->Add(handler);
-#endif
 	}
 };
 
@@ -426,25 +389,17 @@ template <typename R, typename... A, R(*PMF)(A...)>
 bool HookInvoker<R(*)(A...), PMF, None, false>::bHookInitialized = false;
 
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(#MethodReference); \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference)); \
 HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_METHOD_AFTER(MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(#MethodReference); \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference)); \
 HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerAfter(Handler);
 
-#define SUBSCRIBE_VIRTUAL_FUNCTION(TargetClass, MethodReference, Handler) \
-HookInvokerWrapper<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value, (RetargetFuncType<decltype(&MethodReference), TargetClass>::Value) &MethodReference, TargetClass>::Value::InstallVirtualFunctionHook<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value>(#MethodReference, &MethodReference); \
-HookInvokerWrapper<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value, (RetargetFuncType<decltype(&MethodReference), TargetClass>::Value) &MethodReference, TargetClass>::Value::addHandlerBefore(Handler);
-
-#define SUBSCRIBE_VIRTUAL_FUNCTION_AFTER(TargetClass, MethodReference, Handler) \
-HookInvokerWrapper<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value, (RetargetFuncType<decltype(&MethodReference), TargetClass>::Value) &MethodReference, TargetClass>::Value::InstallVirtualFunctionHook<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value>(#MethodReference, &MethodReference); \
-HookInvokerWrapper<RetargetFuncType<decltype(&MethodReference), TargetClass>::Value, (RetargetFuncType<decltype(&MethodReference), TargetClass>::Value) &MethodReference, TargetClass>::Value::addHandlerAfter(Handler);
-
-#define SUBSCRIBE_METHOD_MANUAL(MethodName, MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(MethodName); \
+#define SUBSCRIBE_METHOD_VIRTUAL(MethodReference, SampleObjectInstance, Handler) \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
 HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerBefore(Handler);
 
-#define SUBSCRIBE_METHOD_AFTER_MANUAL(MethodName, MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(MethodName); \
+#define SUBSCRIBE_METHOD_VIRTUAL_AFTER(MethodReference, SampleObjectInstance, Handler) \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
 HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerAfter(Handler);

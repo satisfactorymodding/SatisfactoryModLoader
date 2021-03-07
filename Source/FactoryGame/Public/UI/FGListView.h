@@ -7,7 +7,6 @@
 #include "Widgets/SWidget.h"
 #include "Widgets/SBoxPanel.h"
 #include "Components/PanelWidget.h"
-#include "Views/ITypedTableView.h"
 #include "FGListView.generated.h"
 
 class UFGListViewSlot;

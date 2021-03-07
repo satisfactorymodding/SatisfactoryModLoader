@@ -1,7 +1,7 @@
 ﻿#include "Configuration/Properties/ConfigPropertySection.h"
-#include "CodeGeneration/ConfigGenerationContext.h"
-#include "CodeGeneration/ConfigVariableDescriptor.h"
-#include "CodeGeneration/ConfigVariableLibrary.h"
+#include "Configuration/CodeGeneration/ConfigGenerationContext.h"
+#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
+#include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/Values/ConfigValueSection.h"
 
 void UConfigPropertySection::ApplyDefaultPropertyValue_Implementation(UConfigValue* Value) const {

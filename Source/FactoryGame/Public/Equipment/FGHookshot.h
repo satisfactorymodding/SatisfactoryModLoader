@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGEquipment.h"
+#include "Equipment/FGEquipment.h"
 #include "FGHookshot.generated.h"
 
 UCLASS()

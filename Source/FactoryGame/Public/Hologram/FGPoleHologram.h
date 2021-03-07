@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Hologram/FGFactoryHologram.h"
-#include "FGPoleDescriptor.h"
+#include "Resources/FGPoleDescriptor.h"
 #include "FGPoleHologram.generated.h"
 
 

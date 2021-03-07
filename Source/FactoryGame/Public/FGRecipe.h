@@ -3,7 +3,7 @@
 #pragma once
 
 #include "ItemAmount.h"
-#include "HologramSplinePathMode.h"
+#include "Hologram/HologramSplinePathMode.h"
 #include "FGEventSubsystem.h"
 #include "FGRecipe.generated.h"
 

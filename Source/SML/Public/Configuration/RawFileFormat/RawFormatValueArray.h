@@ -1,8 +1,8 @@
-﻿#pragma once
-#include "RawFormatValue.h"
-#include "RawFormatValueNumber.h"
-#include "RawFormatValueString.h"
-#include "SubclassOf.h"
+#pragma once
+#include "Configuration/RawFileFormat/RawFormatValue.h"
+#include "Configuration/RawFileFormat/RawFormatValueNumber.h"
+#include "Configuration/RawFileFormat/RawFormatValueString.h"
+#include "Templates/SubclassOf.h"
 #include "RawFormatValueArray.generated.h"
 
 /** Describes raw array value */

@@ -1,6 +1,6 @@
 ﻿#include "Configuration/Properties/ConfigPropertyFloat.h"
-#include "CodeGeneration/ConfigVariableDescriptor.h"
-#include "CodeGeneration/ConfigVariableLibrary.h"
+#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
+#include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
 #include "Configuration/Values/ConfigValueFloat.h"
 
 UConfigPropertyFloat::UConfigPropertyFloat() {

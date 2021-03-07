@@ -1,7 +1,7 @@
-﻿#pragma once
-#include "ModModule.h"
+#pragma once
+#include "Module/ModModule.h"
 #include "GameFramework/PlayerInput.h"
-#include "SubclassOf.h"
+#include "Templates/SubclassOf.h"
 #include "Engine/GameInstance.h"
 
 #include "GameInstanceModule.generated.h"

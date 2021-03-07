@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGBuildableManufacturer.h"
+#include "Buildables/FGBuildableManufacturer.h"
 #include "FGBuildableConverter.generated.h"
 
 UCLASS( Blueprintable, Meta = (AutoJson=false) )

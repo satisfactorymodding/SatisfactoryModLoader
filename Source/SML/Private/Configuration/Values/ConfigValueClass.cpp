@@ -1,6 +1,6 @@
-﻿#include "Configuration/Values/ConfigValueClass.h"
-#include "ConfigPropertyClass.h"
-#include "RawFormatValueString.h"
+#include "Configuration/Values/ConfigValueClass.h"
+#include "Configuration/Properties/ConfigPropertyClass.h"
+#include "Configuration/RawFileFormat/RawFormatValueString.h"
 
 
 void UConfigValueClass::SetClassValue(UClass* ClassValue) {

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGRemoteCallObject.h"
 #include "FGSignificanceInterface.h"
 #include "FGBuildableConveyorBase.generated.h"

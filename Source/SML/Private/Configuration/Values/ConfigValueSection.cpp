@@ -1,5 +1,5 @@
-﻿#include "Configuration/Values/ConfigValueSection.h"
-#include "RawFormatValueObject.h"
+#include "Configuration/Values/ConfigValueSection.h"
+#include "Configuration/RawFileFormat/RawFormatValueObject.h"
 
 TMap<FString, UConfigProperty*> UConfigValueSection::GetProperties() const {
     const UConfigPropertySection* SectionProperty = Cast<UConfigPropertySection>(GetAssociatedProperty());

@@ -6,8 +6,8 @@
 #include "ItemAmount.h"
 #include "FGBuildableSubsystem.h"
 #include "FGConstructionMessageInterface.h"
-#include "HologramSplinePathMode.h"
-#include "DelegateCombinations.h"
+#include "Hologram/HologramSplinePathMode.h"
+#include "Delegates/DelegateCombinations.h"
 #include "FGBuildGunBuild.generated.h"
 
 

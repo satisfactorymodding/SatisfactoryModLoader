@@ -5,7 +5,7 @@
 #include "FGUseableInterface.h"
 #include "FGSignificanceInterface.h"
 #include "FGSaveInterface.h"
-#include "FGAggroTargetInterface.h"
+#include "AI/FGAggroTargetInterface.h"
 #include "FGDriveablePawn.h"
 #include "FGDismantleInterface.h"
 #include "FGBlueprintFunctionLibrary.h"

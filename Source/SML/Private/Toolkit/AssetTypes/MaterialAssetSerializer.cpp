@@ -1,16 +1,11 @@
-﻿#pragma once
+#pragma once
 #include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
-#include "AssetHelper.h"
-#include "NativeHookManager.h"
-#include "PropertySerializer.h"
-#include "Materials/Material.h"
-#include "Private/Materials/MaterialUniformExpressions.h"
 
-static bool GHasShaderInitBeenHooked = false;
+/*static bool GHasShaderInitBeenHooked = false;
 
 void UMaterialAssetSerializer::RegisterShaderInitRHIHook() {
     GHasShaderInitBeenHooked = true;
-    SUBSCRIBE_METHOD(FShaderResource::InitRHI, [](auto& Call, FShaderResource* ShaderResource) {
+    SUBSCRIBE_METHOD(FShaderMapResource::InitRHI, [](auto& Call, FShaderMapResourceCode* ShaderResource) {
         //Prevent InitRHI from emptying shader bytecode array because we still need it for dumping
         const TArray<uint8> CopiedByteCodeArray = ShaderResource->Code;
         check(CopiedByteCodeArray.Num());
@@ -312,9 +307,7 @@ static FString QualityLevelToString(uint8 QualityLevel) {
 
 static FString FeatureLevelToString(uint8 FeatureLevel) {
     switch (FeatureLevel) {
-        case ERHIFeatureLevel::ES2: return TEXT("ES2");
         case ERHIFeatureLevel::ES3_1: return TEXT("ES3_1");
-        case ERHIFeatureLevel::SM4: return TEXT("SM4");
         case ERHIFeatureLevel::SM5: return TEXT("SM5");
         default: checkf(0, TEXT("Unknown feature level: %d"), FeatureLevel); return TEXT("");
     }
@@ -855,4 +848,4 @@ TSharedPtr<FJsonObject> UMaterialAssetSerializer::SerializeParameterInfo(const F
 
 EAssetCategory UMaterialAssetSerializer::GetAssetCategory() const {
     return EAssetCategory::EAC_Material;
-}
+}*/

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "UMG.h"
-#include "UserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "FGInteractWidget.generated.h"
 
 

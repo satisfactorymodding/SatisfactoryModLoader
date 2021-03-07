@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGReplicationDetailActor_GeneratorFuel.h"
+#include "Replication/FGReplicationDetailActor_GeneratorFuel.h"
 #include "FGReplicationDetailActor_GeneratorNuclear.generated.h"
 
 UCLASS()
