@@ -8,11 +8,6 @@
 			"Name": "FactoryGame",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
-		},
-		{
-			"Name": "SML",
-			"Type": "Runtime",
-			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [
@@ -38,6 +33,10 @@
 		},
 		{
 			"Name": "Alpakit",
+			"Enabled": true
+		},
+		{
+			"Name": "SML",
 			"Enabled": true
 		}
 	]
