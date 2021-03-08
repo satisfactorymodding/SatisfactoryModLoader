@@ -10,7 +10,7 @@ public class FactoryGameEditorTarget : TargetRules
 		Type = TargetType.Editor;
 		
 		CppStandard = CppStandardVersion.Cpp17;
-		ExtraModuleNames.AddRange(new[] { "FactoryGame", "SML"});
+		ExtraModuleNames.AddRange(new[] { "FactoryGame"});
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 	}
 }

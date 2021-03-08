@@ -11,7 +11,7 @@ public class FactoryGameTarget : TargetRules
 		LinkType = TargetLinkType.Modular;
 		
 		CppStandard = CppStandardVersion.Cpp17;
-		ExtraModuleNames.AddRange(new[] {"FactoryGame", "SML"});
+		ExtraModuleNames.AddRange(new[] {"FactoryGame"});
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 
 		bUseChecksInShipping = true;
