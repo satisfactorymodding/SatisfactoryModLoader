@@ -21,10 +21,7 @@ public:
 
 	/** Returns map of implementation dependent extra attributes describing current mod loader configuration */
 	static TMap<FName, FString> GetExtraAttributes();
-
-	/** Returns currently active mod handler instance, or NULL if mod loading is not initialized */
-	FORCEINLINE static class FModHandler* GetModHandler() { return ModHandlerPrivate.Get(); }
-
+	
 	/** Returns active SML configuration. If not loaded, it will return empty struct */
 	FORCEINLINE static FSMLConfiguration GetSMLConfiguration() { return SMLConfigurationPrivate; }
 private:

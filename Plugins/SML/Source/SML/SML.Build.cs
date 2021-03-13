@@ -16,7 +16,8 @@ public class SML : ModuleRules
         //SML transitive dependencies
         PublicDependencyModuleNames.AddRange(new[] {
             "Json",
-            "MovieScene"
+            "MovieScene",
+            "Projects"
         });
         PrivateDependencyModuleNames.AddRange(new[] {"RenderCore"});
         

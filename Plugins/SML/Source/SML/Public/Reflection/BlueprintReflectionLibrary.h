@@ -3,12 +3,24 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Reflection/BlueprintReflectedObject.h"
 #include "Reflection/ReflectionHelper.h"
+#include "Util/BlueprintAssetHelperLibrary.h"
+#include "SatisfactoryModLoader.h"
 #include "BlueprintReflectionLibrary.generated.h"
 
 UCLASS()
 class SML_API UBlueprintReflectionLibrary : public UBlueprintFunctionLibrary {
     GENERATED_BODY()
 public:
+
+    /**
+     * Retrieves class default object (CDO) instance, which is an archetype for all class objects.
+     * Changes to CDOs will be reflected on all objects of this class created after modification.
+     * Be mindful when using this function, because you can break other mod and vanilla content without leaving a trace.
+     * This function will log a warning when you're attempting to modify class not owned by your mod, for safety reasons.
+     */
+    UFUNCTION(BlueprintPure, Category = "Reflection", CustomThunk, meta = (DeterminesOutputType = "Class"))
+    static UObject* GetClassDefaultObject(UClass* Class);
+    
     /** Allocates reflected object wrapper for given object */
     UFUNCTION(BlueprintPure, Category = "Reflection")
     static FReflectedObject ReflectObject(UObject* Object);
@@ -108,6 +120,20 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
     static void SetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedEnumValue& Enum);
+
+    DECLARE_FUNCTION(execGetClassDefaultObject) {
+        P_GET_OBJECT(UClass, Class);
+        checkf(Class, TEXT("GetClassDefaultObject: received NULL class"));
+
+        UPackage* OutermostPackage = Stack.Node->GetOutermost();
+        const FString PackageOwner = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(OutermostPackage->GetName());
+        const FString ClassOwner = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(Class->GetOuterUPackage()->GetName());
+        if (PackageOwner != ClassOwner) {
+            UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("Blueprint %s, owned by %s, is accessing CDO of class %s, owned by %s"),
+                *OutermostPackage->GetName(), *PackageOwner, *Class->GetPathName(), *ClassOwner);
+        }
+        *(UObject**)RESULT_PARAM = GetClassDefaultObject(Class);
+    }
 
     DECLARE_FUNCTION(execDeflectStruct) {
         P_GET_STRUCT(FReflectedObject, ReflectedObject);

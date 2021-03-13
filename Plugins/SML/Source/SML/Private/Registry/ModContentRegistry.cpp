@@ -5,21 +5,18 @@
 #include "FGResourceSinkSubsystem.h"
 #include "FGSchematicManager.h"
 #include "Unlocks/FGUnlockRecipe.h"
-#include "Misc/FileHelper.h"
-#include "HAL/PlatformFilemanager.h"
-#include "Kismet/GameplayStatics.h"
 #include "IPlatformFilePak.h"
 #include "Subsystem/ModSubsystemHolder.h"
 #include "Patching/NativeHookManager.h"
 #include "Reflection/ReflectionHelper.h"
 #include "Subsystem/SMLSubsystemHolder.h"
 #include "Engine/AssetManager.h"
+#include "ModLoading/ModLoadingLibrary.h"
+#include "Util/BlueprintAssetHelperLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogContentRegistry);
 
-TMap<FString, FString> AModContentRegistry::ModOverwriteMap;
-
-#pragma optimize("", off)
+static bool GIsRegisteringVanillaContent = false;
 
 void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
     const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);
@@ -80,7 +77,7 @@ TArray<TSubclassOf<T>> DiscoverVanillaContentOfType() {
     TArray<TSubclassOf<T>> OutVanillaContent;
 
     for (const FAssetData& AssetData : FoundVanillaAssets) {
-        FAssetDataTagMapSharedView::FFindTagResult GeneratedClassTextPath = AssetData.TagsAndValues.FindTag(TEXT("GeneratedClass"));
+        FAssetDataTagMapSharedView::FFindTagResult GeneratedClassTextPath = AssetData.TagsAndValues.FindTag(FBlueprintTags::GeneratedClassPath);
         if (GeneratedClassTextPath.IsSet()) {
             const FString BlueprintClassPath = FPackageName::ExportTextPathToObjectPath(GeneratedClassTextPath.GetValue());
             UClass* LoadedClass = LoadClass<T>(NULL, *BlueprintClassPath);
@@ -102,6 +99,21 @@ void AModContentRegistry::DisableVanillaContentRegistration() {
         [](auto& Call, AFGSchematicManager*) { Call.Cancel(); });
     SUBSCRIBE_METHOD(AFGResearchManager::PopulateResearchTreeList,
         [](auto& Call, AFGResearchManager*) { Call.Cancel(); });
+}
+
+FName AModContentRegistry::FindContentOwnerFast(UClass* ContentClass) {
+    //Shortcut used for quickly registering vanilla content
+    if (GIsRegisteringVanillaContent) {
+        return FACTORYGAME_MOD_NAME;
+    }
+    
+    //Use GetName on package instead of GetPathName() because it's faster and avoids string concat
+    const FString ContentOwnerName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(ContentClass->GetOuterUPackage()->GetName());
+    if (ContentOwnerName.IsEmpty()) {
+        UE_LOG(LogContentRegistry, Error, TEXT("Failed to determine content owner for object %s. This is an error, report to mod author!"), *ContentClass->GetPathName());
+        return FACTORYGAME_MOD_NAME;
+    }
+    return *ContentOwnerName;
 }
 
 void AModContentRegistry::FlushStateToSchematicManager(AFGSchematicManager* SchematicManager) const {
@@ -142,11 +154,14 @@ void AModContentRegistry::SubscribeToSchematicManager(AFGSchematicManager* Schem
 
 void AModContentRegistry::Init() {
     //Register vanilla content in the registry
-    const FName FactoryGame = FACTORYGAME_MOD_REFERENCE;
+    const FName FactoryGame = FACTORYGAME_MOD_NAME;
 
     UE_LOG(LogContentRegistry, Display, TEXT("Initializing mod content registry"));
     const TArray<TSubclassOf<UFGSchematic>> AllSchematics = DiscoverVanillaContentOfType<UFGSchematic>();
     const TArray<TSubclassOf<UFGResearchTree>> AllResearchTrees = DiscoverVanillaContentOfType<UFGResearchTree>();
+
+    //Start registering vanilla content now
+    GIsRegisteringVanillaContent = true;
     
     for (const TSubclassOf<UFGSchematic>& Schematic : AllSchematics) {
         if (UFGSchematic::GetType(Schematic) != ESchematicType::EST_Alternate) {
@@ -157,6 +172,9 @@ void AModContentRegistry::Init() {
     for (const TSubclassOf<UFGResearchTree>& ResearchTree : AllResearchTrees) {
         RegisterResearchTree(FactoryGame, ResearchTree);
     }
+
+    //Stop registering vanilla content at this point
+    GIsRegisteringVanillaContent = false;
 }
 
 void AModContentRegistry::FreezeRegistryState() {
@@ -201,8 +219,7 @@ void AModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schemat
     }
 }
 
-void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe,
-                                                        FName ModReference) {
+void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference) {
     TArray<FItemAmount> AllReferencedItems;
     AllReferencedItems.Append(UFGRecipe::GetIngredients(Recipe));
     AllReferencedItems.Append(UFGRecipe::GetProducts(Recipe));
@@ -211,15 +228,16 @@ void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRec
         const TSubclassOf<UFGItemDescriptor>& ItemDescriptor = ItemAmount.ItemClass;
         TSharedPtr<FItemRegistrationInfo> ItemRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
         if (!ItemRegistrationInfo.IsValid()) {
-           ItemRegistrationInfo = RegisterItemDescriptor(ModReference, ItemDescriptor);
+            const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
+            ItemRegistrationInfo = RegisterItemDescriptor(OwnerModReference, ModReference, ItemDescriptor);
         }
         //Associate item registration info with this recipe
         ItemRegistrationInfo->ReferencedBy.AddUnique(Recipe);
     }
 }
 
-TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(FName ModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor) {
-    return ItemRegistryState.RegisterObject(MakeRegistrationInfo<FItemRegistrationInfo>(ItemDescriptor, ModReference));
+TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor) {
+    return ItemRegistryState.RegisterObject(MakeRegistrationInfo<FItemRegistrationInfo>(ItemDescriptor, OwnerModReference, RegistrarModReference));
 }
 
 void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicManager,
@@ -300,8 +318,9 @@ void AModContentRegistry::RegisterSchematic(FName ModReference, TSubclassOf<UFGS
         EnsureRegistryUnfrozen();
 
         //Create registration entry and register
+        const FName OwnerModReference = FindContentOwnerFast(Schematic);
         const TSharedPtr<FSchematicRegistrationInfo> RegistrationInfo = SchematicRegistryState.RegisterObject(
-            MakeRegistrationInfo<FSchematicRegistrationInfo>(Schematic, ModReference));
+            MakeRegistrationInfo<FSchematicRegistrationInfo>(Schematic, OwnerModReference, ModReference));
 
         //Register referenced recipes automatically and associate schematic with them
         TArray<TSubclassOf<UFGRecipe>> OutReferencedRecipes;
@@ -324,8 +343,9 @@ void AModContentRegistry::RegisterResearchTree(FName ModReference, TSubclassOf<U
         EnsureRegistryUnfrozen();
 
         //Create registration entry and register
+        const FName OwnerModReference = FindContentOwnerFast(ResearchTree);
         const TSharedPtr<FResearchTreeRegistrationInfo> RegistrationInfo = ResearchTreeRegistryState.RegisterObject(
-            MakeRegistrationInfo<FResearchTreeRegistrationInfo>(ResearchTree, ModReference));
+            MakeRegistrationInfo<FResearchTreeRegistrationInfo>(ResearchTree, OwnerModReference, ModReference));
         
         //Register referenced schematics automatically and associate research tree with them
         TArray<TSubclassOf<UFGSchematic>> OutReferencedSchematics;
@@ -348,11 +368,15 @@ void AModContentRegistry::RegisterRecipe(FName ModReference, TSubclassOf<UFGReci
         EnsureRegistryUnfrozen();
         
         //Create registration entry and register
+        const FName OwnerModReference = FindContentOwnerFast(Recipe);
         const TSharedPtr<FRecipeRegistrationInfo> RegistrationInfo = RecipeRegistryState.RegisterObject(
-            MakeRegistrationInfo<FRecipeRegistrationInfo>(Recipe, ModReference));
+            MakeRegistrationInfo<FRecipeRegistrationInfo>(Recipe, OwnerModReference, ModReference));
 
         //Process registration callback
         OnRecipeRegistered.Broadcast(Recipe, *RegistrationInfo);
+
+        //Associate referenced item descriptors with this recipe registrar
+        MarkItemDescriptorsFromRecipe(Recipe, ModReference);
     }
 }
 
@@ -409,9 +433,9 @@ FItemRegistrationInfo AModContentRegistry::GetItemDescriptorInfo(TSubclassOf<UFG
     if (CachedRegistrationInfo.IsValid()) {
         return *CachedRegistrationInfo;
     }
-    //Item descriptor was not referenced in any registered recipe, generate dummy registration info in runtime
-    const FName GuessedModReference = GetClassOwnerModReference(ItemDescriptor);
-    return *RegisterItemDescriptor(GuessedModReference, ItemDescriptor);
+    //Item descriptor was not referenced in any registered recipe, fallback to registrar name = owner name logic
+    const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
+    return *RegisterItemDescriptor(OwnerModReference, OwnerModReference, ItemDescriptor);
 }
 
 
@@ -464,74 +488,3 @@ void AModContentRegistry::Tick(float DeltaSeconds) {
         }
     }
 }
-
-FName AModContentRegistry::GetClassOwnerModReference(UClass* ClassObject) {
-    check(ClassObject);
-    const FString& PackagePathName = ClassObject->GetOutermost()->GetPathName();
-
-    if (PackagePathName.StartsWith(TEXT("/Game/"))) {
-        //Class is blueprint class located inside game's content directory
-        const FString TrimmedPathName = PackagePathName.Mid(6);
-        int32 FirstSlashIndex;
-        TrimmedPathName.FindChar(TEXT('/'), FirstSlashIndex);
-        if (FirstSlashIndex == INDEX_NONE)
-            FirstSlashIndex = TrimmedPathName.Len();
-        //Take second part between two slashes, so /Game/SML/Example will evaluate to SML
-        return *TrimmedPathName.Mid(0, FirstSlashIndex);
-    }
-    if (PackagePathName.StartsWith(TEXT("/Script/"))) {
-        //Class is defined in native package, their names follow pattern /Script/ModuleName
-        //And usually ModuleName matches ModReference
-        const FString OwnerModuleName = PackagePathName.Mid(8);
-        return *OwnerModuleName;
-    }
-    if (PackagePathName.StartsWith(TEXT("/Engine/"))) {
-        //We assume all engine files to be owned by FactoryGame directly
-        return TEXT("FactoryGame");
-    }
-    //Otherwise it should be /Config/ or something like that. Either way, we fallback to FactoryGame
-    return TEXT("FactoryGame");
-}
-
-void AModContentRegistry::RegisterOverwriteForMod(const FString& ModReference, const FString& OverwritePath) {
-    if (ModOverwriteMap.Contains(OverwritePath)) {
-        const FString OldModReference = ModOverwriteMap.FindChecked(OverwritePath);
-        UE_LOG(LogContentRegistry, Error,
-            TEXT("SML detected two mods trying to overwrite same asset at path '%s': %s and %s"),
-            *OverwritePath, *ModReference, *OldModReference);
-        UE_LOG(LogContentRegistry, Error,
-            TEXT("This setup is not stable, and mods can break depending on which overwrite takes precedence"));
-        UE_LOG(LogContentRegistry, Error, TEXT("Proceed with caution, and make sure to report to mod authors about the conflict"));
-    }
-    ModOverwriteMap.Add(OverwritePath, ModReference);
-}
-
-FString AModContentRegistry::FindOverwriteOwner(UClass* Class, const TCHAR* Fallback) {
-    const FString PackageName = Class->GetOutermost()->GetPathName();
-    if (ModOverwriteMap.Contains(PackageName)) {
-        return ModOverwriteMap.FindChecked(PackageName);
-    }
-    return Fallback;
-}
-
-void AModContentRegistry::DiscoverOverwriteListForModReference(const FString& ModReference) {
-    IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-    const FString DirectoryPath = FPaths::Combine(FPaths::ProjectContentDir(), ModReference, TEXT("ModOverwriteLists"));
-    TArray<FString> ResultOverwriteArray;
-    PlatformFile.IterateDirectory(*DirectoryPath, [&ResultOverwriteArray](const TCHAR* FilenameOrDirectory, bool bIsDirectory) {
-        const FString FilenameString = FilenameOrDirectory;
-        if (!bIsDirectory && FPaths::GetExtension(FilenameOrDirectory) == TEXT("txt")) {
-            FString ResultOverwriteString;
-            FFileHelper::LoadFileToString(ResultOverwriteString, FilenameOrDirectory);
-            ResultOverwriteString.ParseIntoArrayLines(ResultOverwriteArray);
-        }
-        return true;
-    });
-    for (const FString& ResultString : ResultOverwriteArray) {
-        if (ResultString.StartsWith(TEXT("#")))
-            continue; //Skip comments starting with #
-        RegisterOverwriteForMod(ModReference, ResultString);
-    }
-}
-
-#pragma optimize("", on)

@@ -1,5 +1,9 @@
 ﻿#include "Reflection/BlueprintReflectionLibrary.h"
 
+UObject* UBlueprintReflectionLibrary::GetClassDefaultObject(UClass* Class) {
+    return Class->GetDefaultObject();
+}
+
 FReflectedObject UBlueprintReflectionLibrary::ReflectObject(UObject* Object) {
     checkf(Object, TEXT("Cannot Reflect NULL object"));
     FReflectedObject ReflectedObject{};

@@ -33,6 +33,15 @@ private:
     /** Events that we already received. Will be dispatched immediately on child modules */
     TArray<ELifecyclePhase> EventsReceived;
 public:
+    /**
+    * Indicates that this module is considered a root module
+    * Each mod can only contain one root module of each particular type,
+    * e.g GameWorld, MenuWorld and GameInstance types.
+    * Root modules will be automatically discovered and loaded for every mod, regardless of their asset name
+    */
+    UPROPERTY(AssetRegistrySearchable, EditDefaultsOnly)
+    bool bRootModule;
+    
     /** ModReference of the mod this module belongs to */
     UFUNCTION(BlueprintPure)
     FORCEINLINE FName GetOwnerModReference() const { return OwnerModReference; }

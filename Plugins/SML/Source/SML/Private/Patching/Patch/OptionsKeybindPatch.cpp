@@ -2,7 +2,6 @@
 #include "Patching/Patch/OptionsKeybindPatch.h"
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
-#include "ModLoading/ModHandler.h"
 #include "Reflection/ReflectionHelper.h"
 #include "SatisfactoryModLoader.h"
 #include "Components/TextBlock.h"
@@ -11,6 +10,7 @@
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Engine/Engine.h"
 #include "Engine/UserDefinedStruct.h"
+#include "ModLoading/ModLoadingLibrary.h"
 
 void FOptionsKeybindPatch::CategorizeKeyBindingsByModReference(FScriptArrayHelper& InKeyBindings, UScriptStruct* KeyBindStructClass, TMap<FString, TArray<int32>>& OutCategorizedNames) {
     UNameProperty* ActionNameProperty = FReflectionHelper::FindPropertyByShortNameChecked<UNameProperty>(KeyBindStructClass, TEXT("ActionName"));
@@ -37,11 +37,12 @@ void FOptionsKeybindPatch::CategorizeKeyBindingsByModReference(FScriptArrayHelpe
 }
 
 void FOptionsKeybindPatch::SortModReferencesByDisplayName(TArray<FString>& InModReferences, TMap<FString, FString>& OutDisplayNames) {
-    FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
     for (const FString& ModReference : InModReferences) {
-        const FModContainer* ModContainer = ModHandler->GetLoadedMod(ModReference);
-        checkf(ModContainer, TEXT("%s"), *ModReference);
-        OutDisplayNames.Add(ModReference, ModContainer->ModInfo.Name);
+        FModInfo ModInfo;
+        UModLoadingLibrary* ModLoadingLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
+        check(ModLoadingLibrary->GetLoadedModInfo(ModReference, ModInfo));
+        
+        OutDisplayNames.Add(ModReference, ModInfo.FriendlyName);
     }
     InModReferences.StableSort([&](const FString& A, const FString& B){
         const FString& ModNameA = OutDisplayNames.FindChecked(A);

@@ -19,9 +19,13 @@ public:
     /** Retrieves root game instance module by provided mod reference */
     UFUNCTION(BlueprintPure)
     UGameInstanceModule* FindModule(const FName& ModReference) const;
+
+    /** Initializes discovered mod modules for the given game instance */
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+    /** Override this to disable system initialization in the editor */
+    virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 private:
-    friend class FModHandler;
-    
     /** Allocates root module object for instance and registers it */
     void CreateRootModule(const FName& ModReference, TSubclassOf<UGameInstanceModule> ObjectClass);
 

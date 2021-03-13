@@ -1,19 +1,21 @@
 #include "Patching/Patch/MainMenuPatch.h"
 #include "Patching/BlueprintHookHelper.h"
 #include "Patching/BlueprintHookManager.h"
-#include "ModLoading/ModHandler.h"
 #include "Reflection/ReflectionHelper.h"
 #include "SatisfactoryModLoader.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Engine/Engine.h"
+#include "ModLoading/ModLoadingLibrary.h"
+
+#define SML_MENU_PAGE_ASSET_PATH TEXT("/SML/ModList/Widget_ModList.Widget_ModList_C")
 
 UWidget* CreateModSubMenuWidget(UUserWidget* OwningWidget) {
-	UClass* MenuBaseClass = LoadObject<UClass>(NULL, TEXT("/Game/SML/Widget_ModList.Widget_ModList_C"));
+	UClass* MenuBaseClass = LoadObject<UClass>(NULL, SML_MENU_PAGE_ASSET_PATH);
 	if (MenuBaseClass == NULL) {
-		//SML pak is not loaded, so class is not available
-		//Mod list menu won't be openable, but game still can work without it
+		//Class is not accessible. It is definitely an error, but we can at least recover from it
+		UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to load SML menu page asset from path %s"), SML_MENU_PAGE_ASSET_PATH);
 		return NULL;
 	}
 	UUserWidget* NewWidget = UUserWidget::CreateWidgetInstance(*OwningWidget, MenuBaseClass, TEXT("ModListSubMenu"));
@@ -22,8 +24,8 @@ UWidget* CreateModSubMenuWidget(UUserWidget* OwningWidget) {
 }
 
 TArray<FString> FMainMenuPatch::CreateMenuInformationText() {
-	const FModHandler* ModHandler = FSatisfactoryModLoader::GetModHandler();
-	const int32 ModsLoaded = ModHandler->GetLoadedMods().Num();
+	UModLoadingLibrary* ModLoadingLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
+	const int32 ModsLoaded = ModLoadingLibrary->GetLoadedMods().Num();
 	TArray<FString> ResultText;
 	
 	ResultText.Add(FString::Printf(TEXT("Satisfactory Mod Loader v.%s"), *FSatisfactoryModLoader::GetModLoaderVersion().ToString()));

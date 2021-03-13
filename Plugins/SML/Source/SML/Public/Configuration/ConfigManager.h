@@ -68,7 +68,7 @@ class SML_API UConfigManager : public UEngineSubsystem {
 public:
     /** Reloads mod configurations from disk, optionally saving them back if schema changes */
     UFUNCTION(BlueprintCallable)
-    void ReloadModConfigurations(bool bSaveOnSchemaChange);
+    void ReloadModConfigurations();
 
     /** Flushes all pending saves and forces manager to write them into filesystem */
     UFUNCTION(BlueprintCallable)

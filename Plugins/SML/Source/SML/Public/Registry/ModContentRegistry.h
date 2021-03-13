@@ -1,17 +1,12 @@
 #pragma once
 #include "FGResearchTree.h"
-#include "FGSaveInterface.h"
 #include "FGSchematic.h"
 #include "FGRecipe.h"
 #include "FGSubsystem.h"
 #include "Engine/DataTable.h"
-#include "util/BoilerplateHelper.h"
 #include "ModContentRegistry.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogContentRegistry, Log, Log);
-
-/** Mod reference of Satisfactory */
-#define FACTORYGAME_MOD_REFERENCE TEXT("FactoryGame")
 
 /** Holds basic information about a single content registration entry */
 //Should be very lightweight for network serialization, that's why we use FName and not FString here
@@ -19,12 +14,12 @@ USTRUCT(BlueprintType)
 struct SML_API FBasicRegistrationInfo {
     GENERATED_BODY()
 public:
-    /** Mod reference of the mod who originally registered content */
+    /** Mod reference of the plugin which actually performed the object registration. Usually same as OwnedByModReference */
     UPROPERTY(BlueprintReadOnly)
-    FName ModReference;
-    /** If object was overwritten, Mod reference of the mod who owns overwritten asset */
+    FName RegistrarModReference;
+    /** Mod reference of the plugin which owns the actual registered object */
     UPROPERTY(BlueprintReadOnly)
-    FName OverwrittenByModReference;
+    FName OwnedByModReference;
     /** Object that was registered */
     UPROPERTY(BlueprintReadOnly)
     UClass* RegisteredObject;
@@ -162,7 +157,7 @@ public:
      * @param Schematic class of schematic to be registered
      */
     UFUNCTION(BlueprintCallable)
-    void RegisterSchematic(FName ModReference, TSubclassOf<UFGSchematic> Schematic);
+    void RegisterSchematic(const FName ModReference, TSubclassOf<UFGSchematic> Schematic);
 
     /**
      * Registers research tree to be usable by the game
@@ -174,7 +169,7 @@ public:
      * @param ResearchTree class of research tree being registered
      */
     UFUNCTION(BlueprintCallable)
-    void RegisterResearchTree(FName ModReference, TSubclassOf<UFGResearchTree> ResearchTree);
+    void RegisterResearchTree(const FName ModReference, TSubclassOf<UFGResearchTree> ResearchTree);
 
     /**
      * Registers recipe to be usable by the game
@@ -185,11 +180,11 @@ public:
      * @param Recipe class of recipe being registered
      */
     UFUNCTION(BlueprintCallable)
-    void RegisterRecipe(FName ModReference, TSubclassOf<UFGRecipe> Recipe);
+    void RegisterRecipe(const FName ModReference, TSubclassOf<UFGRecipe> Recipe);
     
     /** Register resource sink item points for each item row in the passed table object */
     UFUNCTION(BlueprintCallable)
-    void RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable);
+    void RegisterResourceSinkItemPointTable(const FName ModReference, UDataTable* PointTable);
 
     /** Retrieves list of all currently loaded item descriptors */
     UFUNCTION(BlueprintPure)
@@ -278,7 +273,6 @@ public:
     //Add objects from registry states to reference collector
     static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
 private:
-    friend class FModHandler;
     friend class USMLSubsystemHolder;
     friend class FSatisfactoryModLoader;
 
@@ -328,6 +322,9 @@ private:
 
     /** Injects into vanilla schematic/research managers to override vanilla content registration to registry usage */
     static void DisableVanillaContentRegistration();
+
+    /** Quick version of UBlueprintAssetHelperLibrary, using predefined mod reference for vanilla content */
+    static FName FindContentOwnerFast(UClass* ContentClass);
     
     /** Called early when subsystem is spawned */
     void Init();
@@ -343,34 +340,21 @@ private:
     void OnSchematicPurchased(TSubclassOf<UFGSchematic> Schematic);
     
     /** Associate items referenced in recipe with given mod reference if they are not associated already */
-    void MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, FName ModReference);
+    void MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
 
-    TSharedPtr<FItemRegistrationInfo> RegisterItemDescriptor(FName ModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor);
+    TSharedPtr<FItemRegistrationInfo> RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor);
 
     void FindMissingSchematics(class AFGSchematicManager* SchematicManager, TArray<FMissingObjectStruct>& MissingObjects) const;
     void FindMissingResearchTrees(class AFGResearchManager* ResearchManager, TArray<FMissingObjectStruct>& MissingObjects) const;
     void FindMissingRecipes(class AFGRecipeManager* RecipeManager, TArray<FMissingObjectStruct>& MissingObjects) const;
     static void WarnAboutMissingObjects(const TArray<FMissingObjectStruct>& MissingObjects);
 
-    /** Tries to guess mod reference of the passed class owner by analyzing it's path. For game objects, use methods above */
-    static FName GetClassOwnerModReference(UClass* ClassObject);
-
-    /** Maps path name to the mod reference of the mod that overwrites it */
-    static TMap<FString, FString> ModOverwriteMap;
-    
-    /** Reads overwrite list for passed mod and associates them with it */
-    static void DiscoverOverwriteListForModReference(const FString& ModReference);
-    /** Registers individual overwrite for given asset, prints warning if multiple mods try to overwrite it */
-    static void RegisterOverwriteForMod(const FString& ModReference, const FString& OverwritePath);
-
     template<typename T>
-    FORCEINLINE static T MakeRegistrationInfo(UClass* Class, FName ModReference) {
+    FORCEINLINE static T MakeRegistrationInfo(UClass* Class, const FName OwnedByModReference, const FName RegisteredByModReference) {
         T RegistrationInfo;
-        RegistrationInfo.ModReference = ModReference;
-        RegistrationInfo.OverwrittenByModReference = *FindOverwriteOwner(Class);
+        RegistrationInfo.RegistrarModReference = RegisteredByModReference;
+        RegistrationInfo.OwnedByModReference = OwnedByModReference;
         RegistrationInfo.RegisteredObject = Class;
         return RegistrationInfo;
     }
-    
-    static FString FindOverwriteOwner(UClass* Class, const TCHAR* Fallback = TEXT(""));
 };

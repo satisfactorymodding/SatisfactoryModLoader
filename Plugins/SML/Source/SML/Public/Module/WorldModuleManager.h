@@ -25,8 +25,17 @@ public:
     UFUNCTION(BlueprintPure)
     UWorldModule* FindModule(const FName& ModReference) const;
 private:
-    friend class FModHandler;
+    friend class UModLoadingLibrary;
+    
+    /** Registers world module manager */
+    static void RegisterModuleManager();
+    
+    /** Called when world actors have been initialized */
+    void Initialize();
 
+    /** Called when world post initialization has been completed */
+    void PostInitialize();
+    
     /** Allocates root module object for instance and registers it */
     void CreateRootModule(const FName& ModReference, TSubclassOf<UWorldModule> ObjectClass);
 
