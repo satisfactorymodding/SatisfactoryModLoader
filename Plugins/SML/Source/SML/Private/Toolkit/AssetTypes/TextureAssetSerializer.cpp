@@ -33,7 +33,7 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
     check(PlatformData->Mips.Num());
 
     const EPixelFormat PixelFormat = PlatformData->PixelFormat;
-    const FTexture2DMipMap& FirstMipMap = PlatformData->Mips[0];
+    FTexture2DMipMap& FirstMipMap = PlatformData->Mips[0];
     const FString PixelFormatName = PixelFormatEnum->GetNameStringByValue((int64) PixelFormat);
     
     //Lock mipmap data and obtain pointer to compressed data
