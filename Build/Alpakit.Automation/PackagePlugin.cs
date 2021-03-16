@@ -10,6 +10,53 @@ using UnrealBuildTool;
 namespace Alpakit.Automation
 {
     public class PackagePlugin : BuildCommand {
+
+	    private static string GetGameLaunchURL(BuildCommand cmd) {
+		    var launchType = cmd.ParseOptionalStringParam("LaunchType");
+		    
+		    if (cmd.ParseParam("Steam") || launchType.Equals("Steam", StringComparison.InvariantCultureIgnoreCase)) {
+			    return "steam://rungameid/526870";
+		    }
+		    
+		    if (cmd.ParseParam("EpicEA") || launchType.Equals("EpicEA", StringComparison.InvariantCultureIgnoreCase)) {
+			    return "com.epicgames.launcher://apps/CrabEA?action=launch&silent=true";
+		    }
+		    
+		    if (cmd.ParseParam("EpicExp") || launchType.Equals("EpicExp", StringComparison.InvariantCultureIgnoreCase)) {
+			    return "com.epicgames.launcher://apps/CrabTest?action=launch&silent=true";
+		    }
+		    throw new AutomationException("Game launching requires -LaunchType= or -Steam/EpicEA/EpicExp arguments");
+	    }
+
+	    private static void LaunchGame(BuildCommand cmd) {
+		    if (cmd.ParseParam("LaunchGame")) {
+			    var gameLaunchUrl = GetGameLaunchURL(cmd);
+			    System.Diagnostics.Process.Start(gameLaunchUrl);
+		    }
+	    }
+
+	    private static void CopyPluginToTheGameDir(BuildCommand cmd, FileReference projectFile, FileReference pluginFile, string stagingDir) {
+		    if (cmd.ParseParam("CopyToGameDir")) {
+			    var gameDir = cmd.ParseRequiredStringParam("GameDir");
+			    var bootstrapExePath = Path.Combine(gameDir, "FactoryGame.exe");
+			    if (!FileExists(bootstrapExePath)) {
+				    throw new AutomationException("Provided -GameDir is invalid: '{0}'", gameDir);
+			    }
+			    
+			    var modsDir = Path.Combine(gameDir, projectFile.GetFileNameWithoutAnyExtensions(), "Mods");
+			    var projectPluginsFolder = new DirectoryReference(Path.Combine(projectFile.Directory.ToString(), "Plugins"));
+			    var pluginRelativePath = pluginFile.Directory.MakeRelativeTo(projectPluginsFolder);
+
+			    var resultPluginDirectory = Path.Combine(modsDir, pluginRelativePath);
+			    if (DirectoryExists(resultPluginDirectory)) {
+				    DeleteDirectory(resultPluginDirectory);
+			    }
+			    CreateDirectory(resultPluginDirectory);
+
+			    CopyDirectory_NoExceptions(stagingDir, resultPluginDirectory);
+		    }
+	    }
+	    
 	    private static ProjectParams GetParams(BuildCommand cmd, string projectFileName, string basedOnReleaseName, out FileReference pluginFile) {
 		    // Get the plugin filename
 			var pluginPath = cmd.ParseRequiredStringParam("PluginPath");
@@ -71,7 +118,7 @@ namespace Alpakit.Automation
 			Project.Deploy(projectParams);
 			
 			var stagedPluginDir = Path.Combine(platformStageDirectory, 
-				Path.GetFileNameWithoutExtension(projectFileName), 
+				projectFile.GetFileNameWithoutAnyExtensions(), 
 				pluginFile.Directory.MakeRelativeTo(projectFile.Directory));
 
 			var packagedBuildsDirectory = Path.Combine(pluginFile.Directory.ToString(), "Saved", "PackagedPlugins");
@@ -81,6 +128,9 @@ namespace Alpakit.Automation
 			//Package staged directory into the zip
 			File.Delete(zipFilePath);
 			ZipFile.CreateFromDirectory(stagedPluginDir, zipFilePath);
+			
+			CopyPluginToTheGameDir(this, projectFile, pluginFile, stagedPluginDir);
+			LaunchGame(this);
 		}
     }
 }
