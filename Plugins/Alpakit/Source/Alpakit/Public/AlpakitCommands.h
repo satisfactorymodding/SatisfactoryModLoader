@@ -9,5 +9,4 @@ public:
 	virtual void RegisterCommands() override;
 public:
 	TSharedPtr<FUICommandInfo> OpenPluginWindow;
-	TSharedPtr<FUICommandInfo> AlpakitOverwrite;
 };
