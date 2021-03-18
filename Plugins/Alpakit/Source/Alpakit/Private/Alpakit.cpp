@@ -31,11 +31,11 @@ void FAlpakitModule::StartupModule() {
 			FGlobalTabmanager::Get()->InvokeTab(AlpakitTabName);
 		}),
 		FCanExecuteAction());
-	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>("LevelEditor");
+	FLevelEditorModule& LevelEditorModule = FModuleManager::LoadModuleChecked<FLevelEditorModule>(TEXT("LevelEditor"));
 	
 	//Register Alpakit Settings in Editor's Project Menu
 	TSharedPtr<FExtender> MenuExtender = MakeShareable(new FExtender());
-	MenuExtender->AddMenuExtension("FileProject", EExtensionHook::After, PluginCommands,
+	MenuExtender->AddMenuExtension(TEXT("FileProject"), EExtensionHook::After, PluginCommands,
 		FMenuExtensionDelegate::CreateLambda([](FMenuBuilder& Builder){
 			Builder.AddMenuEntry(FAlpakitCommands::Get().OpenPluginWindow);
 		}));
@@ -43,7 +43,7 @@ void FAlpakitModule::StartupModule() {
 	
 	//Register Alpakit Settings in Editor's Toolbar
 	TSharedPtr<FExtender> ToolbarExtender = MakeShareable(new FExtender);
-	ToolbarExtender->AddToolBarExtension("Settings", EExtensionHook::After, PluginCommands,
+	ToolbarExtender->AddToolBarExtension(TEXT("Settings"), EExtensionHook::After, PluginCommands,
 		FToolBarExtensionDelegate::CreateLambda([](FToolBarBuilder& Builder) {
 			Builder.AddToolBarButton(FAlpakitCommands::Get().OpenPluginWindow);
 		}));
@@ -75,15 +75,15 @@ void FAlpakitModule::ShutdownModule() {
 }
 
 void FAlpakitModule::RegisterSettings() const {
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings")) {
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>(TEXT("Settings"))) {
 		// Create the new category
-		ISettingsContainerPtr SettingsContainer = SettingsModule->GetContainer("Project");
-		SettingsContainer->DescribeCategory("Alpakit Settings",
+		ISettingsContainerPtr SettingsContainer = SettingsModule->GetContainer(TEXT("Project"));
+		SettingsContainer->DescribeCategory(TEXT("Alpakit Settings"),
 			LOCTEXT("RuntimeWDCategoryName", "Alpakit Settings"),
 			LOCTEXT("RuntimeWDCategoryDescription", "Alpakit Settings. Can also be edited in the Alpakit menu"));
 
 		// Register the settings
-		ISettingsSectionPtr SettingsSection = SettingsModule->RegisterSettings("Project", "Alpakit", "General",
+		ISettingsSectionPtr SettingsSection = SettingsModule->RegisterSettings(TEXT("Project"), TEXT("Alpakit"), TEXT("General"),
 			LOCTEXT("RuntimeGeneralSettingsName", "General"),
 			LOCTEXT("RuntimeGeneralSettingsDescription", "Alpakit Settings. Can also be edited in the Alpakit menu"),
 			UAlpakitSettings::Get()
@@ -100,8 +100,8 @@ void FAlpakitModule::RegisterSettings() const {
 }
 
 void FAlpakitModule::UnregisterSettings() const {
-	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>("Settings")) {
-		SettingsModule->UnregisterSettings("Project", "Alpakit", "General");
+	if (ISettingsModule* SettingsModule = FModuleManager::GetModulePtr<ISettingsModule>(TEXT("Settings"))) {
+		SettingsModule->UnregisterSettings(TEXT("Project"), TEXT("Alpakit"), TEXT("General"));
 	}
 }
 

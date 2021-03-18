@@ -21,7 +21,7 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
 	DetailsViewArgs.bAllowMultipleTopLevelObjects = true;
 	DetailsViewArgs.bShowScrollBar = false;
 
-	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>("PropertyEditor");
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(TEXT("PropertyEditor"));
 	DetailsView = PropertyEditorModule.CreateDetailView(DetailsViewArgs);
 	DetailsView->SetObject(UAlpakitSettings::Get());
 	DetailsView->OnFinishedChangingProperties().AddLambda([this](const FPropertyChangedEvent&) {
@@ -33,8 +33,28 @@ void SAlpakitWidget::Construct(const FArguments& InArgs) {
 		+SVerticalBox::Slot().AutoHeight()[
             DetailsView.ToSharedRef()
         ]
+        +SVerticalBox::Slot().AutoHeight()[
+        	SNew(SHorizontalBox)
+        	+SHorizontalBox::Slot().FillWidth(1)[
+        		SNew(SEditableTextBox)
+        		.HintText(LOCTEXT("SearchHint", "Search Plugin..."))
+        		.OnTextChanged_Lambda([this](const FText& InText) {
+        			this->ModList->Filter(InText.ToString());
+        		})
+        	]
+        	+SHorizontalBox::Slot().AutoWidth()[
+        		SNew(SCheckBox)
+        		.Content()[
+        			SNew(STextBlock)
+        			.Text(LOCTEXT("CheckAllPlugins", "All Content Plugins"))
+        		]
+        		.OnCheckStateChanged_Lambda([this](ECheckBoxState InState) {
+        			this->ModList->SetShowEngine(InState == ECheckBoxState::Checked);
+        		})
+        	]
+        ]
 		+SVerticalBox::Slot().FillHeight(1).Padding(3)[
-			SNew(SAlpakitModEntryList)
+			SAssignNew(ModList, SAlpakitModEntryList)
 		]
 	];
 }

@@ -14,8 +14,26 @@ class SAlpakitModEntryList : public SCompoundWidget {
 	 * Updates the mod list.
 	 */
 	void LoadMods();
-	
+
+	/**
+	 * Filters the mods for the given string
+	 */
+	void Filter(const FString& InFilter);
+
+	/**
+	 * Returns the string which was use previously to filter
+	 */
+	FString GetLastFilter() const;
+
+	/**
+	 * True if engine plugins are considered being mods
+	 */
+	void SetShowEngine(bool bInShowEngine);
+
 private:
 	TSharedPtr<SListView<TSharedRef<IPlugin>>> ModList;
 	TArray<TSharedRef<IPlugin>> Mods;
+	TArray<TSharedRef<IPlugin>> FilteredMods;
+	FString LastFilter;
+	bool bShowEngine = false;
 };

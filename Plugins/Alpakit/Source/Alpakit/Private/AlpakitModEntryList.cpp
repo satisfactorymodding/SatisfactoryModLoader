@@ -5,17 +5,17 @@
 #include "Interfaces/IPluginManager.h"
 
 void SAlpakitModEntryList::Construct(const FArguments& Args) {
-	ModList = SNew(SListView<TSharedRef<IPlugin>>)
+	ChildSlot[
+		SAssignNew(ModList, SListView<TSharedRef<IPlugin>>)
         .SelectionMode(ESelectionMode::None)
-        .ListItemsSource(&Mods)
-        .OnGenerateRow_Lambda([](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
+        .ListItemsSource(&FilteredMods)
+        .OnGenerateRow_Lambda([this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
         	return SNew( STableRow<TSharedRef<IPlugin>>, List)[
-				SNew( SAlpakitModEntry, Mod)
+				SNew( SAlpakitModEntry, Mod, SharedThis(this))
 			];
-        });
+        })
+    ];
 	
-	ChildSlot.AttachWidget(ModList.ToSharedRef());
-    
     LoadMods();
 }
 
@@ -48,8 +48,8 @@ void SAlpakitModEntryList::LoadMods() {
 			continue;
 		}
 		//Only include project plugins for now
-		//TODO allow building engine plugins, make sure UAT task supports that as well
-		if (Plugin->GetType() == EPluginType::Project) {
+		//TODO make sure UAT task supports engine plugins
+		if ((bShowEngine && Plugin->GetType() == EPluginType::Engine) || Plugin->GetType() == EPluginType::Project) {
 			const bool bHasRuntime = DoesPluginHaveRuntime(Plugin.Get());
 			if (bHasRuntime) {
 				Mods.Add(Plugin);
@@ -59,5 +59,45 @@ void SAlpakitModEntryList::LoadMods() {
 	Mods.Sort([](const TSharedRef<IPlugin> Plugin1, const TSharedRef<IPlugin> Plugin2) {
 		return Plugin1->GetName() < Plugin2->GetName();
 	});
+	Filter(LastFilter);
+}
+
+void SAlpakitModEntryList::Filter(const FString& InFilter) {
+	LastFilter= InFilter;
+	FilteredMods.Empty();
+	
+	if (InFilter.Len() < 1) {
+		FilteredMods = Mods;
+	} else {
+		// tokenize filter keywords
+		TArray<FString> FilterTokens;
+		InFilter.ParseIntoArray(FilterTokens, TEXT(" "));
+		if (FilterTokens.Num() < 1) FilterTokens.Add(InFilter);
+
+		// check each mod for it to contain the tokens
+		for (TSharedRef<IPlugin> Mod : Mods) {
+			// check each token in mod name
+			bool bFound = true;
+			for (const FString& Token : FilterTokens) {
+				if (!Mod->GetName().Contains(Token)) {
+					bFound = false;
+					break;
+				}
+			}
+
+			// if a single token is missing, don't add the mod to the filtered list
+			if (bFound) FilteredMods.Add(Mod);
+		}
+	}
+	
 	ModList->RequestListRefresh();
+}
+
+FString SAlpakitModEntryList::GetLastFilter() const {
+	return LastFilter;
+}
+
+void SAlpakitModEntryList::SetShowEngine(bool bInShowEngine) {
+	bShowEngine = bInShowEngine;
+	LoadMods();
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AlpakitModEntryList.h"
 #include "Slate.h"
 
 class SAlpakitWidget : public SCompoundWidget {
@@ -11,4 +12,5 @@ public:
 
 private:
 	TSharedPtr<IDetailsView> DetailsView;
+	TSharedPtr<SAlpakitModEntryList> ModList;
 };

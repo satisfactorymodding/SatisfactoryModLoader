@@ -7,14 +7,17 @@
 
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 
-void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InMod) {
-	this->Mod = InMod;
+void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InMod, TSharedRef<SAlpakitModEntryList> InOwner) {
+	Mod = InMod;
 	ChildSlot[
 		SNew(SHorizontalBox)
 		+SHorizontalBox::Slot().FillWidth(1)[
 			SNew(STextBlock)
 			.Text_Lambda([InMod]() {
 				return FText::FromString(InMod->GetName());
+			})
+			.HighlightText_Lambda([InOwner]() {
+				return FText::FromString(InOwner->GetLastFilter());
 			})
 		]
 		+SHorizontalBox::Slot().AutoWidth()[
@@ -23,6 +26,9 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 			.OnClicked_Lambda([this]() {
 				PackageMod();
 				return FReply::Handled();
+			})
+			.ToolTipText_Lambda([this]() {
+				return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
 			})
 		]
 	];
