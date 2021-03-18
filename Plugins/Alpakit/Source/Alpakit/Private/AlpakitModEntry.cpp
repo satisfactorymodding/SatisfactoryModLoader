@@ -8,7 +8,7 @@
 #define LOCTEXT_NAMESPACE "AlpakitModListEntry"
 
 void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InMod) {
-	Mod = InMod;
+	this->Mod = InMod;
 	ChildSlot[
 		SNew(SHorizontalBox)
 		+SHorizontalBox::Slot().FillWidth(1)[
@@ -28,59 +28,59 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 	];
 }
 
-void SAlpakitModEntry::PackageMod() {
-	UAlpakitSettings* Settings = UAlpakitSettings::Get();
-
-	FString ModFileName = Mod->GetDescriptorFileName();
-	FString ModFilePath = FPaths::ConvertRelativePathToFull(ModFileName);
-
-	FString ProjectPath = FPaths::IsProjectFilePathSet() ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath()) : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
-	
-	FString GamePath = Settings->SatisfactoryGamePath.Path;
-
-	FString CopyToGame = "";
-	if (Settings->bCopyModsToGame) {
-		CopyToGame = FString::Printf(TEXT("-CopyToGameDir -GameDir=\"%s\""), *GamePath);
-	}
-
-	FString LaunchType;
-	switch (Settings->LaunchGameAfterPacking) {
+FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
+	switch (LaunchMode) {
 	case EAlpakitStartGameType::STEAM:
-		LaunchType = "Steam";
-		break;
+		return TEXT("-Steam");
 	case EAlpakitStartGameType::EPIC_EARLY_ACCESS:
-		LaunchType = "EpicEA";
-		break;
+		return TEXT("-EpicEA");
 	case EAlpakitStartGameType::EPIC_EXPERIMENTAL:
-		LaunchType = "EpicExp";
-		break;
+		return TEXT("-EpicExp");
 	default:
-		LaunchType = "";
+		return TEXT("");
 	}
-	FString LaunchGame = "";
-	if (LaunchType.Len() > 0) LaunchGame = FString::Printf(TEXT("-LaunchGame -LaunchType=%s"), *LaunchType);
-	
-	FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -project=\"%s\" -pluginpath=\"%s\" %s %s %s"),
-		*ProjectPath,
-        *ProjectPath,
-        *ModFilePath,
-        FApp::IsEngineInstalled() ? TEXT("-installed") : TEXT(""),
-		*CopyToGame,
-        *LaunchGame
-        );
+}
 
+FText GetCurrentPlatformName() {
 #if PLATFORM_WINDOWS
-	FText PlatformName = LOCTEXT("PlatformName_Windows", "Windows");
+	return LOCTEXT("PlatformName_Windows", "Windows");
 #elif PLATFORM_MAC
-	FText PlatformName = LOCTEXT("PlatformName_Mac", "Mac");
+	return LOCTEXT("PlatformName_Mac", "Mac");
 #elif PLATFORM_LINUX
-	FText PlatformName = LOCTEXT("PlatformName_Linux", "Linux");
+	return LOCTEXT("PlatformName_Linux", "Linux");
 #else
-	FText PlatformName = LOCTEXT("PlatformName_Other", "Other OS");
+	return LOCTEXT("PlatformName_Other", "Other OS");
 #endif
+}
 
-	IUATHelperModule::Get().CreateUatTask(CommandLine, PlatformName, LOCTEXT("PackageModTaskName", "Packaging Mod"),
-        LOCTEXT("PackageModTaskShortName", "Package Mod Task"), FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"));
+void SAlpakitModEntry::PackageMod() const {
+	UAlpakitSettings* Settings = UAlpakitSettings::Get();
+	const FString ModFileName = Mod->GetDescriptorFileName();
+	const FString ModFilePath = FPaths::ConvertRelativePathToFull(ModFileName);
+	const FString GamePath = Settings->SatisfactoryGamePath.Path;
+
+	const FString ProjectPath = FPaths::IsProjectFilePathSet() ?
+		FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath()) :
+		FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
+
+	FString AdditionalUATArguments;
+	if (Settings->bCopyModsToGame) {
+		AdditionalUATArguments.Append(TEXT("-CopyToGameDir "));
+	}
+	if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE) {
+		AdditionalUATArguments.Append(GetArgumentForLaunchType(Settings->LaunchGameAfterPacking)).Append(TEXT(" "));
+	}
+	
+	const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);
+
+	const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -project=\"%s\" -pluginpath=\"%s\" -GameDir=\"%s\" %s"),
+	                                            *ProjectPath, *ProjectPath, *ModFilePath, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
+
+	const FText PlatformName = GetCurrentPlatformName();
+	IUATHelperModule::Get().CreateUatTask(CommandLine, PlatformName,
+			LOCTEXT("PackageModTaskName", "Packaging Mod"),
+        LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
+        FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"));
 }
 
 #undef LOCTEXT_NAMESPACE

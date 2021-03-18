@@ -19,23 +19,44 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
     LoadMods();
 }
 
+bool DoesPluginHaveRuntime(const IPlugin& Plugin) {
+	//Content plugins always have runtime component
+	if (Plugin.GetDescriptor().bCanContainContent) {
+		return true;
+	}
+	//C++ plugins have runtime component as long as one of their modules does
+	for (const FModuleDescriptor& Module : Plugin.GetDescriptor().Modules) {
+		if (Module.Type == EHostType::Runtime ||
+			Module.Type == EHostType::RuntimeNoCommandlet ||
+			Module.Type == EHostType::RuntimeAndProgram ||
+			Module.Type == EHostType::ClientOnly ||
+			Module.Type == EHostType::ClientOnlyNoCommandlet ||
+			Module.Type == EHostType::ServerOnly ||
+			Module.Type == EHostType::CookedOnly) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void SAlpakitModEntryList::LoadMods() {
 	Mods.Empty();
-	for (TSharedRef<IPlugin> Plugin : IPluginManager::Get().GetDiscoveredPlugins()) {
-		if (Plugin->GetType() != EPluginType::Mod && Plugin->GetType() != EPluginType::Project) continue;
-		if (!Plugin->IsEnabled()) continue;
-		bool bHasRuntime = Plugin->GetDescriptor().Modules.Num() < 1;
-		if (!bHasRuntime) for (auto Module : Plugin->GetDescriptor().Modules) {
-			if (Module.Type == EHostType::Runtime) {
-				bHasRuntime = true;
-				break;
+	const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
+	for (TSharedRef<IPlugin> Plugin : EnabledPlugins) {
+		//Skip WWise, it is already shipped with the game
+		if (Plugin->GetName() == TEXT("WWise")) {
+			continue;
+		}
+		//Only include project plugins for now
+		//TODO allow building engine plugins, make sure UAT task supports that as well
+		if (Plugin->GetType() == EPluginType::Project) {
+			const bool bHasRuntime = DoesPluginHaveRuntime(Plugin.Get());
+			if (bHasRuntime) {
+				Mods.Add(Plugin);
 			}
 		}
-		if (!bHasRuntime) continue;
-		if (Plugin->GetName() == "Wwise") continue;
-		Mods.Add(Plugin);
 	}
-	Mods.Sort([](TSharedRef<IPlugin> Plugin1, TSharedRef<IPlugin> Plugin2) {
+	Mods.Sort([](const TSharedRef<IPlugin> Plugin1, const TSharedRef<IPlugin> Plugin2) {
 		return Plugin1->GetName() < Plugin2->GetName();
 	});
 	ModList->RequestListRefresh();

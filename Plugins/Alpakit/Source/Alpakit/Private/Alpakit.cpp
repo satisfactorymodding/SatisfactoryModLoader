@@ -10,7 +10,6 @@
 #include "LevelEditor.h"
 
 static const FName AlpakitTabName("Alpakit");
-static const FName AlpakitOverwriteTabName("AlpakitOverwrite");
 
 #define LOCTEXT_NAMESPACE "FAlpakitModule"
 
@@ -53,7 +52,7 @@ void FAlpakitModule::StartupModule() {
 	//Register normal alpakit settings tab spawner
 	FGlobalTabmanager::Get()->RegisterNomadTabSpawner(AlpakitTabName,
 		FOnSpawnTab::CreateLambda([](const FSpawnTabArgs&){
-			TSharedRef<SAlpakitWidget> AlpakitWidget = SNew(SAlpakitWidget);
+			const TSharedRef<SAlpakitWidget> AlpakitWidget = SNew(SAlpakitWidget);
 			return SNew(SDockTab)
 				.TabRole(NomadTab)
 				// TODO: Save settings when tab is closed automatically
@@ -62,62 +61,17 @@ void FAlpakitModule::StartupModule() {
 		}))
 		.SetDisplayName(LOCTEXT("FAlpakitTabTitle", "Alpakit"))
 		.SetMenuType(ETabSpawnerMenuType::Hidden);
-
-	//Register content browsers extensions
-	FContentBrowserModule& ContentBrowserModule = FModuleManager::LoadModuleChecked<FContentBrowserModule>(TEXT("ContentBrowser"));
 }
 
 void FAlpakitModule::ShutdownModule() {
 	if (UObjectInitialized()) {
 		UnregisterSettings();
 	}
+	
 	FAlpakitStyle::Shutdown();
 	FAlpakitCommands::Unregister();
 
 	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitTabName);
-	FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(AlpakitOverwriteTabName);
-}
-
-void EnsureGameDevelopmentModeIsEnabled(const FString& ConfigDirectory) {
-	IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
-	//Ensure config directory exists
-	PlatformFile.CreateDirectory(*ConfigDirectory);
-	const FString ModLoaderConfigPath = FPaths::Combine(ConfigDirectory, TEXT("SML.cfg"));
-	TSharedPtr<FJsonObject> ModLoaderConfig = MakeShareable(new FJsonObject());
-	//SML.cfg exists already, read settings from it
-	if (PlatformFile.FileExists(*ModLoaderConfigPath)) {
-		FString FileJsonString;
-		if (FFileHelper::LoadFileToString(FileJsonString, *ModLoaderConfigPath)) {
-			const TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(FileJsonString);
-			FJsonSerializer JsonSerializer;
-			if (!JsonSerializer.Deserialize(JsonReader, ModLoaderConfig)) {
-				const FString MoveLocation = FString::Printf(TEXT("%s.bkp"), *ModLoaderConfigPath);
-				UE_LOG(LogAlpakit, Error, TEXT("Failed to parse SML.cfg at %s, moving it to %s"), *ModLoaderConfigPath, *MoveLocation);
-				PlatformFile.MoveFile(*ModLoaderConfigPath, *MoveLocation);
-			}
-		} else {
-			UE_LOG(LogAlpakit, Error, TEXT("Failed to read SML.cfg from %s"), *ModLoaderConfigPath);
-		}
-	}
-	//Add developmentMode = true to it and overwrite if it wasn't there
-	bool bEnabledDevelopmentMode = false;
-	if (!ModLoaderConfig->HasTypedField<EJson::Boolean>(TEXT("developmentMode")) ||
-		!ModLoaderConfig->GetBoolField(TEXT("developmentMode"))) {
-		ModLoaderConfig->SetBoolField(TEXT("developmentMode"), true);
-		bEnabledDevelopmentMode = true;
-	}
-	//Overwrite config file if we enabled development mode
-	if (bEnabledDevelopmentMode) {
-		FString OutputJsonString;
-		const TSharedRef<TJsonWriter<>> JsonWriter = TJsonStringWriter<>::Create(&OutputJsonString);
-		FJsonSerializer JsonSerializer;
-		JsonSerializer.Serialize(ModLoaderConfig.ToSharedRef(), JsonWriter);
-		if (!FFileHelper::SaveStringToFile(OutputJsonString, *ModLoaderConfigPath)) {
-			UE_LOG(LogAlpakit, Error, TEXT("Failed to save SML.cfg to %s"), *ModLoaderConfigPath);
-		} else {
-			UE_LOG(LogAlpakit, Display, TEXT("Successfully enabled developmentMod in SML.cfg at %s"), *ModLoaderConfigPath);
-		}
-	}
 }
 
 void FAlpakitModule::RegisterSettings() const {

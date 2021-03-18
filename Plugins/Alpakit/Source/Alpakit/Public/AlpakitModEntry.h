@@ -10,7 +10,7 @@ class SAlpakitModEntry : public SCompoundWidget {
 
 	void Construct( const FArguments& Args, TSharedRef<IPlugin> Mod);
 	
-	void PackageMod();
+	void PackageMod() const;
 
 private:
 	TSharedPtr<IPlugin> Mod;
