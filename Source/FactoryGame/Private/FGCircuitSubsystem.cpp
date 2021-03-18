@@ -2,6 +2,7 @@
 
 #include "FGCircuitSubsystem.h"
 
+UFGCriticalBatteryDepletionMessage::UFGCriticalBatteryDepletionMessage(){ }
 void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool AFGCircuitSubsystem::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGCircuitSubsystem::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
@@ -24,11 +25,17 @@ void AFGCircuitSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInf
 void AFGCircuitSubsystem::ConnectComponents( UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ }
 void AFGCircuitSubsystem::DisconnectComponents( UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ }
 void AFGCircuitSubsystem::RemoveComponent( UFGCircuitConnectionComponent* component){ }
+void AFGCircuitSubsystem::SetCircuitBridgesModified(){ }
+void AFGCircuitSubsystem::AddCircuitBridge(TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge){ }
+void AFGCircuitSubsystem::RemoveCircuitBridge(TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge){ }
+void AFGCircuitSubsystem::Debug_DumpCircuitsToLog(){ }
 void AFGCircuitSubsystem::OnRep_ReplicatedCircuits(){ }
 int32 AFGCircuitSubsystem::GenerateUniqueCircuitID(){ return int32(); }
 void AFGCircuitSubsystem::MergeCircuits(int32 first, int32 second){ }
 int32 AFGCircuitSubsystem::CreateCircuit(TSubclassOf<  UFGCircuit > circuitClass){ return int32(); }
+int32 AFGCircuitSubsystem::SplitCircuit(const UFGCircuit* circuit){ return int32(); }
 void AFGCircuitSubsystem::RemoveCircuit(int32 circuitID){ }
+void AFGCircuitSubsystem::RebuildCircuitGroups(){ }
 void AFGCircuitSubsystem::RebuildCircuit(int32 circuitID){ }
-void AFGCircuitSubsystem::AddComponentToCircuit( UFGCircuitConnectionComponent* component, int32 circuitID){ }
+void AFGCircuitSubsystem::AddComponentToCircuit( UFGCircuitConnectionComponent* component, int32 circuitID, bool rebuildTrivialCircuits){ }
 void AFGCircuitSubsystem::RemoveComponentFromCircuit( UFGCircuitConnectionComponent* component){ }

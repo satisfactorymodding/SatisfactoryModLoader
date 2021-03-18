@@ -1,8 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "Resources/FGBuildDescriptor.h"
+#include "Buildables/FGBuildableManufacturerVariablePower.h"
 #include "FGBuildingDescriptor.generated.h"
 
 /**
@@ -27,9 +28,24 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
 	static float GetPowerConsumption( TSubclassOf< UFGBuildingDescriptor > inClass );
 
+	/** Get the the power consumption of buildable. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
+	static bool HasVariablePowerConsumption( TSubclassOf< UFGBuildingDescriptor > inClass );
+
+	/** Get the the power consumption of buildable. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
+	static float GetMinimumPowerConsumption( TSubclassOf< UFGBuildingDescriptor > inClass );
+
+	/** Get the the power consumption of buildable. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
+	static float GetMaximumPowerConsumption( TSubclassOf< UFGBuildingDescriptor > inClass );
+
 	/** Get the the power production of buildable, 0 for non-producers. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Building" )
 	static float GetPowerProduction( TSubclassOf< UFGBuildingDescriptor > inClass );
+
+	template< float AFGBuildableManufacturerVariablePower::*Member >
+	static float GetVariablePowerConsumptionLimit( TSubclassOf< UFGBuildingDescriptor > inClass );
 
 protected:
 	virtual FText GetItemNameInternal() const override;
@@ -55,3 +71,17 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Building" )
 	TSubclassOf< class AFGBuildable > mBuildableClass;
 };
+
+template< float AFGBuildableManufacturerVariablePower::*Member >
+float UFGBuildingDescriptor::GetVariablePowerConsumptionLimit( TSubclassOf< UFGBuildingDescriptor > inClass )
+{
+	if( HasVariablePowerConsumption( inClass ) )
+	{
+		if( TSubclassOf < AFGBuildable > buildableClass = inClass->GetDefaultObject< UFGBuildingDescriptor >()->mBuildableClass )
+		{
+			AFGBuildableManufacturerVariablePower* buildable = CastChecked< AFGBuildableManufacturerVariablePower >( buildableClass->GetDefaultObject() );
+			return buildable->*Member;
+		}
+	}
+	return GetPowerConsumption( inClass );
+}

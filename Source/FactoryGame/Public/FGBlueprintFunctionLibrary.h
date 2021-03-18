@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -319,6 +319,14 @@ public:
 	UFUNCTION(BlueprintPure, meta=(DisplayName = "ToString (integer64)", CompactNodeTitle = "->", BlueprintAutocast), Category="Utilities|String")
     static FString Conv_IntToString(int64 InInt);
 
+	/* Return the value of GIsEditor. This is only true when we are in the actual editor */
+	UFUNCTION( BlueprintPure, Category = "Editor" )
+	static bool GetGIsEditor();
+
+	/* Calls the scroll to end function after two ticks, This is a special case and shouldn't be used unless necessary */
+	UFUNCTION( BlueprintCallable, Category = "Widget" )
+	static void ScrollToEndAfterTwoTicks( UScrollBox* scrollBox );
+
 	/** Does the same thing as UEditorAssetLibrary::SetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
 	static void SetMetadataTag( UObject* object, FName tag, const FString& value );
@@ -326,5 +334,22 @@ public:
 	/** Does the same thing as UEditorAssetLibrary::GetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
 	static FString GetMetadataTag( UObject* object, FName tag );
+
+	/* Loads a file from drive via absolute path.*/
+	UFUNCTION(BlueprintPure, Category = "Editor Scripting", meta = (DevelopmentOnly))
+	static bool FileLoadString(FString AbsoluteFilePath, FString& String);
+
+	/** 
+	* Finds the last whole character index before the specified position in pixels along the string horizontally
+	* 
+	* @param text				The text to measure
+	* @param InFontInfo			Information about the font used to draw the string
+	* @param HorizontalOffset	Offset horizontally into the string, in pixels
+	* @param suffix				[OPTIONAL] suffix to append and fit in the horizontal offset
+	*
+	* @return The text after it been cut off at the horizontal offset if needed.
+	*/
+	UFUNCTION( BlueprintPure, Category = "Text" )
+    static FText CutTextByPixelOffset( const FText& text, const FSlateFontInfo& inFontInfo, const int32 horizontalOffset, const FString& suffix );
 
 };

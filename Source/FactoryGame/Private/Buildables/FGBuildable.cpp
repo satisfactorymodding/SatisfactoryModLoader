@@ -17,7 +17,6 @@ void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildable::OnConstruction(const FTransform& transform){ }
 void AFGBuildable::BeginPlay(){ }
 void AFGBuildable::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGBuildable::Destroyed(){ }
 void AFGBuildable::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildable::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildable::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -57,6 +56,7 @@ void AFGBuildable::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter
 void AFGBuildable::StopIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
 TSubclassOf< class UFGItemDescriptor > AFGBuildable::GetBuiltWithDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 void AFGBuildable::TurnOffAndDestroy(){ }
+bool AFGBuildable::GetPoolHandleInitialState() const{ return bool(); }
 const TArray< class UMeshComponent* >& AFGBuildable::GetMainMeshes(){ return *(new TArray< class UMeshComponent* >); }
 void AFGBuildable::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildable::Stat_Cost(TArray< FItemAmount >& out_amount) const{ }

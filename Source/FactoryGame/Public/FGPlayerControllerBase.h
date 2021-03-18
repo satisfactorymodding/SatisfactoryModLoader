@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "Online.h"
@@ -63,6 +65,14 @@ public:
 
 	/** Inject the input that was rebinded and remove old default */
 	void UpdatePlayerInput();
+
+	/** Triggered when we update the gamepad input enabled option */
+	UFUNCTION()
+	void OnGamepadInputEnabledUpdated( FString updatedCvar );
+
+	/** Triggered when we update the mouse sensitivity option */
+	UFUNCTION()
+	void OnMouseSensitivityUpdated( FString updatedCvar );
 
 	/** Sets mouse sensitivity */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )

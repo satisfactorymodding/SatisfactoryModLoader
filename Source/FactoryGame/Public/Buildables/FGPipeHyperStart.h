@@ -1,8 +1,4 @@
-#pragma once
-
-#pragma once
-
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -24,6 +20,10 @@ class FACTORYGAME_API AFGPipeHyperStart : public AFGBuildablePipeHyperPart
 
 	virtual bool OnPipeEnter_Implementation( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough = nullptr, const AActor* fromPipe = nullptr ) override;
 	// End FGHyperTube Interface
+
+	// Begin AFGBuildableFactory interface
+	virtual bool CanProduce_Implementation() const override;
+	// End AFGBuildableFactory interface
 protected:
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Hyper Tube" )

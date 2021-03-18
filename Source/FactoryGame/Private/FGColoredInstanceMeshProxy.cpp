@@ -3,11 +3,10 @@
 #include "FGColoredInstanceMeshProxy.h"
 
 UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy(){ }
-void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister(); }
-void UFGColoredInstanceMeshProxy::OnRegister(){ Super::OnRegister(); }
-void UFGColoredInstanceMeshProxy::SetColorSlot(uint8 colorSlotIndex){ }
 void UFGColoredInstanceMeshProxy::BeginPlay(){ }
-void UFGColoredInstanceMeshProxy::InstantiateInternal(){ }
+void UFGColoredInstanceMeshProxy::OnRegister(){ Super::OnRegister(); }
+void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister(); }
+void UFGColoredInstanceMeshProxy::SetColorSlot(uint8 colorSlotIndex){ }
 void UFGColoredInstanceMeshProxy::SetInstanced(bool setToInstanced){ }
-void UFGColoredInstanceMeshProxy::CreateRenderState_Concurrent(FRegisterComponentContext* Context){ Super::CreateRenderState_Concurrent(Context); }
 void UFGColoredInstanceMeshProxy::OnHiddenInGameChanged(){ }
+void UFGColoredInstanceMeshProxy::InstantiateInternal(){ }

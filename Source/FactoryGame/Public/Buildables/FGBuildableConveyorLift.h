@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -14,6 +14,8 @@ class FACTORYGAME_API AFGBuildableConveyorLift : public AFGBuildableConveyorBase
 public:
 	AFGBuildableConveyorLift();
 
+	friend class AFGConveyorItemSubsystem;
+	
 	// Begin AActor Interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
@@ -30,9 +32,14 @@ public:
 	/** Get the height for this lift. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
 
+	/** Overrided as conveyor lifts lack primitives so they never recieve this otherwise */
+	virtual float GetLastRenderTime() const override;
+
+	void DestroyVisualItems();
+	
 protected:
 	// Begin AFGBuildableConveyorBase interface
-	virtual void TickItemTransforms( float dt ) override;
+	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) override;
 	// End AFGBuildableConveyorBase interface
 
 private:
@@ -101,6 +108,7 @@ private:
 	/** Meshes for items. */
 	UPROPERTY( Meta = ( NoAutoJson ) )
 	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;
+
 };
 
 

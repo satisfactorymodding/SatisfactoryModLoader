@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -112,7 +112,7 @@ protected:
 
 	/** Called when NewRecipe is replicated */
 	UFUNCTION()
-	void OnRep_CurrentRecipe();
+	virtual void OnRep_CurrentRecipe();
 
 	virtual void OnRep_ReplicationDetailActor() override;
 

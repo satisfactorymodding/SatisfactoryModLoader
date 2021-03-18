@@ -13,12 +13,11 @@ UFGInventoryComponent* AFGFreightWagon::GetFreightInventory() const{ return null
 void AFGFreightWagon::SetCargoMeshVisibility(bool isVisible){ }
 void AFGFreightWagon::UpdateFreightCargoType(){ }
 bool AFGFreightWagon::CanDockWithPlatformOfType(EFreightCargoType platformType) const{ return bool(); }
+void AFGFreightWagon::KillOverlappedCharacters(){ }
 void AFGFreightWagon::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGFreightWagon::OnItemAddedToFreight(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
 void AFGFreightWagon::OnItemRemovedFromFreight(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }
 void AFGFreightWagon::InitializeInventoryComponent(){ }
-void AFGFreightWagon::BeginLaunchOverlappedCharacter( UPrimitiveComponent* OverlappedComp,  AFGCharacterPlayer* otherCharacter){ }
-void AFGFreightWagon::EndLaunchOverlappedCharacters(){ }
 UStaticMesh* AFGFreightWagon::GetCargoStaticMesh(){ return nullptr; }
 FName AFGFreightWagon::VehicleMovementComponentName = FName();
 FName AFGFreightWagon::CargoMeshComponentName = FName();

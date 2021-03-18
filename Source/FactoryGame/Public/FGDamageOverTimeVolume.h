@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "Interfaces/Interface_PostProcessVolume.h"

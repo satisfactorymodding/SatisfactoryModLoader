@@ -15,6 +15,8 @@ void AFGPlayerControllerBase::FlushPressedKeys(){ }
 bool AFGPlayerControllerBase::RebindActionKey(FFGKeyMapping newKeyMapping){ return bool(); }
 void AFGPlayerControllerBase::ResetInputBindings(){ }
 void AFGPlayerControllerBase::UpdatePlayerInput(){ }
+void AFGPlayerControllerBase::OnGamepadInputEnabledUpdated(FString updatedCvar){ }
+void AFGPlayerControllerBase::OnMouseSensitivityUpdated(FString updatedCvar){ }
 void AFGPlayerControllerBase::SetMouseSensitivity(float newSense){ }
 float AFGPlayerControllerBase::GetMouseSensitivity(){ return float(); }
 float AFGPlayerControllerBase::GetMouseSensitivityX(){ return float(); }

@@ -21,6 +21,7 @@ bool AFGConveyorBeltHologram::CanTakeNextBuildStep() const{ return bool(); }
 void AFGConveyorBeltHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGConveyorBeltHologram::ClientPreConstructMessageSerialization(){ }
 void AFGConveyorBeltHologram::ServerPostConstructMessageDeserialization(){ }
+EFactoryConnectionDirection AFGConveyorBeltHologram::GetActiveConnectionDirection() const{ return EFactoryConnectionDirection(); }
 TArray<AFGBuildable*> AFGConveyorBeltHologram::GetAnyConnectedBuildables(){ return TArray<AFGBuildable*>(); }
 void AFGConveyorBeltHologram::CheckValidFloor(){ }
 void AFGConveyorBeltHologram::CheckClearance(){ }
@@ -29,7 +30,6 @@ void AFGConveyorBeltHologram::ConfigureActor( AFGBuildable* inBuildable) const{ 
 void AFGConveyorBeltHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGConveyorBeltHologram::SetupConveyorClearanceDetector(){ }
 void AFGConveyorBeltHologram::UpdateSplineComponent(){ }
-int32 AFGConveyorBeltHologram::GetNumSections() const{ return int32(); }
 void AFGConveyorBeltHologram::OnRep_ConnectionArrowComponentDirection(){ }
 void AFGConveyorBeltHologram::AutoRouteSpline(const FVector& startConnectionPos,
 		const FVector& startConnectionNormal,

@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "FGSubsystem.h"
@@ -9,6 +11,7 @@ DECLARE_MULTICAST_DELEGATE( FTimeOfDayUpdated );
 #endif
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FNewDayDelegate, int32, newDayNr );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDayStateDelegate, bool, isDayTime );
 
 UCLASS( Blueprintable, abstract )
 class FACTORYGAME_API AFGTimeOfDaySubsystem : public AFGSubsystem, public IFGSaveInterface
@@ -193,6 +196,13 @@ protected:
 	/** Used for regularly update the server time */
 	FTimerHandle mUpdateServerTimeTimer;
 
+	/** How often we want to update the TimeOfDay RTPC */
+	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Time" )
+	float mRTPCInterval;
+
+	/** Accumulated time */
+	float mRTPCAccumulator;
+
 #if WITH_EDITORONLY_DATA
 	// Notify so that other can hook up themself on it to be notified in the editor if the time of day is updated
 	FTimeOfDayUpdated mTimeOfDayUpdated;
@@ -201,8 +211,16 @@ protected:
 	/** Will only update the time if we set this to true */
 	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Time" )
 	bool mUpdateTime;
+
+	/* fence to make sure we dont double call delegate */
+	bool mIsCurrentlyDay;
+	
 public:
 	/** Server and Client | Called when a new day starts */
 	UPROPERTY( BlueprintAssignable, Category = "Events|Time", DisplayName = "OnNewDay" )
 	FNewDayDelegate mOnNewDayDelegate;
+
+	UPROPERTY( BlueprintAssignable, Category = "Events|Time", DisplayName = "OnDayStateChanged" )
+	FDayStateDelegate mOnDayStateDelegate;
+
 };

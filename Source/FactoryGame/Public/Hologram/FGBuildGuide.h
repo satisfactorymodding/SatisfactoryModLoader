@@ -1,4 +1,4 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -68,7 +68,7 @@ public:
 	/** Checks whether there's anything obstructing the guide lines. */
 	static bool IsClearPathToHologram( class UWorld* world, FVector start, FVector end, TSet<class AActor*> excludedActors, ECollisionChannel collisionChannel );
 
-	static TArray<FGuideLineBuildingSweepData> SweepForAlignedBuildings( class AActor* actor, FVector guidelinesBase );
+	static TArray<FGuideLineBuildingSweepData> SweepForAlignedBuildings( class AActor* actor, FVector guidelinesBase, bool includeBuideGuideTrace = false );
 
 	static bool IsWithinRange( float value, float min, float max, bool inclusive = true );
 

@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -6,6 +6,11 @@
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGPipeSubsystem.generated.h"
+
+
+// Group for the detailed stats for this subsystem.
+DECLARE_STATS_GROUP( TEXT( "PipeSubsystem" ), STATGROUP_PipeSubsystem, STATCAT_Advanced );
+
 
 /**
  * Subsystem that manages all pipes in the game, grouping them into networks and managing the simulation of the networks.
@@ -120,7 +125,7 @@ public:
 private:
 	int32 GenerateUniqueID();
 
-	void TickPipeNetworks( float dt );
+	void SimulatePipeNetworks( float dt );
 
 	/**
 	 * Internal helper to rebuild a network.
@@ -139,7 +144,7 @@ private:
 	void AddFluidIntegrantToNetwork( class IFGFluidIntegrantInterface* fluidIntegrant, int32 networkID );
 
 	/** Function that handle the pipe probing. */
-	void Debug_ProbeIntegrant( float dt, int32 substeps );
+	void Debug_ProbeIntegrant();
 	/** Struct containing all data for one pipe probe. */
 	struct ProbeData
 	{
@@ -171,17 +176,8 @@ private:
 		TArray< float > PressureGroupPoints;
 		FVector2D PressureGroupRange = FVector2D::ZeroVector;
 		TArray< TTuple< FLinearColor, float > > PressureGroupLimits;
-
-		TArray< float > DeltaPoints;
-		FVector2D DeltaRange = FVector2D::ZeroVector;
-		TArray< TTuple< FLinearColor, float > > DeltaLimits;
 	};
-	
-public:
-	//@todo-Pipes: These as tunable "consts" for now
-	static float TARGET_DELTA_SECONDS;
-	static int32 MAX_SUBSTEPS;
-	
+
 private:
 	int32 mIDCounter;
 

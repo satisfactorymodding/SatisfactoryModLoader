@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -80,5 +80,14 @@ public:
 	TSubclassOf< class AFGVehicleSubsystem > mVehicleSubsystemClass;
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGEventSubsystem> mEventSubsystemClass;
+	/** Handles world grid and data for those cells */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGWorldGridSubsystem > mWorldGridSubsystemClass;
+	/** Handles all drone stations */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGDroneSubsystem > mDroneSubsystemClass;
+	/* Handles instance updating for conveyor items. */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGConveyorItemSubsystem > mConveyorItemSubsystemClass;
 
 };

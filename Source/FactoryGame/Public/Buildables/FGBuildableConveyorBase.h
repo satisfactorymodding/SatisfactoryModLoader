@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -550,6 +550,8 @@ public:
 	float GetCachedAvailableSpace_Threadsafe() const;
 
 	void ReportInvalidStateAndRequestConveyorRepReset();
+
+	void MarkItemTransformsDirty() { mPendingUpdateItemTransforms = true; }
 protected:
 	// Begin Factory_ interface
 	virtual bool Factory_PeekOutput_Implementation( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const override;
@@ -560,10 +562,8 @@ protected:
 	virtual void GetDismantleInventoryReturns( TArray< FInventoryStack >& out_returns ) const override;
 	// End AFGBuildable interface
 
-	void MarkItemTransformsDirty() { mPendingUpdateItemTransforms = true; }
-
 	/** Called when the visuals, radiation etc need to be updated. */
-	virtual void TickItemTransforms( float dt ) PURE_VIRTUAL(,);
+	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) PURE_VIRTUAL(,);
 
 public: // MODDING EDIT accessor
 	FORCEINLINE int32 FindItemClosestToLocationAccessor(const FVector& location) const { return FindItemClosestToLocation(location); };
@@ -610,6 +610,7 @@ private:
 	*/
 	bool HasRoomOnBelt_ThreadSafe( float& out_availableSpace ) const;
 
+	friend class AFGConveyorItemSubsystem;
 
 public:
 	/** Default height above ground for conveyors. */

@@ -1,4 +1,4 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -92,7 +92,6 @@ public:
 protected:
 	/** Spawns the projectile*/
 	void ProjectileFire( const FVector& shootDir, const FVector& origin );
-
 protected:
 	/** weapon config */
 	UPROPERTY( EditDefaultsOnly, Category = "Weapon" )

@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -33,10 +33,6 @@ public:
 	/** Set the buildable class for this hologram. Called from when spawning an hologram, before before BeginPlay is called. */
 	void SetBuildableClass( TSubclassOf< class AFGBuildable > buildableClass );
 
-	// Begin AActor interface
-	virtual void BeginPlay() override;
-	// End AActor interface
-
 	// AFGHologram interface
 	/** Net Construction Messages */
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
@@ -64,6 +60,17 @@ protected:
 	 *  Both "location" and "rotation" will contain the result once done. */
 	void SnapToFoundationSide( class AFGBuildableFoundation* foundation, const FVector& localSideNormal, FVector& location, FRotator& rotation );
 
+	/** Helper function to snap to the side of a wall. */
+	void SnapToWall(
+		class AFGBuildableWall* wall,
+	    const FVector& aimDirection,
+	    const FVector& aimLocation,
+	    EAxis::Type snapAxis,
+	    const FVector& snapOffsetOnWall,
+	    float snapRotationOnWall,
+	    FVector& out_location,
+	    FRotator& out_rotation );
+	
 	/**
 	 * Helper to check if the floor is valid.
 	 * @return - true if the floor is valid; false if the floor is to steep, another building etc.
@@ -95,43 +102,11 @@ protected:
 	/**
 	* Configure function: Configuring the actor created from the hologram when executed.
 	* Configure functions are called in the following order and can thus override each others steps. Be careful:
-		-   ConfigureActor( buildable ); 
-		-   ConfigureBuildEffect( buildable );
-		-   //Perform the actual spawning in the world
-		-   ConfigureComponents( buildable );
-		-   ConfigureSnappedBuilding( buildable );
-		-   //Begin play called on the buildable
-		-   ConfigureSnappedPower( buildable );
-	* @param inBuildable - The resulting buildable placed in the world that we are to configure before it's finished.
-	 * Configure the snapping to a building, i.e. foundation, floor etc.
-	 */
-	virtual void ConfigureSnappedBuilding( class AFGBuildable* inBuildable ) const;
-
-	/**
-	* Configure function: Configuring the actor created from the hologram when executed.
-	* Configure functions are called in the following order and can thus override each others steps. Be careful:
 		-   ConfigureActor( buildable );
 		-   ConfigureBuildEffect( buildable );
 		-   //Perform the actual spawning in the world
 		-   ConfigureComponents( buildable );
-		-   ConfigureSnappedBuilding( buildable );
 		-   //Begin play called on the buildable
-		-   ConfigureSnappedPower( buildable );
-	* @param inBuildable - The resulting buildable placed in the world that we are to configure before it's finished.
-	 * Configure snapping to a power grid, i.e. when placing a buildable on a foundation it should hook up to any powered walls.
-	 */
-	virtual void ConfigureSnappedPower( class AFGBuildable* inBuildable ) const;
-
-	/**
-	* Configure function: Configuring the actor created from the hologram when executed.
-	* Configure functions are called in the following order and can thus override each others steps. Be careful:
-		-   ConfigureActor( buildable );
-		-   ConfigureBuildEffect( buildable );
-		-   //Perform the actual spawning in the world
-		-   ConfigureComponents( buildable );
-		-   ConfigureSnappedBuilding( buildable );
-		-   //Begin play called on the buildable
-		-   ConfigureSnappedPower( buildable );
 	* @param inBuildable - The resulting buildable placed in the world that we are to configure before it's finished.
 	 * @note DO NOT TOUCH COMPONENTS HERE as they'll be overwritten! Use ConfigureComponents for that
 	 */
@@ -145,9 +120,7 @@ protected:
 		-   ConfigureBuildEffect( buildable );
 		-   //Perform the actual spawning in the world
 		-   ConfigureComponents( buildable );
-		-   ConfigureSnappedBuilding( buildable );
 		-   //Begin play called on the buildable
-		-   ConfigureSnappedPower( buildable );
 	* @param inBuildable - The resulting buildable placed in the world that we are to configure before it's finished.
 	 * @note DO NOT TOUCH COMPONENTS HERE as they'll be overwritten! Use ConfigureComponents for that
 	 */
@@ -161,9 +134,7 @@ protected:
 		-   ConfigureBuildEffect( buildable );
 		-   //Perform the actual spawning in the world
 		-   ConfigureComponents( buildable );
-		-   ConfigureSnappedBuilding( buildable );
 		-   //Begin play called on the buildable
-		-   ConfigureSnappedPower( buildable );
 	* @param inBuildable - The resulting buildable placed in the world that we are to configure before it's finished.
 	 * @note This is a good place to initialize snapped connections etc.
 	 */
@@ -176,9 +147,7 @@ protected:
 		-   ConfigureBuildEffect( buildable );
 		-   //Perform the actual spawning in the world
 		-   ConfigureComponents( buildable );
-		-   ConfigureSnappedBuilding( buildable );
 		-   //Begin play called on the buildable
-		-   ConfigureSnappedPower( buildable );
 	* @param inBuildable - The resulting buildable placed in the world that we are to configure before it's finished.
 	 * @note This is a good place to initialize snapped connections etc.
 	 */
@@ -226,6 +195,12 @@ protected:
 
 	//If set to true, the building will be allowed to snap to 45 degree intervals on fonudations instead of only 90 as the default.
 	bool mUseGradualFoundationRotations = false;
+
+	UPROPERTY( EditDefaultsOnly, meta = ( EditCondition = "mUseBuildClearanceOverlapSnapp" ) )
+	bool mBlockRepositionZOnClearanceOverlapSnapp = false;
+
+	UPROPERTY( EditDefaultsOnly, meta = ( EditCondition = "mUseBuildClearanceOverlapSnapp" ) )
+	bool mBlockResizeOnClearanceOverlapSnapp = false;
 
 
 	/** If the frame mesh should be used to highlight connections in hologram. */

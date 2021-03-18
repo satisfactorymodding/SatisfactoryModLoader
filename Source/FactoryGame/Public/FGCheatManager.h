@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -79,13 +79,16 @@ public:
 	virtual void ClearGiveItemPopularList();
 	
 	UFUNCTION( exec, CheatBoard, category = "Research" )
-	virtual void GiveALLSchematics();
+	virtual void GiveAllSchematics();
 
 	UFUNCTION( exec, CheatBoard, category = "Research" )
 	void GiveAllSchematicsAndPhases();
 
 	UFUNCTION( exec, CheatBoard, category = "Research" )
 	virtual void GiveAvailableSchematics();
+
+	UFUNCTION( exec, CheatBoard, category = "Research" )
+	virtual void GiveActiveMilestoneSchematic();
 
 	UFUNCTION( exec, CheatBoard, category = "Research" )
 	virtual void GiveCheatSchematics();
@@ -101,6 +104,21 @@ public:
 
 	UFUNCTION( exec, CheatBoard, category = "Research" )
 	void GiveAllResearchTrees();
+
+	UFUNCTION( exec, CheatBoard, category = "Story" )
+	void TriggerNextStoryMessageInQueue();
+
+	UFUNCTION( exec, CheatBoard, category = "Story" )
+	void TriggerNextBarkMessageInQueue();
+
+	UFUNCTION( exec, CheatBoard, category = "Story" )
+	void StartNextStoryQueue();
+
+	UFUNCTION( exec, CheatBoard, category = "Story" )
+	void ResetAllStoryQueues();
+
+	UFUNCTION( exec, CheatBoard, category = "Story" )
+	void ResetCurrentStoryQueue();
 	
 	UFUNCTION( exec, CheatBoard, category = "Factory|Uncommon" )
 	virtual void RebuildPowerCircuits();
@@ -200,6 +218,9 @@ public:
 
 	UFUNCTION( exec, CheatBoard, category = "Research" )
 	void SetGamePhase( EGamePhase phase );
+	
+	UFUNCTION( exec, CheatBoard, category = "Research" )
+	void SetNextGamePhase();
 
 	UFUNCTION( exec )
 	void TestSharedInventoryPtr();
@@ -262,9 +283,6 @@ public:
 
 	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void DumpSignificanceManagedObjects();
-
-	UFUNCTION( exec, CheatBoard, category = "Log" )
-	void DumpDynamicOptionsSettings();
 
 	UFUNCTION( exec, CheatBoard, category = "Save/Load" )
 	void PurgeInactiveClientsFromSave( bool fetchInventories );
@@ -422,9 +440,6 @@ public:
 	UFUNCTION( exec )
     void PipeTweakFluidViscosity( float fluidViscosity );
 
-	UFUNCTION( exec )
-    void PipeTweakSubStepping( float targetDeltaSeconds, int32 maxSubSteps );
-
 	/** Duplicate a component within a circuit so it contains multiple entries for the same component. */
 	UFUNCTION( exec )
 	void DupeComponentInCircuit( int32 target );
@@ -434,6 +449,14 @@ public:
 
 	UFUNCTION( exec )
 	void DumpConnectionString();
+
+	UFUNCTION( exec )
+	void FillAllFreightCars( float pct = 1.f );
+	UFUNCTION( exec )
+    void EmptyAllFreightCars();
+
+	UFUNCTION( exec )
+	void DumpCircuitsToLog();
 
 private:
 	class UActorComponent* GetOuterPlayersUseComponent() const;

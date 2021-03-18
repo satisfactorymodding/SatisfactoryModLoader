@@ -8,4 +8,6 @@ bool FFoundationSideSelectionFlags::GetValueForSide(EFoundationSide Side){ retur
 FFoundationSideSelectionFlags FFoundationSideSelectionFlags::RotateEdges(int32 steps) const{ return FFoundationSideSelectionFlags(); }
 const FFoundationSideSelectionFlags FFoundationSideSelectionFlags::NoEdges = FFoundationSideSelectionFlags();
 const FFoundationSideSelectionFlags FFoundationSideSelectionFlags::AllEdges = FFoundationSideSelectionFlags();
+FVector FFoundationHelpers::GetLocalSpaceNormalFromFoundationSide(EFoundationSide side){ return FVector(); }
+FFoundationSideNormal FFoundationHelpers::FindBestMatchingFoundationSideFromLocalNormal( AFGBuildableFoundation* foundation, FVector normal){ return FFoundationSideNormal(); }
 AFGBuildableFactoryBuilding::AFGBuildableFactoryBuilding(){ }

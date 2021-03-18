@@ -1,4 +1,4 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -6,6 +6,16 @@
 #include "Buildables/FGBuildableGeneratorFuel.h"
 #include "Replication/FGReplicationDetailActor_GeneratorNuclear.h"
 #include "FGBuildableGeneratorNuclear.generated.h"
+
+
+//[FreiholtzK:Tue/15-12-2020] @todo look into making this into a more generic warnign system for all generators if applicable.
+UENUM(BlueprintType)
+enum class EGeneratorNuclearWarning : uint8
+{
+	GNW_None,
+    GNW_WasteFull,
+    GNW_MissmatchBetweenInputAndWaste
+};
 
 /**
  * A generator that runs on nuclear fuel and produces waste.
@@ -55,12 +65,23 @@ protected:
 	/** Returns the inventory for waste in the nuclear generator */
 	UFUNCTION( BlueprintPure, Category = "Nuclear" )
 	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventoryHandler->GetActiveInventoryComponent(); }
+
+	/** Returns the current active warning for this nuclear generator */
+	UFUNCTION( BlueprintPure, Category = "Nuclear" )
+	FORCEINLINE EGeneratorNuclearWarning GetCurrentGeneratorNuclearWarning() const { return mCurrentGeneratorNuclearWarning; }
+	
 private:
+	
 	friend class AFGReplicationDetailActor_GeneratorNuclear;
 
 	virtual void OnRep_ReplicationDetailActor() override;
 
 	class AFGReplicationDetailActor_GeneratorNuclear* GetCastRepDetailsActor() const;
+
+	/** Check if the waste inventory has space for the waste item of the fuel in the fuel inventory.
+	 *  will return true if fuel inventory is empty
+	 */
+	bool CanFitWasteOfNextFuelClass() const;
 
 public: //MODDING EDIT public
 	/** Spent fuel rods goes here. */
@@ -73,5 +94,9 @@ public: //MODDING EDIT public
 	/** Waste left to produce from the current fuel rod*/
 	UPROPERTY( SaveGame )
 	int32 mWasteLeftFromCurrentFuel;
+
+	/** Current active warning on this nuclear generator */
+	UPROPERTY( Replicated )
+	EGeneratorNuclearWarning mCurrentGeneratorNuclearWarning;
 
 };

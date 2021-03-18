@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -44,9 +44,8 @@ public:
 	virtual void ServerPostConstructMessageDeserialization() override;
 	// End FGConstructionMessageInterface
 
-	FORCEINLINE EFactoryConnectionDirection GetActiveConnectionDirection()
-	{ return mSnappedConnectionComponents[0] && mBuildStep != ESplineHologramBuildStep::SHBS_FindStart ? mSnappedConnectionComponents[0]->GetDirection() : EFactoryConnectionDirection::FCD_ANY; }
-
+	/** Get the active connections direction, may be any. */
+	EFactoryConnectionDirection GetActiveConnectionDirection() const;
 
 	/** Returns any AFGBuildables that the ConveyorBeltHologram are currently snapping to */
 	TArray<AFGBuildable*> GetAnyConnectedBuildables();
@@ -56,11 +55,8 @@ protected:
 	virtual void CheckValidFloor() override;
 	virtual void CheckClearance() override;
 	virtual void CheckValidPlacement() override;
-
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
-	//void ConfigureSnappedBuilding( class AFGBuildable* inBuildable ) const override;
-
 	// End AFGBuildableHologram Interface
 
 	/** Creates the clearance detector used with conveyor belts */
@@ -70,9 +66,6 @@ private:
 	// Begin FGSplineHologram
 	virtual void UpdateSplineComponent() override;
 	// End FGSplineHologram
-
-	/** Get the number of sections this conveyor has. Used for cost, max length etc. */
-	int32 GetNumSections() const;
 
 	/** Create connection arrow component on the client. */
 	UFUNCTION()
@@ -118,10 +111,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
 	float mBendRadius;
 
-	/** What is the maximum length of one segment. */
+	/** Maximum length that can be built. [cm] */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
 	float mMaxSplineLength = 5600.1f;
-
 
 	/** What is the maximum incline of the conveyor belt (degrees). */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )

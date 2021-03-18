@@ -18,7 +18,6 @@ void AFGVehicle::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion
 void AFGVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGVehicle::GainedSignificance_Implementation(){ }
 void AFGVehicle::LostSignificance_Implementation(){ }
-float AFGVehicle::GetSignificanceBias(){ return float(); }
 float AFGVehicle::GetSignificanceRange(){ return float(); }
 FLinearColor AFGVehicle::GetPrimaryColor_Implementation(){ return FLinearColor(); }
 FLinearColor AFGVehicle::GetSecondaryColor_Implementation(){ return FLinearColor(); }

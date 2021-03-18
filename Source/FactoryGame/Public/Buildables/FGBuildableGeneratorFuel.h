@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -193,6 +193,15 @@ public: // MODDING EDIT protected -> public
 	UPROPERTY( EditDefaultsOnly, Category = "Power" )
 	EResourceForm mFuelResourceForm;
 
+	/** 
+	*	The quantity of inventory to be loaded for use during generation.
+	*	Any quantity less than this will fail to load and halt generation of electricity.
+	*	This is used for fuels so 1 liter isn't loaded constantly which makes the progress bar worthless
+	*	@note - 1 unit equates to 1 Liter. So 1000 units would be 1 Cubic Meter.
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Power" )
+	int32 mFuelLoadAmount;
+
 	/** Does this generator require a secondary NON fuel source to generate power? */
 	UPROPERTY( EditDefaultsOnly, Category = "Power" )
 	bool mRequiresSupplementalResource;
@@ -212,6 +221,10 @@ public: // MODDING EDIT protected -> public
 	/** The quantity of supplemental resource to consume per megawatt of power produced */
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( EditCondition = mRequiresSupplementalResource ) )
 	float mSupplementalToPowerRatio;
+
+	/** If true, the generator always produces at full capacity; if false, it only produces on-demand */
+	UPROPERTY( EditDefaultsOnly, Category = "Power" )
+	bool mIsFullBlast;
 
 	/** @todo: Cleanup, this shouldn't need to be replicated, clients should be able to fetch this anyway. Static index of fuel slot? */
 	UPROPERTY( SaveGame )

@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -21,7 +21,9 @@ enum class ERepresentationType : uint8
 	RT_Train					UMETA( DisplayName = "Train" ),
 	RT_TrainStation				UMETA( DisplayName = "TrainStation" ),
 	RT_Vehicle					UMETA( DisplayName = "Vehicle" ),
-	RT_VehicleDockingStation	UMETA( DisplayName = "VehicleDockingStation" )
+	RT_VehicleDockingStation	UMETA( DisplayName = "VehicleDockingStation" ),
+	RT_DronePort				UMETA( DisplayName = "DronePort" ),
+	RT_Drone					UMETA( DisplayName = "Drone" )
 };
 
 UENUM( BlueprintType )

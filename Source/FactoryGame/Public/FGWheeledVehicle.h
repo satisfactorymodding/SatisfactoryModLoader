@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -317,6 +317,12 @@ protected:
 	UFUNCTION()
 	void UseReplicatedState();
 
+	UFUNCTION()
+	void SmoothMovementReplication(float DeltaTime);
+
+	UFUNCTION(Server, Unreliable)
+	void ReplicateMovementClientToServer(FVector AuthoritativeLoc, FQuat AuthoritativeQuat, FVector AuthoritativeVelocity);
+
 private:
 	/** Tick helpers */
 	void UpdateAirStatus();
@@ -368,7 +374,7 @@ public:
 
 protected:
 	/** This vehicles fuel consumption in MW/s */
-	UPROPERTY( EditDefaultsOnly, Category = "Fuel" )
+	UPROPERTY( EditDefaultsOnly, Category = "Fuel", meta = ( AddAutoJSON = true ) )
 	float mFuelConsumption;
 
 	/** Amount left of the currently burned piece of fuel. In megawatt seconds (MWs). */
@@ -477,6 +483,17 @@ protected:
 	/** Collision box for detecting overlaps with foliage only. Shape modified in BP */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	UBoxComponent* mFoliageCollideBox;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
+	FVector mAuthoritativeLocation;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
+	FQuat mAuthoritativeRotation;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
+	FVector mAuthoritativeLinearVel;
+	
+	FDateTime mLastAccurateLocation;	
 	
 private:
 	/** replicated state of vehicle. */
@@ -495,7 +512,7 @@ private:
 	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated )
 	class UFGInventoryComponent* mStorageInventory;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = ( AddAutoJSON = true ) )
 	int32 mInventorySize;
 
 	UPROPERTY()

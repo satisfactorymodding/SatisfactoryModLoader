@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -23,7 +23,13 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
 	void OnRowUnhovered();
 
-	void InitValueController( FOptionRowData optionRowData );
+	void InitValueController( FOptionRowData optionRowData, UFGDynamicOptionsRow* parentOptionRow );
+
+	UFUNCTION( BlueprintNativeEvent )
+	bool IsPendingApply();
+
+	UFUNCTION( BlueprintNativeEvent )
+	bool IsPendingRestart();
 	
 	UFUNCTION( BlueprintImplementableEvent )
 	void OnInitValueController();
@@ -31,12 +37,30 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
 	void OnOptionValueUpdated();
 
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	bool ShouldBeClickable();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnOptionClicked();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
+	void OnOptionApplied();
+
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable )
+	void OnOptionReverted();
+
 	UFUNCTION( BlueprintPure )
-	FString GetNewSelectionKey( FString currentKey, bool incrementSelection );
+	FText GetCurrentSelectionText();
+
+	UFUNCTION( BlueprintCallable )
+	bool ChangeSelection( FText currentKey, bool incrementSelection );
 
 protected:
 
 	virtual void NativeConstruct() override;
+
+	UFUNCTION( BlueprintPure, Category = "Option" )
+	bool GetBoolOptionValue();
 
 protected:
 
@@ -45,5 +69,8 @@ protected:
 	
 	UPROPERTY( BlueprintReadOnly )
 	bool mIsDynamicOption;
+
+	UPROPERTY( BlueprintReadOnly )
+	UFGDynamicOptionsRow* mParentOptionRow;
 
 };

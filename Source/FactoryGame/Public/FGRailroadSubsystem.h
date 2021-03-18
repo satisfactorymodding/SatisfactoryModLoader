@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -7,6 +7,9 @@
 #include "FGRailroadVehicle.h"
 #include "FGRailroadSubsystem.generated.h"
 
+
+// Group for the detailed stats for this subsystem.
+DECLARE_STATS_GROUP( TEXT( "RailroadSubsystem" ), STATGROUP_RailroadSubsystem, STATCAT_Advanced );
 
 
 /**
@@ -168,6 +171,14 @@ public:
 	/** Remove a track segment. Called on dismantle. */
 	void RemoveTrack( class AFGBuildableRailroadTrack* track );
 
+	/**
+	 * Get the power connection that the locomotives power shoe connects to (the third rail).
+	 * 
+	 * Only valid to call on server.
+	 * 
+	 * @return The third rail power connection for the given track, nullptr if the track is not valid or not part of a valid graph.
+	 */
+	class UFGPowerConnectionComponent* GetThirdRailForTrack( const class AFGBuildableRailroadTrack* track ) const;
 
 
 	/***************************************************************************************************

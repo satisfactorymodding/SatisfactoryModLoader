@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "SharedInventoryStatePtr.h"
@@ -194,6 +196,12 @@ public:
 	int32 FindEmptyIndex() const;
 
 	/**
+	* Returns the first slot index that has any items on it
+	* If nothing exists in inventory -1 is returned
+	*/
+	int32 GetFirstIndexWithItem( int32 StartIndex = 0) const;
+
+	/**
 	 * Adds one item to the inventory.
 	 */
 	FORCEINLINE bool AddItem( const FInventoryItem& item )
@@ -337,7 +345,7 @@ public:
 
 	/** The total size of the inventory, when accessing inventory linearly using indices. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	int32 GetSizeLinear(){ return mInventoryStacks.Num(); }
+	int32 GetSizeLinear() const { return mInventoryStacks.Num(); }
 
 	/** Returns index of the stack that has percentually the most items */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -350,7 +358,7 @@ public:
 	/** Returns the indexes of relevant stacks depending on the given items classes, 
 	indexes are sorted first by class and secondly in ascending stack size */ 
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	TArray<int32> GetRelevantStackIndexes( TArray< TSubclassOf< class UFGItemDescriptor > > relevantClasses, int32 stackLimit );
+	TArray<int32> GetRelevantStackIndexes( TArray< TSubclassOf< class UFGItemDescriptor > > relevantClasses, int32 stackLimit = -1, bool sortResult = false );
 
 	/** Called when this inventory has been resized */
 	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnInventoryResized" )

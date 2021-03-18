@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 #include "CoreTypes.h"
 #include "Misc/Guid.h"
@@ -63,6 +65,9 @@ struct FFactoryGameCustomVersion
 
 		// 2020-03-24: Migrate the schematic dependencies to use the UFGAvailabilityDependency
 		RefactorSchematicDependencies,
+
+		// 2020-03-24: Add support for specific resource node types in the FGUnlockableScannableResource
+		RefactorUnlockScannableResources,
 
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

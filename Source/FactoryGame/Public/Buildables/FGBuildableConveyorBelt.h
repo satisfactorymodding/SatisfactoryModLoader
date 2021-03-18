@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -58,9 +58,12 @@ class FACTORYGAME_API AFGBuildableConveyorBelt : public AFGBuildableConveyorBase
 public:
 	AFGBuildableConveyorBelt();
 
+	friend class AFGConveyorItemSubsystem;
+	
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual bool IsComponentRelevantForNavigation( UActorComponent* component ) const override;
 	// End AActor interface
 
@@ -78,6 +81,7 @@ public:
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
 	virtual	void SetupForSignificance() override;
+	virtual void UpdateMeshLodLevels(int32 newLodLevel) override;
 	// End IFGSignificanceInterface
 
 	// Begin Buildable interface
@@ -132,13 +136,19 @@ public:
 	FORCEINLINE class USplineComponent* GetSplineComponent() { return mSplineComponent; }
 
 	void OnUseServerRepInput( class AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset);
+
+	void SetShadowCasting( bool inStateBelt, bool inStateItems );
+
+	// Temp function will be removed.
+	void DestroyVisualItems();
+	
 protected:
 	// Begin AFGBuildableFactory interface
 	virtual bool VerifyDefaults( FString& out_message ) override;
 	// End AFGBuildableFactory interface
 
 	// Begin AFGBuildableConveyorBase interface
-	virtual void TickItemTransforms( float dt ) override;
+	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) override;
 	// End AFGBuildableConveyorBase interface
 
 private:
@@ -186,4 +196,8 @@ private:
 	/** The ak event to post for the sound spline */
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
 	class UAkAudioEvent* mSplineAudioEvent;
+
+	bool mShouldCastBeltShadows;
+
+	bool mShouldCastItemShadows;
 };

@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -160,6 +160,14 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
 	static FLinearColor GetFluidColorLinear( TSubclassOf< UFGItemDescriptor > inClass );
 
+	/** Returns the color of this is a gas. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Gas" )
+    static FColor GetGasColor( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the color of this gas ( if it is one ) as type FLinearColor */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Gas" )
+    static FLinearColor GetGasColorLinear( TSubclassOf< UFGItemDescriptor > inClass );
+
 	/** Getters and setters for icon capture properties, for editor tools use only but not wrapped with WiTH_EDITOR since it's needed in a tool with a scene which is technically a game.
 	*	The content of the functions are instead wrapped
 	*/
@@ -184,6 +192,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
 	static void SetIconSkyOrientation( TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation );
 
+	/*	Set array index used by the conveyor item renderer subsystem.
+	 * 	Should only be called in runtime and by the conveyor renderer, will write to the mutable default object.  */
+	FORCEINLINE static void SetItemEncountered( TSubclassOf<UFGItemDescriptor> Class, int32 Index );
+
+	FORCEINLINE static int32 IsItemEncountered( TSubclassOf<UFGItemDescriptor> Class );
+	
 #if WITH_EDITOR
 	/** Delete all icons in the game that's referenced by a FGItemDescriptor */
 	static void DeleteAllIcons();
@@ -370,8 +384,16 @@ public: // MODDING EDIT: protected -> public
 	 * Color for this fluid, RGB is the color and A is the transparency of the fluid.
 	 * Form must be liquid or gas for this to be useful.
 	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
+	UPROPERTY( EditDefaultsOnly, Category = "Item", Meta = (DisplayName="Color 1 (Fluid Color)") )
 	FColor mFluidColor;
+
+	/**
+	* Color for this gas, RGB is the color and A is the transparency of the gas.
+	* Form must be liquid or gas for this to be useful.
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Item", Meta = (DisplayName="Color 2 (Gas Color)") )
+	FColor mGasColor;
+
 
 	/** This is just a hook for the resource sink points so we can add them to the 
 	* JSON wiki file even though they are in a separate datatable.  
@@ -380,6 +402,12 @@ public: // MODDING EDIT: protected -> public
 	int32 mResourceSinkPoints;
 
 private:
+
+	/* Index used by the conveyor item subsystem.
+	 * Written onto the mutable default object. */
+	UPROPERTY( Transient )
+	int32 mItemIndex;
+
 	friend class FItemDescriptorDetails;
 	friend class FFGItemDescriptorPropertyHandle;
 };

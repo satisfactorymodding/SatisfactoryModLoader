@@ -16,6 +16,8 @@
 DECLARE_STATS_GROUP( TEXT( "AtmosphereUpdater" ), STATGROUP_AtmosphereUpdater, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advanced );
 
+DECLARE_STATS_GROUP( TEXT( "Execute on Interface" ), STATGROUP_ExecuteInterface, STATCAT_Advanced );
+
 
 // Useful for removing stuff that shouldn't be in public versions
 #ifndef IS_PUBLIC_BUILD
@@ -50,6 +52,7 @@ static const FName SHOWDEBUG_PIPE_DELTA_PRESSURE( TEXT( "PipeDeltaPressure" ) );
 static const FName SHOWDEBUG_PIPE_FLOW( TEXT( "PipeFlow" ) );
 static const FName SHOWDEBUG_PIPE_MOVE_TO_OVERFILL_RATIO( TEXT( "PipeMoveToOverfillRatio" ) );
 static const FName SHOWDEBUG_CREATURES( TEXT( "Creatures" ) );
+static const FName SHOWDEBUG_POOLER( TEXT( "Pooler" ) );
 
 /** Common show debug colors */
 static const FLinearColor DEBUG_TEXTWHITE( 0.9f, 0.9f, 0.9f );
@@ -130,8 +133,8 @@ DECLARE_LOG_CATEGORY_EXTERN( LogSeasonalEvents, Log, All );
 	static FName FuncName_##FunctionName( #FunctionName ); \
 	VarName = BlueprintNodeHelpers::HasBlueprintFunction( FuncName_##FunctionName, *this, *CurrentClass::StaticClass() );
 
-template<class T, size_t N>
-constexpr FORCEINLINE size_t ARRAY_SIZE( T( &)[ N ] ) { return N; }
+template< class T, size_t N >
+constexpr FORCEINLINE size_t ARRAY_SIZE( T( & )[ N ] ) { return N; }
 
 // Has BlueprintNodeHelpers::HasBlueprintFunction in it
 #include "BlueprintNodeHelpers.h"
@@ -151,6 +154,8 @@ static const FName CollisionProfileClearanceDetector( TEXT( "ClearanceDetector" 
 
 static const ECollisionChannel TC_BuildGun( ECC_GameTraceChannel5 );
 static const ECollisionChannel TC_WeaponInstantHit( ECC_GameTraceChannel6 );
+static const ECollisionChannel TC_WorldGrid( ECC_GameTraceChannel9 );
+static const ECollisionChannel TC_BuildGuide( ECC_GameTraceChannel10 );
 
 static const ECollisionChannel OC_Projectile( ECC_GameTraceChannel1 );
 static const ECollisionChannel OC_Hologram( ECC_GameTraceChannel2 );
@@ -173,6 +178,8 @@ static const FName AttentionPingAction( TEXT( "AttentionPing" ) );
 static const FName BuildingSampleAction( TEXT( "TogglePhotoModeUIVisibility_BuildingSample" ) );
 static const FName CycleToNextHotbarAction( TEXT( "CycleToNextHotbar" ) );
 static const FName CycleToPreviousHotbarAction( TEXT( "CycleToPreviousHotbar" ) );
+static const FName PauseAction( TEXT( "PauseGame" ) );
+static const FName ChatAction( TEXT( "Chat" ) );
 
 /** Color Parameters */
 static const FName CanPaintPrimaryOrSecondary( TEXT( "CanBePainted" ) ); //Some - Not all - MaterialInterfaces have this property and it should override the "ability" to modify primary and secondary color
@@ -225,7 +232,7 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 #define QUICKSHOWARRAY( x ) LOGARRAY( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), x );
 
 /** QUICKLOG that appends the net mode. Requires GetWorld(). */
-#define QUICKLOG_NETMODE( x, ... ) UE_LOG( LogTemp, Log, TEXT( "(%s) %s" ), NETMODE_STRING, *FString::Printf( x ), __VA_ARGS__ );
+#define QUICKLOG_NETMODE( x, ... ) UE_LOG( LogTemp, Log, TEXT( "(%s) %s" ), NETMODE_STRING, *FString::Printf( TEXT( x ) ), __VA_ARGS__ );
 
 inline FString NetmodeToString( ENetMode NM )
 {

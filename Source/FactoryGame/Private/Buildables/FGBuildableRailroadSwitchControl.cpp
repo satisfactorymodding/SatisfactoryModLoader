@@ -14,5 +14,6 @@ void AFGBuildableRailroadSwitchControl::StartIsLookedAt_Implementation( AFGChara
 FText AFGBuildableRailroadSwitchControl::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGBuildableRailroadSwitchControl::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildableRailroadSwitchControl::ToggleSwitchPosition(){ }
-void AFGBuildableRailroadSwitchControl::OnSwitchPositionChanged(int32 newPosition){ }
-void AFGBuildableRailroadSwitchControl::OnRep_SwitchPosition(){ }
+void AFGBuildableRailroadSwitchControl::OnSwitchPositionChanged(int32 newPosition, int32 numPositions){ }
+void AFGBuildableRailroadSwitchControl::SetControlledConnection( UFGRailroadTrackConnectionComponent* controlledConnection){ }
+void AFGBuildableRailroadSwitchControl::OnRep_SwitchData(){ }

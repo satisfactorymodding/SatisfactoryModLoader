@@ -5,6 +5,7 @@
 AFGBuildableConveyorBelt::AFGBuildableConveyorBelt(){ }
 void AFGBuildableConveyorBelt::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildableConveyorBelt::BeginPlay(){ }
+void AFGBuildableConveyorBelt::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGBuildableConveyorBelt::IsComponentRelevantForNavigation(UActorComponent* component) const{ return bool(); }
 void AFGBuildableConveyorBelt::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
 void AFGBuildableConveyorBelt::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
@@ -16,6 +17,7 @@ FText AFGBuildableConveyorBelt::GetLookAtDecription_Implementation( AFGCharacter
 void AFGBuildableConveyorBelt::GainedSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::LostSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::SetupForSignificance(){ }
+void AFGBuildableConveyorBelt::UpdateMeshLodLevels(int32 newLodLevel){ }
 int32 AFGBuildableConveyorBelt::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 float AFGBuildableConveyorBelt::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildableConveyorBelt::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
@@ -26,7 +28,9 @@ TArray< AFGBuildableConveyorBelt* > AFGBuildableConveyorBelt::Split(AFGBuildable
 AFGBuildableConveyorBelt* AFGBuildableConveyorBelt::Merge(TArray< AFGBuildableConveyorBelt* > conveyors){ return nullptr; }
 AFGBuildableConveyorBelt* AFGBuildableConveyorBelt::Respline(AFGBuildableConveyorBelt* conveyor, const TArray< FSplinePointData >& newSplineData){ return nullptr; }
 void AFGBuildableConveyorBelt::OnUseServerRepInput( AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset){ }
+void AFGBuildableConveyorBelt::SetShadowCasting(bool inStateBelt, bool inStateItems){ }
+void AFGBuildableConveyorBelt::DestroyVisualItems(){ }
 bool AFGBuildableConveyorBelt::VerifyDefaults(FString& out_message){ return bool(); }
-void AFGBuildableConveyorBelt::TickItemTransforms(float dt){ }
+void AFGBuildableConveyorBelt::TickItemTransforms(float dt, bool bOnlyTickRadioActive){ }
 void AFGBuildableConveyorBelt::TickSingleItemTransform(const FConveyorBeltItem& item, TMap< FName, int32 >& instanceCounts,  AFGRadioactivitySubsystem* radioactiveSubsystem){ }
 void AFGBuildableConveyorBelt::GetConveyorMaterials(TArray<UMaterialInterface*, TInlineAllocator<4>>& out_materials){ }

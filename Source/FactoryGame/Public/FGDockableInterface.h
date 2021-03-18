@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "FGDockableInterface.generated.h"
@@ -13,6 +15,7 @@ enum class EDockStationType : uint8
 	DST_NONE			UMETA( DisplayName = "None" ),
 	DST_TRUCK			UMETA( DisplayName = "Truck" ),
 	DST_TRAIN			UMETA( DisplayName = "Train" ),
+	DST_DRONE			UMETA( DisplayName = "Drone" ),
 	DST_LAST_ENUM		UMETA( Hidden )
 };
 

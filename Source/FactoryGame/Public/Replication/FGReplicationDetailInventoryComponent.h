@@ -1,8 +1,8 @@
-// Copyright 2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
-#include "FGInventoryComponent.h"
+#include "FGInventoryComponent.h" // MODDING EDIT
 #include "Components/ActorComponent.h"
 #include "FGReplicationDetailInventoryComponent.generated.h"
 

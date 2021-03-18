@@ -1,4 +1,4 @@
-// Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -114,6 +114,8 @@ public:
 
 	static bool GetOverridenEventDateTime( EEvents event, FDateTime& out_OverriddenDateTime );
 
+	bool ShouldRunEvent( const FSimpleDate& Begin, const FSimpleDate& End, const FDateTime& now );
+	
 public:
 	UPROPERTY( Replicated )
 	TArray< EEvents > mCurrentEvents;
@@ -134,7 +136,7 @@ UCLASS( config = EditorPerProjectUserSettings, meta = ( DisplayName = "Satisfact
 class FACTORYGAME_API UFGEventDeveloperSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
-private:
+public:
 	UPROPERTY( EditDefaultsOnly, Config )
 	bool mDisableEvents;
 	

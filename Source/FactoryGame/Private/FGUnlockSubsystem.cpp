@@ -9,12 +9,14 @@ AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UWorld* world){ return nullptr; }
 AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGUnlockSubsystem::Init(){ }
 void AFGUnlockSubsystem::UnlockRecipe(TSubclassOf<  UFGRecipe > recipe){ }
-void AFGUnlockSubsystem::UnlockScannableResource(TSubclassOf<  UFGResourceDescriptor > newResource){ }
+void AFGUnlockSubsystem::UnlockScannableResource(FScannableResourcePair newResource){ }
 void AFGUnlockSubsystem::UnlockMap(){ }
 void AFGUnlockSubsystem::UnlockBuildEfficiency(){ }
 void AFGUnlockSubsystem::UnlockBuildOverclock(){ }
 void AFGUnlockSubsystem::UnlockInventorySlots(int32 numSlotsToUnlock){ }
 void AFGUnlockSubsystem::UnlockArmEquipmentSlots(int32 numSlotsToUnlock){ }
+TArray<TSubclassOf<class UFGResourceDescriptor>> AFGUnlockSubsystem::GetScannableResources() const{ return TArray<TSubclassOf<class UFGResourceDescriptor>>(); }
+bool AFGUnlockSubsystem::IsNodeScannable(FScannableResourcePair scannableResourcePair){ return bool(); }
 void AFGUnlockSubsystem::OnSchematicPurchased(TSubclassOf<  UFGSchematic > newSchematic){ }
 void AFGUnlockSubsystem::SetTotalNumInventorySlots(int32 totalNumSlots){ }
 void AFGUnlockSubsystem::SetTotalNumArmEquipmentSlots(int32 totalNumSlots){ }

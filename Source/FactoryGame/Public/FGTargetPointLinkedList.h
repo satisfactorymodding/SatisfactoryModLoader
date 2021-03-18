@@ -1,4 +1,4 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -64,6 +64,12 @@ public:
 	/** Will go through the linked list and set the target node that is closest to the vehicles position as current target */
 	UFUNCTION( BlueprintCallable, Category = "LinkedList" )
 	void SetClosestPointAsTarget();
+
+	/**
+	 * Finds the target point closes to the vehicle owning this list 
+	 * @param withinLookAngle -1 means ignore look angle
+	 * */
+	class AFGTargetPoint* FindBestTarget( float withinLookAngle = -1.0f  );
 
 	/** Clears the linked list and destroyes the targets */
 	UFUNCTION( BlueprintCallable, Category = "Path" )

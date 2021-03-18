@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -33,6 +33,10 @@ public:
 	virtual float GetSignificanceRange() override;
 
 	FORCEINLINE bool IsSignificant(){ return mIsSignificant; }
+
+	/** Returns mesh component */
+	UFUNCTION( BlueprintPure, Category = "Gas Pillar" )
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return mMesh; }
 
 	//~ Begin IInterface_PostProcessVolume Interface
 	virtual bool EncompassesPoint( FVector point, float sphereRadius = 0.f, float* out_distanceToPoint = nullptr ) override;

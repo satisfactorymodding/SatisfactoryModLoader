@@ -22,4 +22,5 @@ void UFGRailroadTrackConnectionComponent::SetTrackPosition(const FRailroadTrackP
 void UFGRailroadTrackConnectionComponent::SortConnections(){ }
 void UFGRailroadTrackConnectionComponent::AddConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
+void UFGRailroadTrackConnectionComponent::OnConnectionsChangedInternal(){ }
 void UFGRailroadTrackConnectionComponent::ClampSwitchPosition(){ }

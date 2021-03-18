@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -41,6 +41,6 @@ public:
 	static FText mOverrideDisplayNameAndDescription;
 
 	/** The vehicle this descriptor describes. */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = ( AddAutoJSON = true ) )
 	TSubclassOf< class AFGVehicle > mVehicleClass;
 };

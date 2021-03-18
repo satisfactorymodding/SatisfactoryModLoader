@@ -19,6 +19,9 @@ enum class ECrosshairState : uint8
 		ECS_Custom		UMETA( DisplayName = "Cutom" )
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPumpiModeChanged, bool, hideHUD );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPartialPumpiModeChanged, bool, partialHideHUD );
+
 UCLASS()
 class FACTORYGAME_API AFGHUD : public AFGHUDBase
 {
@@ -179,6 +182,15 @@ private:
 	/** Function that adds the cheat widget if it should */
 	void PonderOpeningCheatBoard();
 #endif
+
+public:
+	/** Called when the pumpi mode changes. */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnPumpiModeChanged mOnPumpiModeChanged;
+
+	/** Called when the partial pumpi mode changes. */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnPartialPumpiModeChanged mOnPartialPumpiModeChanged;
 
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Game UI" )

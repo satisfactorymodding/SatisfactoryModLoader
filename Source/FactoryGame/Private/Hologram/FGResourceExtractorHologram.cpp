@@ -12,6 +12,6 @@ bool AFGResourceExtractorHologram::IsValidHitResult(const FHitResult& hitResult)
 AActor* AFGResourceExtractorHologram::GetUpgradedActor() const{ return nullptr; }
 void AFGResourceExtractorHologram::CheckValidPlacement(){ }
 void AFGResourceExtractorHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
-void AFGResourceExtractorHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGResourceExtractorHologram::CheckResourcesAvailable(){ }
-void AFGResourceExtractorHologram::CheckMinimumDepth(){ }
+void AFGResourceExtractorHologram::TrySnapToExtractableResource(const FHitResult& hitResult, FVector& newHitLocation){ }
+bool AFGResourceExtractorHologram::CanOccupyResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }

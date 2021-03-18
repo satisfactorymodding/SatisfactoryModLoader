@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "GameFramework/Actor.h"
@@ -86,6 +88,10 @@ public:
 	/** @return Get the progress for the current bit of ore. */
 	UFUNCTION( BlueprintPure, Category = "Production" )
 	FORCEINLINE float GetExtractionProgress() const { return mCurrentExtractProgress; }
+
+	/** @return Get the ExtractCycleTime. */
+	UFUNCTION( BlueprintPure, Category = "Production" )
+    FORCEINLINE float GetExtractCycleTime() const { return mExtractCycleTime; }
 
 private:
 	/** Calls Start/Stop Producing on client */

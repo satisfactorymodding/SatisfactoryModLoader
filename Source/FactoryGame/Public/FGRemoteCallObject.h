@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -32,6 +32,9 @@ public:
 
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_ConstructHologram( FNetConstructionID netConstructionID, FConstructHologramMessage message );
+
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_AnswerCall( TSubclassOf< class UFGAudioMessage > messageClass );
 protected:
 
 	/** Returns the cast outer as a FGPlayerControlelr */

@@ -6,7 +6,6 @@ AFGDropPod::AFGDropPod(){ }
 void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGDropPod::BeginPlay(){ }
 void AFGDropPod::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGDropPod::Tick(float DeltaSeconds){ }
 void AFGDropPod::GainedSignificance_Implementation(){ }
 void AFGDropPod::LostSignificance_Implementation(){ }
 void AFGDropPod::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -29,5 +28,5 @@ void AFGDropPod::RollLoot_Implementation(){ }
 void AFGDropPod::OnRepair_Implementation( AFGCharacterPlayer* InteractingCharacter){ }
 FDropPackage AFGDropPod::RollDropPackage(TArray<TSubclassOf<class UFGItemDescriptor>> includedItems){ return FDropPackage(); }
 void AFGDropPod::GenerateDropPodInventory(TArray<TSubclassOf<class UFGItemDescriptor>> includedItems, int32 numItemsCreated){ }
+void AFGDropPod::OnHasPowerChanged( UFGPowerInfoComponent* info){ }
 void AFGDropPod::OnRep_HasBeenOpened(){ }
-void AFGDropPod::OnPowerConnectionChanged( UFGCircuitConnectionComponent* connection){ }

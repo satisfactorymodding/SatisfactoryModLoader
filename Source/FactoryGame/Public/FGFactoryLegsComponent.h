@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "Components/SceneComponent.h"
@@ -20,6 +22,23 @@ public:
 
 	FName GetSocket() const;
 public:
+	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess )
+	{
+		Ar << FeetIndex;
+		
+		bOutSuccess = true;
+		if( Ar.IsSaving() )
+		{
+			bOutSuccess = WriteFixedCompressedFloat<16384, 16>( OffsetZ, Ar );
+		}
+		else
+		{
+			bOutSuccess = ReadFixedCompressedFloat<16384, 16>( OffsetZ, Ar );
+		}
+
+		return bOutSuccess;
+	}
+
 	/** The index from the foot's socket name, i.e. foot_04 would be 4. */
 	UPROPERTY( SaveGame )
 	uint8 FeetIndex;
@@ -31,6 +50,15 @@ public:
 	/** Does this foot have a valid offset, only used during hologram placement. */
 	UPROPERTY( NotReplicated )
 	bool IsValidOffset;
+};
+
+template<>
+struct TStructOpsTypeTraits<FFeetOffset> : public TStructOpsTypeTraitsBase2<FFeetOffset>
+{
+	enum
+	{
+		WithNetSerializer = true,
+	};
 };
 
 /**

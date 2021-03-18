@@ -47,6 +47,8 @@ void AFGWheeledVehicle::UpdateAssistedVelocitiesState(){ }
 void AFGWheeledVehicle::ServerUpdateAssistedVelocitiesState_Implementation(bool inDrifting, float inInputYaw, float inInputPitch){ }
 bool AFGWheeledVehicle::ServerUpdateAssistedVelocitiesState_Validate(bool inDrifting, float inInputYaw, float inInputPitch){ return bool(); }
 void AFGWheeledVehicle::UseReplicatedState(){ }
+void AFGWheeledVehicle::SmoothMovementReplication(float DeltaTime){ }
+void AFGWheeledVehicle::ReplicateMovementClientToServer_Implementation(FVector AuthoritativeLoc, FQuat AuthoritativeQuat, FVector AuthoritativeVelocity){ }
 void AFGWheeledVehicle::UpdateAirStatus(){ }
 void AFGWheeledVehicle::UpdateTireEffects(){ }
 void AFGWheeledVehicle::UpdateTireParticle(FTireData tireData){ }

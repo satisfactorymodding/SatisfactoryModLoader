@@ -1,4 +1,4 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -18,7 +18,4 @@ public:
 	/** CTOR, who the hell is that? Some Star Wars robot? */
 	AFGResourceNodeGeyser();
 
-	// Begin IFGUseableInterface
-	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
-	// End IFGUseableInterface
 };

@@ -1,8 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "Buildables/FGBuildable.h"
+#include "FGCircuit.h"
 #include "FGBuildableWire.generated.h"
 
 /**
@@ -30,6 +31,9 @@ public:
 	/** @return The distance between the points the wire connects. */
 	UFUNCTION( BlueprintPure, Category = "Buildable|Wire" )
 	FORCEINLINE float GetLength() const { return FVector::Distance( mLocations[ 0 ], mLocations[ 1 ] ); }
+
+	/** Location of point 0 or 1 */
+	FORCEINLINE FVector GetLocation( int32 index ) const { return mLocations[ FMath::Min( index, 1  ) ]; }
 
 	/** @return The connection connected at the end of the wire. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Buildable|Wire" )
@@ -79,6 +83,10 @@ public:
 	float mLengthPerCost;
 
 protected:
+	/** Circuit type this wire is used for. Can only be one, e.g. power or logic. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wire" )
+	TSubclassOf< UFGCircuit > mCircuitType;
+
 	/** Mesh used to visualize the power line */
 	UPROPERTY( BlueprintReadOnly, VisibleAnywhere, Category = "Wire" )
 	UStaticMeshComponent* mWireMesh;

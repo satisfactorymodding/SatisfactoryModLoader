@@ -13,7 +13,6 @@ void AFGBuildableFactory::Destroyed(){ }
 void AFGBuildableFactory::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableFactory::GainedSignificance_Implementation(){ }
 void AFGBuildableFactory::LostSignificance_Implementation(){ }
-float AFGBuildableFactory::GetSignificanceBias(){ return float(); }
 void AFGBuildableFactory::GainedSignificance_Native(){ }
 void AFGBuildableFactory::LostSignificance_Native(){ }
 void AFGBuildableFactory::SetupForSignificance(){ }
@@ -32,6 +31,7 @@ bool AFGBuildableFactory::RunsOnPower() const{ return bool(); }
 float AFGBuildableFactory::GetIdlePowerConsumption() const{ return float(); }
 float AFGBuildableFactory::GetProducingPowerConsumption() const{ return float(); }
 float AFGBuildableFactory::GetDefaultProducingPowerConsumption() const{ return float(); }
+float AFGBuildableFactory::CalcPowerConsumption(float power, float overclock, float exponent){ return float(); }
 float AFGBuildableFactory::CalcProducingPowerConsumptionForPotential(float potential) const{ return float(); }
 bool AFGBuildableFactory::IsConfigured() const{ return bool(); }
 bool AFGBuildableFactory::IsProducing() const{ return bool(); }
@@ -51,8 +51,10 @@ void AFGBuildableFactory::TryStopIdlingLoopEffects(bool didLosePower){ }
 void AFGBuildableFactory::TryStartIdlingLoopEffects(bool didGainPower){ }
 void AFGBuildableFactory::TryStartProductionLoopEffects(bool didStartProducing){ }
 void AFGBuildableFactory::TryStopProductionLoopEffects(bool didStopProducing){ }
+void AFGBuildableFactory::UpdateAnimTickOption(EVisibilityBasedAnimTickOption newOption){ }
 void AFGBuildableFactory::OnIsProducingChanged_Native(bool newIsProducing){ }
 void AFGBuildableFactory::OnHasPowerChanged_Native(bool newHasPower){ }
+void AFGBuildableFactory::SetCurrentPotential(float newCurrentPotential){ }
 void AFGBuildableFactory::OnReplicatingDetailsChanged(){ }
 void AFGBuildableFactory::Factory_ProductionCycleCompleted(float overProductionRate){ }
 void AFGBuildableFactory::Factory_CollectInput_Implementation(){ }
@@ -65,6 +67,6 @@ void AFGBuildableFactory::Factory_StopProducing(){ }
 void AFGBuildableFactory::NativeUpdateEffects(float DeltaSeconds){ }
 void AFGBuildableFactory::OnRep_ReplicationDetailActor(){ }
 AFGReplicationDetailActor* AFGBuildableFactory::GetOrCreateReplicationDetailActor(){ return nullptr; }
+void AFGBuildableFactory::OnRep_CurrentPotential(){ }
 void AFGBuildableFactory::OnRep_IsProducing(){ }
 void AFGBuildableFactory::OnPotentialInventoryItemRemoved(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }
-EProductionStatusChange AFGBuildableFactory::OnProductionStatusChange = EProductionStatusChange();

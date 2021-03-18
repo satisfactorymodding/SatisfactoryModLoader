@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -144,6 +144,16 @@ public:
 	/** @return The track graph this track belongs to. */
 	FORCEINLINE int32 GetTrackGraphID() const { return mTrackGraphID; }
 
+	/**
+	 * Get the third rail power connection for this track.
+	 * The third rail is not unique per track segment but is the same for all tracks in a graph.
+	 * 
+	 * @note Only valid on server.
+	 * 
+	 * @return The third rail, nullptr if client or track is not connected to a valid graph.
+	 */
+	class UFGPowerConnectionComponent* GetThirdRail() const;
+
 private:
 	void SetTrackGraphID( int32 trackGraphID );
 
@@ -172,9 +182,12 @@ private:
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	TArray< FSplinePointData > mSplineData;
 
-	/** This tracks connection component. */
-	UPROPERTY( SaveGame )
-	class UFGRailroadTrackConnectionComponent* mConnections[ 2 ];
+	//@todo 2020-07-06 G2: Tracks built during play does not replicate the inner data for the second component in this array.
+	//                     Index 0 replicates fine, index 1 does not, if the client reconnects the data is replicated on initial,
+	//                     but during play... nothing. mConnectedComponents stays empty for index 1 for some unknown reason.
+	/** This tracks connection components. Created locally with net stable naming. */
+	UPROPERTY()
+	TArray< class UFGRailroadTrackConnectionComponent* > mConnections;
 
 	/** Was this track created and is owned by a platform. */
 	UPROPERTY( EditDefaultsOnly, Category = "Track" )

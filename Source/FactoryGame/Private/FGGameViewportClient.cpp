@@ -5,3 +5,4 @@
 void UFGGameViewportClient::Tick(float deltaSeconds){ }
 void UFGGameViewportClient::LostFocus(FViewport* Viewport){ }
 void UFGGameViewportClient::ReceivedFocus(FViewport* Viewport){ }
+bool UFGGameViewportClient::HandleToggleFullscreenCommand(){ return bool(); }

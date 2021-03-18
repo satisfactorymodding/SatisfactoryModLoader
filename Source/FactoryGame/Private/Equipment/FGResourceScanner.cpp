@@ -16,5 +16,5 @@ void AFGResourceScanner::AddEquipmentActionBindings(){ }
 void AFGResourceScanner::OnScanPressed(){ }
 void AFGResourceScanner::OnScanReleased(){ }
 void AFGResourceScanner::GenerateNodeClusters(){ }
-void AFGResourceScanner::GetNodesWithinDistance(AFGResourceNode* node, float dist, TArray< AFGResourceNode* >& clusterNodes, TArray< AFGResourceNode* >& remainingNodes){ }
+void AFGResourceScanner::GetNodesWithinDistance( AFGResourceNodeBase* node, float dist, TArray<  AFGResourceNodeBase* >& clusterNodes, TArray<  AFGResourceNodeBase* >& remainingNodes){ }
 void AFGResourceScanner::OnCheatBoardOpened(){ }

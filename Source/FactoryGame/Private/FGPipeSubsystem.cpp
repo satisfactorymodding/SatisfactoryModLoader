@@ -28,13 +28,11 @@ void AFGPipeSubsystem::Debug_AddProbedFluidIntegrant( IFGFluidIntegrantInterface
 void AFGPipeSubsystem::Debug_RemoveProbedFluidIntegrant( IFGFluidIntegrantInterface* integrant){ }
 void AFGPipeSubsystem::Debug_ClearProbedFluidIntegrants(){ }
 int32 AFGPipeSubsystem::GenerateUniqueID(){ return int32(); }
-void AFGPipeSubsystem::TickPipeNetworks(float dt){ }
+void AFGPipeSubsystem::SimulatePipeNetworks(float dt){ }
 void AFGPipeSubsystem::RebuildPipeNetwork(int32 networkID){ }
 void AFGPipeSubsystem::MergePipeNetworks(int32 first, int32 second){ }
 int32 AFGPipeSubsystem::CreatePipeNetwork(){ return int32(); }
 void AFGPipeSubsystem::RemovePipeNetwork(int32 networkID){ }
 void AFGPipeSubsystem::RemoveFluidIntegrantFromNetwork( IFGFluidIntegrantInterface* fluidIntegrant){ }
 void AFGPipeSubsystem::AddFluidIntegrantToNetwork( IFGFluidIntegrantInterface* fluidIntegrant, int32 networkID){ }
-void AFGPipeSubsystem::Debug_ProbeIntegrant(float dt, int32 substeps){ }
-float AFGPipeSubsystem::TARGET_DELTA_SECONDS = float();
-int32 AFGPipeSubsystem::MAX_SUBSTEPS = int32();
+void AFGPipeSubsystem::Debug_ProbeIntegrant(){ }

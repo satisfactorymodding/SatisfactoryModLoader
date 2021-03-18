@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -32,8 +32,6 @@ enum class EHologramScrollMode : uint8
  *
  * Note : Do not use SetActorLocation(), SetActorRotation() etc to move a hologram.
  *       Use SetHologramLocationAndRotation() instead as this handles snapping etc.
- *
- *
  */
 UCLASS( hidecategories = ( "Actor", "Input", "Replication", "Rendering", "Actor Tick" ) )
 class FACTORYGAME_API AFGHologram : public AActor, public IFGConstructionMessageInterface
@@ -371,7 +369,7 @@ protected:
 	void SetupClearanceDetector( class UBoxComponent* boxComponent );
 
 	/** Duplicate component for the hologram */
-	template<typename T>
+	template< typename T >
 	T* DuplicateComponent( USceneComponent* attachParent, T* templateComponent, const FName& componentName );
 
 	/**
@@ -416,16 +414,6 @@ protected:
 	 * @return - The newly created component.
 	 */
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
-
-	/**
-	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
-	 * Setup a custom depth component for each mesh.
-	 * Default it's called for every mush when setting up components.
-	 * @note Hax to get custom depth to work with translucent materials.
-	 * @note This does not work well with animated skeletal meshes, so do not add animations to holograms.
-	 * @todo FIXME when custom depth works with translucent materials.
-	 */
-	virtual void SetupDepthMeshComponent( USceneComponent* attachParent, UMeshComponent* componentTemplate );
 
 	/** Mark the hologram as changed. */
 	void SetIsChanged();
@@ -547,8 +535,8 @@ protected:
 	TSubclassOf< AActor > mBuildClass;
 
 	UPROPERTY( EditDefaultsOnly )
-	bool mUseBuildClearanceOverlapSnapp = false
-		;
+	bool mUseBuildClearanceOverlapSnapp = false;
+
 	bool mUseAutomaticBuildClearanceOverlapSnapp = true;
 
 	/** The reason why we couldn't construct this hologram, if it's empty then we can construct it */

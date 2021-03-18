@@ -3,19 +3,23 @@
 #include "Hologram/FGRailroadTrackHologram.h"
 
 AFGRailroadTrackHologram::AFGRailroadTrackHologram(){ }
+void AFGRailroadTrackHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGRailroadTrackHologram::BeginPlay(){ }
 USceneComponent* AFGRailroadTrackHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 void AFGRailroadTrackHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 int32 AFGRailroadTrackHologram::GetBaseCostMultiplier() const{ return int32(); }
+void AFGRailroadTrackHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 bool AFGRailroadTrackHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 void AFGRailroadTrackHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGRailroadTrackHologram::SetLocationAndRotationFromPlatformConnections( UFGTrainPlatformConnection* connectionOne,  UFGTrainPlatformConnection* connectionTwo){ }
-TArray<class UFGRailroadTrackConnectionComponent*> AFGRailroadTrackHologram::GetSnappedConnectionComponents(){ return TArray<class UFGRailroadTrackConnectionComponent*>(); }
+TArray< class UFGRailroadTrackConnectionComponent* > AFGRailroadTrackHologram::GetSnappedConnectionComponents(){ return TArray<class UFGRailroadTrackConnectionComponent*>(); }
 void AFGRailroadTrackHologram::CheckValidPlacement(){ }
 void AFGRailroadTrackHologram::CheckValidFloor(){ }
 void AFGRailroadTrackHologram::CheckClearance(){ }
 void AFGRailroadTrackHologram::UpdateSplineComponent(){ }
+void AFGRailroadTrackHologram::TryFindAndSnapToOverlappingConnection(int32 forConnectionIndex, FVector& inout_newLocation, FVector& inout_newTangent){ }
+void AFGRailroadTrackHologram::TryPlaceSwitchControl(int32 forConnectionIndex){ }
 bool AFGRailroadTrackHologram::ValidateGrade(){ return bool(); }
 bool AFGRailroadTrackHologram::ValidateCurvature(){ return bool(); }
 void AFGRailroadTrackHologram::AutoRouteSpline(const FVector& startConnectionPos,

@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "Components/SceneComponent.h"
@@ -43,9 +45,14 @@ protected:
 	/** Called by timer to tell us to damage the containing actors */
 	UFUNCTION()
 	void DamageContainingActors();
+
+private:
+	void AddActorToDamage( AActor* actor );
+	void RemoveActorToDamage( AActor* actor );
+	
 protected:
 	/** The dot we should apply to things in the primitive component we are attached to */
-	UPROPERTY( EditAnywhere, Category="Dot")
+	UPROPERTY( EditAnywhere, Category = "Dot" )
 	TSubclassOf< class UFGDamageOverTime > mDotClass;
 
 	/** The actors we want to damage */

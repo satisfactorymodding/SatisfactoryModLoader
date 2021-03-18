@@ -19,12 +19,14 @@ bool AFGWireHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 void AFGWireHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGWireHologram::Destroyed(){ }
 void AFGWireHologram::CheckValidPlacement(){ }
-void AFGWireHologram::SetupDepthMeshComponent(USceneComponent* attachParent, UMeshComponent* componentTemplate){ }
 void AFGWireHologram::CheckClearance(){ }
 void AFGWireHologram::CheckValidSnap(){ }
 void AFGWireHologram::CheckLength(){ }
 void AFGWireHologram::SetActiveAutomaticPoleHologram( AFGPowerPoleHologram* poleHologram){ }
-UFGCircuitConnectionComponent* AFGWireHologram::FindOverlappingCircuitConnectionComponent(const FVector& location,  AActor* actor,  UFGCircuitConnectionComponent* ignoredConnectionComponent){ return nullptr; }
+UFGCircuitConnectionComponent* AFGWireHologram::FindOverlappingCircuitConnectionComponent(const FVector& location,
+		 AActor* actor,
+		 UFGCircuitConnectionComponent* ignoredConnectionComponent,
+		TSubclassOf<  UFGCircuit > compatibleCircuitType){ return nullptr; }
 void AFGWireHologram::StartLookAtBuilding(UFGCircuitConnectionComponent* overlappingComponent){ }
 void AFGWireHologram::StopLookAtBuilding(){ }
 void AFGWireHologram::StartLookAtTooManyConnectionsBuilding(UFGCircuitConnectionComponent* overlappingConnection){ }

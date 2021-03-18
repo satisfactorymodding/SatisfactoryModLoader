@@ -10,3 +10,4 @@ TArray< EEvents > AFGEventSubsystem::GetCurrentEvents(){ return TArray<EEvents>(
 void AFGEventSubsystem::StoreCalendarDataForEvent(EEvents event, FCalendarData calendarData){ }
 bool AFGEventSubsystem::GetStoredCalendarDataForEvent(EEvents event, FCalendarData& out_calendarData){ return bool(); }
 bool AFGEventSubsystem::GetOverridenEventDateTime(EEvents event, FDateTime& out_OverriddenDateTime){ return bool(); }
+bool AFGEventSubsystem::ShouldRunEvent(const FSimpleDate& Begin, const FSimpleDate& End, const FDateTime& now){ return bool(); }

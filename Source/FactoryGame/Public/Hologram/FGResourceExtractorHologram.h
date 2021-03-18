@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -36,7 +36,6 @@ protected:
 
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
-	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
 
 	/**
@@ -44,44 +43,22 @@ protected:
 	 */
 	void CheckResourcesAvailable();
 
-	/**
-	 * Check if this hologram meets minimum depth requirements.
-	 */
-	void CheckMinimumDepth();
+	virtual void TrySnapToExtractableResource( const FHitResult& hitResult, FVector& newHitLocation );
+
+	virtual bool CanOccupyResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const;
 
 protected:
-	/** What form can the overlapping resources be in. */
 	UPROPERTY()
-	TArray< EResourceForm > mAllowedResourceForms;
-
-	/** Only allow certain specified resources ( set on the buildable ) */
-	bool mOnlyAllowCertainResources;
-
-	/** Class of disqualifier to display when not snapped to a resource ( copied from buildable ) */
-	UPROPERTY()
-	TSubclassOf< class UFGConstructDisqualifier > mMustPlaceOnResourceDisqualifier;
-
-	/** If this buildable only allows certain resources for placement, this is the list of those taken from the buildable */
-	UPROPERTY()
-	TArray< TSubclassOf< UFGResourceDescriptor > > mAllowedResources;
+	const class AFGBuildableResourceExtractorBase* mDefaultExtractor = nullptr;
 
 	/** The resource node we snapped to. */
 	UPROPERTY()
 	TScriptInterface< class IFGExtractableResourceInterface > mSnappedExtractableResource;
 
 	UPROPERTY( )
-	class AFGBuildableResourceExtractor* mUpgradeTarget = nullptr;
+	class AFGBuildableResourceExtractorBase* mUpgradeTarget = nullptr;
 
-	/** name used to mathc types of extractros for compatiblility when upgrading */
+	/** name used to match types of extractors for compatibility when upgrading */
 	FName mExtractorTypeName = "";
-
-	/** Minimum depth for placement assigned from the Buildable */
-	float mMinimumDepthForPlacement;
-
-	/** Require collision with the resource class at all minimum depth points? Assigned from the buildable */
-	bool mRequireResourceAtMinimumDepthChecks;
-
-	/** Origin Offset when performing minimum depth traces. Assigned from the buildable */
-	FVector mDepthTraceOriginOffset;
 
 };

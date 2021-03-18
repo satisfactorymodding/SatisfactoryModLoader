@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -15,38 +15,10 @@ enum class EFoundationSide : uint8
 	FoundationTop UMETA( DisplayName = "Top" ),
 	FoundationBottom UMETA( DisplayName = "Bottom" ),
 
-	FoundationNumSides UMETA( DisplayName = "Num Sides" )
+	FoundationNumSides UMETA( DisplayName = "Num Sides" ),
+
+	Invalid UMETA( DisplayName = "Invalid" )
 };
-
-static FVector GetLocalSpaceNormalFromFoundationSide(EFoundationSide Side)
-{
-	switch( Side )
-	{
-		case EFoundationSide::FoundationFront:
-			return FVector::ForwardVector;
-
-		case EFoundationSide::FoundationRight:
-			return FVector::RightVector;
-		
-		case EFoundationSide::FoundationBack:
-			return FVector::BackwardVector;
-		
-		case EFoundationSide::FoundationLeft:
-			return FVector::LeftVector;
-			
-		case EFoundationSide::FoundationTop:
-			return FVector::UpVector;
-		
-		case EFoundationSide::FoundationBottom:
-			return FVector::DownVector;
-		
-		default:
-			// Is our game 4D now, wtf?
-			break;
-	}
-
-	return FVector::ZeroVector;
-}
 
 /** Disable snapping on specific sides. */
 USTRUCT( BlueprintType )
@@ -78,6 +50,21 @@ public:
 	uint8 Top : 1;
 	UPROPERTY( EditDefaultsOnly, Category = "Sides" )
 	uint8 Bottom : 1;
+};
+
+struct FFoundationSideNormal
+{
+	FFoundationSideNormal() {}
+	FFoundationSideNormal( EFoundationSide side, FVector normal ) : Side( side ), LocalNormal( normal ) {}
+	
+	EFoundationSide Side = EFoundationSide::Invalid;
+	FVector LocalNormal = FVector{ EForceInit::ForceInit };
+};
+
+struct FFoundationHelpers
+{
+	static FVector GetLocalSpaceNormalFromFoundationSide( EFoundationSide side );
+	static FFoundationSideNormal FindBestMatchingFoundationSideFromLocalNormal( class AFGBuildableFoundation* foundation, FVector normal );
 };
 
 /**

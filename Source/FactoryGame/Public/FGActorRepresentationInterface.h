@@ -1,5 +1,8 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
+#include "FGActorRepresentation.h"
 #include "FGActorRepresentationInterface.generated.h"
 
 /**

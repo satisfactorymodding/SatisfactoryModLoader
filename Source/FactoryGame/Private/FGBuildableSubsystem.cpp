@@ -21,6 +21,7 @@ AFGBuildableSubsystem* AFGBuildableSubsystem::Get(UObject* worldContext){ return
 AFGBuildable* AFGBuildableSubsystem::BeginSpawnBuildable(TSubclassOf<  AFGBuildable > inClass, const FTransform& inTransform){ return nullptr; }
 void AFGBuildableSubsystem::AddBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::AddConveyor(AFGBuildableConveyorBase* conveyor){ }
+void AFGBuildableSubsystem::RemoveFogPlanes( AFGBuildable* buildable){ }
 AFGBuildableConveyorBase* AFGBuildableSubsystem::GetConnectedConveyorBelt( UFGFactoryConnectionComponent* connection){ return nullptr; }
 void AFGBuildableSubsystem::RemoveBuildable( AFGBuildable* buildable){ }
 void AFGBuildableSubsystem::RemoveConveyor(AFGBuildableConveyorBase* conveyor){ }
@@ -38,6 +39,10 @@ FLinearColor AFGBuildableSubsystem::GetColorSlotPrimary_Linear(uint8 index){ ret
 FLinearColor AFGBuildableSubsystem::GetColorSlotSecondary_Linear(uint8 index){ return FLinearColor(); }
 void AFGBuildableSubsystem::SetColorSlotPrimary_Linear(uint8 index, FLinearColor color){ }
 void AFGBuildableSubsystem::SetColorSlotSecondary_Linear(uint8 index, FLinearColor color){ }
+FLinearColor AFGBuildableSubsystem::GetBuildableLightColorSlot(int32 index) const{ return FLinearColor(); }
+TArray<FLinearColor> AFGBuildableSubsystem::GetBuildableLightColorSlots() const{ return TArray<FLinearColor>(); }
+void AFGBuildableSubsystem::BuildableLightColorSlotsUpdated(const TArray< FLinearColor >& colors){ }
+void AFGBuildableSubsystem::UpdateBuildableCullDistances(float newFactor){ }
 void AFGBuildableSubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildableSubsystem::DebugEnableInstancing(bool enabled){ }
 void AFGBuildableSubsystem::DebugGetFactoryActors(TArray< AActor* >& out_actors){ }
@@ -52,7 +57,11 @@ void AFGBuildableSubsystem::RegisterFactoryTickFunction(bool shouldRegister){ }
 void AFGBuildableSubsystem::CreateFactoryStatID() const{ }
 void AFGBuildableSubsystem::UpdateReplayEffects(float dt){ }
 void AFGBuildableSubsystem::AddBuildableMeshInstances( AFGBuildable* buildable){ }
+void AFGBuildableSubsystem::AddToTickGroup(AFGBuildable* buildable){ }
+void AFGBuildableSubsystem::RemoveFromTickGroup(AFGBuildable* buildable){ }
+void AFGBuildableSubsystem::SetupColoredMeshInstances(AFGBuildable* buildable){ }
+void AFGBuildableSubsystem::SetupProductionIndicatorInstancing( AFGBuildableFactory* factory){ }
 void AFGBuildableSubsystem::TickFactoryActors(float dt){ }
-void AFGBuildableSubsystem::DumpFixedFactoryTickValues() const{ }
+void AFGBuildableSubsystem::UpdateConveyorRenderType(FString cvar){ }
 UFGColoredInstanceManager* AFGBuildableSubsystem::GetColoredInstanceManager( UFGColoredInstanceMeshProxy* proxy){ return nullptr; }
 bool AFGBuildableSubsystem::IsBasedOn(const UMaterialInterface* instance, const UMaterial* base){ return bool(); }

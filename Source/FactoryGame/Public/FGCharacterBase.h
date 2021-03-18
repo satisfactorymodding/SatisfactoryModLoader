@@ -66,11 +66,11 @@ public:
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	virtual void Tick( float deltaTime ) override;
 
-	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser );
+	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser ) override;
 	// End AActor interface
 
 	/** Apply momentum caused by damage. */
-	virtual void ApplyDamageMomentum( float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser );
+	virtual void ApplyDamageMomentum( float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser ) override;
 
 	/**
 	* Called when this Pawn is possessed. Only called on the server (or in standalone).
@@ -127,6 +127,9 @@ public:
 	
 	/** Called when landing, used for fall damage */
 	virtual void Landed( const FHitResult& Hit ) override;
+
+	/** Return if character is ragdolled */
+	FORCEINLINE bool GetIsRagdoll() { return mIsRagdolled; }
 
 	/** Calculate damage we take from a fall */
 	UFUNCTION( BlueprintNativeEvent, Category = "Fall Damage" )
@@ -197,7 +200,7 @@ public:
 	
 	/** returns true if mesh is ragdolled */
 	UFUNCTION( BlueprintPure, Category = "Ragdoll" )
-	bool IsRagdolled() { return mIsRagdolled; }
+	bool IsRagdolled() const { return mIsRagdolled; }
 
 	/**
 	* if newRagdoll is true this function will ragdoll the player
@@ -289,7 +292,7 @@ protected:
 	 * @param waterDepth - distance from water to bottom of the water puddle
 	 * @param out_footstepEffect - the footstep effect, only valid if returning true
 	 *
-	 * @return true if we found a suiteable effect
+	 * @return true if we found a suitable effect
 	 */
 	bool GetWaterFootstepEffect( const TArray< FFootstepEffectWater >& waterEffects, float waterDepth, FFootstepEffect& out_footstepEffect ) const;
 
@@ -422,7 +425,7 @@ protected:
 	/** Used to avoid playing landing effect twice */
 	bool mShouldPlayLandEffect:1;
 
-	/** Velicty we have when falling, updaten all the time when falling, never cleared */
+	/** Velocity we have when falling, update all the time when falling, never cleared */
 	FVector mFallVelocity;
 
 	UPROPERTY( Replicated )

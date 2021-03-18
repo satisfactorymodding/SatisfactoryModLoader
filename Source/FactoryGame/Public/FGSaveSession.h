@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -91,6 +91,10 @@ public:
 	 * @param willLoad - we will later on get a LoadGame call
 	 */
 	void Init( bool willLoad );
+
+	/** Called when auto save interval option is updated */
+	UFUNCTION()
+	void OnAutosaveIntervalUpdated( FString cvar );
 
 	/** Get the save system from a world */
 	static class UFGSaveSession* Get( class UWorld* world );

@@ -1,6 +1,8 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
-#include "FGGameUserSettings.h"
+#include "OptionValueContainer.h"
 #include "FGOptionsSettings.generated.h"
 
 UENUM( BlueprintType )
@@ -10,34 +12,63 @@ enum class EOptionCategory : uint8
 	OC_Audio					UMETA( DisplayName = "Audio" ),
 	OC_Video					UMETA( DisplayName = "Video" ),
 	OC_Controls					UMETA( DisplayName = "Controls" ),
-	OC_UserInterface			UMETA( DisplayName = "User Interface" )
+	OC_Keybindings				UMETA( DisplayName = "Keybindings" ),
+	OC_UserInterface			UMETA( DisplayName = "User Interface" ),
+	OC_Online					UMETA( DisplayName = "Online" ),
+	OC_Debug					UMETA( DisplayName = "Debug" )
 };
 
 UENUM( BlueprintType )
 enum class EOptionType : uint8
 {
 	OT_Checkbox					UMETA( DisplayName = "Checkbox" ),
-	OT_IntegerSelection			UMETA( DisplayName = "IntegerSelection (NO SUPPORT YET)" ),
-	OT_FloatSelection			UMETA( DisplayName = "FloatSelection (NO SUPPORT YET)" ),
-	OT_Slider					UMETA( DisplayName = "Slider" )
+	OT_Slider					UMETA( DisplayName = "Slider" ),
+	OT_IntegerSelection			UMETA( DisplayName = "IntegerSelection" ),
+	OT_FloatSelection			UMETA( DisplayName = "FloatSelection" ),
+	OT_Custom					UMETA( DisplayName = "Custom" )
 };
 
 UENUM( BlueprintType )
-enum class ENetmodeAvailability : uint8
+enum class EOptionNetmodeType : uint8
 {
-	NA_ServerAndClient			UMETA( DisplayName = "Server and Client" ),
-	NA_OnlyServer				UMETA( DisplayName = "Only Server" ),
-	NA_OnlyClient				UMETA( DisplayName = "Only Client" )
+	ONT_ServerAndClient			UMETA( DisplayName = "Server and Client" ),
+	ONT_OnlyServer				UMETA( DisplayName = "Only Server" ),
+	ONT_OnlyClient				UMETA( DisplayName = "Only Client" )
 };
 
 UENUM( BlueprintType )
-enum class EGamemodeAvailability : uint8
+enum class EOptionGamemodeType : uint8
 {
-	GA_Always					UMETA( DisplayName = "Always" ),
-    GA_OnlyInMainMenu			UMETA( DisplayName = "Only In Main Menu" ),
-    GA_OnlyInGame				UMETA( DisplayName = "Only In Game" )
+	OGT_Always					UMETA( DisplayName = "Always" ),
+	OGT_OnlyInMainMenu			UMETA( DisplayName = "Only In Main Menu" ),
+	OGT_OnlyInGame				UMETA( DisplayName = "Only In Game" )
 };
 
+USTRUCT( BlueprintType )
+struct FIntegerSelection
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	FText Name;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	int32 Value;
+};
+
+USTRUCT( BlueprintType )
+struct FFloatSelection
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	FText Name;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	float Value;
+};
 
 USTRUCT( BlueprintType )
 struct FOptionRowData
@@ -46,19 +77,19 @@ struct FOptionRowData
 
 public:
 	FOptionRowData() :
-		OptionType(EOptionType::OT_Checkbox),
-		DefaultCheckBoxValue(false),
-		MinValue(0),
-		MaxValue(0),
-		MinDisplayValue(0),
-		MaxDisplayValue(0),
-		MaxFractionalDigits(0),
-		ShowZeroAsOff(false),
-		DefaultSliderValue(0),
-		UpdateInstantly(false),
-		RequireRestart(false),
-		NetmodeAvailability( ENetmodeAvailability::NA_ServerAndClient ),
-		GamemodeAvailability( EGamemodeAvailability::GA_Always )
+		OptionType( EOptionType::OT_Checkbox ),
+		DefaultCheckBoxValue( false ),
+		MinValue( 0 ),
+		MaxValue( 0 ),
+		MinDisplayValue( 0 ),
+		MaxDisplayValue( 0 ),
+		MaxFractionalDigits( 0 ),
+		ShowZeroAsOff( false ),
+		DefaultSliderValue( 0 ),
+		OptionApplyType( EOptionApplyType::OAT_Normal ),
+		NetmodeAvailability( EOptionNetmodeType::ONT_ServerAndClient ),
+		GamemodeAvailability( EOptionGamemodeType::OGT_Always ),
+		CustomWidgetClass( nullptr )
 	{
 	}
 
@@ -95,29 +126,29 @@ public:
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	float DefaultSliderValue;
 
-	UPROPERTY( BlueprintReadWrite )
-	TMap<FString, int32> IntegerSelectionValues;
-
-	UPROPERTY( BlueprintReadWrite )
-	TMap<FString, float> FloatSelectionValues;
-
-	UPROPERTY( BlueprintReadWrite )
-	FString DefaultSelectionValue;
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	TArray<FIntegerSelection> IntegerSelectionValues;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	bool UpdateInstantly;
+	TArray<FFloatSelection> FloatSelectionValues;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	bool RequireRestart;
+	int32 DefaultSelectionIndex;
 	
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	FText Tooltip;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	ENetmodeAvailability NetmodeAvailability;
+	EOptionApplyType OptionApplyType;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	EGamemodeAvailability GamemodeAvailability;
+	EOptionNetmodeType NetmodeAvailability;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	EOptionGamemodeType GamemodeAvailability;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	TSubclassOf< class UFGOptionsValueController > CustomWidgetClass;
 };
 
 USTRUCT( BlueprintType, meta = ( ShowOnlyInnerProperties ) )
@@ -208,14 +239,7 @@ public:
 	}
 
 #if WITH_EDITOR
-	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override
-	{
-		Super::PostEditChangeProperty( PropertyChangedEvent );
-		if( UFGGameUserSettings* gameUserSettings = UFGGameUserSettings::GetFGGameUserSettings() )
-		{
-			gameUserSettings->SetupDefaultOptionsValues();
-		}
-	};
+	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
 #endif
 public:
 	UPROPERTY( EditAnywhere, config, Category = "Key Bindings", meta = ( ShowOnlyInnerProperties, ToolTip = "This maps a axis name to a postive and negative display name. If no display name is provided we show the axis name" ) )
@@ -238,6 +262,12 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
 	TArray<FOptionRowData> mUserInterfaceOptions;
+		
+	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
+	TArray<FOptionRowData> mOnlineOptions;
+
+	UPROPERTY( EditAnywhere, config, Category = "Options", meta = ( ToolTip = "" ) )
+	TArray<FOptionRowData> mDebugOptions;
 
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
 	TMap<EOptionType, TSubclassOf< class UFGOptionsValueController >> mOptionTypeWidgetsClasses;
@@ -246,4 +276,3 @@ public:
 	TSubclassOf< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
 
 };
-

@@ -7,6 +7,8 @@ UFGMusicManager* UFGMusicManager::Get(UWorld* world){ return nullptr; }
 UFGMusicManager* UFGMusicManager::Get(UObject* worldContext){ return nullptr; }
 UWorld* UFGMusicManager::GetWorld() const{ return nullptr; }
 void UFGMusicManager::OnPlayerControllerBeginPlay( AFGPlayerControllerBase* pc){ }
+void UFGMusicManager::UpdateIncomingAttackers(int32 numAttackers){ }
+void UFGMusicManager::OnPlayerEnteredArea_Implementation(AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > mapArea){ }
 UFGMusicManager::UFGMusicManager(){ }
 void UFGMusicManager::Update(){ }
-void UFGMusicManager::OnPostLoadMap(UWorld* loadedWorld){ }
+void UFGMusicManager::Init(UWorld* inWorld){ }

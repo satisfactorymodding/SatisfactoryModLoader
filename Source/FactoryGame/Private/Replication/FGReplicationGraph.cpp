@@ -19,7 +19,6 @@ void UFGReplicationGraph::OnCharacterPlayerEquip( AFGCharacterPlayer* pawn,  AFG
 void UFGReplicationGraph::OnCharacterPlayerUnequip( AFGCharacterPlayer* pawn,  AFGEquipment* equipment){ }
 void UFGReplicationGraph::OnCharacterPlayerFoliagePickupSpawned( AFGCharacterPlayer* pawn,  AFGFoliagePickup* foliagePickup){ }
 void UFGReplicationGraph::OnBuildableRegistedPlayerChanged( AFGBuildable* buildable,  AFGCharacterPlayer* player, bool isInUse){ }
-void UFGReplicationGraph::OnFactoryProductionStatusChanged( AFGBuildable* buildable, EProductionStatus oldStatus, EProductionStatus newStatus){ }
 EClassRepPolicy UFGReplicationGraph::GetMappingPolicy(UClass* inClass){ return EClassRepPolicy(); }
 void UFGReplicationGraph::LogCurrentActorDependencyList(FGlobalActorReplicationInfo& actorInfo, FString& logMarker){ }
 UReplicationGraphNode_AlwaysRelevant_ForConnection* UFGReplicationGraph::GetAlwaysRelevantNodeForConnection(UNetConnection* Connection){ return nullptr; }

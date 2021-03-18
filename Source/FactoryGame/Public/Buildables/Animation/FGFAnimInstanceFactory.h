@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -27,6 +27,10 @@ struct FAnimInstanceProxyFactory : public FAnimInstanceProxy
 		mStartFrame( 0 ),
 		mLoadPercentage( 0 ),
 		mHasFuel( false ),
+		mIsFuelGeneratorOnlineFloat( 0.0f ),
+		mHasPowerFloat( 0.0f ),
+		mIsProducingFloat( 0.0f ),
+		mCurrentPotential( 1 ),
 		mHasPower( false ),
 		mIsProducing( false ),
 		mIsActivated( false ),
@@ -102,6 +106,22 @@ public:
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	bool mHasFuel;
 
+	/** True if generator has power and is producing (this is a clone variable that is just a float because bigge want it) */
+	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
+	float mIsFuelGeneratorOnlineFloat;
+
+	/** Factory has power (this is a clone variable that is just a float because bigge want it)*/
+	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
+	float mHasPowerFloat;
+
+	/** Factory is producing something (this is a clone variable that is just a float to let animation use fast path)*/
+	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
+	float mIsProducingFloat;
+
+	/** This is the current potential of this factory, 0 = underclocked, 1 = default, 2 = overclocking */
+	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
+	int32 mCurrentPotential;
+
 	/** Factory has power */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	uint8 mHasPower : 1;
@@ -146,7 +166,8 @@ public:
 	virtual void NativeInitializeAnimation() override;
 
 	/** Function for updating a rtpc at intervals */
-	virtual void UpdateSoundRTPC( float DeltaSeconds );
+	UFUNCTION( BlueprintCallable, Category = "Animation" )
+	virtual void UpdateSoundRTPC( float DeltaSeconds, bool forceUpdate = false );
 protected:
 	UPROPERTY( Transient, BlueprintReadOnly, Category = "Factory Anim", meta = ( AllowPrivateAccess = "true" ) )
 	FAnimInstanceProxyFactory mProxy;
@@ -202,4 +223,8 @@ public:
 	/** Max value for RTPC range */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
 	float mSoundSpeedRTPCMaxValue;
+
+	/** RTPC value set after scaling */
+	UPROPERTY( BlueprintReadOnly, Category = "Anim" )
+	float mRTPCValue;
 };

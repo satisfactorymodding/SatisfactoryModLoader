@@ -36,6 +36,7 @@ void AFGRailroadSubsystem::UpdateCargoPlatformPowerConnection(int32 trackGraphID
 bool AFGRailroadSubsystem::MoveTrackPosition( FRailroadTrackPosition& position, float delta, float& out_movedDelta){ return bool(); }
 void AFGRailroadSubsystem::AddTrack( AFGBuildableRailroadTrack* track){ }
 void AFGRailroadSubsystem::RemoveTrack( AFGBuildableRailroadTrack* track){ }
+UFGPowerConnectionComponent* AFGRailroadSubsystem::GetThirdRailForTrack(const  AFGBuildableRailroadTrack* track) const{ return nullptr; }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
 void AFGRailroadSubsystem::RebuildTrackGraph(int32 graphID){ }
 void AFGRailroadSubsystem::RefreshPlatformPowerConnectionsFromStation( AFGBuildableRailroadStation* station,  UFGCircuitConnectionComponent* connectTo){ }

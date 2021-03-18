@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -29,6 +29,7 @@ public:
 
 protected:
 	// Begin AFGHologram interface
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void CheckValidPlacement() override;
 	// End of AFGHologram interface
 

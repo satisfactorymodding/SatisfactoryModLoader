@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -12,17 +12,12 @@ USTRUCT()
 struct FACTORYGAME_API FDismantleRefunds
 {
 	GENERATED_BODY()
-	
-	FDismantleRefunds()
-	{
-		NumPendingActors = 0;
-	}
+public:
+	UPROPERTY()
+	uint32 NumPendingActors = 0;
 
 	UPROPERTY()
-	uint32 NumPendingActors;
-
-	UPROPERTY()
-	TArray<FInventoryStack> PeekDismantleRefund;
+	TArray< FInventoryStack > PeekDismantleRefund;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnDismantleRefundsChanged, class UFGBuildGunStateDismantle*, dismantleGun );

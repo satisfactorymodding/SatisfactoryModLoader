@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
 
 #include "FactoryGame.h"
 #include "FGFactoryMaterialInstanceManager.generated.h"

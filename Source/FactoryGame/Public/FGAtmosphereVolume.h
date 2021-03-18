@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "Interfaces/Interface_PostProcessVolume.h"
@@ -5,6 +7,7 @@
 #include "Curves/CurveLinearColor.h"
 #include "FGSkySphere.h"
 #include "FGAtmosphereVolume.generated.h"
+
 
 USTRUCT()
 struct FExponentialFogSettings

@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -59,6 +59,23 @@ class FACTORYGAME_API UFGSchematic : public UObject
 public:
 	UFGSchematic();
 
+	// Begin UObject interface
+	virtual void PostLoad() override;
+	virtual void Serialize( FArchive& ar ) override;
+#if WITH_EDITOR
+	virtual void PreSave( const class ITargetPlatform* targetPlatform ) override;
+	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+#endif
+	// End UObject interface
+
+	//~ Begin AssetInterface
+	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
+#if WITH_EDITOR
+	/** This scans the class for AssetBundles metadata on asset properties and initializes the AssetBundleData with InitializeAssetBundlesFromMetadata */
+	void UpdateAssetBundleData();
+#endif
+	//~ End AssetInterface
+
 	/** Returns the type of schematic. */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static ESchematicType GetType( TSubclassOf< UFGSchematic > inClass );
@@ -67,6 +84,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static FText GetSchematicDisplayName( TSubclassOf< UFGSchematic > inClass );
 
+	/** Returns the description of this schematic */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static FText GetSchematicDescription( TSubclassOf< UFGSchematic > inClass );
+
 	/** Returns the category of this schematic */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static TSubclassOf< class UFGSchematicCategory > GetSchematicCategory( TSubclassOf< UFGSchematic > inClass );
@@ -74,6 +95,10 @@ public:
 	/** Returns the sub categories of this schematic */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	static void GetSubCategories( TSubclassOf< UFGSchematic > inClass, UPARAM( ref ) TArray< TSubclassOf< class UFGSchematicCategory > >& out_subCategories );
+
+	/** The order we want schematics in menus, lower is earlier */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+    static float GetMenuPriority( TSubclassOf< UFGSchematic > inClass );
 
 	/** Returns the cost of this schematic*/
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -90,10 +115,22 @@ public:
 	/** Returns how long this schematics takes to complete its actions when we acquire it */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static float GetTimeToComplete( TSubclassOf< UFGSchematic > inClass );
+
+	/** Returns other schematics that are unlocked and relevant to this schematic in the awesome shop */
+	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+	static void GetRelevantUnlockedShopSchematics( UObject* worldContext, TSubclassOf< UFGSchematic > inClass, TArray< TSubclassOf< UFGSchematic > >& out_schematics );
+
+	/** Returns other schematics that are relevant to this schematic in the awesome shop */
+	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+	static void GetRelevantShopSchematics( TSubclassOf< UFGSchematic > inClass, TArray< TSubclassOf< UFGSchematic > >& out_schematics );
 	
 	/** The icon to be used in UI. */
-	UFUNCTION( BlueprintPure, Category = "Item" )
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static FSlateBrush GetItemIcon( TSubclassOf< UFGSchematic > inClass );
+
+	/** The small version of the icon to be used in UI. */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+    static UTexture2D* GetSmallIcon( TSubclassOf< UFGSchematic > inClass );
 
 	/** Returns true if the dependencies for this schematic are met and are available for purchase */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -107,6 +144,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool IsRepeatPurchasesAllowed( TSubclassOf< UFGSchematic > inClass );
 
+	/** Sort an array dependent on their menu priority. */
+	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+    static void SortByMenuPriority( UPARAM( ref ) TArray< TSubclassOf< UFGSchematic > >& schematics );
+
 	/** Returns the relevant events this schematic is present in. */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
     static TArray< EEvents > GetRelevantEvents( TSubclassOf< UFGSchematic > inClass );
@@ -115,14 +156,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool IsIncludedInBuild( TSubclassOf< UFGSchematic > inClass );
 
-	// Begin UObject interface
-	virtual void PostLoad() override;
-	virtual void Serialize( FArchive& ar ) override;
-#if WITH_EDITOR
-	virtual void PreSave( const class ITargetPlatform* targetPlatform ) override;
-#endif
-	// End UObject interface
-
 #if WITH_EDITOR
 	/** Add a recipe to this schematic. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Schematic" )
@@ -130,16 +163,7 @@ public:
 
 	/** This migrates the old schematic dependencies to the new dependency system */
 	void MigrateDataToNewDependencySystem();
-
 #endif
-
-	//~ Begin AssetInterface
-#if WITH_EDITOR
-	/** This scans the class for AssetBundles metadata on asset properties and initializes the AssetBundleData with InitializeAssetBundlesFromMetadata */
-	void UpdateAssetBundleData();
-#endif
-	virtual FPrimaryAssetId GetPrimaryAssetId() const override;
-	//~ End AssetInterface
 
 public: // MODDING EDIT: protected -> public
 	/** What type of schematic is this. */
@@ -150,6 +174,10 @@ public: // MODDING EDIT: protected -> public
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	FText mDisplayName;
 
+	/** Readable description of the schematic */
+	UPROPERTY( EditDefaultsOnly, Category = "Schematic", meta = ( MultiLine = true ) )
+	FText mDescription;
+
 	/** The category this schematic belongs to. */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	TSubclassOf< class UFGSchematicCategory > mSchematicCategory;
@@ -157,6 +185,10 @@ public: // MODDING EDIT: protected -> public
 	/** The sub categories this schematic belongs to. */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	TArray< TSubclassOf< class UFGSchematicCategory > > mSubCategories;
+
+	/** The order in menus is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
+	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	float mMenuPriority;
 
 	/** The tech tier that this Schematic belongs to. [0...N]*/
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic", AssetRegistrySearchable )
@@ -170,13 +202,21 @@ public: // MODDING EDIT: protected -> public
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	float mTimeToComplete;
 
+	/** Other schematics that are relevant to this schematic in the awesome shop */
+	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
+	TArray< TSubclassOf<UFGSchematic> > mRelevantShopSchematics;
+
 	/** The unlocks you get when purchasing */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Unlocks" )
 	TArray< class UFGUnlock* > mUnlocks;
 
 	/** Icon used when displaying this schematic */
-	UPROPERTY( EditDefaultsOnly, Category = "Schematic", meta = (NoAutoJson = true) )
+	UPROPERTY( EditDefaultsOnly, Category = "UI", meta = (NoAutoJson = true) )
 	FSlateBrush mSchematicIcon;
+	
+	/** Small version of the icon used when displaying this schematic  */
+	UPROPERTY( EditDefaultsOnly, Category="UI", meta = ( AddAutoJSON = true ) )
+	UTexture2D* mSmallSchematicIcon;
 
 	/** Is this schematic dependant on anything to be available for purchase? */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Dependencies" )

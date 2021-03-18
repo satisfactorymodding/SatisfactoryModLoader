@@ -11,6 +11,8 @@ float UFGCharacterMovementComponent::GetMaxSpeed() const{ return float(); }
 void UFGCharacterMovementComponent::StartNewPhysics(float deltaTime, int32 Iterations){ }
 void UFGCharacterMovementComponent::SetDefaultMovementMode(){ }
 float UFGCharacterMovementComponent::GetMaxJumpZVelocity() const{ return float(); }
+bool UFGCharacterMovementComponent::CanCrouchInCurrentState() const{ return bool(); }
+void UFGCharacterMovementComponent::SmoothClientPosition(float DeltaSeconds){ }
 void UFGCharacterMovementComponent::ServerSetHookLocation_Implementation(const FVector& hookLocation){ }
 bool UFGCharacterMovementComponent::ServerSetHookLocation_Validate(const FVector& hookLocation){ return bool(); }
 void UFGCharacterMovementComponent::SetHookLocation(const FVector& hookLocation){ }
@@ -24,10 +26,14 @@ bool UFGCharacterMovementComponent::EnterPipeHyper( AFGBuildablePipeHyperPart* p
 FVector UFGCharacterMovementComponent::GetPipeTravelDirectionWorld(){ return FVector(); }
 FRotator UFGCharacterMovementComponent::GetPipeCharacterTransform(FVector cameraForwardAxis){ return FRotator(); }
 void UFGCharacterMovementComponent::PipeHyperForceExit(){ }
-void UFGCharacterMovementComponent::UpdateWantsToSlide(){ }
+bool UFGCharacterMovementComponent::WantsToSlide(){ return bool(); }
 void UFGCharacterMovementComponent::UpdateSlideStatus(){ }
+void UFGCharacterMovementComponent::UpdateZiplineStatus(float dt){ }
 bool UFGCharacterMovementComponent::SetTravelingPipeHyperActor(AActor* hyperPipeInterfaceActor){ return bool(); }
 const USceneComponent* UFGCharacterMovementComponent::GetUpdateComponent() const{ return nullptr; }
+float UFGCharacterMovementComponent::GetZiplineSpeed(bool IsSprinting) const{ return float(); }
+void UFGCharacterMovementComponent::StopZiplineMovement(FVector exitForce){ }
+void UFGCharacterMovementComponent::StartZiplineMovement(AActor* ziplineActor, FVector actorForward){ }
 void UFGCharacterMovementComponent::UpdateFromCompressedFlags(uint8 flags){ }
 void UFGCharacterMovementComponent::OnMovementUpdated(float deltaSeconds, const FVector & oldLocation, const FVector & oldVelocity){ }
 void UFGCharacterMovementComponent::OnMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode){ }
@@ -37,11 +43,14 @@ void UFGCharacterMovementComponent::SetOnLadder( UFGLadderComponent* ladder){ }
 void UFGCharacterMovementComponent::PhysFlying(float deltaTime, int32 Iterations){ }
 void UFGCharacterMovementComponent::PhysLadder(float deltaTime, int32 iterations){ }
 void UFGCharacterMovementComponent::PhysPipe(float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysZipline(float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysHover(float deltaTime, int32 iterations){ }
 void UFGCharacterMovementComponent::UpdateJetPack(float deltaSeconds){ }
 void UFGCharacterMovementComponent::UpdateHookshot(float deltaSeconds, FVector oldLocation){ }
 void UFGCharacterMovementComponent::UpdateSprintStatus(){ }
 void UFGCharacterMovementComponent::UpdateParachute(float delta){ }
 void UFGCharacterMovementComponent::UpdateJumpingStilts(float deltaSeconds){ }
+void UFGCharacterMovementComponent::UpdateHoverPack(float deltaSeconds){ }
 bool UFGCharacterMovementComponent::CanSprint() const{ return bool(); }
 bool UFGCharacterMovementComponent::CanSlide() const{ return bool(); }
 bool UFGCharacterMovementComponent::CanStartSlide() const{ return bool(); }
@@ -49,6 +58,7 @@ AFGJetPack* UFGCharacterMovementComponent::GetCachedJetPack(){ return nullptr; }
 AFGHookshot* UFGCharacterMovementComponent::GetCachedHookshot(){ return nullptr; }
 AFGParachute* UFGCharacterMovementComponent::GetCachedParachute(){ return nullptr; }
 AFGJumpingStilts* UFGCharacterMovementComponent::GetCachedJumpingStilts(){ return nullptr; }
+AFGHoverPack* UFGCharacterMovementComponent::GetCachedHoverPack(){ return nullptr; }
 void UFGCharacterMovementComponent::TickSlide(float delta){ }
 void FSavedMove_FGMovement::Clear(){ }
 uint8 FSavedMove_FGMovement::GetCompressedFlags() const{ return uint8(); }

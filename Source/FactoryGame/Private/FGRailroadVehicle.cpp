@@ -13,6 +13,7 @@ bool AFGRailroadVehicle::CanDismantle_Implementation() const{ return bool(); }
 void AFGRailroadVehicle::GainedSignificance_Implementation(){ }
 void AFGRailroadVehicle::LostSignificance_Implementation(){ }
 void AFGRailroadVehicle::UpdateAnimation(){ }
+void AFGRailroadVehicle::UpdatePower(){ }
 UFGRailroadVehicleMovementComponent* AFGRailroadVehicle::GetRailroadVehicleMovementComponent() const{ return nullptr; }
 bool AFGRailroadVehicle::IsDocked() const{ return bool(); }
 void AFGRailroadVehicle::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }

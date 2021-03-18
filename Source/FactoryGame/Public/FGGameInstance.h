@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "Engine/GameInstance.h"
@@ -234,9 +236,6 @@ public:
 	UFUNCTION(BlueprintPure, Category="FactoryGame|Online")
 	EJoinSessionState GetCurrentJoinSessionState() const;
 
-	/* Set if we should enable navigation with tab and arrow keys. Stops UE4 to hog tab and arrow key input bindings in widgets. Doesn't do anything in PIE */
-	void EnableTabAndNavKeys( bool enable );
-
 	/** Get the instance of the debug overlay widget. Will create one if it doesn't exists. Might return null if we don't have a specificed debug overlay widget class */
 	class UFGDebugOverlayWidget* GetDebugOverlayWidget();
 
@@ -278,6 +277,10 @@ private:
 
 	void JoinSession_Internal();
 	
+	/** Called when the option for sending gameplay data is changed*/
+	UFUNCTION()
+	void OnSendGameplayDataUpdated( FString cvar );
+
 protected:
 	/** The global save system */
 	UPROPERTY()

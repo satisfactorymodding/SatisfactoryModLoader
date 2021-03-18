@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -70,10 +70,10 @@ struct FSplineUtils
 		// @param forceVerticalExceeding - Vertical rise between the two points to change calculation to assume a vertical rise along segment
 		void CalculateValues( float forceVerticalExceeding = 35.f );
 
-		// Adds segements for this spline segment into the passed builder
-		void AddSegementsToBuilder( struct FSplineBuilder& builder );
+		// Adds segments for this spline segment into the passed builder
+		void AddSegmentsToBuilder( struct FSplineBuilder& builder );
 
-		// Can the values be treated as calculated? ie. Valid point data was initialized and have the calculations been run?
+		// Can the values be treated as calculated? i.e. Valid point data was initialized and have the calculations been run?
 		bool IsValid() { return HasInitialized && HasCalculated && StartAngle <= MAX_ANGLE && EndAngle <= MAX_ANGLE; }
 
 		// Inputed radii
@@ -149,7 +149,7 @@ struct FSplineUtils
 		// 90:    1.65
 		// 120:   2.7
 		// 180:   4.0
-		const float clampedAngle = FMath::Clamp( angle, 0.0f, PI*1.1f ); //[DavalliusA:Thu/30-01-2020] increased the max a little here. We should really leave the responsibility to the ones calling.
+		const float clampedAngle = FMath::Clamp( angle, 0.0f, PI * 1.1f ); //[DavalliusA:Thu/30-01-2020] increased the max a little here. We should really leave the responsibility to the ones calling.
 		const float magicMultiplier = 0.14f * clampedAngle * clampedAngle + 0.81f * clampedAngle + 0.01f;
 		return radius * magicMultiplier;
 	}

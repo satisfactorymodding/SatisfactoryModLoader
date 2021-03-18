@@ -5,7 +5,6 @@
 void AFGBuildableHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGBuildableHologram::AFGBuildableHologram(){ }
 void AFGBuildableHologram::SetBuildableClass(TSubclassOf<  AFGBuildable > buildableClass){ }
-void AFGBuildableHologram::BeginPlay(){ }
 void AFGBuildableHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 bool AFGBuildableHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGBuildableHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
@@ -17,12 +16,18 @@ void AFGBuildableHologram::CheckValidPlacement(){ }
 int32 AFGBuildableHologram::GetRotationStep() const{ return int32(); }
 void AFGBuildableHologram::SnapToFloor( AFGBuildable* floor, FVector& location, FRotator& rotation){ }
 void AFGBuildableHologram::SnapToFoundationSide( AFGBuildableFoundation* foundation, const FVector& localSideNormal, FVector& location, FRotator& rotation){ }
+void AFGBuildableHologram::SnapToWall( AFGBuildableWall* wall,
+	    const FVector& aimDirection,
+	    const FVector& aimLocation,
+	    EAxis::Type snapAxis,
+	    const FVector& snapOffsetOnWall,
+	    float snapRotationOnWall,
+	    FVector& out_location,
+	    FRotator& out_rotation){ }
 void AFGBuildableHologram::CheckValidFloor(){ }
 void AFGBuildableHologram::CheckClearance(){ }
 bool AFGBuildableHologram::CheckClearanceForPrimitive(UPrimitiveComponent* comp, const FComponentQueryParams& params , bool allowSnapAndMoveAlongBuildings){ return bool(); }
 bool AFGBuildableHologram::CheckClearanceForShapeSimple( FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params){ return bool(); }
-void AFGBuildableHologram::ConfigureSnappedBuilding( AFGBuildable* inBuildable) const{ }
-void AFGBuildableHologram::ConfigureSnappedPower( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureBuildEffect( AFGBuildable* inBuildable){ }

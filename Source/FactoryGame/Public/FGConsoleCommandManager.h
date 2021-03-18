@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -71,4 +71,7 @@ public:
 	/** Dumps the player coordinates to log, potentially with a label and copy to clipboard */
 	UFUNCTION( exec )
 	void DumpPlayerCoordinates( const FString& label = TEXT(""), bool copyToClipboard = false );
+
+	UFUNCTION( exec, CheatBoard, category = "Log" )
+	void DumpDynamicOptionsSettings();
 };

@@ -9,6 +9,7 @@ void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChang
 void AFGWaterVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGWaterVolume::AFGWaterVolume(){ }
+void AFGWaterVolume::PostInitProperties(){ Super::PostInitProperties(); }
 void AFGWaterVolume::BeginPlay(){ }
 void AFGWaterVolume::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 bool AFGWaterVolume::IsOverlapInVolume(const  USceneComponent& testComponent) const{ return bool(); }
@@ -26,15 +27,15 @@ void AFGWaterVolume::PostRegisterAllComponents(){ }
 void AFGWaterVolume::GetNavigationData(FNavigationRelevantData& Data) const{ }
 FBox AFGWaterVolume::GetNavigationBounds() const{ return FBox(); }
 void AFGWaterVolume::RebuildNavigationData(){ }
-void AFGWaterVolume::SetIsOccupied_Implementation(bool occupied){ }
-bool AFGWaterVolume::IsOccupied_Implementation() const{ return bool(); }
-bool AFGWaterVolume::CanBecomeOccupied_Implementation() const{ return bool(); }
-bool AFGWaterVolume::HasAnyResources_Implementation() const{ return bool(); }
-TSubclassOf<class UFGResourceDescriptor> AFGWaterVolume::GetResourceClass_Implementation() const{ return TSubclassOf<class UFGResourceDescriptor>(); }
-int32 AFGWaterVolume::ExtractResource_Implementation(int32 amount){ return int32(); }
-float AFGWaterVolume::GetExtractionSpeedMultiplier_Implementation() const{ return float(); }
-FVector AFGWaterVolume::GetPlacementLocation_Implementation(const FVector& hitLocation) const{ return FVector(); }
-bool AFGWaterVolume::CanPlaceResourceExtractor_Implementation() const{ return bool(); }
+void AFGWaterVolume::SetIsOccupied(bool occupied){ }
+bool AFGWaterVolume::IsOccupied() const{ return bool(); }
+bool AFGWaterVolume::CanBecomeOccupied() const{ return bool(); }
+bool AFGWaterVolume::HasAnyResources() const{ return bool(); }
+TSubclassOf<class UFGResourceDescriptor> AFGWaterVolume::GetResourceClass() const{ return TSubclassOf<class UFGResourceDescriptor>(); }
+int32 AFGWaterVolume::ExtractResource(int32 amount){ return int32(); }
+float AFGWaterVolume::GetExtractionSpeedMultiplier() const{ return float(); }
+FVector AFGWaterVolume::GetPlacementLocation(const FVector& hitLocation) const{ return FVector(); }
+bool AFGWaterVolume::CanPlaceResourceExtractor() const{ return bool(); }
 void AFGWaterVolume::OnPrimitiveComponentEntered(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult){ }
 void AFGWaterVolume::OnPrimitiveComponentExited(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex){ }
 void AFGWaterVolume::OnPawnEntered(APawn* pawn, const FHitResult& enterInfo){ }

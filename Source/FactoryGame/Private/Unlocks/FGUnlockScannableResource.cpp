@@ -2,6 +2,9 @@
 
 #include "Unlocks/FGUnlockScannableResource.h"
 
+bool FScannableResourcePair::operator ==(const FScannableResourcePair& other) const{ return bool(); }
+bool FScannableResourcePair::operator !=(const FScannableResourcePair& other) const{ return bool(); }
 #if WITH_EDITORONLY_DATA
 #endif 
 void UFGUnlockScannableResource::Apply( AFGUnlockSubsystem* unlockSubssytem){ }
+void UFGUnlockScannableResource::PostLoad(){ Super::PostLoad(); }

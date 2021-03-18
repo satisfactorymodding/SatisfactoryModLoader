@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -108,13 +108,6 @@ protected:
 	UFUNCTION()
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
 private:
-	/**
-	 * @todo: Move to InventoryComponent, make const
-	 * Returns the first slot index that has any items on it
-	 * If nothing exists in inventory -1 is returned
-	 */
-	int32 GetFirstIndexWithItem( UFGInventoryComponent* inventory );
-
 
 	/** Loads fuel into the docked vehicles inventory.
 	 * @return true if we are done refueling (i.e. vehicle fuel inventory is full or we have no fuel to transfer)

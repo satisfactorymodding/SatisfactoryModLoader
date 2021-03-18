@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -86,8 +86,8 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
-	/** Should the subsystem tick this network? */
-	bool ShouldTickNetwork() const;
+	/** Should the subsystem update this network? */
+	bool ShouldRunSimulation() const;
 	
 	/** Run the simulation on the networks junctions and fluid boxes */
 	void UpdateSimulation( float dt );
@@ -152,6 +152,8 @@ private:
 
 	void UpdateFluidDescriptor( TSubclassOf< UFGItemDescriptor > descriptor );
 
+	/** Liquid functions. */
+	void TickPhysics( float dt );
 	int32 CreatePressureGroup();
 	int32 FindTopMostPressureGroupIndex( int32 index );
 	void UpdatePressureGroups( PipeJunction& junction, float dt );
@@ -161,6 +163,13 @@ private:
 	void PreUpdateFlow( PipeJunction& junction );
 	void UpdateFlow( PipeJunction& junction, float dt );
 	void UpdateContent( PipeJunction& junction, float dt );
+
+	/** Gas functions. */
+	void TickPhysics_Gas( float dt );
+	void UpdatePressure_Gas( PipeJunction& junction, float dt );
+	void PreUpdateFlow_Gas( PipeJunction& junction );
+	void UpdateFlow_Gas( PipeJunction& junction, float dt );
+	void UpdateContent_Gas( PipeJunction& junction, float dt );
 
 private:
 	friend class UFGCheatManager;

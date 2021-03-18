@@ -1,10 +1,11 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "Engine/GameEngine.h"
 #include "FGEngineCommon.h"
 #include "FGWorldCreationInterface.h"
 #include "FGGameEngine.generated.h"
-
 
 
 UCLASS()
@@ -17,6 +18,7 @@ public:
 	virtual void Start() override;
 	virtual void PreExit() override;
 	virtual void Tick( float deltaSeconds, bool idleMode ) override;
+	virtual bool LoadMap( FWorldContext& WorldContext, FURL URL, class UPendingNetGame* Pending, FString& Error ) override;
 	// End UEngine interface
 
 	//~ Begin IFGWorldCreationInterface interface

@@ -30,6 +30,10 @@ public:
 	/** Gets the default object of the message class */
 	UFUNCTION( BlueprintPure, Category = "Message|Utilities", meta = ( DeterminesOutputType = "inClass" ) )
 	static UObject* GetMessageDefaultObject( TSubclassOf< UFGMessageBase > inClass );
+
+	/** Gets if this message should trigger a call */
+    static bool GetShouldTriggerCall( TSubclassOf< UFGMessageBase > inClass );
+
 public:
 	/** I think this may be the title */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
@@ -42,6 +46,10 @@ public:
 	/** Should the message be displayed in a popup? */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	bool mIsPopup;
+
+	/** Should this message trigger a call? */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
+	bool mShouldTriggerCall;
 
 	/** Who sent the message */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )

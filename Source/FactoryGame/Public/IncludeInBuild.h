@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 static const FName INCLUDE_IN_BUILD_ASSET_TAG( TEXT( "mIncludeInBuilds" ) );

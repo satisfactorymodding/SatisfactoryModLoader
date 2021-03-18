@@ -25,7 +25,6 @@ void UFGGameInstance::QueryNATType(){ }
 bool UFGGameInstance::GetLatestNetworkError(FFGGameNetworkErrorMsg& msg){ return bool(); }
 bool UFGGameInstance::PopLatestNetworkError(){ return bool(); }
 EJoinSessionState UFGGameInstance::GetCurrentJoinSessionState() const{ return EJoinSessionState(); }
-void UFGGameInstance::EnableTabAndNavKeys(bool enable){ }
 UFGDebugOverlayWidget* UFGGameInstance::GetDebugOverlayWidget(){ return nullptr; }
 void UFGGameInstance::LoadComplete(const float loadTime, const FString& mapName){ }
 void UFGGameInstance::OnDestroyOldSessionComplete_JoinSession(FName gameSessionName, bool wasSuccessful){ }
@@ -40,3 +39,4 @@ void UFGGameInstance::OnPostLoadMap(UWorld* loadedWorld){ }
 void UFGGameInstance::OnWorldDestroy(UWorld* world){ }
 void UFGGameInstance::InitGameAnalytics(){ }
 void UFGGameInstance::JoinSession_Internal(){ }
+void UFGGameInstance::OnSendGameplayDataUpdated(FString cvar){ }

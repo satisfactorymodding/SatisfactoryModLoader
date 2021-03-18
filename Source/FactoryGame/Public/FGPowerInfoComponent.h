@@ -7,6 +7,29 @@
 #include "FGSaveInterface.h"
 #include "FGPowerInfoComponent.generated.h"
 
+UCLASS()
+class FACTORYGAME_API UFGBatteryInfo : public UObject
+{
+	GENERATED_BODY()
+public:
+	void SetActive( bool isActive ) { mIsActive = isActive; }
+	bool IsActive() const { return mIsActive; }
+	float GetPowerStore() const { return mPowerStore; }
+	void SetPowerStore( float powerStore ) { mPowerStore = powerStore; }
+	float GetPowerInput() const { return mPowerInput; }
+
+private:
+	friend class UFGPowerInfoComponent;
+	friend class UFGPowerCircuitGroup;
+
+	bool mIsActive;
+
+	float mPowerStoreCapacity;
+	float mPowerInputCapacity;
+
+	float mPowerStore;
+	float mPowerInput;
+};
 
 /**
  * A power info is a component on buildings that lets them interact with the power circuit.
@@ -129,20 +152,46 @@ public:
 	float GetRegulatedDynamicProduction() const;
 
 	/**
+	 * @param isFullBlast set to true if the generator should always produce at full capacity; to false if it should only produce on-demand
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|PowerInfo" )
+	void SetFullBlast( bool isFullBlast );
+	/**
+	 * @return true if the generator always produces at full capacity; false if it only produces on-demand
+	 */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
+	bool IsFullBlast() const;
+
+	/**
 	 * @note Do not call this unless you know what you're doing.
 	 * @param circuitID The new circuit id, INDEX_NONE if disconnected.
 	 */
 	void SetCircuitID( int32 circuitID );
 
+	/**
+	 * Create and attach a battery to this power-circuit node
+	 */
+	void InitializeBatteryInfo( float powerStoreCapacity, float powerInputCapacity );
+
+	UFGBatteryInfo* GetBatteryInfo() { return mBatteryInfo; }
+
 	/** Debug */
 	void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
 
 private:
+	void SetHasPower( bool hasPower );
+	
 	/** If we should replicate detailed information. */
 	bool IsReplicatingDetails() const { return mReplicateDetails; }
 
+public:
+	/** Delegate that will fire whenever mHasPower has changed */
+	DECLARE_DELEGATE_OneParam( FOnHasPowerChanged, UFGPowerInfoComponent* )
+    FOnHasPowerChanged OnHasPowerChanged;
+
 private:
 	friend class UFGPowerCircuit;
+	friend class UFGPowerCircuitGroup;
 
 	/** If we should replicate detailed information, use this to optimize replication of power info not actively used by client. */
 	bool mReplicateDetails;
@@ -177,10 +226,16 @@ private:
 	UPROPERTY( Replicated )
 	float mDynamicProductionDemandFactor;
 
-	/** Do we have enough of the requested power. */
+	UPROPERTY()
+	UFGBatteryInfo* mBatteryInfo;
+
+	/** Do we have enough of the requested power. Do not set this directly, use SetHasPower. */
 	uint8 mHasPower:1;
 
 	/** true if the circuit is overloaded and the fuse has been triggered. */
 	UPROPERTY( Replicated )
 	uint8 mIsFuseTriggered:1;
+
+	UPROPERTY( SaveGame, Replicated )
+	uint8 mIsFullBlast : 1;
 };

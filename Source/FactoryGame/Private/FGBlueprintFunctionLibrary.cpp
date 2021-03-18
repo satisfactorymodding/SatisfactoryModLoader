@@ -65,5 +65,9 @@ AFGPlayerController* UFGBlueprintFunctionLibrary::GetLocalPlayerController(const
 bool UFGBlueprintFunctionLibrary::EvaluateMathExpression(const FString& expression,  FText& out_Result){ return bool(); }
 FString UFGBlueprintFunctionLibrary::SecondsToTimeString(float inSeconds){ return FString(); }
 FString UFGBlueprintFunctionLibrary::Conv_IntToString(int64 InInt){ return FString(); }
+bool UFGBlueprintFunctionLibrary::GetGIsEditor(){ return bool(); }
+void UFGBlueprintFunctionLibrary::ScrollToEndAfterTwoTicks(UScrollBox* scrollBox){ }
 void UFGBlueprintFunctionLibrary::SetMetadataTag(UObject* object, FName tag, const FString& value){ }
 FString UFGBlueprintFunctionLibrary::GetMetadataTag(UObject* object, FName tag){ return FString(); }
+bool UFGBlueprintFunctionLibrary::FileLoadString(FString AbsoluteFilePath, FString& String){ return bool(); }
+FText UFGBlueprintFunctionLibrary::CutTextByPixelOffset(const FText& text, const FSlateFontInfo& inFontInfo, const int32 horizontalOffset, const FString& suffix){ return FText(); }

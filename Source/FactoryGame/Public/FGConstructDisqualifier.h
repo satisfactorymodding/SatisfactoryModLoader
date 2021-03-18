@@ -1,4 +1,4 @@
-// Copyright 2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -133,6 +133,17 @@ class FACTORYGAME_API UFGCDMustSnap : public UFGConstructDisqualifier
 };
 
 UCLASS()
+class FACTORYGAME_API UFGCDMustSnapToCeiling : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMustSnapToCeiling()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapToCeiling", "This must be built in the ceiling!" );
+	}
+};
+
+UCLASS()
 class FACTORYGAME_API UFGCDShouldntSnap : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
@@ -155,7 +166,62 @@ class FACTORYGAME_API UFGCDNeedsResourceNode : public UFGConstructDisqualifier
 };
 
 UCLASS()
-class FACTORYGAME_API UFGCDResourceNodeIsOccuped : public UFGConstructDisqualifier
+class FACTORYGAME_API UFGCDMustSnapStation : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMustSnapStation()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapStation", "Must snap to a station!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDOccupiedStation : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDOccupiedStation()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDOccupiedStation", "Station is currently occupied!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDDroneStationHasDrone : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDDroneStationHasDrone()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDDroneStationHasDrone", "Station already has a drone assigned to it!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDNeedsFrackingCoreNode : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDNeedsFrackingCoreNode()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsFrackingCoreNode", "You need to place this on a Fracking Core Node!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDNeedsFrackingSatelliteNode : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDNeedsFrackingSatelliteNode()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsFrackingSatelliteNode", "You need to place this on an activated Fracking Satellite Node!" );
+	}
+};
+
+UCLASS()
+class UFGCDResourceNodeIsOccuped : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
 

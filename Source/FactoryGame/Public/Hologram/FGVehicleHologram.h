@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -6,18 +6,15 @@
 #include "FGVehicleHologram.generated.h"
 
 /**
-* The base class for vehicle holograms such as trucks, trains etc.
-*/
+ * The base class for vehicle holograms such as trucks, trains etc.
+ */
 UCLASS()
 class FACTORYGAME_API AFGVehicleHologram : public AFGHologram
 {
 	GENERATED_BODY()
-
 public:
-	/** Replication */
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-
 	// Begin AActor interface
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	// End AActor interface
 

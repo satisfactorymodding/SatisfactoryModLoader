@@ -15,6 +15,7 @@ bool AFGEquipment::NeedTransform_Implementation(){ return bool(); }
 bool AFGEquipment::ShouldSave_Implementation() const{ return bool(); }
 void AFGEquipment::Equip( AFGCharacterPlayer* character){ }
 void AFGEquipment::UnEquip(){ }
+void AFGEquipment::OnCharacterMovementModeChanged(EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode){ }
 void AFGEquipment::OnDefaultPrimaryFirePressed(){ }
 void AFGEquipment::Server_DefaultPrimaryFire_Implementation(){ }
 bool AFGEquipment::Server_DefaultPrimaryFire_Validate(){ return bool(); }

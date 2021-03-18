@@ -1,4 +1,4 @@
-// Copyright 2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -129,9 +129,6 @@ protected:
 	/** Callback to when a building registers (or unregisters) a player. Handles dormancy state changes for buildables in these cases. */
 	void OnBuildableRegistedPlayerChanged( class AFGBuildable* buildable, class AFGCharacterPlayer* player, bool isInUse );
 
-	/** Callback on when buildables production status changes. Handles any replication needed behavior for buildables when this happens. */
-	void OnFactoryProductionStatusChanged( class AFGBuildable* buildable, EProductionStatus oldStatus, EProductionStatus newStatus );
-
 	/** Whether the given mapping is spatialized in any way */
 	FORCEINLINE bool IsSpatialized( EClassRepPolicy mapping ) { return mapping >= EClassRepPolicy::CRP_Spatialize_Static; }
 
@@ -141,13 +138,13 @@ protected:
 	TClassMap<EClassRepPolicy> mClassRepPolicies;
 
 	// The size in uunits of each grid cell
-	float mGridCellSize = 100000.f; // [Dylan] Was 100000.f
+	float mGridCellSize = 50000.f; // [Dylan] Was 100000.f
 	
 	// Essentially "Min X" for replication. This is just an initial value. The system will reset itself if actors appears outside of this.
-	float mSpatialBiasX = -15000.f;
+	float mSpatialBiasX = -400000.f;
 	
 	// Essentially "Min Y" for replication. This is just an initial value. The system will reset itself if actors appears outside of this.
-	float mSpatialBiasY = -15000.f;
+	float mSpatialBiasY = -400000.f;
 
 	// How many buckets to spread dynamic, spatialized actors across. High number = more buckets = smaller effective replication frequency. This happens before individual actors do their own NetUpdateFrequency check.
 	float mDynamicActorFrequencyBuckets = 4;
@@ -390,7 +387,6 @@ protected:
 		int32 BucketReplicationPeriod = 0;
 		int32 FramesTillReplicate = 0;
 		int32 LastReplicationFrame = 0;
-		int32 BucketDelayExponent = 0;
 
 		// ZBucket globals
 		inline static int32 NumActorsToSubdivide = 20; // A single bucket with more actors than this should attempt to split and redistribute to the new buckets
@@ -493,8 +489,8 @@ protected:
 					return i;
 				}
 			}
-
-			UE_LOG( LogConveyorFrequencyNodes, Warning, TEXT("Failed to find appropriate ZBucket for world location: %f"), zLoc);
+			
+			UE_LOG( LogConveyorFrequencyNodes, Verbose, TEXT("Failed to find appropriate ZBucket for world location: %f"), zLoc);
 			return 0;
 		}
 

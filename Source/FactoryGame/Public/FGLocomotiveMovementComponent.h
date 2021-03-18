@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -154,6 +154,13 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
 	FORCEINLINE float GetDynamicBrake() const { return mDynamicBrakeInput; }
 
+	/** Get the power factor this locomotive needs to run. */
+	float GetTractiveEffortPct() const { return FMath::Abs( mTargetTractiveEffort ) / mMaxTractiveEffort; }
+	/** Get the power factor this locomotive can return to the grid. */
+	float GetDynamicBrakingEffortPct() const { return FMath::Abs( mDynamicBrakingForce ) / mMaxDynamicBrakingEffort; }
+	/** Set the actual power factor that we got. */
+	void SetTractivePowerFactor( float factor ) { mPowerFactor = factor; }
+	
 protected:
 	/** Get dynamic braking force at the given speed. [N] [kg cm/s^2] */
 	FORCEINLINE float CalcDynamicBrakingEffort( float atSpeed ) const

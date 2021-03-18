@@ -9,4 +9,6 @@ AFGGameState* UFGRemoteCallObject::GetGameState(){ return nullptr; }
 void UFGRemoteCallObject::SendHologramConstructMessage( AFGBuildGun* buildGun,  AFGHologram* hologram, AActor* upgradedActor){ }
 void UFGRemoteCallObject::Server_ConstructHologram_Implementation(FNetConstructionID netConstructionID, FConstructHologramMessage message){ }
 bool UFGRemoteCallObject::Server_ConstructHologram_Validate(FNetConstructionID netConstructionID, FConstructHologramMessage message){ return bool(); }
+void UFGRemoteCallObject::Server_AnswerCall_Implementation(TSubclassOf<  UFGAudioMessage > messageClass){ }
+bool UFGRemoteCallObject::Server_AnswerCall_Validate(TSubclassOf<  UFGAudioMessage > messageClass){ return bool(); }
 AFGPlayerController* UFGRemoteCallObject::GetOuterFGPlayerController(){ return nullptr; }

@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -33,4 +33,6 @@ public:
 
 	UFUNCTION()
 	virtual void OnTargetPerceptionUpdated(  AActor* inActor,  struct FAIStimulus Stimulus );
+
+	virtual void CreatureDied();
 };

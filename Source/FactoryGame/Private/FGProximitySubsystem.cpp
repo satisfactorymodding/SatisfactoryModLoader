@@ -3,7 +3,7 @@
 #include "FGProximitySubsystem.h"
 
 AFGProximitySubsystem::AFGProximitySubsystem(){ }
-void AFGProximitySubsystem::OnEnteredMapArea_Implementation(TSubclassOf<  UFGMapArea > newArea){ }
+void AFGProximitySubsystem::OnEnteredMapArea_Implementation( AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > newArea){ }
 void AFGProximitySubsystem::OnPawnChanged_Implementation( APawn* newPawn){ }
 UParticleSystem* AFGProximitySubsystem::GetParticleSystemFromMapArea(TSubclassOf<  UFGMapArea > inArea){ return nullptr; }
 void AFGProximitySubsystem::SpawnPooledDecal(const UObject* WorldContextObject,  UMaterialInterface* DecalMaterial, FVector DecalSize, FVector Location, FRotator Rotation , float LifeSpan){ }

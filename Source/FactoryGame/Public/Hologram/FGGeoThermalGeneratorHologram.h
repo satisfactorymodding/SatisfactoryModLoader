@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -20,4 +20,8 @@ protected:
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
+
+	// Begin AFGResourceExtractorHologram Interface
+	virtual bool CanOccupyResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const override;
+	// End AFGResourceExtractorHologram Interface
 };

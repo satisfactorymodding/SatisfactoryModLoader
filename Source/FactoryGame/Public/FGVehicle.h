@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -141,7 +141,6 @@ public:
 	//Begin IFGSignificanceInterface
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
-	virtual	float GetSignificanceBias() override;
 	virtual float GetSignificanceRange() override;
 	//End IFGSignificanceInterface
 
@@ -333,6 +332,10 @@ protected:
 	void ShowOutline( EOutlineColor color ) const;
 	/** Hide the outline for the vehicle. */
 	void HideOutline();
+
+	/** Called to update the camera when this vehicle is possessed by a player. */
+	UFUNCTION( BlueprintImplementableEvent )
+	void UpdateCamera( float DeltaTime );
 private:
 	/** Helpers */
 	void SetSelfDriving( bool newSelfDriving );
@@ -447,10 +450,6 @@ private:
 
 	/** Indicates if the vehicle is within significance distance */
 	uint8 mIsSignificant : 1;
-
-	/** A bias to the significance value */
-	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
-	float mSignificanceBias;
 
 	/* Forces vehicle to be in simulation mode */
 	bool mForceSimulationMode;

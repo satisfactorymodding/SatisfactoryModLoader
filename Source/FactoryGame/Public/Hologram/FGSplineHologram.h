@@ -38,9 +38,6 @@ public:
 	// Handles the pending hologram state copy
 	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 
-	/** Set point index directly */
-	//void SetActivePointIndex( int32 newIndex ){ mActivePointIdx = newIndex; }
-
 	/** Checks if we have snapped to any connection */
 	virtual bool IsConnectionSnapped( bool lastConnection );
 

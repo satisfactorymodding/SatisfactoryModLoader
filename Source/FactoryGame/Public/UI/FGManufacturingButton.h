@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -26,8 +26,8 @@ public:
 	/** Are we holding the button */
 	FORCEINLINE bool IsButtonHeld(){ return mIsHolding; }
 protected: 
-	/** Internal button was pressed */
-	UFUNCTION()
+	/** Internal button was pressed, added BlueprintCallable to be able to simulate button release */
+	UFUNCTION( BlueprintCallable, Category = "Manufacturing Button" )
 	void OnPressedButton();
 
 	/** Internal button was released, added BlueprintCallable to be able to simulate button release */

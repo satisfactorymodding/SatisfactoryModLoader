@@ -17,3 +17,4 @@ void UFGConsoleCommandManager::FixupBuiltByRecipeInOldSave(bool reapplyRecipeIfB
 void UFGConsoleCommandManager::DumpFactoryStatsToLog(){ }
 void UFGConsoleCommandManager::CopyPlayerCoordinates(){ }
 void UFGConsoleCommandManager::DumpPlayerCoordinates(const FString& label , bool copyToClipboard){ }
+void UFGConsoleCommandManager::DumpDynamicOptionsSettings(){ }

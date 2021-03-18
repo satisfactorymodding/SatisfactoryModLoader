@@ -1,9 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "FGSettings.h"
 #include "Resources/FGItemDescriptor.h"
+#include "Resources/FGResourceNode.h"
 #include "FGResourceSettings.generated.h"
 
 USTRUCT()
@@ -123,6 +124,9 @@ public:
 	/** The class of item we want to drop when we drop something */
 	UPROPERTY( EditDefaultsOnly, Category = "Drops" )
 	TSubclassOf< class AFGItemPickup_Spawnable > mItemDropClass;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Power" )
+	TMap< TEnumAsByte< EResourcePurity >, UCurveFloat* > mGeyserPowerOutputCurves;
 
 #if WITH_EDITORONLY_DATA
 	/** The stage that should be used to make icons */

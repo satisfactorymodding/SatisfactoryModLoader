@@ -5,3 +5,7 @@
 void UFGDebugOverlayWidget::AddToScreen(ULocalPlayer* LocalPlayer, int32 ZOrder){ }
 void UFGDebugOverlayWidget::RemoveFromParent(){ }
 void UFGDebugOverlayWidget::UpdateDebugOverlay(){ }
+void UFGDebugOverlayWidget::SetDebugOverlayType(EDebugOverlayType type){ }
+void UFGDebugOverlayWidget::GetDefaultOverlayData(TArray<FString>& out_debugOverlayData){ }
+void UFGDebugOverlayWidget::GetStoryOverlayData(TArray<FString>& out_debugOverlayData){ }
+void UFGDebugOverlayWidget::GetOptionsOverlayData(TArray<FString>& out_debugOverlayData){ }

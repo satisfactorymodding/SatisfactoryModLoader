@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -230,9 +230,6 @@ struct FACTORYGAME_API FTrainSimulationData
 {
 	GENERATED_BODY()
 public:
-	/** Is this train simulating physics and not just moving along the track. */
-	bool IsSimulatingPhysics = false;
-
 	/** Cached vehicles in the direction of travel. */
 	UPROPERTY()
 	TArray< class AFGRailroadVehicle* > SimulatedVehicles;
@@ -243,6 +240,10 @@ public:
 
 	/** If we're simulating the train front to back (1) or back to front (-1). */
 	float SimulationDirection = 0.f;
+
+	/** The approximated location and bounds for the vehicles combined. */
+	FVector TrainLocation = FVector::ZeroVector;
+	float TrainBound = 0.f;
 
 	/** Cached master locomotive. */
 	UPROPERTY()
@@ -299,7 +300,6 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 	
-	//@todotrains Put stat counters in these.
 	void TickAtc( float dt );
 	void TickSelfDriving( float dt );
 

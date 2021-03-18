@@ -229,7 +229,7 @@ public:
 	
 	/** Triggered when Maintain Y Axis FOV option have changed */
 	UFUNCTION()
-    void OnMaintainYAxisFOVUpdated();
+    void OnMaintainYAxisFOVUpdated( FString updatedCvar );
 
 	/** Get in what state our login is */
 	UFUNCTION(BlueprintPure,Category="Online")

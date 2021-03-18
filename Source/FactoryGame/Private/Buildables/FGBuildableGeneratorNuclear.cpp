@@ -15,3 +15,4 @@ bool AFGBuildableGeneratorNuclear::CanLoadFuel() const{ return bool(); }
 void AFGBuildableGeneratorNuclear::TryProduceWaste(){ }
 void AFGBuildableGeneratorNuclear::OnRep_ReplicationDetailActor(){ }
 AFGReplicationDetailActor_GeneratorNuclear* AFGBuildableGeneratorNuclear::GetCastRepDetailsActor() const{ return nullptr; }
+bool AFGBuildableGeneratorNuclear::CanFitWasteOfNextFuelClass() const{ return bool(); }

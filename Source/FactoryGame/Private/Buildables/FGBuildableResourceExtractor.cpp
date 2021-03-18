@@ -7,20 +7,18 @@ void AFGBuildableResourceExtractor::PreReplication(IRepChangedPropertyTracker& C
 AFGBuildableResourceExtractor::AFGBuildableResourceExtractor(){ }
 void AFGBuildableResourceExtractor::OnReplicationDetailActorRemoved(){ }
 void AFGBuildableResourceExtractor::BeginPlay(){ }
-void AFGBuildableResourceExtractor::Destroyed(){ }
-bool AFGBuildableResourceExtractor::DisconnectExtractableResource(){ return bool(); }
 bool AFGBuildableResourceExtractor::CanProduce_Implementation() const{ return bool(); }
 float AFGBuildableResourceExtractor::GetProductionCycleTime() const{ return float(); }
 float AFGBuildableResourceExtractor::GetProductionProgress() const{ return float(); }
 float AFGBuildableResourceExtractor::CalcProductionCycleTimeForPotential(float potential) const{ return float(); }
-void AFGBuildableResourceExtractor::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 float AFGBuildableResourceExtractor::GetNumExtractedItemsPerCycleConverted() const{ return float(); }
-void AFGBuildableResourceExtractor::SetExtractableResource(TScriptInterface< IFGExtractableResourceInterface > extractableInterface){ }
-void AFGBuildableResourceExtractor::SetResourceNode( AFGResourceNode* resourceNode){ }
-UParticleSystem* AFGBuildableResourceExtractor::GetMiningParticle(){ return nullptr; }
+float AFGBuildableResourceExtractor::GetExtractionPerMinute() const{ return float(); }
 bool AFGBuildableResourceExtractor::IsStartupComplete(){ return bool(); }
 float AFGBuildableResourceExtractor::GetMaxFlowRate() const{ return float(); }
 void AFGBuildableResourceExtractor::Factory_StartProducing(){ }
 void AFGBuildableResourceExtractor::Factory_TickProducing(float dt){ }
 void AFGBuildableResourceExtractor::Factory_PushPipeOutput_Implementation(float dt){ }
 void AFGBuildableResourceExtractor::OnRep_ReplicationDetailActor(){ }
+void AFGBuildableResourceExtractor::OnExtractableResourceSet(){ }
+void AFGBuildableResourceExtractor::OnRep_CurrentPotential(){ }
+void AFGBuildableResourceExtractor::CalculateProductionCycleTime(){ }

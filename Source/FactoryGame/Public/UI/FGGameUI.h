@@ -1,3 +1,5 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "FGSchematic.h"
@@ -58,6 +60,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI")
 	void PushWidget(UFGInteractWidget* Widget);
 
+	/* Pushes a notification widget */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI")
+	void PushNotificationWidget( class UFGPushNotificationWidget* Widget );
+
 	/* Removes widget */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable , Category = "UI")
 	bool PopWidget(UFGInteractWidget* WidgetToRemove );
@@ -73,6 +79,18 @@ public:
 	/** Handle message. Usually grabbed from the pending message list at appropriate time */
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	void ReceivedMessage( TSubclassOf< class UFGMessageBase > inMessage );
+
+	/** Handle call message. Usually grabbed from the pending message list at appropriate time */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    void ReceivedCall( TSubclassOf< class UFGAudioMessage > inMessage );
+
+	/** Handle audio message. Usually grabbed from the pending message list at appropriate time */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    void ReceivedAudioMessage( TSubclassOf< class UFGAudioMessage > inMessage );
+
+	/** Answer a call that is shown on the screen */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    void AnswerCall( TSubclassOf< class UFGAudioMessage > inMessage );
 
 	/** Handle pending messages and push them at appropriate time */
 	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
@@ -153,6 +171,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Radiation" )
 	void OnRadiationIntensityUpdated( float radiationIntensity, float radiationImmunity );
 
+	/** Called when we go from connected to disconnected or vice versa with a hoverpack. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|HUD|HoverPack" )
+    void OnHoverPackConnectionStatusUpdated( const bool HasConnection );
+
 	/** Play a audio message in the UI */
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category ="FactoryGame|Message")
 	void PlayAudioMessage( TSubclassOf<UFGAudioMessage> messageClass );
@@ -172,6 +194,10 @@ public:
 	/** Called when we want to show the quick search */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Quick Search" )
 	void ShowQuickSearch();
+
+	/** Show attention ping in the HUD */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|HUD" )
+	void ShowAttentionPing( AFGPlayerState* playerState, FVector worldLocation );
 
 protected:
 	// Begin UUserWidget interface

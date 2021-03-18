@@ -1,4 +1,4 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -22,4 +22,8 @@ public:
 	virtual void LostFocus( FViewport* Viewport ) override;
 	virtual void ReceivedFocus( FViewport* Viewport ) override;
 	//~ End FViewportClient Interface.
+
+	/** When full screen command is triggered we handle it hear */
+	bool HandleToggleFullscreenCommand() override;
+
 };

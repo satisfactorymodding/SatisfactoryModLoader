@@ -1,7 +1,10 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "FGWorldCreationInterface.h"
 #include "FGEngineCommon.generated.h"
+
 
 /**
  * Filtered and gathered stats we get during each frame

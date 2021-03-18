@@ -14,4 +14,5 @@ void AFGTrainPlatformHologram::ConfigureComponents( AFGBuildable* inBuildable) c
 void AFGTrainPlatformHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
 int32 AFGTrainPlatformHologram::GetRotationStep() const{ return int32(); }
 void AFGTrainPlatformHologram::CheckClearance(){ }
+void AFGTrainPlatformHologram::OnHologramTransformUpdated(){ }
 UFGTrainPlatformConnection* AFGTrainPlatformHologram::FindOverlappingConnectionComponent(const FVector& location, float actorOverlapRadius, float toleranceRadius, bool ignoreSelf, bool ignoreIsConnected) const{ return nullptr; }

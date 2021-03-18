@@ -9,7 +9,7 @@ float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalO
 void FSplineUtils::FSplineSegmentPointData::InitializePoints(FVector startPos, FVector startForward, FVector startRight, FVector endPos, FVector endForward, FVector endRight, float startRadius, float endRadius){ }
 void FSplineUtils::FSplineSegmentPointData::AssignDebugObject( AActor* debugActor){ }
 void FSplineUtils::FSplineSegmentPointData::CalculateValues(float forceVerticalExceeding){ }
-void FSplineUtils::FSplineSegmentPointData::AddSegementsToBuilder( FSplineBuilder& builder){ }
+void FSplineUtils::FSplineSegmentPointData::AddSegmentsToBuilder( FSplineBuilder& builder){ }
 void FSplineUtils::CalcAutoCurveSpline( FSplinePointData& startPoint,  FSplinePointData& endPoint){ }
 float FSplineUtils::CalcTangentRatioAtSplit(const  USplineComponent* component, float split){ return float(); }
 bool FSplineUtils::BuildStraightSpline2D( FSplineBuilder& builder,

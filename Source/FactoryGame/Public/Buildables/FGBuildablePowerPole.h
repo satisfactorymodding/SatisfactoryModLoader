@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -53,6 +53,21 @@ public:
 
 	/** Updates the cached number of connections this power pole currently have. */
 	void MarkConnectionsDirty();
+	
+	/** @returns true if the power production in the circuit connected to this pole is above zero, false otherwise. */
+	UFUNCTION( BlueprintPure, Category = "PowerPole" )
+	bool HasPower() const { return mHasPower; }
+
+	/** Event that will be fired whenever mHasPower has changed */
+	UFUNCTION( BlueprintImplementableEvent, Category = "PowerPole" )
+	void OnHasPowerChanged( bool hasPower ) const;
+
+private:
+	void SetHasPower( bool hasPower );
+	void OnConnectionHasPowerChanged( bool hasPower );
+
+	UFUNCTION()
+	void OnRep_HasPower() const;
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PowerPole")
@@ -77,4 +92,7 @@ private:
 	bool mIsDismantled;
 	bool mIsShowingDismantleOutline;
 	bool mIsShowingConnectionOutline;
+
+	UPROPERTY( ReplicatedUsing = OnRep_HasPower )
+	bool mHasPower;
 };

@@ -24,5 +24,9 @@ void UFGPowerInfoComponent::SetDynamicProductionCapacity(float newProduction){ }
 float UFGPowerInfoComponent::GetDynamicProductionCapacity() const{ return float(); }
 float UFGPowerInfoComponent::GetDynamicProductionDemandFactor() const{ return float(); }
 float UFGPowerInfoComponent::GetRegulatedDynamicProduction() const{ return float(); }
+void UFGPowerInfoComponent::SetFullBlast(bool isFullBlast){ }
+bool UFGPowerInfoComponent::IsFullBlast() const{ return bool(); }
 void UFGPowerInfoComponent::SetCircuitID(int32 circuitID){ }
+void UFGPowerInfoComponent::InitializeBatteryInfo(float powerStoreCapacity, float powerInputCapacity){ }
 void UFGPowerInfoComponent::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
+void UFGPowerInfoComponent::SetHasPower(bool hasPower){ }

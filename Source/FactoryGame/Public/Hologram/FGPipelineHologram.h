@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -26,21 +26,20 @@ public:
 	// Begin AFGHologram Interface
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-
-	void RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal );
-
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease )  override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void GetSupportedScrollModes( TArray< EHologramScrollMode >* out_modes ) const override;
 	virtual void GetSupportedSplineModes_Implementation( TArray< EHologramSplinePathMode >& out_splineModes ) const override;
-	bool IsValidHitResult( const FHitResult& hitResult ) const override;
-	void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
-	bool TrySnapToActor( const FHitResult& hitResult ) override;
-	void OnInvalidHitResult() override;
-	void Scroll( int32 delta ) override;
+	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
+	virtual void OnInvalidHitResult() override;
+	virtual void Scroll( int32 delta ) override;
 	virtual bool CanTakeNextBuildStep() const override;
+	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
+	virtual void SetSnapToGuideLines( bool isEnabled ) override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface
@@ -49,21 +48,13 @@ public:
 	virtual void ServerPostConstructMessageDeserialization() override;
 	// End FGConstructionMessageInterface
 
-	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
-
-	//[DavalliusA:Fri/13-12-2019]  Not here anymore. Set the build step instead with the EPipeHologramBuildStep
-	/** Set point index directly */
-	//void SetActivePointIndex( int32 newIndex ){ mActivePointIdx = newIndex; }
-
+	// Begin FGSplineHologram Interface
 	virtual void ResetBuildSteps() override;
+	virtual bool IsConnectionSnapped( bool lastConnection ) override;
+	// End FGSplineHologram Interface
 
 	/** Returns reference to spline point data */
 	void GetLastSplineData( FSplinePointData &data );
-
-	/** Checks if we have snapped to any connection */
-	virtual bool IsConnectionSnapped( bool lastConnection ) override;
-
-	void SetSnapToGuideLines( bool isEnabled ) override;
 
 protected:
 	// Begin AFGBuildableHologram Interface
@@ -80,8 +71,7 @@ protected:
 	FORCEINLINE class AFGPipelineSupportHologram* GetChildPoleHologram() const { return mChildPoleHologram; }
 
 private:
-	/** Get the number of sections this conveyor has. Used for cost, max length etc. */
-	int32 GetNumSections() const;
+	void RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal );
 
 	/** Update the spline on the client. */
 	UFUNCTION()
@@ -198,10 +188,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	float mMinBendRadius = 75;
 
-	/** Maximum number of meshes per pipe */
-	UPROPERTY(EditDefaultsOnly, Category = "Pipeline")
+	/** Maximum length that can be built. [cm] */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	float mMaxSplineLength = 5600.1f;
-
 
 	/** Arrow to indicate the direction of the conveyor while placing it. */
 	UPROPERTY()

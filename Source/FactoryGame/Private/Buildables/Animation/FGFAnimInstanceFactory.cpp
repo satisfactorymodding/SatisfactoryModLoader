@@ -8,4 +8,4 @@ void FAnimInstanceProxyFactory::Initialize(UAnimInstance* InAnimInstance){ }
 UFGFAnimInstanceFactory::UFGFAnimInstanceFactory(){ }
 void UFGFAnimInstanceFactory::NativeUpdateAnimation(float DeltaSeconds){ }
 void UFGFAnimInstanceFactory::NativeInitializeAnimation(){ }
-void UFGFAnimInstanceFactory::UpdateSoundRTPC(float DeltaSeconds){ }
+void UFGFAnimInstanceFactory::UpdateSoundRTPC(float DeltaSeconds, bool forceUpdate){ }

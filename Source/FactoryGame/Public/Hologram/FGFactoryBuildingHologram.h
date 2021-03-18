@@ -1,9 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "Hologram/FGBuildableHologram.h"
 #include "Buildables/FGBuildableFactoryBuilding.h"
+#include "Buildables/FGBuildableFoundation.h"
 #include "FGFactoryBuildingHologram.generated.h"
 
 

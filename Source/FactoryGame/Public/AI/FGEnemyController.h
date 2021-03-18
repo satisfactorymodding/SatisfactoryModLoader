@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -80,8 +80,9 @@ public:
 	//~ Begin AController Interface
 	virtual void OnPossess( APawn* InPawn ) override;
 	virtual void OnUnPossess() override;
+	virtual void Destroyed() override;
 	//~ End AController Interface
-
+	
 	// Begin AFGCreatureController interface
 	virtual void StartPanic_Implementation() override;
 	// End AFGCreatureController interface
@@ -337,6 +338,11 @@ public:
 	/** Resets the variable mLastValidLocation to an invalid location */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|AI" ) 
 	void ResetLastValidTargetLocation() { mLastValidLocation = FAISystem::InvalidLocation; } 
+
+	virtual void CreatureDied();
+
+	/** Clears aggro target if any and stop updating for new targets */
+	void CancelAggroTasks();
 public:
 	/** Handle that cares about how often we update the aggro for our AI */
 	FTimerHandle mUpdateAggroHandle;
@@ -442,4 +448,8 @@ private:
 	/** Time we should ignore targets when panicking */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	float mPanicIgnoreTime;
+
+	/** Indicates if we already have cancels aggro tasks */
+	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	bool mDidCancelAggroTasks;
 };

@@ -68,7 +68,6 @@ void AFGHologram::OnRep_PlacementMaterial(){ }
 void AFGHologram::SetMaterial( UMaterialInterface* material){ }
 TSubclassOf< AActor > AFGHologram::GetActorClass() const{ return TSubclassOf<AActor>(); }
 USceneComponent* AFGHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
-void AFGHologram::SetupDepthMeshComponent(USceneComponent* attachParent, UMeshComponent* componentTemplate){ }
 void AFGHologram::SetIsChanged(){ }
 bool AFGHologram::IsLocalHologram() const{ return bool(); }
 bool AFGHologram::IsValidHitActor(AActor* hitActor) const{ return bool(); }

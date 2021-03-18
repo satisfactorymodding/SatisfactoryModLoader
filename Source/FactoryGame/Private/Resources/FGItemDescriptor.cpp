@@ -127,6 +127,8 @@ FLinearColor UFGItemDescriptor::GetFluidColorLinear(TSubclassOf< UFGItemDescript
 	else
 		return FLinearColor();
 }
+FColor UFGItemDescriptor::GetGasColor(TSubclassOf< UFGItemDescriptor > inClass){ return FColor(); }
+FLinearColor UFGItemDescriptor::GetGasColorLinear(TSubclassOf< UFGItemDescriptor > inClass){ return FLinearColor(); }
 FTransform UFGItemDescriptor::GetIconCameraTransform(TSubclassOf< UFGItemDescriptor > inClass) {
 	if (inClass)
 #if WITH_EDITOR

@@ -1,4 +1,4 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -45,6 +45,10 @@ protected:
 	/** Material to use on the clearance component */
 	UPROPERTY()
 	class UMaterialInterface* mClearanceMaterial;
+
+	/** Should this building also use the TC_BuildGuide when sweeping for aligned buildings? */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Hologram" )
+	bool mIncludeBuildGuideTraceChannel;
 
 	TMap<class UObject*, class AFGBuildGuide*> mGuideLineBuildings;
 };

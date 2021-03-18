@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -31,14 +31,13 @@ public:
 	UFUNCTION()
 	virtual void SetupForSignificance();
 
-	/** Defaults to 0.0f */
-	UFUNCTION()
-	virtual float GetSignificanceBias();
-
 	/** Defaults to 10000.0ff */
 	UFUNCTION()
 	virtual float GetSignificanceRange();
 
+	UFUNCTION()
+	virtual void UpdateMeshLodLevels(int32 newLodLevel);
+	
 	UFUNCTION()
 	virtual void GainedSignificance_Native();
 

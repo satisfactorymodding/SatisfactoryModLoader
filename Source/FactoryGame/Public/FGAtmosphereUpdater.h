@@ -1,8 +1,11 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
 #include "UObject/Object.h"
 #include "FGAtmosphereVolume.h"
 #include "FGAtmosphereUpdater.generated.h"
+
 
 /**
  * Exists both in EditorEngine and GameEngine, encapsulates the interpolation ExponentialHeightFog
@@ -29,6 +32,7 @@ protected:
 
 	/** returns true if we should update the given world */
 	bool ShouldUpdateWorld( UWorld* world ) const;
+
 protected:
 	/** The worlds we want to affect */
 	UPROPERTY()

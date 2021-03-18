@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -37,6 +37,7 @@ protected:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual int32 GetRotationStep() const override;
 	virtual void CheckClearance() override;
+	virtual void OnHologramTransformUpdated() override;
 	// End AFGHologram interface
 
 	/** Check for platform connections to snap to */
