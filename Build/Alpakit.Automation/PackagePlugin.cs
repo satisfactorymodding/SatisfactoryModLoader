@@ -87,7 +87,7 @@ namespace Alpakit.Automation
 		}
 
 	    private static string RetrieveBuildIdFromGame(string gameDir) {
-		    var versionFilePath = Path.Combine(gameDir, "Engine", "Binaries", "UE4-Win64-Shipping.version");
+		    var versionFilePath = Path.Combine(gameDir, "Engine", "Binaries", "Win64", "UE4-Win64-Shipping.version");
 		    if (!FileExists(versionFilePath)) {
 			    throw new AutomationException("Cannot find game version file at '{0}'", versionFilePath);
 		    }
@@ -146,7 +146,7 @@ namespace Alpakit.Automation
 			const string releaseName = "FactoryGame_Release";
 			var gameBuildVersion = RetrieveBuildIdFromGame(gameDir);
 			LogInformation("Game Build Id: {0}", gameBuildVersion);
-			LogInformation("Target Release: {1}", releaseName);
+			LogInformation("Target Release: {0}", releaseName);
 			
 			ProjectParams projectParams = GetParams(this, projectFileName, releaseName, out var pluginFile);
 			FileReference projectFile = new FileReference(projectFileName);
