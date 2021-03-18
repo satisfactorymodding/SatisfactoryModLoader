@@ -14,7 +14,8 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 		+SHorizontalBox::Slot().FillWidth(1)[
 			SNew(STextBlock)
 			.Text_Lambda([InMod]() {
-				return FText::FromString(InMod->GetName());
+				const FString DisplayText = FString::Printf(TEXT("%s (%s)"), *InMod->GetDescriptor().FriendlyName, *InMod->GetName());
+				return FText::FromString(DisplayText);
 			})
 			.HighlightText_Lambda([InOwner]() {
 				return FText::FromString(InOwner->GetLastFilter());
@@ -61,8 +62,7 @@ FText GetCurrentPlatformName() {
 
 void SAlpakitModEntry::PackageMod() const {
 	UAlpakitSettings* Settings = UAlpakitSettings::Get();
-	const FString ModFileName = Mod->GetDescriptorFileName();
-	const FString ModFilePath = FPaths::ConvertRelativePathToFull(ModFileName);
+	const FString PluginName = Mod->GetName();
 	const FString GamePath = Settings->SatisfactoryGamePath.Path;
 
 	const FString ProjectPath = FPaths::IsProjectFilePathSet() ?
@@ -74,13 +74,14 @@ void SAlpakitModEntry::PackageMod() const {
 		AdditionalUATArguments.Append(TEXT("-CopyToGameDir "));
 	}
 	if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE) {
+		AdditionalUATArguments.Append(TEXT("-LaunchGame "));
 		AdditionalUATArguments.Append(GetArgumentForLaunchType(Settings->LaunchGameAfterPacking)).Append(TEXT(" "));
 	}
 	
 	const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);
 
-	const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -project=\"%s\" -pluginpath=\"%s\" -GameDir=\"%s\" %s"),
-	                                            *ProjectPath, *ProjectPath, *ModFilePath, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
+	const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
+	                                            *ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
 
 	const FText PlatformName = GetCurrentPlatformName();
 	IUATHelperModule::Get().CreateUatTask(CommandLine, PlatformName,

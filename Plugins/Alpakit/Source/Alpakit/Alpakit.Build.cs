@@ -6,13 +6,11 @@ public class Alpakit : ModuleRules
 {
 	public Alpakit(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 		bLegacyPublicIncludePaths = false;
 
 		PublicDependencyModuleNames.AddRange(new[] {
 			"Core",
-			"SML",
-			"Json"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new[] {

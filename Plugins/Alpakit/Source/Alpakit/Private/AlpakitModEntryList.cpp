@@ -62,31 +62,38 @@ void SAlpakitModEntryList::LoadMods() {
 	Filter(LastFilter);
 }
 
+bool PluginMatchesSearchTokens(const IPlugin& Plugin, const TArray<FString>& Tokens) {
+	const FString PluginName = Plugin.GetName();
+	const FString FriendlyName = Plugin.GetDescriptor().FriendlyName;
+	const FString Description = Plugin.GetDescriptor().Description;
+	
+	for (const FString& Token : Tokens) {
+		if (PluginName.Contains(Token) ||
+			FriendlyName.Contains(Token) ||
+			Description.Contains(Token)) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void SAlpakitModEntryList::Filter(const FString& InFilter) {
-	LastFilter= InFilter;
+	LastFilter = InFilter;
 	FilteredMods.Empty();
 	
-	if (InFilter.Len() < 1) {
+	if (InFilter.IsEmpty()) {
 		FilteredMods = Mods;
 	} else {
 		// tokenize filter keywords
 		TArray<FString> FilterTokens;
-		InFilter.ParseIntoArray(FilterTokens, TEXT(" "));
-		if (FilterTokens.Num() < 1) FilterTokens.Add(InFilter);
-
+		InFilter.ParseIntoArray(FilterTokens, TEXT(" "), true);
+		
 		// check each mod for it to contain the tokens
 		for (TSharedRef<IPlugin> Mod : Mods) {
 			// check each token in mod name
-			bool bFound = true;
-			for (const FString& Token : FilterTokens) {
-				if (!Mod->GetName().Contains(Token)) {
-					bFound = false;
-					break;
-				}
+			if (PluginMatchesSearchTokens(Mod.Get(), FilterTokens)) {
+				FilteredMods.Add(Mod);
 			}
-
-			// if a single token is missing, don't add the mod to the filtered list
-			if (bFound) FilteredMods.Add(Mod);
 		}
 	}
 	

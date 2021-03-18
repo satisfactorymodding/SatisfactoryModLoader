@@ -55,22 +55,22 @@
 		<ProjectReference Include="$(EngineDir)\Source\Programs\DotNETCommon\DotNETUtilities\DotNETUtilities.csproj">
 		  <Project>{5D7D66E8-8C76-4AF9-B3EC-2EF03421D730}</Project>
 		  <Name>DotNETUtilities</Name>
-		  <Private>False</Private>
+		  <Private>false</Private>
 		</ProjectReference>
 		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\AutomationUtils\AutomationUtils.Automation.csproj">
 		  <Project>{2c96a7f2-b1a3-4258-8e0a-e588ff41a53e}</Project>
 		  <Name>AutomationUtils.Automation</Name>
-		  <Private>False</Private>
+		  <Private>false</Private>
 		</ProjectReference>
 		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\Scripts\AutomationScripts.Automation.csproj">
 		  <Project>{8aa00d65-0954-4a27-ac0d-fb8b1106120f}</Project>
 		  <Name>AutomationScripts.Automation</Name>
-		  <Private>False</Private>
+		  <Private>false</Private>
 		</ProjectReference>
 		<ProjectReference Include="$(EngineDir)\Source\Programs\UnrealBuildTool\UnrealBuildTool.csproj">
 		  <Project>{fd7c5e1a-cfe4-4fd5-a525-1eb1599a39ac}</Project>
 		  <Name>UnrealBuildTool</Name>
-		  <Private>False</Private>
+		  <Private>false</Private>
 		</ProjectReference>
 		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\AllDesktop\AllDesktop.Automation.csproj">
 		  <Project>{a9cd1a06-764a-4c53-86ce-2f34b94f0283}</Project>

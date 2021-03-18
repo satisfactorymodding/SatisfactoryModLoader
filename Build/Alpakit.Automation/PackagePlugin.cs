@@ -8,11 +8,19 @@ using UnrealBuildTool;
 
 namespace Alpakit.Automation
 {
+	public class FactoryGameParams
+	{
+		public string GameBuildId;
+		public bool CopyToGameDirectory;
+		public bool StartGame;
+		public string GameDirectory;
+		public string LaunchGameURL;
+	}
 
 	public class PackagePlugin : BuildCommand {
 
-	    private static string GetGameLaunchURL(BuildCommand cmd) {
-		    var launchType = cmd.ParseOptionalStringParam("LaunchType");
+		private static string GetGameLaunchURL(BuildCommand cmd) {
+		    var launchType = cmd.ParseRequiredStringParam("LaunchType");
 		    
 		    if (cmd.ParseParam("Steam") || launchType.Equals("Steam", StringComparison.InvariantCultureIgnoreCase)) {
 			    return "steam://rungameid/526870";
@@ -50,16 +58,11 @@ namespace Alpakit.Automation
 		    CopyDirectory_NoExceptions(stagingDir, resultPluginDirectory);
 	    }
 
-	    private static ProjectParams GetParams(BuildCommand cmd, string projectFileName, string basedOnReleaseName, out FileReference pluginFile) {
-		    // Get the plugin filename
-			var pluginPath = cmd.ParseRequiredStringParam("PluginPath");
-
-			// Check it exists
-			pluginFile = new FileReference(pluginPath);
-			if (!FileReference.Exists(pluginFile)) {
-				throw new AutomationException("Plugin '{0}' not found", pluginFile.FullName);
-			}
-			
+	    private static ProjectParams GetParams(BuildCommand cmd, string basedOnReleaseName) {
+		    var projectFileName = cmd.ParseRequiredStringParam("Project");
+		    LogInformation(projectFileName);
+		    
+		    var pluginName = cmd.ParseRequiredStringParam("PluginName");
 			var projectFile = new FileReference(projectFileName);
 
 			var projectParameters = new ProjectParams(
@@ -79,7 +82,7 @@ namespace Alpakit.Automation
 				//Need this to allow engine content that wasn't cooked in the base game to be included in the PAK file 
 				DLCIncludeEngineContent: true,
 				BasedOnReleaseVersion: basedOnReleaseName,
-				DLCName: pluginFile.GetFileNameWithoutAnyExtensions(),
+				DLCName: pluginName,
 				RunAssetNativization: false);
 
 			projectParameters.ValidateAndLog();
@@ -117,7 +120,6 @@ namespace Alpakit.Automation
 				    }
 
 				    writer.WriteObjectEnd();
-
 				    writer.WriteObjectEnd();
 			    }
 		    } catch (Exception ex) {
@@ -133,62 +135,120 @@ namespace Alpakit.Automation
 		    }
 	    }
 
+	    private static IReadOnlyList<DeploymentContext> CreateDeploymentContexts(ProjectParams projectParams) {
+		    var deployContextList = new List<DeploymentContext>();
+		    if (!projectParams.NoClient) {
+			    deployContextList.AddRange(Project.CreateDeploymentContext(projectParams, false));
+		    }
+		    if (projectParams.DedicatedServer) {
+			    deployContextList.AddRange(Project.CreateDeploymentContext(projectParams, true));
+		    }
+		    return deployContextList;
+	    }
+
+	    private static void PackagePluginProject(IEnumerable<DeploymentContext> deploymentContexts, string workingBuildId) {
+		    foreach (var deploymentContext in deploymentContexts) {
+			    //Update .modules files build id to match game's one before packaging
+			    UpdateModulesBuildId(deploymentContext.StageDirectory.ToString(), workingBuildId);
+		    }
+	    }
+
+	    private static string GetPluginPathRelativeToStageRoot(ProjectParams projectParams, DeploymentContext SC) {
+		    var dlcFile = projectParams.DLCFile;
+		    if (dlcFile.IsUnderDirectory(SC.ProjectRoot)) {
+			    var pluginFolderRelativeToProjectRoot = dlcFile.Directory.MakeRelativeTo(SC.ProjectRoot);
+			    return Path.Combine(projectParams.ShortProjectName, pluginFolderRelativeToProjectRoot);
+		    } 
+		    
+		    if (dlcFile.IsUnderDirectory(SC.EngineRoot)) {
+			    var pluginFolderRelativeToEngineRoot = dlcFile.Directory.MakeRelativeTo(SC.EngineRoot);
+			    return Path.Combine("Engine", pluginFolderRelativeToEngineRoot);
+		    }
+
+		    throw new AutomationException("Plugin file path is not relative to a valid engine/project path: '{0}'",
+			    dlcFile.ToString());
+	    }
+
+	    private static void ArchivePluginProject(ProjectParams projectParams, IEnumerable<DeploymentContext> deploymentContexts) {
+		    var baseArchiveDirectory = CombinePaths(Path.GetDirectoryName(projectParams.RawProjectPath.ToString()), "Saved", "ArchivedPlugins");
+		    
+		    foreach (var deploymentContext in deploymentContexts) {
+			    var stageRootDirectory = deploymentContext.StageDirectory;
+			    var relativePluginPath = GetPluginPathRelativeToStageRoot(projectParams, deploymentContext);
+			    
+			    var stagePluginDirectory = Path.Combine(stageRootDirectory.ToString(), relativePluginPath);
+
+			    var archiveDirectory = Path.Combine(baseArchiveDirectory, deploymentContext.FinalCookPlatform);
+			    CreateDirectory(archiveDirectory);
+			    
+			    var zipFilePath = Path.Combine(archiveDirectory, projectParams.DLCFile.GetFileNameWithoutAnyExtensions() + ".zip");
+			    if (FileExists(zipFilePath)) {
+				    DeleteFile(zipFilePath);
+			    }
+			    ZipFile.CreateFromDirectory(stagePluginDirectory, zipFilePath);
+		    }
+	    }
+
+	    private static void DeployPluginProject(ProjectParams projectParams, IEnumerable<DeploymentContext> deploymentContexts, FactoryGameParams factoryGameParams) {
+		    foreach (var deploymentContext in deploymentContexts) {
+			    if (factoryGameParams.CopyToGameDirectory &&
+			        deploymentContext.FinalCookPlatform == "WindowsNoEditor") {
+				   CopyPluginToTheGameDir(factoryGameParams.GameDirectory, projectParams.RawProjectPath, 
+					   projectParams.DLCFile, deploymentContext.StageDirectory.ToString());
+			    }
+		    }
+
+		    if (factoryGameParams.StartGame) {
+			    System.Diagnostics.Process.Start(factoryGameParams.LaunchGameURL);
+		    }
+	    }
+
+	    private static void CleanStagingDirectories(IEnumerable<DeploymentContext> deploymentContexts) {
+		    foreach (var deploymentContext in deploymentContexts) {
+			    if (DirectoryExists(deploymentContext.StageDirectory.ToString())) {
+				    DeleteDirectory(deploymentContext.StageDirectory);
+			    }
+		    }
+	    }
+
 		public override void ExecuteBuild() {
-			var projectFileName = ParseParamValue("Project");
-			LogInformation(projectFileName);
-			
 			var gameDir = ParseRequiredStringParam("GameDir");
 			var bootstrapExePath = Path.Combine(gameDir, "FactoryGame.exe");
 			if (!FileExists(bootstrapExePath)) {
 				throw new AutomationException("Provided -GameDir is invalid: '{0}'", gameDir);
 			}
-			
+
 			const string releaseName = "FactoryGame_Release";
 			var gameBuildVersion = RetrieveBuildIdFromGame(gameDir);
+			
 			LogInformation("Game Build Id: {0}", gameBuildVersion);
 			LogInformation("Target Release: {0}", releaseName);
-			
-			ProjectParams projectParams = GetParams(this, projectFileName, releaseName, out var pluginFile);
-			FileReference projectFile = new FileReference(projectFileName);
 
-			//Get path to where the plugin was staged
-			var platformStageDirectory = Path.Combine(projectParams.BaseStageDirectory, "WindowsNoEditor");
-			
-			//Cleanup Staged folder because it confuses Cooker of plugin type and location
-			if (Directory.Exists(platformStageDirectory)) {
-				Directory.Delete(platformStageDirectory, true);
+			var factoryGameParams = new FactoryGameParams {
+				GameBuildId = releaseName,
+				GameDirectory = gameDir,
+				StartGame = ParseParam("LaunchGame"),
+				CopyToGameDirectory = ParseParam("CopyToGameDir")
+			};
+			if (factoryGameParams.StartGame) {
+				factoryGameParams.LaunchGameURL = GetGameLaunchURL(this);
 			}
 			
+			var projectParams = GetParams(this, releaseName);
+
 			Project.Cook(projectParams);
-			Project.CopyBuildToStagingDirectory(projectParams);
-			Project.Package(projectParams);
-			Project.Archive(projectParams);
-			Project.Deploy(projectParams);
-			
-			var stagedPluginDir = Path.Combine(platformStageDirectory, 
-				projectFile.GetFileNameWithoutAnyExtensions(), 
-				pluginFile.Directory.MakeRelativeTo(projectFile.Directory));
-			
-			//Update .modules files build id to match game's one before packaging
-			UpdateModulesBuildId(stagedPluginDir, gameBuildVersion);
+			var deploymentContexts = CreateDeploymentContexts(projectParams);
 
-			var packagedBuildsDirectory = Path.Combine(pluginFile.Directory.ToString(), "Saved", "PackagedPlugins");
-			Directory.CreateDirectory(packagedBuildsDirectory);
-			var zipFilePath = Path.Combine(packagedBuildsDirectory, pluginFile.GetFileNameWithoutAnyExtensions()) + ".zip";
-
-			//Package staged directory into the zip
-			File.Delete(zipFilePath);
-			ZipFile.CreateFromDirectory(stagedPluginDir, zipFilePath);
-
-			if (ParseParam("CopyToGameDir")) {
-				CopyPluginToTheGameDir(gameDir, projectFile, pluginFile, stagedPluginDir);
+			try {
+				Project.CopyBuildToStagingDirectory(projectParams);
+				PackagePluginProject(deploymentContexts, gameBuildVersion);
+				ArchivePluginProject(projectParams, deploymentContexts);
+				DeployPluginProject(projectParams, deploymentContexts, factoryGameParams);
+			} finally {
+				//Clean staging directories because they confuse cooking commandlet and UBT
+				CleanStagingDirectories(deploymentContexts);
 			}
 
-			//Cleanup Staged folder because it confuses Cooker of plugin type and location
-			if (Directory.Exists(platformStageDirectory)) {
-				Directory.Delete(platformStageDirectory, true);
-			}
-			
 			LaunchGame(this);
 		}
     }
