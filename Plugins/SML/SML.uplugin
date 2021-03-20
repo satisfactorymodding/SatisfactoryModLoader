@@ -2,6 +2,7 @@
 	"FileVersion": 3,
 	"Version": 3,
 	"VersionName": "3.0.0",
+	"SemVersion": "3.0.0",
 	"FriendlyName": "Satisfactory Mod Loader",
 	"Description": "Mod loading and compatibility API for Satisfactory",
 	"Category": "Other",

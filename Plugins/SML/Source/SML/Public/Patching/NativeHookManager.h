@@ -6,34 +6,45 @@
 DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
 
 //NOTE: This struct does not actually fully represent member function pointer even on MSVC,
-//because it does not contain additional information for handling virtual inheritance
+//because it does not contain additional information for handling unknown inheritance
 //Besides, MSVC layout for "unknown inheritance" and "virtual inheritance" is different
 //See https://www.codeproject.com/Articles/7150/Member-Function-Pointers-and-the-Fastest-Possible
-//So yeah, casting function pointer to this struct is not really safe on other compilers
-template<typename T>
-union TMemberFunctionPointer {
-	T MemberFunctionPointer;
-	struct {
-		void* FunctionAddress;
-		int ThisAdjustment;
-	} Value;
+//So yeah, casting function pointer to this struct is not really safe on other compilers, and even on MSVC
+//But we're not really trying to support unknown inheritance, so it's fine.
+struct FMemberFunctionPointer {
+	void* FunctionAddress;
+	uint32 ThisAdjustment;
+	uint32 VtableDisplacement;
 };
 
 template<typename T>
-FORCEINLINE TMemberFunctionPointer<T> ConvertFunctionPointer(T SourcePointer) {
+struct TMemberFunctionPointer {
+	T MemberFunctionPointer;
+};
+
+template<typename T>
+FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const TMemberFunctionPointer<T>* SourcePointer) {
 	const SIZE_T FunctionPointerSize = sizeof(SourcePointer);
 	
 	//We only support non-virtual inheritance, so assert on virtual inheritance and unknown inheritance cases
 	//Note that it might also mean that we are dealing with "proper" compiler with static function pointer size
 	//(e.g anything different from Intel C++ and MSVC)
-	checkf(FunctionPointerSize == 8 || FunctionPointerSize == 12, TEXT("Unsupported function pointer size received: \
+	checkf(FunctionPointerSize == 8 || FunctionPointerSize == 16, TEXT("Unsupported function pointer size received: \
 		Hooking can only support non-virtual multiple inheritence. \
 		This might be also caused by unsupported compiler. Currently, only MSVC and Intel C++ are supported\
 		Function pointer size: %d bytes."), FunctionPointerSize);
 
-	TMemberFunctionPointer<T> MemberFunctionPointer{};
-	MemberFunctionPointer.MemberFunctionPointer = SourcePointer;
-	return MemberFunctionPointer;
+	const FMemberFunctionPointer* RawFunctionPointer = (const FMemberFunctionPointer*) SourcePointer;
+
+	//TODO we  cannot really make sure there is no virtual inheritance involved, so we just assume it for now
+	FMemberFunctionPointer ResultPointer{};
+	ResultPointer.FunctionAddress = RawFunctionPointer->FunctionAddress;
+	if (FunctionPointerSize >= 16) {
+		ResultPointer.ThisAdjustment = RawFunctionPointer->ThisAdjustment;
+		ResultPointer.VtableDisplacement = RawFunctionPointer->VtableDisplacement;
+	}
+	
+	return ResultPointer;
 }
 
 class SML_API FNativeHookManagerInternal {
@@ -59,7 +70,7 @@ THandlerLists<T, E>* createHandlerLists(void* RealFunctionAddress) {
 	return static_cast<THandlerLists<T, E>*>(handlerListRaw);
 }
 
-template <typename TCallable, TCallable Callable, typename TargetClass, bool bIsConst>
+template <typename TCallable, TCallable Callable, bool bIsConst>
 struct HookInvoker;
 
 template<typename TCallable>
@@ -174,7 +185,7 @@ struct None {};
 
 //Hook invoker for global functions
 template <typename R, typename... A, R(*PMF)(A...)>
-struct HookInvoker<R(*)(A...), PMF, None, false> {
+struct HookInvoker<R(*)(A...), PMF, false> {
 public:
 	typedef CallScope<R(*)(A...)> ScopeType;
 	// mod handler function
@@ -242,22 +253,22 @@ public:
 
 //Template which is used for erasing const from method pointer
 //passed to HookInvoker, since HookInvoker cannot properly handle const method hooks
-template<typename TCallable, TCallable Callable, typename TargetClass>
+template<typename TCallable, TCallable Callable>
 struct HookInvokerWrapper {
 public:
-	using Value = HookInvoker<TCallable, (TCallable) Callable, TargetClass, false>;
+	using Value = HookInvoker<TCallable, (TCallable) Callable, false>;
 };
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...) const, typename TargetClass>
-struct HookInvokerWrapper<R(C::*)(A...) const, PMF, TargetClass> {
+template <typename R, typename C, typename... A, R(C::*PMF)(A...) const>
+struct HookInvokerWrapper<R(C::*)(A...) const, PMF> {
 public:
 	using FunctionType = R(C::*)(A...);
-    using Value = HookInvoker<FunctionType, (FunctionType) PMF, TargetClass, true>;
+    using Value = HookInvoker<FunctionType, (FunctionType) PMF, true>;
 };
 
 //Hook invoker for member functions
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass, bool bIsConst>
-struct HookInvoker<R(C::*)(A...), PMF, TargetClass, bIsConst>
+template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
+struct HookInvoker<R(C::*)(A...), PMF, bIsConst>
 {
 public:
 	using ConstCorrectThisPtr = std::conditional_t<bIsConst, const C*, C*>;
@@ -341,13 +352,15 @@ public:
 	static void InstallHook(const FString& DebugSymbolName, void* SampleObjectInstance = NULL) {
 		if (!bHookInitialized) {
 			bHookInitialized = true;
-			void* HookFunctionPointer = static_cast<void*>(getApplyCall());
-			TMemberFunctionPointer<decltype(PMF)> MemberFunctionPointer = ConvertFunctionPointer(PMF);
+			void* HookFunctionPointer = getApplyCall();
+			TMemberFunctionPointer<R(C::*)(A...)> RawFunctionPointer{};
+			RawFunctionPointer.MemberFunctionPointer = PMF;
+			const FMemberFunctionPointer MemberFunctionPointer = ConvertFunctionPointer(&RawFunctionPointer);
 			
 			void* RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName,
-				MemberFunctionPointer.Value.FunctionAddress,
+				MemberFunctionPointer.FunctionAddress,
 				SampleObjectInstance,
-				MemberFunctionPointer.Value.ThisAdjustment,
+				MemberFunctionPointer.ThisAdjustment,
 				HookFunctionPointer, (void**) &functionPtr);
 			
 			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(RealFunctionAddress);
@@ -365,41 +378,41 @@ public:
 	}
 };
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass, bool bIsConst>
-TArray<typename HookInvoker<R(C::*)(A...), PMF, TargetClass, bIsConst>::Handler>* HookInvoker<R(C::*)(A...), PMF, TargetClass, bIsConst>::handlersBefore = nullptr;
+template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
+TArray<typename HookInvoker<R(C::*)(A...), PMF, bIsConst>::Handler>* HookInvoker<R(C::*)(A...), PMF, bIsConst>::handlersBefore = nullptr;
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass, bool bIsConst>
-TArray<typename HookInvoker<R(C::*)(A...), PMF, TargetClass, bIsConst>::HandlerAfter>* HookInvoker<R(C::*)(A...), PMF, TargetClass, bIsConst>::handlersAfter = nullptr;
+template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
+TArray<typename HookInvoker<R(C::*)(A...), PMF, bIsConst>::HandlerAfter>* HookInvoker<R(C::*)(A...), PMF, bIsConst>::handlersAfter = nullptr;
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass, bool bIsConst>
-R(* HookInvoker<R(C::*)(A...), PMF, TargetClass, bIsConst>::functionPtr)(std::conditional_t<bIsConst, const C*, C*>,A...) = nullptr;
+template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
+R(* HookInvoker<R(C::*)(A...), PMF, bIsConst>::functionPtr)(std::conditional_t<bIsConst, const C*, C*>,A...) = nullptr;
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), typename TargetClass, bool bIsConst>
-bool HookInvoker<R(C::*)(A...), PMF, TargetClass, bIsConst>::bHookInitialized = nullptr;
-
-template <typename R, typename... A, R(*PMF)(A...)>
-TArray<typename HookInvoker<R(*)(A...), PMF, None, false>::Handler>* HookInvoker<R(*)(A...), PMF, None, false>::handlersBefore = nullptr;
+template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
+bool HookInvoker<R(C::*)(A...), PMF, bIsConst>::bHookInitialized = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
-TArray<typename HookInvoker<R(*)(A...), PMF, None, false>::HandlerAfter>* HookInvoker<R(*)(A...), PMF, None, false>::handlersAfter = nullptr;
+TArray<typename HookInvoker<R(*)(A...), PMF, false>::Handler>* HookInvoker<R(*)(A...), PMF, false>::handlersBefore = nullptr;
 
 template <typename R, typename... A, R(*PMF)(A...)>
-R(* HookInvoker<R(*)(A...), PMF, None, false>::functionPtr)(A...) = nullptr;
+TArray<typename HookInvoker<R(*)(A...), PMF, false>::HandlerAfter>* HookInvoker<R(*)(A...), PMF, false>::handlersAfter = nullptr;
+
 template <typename R, typename... A, R(*PMF)(A...)>
-bool HookInvoker<R(*)(A...), PMF, None, false>::bHookInitialized = false;
+R(* HookInvoker<R(*)(A...), PMF, false>::functionPtr)(A...) = nullptr;
+template <typename R, typename... A, R(*PMF)(A...)>
+bool HookInvoker<R(*)(A...), PMF, false>::bHookInitialized = false;
 
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference)); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerBefore(Handler);
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference)); \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_METHOD_AFTER(MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference)); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerAfter(Handler);
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference)); \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerAfter(Handler);
 
 #define SUBSCRIBE_METHOD_VIRTUAL(MethodReference, SampleObjectInstance, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerBefore(Handler);
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_METHOD_VIRTUAL_AFTER(MethodReference, SampleObjectInstance, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference, None>::Value::addHandlerAfter(Handler);
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
+HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerAfter(Handler);

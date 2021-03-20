@@ -328,7 +328,10 @@ public:
 
 	/** Updates RTPCs for all music player objects that have registered with this controller */
 	void UpdateMusicPlayers( float dt );
-public: // MODDING EDIT protected -> public
+protected:
+	//MODDING EDIT: Allow access from SMLRemoteCallObject
+	friend class USMLRemoteCallObject;
+	
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 
@@ -379,10 +382,8 @@ public: // MODDING EDIT protected -> public
 	/** Caches a lot off stuff needed for the map area checks */
 	bool InitMapAreaCheckFunction();
 
-public: // MODDING EDIT
 	UFUNCTION( BlueprintCallable, Category = "Chat" )
 	void EnterChatMessage( const FString& inMessage );
-protected: // MODDING EDIT
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
 	void OnDisabledInputGateChanged();

@@ -1,5 +1,6 @@
 #include "ModLoading/PluginModuleLoader.h"
 #include "AssetRegistryModule.h"
+#include "IPlatformFilePak.h"
 #include "Util/BlueprintAssetHelperLibrary.h"
 #include "SatisfactoryModLoader.h"
 
@@ -19,6 +20,17 @@ static bool PluginModuleLoaderExec(UWorld* InWorld, const TCHAR* Cmd, FOutputDev
 		const FString TargetPackageName = Cmd;
 		const FString OwnerPluginName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(TargetPackageName, false);
 		Ar.Logf(TEXT("Owner of the package %s is %s"), *TargetPackageName, *OwnerPluginName);
+		return true;
+	}
+	if (FParse::Command(&Cmd, TEXT("ListMountedPaks"))) {
+		TArray<FString> MountedPaksFilenames;
+		FPakPlatformFile* PakPlatformFile = (FPakPlatformFile*) FPlatformFileManager::Get().GetPlatformFile(TEXT("PakFile"));
+		PakPlatformFile->GetMountedPakFilenames(MountedPaksFilenames);
+
+		Ar.Log(TEXT("Mounted pak filenames: "));
+		for (const FString& PakFilename : MountedPaksFilenames) {
+			Ar.Logf(TEXT("%s"), *PakFilename);
+		}
 		return true;
 	}
 	return false;

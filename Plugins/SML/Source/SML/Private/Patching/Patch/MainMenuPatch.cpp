@@ -38,10 +38,10 @@ TArray<FString> FMainMenuPatch::CreateMenuInformationText() {
 }
 
 void FMainMenuPatch::ApplyMainMenuPatch(UUserWidget* MenuWidget) {
-	UTextBlock* UsernameLabel = FReflectionHelper::GetObjectPropertyValue<UTextBlock>(MenuWidget, TEXT("UsernameLabel"));
-	checkf(UsernameLabel, TEXT("UsernameLabel not found"));
+	UTextBlock* UsernameLabel = FReflectionHelper::GetObjectPropertyValue<UTextBlock>(MenuWidget, TEXT("mEpicUsernameLabel"));
+	checkf(UsernameLabel, TEXT("mEpicUsernameLabel not found"));
 	UVerticalBox* ParentVerticalBox = Cast<UVerticalBox>(UsernameLabel->GetParent());
-	checkf(ParentVerticalBox, TEXT("UsernameLabel parent is not a vertical box"));
+	checkf(ParentVerticalBox, TEXT("mEpicUsernameLabel parent is not a vertical box"));
 		
 	UUserWidget* OptionsButton = FReflectionHelper::GetObjectPropertyValue<UUserWidget>(MenuWidget, TEXT("mButtonOptions"));
 	UPanelWidget* SwitcherWidget = FReflectionHelper::GetObjectPropertyValue<UPanelWidget>(MenuWidget, TEXT("mSwitcher"));
@@ -53,15 +53,18 @@ void FMainMenuPatch::ApplyMainMenuPatch(UUserWidget* MenuWidget) {
 		SwitcherWidget->AddChild(ModSubMenuWidget);
 	}
 		
-	UPanelWidget* ParentPanel = OptionsButton->GetParent();
+	UPanelWidget* ParentPanel = FReflectionHelper::GetObjectPropertyValue<UPanelWidget>(MenuWidget, TEXT("mMainMenuList"));
+	
 	UClass* FrontEndButtonClass = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/Menu/Widget_FrontEnd_Button.Widget_FrontEnd_Button_C"));
 	checkf(FrontEndButtonClass, TEXT("FrontEndButton class not found"));
 	UUserWidget* ButtonWidget = UUserWidget::CreateWidgetInstance(*MenuWidget, FrontEndButtonClass, TEXT("mModListButton"));
 	FText ButtonText = FText::FromString(TEXT("Mods"));
-	FReflectionHelper::CallScriptFunction(ButtonWidget, TEXT("SetTitle"), ButtonText);
+	FReflectionHelper::CallScriptFunction(ButtonWidget, TEXT("SetTitle"), &ButtonText);
+	
 	if (ModSubMenuWidget != NULL) {
 		FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mSwitcherWidget"), SwitcherWidget);
 		FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mTargetWidget"), ModSubMenuWidget);
+		FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mParentList"), ParentPanel);
 	}
 	ParentPanel->AddChild(ButtonWidget);
 		

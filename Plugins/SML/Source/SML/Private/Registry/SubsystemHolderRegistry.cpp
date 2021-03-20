@@ -49,7 +49,8 @@ void USubsystemHolderRegistry::Initialize(FSubsystemCollectionBase& Collection) 
 }
 
 void USubsystemHolderRegistry::InitializePatches() {
-    SUBSCRIBE_METHOD_AFTER(AFGGameState::Init, [](AFGGameState* GameState) {
+    void* ObjectInstance = GetMutableDefault<AFGGameState>();
+    SUBSCRIBE_METHOD_VIRTUAL_AFTER(AFGGameState::Init, ObjectInstance, [](AFGGameState* GameState) {
         InitializeSubsystems(GameState);
     });
 }

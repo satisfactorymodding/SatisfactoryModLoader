@@ -6,6 +6,7 @@
 #include "Toolkit/KismetBytecodeDisassemblerJson.h"
 #include "Engine/Texture2D.h"
 #include "Toolkit/ObjectHierarchySerializer.h"
+#include "AssemblyAnalyzer.h"
 
 //Note: these offsets are for shipping windows x64 build, retrieved from IDA
 //They are checked automatically to be correct when SML is launched,
@@ -28,6 +29,14 @@ UClass* FAssetHelper::FindClassWithSerializeImplementation(UClass* Class) {
     return Class;
 }
 
+bool AreFunctionPointersEqual(uint64 FirstPointer, uint64 SecondPointer) {
+    const FunctionInfo FunctionInfo1 = DiscoverFunction((uint8*) FirstPointer);
+    const FunctionInfo FunctionInfo2 = DiscoverFunction((uint8*) SecondPointer);
+    return FunctionInfo1.bIsValid && FunctionInfo2.bIsValid &&
+            !FunctionInfo1.bIsVirtualFunction && !FunctionInfo2.bIsVirtualFunction &&
+            FunctionInfo1.RealFunctionAddress == FunctionInfo2.RealFunctionAddress;
+}
+
 bool FAssetHelper::IsSerializeImplementationDifferent(UClass* Class1, UClass* Class2) {
 #if PLATFORM_WINDOWS
 #if !WITH_EDITOR
@@ -36,13 +45,13 @@ bool FAssetHelper::IsSerializeImplementationDifferent(UClass* Class1, UClass* Cl
 
     const uint64 UObjectSerializeFunctionPtr = UObjectVTablePtr[WINDOWS_SHIPPING_SERIALIZE_VTABLE_OFFSET];
     const uint64 ClassSerializeFunctionPtr = ClassObjectVTablePtr[WINDOWS_SHIPPING_SERIALIZE_VTABLE_OFFSET];
-    if (UObjectSerializeFunctionPtr != ClassSerializeFunctionPtr) {
+    if (!AreFunctionPointersEqual(UObjectSerializeFunctionPtr, ClassSerializeFunctionPtr)) {
         return true;
     }
 
     const uint64 UObjectStructuredSerializeFunctionPtr = UObjectVTablePtr[WINDOWS_SHIPPING_STRUCTURED_SERIALIZE_VTABLE_OFFSET];
     const uint64 ClassStructuredSerializeFunctionPtr = ClassObjectVTablePtr[WINDOWS_SHIPPING_STRUCTURED_SERIALIZE_VTABLE_OFFSET];
-    if (UObjectStructuredSerializeFunctionPtr != ClassStructuredSerializeFunctionPtr) {
+    if (!AreFunctionPointersEqual(UObjectStructuredSerializeFunctionPtr, ClassStructuredSerializeFunctionPtr)) {
         return true;
     }
     

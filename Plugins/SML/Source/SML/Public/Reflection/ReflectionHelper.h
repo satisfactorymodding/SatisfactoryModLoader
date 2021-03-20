@@ -98,13 +98,13 @@ public:
     }
 
     template <typename T>
-    static UFunction* CallScriptFunction(UObject* Object, const TCHAR* FunctionName, T& ParamStruct) {
+    static UFunction* CallScriptFunction(UObject* Object, const TCHAR* FunctionName, T* ParamStruct) {
         UFunction* Function = Object->FindFunction(FunctionName);
         checkf(Function, TEXT("Function not found: %s"), FunctionName);
-        checkf(Function->ParmsSize == static_cast<uint16>(sizeof(T)),
-            TEXT("Function parameter layout doesn't match provided parameter struct: Expected %d bytes, got %llu"),
-            Function->ParmsSize, sizeof(ParamStruct));
-        Object->ProcessEvent(Function, &ParamStruct);
+        checkf(Function->ParmsSize == static_cast<uint16>(sizeof(T)) || (Function->ParmsSize == 0 && ParamStruct == NULL),
+            TEXT("Function parameter layout doesn't match provided parameter struct: Expected %d bytes, got %u"),
+            Function->ParmsSize, sizeof(T));
+        Object->ProcessEvent(Function, ParamStruct);
         return Function;
     }
 };

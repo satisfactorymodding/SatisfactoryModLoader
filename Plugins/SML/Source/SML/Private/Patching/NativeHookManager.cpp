@@ -25,6 +25,10 @@ void FNativeHookManagerInternal::SetHandlerListInstanceInternal(void* RealFuncti
 #define CHECK_FUNCHOOK_ERR(arg) \
 	if (arg != FUNCHOOK_ERROR_SUCCESS) UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking function %s failed: funchook failed: %hs"), *DebugSymbolName, funchook_error_message(funchook));
 
+void LogDebugAssemblyAnalyzer(const ANSICHAR* Message) {
+	UE_LOG(LogNativeHookManager, Display, TEXT("AssemblyAnalyzer Debug: %hs"), Message);
+}
+
 bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* HookFunctionPointer, void** OutTrampolineFunction) {
 	if (InstalledHookMap.Contains(OriginalFunctionPointer)) {
 		//Hook already installed, set trampoline function and return
@@ -44,6 +48,7 @@ bool HookStandardFunction(const FString& DebugSymbolName, void* OriginalFunction
 }
 
 SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& DebugSymbolName, void* OriginalFunctionPointer, void* SampleObjectInstance, int ThisAdjustment, void* HookFunctionPointer, void** OutTrampolineFunction) {
+	SetDebugLoggingHook(&LogDebugAssemblyAnalyzer);
 	FunctionInfo FunctionInfo = DiscoverFunction((uint8*) OriginalFunctionPointer);
 	checkf(FunctionInfo.bIsValid, TEXT("Attempt to hook invalid function %s: Provided code pointer %p is not valid"), *DebugSymbolName, OriginalFunctionPointer);
 
@@ -54,7 +59,9 @@ SML_API void* FNativeHookManagerInternal::RegisterHookFunction(const FString& De
 		//Target Function Address = (this + ThisAdjustment)->vftable[VirtualFunctionOffset]
 		void* AdjustedThisPointer = ((uint8*) SampleObjectInstance) + ThisAdjustment;
 		uint8** VirtualFunctionTableBase = *((uint8***) AdjustedThisPointer);
-		uint8* FunctionImplementationPointer = VirtualFunctionTableBase[FunctionInfo.VirtualTableFunctionOffset];
+		//Offset is in bytes from the start of the virtual table, we need to convert it to pointer array index
+		uint8* FunctionImplementationPointer = VirtualFunctionTableBase[FunctionInfo.VirtualTableFunctionOffset / 8];
+
 		FunctionInfo = DiscoverFunction(FunctionImplementationPointer);
 
 		//Perform basic checking to make sure calculation was correct, or at least seems to be so

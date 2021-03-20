@@ -5,7 +5,8 @@
 #include "SatisfactoryModLoader.h"
 
 void FOfflinePlayerHandler::RegisterHandlerPatches() {
-    SUBSCRIBE_METHOD(ULocalPlayer::GetNickname, [](auto& Call, const ULocalPlayer* Player) {
+    ULocalPlayer* LocalPlayerInstance = GetMutableDefault<ULocalPlayer>();
+    SUBSCRIBE_METHOD_VIRTUAL(ULocalPlayer::GetNickname, LocalPlayerInstance, [](auto& Call, const ULocalPlayer* Player) {
         const FString ReturnedParentValue = Call(Player);
         if (ReturnedParentValue.IsEmpty()) {
              const FString UsernameOverride = FOfflinePlayerHandler::GetOfflineUsernameOverride();
@@ -14,6 +15,7 @@ void FOfflinePlayerHandler::RegisterHandlerPatches() {
              }
         }
     });
+    
     SUBSCRIBE_METHOD(ULocalPlayer::GetUniqueNetIdFromCachedControllerId, [](auto& Call, const ULocalPlayer* Player) {
         const FUniqueNetIdRepl ReturnedParentValue = Call(Player);
         if (!ReturnedParentValue.IsValid()) {

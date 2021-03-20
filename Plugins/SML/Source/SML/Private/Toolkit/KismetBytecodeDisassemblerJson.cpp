@@ -150,6 +150,9 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("Let"));
 
+			//Skip property pointer, type can be deduced from Variable expression
+			ReadPointer<FProperty>(ScriptIndex);
+
 			Result->SetObjectField(TEXT("Variable"), SerializeExpression(ScriptIndex));
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;
@@ -738,6 +741,27 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			Result->SetNumberField(TEXT("Value"), ConstValue);
 			break;
 		}
+	case EX_Int64Const:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("Int64Const"));
+			int64 ConstValue = ReadQword(ScriptIndex);
+			Result->SetNumberField(TEXT("Value"), ConstValue);
+			break;
+		}
+	case EX_UInt64Const:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("UInt64Const"));
+			uint64 ConstValue = ReadQword(ScriptIndex);
+			Result->SetNumberField(TEXT("Value"), ConstValue);
+			break;
+		}
+	case EX_FieldPathConst:
+		{
+			Result->SetStringField(TEXT("Inst"), TEXT("FieldPathConst"));
+			const TSharedPtr<FJsonObject> InnerExpression = SerializeExpression(ScriptIndex);
+			Result->SetObjectField(TEXT("Expression"), InnerExpression);
+			break;
+		}
 	case EX_MetaCast:
 		{
 			//Cast of class object to another class object
@@ -971,6 +995,7 @@ bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UStruct* Function
 	while (ScriptIndex < Script.Num()) {
 		const int32 StatementIndex = ScriptIndex;
 		const uint8 StatementOpcode = Script[ScriptIndex];
+		FString ResultString;
 		SerializeExpression(ScriptIndex);
 		if (StatementOpcode == ExpectedStatementOpcode) {
 			OutStatementIndex = StatementIndex;

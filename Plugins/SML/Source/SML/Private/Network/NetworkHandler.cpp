@@ -58,11 +58,13 @@ UObjectMetadata* UModNetworkHandler::GetMetadataForConnection(UNetConnection* Co
 }
 
 void UModNetworkHandler::InitializePatches() {
-    SUBSCRIBE_METHOD_AFTER(UNetConnection::CleanUp, [=](UNetConnection* Connection) {
+    UNetConnection* NetConnectionInstance = GetMutableDefault<UNetConnection>();
+    SUBSCRIBE_METHOD_VIRTUAL_AFTER(UNetConnection::CleanUp, NetConnectionInstance, [=](UNetConnection* Connection) {
         UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
         NetworkHandler->Metadata.Remove(Connection);
     });
-    SUBSCRIBE_METHOD_AFTER(UWorld::WelcomePlayer, [=](UWorld* ServerWorld, UNetConnection* Connection) {
+    UWorld* WorldObjectInstance = GetMutableDefault<UWorld>();
+    SUBSCRIBE_METHOD_VIRTUAL_AFTER(UWorld::WelcomePlayer, WorldObjectInstance, [=](UWorld* ServerWorld, UNetConnection* Connection) {
         UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
         NetworkHandler->OnWelcomePlayer().Broadcast(ServerWorld, Connection);
     });
@@ -85,6 +87,11 @@ void UModNetworkHandler::InitializePatches() {
             }
         }
     };
-    SUBSCRIBE_METHOD(UWorld::NotifyControlMessage, MessageHandler);
-    SUBSCRIBE_METHOD(UPendingNetGame::NotifyControlMessage, MessageHandler);
+
+    void* WorldNetworkNotifyInstance = static_cast<FNetworkNotify*>(WorldObjectInstance);
+    SUBSCRIBE_METHOD_VIRTUAL(UWorld::NotifyControlMessage, WorldNetworkNotifyInstance, MessageHandler);
+
+    UPendingNetGame* PendingNetGame = (UPendingNetGame*) FindObjectChecked<UClass>(NULL, TEXT("/Script/Engine.PendingNetGame"))->GetDefaultObject();
+    void* PendingGameNetworkNotifyInstance = static_cast<FNetworkNotify*>(PendingNetGame);
+    SUBSCRIBE_METHOD_VIRTUAL(UPendingNetGame::NotifyControlMessage, PendingGameNetworkNotifyInstance, MessageHandler);
 }

@@ -87,7 +87,7 @@ void FOptionsKeybindPatch::HandleRefreshKeyBindingsHook(FBlueprintHookHelper& Ho
     
     //Retrieve key bindings by calling blueprint method
     FScriptArray OutKeyBindDataArray;
-    UFunction* Function = FReflectionHelper::CallScriptFunction(HookHelper.GetContext(), TEXT("GetKeybindData"), OutKeyBindDataArray);
+    UFunction* Function = FReflectionHelper::CallScriptFunction(HookHelper.GetContext(), TEXT("GetKeybindData"), &OutKeyBindDataArray);
     UArrayProperty* FirstParameter = Cast<UArrayProperty>(FReflectionHelper::FindParameterByIndex(Function, 0));
     FScriptArrayHelper KeyBindingsArrayHelper(FirstParameter, &OutKeyBindDataArray);
     
@@ -112,10 +112,11 @@ void FOptionsKeybindPatch::HandleRefreshKeyBindingsHook(FBlueprintHookHelper& Ho
 }
 
 void FOptionsKeybindPatch::RegisterPatch() {
-    UClass* WidgetKeyBindClass = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/Menu/PauseMenu/Widget_KeyBind.Widget_KeyBind_C"));
-    check(WidgetKeyBindClass);
-    UFunction* RefreshKeyBindingsFunction = WidgetKeyBindClass->FindFunctionByName(TEXT("RefreshKeyBindings"));
-    UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
-    HookManager->HookBlueprintFunction(RefreshKeyBindingsFunction, HandleRefreshKeyBindingsHook, EPredefinedHookOffset::Start);
+    //TODO fix once we get the fresh dump of blueprints
+    //UClass* WidgetKeyBindClass = LoadObject<UClass>(NULL, TEXT("/Game/FactoryGame/Interface/UI/Menu/PauseMenu/Widget_KeyBind.Widget_KeyBind_C"));
+    //check(WidgetKeyBindClass);
+    //UFunction* RefreshKeyBindingsFunction = WidgetKeyBindClass->FindFunctionByName(TEXT("RefreshKeyBindings"));
+    //UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
+    //HookManager->HookBlueprintFunction(RefreshKeyBindingsFunction, HandleRefreshKeyBindingsHook, EPredefinedHookOffset::Start);
 }
 
