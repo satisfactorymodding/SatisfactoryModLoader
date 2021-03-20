@@ -1,10 +1,10 @@
 {
 	"FileVersion": 3,
-	"Version": 3,
-	"VersionName": "3.0.0",
-	"SemVersion": "3.0.0",
-	"FriendlyName": "Satisfactory Mod Loader",
-	"Description": "Mod loading and compatibility API for Satisfactory",
+	"Version": 1,
+	"VersionName": "1.0",
+	"SemVersion": "1.0.0",
+	"FriendlyName": "Example Mod",
+	"Description": "A mod demonstrating capabilities of the Satisfactory and SML modding",
 	"Category": "Modding",
 	"CreatedBy": "SML Team",
 	"CreatedByURL": "https://github.com/satisfactorymodding/SatisfactoryModLoader",
@@ -14,12 +14,5 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
-	"Installed": false,
-	"Modules": [
-		{
-			"Name": "SML",
-			"Type": "Runtime",
-			"LoadingPhase": "PostDefault"
-		}
-	]
+	"Installed": false
 }

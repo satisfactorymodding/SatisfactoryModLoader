@@ -83,7 +83,7 @@ void AWorldModuleManager::Initialize() {
         CreateRootModule(*Module.OwnerPluginName, WorldModule);
     }
     
-    UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Discovered %s world modules of class %s"), AlreadyLoadedMods.Num(), *ModuleTypeClass->GetName());
+    UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Discovered %d world modules of class %s"), AlreadyLoadedMods.Num(), *ModuleTypeClass->GetName());
     
     //Dispatch lifecycle events in a sequence
     DispatchLifecycleEvent(ELifecyclePhase::CONSTRUCTION);
@@ -108,8 +108,8 @@ void AWorldModuleManager::CreateRootModule(const FName& ModReference, TSubclassO
 
 void AWorldModuleManager::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     //Notify log of our current loading phase, in case of things going wrong
-    const FString PhaseName = StaticEnum<ELifecyclePhase>()->GetNameStringByValue((int64) Phase);
-    UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Dispatching lifecycle event %s to world %s modules"), *PhaseName, *GetWorld()->GetName());
+    UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Dispatching lifecycle event %s to world %s modules"), 
+        *UModModule::LifecyclePhaseToString(Phase), *GetWorld()->GetMapName());
     
     //Iterate modules in their order of registration and dispatch lifecycle event to them
     for (UWorldModule* RootModule : RootModuleList) {

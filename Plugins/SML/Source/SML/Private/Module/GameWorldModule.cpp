@@ -3,8 +3,15 @@
 #include "Registry/ModContentRegistry.h"
 
 void UGameWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
+    //Register default content before calling blueprint event logic
+    if (Phase == ELifecyclePhase::INITIALIZATION) {
+        RegisterDefaultContent();
+    }
+    
     Super::DispatchLifecycleEvent(Phase);
+}
 
+void UGameWorldModule::RegisterDefaultContent() {
     //Register default content
     UWorld* WorldObject = GetWorld();
     AModContentRegistry* ModContentRegistry = AModContentRegistry::Get(WorldObject);

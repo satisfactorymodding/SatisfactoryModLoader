@@ -24,8 +24,15 @@ UWorld* UGameInstanceModule::GetWorld() const {
 }
 
 void UGameInstanceModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
+    //Register default content before calling blueprint event logic
+    if (Phase == ELifecyclePhase::INITIALIZATION) {
+        RegisterDefaultContent();
+    }
+    
     Super::DispatchLifecycleEvent(Phase);
+}
 
+void UGameInstanceModule::RegisterDefaultContent() {
     //Register default content
     UGameInstance* GameInstance = GetGameInstance();
     UConfigManager* ConfigManager = GameInstance->GetEngine()->GetEngineSubsystem<UConfigManager>();

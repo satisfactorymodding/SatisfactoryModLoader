@@ -69,20 +69,11 @@ struct SML_API FModAxisBindingInfo {
 UCLASS(Blueprintable)
 class SML_API UGameInstanceModule : public UModModule {
     GENERATED_BODY()
-public:
-    /** Allow SetOwnerModReference access to game instance module manager */
-    friend class UGameInstanceModuleManager;
-    
+public:    
     /** Returns game instance this module is attached to */
     UFUNCTION(BlueprintPure)
     UGameInstance* GetGameInstance() const;
-
-    /** Game instance modules can access world context from game instance */
-    virtual UWorld* GetWorld() const override;
-
-    /** Register content from properties here */
-    virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
-public:
+  
     /** Configurations defined and used by this mod */
     UPROPERTY(EditDefaultsOnly, Category = Default)
     TArray<FModConfigurationEntry> ModConfigurations;
@@ -116,4 +107,16 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = Advanced)
     TArray<FModAxisBindingInfo> ModAxisBindings;
+
+    /** Game instance modules can access world context from game instance */
+    virtual UWorld* GetWorld() const override;
+
+    /** Register content from properties here */
+    virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
+protected:
+    /** Allow SetOwnerModReference access to game instance module manager */
+    friend class UGameInstanceModuleManager;
+    
+    /** Registers default content from properties specified above */
+    void RegisterDefaultContent();
 };

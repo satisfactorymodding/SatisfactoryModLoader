@@ -16,6 +16,8 @@ private:
     UPROPERTY()
     TArray<UGameInstanceModule*> RootModuleList;
 public:
+    UGameInstanceModuleManager();
+    
     /** Retrieves root game instance module by provided mod reference */
     UFUNCTION(BlueprintPure)
     UGameInstanceModule* FindModule(const FName& ModReference) const;
@@ -25,7 +27,22 @@ public:
 
     /** Override this to disable system initialization in the editor */
     virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+
+    /**
+     * Makes sure provided subsystem is already initialized and ready to be used.
+     * Use this before accessing subsystems during GameInstanceModule initialization
+     * to enforce initialization order.
+     * NOTE: only needed for custom subsystems, SML subsystems are already pre-initialized.
+     */
+    UFUNCTION(BlueprintCallable)
+    void EnsureSubsystemInitialized(TSubclassOf<UGameInstanceSubsystem> SubsystemClass);
 private:
+    /** Determines whenever we are currently calling Initialize() */
+    bool bIsInitializingCurrently;
+    FSubsystemCollectionBase* CurrentSubsystemCollection;
+
+    void EnsureSMLSubsystemsInitialized();
+    
     /** Allocates root module object for instance and registers it */
     void CreateRootModule(const FName& ModReference, TSubclassOf<UGameInstanceModule> ObjectClass);
 

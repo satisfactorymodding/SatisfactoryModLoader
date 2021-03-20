@@ -8,9 +8,6 @@ UCLASS(Blueprintable)
 class SML_API UGameWorldModule : public UWorldModule {
     GENERATED_BODY()
 public:
-    /** Register content from properties here */
-    virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
-public:
     /**
     * List of schematics that will be automatically registered
     * by the SML during the loading phase
@@ -37,4 +34,10 @@ public:
     */
     UPROPERTY(EditDefaultsOnly, Category = Advanced)
     TSoftObjectPtr<class UDataTable> mResourceSinkItemPointsTable;
+
+    /** Register content from properties here */
+    virtual void DispatchLifecycleEvent(ELifecyclePhase Phase) override;
+protected:
+    /** Registers default content from properties specified above */
+    void RegisterDefaultContent();
 };

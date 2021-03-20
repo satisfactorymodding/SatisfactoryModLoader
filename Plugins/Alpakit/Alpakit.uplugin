@@ -4,14 +4,14 @@
 	"VersionName": "1.0",
 	"FriendlyName": "Alpakit",
 	"Description": "Pak your Satisfactory mods and copy them to get game folder",
-	"Category": "Other",
+	"Category": "Modding",
 	"CreatedBy": "Mircea Roata",
 	"CreatedByURL": "",
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"CanContainContent": false,
-	"Installed": true,
+	"Installed": false,
 	"Modules": [
 		{
 			"Name": "Alpakit",

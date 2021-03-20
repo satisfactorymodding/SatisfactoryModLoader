@@ -41,3 +41,8 @@ void UModModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     //Trigger kismet OnLifecycleEvent callback
     K2_OnLifecycleEvent(Phase);
 }
+
+FString UModModule::LifecyclePhaseToString(ELifecyclePhase Phase) {
+    UEnum* LifecyclePhase = StaticEnum<ELifecyclePhase>();
+    return LifecyclePhase->GetNameStringByValue((int64) Phase);
+}

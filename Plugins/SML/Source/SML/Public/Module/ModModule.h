@@ -56,6 +56,8 @@ public:
 
     /** Handles received lifecycle event and dispatches it to all modules */
     virtual void DispatchLifecycleEvent(ELifecyclePhase Phase);
+
+    static FString LifecyclePhaseToString(ELifecyclePhase Phase);
 protected:
     /** Called when module receives lifetime event */
     UFUNCTION(BlueprintImplementableEvent, meta = (DisplayName = "On Lifecycle Event"))
