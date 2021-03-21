@@ -3,6 +3,8 @@
 #pragma once
 
 #include "Resources/FGItemDescriptor.h"
+//MODDING EDIT: FactoryGame.h
+#include "FactoryGame.h"
 #include "ItemAmount.generated.h"
 
 /**

@@ -3,6 +3,8 @@
 #pragma once
 
 #include "FGSaveSession.h"
+//MODDING EDIT: FactoryGame.h
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "Templates/SharedPointer.h"
 #include "Engine/PackageMapClient.h"
