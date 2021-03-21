@@ -126,7 +126,11 @@ void AModContentRegistry::FlushStateToSchematicManager(AFGSchematicManager* Sche
     for (const TSharedPtr<FSchematicRegistrationInfo>& RegistrationInfo : RegisteredSchematics) {
         TSubclassOf<UFGSchematic> Schematic = RegistrationInfo->RegisteredObject;
         SchematicManager->mAllSchematics.Add(Schematic);
-        if (UFGSchematic::GetType(Schematic) == ESchematicType::EST_Milestone) {
+
+        if ((UFGSchematic::GetType(Schematic) == ESchematicType::EST_Milestone ||
+            UFGSchematic::GetType(Schematic) == ESchematicType::EST_Tutorial ||
+            UFGSchematic::GetType(Schematic) == ESchematicType::EST_ResourceSink) &&
+            SchematicManager->CanGiveAccessToSchematic(Schematic)) {
             SchematicManager->mAvailableSchematics.Add(Schematic);
         }
     }
