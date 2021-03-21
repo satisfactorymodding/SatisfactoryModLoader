@@ -798,7 +798,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			uint8 InDebugMode = ReadByte(ScriptIndex);
 
 			Result->SetNumberField(TEXT("LineNumber"), LineNumber);
-			Result->SetBoolField(TEXT("Debug"), InDebugMode);
+			Result->SetBoolField(TEXT("Debug"), bool(InDebugMode));
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;
 		}

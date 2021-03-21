@@ -4,6 +4,8 @@
 
 #include "UObject/Object.h"
 #include "FGSaveSystem.h"
+//MODDING EDIT: SaveToDiskWithCompression wants FBufferArchive
+#include "Serialization/BufferArchive.h"
 #include "FGObjectReference.h"
 #include "FGSaveSession.generated.h"
 

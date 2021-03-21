@@ -3,6 +3,8 @@
 #pragma once
 
 #include "SharedInventoryStatePtr.h"
+//MODDING EDIT: FactoryGame.h
+#include "FactoryGame.h"
 #include "FGSaveInterface.h"
 #include "Resources/FGItemDescriptor.h"
 #include "ItemAmount.h"
