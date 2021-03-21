@@ -5,6 +5,7 @@ using System.IO;
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
+using Tools.DotNETCommon;
 
 public class SML : ModuleRules
 {
@@ -47,14 +48,8 @@ public class SML : ModuleRules
             PublicDependencyModuleNames.Add("UnrealEd");
         }
         
-        var projectFilePath = Target.ProjectFile.ToString();
-        var projectRootPath = projectFilePath.Substring(0, projectFilePath.LastIndexOf(Path.DirectorySeparatorChar));
-        var absoluteHeaderFilePath = Path.Combine(projectRootPath, "Source/FactoryGame/Public/FactoryGame.h");
-        var moduleRelativeHeaderFilePath = new StringBuilder(260);
-        PathRelativePathTo(moduleRelativeHeaderFilePath, ModuleDirectory, FILE_ATTRIBUTE_DIRECTORY,
-            absoluteHeaderFilePath, FILE_ATTRIBUTE_NORMAL);
-        
-        PrivatePCHHeaderFile = moduleRelativeHeaderFilePath.ToString();
+        var factoryGamePchPath = new DirectoryReference(Path.Combine(Target.ProjectFile.Directory.ToString(), "Source", "FactoryGame", "Public", "FactoryGame.h"));
+        PrivatePCHHeaderFile = factoryGamePchPath.MakeRelativeTo(new DirectoryReference(ModuleDirectory));
         
         var thirdPartyFolder = Path.Combine(ModuleDirectory, "../../ThirdParty");
         PublicIncludePaths.Add(Path.Combine(thirdPartyFolder, "include"));
@@ -71,13 +66,4 @@ public class SML : ModuleRules
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zydis.lib"));
         PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zycore.lib"));
     }
-    
-    //Copied from https://stackoverflow.com/questions/275689/how-to-get-relative-path-from-absolute-path
-    //Cannot really use Path.getRelativePath because it's since .NET Framework 5.0 only
-    //Dude why the hell do I even need to write wrappers around native code just to get relative path properly
-    private const int FILE_ATTRIBUTE_DIRECTORY = 0x10;
-    private const int FILE_ATTRIBUTE_NORMAL = 0x80;
-
-    [DllImport("shlwapi.dll", SetLastError = true)]
-    private static extern int PathRelativePathTo(StringBuilder pszPath, string pszFrom, int dwAttrFrom, string pszTo, int dwAttrTo);
 }
