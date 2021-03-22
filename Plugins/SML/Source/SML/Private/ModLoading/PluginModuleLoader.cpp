@@ -39,33 +39,38 @@ static bool PluginModuleLoaderExec(UWorld* InWorld, const TCHAR* Cmd, FOutputDev
 TArray<FDiscoveredModule> FPluginModuleLoader::FindRootModulesOfType(TSubclassOf<UModModule> ModuleType) {
 	TArray<FDiscoveredModule> ResultingModules;
 
+	//Retrieve all loaded classes parenting from module class and check them
+	TArray<UClass*> NativeModuleClasses;
+	UBlueprintAssetHelperLibrary::FindNativeClassesByType(ModuleType, NativeModuleClasses);
+	
 	//Retrieve assets with bRootModule tag set to true using asset registry
-	TArray<UClass*> ModuleBlueprintClasses;
-	UBlueprintAssetHelperLibrary::FindBlueprintAssetsByTag(ModuleType, TEXT("bRootModule"), {TEXT("True")}, ModuleBlueprintClasses);
+	TArray<UClass*> BlueprintModuleClasses;
+	UBlueprintAssetHelperLibrary::FindBlueprintAssetsByTag(ModuleType, TEXT("bRootModule"), {TEXT("True")}, BlueprintModuleClasses);
 
+	TSet<UClass*> AllModuleClasses;
+	AllModuleClasses.Reserve(NativeModuleClasses.Num() + BlueprintModuleClasses.Num());
+	AllModuleClasses.Append(NativeModuleClasses);
+	AllModuleClasses.Append(BlueprintModuleClasses);
+	
 	//Iterate found classes and perform additional checking
-	for (UClass* RootModuleClass : ModuleBlueprintClasses) {
-		UModModule* ModModuleCDO = CastChecked<UModModule>(RootModuleClass->GetDefaultObject());
+	for (UClass* RootModuleClass : AllModuleClasses) {
+		if (!RootModuleClass->HasAnyClassFlags(CLASS_Abstract | CLASS_NewerVersionExists | CLASS_Deprecated)) {
+			UModModule* ModModuleCDO = CastChecked<UModModule>(RootModuleClass->GetDefaultObject());
 		
-		//Make sure it is a root module after all, just in case
-		if (ModModuleCDO->bRootModule) {
-			//Make sure market class is not Abstract
-			if (RootModuleClass->HasAnyClassFlags(CLASS_Abstract)) {
-				UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Abstract class '%s' has been marked as a root module. This is a error"), *RootModuleClass->GetPathName());
-				continue;
+			//Make sure it is a root module after all, because FindNativeClassesByType doesn't check for this
+			if (ModModuleCDO->bRootModule) {
+				//Retrieve owning plugin name for the provided class
+				const FString OwnerPluginName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(RootModuleClass->GetPathName());
+
+				//Make sure valid owner has been found
+				if (OwnerPluginName.IsEmpty()) {
+					UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to determine owning plugin for root module %s"), *RootModuleClass->GetPathName());
+					continue;
+				}
+
+				//Add module into the collection
+				ResultingModules.Add(FDiscoveredModule{OwnerPluginName, RootModuleClass});
 			}
-
-			//Retrieve owning plugin name for the provided class
-			const FString OwnerPluginName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(RootModuleClass->GetPathName());
-
-			//Make sure valid owner has been found
-			if (OwnerPluginName.IsEmpty()) {
-				UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Failed to determine owning plugin for root module %s"), *RootModuleClass->GetPathName());
-				continue;
-			}
-
-			//Add module into the collection
-			ResultingModules.Add(FDiscoveredModule{OwnerPluginName, RootModuleClass});
 		}
 	}
 	return ResultingModules;

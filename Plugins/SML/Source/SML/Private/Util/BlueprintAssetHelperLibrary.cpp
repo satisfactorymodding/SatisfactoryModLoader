@@ -50,6 +50,10 @@ void UBlueprintAssetHelperLibrary::FindBlueprintAssetsByTag(UClass* BaseClass, c
 	}
 }
 
+void UBlueprintAssetHelperLibrary::FindNativeClassesByType(UClass* BaseClass, TArray<UClass*>& FoundClasses) {
+	GetDerivedClasses(BaseClass, FoundClasses, true);
+}
+
 FString FindOwnerPluginForModuleName(const FString& ModuleName, bool bTreatNonModPluginsAsGame) {
 	//Iterate mod plugin modules and find the owning plugin for them
 	const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
