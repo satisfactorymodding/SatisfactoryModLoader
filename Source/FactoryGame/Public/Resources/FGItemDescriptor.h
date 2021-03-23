@@ -3,6 +3,8 @@
 #pragma once
 
 #include "UObject/Object.h"
+//MODDING EDIT: "FactoryGame.h"
+#include "FactoryGame.h"
 #include "Styling/SlateBrush.h"
 #include "FGItemDescriptor.generated.h"
 

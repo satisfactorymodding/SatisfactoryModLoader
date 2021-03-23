@@ -203,8 +203,8 @@ private:
 	FSchematicCost* FindSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
 	void AddSchematicPayOff( TSubclassOf< class UFGSchematic > schematic, const TArray< FItemAmount >& amount );
 	void RemoveSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
-
-protected:	
+	//MODDING EDIT: protected -> public
+public:
 	//MODDING EDIT: expose access to internal state to content registry
 	friend class AModContentRegistry;
     

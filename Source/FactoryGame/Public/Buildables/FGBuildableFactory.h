@@ -512,8 +512,8 @@ protected:
 	/** Event for when ReplicationDetailActors are created. Will only be dispatched if this buildable inherits from the ReplicationDetailActorOwnerInterface. */
 	UPROPERTY( BlueprintAssignable, Category = "Replication Detail Actor Owner Interface" )
 	FOnReplicationDetailActorCreated OnReplicationDetailActorCreatedEvent;
-
-private:
+	//MODDING EDIT: private -> Public
+public:
 	/** The input we place a crystal in to unlock the potential */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mInventoryPotential;
