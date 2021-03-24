@@ -16,6 +16,7 @@
 #include "Patching/Patch/OfflinePlayerHandler.h"
 #include "Patching/Patch/OptionsKeybindPatch.h"
 #include "Player/PlayerCheatManagerHandler.h"
+#include "Toolkit/OldToolkit/FGNativeClassDumper.h"
 
 extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.0.0");
 extern "C" DLLEXPORT const long targetGameVersion = 137570;
@@ -141,6 +142,7 @@ void FSatisfactoryModLoader::RegisterSubsystems() {
 
         //Register asset dumping related console commands
         FGameAssetDumper::RegisterConsoleCommands();
+        FGameNativeClassDumper::RegisterConsoleCommands();
     }
 }
 
