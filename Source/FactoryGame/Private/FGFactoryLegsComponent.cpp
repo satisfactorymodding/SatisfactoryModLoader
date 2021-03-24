@@ -11,7 +11,7 @@ void UFGFactoryLegsComponent::OnRegister(){ Super::OnRegister(); }
 void UFGFactoryLegsComponent::OnUnregister(){ Super::OnUnregister(); }
 #endif 
 UFGFactoryLegsComponent::UFGFactoryLegsComponent() : Super() {
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGFactoryLegsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGFactoryLegsComponent::BeginPlay(){ }

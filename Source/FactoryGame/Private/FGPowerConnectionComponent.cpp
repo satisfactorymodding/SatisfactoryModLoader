@@ -7,7 +7,7 @@ UFGPowerConnectionComponent::UFGPowerConnectionComponent() : Super() {
 	this->mCircuitType = UFGPowerCircuit::StaticClass();
 	this->mMaxNumConnectionLinks = 1;
 	this->bNetAddressable = true;
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGPowerConnectionComponent::SetPowerInfo( UFGPowerInfoComponent* powerInfo){ }
 UFGPowerCircuit* UFGPowerConnectionComponent::GetPowerCircuit() const{ return nullptr; }

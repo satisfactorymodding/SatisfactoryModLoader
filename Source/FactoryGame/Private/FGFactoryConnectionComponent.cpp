@@ -6,7 +6,7 @@ UFGFactoryConnectionComponent::UFGFactoryConnectionComponent() : Super() {
 	this->mConnectorClearance = 100;
 	this->mInventoryAccessIndex = -1;
 	this->bNetAddressable = true;
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }

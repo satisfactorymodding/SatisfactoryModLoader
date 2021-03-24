@@ -7,7 +7,7 @@ UFGPipeConnectionFactory::UFGPipeConnectionFactory() : Super() {
 	this->mApplyAdditionalPressure = true;
 	this->mPipeType = "Fluid";
 	this->bNetAddressable = true;
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGPipeConnectionFactory::BeginPlay(){ }
 void UFGPipeConnectionFactory::EndPlay(const EEndPlayReason::Type reason){ }

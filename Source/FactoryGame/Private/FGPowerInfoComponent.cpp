@@ -6,7 +6,7 @@ void UFGPowerInfoComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty
 void UFGPowerInfoComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 UFGPowerInfoComponent::UFGPowerInfoComponent() : Super() {
 	this->mCircuitID = -1;
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGPowerInfoComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGPowerInfoComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

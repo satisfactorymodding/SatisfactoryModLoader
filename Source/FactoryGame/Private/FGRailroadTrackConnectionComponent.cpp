@@ -5,7 +5,7 @@
 UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Super() {
 	this->mSwitchPosition = -1;
 	this->bNetAddressable = true;
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }

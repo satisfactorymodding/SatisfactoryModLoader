@@ -5,7 +5,7 @@
 UFGPipeConnectionComponentBase::UFGPipeConnectionComponentBase() : Super() {
 	this->mPipeType = "Base";
 	this->bNetAddressable = true;
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPipeConnectionComponentBase::OnComponentDestroyed(bool isDestroyingHierarchy){ }
@@ -24,7 +24,7 @@ void UFGPipeConnectionComponentBase::UpdateClientCachedConnection(){ }
 UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
 	this->mPipeType = "Fluid";
 	this->bNetAddressable = true;
-	this->SetIsReplicated(true);
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGPipeConnectionComponent::BeginPlay(){ }
 void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }

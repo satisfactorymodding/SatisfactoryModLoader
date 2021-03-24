@@ -382,10 +382,8 @@ protected:
 	/** Caches a lot off stuff needed for the map area checks */
 	bool InitMapAreaCheckFunction();
 
-public: // MODDING EDIT
 	UFUNCTION( BlueprintCallable, Category = "Chat" )
 	void EnterChatMessage( const FString& inMessage );
-protected: // MODDING EDIT
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
 	void OnDisabledInputGateChanged();
