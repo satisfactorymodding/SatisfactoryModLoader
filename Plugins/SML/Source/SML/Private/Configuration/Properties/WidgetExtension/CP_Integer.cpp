@@ -1,5 +1,13 @@
 ﻿#include "Configuration/Properties/WidgetExtension/CP_Integer.h"
 
+
+UCP_Integer::UCP_Integer()
+{
+	MinValue = 0;
+	MaxValue = 1;
+}
+
+
 TArray<FName> UCP_Integer::GetEnumNames() const
 {
 	if (EnumClass)

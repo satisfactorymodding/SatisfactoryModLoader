@@ -14,10 +14,17 @@ enum class ECP_FloatWidgetType : uint8
 UCLASS(EditInlineNew)
 class SML_API UCP_Float : public UConfigPropertyFloat {
     GENERATED_BODY()
-public:
 
+	UCP_Float();
+
+public:
+	
 
 	UPROPERTY(EditAnywhere, Category = "Default", BlueprintReadOnly, meta = (DisplayAfter = "DefaultValue"))
 		ECP_FloatWidgetType WidgetType;
+	UPROPERTY(EditAnywhere, Category = "Default", BlueprintReadOnly, meta = (DisplayAfter = "WidgetType"))
+		float MinValue;
+	UPROPERTY(EditAnywhere, Category = "Default", BlueprintReadOnly, meta = (DisplayAfter = "MaxValue"))
+		float MaxValue;
 
 };

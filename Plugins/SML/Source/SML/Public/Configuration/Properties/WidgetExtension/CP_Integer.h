@@ -17,10 +17,15 @@ class SML_API UCP_Integer : public UConfigPropertyInteger {
     GENERATED_BODY()
 public:
 
+	UCP_Integer();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (DisplayAfter = "DefaultValue"))
 	ECP_IntegerWidgetType WidgetType;
 
-	// Edit Condition doesnt work untill 4.23
+	UPROPERTY(EditAnywhere, Category = "Default", BlueprintReadOnly, meta = (DisplayAfter = "WidgetType"))
+		int32 MinValue;
+	UPROPERTY(EditAnywhere, Category = "Default", BlueprintReadOnly, meta = (DisplayAfter = "MaxValue"))
+		int32 MaxValue;
 
 	// Custom Enum Class to use for the display Widget
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "WidgetType == ECP_IntegerWidgetType::CPI_Enum", EditConditionHides, DisplayAfter = "WidgetType"))

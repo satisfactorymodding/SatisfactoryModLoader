@@ -3,3 +3,8 @@
 
 
 
+UCP_Float::UCP_Float()
+{
+	MinValue = 0.f;
+	MaxValue = 1.f;
+}
