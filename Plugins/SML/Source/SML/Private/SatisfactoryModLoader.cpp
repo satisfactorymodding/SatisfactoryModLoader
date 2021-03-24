@@ -19,7 +19,7 @@
 #include "Toolkit/OldToolkit/FGNativeClassDumper.h"
 
 extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.0.0");
-extern "C" DLLEXPORT const long targetGameVersion = 137570;
+extern "C" DLLEXPORT const long targetGameVersion = 147126;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
