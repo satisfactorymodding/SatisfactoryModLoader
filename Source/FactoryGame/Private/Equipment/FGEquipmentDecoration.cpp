@@ -2,7 +2,14 @@
 
 #include "Equipment/FGEquipmentDecoration.h"
 
-AFGEquipmentDecoration::AFGEquipmentDecoration(){ }
+AFGEquipmentDecoration::AFGEquipmentDecoration() : Super() {
+	this->mPlaceDistanceMax = 1000;
+	this->mArmAnimation = EArmEquipment::AE_Generic1Hand;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bOnlyRelevantToOwner = true;
+	this->bNetUseOwnerRelevancy = true;
+	this->SetReplicates(true);
+}
 void AFGEquipmentDecoration::Tick(float DeltaSeconds){ }
 void AFGEquipmentDecoration::OnPrimaryFirePressed(){ }
 void AFGEquipmentDecoration::Server_PrimaryFire_Implementation(){ }

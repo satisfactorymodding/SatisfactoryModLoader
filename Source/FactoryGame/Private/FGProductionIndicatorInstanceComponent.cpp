@@ -2,7 +2,9 @@
 
 #include "FGProductionIndicatorInstanceComponent.h"
 
-UFGProductionIndicatorInstanceComponent::UFGProductionIndicatorInstanceComponent(){ }
+UFGProductionIndicatorInstanceComponent::UFGProductionIndicatorInstanceComponent() : Super() {
+	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = false; this->PrimaryComponentTick.bStartWithTickEnabled = false; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false; this->PrimaryComponentTick.TickInterval = 0;
+}
 void UFGProductionIndicatorInstanceComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void UFGProductionIndicatorInstanceComponent::SetInstanceManager(UFGProductionIndicatorInstanceManager* manager){ }
 void UFGProductionIndicatorInstanceComponent::SetInstanced(bool isInstanced){ }

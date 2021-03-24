@@ -2,4 +2,7 @@
 
 #include "FGBeacon.h"
 
-AFGBeacon::AFGBeacon(){ }
+AFGBeacon::AFGBeacon() : Super() {
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
+}

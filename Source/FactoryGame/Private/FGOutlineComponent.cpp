@@ -2,7 +2,9 @@
 
 #include "FGOutlineComponent.h"
 
-UFGOutlineComponent::UFGOutlineComponent(){ }
+UFGOutlineComponent::UFGOutlineComponent() : Super() {
+	
+}
 UFGOutlineComponent* UFGOutlineComponent::Get(UWorld* world){ return nullptr; }
 void UFGOutlineComponent::ShowOutline(AActor* actorToOutline, EOutlineColor color){ }
 void UFGOutlineComponent::ShowProxyOutline( UStaticMesh* outlineMesh, const FTransform transform, EOutlineColor color){ }

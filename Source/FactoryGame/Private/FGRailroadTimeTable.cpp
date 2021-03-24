@@ -2,7 +2,10 @@
 
 #include "FGRailroadTimeTable.h"
 
-AFGRailroadTimeTable::AFGRailroadTimeTable(){ }
+AFGRailroadTimeTable::AFGRailroadTimeTable() : Super() {
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 void AFGRailroadTimeTable::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGRailroadTimeTable::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRailroadTimeTable::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

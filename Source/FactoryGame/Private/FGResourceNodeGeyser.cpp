@@ -2,4 +2,13 @@
 
 #include "FGResourceNodeGeyser.h"
 
-AFGResourceNodeGeyser::AFGResourceNodeGeyser(){ }
+AFGResourceNodeGeyser::AFGResourceNodeGeyser() : Super() {
+	this->mPurity = RP_Normal;
+	this->mAmount = RA_Infinite;
+	this->mCanPlaceResourceExtractor = true;
+	this->mExtractMultiplier = 1;
+	this->mAllowDecal = true;
+	this->mDoSpawnParticle = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
+}

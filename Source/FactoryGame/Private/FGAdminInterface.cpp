@@ -2,7 +2,11 @@
 
 #include "FGAdminInterface.h"
 
-AFGAdminInterface::AFGAdminInterface(){ }
+AFGAdminInterface::AFGAdminInterface() : Super() {
+	this->bOnlyRelevantToOwner = true;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 bool AFGAdminInterface::IsNetRelevantFor(const AActor* realViewer, const AActor* viewTarget, const FVector& srcLocation) const{ return bool(); }
 void AFGAdminInterface::KickPlayer_Implementation( APlayerState* playerState){ }
 bool AFGAdminInterface::KickPlayer_Validate( APlayerState* playerState){ return bool(); }

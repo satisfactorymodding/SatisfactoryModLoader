@@ -2,7 +2,11 @@
 
 #include "FGTrainStationIdentifier.h"
 
-AFGTrainStationIdentifier::AFGTrainStationIdentifier(){ }
+AFGTrainStationIdentifier::AFGTrainStationIdentifier() : Super() {
+	this->mTrackGraphID = -1;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 void AFGTrainStationIdentifier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGTrainStationIdentifier::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTrainStationIdentifier::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

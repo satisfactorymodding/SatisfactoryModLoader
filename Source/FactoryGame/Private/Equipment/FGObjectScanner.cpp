@@ -2,7 +2,19 @@
 
 #include "Equipment/FGObjectScanner.h"
 
-AFGObjectScanner::AFGObjectScanner(){ }
+AFGObjectScanner::AFGObjectScanner() : Super() {
+	this->mBeepDelayMax = 1.5;
+	this->mBeepDelayMin = 0.200000002980232;
+	this->mDetectionRange = 500;
+	this->mUpdateClosestObjectTime = 2;
+	this->mShouldBeepEvenIfNoObject = true;
+	this->mEquipmentSlot = EEquipmentSlot::ES_ARMS;
+	this->mArmAnimation = EArmEquipment::AE_ObjectScanner;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bOnlyRelevantToOwner = true;
+	this->bNetUseOwnerRelevancy = true;
+	this->SetReplicates(true);
+}
 void AFGObjectScanner::BeginPlay(){ }
 void AFGObjectScanner::Tick(float deltaTime){ }
 void AFGObjectScanner::Equip( AFGCharacterPlayer* character){ }

@@ -2,7 +2,9 @@
 
 #include "FGRailroadVehicleSoundComponent.h"
 
-UFGRailroadVehicleSoundComponent::UFGRailroadVehicleSoundComponent(){ }
+UFGRailroadVehicleSoundComponent::UFGRailroadVehicleSoundComponent() : Super() {
+	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = true; this->PrimaryComponentTick.bStartWithTickEnabled = true; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true; this->PrimaryComponentTick.TickInterval = 0;
+}
 void UFGRailroadVehicleSoundComponent::OnRegister(){ Super::OnRegister(); }
 void UFGRailroadVehicleSoundComponent::OnUnregister(){ Super::OnUnregister(); }
 void UFGRailroadVehicleSoundComponent::TickComponent(float deltaTime, ELevelTick tickType, FActorComponentTickFunction* thisTickFunction){ }

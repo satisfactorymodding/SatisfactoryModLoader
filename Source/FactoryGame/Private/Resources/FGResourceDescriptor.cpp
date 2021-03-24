@@ -5,7 +5,15 @@
 #if WITH_EDITOR
 void UFGResourceDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
-UFGResourceDescriptor::UFGResourceDescriptor(){ }
+UFGResourceDescriptor::UFGResourceDescriptor() : Super() {
+	this->mDecalSize = 200;
+	this->mCollectSpeedMultiplier = 1;
+	this->mManualMiningAudioName = "Metal";
+	this->mUseDisplayNameAndDescription = true;
+	this->mStackSize = EStackSize::SS_MEDIUM;
+	this->mCanBeDiscarded = true;
+	this->mForm = EResourceForm::RF_SOLID;
+}
 bool UFGResourceDescriptor::CanBeHandMined(TSubclassOf< UFGResourceDescriptor > inClass){ return bool(); }
 UMaterialInstance* UFGResourceDescriptor::GetDepositMaterial(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }
 UStaticMesh* UFGResourceDescriptor::GetDepositMesh(TSubclassOf< UFGResourceDescriptor > inClass){ return nullptr; }

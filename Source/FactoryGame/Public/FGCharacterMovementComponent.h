@@ -446,7 +446,7 @@ public:
 	UPROPERTY()
 	class AFGCharacterPlayer* mFGCharacterOwner;
 
-// Modding Edit: Access private:
+// private: // MODDING EDIT
 	friend class FSavedMove_FGMovement;
 
 	/** A cached instance of the equipment that issued jet pack thrust */
@@ -549,8 +549,7 @@ public:
 	public:
 	bool mCheatGhost : 1;
 	float CheatFlySpeedVertical;
-// Modding Edit: dont want to change Signature
-private:
+private: // MODDING EDIT: Don't change signature
 	void ZeroOutFallVelocity();
 	//end Cheat
 };

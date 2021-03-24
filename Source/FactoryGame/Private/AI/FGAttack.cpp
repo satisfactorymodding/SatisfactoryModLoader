@@ -2,4 +2,8 @@
 
 #include "AI/FGAttack.h"
 
-UFGAttack::UFGAttack(){ }
+UFGAttack::UFGAttack() : Super() {
+	this->mAttackRange = 100;
+	this->mDamage = 10;
+	this->mAttackAngle = 60;
+}

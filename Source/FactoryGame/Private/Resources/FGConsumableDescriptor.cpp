@@ -2,6 +2,12 @@
 
 #include "Resources/FGConsumableDescriptor.h"
 
-UFGConsumableDescriptor::UFGConsumableDescriptor(){ }
+UFGConsumableDescriptor::UFGConsumableDescriptor() : Super() {
+	this->mCustomHandsMeshScale = 1;
+	this->mUseDisplayNameAndDescription = true;
+	this->mStackSize = EStackSize::SS_MEDIUM;
+	this->mCanBeDiscarded = true;
+	this->mForm = EResourceForm::RF_SOLID;
+}
 USkeletalMesh* UFGConsumableDescriptor::GetFPOverrideMesh(TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }
 UStaticMesh* UFGConsumableDescriptor::GetTPOverrideMesh(TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }

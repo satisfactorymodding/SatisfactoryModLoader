@@ -2,7 +2,13 @@
 
 #include "FGPipeConnectionFactory.h"
 
-UFGPipeConnectionFactory::UFGPipeConnectionFactory(){ }
+UFGPipeConnectionFactory::UFGPipeConnectionFactory() : Super() {
+	this->mFluidBoxVolume = 5;
+	this->mApplyAdditionalPressure = true;
+	this->mPipeType = "Fluid";
+	this->bNetAddressable = true;
+	this->SetIsReplicated(true);
+}
 void UFGPipeConnectionFactory::BeginPlay(){ }
 void UFGPipeConnectionFactory::EndPlay(const EEndPlayReason::Type reason){ }
 FFluidBox* UFGPipeConnectionFactory::GetFluidBox(){ return nullptr; }

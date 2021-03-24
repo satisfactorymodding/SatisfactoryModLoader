@@ -2,7 +2,11 @@
 
 #include "FGRadioactivitySubsystem.h"
 
-AFGRadioactivitySubsystem::AFGRadioactivitySubsystem(){ }
+AFGRadioactivitySubsystem::AFGRadioactivitySubsystem() : Super() {
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 void AFGRadioactivitySubsystem::BeginPlay(){ }
 void AFGRadioactivitySubsystem::Tick(float dt){ }
 void AFGRadioactivitySubsystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }

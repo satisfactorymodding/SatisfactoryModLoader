@@ -11,7 +11,9 @@ void AFGWorldSettings::HandleMapChanged( UWorld* newWorld, EMapChangeType mapCha
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-AFGWorldSettings::AFGWorldSettings(){ }
+AFGWorldSettings::AFGWorldSettings() : Super() {
+	this->mStartTimeOfDay = 12;
+}
 void AFGWorldSettings::BeginDestroy(){ Super::BeginDestroy(); }
 void AFGWorldSettings::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGWorldSettings::PostLoad(){ Super::PostLoad(); }

@@ -15,5 +15,7 @@ TArray<TArray<FColor>> AFGMinimapCaptureActor::CreateLayeredPixelArray(FFGHeight
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-AFGMinimapCaptureActor::AFGMinimapCaptureActor(){ }
+AFGMinimapCaptureActor::AFGMinimapCaptureActor() : Super() {
+	
+}
 void AFGMinimapCaptureActor::BeginPlay(){ }

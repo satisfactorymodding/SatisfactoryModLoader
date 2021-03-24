@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "Json.h"
+#include "Configuration/ConfigManager.h"
 
 class SML_API FLegacyConfigurationHelper {
 public:

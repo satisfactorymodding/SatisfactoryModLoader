@@ -4,7 +4,11 @@
 
 AFGMapManager* AFGMapManager::Get(UWorld* world){ return nullptr; }
 AFGMapManager* AFGMapManager::Get(UObject* worldContext){ return nullptr; }
-AFGMapManager::AFGMapManager(){ }
+AFGMapManager::AFGMapManager() : Super() {
+	this->PrimaryActorTick.TickGroup = TG_DuringPhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0.100000001490116;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 void AFGMapManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGMapManager::BeginPlay(){ }
 void AFGMapManager::Tick(float dt){ }

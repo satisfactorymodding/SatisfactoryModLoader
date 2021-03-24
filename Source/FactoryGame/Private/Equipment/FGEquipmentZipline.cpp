@@ -2,7 +2,18 @@
 
 #include "Equipment/FGEquipmentZipline.h"
 
-AFGEquipmentZipline::AFGEquipmentZipline(){ }
+AFGEquipmentZipline::AFGEquipmentZipline() : Super() {
+	this->mZiplineJumpLaunchVelocity = 600;
+	this->mMaxZiplineAngle = 0.949999988079071;
+	this->mTraceDistance = 500;
+	this->mTraceStartOffset = 300;
+	this->mTraceRadius = 70;
+	this->mZiplineReattachCooldown = 1;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bOnlyRelevantToOwner = true;
+	this->bNetUseOwnerRelevancy = true;
+	this->SetReplicates(true);
+}
 void AFGEquipmentZipline::AddEquipmentActionBindings(){ }
 void AFGEquipmentZipline::DoDefaultPrimaryFire_Native(){ }
 void AFGEquipmentZipline::UnEquip(){ }

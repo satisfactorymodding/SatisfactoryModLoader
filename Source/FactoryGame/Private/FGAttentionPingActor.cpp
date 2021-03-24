@@ -2,7 +2,12 @@
 
 #include "FGAttentionPingActor.h"
 
-AFGAttentionPingActor::AFGAttentionPingActor(){ }
+AFGAttentionPingActor::AFGAttentionPingActor() : Super() {
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bAlwaysRelevant = true;
+	this->SetReplicatingMovement(true);
+	this->SetReplicates(true);
+}
 void AFGAttentionPingActor::BeginPlay(){ }
 void AFGAttentionPingActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGAttentionPingActor::SetOwningPlayerState( AFGPlayerState* playerState){ }

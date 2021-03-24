@@ -2,7 +2,10 @@
 
 #include "FGCrate.h"
 
-AFGCrate::AFGCrate(){ }
+AFGCrate::AFGCrate() : Super() {
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
+}
 void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGCrate::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGCrate::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

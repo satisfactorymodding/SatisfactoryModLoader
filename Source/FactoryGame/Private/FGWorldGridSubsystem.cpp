@@ -9,7 +9,11 @@ float FFGWorldGridCell::GetElevation() const{ return float(); }
 void FFGWorldGridCell::OnTraceCompleted(const FTraceHandle& Handle, FTraceDatum& Data){ }
 void UFGWorldGridDataAsset::AssignWorldCells(TArray<FFGWorldGridCellData>&& Cells, const FVector2D& GridMin, const FVector2D& GridMax, int32 Divisions){ }
 void UFGWorldGridDataAsset::DebugDraw(){ }
-AFGWorldGridSubsystem::AFGWorldGridSubsystem(){ }
+AFGWorldGridSubsystem::AFGWorldGridSubsystem() : Super() {
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UWorld* world){ return nullptr; }
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGWorldGridSubsystem::UpdateCellContainingBuildable( AFGBuildable* pBuildable){ }

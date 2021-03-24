@@ -7,7 +7,17 @@ void FInstanceLODs::AddBucketInstance(int32 Num, AActor* Outer){ }
 void FInstanceLODs::UpdateBuffers(UTexture2D* PositionBuffer, UTexture2D* OrientationBuffer){ }
 void FInstanceLODs::Initialize(AActor* Outer, UStaticMesh* Mesh, int32 Row, int32 LodLevel, UTexture2D* PositionBuffer, UTexture2D* OrientationBuffer){ }
 void FInstanceLODs::AddInstance_Internal(AActor* Outer){ }
-AFGConveyorItemSubsystem::AFGConveyorItemSubsystem(){ }
+AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
+	this->mInitialPreAllocatedNumberOfItemTypes = 8;
+	this->mInitialPreAllocatedNumberOfItemsInstances = 512;
+	this->mItemInstanceIncrementSize = 32;
+	this->mItemInstanceUpdateThreshold = 64;
+	this->mItemTypeIncrementSize = 8;
+	this->mMaxParallelTasks = 10;
+	this->mMaxInstancesPerComponent = 64;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = false; this->PrimaryActorTick.TickInterval = 0.0166666675359011;
+	this->bAlwaysRelevant = true;
+}
 AFGConveyorItemSubsystem* AFGConveyorItemSubsystem::Get(UWorld* world){ return nullptr; }
 void AFGConveyorItemSubsystem::RegisterBelt(AFGBuildableConveyorBase* newBelt){ }
 void AFGConveyorItemSubsystem::UnRegisterBelt(AFGBuildableConveyorBase* removedBelt){ }

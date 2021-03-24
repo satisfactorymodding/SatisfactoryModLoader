@@ -16,7 +16,13 @@ void AFGCircuitSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 g
 void AFGCircuitSubsystem::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGCircuitSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGCircuitSubsystem::ShouldSave_Implementation() const{ return bool(); }
-AFGCircuitSubsystem::AFGCircuitSubsystem(){ }
+AFGCircuitSubsystem::AFGCircuitSubsystem() : Super() {
+	this->mCriticalBatteryDepletionPercent = 0.25;
+	this->mMinimumBatteryWarningInterval = 10;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGCircuitSubsystem::BeginPlay(){ }
 void AFGCircuitSubsystem::Tick(float DeltaSeconds){ }

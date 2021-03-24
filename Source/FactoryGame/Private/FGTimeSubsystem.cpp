@@ -6,7 +6,20 @@
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-AFGTimeOfDaySubsystem::AFGTimeOfDaySubsystem(){ }
+AFGTimeOfDaySubsystem::AFGTimeOfDaySubsystem() : Super() {
+	this->mSyncronizeTimeOfDayInterval = 5;
+	this->mDayLengthMinutes = 3;
+	this->mNightLengthMinutes = 1.5;
+	this->mDayStartTime = 6;
+	this->mNightStartTime = 18;
+	this->mSpeedMultiplier = 1;
+	this->mNumberOfPassedDays = -1;
+	this->mRTPCInterval = 20;
+	this->mUpdateTime = true;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
 void AFGTimeOfDaySubsystem::BeginPlay(){ }
 void AFGTimeOfDaySubsystem::Tick(float dt){ }
 void AFGTimeOfDaySubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

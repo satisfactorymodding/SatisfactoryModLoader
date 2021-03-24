@@ -5,7 +5,16 @@
 #if WITH_EDITOR
 void AFGResourceNode::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 #endif 
-AFGResourceNode::AFGResourceNode(){ }
+AFGResourceNode::AFGResourceNode() : Super() {
+	this->mPurity = RP_Normal;
+	this->mAmount = RA_Infinite;
+	this->mCanPlaceResourceExtractor = true;
+	this->mExtractMultiplier = 1;
+	this->mAllowDecal = true;
+	this->mDoSpawnParticle = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
+}
 void AFGResourceNode::BeginPlay(){ }
 void AFGResourceNode::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
 void AFGResourceNode::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

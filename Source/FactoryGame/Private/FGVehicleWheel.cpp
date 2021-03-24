@@ -2,6 +2,9 @@
 
 #include "FGVehicleWheel.h"
 
-UFGVehicleWheel::UFGVehicleWheel(){ }
+UFGVehicleWheel::UFGVehicleWheel() : Super() {
+	this->mCamberStiffness = 5.72957801818848;
+	this->SweepType = Simple;
+}
 PxConvexMesh* UFGVehicleWheel::CreateWheelMesh(const PxF32 width, const PxF32 radius, PxPhysics& physics, PxCooking& cooking){ return nullptr; }
 UTireConfig* UFGVehicleWheel::GetDefaultTireConfig(){ return nullptr; }

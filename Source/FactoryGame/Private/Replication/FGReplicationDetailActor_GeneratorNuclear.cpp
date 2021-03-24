@@ -2,7 +2,10 @@
 
 #include "Replication/FGReplicationDetailActor_GeneratorNuclear.h"
 
-AFGReplicationDetailActor_GeneratorNuclear::AFGReplicationDetailActor_GeneratorNuclear(){ }
+AFGReplicationDetailActor_GeneratorNuclear::AFGReplicationDetailActor_GeneratorNuclear() : Super() {
+	this->SetHidden(true);
+	this->SetReplicates(true);
+}
 void AFGReplicationDetailActor_GeneratorNuclear::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGReplicationDetailActor_GeneratorNuclear::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_GeneratorNuclear::RemoveDetailActorFromOwner(){ }

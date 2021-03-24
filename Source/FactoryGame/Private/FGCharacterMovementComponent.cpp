@@ -2,7 +2,21 @@
 
 #include "FGCharacterMovementComponent.h"
 
-UFGCharacterMovementComponent::UFGCharacterMovementComponent(){ }
+UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
+	this->mClimbSpeed = 500;
+	this->mMaxSprintSpeed = 900;
+	this->mSprintMinDotResult = 0.75;
+	this->mJumpOffLadderVelocity = 300;
+	this->mMaxSlideAngle = 1.64999997615814;
+	this->mBoostJumpZMultiplier = 1.5;
+	this->mBoostJumpVelocityMultiplier = 1.29999995231628;
+	this->mBoostJumpTimeWindow = 0.150000005960464;
+	this->mZiplineSpeed = 1200;
+	this->mZiplineInitialVelocityPercentage = 0.5;
+	this->mZiplineVelocityInterpolationSpeed = 1;
+	this->mZiplineSpeedMultiplierUp = 0.5;
+	this->mZiplineSpeedMultiplierDown = 1.29999995231628;
+}
 void UFGCharacterMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){ }
 FNetworkPredictionData_Client* UFGCharacterMovementComponent::GetPredictionData_Client() const{ return nullptr; }
 bool UFGCharacterMovementComponent::DoJump(bool isReplayingMoves){ return bool(); }

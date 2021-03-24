@@ -575,8 +575,7 @@ protected:
 
 	/** Checks if there is an item at index. */
 	bool Factory_HasItemAt( int32 index ) const;
-// MODDING EDIT Accessor
-public:
+public: // MODDING EDIT: Accessor
 	FORCEINLINE const FConveyorBeltItem& Factory_PeekItemAtAccessor(int32 index) const { return Factory_PeekItemAt(index); };
 protected:
 	/** Lets you know what type of item is on a specific index. */

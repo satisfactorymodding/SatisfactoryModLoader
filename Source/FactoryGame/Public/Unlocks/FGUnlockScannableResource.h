@@ -68,8 +68,8 @@ public:
 
 	UFUNCTION( BlueprintPure, Category=Unlocks )
 	FORCEINLINE TArray< FScannableResourcePair > GetResourcesToAddToScanner() const { return mResourcePairsToAddToScanner; }
-//MODDING EDIT: protected -> public
-public:
+
+public: // MODDING EDIT: protected -> public
 	/**  These are the resources that are scannable after this unlock */
 	UPROPERTY() //@todok2 Deprecated remove this when all assets been resaved.
 	TArray< TSubclassOf< class UFGResourceDescriptor > > mResourcesToAddToScanner;

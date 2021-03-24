@@ -2,7 +2,9 @@
 
 #include "FGSaveSession.h"
 
-UFGSaveSession::UFGSaveSession(){ }
+UFGSaveSession::UFGSaveSession() : Super() {
+	this->mNumRotatingAutosaves = 3;
+}
 UFGSaveSession::~UFGSaveSession(){ }
 void UFGSaveSession::Init(bool willLoad){ }
 void UFGSaveSession::OnAutosaveIntervalUpdated(FString cvar){ }

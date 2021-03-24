@@ -2,7 +2,16 @@
 
 #include "Equipment/FGChainsaw.h"
 
-AFGChainsaw::AFGChainsaw(){ }
+AFGChainsaw::AFGChainsaw() : Super() {
+	this->mEnergyConsumption = 3;
+	this->mSawDownTreeTime = 2;
+	this->mCollateralPickupRadius = 200;
+	this->mArmAnimation = EArmEquipment::AE_ChainSaw;
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->bOnlyRelevantToOwner = true;
+	this->bNetUseOwnerRelevancy = true;
+	this->SetReplicates(true);
+}
 void AFGChainsaw::Tick(float dt){ }
 bool AFGChainsaw::ShouldSaveState() const{ return bool(); }
 void AFGChainsaw::UnEquip(){ }

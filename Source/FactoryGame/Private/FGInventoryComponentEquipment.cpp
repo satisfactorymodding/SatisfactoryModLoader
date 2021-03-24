@@ -2,7 +2,12 @@
 
 #include "FGInventoryComponentEquipment.h"
 
-UFGInventoryComponentEquipment::UFGInventoryComponentEquipment(){ }
+UFGInventoryComponentEquipment::UFGInventoryComponentEquipment() : Super() {
+	this->mActiveEquipmentIndex = -1;
+	this->mDefaultInventorySize = 1;
+	this->mCanBeRearrange = true;
+	this->SetIsReplicated(true);
+}
 AFGEquipment* UFGInventoryComponentEquipment::GetEquipmentInInventory() const{ return nullptr; }
 EEquipmentSlot UFGInventoryComponentEquipment::GetEquipmentSlotEnum() const{ return EEquipmentSlot(); }
 void UFGInventoryComponentEquipment::SetEquipmentSlotEnum(EEquipmentSlot inSlot){ }

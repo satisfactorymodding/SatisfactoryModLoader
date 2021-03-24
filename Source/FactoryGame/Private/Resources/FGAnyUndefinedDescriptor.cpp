@@ -2,4 +2,11 @@
 
 #include "Resources/FGAnyUndefinedDescriptor.h"
 
-UFGAnyUndefinedDescriptor::UFGAnyUndefinedDescriptor(){ }
+UFGAnyUndefinedDescriptor::UFGAnyUndefinedDescriptor() : Super() {
+	this->mUseDisplayNameAndDescription = true;
+	this->mDisplayName = NSLOCTEXT("AnyUndefinedDescriptor", "DisplayName", "Any Undefined");
+	this->mDescription = NSLOCTEXT("AnyUndefinedDescriptor", "Description", "Any item not specified elsewhere");
+	this->mStackSize = EStackSize::SS_MEDIUM;
+	this->mCanBeDiscarded = true;
+	this->mForm = EResourceForm::RF_SOLID;
+}

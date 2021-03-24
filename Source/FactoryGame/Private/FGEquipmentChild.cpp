@@ -2,7 +2,11 @@
 
 #include "FGEquipmentChild.h"
 
-AFGEquipmentChild::AFGEquipmentChild(){ }
+AFGEquipmentChild::AFGEquipmentChild() : Super() {
+	this->bOnlyRelevantToOwner = true;
+	this->bNetUseOwnerRelevancy = true;
+	this->SetReplicates(true);
+}
 void AFGEquipmentChild::BeginPlay(){ }
 void AFGEquipmentChild::Equip( AFGCharacterPlayer* character,  AFGEquipment* parentEquipment){ }
 void AFGEquipmentChild::UnEquip(){ }
