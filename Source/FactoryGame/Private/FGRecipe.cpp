@@ -3,8 +3,8 @@
 #include "FGRecipe.h"
 
 #if WITH_EDITOR
-bool UFGRecipe::CanEditChange(const FProperty* InProperty) const{ return bool(); }
-EDataValidationResult UFGRecipe::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult(); }
+bool UFGRecipe::CanEditChange(const FProperty* InProperty) const{ return true; }
+EDataValidationResult UFGRecipe::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult::Valid; }
 #endif 
 #if WITH_EDITOR
 void UFGRecipe::SetProduct(TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product) {

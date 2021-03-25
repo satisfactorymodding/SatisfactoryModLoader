@@ -4,7 +4,7 @@
 
 #if WITH_EDITOR
 void UFGSchematic::PreSave(const  ITargetPlatform* targetPlatform){ }
-EDataValidationResult UFGSchematic::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult(); }
+EDataValidationResult UFGSchematic::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult::Valid;}
 #endif 
 #if WITH_EDITOR
 void UFGSchematic::UpdateAssetBundleData(){ }

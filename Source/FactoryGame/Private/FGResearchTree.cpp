@@ -4,7 +4,7 @@
 
 #if WITH_EDITOR
 void UFGResearchTree::PreSave(const  ITargetPlatform* targetPlatform){ }
-EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult(); }
+EDataValidationResult UFGResearchTree::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult::Valid; }
 #endif 
 #if WITH_EDITOR
 void UFGResearchTree::UpdateAssetBundleData(){ }
