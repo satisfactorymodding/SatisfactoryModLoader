@@ -12,32 +12,9 @@
 
 class UUserWidget;
 class URootConfigValueHolder;
+class UConfigValueSection;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogConfigManager, Log, Log)
-
-/** Describes an identifier for a single configuration tree */
-USTRUCT(BlueprintType)
-struct SML_API FConfigId {
-    GENERATED_BODY();
-public:    
-    /** Mod reference of the requested configuration owner */
-    UPROPERTY(BlueprintReadWrite)
-    FString ModReference;
-
-    /** Category if this configuration. Leave empty if mod has only one configuration */
-    UPROPERTY(BlueprintReadWrite)
-    FString ConfigCategory;
-
-    bool operator==(const FConfigId& ConfigId) const;
-};
-
-FORCEINLINE uint32 GetTypeHash(const FConfigId& ConfigId) {
-    return HashCombine(GetTypeHash(ConfigId.ModReference), GetTypeHash(ConfigId.ConfigCategory));
-}
-
-FORCEINLINE bool FConfigId::operator==(const FConfigId& ConfigId) const {
-    return ConfigId.ModReference == ModReference && ConfigId.ConfigCategory == ConfigCategory;
-}
 
 /** Describes active configuration data */
 USTRUCT()
@@ -88,7 +65,15 @@ public:
 
     /** Registers a configuration under specified ID. Should be only called on startup for it to load from disk */
     UFUNCTION(BlueprintCallable)
-    void RegisterModConfiguration(const FConfigId& ConfigId, TSubclassOf<UModConfiguration> Configuration);
+    void RegisterModConfiguration(TSubclassOf<UModConfiguration> Configuration);
+
+    /** Retrieves configuration class associated with provided config id */
+    UFUNCTION(BlueprintPure)
+    TSubclassOf<UModConfiguration> GetConfigurationById(const FConfigId& ConfigId) const;
+
+    /** Retrieves root configuration section value for provided configuration ID */
+    UFUNCTION(BlueprintPure)
+    UConfigValueSection* GetConfigurationRootSection(const FConfigId& ConfigId) const;
 
     void Initialize(FSubsystemCollectionBase& Collection) override;
     

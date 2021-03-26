@@ -9,20 +9,6 @@
 class UModSubsystemHolder;
 class UModConfiguration;
 
-/** Holds information about a single configuration registered by the mod */
-USTRUCT(BlueprintType)
-struct SML_API FModConfigurationEntry {
-    GENERATED_BODY()
-
-    /** Type of the configuration you are registering */
-    UPROPERTY(EditAnywhere, Category = Default)
-    TSubclassOf<UModConfiguration> Configuration;
-
-    /** Category of this configuration. If your mod has one configuration only, leave it empty */
-    UPROPERTY(EditAnywhere, Category = Advanced)
-    FString ConfigurationCategory;
-};
-
 /** Holds information about individual key binding registration */
 USTRUCT(BlueprintType)
 struct SML_API FModKeyBindingInfo {
@@ -76,7 +62,7 @@ public:
   
     /** Configurations defined and used by this mod */
     UPROPERTY(EditDefaultsOnly, Category = Default)
-    TArray<FModConfigurationEntry> ModConfigurations;
+    TArray<TSubclassOf<UModConfiguration>> ModConfigurations;
     
     /** Key Bindings for this mod to be registered */
     UPROPERTY(EditDefaultsOnly, Category = Default)

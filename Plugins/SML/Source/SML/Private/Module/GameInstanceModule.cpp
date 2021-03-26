@@ -42,9 +42,8 @@ void UGameInstanceModule::RegisterDefaultContent() {
     const FString OwnerModReferenceString = GetOwnerModReference().ToString();
     
     //Register mod configurations first
-    for (const FModConfigurationEntry& ConfigurationEntry : ModConfigurations) {
-        FConfigId ConfigId{OwnerModReferenceString, ConfigurationEntry.ConfigurationCategory};
-        ConfigManager->RegisterModConfiguration(ConfigId, ConfigurationEntry.Configuration);
+    for (const TSubclassOf<UModConfiguration>& Configuration : ModConfigurations) {
+        ConfigManager->RegisterModConfiguration(Configuration);
     }
     
     //Subsystems holders

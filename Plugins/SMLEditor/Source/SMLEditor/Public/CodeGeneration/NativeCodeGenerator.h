@@ -12,8 +12,10 @@ struct FReferencedClassesData {
 };
 
 class SMLEDITOR_API FNativeCodeGenerator {
-
-    /**
+public:
+     static bool GenerateConfigStructForConfigurationAsset(UBlueprint* Blueprint);
+    
+     /**
      * Checks if native configuration can be generated from a given context
      * Currently native configuration cannot be generated only if blueprint structs are used
      * inside the configuration structures.
@@ -22,18 +24,18 @@ class SMLEDITOR_API FNativeCodeGenerator {
      */
     static bool CanGenerateNativeConfiguration(UConfigGenerationContext* Context, FString& OutFailureMessage);
 
-    /**
+     /**
      * Generates native C++ code header and writes it into the passed output device
      * It will generate separate structure for each generated struct and populate it with fields
      * Additionally it will generate wrapper methods to fill configuration with actual data from configuration manager
      */
-    static void GenerateConfigurationCodeHeader(const FString& HeaderFileName, UConfigGenerationContext* Context, FOutputDevice& OutputDevice);
+    static void GenerateConfigurationCodeHeader(const FString& HeaderFileName, UBlueprint* SourceBlueprint, UConfigGenerationContext* Context, FOutputDevice& OutputDevice);
 
     /**
      * Generates individual structure and populates it
      * with properties defined in configuration
      */
-    static void GenerateConfigStruct(UConfigGeneratedStruct* Struct, FOutputDevice& OutputDevice);
+    static void GenerateConfigStruct(UConfigGeneratedStruct* Struct, UBlueprint* SourceBlueprint, FOutputDevice& OutputDevice);
 
     static FString GenerateCppTypeForVariable(const FConfigVariableDescriptor& Descriptor);
  
@@ -56,4 +58,6 @@ class SMLEDITOR_API FNativeCodeGenerator {
     static int GetNestedLevelOfStruct(const UConfigGeneratedStruct* Struct);
 
     static void AddReferencedVariable(const FConfigVariableDescriptor& Descriptor, FReferencedClassesData& ReferencedClasses);
+
+    static bool IsValidCppIdentifierString(const FString& Identifier);
 };

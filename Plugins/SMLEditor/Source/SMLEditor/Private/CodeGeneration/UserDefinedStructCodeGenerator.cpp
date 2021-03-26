@@ -2,11 +2,48 @@
 #include "AssetToolsModule.h"
 #include "EdGraphSchema_K2.h"
 #include "FileHelpers.h"
+#include "PackageTools.h"
+#include "Configuration/ModConfiguration.h"
 #include "Configuration/CodeGeneration/ConfigGenerationContext.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Factories/StructureFactory.h"
 #include "UserDefinedStructure/UserDefinedStructEditorData.h"
 #define LOCTEXT_NAMESPACE "SML"
+
+bool FUserDefinedStructCodeGenerator::GenerateConfigStructForConfigurationAsset(UBlueprint* Blueprint) {
+    UConfigGenerationContext* GenerationContext;
+    if (!CreateConfigStructContextForConfigurationAsset(Blueprint, GenerationContext)) {
+        return false;
+    }
+
+    const FString ModConfigPackageName = Blueprint->GetOutermost()->GetName();
+    const FString ModConfigFolderName = FPackageName::GetLongPackagePath(ModConfigPackageName);
+    return GenerateConfigurationStruct(ModConfigFolderName, GenerationContext);
+}
+
+bool FUserDefinedStructCodeGenerator::CreateConfigStructContextForConfigurationAsset(UBlueprint* Blueprint, UConfigGenerationContext*& OutGenerationContext) {
+    const FString BlueprintName = Blueprint->GetName();
+
+    UClass* BlueprintGeneratedClass = Blueprint->GeneratedClass;
+    if (BlueprintGeneratedClass == NULL || !BlueprintGeneratedClass->IsChildOf<UModConfiguration>()) {
+        FMessageDialog::Open(EAppMsgType::Ok, FText::Format(LOCTEXT("MissingGeneratedClass", "Blueprint '{0}' is not compiled, or does not inherit from Mod Configuration. "
+            "Make sure blueprint is compiled successfully and has Mod Configuration as a parent class"), FText::FromString(BlueprintName)));
+        return false;
+    }
+
+    UModConfiguration* ModConfiguration = CastChecked<UModConfiguration>(BlueprintGeneratedClass->GetDefaultObject());
+    if (ModConfiguration->RootSection == NULL) {
+        FMessageDialog::Open(EAppMsgType::Ok, FText::Format(LOCTEXT("MissingRootSection", "Blueprint '{0}' does not contain a valid root section. "
+            "Make sure 'Root Section' property has a valid object value"), FText::FromString(BlueprintName)));
+        return false;
+    }
+
+    OutGenerationContext = NewObject<UConfigGenerationContext>();
+
+    const FString BaseStructName = FString::Printf(TEXT("%sStruct"), *BlueprintName);
+    ModConfiguration->RootSection->CreatePropertyDescriptor(OutGenerationContext, BaseStructName);
+    return true;
+}
 
 bool FUserDefinedStructCodeGenerator::GenerateConfigurationStruct(const FString& PackageName, UConfigGenerationContext* Context) {
     //Load required modules and create factories for making new struct assets
@@ -18,14 +55,40 @@ bool FUserDefinedStructCodeGenerator::GenerateConfigurationStruct(const FString&
     
     //Generate asset for each struct we have
     for (UConfigGeneratedStruct* GeneratedStruct : Context->GetAllGeneratedStructs()) {
-        UObject* AssetObject = AssetTools.CreateAsset(GeneratedStruct->GetStructName(), PackageName, NULL, StructureFactory);
-        if (AssetObject == NULL) {
-            FMessageDialog::Open(EAppMsgType::Ok, LOCTEXT("NameOccupied", "Couldn't create config struct due already existing asset with the same name"));
+        const FString& StructAssetName = GeneratedStruct->GetStructName();
+        
+        const FString FinalStructAssetPackagePath = UPackageTools::SanitizePackageName(PackageName + TEXT("/") + StructAssetName);
+        if (!FPackageName::IsValidLongPackageName(FinalStructAssetPackagePath)) {
+            FMessageDialog::Open(EAppMsgType::Ok, FText::Format(LOCTEXT("InvalidPackageName", "Cannot create struct asset because of the invalid package name '{0}'"),
+                FText::FromString(FinalStructAssetPackagePath)));
             return false;
         }
-        UUserDefinedStruct* UserDefinedStruct = CastChecked<UUserDefinedStruct>(AssetObject);
+        
+        UUserDefinedStruct* UserDefinedStruct;
+
+        //First try to load existing package and make sure it represents an user defined struct
+        if (UPackage* ExistingPackage = LoadPackage(NULL, *FinalStructAssetPackagePath, LOAD_Quiet)) {
+            UserDefinedStruct = FindObject<UUserDefinedStruct>(ExistingPackage, *StructAssetName);
+            if (UserDefinedStruct == NULL) {
+                FMessageDialog::Open(EAppMsgType::Ok, FText::Format(LOCTEXT("InvalidConfigAsset", "Package with name '{0} already exists, but it's type is not a user defined struct. "
+                    "Delete it or make sure it contains a correct user defined struct."), FText::FromString(FinalStructAssetPackagePath)));
+                return false;
+            }
+
+            //Clear struct contains so it will only contain one dummy field, just like the newly created one
+            ClearUserDefinedStructContents(UserDefinedStruct);
+        } else {
+            //Create asset manually if we haven't found existing one already
+            UserDefinedStruct = Cast<UUserDefinedStruct>(AssetTools.CreateAsset(GeneratedStruct->GetStructName(), PackageName, NULL, StructureFactory));
+            if (UserDefinedStruct == NULL) {
+                FMessageDialog::Open(EAppMsgType::Ok, FText::Format(LOCTEXT("NameOccupied", "Couldn't create config struct asset at package name '{0}'"),
+                    FText::FromString(FinalStructAssetPackagePath)));
+                return false;
+            }
+        }
+
         GeneratedStructs.Add(GeneratedStruct, UserDefinedStruct);
-        PackagesToSave.Add(AssetObject->GetOutermost());
+        PackagesToSave.Add(UserDefinedStruct->GetOutermost());
     }
     
     //Populate each struct generated with properties
@@ -45,8 +108,21 @@ bool FUserDefinedStructCodeGenerator::GenerateConfigurationStruct(const FString&
     return true;
 }
 
+void FUserDefinedStructCodeGenerator::ClearUserDefinedStructContents(UUserDefinedStruct* Struct) {
+    const TArray<FStructVariableDescription> OldVariables = FStructureEditorUtils::GetVarDesc(Struct);
+    
+    //Create one dummy variable at the end of the struct
+    FStructureEditorUtils::AddVariable(Struct, FEdGraphPinType(UEdGraphSchema_K2::PC_Boolean, NAME_None, NULL,
+        EPinContainerType::None, false, FEdGraphTerminalType()));
+
+    //Remove all previous variables so only remaining one will be a dummy one
+    for (const FStructVariableDescription& VariableDescription : OldVariables) {
+        FStructureEditorUtils::RemoveVariable(Struct, VariableDescription.VarGuid);
+    }
+}
+
 void FUserDefinedStructCodeGenerator::PopulateGeneratedStruct(UConfigGeneratedStruct* GeneratedStruct, UUserDefinedStruct* UserStruct,
-    const TMap<UConfigGeneratedStruct*, UUserDefinedStruct*>& GeneratedStructs) {
+                                                              const TMap<UConfigGeneratedStruct*, UUserDefinedStruct*>& GeneratedStructs) {
     //Generate each config variable
     for (const TPair<FString, FConfigVariableDescriptor>& Pair : GeneratedStruct->GetVariables()) {
         //Creates new variable with specified type

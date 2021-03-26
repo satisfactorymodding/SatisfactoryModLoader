@@ -4,12 +4,19 @@
 #include "EdGraph/EdGraphPin.h"
 
 class SMLEDITOR_API FUserDefinedStructCodeGenerator {
+public:
+	static bool GenerateConfigStructForConfigurationAsset(class UBlueprint* Blueprint);
+
+	static bool CreateConfigStructContextForConfigurationAsset(UBlueprint* Blueprint, UConfigGenerationContext*& OutGenerationContext);
 
     /**
      * Generates user defined configuration struct inside of the given package name
      * From the provided context, and returns boolean indicating whenever it was successful or failure
      */
     static bool GenerateConfigurationStruct(const FString& PackageName, UConfigGenerationContext* Context);
+
+	// Deletes all struct members and creates one dummy boolean member instead
+	static void ClearUserDefinedStructContents(class UUserDefinedStruct* Struct);
 
     //Populates generated struct with variable declarations
     static void PopulateGeneratedStruct(UConfigGeneratedStruct* GeneratedStruct, class UUserDefinedStruct* UserStruct,

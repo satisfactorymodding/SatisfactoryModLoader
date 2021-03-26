@@ -32,7 +32,12 @@ public class SMLEditor : ModuleRules
             "AIModule",
             "GameplayTasks",
             "SlateCore", "Slate", "UMG",
-            "InstancedSplines"
+            "InstancedSplines",
+            "Projects"
+        });
+        
+        PrivateDependencyModuleNames.AddRange(new[] {
+            "DesktopPlatform"
         });
     }
 }
