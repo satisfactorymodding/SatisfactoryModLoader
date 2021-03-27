@@ -565,25 +565,16 @@ protected:
 	/** Called when the visuals, radiation etc need to be updated. */
 	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) PURE_VIRTUAL(,);
 
-public: // MODDING EDIT accessor
-	FORCEINLINE int32 FindItemClosestToLocationAccessor(const FVector& location) const { return FindItemClosestToLocation(location); };
-protected:
-
 	//@todonow These can possibly be moved to private once Belt::OnUse has been moved to base.
 	/** Find the item closest to the given location. */
 	int32 FindItemClosestToLocation( const FVector& location ) const;
 
 	/** Checks if there is an item at index. */
 	bool Factory_HasItemAt( int32 index ) const;
-public: // MODDING EDIT: Accessor
-	FORCEINLINE const FConveyorBeltItem& Factory_PeekItemAtAccessor(int32 index) const { return Factory_PeekItemAt(index); };
-protected:
+
 	/** Lets you know what type of item is on a specific index. */
 	const FConveyorBeltItem& Factory_PeekItemAt( int32 index ) const;
 
-public: // MODDING EDIT accessor
-	FORCEINLINE void Factory_RemoveItemAtAccessor(int32 index) { Factory_RemoveItemAt(index);};
-protected:
 	/** Remove an item from the belt at index. */
 	void Factory_RemoveItemAt( int32 index );
 
@@ -591,9 +582,6 @@ private:
 	/** Take the first element on the belt. */
 	void Factory_DequeueItem();
 
-public: // MODDING EDIT accessor
-	FORCEINLINE void Factory_EnqueueItemAccessor(const FInventoryItem& item, float initialOffset) { Factory_EnqueueItem(item, initialOffset); };
-private:
 	/** Put a new item onto the belt. */
 	void Factory_EnqueueItem( const FInventoryItem& item, float initialOffset );
 
@@ -622,7 +610,7 @@ public:
 	/** Spacing between each conveyor item, from origo to origo. */
 	static constexpr float ITEM_SPACING = 120.0f;
 
-public: // MODDING EDIT protected -> public
+protected:
 
 	/** Speed of this conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor" )
