@@ -26,7 +26,7 @@ FORCEINLINE bool FConfigId::operator==(const FConfigId& ConfigId) const {
     return ConfigId.ModReference == ModReference && ConfigId.ConfigCategory == ConfigCategory;
 }
 
-UCLASS(Blueprintable)
+UCLASS(Abstract, Blueprintable)
 class SML_API UModConfiguration : public UObject {
     GENERATED_BODY()
 public:

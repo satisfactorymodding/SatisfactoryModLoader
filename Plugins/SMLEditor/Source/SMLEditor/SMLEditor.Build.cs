@@ -23,6 +23,8 @@ public class SMLEditor : ModuleRules
             "OnlineSubsystem", "OnlineSubsystemNull", "OnlineSubsystemEOS", "OnlineSubsystemUtils",
             "SignificanceManager",
             "APEX", "ApexDestruction",
+            "BlueprintGraph",
+            "KismetCompiler",
             "AnimGraphRuntime",
             "AkAudio", 
             "PhysXVehicles",

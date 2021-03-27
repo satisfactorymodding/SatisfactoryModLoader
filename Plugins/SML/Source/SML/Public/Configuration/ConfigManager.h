@@ -56,7 +56,7 @@ public:
     void MarkConfigurationDirty(const FConfigId& ConfigId);
     
     /** Fills passed struct with a data obtained from active configuration identified by passed config id */
-    UFUNCTION(BlueprintCallable, CustomThunk, meta = (CustomStructureParam = "StructInfo"))
+    UFUNCTION(BlueprintCallable, BlueprintInternalUseOnly, CustomThunk, meta = (CustomStructureParam = "StructInfo"))
     void FillConfigurationStruct(const FConfigId& ConfigId, UPARAM(Ref) const FDynamicStructInfo& StructInfo);
 
     /** Creates a configuration widget hierarchy for active configuration specified by passed id */
