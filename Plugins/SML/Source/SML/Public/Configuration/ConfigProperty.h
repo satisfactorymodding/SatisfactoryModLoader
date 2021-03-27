@@ -34,11 +34,11 @@ public:
     void ApplyDefaultPropertyValue(UConfigValue* Value) const;
 
     /** Creates new value object from this property and fills it with default settings */
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Outer"))
     UConfigValue* CreateNewValue(UObject* Outer) const;
     
     /** Creates widget instance for editing provided configuration value. Can be NULL if widget is not supported */
-    UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+    UFUNCTION(BlueprintPure, BlueprintNativeEvent, meta = (DefaultToSelf = "ParentWidget"))
     class UUserWidget* CreateEditorWidget(class UUserWidget* ParentWidget, UConfigValue* Value) const;
 
     /** Creates config property descriptor for code generation */

@@ -60,7 +60,7 @@ public:
     void FillConfigurationStruct(const FConfigId& ConfigId, UPARAM(Ref) const FDynamicStructInfo& StructInfo);
 
     /** Creates a configuration widget hierarchy for active configuration specified by passed id */
-    UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Outer"))
     UUserWidget* CreateConfigurationWidget(const FConfigId& ConfigId, UUserWidget* Outer);
 
     /** Registers a configuration under specified ID. Should be only called on startup for it to load from disk */

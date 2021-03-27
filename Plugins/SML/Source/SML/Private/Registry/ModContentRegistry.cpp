@@ -168,9 +168,7 @@ void AModContentRegistry::Init() {
     GIsRegisteringVanillaContent = true;
     
     for (const TSubclassOf<UFGSchematic>& Schematic : AllSchematics) {
-        if (UFGSchematic::GetType(Schematic) != ESchematicType::EST_Alternate) {
-            RegisterSchematic(FactoryGame, Schematic);
-        }
+        RegisterSchematic(FactoryGame, Schematic);
     }
     
     for (const TSubclassOf<UFGResearchTree>& ResearchTree : AllResearchTrees) {

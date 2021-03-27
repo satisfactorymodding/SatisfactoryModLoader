@@ -44,7 +44,7 @@ public:
     FString DescribeValue() const;
     
     /** Serializes this state into the raw file format. Please use specified Outer for creating raw value object */
-    UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+    UFUNCTION(BlueprintPure, BlueprintNativeEvent, meta = (DefaultToSelf = "Outer"))
     URawFormatValue* Serialize(UObject* Outer) const;
 
     /** Deserializes passed raw file format value into this state */

@@ -6,6 +6,7 @@
 
 class UTexture2D;
 class IPlugin;
+class FJsonObject;
 
 /** Mod name of the Satisfactory itself, backend by the dummy mod info with changelist-defined version number */
 #define FACTORYGAME_MOD_NAME TEXT("FactoryGame")

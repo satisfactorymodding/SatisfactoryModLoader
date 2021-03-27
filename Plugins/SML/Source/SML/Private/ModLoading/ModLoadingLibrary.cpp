@@ -4,6 +4,7 @@
 #include "Interfaces/IPluginManager.h"
 #include "Module/WorldModuleManager.h"
 #include "Util/ImageLoadingUtil.h"
+#include "Json.h"
 
 void FSMLPluginDescriptorMetadata::SetupDefaults(const FPluginDescriptor& PluginDescriptor) {
     this->Version = FVersion(PluginDescriptor.Version, 0, 0);
