@@ -82,13 +82,3 @@ Plugins/*
 !Plugins/SML/
 !Plugins/SMLEditor/
 !Plugins/ExampleMod/
-
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_Backpack_Refl.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_Backpack_Nor.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_Backpack_Alb.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_02_Refl.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_02_Nor.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_02_Alb.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_01_Refl.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_01_Nor.uasset
-Content/FactoryGame/Character/Player/Texture/Avatar_Body_01_Alb.uasset
