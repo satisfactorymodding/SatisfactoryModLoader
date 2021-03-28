@@ -1,26 +1,34 @@
 ﻿#include "Configuration/ConfigProperty.h"
-#include "Configuration/ConfigValue.h"
+#include "Configuration/ConfigValueDirtyHandlerInterface.h"
 #include "Configuration/CodeGeneration/ConfigGenerationContext.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 
-TSubclassOf<UConfigValue> UConfigProperty::GetValueClass_Implementation() const {
-    checkf(false, TEXT("GetValueClass not implemented"));
-    return UConfigValue::StaticClass();
+FString UConfigProperty::DescribeValue_Implementation() const {
+    return FString::Printf(TEXT("[unknown value %s]"), *GetClass()->GetPathName());
 }
 
-void UConfigProperty::ApplyDefaultPropertyValue_Implementation(UConfigValue* Value) const {
+URawFormatValue* UConfigProperty::Serialize_Implementation(UObject* Outer) const {
+    checkf(false, TEXT("Serialize not implemented"));
+    return NULL;
 }
 
-UConfigValue* UConfigProperty::CreateNewValue(UObject* Outer) const {
-    UClass* ValueClass = GetValueClass();
-    checkf(ValueClass, TEXT("GetValueClass returned NULL class"));
-    checkf(!ValueClass->HasAnyClassFlags(CLASS_Abstract), TEXT("GetValueClass returned Abstract class"));
-    
-    UConfigValue* ConfigValue = NewObject<UConfigValue>(Outer, ValueClass);
-    check(ConfigValue);
-    ConfigValue->SetAssociatedProperty(this);
-    ConfigValue->InitializedFromProperty();
-    return ConfigValue;
+void UConfigProperty::Deserialize_Implementation(const URawFormatValue* Value) {
+    checkf(false, TEXT("Deserialize not implemented"));
+}
+
+void UConfigProperty::MarkDirty() {
+    //Let closest Outer object implementing IConfigValueDirtyHandlerInterface handle MarkDirty call
+    for (UObject* NextOuter = GetOuter(); NextOuter != NULL; NextOuter = NextOuter->GetOuter()) {
+        if (NextOuter->Implements<UConfigValueDirtyHandlerInterface>()) {
+            IConfigValueDirtyHandlerInterface::Execute_MarkDirty(NextOuter);
+            break;
+        }
+    }
+}
+
+void UConfigProperty::FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject,
+    const FString& VariableName) const {
+    checkf(false, TEXT("FillConfigStruct not implemented"));
 }
 
 FConfigVariableDescriptor UConfigProperty::CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const {
@@ -28,6 +36,6 @@ FConfigVariableDescriptor UConfigProperty::CreatePropertyDescriptor_Implementati
     return FConfigVariableDescriptor{};
 }
 
-UUserWidget* UConfigProperty::CreateEditorWidget_Implementation(UUserWidget* ParentWidget, UConfigValue* Value) const {
+UUserWidget* UConfigProperty::CreateEditorWidget_Implementation(UUserWidget* ParentWidget) const {
     return NULL;
 }

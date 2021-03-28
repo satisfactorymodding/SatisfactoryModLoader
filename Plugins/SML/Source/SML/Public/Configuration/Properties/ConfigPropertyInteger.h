@@ -2,16 +2,21 @@
 #include "Configuration/ConfigProperty.h"
 #include "ConfigPropertyInteger.generated.h"
 
-UCLASS(EditInlineNew)
+UCLASS()
 class SML_API UConfigPropertyInteger : public UConfigProperty {
     GENERATED_BODY()
 public:
-    /** Default value of this property to be used in config */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 DefaultValue;
+    /** Current value of this configuration property */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Configuration Property")
+    int32 Value;
     
     UConfigPropertyInteger();
-    TSubclassOf<UConfigValue> GetValueClass_Implementation() const override;
-    void ApplyDefaultPropertyValue_Implementation(UConfigValue* Value) const override;
-    FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
+  
+	//Begin UConfigProperty
+	virtual FString DescribeValue_Implementation() const override;
+	virtual URawFormatValue* Serialize_Implementation(UObject* Outer) const override;
+	virtual void Deserialize_Implementation(const URawFormatValue* Value) override;
+    virtual FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
+    virtual void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
+	//End UConfigProperty
 };

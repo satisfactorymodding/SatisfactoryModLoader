@@ -1,21 +1,32 @@
 ﻿#include "Configuration/Properties/ConfigPropertyFloat.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
-#include "Configuration/Values/ConfigValueFloat.h"
+#include "Configuration/RawFileFormat/RawFormatValueNumber.h"
+#include "Reflection/BlueprintReflectedObject.h"
 
 UConfigPropertyFloat::UConfigPropertyFloat() {
-    DefaultValue = 0.0f;
+    this->Value = 0.0f;
 }
 
-TSubclassOf<UConfigValue> UConfigPropertyFloat::GetValueClass_Implementation() const {
-    return UConfigValueFloat::StaticClass();
+FString UConfigPropertyFloat::DescribeValue_Implementation() const {
+    return FString::Printf(TEXT("[float %f]"), Value);
 }
 
-void UConfigPropertyFloat::ApplyDefaultPropertyValue_Implementation(UConfigValue* Value) const {
-    UConfigValueFloat* FloatValue = Cast<UConfigValueFloat>(Value);
-    if (FloatValue != NULL) {
-        FloatValue->Value = DefaultValue;
+URawFormatValue* UConfigPropertyFloat::Serialize_Implementation(UObject* Outer) const {
+    URawFormatValueNumber* NumberValue = NewObject<URawFormatValueNumber>(Outer);
+    NumberValue->SetValueFloat(Value);
+    return NumberValue;
+}
+
+void UConfigPropertyFloat::Deserialize_Implementation(const URawFormatValue* RawValue) {
+    const URawFormatValueNumber* NumberValue = Cast<URawFormatValueNumber>(RawValue);
+    if (NumberValue != NULL) {
+        this->Value = NumberValue->Value;
     }
+}
+
+void UConfigPropertyFloat::FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const {
+    ReflectedObject.SetFloatProperty(*VariableName, Value);
 }
 
 FConfigVariableDescriptor UConfigPropertyFloat::CreatePropertyDescriptor_Implementation(

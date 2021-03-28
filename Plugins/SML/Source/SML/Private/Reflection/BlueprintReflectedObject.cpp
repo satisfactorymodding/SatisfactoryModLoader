@@ -1,25 +1,104 @@
 #include "Reflection/BlueprintReflectedObject.h"
 #include "UObject/TextProperty.h"
 
-#define GET_PROPERTY(PropertyType, bCheckWriteable) \
-    PropertyType* Property = Cast<PropertyType>(FindProperty(PropertyName, bCheckWriteable)); \
-    void* ObjectValue = GetObjectData(); \
-    bool bIsPropertyValid = Property != NULL && ObjectValue != NULL && IsValidIndex(ArrayIndex, Property->ArrayDim);
+EReflectedPropertyType DeterminePropertyType(FProperty* Property);
+
+FReflectedObjectState_Array::FReflectedObjectState_Array(const TSharedPtr<FReflectedObjectState> OwnerObject, const FName ArrayPropertyName) {
+    this->OwnerObjectState = OwnerObject;
+    this->ArrayPropertyName = ArrayPropertyName;
+}
+
+int32 FReflectedObjectState_Array::GetArrayNum() const {
+    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
+        void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
+        const FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
+        return ArrayHelper.Num();
+    }
+    return 0;
+}
+
+int32 FReflectedObjectState_Array::AddNewArrayElement() const {
+    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
+        void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
+        FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
+        return ArrayHelper.AddValue();
+    }
+    return -1;
+}
+
+void FReflectedObjectState_Array::RemoveArrayElements(int32 Index, int32 Count) const {
+    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
+        void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
+        FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
+        if (ArrayHelper.IsValidIndex(Index) && ArrayHelper.IsValidIndex(Index + Count - 1)) {
+            ArrayHelper.RemoveValues(Index, Count);
+        }
+    }
+}
+
+TArray<FReflectedPropertyInfo> FReflectedObjectState_Array::GetAllProperties() const {
+    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    TArray<FReflectedPropertyInfo> ResultProperties;
+    
+    if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
+        const EReflectedPropertyType InnerPropertyType = DeterminePropertyType(ArrayProperty->Inner);
+        if (InnerPropertyType != EReflectedPropertyType::ERPT_Invalid) {
+            void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
+            const FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
+
+            for (int32 i = 0; i < ArrayHelper.Num(); i++) {
+                const FName PropertyName = *FString::FromInt(i);
+                ResultProperties.Add(FReflectedPropertyInfo{PropertyName, InnerPropertyType});
+            }
+        } 
+    }
+    return ResultProperties;
+}
+
+FProperty* FReflectedObjectState_Array::FindPropertyByName(const FName PropertyName) const {
+    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
+        void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
+        const FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
+
+        const int32 ArrayIndex = FCString::Atoi(*PropertyName.ToString());
+        if (ArrayHelper.IsValidIndex(ArrayIndex)) {
+            return ArrayProperty->Inner;
+        }
+    }
+    return NULL;
+}
+
+void* FReflectedObjectState_Array::GetPropertyValue(const FName PropertyName) {
+    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
+        void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
+        FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
+        
+        const int32 ArrayIndex = FCString::Atoi(*PropertyName.ToString());
+        if (ArrayHelper.IsValidIndex(ArrayIndex)) {
+            return ArrayHelper.GetRawPtr(ArrayIndex);
+        }
+    }
+    return NULL;
+}
+
+void FReflectedObjectState_Array::AddReferencedObjects(FReferenceCollector& ReferenceCollector) {
+    if (OwnerObjectState.IsValid()) {
+        this->OwnerObjectState->AddReferencedObjects(ReferenceCollector);
+    }
+}
 
 FReflectedObjectState_UObject::FReflectedObjectState_UObject(UObject* Object) {
     checkf(Object, TEXT("Cannot construct state without valid UObject"));
     this->ReferencedObject = Object;
 }
 
-void FReflectedObjectState_UObject::CopyStructValue(UScriptStruct* StructType, void* StructValue) const {
-}
-
 UObject* FReflectedObjectState_UObject::GetObjectPointer() const {
     return ReferencedObject;
-}
-
-bool FReflectedObjectState_UObject::ShouldStripPropertyNames() const {
-    return false;
 }
 
 UStruct* FReflectedObjectState_UObject::GetStructObject() const {
@@ -57,10 +136,6 @@ void FReflectedObjectState_ScriptStruct::CopyStructValue(UScriptStruct* StructTy
     }
 }
 
-UObject* FReflectedObjectState_ScriptStruct::GetObjectPointer() const {
-    return NULL;
-}
-
 bool FReflectedObjectState_ScriptStruct::ShouldStripPropertyNames() const {
     return true;
 }
@@ -91,6 +166,73 @@ void FReflectedObjectState_ScriptStruct::AddReferencedObjects(FReferenceCollecto
     }
 }
 
+TArray<FReflectedPropertyInfo> FReflectedObjectState::GetAllProperties() const {
+    UStruct* ObjectStruct = GetStructObject();
+    TArray<FReflectedPropertyInfo> OutPropertyInfo;
+    if (ObjectStruct != NULL) {
+        for(UProperty* Property = ObjectStruct->PropertyLink; Property; Property = Property->PropertyLinkNext) {
+            if (Property->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
+                const FName Name = Property->GetFName();
+                const EReflectedPropertyType PropertyType = DeterminePropertyType(Property);
+                if (PropertyType != EReflectedPropertyType::ERPT_Invalid) {
+                    OutPropertyInfo.Add(FReflectedPropertyInfo{Name, PropertyType});
+                }
+            }
+        }
+    }
+    return OutPropertyInfo;
+}
+
+FProperty* FReflectedObjectState::FindPropertyByName(FName PropertyName) const {
+    UStruct* AssociatedStruct = GetStructObject();
+    if (AssociatedStruct != NULL) {
+        return AssociatedStruct->FindPropertyByName(PropertyName);
+    }
+    return NULL;
+}
+
+void* FReflectedObjectState::GetPropertyValue(FName PropertyName) {
+    UStruct* AssociatedStruct = GetStructObject();
+    void* ObjectData = GetObjectData();
+    if (AssociatedStruct != NULL && ObjectData != NULL) {
+        FProperty* Property = AssociatedStruct->FindPropertyByName(PropertyName);
+        if (Property != NULL) {
+            return Property->ContainerPtrToValuePtr<void>(ObjectData);
+        }
+    }
+    return NULL;
+}
+
+int32 FReflectedObjectState::GetArrayNum() const {
+    return 0;
+}
+
+int32 FReflectedObjectState::AddNewArrayElement() const {
+    return -1;
+}
+
+void FReflectedObjectState::RemoveArrayElements(int32 Index, int32 Count) const {
+}
+
+void FReflectedObjectState::CopyStructValue(UScriptStruct* StructType, void* StructValue) const {
+}
+
+UObject* FReflectedObjectState::GetObjectPointer() const {
+    return NULL;
+}
+
+bool FReflectedObjectState::ShouldStripPropertyNames() const {
+    return false;
+}
+
+UStruct* FReflectedObjectState::GetStructObject() const {
+    return NULL;
+}
+
+void* FReflectedObjectState::GetObjectData() {
+    return NULL;
+}
+
 FReflectedEnumValue::FReflectedEnumValue() : EnumerationType(NULL), RawEnumValue(0) {}
 
 FReflectedEnumValue::FReflectedEnumValue(UEnum* EnumType, int64 EnumValue) : EnumerationType(EnumType), RawEnumValue(EnumValue) {}
@@ -105,7 +247,7 @@ int64 FReflectedEnumValue::GetCurrentValue() const {
 
 void FReflectedEnumValue::SetCurrentValue(int64 NewValue) {
     if (EnumerationType != NULL) {
-        checkf(EnumerationType->IsValidEnumValue(NewValue), TEXT("Invalid Enum value: %d"), NewValue);
+        checkf(EnumerationType->IsValidEnumValue(NewValue), TEXT("Invalid Enum value: %lld"), NewValue);
     }
     this->RawEnumValue = NewValue;
 }
@@ -124,6 +266,12 @@ void FReflectedObject::SetupFromStruct(UScriptStruct* StructType, const void* St
     }
 }
 
+void FReflectedObject::SetupFromArray(const FReflectedObject& Object, const FName PropertyName) {
+    if (Object.State.IsValid()) {
+        this->State = MakeShareable(new FReflectedObjectState_Array(Object.State, PropertyName));
+    }
+}
+
 UObject* FReflectedObject::GetWrappedObject() const {
     return State.IsValid() ? State->GetObjectPointer() : NULL;
 }
@@ -134,202 +282,129 @@ void FReflectedObject::CopyWrappedStruct(UScriptStruct* StructType, void* Struct
     }
 }
 
-EReflectedPropertyType DeterminePropertyType(UProperty* Property) {
-    EReflectedPropertyType PropertyType = EReflectedPropertyType::ERPT_Invalid;
-    if (UByteProperty* ByteProperty = Cast<UByteProperty>(Property)) {
-        if (ByteProperty->IsEnum())
-            PropertyType = EReflectedPropertyType::ERPT_Enum;
-        else PropertyType = EReflectedPropertyType::ERPT_Byte;
-    } else if (Property->IsA<UIntProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Int32;
-    } else if (Property->IsA<UInt64Property>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Int64;
-    } else if (Property->IsA<UFloatProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Float;
-    } else if (Property->IsA<UStrProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_String;
-    } else if (Property->IsA<UNameProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Name;
-    } else if (Property->IsA<UTextProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Text;
-    } else if (Property->IsA<UBoolProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Bool;
-    } else if (Property->IsA<UEnumProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Enum;
-    } else if (Property->IsA<UObjectPropertyBase>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Object;
-    } else if (Property->IsA<UStructProperty>()) {
-        PropertyType = EReflectedPropertyType::ERPT_Struct;
+EReflectedPropertyType DeterminePropertyType(FProperty* Property) {
+    if (Property->ArrayDim != 1) {
+        return EReflectedPropertyType::ERPT_Array;
     }
-    return PropertyType;
+    if (Property->IsA<FArrayProperty>()) {
+        return EReflectedPropertyType::ERPT_Array;
+    }
+    if (FByteProperty* ByteProperty = Cast<FByteProperty>(Property)) {
+        if (ByteProperty->IsEnum())
+            return EReflectedPropertyType::ERPT_Enum;
+        return EReflectedPropertyType::ERPT_Byte;
+    }
+    if (Property->IsA<FIntProperty>()) {
+        return EReflectedPropertyType::ERPT_Int32;
+    }
+    if (Property->IsA<FInt64Property>()) {
+        return EReflectedPropertyType::ERPT_Int64;
+    }
+    if (Property->IsA<FFloatProperty>()) {
+        return EReflectedPropertyType::ERPT_Float;
+    }
+    if (Property->IsA<FStrProperty>()) {
+        return EReflectedPropertyType::ERPT_String;
+    }
+    if (Property->IsA<FNameProperty>()) {
+        return EReflectedPropertyType::ERPT_Name;
+    }
+    if (Property->IsA<FTextProperty>()) {
+        return EReflectedPropertyType::ERPT_Text;
+    }
+    if (Property->IsA<FBoolProperty>()) {
+        return EReflectedPropertyType::ERPT_Bool;
+    }
+    if (Property->IsA<FEnumProperty>()) {
+        return EReflectedPropertyType::ERPT_Enum;
+    }
+    if (Property->IsA<FObjectPropertyBase>()) {
+        return EReflectedPropertyType::ERPT_Object;
+    } 
+    if (Property->IsA<FStructProperty>()) {
+        return EReflectedPropertyType::ERPT_Struct;
+    }
+    return EReflectedPropertyType::ERPT_Invalid;
 }
 
 TArray<FReflectedPropertyInfo> FReflectedObject::GetReflectedProperties() const {
-    UStruct* ObjectStruct = GetStruct();
-    TArray<FReflectedPropertyInfo> OutPropertyInfo;
-    if (ObjectStruct != NULL) {
-        for(UProperty* Property = ObjectStruct->PropertyLink; Property; Property = Property->PropertyLinkNext) {
-            if (Property->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
-                const FName Name = Property->GetFName();
-                const EReflectedPropertyType PropertyType = DeterminePropertyType(Property);
-                const int32 ArrayDim = Property->ArrayDim;
-                if (PropertyType != EReflectedPropertyType::ERPT_Invalid) {
-                    OutPropertyInfo.Add(FReflectedPropertyInfo{Name, PropertyType, ArrayDim});
-                }
-            }
-        }
+    return State.IsValid() ? State->GetAllProperties() : TArray<FReflectedPropertyInfo>();
+}
+
+#define IMPLEMENT_GET_PROPERTY_VALUE(PropertyType, DefaultValue) \
+    F##PropertyType::TCppType FReflectedObject::Get##PropertyType(FName PropertyName) const { \
+        if (F##PropertyType* CastedProperty = FindPropertyByName<F##PropertyType>(PropertyName, false)) { \
+            void* PropertyValuePtr = State->GetPropertyValue(PropertyName); \
+            return CastedProperty->GetPropertyValue(PropertyValuePtr); \
+        } \
+        return DefaultValue; \
     }
-    return OutPropertyInfo;
-}
 
-uint8 FReflectedObject::GetByteProperty(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UByteProperty, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : 0;
-}
-
-void FReflectedObject::SetByteProperty(FName PropertyName, uint8 Value, int32 ArrayIndex) const {
-    GET_PROPERTY(UByteProperty, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Value, ArrayIndex);
+#define IMPLEMENT_SET_PROPERTY_VALUE(PropertyType) \
+    void FReflectedObject::Set##PropertyType(FName PropertyName, const F##PropertyType::TCppType Value) const { \
+        if (F##PropertyType* CastedProperty = FindPropertyByName<F##PropertyType>(PropertyName, true)) { \
+            void* PropertyValuePtr = State->GetPropertyValue(PropertyName); \
+            CastedProperty->SetPropertyValue(PropertyValuePtr, Value); \
+        } \
     }
-}
 
-int32 FReflectedObject::GetInt32Property(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UIntProperty, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : 0;
-}
+#define IMPLEMENT_PROPERTY_TYPE(PropertyType, DefaultValue) \
+    IMPLEMENT_GET_PROPERTY_VALUE(PropertyType, DefaultValue); \
+    IMPLEMENT_SET_PROPERTY_VALUE(PropertyType);
 
-void FReflectedObject::SetInt32Property(FName PropertyName, int32 Value, int32 ArrayIndex) const {
-    GET_PROPERTY(UIntProperty, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Value, ArrayIndex);
-    }
-}
+IMPLEMENT_PROPERTY_TYPE(ByteProperty, 0);
+IMPLEMENT_PROPERTY_TYPE(IntProperty, 0);
+IMPLEMENT_PROPERTY_TYPE(Int64Property, 0);
+IMPLEMENT_PROPERTY_TYPE(FloatProperty, 0.0f);
+IMPLEMENT_PROPERTY_TYPE(BoolProperty, false);
+IMPLEMENT_PROPERTY_TYPE(NameProperty, NAME_None);
+IMPLEMENT_PROPERTY_TYPE(TextProperty, FText::GetEmpty());
+IMPLEMENT_PROPERTY_TYPE(StrProperty, TEXT(""));
+IMPLEMENT_PROPERTY_TYPE(ObjectProperty, NULL);
+IMPLEMENT_PROPERTY_TYPE(WeakObjectProperty, NULL);
+IMPLEMENT_PROPERTY_TYPE(LazyObjectProperty, FLazyObjectPtr(NULL));
+IMPLEMENT_PROPERTY_TYPE(SoftObjectProperty, FSoftObjectPtr(NULL));
 
-int64 FReflectedObject::GetInt64Property(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UInt64Property, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : 0;
-}
-
-void FReflectedObject::SetInt64Property(FName PropertyName, int64 Value, int32 ArrayIndex) const {
-    GET_PROPERTY(UInt64Property, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Value, ArrayIndex);
-    }
-}
-
-float FReflectedObject::GetFloatProperty(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UFloatProperty, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : 0.0f;
-}
-
-void FReflectedObject::SetFloatProperty(FName PropertyName, float Value, int32 ArrayIndex) const {
-    GET_PROPERTY(UFloatProperty, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Value, ArrayIndex);
-    }
-}
-
-FString FReflectedObject::GetStringProperty(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UStrProperty, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : TEXT("");
-}
-
-void FReflectedObject::SetStringProperty(FName PropertyName, const FString& Value, int32 ArrayIndex) const {
-    GET_PROPERTY(UStrProperty, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Value, ArrayIndex);
-    }
-}
-
-bool FReflectedObject::GetBoolProperty(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UBoolProperty, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : false;
-}
-
-void FReflectedObject::SetBoolProperty(FName PropertyName, bool Value, int32 ArrayIndex) const {
-    GET_PROPERTY(UBoolProperty, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Value, ArrayIndex);
-    }
-}
-
-FName FReflectedObject::GetNameProperty(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UNameProperty, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : NAME_None;
-}
-
-void FReflectedObject::SetNameProperty(FName PropertyName, const FName& Name, int32 ArrayIndex) const {
-    GET_PROPERTY(UNameProperty, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Name, ArrayIndex);
-    }
-}
-
-FText FReflectedObject::GetTextProperty(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UTextProperty, false);
-    return bIsPropertyValid ? Property->GetPropertyValue_InContainer(ObjectValue, ArrayIndex) : FText::FromString(TEXT(""));
-}
-
-void FReflectedObject::SetTextProperty(FName PropertyName, const FText& Text, int32 ArrayIndex) const {
-    GET_PROPERTY(UTextProperty, true);
-    if (bIsPropertyValid) {
-        Property->SetPropertyValue_InContainer(ObjectValue, Text, ArrayIndex);
-    }
-}
-
-UObject* FReflectedObject::GetObjectProperty(FName PropertyName, int32 ArrayIndex) const {
-    GET_PROPERTY(UObjectPropertyBase, false);
-    return bIsPropertyValid ? Property->GetObjectPropertyValue_InContainer(ObjectValue, ArrayIndex) : NULL;
-}
-
-void FReflectedObject::SetObjectProperty(FName PropertyName, UObject* Object, int32 ArrayIndex) const {
-    GET_PROPERTY(UObjectPropertyBase, true);
-    if (bIsPropertyValid) {
-        Property->SetObjectPropertyValue_InContainer(ObjectValue, Object, ArrayIndex);
-    }
-}
-
-FReflectedObject FReflectedObject::GetStructProperty(FName PropertyName, int32 ArrayIndex) const {
-    UStructProperty* Property = Cast<UStructProperty>(FindProperty(PropertyName, false));
-    const void* ObjectValue = GetObjectData();
+FReflectedObject FReflectedObject::GetStructProperty(FName PropertyName) const {
     FReflectedObject ReflectedObject{};
-    
-    if (Property != NULL && ObjectValue != NULL && IsValidIndex(ArrayIndex, Property->ArrayDim)) {
-        UScriptStruct* ScriptStruct = Property->Struct;
-        const void* StructValue = Property->ContainerPtrToValuePtr<void>(ObjectValue, ArrayIndex);
+    if (FStructProperty* StructProperty = FindPropertyByName<FStructProperty>(PropertyName, false)) {
+        UScriptStruct* ScriptStruct = StructProperty->Struct;
+        void* StructValue = State->GetPropertyValue(PropertyName);
         ReflectedObject.SetupFromStruct(ScriptStruct, StructValue);
     }
     return ReflectedObject;
 }
 
-void FReflectedObject::SetStructProperty(FName PropertyName, const FReflectedObject& Struct, int32 ArrayIndex) const {
-    UStructProperty* Property = Cast<UStructProperty>(FindProperty(PropertyName, true));
-    void* ObjectValue = GetObjectData();
-
-    if (Property != NULL && ObjectValue != NULL && IsValidIndex(ArrayIndex, Property->ArrayDim)) {
-        UScriptStruct* ScriptStruct = Property->Struct;
-        void* StructValue = Property->ContainerPtrToValuePtr<void>(ObjectValue, ArrayIndex);
+void FReflectedObject::SetStructProperty(FName PropertyName, const FReflectedObject& Struct) const {
+    if (FStructProperty* StructProperty = FindPropertyByName<FStructProperty>(PropertyName, true)) {
+        UScriptStruct* ScriptStruct = StructProperty->Struct;
+        void* StructValue = State->GetPropertyValue(PropertyName);
         if (ScriptStruct == Struct.GetStruct()) {
-            ScriptStruct->CopyScriptStruct(StructValue, Struct.GetObjectData());
+            ScriptStruct->CopyScriptStruct(StructValue, Struct.State->GetObjectData());
         }
     }
 }
 
-FReflectedEnumValue FReflectedObject::GetEnumProperty(FName PropertyName) const {
-    UProperty* Property = FindProperty(PropertyName, false);
-    const void* ObjectValue = GetObjectData();
+FReflectedObject FReflectedObject::GetArrayProperty(FName PropertyName) const {
+    FReflectedObject ReflectedObject{};
+    if (FindPropertyByName<FArrayProperty>(PropertyName, true)) {
+        ReflectedObject.SetupFromArray(*this, PropertyName);
+    }
+    return ReflectedObject;
+}
 
-    if (Property != NULL && ObjectValue != NULL) {
-        if (UEnumProperty* EnumProperty = Cast<UEnumProperty>(Property)) {
-            const void* PropertyValue = Property->ContainerPtrToValuePtr<void>(ObjectValue);
+FReflectedEnumValue FReflectedObject::GetEnumProperty(FName PropertyName) const {
+    FProperty* Property = FindPropertyByName<FProperty>(PropertyName, false);
+    if (Property != NULL) {
+        void* PropertyValue = State->GetPropertyValue(PropertyName);
+        if (FEnumProperty* EnumProperty = Cast<FEnumProperty>(Property)) {
             const int64 RawPropertyValue = EnumProperty->GetUnderlyingProperty()->GetSignedIntPropertyValue(PropertyValue);
             return FReflectedEnumValue{EnumProperty->GetEnum(), RawPropertyValue};
         }
 
-        if (UByteProperty* ByteProperty = Cast<UByteProperty>(Property)) {
+        if (FByteProperty* ByteProperty = Cast<FByteProperty>(Property)) {
             if (ByteProperty->IsEnum()) {
-                const int64 RawPropertyValue = ByteProperty->GetPropertyValue_InContainer(ObjectValue);
+                const int64 RawPropertyValue = ByteProperty->GetPropertyValue(PropertyValue);
                 return FReflectedEnumValue{ByteProperty->Enum, RawPropertyValue};
             }
         }
@@ -338,20 +413,18 @@ FReflectedEnumValue FReflectedObject::GetEnumProperty(FName PropertyName) const 
 }
 
 void FReflectedObject::SetEnumProperty(FName PropertyName, const FReflectedEnumValue& Enum) const {
-    UProperty* Property = FindProperty(PropertyName, true);
-    void* ObjectValue = GetObjectData();
-
-    if (Property != NULL && ObjectValue != NULL) {
-        if (UEnumProperty* EnumProperty = Cast<UEnumProperty>(Property)) {
+    FProperty* Property = FindPropertyByName<FProperty>(PropertyName, true);
+    if (Property != NULL) {
+        void* PropertyValue = State->GetPropertyValue(PropertyName);
+        if (FEnumProperty* EnumProperty = Cast<FEnumProperty>(Property)) {
             if (EnumProperty->GetEnum() == Enum.GetEnumerationType()) {
-                void* PropertyValue = Property->ContainerPtrToValuePtr<void>(ObjectValue);
                 EnumProperty->GetUnderlyingProperty()->SetIntPropertyValue(PropertyValue, Enum.GetCurrentValue());
             }
         }
 
-        if (UByteProperty* ByteProperty = Cast<UByteProperty>(Property)) {
+        if (FByteProperty* ByteProperty = Cast<FByteProperty>(Property)) {
             if (ByteProperty->IsEnum() && ByteProperty->Enum == Enum.GetEnumerationType()) {
-                ByteProperty->SetPropertyValue_InContainer(ObjectValue, (uint8) Enum.GetCurrentValue());
+                ByteProperty->SetPropertyValue_InContainer(PropertyValue, (uint8) Enum.GetCurrentValue());
             }
         }
     }
@@ -363,6 +436,25 @@ void FReflectedObject::AddStructReferencedObjects(FReferenceCollector& Collector
     }
 }
 
+int32 FReflectedObject::GetArrayNum() const {
+    return State.IsValid() ? State->GetArrayNum() : 0;
+}
+
+int32 FReflectedObject::AddNewArrayElement() const {
+    return State.IsValid() ? State->AddNewArrayElement() : -1;
+}
+
+void FReflectedObject::ClearArray() const {
+    RemoveArrayElements(0, GetArrayNum());
+}
+
+void FReflectedObject::RemoveArrayElements(int32 Index, int32 Count) const {
+    if (State.IsValid()) {
+        State->RemoveArrayElements(Index, Count);
+    }
+}
+
+
 bool ComparePropertyNames(FName Name, FName Pattern, bool bStripName) {
     return bStripName ? (Name.ToString().StartsWith(Pattern.ToString())) : (Name == Pattern);
 }
@@ -370,19 +462,4 @@ bool ComparePropertyNames(FName Name, FName Pattern, bool bStripName) {
 bool CheckPropertyFlags(UProperty* Property, bool bCheckForWriteable) {
     return Property->HasAnyPropertyFlags(CPF_BlueprintVisible) &&
         (!bCheckForWriteable || !Property->HasAnyPropertyFlags(CPF_BlueprintReadOnly));
-}
-
-UProperty* FReflectedObject::FindProperty(FName PropertyName, bool bCheckForWriteable) const {
-    UStruct* StructObject = GetStruct();
-    const bool bShouldStripNames = ShouldStripNames();
-    if (StructObject != NULL) {
-        for(UProperty* Property = StructObject->PropertyLink; Property; Property = Property->PropertyLinkNext) {
-            const FName OtherPropertyName = Property->GetFName();
-            if (CheckPropertyFlags(Property, bCheckForWriteable) &&
-                ComparePropertyNames(OtherPropertyName, PropertyName, bShouldStripNames)) {
-                return Property;
-            }
-        }
-    }
-    return NULL;
 }

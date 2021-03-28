@@ -7,8 +7,20 @@
 #include "Configuration/CodeGeneration/ConfigGenerationContext.h"
 #include "Engine/UserDefinedStruct.h"
 #include "Factories/StructureFactory.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "UserDefinedStructure/UserDefinedStructEditorData.h"
+#include "Widgets/Notifications/SNotificationList.h"
 #define LOCTEXT_NAMESPACE "SML"
+
+void FUserDefinedStructCodeGenerator::ShowSuccessNotification(const FText& NotificationText) {
+    FNotificationInfo Info(NotificationText);
+    Info.ExpireDuration = 3.0f;
+    Info.bUseLargeFont = false;
+    TSharedPtr<SNotificationItem> Notification = FSlateNotificationManager::Get().AddNotification(Info);
+    if (Notification.IsValid()) {
+        Notification->SetCompletionState(SNotificationItem::CS_Success);
+    }
+}
 
 bool FUserDefinedStructCodeGenerator::GenerateConfigStructForConfigurationAsset(UBlueprint* Blueprint) {
     UConfigGenerationContext* GenerationContext;
@@ -18,7 +30,13 @@ bool FUserDefinedStructCodeGenerator::GenerateConfigStructForConfigurationAsset(
 
     const FString ModConfigPackageName = Blueprint->GetOutermost()->GetName();
     const FString ModConfigFolderName = FPackageName::GetLongPackagePath(ModConfigPackageName);
-    return GenerateConfigurationStruct(ModConfigFolderName, GenerationContext);
+    const bool bSuccess = GenerateConfigurationStruct(ModConfigFolderName, GenerationContext);
+    if (bSuccess) {
+        ShowSuccessNotification(FText::Format(LOCTEXT("BlueprintConfigStructRegenerated",
+            "Successfully regenerated Structs for Configuration '{0}' and saved them under '{1}'"),
+            FText::FromString(Blueprint->GetName()), FText::FromString(ModConfigFolderName)));
+    }
+    return bSuccess;
 }
 
 bool FUserDefinedStructCodeGenerator::CreateConfigStructContextForConfigurationAsset(UBlueprint* Blueprint, UConfigGenerationContext*& OutGenerationContext) {
@@ -121,17 +139,75 @@ void FUserDefinedStructCodeGenerator::ClearUserDefinedStructContents(UUserDefine
     }
 }
 
+FGuid GenerateRandomUniqueIdFromString(const FString& DisplayName) {
+    FGuid ResultGuid;
+
+    const FRandomStream RandomStream{(int32) GetTypeHash(DisplayName)};
+    const uint64 CityHash = CityHash64((ANSICHAR*) GetData(DisplayName), DisplayName.Len() * sizeof(TCHAR));
+
+    ResultGuid[0] = RandomStream.GetUnsignedInt();
+    ResultGuid[1] = RandomStream.GetUnsignedInt();
+    ResultGuid[2] = (uint32) (CityHash & 0xFFFFFFFF);
+    ResultGuid[3] = (uint32) (CityHash >> 32);
+    
+    // https://tools.ietf.org/html/rfc4122#section-4.4
+    // https://en.wikipedia.org/wiki/Universally_unique_identifier
+    //
+    // The 4 bits of digit M indicate the UUID version, and the 1–3
+    //   most significant bits of digit N indicate the UUID variant.
+    // xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
+    ResultGuid[1] = (ResultGuid[1] & 0xffff0fff) | 0x00004000; // version 4
+    ResultGuid[2] = (ResultGuid[2] & 0x3fffffff) | 0x80000000; // variant 1
+    
+    return ResultGuid;
+}
+
+FName GenerateStructVariableName(const uint32 UniqueNameId, const FGuid Guid) {
+    const FString Result = TEXT("MemberVar");
+    const FString FriendlyName = FString::Printf(TEXT("%s_%u"), *Result, UniqueNameId);
+    const FName NameResult = *FString::Printf(TEXT("%s_%s"), *FriendlyName, *Guid.ToString(EGuidFormats::Digits));
+    check(NameResult.IsValidXName(INVALID_OBJECTNAME_CHARACTERS));
+    return NameResult;
+}
+
+bool FUserDefinedStructCodeGenerator::SpawnStructVariableWithFixedName(UUserDefinedStruct* Struct, const FEdGraphPinType& VariableType, const FString& DisplayName) {
+    const FScopedTransaction Transaction( LOCTEXT("AddVariable", "Add Variable"));
+    FStructureEditorUtils::ModifyStructData(Struct);
+
+    FString ErrorMessage;
+    if (!FStructureEditorUtils::CanHaveAMemberVariableOfType(Struct, VariableType, &ErrorMessage)) {
+        FMessageDialog::Open(EAppMsgType::Ok, FText::Format(LOCTEXT("StructCannotHaveMemberOfType",
+            "Configuration Struct '{0}' cannot have a member '{1}' of predefined type: {2}. "
+            "Make sure your configuration does not contain recursion or invalid property types."),
+            FText::FromString(Struct->GetName()), FText::FromString(DisplayName), FText::FromString(ErrorMessage)));
+        return false;
+    }
+
+    const FGuid Guid = GenerateRandomUniqueIdFromString(DisplayName);
+    const uint32 UniqueNameId = GetTypeHash(DisplayName);
+    const FName VarName = GenerateStructVariableName(UniqueNameId, Guid);
+    TArray<FStructVariableDescription>& VarDesc = FStructureEditorUtils::GetVarDesc(Struct);
+    check(NULL == VarDesc.FindByPredicate(FStructureEditorUtils::FFindByNameHelper<FStructVariableDescription>(VarName)));
+    check(FStructureEditorUtils::IsUniqueVariableFriendlyName(Struct, DisplayName));
+
+    FStructVariableDescription NewVar;
+    NewVar.VarName = VarName;
+    NewVar.FriendlyName = DisplayName;
+    NewVar.SetPinType(VariableType);
+    NewVar.VarGuid = Guid;
+    VarDesc.Add(NewVar);
+
+    FStructureEditorUtils::OnStructureChanged(Struct, FStructureEditorUtils::EStructureEditorChangeInfo::AddedVariable);
+    return true;
+}
+
 void FUserDefinedStructCodeGenerator::PopulateGeneratedStruct(UConfigGeneratedStruct* GeneratedStruct, UUserDefinedStruct* UserStruct,
                                                               const TMap<UConfigGeneratedStruct*, UUserDefinedStruct*>& GeneratedStructs) {
     //Generate each config variable
     for (const TPair<FString, FConfigVariableDescriptor>& Pair : GeneratedStruct->GetVariables()) {
         //Creates new variable with specified type
         const FEdGraphPinType GraphPin = CreatePinTypeForVariable(Pair.Value, GeneratedStructs);
-        FStructureEditorUtils::AddVariable(UserStruct, GraphPin);
-        
-        //Rename variable to match display name specified earlier
-        const FStructVariableDescription& Description = FStructureEditorUtils::GetVarDesc(UserStruct).Last();
-        FStructureEditorUtils::RenameVariable(UserStruct, Description.VarGuid, Pair.Key);
+        SpawnStructVariableWithFixedName(UserStruct, GraphPin, Pair.Key);
     }
 }
 

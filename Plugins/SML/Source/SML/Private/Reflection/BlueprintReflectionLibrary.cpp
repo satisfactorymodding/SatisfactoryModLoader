@@ -32,84 +32,96 @@ TArray<FReflectedPropertyInfo> UBlueprintReflectionLibrary::GetReflectedProperti
     return ReflectedObject.GetReflectedProperties();
 }
 
-uint8 UBlueprintReflectionLibrary::GetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetByteProperty(PropertyName, ArrayIndex);
+int32 UBlueprintReflectionLibrary::GetArrayNum(const FReflectedObject& ReflectedObject) {
+    return ReflectedObject.GetArrayNum();
 }
 
-void UBlueprintReflectionLibrary::SetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName, uint8 Value, int32 ArrayIndex) {
-    ReflectedObject.SetByteProperty(PropertyName, Value, ArrayIndex);
+int32 UBlueprintReflectionLibrary::AddNewArrayElement(const FReflectedObject& ReflectedObject) {
+    return ReflectedObject.AddNewArrayElement();
 }
 
-int64 UBlueprintReflectionLibrary::GetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetInt64Property(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::RemoveArrayElements(const FReflectedObject& ReflectedObject, int32 Index, int32 Count) {
+    ReflectedObject.RemoveArrayElements(Index, Count);
 }
 
-void UBlueprintReflectionLibrary::SetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName, int64 Value, int32 ArrayIndex) {
-    ReflectedObject.SetInt64Property(PropertyName, Value, ArrayIndex);
+uint8 UBlueprintReflectionLibrary::GetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetByteProperty(PropertyName);
 }
 
-int32 UBlueprintReflectionLibrary::GetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetInt32Property(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName, uint8 Value) {
+    ReflectedObject.SetByteProperty(PropertyName, Value);
 }
 
-void UBlueprintReflectionLibrary::SetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 Value, int32 ArrayIndex) {
-    ReflectedObject.SetInt32Property(PropertyName, Value, ArrayIndex);
+int64 UBlueprintReflectionLibrary::GetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetInt64Property(PropertyName);
 }
 
-float UBlueprintReflectionLibrary::GetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetFloatProperty(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName, int64 Value) {
+    ReflectedObject.SetInt64Property(PropertyName, Value);
 }
 
-void UBlueprintReflectionLibrary::SetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName, float Value, int32 ArrayIndex) {
-    ReflectedObject.SetFloatProperty(PropertyName, Value, ArrayIndex);
+int32 UBlueprintReflectionLibrary::GetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetIntProperty(PropertyName);
 }
 
-FString UBlueprintReflectionLibrary::GetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetStringProperty(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 Value) {
+    ReflectedObject.SetIntProperty(PropertyName, Value);
 }
 
-void UBlueprintReflectionLibrary::SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FString& Value, int32 ArrayIndex) {
-    ReflectedObject.SetStringProperty(PropertyName, Value, ArrayIndex);
+float UBlueprintReflectionLibrary::GetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetFloatProperty(PropertyName);
 }
 
-bool UBlueprintReflectionLibrary::GetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetBoolProperty(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName, float Value) {
+    ReflectedObject.SetFloatProperty(PropertyName, Value);
 }
 
-void UBlueprintReflectionLibrary::SetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName, bool Value, int32 ArrayIndex) {
-    ReflectedObject.SetBoolProperty(PropertyName, Value, ArrayIndex);
+FString UBlueprintReflectionLibrary::GetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetStrProperty(PropertyName);
 }
 
-FName UBlueprintReflectionLibrary::GetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetNameProperty(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FString& Value) {
+    ReflectedObject.SetStrProperty(PropertyName, Value);
 }
 
-void UBlueprintReflectionLibrary::SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FName& Name, int32 ArrayIndex) {
-    ReflectedObject.SetNameProperty(PropertyName, Name, ArrayIndex);
+bool UBlueprintReflectionLibrary::GetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetBoolProperty(PropertyName);
 }
 
-FText UBlueprintReflectionLibrary::GetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetTextProperty(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName, bool Value) {
+    ReflectedObject.SetBoolProperty(PropertyName, Value);
 }
 
-void UBlueprintReflectionLibrary::SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FText& Text, int32 ArrayIndex) {
-    ReflectedObject.SetTextProperty(PropertyName, Text, ArrayIndex);
+FName UBlueprintReflectionLibrary::GetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetNameProperty(PropertyName);
 }
 
-UObject* UBlueprintReflectionLibrary::GetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetObjectProperty(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FName& Name) {
+    ReflectedObject.SetNameProperty(PropertyName, Name);
 }
 
-void UBlueprintReflectionLibrary::SetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName, UObject* Object, int32 ArrayIndex) {
-    ReflectedObject.SetObjectProperty(PropertyName, Object, ArrayIndex);
+FText UBlueprintReflectionLibrary::GetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetTextProperty(PropertyName);
 }
 
-FReflectedObject UBlueprintReflectionLibrary::GetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex) {
-    return ReflectedObject.GetStructProperty(PropertyName, ArrayIndex);
+void UBlueprintReflectionLibrary::SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FText& Text) {
+    ReflectedObject.SetTextProperty(PropertyName, Text);
 }
 
-void UBlueprintReflectionLibrary::SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedObject& Struct, int32 ArrayIndex) {
-    ReflectedObject.SetStructProperty(PropertyName, Struct, ArrayIndex);
+UObject* UBlueprintReflectionLibrary::GetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetObjectProperty(PropertyName);
+}
+
+void UBlueprintReflectionLibrary::SetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName, UObject* Object) {
+    ReflectedObject.SetObjectProperty(PropertyName, Object);
+}
+
+FReflectedObject UBlueprintReflectionLibrary::GetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetStructProperty(PropertyName);
+}
+
+void UBlueprintReflectionLibrary::SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedObject& Struct) {
+    ReflectedObject.SetStructProperty(PropertyName, Struct);
 }
 
 FReflectedEnumValue UBlueprintReflectionLibrary::GetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
@@ -118,4 +130,8 @@ FReflectedEnumValue UBlueprintReflectionLibrary::GetEnumProperty(const FReflecte
 
 void UBlueprintReflectionLibrary::SetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedEnumValue& Enum) {
     ReflectedObject.SetEnumProperty(PropertyName, Enum);
+}
+
+FReflectedObject UBlueprintReflectionLibrary::GetArrayProperty(const FReflectedObject& ReflectedObject, FName PropertyName) {
+    return ReflectedObject.GetArrayProperty(PropertyName);
 }

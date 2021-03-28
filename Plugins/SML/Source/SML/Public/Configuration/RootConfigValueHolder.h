@@ -1,9 +1,7 @@
 #pragma once
+#include "ConfigValueDirtyHandlerInterface.h"
 #include "Configuration/ConfigManager.h"
-#include "Configuration/ConfigValue.h"
 #include "RootConfigValueHolder.generated.h"
-
-class UConfigValueSection;
 
 UCLASS(NotBlueprintable)
 class SML_API URootConfigValueHolder : public UObject, public IConfigValueDirtyHandlerInterface {
@@ -13,17 +11,17 @@ class SML_API URootConfigValueHolder : public UObject, public IConfigValueDirtyH
     virtual void MarkDirty_Implementation() override;
     //End IConfigValueDirtyHandlerInterface
 
-    FORCEINLINE UConfigValueSection* GetWrappedValue() const { return RootWrappedValue; }
+    FORCEINLINE UConfigPropertySection* GetWrappedValue() const { return RootWrappedValue; }
 private:
     friend class UConfigManager;
     
-    void SetupRootValue(UConfigManager* ConfigManager, const FConfigId& ConfigId, UConfigValueSection* ConfigValue);
+    void SetupRootValue(UConfigManager* ConfigManager, const FConfigId& ConfigId);
 
-    void UpdateWrappedValue(UConfigValueSection* NewWrappedRootValue);
+    void UpdateWrappedValue(UConfigPropertySection* RootValueTemplate);
     
     FConfigId ConfigId;
     UPROPERTY()
-    UConfigValueSection* RootWrappedValue;
+    UConfigPropertySection* RootWrappedValue;
     UPROPERTY()
     UConfigManager* ConfigManager;
 };

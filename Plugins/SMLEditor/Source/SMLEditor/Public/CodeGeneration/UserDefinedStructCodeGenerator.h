@@ -9,6 +9,8 @@ public:
 
 	static bool CreateConfigStructContextForConfigurationAsset(UBlueprint* Blueprint, UConfigGenerationContext*& OutGenerationContext);
 
+	static void ShowSuccessNotification(const FText& NotificationText);
+	
     /**
      * Generates user defined configuration struct inside of the given package name
      * From the provided context, and returns boolean indicating whenever it was successful or failure
@@ -17,6 +19,8 @@ public:
 
 	// Deletes all struct members and creates one dummy boolean member instead
 	static void ClearUserDefinedStructContents(class UUserDefinedStruct* Struct);
+
+	static bool SpawnStructVariableWithFixedName(UUserDefinedStruct* Struct, const FEdGraphPinType& VariableType, const FString& Name);
 
     //Populates generated struct with variable declarations
     static void PopulateGeneratedStruct(UConfigGeneratedStruct* GeneratedStruct, class UUserDefinedStruct* UserStruct,

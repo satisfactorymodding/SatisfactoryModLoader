@@ -1,6 +1,5 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "Configuration/ConfigValue.h"
 #include "Subsystems/EngineSubsystem.h"
 #include "Configuration/ModConfiguration.h"
 #include "Reflection/ReflectionHelper.h"
@@ -12,7 +11,6 @@
 
 class UUserWidget;
 class URootConfigValueHolder;
-class UConfigValueSection;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogConfigManager, Log, Log)
 
@@ -73,7 +71,7 @@ public:
 
     /** Retrieves root configuration section value for provided configuration ID */
     UFUNCTION(BlueprintPure)
-    UConfigValueSection* GetConfigurationRootSection(const FConfigId& ConfigId) const;
+    UConfigPropertySection* GetConfigurationRootSection(const FConfigId& ConfigId) const;
 
     void Initialize(FSubsystemCollectionBase& Collection) override;
     

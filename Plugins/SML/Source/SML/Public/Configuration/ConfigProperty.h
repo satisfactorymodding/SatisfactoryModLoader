@@ -1,11 +1,12 @@
 #pragma once
-#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Templates/SubclassOf.h"
+#include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
+#include "Reflection/BlueprintReflectedObject.h"
 #include "ConfigProperty.generated.h"
 
-class UConfigValue;
+class URawFormatValue;
+class UUserWidget;
 
 /**
  * Describes single value inside the configuration
@@ -18,30 +19,42 @@ class SML_API UConfigProperty : public UObject {
     GENERATED_BODY()
 public:
     /** Display name of this property as it is visible to the user */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
     FString DisplayName;
 
     /** Tooltip visible to user hovering over this property */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
     FString Tooltip;
-    
-    /** Retrieves type of the configuration state this value is operating on */
-    UFUNCTION(BlueprintPure, BlueprintNativeEvent)
-    TSubclassOf<UConfigValue> GetValueClass() const;
 
-    /** Called by CreateNewValue() to fill created object with default value of this property */
-    UFUNCTION(BlueprintNativeEvent)
-    void ApplyDefaultPropertyValue(UConfigValue* Value) const;
+	/** Whenever this value is only editable from main menu and disabled for editing in pause menu */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
+	uint8 bRequiresWorldReload: 1;
 
-    /** Creates new value object from this property and fills it with default settings */
-    UFUNCTION(BlueprintCallable, meta = (DefaultToSelf = "Outer"))
-    UConfigValue* CreateNewValue(UObject* Outer) const;
-    
-    /** Creates widget instance for editing provided configuration value. Can be NULL if widget is not supported */
+	/** Describes value of this property for debugging purposes */
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
+    FString DescribeValue() const;
+
+	/** Serializes value of this property into raw file format. Please use specified Outer for creating raw value object */
+	UFUNCTION(BlueprintPure, BlueprintNativeEvent, meta = (DefaultToSelf = "Outer"))
+    URawFormatValue* Serialize(UObject* Outer) const;
+
+	/** Deserializes passed raw file format value into this property state */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+    void Deserialize(const URawFormatValue* Value);
+
+	/** Marks this property directly, forcing file system synchronization to happen afterwards */
+	UFUNCTION(BlueprintCallable)
+    virtual void MarkDirty();
+	
+    /** Creates widget instance for editing this configuration property's value. Can return NULL if property doesn't support direct UI editing */
     UFUNCTION(BlueprintPure, BlueprintNativeEvent, meta = (DefaultToSelf = "ParentWidget"))
-    class UUserWidget* CreateEditorWidget(class UUserWidget* ParentWidget, UConfigValue* Value) const;
+    UUserWidget* CreateEditorWidget(class UUserWidget* ParentWidget) const;
 
     /** Creates config property descriptor for code generation */
     UFUNCTION(BlueprintPure, BlueprintNativeEvent)
     FConfigVariableDescriptor CreatePropertyDescriptor(class UConfigGenerationContext* Context, const FString& OuterPath) const;
+
+	/** Fills variable of provided object with the value carried by this property */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+    void FillConfigStruct(const FReflectedObject& ReflectedObject, const FString& VariableName) const;
 };

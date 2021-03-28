@@ -41,85 +41,100 @@ public:
     UFUNCTION(BlueprintPure, Category = "Reflection")
     static TArray<FReflectedPropertyInfo> GetReflectedProperties(const FReflectedObject& ReflectedObject);
 
+    /** Retrieves amount of elements in the reflected array object, if it represents array, or zero otherwise */
+    UFUNCTION(BlueprintPure, Category = "Reflection")
+    static int32 GetArrayNum(const FReflectedObject& ReflectedObject);
+
+    /** Appends one new element into the reflected array object, and returns index of the new element, or -1 if object does not represent an array */
+    UFUNCTION(BlueprintCallable, Category = "Reflection")
+    static int32 AddNewArrayElement(const FReflectedObject& ReflectedObject);
+
+    /** Removes specified amount of the elements from the array object, starting at specified index */
+    UFUNCTION(BlueprintCallable, Category = "Reflection")
+    static void RemoveArrayElements(const FReflectedObject& ReflectedObject, int32 Index, int32 Count = 1);
+
     /** Retrieves a value of byte property */
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static uint8 GetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static uint8 GetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     /** Updates a value of byte property */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName, uint8 Value, int32 ArrayIndex = 0);
+    static void SetByteProperty(const FReflectedObject& ReflectedObject, FName PropertyName, uint8 Value);
 
     /** Retrieves a value of 64-bit signed integer */
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static int64 GetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static int64 GetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     /** Updates a value of 64-bit signed integer variable */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName, int64 Value, int32 ArrayIndex = 0);
+    static void SetInt64Property(const FReflectedObject& ReflectedObject, FName PropertyName, int64 Value);
     
     /** Retrieves a value of 32-bit signed integer */
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static int32 GetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static int32 GetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     /** Updates a value of 32-bit signed integer variable */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 Value, int32 ArrayIndex = 0);
+    static void SetInt32Property(const FReflectedObject& ReflectedObject, FName PropertyName, int32 Value);
 
     /** Retrieves a value of floating point variable from object */
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static float GetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static float GetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     /** Updates a value of floating point property on reflected object */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName, float Value, int32 ArrayIndex = 0);
+    static void SetFloatProperty(const FReflectedObject& ReflectedObject, FName PropertyName, float Value);
 
     /** Retrieves a value of string variable on reflected object */
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static FString GetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static FString GetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     /** Updates a value of string variable on passed object */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FString& Value, int32 ArrayIndex = 0);
+    static void SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FString& Value);
 
     /** Retrieves boolean property value from reflected object */
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static bool GetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static bool GetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     /** Updates a value of boolean property on reflected object */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName, bool Value, int32 ArrayIndex = 0);
+    static void SetBoolProperty(const FReflectedObject& ReflectedObject, FName PropertyName, bool Value);
 
     /** Retrieves a value of name property from reflected object */
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static FName GetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static FName GetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     /** Updates a value of name property on reflected object */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FName& Name, int32 ArrayIndex = 0);
+    static void SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FName& Name);
 
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static FText GetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static FText GetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FText& Text, int32 ArrayIndex = 0);
+    static void SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FText& Text);
 
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static UObject* GetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static UObject* GetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName, UObject* Object, int32 ArrayIndex = 0);
+    static void SetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName, UObject* Object);
 
     UFUNCTION(BlueprintPure, Category = "Reflection")
-    static FReflectedObject GetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, int32 ArrayIndex = 0);
+    static FReflectedObject GetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedObject& Struct, int32 ArrayIndex = 0);
+    static void SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedObject& Struct);
 
     UFUNCTION(BlueprintPure, Category = "Reflection")
     static FReflectedEnumValue GetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
     static void SetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedEnumValue& Enum);
+
+    UFUNCTION(BlueprintPure)
+    static FReflectedObject GetArrayProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     DECLARE_FUNCTION(execGetClassDefaultObject) {
         P_GET_OBJECT(UClass, Class);

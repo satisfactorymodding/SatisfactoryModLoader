@@ -64,7 +64,10 @@ bool FNativeCodeGenerator::GenerateConfigStructForConfigurationAsset(UBlueprint*
         FMessageDialog::Open(EAppMsgType::Ok, FText::Format(LOCTEXT("FailedToOpenFile", "Failed to save header file at path '{0}'"), FText::FromString(ResultHeaderFilename)));
         return false;
     }
-
+    
+    FUserDefinedStructCodeGenerator::ShowSuccessNotification(FText::Format(LOCTEXT("BlueprintConfigStructRegenerated",
+               "Successfully generated Native Struct for Configuration '{0}' and saved them at '{1}'"),
+               FText::FromString(Blueprint->GetName()), FText::FromString(ResultHeaderFilename)));
     return true;
 }
 

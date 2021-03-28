@@ -3,8 +3,8 @@
 #include "Toolkit/AssetTypes/FbxMeshExporter.h"
 #include "Toolkit/OldToolkit/FGAssetDumper.h"
 #include "FGPlayerController.h"
+#include "Configuration/ConfigManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
-#include "Configuration/Legacy/LegacyConfigurationHelper.h"
 #include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
 #include "Registry/ModContentRegistry.h"
 #include "Network/NetworkHandler.h"
@@ -43,7 +43,7 @@ TMap<FName, FString> FSatisfactoryModLoader::GetExtraAttributes() {
 }
 
 void FSatisfactoryModLoader::LoadSMLConfiguration(bool bAllowSave) {
-    const FString ConfigLocation = FLegacyConfigurationHelper::GetModConfigFilePath(TEXT("SML"));
+    const FString ConfigLocation = UConfigManager::GetConfigurationFilePath(FConfigId{TEXT("SML")});
     IPlatformFile& PlatformFile = FPlatformFileManager::Get().GetPlatformFile();
     bool bShouldWriteConfiguration = false;
     

@@ -1,21 +1,33 @@
 ﻿#include "Configuration/Properties/ConfigPropertyString.h"
 #include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
-#include "Configuration/Values/ConfigValueString.h"
+#include "Configuration/RawFileFormat/RawFormatValueString.h"
+#include "Reflection/BlueprintReflectedObject.h"
 
 UConfigPropertyString::UConfigPropertyString() {
-    DefaultValue = TEXT("");
+    this->Value = TEXT("");
 }
 
-TSubclassOf<UConfigValue> UConfigPropertyString::GetValueClass_Implementation() const {
-    return UConfigValueString::StaticClass();
+FString UConfigPropertyString::DescribeValue_Implementation() const {
+    return FString::Printf(TEXT("[string \"%s\"]"), *Value.ReplaceQuotesWithEscapedQuotes());
 }
 
-void UConfigPropertyString::ApplyDefaultPropertyValue_Implementation(UConfigValue* Value) const {
-    UConfigValueString* StringValue = Cast<UConfigValueString>(Value);
+URawFormatValue* UConfigPropertyString::Serialize_Implementation(UObject* Outer) const {
+    URawFormatValueString* StringValue = NewObject<URawFormatValueString>(Outer);
+    StringValue->Value = Value;
+    return StringValue;
+}
+
+void UConfigPropertyString::Deserialize_Implementation(const URawFormatValue* RawValue) {
+    const URawFormatValueString* StringValue = Cast<URawFormatValueString>(RawValue);
     if (StringValue != NULL) {
-        StringValue->Value = DefaultValue;
+        this->Value = StringValue->Value;
     }
 }
+
+void UConfigPropertyString::FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const {
+    ReflectedObject.SetStrProperty(*VariableName, Value);
+}
+
 
 FConfigVariableDescriptor UConfigPropertyString::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {

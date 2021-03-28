@@ -44,5 +44,9 @@ public:
 
     /** Root property of this configuration describing it's values */
     UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly)
-    UConfigPropertySection* RootSection;   
+    UConfigPropertySection* RootSection;
+
+#if WITH_EDITOR
+    virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
+#endif
 };

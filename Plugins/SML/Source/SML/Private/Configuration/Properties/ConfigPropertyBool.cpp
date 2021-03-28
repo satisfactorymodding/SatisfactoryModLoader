@@ -1,21 +1,32 @@
 ﻿#include "Configuration/Properties/ConfigPropertyBool.h"
 #include "Configuration/CodeGeneration/ConfigVariableDescriptor.h"
 #include "Configuration/CodeGeneration/ConfigVariableLibrary.h"
-#include "Configuration/Values/ConfigValueBool.h"
+#include "Configuration/RawFileFormat/RawFormatValueBool.h"
+#include "Reflection/BlueprintReflectedObject.h"
 
 UConfigPropertyBool::UConfigPropertyBool() {
-    this->DefaultValue = false;
+    this->Value = false;
 }
 
-TSubclassOf<UConfigValue> UConfigPropertyBool::GetValueClass_Implementation() const {
-    return UConfigValueBool::StaticClass();
+FString UConfigPropertyBool::DescribeValue_Implementation() const {
+    return FString::Printf(TEXT("[bool %s]"), Value ? TEXT("true") : TEXT("false"));
 }
 
-void UConfigPropertyBool::ApplyDefaultPropertyValue_Implementation(UConfigValue* Value) const {
-    UConfigValueBool* ValueBool = Cast<UConfigValueBool>(Value);
-    if (ValueBool != NULL) {
-        ValueBool->Value = DefaultValue;
+URawFormatValue* UConfigPropertyBool::Serialize_Implementation(UObject* Outer) const {
+    URawFormatValueBool* BoolValue = NewObject<URawFormatValueBool>(Outer);
+    BoolValue->Value = Value;
+    return BoolValue;
+}
+
+void UConfigPropertyBool::Deserialize_Implementation(const URawFormatValue* RawValue) {
+    const URawFormatValueBool* BoolValue = Cast<URawFormatValueBool>(RawValue);
+    if (BoolValue) {
+        this->Value = BoolValue->Value;
     }
+}
+
+void UConfigPropertyBool::FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const {
+    ReflectedObject.SetBoolProperty(*VariableName, Value);
 }
 
 FConfigVariableDescriptor UConfigPropertyBool::CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const {
