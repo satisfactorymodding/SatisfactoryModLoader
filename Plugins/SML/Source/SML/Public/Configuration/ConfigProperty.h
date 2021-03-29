@@ -30,6 +30,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
 	uint8 bRequiresWorldReload: 1;
 
+	/** Whenever this value should be hidden in Widgets ( No User Input )  */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
+		uint8 bHidden : 1;
+
 	/** Describes value of this property for debugging purposes */
 	UFUNCTION(BlueprintPure, BlueprintNativeEvent)
     FString DescribeValue() const;

@@ -46,6 +46,10 @@ public:
     UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly)
     UConfigPropertySection* RootSection;
 
+	/** Custom Widget - placed at the Bottom of the Mod Config Widgets*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TSubclassOf<UUserWidget> CustomWidget;
+
 #if WITH_EDITOR
     virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif

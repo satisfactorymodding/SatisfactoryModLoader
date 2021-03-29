@@ -79,7 +79,7 @@ public:
     static FString GetConfigurationFolderPath();
 private:
     friend class FSatisfactoryModLoader;
-    
+	friend class URuntimeBlueprintFunctionLibrary;
     /** Returns path to the provided configuration */
     static FString GetConfigurationFilePath(const FConfigId& ConfigId);
 

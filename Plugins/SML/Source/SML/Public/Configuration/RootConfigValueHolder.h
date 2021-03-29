@@ -14,7 +14,7 @@ class SML_API URootConfigValueHolder : public UObject, public IConfigValueDirtyH
     FORCEINLINE UConfigPropertySection* GetWrappedValue() const { return RootWrappedValue; }
 private:
     friend class UConfigManager;
-    
+	friend class URuntimeBlueprintFunctionLibrary;
     void SetupRootValue(UConfigManager* ConfigManager, const FConfigId& ConfigId);
 
     void UpdateWrappedValue(UConfigPropertySection* RootValueTemplate);

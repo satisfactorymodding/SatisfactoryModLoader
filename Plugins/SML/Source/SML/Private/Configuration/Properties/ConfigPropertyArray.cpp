@@ -32,11 +32,13 @@ bool UConfigPropertyArray::CanEditChange(const FProperty* InProperty) const {
 }
 
 EDataValidationResult UConfigPropertyArray::IsDataValid(TArray<FText>& ValidationErrors) {
-    if (DefaultValue == NULL) {
+ /*
+	if (DefaultValue == NULL) {
         ValidationErrors.Add(FText::Format(LOCTEXT("ArrayDefaultValueConfigNotSet",
             "Default Value for Array Property '{0}' is not set."), FText::FromString(GetPathName())));
         return EDataValidationResult::Invalid;
     }
+*/
     EDataValidationResult ValidationResult = EDataValidationResult::Valid;
     for (const UConfigProperty* ConfigProperty : Values) {
         if (ConfigProperty == NULL ||

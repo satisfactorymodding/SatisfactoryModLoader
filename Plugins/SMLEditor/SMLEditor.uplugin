@@ -10,7 +10,7 @@
 	"DocsURL": "https://docs.ficsit.app",
 	"MarketplaceURL": "",
 	"SupportURL": "",
-	"CanContainContent": false,
+	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
 	"Installed": true,
