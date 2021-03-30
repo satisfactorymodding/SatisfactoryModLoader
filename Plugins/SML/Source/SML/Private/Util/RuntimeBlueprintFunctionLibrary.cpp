@@ -29,7 +29,6 @@ bool URuntimeBlueprintFunctionLibrary::IsEditor() {
 #endif
 }
 
-
 FName URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyToName(UConfigProperty * Property) {
 	if (Cast<UConfigPropertyString>(Property)) {
 		UConfigPropertyString * Obj = Cast<UConfigPropertyString>(Property);
@@ -206,8 +205,8 @@ bool URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyBoolToBool(UConfigProp
 FString URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyStringToString(UConfigPropertyString * Property) {
 	return Conv_ConfigPropertyToString(Property);
 };
-UConfigProperty * URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertySectionToConfigProperty(UConfigPropertySection * Property, FString Key)
-{
+
+UConfigProperty * URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertySectionToConfigProperty(UConfigPropertySection * Property, FString Key) {
 	if (!Property)
 		return nullptr;
 	if (!Property->SectionProperties.Contains(Key))
@@ -216,69 +215,53 @@ UConfigProperty * URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertySectionTo
 	return Out;
 };
 
-TArray<UConfigProperty*> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToConfigPropertyArray(UConfigPropertyArray * Property)
-{
+TArray<UConfigProperty*> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToConfigPropertyArray(UConfigPropertyArray * Property) {
 	if (!Property)
 		return TArray<UConfigProperty*>();
 	return Property->Values;
 };
 
-
-TArray<FString> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToStringArray(UConfigPropertyArray * Property)
-{
+TArray<FString> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToStringArray(UConfigPropertyArray * Property) {
 	TArray<FString> Out;
-	
 	if(Property)
 		for (auto * i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToString(i));
-
 	return Out;
 };
-TArray<float> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToFloatArray(UConfigPropertyArray * Property)
-{
-	TArray<float> Out;
 
+TArray<float> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToFloatArray(UConfigPropertyArray * Property) {
+	TArray<float> Out;
 	if (Property)
 		for (auto * i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToFloat(i));
-
 	return Out;
 };
 
-TArray<int32> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToIntegerArray(UConfigPropertyArray * Property)
-{
+TArray<int32> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToIntegerArray(UConfigPropertyArray * Property) {
 	TArray<int32> Out;
-
 	if (Property)
 		for (auto * i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToInteger(i));
-
 	return Out;
 }
 
-TArray<bool> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToBoolArray(UConfigPropertyArray * Property)
-{
+TArray<bool> URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyArrayToBoolArray(UConfigPropertyArray * Property) {
 	TArray<bool> Out;
-
 	if (Property)
 		for (auto * i : Property->Values)
 			Out.Add(Conv_ConfigPropertyToBool(i));
-
 	return Out;
 };
 
-
 UWidget * URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyToWidget(UConfigProperty * Property, UObject * ParentWidget) {
 	if (!Property)
-		return nullptr;
-	
+		return nullptr;	
 	return Property->CreateEditorWidget(Cast<UUserWidget>(ParentWidget));
 };
+
 UUserWidget * URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyToUserWidget(UConfigProperty * Property, UObject * ParentWidget) {
 	return Cast<UUserWidget>(Conv_ConfigPropertyToWidget(Property, ParentWidget));
 };
-
-
 
 UConfigProperty* URuntimeBlueprintFunctionLibrary::GetModConfigurationProperty(const FConfigId& ConfigId) {
 	const UConfigManager* MySubsystem = GEngine->GetEngineSubsystem<UConfigManager>();
@@ -290,7 +273,6 @@ UConfigProperty* URuntimeBlueprintFunctionLibrary::GetModConfigurationProperty(c
 		return ConfigurationData->RootValue->GetWrappedValue();
 	}
 };
-
 
 UConfigProperty* URuntimeBlueprintFunctionLibrary::GetModConfigurationPropertyByClass(TSubclassOf<UModConfiguration> ConfigClass) {
 	if (!ConfigClass)
@@ -321,10 +303,10 @@ UConfigProperty * URuntimeBlueprintFunctionLibrary::Conv_ModConfigurationToConfi
 	return (GetModConfigurationPropertyByClass(ConfigClass));
 }
 
-
 UConfigProperty * URuntimeBlueprintFunctionLibrary::Conv_ConfigIdToConfigProperty(const FConfigId & ConfigId) {
 	return GetModConfigurationProperty(ConfigId);
 }
+
 TSubclassOf<UModConfiguration> URuntimeBlueprintFunctionLibrary::Conv_ConfigIdToModConfigurationClass(const FConfigId & ConfigId) {
 	const UConfigManager* MySubsystem = GEngine->GetEngineSubsystem<UConfigManager>();
 	const FRegisteredConfigurationData* ConfigurationData = MySubsystem->Configurations.Find(ConfigId);
@@ -335,12 +317,24 @@ TSubclassOf<UModConfiguration> URuntimeBlueprintFunctionLibrary::Conv_ConfigIdTo
 		return ConfigurationData->ConfigurationClass;
 	}
 }
-UUserWidget* URuntimeBlueprintFunctionLibrary::CreateSMLWidget(UUserWidget* OwningObject, TSubclassOf<UUserWidget> UserWidgetClass, FName WidgetName)
-{
+
+UUserWidget* URuntimeBlueprintFunctionLibrary::CreateSMLWidget(UUserWidget* OwningObject, TSubclassOf<UUserWidget> UserWidgetClass, FName WidgetName) {
 	SCOPE_CYCLE_COUNTER(STAT_CreateWidget);
 
 	if (OwningObject) {
 		return Cast<UUserWidget>(UUserWidget::CreateWidgetInstance(*OwningObject, UserWidgetClass, WidgetName));
 	}
 	return nullptr;
-};
+}
+
+void URuntimeBlueprintFunctionLibrary::SetSpinBoxFont(USpinBox* Box, FSlateFontInfo Font) {
+	if (!Box)
+		return;
+	Box->Font = Font;
+}
+
+void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSlateFontInfo Font) {
+	if (!Box)
+		return;
+	Box->Font = Font;
+}

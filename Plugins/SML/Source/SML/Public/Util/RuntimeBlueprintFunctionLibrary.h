@@ -18,6 +18,10 @@
 
 #include "Configuration/Properties/ConfigPropertyBool.h"
 #include "Configuration/RootConfigValueHolder.h"
+
+#include "Components/SpinBox.h" 
+#include "Components/ComboBoxString.h" 
+
 #include "RuntimeBlueprintFunctionLibrary.generated.h"
 
 /**
@@ -127,6 +131,13 @@ public:
 		UFUNCTION(BlueprintCallable)
 		static UUserWidget* CreateSMLWidget(UUserWidget* OwningObject, TSubclassOf<UUserWidget> UserWidgetClass, FName WidgetName);
 	
+		/** Allows Font Editing. This needs to be called before PreConstruct. */
+		UFUNCTION(BlueprintCallable)
+		static void SetSpinBoxFont(USpinBox* Box, FSlateFontInfo Font);
 	
+		/** Allows Font Editing. This needs to be called before PreConstruct. */
+		UFUNCTION(BlueprintCallable)
+		static void SetComboBoxFont(UComboBoxString* Box, FSlateFontInfo Font);
+
 };
 
