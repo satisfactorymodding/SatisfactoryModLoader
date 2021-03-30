@@ -1,8 +1,6 @@
 #include "Toolkit/AssetTypes/AssetTypeSerializer.h"
 #include "UObject/UObjectIterator.h"
 
-#pragma optimize("", off)
-
 //Static class used to lazily populate serializer registry
 class FAssetTypeSerializerRegistry {
 public:
@@ -63,5 +61,3 @@ void FAssetTypeSerializerRegistry::InitializeAssetTypeSerializerRegistry() {
         }
     }
 }
-
-#pragma optimize("", on)

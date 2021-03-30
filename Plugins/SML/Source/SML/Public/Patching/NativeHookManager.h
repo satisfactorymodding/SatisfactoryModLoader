@@ -70,7 +70,7 @@ THandlerLists<T, E>* createHandlerLists(void* RealFunctionAddress) {
 	return static_cast<THandlerLists<T, E>*>(handlerListRaw);
 }
 
-template <typename TCallable, TCallable Callable, bool bIsConst>
+template <typename TCallable, TCallable Callable>
 struct HookInvoker;
 
 template<typename TCallable>
@@ -181,52 +181,48 @@ struct FMemberFunctionStruct {
 	T MemberFunctionPtr;
 };
 
-struct None {};
-
 //Hook invoker for global functions
-template <typename R, typename... A, R(*PMF)(A...)>
-struct HookInvoker<R(*)(A...), PMF, false> {
+template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
+struct HookInvokerExecutorGlobalFunction {
 public:
-	typedef CallScope<R(*)(A...)> ScopeType;
-	// mod handler function
-	typedef void HandlerSignature(ScopeType&, A...);
-	typedef typename HandlerAfterFunc<R, A...>::Value HandlerSignatureAfter;
-	typedef R HookType(A...);
-	typedef R ReturnType;
-
-	// support arbitrary context for handlers
-	typedef std::function<HandlerSignature> Handler;
-	typedef std::function<HandlerSignatureAfter> HandlerAfter;
+	using HookType = TCallable;
+	using ScopeType = CallScope<TCallable>;
+	using HandlerSignature = void(ScopeType&, ArgumentTypes...);
+	using HandlerSignatureAfter = typename HandlerAfterFunc<ReturnType, ArgumentTypes...>::Value;
+	using Handler = std::function<HandlerSignature>;
+	using HandlerAfter = std::function<HandlerSignatureAfter>;
 private:
 	static TArray<Handler>* handlersBefore;
 	static TArray<HandlerAfter>* handlersAfter;
-	static HookType* functionPtr;
+	static TCallable functionPtr;
 	static bool bHookInitialized;
 public:
-	static R applyCall(A... args) {
+	static ReturnType applyCall(ArgumentTypes... args) {
 		ScopeType scope(handlersBefore, functionPtr);
 		scope(args...);
-		if (handlersAfter) for (HandlerAfter& handler : * handlersAfter) handler(scope.getResult(), args...);
+		for (HandlerAfter& handler : *handlersAfter)
+			handler(scope.getResult(), args...);
 		return scope.getResult();
 	}
 
-	static void applyCallVoid(A... args) {
+	static void applyCallVoid(ArgumentTypes... args) {
 		ScopeType scope(handlersBefore, functionPtr);
 		scope(args...);
-		if (handlersAfter) for (HandlerAfter& handler : *handlersAfter) handler(args...);
+		for (HandlerAfter& handler : *handlersAfter)
+			handler(args...);
 	}
 
 private:
-	static HookType* getApplyRef(std::true_type) {
+	static TCallable getApplyRef(std::true_type) {
 		return &applyCallVoid;
 	}
 
-	static HookType* getApplyRef(std::false_type) {
+	static TCallable getApplyRef(std::false_type) {
 		return &applyCall;
 	}
 
-	static HookType* getApplyCall() {
-		return getApplyRef(std::is_same<R, void>{});
+	static TCallable getApplyCall() {
+		return getApplyRef(std::is_same<ReturnType, void>{});
 	}
 public:
 	//This hook invoker is for global non-member static functions, so we don't have to deal with
@@ -251,91 +247,75 @@ public:
 	}
 };
 
-//Template which is used for erasing const from method pointer
-//passed to HookInvoker, since HookInvoker cannot properly handle const method hooks
-template<typename TCallable, TCallable Callable>
-struct HookInvokerWrapper {
-public:
-	using Value = HookInvoker<TCallable, (TCallable) Callable, false>;
-};
-
-template <typename R, typename C, typename... A, R(C::*PMF)(A...) const>
-struct HookInvokerWrapper<R(C::*)(A...) const, PMF> {
-public:
-	using FunctionType = R(C::*)(A...);
-    using Value = HookInvoker<FunctionType, (FunctionType) PMF, true>;
-};
-
 //Hook invoker for member functions
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
-struct HookInvoker<R(C::*)(A...), PMF, bIsConst>
-{
+template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
+struct HookInvokerExecutorMemberFunction {
 public:
-	using ConstCorrectThisPtr = std::conditional_t<bIsConst, const C*, C*>;
-	using CallScopeFunctionSignature = R(*)(ConstCorrectThisPtr, A...); 
-    typedef CallScope<CallScopeFunctionSignature> ScopeType;
+	using ConstCorrectThisPtr = std::conditional_t<bIsConst, const CallableType*, CallableType*>;
+	using CallScopeFunctionSignature = ReturnType(*)(ConstCorrectThisPtr, ArgumentTypes...); 
+	typedef CallScope<CallScopeFunctionSignature> ScopeType;
 	
-	typedef void HandlerSignature(ScopeType&, ConstCorrectThisPtr, A...);
-	typedef typename HandlerAfterFunc<R, ConstCorrectThisPtr, A...>::Value HandlerSignatureAfter;
-	typedef R HookType(ConstCorrectThisPtr, A...);
-	typedef R ReturnType;
+	typedef void HandlerSignature(ScopeType&, ConstCorrectThisPtr, ArgumentTypes...);
+	typedef typename HandlerAfterFunc<ReturnType, ConstCorrectThisPtr, ArgumentTypes...>::Value HandlerSignatureAfter;
+	typedef ReturnType HookType(ConstCorrectThisPtr, ArgumentTypes...);
 
-	// support arbitrary context for handlers
-	typedef std::function<HandlerSignature> Handler;
-	typedef std::function<HandlerSignatureAfter> HandlerAfter;
+	using Handler = std::function<HandlerSignature>;
+	using HandlerAfter = std::function<HandlerSignatureAfter>;
 private:
     static TArray<Handler>* handlersBefore;
 	static TArray<HandlerAfter>* handlersAfter;
 	static HookType* functionPtr;
 	static bool bHookInitialized;
-public:
-    //Methods which return class/struct/union by value have out pointer inserted
-    //as first parameter after this pointer, with all arguments shifted right by 1 for it
-    static R* applyCallUserTypeByValue(C* self, R* outReturnValue, A... args) {
-        // Capture the pointer of the return value
-        // so ScopeType does not have to know about that special case
-        auto Trampoline = [&](ConstCorrectThisPtr self_, A... args_) -> R {
-            (reinterpret_cast<R*(*)(ConstCorrectThisPtr, R*, A...)>(functionPtr))(self_, outReturnValue, args_...);
-            return *outReturnValue;
-        };
 
-    	ScopeType scope(handlersBefore, Trampoline);
-    	scope(self, args...);
-    	for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
-    	//We always return outReturnValue, so copy our result to output variable and return it
-    	*outReturnValue = scope.getResult();
-    	return outReturnValue;
-    }
+	//Methods which return class/struct/union by value have out pointer inserted
+	//as first parameter after this pointer, with all arguments shifted right by 1 for it
+	static ReturnType* applyCallUserTypeByValue(CallableType* self, ReturnType* outReturnValue, ArgumentTypes... args) {
+		// Capture the pointer of the return value
+		// so ScopeType does not have to know about that special case
+		auto Trampoline = [&](ConstCorrectThisPtr self_, ArgumentTypes... args_) -> ReturnType {
+			(reinterpret_cast<ReturnType*(*)(ConstCorrectThisPtr, ReturnType*, ArgumentTypes...)>(functionPtr))(self_, outReturnValue, args_...);
+			return *outReturnValue;
+		};
+
+		ScopeType scope(handlersBefore, Trampoline);
+		scope(self, args...);
+		for (HandlerAfter& handler : *handlersAfter)
+			handler(scope.getResult(), self, args...);
+		//We always return outReturnValue, so copy our result to output variable and return it
+		*outReturnValue = scope.getResult();
+		return outReturnValue;
+	}
 
 	//Normal scalar type call, where no additional arguments are inserted
 	//If it were returning user type by value, first argument would be R*, which is incorrect - that's why we need separate
 	//applyCallUserType with correct argument order
-	static R applyCallScalar(C* self, A... args) {
-    	ScopeType scope(handlersBefore, functionPtr);
-    	scope(self, args...);
-    	for (HandlerAfter& handler : *handlersAfter) handler(scope.getResult(), self, args...);
-    	return scope.getResult();
-    }
+	static ReturnType applyCallScalar(CallableType* self, ArgumentTypes... args) {
+		ScopeType scope(handlersBefore, functionPtr);
+		scope(self, args...);
+		for (HandlerAfter& handler : *handlersAfter)
+			handler(scope.getResult(), self, args...);
+		return scope.getResult();
+	}
 
 	//Call for void return type - nothing special to do with void
-	static void applyCallVoid(C* self, A... args) {
-    	ScopeType scope(handlersBefore, functionPtr);
-    	scope(self, args...);
-    	for (HandlerAfter& handler : *handlersAfter) handler(self, args...);
-    }
+	static void applyCallVoid(CallableType* self, ArgumentTypes... args) {
+		ScopeType scope(handlersBefore, functionPtr);
+		scope(self, args...);
+		for (HandlerAfter& handler : *handlersAfter)
+			handler(self, args...);
+	}
 
-private:
     static void* getApplyCall1(std::true_type) {
     	return (void*) applyCallVoid; //true - type is void
     }
 	static void* getApplyCall1(std::false_type) {
-	    return getApplyCall2(std::is_class<R>{}); //not a void, try call 2
+	    return getApplyCall2(std::is_class<ReturnType>{}); //not a void, try call 2
     }
 	static void* getApplyCall2(std::true_type) {
 	    return (void*) applyCallUserTypeByValue; //true - type is class
     }
 	static void* getApplyCall2(std::false_type) {
-	    return getApplyCall3(std::is_union<R>{});
+	    return getApplyCall3(std::is_union<ReturnType>{});
     }
 	static void* getApplyCall3(std::true_type) {
     	return (void*) applyCallUserTypeByValue; //true - type is union
@@ -345,7 +325,7 @@ private:
     }
 	
 	static void* getApplyCall() {
-    	return getApplyCall1(std::is_same<R, void>{});
+    	return getApplyCall1(std::is_same<ReturnType, void>{});
 	}
 public:
 	//Handles normal member function hooking, e.g hooking fixed symbol implementation in executable
@@ -353,8 +333,8 @@ public:
 		if (!bHookInitialized) {
 			bHookInitialized = true;
 			void* HookFunctionPointer = getApplyCall();
-			TMemberFunctionPointer<R(C::*)(A...)> RawFunctionPointer{};
-			RawFunctionPointer.MemberFunctionPointer = PMF;
+			TMemberFunctionPointer<TCallable> RawFunctionPointer{};
+			RawFunctionPointer.MemberFunctionPointer = Callable;
 			const FMemberFunctionPointer MemberFunctionPointer = ConvertFunctionPointer(&RawFunctionPointer);
 			
 			void* RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName,
@@ -368,7 +348,7 @@ public:
 			handlersAfter = &HandlerLists->HandlersAfter;
 		}
 	}
-	
+
 	static void addHandlerBefore(Handler handler) {
 		handlersBefore->Add(handler);
 	}
@@ -378,41 +358,59 @@ public:
 	}
 };
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
-TArray<typename HookInvoker<R(C::*)(A...), PMF, bIsConst>::Handler>* HookInvoker<R(C::*)(A...), PMF, bIsConst>::handlersBefore = nullptr;
+//Hook invoker for member non-const functions
+template<typename R, typename C, typename... A, R(C::*Callable)(A...)>
+struct HookInvoker<R(C::*)(A...), Callable> : HookInvokerExecutorMemberFunction<R(C::*)(A...), Callable, false, R, C, A...> {
+};
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
-TArray<typename HookInvoker<R(C::*)(A...), PMF, bIsConst>::HandlerAfter>* HookInvoker<R(C::*)(A...), PMF, bIsConst>::handlersAfter = nullptr;
+//Hook invoker for member const functions
+template<typename R, typename C, typename... A, R(C::*Callable)(A...) const>
+struct HookInvoker<R(C::*)(A...) const, Callable> : HookInvokerExecutorMemberFunction<R(C::*)(A...) const, Callable, true, R, C, A...> {
+};
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
-R(* HookInvoker<R(C::*)(A...), PMF, bIsConst>::functionPtr)(std::conditional_t<bIsConst, const C*, C*>,A...) = nullptr;
+//Hook invoker for global functions
+template<typename R, typename... A, R(*Callable)(A...)>
+struct HookInvoker<R(*)(A...), Callable> : HookInvokerExecutorGlobalFunction<R(*)(A...), Callable, R, A...> {
+};
 
-template <typename R, typename C, typename... A, R(C::*PMF)(A...), bool bIsConst>
-bool HookInvoker<R(C::*)(A...), PMF, bIsConst>::bHookInitialized = nullptr;
+template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
+typename HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::HookType* HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::functionPtr = nullptr;
 
-template <typename R, typename... A, R(*PMF)(A...)>
-TArray<typename HookInvoker<R(*)(A...), PMF, false>::Handler>* HookInvoker<R(*)(A...), PMF, false>::handlersBefore = nullptr;
+template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
+bool HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::bHookInitialized = false;
 
-template <typename R, typename... A, R(*PMF)(A...)>
-TArray<typename HookInvoker<R(*)(A...), PMF, false>::HandlerAfter>* HookInvoker<R(*)(A...), PMF, false>::handlersAfter = nullptr;
+template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
+TArray<typename HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::Handler>* HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::handlersBefore = nullptr;
 
-template <typename R, typename... A, R(*PMF)(A...)>
-R(* HookInvoker<R(*)(A...), PMF, false>::functionPtr)(A...) = nullptr;
-template <typename R, typename... A, R(*PMF)(A...)>
-bool HookInvoker<R(*)(A...), PMF, false>::bHookInitialized = false;
+template <typename TCallable, TCallable Callable, bool bIsConst, typename ReturnType, typename CallableType, typename... ArgumentTypes>
+TArray<typename HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::HandlerAfter>* HookInvokerExecutorMemberFunction<TCallable, Callable, bIsConst, ReturnType, CallableType, ArgumentTypes...>::handlersAfter = nullptr;
+
+
+template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
+typename HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::HookType HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::functionPtr = nullptr;
+
+template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
+bool HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::bHookInitialized = false;
+
+template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
+TArray<typename HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::Handler>* HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::handlersBefore = nullptr;
+
+template <typename TCallable, TCallable Callable, typename ReturnType, typename... ArgumentTypes>
+TArray<typename HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::HandlerAfter>* HookInvokerExecutorGlobalFunction<TCallable, Callable, ReturnType, ArgumentTypes...>::handlersAfter = nullptr;
+
 
 #define SUBSCRIBE_METHOD(MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference)); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerBefore(Handler);
+HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference)); \
+HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_METHOD_AFTER(MethodReference, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference)); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerAfter(Handler);
+HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference)); \
+HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerAfter(Handler);
 
 #define SUBSCRIBE_METHOD_VIRTUAL(MethodReference, SampleObjectInstance, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerBefore(Handler);
+HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
+HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerBefore(Handler);
 
 #define SUBSCRIBE_METHOD_VIRTUAL_AFTER(MethodReference, SampleObjectInstance, Handler) \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
-HookInvokerWrapper<decltype(&MethodReference), &MethodReference>::Value::addHandlerAfter(Handler);
+HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
+HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerAfter(Handler);

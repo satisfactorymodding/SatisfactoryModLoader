@@ -22,7 +22,7 @@ static bool PluginModuleLoaderExec(UWorld* InWorld, const TCHAR* Cmd, FOutputDev
 		Ar.Logf(TEXT("Owner of the package %s is %s"), *TargetPackageName, *OwnerPluginName);
 		return true;
 	}
-	if (FParse::Command(&Cmd, TEXT("ListMountedPaks"))) {
+	/*if (FParse::Command(&Cmd, TEXT("ListMountedPaks"))) {
 		TArray<FString> MountedPaksFilenames;
 		FPakPlatformFile* PakPlatformFile = (FPakPlatformFile*) FPlatformFileManager::Get().GetPlatformFile(TEXT("PakFile"));
 		PakPlatformFile->GetMountedPakFilenames(MountedPaksFilenames);
@@ -32,7 +32,7 @@ static bool PluginModuleLoaderExec(UWorld* InWorld, const TCHAR* Cmd, FOutputDev
 			Ar.Logf(TEXT("%s"), *PakFilename);
 		}
 		return true;
-	}
+	}*/
 	return false;
 }
 

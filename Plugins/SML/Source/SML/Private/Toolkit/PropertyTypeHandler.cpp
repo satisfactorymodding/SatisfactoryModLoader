@@ -151,8 +151,6 @@ TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGrap
 
 bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer);
 
-#pragma optimize("", off)
-
 bool FPropertyTypeHelper::ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType& TypeOut) {
 	if (Property == nullptr) {
 		TypeOut.PinCategory = TEXT("bad_type");
@@ -265,5 +263,3 @@ bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, 
 
 	return true;
 }
-
-#pragma optimize("", on)

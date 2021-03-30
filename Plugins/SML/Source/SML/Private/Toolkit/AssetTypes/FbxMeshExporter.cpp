@@ -9,8 +9,6 @@
 #include "Engine/SkeletalMesh.h"
 #include "Engine/StaticMesh.h"
 
-#pragma optimize("", off)
-
 FString GetNameForUVChannel(uint32 Index) {
     if (Index == 0) {
         return TEXT("uv");
@@ -880,5 +878,3 @@ void FFbxMeshExporter::ExportStaticMesh(const FStaticMeshLODResources& StaticMes
         }
     }
 }
-
-#pragma optimize("", on)

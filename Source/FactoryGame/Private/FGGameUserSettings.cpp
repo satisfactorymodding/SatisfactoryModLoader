@@ -70,4 +70,6 @@ void UFGGameUserSettings::DumpDynamicOptionsSettings(){ }
 void UFGGameUserSettings::GetOptionsDebugData(TArray<FString>& out_debugData){ }
 bool UFGGameUserSettings::ValidateCVar(FString &cvar){ return bool(); }
 void UFGGameUserSettings::BroadcastDynamicOptionUpdate(FString cvar){ }
-FAutoConsoleVariableSink UFGGameUserSettings::mCVarSink = NULL;
+
+//MODDING EDIT: Initialize with a proper value
+FAutoConsoleVariableSink UFGGameUserSettings::mCVarSink(FConsoleCommandDelegate::CreateStatic(&UFGGameUserSettings::CVarSinkHandler));
