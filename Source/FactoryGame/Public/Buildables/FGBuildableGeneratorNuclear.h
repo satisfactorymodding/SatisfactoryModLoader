@@ -42,7 +42,7 @@ protected:
 	// End AFGBuildableGeneratorFuel
 	
 	// Begin AFGBuildableGenerator interface
-	virtual bool HasPower() const override;
+	virtual bool Factory_HasPower() const override;
 	virtual bool CanStartPowerProduction_Implementation() const override;
 	// End AFGBuildableGenerator interface
 

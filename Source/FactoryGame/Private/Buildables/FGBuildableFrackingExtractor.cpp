@@ -2,7 +2,7 @@
 
 #include "Buildables/FGBuildableFrackingExtractor.h"
 
-bool AFGBuildableFrackingExtractor::HasPower() const{ return bool(); }
+bool AFGBuildableFrackingExtractor::Factory_HasPower() const{ return bool(); }
 bool AFGBuildableFrackingExtractor::CanProduce_Implementation() const{ return bool(); }
 void AFGBuildableFrackingExtractor::Factory_StartProducing(){ }
 void AFGBuildableFrackingExtractor::Factory_ProductionCycleCompleted(float overProductionRate){ }

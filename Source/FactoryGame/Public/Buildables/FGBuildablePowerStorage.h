@@ -37,10 +37,10 @@ public:
 	//~ End AActor interface
 
 	//~ Begin AFGBuildableFactory interface
-	virtual bool HasPower() const override;
+	virtual bool Factory_HasPower() const override;
 	virtual bool CanProduce_Implementation() const override;
 	virtual EProductionStatus GetProductionIndicatorStatus() const override;
-	virtual void Factory_StartProducing() override;
+	virtual void Factory_StartProducing() override;	
 	virtual void Factory_StopProducing() override;
 	virtual void Factory_TickProducing( float deltaTime ) override;
 	//~ End AFGBuildableFactory interface

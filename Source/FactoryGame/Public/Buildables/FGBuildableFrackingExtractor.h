@@ -16,7 +16,7 @@ class FACTORYGAME_API AFGBuildableFrackingExtractor : public AFGBuildableResourc
 
 public:
 	//~ Begin AFGBuildableFactory interface
-	virtual bool HasPower() const override;
+	virtual bool Factory_HasPower() const override;
 	virtual bool CanProduce_Implementation() const override;
 	virtual void Factory_StartProducing() override;
 	virtual void Factory_ProductionCycleCompleted( float overProductionRate );

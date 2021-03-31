@@ -26,7 +26,7 @@ public:
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
-	virtual bool HasPower() const override;
+	virtual bool Factory_HasPower() const override;
 	virtual EProductionStatus GetProductionIndicatorStatus() const override;
 	// End AFGBuildableFactory interface
 

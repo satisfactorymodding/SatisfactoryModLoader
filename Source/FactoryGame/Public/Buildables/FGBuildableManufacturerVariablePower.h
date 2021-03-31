@@ -19,7 +19,7 @@ public:
 	// End AActor interface
 
 	// Begin AFGBuildableFactory interface
-	virtual bool RunsOnPower() const override { return true; }
+	virtual bool Factory_RunsOnPower() const override { return true; }
 	virtual float GetProducingPowerConsumptionBase() const override { return mVariablePowerConsumption; }
 	virtual void Factory_StartProducing() override;
 	virtual void Factory_TickProducing( float dt ) override;

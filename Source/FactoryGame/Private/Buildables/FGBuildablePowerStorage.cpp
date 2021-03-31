@@ -32,7 +32,7 @@ AFGBuildablePowerStorage::AFGBuildablePowerStorage() : Super() {
 }
 void AFGBuildablePowerStorage::BeginPlay(){ }
 void AFGBuildablePowerStorage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-bool AFGBuildablePowerStorage::HasPower() const{ return bool(); }
+bool AFGBuildablePowerStorage::Factory_HasPower() const{ return bool(); }
 bool AFGBuildablePowerStorage::CanProduce_Implementation() const{ return bool(); }
 EProductionStatus AFGBuildablePowerStorage::GetProductionIndicatorStatus() const{ return EProductionStatus(); }
 void AFGBuildablePowerStorage::Factory_StartProducing(){ }
