@@ -1,7 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
+	"VersionName": "2.0.0",
 	"FriendlyName": "Alpakit",
 	"Description": "Pak your Satisfactory mods and copy them to the game folder",
 	"Category": "Modding",
