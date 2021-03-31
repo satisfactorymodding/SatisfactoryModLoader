@@ -1,6 +1,7 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
+	"SemVersion": "1.0.0",
 	"VersionName": "1.0.0",
 	"FriendlyName": "Example Mod",
 	"Description": "A mod demonstrating capabilities of the Satisfactory and SML modding",
