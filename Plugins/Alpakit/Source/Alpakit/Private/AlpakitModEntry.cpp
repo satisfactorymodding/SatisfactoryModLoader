@@ -115,32 +115,7 @@ void SAlpakitModEntry::PackageMod() const
 		PlatformName,
 		LOCTEXT("PackageModTaskName", "Packaging Mod"),
 		LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
-		FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
-		[this, Settings, PluginName](FString resultType, double runTime)
-		{
-			UE_LOG(LogInit, Display, TEXT("Packaging result type: \"%s\""), *resultType);
-			UE_LOG(LogInit, Display, TEXT("Packaging run time: %f"), runTime);
-
-			if (resultType == TEXT("Completed"))
-			{
-				auto iconPath = Mod->GetBaseDir() / TEXT("Resources/Icon128.png");
-				auto iconTargetPath = Settings->SatisfactoryGamePath.Path / TEXT("FactoryGame/Mods") / PluginName / TEXT("Resources/Icon128.png");
-
-				if (FPaths::FileExists(iconPath))
-				{
-					// Icon is newer. Replace
-					UE_LOG(LogInit, Display, TEXT("Copying icon from \"%s\" to \"%s\""), *iconPath, *iconTargetPath);
-					auto mkdirResult = IFileManager::Get().MakeDirectory(*FPaths::GetPath(iconTargetPath), true);
-					UE_LOG(LogInit, Display, TEXT("Mkdir result = %s"), mkdirResult? TEXT("true") : TEXT("false"));
-					auto copyResult = IFileManager::Get().Copy(*iconTargetPath, *iconPath, true, true);
-					UE_LOG(LogInit, Display, TEXT("Copy result = %d"), copyResult);
-				}
-				else
-				{
-					UE_LOG(LogInit, Warning, TEXT("Plug-In icon \"%s\" was not found"), *iconPath);
-				}
-			}
-		}
+		FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow")
 		);
 }
 
