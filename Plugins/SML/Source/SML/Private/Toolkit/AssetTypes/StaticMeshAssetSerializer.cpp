@@ -55,6 +55,6 @@ TSharedPtr<FJsonObject> UStaticMeshAssetSerializer::SerializeBodySetup(UBodySetu
     return BodySetupObject;
 }
 
-EAssetCategory UStaticMeshAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_StaticMesh;
+FName UStaticMeshAssetSerializer::GetAssetClass() const {
+    return UStaticMesh::StaticClass()->GetFName();
 }

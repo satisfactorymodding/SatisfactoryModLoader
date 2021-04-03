@@ -139,6 +139,6 @@ void UTextureAssetSerializer::SerializeTexture(UTexture* Texture, TSharedPtr<FJs
     OutObject->SetArrayField(TEXT("AssetUserData"), AssetUserDataArray);
 }
 
-EAssetCategory UTextureAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_Texture2D;
+FName UTextureAssetSerializer::GetAssetClass() const {
+    return UTexture2D::StaticClass()->GetFName();
 }

@@ -12,5 +12,5 @@ public:
 
     static void SerializeSmartNameContainer(const struct FSmartNameContainer& Container, TSharedPtr<FJsonObject> OutObject);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };

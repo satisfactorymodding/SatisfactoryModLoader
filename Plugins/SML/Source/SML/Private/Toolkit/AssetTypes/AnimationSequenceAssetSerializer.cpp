@@ -34,6 +34,6 @@ void UAnimationSequenceAssetSerializer::SerializeAnimationSequence(UAnimSequence
     checkf(bSuccess, TEXT("Failed to export anim sequence %s: %s"), *AnimSequence->GetPathName(), *OutErrorMessage);
 }
 
-EAssetCategory UAnimationSequenceAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_AnimSequence;
+FName UAnimationSequenceAssetSerializer::GetAssetClass() const {
+    return UAnimSequence::StaticClass()->GetFName();
 }

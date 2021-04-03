@@ -21,6 +21,15 @@ void UCurveBaseAssetSerializer::SerializeCurveBase(UCurveBase* Curve, TSharedPtr
     ObjectHierarchySerializer->SerializeObjectPropertiesIntoObject(Curve, OutObject);
 }
 
-EAssetCategory UCurveBaseAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_CurveBase;
+//TODO DEFINITELY a bad solution, should look into every case separately and make sure no data is missed
+void UCurveBaseAssetSerializer::GetAdditionallyHandledAssetClasses(TArray<FName>& OutExtraAssetClasses) {
+    TArray<UClass*> DerivedClasses;
+    GetDerivedClasses(UCurveBase::StaticClass(), DerivedClasses);
+    for (UClass* BlendSpaceClass : DerivedClasses) {
+        OutExtraAssetClasses.Add(BlendSpaceClass->GetFName());
+    }
+}
+
+FName UCurveBaseAssetSerializer::GetAssetClass() const {
+    return UCurveBase::StaticClass()->GetFName();
 }

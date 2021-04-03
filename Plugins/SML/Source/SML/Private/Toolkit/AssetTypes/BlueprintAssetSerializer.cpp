@@ -105,6 +105,6 @@ void UBlueprintAssetSerializer::SerializeBlueprintClass(TSharedPtr<FJsonObject> 
     }
 }
 
-EAssetCategory UBlueprintAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_Blueprint;
+FName UBlueprintAssetSerializer::GetAssetClass() const {
+    return TEXT("Blueprint"); //UBlueprint::StaticClass()->GetFName()
 }

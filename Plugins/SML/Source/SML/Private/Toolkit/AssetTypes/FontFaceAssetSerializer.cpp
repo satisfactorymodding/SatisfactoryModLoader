@@ -32,6 +32,6 @@ void UFontFaceAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr
     Context.SaveAdditionalAssetFile(TEXT("ttf"), FontRawData);
 }
 
-EAssetCategory UFontFaceAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_FontFace;
+FName UFontFaceAssetSerializer::GetAssetClass() const {
+    return UFontFace::StaticClass()->GetFName();
 }

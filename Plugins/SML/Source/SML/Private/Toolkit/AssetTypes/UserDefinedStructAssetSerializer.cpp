@@ -29,6 +29,6 @@ void UUserDefinedStructAssetSerializer::SerializeUserDefinedStruct(TSharedPtr<FJ
     OutObject->SetObjectField(TEXT("StructDefaultInstance"), DefaultInstance);
 }
 
-EAssetCategory UUserDefinedStructAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_UserDefinedStruct;
+FName UUserDefinedStructAssetSerializer::GetAssetClass() const {
+    return UUserDefinedStruct::StaticClass()->GetFName();
 }

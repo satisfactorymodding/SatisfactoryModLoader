@@ -21,6 +21,6 @@ void UTextureCubeAssetSerializer::SerializeTextureCube(UTextureCube* TextureCube
     UTextureAssetSerializer::SerializeTextureData(TextureCube, TextureCube->PlatformData, OutObject, Context, true, TEXT(""));
 }
 
-EAssetCategory UTextureCubeAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_TextureCube;
+FName UTextureCubeAssetSerializer::GetAssetClass() const {
+    return UTextureCube::StaticClass()->GetFName();
 }

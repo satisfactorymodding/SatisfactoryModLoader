@@ -9,6 +9,7 @@ public:
     virtual void SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const override;
 
     static void SerializeBlendSpace(class UBlendSpaceBase* BlendSpace, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer);
-    
-    virtual EAssetCategory GetAssetCategory() const override;
+
+    virtual void GetAdditionallyHandledAssetClasses(TArray<FName>& OutExtraAssetClasses) override;
+    virtual FName GetAssetClass() const override;
 };

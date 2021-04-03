@@ -16,6 +16,6 @@ void UMaterialParameterCollectionAssetSerializer::SerializeAsset(UPackage* Asset
     OutObject->SetNumberField(TEXT("MaterialParameterCollection"), CollectionObjectIndex);
 }
 
-EAssetCategory UMaterialParameterCollectionAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_MaterialParameterCollection;
+FName UMaterialParameterCollectionAssetSerializer::GetAssetClass() const {
+    return UMaterialParameterCollection::StaticClass()->GetFName();
 }

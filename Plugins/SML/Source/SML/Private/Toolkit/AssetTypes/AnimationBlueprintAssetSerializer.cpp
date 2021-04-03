@@ -1,4 +1,5 @@
 #include "Toolkit/AssetTypes/AnimationBlueprintAssetSerializer.h"
+#include "Animation/AnimBlueprint.h"
 #include "Toolkit/PropertySerializer.h"
 #include "Animation/AnimBlueprintGeneratedClass.h"
 
@@ -90,8 +91,8 @@ void UAnimationBlueprintAssetSerializer::SerializeAnimBlueprintClass(TSharedPtr<
     OutObject->SetArrayField(TEXT("EvaluateGraphExposedInputs"), ExposedValueHandlers);
 }
 
-EAssetCategory UAnimationBlueprintAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_AnimationBlueprint;
+FName UAnimationBlueprintAssetSerializer::GetAssetClass() const {
+    return TEXT("AnimBlueprint"); //UAnimBlueprint::StaticClass()->GetFName();
 }
 
 void UAnimationBlueprintAssetSerializer::SerializeClassInternal(TSharedPtr<FJsonObject> OutObject, UBlueprintGeneratedClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer) const {

@@ -65,6 +65,6 @@ void USkeletalMeshAssetSerializer::SerializeReferenceSkeleton(const FReferenceSk
     //from serialize bone info structure
 }
 
-EAssetCategory USkeletalMeshAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_SkeletalMesh;
+FName USkeletalMeshAssetSerializer::GetAssetClass() const {
+    return USkeletalMesh::StaticClass()->GetFName();
 }

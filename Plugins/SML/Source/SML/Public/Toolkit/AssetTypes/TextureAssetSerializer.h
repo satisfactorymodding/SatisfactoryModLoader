@@ -17,5 +17,5 @@ public:
     /** Serialize data common to all UTexture objects */
     static void SerializeTexture(class UTexture* Texture, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer);
 
-    virtual EAssetCategory GetAssetCategory() const override;    
+    virtual FName GetAssetClass() const override;    
 };

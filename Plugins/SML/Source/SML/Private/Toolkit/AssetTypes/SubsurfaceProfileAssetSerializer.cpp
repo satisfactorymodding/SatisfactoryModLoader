@@ -13,6 +13,6 @@ void USubsurfaceProfileAssetSerializer::SerializeAsset(UPackage* AssetPackage, T
     OutObject->SetNumberField(TEXT("SubsurfaceProfile"), SubsurfaceProfileObjectIndex);
 }
 
-EAssetCategory USubsurfaceProfileAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_SubsurfaceProfile;
+FName USubsurfaceProfileAssetSerializer::GetAssetClass() const {
+    return USubsurfaceProfile::StaticClass()->GetFName();
 }

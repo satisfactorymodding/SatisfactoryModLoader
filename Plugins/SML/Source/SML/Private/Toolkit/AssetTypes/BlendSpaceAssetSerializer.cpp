@@ -21,6 +21,15 @@ void UBlendSpaceSerializer::SerializeBlendSpace(UBlendSpaceBase* BlendSpace, TSh
     ObjectHierarchySerializer->SerializeObjectPropertiesIntoObject(BlendSpace, OutObject);
 }
 
-EAssetCategory UBlendSpaceSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_BlendSpaceBase;
+//TODO probably a bad solution, should look into every case separately and make sure no data is missed
+void UBlendSpaceSerializer::GetAdditionallyHandledAssetClasses(TArray<FName>& OutExtraAssetClasses) {
+    TArray<UClass*> DerivedClasses;
+    GetDerivedClasses(UBlendSpaceBase::StaticClass(), DerivedClasses);
+    for (UClass* BlendSpaceClass : DerivedClasses) {
+        OutExtraAssetClasses.Add(BlendSpaceClass->GetFName());
+    }
+}
+
+FName UBlendSpaceSerializer::GetAssetClass() const {
+    return UBlendSpaceBase::StaticClass()->GetFName();
 }

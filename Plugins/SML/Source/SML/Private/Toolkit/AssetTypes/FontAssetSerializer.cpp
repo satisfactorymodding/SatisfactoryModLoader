@@ -49,6 +49,6 @@ void UFontAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJs
     }
 }
 
-EAssetCategory UFontAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_Font;
+FName UFontAssetSerializer::GetAssetClass() const {
+    return UFont::StaticClass()->GetFName();
 }

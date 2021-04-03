@@ -40,6 +40,6 @@ void UStringTableAssetSerializer::SerializeStringTable(UStringTable* StringTable
     OutObject->SetObjectField(TEXT("MetaData"), KeyMetaData);
 }
 
-EAssetCategory UStringTableAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_StringTable;
+FName UStringTableAssetSerializer::GetAssetClass() const {
+    return UStringTable::StaticClass()->GetFName();
 }

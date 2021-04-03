@@ -10,5 +10,5 @@ public:
 
     static void SerializeAnimationSequence(class UAnimSequence* AnimSequence, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* Serializer, FAssetSerializationContext& Context);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };

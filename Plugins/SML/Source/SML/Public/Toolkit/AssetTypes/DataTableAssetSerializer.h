@@ -10,5 +10,5 @@ public:
 
     static void SerializeDataTable(class UDataTable* DataTable, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };

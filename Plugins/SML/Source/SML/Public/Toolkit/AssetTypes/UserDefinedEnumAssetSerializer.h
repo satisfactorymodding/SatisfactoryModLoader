@@ -11,5 +11,5 @@ public:
     /** Serializes UUserDefinedEnum instance */
     static void SerializeUserDefinedEnum(TSharedPtr<FJsonObject> OutObject, class UUserDefinedEnum* Enum);
 
-    virtual EAssetCategory GetAssetCategory() const override;    
+    virtual FName GetAssetClass() const override;    
 };

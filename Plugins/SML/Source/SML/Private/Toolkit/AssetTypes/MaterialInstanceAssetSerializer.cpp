@@ -48,6 +48,6 @@ void UMaterialInstanceAssetSerializer::SerializeMaterialInstance(UMaterialInstan
     }
 }
 
-EAssetCategory UMaterialInstanceAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_MaterialInstance;
+FName UMaterialInstanceAssetSerializer::GetAssetClass() const {
+    return UMaterialInstance::StaticClass()->GetFName();
 }

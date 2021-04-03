@@ -10,7 +10,7 @@ public:
     /** Serializes UAnimBlueprintGeneratedClass instance */
     static void SerializeAnimBlueprintClass(TSharedPtr<FJsonObject> OutObject, class UAnimBlueprintGeneratedClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 protected:
     virtual void SerializeClassInternal(TSharedPtr<FJsonObject> OutObject, class UBlueprintGeneratedClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer) const override;
 };

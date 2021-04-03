@@ -26,6 +26,6 @@ void UDataTableAssetSerializer::SerializeDataTable(UDataTable* DataTable, TShare
     OutObject->SetObjectField(TEXT("RowData"), RowData);
 }
 
-EAssetCategory UDataTableAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_DataTable;
+FName UDataTableAssetSerializer::GetAssetClass() const {
+    return UDataTable::StaticClass()->GetFName();
 }

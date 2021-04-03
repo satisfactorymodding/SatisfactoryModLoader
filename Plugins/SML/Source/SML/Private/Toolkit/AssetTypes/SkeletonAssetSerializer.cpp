@@ -95,6 +95,6 @@ void USkeletonAssetSerializer::SerializeSmartNameContainer(const FSmartNameConta
     OutObject->SetArrayField(TEXT("NameMappings"), NameMappings);
 }
 
-EAssetCategory USkeletonAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_Skeleton;
+FName USkeletonAssetSerializer::GetAssetClass() const {
+    return USkeleton::StaticClass()->GetFName();
 }

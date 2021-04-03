@@ -12,5 +12,5 @@ public:
 
     static void SerializeReferenceSkeleton(const struct FReferenceSkeleton& ReferenceSkeleton, TSharedPtr<FJsonObject> OutObject);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };

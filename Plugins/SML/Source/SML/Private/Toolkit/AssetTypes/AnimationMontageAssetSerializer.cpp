@@ -15,6 +15,6 @@ void UAnimationMontageAssetSerializer::SerializeAsset(UPackage* AssetPackage, TS
     ObjectHierarchySerializer->SerializeObjectPropertiesIntoObject(AnimMontage, OutObject);
 }
 
-EAssetCategory UAnimationMontageAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_AnimMontage;
+FName UAnimationMontageAssetSerializer::GetAssetClass() const {
+    return UAnimMontage::StaticClass()->GetFName();
 }

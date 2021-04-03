@@ -11,5 +11,5 @@ public:
     /** Serializes UUserDefinedStruct instance */
     static void SerializeUserDefinedStruct(TSharedPtr<FJsonObject> OutObject, class UUserDefinedStruct* Struct, UObjectHierarchySerializer* ObjectHierarchySerializer);
 
-    virtual EAssetCategory GetAssetCategory() const override;    
+    virtual FName GetAssetClass() const override;    
 };

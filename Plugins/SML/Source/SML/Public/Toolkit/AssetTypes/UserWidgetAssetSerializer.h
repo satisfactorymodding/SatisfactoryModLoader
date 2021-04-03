@@ -10,7 +10,7 @@ public:
     /** Serializes UWidgetBlueprintGeneratedClass instance */
     static void SerializeWidgetBlueprintClass(TSharedPtr<FJsonObject> OutObject, class UWidgetBlueprintGeneratedClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 protected:
     virtual void CheckRootObjectSet(UPackage* AssetPackage, const TArray<UObject*>& RootPackageObjects) const override;
     

@@ -48,8 +48,8 @@ void UUserWidgetAssetSerializer::SerializeWidgetBlueprintClass(TSharedPtr<FJsonO
     OutObject->SetBoolField(TEXT("ClassRequiresNativeTick"), Class->ClassRequiresNativeTick());
 }
 
-EAssetCategory UUserWidgetAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_UserWidget;
+FName UUserWidgetAssetSerializer::GetAssetClass() const {
+    return TEXT("WidgetBlueprint"); //UWidgetBlueprint::StaticClass()->GetFName();
 }
 
 void UUserWidgetAssetSerializer::CheckRootObjectSet(UPackage* AssetPackage, const TArray<UObject*>& RootPackageObjects) const {

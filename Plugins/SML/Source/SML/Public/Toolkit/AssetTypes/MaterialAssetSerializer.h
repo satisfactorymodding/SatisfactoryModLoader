@@ -32,5 +32,5 @@ public:
     static FString ShaderPlatformToString(uint8 ShaderPlatform);
     static FString ShaderFrequencyToString(uint8 ShaderFrequency);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };*/

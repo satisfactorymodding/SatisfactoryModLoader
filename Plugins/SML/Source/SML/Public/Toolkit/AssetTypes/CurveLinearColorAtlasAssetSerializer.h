@@ -10,5 +10,5 @@ public:
 
     static void SerializeColorAtlas(class UCurveLinearColorAtlas* LinearColorAtlas, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context);
 
-    virtual EAssetCategory GetAssetCategory() const override;    
+    virtual FName GetAssetClass() const override;    
 };

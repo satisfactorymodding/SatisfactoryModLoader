@@ -1,7 +1,6 @@
 #include "SatisfactoryModLoader.h"
 #include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Toolkit/AssetTypes/FbxMeshExporter.h"
-#include "Toolkit/OldToolkit/FGAssetDumper.h"
 #include "FGPlayerController.h"
 #include "Configuration/ConfigManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
@@ -19,7 +18,11 @@
 #include "Player/PlayerCheatManagerHandler.h"
 #include "Toolkit/OldToolkit/FGNativeClassDumper.h"
 
-extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.0.0");
+#ifndef SML_BUILD_METADATA
+#define SML_BUILD_METADATA "unknown"
+#endif
+
+extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.0.0+") TEXT(SML_BUILD_METADATA);
 extern "C" DLLEXPORT const long targetGameVersion = 147126;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
@@ -147,13 +150,13 @@ void FSatisfactoryModLoader::RegisterSubsystems() {
         FAssetHelper::RunStaticTests();
 
         //Register asset dumping related console commands
-        FGameAssetDumper::RegisterConsoleCommands();
         FGameNativeClassDumper::RegisterConsoleCommands();
     }
 }
 
 void FSatisfactoryModLoader::PreInitializeModLoading() {
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Satisfactory Mod Loader v.%s pre-initializing..."), modLoaderVersionString);
+    UE_LOG(LogSatisfactoryModLoader, Display, TEXT("Build Date: %s %s"), ANSI_TO_TCHAR(__DATE__), ANSI_TO_TCHAR(__TIME__));
 
     //Don't try to save configuration in the editor, because it will make new folders for no real reason
     const bool bAllowSavingConfiguration = !WITH_EDITOR;

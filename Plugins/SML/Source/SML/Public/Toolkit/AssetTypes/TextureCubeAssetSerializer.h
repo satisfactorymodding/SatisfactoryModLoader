@@ -11,5 +11,5 @@ public:
     /** Serializes TextureCube, including exporting it to image file saved alongside json */
     static void SerializeTextureCube(class UTextureCube* TextureCube, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context);
 
-    virtual EAssetCategory GetAssetCategory() const override;    
+    virtual FName GetAssetClass() const override;    
 };

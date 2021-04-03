@@ -10,5 +10,5 @@ public:
 
     static void SerializeStringTable(class UStringTable* StringTable, TSharedPtr<FJsonObject> OutObject);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };

@@ -12,5 +12,5 @@ public:
     
     static TSharedPtr<FJsonObject> SerializeBodySetup(class UBodySetup* BodySetup, UObjectHierarchySerializer* ObjectHierarchySerializer);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };

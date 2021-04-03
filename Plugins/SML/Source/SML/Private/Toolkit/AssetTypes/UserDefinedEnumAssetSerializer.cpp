@@ -26,6 +26,6 @@ void UUserDefinedEnumAssetSerializer::SerializeUserDefinedEnum(TSharedPtr<FJsonO
     OutObject->SetArrayField(TEXT("DisplayNameMap"), DisplayNameMap);
 }
 
-EAssetCategory UUserDefinedEnumAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_UserDefinedEnum;
+FName UUserDefinedEnumAssetSerializer::GetAssetClass() const {
+    return UUserDefinedEnum::StaticClass()->GetFName();
 }

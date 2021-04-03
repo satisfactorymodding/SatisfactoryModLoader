@@ -10,5 +10,5 @@ public:
 
     static void SerializeMaterialInstance(class UMaterialInstance* MaterialInstance, TSharedPtr<FJsonObject> OutJson, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& SerializationContext);
     
-    virtual EAssetCategory GetAssetCategory() const override;
+    virtual FName GetAssetClass() const override;
 };

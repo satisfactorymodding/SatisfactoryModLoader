@@ -231,7 +231,7 @@ public:
 		if (!bHookInitialized) {
 			bHookInitialized = true;
 			void* HookFunctionPointer = static_cast<void*>(getApplyCall());
-			void* RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName, PMF, NULL, 0, HookFunctionPointer, (void**) &functionPtr);
+			void* RealFunctionAddress = FNativeHookManagerInternal::RegisterHookFunction(DebugSymbolName, Callable, NULL, 0, HookFunctionPointer, (void**) &functionPtr);
 			auto* HandlerLists = createHandlerLists<Handler, HandlerAfter>(RealFunctionAddress);
 			handlersBefore = &HandlerLists->HandlersBefore;
 			handlersAfter = &HandlerLists->HandlersAfter;

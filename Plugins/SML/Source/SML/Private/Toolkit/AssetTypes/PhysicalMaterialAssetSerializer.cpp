@@ -13,6 +13,6 @@ void UPhysicalMaterialAssetSerializer::SerializeAsset(UPackage* AssetPackage, TS
     OutObject->SetNumberField(TEXT("PhysicalMaterial"), PhysicalMaterialObjectIndex);
 }
 
-EAssetCategory UPhysicalMaterialAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_PhysicalMaterial;
+FName UPhysicalMaterialAssetSerializer::GetAssetClass() const {
+    return UPhysicalMaterial::StaticClass()->GetFName();
 }

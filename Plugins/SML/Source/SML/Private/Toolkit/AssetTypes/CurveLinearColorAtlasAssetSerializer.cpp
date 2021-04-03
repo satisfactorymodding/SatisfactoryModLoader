@@ -1,5 +1,4 @@
 #include "Toolkit/AssetTypes/CurveLinearColorAtlasAssetSerializer.h"
-
 #include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Toolkit/AssetTypes/TextureAssetSerializer.h"
 #include "Curves/CurveLinearColor.h"
@@ -31,6 +30,6 @@ void UCurveLinearColorAtlasAssetSerializer::SerializeColorAtlas(UCurveLinearColo
     OutObject->SetArrayField(TEXT("GradientCurves"), GradientCurves);
 }
 
-EAssetCategory UCurveLinearColorAtlasAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_CurveLinearColorAtlas;
+FName UCurveLinearColorAtlasAssetSerializer::GetAssetClass() const {
+    return UCurveLinearColorAtlas::StaticClass()->GetFName();
 }
