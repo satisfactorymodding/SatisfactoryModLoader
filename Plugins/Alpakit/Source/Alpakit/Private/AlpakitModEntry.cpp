@@ -17,29 +17,29 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 			SNew(SButton)
 			.Text(LOCTEXT("PackageModAlpakit", "Alpakit!"))
 			.OnClicked_Lambda(
-		         [this]()
-		         {
-		             PackageMod();
-		             return FReply::Handled();
-		         }
-		         )
+				             [this]()
+				             {
+					             PackageMod();
+					             return FReply::Handled();
+				             }
+				             )
 			.ToolTipText_Lambda(
-	             [this]()
-	             {
-		             return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
-	             }
-	             )
+				             [this]()
+				             {
+					             return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
+				             }
+				             )
 		]
 		+ SHorizontalBox::Slot().FillWidth(1)[
 			SNew(STextBlock)
-				.Text_Lambda(
+            .Text_Lambda(
 				                [InMod]()
 				                {
 					                const FString DisplayText = FString::Printf(TEXT("%s (%s)"), *InMod->GetDescriptor().FriendlyName, *InMod->GetName());
 					                return FText::FromString(DisplayText);
 				                }
 				                )
-	            .HighlightText_Lambda(
+            .HighlightText_Lambda(
 				                [InOwner]()
 				                {
 					                return FText::FromString(InOwner->GetLastFilter());
