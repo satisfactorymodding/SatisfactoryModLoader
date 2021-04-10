@@ -4,44 +4,37 @@
 #include "Toolkit/PropertySerializer.h"
 #include "Toolkit/AssetTypes/StaticMeshAssetSerializer.h"
 #include "Engine/SkeletalMesh.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
 
-void USkeletalMeshAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
+void USkeletalMeshAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(USkeletalMesh)
 
-    USkeletalMesh* SkeletalMesh;
-    check(RootPackageObjects.FindItemByClass<USkeletalMesh>(&SkeletalMesh));
-
-    SerializeSkeletalMesh(SkeletalMesh, OutObject, ObjectHierarchySerializer, Context);
-}
-
-void USkeletalMeshAssetSerializer::SerializeSkeletalMesh(USkeletalMesh* SkeletalMesh, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) {
-    UPropertySerializer* PropertySerializer = ObjectHierarchySerializer->GetPropertySerializer<UPropertySerializer>();
+    //Serialize normal asset data
+    SERIALIZE_ASSET_OBJECT
     
-    //Just serialize normal properties into root object
-    ObjectHierarchySerializer->SetObjectMark(SkeletalMesh, TEXT("SkeletalMeshObject"));
-    ObjectHierarchySerializer->SerializeObjectPropertiesIntoObject(SkeletalMesh, OutObject);
-
     //Serialize few properties that are marked as transient but in fact are serialized natively (probably for cooking/compatibility reasons)
-    OutObject->SetField(TEXT("Materials"), PropertySerializer->SerializePropertyByName(SkeletalMesh, TEXT("Materials")));
-    OutObject->SetField(TEXT("ImportedBounds"), PropertySerializer->SerializePropertyByName(SkeletalMesh, TEXT("ImportedBounds")));
+    Data->SetField(TEXT("Materials"), SERIALIZE_PROPERTY_VALUE(Asset, Materials));
 
     //Serialize reference skeleton
     const TSharedPtr<FJsonObject> ReferenceSkeleton = MakeShareable(new FJsonObject());
-    SerializeReferenceSkeleton(SkeletalMesh->RefSkeleton, ReferenceSkeleton);
-    OutObject->SetObjectField(TEXT("RefSkeleton"), ReferenceSkeleton);
+    SerializeReferenceSkeleton(Asset->RefSkeleton, ReferenceSkeleton);
+    Data->SetObjectField(TEXT("RefSkeleton"), ReferenceSkeleton);
     
     //Serialize BodySetup if per poly collision is enabled
-    if (SkeletalMesh->bEnablePerPolyCollision) {
-        const TSharedPtr<FJsonObject> BodySetupObject = UStaticMeshAssetSerializer::SerializeBodySetup(SkeletalMesh->BodySetup, ObjectHierarchySerializer);
-        OutObject->SetObjectField(TEXT("BodySetup"), BodySetupObject);
+    if (Asset->bEnablePerPolyCollision) {
+        const TSharedPtr<FJsonObject> BodySetupObject = UStaticMeshAssetSerializer::SerializeBodySetup(Asset->BodySetup, ObjectSerializer);
+        Data->SetObjectField(TEXT("BodySetup"), BodySetupObject);
     }
 
     //Export raw mesh data into separate FBX file that can be imported back into UE
-    const FString OutFbxMeshFileName = Context.GetAdditionalFilePath(TEXT(""), TEXT("fbx"));
+    const FString OutFbxMeshFileName = Context->GetDumpFilePath(TEXT(""), TEXT("fbx"));
     FString OutErrorMessage;
-    const bool bSuccess = FFbxMeshExporter::ExportSkeletalMeshIntoFbxFile(SkeletalMesh, OutFbxMeshFileName, false, &OutErrorMessage);
-    checkf(bSuccess, TEXT("Failed to export skeletal mesh %s: %s"), *SkeletalMesh->GetPathName(), *OutErrorMessage);
+    const bool bSuccess = FFbxMeshExporter::ExportSkeletalMeshIntoFbxFile(Asset, OutFbxMeshFileName, false, &OutErrorMessage);
+    checkf(bSuccess, TEXT("Failed to export skeletal mesh %s: %s"), *Asset->GetPathName(), *OutErrorMessage);
+
+    END_ASSET_SERIALIZATION
 }
 
 void USkeletalMeshAssetSerializer::SerializeReferenceSkeleton(const FReferenceSkeleton& ReferenceSkeleton, TSharedPtr<FJsonObject> OutObject) {

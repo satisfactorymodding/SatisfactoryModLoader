@@ -1,33 +1,21 @@
 #include "Toolkit/AssetTypes/CurveBaseAssetSerializer.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Curves/CurveBase.h"
+#include "Curves/CurveLinearColor.h"
+#include "Curves/CurveVector.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
 
-void UCurveBaseAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
-
-    UCurveBase* CurveAsset;
-    check(RootPackageObjects.FindItemByClass<UCurveBase>(&CurveAsset));
-
-    SerializeCurveBase(CurveAsset, OutObject, ObjectHierarchySerializer);
+void UCurveBaseAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UCurveBase)
+    SERIALIZE_ASSET_OBJECT
+    END_ASSET_SERIALIZATION
 }
 
-void UCurveBaseAssetSerializer::SerializeCurveBase(UCurveBase* Curve, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer) {
-    //Serialize object class to known which kind of asset exactly we are creating
-    OutObject->SetNumberField(TEXT("ObjectClass"), ObjectHierarchySerializer->SerializeObject(Curve->GetClass()));
-    
-    //Serialize normal object properties, curves don't have native serialization at all
-    ObjectHierarchySerializer->SetObjectMark(Curve, TEXT("CurveObject"));
-    ObjectHierarchySerializer->SerializeObjectPropertiesIntoObject(Curve, OutObject);
-}
-
-//TODO DEFINITELY a bad solution, should look into every case separately and make sure no data is missed
 void UCurveBaseAssetSerializer::GetAdditionallyHandledAssetClasses(TArray<FName>& OutExtraAssetClasses) {
-    TArray<UClass*> DerivedClasses;
-    GetDerivedClasses(UCurveBase::StaticClass(), DerivedClasses);
-    for (UClass* BlendSpaceClass : DerivedClasses) {
-        OutExtraAssetClasses.Add(BlendSpaceClass->GetFName());
-    }
+    OutExtraAssetClasses.Add(UCurveVector::StaticClass()->GetFName());
+    OutExtraAssetClasses.Add(UCurveFloat::StaticClass()->GetFName());
+    OutExtraAssetClasses.Add(UCurveLinearColor::StaticClass()->GetFName());
 }
 
 FName UCurveBaseAssetSerializer::GetAssetClass() const {

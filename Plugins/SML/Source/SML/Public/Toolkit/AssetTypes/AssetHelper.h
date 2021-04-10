@@ -29,9 +29,6 @@ public:
      */
     static bool HasCustomSerializeOnStruct(UScriptStruct* Struct);
 
-    /** Retrieves list of root objects having specified package as outer */
-    static TArray<UObject*> GetRootPackageObjects(UPackage* Package);
-
     /** Serializes Class object in a way mirroring native UClass::Serialize implementation */
     static void SerializeClass(TSharedPtr<FJsonObject> OutObject, UClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer);
 

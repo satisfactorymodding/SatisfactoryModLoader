@@ -1,16 +1,13 @@
 #include "Toolkit/AssetTypes/SubsurfaceProfileAssetSerializer.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
 #include "Engine/SubsurfaceProfile.h"
 
-void USubsurfaceProfileAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
-
-    USubsurfaceProfile* SubsurfaceProfile;
-    check(RootPackageObjects.FindItemByClass<USubsurfaceProfile>(&SubsurfaceProfile));
-    
-    const int32 SubsurfaceProfileObjectIndex = ObjectHierarchySerializer->SerializeObject(SubsurfaceProfile);
-    OutObject->SetNumberField(TEXT("SubsurfaceProfile"), SubsurfaceProfileObjectIndex);
+void USubsurfaceProfileAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(USubsurfaceProfile)
+        SERIALIZE_ASSET_OBJECT
+    END_ASSET_SERIALIZATION
 }
 
 FName USubsurfaceProfileAssetSerializer::GetAssetClass() const {

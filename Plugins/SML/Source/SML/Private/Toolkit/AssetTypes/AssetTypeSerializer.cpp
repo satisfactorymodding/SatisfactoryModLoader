@@ -1,4 +1,4 @@
-#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializer.h"
 #include "UObject/UObjectIterator.h"
 
 //Static class used to lazily populate serializer registry

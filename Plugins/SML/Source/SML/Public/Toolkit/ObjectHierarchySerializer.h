@@ -3,6 +3,8 @@
 #include "Json.h"
 #include "ObjectHierarchySerializer.generated.h"
 
+class UPropertySerializer;
+
 UCLASS()
 class SML_API UObjectHierarchySerializer : public UObject {
     GENERATED_BODY()
@@ -15,7 +17,7 @@ private:
     TMap<int32, UObject*> LoadedObjects;
     int32 LastObjectIndex;
     UPROPERTY()
-    UObject* PropertySerializer;
+    UPropertySerializer* PropertySerializer;
     TMap<int32, TSharedPtr<FJsonObject>> SerializedObjects;
     UPROPERTY()
     TArray<UClass*> AllowedNativeSerializeClasses;
@@ -27,15 +29,12 @@ private:
 public:
     UObjectHierarchySerializer();
     
-    template<typename T>
-    FORCEINLINE T* GetPropertySerializer() const { return Cast<T>(PropertySerializer); }
-    
     TSharedRef<FJsonObject> SerializeObjectProperties(UObject* Object);
     void SerializeObjectPropertiesIntoObject(UObject* Object, TSharedPtr<FJsonObject> OutObject);
     
     void DeserializeObjectProperties(const TSharedRef<FJsonObject>& Properties, UObject* Object);
     
-    void Initialize(UPackage* SourcePackage, UObject* PropertySerializer);
+    void Initialize(UPackage* SourcePackage, UPropertySerializer* PropertySerializer);
 
     /** Allows serialization of class with native Serialize override */
     void AllowNativeClassSerialization(UClass* ClassToAllow);

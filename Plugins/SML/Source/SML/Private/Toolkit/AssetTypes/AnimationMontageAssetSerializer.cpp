@@ -1,18 +1,18 @@
 #include "Toolkit/AssetTypes/AnimationMontageAssetSerializer.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
 #include "Animation/AnimMontage.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
+#include "Toolkit/PropertySerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
 
-void UAnimationMontageAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
+void UAnimationMontageAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UAnimMontage)
+    
+    DISABLE_SERIALIZATION(UAnimSequenceBase, RawCurveData)
+    check(Asset->RawCurveData.FloatCurves.Num() == 0);
 
-    UAnimMontage* AnimMontage;
-    check(RootPackageObjects.FindItemByClass<UAnimMontage>(&AnimMontage));
-
-    //Just serialize object directly, UAnimMontage does not have a custom Serialize override
-    //Few parent assets serialize some extra data though, but it's not crucial and is mostly used for fixups/legacy data conversion
-    ObjectHierarchySerializer->SetObjectMark(AnimMontage, TEXT("AnimMontageObject"));
-    ObjectHierarchySerializer->SerializeObjectPropertiesIntoObject(AnimMontage, OutObject);
+    SERIALIZE_ASSET_OBJECT
+    END_ASSET_SERIALIZATION
 }
 
 FName UAnimationMontageAssetSerializer::GetAssetClass() const {

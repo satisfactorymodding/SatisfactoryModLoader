@@ -1,4 +1,5 @@
 #pragma once
+#include "AssetDumpProcessor.h"
 #include "Slate.h"
 
 class SAssetDumperWidget : public SCompoundWidget {
@@ -8,8 +9,16 @@ public:
 
     void Construct(const FArguments& InArgs);
 protected:
-	//Determines whenever assets of the provided type should be serialized
 	TMap<FName, bool> AssetClassSerializationRules;
+	TMap<FName, TArray<FName>> AdditionalAssetTypes;
+	
+	TSharedPtr<class SAssetRegistryViewWidget> AssetRegistryViewWidget;
+	TSharedPtr<class SButton> AssetDumpButton;
+	TSharedPtr<class SEditableTextBox> OutputPathText;
+	FAssetDumpSettings AssetDumpSettings;
 
-	TSharedRef<SHorizontalBox> CreateAssetTypesBox();
+	TSharedRef<SHorizontalBox> CreateAssetTypesTab();
+	TSharedRef<SVerticalBox> CreateSettingsCategory();
+	FReply OnBrowseOutputPathPressed();
+	FReply OnAssetDumpButtonPressed();
 };
