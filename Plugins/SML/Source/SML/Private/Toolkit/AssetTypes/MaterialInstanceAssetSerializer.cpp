@@ -1,34 +1,24 @@
 ﻿#include "Toolkit/AssetTypes/MaterialInstanceAssetSerializer.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
-#include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
 #include "Materials/MaterialInstanceConstant.h"
-#include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Toolkit/PropertySerializer.h"
 
-void UMaterialInstanceAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootObjects.Num() == 1);
-
-    UMaterialInstanceConstant* MaterialInstanceConstant;
-    check(RootObjects.FindItemByClass<UMaterialInstanceConstant>(&MaterialInstanceConstant));
-
-    SerializeMaterialInstance(MaterialInstanceConstant, OutObject, ObjectHierarchySerializer, Context);
-}
-
-void UMaterialInstanceAssetSerializer::SerializeMaterialInstance(UMaterialInstance* MaterialInstance, TSharedPtr<FJsonObject> OutJson, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& SerializationContext) {
-    //Serialize basic properties
-    //all of them are perfectly serializable on material instance object
-    OutJson->SetObjectField(TEXT("Properties"), ObjectHierarchySerializer->SerializeObjectProperties(MaterialInstance));
+void UMaterialInstanceAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UMaterialInstance)
+    SERIALIZE_ASSET_OBJECT
 
     //Serialize shader maps if this material instance has static permutations
-    OutJson->SetBoolField(TEXT("HasStaticPermutationResource"), MaterialInstance->bHasStaticPermutationResource);
+    Data->SetBoolField(TEXT("HasStaticPermutationResource"), Asset->bHasStaticPermutationResource);
 
-    if (MaterialInstance->bHasStaticPermutationResource) {
+    //TODO uncomment once we rework material bytecode serialization for UE4.25
+    /*if (Asset->bHasStaticPermutationResource) {
         //Gather all unique material resources
         TSet<FMaterialResource*> MaterialResources;
         for (int32 FeatureLevel = 0; FeatureLevel < ERHIFeatureLevel::Num; FeatureLevel++) {
             for (int32 QualityLevel = 0; QualityLevel < EMaterialQualityLevel::Num; QualityLevel++) {
-                FMaterialResource* MaterialResource = MaterialInstance->GetMaterialResource((ERHIFeatureLevel::Type) FeatureLevel, EMaterialQualityLevel::High);
+                FMaterialResource* MaterialResource = Asset->GetMaterialResource((ERHIFeatureLevel::Type) FeatureLevel, EMaterialQualityLevel::High);
                 if (MaterialResource != NULL && MaterialResource->GetGameThreadShaderMap() != NULL) {
                     MaterialResources.Add(MaterialResource);
                 }
@@ -41,13 +31,14 @@ void UMaterialInstanceAssetSerializer::SerializeMaterialInstance(UMaterialInstan
         TArray<TSharedPtr<FJsonValue>> MaterialResourcesArray;
         for (FMaterialResource* MaterialResource : MaterialResources) {
             const TSharedPtr<FJsonObject> ResourceObject = MakeShareable(new FJsonObject());
-            //UMaterialAssetSerializer::SerializeMaterialResource(MaterialResource, ResourceObject, ObjectHierarchySerializer, SerializationContext);
+            UMaterialAssetSerializer::SerializeMaterialResource(MaterialResource, ResourceObject, ObjectHierarchySerializer, SerializationContext);
             MaterialResourcesArray.Add(MakeShareable(new FJsonValueObject(ResourceObject)));
         }
-        OutJson->SetArrayField(TEXT("MaterialResources"), MaterialResourcesArray);
-    }
+        Data->SetArrayField(TEXT("MaterialResources"), MaterialResourcesArray);
+    }*/
+    END_ASSET_SERIALIZATION
 }
 
-EAssetCategory UMaterialInstanceAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_MaterialInstance;
+FName UMaterialInstanceAssetSerializer::GetAssetClass() const {
+    return UMaterialInstanceConstant::StaticClass()->GetFName();
 }

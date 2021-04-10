@@ -1,6 +1,22 @@
 #pragma once
 #include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
 
+void UMaterialAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UMaterial)
+    //TODO we do not serialize shaders yet, but information exposed by normal object serialization should be enough for reasonable stubs
+    //obviously they will be unable to show material in editor, but they can be used to reference it and even create new instances on top of it
+    SERIALIZE_ASSET_OBJECT
+    END_ASSET_SERIALIZATION
+}
+
+FName UMaterialAssetSerializer::GetAssetClass() const {
+    return UMaterial::StaticClass()->GetFName();
+}
+
+//TODO uncomment once we port Material shader serialization to UE4.25
 /*static bool GHasShaderInitBeenHooked = false;
 
 void UMaterialAssetSerializer::RegisterShaderInitRHIHook() {
@@ -14,7 +30,7 @@ void UMaterialAssetSerializer::RegisterShaderInitRHIHook() {
     });
 }
 
-void UMaterialAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
+void UMaterialAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
     const TArray<UObject*> RootObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
     check(RootObjects.Num() == 1);
 

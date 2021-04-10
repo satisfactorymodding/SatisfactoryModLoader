@@ -1,27 +1,22 @@
 #include "Toolkit/AssetTypes/StringTableAssetSerializer.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
 #include "Internationalization/StringTable.h"
 #include "Internationalization/StringTableCore.h"
 
-void UStringTableAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
-
-    UStringTable* StringTable;
-    check(RootPackageObjects.FindItemByClass<UStringTable>(&StringTable));
-    SerializeStringTable(StringTable, OutObject);
-}
-
-void UStringTableAssetSerializer::SerializeStringTable(UStringTable* StringTable, TSharedPtr<FJsonObject> OutObject) {
-    const FStringTableConstRef StringTablePtr = StringTable->GetStringTable();
-    OutObject->SetStringField(TEXT("TableNamespace"), StringTablePtr->GetNamespace());
+void UStringTableAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UStringTable)
+    
+    const FStringTableConstRef StringTablePtr = Asset->GetStringTable();
+    Data->SetStringField(TEXT("TableNamespace"), StringTablePtr->GetNamespace());
 
     TSharedPtr<FJsonObject> SourceStrings = MakeShareable(new FJsonObject());
     StringTablePtr->EnumerateSourceStrings([&](const FString& InKey, const FString& DisplayString){
         SourceStrings->SetStringField(InKey, DisplayString);
         return true;
     });
-    OutObject->SetObjectField(TEXT("SourceStrings"), SourceStrings);
+    Data->SetObjectField(TEXT("SourceStrings"), SourceStrings);
 
     TArray<FString> InStringTableKeys;
     SourceStrings->Values.GetKeys(InStringTableKeys);
@@ -37,9 +32,11 @@ void UStringTableAssetSerializer::SerializeStringTable(UStringTable* StringTable
             KeyMetaData->SetObjectField(InKey, MetaDataObject);
         }
     }
-    OutObject->SetObjectField(TEXT("MetaData"), KeyMetaData);
+    Data->SetObjectField(TEXT("MetaData"), KeyMetaData);
+    
+    END_ASSET_SERIALIZATION
 }
 
-EAssetCategory UStringTableAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_StringTable;
+FName UStringTableAssetSerializer::GetAssetClass() const {
+    return UStringTable::StaticClass()->GetFName();
 }

@@ -1,18 +1,12 @@
 #pragma once
-#include "Toolkit/AssetTypes/AssetTypeSerializer.h"
-#include "Toolkit/AssetTypes/BlueprintAssetSerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializer.h"
 #include "UserWidgetAssetSerializer.generated.h"
 
 UCLASS()
-class SML_API UUserWidgetAssetSerializer : public UBlueprintAssetSerializer {
+class SML_API UUserWidgetAssetSerializer : public UAssetTypeSerializer {
     GENERATED_BODY()
 public:
-    /** Serializes UWidgetBlueprintGeneratedClass instance */
-    static void SerializeWidgetBlueprintClass(TSharedPtr<FJsonObject> OutObject, class UWidgetBlueprintGeneratedClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer);
+    virtual void SerializeAsset(TSharedRef<FSerializationContext> Context) const override;
     
-    virtual EAssetCategory GetAssetCategory() const override;
-protected:
-    virtual void CheckRootObjectSet(UPackage* AssetPackage, const TArray<UObject*>& RootPackageObjects) const override;
-    
-    virtual void SerializeClassInternal(TSharedPtr<FJsonObject> OutObject, class UBlueprintGeneratedClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer) const override;
+    virtual FName GetAssetClass() const override;
 };

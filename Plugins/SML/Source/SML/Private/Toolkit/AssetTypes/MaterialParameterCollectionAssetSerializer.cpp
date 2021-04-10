@@ -1,21 +1,17 @@
 #include "Toolkit/AssetTypes/MaterialParameterCollectionAssetSerializer.h"
-
-#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
 #include "Materials/MaterialParameterCollection.h"
 
-void UMaterialParameterCollectionAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
-
-    UMaterialParameterCollection* MaterialParameterCollection;
-    check(RootPackageObjects.FindItemByClass<UMaterialParameterCollection>(&MaterialParameterCollection));
-    
+void UMaterialParameterCollectionAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
     //In fact, MPC is one of the simplest assets to serialize
     //It doesn't even have custom Serialize override with extra data, just normal UPROPERTY structs
-    const int32 CollectionObjectIndex = ObjectHierarchySerializer->SerializeObject(MaterialParameterCollection);
-    OutObject->SetNumberField(TEXT("MaterialParameterCollection"), CollectionObjectIndex);
+    BEGIN_ASSET_SERIALIZATION(UMaterialParameterCollection)
+        SERIALIZE_ASSET_OBJECT
+    END_ASSET_SERIALIZATION
 }
 
-EAssetCategory UMaterialParameterCollectionAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_MaterialParameterCollection;
+FName UMaterialParameterCollectionAssetSerializer::GetAssetClass() const {
+    return UMaterialParameterCollection::StaticClass()->GetFName();
 }

@@ -67,14 +67,6 @@ bool FAssetHelper::HasCustomSerializeOnStruct(UScriptStruct* Struct) {
     return (Struct->StructFlags & STRUCT_SerializeNative) != 0;
 }
 
-TArray<UObject*> FAssetHelper::GetRootPackageObjects(UPackage* Package) {
-    TArray<UObject*> OutObjects;
-    ForEachObjectWithOuter(Package, [&OutObjects](UObject* Object){
-        OutObjects.Add(Object);
-    }, false);
-    return OutObjects;
-}
-
 void FAssetHelper::SerializeClass(TSharedPtr<FJsonObject> OutObject, UClass* Class, UObjectHierarchySerializer* ObjectHierarchySerializer) {
     
     //Serialize native Struct class data first

@@ -7,7 +7,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogBlueprintLogging, Verbose, Verbose);
 
 #define IMPLEMENT_BP_LOG_FUNCTION(Verbosity) \
     { \
-        P_GET_PROPERTY(UStrProperty, Str); \
+        P_GET_PROPERTY(FStrProperty, Str); \
         P_FINISH; \
         UPackage* OutermostPackage = Stack.Node->GetOutermost(); \
         check(OutermostPackage); \

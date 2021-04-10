@@ -5,16 +5,15 @@
 #include "Engine/Texture2D.h"
 #include "Toolkit/AssetTypes/TextureDecompressor.h"
 #include "IImageWrapper.h"
-#include "Engine/AssetUserData.h"
+#include "Dom/JsonObject.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
 
-void UTextureAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
-
-    UTexture2D* Texture2D;
-    check(RootPackageObjects.FindItemByClass<UTexture2D>(&Texture2D));
-    
-    SerializeTexture2D(Texture2D, OutObject, ObjectHierarchySerializer, Context, TEXT(""));
+void UTextureAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UTexture2D)
+    SerializeTexture2D(Asset, Data, Context, TEXT(""));
+    END_ASSET_SERIALIZATION
 }
 
 void ClearAlphaFromBGRA8Texture(void* TextureData, int32 NumPixels) {
@@ -26,8 +25,8 @@ void ClearAlphaFromBGRA8Texture(void* TextureData, int32 NumPixels) {
     }
 }
 
-void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePlatformData* PlatformData, TSharedPtr<FJsonObject> OutObject, FAssetSerializationContext& SerializationContext, bool bResetAlpha, const FString& FileNamePostfix) {
-     UEnum* PixelFormatEnum = UTexture2D::GetPixelFormatEnum();
+void UTextureAssetSerializer::SerializeTextureData(const FString& ContextString, FTexturePlatformData* PlatformData, TSharedPtr<FJsonObject> Data, TSharedRef<FSerializationContext> Context, bool bResetAlpha, const FString& FileNamePostfix) {
+    UEnum* PixelFormatEnum = UTexture2D::GetPixelFormatEnum();
 
     check(PlatformData);
     check(PlatformData->Mips.Num());
@@ -44,10 +43,10 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
     check(FirstMipMap.SizeZ == 1);
 
     //Write basic information about texture
-    OutObject->SetNumberField(TEXT("TextureWidth"), TextureWidth);
-    OutObject->SetNumberField(TEXT("TextureHeight"), TextureHeight);
-    OutObject->SetNumberField(TEXT("NumSlices"), NumSlices);
-    OutObject->SetStringField(TEXT("CookedPixelFormat"), PixelFormatName);
+    Data->SetNumberField(TEXT("TextureWidth"), TextureWidth);
+    Data->SetNumberField(TEXT("TextureHeight"), TextureHeight);
+    Data->SetNumberField(TEXT("NumSlices"), NumSlices);
+    Data->SetStringField(TEXT("CookedPixelFormat"), PixelFormatName);
 
     TArray<uint8> CombinedDecompressedData;
 
@@ -65,7 +64,7 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
         const bool bSuccess = FTextureDecompressor::DecompressTextureData(PixelFormat, CompressedData, TextureWidth, TextureHeight, ActualOutputArray, &OutErrorMessage);
 
         //Make sure extraction was successful. Theoretically only failure reason would be unsupported format, but we should support most of the used formats
-        checkf(bSuccess, TEXT("Failed to extract Texture %s (%dx%d, format %s): %s"), *Texture->GetPathName(), TextureWidth, TextureHeight, *PixelFormatName, *OutErrorMessage);
+        checkf(bSuccess, TEXT("Failed to extract Texture %s (%dx%d, format %s): %s"), *ContextString, TextureWidth, TextureHeight, *PixelFormatName, *OutErrorMessage);
 
         //Avoid doing all of that if we have one slice only
         if (!bHaveOnlyOneSlice) {
@@ -99,46 +98,16 @@ void UTextureAssetSerializer::SerializeTextureData(UTexture* Texture, FTexturePl
     const TArray64<uint8>& PNGResultData = ImageWrapper->GetCompressed();
 
     //Store data in serialization context
-    SerializationContext.SaveAdditionalAssetFile(TEXT("png"), PNGResultData, FileNamePostfix);    
+    const FString ImageFilename = Context->GetDumpFilePath(FileNamePostfix, TEXT("png"));
+    check(FFileHelper::SaveArrayToFile(PNGResultData, *ImageFilename));
 }
 
-void UTextureAssetSerializer::SerializeTexture2D(UTexture2D* Texture2D, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context, const FString& FileNamePostfix) {
-
-    //Serialize Texture2D specific fields
-    OutObject->SetBoolField(TEXT("bGlobalForceMipLevelsToBeResident"), Texture2D->bGlobalForceMipLevelsToBeResident);
-    OutObject->SetNumberField(TEXT("AddressX"), Texture2D->AddressX);
-    OutObject->SetNumberField(TEXT("AddressY"), Texture2D->AddressY);
-
-    //Serialize fields common to all UTexture objects
-    SerializeTexture(Texture2D, OutObject, ObjectHierarchySerializer);
-
-    //Serialize actual texture data
-    SerializeTextureData(Texture2D, Texture2D->PlatformData, OutObject, Context, false, FileNamePostfix);
+void UTextureAssetSerializer::SerializeTexture2D(UTexture2D* Asset, TSharedPtr<FJsonObject> Data, TSharedRef<FSerializationContext> Context, const FString& Postfix) {
+    UObjectHierarchySerializer* ObjectSerializer = Context->GetObjectSerializer();
+    SERIALIZE_ASSET_OBJECT
+    SerializeTextureData(Asset->GetPathName(), Asset->PlatformData, Data, Context, false, Postfix);   
 }
 
-void UTextureAssetSerializer::SerializeTexture(UTexture* Texture, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer) {
-    //Skip serializing all AdjustXXX fields because they are applied to the image
-    //during cooked and mipmap image we get after decompression already has them applied
-
-    //Serialize properties that are relevant in runtime
-    OutObject->SetNumberField(TEXT("LODBias"), Texture->LODBias);
-    OutObject->SetNumberField(TEXT("NumCinematicMipLevels"), Texture->NumCinematicMipLevels);
-    OutObject->SetNumberField(TEXT("CompressionSettings"), Texture->CompressionSettings);
-    OutObject->SetNumberField(TEXT("Filter"), Texture->Filter);
-    OutObject->SetNumberField(TEXT("LODGroup"), Texture->LODGroup);
-    OutObject->SetBoolField(TEXT("SRGB"), Texture->SRGB);
-    OutObject->SetBoolField(TEXT("NeverStream"), Texture->NeverStream);
-    OutObject->SetBoolField(TEXT("bNoTiling"), Texture->bNoTiling);
-
-    //Serialize AssetUserData set on texture object
-    TArray<TSharedPtr<FJsonValue>> AssetUserDataArray;
-    for (UAssetUserData* AssetUserData : *Texture->GetAssetUserDataArray()) {
-        const int32 AssetDataObjectIndex = ObjectHierarchySerializer->SerializeObject(AssetUserData);
-        AssetUserDataArray.Add(MakeShareable(new FJsonValueNumber(AssetDataObjectIndex)));
-    }
-    OutObject->SetArrayField(TEXT("AssetUserData"), AssetUserDataArray);
-}
-
-EAssetCategory UTextureAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_Texture2D;
+FName UTextureAssetSerializer::GetAssetClass() const {
+    return UTexture2D::StaticClass()->GetFName();
 }
