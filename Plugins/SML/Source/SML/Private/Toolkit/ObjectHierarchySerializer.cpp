@@ -15,10 +15,9 @@ UObjectHierarchySerializer::UObjectHierarchySerializer() {
     APPEND_DEFAULT_SERIALIZABLE_NATIVE_CLASSES(AllowedNativeSerializeClasses.Add);
 }
 
-void UObjectHierarchySerializer::Initialize(UPackage* NewSourcePackage, UObject* Serializer) {
+void UObjectHierarchySerializer::Initialize(UPackage* NewSourcePackage, UPropertySerializer* NewPropertySerializer) {
     check(NewSourcePackage);
     this->SourcePackage = NewSourcePackage;
-    UPropertySerializer* NewPropertySerializer = Cast<UPropertySerializer>(Serializer);
     check(NewPropertySerializer);
     this->PropertySerializer = NewPropertySerializer;
     NewPropertySerializer->ObjectHierarchySerializer = this;
@@ -130,27 +129,25 @@ TSharedRef<FJsonObject> UObjectHierarchySerializer::SerializeObjectProperties(UO
 }
 
 void UObjectHierarchySerializer::SerializeObjectPropertiesIntoObject(UObject* Object, TSharedPtr<FJsonObject> Properties) {
-    UPropertySerializer* CastedPropertySerializer = GetPropertySerializer<UPropertySerializer>();
     UClass* ObjectClass = Object->GetClass();
     for (UProperty* Property = ObjectClass->PropertyLink; Property; Property = Property->PropertyLinkNext) {
-        if (CastedPropertySerializer->ShouldSerializeProperty(Property)) {
+        if (PropertySerializer->ShouldSerializeProperty(Property)) {
             const void* PropertyValue = Property->ContainerPtrToValuePtr<void>(Object);
-            TSharedRef<FJsonValue> PropertyValueJson = CastedPropertySerializer->SerializePropertyValue(Property, PropertyValue);
+            TSharedRef<FJsonValue> PropertyValueJson = PropertySerializer->SerializePropertyValue(Property, PropertyValue);
             Properties->SetField(Property->GetName(), PropertyValueJson);
         }
     }
 }
 
 void UObjectHierarchySerializer::DeserializeObjectProperties(const TSharedRef<FJsonObject>& Properties, UObject* Object) {
-    UPropertySerializer* CastedPropertySerializer = GetPropertySerializer<UPropertySerializer>();
     UClass* ObjectClass = Object->GetClass();
     for (UProperty* Property = ObjectClass->PropertyLink; Property; Property = Property->PropertyLinkNext) {
         const FString PropertyName = Property->GetName();
-        if (CastedPropertySerializer->ShouldSerializeProperty(Property) && Properties->HasField(PropertyName)) {
+        if (PropertySerializer->ShouldSerializeProperty(Property) && Properties->HasField(PropertyName)) {
             void* PropertyValue = Property->ContainerPtrToValuePtr<void>(Object);
             const TSharedPtr<FJsonValue>& ValueObject = Properties->Values.FindChecked(PropertyName);
             if (ValueObject.IsValid()) {
-                CastedPropertySerializer->DeserializePropertyValue(Property, ValueObject.ToSharedRef(), PropertyValue);
+                PropertySerializer->DeserializePropertyValue(Property, ValueObject.ToSharedRef(), PropertyValue);
             }
         }
     }

@@ -123,13 +123,11 @@ void ExecuteDumpAllGameNativeClasses(const TArray<FString>& Arguments) {
 	UPackage* NativePackage = FindPackage(NULL, TEXT("/Script/FactoryGame"));
 	UPropertySerializer* PropertySerializer = NewObject<UPropertySerializer>(GetTransientPackage());
 	
-	for (TObjectIterator<UClass> ClassIt; ClassIt; ++ClassIt)
-	{
+	for (TObjectIterator<UClass> ClassIt; ClassIt; ++ClassIt) {
 		UClass* Class = *ClassIt;
 
 		// Only interested in native C++ classes
-		if (!Class->IsNative())
-		{
+		if (!Class->IsNative()) {
 			continue;
 		}
 
@@ -139,7 +137,7 @@ void ExecuteDumpAllGameNativeClasses(const TArray<FString>& Arguments) {
 	}
 	
 	FString ResultPath = FPaths::Combine(FPaths::RootDir(), TEXT("AssetDump"), TEXT("NativeClasses.json"));
-	ResultPath.ReplaceInline(TEXT("/../../../"), TEXT("/"));
+	ResultPath = FPaths::ConvertRelativePathToFull(ResultPath);
 	
 	TSharedPtr<FJsonObject> ResultJsonObject = MakeShareable(new FJsonObject());
 	ResultJsonObject->SetArrayField(TEXT("Classes"), ClassesJsonObjects);

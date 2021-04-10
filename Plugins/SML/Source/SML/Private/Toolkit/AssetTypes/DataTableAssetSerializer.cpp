@@ -1,31 +1,26 @@
 #include "Toolkit/AssetTypes/DataTableAssetSerializer.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
 #include "Toolkit/PropertySerializer.h"
 #include "Engine/DataTable.h"
 
-void UDataTableAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
-
-    UDataTable* DataTable;
-    check(RootPackageObjects.FindItemByClass<UDataTable>(&DataTable));
-    SerializeDataTable(DataTable, OutObject, ObjectHierarchySerializer);
-}
-
-void UDataTableAssetSerializer::SerializeDataTable(UDataTable* DataTable, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer) {
-    UPropertySerializer* PropertySerializer = ObjectHierarchySerializer->GetPropertySerializer<UPropertySerializer>();
-    const int32 RowStructIndex = ObjectHierarchySerializer->SerializeObject(DataTable->RowStruct);
-    OutObject->SetNumberField(TEXT("RowStruct"), RowStructIndex);
+void UDataTableAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UDataTable)
 
     const TSharedPtr<FJsonObject> RowData = MakeShareable(new FJsonObject());
-    const TMap<FName, uint8*>& RowDataMap = DataTable->GetRowMap();
+    const TMap<FName, uint8*>& RowDataMap = Asset->GetRowMap();
     for (const TPair<FName, uint8*>& RowDataPair : RowDataMap) {
-        TSharedPtr<FJsonObject> StructData = PropertySerializer->SerializeStruct(DataTable->RowStruct, RowDataPair.Value);
+        TSharedPtr<FJsonObject> StructData = Serializer->SerializeStruct(Asset->RowStruct, RowDataPair.Value);
         RowData->SetObjectField(RowDataPair.Key.ToString(), StructData);
     }
-    OutObject->SetObjectField(TEXT("RowData"), RowData);
+
+    Data->SetNumberField(TEXT("RowStruct"), ObjectSerializer->SerializeObject(Asset->RowStruct));
+    Data->SetObjectField(TEXT("RowData"), RowData);
+
+    END_ASSET_SERIALIZATION
 }
 
-EAssetCategory UDataTableAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_DataTable;
+FName UDataTableAssetSerializer::GetAssetClass() const {
+    return UDataTable::StaticClass()->GetFName();
 }

@@ -149,9 +149,9 @@ TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGrap
 	return TypeEntry;
 }
 
-bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer);
+bool GetPropertyCategoryInfo(const FProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer);
 
-bool FPropertyTypeHelper::ConvertPropertyToPinType(const UProperty* Property, /*out*/ FEdGraphPinType& TypeOut) {
+bool FPropertyTypeHelper::ConvertPropertyToPinType(const FProperty* Property, /*out*/ FEdGraphPinType& TypeOut) {
 	if (Property == nullptr) {
 		TypeOut.PinCategory = TEXT("bad_type");
 		return false;
@@ -160,10 +160,10 @@ bool FPropertyTypeHelper::ConvertPropertyToPinType(const UProperty* Property, /*
 	TypeOut.PinSubCategory = NAME_None;
 
 	// Handle whether or not this is an array property
-	const UMapProperty* MapProperty = Cast<const UMapProperty>(Property);
-	const USetProperty* SetProperty = Cast<const USetProperty>(Property);
-	const UArrayProperty* ArrayProperty = Cast<const UArrayProperty>(Property);
-	const UProperty* TestProperty = Property;
+	const FMapProperty* MapProperty = CastField<const FMapProperty>(Property);
+	const FSetProperty* SetProperty = CastField<const FSetProperty>(Property);
+	const FArrayProperty* ArrayProperty = CastField<const FArrayProperty>(Property);
+	const FProperty* TestProperty = Property;
 	if (MapProperty) {
 		TestProperty = MapProperty->KeyProp;
 
@@ -190,10 +190,10 @@ bool FPropertyTypeHelper::ConvertPropertyToPinType(const UProperty* Property, /*
 	TypeOut.bIsConst = Property->HasAllPropertyFlags(CPF_ConstParm);
 
 	// Check to see if this is the wildcard property for the target container type
-	if (const UMulticastDelegateProperty* MulticastDelegateProperty = Cast<const UMulticastDelegateProperty>(TestProperty)) {
+	if (const FMulticastDelegateProperty* MulticastDelegateProperty = CastField<const FMulticastDelegateProperty>(TestProperty)) {
 		TypeOut.PinCategory = PC_MCDelegate;
 		FMemberReference::FillSimpleMemberReference<UFunction>(MulticastDelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
-	} else if (const FDelegateProperty* DelegateProperty = Cast<const FDelegateProperty>(TestProperty)) {
+	} else if (const FDelegateProperty* DelegateProperty = CastField<const FDelegateProperty>(TestProperty)) {
 		TypeOut.PinCategory = PC_Delegate;
 		FMemberReference::FillSimpleMemberReference<UFunction>(DelegateProperty->SignatureFunction, TypeOut.PinSubCategoryMemberReference);
 	} else {
@@ -209,38 +209,38 @@ bool FPropertyTypeHelper::ConvertPropertyToPinType(const UProperty* Property, /*
 	return true;
 }
 
-bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer) {
-	if (const UInterfaceProperty* InterfaceProperty = Cast<const UInterfaceProperty>(TestProperty)) {
+bool GetPropertyCategoryInfo(const FProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer) {
+	if (const FInterfaceProperty* InterfaceProperty = CastField<const FInterfaceProperty>(TestProperty)) {
 		OutCategory = PC_Interface;
 		OutSubCategoryObject = InterfaceProperty->InterfaceClass;
-	} else if (const UClassProperty* ClassProperty = Cast<const UClassProperty>(TestProperty)) {
+	} else if (const FClassProperty* ClassProperty = CastField<const FClassProperty>(TestProperty)) {
 		OutCategory = PC_Class;
 		OutSubCategoryObject = ClassProperty->MetaClass;
-	} else if (const USoftClassProperty* SoftClassProperty = Cast<const USoftClassProperty>(TestProperty)) {
+	} else if (const FSoftClassProperty* SoftClassProperty = CastField<const FSoftClassProperty>(TestProperty)) {
 		OutCategory = PC_SoftClass;
 		OutSubCategoryObject = SoftClassProperty->MetaClass;
-	} else if (const USoftObjectProperty* SoftObjectProperty = Cast<const USoftObjectProperty>(TestProperty)) {
+	} else if (const FSoftObjectProperty* SoftObjectProperty = CastField<const FSoftObjectProperty>(TestProperty)) {
 		OutCategory = PC_SoftObject;
 		OutSubCategoryObject = SoftObjectProperty->PropertyClass;
-	} else if (const UObjectPropertyBase* ObjectProperty = Cast<const UObjectPropertyBase>(TestProperty)) {
+	} else if (const FObjectPropertyBase* ObjectProperty = CastField<const FObjectPropertyBase>(TestProperty)) {
 		OutCategory = PC_Object;
 		OutSubCategoryObject = ObjectProperty->PropertyClass;
-		bOutIsWeakPointer = TestProperty->IsA(UWeakObjectProperty::StaticClass());
-	} else if (const UStructProperty* StructProperty = Cast<const UStructProperty>(TestProperty)) {
+		bOutIsWeakPointer = TestProperty->IsA(FWeakObjectProperty::StaticClass());
+	} else if (const FStructProperty* StructProperty = CastField<const FStructProperty>(TestProperty)) {
 		OutCategory = PC_Struct;
 		OutSubCategoryObject = StructProperty->Struct;
-	} else if (TestProperty->IsA<UFloatProperty>()) {
+	} else if (TestProperty->IsA<FFloatProperty>()) {
 		OutCategory = PC_Float;
-	} else if (TestProperty->IsA<UInt64Property>()) {
+	} else if (TestProperty->IsA<FInt64Property>()) {
 		OutCategory = PC_Int64;
-	} else if (TestProperty->IsA<UIntProperty>()) {
+	} else if (TestProperty->IsA<FIntProperty>()) {
 		OutCategory = PC_Int;
-	} else if (const UByteProperty* ByteProperty = Cast<const UByteProperty>(TestProperty)) {
+	} else if (const FByteProperty* ByteProperty = CastField<const FByteProperty>(TestProperty)) {
 		OutCategory = PC_Byte;
 		OutSubCategoryObject = ByteProperty->Enum;
-	} else if (const UEnumProperty* EnumProperty = Cast<const UEnumProperty>(TestProperty)) {
+	} else if (const FEnumProperty* EnumProperty = CastField<const FEnumProperty>(TestProperty)) {
 		// K2 only supports byte enums right now - any violations should have been caught by UHT or the editor
-		if (!EnumProperty->GetUnderlyingProperty()->IsA<UByteProperty>()) {
+		if (!EnumProperty->GetUnderlyingProperty()->IsA<FByteProperty>()) {
 			OutCategory = TEXT("unsupported_enum_type");
 			return false;
 		}
@@ -248,13 +248,13 @@ bool GetPropertyCategoryInfo(const UProperty* TestProperty, FName& OutCategory, 
 		OutCategory = PC_Byte;
 		OutSubCategoryObject = EnumProperty->GetEnum();
 		
-	} else if (TestProperty->IsA<UNameProperty>()) {
+	} else if (TestProperty->IsA<FNameProperty>()) {
 		OutCategory = PC_Name;
-	} else if (TestProperty->IsA<UBoolProperty>()) {
+	} else if (TestProperty->IsA<FBoolProperty>()) {
 		OutCategory = PC_Boolean;
-	} else if (TestProperty->IsA<UStrProperty>()) {
+	} else if (TestProperty->IsA<FStrProperty>()) {
 		OutCategory = PC_String;
-	} else if (TestProperty->IsA<UTextProperty>()) {
+	} else if (TestProperty->IsA<FTextProperty>()) {
 		OutCategory = PC_Text;
 	} else {
 		OutCategory = TEXT("bad_type");

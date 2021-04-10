@@ -70,7 +70,7 @@ namespace Alpakit.Automation
 			CopyDirectory_NoExceptions(stagingDir, resultPluginDirectory);
 		}
 
-		private static ProjectParams GetParams(BuildCommand cmd, string basedOnReleaseName)
+		private static ProjectParams GetParams(BuildCommand cmd)
 		{
 			var projectFileName = cmd.ParseRequiredStringParam("Project");
 			LogInformation(projectFileName);
@@ -96,8 +96,8 @@ namespace Alpakit.Automation
 				Manifests: false,
 				//Need this to allow engine content that wasn't cooked in the base game to be included in the PAK file 
 				DLCIncludeEngineContent: true,
-				BasedOnReleaseVersion: basedOnReleaseName,
 				DLCName: pluginName,
+				AdditionalCookerOptions: "-CookOnlyPluginAndEngineContent",
 				RunAssetNativization: false);
 
 			projectParameters.ValidateAndLog();
@@ -281,6 +281,12 @@ namespace Alpakit.Automation
 					var relativePluginPath = GetPluginPathRelativeToStageRoot(projectParams, deploymentContext);
 					var stagePluginDirectory = Path.Combine(stageRootDirectory.ToString(), relativePluginPath);
 
+					if (factoryGameParams.GameDirectory == null)
+					{
+						throw new AutomationException(
+							"-CopyToGameDirectory was specified, but no game directory path has been provided");
+					}
+					
 					CopyPluginToTheGameDir(factoryGameParams.GameDirectory, projectParams.RawProjectPath,
 						projectParams.DLCFile, stagePluginDirectory);
 				}
@@ -305,23 +311,26 @@ namespace Alpakit.Automation
 
 		public override void ExecuteBuild()
 		{
-			var gameDir = ParseRequiredStringParam("GameDir");
-			var bootstrapExePath = Path.Combine(gameDir, "FactoryGame.exe");
-			if (!FileExists(bootstrapExePath))
+			var gameBuildVersion = ParseOptionalStringParam("GameVersionOverride");
+			string maybeGameDirectory = null;
+			if (gameBuildVersion == null)
 			{
-				throw new AutomationException("Provided -GameDir is invalid: '{0}'", gameDir);
+				var gameDir = ParseRequiredStringParam("GameDir");
+				var bootstrapExePath = Path.Combine(gameDir, "FactoryGame.exe");
+				if (!FileExists(bootstrapExePath))
+				{
+					throw new AutomationException("Provided -GameDir is invalid: '{0}'", gameDir);
+				}
+				gameBuildVersion = RetrieveBuildIdFromGame(gameDir);
+				maybeGameDirectory = gameDir;
 			}
 
-			const string releaseName = "FactoryGame_Release";
-			var gameBuildVersion = RetrieveBuildIdFromGame(gameDir);
-
 			LogInformation("Game Build Id: {0}", gameBuildVersion);
-			LogInformation("Target Release: {0}", releaseName);
 
 			var factoryGameParams = new FactoryGameParams
 			{
-				GameBuildId = releaseName,
-				GameDirectory = gameDir,
+				GameBuildId = gameBuildVersion,
+				GameDirectory = maybeGameDirectory,
 				StartGame = ParseParam("LaunchGame"),
 				CopyToGameDirectory = ParseParam("CopyToGameDir")
 			};
@@ -330,7 +339,7 @@ namespace Alpakit.Automation
 				factoryGameParams.LaunchGameURL = GetGameLaunchURL(this);
 			}
 
-			var projectParams = GetParams(this, releaseName);
+			var projectParams = GetParams(this);
 
 			Project.Cook(projectParams);
 			var deploymentContexts = CreateDeploymentContexts(projectParams);

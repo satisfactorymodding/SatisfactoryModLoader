@@ -1,18 +1,15 @@
 #include "Toolkit/AssetTypes/PhysicalMaterialAssetSerializer.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
+#include "Toolkit/AssetDumping/SerializationContext.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
+#include "Toolkit/ObjectHierarchySerializer.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
-void UPhysicalMaterialAssetSerializer::SerializeAsset(UPackage* AssetPackage, TSharedPtr<FJsonObject> OutObject, UObjectHierarchySerializer* ObjectHierarchySerializer, FAssetSerializationContext& Context) const {
-    const TArray<UObject*> RootPackageObjects = FAssetHelper::GetRootPackageObjects(AssetPackage);
-    check(RootPackageObjects.Num() == 1);
-
-    UPhysicalMaterial* PhysicalMaterial;
-    check(RootPackageObjects.FindItemByClass<UPhysicalMaterial>(&PhysicalMaterial));
-    
-    const int32 PhysicalMaterialObjectIndex = ObjectHierarchySerializer->SerializeObject(PhysicalMaterial);
-    OutObject->SetNumberField(TEXT("PhysicalMaterial"), PhysicalMaterialObjectIndex);
+void UPhysicalMaterialAssetSerializer::SerializeAsset(TSharedRef<FSerializationContext> Context) const {
+    BEGIN_ASSET_SERIALIZATION(UPhysicalMaterial)
+        SERIALIZE_ASSET_OBJECT
+    END_ASSET_SERIALIZATION
 }
 
-EAssetCategory UPhysicalMaterialAssetSerializer::GetAssetCategory() const {
-    return EAssetCategory::EAC_PhysicalMaterial;
+FName UPhysicalMaterialAssetSerializer::GetAssetClass() const {
+    return UPhysicalMaterial::StaticClass()->GetFName();
 }
