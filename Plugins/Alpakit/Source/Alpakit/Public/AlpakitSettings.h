@@ -31,3 +31,22 @@ public:
 	UPROPERTY(EditAnywhere, config, Category = Config)
 	bool bCopyModsToGame = false;
 };
+
+UCLASS(config=Game)
+class ALPAKIT_API UAlpakitModSelectionSettings : public UObject {
+	GENERATED_BODY()
+public:
+	/** Retrieves global instance of alpakit settings */
+	static UAlpakitModSelectionSettings* Get();
+
+	/** Saves alpakit settings to configuration file */
+	void SaveSettings();
+	void loadJson();
+	void SetPluginSelection(const FString& modName, bool selected);
+	bool GetPluginSelection(const FString& PluginName);
+
+	UPROPERTY(EditAnywhere, config, Category = Config)
+	FString modSelection;
+
+	TSharedPtr<FJsonObject> cacheJsonObject;
+};
