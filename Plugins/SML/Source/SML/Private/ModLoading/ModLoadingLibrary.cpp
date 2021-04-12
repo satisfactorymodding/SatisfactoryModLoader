@@ -6,6 +6,9 @@
 #include "Util/ImageLoadingUtil.h"
 #include "Json.h"
 
+//We only want to enforce plugin dependency versions outside of the editor
+#define ENFORCE_PLUGIN_DEPENDENCY_VERSIONS !WITH_EDITOR
+
 void FSMLPluginDescriptorMetadata::SetupDefaults(const FPluginDescriptor& PluginDescriptor) {
     this->Version = FVersion(PluginDescriptor.Version, 0, 0);
     this->bAcceptsAnyRemoteVersion = false;
@@ -170,8 +173,7 @@ FModInfo UModLoadingLibrary::CreateFactoryGameModInfo() {
 }
 
 void UModLoadingLibrary::VerifyPluginDependencies() {
-	//Do not verify dependencies in the editor
-#if WITH_EDITOR == 0
+#if ENFORCE_PLUGIN_DEPENDENCY_VERSIONS
     TArray<FString> MismatchedDependencies;
 
     const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
@@ -189,8 +191,7 @@ void UModLoadingLibrary::VerifyPluginDependencies() {
 }
 
 void UModLoadingLibrary::VerifySinglePluginDependencies(IPlugin& Plugin) {
-    //Do not verify dependencies in the editor
-#if WITH_EDITOR == 0
+#if ENFORCE_PLUGIN_DEPENDENCY_VERSIONS
 	TArray<FString> MismatchedDependencies;
 	VerifyPluginDependencies(Plugin, MismatchedDependencies);
 
