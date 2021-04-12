@@ -1,9 +1,8 @@
-#pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "FGBuildable.h"
+#pragma once
+
+#include "Buildables/FGBuildable.h"
 #include "FGBuildableDecor.generated.h" 
 
 
@@ -32,7 +31,4 @@ protected:
 	/** The mesh we want to have for the decor */
 	UPROPERTY( SaveGame, Replicated )
 	class UStaticMesh* mDecorMesh;
-
-public:
-	FORCEINLINE ~AFGBuildableDecor() = default;
 };

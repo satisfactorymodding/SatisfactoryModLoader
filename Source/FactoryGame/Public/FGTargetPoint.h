@@ -1,8 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -99,7 +97,4 @@ public:
 	/** Target speed at this node */ 
 	UPROPERTY( Replicated, BlueprintReadOnly, SaveGame, Meta = ( ExposeOnSpawn = "true" ), Category = "Target Point" )
 	int32 mTargetSpeed;
-
-public:
-	FORCEINLINE ~AFGTargetPoint() = default;
 };

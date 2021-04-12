@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
@@ -25,6 +22,10 @@ public:
 	 *
 	 * @param spline			The spline the meshes should go along.
 	 *
+	 * @oaram maxSplineLengthToFill		The lenght of the spline to fill with meshes, any distance after this will be left without meshes.
+	 * 									This can be more than the spline length (in which case spline length is used)
+	 * 									If this is 0 or less, no meshes will be generated.
+	 *
 	 * @param mesh				The static mesh to spline, it will be splined along the X-axis.
 	 *
 	 * @param meshLength		The length of the given mesh, along it's X-axis.
@@ -35,6 +36,9 @@ public:
 	 *							This is useful for holograms as the spline change around a lot.
 	 *
 	 * @param meshConstructor	Lambda or other function that creates a new mesh to put in the pool.
+	 * 							This is only called when a new mesh needs to be created in the pool,
+	 * 							This means that if the number of meshes needed remains constant this
+	 * 							is only called the first time the function is called.
 	 *							The constructor is responsible for calling SetupAttachment and set the Owner.
 	 *							The constructor must never call RegisterComponent.
 	 *							If the returned mesh have mobility Static, then the pool cannot be reused as any further changes to the mesh have no effect.
@@ -55,24 +59,9 @@ public:
 	template< typename MeshConstructor >
 	static void BuildSplineMeshes(
 		class USplineComponent* spline,
+		float maxSplineLengthToFill,
 		UStaticMesh* mesh,
 		float meshLength,
-		TArray< USplineMeshComponent* >& meshPool,
-		MeshConstructor meshConstructor );
-
-	/**
-	 * Overload that can limit the number of meshes generated.
-	 *
-	 * @param maxNumMeshes      Maximum number of meshes to generate from the start of the spline,
-	 *                          This will cut of the generation after that point even if the
-	 *                          spline requires more meshes to be completely filled.
-	 */
-	template< typename MeshConstructor >
-	static void BuildSplineMeshes(
-		class USplineComponent* spline,
-		UStaticMesh* mesh,
-		float meshLength,
-		int32 maxNumMeshes,
 		TArray< USplineMeshComponent* >& meshPool,
 		MeshConstructor meshConstructor );
 
@@ -175,9 +164,6 @@ public:
 		uint8 fineTuningIterations = 5,
 		float minStepFactor = 0.5f,
 		ESplineCoordinateSpace::Type space = ESplineCoordinateSpace::World );
-
-public:
-	FORCEINLINE ~UFGSplineMeshGenerationLibrary() = default;
 };
 
 /**
@@ -186,29 +172,16 @@ public:
 template< typename MeshConstructor >
 void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	class USplineComponent* spline,
+	float maxSplineLengthToFill,
 	UStaticMesh* mesh,
 	float meshLength,
-	TArray< USplineMeshComponent* >& meshPool,
-	MeshConstructor meshConstructor )
-{
-	const int32 REASONABLE_MAX_NUM_MESHES = 500;
-
-	BuildSplineMeshes( spline, mesh, meshLength, REASONABLE_MAX_NUM_MESHES, meshPool, meshConstructor );
-}
-
-template< typename MeshConstructor >
-void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
-	class USplineComponent* spline,
-	UStaticMesh* mesh,
-	float meshLength,
-	int32 maxNumMeshes,
 	TArray< USplineMeshComponent* >& meshPool,
 	MeshConstructor meshConstructor )
 {
 	check( spline );
 
-	const float splineLength = spline->GetSplineLength();
-	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( splineLength / meshLength ) );
+	const float splineLengthToFill = FMath::Clamp( spline->GetSplineLength(), 0.f, maxSplineLengthToFill );
+	const int32 numMeshes = splineLengthToFill > SMALL_NUMBER ? FMath::Max( 1, FMath::RoundToInt( splineLengthToFill / meshLength ) ) : 0;
 
 	// Create more or remove the excess meshes.
 	if( numMeshes < meshPool.Num() )
@@ -221,7 +194,7 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	}
 	else if( numMeshes > meshPool.Num() )
 	{
-		while( meshPool.Num() < numMeshes && meshPool.Num() < maxNumMeshes )
+		while( meshPool.Num() < numMeshes )
 		{
 			if( auto newMesh = meshConstructor( spline ) )
 			{
@@ -240,7 +213,7 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 
 	// Put all pieces along the spline.
 	{
-		const float segmentLength = splineLength / numMeshes;
+		const float segmentLength = splineLengthToFill / numMeshes;
 
 		for( int32 i = 0; i < meshPool.Num(); ++i )
 		{

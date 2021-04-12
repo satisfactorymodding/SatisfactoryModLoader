@@ -1,6 +1,8 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 
-#include "AnalogCursor.h"
+#include "Framework/Application/AnalogCursor.h"
 #include "Engine/LocalPlayer.h"
 //#include "FGGamepadCursor.generated.h"
 
@@ -32,7 +34,4 @@ private:
 
 	/** The single analog cursor we allow in the game */
 	static TSharedPtr< FFGGamepadCursor > AnalogCursor;
-
-public:
-	FORCEINLINE ~FFGGamepadCursor() = default;
 };

@@ -1,9 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGVehicle.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
@@ -50,6 +47,9 @@ public:
 
 	/** Update the animations for this vehicle, this is called after the whole train has been moved. */
 	void UpdateAnimation();
+
+	/** Update the power usage and info for this railroad vehicle. */
+	virtual void UpdatePower();
 
 	/** Get the railroad movement for this vehicle. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Vehicle" )
@@ -159,7 +159,4 @@ private:
 	UPROPERTY( SaveGame )
 	FRailroadTrackPosition mTrackPosition;
 
-
-public:
-	FORCEINLINE ~AFGRailroadVehicle() = default;
 };

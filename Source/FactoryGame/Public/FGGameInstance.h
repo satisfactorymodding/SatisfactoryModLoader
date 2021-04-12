@@ -1,9 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Engine/GameInstance.h"
 #include "NAT.h"
@@ -11,21 +8,20 @@
 //#include "AnalyticsService.h"
 #include "FGAnalyticsMacros.h"
 #include "OnlineSessionSettings.h"
-#include "Online.h"
 #include "Interfaces/OnlineSessionInterface.h"
 // MODDING EDIT: Online stuff...
 //#include "EOSSDKForwards.h"
 //#include "AnalyticsService.h"
 #include "FGGameInstance.generated.h"
 
-// MODDING EDIT: dummy classes from the Epic Online missing headers
-class FACTORYGAME_API EOS_ProductUserId
+// MODDING EDIT
+UCLASS()
+class UAnalyticsService : public UObject
 {
-    
-
-public:
-	FORCEINLINE ~EOS_ProductUserId() = default;
+	GENERATED_BODY()
 };
+typedef struct EOS_P2PHandle* EOS_HP2P;
+typedef struct EOS_ProductUserIdDetails* EOS_ProductUserId;
 
 UENUM(BlueprintType)
 enum class EJoinSessionState : uint8
@@ -40,14 +36,14 @@ enum class EJoinSessionState : uint8
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnJoinSessionStateChanged, EJoinSessionState, newState );
 
 USTRUCT()
-struct FACTORYGAME_API FOnJoinSessionData
+struct FOnJoinSessionData
 {
 	GENERATED_BODY()
 
 	void Init( class UFGLocalPlayer* player, const FOnlineSessionSearchResult& session )
 	{
 		LocalPlayer = player;
-		//Session = session;
+		Session = session;
 
 		JoinInProgress = true;
 	}
@@ -66,24 +62,20 @@ struct FACTORYGAME_API FOnJoinSessionData
 	UPROPERTY()
 	class UFGLocalPlayer* LocalPlayer;
 
-	// MODDING EDIT: Online not working
-	///** Session to join */
-	//FOnlineSessionSearchResult Session;
+	/** Session to join */
+	FOnlineSessionSearchResult Session;
 
 	/** True if we are currently joining a session */
 	uint8 JoinInProgress:1;
 private:
 	EJoinSessionState State;
-
-public:
-	FORCEINLINE ~FOnJoinSessionData() = default;
 };
 
 /**
 *
 */
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FFGModPackage
+struct FFGModPackage
 {
 	GENERATED_BODY()
 
@@ -110,13 +102,10 @@ struct FACTORYGAME_API FFGModPackage
 		Version = TEXT( "" );
 		Description = TEXT( "" );
 	}
-
-public:
-	FORCEINLINE ~FFGModPackage() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FFGGameNetworkErrorMsg
+struct FFGGameNetworkErrorMsg
 {
 	GENERATED_BODY()
 	FFGGameNetworkErrorMsg( ENetworkFailure::Type _errorType, const FString& _errorMsg ) : errorType( _errorType ), errorMsg( _errorMsg )
@@ -128,9 +117,6 @@ struct FACTORYGAME_API FFGGameNetworkErrorMsg
 
 	UPROPERTY( BlueprintReadWrite )
 	FString errorMsg;
-
-public:
-	FORCEINLINE ~FFGGameNetworkErrorMsg() = default;
 };
 
 
@@ -172,17 +158,15 @@ public:
 	/** @return OnlineSession class to use for this game instance  */
 	virtual TSubclassOf<UOnlineSession> GetOnlineSessionClass() override;
 
-	// MODDING EDIT
-	///** Service provider for analytics */
-	//FORCEINLINE class UAnalyticsService* GetAnalyticsService() const { return mAnalyticsService; }
+	/** Service provider for analytics */
+	FORCEINLINE UAnalyticsService* GetAnalyticsService() const { return mAnalyticsService; }
 
-	// MODDING EDIT
-	///** Returns the relative analytics services from the world context holder */
-	//UFUNCTION( BlueprintPure, Category = "GameAnalytics", DisplayName = "GetGameAnalyticsService", Meta = ( DefaultToSelf = "WorldContext" ) )
-	//static UAnalyticsService* GetGameAnalyticsService( UObject* worldContext );
-	//
-	///** Returns the relative analytics services from the world context holder */
-	//static UAnalyticsService* GetAnalyticsServiceFromWorld( UWorld* worldContext );
+	/** Returns the relative analytics services from the world context holder */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameAnalytics", DisplayName = "GetGameAnalyticsService", Meta = ( DefaultToSelf = "WorldContext" ) )
+	static UAnalyticsService* GetGameAnalyticsService( UObject* worldContext );
+
+	/** Returns the relative analytics services from the world context holder */
+	static UAnalyticsService* GetAnalyticsServiceFromWorld( UWorld* worldContext );
 
 	// @todo: Move error functions to a "message bus" class	
 	/** Pushes a error to the game, that handles it appropriately */
@@ -251,11 +235,15 @@ public:
 
 	UFUNCTION(BlueprintPure, Category="FactoryGame|Online")
 	EJoinSessionState GetCurrentJoinSessionState() const;
-public:
-	//MODDING EDIT
+
+	/** Get the instance of the debug overlay widget. Will create one if it doesn't exists. Might return null if we don't have a specificed debug overlay widget class */
+	class UFGDebugOverlayWidget* GetDebugOverlayWidget();
+
+public: //MODDING EDIT protected -> public
 	// Called when a map has loaded properly in Standalone
 	virtual void LoadComplete( const float loadTime, const FString& mapName ) override;
-protected:
+protected: // MODDING EDIT
+
 	/** Called after we have destroyed a old session for joining a new session */
 	virtual void OnDestroyOldSessionComplete_JoinSession( FName gameSessionName, bool wasSuccessful );
 
@@ -266,12 +254,17 @@ protected:
 	UFUNCTION()
 	virtual void PollHostProductUserId_JoinSession();
 
-	// MODDING EDIT: Online not working
-	///** Called when we receive a callback about our current NAT-type */
-	//void OnNATQueryCompleted( const struct FOnlineError& requestStatus, TOptional<ENATType> foundNATType );
-	//
-	///** Called after we have joined a session, makes sure we copy the session settings from the host */
-	//void OnJoinSessionComplete( FName sessionName, EOnJoinSessionCompleteResult::Type joinResult );
+	/** Forward function when nat query is completed */
+	static void _OnNATUpdatedCallback( void* userData, ECachedNATType Data);
+
+	/** Called when we receive a callback about our current NAT-type  */
+	void OnNATUpdated( ECachedNATType Data);
+
+	/** Called after we have joined a session, makes sure we copy the session settings from the host */
+	void OnJoinSessionComplete( FName sessionName, EOnJoinSessionCompleteResult::Type joinResult );
+
+	void SendRecievedNetworkErrorOnDelegate( UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg );
+
 private:
 	void OnPreLoadMap( const FString& levelName );
 	void OnPostLoadMap( UWorld* loadedWorld );
@@ -281,21 +274,31 @@ private:
 
 	/** Initializes the Game Analytics Service. Requires that the Epic Online Services handle has been created beforehand. */
 	void InitGameAnalytics();
+
+	void JoinSession_Internal();
+	
+	/** Called when the option for sending gameplay data is changed*/
+	UFUNCTION()
+	void OnSendGameplayDataUpdated( FString cvar );
+
 protected:
 	/** The global save system */
 	UPROPERTY()
 	class UFGSaveSystem* mSaveSystem;
 
-	// MODDING EDIT: Online not working
-	//// @todo: Make accessors for this when moving this to FGErrorBus or similar
-	///** Called whenever a new error is added that doesn't send you to main menu */
-	//UPROPERTY(BlueprintAssignable)
-	//FOnNewError mOnNewError;
+	// @todo: Make accessors for this when moving this to FGErrorBus or similar
+	/** Called whenever a new error is added that doesn't send you to main menu */
+	UPROPERTY(BlueprintAssignable)
+	FOnNewError mOnNewError;
 
-	// MODDING EDIT
-	///** The global Analytics Service */
-	//UPROPERTY()
-	//class UAnalyticsService* mAnalyticsService;
+	TArray< FFGGameNetworkErrorMsg > mNetworkErrorQueue;
+
+	UPROPERTY( BlueprintAssignable )
+	FOnNetworkErrorRecieved mOnNetworkErrorRecieved;
+
+	/** The global Analytics Service */
+	UPROPERTY()
+	UAnalyticsService* mAnalyticsService;
 
 	/** List of errors that we should pop */
 	UPROPERTY()
@@ -315,22 +318,20 @@ protected:
 	/** Has the player chosen to skip the onboarding? */
 	bool mSkipOnboarding;
 
-	// MODDING EDIT: Online not working
-	///** Called when nat-type is updated */
-	//UPROPERTY(BlueprintAssignable)
-	//FOnNatTypeUpdated mOnNatTypeUpdated;
+	/** Called when nat-type is updated */
+	UPROPERTY(BlueprintAssignable)
+	FOnNatTypeUpdated mOnNatTypeUpdated;
 
-	// MODDING EDIT: Online not working
-	///** Used to query NAT type, nothing more */
-	//TUniquePtr<class FEpicPeerManager> mEpicPeerManager;
+	/** Used to query NAT type, nothing more */
+	EOS_HP2P mP2PHandle;
 
 	/** Our last seen NAT-type */
 	ECachedNATType mCachedNATType;
 
-	// MODDING EDIT
 	///** The handle for the Epic Online Services manager. Is initialized in Init(). */
 	//UPROPERTY()
 	//class UEOSManager* mCachedEOSManager;
+	
 public:
 	// Mod packages found - valid or invalid
 	UPROPERTY( BlueprintReadOnly, Category = "Modding" )
@@ -342,6 +343,9 @@ public:
 
 	/** Has the player seen the alpha info screen, used to only show it once per session */
 	bool mHasSeenAlphaInfo;
+	
 private:
-	void JoinSession_Internal();
+	UPROPERTY()
+	class UFGDebugOverlayWidget* mDebugOverlayWidget;
+	
 };

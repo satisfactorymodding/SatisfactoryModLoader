@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Equipment/FGWeaponInstantFire.h"
 #include "FGColorGun.generated.h"
@@ -167,7 +165,4 @@ protected:
 
 	class AFGCharacterPlayer* mCharOwner; //[DavalliusA:Wed/20-03-2019] saved so we can easily handle outline stuff
 	bool mHadUseTargetLastFrame;
-
-public:
-	FORCEINLINE ~AFGColorGun() = default;
 };

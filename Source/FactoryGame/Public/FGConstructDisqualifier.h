@@ -1,10 +1,8 @@
-// Copyright 2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "FGConstructDisqualifier.generated.h"
 
 #define LOCTEXT_NAMESPACE "Construct Disqualifiers" 
@@ -32,9 +30,6 @@ protected:
 	/** Text displayed to the player when they couldn't build */
 	UPROPERTY( EditDefaultsOnly )
 	FText mDisqfualifyingText;
-
-public:
-	FORCEINLINE ~UFGConstructDisqualifier() = default;
 };
 
 UCLASS()
@@ -46,9 +41,6 @@ class FACTORYGAME_API UFGCDInitializing : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDInitializing", "Initializing" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDInitializing() = default;
 };
 
 UCLASS()
@@ -58,11 +50,8 @@ class FACTORYGAME_API UFGCDInvalidAimLocation : public UFGConstructDisqualifier
 
 	UFGCDInvalidAimLocation()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidAimLocation", "Invalid Aim Location!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidAimLocation", "Invalid aim location!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDInvalidAimLocation() = default;
 };
 
 UCLASS()
@@ -72,11 +61,8 @@ class FACTORYGAME_API UFGCDUnaffordable : public UFGConstructDisqualifier
 	
 	UFGCDUnaffordable()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDUnaffordable", "Can't Afford!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDUnaffordable", "Can't afford!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDUnaffordable() = default;
 };
 
 
@@ -87,11 +73,8 @@ class FACTORYGAME_API UFGCDInvalidPlacement : public UFGConstructDisqualifier
 
 	UFGCDInvalidPlacement()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidPlacement", "Invalid Placement!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidPlacement", "Invalid placement!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDInvalidPlacement() = default;
 };
 
 UCLASS()
@@ -101,11 +84,8 @@ class FACTORYGAME_API UFGCDEncroachingClearance : public UFGConstructDisqualifie
 
 	UFGCDEncroachingClearance()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingClearance", "Encroaching other's Clearance!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingClearance", "Encroaching other's clearance!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDEncroachingClearance() = default;
 };
 
 UCLASS()
@@ -117,9 +97,6 @@ class FACTORYGAME_API UFGCDEncroachingPlayer : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingPlayer", "A player is in the way!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDEncroachingPlayer() = default;
 };
 
 UCLASS()
@@ -129,11 +106,8 @@ class FACTORYGAME_API UFGCDInvalidFloor : public UFGConstructDisqualifier
 
 	UFGCDInvalidFloor()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidFloor", "Floor is too Steep!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidFloor", "Floor is too steep!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDInvalidFloor() = default;
 };
 
 UCLASS()
@@ -145,9 +119,6 @@ class FACTORYGAME_API UFGCDUniqueBuilding : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDUniqueBuilding", "You can only build one!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDUniqueBuilding() = default;
 };
 
 UCLASS()
@@ -159,9 +130,17 @@ class FACTORYGAME_API UFGCDMustSnap : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnap", "Must snap to a foundation or similar!" );
 	}
+};
 
-public:
-	FORCEINLINE ~UFGCDMustSnap() = default;
+UCLASS()
+class FACTORYGAME_API UFGCDMustSnapToCeiling : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMustSnapToCeiling()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapToCeiling", "This must be built on a ceiling!" );
+	}
 };
 
 UCLASS()
@@ -173,9 +152,6 @@ class FACTORYGAME_API UFGCDShouldntSnap : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDShouldntSnap", "This building can't snap to foundations!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDShouldntSnap() = default;
 };
 
 UCLASS()
@@ -187,23 +163,72 @@ class FACTORYGAME_API UFGCDNeedsResourceNode : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsResourceNode", "You need to place this on a Resource Node!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDNeedsResourceNode() = default;
 };
 
 UCLASS()
-class FACTORYGAME_API UFGCDResourceNodeIsOccuped : public UFGConstructDisqualifier
+class FACTORYGAME_API UFGCDMustSnapStation : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMustSnapStation()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapStation", "Must snap to a Drone Port!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDOccupiedStation : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDOccupiedStation()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDOccupiedStation", "Drone Port is currently occupied!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDDroneStationHasDrone : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDDroneStationHasDrone()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDDroneStationHasDrone", "Port already has a drone assigned to it!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDNeedsFrackingCoreNode : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDNeedsFrackingCoreNode()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsFrackingCoreNode", "You need to place this on a Fracking Core Node!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDNeedsFrackingSatelliteNode : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDNeedsFrackingSatelliteNode()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsFrackingSatelliteNode", "You need to place this on an activated Fracking Satellite Node!" );
+	}
+};
+
+UCLASS()
+class UFGCDResourceNodeIsOccuped : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
 
 	UFGCDResourceNodeIsOccuped()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDResourceNodeIsOccuped", "Resource Node is Occupied!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDResourceNodeIsOccuped", "Resource Node is occupied!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDResourceNodeIsOccuped() = default;
 };
 
 UCLASS()
@@ -213,11 +238,8 @@ class FACTORYGAME_API UFGCDResourceIsTooShallow : public UFGConstructDisqualifie
 
 	UFGCDResourceIsTooShallow()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDResourceIsTooShallow", "Resource is not Deep Enough!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDResourceIsTooShallow", "Resource is not deep enough!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDResourceIsTooShallow() = default;
 };
 
 UCLASS()
@@ -227,11 +249,8 @@ class FACTORYGAME_API UFGCDNeedsWaterVolume : public UFGConstructDisqualifier
 
 	UFGCDNeedsWaterVolume()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsWaterVolume", "You need to place this on Deep Water!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsWaterVolume", "You need to place this on deep water!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDNeedsWaterVolume() = default;
 };
 
 UCLASS()
@@ -243,9 +262,6 @@ class FACTORYGAME_API UFGCDResourceDeposit : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDResourceDeposit", "You can't place a Resource Extractor on a Resource Deposit, it needs a Resource Node!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDResourceDeposit() = default;
 };
 
 UCLASS()
@@ -257,9 +273,6 @@ class FACTORYGAME_API UFGCDWireSnap : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDWireSnap", "You need to hook this up to a connection!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDWireSnap() = default;
 };
 
 UCLASS()
@@ -271,9 +284,6 @@ class FACTORYGAME_API UFGCDWireTooLong : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDWireTooLong", "Wire is too long!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDWireTooLong() = default;
 };
 
 UCLASS()
@@ -285,9 +295,6 @@ class FACTORYGAME_API UFGCDWireTooManyConnections : public UFGConstructDisqualif
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDWireTooManyConnections", "You can't connect more lines to this connection!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDWireTooManyConnections() = default;
 };
 
 UCLASS()
@@ -299,9 +306,6 @@ class FACTORYGAME_API UFGCDBeltMustSnap : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDBeltMustSnap", "The Conveyor Belt must snap to a Conveyor Pole or an Input/Output of a building!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDBeltMustSnap() = default;
 };
 
 UCLASS()
@@ -313,9 +317,6 @@ class FACTORYGAME_API UFGCDConveyorTooLong : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDConveyorTooLong", "The Conveyor Belt is too long!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDConveyorTooLong() = default;
 };
 
 UCLASS()
@@ -327,9 +328,6 @@ class FACTORYGAME_API UFGCDConveyorTooShort : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDConveyorTooShort", "The Conveyor Belt is too short!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDConveyorTooShort() = default;
 };
 
 UCLASS()
@@ -341,9 +339,6 @@ class FACTORYGAME_API UFGCDConveyorTooSteep : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDConveyorTooSteep", "The Conveyor Belt is too steep!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDConveyorTooSteep() = default;
 };
 
 UCLASS()
@@ -355,9 +350,6 @@ class FACTORYGAME_API UFGCDConveyorInvalidShape : public UFGConstructDisqualifie
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDConveyorInvalidShape", "The Conveyor Belt has an invalid shape!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDConveyorInvalidShape() = default;
 };
 
 UCLASS()
@@ -369,9 +361,6 @@ class FACTORYGAME_API UFGCDConveyorAttachmentTooSharpTurn : public UFGConstructD
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDConveyorAttachmentTooSharpTurn", "The turn of the belt is too sharp of an attachment!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDConveyorAttachmentTooSharpTurn() = default;
 };
 
 UCLASS()
@@ -383,9 +372,6 @@ class FACTORYGAME_API UFGCDMustHaveRailRoadTrack : public UFGConstructDisqualifi
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDMustHaveRailRoadTrack", "This must be placed on a railroad track!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDMustHaveRailRoadTrack() = default;
 };
 
 UCLASS()
@@ -397,9 +383,6 @@ class FACTORYGAME_API UFGCDMustAttachToTrainPlatform : public UFGConstructDisqua
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDMustAttachToTrainPlatform", "This must be placed inline with another train platform!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDMustAttachToTrainPlatform() = default;
 };
 
 UCLASS()
@@ -411,9 +394,6 @@ class FACTORYGAME_API UFGCDTrackTooLong : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDTrackTooLong", "The Railroad Track is too long" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDTrackTooLong() = default;
 };
 
 UCLASS()
@@ -425,9 +405,6 @@ class FACTORYGAME_API UFGCDTrackTooShort : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDTrackTooShort", "The Railroad Track is too short" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDTrackTooShort() = default;
 };
 
 UCLASS()
@@ -439,9 +416,6 @@ class FACTORYGAME_API UFGCDTrackTooSteep : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDTrackTooSteep", "The Railroad Track is too steep" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDTrackTooSteep() = default;
 };
 
 UCLASS()
@@ -453,9 +427,6 @@ class FACTORYGAME_API UFGCDTrackTrunToSharp : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDTrackTrunToSharp", "The Railroad Track has a too sharp turn" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDTrackTrunToSharp() = default;
 };
 
 UCLASS()
@@ -467,9 +438,6 @@ class FACTORYGAME_API UFGCDPipeTooShort : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDPipeTooShort", "The Pipe is too short" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDPipeTooShort() = default;
 };
 
 UCLASS()
@@ -481,9 +449,6 @@ class FACTORYGAME_API UFGCDPipeTooLong : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDPipeTooLong", "The Pipe is too long" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDPipeTooLong() = default;
 };
 
 UCLASS()
@@ -495,9 +460,6 @@ class FACTORYGAME_API UFGCDPipeAttachmentTooSharpTurn : public UFGConstructDisqu
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDPipeAttachmentTooSharpTurn", "The turn of the Pipe is too sharp for attachment!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDPipeAttachmentTooSharpTurn() = default;
 };
 
 UCLASS()
@@ -509,9 +471,6 @@ class FACTORYGAME_API UFGCDPipeMustSnap : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDPipeMustSnap", "The Pipe must snap to a Pipe Support or a building connection!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDPipeMustSnap() = default;
 };
 
 UCLASS()
@@ -523,9 +482,6 @@ class FACTORYGAME_API UFGCDPipeFluidTypeMismatch : public UFGConstructDisqualifi
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDPipeFluidTypeMismatch", "Cannot connect pipe networks containing different fluids!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDPipeFluidTypeMismatch() = default;
 };
 
 UCLASS()
@@ -537,9 +493,6 @@ class FACTORYGAME_API UFGCDPipeInvalidShape : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDPipeInvalidShape", "The Pipe has an invalid shape!" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDPipeInvalidShape() = default;
 };
 
 UCLASS()
@@ -551,9 +504,6 @@ class FACTORYGAME_API UFGCDPipeNoPathFound : public UFGConstructDisqualifier
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDPipeNoPathFound", "No path could be found to construct the pipe" );
 	}
-
-public:
-	FORCEINLINE ~UFGCDPipeNoPathFound() = default;
 };
 
 

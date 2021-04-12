@@ -1,7 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "FGCircuitConnectionComponent.h"
 #include "FGPowerConnectionComponent.generated.h"
@@ -15,6 +14,8 @@ class FACTORYGAME_API UFGPowerConnectionComponent : public UFGCircuitConnectionC
 {
 	GENERATED_BODY()
 public:
+	UFGPowerConnectionComponent();
+
 	/** Set the power info for this connection. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|PowerConnection" )
 	void SetPowerInfo( class UFGPowerInfoComponent* powerInfo );
@@ -29,11 +30,23 @@ public:
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerConnection" )
 	class UFGPowerCircuit* GetPowerCircuit() const;
+	
+	/** @returns true if the power production in the circuit connected to this component is above zero, false otherwise. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerConnection" )
+	bool HasPower() const { return mHasPower; }
+
+	/** Delegate that will fire whenever mHasPower has changed */
+	DECLARE_DELEGATE_OneParam( FOnHasPowerChanged, bool )
+	FOnHasPowerChanged OnHasPowerChanged;
 
 protected:
 	// Begin UFGCircuitConnectionComponent interface
 	virtual void OnCircuitIDChanged() override;
 	// End UFGCircuitConnectionComponent interface
+
+private:
+	void SetHasPower( bool hasPower );
+	void OnCircuitHasPowerChanged( bool hasPower );
 
 private:
 	/**
@@ -43,6 +56,9 @@ private:
 	UPROPERTY()
 	class UFGPowerInfoComponent* mPowerInfo;
 
-public:
-	FORCEINLINE ~UFGPowerConnectionComponent() = default;
+	/** true if the power production the circuit connected to this is above zero, false otherwise. */
+	UPROPERTY()
+	bool mHasPower;
+
+	int32 mPreviousCircuitID = INDEX_NONE;
 };

@@ -1,16 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "Styling/SlateBrush.h"
-#include "Templates/SubclassOf.h"
 #include "FGItemDescriptor.generated.h"
 
 /**
@@ -43,7 +36,7 @@ enum class EStackSize : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FItemView
+struct FItemView
 {
 	GENERATED_BODY()
 
@@ -65,9 +58,6 @@ struct FACTORYGAME_API FItemView
 	/** How much "down or up" the camera should be angeled (in degrees) when crating the view */
 	UPROPERTY( EditDefaultsOnly, Category = "View" )
 	float CameraPitch;
-
-public:
-	FORCEINLINE ~FItemView() = default;
 };
 
 /**
@@ -162,18 +152,6 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static TSubclassOf< UFGItemCategory > GetItemCategory( TSubclassOf< UFGItemDescriptor > inClass );
 
-	/** Returns the density if this is a fluid. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
-	static float GetFluidDensity( TSubclassOf< UFGItemDescriptor > inClass );
-
-	/** Returns the viscosity if this is a fluid. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
-	static float GetFluidViscosity( TSubclassOf< UFGItemDescriptor > inClass );
-
-	/** Returns the friction of this fluid. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
-	static float GetFluidFriction( TSubclassOf< UFGItemDescriptor > inClass );
-
 	/** Returns the color of this is a fluid. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
 	static FColor GetFluidColor( TSubclassOf< UFGItemDescriptor > inClass );
@@ -181,6 +159,14 @@ public:
 	/** Returns the color of this fluid ( if it is one ) as type FLinearColor */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
 	static FLinearColor GetFluidColorLinear( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the color of this is a gas. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Gas" )
+    static FColor GetGasColor( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the color of this gas ( if it is one ) as type FLinearColor */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Gas" )
+    static FLinearColor GetGasColorLinear( TSubclassOf< UFGItemDescriptor > inClass );
 
 	/** Getters and setters for icon capture properties, for editor tools use only but not wrapped with WiTH_EDITOR since it's needed in a tool with a scene which is technically a game.
 	*	The content of the functions are instead wrapped
@@ -206,6 +192,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
 	static void SetIconSkyOrientation( TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation );
 
+	/*	Set array index used by the conveyor item renderer subsystem.
+	 * 	Should only be called in runtime and by the conveyor renderer, will write to the mutable default object.  */
+	FORCEINLINE static void SetItemEncountered( TSubclassOf<UFGItemDescriptor> Class, int32 Index );
+
+	FORCEINLINE static int32 IsItemEncountered( TSubclassOf<UFGItemDescriptor> Class );
+	
 #if WITH_EDITOR
 	/** Delete all icons in the game that's referenced by a FGItemDescriptor */
 	static void DeleteAllIcons();
@@ -266,7 +258,7 @@ public:
 	 * This is specified in the native constructor and is meant to be per class.
 	 * E.g. vehicle descriptors get name and description from the vehicle class so the defaults are useless.
 	 */
-	UPROPERTY( EditDefaultsOnly, Transient ) // MODDING EDIT
+	UPROPERTY( Transient )
 	bool mUseDisplayNameAndDescription;
 
 	/** Readable name of the item */
@@ -389,31 +381,19 @@ public: // MODDING EDIT: protected -> public
 
 	// NOTE: Ideally we want a fluid descriptor but some fluids are already a raw resource so we cannot do multiple inheritance, so either we need refactor how descriptors work or we put them here for now.
 	/**
-	 * @todoPipes Removing this for now, it was always 1 anyway.
-	 * Density for this fluid.
-	 * Form must be liquid or gas for this to be useful.
-	 */
-	UPROPERTY()
-	float mFluidDensity;
-	/**
-	 * @todoPipes Removing this for now, caused more issues than it fixed, the back flow in junctions issue.
-	 * Friction for this fluid, this is the friction inside the fluid itself.
-	 * Form must be liquid or gas for this to be useful.
-	 */
-	UPROPERTY()
-	float mFluidViscosity;
-	/**
-	 * Friction for this fluid, this is the friction between the fluid and the pipe.
-	 * Form must be liquid or gas for this to be useful.
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
-	float mFluidFriction;
-	/**
 	 * Color for this fluid, RGB is the color and A is the transparency of the fluid.
 	 * Form must be liquid or gas for this to be useful.
 	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Item|Fluid" )
+	UPROPERTY( EditDefaultsOnly, Category = "Item", Meta = (DisplayName="Color 1 (Fluid Color)") )
 	FColor mFluidColor;
+
+	/**
+	* Color for this gas, RGB is the color and A is the transparency of the gas.
+	* Form must be liquid or gas for this to be useful.
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Item", Meta = (DisplayName="Color 2 (Gas Color)") )
+	FColor mGasColor;
+
 
 	/** This is just a hook for the resource sink points so we can add them to the 
 	* JSON wiki file even though they are in a separate datatable.  
@@ -422,11 +402,12 @@ public: // MODDING EDIT: protected -> public
 	int32 mResourceSinkPoints;
 
 private:
+
+	/* Index used by the conveyor item subsystem.
+	 * Written onto the mutable default object. */
+	UPROPERTY( Transient )
+	int32 mItemIndex;
+
 	friend class FItemDescriptorDetails;
 	friend class FFGItemDescriptorPropertyHandle;
-
-public:
-	FORCEINLINE ~UFGItemDescriptor() = default;
 };
-
-FORCEINLINE FString VarToFString(const TSubclassOf<UFGItemDescriptor>& var) { return FString::Printf( TEXT("") ); }

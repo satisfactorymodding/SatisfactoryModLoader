@@ -1,18 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableHologram.h"
-#include "../FGCircuitConnectionComponent.h"
-#include "Components/MeshComponent.h"
+#include "Hologram/FGBuildableHologram.h"
+#include "FGCircuitConnectionComponent.h"
 #include "FGWireHologram.generated.h"
-
-#define NUM_CONNECTIONS 2
 
 /**
  * Hologram for placing wires between circuit connections.
@@ -34,15 +26,21 @@ public:
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
+	virtual AActor* GetUpgradedActor() const override;
+	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	// End AFGHologram Interface
 
 	// Begin AFGBuildableHologram Interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
+
+	UFUNCTION(BlueprintPure, Category = "Power Pole")
+	class AFGPowerPoleHologram* GetActiveAutomaticPoleHologram() const { return mActivePoleHologram; }
 
 protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Hologram" )
@@ -52,7 +50,6 @@ protected:
 
 	// Begin AFGHologram Interface
 	virtual void CheckValidPlacement() override;
-	virtual void SetupDepthMeshComponent( USceneComponent* attachParent, UMeshComponent* componentTemplate ) override;
 	virtual void CheckClearance() override;
 	// End AFGHologram Interface
 
@@ -60,11 +57,23 @@ private:
 	void CheckValidSnap();
 	void CheckLength();
 
+	void SetActiveAutomaticPoleHologram( class AFGPowerPoleHologram* poleHologram );
+
 	/**
-	 * Check for nearby connectors.
+	 * Check for connections near a point on a given actor.
+	 *
+	 * @param location                     Location to search nearby.
+	 * @param actor                        Actor to search for connections on.
+	 * @param ignoredConnectionComponent   Connection to ignore when searching.
+	 * @param compatibleCircuitType        Circuit type to look for, null is not compatible with anything.
+	 *
 	 * @return Closest connection, with or without free connections left.
 	 */
-	class UFGCircuitConnectionComponent* FindOverlappingCircuitConnectionComponent( const FVector& location, class AActor* actor, class UFGCircuitConnectionComponent* ignoredConnectionComponent );
+	class UFGCircuitConnectionComponent* FindOverlappingCircuitConnectionComponent(
+		const FVector& location,
+		class AActor* actor,
+		class UFGCircuitConnectionComponent* ignoredConnectionComponent,
+		TSubclassOf< class UFGCircuit > compatibleCircuitType );
 
 	void StartLookAtBuilding( UFGCircuitConnectionComponent* overlappingComponent );
 	void StopLookAtBuilding();
@@ -73,19 +82,38 @@ private:
 
 	float GetLength() const;
 
+	void SetUpgradeTarget( AFGBuildableWire* target );
+
 private:
 	float mMaxLength;
 	float mLengthPerCost;
 
 	/** The two connection components we connect. */
 	UPROPERTY()
-	class UFGCircuitConnectionComponent* mConnections[ NUM_CONNECTIONS ];
+	class UFGCircuitConnectionComponent* mConnections[ 2 ];
 
+	/** Automatically spawned child pole, can be null. */
 	UPROPERTY( Replicated )
 	class AFGPowerPoleHologram* mPowerPole;
 
+	UPROPERTY( Replicated )
+	class AFGPowerPoleWallHologram* mPowerPoleWall;
+
+	class AFGPowerPoleHologram* mActivePoleHologram;
+
+	/** Recipe to use for the automatically spawned child pole, can be null. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power pole" )
-	TSubclassOf<class UFGRecipe> mDefaultPowerPoleRecipe;
+	TSubclassOf< class UFGRecipe > mDefaultPowerPoleRecipe;
+
+	/** Circuit types this wire can connect. */
+	UPROPERTY()
+	TSubclassOf< class UFGCircuit > mCircuitType;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Power pole" )
+	TSubclassOf<class UFGRecipe> mDefaultPowerPoleWallRecipe;
+
+	/** Whether or not it's possible to place automatic power poles on the wall. */
+	bool mAutomaticWallPoleEnabled;
 
 	/** The start location of this wire */
 	UPROPERTY( Replicated )
@@ -99,6 +127,6 @@ private:
 	UPROPERTY()
 	UStaticMeshComponent* mWireMesh;
 
-public:
-	FORCEINLINE ~AFGWireHologram() = default;
+	UPROPERTY()
+	class AFGBuildableWire* mUpgradeTarget;
 };

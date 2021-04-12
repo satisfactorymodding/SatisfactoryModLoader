@@ -1,18 +1,12 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include <type_traits>
 #include "GameFramework/PlayerState.h"
 #include "FGCharacterPlayer.h"
 #include "UI/Message/FGMessageBase.h"
 #include "FGActorRepresentation.h"
-#include "UI/Message/FGMessageBase.h"
 #include "FGPlayerState.generated.h"
 
 typedef TSharedPtr<class IHttpRequest> FHttpRequestPtr;
@@ -41,10 +35,6 @@ struct FACTORYGAME_API FSlotData
 	FORCEINLINE bool operator==( const FSlotData& other ) const{
 		return other.PingColor == PingColor && other.NametagColor == NametagColor;
 	}
-
-
-public:
-	FORCEINLINE ~FSlotData() = default;
 };
 
 /**
@@ -68,9 +58,6 @@ struct FACTORYGAME_API FMessageData
 	/** What class is the message */
 	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > MessageClass;
-
-public:
-	FORCEINLINE ~FMessageData() = default;
 };
 
 /**
@@ -82,16 +69,11 @@ struct FACTORYGAME_API FHotbar
 	GENERATED_BODY();
 
 	FHotbar(){}
-
 	FHotbar( class AFGPlayerState* owningState, const FHotbar& hotbar );
-
 	FHotbar( TArray< class UFGHotbarShortcut* > hotbarShortcuts );
 
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	TArray< class UFGHotbarShortcut* > HotbarShortcuts;
-
-public:
-	FORCEINLINE ~FHotbar() = default;
 };
 
 /**
@@ -103,9 +85,7 @@ struct FACTORYGAME_API FPresetHotbar
 	GENERATED_BODY();
 
 	FPresetHotbar(){}
-
 	FPresetHotbar( class AFGPlayerState* owningState, const FPresetHotbar& presetHotbar );
-
 	FPresetHotbar( FText presetName, uint8 iconIndex, FHotbar hotbar ) :
 		PresetName( presetName ),
 		IconIndex( iconIndex ),
@@ -122,9 +102,6 @@ struct FACTORYGAME_API FPresetHotbar
 	/** The hotbar shortcuts for this preset */
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	FHotbar Hotbar;
-
-public:
-	FORCEINLINE ~FPresetHotbar() = default;
 };
 
 UCLASS()
@@ -240,7 +217,6 @@ public:
 		check( T::StaticClass()->IsChildOf( UFGHotbarShortcut::StaticClass() ) );
 		return Cast< T >( CreateShortcut( shortcutClass ) );
 	}
-
 
 	/** Get current shortcuts */
 	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
@@ -392,6 +368,28 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Inventory" )
 	void UpdateNumObservedInventorySlots();
 
+	/** Is this schematic saved as a favorite in the awesome shop */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Awesome Shop" )
+	bool IsShopFavorite( TSubclassOf<class UFGSchematic> schematic ) const;
+
+	/** Get all schematics saved as a favorite in the awesome shop */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Awesome Shop" )
+	TArray<TSubclassOf<class UFGSchematic>> GetShopFavorites() const;
+
+	/** Save this schematic as a favorite in the awesome shop */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Awesome Shop" )
+	void SaveAsShopFavorite( TSubclassOf<class UFGSchematic> schematic );
+
+	/** Remove this schematic as a favorite in the awesome shop */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Awesome Shop" )
+	void RemoveAsShopFavorite( TSubclassOf<class UFGSchematic> schematic );
+
+	/** Remove all favorite schematic in the awesome shop */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Awesome Shop" )
+	void RemoveAllShopFavorites();
+
+	FORCEINLINE TArray< TSubclassOf< class UFGMapArea > >* GetPlayerVisitedAreas() { return &mVisitedAreas; };
+
 protected:
 	// Client get notified that the hotbar has changed
 	UFUNCTION()
@@ -454,6 +452,9 @@ protected:
 	/** If true, then we are server admin */
 	UPROPERTY( Replicated )
 	uint8 mIsServerAdmin : 1;
+
+	UPROPERTY(SaveGame, Replicated)
+	TArray< TSubclassOf< class UFGMapArea > > mVisitedAreas;
 private:
 	/** Each local player has their own tutorial subsystem */
 	UPROPERTY( SaveGame )
@@ -497,6 +498,8 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	int32 mNumObservedInventorySlots;
 
-public:
-	FORCEINLINE ~AFGPlayerState() = default;
+	/** The schematics the player has selected as their favorites in the awesome shop */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< TSubclassOf< class UFGSchematic > > mFavoriteShopSchematics;
+
 };

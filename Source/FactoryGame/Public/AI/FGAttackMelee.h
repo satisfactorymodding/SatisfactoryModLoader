@@ -1,9 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
-#include "FGAttack.h"
+#include "AI/FGAttack.h"
 #include "FGAttackMelee.generated.h"
 
 /**
@@ -19,7 +18,4 @@ public:
 	/ Handles the attack logic, differs depending on type of attack ( ex melee, ranged etc )
 	*/
 	virtual void PerformAttack( TScriptInterface< IFGAggroTargetInterface >	aggroTarget, class AFGEnemy* sourceActor ) override;
-
-public:
-	FORCEINLINE ~UFGAttackMelee() = default;
 };

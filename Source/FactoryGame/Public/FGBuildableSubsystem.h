@@ -1,29 +1,22 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UnrealString.h"
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "BuildableColorSlotBase.h"
 #include "FGSaveInterface.h"
 #include "FGBuildingColorSlotStruct.h"
 #include "FactoryTick.h"
-#include "Materials/Material.h"
 #include "FGBuildableSubsystem.generated.h"
 
 class UFGProductionIndicatorInstanceManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedGlobal, AFGBuildable*, buildable );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnBuildableLightColorSlotsUpdated );
 
 /** Used to track constructed (spawned) buildables matched with their holograms between client and server */
 USTRUCT()
-struct FACTORYGAME_API FNetConstructionID
+struct FNetConstructionID
 {
 	GENERATED_BODY()
 
@@ -52,14 +45,11 @@ struct FACTORYGAME_API FNetConstructionID
 	{
 		return NetPlayerID >= 0 && Server_ID > 0 && Client_ID > 0;
 	}
-
-public:
-	FORCEINLINE ~FNetConstructionID() = default;
 };
 
 /** Distances where we switch tick rate */
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FDistanceBasedTickRate
+struct FDistanceBasedTickRate
 {
 	GENERATED_BODY()
 
@@ -68,13 +58,10 @@ struct FACTORYGAME_API FDistanceBasedTickRate
 
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
 	float TickRate;
-
-public:
-	FORCEINLINE ~FDistanceBasedTickRate() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FBuildableBucket
+struct FBuildableBucket
 {
 	GENERATED_BODY()
 
@@ -83,13 +70,10 @@ struct FACTORYGAME_API FBuildableBucket
 
 	UPROPERTY()
 	TArray< class AFGBuildable* > Buildables;
-
-public:
-	FORCEINLINE ~FBuildableBucket() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FConveyorBucket
+struct FConveyorBucket
 {
 	GENERATED_BODY()
 
@@ -97,13 +81,10 @@ struct FACTORYGAME_API FConveyorBucket
 
 	UPROPERTY()
 	TArray< class AFGBuildableConveyorBase* > Conveyors;
-
-public:
-	FORCEINLINE ~FConveyorBucket() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FBuildableGroupTimeData
+struct FBuildableGroupTimeData
 {
 	GENERATED_BODY()
 	
@@ -118,16 +99,13 @@ struct FACTORYGAME_API FBuildableGroupTimeData
 	int32 RealSeconds;
 
 	float RealPartialSeconds;
-
-public:
-	FORCEINLINE ~FBuildableGroupTimeData() = default;
 };
 
 /**
  * Subsystem responsible for spawning and maintaining buildables.
  * This enables and disables ticks on the buildable.
  */
-UCLASS(Blueprintable, config = Game, defaultconfig, meta = ( DisplayName = "Buildable Subsystem" ) )
+UCLASS( config = Game, defaultconfig, meta = ( DisplayName = "Buildable Subsystem" ) )
 class FACTORYGAME_API AFGBuildableSubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -174,6 +152,9 @@ public:
 	/** Adds a conveyor to the conveyor buckets */
 	void AddConveyor( AFGBuildableConveyorBase* conveyor );
 
+	/** Cleans up fog planes spawned by this buildable. */
+	void RemoveFogPlanes(class AFGBuildable* buildable);
+	
 	/** 
 	* Get the connected conveyor belt from the given connection. 
 	* Can return a nullptr if we have no belt connected or if the connected belt have bucket index assigned to -1 
@@ -258,6 +239,23 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
 	uint8 GetNbColorSlotsExposedToPlayers() { return mNbPlayerExposedSlots; }
 
+	/** Getter for buildable light color slot for the given index */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
+    FLinearColor GetBuildableLightColorSlot( int32 index ) const;
+    
+	/** Getter for all buildable light color slots */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Buildable|Light", meta=(BlueprintPure = false) )
+	TArray<FLinearColor> GetBuildableLightColorSlots() const;
+
+	/** Returns the number of colorable slots actually available to the the player  */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
+    int32 GetNumBuildableLightColorSlots() const { return mBuildableLightColorSlots.Num(); }
+
+	/** Called both on client and server when the buildable light color slots have been updated */
+	void BuildableLightColorSlotsUpdated( const TArray< FLinearColor >& colors );
+	
+	void UpdateBuildableCullDistances(float newFactor);
+
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 	void DebugEnableInstancing( bool enabled );
@@ -311,11 +309,18 @@ private:
 
 	void UpdateReplayEffects( float dt );
 
+	/** Internal helpers to setup a buildable that is registered. */
 	void AddBuildableMeshInstances( class AFGBuildable* buildable );
+	void AddToTickGroup( AFGBuildable* buildable );
+	void RemoveFromTickGroup( AFGBuildable* buildable );
+	void SetupColoredMeshInstances( AFGBuildable* buildable );
+	void SetupProductionIndicatorInstancing( class AFGBuildableFactory* factory );
 
 	/* Tick all factory buildings, conveyors and conveyor attachments */
 	void TickFactoryActors( float dt );
 
+	UFUNCTION()
+	void UpdateConveyorRenderType( FString cvar );
 public:
 	/** Distance used when calculating if a location is near a base */
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
@@ -329,8 +334,9 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableConstructedGlobal" )
 	FOnBuildableConstructedGlobal BuildableConstructedGlobalDelegate;
 
-	/** Print all fixed factory tick information */
-	void DumpFixedFactoryTickValues() const;
+	/** Broadcast when buildable light color slots have been updated. Used to update UI */
+	UPROPERTY( BlueprintAssignable, Category = "Light Color" )
+	FOnBuildableLightColorSlotsUpdated mOnBuildableLightColorSlotsUpdated;
 
 	/**
 	 * Used by UFGColoredInstanceMeshProxy to get an instance if it's not already been assigned
@@ -356,7 +362,7 @@ private:
 	TArray< class AFGBuildable* > mFactoryBuildings;
 
 	// Groupings of factory buildings for reduced thread count parallelization
-	TArray < TArray < class AFGBuildable* >> mFactoryBuildingGroups;
+	TArray < TArray < class AFGBuildable* > > mFactoryBuildingGroups;
 
 	// Track if we need to rebuild the factory buildings groupings
 	bool mFactoryBuildingGroupsDirty;
@@ -396,7 +402,6 @@ private:
 	/** Hierarchical instances for the factory buildings. */
 	UPROPERTY()
 	AActor* mBuildableInstancesActor;
-	
 	UPROPERTY()
 	TMap< class UStaticMesh*, class UProxyHierarchicalInstancedStaticMeshComponent* > mBuildableMeshInstances;
 
@@ -430,6 +435,13 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Customization" )
 	uint8 mNbPlayerExposedSlots = 16;
 
+	/** This contains all buildable light sources. Used to update light sources when light color slots have changed */
+	TArray< class AFGBuildableLightSource* > mBuildableLightSources;
+
+	/** The player adjustable color slots used by the buildable lights. Saved and replicated in game state. */ 
+	UPROPERTY( Transient )
+	TArray< FLinearColor > mBuildableLightColorSlots;
+
 	// Map of all Factory materials that are referenced by Factory buildings. Maps the materials name (and all dynamic instance mat names) to a manager class holding corresponding colored instances
 	// This is also used for non-colored materials, for example, the conveyor belt materials so that the same instance can be applied to many different belts
 	UPROPERTY()
@@ -437,36 +449,6 @@ private:
 
 	// Count index for unique naming of new material Insance mangers
 	int32 mMaterialManagerIDCounter;
-
-
-	/** Begin Fixed Factory Tick Config Parameters */
-	UPROPERTY( config )
-	bool mUseFixedFactoryTick;
-
-	UPROPERTY( config )
-	float mMinFactoryTickRate;
-
-	UPROPERTY( config )
-	float mMaxFactoryTickRate;
-
-	UPROPERTY( config )
-	int mMaxTickSubsteps;
-	/** End Fixed Factory Tick Parameters*/
-
-	/** Time in MS of the minimum tick time (1.f / mMinFactoryTickRate)
-	*	Minimum factory tick refers to the maximum amount of time that is allowed to pass per factory tick. So minimum here is actually a larger number than max
-	*	A little confusing, but this way it can match its respective tickRate var by name: mMinFactoryTickRate, which appears in the config.
-	*/
-	float mMinFactoryTick;
-
-	/** Time in MS of the maximum tick time (1.f / mMaxFactoryTickRate)
-	*	Maximum factory tick refers to the minimum amount of time that is allowed to pass to execute a factory tick. Maximum here is actually a smaller number than min
-	*	Again, a little confusing, but this way it can match its respective tickRate var by name: mMaxFactoryTickRate, which appears in the config.
-	*/
-	float mMaxFactoryTick;
-
-	/** How much time did we not utilize the previous Factory update? */
-	float mFixedTickDebt;
 
 	/** Maximum number of buildables that we consider their optimization level during the same frame */
 	int32 mMaxConsideredBuildables;
@@ -518,9 +500,6 @@ private:
 
 	/** Holograms simulated on client to indicate any pending constructions from server */
 	TMap<int16, class AFGHologram*> mPendingConstructionHolograms;
-
-public:
-	FORCEINLINE ~AFGBuildableSubsystem() = default;
 };
 
 template< typename T >

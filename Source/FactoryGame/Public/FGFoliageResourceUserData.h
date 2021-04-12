@@ -1,11 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Engine/AssetUserData.h"
 #include "ItemDrop.h"
@@ -14,6 +9,16 @@
 /**
  * 
  */
+UENUM(BlueprintType)
+enum EProximityEffectTypes
+{
+	PET_None UMETA(DisplayName = "None"),
+	PET_Bush UMETA(DisplayName = "Bush(s)"),
+    PET_Tree UMETA(DisplayName = "Tree(s)"),
+    PET_Rock UMETA(DisplayName = "Rock(s)"),
+    PET_Flower UMETA(DisplayName = "Flower(s)"),
+};
+
 UCLASS( EditInlineNew, DefaultToInstanced )
 class FACTORYGAME_API UFGFoliageResourceUserData : public UAssetUserData
 {
@@ -40,7 +45,9 @@ public:
 	 * @return false if mesh is nullptr, true identifier is null, also if the mesh doesn't have any UFGFoliageResourceUserData
 	 */
 	static bool MeshHasIdentifier( UStaticMesh* mesh, TSubclassOf< class UFGFoliageIdentifier > identifier );
-
+	
+	UFUNCTION(BlueprintPure, Category = "Foliage")
+	static EProximityEffectTypes GetProximityEffectTypeByMesh(UStaticMesh* mesh);
 	// Accessors
 	FORCEINLINE const TArray< FItemDropWithChance >& GetPickupItems() const{ return mPickupItems; }
 	FORCEINLINE class UAkAudioEvent* GetPickupEvent() const{ return mPickupEvent; }
@@ -48,7 +55,8 @@ public:
 	FORCEINLINE class UAkAudioEvent* GetVehicleDestroyedEvent() const { return mVehicleDestroyedEvent; }
 	FORCEINLINE class UParticleSystem* GetVehicleDestroyedEffect() const { return mVehicleDestroyedEffect; }
 	FORCEINLINE int32 GetFXPriority() const { return mFXPriority;  }
-
+	FORCEINLINE class UStaticMesh* GetPhysicsMesh() const { return mPhysicsMesh; }
+	FORCEINLINE EProximityEffectTypes GetEffectCategory() const { return EffectCategory; }
 	// Returns the first defined effect starting from most desirable, mExplosionDestroyedEffect working down to mPickupEffect
 	class UParticleSystem* GetExplosionDestroyedEffect() const;
 
@@ -85,6 +93,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	TArray< TSubclassOf< class UFGFoliageIdentifier > > mFoliageIdentifiers;
 
-public:
-	FORCEINLINE ~UFGFoliageResourceUserData() = default;
+	/** Mesh to use when we want this object to simulate physics */
+	UPROPERTY( EditDefaultsOnly )
+	class UStaticMesh* mPhysicsMesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TEnumAsByte<EProximityEffectTypes> EffectCategory;
 };

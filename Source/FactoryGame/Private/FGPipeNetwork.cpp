@@ -13,7 +13,7 @@ void AFGPipeNetwork::PostLoadGame_Implementation(int32 saveVersion, int32 gameVe
 void AFGPipeNetwork::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGPipeNetwork::NeedTransform_Implementation(){ return bool(); }
 bool AFGPipeNetwork::ShouldSave_Implementation() const{ return bool(); }
-bool AFGPipeNetwork::ShouldTickNetwork() const{ return bool(); }
+bool AFGPipeNetwork::ShouldRunSimulation() const{ return bool(); }
 void AFGPipeNetwork::UpdateSimulation(float dt){ }
 int32 AFGPipeNetwork::GetPipeNetworkID() const{ return int32(); }
 void AFGPipeNetwork::SetPipeNetworkID(int32 id){ }
@@ -34,11 +34,18 @@ void AFGPipeNetwork::Debug_DisplayDetails( UCanvas* canvas, const  FDebugDisplay
 void AFGPipeNetwork::Debug_PipeVisualization(EDebugPipeVisualization mode){ }
 void AFGPipeNetwork::RebuildUpdateList(){ }
 void AFGPipeNetwork::UpdateFluidDescriptor(TSubclassOf< UFGItemDescriptor > descriptor){ }
+void AFGPipeNetwork::TickPhysics(float dt){ }
 int32 AFGPipeNetwork::CreatePressureGroup(){ return int32(); }
 int32 AFGPipeNetwork::FindTopMostPressureGroupIndex(int32 index){ return int32(); }
 void AFGPipeNetwork::UpdatePressureGroups(PipeJunction& junction, float dt){ }
+void AFGPipeNetwork::UpdatePropagatedPressure(PipeJunction& junction, float dt){ }
 void AFGPipeNetwork::UpdatePressure(PipeJunction& junction, float dt){ }
 void AFGPipeNetwork::PostUpdatePressureGroups(PipeJunction& junction){ }
 void AFGPipeNetwork::PreUpdateFlow(PipeJunction& junction){ }
 void AFGPipeNetwork::UpdateFlow(PipeJunction& junction, float dt){ }
 void AFGPipeNetwork::UpdateContent(PipeJunction& junction, float dt){ }
+void AFGPipeNetwork::TickPhysics_Gas(float dt){ }
+void AFGPipeNetwork::UpdatePressure_Gas(PipeJunction& junction, float dt){ }
+void AFGPipeNetwork::PreUpdateFlow_Gas(PipeJunction& junction){ }
+void AFGPipeNetwork::UpdateFlow_Gas(PipeJunction& junction, float dt){ }
+void AFGPipeNetwork::UpdateContent_Gas(PipeJunction& junction, float dt){ }

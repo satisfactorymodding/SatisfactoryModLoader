@@ -1,10 +1,9 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableFactoryBuilding.h"
+#include "Buildables/FGBuildableFactoryBuilding.h"
 #include "FGBuildableWalkway.generated.h"
 
 /**
@@ -29,7 +28,4 @@ public:
 	/** Disable snapping on specific sides. */
 	UPROPERTY( EditDefaultsOnly, Category = "Walkway" )
 	FFoundationSideSelectionFlags mDisableSnapOn;
-
-public:
-	FORCEINLINE ~AFGBuildableWalkway() = default;
 };

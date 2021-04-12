@@ -1,62 +1,57 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
-//<CSS>
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
-
 
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "Buildables/FGBuildableFactory.h"
+#include "Components/SceneComponent.h" //MODDING EDIT
 #include "FGProductionIndicatorInstanceManager.generated.h"
 
 
 /**
-* 
-*/
+ * Instanced production indicator, used on factories to display their status.
+ */
 UCLASS( ClassGroup = FactoryGame )
 class FACTORYGAME_API UFGProductionIndicatorInstanceManager : public USceneComponent
 {
 	GENERATED_BODY()
 public:
-
 	struct InstanceHandle
 	{
-		FORCEINLINE bool isInstanced() const
+		FORCEINLINE bool IsInstanced() const
 		{
-			return handleID >= 0;
+			return HandleID >= 0;
 		}
 	private:
-		int32 handleID = INDEX_NONE;
-		EProductionStatus status = EProductionStatus::IS_NONE;
 		friend UFGProductionIndicatorInstanceManager;
+
+		int32 HandleID = INDEX_NONE;
+		EProductionStatus Status = EProductionStatus::IS_NONE;
 	};
 
-	UFGProductionIndicatorInstanceManager();
+	// Begin AActorComponent interface
+	virtual bool RequiresGameThreadEndOfFrameRecreate() const override { return true; }
+	// End AActorComponent interface
 
+	// Setup the necessary instance lists on our outer. Component must be registered before this is called.
+	void SetupInstanceLists( UStaticMesh* staticMesh );
 
-	virtual void OnUnregister() override;
-	virtual void OnRegister() override;
-
+	// Functions to manage the instances handled by this class, setup must be called prior to using these.
 	void ClearInstances();
-
 	void AddInstance( const FTransform& transform, InstanceHandle& handle, EProductionStatus status );
 	void RemoveInstance( InstanceHandle& handle );
-	void MoveInstance( const FTransform& transform, InstanceHandle& handle, EProductionStatus moveTo ); //[DavalliusA:Fri/15-02-2019] wish we could remove the need to send the transform, but didn't find a way to read it from the current instance, so let's send it for now. In worst case we can store it in the handle later... or something.
-
-	//virtual bool RequiresGameThreadEndOfFrameUpdates() const override { return true; }
-	virtual bool RequiresGameThreadEndOfFrameRecreate() const override { return true; }
-
-	void SetupInstanceLists( UStaticMesh* staticMesh );
+	void MoveInstance( const FTransform& transform, InstanceHandle& handle, EProductionStatus moveTo );
 private:
-
+	/**
+	 * All instances managed, one instance list per indicator status.
+	 * Since these need to be attached to an actor to be rendered, our outer is used for this purpose.
+	 */
+	//MODDING EDIT: cast enum classes to underlying types because it is an syntax error on everything except MSVC
 	UPROPERTY()
-	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ EProductionStatus::IS_MAX ];
-	TArray< InstanceHandle* > mHandles[ EProductionStatus::IS_MAX ];
+	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ (uint8) EProductionStatus::IS_MAX ];
 
-
-public:
-	FORCEINLINE ~UFGProductionIndicatorInstanceManager() = default;
+	//MODDING EDIT: cast enum classes to underlying types because it is an syntax error on everything except MSVC
+	/** Handles from all the managed indicators. */
+	TArray< InstanceHandle* > mHandles[ (uint8) EProductionStatus::IS_MAX ];
 };
 
 //</CSS>

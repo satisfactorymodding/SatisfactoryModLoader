@@ -1,9 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGVersionFunctionLibrary.h"
@@ -14,7 +11,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewsReceived, FText, news );
 
 USTRUCT()
-struct FACTORYGAME_API FNewsFeedMap
+struct FNewsFeedMap
 {
 	GENERATED_BODY()
 
@@ -23,9 +20,6 @@ struct FACTORYGAME_API FNewsFeedMap
 
 	UPROPERTY()
 	FString URL;
-
-public:
-	FORCEINLINE ~FNewsFeedMap() = default;
 };
 
 UCLASS( BlueprintType, Config=Game )
@@ -60,7 +54,4 @@ protected:
 	UPROPERTY( Config )
 	TArray< FNewsFeedMap > mNewsFeedURLs;
 	
-
-public:
-	FORCEINLINE ~AFGNewsFeedActor() = default;
 };

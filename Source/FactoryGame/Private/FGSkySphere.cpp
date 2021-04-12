@@ -16,12 +16,12 @@ void AFGSkySphere::SetupPreviewDelegate(){ }
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGSkySphere::AFGSkySphere() : Super() {
-	this->mSkyLightIntensity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.EditorCurveData.DefaultValue = 5;
-	this->mOcclusionTintColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[0].DefaultValue = 0;
-	this->mStarBrightness.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mStarBrightness.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mStarBrightness.EditorCurveData.DefaultValue = 0.200000002980232;
-	this->mSkyLightColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[0].DefaultValue = 1;
+	this->mSkyLightIntensity.EditorCurveData.DefaultValue = 5; this->mSkyLightIntensity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.ExternalCurve = 0;
+	this->mOcclusionTintColor.ColorCurves[0].DefaultValue = 0; this->mOcclusionTintColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[1].DefaultValue = 0; this->mOcclusionTintColor.ColorCurves[1].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[1].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[2].DefaultValue = 0; this->mOcclusionTintColor.ColorCurves[2].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[2].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[3].DefaultValue = 1; this->mOcclusionTintColor.ColorCurves[3].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[3].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ExternalCurve = 0;
+	this->mStarBrightness.EditorCurveData.DefaultValue = 0.200000002980232; this->mStarBrightness.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mStarBrightness.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mStarBrightness.ExternalCurve = 0;
+	this->mSkyLightColor.ColorCurves[0].DefaultValue = 1; this->mSkyLightColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[1].DefaultValue = 1; this->mSkyLightColor.ColorCurves[1].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[1].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[2].DefaultValue = 1; this->mSkyLightColor.ColorCurves[2].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[2].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[3].DefaultValue = 1; this->mSkyLightColor.ColorCurves[3].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[3].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ExternalCurve = 0;
 }
-void AFGSkySphere::PostActorCreated(){ }
+void AFGSkySphere::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGSkySphere::PostLoad(){ Super::PostLoad(); }
 void AFGSkySphere::BeginDestroy(){ Super::BeginDestroy(); }
 void AFGSkySphere::UpdatePreview_Implementation(){ }

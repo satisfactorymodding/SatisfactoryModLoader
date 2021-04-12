@@ -1,10 +1,9 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGUnlock.h"
+#include "Unlocks/FGUnlock.h"
 #include "FGUnlockInventorySlot.generated.h"
 
 /**
@@ -31,7 +30,4 @@ protected:
 	/** Number of inventory slots this unlock adds to the players inventory */
 	UPROPERTY( EditDefaultsOnly )
 	int32 mNumInventorySlotsToUnlock;
-
-public:
-	FORCEINLINE ~UFGUnlockInventorySlot() = default;
 };

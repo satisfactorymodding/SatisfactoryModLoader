@@ -1,10 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableManufacturer.h"
+#include "Buildables/FGBuildableManufacturer.h"
 #include "FGBuildableAutomatedWorkBench.generated.h"
 
 /**
@@ -43,7 +42,4 @@ public:
 	/** Size of the input inventory for the workbench */
 	UPROPERTY( EditDefaultsOnly, Category = "Automated WorkBench" )
 	int32 mInputInventorySize;
-
-public:
-	FORCEINLINE ~AFGBuildableAutomatedWorkBench() = default;
 };

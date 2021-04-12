@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
@@ -12,7 +8,7 @@
 #include "FGResourceSinkSettings.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FResourceSinkRewardLevelsData : public FTableRowBase
+struct FResourceSinkRewardLevelsData : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -27,12 +23,10 @@ struct FACTORYGAME_API FResourceSinkRewardLevelsData : public FTableRowBase
 	UPROPERTY( EditAnywhere )
 	int32 NumRepeats;
 
-public:
-	FORCEINLINE ~FResourceSinkRewardLevelsData() = default;
 };
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FResourceSinkPointsData : public FTableRowBase
+struct FResourceSinkPointsData : public FTableRowBase
 {
 	GENERATED_BODY()
 
@@ -53,9 +47,6 @@ struct FACTORYGAME_API FResourceSinkPointsData : public FTableRowBase
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 OverriddenResourceSinkPoints;
 
-
-public:
-	FORCEINLINE ~FResourceSinkPointsData() = default;
 };
 
 /**
@@ -66,7 +57,7 @@ class FACTORYGAME_API UFGResourceSinkSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 public:
-	FORCEINLINE static const UFGResourceSinkSettings* Get() { return GetDefault<UFGResourceSinkSettings>(); };
+	static const UFGResourceSinkSettings* Get() { return GetDefault<UFGResourceSinkSettings>(); };
 
 #if WITH_EDITOR
 
@@ -146,7 +137,4 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Number of repeats per each level" ) )
 	int32 mDefaultNumRepeats;
 
-
-public:
-	FORCEINLINE ~UFGResourceSinkSettings() = default;
 };

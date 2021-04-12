@@ -1,7 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "GameFramework/Volume.h"
@@ -12,7 +11,6 @@ class FACTORYGAME_API AFGDamageOverTimeVolume : public AVolume, public IInterfac
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	AFGDamageOverTimeVolume();
 
 	//~ Begin IInterface_PostProcessVolume Interface
@@ -38,7 +36,4 @@ protected:
 	/** The component that will do the damage to actors */
 	UPROPERTY( VisibleInstanceOnly, Category="Damage")
 	class UFGDotComponent* mDotComponent;
-
-public:
-	FORCEINLINE ~AFGDamageOverTimeVolume() = default;
 };

@@ -1,9 +1,11 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
 #include "CoreTypes.h"
 #include "Misc/Guid.h"
 
 // Custom serialization version for changes made in Dev-Framework stream
-struct FACTORYGAME_API FFactoryGameCustomVersion
+struct FFactoryGameCustomVersion
 {
 	enum Type
 	{
@@ -64,6 +66,9 @@ struct FACTORYGAME_API FFactoryGameCustomVersion
 		// 2020-03-24: Migrate the schematic dependencies to use the UFGAvailabilityDependency
 		RefactorSchematicDependencies,
 
+		// 2020-03-24: Add support for specific resource node types in the FGUnlockableScannableResource
+		RefactorUnlockScannableResources,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1
@@ -74,7 +79,4 @@ struct FACTORYGAME_API FFactoryGameCustomVersion
 
 private:
 	FFactoryGameCustomVersion() {}
-
-public:
-	FORCEINLINE ~FFactoryGameCustomVersion() = default;
 };

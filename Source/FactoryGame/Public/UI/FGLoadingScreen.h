@@ -1,18 +1,16 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UnrealString.h"
 
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Animation/CurveSequence.h"
-#include "UMG.h"
 #include "Styling/ISlateStyle.h"
 
 /**
  * Loading screen with support for a custom text.
  */
-class FACTORYGAME_API SFGLoadingScreen : public SCompoundWidget
+class SFGLoadingScreen : public SCompoundWidget
 {
 public:
 	static void Initialize();
@@ -38,15 +36,12 @@ private:
 	FText mLoadingText;
 
 	static TSharedPtr< class FSlateStyleSet > StyleSet;
-
-public:
-	FORCEINLINE ~SFGLoadingScreen() = default;
 };
 
 /**
  * Loading Spinner
  */
-class FACTORYGAME_API SFGSpinnerLoader : public SCompoundWidget
+class SFGSpinnerLoader : public SCompoundWidget
 {
 public:
 	SLATE_BEGIN_ARGS( SFGSpinnerLoader ) :
@@ -84,7 +79,4 @@ private:
 
 	/** The amount of time in seconds for a full circle */
 	float mPeriod;
-
-public:
-	FORCEINLINE ~SFGSpinnerLoader() = default;
 };

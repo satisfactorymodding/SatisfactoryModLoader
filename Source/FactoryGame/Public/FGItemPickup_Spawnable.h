@@ -1,10 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGItemPickup.h"
 #include "FGItemPickup_Spawnable.generated.h"
@@ -17,6 +13,7 @@ public:
 	AFGItemPickup_Spawnable();
 
 	//~ Begin AActor interface
+	virtual void PostLoad() override;
 	virtual void BeginPlay() override;
 	//~ End AActor interface
 
@@ -146,7 +143,4 @@ private:
 	/** Should we play a spawn effect? */
 	UPROPERTY( SaveGame )
 	bool mPlaySpawnEffect;
-
-public:
-	FORCEINLINE ~AFGItemPickup_Spawnable() = default;
 };

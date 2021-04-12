@@ -1,8 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
-#include "UObject/Class.h"
 
 /**
  * @OSS
@@ -24,7 +22,7 @@ DECLARE_DYNAMIC_DELEGATE_OneParam(FSearchQueryCompleteDelegate, FBlueprintSessio
 DECLARE_DYNAMIC_DELEGATE_TwoParams( FChangeSessionIDDelegate, bool, result, FString, newID );
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FOnlinePresence
+struct FOnlinePresence
 {
 	GENERATED_BODY()
 
@@ -39,9 +37,6 @@ struct FACTORYGAME_API FOnlinePresence
 	FORCEINLINE bool IsValid() const { return Presence.IsValid(); }
 	
 	TSharedPtr<FOnlineUserPresence> Presence;
-
-public:
-	FORCEINLINE ~FOnlinePresence() = default;
 };
 
 UENUM(BlueprintType)
@@ -66,7 +61,7 @@ enum ECantJoinReason
 
 //This is just the data from the feedback widget.
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FUserFeedbackFrontEndData
+struct FUserFeedbackFrontEndData
 {
 	GENERATED_BODY()
 
@@ -80,15 +75,12 @@ struct FACTORYGAME_API FUserFeedbackFrontEndData
 	FString body;
 
 	FUserFeedbackFrontEndData() : isSatisfactory( false ), typeOfFeedback( "" ), body( "" ) {}
-
-public:
-	FORCEINLINE ~FUserFeedbackFrontEndData() = default;
 };
 
 // @todosession: We assume we always have cached presence for people. So we need to find where a we don't and it matters (friends-friends, discord invites)
 
 UCLASS()
-class FACTORYGAME_API UFGPresenceLibrary : public UBlueprintFunctionLibrary
+class UFGPresenceLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
@@ -123,13 +115,10 @@ public:
 	/** Returns true if a OnlinePresence is valid */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online", meta=(DisplayName = "Valid (OnlinePresence)", CompactNodeTitle = "Is Valid", Keywords = "valid presence"))
 	static bool IsValid_OnlinePresence( const FOnlinePresence& a );
-
-public:
-	FORCEINLINE ~UFGPresenceLibrary() = default;
 };
 
 UCLASS()
-class FACTORYGAME_API UFGFriendsLibrary : public UBlueprintFunctionLibrary
+class UFGFriendsLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
@@ -161,13 +150,10 @@ public:
 	/** Returns true if a OnlinePresence is valid */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Friends", meta=(DisplayName = "Valid (FGOnlineFriend)", CompactNodeTitle = "Is Valid", Keywords = "valid friend"))
 	static bool IsValid_Friend( const FFGOnlineFriend& a );
-
-public:
-	FORCEINLINE ~UFGFriendsLibrary() = default;
 };
 
 UCLASS()
-class FACTORYGAME_API UFGSessionLibrary : public UBlueprintFunctionLibrary
+class UFGSessionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
@@ -231,13 +217,10 @@ public:
 
 private:
 	void OnFindCompleteDelicgateFunction(bool wasSucsessful);
-
-public:
-	FORCEINLINE ~UFGSessionLibrary() = default;
 };
 
 UCLASS()
-class FACTORYGAME_API UFGInviteLibrary : public UBlueprintFunctionLibrary
+class UFGInviteLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
@@ -268,15 +251,12 @@ public:
 	/** Discard a pending invite */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Online|Invite")
 	static void DiscardInvite( UObject* worldContext, const FPendingInvite& invite );
-
-public:
-	FORCEINLINE ~UFGInviteLibrary() = default;
 };
 
 
 
 UCLASS()
-class FACTORYGAME_API UFGNetworkLibrary : public UBlueprintFunctionLibrary
+class UFGNetworkLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
@@ -325,7 +305,4 @@ public:
 	/** Get UniqueNetId from fg local player.*/
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online" )
 	static FUniqueNetIdRepl GetUniqueID( UFGLocalPlayer* localPlayer );
-
-public:
-	FORCEINLINE ~UFGNetworkLibrary() = default;
 };

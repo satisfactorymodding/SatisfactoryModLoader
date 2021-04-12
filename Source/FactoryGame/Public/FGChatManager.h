@@ -1,10 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
@@ -55,9 +51,6 @@ public:
 
 	UPROPERTY()
 	EFGChatMessageType MessageType = EFGChatMessageType::CMT_PlayerMessage;
-
-public:
-	FORCEINLINE ~FChatMessageStruct() = default;
 };
 
 /**
@@ -74,8 +67,7 @@ public:
 
 public:
 	/** Get the chat manager, this should always return something unless you call it really early. */
-	//MODDING EDIT: doesn't exist in executable, so forceinline to use version below
-	FORCEINLINE static AFGChatManager* Get(UWorld* world) { return Get(static_cast<UObject*>(world)); }
+	static AFGChatManager* Get( UWorld* world );
 
 	/** Get the chat manager from a world context, this should always return something unless you call it really early. */
 	UFUNCTION( BlueprintPure, Category = "Schematic", DisplayName = "GetChatManager", Meta = ( DefaultToSelf = "worldContext" ) )
@@ -119,7 +111,4 @@ private:
 	UPROPERTY()
 	TArray< FChatMessageStruct > mReceivedMessages;
 
-
-public:
-	FORCEINLINE ~AFGChatManager() = default;
 };

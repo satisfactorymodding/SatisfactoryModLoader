@@ -1,27 +1,18 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Interface.h"
-#include "UObject/Class.h"
 
 #include "FGColorInterface.generated.h"
 
 /**
-* For blueprint support of the interface, we will never add anything to it, just use it to
-* have a UCLASS to be able to access
-*/
+ * Interface for actors that should be colorable with the colorgun.
+ */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGColorInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGColorInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGColorInterface() = default;
+	GENERATED_UINTERFACE_BODY()	
 };
 
-/**
-*
-*/
 class FACTORYGAME_API IFGColorInterface
 {
 	GENERATED_IINTERFACE_BODY()
@@ -57,7 +48,4 @@ class FACTORYGAME_API IFGColorInterface
 	*/
 	UFUNCTION( BlueprintNativeEvent, Category = "Use" )
 	void StopIsAimedAtForColor( AFGCharacterPlayer* byCharacter );
-
-public:
-	FORCEINLINE IFGColorInterface() = default;
 };

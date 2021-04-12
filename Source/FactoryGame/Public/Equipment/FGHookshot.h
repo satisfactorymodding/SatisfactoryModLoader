@@ -1,9 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
-#include "FGEquipment.h"
+#include "Equipment/FGEquipment.h"
 #include "FGHookshot.generated.h"
 
 UCLASS()
@@ -72,7 +71,4 @@ protected:
 private:
 	/** Distance from player when attached, caluclated from mHookshotAudio */
 	float mAttachDistance;
-
-public:
-	FORCEINLINE ~AFGHookshot() = default;
 };

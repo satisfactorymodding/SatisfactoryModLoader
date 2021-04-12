@@ -6,7 +6,7 @@ AFGCentralStorageSubsystem* AFGCentralStorageSubsystem::Get(UWorld* world){ retu
 AFGCentralStorageSubsystem* AFGCentralStorageSubsystem::Get(UObject* worldContext){ return nullptr; }
 AFGCentralStorageSubsystem::AFGCentralStorageSubsystem() : Super() {
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }
 int32 AFGCentralStorageSubsystem::GetNumItemsFromCentralStorage(TSubclassOf<  UFGItemDescriptor > itemClass){ return int32(); }
 void AFGCentralStorageSubsystem::RemoveItemsFromCentralStorage(TSubclassOf<  UFGItemDescriptor > itemClass, int32 num){ }

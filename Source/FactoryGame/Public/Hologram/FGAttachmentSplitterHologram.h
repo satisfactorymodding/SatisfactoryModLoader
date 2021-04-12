@@ -1,12 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGConveyorAttachmentHologram.h"
+#include "Hologram/FGConveyorAttachmentHologram.h"
 #include "FGAttachmentSplitterHologram.generated.h"
 
 /**
@@ -38,7 +35,4 @@ private:
 	/** Used when upgrading. */
 	UPROPERTY()
 	TArray< UFGFactoryConnectionComponent* > mSnappedConnectionComponents;
-
-public:
-	FORCEINLINE ~AFGAttachmentSplitterHologram() = default;
 };

@@ -1,9 +1,8 @@
-#pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "FGEquipment.h"
+#pragma once
+
+#include "Equipment/FGEquipment.h"
 #include "FGResourceScanner.generated.h"
 
 /** Holds information about resource node clusters. This could be saved in actors on the level for optimization. */
@@ -20,7 +19,7 @@ struct FACTORYGAME_API FNodeClusterData
 
 	/** Cost of schematic if there are more than once item in this array the true cost will be randomly selected. */
 	UPROPERTY( BluePrintReadOnly )
-	TArray< class AFGResourceNode* > Nodes;
+	TArray< class AFGResourceNodeBase* > Nodes;
 
 	/** The average location of all the nodes */
 	UPROPERTY( BluePrintReadOnly )
@@ -29,9 +28,6 @@ struct FACTORYGAME_API FNodeClusterData
 	/** The resource descriptor of this cluster */
 	UPROPERTY( BluePrintReadOnly )
 	TSubclassOf< class UFGResourceDescriptor > ResourceDescriptor;
-
-public:
-	FORCEINLINE ~FNodeClusterData() = default;
 };
 
 
@@ -94,14 +90,14 @@ protected:
 	virtual void OnScanPressed();
 	virtual void OnScanReleased();
 
-public:
+public: // MODDING EDIT accessor
 	FORCEINLINE void GenerateNodeClustersAccessor() { GenerateNodeClusters(); }
 protected:
 	/** Constructs the list of nodes cluster used when scanning */
 	void GenerateNodeClusters();
 
 	/** Finds nodes within a radius of the passed node */
-	void GetNodesWithinDistance( AFGResourceNode* node, float dist, TArray< AFGResourceNode* >& clusterNodes, TArray< AFGResourceNode* >& remainingNodes );
+	void GetNodesWithinDistance( class AFGResourceNodeBase* node, float dist, TArray< class AFGResourceNodeBase* >& clusterNodes, TArray< class AFGResourceNodeBase* >& remainingNodes );
 
 protected:
 	/** This is the resource class to scan for */
@@ -139,7 +135,4 @@ protected:
 private:
 	// Temp fix for avoiding scanning when opening CheatBoard, function is bound to CheatBoard input
 	void OnCheatBoardOpened();
-
-public:
-	FORCEINLINE ~AFGResourceScanner() = default;
 };

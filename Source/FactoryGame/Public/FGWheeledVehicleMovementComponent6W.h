@@ -1,22 +1,21 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 /*
 * Base VehicleSim for the 6W PhysX vehicle class
 */
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 #include "WheeledVehicleMovementComponent.h"
 #include "Curves/CurveFloat.h"
 #include "PhysicsPublic.h"
 #include "PhysXPublic.h"
 #include "FGWheeledVehicle.h"
+#include "DSOLGearbox.h"
 #include "FGWheeledVehicleMovementComponent6W.generated.h"
 
 
 /** Described which axles are powered by the engine. True == Powered. */
 USTRUCT()
-struct FACTORYGAME_API FDifferentialSetup6W
+struct FDifferentialSetup6W
 {
 	GENERATED_USTRUCT_BODY()
 	
@@ -28,9 +27,6 @@ struct FACTORYGAME_API FDifferentialSetup6W
 
 	UPROPERTY(EditAnywhere, Category = Setup)
 	bool Rear;
-
-public:
-	FORCEINLINE ~FDifferentialSetup6W() = default;
 };
 
 UENUM()
@@ -45,20 +41,17 @@ enum EWheelOrder6W
 };
 
 USTRUCT()
-struct FACTORYGAME_API FVehicleDifferential6WData
+struct FVehicleDifferential6WData
 {
 	GENERATED_USTRUCT_BODY()
 
 	/** Type of differential */
 	UPROPERTY(EditAnywhere, Category = Setup)
 	FDifferentialSetup6W DifferentialConfig;
-
-public:
-	FORCEINLINE ~FVehicleDifferential6WData() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FVehicleEngineData6W
+struct FVehicleEngineData6W
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -88,14 +81,11 @@ struct FACTORYGAME_API FVehicleEngineData6W
 
 	/** Find the peak torque produced by the TorqueCurve */
 	float FindPeakTorque() const;
-
-public:
-	FORCEINLINE ~FVehicleEngineData6W() = default;
 };
 
 
 USTRUCT()
-struct FACTORYGAME_API FVehicleGearData6W
+struct FVehicleGearData6W
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -110,13 +100,10 @@ struct FACTORYGAME_API FVehicleGearData6W
 	/** Value of engineRevs/maxEngineRevs that is high enough to gear up*/
 	UPROPERTY(EditAnywhere, meta = (ClampMin = "0.0", UIMin = "0.0", ClampMax = "1.0", UIMax = "1.0"), Category = Setup)
 	float UpRatio;
-
-public:
-	FORCEINLINE ~FVehicleGearData6W() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FVehicleTransmissionData6W
+struct FVehicleTransmissionData6W
 {
 	GENERATED_USTRUCT_BODY()
 	/** Whether to use automatic transmission */
@@ -150,17 +137,12 @@ struct FACTORYGAME_API FVehicleTransmissionData6W
 	/** Strength of clutch (Kgm^2/s)*/
 	UPROPERTY(EditAnywhere, Category = Setup, AdvancedDisplay, meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float ClutchStrength;
-
-public:
-	FORCEINLINE ~FVehicleTransmissionData6W() = default;
 };
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class FACTORYGAME_API UFGWheeledVehicleMovementComponent6W : public UWheeledVehicleMovementComponent
 {
-	// MODDING EDIT
-	GENERATED_BODY() 
-	UFGWheeledVehicleMovementComponent6W(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+	GENERATED_UCLASS_BODY()
 
 	/** Engine */
 	UPROPERTY(EditAnywhere, Category = MechanicalSetup)
@@ -298,8 +280,5 @@ private:
 
 	/** Array of PhysXWheel User defineable data that are passed to the shader */
 	TArray<FPhysxWheelUserData> mPhysxWheelUserData;
-
-public:
-	FORCEINLINE ~UFGWheeledVehicleMovementComponent6W() = default;
 };
 

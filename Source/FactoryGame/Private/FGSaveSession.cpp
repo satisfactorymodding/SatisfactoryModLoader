@@ -7,6 +7,7 @@ UFGSaveSession::UFGSaveSession() : Super() {
 }
 UFGSaveSession::~UFGSaveSession(){ }
 void UFGSaveSession::Init(bool willLoad){ }
+void UFGSaveSession::OnAutosaveIntervalUpdated(FString cvar){ }
 UFGSaveSession* UFGSaveSession::Get( UWorld* world){ return nullptr; }
 UFGSaveSession* UFGSaveSession::Get( UObject* worldContext){ return nullptr; }
 void UFGSaveSession::RoutePostLoadGame(){ }

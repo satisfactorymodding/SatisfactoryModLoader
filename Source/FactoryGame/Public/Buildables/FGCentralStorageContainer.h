@@ -1,11 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableStorage.h"
+#include "Buildables/FGBuildableStorage.h"
 #include "FGCentralStorageContainer.generated.h"
 
 /**
@@ -26,7 +24,4 @@ private:
 	// Recalled if the storage subsystem isn't created
 	UFUNCTION()
 	void AddToCentralStorageSubsystem();
-
-public:
-	FORCEINLINE ~AFGCentralStorageContainer() = default;
 };

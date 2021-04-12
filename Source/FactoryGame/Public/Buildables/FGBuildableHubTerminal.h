@@ -1,10 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 
 #include "FGBuildableHubTerminal.generated.h"
 
@@ -27,7 +26,4 @@ public:
 	UPROPERTY()
 	class AFGBuildableTradingPost* mTradingPost;
 	
-
-public:
-	FORCEINLINE ~AFGBuildableHubTerminal() = default;
 };

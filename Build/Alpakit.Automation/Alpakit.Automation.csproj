@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{A777BF44-017F-4E69-916A-A62D06D63556}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>Alpakit.Automation</RootNamespace>
+        <AssemblyName>Alpakit.Automation</AssemblyName>
+        <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>Scripts\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>Scripts\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Development|AnyCPU' ">
+      <OutputPath>Scripts\</OutputPath>
+      <DebugSymbols>true</DebugSymbols>
+      <DebugType>pdbonly</DebugType>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Data" />
+        <Reference Include="System.Xml" />
+		<Reference Include="System.IO.Compression.FileSystem" />
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="PackagePlugin.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+    </ItemGroup> 
+	
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<Import Project="Alpakit.Automation.csproj.props" Condition="Exists('Alpakit.Automation.csproj.props')" />
+
+	<ItemGroup>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\DotNETCommon\DotNETUtilities\DotNETUtilities.csproj">
+		  <Project>{5D7D66E8-8C76-4AF9-B3EC-2EF03421D730}</Project>
+		  <Name>DotNETUtilities</Name>
+		  <Private>false</Private>
+		</ProjectReference>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\AutomationUtils\AutomationUtils.Automation.csproj">
+		  <Project>{2c96a7f2-b1a3-4258-8e0a-e588ff41a53e}</Project>
+		  <Name>AutomationUtils.Automation</Name>
+		  <Private>false</Private>
+		</ProjectReference>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\Scripts\AutomationScripts.Automation.csproj">
+		  <Project>{8aa00d65-0954-4a27-ac0d-fb8b1106120f}</Project>
+		  <Name>AutomationScripts.Automation</Name>
+		  <Private>false</Private>
+		</ProjectReference>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\UnrealBuildTool\UnrealBuildTool.csproj">
+		  <Project>{fd7c5e1a-cfe4-4fd5-a525-1eb1599a39ac}</Project>
+		  <Name>UnrealBuildTool</Name>
+		  <Private>false</Private>
+		</ProjectReference>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\AllDesktop\AllDesktop.Automation.csproj">
+		  <Project>{a9cd1a06-764a-4c53-86ce-2f34b94f0283}</Project>
+          <Name>AllDesktop.Automation</Name>
+          <Private>false</Private>
+		</ProjectReference>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\BuildGraph\BuildGraph.Automation.csproj">
+		  <Project>{a002361e-37f9-4124-af82-cf0d393cb928}</Project>
+		  <Name>BuildGraph.Automation</Name>
+		  <Private>false</Private>
+		</ProjectReference>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\Gauntlet\Gauntlet.Automation.csproj">
+		  <Project>{767b4f85-ab56-4b00-a033-04c7600acc3d}</Project>
+		  <Name>Gauntlet.Automation</Name>
+		  <Private>false</Private>
+		</ProjectReference>
+		<ProjectReference Include="$(EngineDir)\Source\Programs\AutomationTool\Win\Win.Automation.csproj">
+		  <Project>{6f6f8e5b-53ca-4c9f-a696-96aa9b8fb128}</Project>
+		  <Name>Win.Automation</Name>
+		  <Private>false</Private>
+		</ProjectReference>
+	</ItemGroup>
+</Project>

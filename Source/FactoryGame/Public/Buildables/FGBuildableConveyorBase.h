@@ -1,26 +1,22 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildable.h"
-#include "../FGRemoteCallObject.h"
-#include "../FGSignificanceInterface.h"
-#include "../FGRemoteCallObject.h"
-#include "../FGFactoryConnectionComponent.h"
+#include "Buildables/FGBuildable.h"
+#include "FGRemoteCallObject.h"
+#include "FGSignificanceInterface.h"
 #include "FGBuildableConveyorBase.generated.h"
 
 
-using FG_ConveyorItemRepKeyType = int16;
-using FG_ConveyorVersionType = int8;
+using FG_ConveyorItemRepKeyType = uint32;
+using FG_ConveyorVersionType = uint32;
+
+enum { FG_CONVEYOR_REP_KEY_NONE = 0 };
 
 
-
+/**
+*A class used for clients to be able to call the server through the local player character.
+*/
 UCLASS()
 class FACTORYGAME_API UFGConveyorRemoteCallObject : public UFGRemoteCallObject
 {
@@ -28,30 +24,23 @@ class FACTORYGAME_API UFGConveyorRemoteCallObject : public UFGRemoteCallObject
 	public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
-	/** Compact representation of mSplineComponent, used for replication and save game */
 	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
 	bool mForceNetField_UFGConveyorRemoteCallObject = false;
 
 	UFUNCTION( Reliable, Server, WithValidation, Category = "Use" )
-	void Server_OnUse( class AFGBuildableConveyorBelt* target, class AFGCharacterPlayer* byCharacter, int32 itemIndex, int8 repVersion );
+	void Server_OnUse( class AFGBuildableConveyorBelt* target, class AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset );
+
+	UFUNCTION(Reliable, Server, WithValidation, Category = "Client to Server Report")
+	void Server_ReportInvalidStateAndRequestConveyorRepReset(class AFGBuildableConveyorBase* target);
 
 
 	//UFUNCTION( Reliable, Server, WithValidation, Category = "Sync" )
 	//void Server_RequestCleanSync( class AFGBuildableConveyorBelt* target );
-
-public:
-	FORCEINLINE ~UFGConveyorRemoteCallObject() = default;
 };
 
 
 /**
 * Holds data for an item traveling on the conveyor.
-*
-* @note This item must not contain any object references as they will not get replicated correctly.
-* @note We do not yet support changes to variables, only initial replication will be done.
-* @note We only support adds at the end of the array, no inserts allowed!
-*
-* @see FConveyorBeltItems::NetDeltaSerialize for more comments about the features supported and not.
 */
 USTRUCT()
 struct FACTORYGAME_API FConveyorBeltItem
@@ -70,48 +59,99 @@ public:
 		Item = item;
 	}
 
+	//[Gafgar:Fri/20-11-2020] just explicitly adding these "the rule of 5" to make sure that is not the issue of a bug we are ahving. Once confirmed we can remove them.
+	virtual ~FConveyorBeltItem()
+	{
+
+	}
+
+	FConveyorBeltItem(const FConveyorBeltItem& b)
+	{
+		Item = b.Item;
+		Offset = b.Offset;
+		bIsRemoved = b.bIsRemoved;
+		bIsMadeUp = b.bIsMadeUp;
+		PredictedRemoveRepVersion = b.PredictedRemoveRepVersion;
+		MostRecentConveyorRepKey = b.PredictedRemoveRepVersion;
+		ReplicationID = b.ReplicationID;
+		ReplicationKey = b.ReplicationKey;
+	}
+
+	FConveyorBeltItem(FConveyorBeltItem&& b)
+	{
+		Item = b.Item;
+		Offset = b.Offset;
+		bIsRemoved = b.bIsRemoved;
+		bIsMadeUp = b.bIsMadeUp;
+		PredictedRemoveRepVersion = b.PredictedRemoveRepVersion;
+		MostRecentConveyorRepKey = b.PredictedRemoveRepVersion;
+		ReplicationID = b.ReplicationID;
+		ReplicationKey = b.ReplicationKey;
+	}
+
+	const FConveyorBeltItem& operator=(const FConveyorBeltItem& b)
+	{
+		Item = b.Item;
+		Offset = b.Offset;
+		bIsRemoved = b.bIsRemoved;
+		bIsMadeUp = b.bIsMadeUp;
+		PredictedRemoveRepVersion = b.PredictedRemoveRepVersion;
+		MostRecentConveyorRepKey = b.PredictedRemoveRepVersion;
+		ReplicationID = b.ReplicationID;
+		ReplicationKey = b.ReplicationKey;
+		return *this;
+	}
+	const FConveyorBeltItem& operator=(FConveyorBeltItem&& b)
+	{
+		Item = b.Item;
+		Offset = b.Offset;
+		bIsRemoved = b.bIsRemoved;
+		bIsMadeUp = b.bIsMadeUp;
+		PredictedRemoveRepVersion = b.PredictedRemoveRepVersion;
+		MostRecentConveyorRepKey = b.PredictedRemoveRepVersion;
+		ReplicationID = b.ReplicationID;
+		ReplicationKey = b.ReplicationKey;
+		return *this;
+	}
+
+
 	/** The type of this item. */
 	UPROPERTY()
 	FInventoryItem Item;
 
 	/**
 	* The offset of this item along the conveyor belt in range [0,LENGTH].
-	* @todo This only need to replicate when the item is added to the conveyor as it is simulated locally on the client after that.
-	*       Having this replicated always works for now because we never mark an item as dirty after adding it.
-	*       I.e. we only do one replication per item.
 	*/
 	UPROPERTY()
 	float Offset;
-	bool Removed = false;
-	bool AnimateRemove = false; //@TODO:[DavalliusA:Tue/11-06-2019] not really used any more? MAke sure that is the case and if so, fix it.
+	bool bIsRemoved = false;
+	bool bIsMadeUp = false; //If true, it means we had to guesstimate the item due to dropped or missing packets.
 
 	//Sets to a rep key value of the current version on the client when sending a pickup command. 
-	//When receiving a package building on this state, it will be reset to INDEX_NONE, if it's a non INDEX_NONE value it will on the client be handled like if it's removed. 
+	//When receiving a package building on this state, it will be reset to FG_CONVEYOR_REP_KEY_NONE, if it's a non FG_CONVEYOR_REP_KEY_NONE value it will on the client be handled like if it's removed. 
 	//Making things more responsive, and in 99% of the cases a remove should go through without an issue, meaning this should be a very accurate prediction. However, only remove it visually. Let the item movement and so on not take this into account. Let that be in sync with the server.
-	FG_ConveyorVersionType PredictedRemoveRepVersion = INDEX_NONE; 
+	FG_ConveyorVersionType PredictedRemoveRepVersion = FG_CONVEYOR_REP_KEY_NONE;
+
+	FG_ConveyorVersionType MostRecentConveyorRepKey; //used to detect implicit removes and such. To be updated on every delta received that handled this item
+	
 private:
 	friend struct FConveyorBeltItems;
 
 	friend class AFGBuildableConveyorBelt; //[DavalliusA:Mon/03-06-2019] for debugging only for now
 
-	FG_ConveyorItemRepKeyType ReplicationID = INDEX_NONE;
+	FG_ConveyorItemRepKeyType ReplicationID = FG_CONVEYOR_REP_KEY_NONE;
 
-	FG_ConveyorItemRepKeyType ReplicationKey = INDEX_NONE;
+	FG_ConveyorItemRepKeyType ReplicationKey = FG_CONVEYOR_REP_KEY_NONE;
 
-public:
-	FORCEINLINE ~FConveyorBeltItem() = default;
 };
 
 
 /** Custom INetDeltaBaseState used by our custom NetDeltaSerialize. Representing a snapshot of the state, enough to calculate a delta between this state and another.*/
-class FACTORYGAME_API FConveyorBeltItemsBaseState : public INetDeltaBaseState
+class FConveyorBeltItemsBaseState : public INetDeltaBaseState
 {
 public:
 
-	struct PresistentClientInfo
-	{
-		int32 PackageCreationCounter = 0;
-	};
+
 
 	FConveyorBeltItemsBaseState()
 	{
@@ -119,84 +159,80 @@ public:
 
 	~FConveyorBeltItemsBaseState()
 	{
-		PresistentClientInfoPtr = nullptr; //[DavalliusA:Wed/03-07-2019] should we rally need this? Got strange crash on deletion otherwise it seems
 	}
 
 	FConveyorBeltItemsBaseState( const FConveyorBeltItemsBaseState& other )
 	{
 		TypeToBitIDMap = other.TypeToBitIDMap;
 		ItemList = other.ItemList;
-		ArrayReplicationKey = other.ArrayReplicationKey;
+		ConveyorRepKey = other.ConveyorRepKey;
 		lastSentSpacing = other.lastSentSpacing;
 		NewestItemID = other.NewestItemID;
-		NextToMoveOutItemID = other.NextToMoveOutItemID;
-		ArrayReplicationKeyLoopCounter = other.ArrayReplicationKeyLoopCounter;
-		PresistentClientInfoPtr = other.PresistentClientInfoPtr;
+		ConveyorVersion = other.ConveyorVersion;
 	}
 
 	FConveyorBeltItemsBaseState( FConveyorBeltItemsBaseState&& other )
 	{
 		TypeToBitIDMap = other.TypeToBitIDMap;
 		ItemList = other.ItemList;
-		ArrayReplicationKey = other.ArrayReplicationKey;
+		ConveyorRepKey = other.ConveyorRepKey;
 		lastSentSpacing = other.lastSentSpacing;
 		NewestItemID = other.NewestItemID;
-		NextToMoveOutItemID = other.NextToMoveOutItemID;
-		ArrayReplicationKeyLoopCounter = other.ArrayReplicationKeyLoopCounter;
-		PresistentClientInfoPtr = other.PresistentClientInfoPtr;
+		ConveyorVersion = other.ConveyorVersion;
 	}
-
-	//virtual ~FConveyorBeltItemsBaseState();
 
 	const FConveyorBeltItemsBaseState& operator=( const FConveyorBeltItemsBaseState& other )
 	{
 		TypeToBitIDMap = other.TypeToBitIDMap;
 		ItemList = other.ItemList;
-		ArrayReplicationKey = other.ArrayReplicationKey;
+		ConveyorRepKey = other.ConveyorRepKey;
 		lastSentSpacing = other.lastSentSpacing;
 		NewestItemID = other.NewestItemID;
-		NextToMoveOutItemID = other.NextToMoveOutItemID;
-		ArrayReplicationKeyLoopCounter = other.ArrayReplicationKeyLoopCounter;
-		PresistentClientInfoPtr = other.PresistentClientInfoPtr;
-		return *this; // MODDING EDIT: why did it ever work without this?
+		ConveyorVersion = other.ConveyorVersion;
+		
+		return *this; // MODDING EDIT: how does it work without this?
 	}
 
 	const FConveyorBeltItemsBaseState& operator=( FConveyorBeltItemsBaseState&& other )
 	{
 		TypeToBitIDMap = other.TypeToBitIDMap;
 		ItemList = other.ItemList;
-		ArrayReplicationKey = other.ArrayReplicationKey;
+		ConveyorRepKey = other.ConveyorRepKey;
 		lastSentSpacing = other.lastSentSpacing;
 
 		NewestItemID = other.NewestItemID;
-		NextToMoveOutItemID = other.NextToMoveOutItemID;
-		ArrayReplicationKeyLoopCounter = other.ArrayReplicationKeyLoopCounter;
-		PresistentClientInfoPtr = other.PresistentClientInfoPtr;
-		return *this; // MODDING EDIT: why did it ever work without this?
+		ConveyorVersion = other.ConveyorVersion;
+		
+		return *this; // MODDING EDIT: how does it work without this?
 	}
 
-	virtual bool IsStateEqual( INetDeltaBaseState* otherState ) override
+	//must be implemented
+	virtual bool IsStateEqual(INetDeltaBaseState* otherState) override
 	{
-		FConveyorBeltItemsBaseState* other = static_cast< FConveyorBeltItemsBaseState* >( otherState );
-		if( ItemList.Num() != other->ItemList.Num() )
-		{	
-			return false;
-		}
-		if( lastSentSpacing != other->lastSentSpacing )
-		{	
-			return false;
-		}
-		for( int32 i = 0; i < ItemList.Num(); ++i )
+		FConveyorBeltItemsBaseState* other = static_cast<FConveyorBeltItemsBaseState*>(otherState);
+		if (ConveyorVersion != other->ConveyorVersion)
 		{
-			if( ItemList[ i ] != other->ItemList[ i ] )
+			return false;
+		}
+		if (ItemList.Num() != other->ItemList.Num())
+		{
+			return false;
+		}
+		if (lastSentSpacing != other->lastSentSpacing)
+		{
+			return false;
+		}
+		for (int32 i = 0; i < ItemList.Num(); ++i)
+		{
+			if (ItemList[i] != other->ItemList[i])
 			{
 				return false;
 			}
 		}
-		for( auto it = TypeToBitIDMap.CreateIterator(); it; ++it )
+		for (auto it = TypeToBitIDMap.CreateIterator(); it; ++it)
 		{
-			auto ptr = other->TypeToBitIDMap.Find( it.Key() );
-			if( !ptr || *ptr != it.Value() )
+			auto ptr = other->TypeToBitIDMap.Find(it.Key());
+			if (!ptr || *ptr != it.Value())
 			{
 				return false;
 			}
@@ -204,73 +240,46 @@ public:
 		return true;
 	}
 
-
-	//virtual void DebugPrintWhenRevertingFromNAKTo() override;
-	//virtual void DebugPrintWhenRevertingFromNAKFrom() override;
-	//virtual void DebugPrintWhenDeletingDueToOtherRevertingFromNAK() override;
-	//virtual void DebugPrintWhenACK() override;
-	//virtual FString GetDeltaIDDebugString() override;
-
-	/**Trasnaltion of class type to an int id, so we can minimize each send size. Nb elements will be used to find a sed*/
-
+	/**Translation of class type to an int id, so we can minimize each send size. Nb elements will be used to find a sed*/
 	TMap< TSubclassOf< class UFGItemDescriptor >, uint8 > TypeToBitIDMap;
-	/** This maps ReplicationID to our last known replication key. */
-	//TMap< int16, int16 > ItemKeyMap;
+
 	struct ItemHolder
 	{
-		ItemHolder( FG_ConveyorItemRepKeyType _id, bool _removed, float _offset ) : RepID( _id ), Removed( _removed ), Offset(_offset){}
-		FG_ConveyorItemRepKeyType RepID;
-		bool Removed = false;
-		//@TODO:[DavalliusA:Tue/11-06-2019] remove this? We probably don't need this. But actually, we probably don't need this whole list. Just holding first and last IDs should be enough. Reconsider this implementation to save memory.
-		float Offset; //[DavalliusA:Tue/14-05-2019] used to store a position, so we can accurately predict what item to remove when getting a pickup event from a client.
-		//@TODO:[DavalliusA:Tue/14-05-2019] consider how to handle pickups happening on the edge of a conveyor, but it should be an no issue once we merge?
+		ItemHolder( FG_ConveyorItemRepKeyType _id, bool _removed ) : RepID( _id ), bIsRemoved( _removed ){}
+		FG_ConveyorItemRepKeyType RepID = FG_CONVEYOR_REP_KEY_NONE; //Should be in sync on server and client. Unique ID, taken from the RepID on the item. Should be possible to look up an item based on this ID too. (should incremented for every item added to the conveyor and an unbroken series)
+		uint8 TypeIndex = -1; //Replicated. assigned on creation should always be up to date. At the moment we never remove types from the type map. If we can do that we should update all these too.
+		//uint8 TypeMapVersion; //used to make sure our mapping corresponds to the correct type map version
+		
+		//[Gafgar:Wed/30-09-2020] this should only be needed for the actual items right? not these delta bases. As they are on server only right?
+		//FG_ConveyorVersionType MostRecentConveyorRepKey; //stores the version this item was added/modified. Enables us to find implicit deltes and such.
+		
+		bool bIsRemoved = false; //so we can detect if the item was removed since last rep.
+		bool wasRemovedOnLastDelta = false; //easy way to keep track by keeping this in here, and it fits with the padding of the struct anyway.
+	
 		inline bool operator!=( const ItemHolder& B ) const
 		{
-			return B.RepID != RepID || B.Removed != Removed;
+			return B.RepID != RepID || B.bIsRemoved != bIsRemoved;
 		}
 		inline bool operator==( const ItemHolder& B ) const
 		{
-			return B.RepID == RepID && B.Removed == Removed;
+			return B.RepID == RepID && B.bIsRemoved == bIsRemoved;
 		}
 	};
 
 	
-
-	float lastSentSpacing = -100; //used to know if we need to send a new spacing or if we can use the default state
+	FG_ConveyorItemRepKeyType NewestItemID = FG_CONVEYOR_REP_KEY_NONE; //we need to store it, so we stil lcan send it when the conveyor is empty
+	float lastSentSpacing = 0; //used to know what spacing the client will use in case we tell it to use the last spacing.
 	TArray<ItemHolder> ItemList; //[DavalliusA:Thu/11-04-2019] see if we can move this to a static size, or templateify the size, so we can keep it in one memory chunk for each history entry.
 
-	FG_ConveyorItemRepKeyType NewestItemID = INDEX_NONE;
-	FG_ConveyorItemRepKeyType NextToMoveOutItemID = INDEX_NONE + 1; //oldest item. If the conveyor is empty, this value will be NewestItemID+1
-
 	
-	PresistentClientInfo* PresistentClientInfoPtr = nullptr; //created on the first delta and then kept alive through all.
-	uint32 PackageCreationID = 0; //used to compare with the persistent client data to know how many packages that have been created since this one so we can detect issues/when clients are likely to run out of their delt alog and need a reset.
+	
+	/** The replication key from the conveyor at which this state was created. ACtually replicated as FG_ConveyorVersionType, but looping. We store 32bit so we know the loop */
+	uint32 ConveyorRepKey = FG_CONVEYOR_REP_KEY_NONE; //this rep key increments on every change on server that will require replication of the conveyor
+	uint32 ConveyorVersion; //will need to be in sync with the conveyor. If this value is different, 
+							//there has been a reset in between the replications, and we need to send this as a reset event. 
+							//Should only happen when we encounter unrecoverable states, or we run out of space and needs a reset to recover.
+	
 
-	/** The replication key from the array this state was created for. */
-	FG_ConveyorVersionType ArrayReplicationKey = INDEX_NONE;
-	uint8	ArrayReplicationKeyLoopCounter = 0;
-	struct FConveyorBeltItems* ObjectDebugPtr = nullptr;
-};
-
-UCLASS()
-class FACTORYGAME_API  UPresistentConveyorPackagingData : public UObject
-{
-	GENERATED_BODY()
-public:
-	~UPresistentConveyorPackagingData()
-	{
-		for ( auto itr : ClientPresistentDataPointers )
-		{
-			if( itr.Value )
-			{
-				delete itr.Value;
-				itr.Value = nullptr;
-			}
-		}
-		ClientPresistentDataPointers.Empty();
-	}
-
-	TMap<void*, FConveyorBeltItemsBaseState::PresistentClientInfo*> ClientPresistentDataPointers; //@TODO:[DavalliusA:Wed/03-07-2019] we need pointers, or we can't guarantee the data stays in place when the arraygrows
 };
 
 
@@ -282,15 +291,19 @@ public:
 *   - Mapping of object references (objects that are replicated that is). Look at fast TArray replication on how to implement this if needed.
 */
 USTRUCT()
-struct FACTORYGAME_API FConveyorBeltItems
+struct FConveyorBeltItems
 {
-	static const uint8 NUM_HISTORY_VERSION = 27; //[DavalliusA:Thu/16-05-2019] should be enough to get about 2 sec back with 3 other clients connected and we were to send at max speed for each client separately 3*3*2
 
-	struct ItemHolderHistory //[DavalliusA:Tue/14-05-2019] used to store a history list on the server, with a looping array of version, to be be able to jump back in time for interactions sent from clients (picking up items and such)
+	enum class EConveyorSpawnStyle : int8
 	{
-		FG_ConveyorVersionType ArrayReplicationKey = INDEX_NONE;
-		TArray<FConveyorBeltItemsBaseState::ItemHolder> ItemList;
+		CSS_default = -1, //even spacing or if it don't matter/the conveyor is full after the add
+		CSS_A_from_front_B_Spacing = 0,
+		CSS_A_from_front_burst,
+		CSS_Individual,
+		CSS_MAX
 	};
+
+	
 
 	GENERATED_BODY()
 
@@ -309,7 +322,7 @@ struct FACTORYGAME_API FConveyorBeltItems
 	FORCEINLINE void Add( const FConveyorBeltItem& item )
 	{
 		Items.Add( item );
-		Items.Last().ReplicationID = INDEX_NONE;
+		Items.Last().ReplicationID = FG_CONVEYOR_REP_KEY_NONE;
 		MarkItemDirty( Items.Last() );
 		if( Items.Num() > 1 )
 		{
@@ -327,7 +340,7 @@ struct FACTORYGAME_API FConveyorBeltItems
 			for( auto itm : Items )
 			{
 				itm.ReplicationID = IDCounter++;
-				if( IDCounter == INDEX_NONE )
+				if( IDCounter == FG_CONVEYOR_REP_KEY_NONE )
 				{
 					++IDCounter;
 				}
@@ -348,14 +361,14 @@ struct FACTORYGAME_API FConveyorBeltItems
 		MarkArrayDirty();
 	}
 
-	FORCEINLINE bool IsRemovedAt( int16 index )
+	FORCEINLINE bool IsRemovedAt( int16 index ) const
 	{
-		return Items[ index ].Removed || !Items[index].Item.IsValid();
+		return Items[ index ].bIsRemoved || !Items[index].Item.IsValid();
 	}
 
 	FORCEINLINE void FlagForRemoveAt( int16 index )
 	{
-		Items[ index ].Removed = true;
+		Items[ index ].bIsRemoved = true;
 	}
 
 	FORCEINLINE FConveyorBeltItem& operator[]( int16 index )
@@ -369,7 +382,10 @@ struct FACTORYGAME_API FConveyorBeltItems
 	}
 
 
-	int32 GetIndexForItemByRepKey( FG_ConveyorItemRepKeyType itemID );
+	int32 GetIndexForItemByRepKey(FG_ConveyorItemRepKeyType itemID) const;
+
+	//Get the item for a given rep ID of an item, but account for the accuracy of the index with the network ID precision
+	int32 GetIndexForItemByRepKeyNetBitLimit(uint32 itemID) const;
 
 	FG_ConveyorVersionType GetRepKey() const
 	{
@@ -383,6 +399,13 @@ struct FACTORYGAME_API FConveyorBeltItems
 	/** Custom delta serialization. */
 	bool NetDeltaSerialize( FNetDeltaSerializeInfo& parms );
 
+	void ApplySpacingToItem(int32 targetIndex, int32 nbReadsDone, EConveyorSpawnStyle spacingStyle, int16 spacingParamA, int16 spacingParamB, uint32 individualSpacingParam);
+
+	/** Used to recover if a non recoverable read state is found. Will cause a fresh relocation of this conveyor to ALL clients, and a visual jump. So use with care. */
+	void SignalReadErrorAndRequestReset(FBitReader& reader);
+
+	void CleanupAndSignalVersionChange();
+
 	/** Mark the array dirty. */
 	void MarkArrayDirty();
 
@@ -392,219 +415,74 @@ struct FACTORYGAME_API FConveyorBeltItems
 	friend FArchive& operator<<( FArchive& ar, FConveyorBeltItems& items );
 
 
-	void SetOwner( class AFGBuildableConveyorBase* _owner )
+	FORCEINLINE void SetOwner( class AFGBuildableConveyorBase* _owner )
 	{
 		Owner = _owner;
 	}
 
-	int16 GetCombinedDirtyKey()
+	FORCEINLINE int16 GetCombinedDirtyKey()
 	{
 		return ArrayReplicationKey + ArrayReplicationKeyLastSerialized;
 	}
 
-	float ConsumeAndUpdateConveyorOffsetDept( float dt );
+	float ConsumeAndUpdateConveyorOffsetDebt( float dt );
 
-	ItemHolderHistory* GetHistoryVersion( FG_ConveyorVersionType version );
-	ItemHolderHistory* AddAndGetHistoryVersion( FG_ConveyorVersionType version )
-	{
-		if( !VersionHistoryStateList )
-		{
-			VersionHistoryStateList = new ItemHolderHistory[ NUM_HISTORY_VERSION ];
-		}
-		
-		for( int32 i = 0; i < NUM_HISTORY_VERSION; ++i )
-		{
-			if( VersionHistoryStateList[ i ].ArrayReplicationKey == version )
-			{
-				return &(VersionHistoryStateList[ i ]);
-			}
-		}
-		
-		++VersionHistoryStateListWriteHead;
-		if( VersionHistoryStateListWriteHead >= NUM_HISTORY_VERSION )
-			VersionHistoryStateListWriteHead = 0;
-		VersionHistoryStateList[ VersionHistoryStateListWriteHead ].ArrayReplicationKey = version;
-		VersionHistoryStateList[ VersionHistoryStateListWriteHead ].ItemList.Reset();
-		return &( VersionHistoryStateList[ VersionHistoryStateListWriteHead ] );
-	}
 
-	TArray< FConveyorBeltItem >& AnimRemoveList()
+	FORCEINLINE TArray< FConveyorBeltItem >& AnimRemoveList()
 	{
 		return AnimRemoveItems;
 	}
-	bool IsDesynced()
-	{
-		return bIsDesynced;
-	}
-	float& GetDesyncedNotifyTimer()
-	{
-		return DescynNotifyTimer;
-	}
 
-	float ConveyorLength; //[DavalliusA:Fri/26-04-2019] only used for improving appearance on belts that have gotten completely de-synced from the delta
-	int16 DebugID = INDEX_NONE;
+
+	float ConveyorLength; 
+	int16 DebugID = INDEX_NONE; //Used for identifying conveyors during debugging and debug prints. And can with a compile flag be synced between clients and servers. not really needed for any logics.
 private:
 	/** Mark a single item dirty. */
 	void MarkItemDirty( FConveyorBeltItem& item );
 
 private:
 	/** Counter for assigning new replication IDs. */
-	int16 IDCounter; //@TODO:[DavalliusA:Tue/11-06-2019] Seems to not be used. Check and remove.
-	UPresistentConveyorPackagingData* PresistentPackDataPtr;
-	TMap< TSubclassOf< class UFGItemDescriptor >, uint8 > TypeToBitIDMap;
+	FG_ConveyorItemRepKeyType IDCounter = FG_CONVEYOR_REP_KEY_NONE + 1;
 
-	ItemHolderHistory* VersionHistoryStateList = nullptr;
-	int8 VersionHistoryStateListWriteHead = NUM_HISTORY_VERSION;
+	TMap< TSubclassOf< class UFGItemDescriptor >, uint8 > ClientTypeToBitIDMap;
+
+
 
 	TArray< FConveyorBeltItem > Items; //0 = first added item (item to be removed/move out next), max/end/n = newest item/item added most recently.
-	TArray< FConveyorBeltItem > AnimRemoveItems; //holding items we should no longer include in logics, and are just removing animation wise
-	FG_ConveyorItemRepKeyType NewestItemID = INDEX_NONE;
+	TArray< FConveyorBeltItem > AnimRemoveItems; //holding items we should no longer include in logics, and are just rolling out with animation/visually
+	FG_ConveyorItemRepKeyType NewestItemID = FG_CONVEYOR_REP_KEY_NONE;
 
-	//@TODO:[DavalliusA:Fri/12-04-2019]  consider moving this to an object we allocate only on clients?
-	struct DeltaLogStruct
-	{
-		struct Delta
-		{
-			FG_ConveyorVersionType BasedOnKey = INDEX_NONE - 1; //[DavalliusA:Thu/25-04-2019] make sure it's not a key that is same as the default replicationKey, so we can end up in infinite loops when traversing them 
-			FG_ConveyorVersionType ReplicationKey = INDEX_NONE;
-			uint8 NumToDelete = 0;
-			uint8 NumToAdd = 0;
-			int16 NumItems = 0;
-		};
-		static const uint8 LOG_SIZE = 32;
-		uint8 WriteHead = 0;
-		Delta Deltas[ LOG_SIZE ];
-
-
-		/**0 = latest default, 1 = the delta before that. Taking the looping buffer into account*/
-		inline Delta& GetDelta( uint8 stepsBack )
-		{
-			++stepsBack; //as 0 = the one before the write head, do minus one extra
-			uint8 i = WriteHead;
-			if( i < stepsBack )
-			{
-				i += LOG_SIZE - stepsBack;
-			}
-			else
-			{
-				i -= stepsBack;
-			}
-			return Deltas[ i ];
-		}
-		//@TODO:[DavalliusA:Tue/16-04-2019] make so we start searching from the current write head, as we are likely to only look for the most recent entries anyway
-		inline Delta* FindRepKey( FG_ConveyorVersionType repKey )
-		{
-			for( auto & d : Deltas )
-			{
-				if( d.ReplicationKey == repKey )
-				{
-					return &d;
-				}
-			}
-			return nullptr;
-		}
-		//@TODO:[DavalliusA:Tue/16-04-2019] make so we start searching from the current write head, as we are likely to only look for the most recent entries anyway
-		inline Delta* FindBaseKey( FG_ConveyorVersionType baseKey )
-		{
-			for( auto & d : Deltas )
-			{
-				if( d.BasedOnKey == baseKey && d.ReplicationKey != INDEX_NONE) //if this delta takes us to index none, it is not a real state. It can be the empty states, as the default base key of -2 is a valid real vlaue, we need this
-				{
-					return &d;
-				}
-			}
-			return nullptr;
-		}
-
-		void AddDelta( FG_ConveyorVersionType basedOnKey, FG_ConveyorVersionType replicationKey, uint8 numDeleted, uint8 numAdded, int16 numItems )
-		{
-			checkf( replicationKey != INDEX_NONE, TEXT("We should try to add a delta that takes us to INDEX_NONE. Something is strange here! Adding a delta for %d -> %d"), basedOnKey, replicationKey );
-			Deltas[ WriteHead ].BasedOnKey = basedOnKey;
-			Deltas[ WriteHead ].ReplicationKey = replicationKey;
-			Deltas[ WriteHead ].NumToDelete = numDeleted;
-			Deltas[ WriteHead ].NumToAdd = numAdded;
-			Deltas[ WriteHead ].NumItems = numItems;
-			++WriteHead;
-			if( WriteHead >= LOG_SIZE )
-				WriteHead = 0;
-		}
-		void EnterAndSetupResetState()
-		{
-			Delta tempAsigner;
-			for( auto & d : Deltas )
-			{
-				d = tempAsigner;
-				//assign with a default object instead of manually resetting all variables.
-				//d.BasedOnKey = INDEX_NONE - 1;
-				//d.ReplicationKey = INDEX_NONE;
-				//d.NumToAdd = 0;
-				//d.NumToDelete = 0;
-				//d.NumItems = 0;
-			}
-		}
-		DeltaLogStruct::Delta * GetDeltaClosestTo( FG_ConveyorVersionType baseReplicationKey )
-		{
-			Delta* bestDelta = &Deltas[0]; //[DavalliusA:Wed/07-08-2019] make sure we at least have something to return here
-			int32 bestDeltaDiff = 6000;
-			for( auto & d : Deltas )
-			{
-				if( d.ReplicationKey == INDEX_NONE )
-				{
-					continue;
-				}
-				int32 diff = abs( d.BasedOnKey - baseReplicationKey );
-				if( diff < bestDeltaDiff ) //if this delta takes us to index none, it is not a real state. It can be the empty states, as the default base key of -2 is a valid real vlaue, we need this
-				{
-					bestDeltaDiff = diff;
-					bestDelta = &d;
-				}
-			}
-			return bestDelta;
-		}
-	};
-	DeltaLogStruct DeltaLog;
-
-	
 	/** Like a dirty flag. */
+	uint32 ArrayReplicationKey = FG_CONVEYOR_REP_KEY_NONE+1;
 
-	FG_ConveyorVersionType ArrayReplicationKey = 0;
+	uint32 ArrayReplicationKeyLastSerialized = FG_CONVEYOR_REP_KEY_NONE; //Used to not increase the version number when it's not needed. So we can limit how quickly we overflow/go out of range
 
-	FG_ConveyorVersionType ArrayReplicationKeyLastSerialized = INDEX_NONE; //[DavalliusA:Wed/17-04-2019] we might not be able to use the regular one, as client simulation might accidentally call make dirty and increase our version then
 
-	FG_ConveyorVersionType BaseReplicationKey = INDEX_NONE;
+	float LastRecivedSpacing = 0; //used so we can know what length we last received, so we can apply it when needed. //@TODO:[Gafgar:Wed/04-11-2020] potential problem with dropped packets here as it's not rolled back in any way. But as it's only visual with spacing, it should not be an issue and works for the most time.
+	float ConveyorOffsetDebt = 0; //used to adjust for removes and adds that were received with bad timing
+	float DeltaSinceLastNetUpdate = 0; //@TODO:[DavalliusA:Tue/11-06-2019] store a time in the delta log, so we can know the time since for the individual deltas? This can get arbitrary quickly...
 
-	float lastRecivedSpacing = 0; //we should not need to store this in the delta history, as a new spacing should be sent if any of them are irregular enough to need a new spacing.
-	float ConveyorOffsetDept = 0; //used to adjust for removes and adds that were received with bad timing
-	float DeltaSinceLastNetUpdate = 0; //@TODO:[DavalliusA:Tue/11-06-2019] store a time in the delta log, so we can know the time since for the individual deltas? This can get arbitary quickly...
-	float DescynNotifyTimer = -100;
+	uint32 ConveyorVersion = 0; //If incremented, it will cause all deltas with old base states to be reset deltas. If we are making a delta and it's base is different from this, we will treat it as a reset.
 
-	uint8	ArrayReplicationKeyLoopCounter = 0;
-	uint8	NumPotentialDriftingSends = 0;
 
-	bool bIsDesynced = false;
-	bool bIsInResetState = false; //this means we we've gotten a reset signal from the server and will treat all history events till the next real event differently.
+	uint8 NumPacketsRecievedWhileWaitingForReset = 0;
+	bool bIsAwaitingResetPacket = true; //this means we we've gotten a reset signal from the server and will treat all history events till the next real event differently. Must be true by default, as we expct the frist packet we get to be a reset.
+
 
 	class AFGBuildableConveyorBase* Owner = nullptr;
-
-	friend FConveyorBeltItemsBaseState;
+	
 	friend class AFGBuildableConveyorBelt;
-
-public:
-	FORCEINLINE ~FConveyorBeltItems() = default;
 };
 
 
 /** Enable custom net delta serialization for the above struct. */
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FConveyorBeltItems > : public TStructOpsTypeTraitsBase2< FConveyorBeltItems >
+struct TStructOpsTypeTraits< FConveyorBeltItems > : public TStructOpsTypeTraitsBase2< FConveyorBeltItems >
 {
 	enum
 	{
 		WithNetDeltaSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FConveyorBeltItems >() = default;
 };
 
 
@@ -621,6 +499,7 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	virtual void Serialize( FArchive& ar ) override;
@@ -660,18 +539,30 @@ public:
 	/** Get the location and direction of the conveyor at the given offset. */
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const PURE_VIRTUAL( , );
 
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-
 	void SetConveyorBucketID( int32 ID );
 
 	FORCEINLINE int32 GetConveyorBucketID() const { return mConveyorBucketID; }
 
 	/** Returns how much room there currently is on the belt. If the belt is empty it will return the length of the belt */
-	float GetAvailableSpace() const;
+	FORCEINLINE float GetAvailableSpace() const
+	{
+		for ( int32 i = mItems.Num() - 1; i >= 0; --i )
+		{
+			if ( !mItems[ i ].bIsRemoved )
+			{
+				return mItems[ i ].Offset;
+			}
+		}
+
+		return GetLength();
+	}
 
 	/** Returns how much room there was on the belt after the last factory tick. If the belt is empty it will return the length of the belt */
 	float GetCachedAvailableSpace_Threadsafe() const;
 
+	void ReportInvalidStateAndRequestConveyorRepReset();
+
+	FORCEINLINE void MarkItemTransformsDirty() { mPendingUpdateItemTransforms = true; }
 protected:
 	// Begin Factory_ interface
 	virtual bool Factory_PeekOutput_Implementation( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const override;
@@ -682,42 +573,41 @@ protected:
 	virtual void GetDismantleInventoryReturns( TArray< FInventoryStack >& out_returns ) const override;
 	// End AFGBuildable interface
 
-	void MarkItemTransformsDirty() { mPendingUpdateItemTransforms = true; }
-
 	/** Called when the visuals, radiation etc need to be updated. */
-	virtual void TickItemTransforms( float dt ) PURE_VIRTUAL(,);
+	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) PURE_VIRTUAL(,);
 
+	/* When using the exp - conveyor renderer tick the radio activity of the items. */
+	virtual void TickRadioactivity() PURE_VIRTUAL(,);
+	
 	//@todonow These can possibly be moved to private once Belt::OnUse has been moved to base.
 	/** Find the item closest to the given location. */
 	int32 FindItemClosestToLocation( const FVector& location ) const;
-public:
-	FORCEINLINE int32 FindItemClosestToLocationAccessor(const FVector& location) { return FindItemClosestToLocation(location); };
-protected:
+
 	/** Checks if there is an item at index. */
 	bool Factory_HasItemAt( int32 index ) const;
-public:
-	FORCEINLINE bool Factory_HasItemAtAccessor(int32 index) const { return Factory_HasItemAt(index); };
-protected:
 	/** Lets you know what type of item is on a specific index. */
 	const FConveyorBeltItem& Factory_PeekItemAt( int32 index ) const;
+
 	/** Remove an item from the belt at index. */
 	void Factory_RemoveItemAt( int32 index );
-public:
-	FORCEINLINE void Factory_RemoveItemAtAccessor(int32 index) { Factory_RemoveItemAt(index); };
+
 private:
 	/** Take the first element on the belt. */
 	void Factory_DequeueItem();
+
 	/** Put a new item onto the belt. */
 	void Factory_EnqueueItem( const FInventoryItem& item, float initialOffset );
-public:
-	FORCEINLINE void Factory_EnqueueItemAccessor(const FInventoryItem& item, float initialOffset) { Factory_EnqueueItem(item, initialOffset); };
-protected:
+
 	/**
 	 * @param out_availableSpace - amount of space until next item
 	 *
 	 * @return true if there is enough room for an item of size itemSize
 	 */
-	bool HasRoomOnBelt( float& out_availableSpace ) const;
+	FORCEINLINE bool HasRoomOnBelt( float& out_availableSpace ) const
+	{
+		out_availableSpace = GetAvailableSpace();
+		return out_availableSpace > AFGBuildableConveyorBase::ITEM_SPACING;
+	}
 
 	/**
 	*	Thread safe version to check available room on a belt. This uses a cached position of the last item offset to ensure thread safety
@@ -728,6 +618,7 @@ protected:
 	*/
 	bool HasRoomOnBelt_ThreadSafe( float& out_availableSpace ) const;
 
+	friend class AFGConveyorItemSubsystem;
 
 public:
 	/** Default height above ground for conveyors. */
@@ -736,10 +627,7 @@ public:
 	/** Spacing between each conveyor item, from origo to origo. */
 	static constexpr float ITEM_SPACING = 120.0f;
 
-	UPROPERTY( )
-	UPresistentConveyorPackagingData* PresistentConveyorPackagingDataObject = nullptr; //held here, but created by conveyors when replicated, as we don't want to create it unless it's used.
-
-public:
+protected:
 
 	/** Speed of this conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor" )
@@ -772,7 +660,4 @@ private:
 	/** The id for the conveyor bucket this conveyor belongs to */
 	int32 mConveyorBucketID;
 
-
-public:
-	FORCEINLINE ~AFGBuildableConveyorBase() = default;
 };

@@ -3,10 +3,11 @@
 #include "FGPipeConnectionFactory.h"
 
 UFGPipeConnectionFactory::UFGPipeConnectionFactory() : Super() {
+	this->mFluidBoxVolume = 5;
 	this->mApplyAdditionalPressure = true;
 	this->mPipeType = "Fluid";
-	this->bReplicates = true;
 	this->bNetAddressable = true;
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGPipeConnectionFactory::BeginPlay(){ }
 void UFGPipeConnectionFactory::EndPlay(const EEndPlayReason::Type reason){ }

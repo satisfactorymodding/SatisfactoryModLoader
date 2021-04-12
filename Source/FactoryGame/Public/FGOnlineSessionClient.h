@@ -1,14 +1,12 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "OnlineSessionClient.h"
 #include "FGOnlineSessionClient.generated.h"
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FPendingInvite
+struct FPendingInvite
 {
 	GENERATED_BODY();
 public:
@@ -29,9 +27,6 @@ public:
 
 	/** Information about the session the user is playing in */
 	FOnlineSessionSearchResult SearchResult;
-
-public:
-	FORCEINLINE ~FPendingInvite() = default;
 };
 
 bool operator == ( const FPendingInvite& a, const FPendingInvite& b );
@@ -56,7 +51,7 @@ FORCEINLINE uint32 GetTypeHash( const FPendingInvite& invite )
  * Will detect that we receive a invite and expose functionality to join invites and react to the invite
  */
 UCLASS()
-class FACTORYGAME_API UFGOnlineSessionClient : public UOnlineSessionClient
+class UFGOnlineSessionClient : public UOnlineSessionClient
 {
 	GENERATED_BODY()
 public:
@@ -108,7 +103,4 @@ protected:
 
 	// Invites that we don't have enough information to be able to accept, waiting for data from OSS
 	TArray<FPendingInvite> mUninitializedInvites;
-
-public:
-	FORCEINLINE ~UFGOnlineSessionClient() = default;
 };

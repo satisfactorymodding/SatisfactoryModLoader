@@ -1,17 +1,11 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Online.h"
 #include "FGInputLibrary.h"
 #include "PlayerPresenceState.h"
-#include "GameFramework/PlayerController.h"
 #include "FGPlayerControllerBase.generated.h"
-
-
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnInputChanged );
 
@@ -20,7 +14,6 @@ class FACTORYGAME_API AFGPlayerControllerBase : public APlayerController
 {
 	GENERATED_BODY()
 public:
-	/** Ctor */
 	AFGPlayerControllerBase();
 
 	// Begin AActor interface
@@ -72,6 +65,14 @@ public:
 
 	/** Inject the input that was rebinded and remove old default */
 	void UpdatePlayerInput();
+
+	/** Triggered when we update the gamepad input enabled option */
+	UFUNCTION()
+	void OnGamepadInputEnabledUpdated( FString updatedCvar );
+
+	/** Triggered when we update the mouse sensitivity option */
+	UFUNCTION()
+	void OnMouseSensitivityUpdated( FString updatedCvar );
 
 	/** Sets mouse sensitivity */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Input" )
@@ -191,7 +192,4 @@ private:
 
 	/** Are we using gamepad? */
 	bool mIsUsingGamepad;
-
-public:
-	FORCEINLINE ~AFGPlayerControllerBase() = default;
 };

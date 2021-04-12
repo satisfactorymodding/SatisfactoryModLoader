@@ -1,11 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGEquipment.h"
+#include "Equipment/FGEquipment.h"
 #include "FGEquipmentStunSpear.generated.h"
 
 /**
@@ -78,7 +76,4 @@ public:
 	/** How much inf ront of character the attack is */
 	UPROPERTY( EditDefaultsOnly, Category = "Stun Spear" )
 	float mAttackDistance;
-
-public:
-	FORCEINLINE ~AFGEquipmentStunSpear() = default;
 };

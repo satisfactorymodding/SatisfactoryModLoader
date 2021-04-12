@@ -1,14 +1,13 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGUseableInterface.h"
 #include "FGSaveInterface.h"
 #include "FGInventoryComponent.h"
 #include "FGSignificanceInterface.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGItemPickup.generated.h"
 
 /**
@@ -20,9 +19,6 @@ class FACTORYGAME_API UFGUseState_FullInventory : public UFGUseState
 	GENERATED_BODY()
 
 	UFGUseState_FullInventory() : Super() { mIsUsableState = false; }
-
-public:
-	FORCEINLINE ~UFGUseState_FullInventory() = default;
 };
 
 /**
@@ -34,9 +30,6 @@ class FACTORYGAME_API UFGUseState_Collecting : public UFGUseState
 	GENERATED_BODY()
 
 	UFGUseState_Collecting() : Super() { mIsUsableState = true; }
-
-public:
-	FORCEINLINE ~UFGUseState_Collecting() = default;
 };
 
 //State that an item pickup can be in
@@ -52,7 +45,7 @@ enum class EItemState :uint8
  * @todo: This looks like it should be a subclass of FGInteractActor
  */
 UCLASS(abstract)
-class FACTORYGAME_API AFGItemPickup : public AActor, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface
+class FACTORYGAME_API AFGItemPickup : public AFGStaticReplicatedActor, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -248,7 +241,4 @@ private:
 	/** How many respawns are allowed on this item */
 	UPROPERTY( SaveGame )
 	int32 mNumRespawns;
-
-public:
-	FORCEINLINE ~AFGItemPickup() = default;
 };

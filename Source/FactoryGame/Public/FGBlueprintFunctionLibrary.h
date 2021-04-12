@@ -1,13 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGUseableInterface.h"
 #include "FGInventoryComponent.h"
@@ -296,6 +289,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void ClosePopup( APlayerController* controller );
 
+	/** Clear the popup queue of all popups of the given class */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static void ClearPopupQueueOfClass( APlayerController* controller, TSubclassOf< UUserWidget > widgetClass );
+
 	/** Copies the given text to the users clipboard */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static void CopyTextToClipboard( FText textToCopy );
@@ -314,6 +311,22 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Math" )
 	static bool EvaluateMathExpression( const FString& expression, UPARAM( DisplayName = "Result" ) FText& out_Result );
 
+	/** Convert a number of seconds into hour:minutes:seconds format string (including leading zeroes) */
+	UFUNCTION(BlueprintPure,  Category = "Utilities|String")
+    static FString SecondsToTimeString( float inSeconds );
+
+	/** Converts an 64-bit integer value to a string */
+	UFUNCTION(BlueprintPure, meta=(DisplayName = "ToString (integer64)", CompactNodeTitle = "->", BlueprintAutocast), Category="Utilities|String")
+    static FString Conv_IntToString(int64 InInt);
+
+	/* Return the value of GIsEditor. This is only true when we are in the actual editor */
+	UFUNCTION( BlueprintPure, Category = "Editor" )
+	static bool GetGIsEditor();
+
+	/* Calls the scroll to end function after two ticks, This is a special case and shouldn't be used unless necessary */
+	UFUNCTION( BlueprintCallable, Category = "Widget" )
+	static void ScrollToEndAfterTwoTicks( UScrollBox* scrollBox );
+
 	/** Does the same thing as UEditorAssetLibrary::SetMetadataTag but exposed to gameplay code since we have tools that are technically running as gameplay. Content of function is wrapped with editor only */
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
 	static void SetMetadataTag( UObject* object, FName tag, const FString& value );
@@ -322,7 +335,21 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Editor Scripting | Metadata", meta = ( DevelopmentOnly ) )
 	static FString GetMetadataTag( UObject* object, FName tag );
 
+	/* Loads a file from drive via absolute path.*/
+	UFUNCTION(BlueprintPure, Category = "Editor Scripting", meta = (DevelopmentOnly))
+	static bool FileLoadString(FString AbsoluteFilePath, FString& String);
 
-public:
-	FORCEINLINE ~UFGBlueprintFunctionLibrary() = default;
+	/** 
+	* Finds the last whole character index before the specified position in pixels along the string horizontally
+	* 
+	* @param text				The text to measure
+	* @param InFontInfo			Information about the font used to draw the string
+	* @param HorizontalOffset	Offset horizontally into the string, in pixels
+	* @param suffix				[OPTIONAL] suffix to append and fit in the horizontal offset
+	*
+	* @return The text after it been cut off at the horizontal offset if needed.
+	*/
+	UFUNCTION( BlueprintPure, Category = "Text" )
+    static FText CutTextByPixelOffset( const FText& text, const FSlateFontInfo& inFontInfo, const int32 horizontalOffset, const FString& suffix );
+
 };

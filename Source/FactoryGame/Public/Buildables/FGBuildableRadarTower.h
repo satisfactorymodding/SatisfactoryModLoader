@@ -1,11 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableFactory.h"
+#include "Buildables/FGBuildableFactory.h"
 #include "FGBuildableRadarTower.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FRadarTowerRadiusUpdated );
@@ -110,7 +107,4 @@ private:
 	UPROPERTY( Replicated, SaveGame )
 	float mTimeToNextExpansion;
 
-
-public:
-	FORCEINLINE ~AFGBuildableRadarTower() = default;
 };

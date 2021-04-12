@@ -1,21 +1,18 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "../FGFluidIntegrantInterface.h"
+#include "FGFluidIntegrantInterface.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "../FGSignificanceInterface.h"
+#include "FGSignificanceInterface.h"
 #include "FGBuildablePipeReservoir.generated.h"
 
 /**
  * Struct containing quantized fluid content for a more optimized replication.
  */
 USTRUCT()
-struct FACTORYGAME_API FQuantizedReservoirIndicatorData
+struct FQuantizedReservoirIndicatorData
 {
 	GENERATED_BODY()
 public:
@@ -36,9 +33,6 @@ private:
 	uint8 PackedFlowDrain = 0;
 	UPROPERTY()
 	uint8 PackedContent = 0;
-
-public:
-	FORCEINLINE ~FQuantizedReservoirIndicatorData() = default;
 };
 
 /**
@@ -118,7 +112,4 @@ private:
 	float mIndicatorFlowFillPct;
 	float mIndicatorFlowDrainPct;
 	float mIndicatorContentPct;
-
-public:
-	FORCEINLINE ~AFGBuildablePipeReservoir() = default;
 };

@@ -1,11 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
@@ -22,16 +17,21 @@ enum class EDebugPipeVisualization
 	DPV_Pressure,
 	DPV_PressureGroup,
 	DPV_DeltaPressure,
-	DPV_Flow
+	DPV_Flow,
+	DPV_MoveToOverfillRatio
 };
 
 /**
  * Contains all info needed to update a fluid box.
  */
-struct FACTORYGAME_API PipeJunction
+struct PipeJunction
 {
 	PipeJunction( class UFGPipeConnectionComponent* previous, class UFGPipeConnectionComponent* current );
 
+	/**
+	 * The fluid boxes on each side of the junction.
+	 * CurrentBox is always valid while PreviousBox might be null at the pipe ends.
+	 */
 	struct FFluidBox* PreviousBox = nullptr;
 	struct FFluidBox* CurrentBox = nullptr;
 
@@ -39,10 +39,15 @@ struct FACTORYGAME_API PipeJunction
 	float PreviousOutflowZ = 0.f;
 	float CurrentOutflowZ = 0.f;
 
-	// Controls one way fluid movements, e.g. pumps and reservoirs.
-	float PreviousOneWayModifier = 1.f;
-	float CurrentOneWayModifier = 1.f;
-
+	// Should this junction break the pressure into two groups, one on each side of the junction.
+	bool ShouldBreakPressureGroup = false;
+	// Modifies the pressure on the given connection when this junction is evaluated, used to fake "suction" on pumps.
+	bool PreviousZeroPressure = false;
+	bool CurrentZeroPressure = false;
+	// Modifies how pressure is propagated between the pressure groups. Only valid in conjunction with breaking pressure groups.
+	bool PreviousPropagatePressure = false;
+	bool CurrentPropagatePressure = false;
+	
 	/**
 	 * The flow and moved content from current to previous in this junction pair.
 	 * A positive flow, and move, is from the previous box to into the current box.
@@ -51,13 +56,10 @@ struct FACTORYGAME_API PipeJunction
 	float Flow = 0.f;
 	float MovedContent = 0.f;
 
-	//@todoPipes WITH_EDITORONLY_DATA
+	//@todo-Pipes WITH_EDITORONLY_DATA
 	FVector Debug_Location;
 	FString Debug_Name;
 	FString Debug_String;
-
-public:
-	FORCEINLINE ~PipeJunction() = default;
 };
 
 /**
@@ -84,8 +86,8 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
-	/** Should the subsystem tick this network? */
-	bool ShouldTickNetwork() const;
+	/** Should the subsystem update this network? */
+	bool ShouldRunSimulation() const;
 	
 	/** Run the simulation on the networks junctions and fluid boxes */
 	void UpdateSimulation( float dt );
@@ -150,14 +152,24 @@ private:
 
 	void UpdateFluidDescriptor( TSubclassOf< UFGItemDescriptor > descriptor );
 
+	/** Liquid functions. */
+	void TickPhysics( float dt );
 	int32 CreatePressureGroup();
 	int32 FindTopMostPressureGroupIndex( int32 index );
 	void UpdatePressureGroups( PipeJunction& junction, float dt );
+	void UpdatePropagatedPressure( PipeJunction& junction, float dt );
 	void UpdatePressure( PipeJunction& junction, float dt );
 	void PostUpdatePressureGroups( PipeJunction& junction );
 	void PreUpdateFlow( PipeJunction& junction );
 	void UpdateFlow( PipeJunction& junction, float dt );
 	void UpdateContent( PipeJunction& junction, float dt );
+
+	/** Gas functions. */
+	void TickPhysics_Gas( float dt );
+	void UpdatePressure_Gas( PipeJunction& junction, float dt );
+	void PreUpdateFlow_Gas( PipeJunction& junction );
+	void UpdateFlow_Gas( PipeJunction& junction, float dt );
+	void UpdateContent_Gas( PipeJunction& junction, float dt );
 
 private:
 	friend class UFGCheatManager;
@@ -174,6 +186,8 @@ private:
 	/** The type of liquid in this network. */
 	UPROPERTY( SaveGame, Replicated )
 	TSubclassOf< UFGItemDescriptor > mFluidDescriptor;
+	/** Cached values from the fluid descriptor. */
+	EResourceForm mFluidForm;
 
 	/** When a buildable attempts to move inventory to a pipe network as a fluid, it will first set the pending fluid descriptor
 	*	On the next subsystem tick, this network will be marked for rebuild and will assign each connection this descriptor 
@@ -183,10 +197,10 @@ private:
 	TSubclassOf< UFGItemDescriptor > mPendingFluidDescriptor;
 
 	/** Cached constants for easy access. */
-	float mFluidDensity;		// Around 1 is good for water,
-	float mFluidViscosity;		// Around 1 is good for water, higher for oils, lower for gases.
 	float mGravity;				// [m/s^2]
 	float mFluidFriction;
+	float mFluidDensity;
+	float mFluidViscosity;
 
 	/** All Fluid Integrant Interfaces in this network */
 	TArray< class IFGFluidIntegrantInterface* > mFluidIntegrants;
@@ -213,7 +227,4 @@ private:
 	 * See comments in implementation for details.
 	 */
 	TArray< FPressureGroup > mPressureGroups;
-
-public:
-	FORCEINLINE ~AFGPipeNetwork() = default;
 };

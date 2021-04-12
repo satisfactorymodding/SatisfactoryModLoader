@@ -1,13 +1,10 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableFactory.h"
-#include "../ItemAmount.h"
+#include "Buildables/FGBuildableFactory.h"
+#include "ItemAmount.h"
 #include "FGBuildableSpaceElevator.generated.h"
 
 /**
@@ -91,7 +88,4 @@ protected:
 
 	/** Cached input connections (No need for UPROPERTY as they are referenced in component array) */
 	TArray< class UFGFactoryConnectionComponent* > mInputConnections;
-
-public:
-	FORCEINLINE ~AFGBuildableSpaceElevator() = default;
 };

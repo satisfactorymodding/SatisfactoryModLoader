@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGPlanet.generated.h"
@@ -16,6 +17,7 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditChangeChainProperty( struct FPropertyChangedChainEvent& propertyChangedEvent ) override;
 #endif
+	// End AActor interface
 
 	/** Update the preview of the planet in the editor */	
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, meta = ( CallInEditor = "true" ) )
@@ -33,7 +35,4 @@ private:
 	// In editor, receive updates for whenever the time of day is updated
 	FDelegateHandle mTimeOfDayUpdated;
 #endif
-
-public:
-	FORCEINLINE ~AFGPlanet() = default;
 };

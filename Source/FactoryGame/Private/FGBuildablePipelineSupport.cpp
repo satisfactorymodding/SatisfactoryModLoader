@@ -18,7 +18,8 @@ AFGBuildablePipelineSupport::AFGBuildablePipelineSupport() : Super() {
 	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
 	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
 	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 	this->NetCullDistanceSquared = 5624999936;
 }
 void AFGBuildablePipelineSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }

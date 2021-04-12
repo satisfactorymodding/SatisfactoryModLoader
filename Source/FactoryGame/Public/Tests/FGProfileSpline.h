@@ -1,11 +1,11 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "FGProfileSpline.generated.h"
+
 
 UCLASS()
 class FACTORYGAME_API AFGProfileSpline : public AActor
@@ -30,8 +30,12 @@ public:
 
 	// Runtime length of the spline in minutes.
 	UPROPERTY(BlueprintReadOnly)
-	float Duration;	
+	float Duration;
 
-public:
-	FORCEINLINE ~AFGProfileSpline() = default;
+	UFUNCTION(BlueprintImplementableEvent)
+	float GetCurrentDuration() const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	FTransform GetCurrentView() const;
+	
 };

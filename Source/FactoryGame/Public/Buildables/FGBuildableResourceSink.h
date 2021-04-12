@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
@@ -24,13 +20,9 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	virtual void Tick( float dt ) override;
 	virtual void Destroyed() override;
 	// End AActor interface
-
-	// Begin IFGSaveInterface
-	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	// End IFGSaveInterface
 
 	// Begin BuildableFactoryInterface
 	virtual void Factory_CollectInput_Implementation() override;
@@ -52,12 +44,6 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Resource Sink" )
 	void ReturnUnclaimedCoupons();
 
-
-private:
-	/** Used to start the producing timer from non-game thread */
-	UFUNCTION()
-	void StartProducingTimer();
-
 private:
 	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated, Category = "Resource Sink" )
 	class UFGInventoryComponent* mCouponInventory;
@@ -78,16 +64,13 @@ private:
 	UPROPERTY( EditDefaultsOnly )
 	float mProcessingTime;
 
-	/** How long we have left on the timer when saving the game */
-	UPROPERTY( EditDefaultsOnly, SaveGame )
-	float mSavedProducingTimer;
-	
 	/** Used to know when we should stop producing. Since the sink just sinks at belt speed we don't have anything to look at to know if we are producing
 	* so whenever we sink an item we reset the timer. If the timer is active we are producing. Used to avoid choppy triggers for animation/vfx/sound.
-	* If we ever have the need for tick in this class we can move this functionality there with our own timer based on a float or similar.
+	* This will only count down if we have significance. So if we go out of significance while producing we will still return true for producing until we get significance back. 
+	* @todok2 Look into if this is a problem. The only thing I can think of now is that animations/vfx/sound depending on this state might be starting when getting significance back 
+	* when in fact we aren't producing
 	*/
-	FTimerHandle mProducingTimer;
-
-public:
-	FORCEINLINE ~AFGBuildableResourceSink() = default;
+	UPROPERTY( SaveGame )
+	float mProducingTimer;
+	
 };

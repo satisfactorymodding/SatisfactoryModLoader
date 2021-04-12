@@ -1,13 +1,10 @@
-#pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
-
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
-#include "FGBuildablePipeBase.h"
-#include "../FGPipeHyperInterface.h"
+
+#include "Buildables/FGBuildablePipeBase.h"
+#include "FGPipeHyperInterface.h"
 #include "FGBuildablePipeHyper.generated.h"
 
 
@@ -18,6 +15,9 @@ UCLASS()
 class FACTORYGAME_API AFGBuildablePipeHyper : public AFGBuildablePipeBase, public IFGPipeHyperInterface
 {
 	GENERATED_BODY()
+
+	AFGBuildablePipeHyper();
+	
 public:
 
 	// Begin FGHyperTube Interface
@@ -31,8 +31,5 @@ public:
 private:
 
 
-
-public:
-	FORCEINLINE ~AFGBuildablePipeHyper() = default;
 };
 

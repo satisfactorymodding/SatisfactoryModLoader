@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
@@ -36,7 +33,4 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	bool mRequireAllSchematicsToBePurchased;
 
-
-public:
-	FORCEINLINE ~UFGSchematicPurchasedDependency() = default;
 };

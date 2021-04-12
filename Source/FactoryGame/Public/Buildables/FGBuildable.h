@@ -1,34 +1,27 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "../FGUseableInterface.h"
-#include "../ItemAmount.h"
-#include "../FGDismantleInterface.h"
-#include "../FGBlueprintFunctionLibrary.h"
+#include "FGUseableInterface.h"
+#include "ItemAmount.h"
+#include "FGDismantleInterface.h"
+#include "FGBlueprintFunctionLibrary.h"
 #include "Animation/AnimInstance.h"
 #include "Engine/BlueprintGeneratedClass.h"
 #include "Engine/SCS_Node.h"
-#include "../FGSaveInterface.h"
-#include "../FactoryTick.h"
-#include "../FGColorInterface.h"
-#include "../Replication/FGReplicationDetailActorOwnerInterface.h"
-#include "../FGBuildableSubsystem.h"
-#include "../FGSaveInterface.h"
-#include "../FactoryTick.h"
-#include "../FGColorInterface.h"
-#include "../Replication/FGReplicationDetailActorOwnerInterface.h"
+#include "FGSaveInterface.h"
+#include "FactoryTick.h"
+#include "FGColorInterface.h"
+#include "Replication/FGReplicationDetailActorOwnerInterface.h"
+#include "FGBuildableSubsystem.h"
+#include "FGBuildingTagInterface.h"
 #include "FGBuildable.generated.h"
 
 //@todonow These should CAPS_CASE according to the coding standard
 static const FString MainMeshName( TEXT( "MainMesh" ) );
 static const FName ClearanceVolumeName( TEXT( "Clearance" ) ); //@todo There's a duplicate of this in the CPP file.
+static const FName ClearanceDetectorVolumeName( TEXT( "ClearanceDetector" ) ); //@todo There's a duplicate of this in the CPP file.
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FBuildableDismantledSignature );
 
@@ -67,7 +60,6 @@ public:
 	virtual void OnConstruction( const FTransform& transform ) override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
-	virtual void Destroyed() override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -134,7 +126,7 @@ public:
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	//~ End IFGDismantleInferface
 
-	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter );
+	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter, class UFGCircuitConnectionComponent* overlappingConnection );
 	virtual void StopIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter );
 
 	/** Called in ConfigureActor from the hologram. */
@@ -148,16 +140,12 @@ public:
 	/** Shutdown this building. */
 	void TurnOffAndDestroy();
 
+	/* The state the pool handles get registered in, useful for lights and other components that reacts to power change.*/
+	virtual bool GetPoolHandleInitialState() const; 
+	
 	/** Finds, caches and returns the MainMesh of this buildable */
 	UFUNCTION( BlueprintCallable, Category = "Buildable" )
 	const TArray< class UMeshComponent* >& GetMainMeshes();
-
-	/** Get the building this buildable belong to. */
-	FORCEINLINE int32 GetBuildingID() const { return mBuildingID; }
-
-	/** Set the building ID for this buildable, be careful when calling this so the relation to the surrounding buildings is not broken. */
-	FORCEINLINE void SetBuildingID( int32 buildingID ) { mBuildingID = buildingID; }
-
 
 	/** Returns the timestamp for when this building was built */
 	FORCEINLINE float GetBuildTime() { return mBuildTimeStamp; }
@@ -247,21 +235,12 @@ public:
 	uint8 GetParticipatedInCleranceEncroachFrameCountDown(){ return mParticipatedInCleranceEncroachFrameCountDown; }
 	void SetParticipatedInCleranceEncroachFrameCountDown( uint8 value ){ mParticipatedInCleranceEncroachFrameCountDown = FMath::Min( value, (uint8 )3 ); }
 
-	 //Used to let fonudations allow for clerance sepration when stakced on, which most others don't.
-	bool AllowCleranceSeparationEvenIfStackedOn()
-	{
-		return mAllowCleranceSeparationEvenIfStackedOn;
-	}
+	/** Used to let foundations allow for clearance separation when stacked on, which most others don't */
+	bool AllowCleranceSeparationEvenIfStackedOn() { return mAllowCleranceSeparationEvenIfStackedOn; }
 
-	//[DavalliusA:Mon/17-02-2020] moved these to not be private as I don't understand why they should be
-	/** Get the number of power connections */
-	UFUNCTION( BlueprintCallable, Category = "Buildable|Connections" )
+	/** Get the number of connections components on this buildable, may not be the same as the number of usable connections. */
 	uint8 GetNumPowerConnections() const;
-
-		/** Get the number of factory connections */
 	uint8 GetNumFactoryConnections() const;
-
-	/** Get the number of factory output connections */
 	uint8 GetNumFactoryOuputConnections() const;
 
 	/** Should this buildable be relevant when considering if a location is near a base/factory area */
@@ -278,8 +257,10 @@ public:
 	/** Called when materials are updated by the buildable subsystem material sharing or when a new color is set */
 	virtual void Native_OnMaterialInstancesUpdated();
 
-protected:
+	/* Returns a default object containing cosmetic components used for the pooler. */
+	TSubclassOf< class AFGDecorationTemplate > GetDecorationTemplate() const { return mDecoratorClass; }
 
+protected:
 	/** Blueprint event for when materials are updated by the buildable subsystem*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
 	void OnMaterialInstancesUpdated();
@@ -291,7 +272,6 @@ protected:
 	/** Plays dismantle sound, override this event to play a custom sound. */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCosmetic, Category = "Buildable|Build Effect" )
 	void PlayDismantleSound();
-
 
 	/** Ugly haxx to remove replication of graph unless any player is looking at it */
 	void RegisterInteractingPlayerWithCircuit( class AFGCharacterPlayer* player );
@@ -307,14 +287,14 @@ protected:
 	 * For custom connections, if we want a custom implementation for
 	 * Called if mForwardPeekAndGrabToProxy is set in the connection.
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Connections" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing=mHasFactory_PeekOutput, Category = "Buildable|Connections" )
 	bool Factory_PeekOutput( const class UFGFactoryConnectionComponent* connection, TArray< FInventoryItem >& out_items, TSubclassOf< UFGItemDescriptor > type ) const;
 
 	/**
 	 * For custom connections, if we want a custom implementation for peek
 	 * Called if mForwardPeekAndGrabToProxy is set in the connection.
 	 */
-	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Connections" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing=mHasFactory_GrabOutput, Category = "Buildable|Connections" )
 	bool Factory_GrabOutput( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type );
 
 	/**
@@ -330,7 +310,6 @@ protected:
 	*	@ param estimatedDeltaTime - the amount of time we use to estimate how many items we can grab after that time have passed
 	*/
 	virtual uint8 EstimatedMaxNumGrab_Threadsafe( float estimatedDeltaTime ) const;
-
 
 	/**
 	 * Override this to verify the default configuration.
@@ -387,6 +366,13 @@ protected:
 
 	/** OnDismantle check to see if the buildable subsystem has any BlockedSharing material instance references that were only relevent to this object and remove them from the master material manager map */
 	void CleanUpMaterialInstanceMappingsInSubsystem();
+
+	UFUNCTION( BlueprintPure, Category="Buildable" )
+	bool ShouldModifyWorldGrid() const { return mShouldModifyWorldGrid; }
+
+	/** Setter for mDidFirstTimeUse so we can ensure that it is flagged for replication property */
+	void SetDidFirstTimeUse( bool didUse );
+	
 private:
 	/** Create a stat for the buildable */
 	void CreateFactoryStatID() const;
@@ -407,7 +393,6 @@ private:
 	/** Let client see the highlight */
 	UFUNCTION()
 	void OnRep_DidFirstTimeUse();
-
 
 public:
 	//@todoGC Move to the descriptor maybe?
@@ -435,6 +420,21 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	FVector mHighlightVector;
 
+	// TODO remove
+	/* Abstract locations of the fog planes.*/
+	UPROPERTY(EditDefaultsOnly, Category = "Buildable|FogPlane")
+	TArray<FTransform> mFogPlaneTransforms;
+
+	// TODO remove
+	UPROPERTY(EditDefaultsOnly, Category = "Buildable|FogPlane")
+	UStaticMesh* mFogPlaneMesh;
+
+	/* Pool handles used by the pooling system. */
+	TArray< struct FPoolHandle* > mPoolHandles;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Buildable")
+	TSubclassOf< class AFGDecorationTemplate > mDecoratorClass;
+	
 protected:
 	//@todorefactor With meta = ( ShowOnlyInnerProperties ) it does not show and PrimaryActorTick seems to be all custom properties, so I moved to another category but could not expand.
 	/** Controls if we should receive Factory_Tick and how frequent. */
@@ -469,7 +469,6 @@ protected:
 	UPROPERTY( EditAnywhere, SaveGame, ReplicatedUsing = OnRep_ColorSlot, meta = (NoAutoJson = true) )
 	uint8 mColorSlot = 0; 
 
-
 	/** HAXX FLAG! Buildings set this to start replicating power graph if they are interacted with */
 	bool mInteractionRegisterPlayerWithCircuit;
 
@@ -482,12 +481,16 @@ protected:
 	UPROPERTY()
 	TSubclassOf< class UFGMaterialEffect_Build > mDismantleEffectTemplate;
 
+	/** Store the active effect so we can cancel an old one if we need to start a new. */
 	UPROPERTY()
-	UFGMaterialEffect_Build* mActiveBuildEffect = nullptr; //Store the active effect so we can cancel an old one if we need to start a new.
+	UFGMaterialEffect_Build* mActiveBuildEffect;
 
-	/** Used to sync and start build effect on buildings when created, but not after creation. Set's to true when creating a building, turns off in the construction effect finish play.*/
+	/**
+	 * Used to sync and start build effect on buildings when created, but not after creation.
+	 * This is sett to null in default. If it's non null, we expect the build effects need to play.
+	 */
 	UPROPERTY( Replicated, meta = ( NoAutoJson = true ) )
-	AActor* mBuildEffectInstignator = nullptr; //[DavalliusA:Mon/01-04-2019] this is sett to null in default. If it's non null, we expect the build effects need to play.
+	AActor* mBuildEffectInstignator;
 
 	/** Name read from config */
 	UPROPERTY( config, noclear, meta = (NoAutoJson = true) )
@@ -508,6 +511,10 @@ protected:
 	/** Whether or not this building should use ForceNetUpdate() when a player registers/unregisters from it. */
 	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
 	bool mForceNetUpdateOnRegisterPlayer;
+	
+	/** Whether or not this building should set Dorm_Awake when a player registers interaction and to set Dorm_DormantAll when no more players are interacting. */
+	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
+	bool mToggleDormancyOnInteraction;
 
 	/** Flag for whether the build effect is active */
 	uint8 mBuildEffectIsPlaying : 1;
@@ -540,7 +547,6 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	bool mShouldShowHighlight;
 
-
 	UPROPERTY( EditDefaultsOnly, Category = "Stacking" )
 	bool mAllowCleranceSeparationEvenIfStackedOn = false;
 
@@ -556,10 +562,6 @@ private:
 	/** Squared distance to closest camera */
 	UPROPERTY( meta = (NoAutoJson = true) )
 	float mCameraDistanceSq;
-
-	/** The building ID this belongs to. */
-	UPROPERTY( SaveGame, meta = (NoAutoJson = true) )
-	int32 mBuildingID;
 	
 	/** The cached main mesh of this buildable */
 	TArray< UMeshComponent* > mCachedMainMeshes; //@todoGC Do we still use this? Probably not, check with Ben.
@@ -578,8 +580,8 @@ private:
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
 
-	uint8 mParticipatedInCleranceEncroachFrameCountDown : 2; //used to indicate a recent clearance overlap for feedback. Only handled and accessed by the build gun on the local machine
-
+	/** Used to indicate a recent clearance overlap for feedback. Only handled and accessed by the build gun on the local machine */
+	uint8 mParticipatedInCleranceEncroachFrameCountDown : 2;
 
 	/** If you can interact with this buildable. */
 	UPROPERTY( EditDefaultsOnly, Category = "Interaction" )
@@ -624,8 +626,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Build Effect" )
     bool mHideOnBuildEffectStart;
 
-public:
-	FORCEINLINE ~AFGBuildable() = default;
+	/** Whether or not this buildable should affect the WorldGrid subsystem */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	bool mShouldModifyWorldGrid;
 };
 
 /** Definition for GetDefaultComponents. */

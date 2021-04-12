@@ -5,9 +5,7 @@
 void FAnimInstanceProxyRailRoadVehicle::PreUpdate(UAnimInstance* InAnimInstance, float DeltaSeconds){ }
 void FAnimInstanceProxyRailRoadVehicle::Update(float DeltaSeconds){ }
 void FAnimInstanceProxyRailRoadVehicle::Initialize(UAnimInstance* InAnimInstance){ }
-UFGRailRoadVehicleAnim::UFGRailRoadVehicleAnim() : Super() {
-	
-}
+UFGRailRoadVehicleAnim::UFGRailRoadVehicleAnim(){ }
 void UFGRailRoadVehicleAnim::NativeUpdateAnimation(float DeltaSeconds){ }
 void UFGRailRoadVehicleAnim::NativeInitializeAnimation(){ }
 void UFGRailRoadVehicleAnim::SetUsingHandBrake(bool inValue){ }

@@ -1,10 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGFoundationHologram.h"
+#include "Hologram/FGFoundationHologram.h"
 #include "FGStairHologram.generated.h"
 
 /**
@@ -23,7 +22,4 @@ protected:
 	// Begin AFGHologram Interface
 	virtual void CheckValidPlacement() override;
 	// End AFGHologram Interface
-
-public:
-	FORCEINLINE ~AFGStairHologram() = default;
 };

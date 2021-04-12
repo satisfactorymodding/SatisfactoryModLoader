@@ -1,9 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGBuildableSpeedSign.generated.h"
 
 
@@ -26,7 +25,4 @@ class FACTORYGAME_API AFGBuildableSpeedSign : public AFGBuildable
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	//~ End IFGUseableInterface
-
-public:
-	FORCEINLINE ~AFGBuildableSpeedSign() = default;
 };

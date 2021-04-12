@@ -1,11 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGFactoryHologram.h"
+#include "Hologram/FGFactoryHologram.h"
 #include "FGTradingPostHologram.generated.h"
 
 /**
@@ -64,7 +61,4 @@ private:
 	/** component matching the location where the work bench is placed */
 	UPROPERTY()
 	USceneComponent* mWorkBenchLocation;
-
-public:
-	FORCEINLINE ~AFGTradingPostHologram() = default;
 };

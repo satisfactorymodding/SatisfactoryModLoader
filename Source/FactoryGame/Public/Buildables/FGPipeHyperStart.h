@@ -1,14 +1,8 @@
-#pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
-
-#pragma once
-
-#include "../FGBuildablePipePart.h"
+#include "FGBuildablePipePart.h"
 #include "FGPipeHyperStart.generated.h"
 
 
@@ -26,6 +20,10 @@ class FACTORYGAME_API AFGPipeHyperStart : public AFGBuildablePipeHyperPart
 
 	virtual bool OnPipeEnter_Implementation( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough = nullptr, const AActor* fromPipe = nullptr ) override;
 	// End FGHyperTube Interface
+
+	// Begin AFGBuildableFactory interface
+	virtual bool CanProduce_Implementation() const override;
+	// End AFGBuildableFactory interface
 protected:
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Hyper Tube" )
@@ -40,9 +38,6 @@ private:
 	   Could be exploited if made too big, but it felt better and clearer feedback about slowdowns if it was a little above the usual min speed when doing initial tests.*/
 	UPROPERTY( EditDefaultsOnly )
 	float mInitialMinSpeedFactor = 1.4f;
-
-public:
-	FORCEINLINE ~AFGPipeHyperStart() = default;
 };
 
 

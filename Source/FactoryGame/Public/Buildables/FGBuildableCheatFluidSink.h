@@ -1,13 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "../FGFluidIntegrantInterface.h"
+#include "FGFluidIntegrantInterface.h"
 #include "FGBuildableCheatFluidSink.generated.h"
 
 /**
@@ -28,8 +25,15 @@ public:
 	virtual TArray< class UFGPipeConnectionComponent* > GetPipeConnections() override;
 	// End FluidIntegrant Interface
 
+	/** Set this sink enabled/disabled */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat|CheatFluidSink" )
+	void SetEnabled( bool isEnabled );
+	/** true if this sink is enabled. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat|CheatFluidSink" )
+	bool IsEnabled() const { return mIsEnabled; }
+	
 	/** Get the maximum fluid content this building can hold. [m3] */
-	UFUNCTION( BlueprintPure )
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat|CheatFluidSink" )
 	float GetMaxContent() const { return mFluidBox.MaxContent; }
 
 protected:
@@ -38,6 +42,10 @@ protected:
 	// End AFGBuildableFactory interface
 
 public:
+	/** Is the spawner outputting anything, useful for testing setups where multiple spawners are used. */
+	UPROPERTY( SaveGame )
+	bool mIsEnabled = true;
+	
 	/** Sink rate of the fluid, 0 means sink everything. [m3/s] */
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	float mSinkRate;
@@ -62,7 +70,4 @@ private:
 	/** Simulation data for this fluid integrant. */
 	UPROPERTY( SaveGame )
 	FFluidBox mFluidBox;
-
-public:
-	FORCEINLINE ~AFGBuildableCheatFluidSink() = default;
 };

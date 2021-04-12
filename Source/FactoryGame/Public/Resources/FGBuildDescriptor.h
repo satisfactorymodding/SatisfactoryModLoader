@@ -1,12 +1,8 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGItemDescriptor.h"
+#include "Resources/FGItemDescriptor.h"
 #include "FGBuildDescriptor.generated.h"
 
 /**
@@ -59,7 +55,4 @@ protected:
 	/** The order in the Build Menu is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
 	UPROPERTY( EditDefaultsOnly, Category = "Build" )
 	float mBuildMenuPriority;
-
-public:
-	FORCEINLINE ~UFGBuildDescriptor() = default;
 };

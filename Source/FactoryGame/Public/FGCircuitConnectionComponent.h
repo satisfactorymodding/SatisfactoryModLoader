@@ -1,15 +1,11 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UnrealString.h"
-#include "Array.h"
-#include "UObject/Class.h"
-#include "GameFramework/Actor.h"
+
 #include "FGConnectionComponent.h"
 #include "FGSaveInterface.h"
+#include "FGCircuit.h"
 #include "FGCircuitConnectionComponent.generated.h"
-
-#define IS_PUBLIC_BUILD 1
 
 DECLARE_MULTICAST_DELEGATE_OneParam( FConnectionChanged, class UFGCircuitConnectionComponent* );
 
@@ -99,6 +95,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|Connection" )
 	void RemoveHiddenConnection( class UFGCircuitConnectionComponent* other );
 
+	/**
+	* Checks whether or not there's a hidden connection between this component and another.
+	*/
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Circuits|Connection" )
+    bool HasHiddenConnection( class UFGCircuitConnectionComponent* other );
+
 	/** Clear all hidden connections. */
 	void ClearHiddenConnections();
 
@@ -116,6 +118,9 @@ public:
 
 	/** Used by the circuits and circuit subsystem to update the circuit this is connected to. */
 	void SetCircuitID( int32 circuitID );
+
+	/** @return The type of circuit this connection can belong to. See mCircuitType for more detailed info. */
+	TSubclassOf< UFGCircuit > GetCircuitType() const { return mCircuitType; }
 
 	/** Debug */
 	void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos );
@@ -138,7 +143,16 @@ public:
 	/** Callback when connection was removed or added */
 	FConnectionChanged OnConnectionChanged;
 
-private:
+protected:
+	/**
+	 * A circuit connection belongs to a specific type of circuit.
+	 * E.g. power connections can belong to power circuits and logic connection can belong to logic circuits.
+	 *
+	 * Note that it is illegal to try to connect two connections with different types.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
+	TSubclassOf< UFGCircuit > mCircuitType;
+
 	/** How many connections this component can have connected. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	int32 mMaxNumConnectionLinks;
@@ -147,6 +161,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	bool mIsHiddenConnection;
 
+private:
 	/** The wired connections to this. */
 	UPROPERTY( VisibleAnywhere, SaveGame, Replicated, Category = "Connection" )
 	TArray< AFGBuildableWire* > mWires;
@@ -165,7 +180,4 @@ private:
 	 */
 	UPROPERTY( VisibleAnywhere, ReplicatedUsing = OnRep_CircuitIDChanged, Category = "Connection" )
 	int32 mCircuitID;
-
-public:
-	FORCEINLINE ~UFGCircuitConnectionComponent() = default;
 };

@@ -1,17 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Components/SplineMeshComponent.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Hologram/FGSplineHologram.h"
-#include "FGFactoryHologram.h"
 #include "Components/SplineComponent.h"
-#include "../FGFactoryConnectionComponent.h"
+#include "FGFactoryConnectionComponent.h"
 #include "FGConveyorBeltHologram.generated.h"
 
 /**
@@ -51,9 +44,8 @@ public:
 	virtual void ServerPostConstructMessageDeserialization() override;
 	// End FGConstructionMessageInterface
 
-	FORCEINLINE EFactoryConnectionDirection GetActiveConnectionDirection()
-	{ return mSnappedConnectionComponents[0] && mBuildStep != ESplineHologramBuildStep::SHBS_FindStart ? mSnappedConnectionComponents[0]->GetDirection() : EFactoryConnectionDirection::FCD_ANY; }
-
+	/** Get the active connections direction, may be any. */
+	EFactoryConnectionDirection GetActiveConnectionDirection() const;
 
 	/** Returns any AFGBuildables that the ConveyorBeltHologram are currently snapping to */
 	TArray<AFGBuildable*> GetAnyConnectedBuildables();
@@ -63,11 +55,8 @@ protected:
 	virtual void CheckValidFloor() override;
 	virtual void CheckClearance() override;
 	virtual void CheckValidPlacement() override;
-
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
-	//void ConfigureSnappedBuilding( class AFGBuildable* inBuildable ) const override;
-
 	// End AFGBuildableHologram Interface
 
 	/** Creates the clearance detector used with conveyor belts */
@@ -77,9 +66,6 @@ private:
 	// Begin FGSplineHologram
 	virtual void UpdateSplineComponent() override;
 	// End FGSplineHologram
-
-	/** Get the number of sections this conveyor has. Used for cost, max length etc. */
-	int32 GetNumSections() const;
 
 	/** Create connection arrow component on the client. */
 	UFUNCTION()
@@ -109,7 +95,7 @@ private:
 	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
 
 	/** The connections we've made. */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	class UFGFactoryConnectionComponent* mSnappedConnectionComponents[ 2 ];
 
 
@@ -125,9 +111,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
 	float mBendRadius;
 
-	/** What is the maximum length of one segment. */
+	/** Maximum length that can be built. [cm] */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
-	int32 mMaxLength;
+	float mMaxSplineLength = 5600.1f;
 
 	/** What is the maximum incline of the conveyor belt (degrees). */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
@@ -141,10 +127,10 @@ private:
 	UPROPERTY()
 	class UStaticMeshComponent* mConnectionArrowComponent;
 
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	FVector mConstructionPoleLocations[ 2 ];
 
-	UPROPERTY(/*CustomSerialization*/)
+	UPROPERTY(CustomSerialization)
 	FRotator mConstructionPoleRotations[ 2 ];
 
 	/** All the generated spline meshes. */
@@ -159,7 +145,4 @@ private:
 	UPROPERTY()
 	class UStaticMesh* mMesh;
 	float mMeshLength;
-
-public:
-	FORCEINLINE ~AFGConveyorBeltHologram() = default;
 };

@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -12,10 +8,11 @@
 #include "FGSignificanceInterface.h"
 #include "FGExplosiveDestroyableInterface.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGGasPillar.generated.h"
 
 UCLASS()
-class FACTORYGAME_API AFGGasPillar : public AActor, public IFGSignificanceInterface, public IInterface_PostProcessVolume//, public IFGExplosiveDestroyableInterface, public IFGSaveInterface
+class FACTORYGAME_API AFGGasPillar : public AFGStaticReplicatedActor, public IFGSignificanceInterface, public IInterface_PostProcessVolume//, public IFGExplosiveDestroyableInterface, public IFGSaveInterface
 {
 	GENERATED_BODY()
 public:	
@@ -36,6 +33,10 @@ public:
 	virtual float GetSignificanceRange() override;
 
 	FORCEINLINE bool IsSignificant(){ return mIsSignificant; }
+
+	/** Returns mesh component */
+	UFUNCTION( BlueprintPure, Category = "Gas Pillar" )
+	FORCEINLINE UStaticMeshComponent* GetMesh() const { return mMesh; }
 
 	//~ Begin IInterface_PostProcessVolume Interface
 	virtual bool EncompassesPoint( FVector point, float sphereRadius = 0.f, float* out_distanceToPoint = nullptr ) override;
@@ -75,7 +76,4 @@ private:
 
 	/** Saved significance value */
 	bool mIsSignificant;
-
-public:
-	FORCEINLINE ~AFGGasPillar() = default;
 };

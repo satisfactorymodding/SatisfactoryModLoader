@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
@@ -54,12 +51,13 @@ struct FACTORYGAME_API FAnimInstanceProxyRailRoadVehicle : public FAnimInstanceP
 	FAnimInstanceProxyRailRoadVehicle( UAnimInstance* Instance ) : FAnimInstanceProxy( Instance )
 	{
 	}
+
+	// Begin FAnimInstanceProxy
 	virtual void PreUpdate( UAnimInstance* InAnimInstance, float DeltaSeconds ) override;
-
 	virtual void Update( float DeltaSeconds ) override;
-
-	/** Called when our anim instance is being initialized */
 	virtual void Initialize( UAnimInstance* InAnimInstance ) override;
+	// End FAnimInstanceProxy
+	
 public:
 	/** saved DT */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
@@ -188,25 +186,19 @@ public:
 	/** Bigge values, I dunno */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	uint8 mAGHandBrakeStop : 1;
-
-public:
-	FORCEINLINE ~FAnimInstanceProxyRailRoadVehicle() = default;
 };
 
-/**
- * 
- */
 UCLASS()
 class FACTORYGAME_API UFGRailRoadVehicleAnim : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	/** Constructor */
 	UFGRailRoadVehicleAnim();
 
+	// Begin UAnimInstance
 	virtual void NativeUpdateAnimation( float DeltaSeconds ) override;
-
 	virtual void NativeInitializeAnimation() override;
+	// End UAnimInstance
 
 	UFUNCTION( BlueprintCallable, Category = "Rail Road Vehicle Anim" )
 	void SetUsingHandBrake( bool inValue );
@@ -224,26 +216,25 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "Rail Road Vehicle Anim" )
 	void TriggerHandBrakeVfx();
+	
 protected:
-	UPROPERTY( Transient, BlueprintReadOnly, Category = "Rail Road Vehicle Anim", meta = ( AllowPrivateAccess = "true" ) )
-	FAnimInstanceProxyRailRoadVehicle mProxy;
-
-	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override
-	{
-		return &mProxy;
-	}
-
-	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* InProxy ) override
-	{
-
-	}
-
-	friend struct FAnimInstanceProxyRailRoadVehicle;
+	// Begin UAnimInstance
+	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override { return &mProxy; }
+	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* InProxy ) override {}
+	// End UAnimInstance
+	
 public:
 	/** The UCurveFloat specifying brake force */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
 	UCurveFloat* mBrakeCurve;
+
+protected:
+	UPROPERTY( Transient, BlueprintReadOnly, Category = "Rail Road Vehicle Anim", meta = ( AllowPrivateAccess = "true" ) )
+	FAnimInstanceProxyRailRoadVehicle mProxy;
+	
 private:
+	friend struct FAnimInstanceProxyRailRoadVehicle;
+	
 	bool mIsUsingHandBrake;
 
 	/** Trains material */
@@ -266,7 +257,6 @@ private:
 	UPROPERTY()
 	TArray< UParticleSystemComponent* > mSteamEffects;
 
-
 	/** Template for brake sparks particle */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
 	UParticleSystem* mBrakeSparkTemplate;
@@ -286,7 +276,4 @@ private:
 	/** Template for brake effect */
 	UPROPERTY()
 	UParticleSystemComponent* mHandBrakeVfxComponent;
-
-public:
-	FORCEINLINE ~UFGRailRoadVehicleAnim() = default;
 };

@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSettings.h"
 #include "FGSubsystemClasses.generated.h"
@@ -80,8 +78,16 @@ public:
 	/** Handles all vehicles */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGVehicleSubsystem > mVehicleSubsystemClass;
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGEventSubsystem> mEventSubsystemClass;
+	/** Handles world grid and data for those cells */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGWorldGridSubsystem > mWorldGridSubsystemClass;
+	/** Handles all drone stations */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGDroneSubsystem > mDroneSubsystemClass;
+	/* Handles instance updating for conveyor items. */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGConveyorItemSubsystem > mConveyorItemSubsystemClass;
 
-
-public:
-	FORCEINLINE ~UFGSubsystemClasses() = default;
 };

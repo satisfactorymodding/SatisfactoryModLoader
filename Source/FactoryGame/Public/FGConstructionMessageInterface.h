@@ -1,14 +1,15 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Interface.h"
-#include "SubclassOf.h"
 
 #include "FGBuildableSubsystem.h"
 #include "FGConstructionMessageInterface.generated.h"
 
+/**
+ * @todo Please comment me
+ */
 USTRUCT()
-struct FACTORYGAME_API FConstructHologramMessage
+struct FConstructHologramMessage
 {
 	GENERATED_BODY()
 
@@ -38,30 +39,21 @@ struct FACTORYGAME_API FConstructHologramMessage
 	{
 		return UpgradeActor != nullptr;
 	}
-
-public:
-	FORCEINLINE ~FConstructHologramMessage() = default;
 };
 
 /**
-*
-*/
+ * @todo Please comment me
+ */
 UINTERFACE(Blueprintable)
 class FACTORYGAME_API UFGConstructionMessageInterface : public UInterface
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGConstructionMessageInterface() = default;
 };
 
-/**
-*
-*/
+//@todo Why is this only on one hologram and not all holograms that do construction messages?
 class FACTORYGAME_API IFGConstructionMessageInterface
 {
 	GENERATED_BODY()
-
 public:
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) = 0;
 
@@ -73,7 +65,4 @@ public:
 	/** This is called on server when a hologram has been created from a construct message */
 	UFUNCTION( BlueprintNativeEvent )
 	void OnConstructMessagedDeserialized();
-
-public:
-	FORCEINLINE IFGConstructionMessageInterface() = default;
 };

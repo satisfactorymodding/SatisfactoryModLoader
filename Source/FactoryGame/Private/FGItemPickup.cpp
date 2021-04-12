@@ -10,7 +10,8 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->mGrowTimeInDays = 3;
 	this->mSavedNumItems = -1;
 	this->mMaxRespawns = -1;
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 }
 void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGItemPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }

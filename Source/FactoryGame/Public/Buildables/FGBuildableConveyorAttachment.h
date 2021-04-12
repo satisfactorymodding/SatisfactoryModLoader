@@ -1,20 +1,16 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActor_Storage.h"
-#include "FGBuildableFactory.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "Replication/FGReplicationDetailActor_Storage.h"
 #include "FGBuildableConveyorAttachment.generated.h"
 
 /**
-* This is a struct that will assign an item to a certain connection. Used by splitters to cycle outputs so all items dont always go to one output
-*/
+ * This is a struct that will assign an item to a certain connection. Used by splitters to cycle outputs so all items dont always go to one output
+ */
 USTRUCT()
 struct FACTORYGAME_API FConnectionItemStruct
 {
@@ -54,13 +50,10 @@ struct FACTORYGAME_API FConnectionItemStruct
 
 	/** To allow this to be thread safe, this bool marks if a table element has been consumed, to remove the need to delete from the table array */
 	bool Grabbed;
-
-public:
-	FORCEINLINE ~FConnectionItemStruct() = default;
 };
 
 /**
- * 
+ * Base class for conveyor attachments such as the splitters and mergers.
  */
 UCLASS()
 class FACTORYGAME_API AFGBuildableConveyorAttachment : public AFGBuildableFactory
@@ -73,15 +66,12 @@ public:
 	virtual void BeginPlay() override;
 	// End AActor interface
 
-	//~ Begin Factory Interface
-	//virtual void Factory_Tick( float deltaTime ) override;
-	//~ End Factory Interface
-
 	//~ Begin IFGDismantleInterface
 	virtual void Dismantle_Implementation() override;
-	//~ End IFGDismantleInferface
+	//~ End IFGDismantleInterface
 
 	FORCEINLINE class UFGInventoryComponent* GetBufferInventory() const { return mBufferInventory; }
+
 protected:
 	friend class AFGReplicationDetailActor_Storage;
 
@@ -94,6 +84,7 @@ protected:
 	virtual void OnBuildableReplicationDetailStateChange( bool newStateIsActive ) override;
 	virtual class AFGReplicationDetailActor* GetOrCreateReplicationDetailActor() override;
 	// End IFGReplicationDetailActorOwnerInterface
+
 public:
 	/** The size of the inventory for this attachment. Used to hold a buffer of incoming items */
 	int32 mInventorySizeX;
@@ -102,7 +93,6 @@ public:
 	int32 mInventorySizeY;
 
 protected:
-
 	/** The inventory to store everything in. Don't use this directly, use mStorageInventoryHandler->GetActiveInventoryComponent() */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mBufferInventory;
@@ -115,8 +105,4 @@ protected:
 
 	/** Cached linear size of the inventory component*/
 	int32 mCachedInventorySize;
-
-
-public:
-	FORCEINLINE ~AFGBuildableConveyorAttachment() = default;
 };

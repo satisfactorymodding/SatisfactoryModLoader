@@ -1,20 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "../FGUseableInterface.h"
-#include "FGBuildableConveyorBase.h"
+#include "FGUseableInterface.h"
+#include "Buildables/FGBuildableConveyorBase.h"
 #include "Components/SplineComponent.h"
-#include "../FGSignificanceInterface.h"
-#include "Components/SplineComponent.h"
-#include "FGInstancedSplineMeshComponent.h"
-#include "../FGRemoteCallObject.h"
 #include "FGBuildableConveyorBelt.generated.h"
 
 /**
@@ -32,9 +22,6 @@ public:
 	int32 mItemIndex;
 
 	int8 mRepVersion;
-
-public:
-	FORCEINLINE ~UFGUseState_ConveyorBeltValid() = default;
 };
 
 UCLASS()
@@ -47,9 +34,6 @@ public:
 public:
 	/** index for the looked at item in mItems */
 	int32 mItemIndex;
-
-public:
-	FORCEINLINE ~UFGUseState_ConveyorBeltFullInventory() = default;
 };
 
 /**
@@ -61,9 +45,6 @@ class FACTORYGAME_API UFGUseState_ConveyorBeltEmpty : public UFGUseState
 	GENERATED_BODY()
 public:
 	UFGUseState_ConveyorBeltEmpty() { mIsUsableState = false; mWantAdditonalData = false; }
-
-public:
-	FORCEINLINE ~UFGUseState_ConveyorBeltEmpty() = default;
 };
 
 /**
@@ -77,9 +58,12 @@ class FACTORYGAME_API AFGBuildableConveyorBelt : public AFGBuildableConveyorBase
 public:
 	AFGBuildableConveyorBelt();
 
+	friend class AFGConveyorItemSubsystem;
+	
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual bool IsComponentRelevantForNavigation( UActorComponent* component ) const override;
 	// End AActor interface
 
@@ -97,6 +81,7 @@ public:
 	virtual void GainedSignificance_Implementation() override;
 	virtual	void LostSignificance_Implementation() override;
 	virtual	void SetupForSignificance() override;
+	virtual void UpdateMeshLodLevels(int32 newLodLevel) override;
 	// End IFGSignificanceInterface
 
 	// Begin Buildable interface
@@ -137,7 +122,7 @@ public:
 	 * Respline a conveyor with the given spline.
 	 */
 	static AFGBuildableConveyorBelt* Respline( AFGBuildableConveyorBelt* conveyor, const TArray< FSplinePointData >& newSplineData );
-	
+
 	/** Get the mesh used for this conveyor. */
 	UFUNCTION( BlueprintPure, Category = "Conveyor" )
 	FORCEINLINE UStaticMesh* GetSplineMesh() const { return mMesh; }
@@ -150,14 +135,21 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Build" )
 	FORCEINLINE class USplineComponent* GetSplineComponent() { return mSplineComponent; }
 
-	void OnUseServerRepInput( class AFGCharacterPlayer* byCharacter, int32 itemIndex, int8 repVersion );
+	void OnUseServerRepInput( class AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset);
+
+	void SetShadowCasting( bool inStateBelt, bool inStateItems );
+
+	// Temp function will be removed.
+	void DestroyVisualItems();
+	
 protected:
 	// Begin AFGBuildableFactory interface
 	virtual bool VerifyDefaults( FString& out_message ) override;
 	// End AFGBuildableFactory interface
 
 	// Begin AFGBuildableConveyorBase interface
-	virtual void TickItemTransforms( float dt ) override;
+	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) override;
+	virtual void TickRadioactivity() override;
 	// End AFGBuildableConveyorBase interface
 
 private:
@@ -206,6 +198,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Audio" )
 	class UAkAudioEvent* mSplineAudioEvent;
 
-public:
-	FORCEINLINE ~AFGBuildableConveyorBelt() = default;
+	bool mShouldCastBeltShadows;
+
+	bool mShouldCastItemShadows;
 };

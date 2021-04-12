@@ -1,12 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Resources/FGItemDescriptor.h"
-#include "../Equipment/FGEquipment.h" // I really want to get rid of this include, but removing it adds compile errors
-#include "FGItemDescriptor.h"
+#include "Equipment/FGEquipment.h" // I really want to get rid of this include, but removing it adds compile errors
 #include "FGEquipmentDescriptor.generated.h"
 
 /**
@@ -25,9 +22,4 @@ public:
 	/** The equipment that is linked to this descriptor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
 	TSubclassOf< class AFGEquipment > mEquipmentClass;
-
-public:
-	UFGEquipmentDescriptor();
-	FORCEINLINE ~UFGEquipmentDescriptor() = default;
 };
-FORCEINLINE UFGEquipmentDescriptor::UFGEquipmentDescriptor() = default;

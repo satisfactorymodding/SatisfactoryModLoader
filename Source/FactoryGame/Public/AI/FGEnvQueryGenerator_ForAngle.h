@@ -1,8 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "EnvironmentQuery/Generators/EnvQueryGenerator_ProjectedPoints.h"
@@ -51,7 +49,4 @@ public:
 	UPROPERTY( EditAnywhere, Category = Generator )
 	TSubclassOf< UEnvQueryContext > mCenterActor;
 	
-
-public:
-	FORCEINLINE ~UFGEnvQueryGenerator_ForAngle() = default;
 };

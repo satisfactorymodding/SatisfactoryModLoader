@@ -1,10 +1,5 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Character.h"
 #include "FGSaveInterface.h"
@@ -26,9 +21,6 @@ struct FACTORYGAME_API FFootstepEffect
 	/** The decal to place on the ground when walking around */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
 	TArray< class UMaterialInterface* > GroundDecals;
-
-public:
-	FORCEINLINE ~FFootstepEffect() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -43,9 +35,6 @@ struct FACTORYGAME_API FFootstepEffectSurface
 	/** The effect we want to play when hitting the surface */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep", meta = ( ShowOnlyInnerProperties ) )
 	FFootstepEffect Effect;
-
-public:
-	FORCEINLINE ~FFootstepEffectSurface() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -60,9 +49,6 @@ struct FACTORYGAME_API FFootstepEffectWater
 	/** The effect we want to play when hitting the surface */
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep", meta = ( ShowOnlyInnerProperties ) )
 	FFootstepEffect Effect;
-
-public:
-	FORCEINLINE ~FFootstepEffectWater() = default;
 };
 
 
@@ -80,17 +66,17 @@ public:
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	virtual void Tick( float deltaTime ) override;
 
-	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser );
+	virtual float TakeDamage( float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser ) override;
 	// End AActor interface
 
 	/** Apply momentum caused by damage. */
-	virtual void ApplyDamageMomentum( float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser );
+	virtual void ApplyDamageMomentum( float DamageTaken, FDamageEvent const& DamageEvent, APawn* PawnInstigator, AActor* DamageCauser ) override;
 
 	/**
 	* Called when this Pawn is possessed. Only called on the server (or in standalone).
-	*	@param C The controller possessing this pawn
+	*	@param NewController The controller possessing this pawn
 	*/
-	virtual void PossessedBy( AController* NewController );
+	virtual void PossessedBy( AController* NewController ) override;
 	virtual void UnPossessed() override;
 
 	// Begin IFGSaveInterface
@@ -142,6 +128,9 @@ public:
 	/** Called when landing, used for fall damage */
 	virtual void Landed( const FHitResult& Hit ) override;
 
+	/** Return if character is ragdolled */
+	FORCEINLINE bool GetIsRagdoll() { return mIsRagdolled; }
+
 	/** Calculate damage we take from a fall */
 	UFUNCTION( BlueprintNativeEvent, Category = "Fall Damage" )
 	int32 CalculateFallDamage( float zSpeed ) const;
@@ -186,7 +175,7 @@ public:
 	 *
 	 * @param footDown - the index specified in UFGAnimNotify_FootDown
 	 **/
-	UFUNCTION( BlueprintNativeEvent, Category = "Footstep" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_PlayFootstepEffect, Category = "Footstep" )
 	void PlayFootstepEffect( int32 footDown, bool playSound );
 
 	/**
@@ -211,7 +200,7 @@ public:
 	
 	/** returns true if mesh is ragdolled */
 	UFUNCTION( BlueprintPure, Category = "Ragdoll" )
-	bool IsRagdolled() { return mIsRagdolled; }
+	bool IsRagdolled() const { return mIsRagdolled; }
 
 	/**
 	* if newRagdoll is true this function will ragdoll the player
@@ -237,6 +226,10 @@ public:
 	/** Event called when a locally controlled pawn gets possessed/unpossessed */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
 	void OnLocallyPossessedChanged( bool isLocallyPossessed );
+
+	/**Is this player possessed yet */
+	UFUNCTION( BlueprintPure, Category = "Character" )
+	FORCEINLINE bool IsPossessed() const{ return mIsPossessed; }
 protected:
 	/**
 	 * Get the audio event for the foot down
@@ -299,7 +292,7 @@ protected:
 	 * @param waterDepth - distance from water to bottom of the water puddle
 	 * @param out_footstepEffect - the footstep effect, only valid if returning true
 	 *
-	 * @return true if we found a suiteable effect
+	 * @return true if we found a suitable effect
 	 */
 	bool GetWaterFootstepEffect( const TArray< FFootstepEffectWater >& waterEffects, float waterDepth, FFootstepEffect& out_footstepEffect ) const;
 
@@ -432,7 +425,7 @@ protected:
 	/** Used to avoid playing landing effect twice */
 	bool mShouldPlayLandEffect:1;
 
-	/** Velicty we have when falling, updaten all the time when falling, never cleared */
+	/** Velocity we have when falling, update all the time when falling, never cleared */
 	FVector mFallVelocity;
 
 	UPROPERTY( Replicated )
@@ -495,7 +488,4 @@ private:
 	/** Used to let client know when a pawn gets possessed/unpossessed */
 	UPROPERTY( ReplicatedUsing = OnRep_IsPossessed )
 	bool mIsPossessed;
-
-public:
-	FORCEINLINE ~AFGCharacterBase() = default;
 };

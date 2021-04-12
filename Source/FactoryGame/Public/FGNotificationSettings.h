@@ -1,8 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
@@ -20,7 +18,4 @@ public:
 public:
 	UPROPERTY( EditAnywhere, config, Category = "Timings", meta = ( ToolTip = "If the autosave interval is longer than the timing each of these timings will trigger a autosave notifications when there is that amount of time left on the auto save timer " ) )
 	TArray<float> mAutoSaveNotificationTimings;
-
-public:
-	FORCEINLINE ~UFGNotificationSettings() = default;
 };

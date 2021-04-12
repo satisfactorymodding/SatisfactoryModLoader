@@ -1,8 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Camera/CameraModifier.h"
@@ -32,7 +30,4 @@ public:
 	/** The min rotation in pitch  */
 	UPROPERTY( EditDefaultsOnly, Category = "Limited Look" )
 	float mMinPitch;
-
-public:
-	FORCEINLINE ~UFGCameraModifierSlide() = default;
 };

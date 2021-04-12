@@ -4,7 +4,7 @@
 
 AFGRailroadTimeTable::AFGRailroadTimeTable() : Super() {
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }
 void AFGRailroadTimeTable::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGRailroadTimeTable::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

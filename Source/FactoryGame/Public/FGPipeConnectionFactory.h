@@ -1,8 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGPipeConnectionComponent.h"
@@ -37,11 +35,12 @@ protected:
 	/** Fluid box managed by this connection. This is special to PipeConnectionFactory as other connections do not have their own fluid box */
 	FFluidBox mFluidBox;
 
+	/** Volume of the fluid box inside this attachment. [m3] */
+	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
+	float mFluidBoxVolume;
+
 private:
 	/** If this connection is a producer type, should it apply the factory settings default pressure? */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	bool mApplyAdditionalPressure;
-
-public:
-	FORCEINLINE ~UFGPipeConnectionFactory() = default;
 };

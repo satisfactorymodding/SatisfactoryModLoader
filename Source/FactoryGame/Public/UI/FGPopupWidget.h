@@ -1,11 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "../FGPopupInstigatorInterface.h"
-#include "FGInteractWidget.h"
+#include "FGPopupInstigatorInterface.h"
+#include "UI/FGInteractWidget.h"
 #include "FGPopupWidget.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE( FPopupConfirmClicked );
@@ -21,7 +19,7 @@ enum EPopupId
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FPopupData
+struct FPopupData
 {
 	GENERATED_BODY();
 public:
@@ -46,9 +44,6 @@ public:
 	UPROPERTY()
 	FPopupClosed PopupClosedDelegate;
 
-
-public:
-	FORCEINLINE ~FPopupData() = default;
 };
 
 /**
@@ -78,7 +73,4 @@ public:
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere, Category = "Popup" )
 	UObject* mInstigator;
 
-
-public:
-	FORCEINLINE ~UFGPopupWidget() = default;
 };

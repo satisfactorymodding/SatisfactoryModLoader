@@ -1,11 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGAttackMelee.h"
+#include "AI/FGAttackMelee.h"
 #include "FGAttackMeleeJump.generated.h"
 
 /**
@@ -46,7 +44,4 @@ protected:
 	/** Animation to play before jumping */
 	UPROPERTY( EditDefaultsOnly )
 	class UAnimMontage* mPreJumpMontage;
-
-public:
-	FORCEINLINE ~UFGAttackMeleeJump() = default;
 };

@@ -18,4 +18,5 @@ void UFGTargetPointLinkedList::SetCurrentTarget( AFGTargetPoint* newTarget){ }
 void UFGTargetPointLinkedList::SetPathVisibility(bool inVisible){ }
 void UFGTargetPointLinkedList::SetNextTarget(){ }
 void UFGTargetPointLinkedList::SetClosestPointAsTarget(){ }
+AFGTargetPoint* UFGTargetPointLinkedList::FindBestTarget(float withinLookAngle){ return nullptr; }
 void UFGTargetPointLinkedList::ClearRecording(){ }

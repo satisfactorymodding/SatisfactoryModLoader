@@ -1,7 +1,8 @@
-#pragma once
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "Object.h"
+#pragma once
+
+#include "UObject/Object.h"
 #include "FGFoliageIdentifier.generated.h"
 
 /**
@@ -11,9 +12,6 @@ UCLASS(abstract, Blueprintable)
 class FACTORYGAME_API UFGFoliageIdentifier : public UObject
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFoliageIdentifier() = default;
 };
 
 /**
@@ -23,9 +21,6 @@ UCLASS()
 class FACTORYGAME_API UFGFoliageIdentifier_RemovableByBuildings : public UFGFoliageIdentifier
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFoliageIdentifier_RemovableByBuildings() = default;
 };
 
 /**
@@ -35,9 +30,6 @@ UCLASS()
 class FACTORYGAME_API UFGFoliageIdentifier_Pickupable : public UFGFoliageIdentifier_RemovableByBuildings
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFoliageIdentifier_Pickupable() = default;
 };
 
 /**
@@ -47,9 +39,6 @@ UCLASS()
 class FACTORYGAME_API UFGFoliageIdentifier_Chainsawable : public UFGFoliageIdentifier
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFoliageIdentifier_Chainsawable() = default;
 };
 
 /**
@@ -59,9 +48,6 @@ UCLASS()
 class FACTORYGAME_API UFGFoliageIdentifier_ChainsawableXmasTree : public UFGFoliageIdentifier_Chainsawable
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFoliageIdentifier_ChainsawableXmasTree() = default;
 };
 
 /**
@@ -71,9 +57,6 @@ UCLASS()
 class FACTORYGAME_API UFGFoliageIdentifier_VehicleDestroyable : public UFGFoliageIdentifier
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFoliageIdentifier_VehicleDestroyable() = default;
 };
 
 /**
@@ -83,7 +66,4 @@ UCLASS()
 class FACTORYGAME_API UFGFoliageIdentifier_ExplosiveDestroyable : public UFGFoliageIdentifier
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGFoliageIdentifier_ExplosiveDestroyable() = default;
 };

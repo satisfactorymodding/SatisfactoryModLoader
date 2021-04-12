@@ -1,11 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGAttack.h"
+#include "AI/FGAttack.h"
 #include "FGAttackRanged.generated.h"
 
 /**
@@ -27,7 +24,4 @@ public:
 public:
 	UPROPERTY( EditDefaultsOnly, Category = "Attack" )
 	TSubclassOf< class AFGProjectile > mProjectileClass;
-
-public:
-	FORCEINLINE ~UFGAttackRanged() = default;
 };

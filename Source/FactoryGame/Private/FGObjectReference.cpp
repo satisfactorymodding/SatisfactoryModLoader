@@ -9,6 +9,7 @@ bool FObjectReferenceDisc::IsNullptr() const{ return bool(); }
 void FObjectReferenceDisc::Reset(){ }
 UObject* FObjectReferenceDisc::Resolve(UWorld* world) const{ return nullptr; }
 bool FObjectReferenceDisc::ResolveWithRedirect(UWorld* world, const FString& outerName, UObject*& out_object, UObject*& out_outer) const{ return bool(); }
+UObject* FObjectReferenceDisc::StaticFindOrLoad(UClass* ObjectClass, UObject* InObjectPackage, const TCHAR* OrigInName, bool isProbablyClass){ return nullptr; }
 void FObjectReferenceDisc::Set(UObject* obj){ }
 void FObjectReferenceDisc::ParseObjectName(FString& out_objName) const{ }
 void FObjectReferenceDisc::ParseObjectNameAndPath(FString& out_objPath, FString& out_objName) const{ }
@@ -21,3 +22,4 @@ void FObjectReferenceDisc::ClearRedirects(){ }
 bool FObjectReferenceDisc::FindRedirect(const FString& oldName, FString& out_newRedirectedName){ return bool(); }
 void FObjectReferenceDisc::AddRedirector(const FString& source, const FString& destination){ }
 ULevel* FObjectReferenceDisc::InternalFindLevel(UWorld* world, const FString& levelName) const{ return nullptr; }
+bool FObjectReferenceDisc::IsModdingModuleLoaded = bool();

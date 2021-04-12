@@ -2,8 +2,8 @@
 
 #include "FGFactorySettings.h"
 #include "FGRecipeShortcut.h"
-#include "FGResourceScanner.h"
-#include "FGBuildGun.h"
+#include "Equipment/FGResourceScanner.h"
+#include "Equipment/FGBuildGun.h"
 
 UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mBuildGunClass = AFGBuildGun::StaticClass();

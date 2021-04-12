@@ -1,10 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGRailroadVehicle.h"
 #include "FGFreightWagon.generated.h"
@@ -27,7 +23,6 @@ UCLASS()
 class FACTORYGAME_API AFGFreightWagon : public AFGRailroadVehicle
 {
 	GENERATED_BODY()
-	
 public:
 	AFGFreightWagon();
 
@@ -72,6 +67,9 @@ public:
 	/** Checks if a freight is valid to dock with a certain platform and its type */
 	bool CanDockWithPlatformOfType( EFreightCargoType platformType ) const;
 
+	/** Kill all players that overlap with the container area. */
+	void KillOverlappedCharacters();
+	
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 
@@ -85,12 +83,6 @@ private:
 	UFUNCTION()
 	void InitializeInventoryComponent();
 
-	/** When the player is first killed by an appearing container (items were added to an empty container) this is called. */
-	void BeginLaunchOverlappedCharacter( class UPrimitiveComponent* OverlappedComp, class AFGCharacterPlayer* otherCharacter );
-
-	/** Called a frame after a player is killed by an appearing container */
-	void EndLaunchOverlappedCharacters( );
-
 	/** Returns a UStaticMesh pointer ( loaded if necessary ) that matches the inventory housed in our inventory component */
 	UStaticMesh* GetCargoStaticMesh();
 
@@ -102,7 +94,6 @@ public:
 	static FName CargoMeshComponentName;
 
 private:
-
 	/** The current type of inventory this freight is holding. Default is FCT_Standard. */
 	UPROPERTY()
 	EFreightCargoType mFreightCargoType;
@@ -114,9 +105,6 @@ private:
 	 */
 	UPROPERTY()
 	EFreightCargoType mTransitoryCargoType;
-
-	UPROPERTY()
-	TArray<AFGCharacterPlayer*> mLaunchedCharacters;
 
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )
@@ -135,7 +123,7 @@ private:
 	TSoftObjectPtr< UStaticMesh > mContainerMeshLiquid;
 	
 	/** The size of the inventory for this wagon. */
-	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
+	UPROPERTY( EditDefaultsOnly, Category = "Inventory", meta = ( AddAutoJSON = true ) )
 	int32 mInventorySize;
 
 	/** Item stack size Enum to use as base for how much fluid a Liquid / Gas Item descriptor can be stored on an index in an inventory */
@@ -149,16 +137,7 @@ private:
 	/** Cached value of Fluid Resource Stack Size ( set in begin play from the default stack enum ) */
 	int32 mCachedFluidStackSize;
 
+	/** Cached pointer to the cargo mesh, valid after BeginPlay. */
 	UPROPERTY()
 	class UStaticMeshComponent* mCargoMeshComponent;
-
-	UPROPERTY(EditDefaultsOnly, Category = "FreightWagon")
-	float mLaunchCharacterScalar;
-
-	UPROPERTY( VisibleAnywhere )
-	class UBoxComponent* mCargoOverlapCollision;
-
-
-public:
-	FORCEINLINE ~AFGFreightWagon() = default;
 };

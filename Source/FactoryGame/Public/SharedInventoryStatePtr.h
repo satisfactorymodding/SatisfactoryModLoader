@@ -1,11 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UnrealString.h"
 
 #include "FGSaveSession.h"
 #include "GameFramework/Actor.h"
-#include "SharedPointer.h"
+#include "Templates/SharedPointer.h"
 #include "Engine/PackageMapClient.h"
 #include "Engine/NetConnection.h"
 #include "SharedInventoryStatePtr.generated.h"
@@ -22,7 +21,7 @@ public:
 	 * Make a shared pointer of for an actor.
 	 * @note Only valid to call on the server.
 	 */
-	FORCEINLINE static FSharedInventoryStatePtr MakeShared( AActor* actor )
+	static FSharedInventoryStatePtr MakeShared( AActor* actor )
 	{
 		if( ::IsValid( actor ) )
 		{
@@ -52,7 +51,7 @@ public:
 		inSharedPtr.ActorPtr = nullptr;
 	}
 
-	FORCEINLINE FSharedInventoryStatePtr& operator=( const FSharedInventoryStatePtr& inSharedPtr )
+	FSharedInventoryStatePtr& operator=( const FSharedInventoryStatePtr& inSharedPtr )
 	{
 		SharedReferenceCount = inSharedPtr.SharedReferenceCount;
 		ActorPtr = inSharedPtr.ActorPtr;
@@ -79,14 +78,14 @@ public:
 	/**
 	 * Use a custom serialize so we can start the reference counting on a loaded pointer.
 	 */
-	FORCEINLINE bool Serialize( FArchive& ar )
+	bool Serialize( FArchive& ar )
 	{
 		ar << *this;
 
 		return !ar.IsError();
 	}
 	
-	FORCEINLINE friend FArchive& operator<<( FArchive& ar, FSharedInventoryStatePtr& state )
+	friend FArchive& operator<<( FArchive& ar, FSharedInventoryStatePtr& state )
 	{
 		ar << state.ActorPtr;
 
@@ -109,7 +108,7 @@ public:
 	/**
 	 * Use a custom net serialize to only allow replication from server to client and never the other way around.
 	 */
-	FORCEINLINE bool NetSerialize( FArchive& ar, class UPackageMap* map, bool& out_Success )
+	bool NetSerialize( FArchive& ar, class UPackageMap* map, bool& out_Success )
 	{
 		bool isServer = false;
 		if( UPackageMapClient* client = Cast<UPackageMapClient>( map ) )
@@ -159,7 +158,7 @@ public:
 		return nullptr;
 	}
 
-	FORCEINLINE int32 GetSharedReferenceCount() const
+	int32 GetSharedReferenceCount() const
 	{
 		return SharedReferenceCount.GetSharedReferenceCount();
 	}
@@ -187,11 +186,11 @@ private:
 	class TReferenceControllerWithNextFrameDeleter : public SharedPointerInternals::FReferenceControllerBase
 	{
 	public:
-		FORCEINLINE explicit TReferenceControllerWithNextFrameDeleter( AActor* inActorPtr ) :
+		explicit TReferenceControllerWithNextFrameDeleter( AActor* inActorPtr ) :
 			ActorPtr( inActorPtr )
 		{}
 
-		FORCEINLINE virtual void DestroyObject() override
+		virtual void DestroyObject() override
 		{
 			//[FreiholtzK:Mon/16-03-2020] Added support for removing objects in non game thread, E.g  parallelfor in buildable subsystem
 			FSimpleDelegateGraphTask::CreateAndDispatchWhenReady
@@ -217,18 +216,15 @@ private:
 		TWeakObjectPtr< AActor > ActorPtr;
 	};
 
-	FORCEINLINE SharedPointerInternals::FReferenceControllerBase* NewReferenceControllerWithNextFrameDeleter( AActor* inActorPtr )
+	inline SharedPointerInternals::FReferenceControllerBase* NewReferenceControllerWithNextFrameDeleter( AActor* inActorPtr )
 	{
 		return new TReferenceControllerWithNextFrameDeleter( inActorPtr );
 	}
-// MODDING EDIT
-public: // VarToFString requires this
+
 	/**
 	 * Private constructor to create a pointer with reference counting enabled.
-	 *
-	 * Modders, please use FSharedInventoryStatePtr::MakeShared, using this might cause a runtime crash.
 	 */
-	FORCEINLINE FSharedInventoryStatePtr( AActor* actor ) :
+	FSharedInventoryStatePtr( AActor* actor ) :
 		ActorPtr( actor ),
 		SharedReferenceCount( NewReferenceControllerWithNextFrameDeleter( actor ) )
 	{
@@ -244,23 +240,17 @@ private:
 	 * this is only setup on the server and is completely ignored on clients and replication.
 	 */
 	SharedPointerInternals::FSharedReferencer< ESPMode::Fast > SharedReferenceCount;
-
-public:
-	FORCEINLINE ~FSharedInventoryStatePtr() = default;
 };
 FORCEINLINE FString VarToFString( FSharedInventoryStatePtr var ){ return FString::Printf( TEXT( "%s" ), *VarToFString(var.Get()) ); }
 
 template<> struct TIsZeroConstructType<FSharedInventoryStatePtr> { enum { Value = true }; };
 
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits<FSharedInventoryStatePtr> : public TStructOpsTypeTraitsBase2<FSharedInventoryStatePtr>
+struct TStructOpsTypeTraits<FSharedInventoryStatePtr> : public TStructOpsTypeTraitsBase2<FSharedInventoryStatePtr>
 {
 	enum
 	{
 		WithNetSerializer = true,
 		WithSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits<FSharedInventoryStatePtr>() = default;
 };

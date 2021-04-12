@@ -11,7 +11,7 @@ USkinnedMeshComponent* UFGRailroadVehicleMovementComponent::GetMesh() const{ ret
 void UFGRailroadVehicleMovementComponent::FixupSkeletalMesh(){ }
 void UFGRailroadVehicleMovementComponent::TickSlaveInput(float dt, const  UFGLocomotiveMovementComponent* master){ }
 void UFGRailroadVehicleMovementComponent::TickTractionAndFriction(float dt){ }
-void UFGRailroadVehicleMovementComponent::MoveVehicle(float dt, float distance, FRailroadTrackPosition newTrackPosition){ }
+void UFGRailroadVehicleMovementComponent::MoveVehicle(float dt, float distance, FRailroadTrackPosition newTrackPosition, bool shouldMoveComponent){ }
 void UFGRailroadVehicleMovementComponent::UpdateCouplerRotationAndLength(){ }
 float UFGRailroadVehicleMovementComponent::GetWheelsetAngle() const{ return float(); }
 void UFGRailroadVehicleMovementComponent::OnCreatePhysicsState(){ }
@@ -23,3 +23,4 @@ float UFGRailroadVehicleMovementComponent::GetWheelsetOffset(int32 index) const{
 FVector UFGRailroadVehicleMovementComponent::GetCouplerRotationAndExtention(int32 index,  float& out_extention) const{ return FVector(); }
 UFGRailroadVehicleMovementComponent* UFGRailroadVehicleMovementComponent::GetCoupledMovementAt(ERailroadVehicleCoupler coupler) const{ return nullptr; }
 FVector UFGRailroadVehicleMovementComponent::CalcCouplerDistance(ERailroadVehicleCoupler coupler) const{ return FVector(); }
+UFGRailroadVehicleMovementComponent::UFGRailroadVehicleMovementComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

@@ -1,11 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "FGWeapon.h"
+#include "Equipment/FGWeapon.h"
 #include "FGResourceMiner.generated.h"
 
 UCLASS()
@@ -66,7 +64,4 @@ protected:
 	/** The node we want to pick from */
 	UPROPERTY( Replicated )
 	class AFGResourceNode* mCachedResouceNode;
-
-public:
-	FORCEINLINE ~AFGResourceMiner() = default;
 };

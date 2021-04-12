@@ -1,8 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/World.h"
-#include "UnrealString.h"
-#include "UObject/Interface.h"
-#include "UObject/Class.h"
 
 #include "FGWorldCreationInterface.generated.h"
 
@@ -11,20 +9,15 @@
 * have a UCLASS to be able to access
 */
 UINTERFACE( Blueprintable )
-class FACTORYGAME_API UFGWorldCreationInterface : public UInterface
+class UFGWorldCreationInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGWorldCreationInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGWorldCreationInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
 /**
 * @brief Interface for all useable classes out there
 */
-class FACTORYGAME_API IFGWorldCreationInterface
+class IFGWorldCreationInterface
 {
 	GENERATED_IINTERFACE_BODY()
 public:
@@ -37,7 +30,4 @@ public:
 	 * Destroy a world created with CreateWorld
 	 */
 	virtual void DestroyWorld( class UWorld* world ) = 0;
-
-public:
-	FORCEINLINE IFGWorldCreationInterface() = default;
 };

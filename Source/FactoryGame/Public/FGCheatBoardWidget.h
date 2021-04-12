@@ -1,23 +1,15 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UMG.h"
 
 #include "FGCheatManager.h"
 #include "SlateBasics.h"
-#include "STreeView.h"
-
-// MODDING EDIT: doesn't inherit the one from FactoryGame.h
-#ifndef WITH_CHEATS // and now it does? what?
-#define WITH_CHEATS 0
-#endif
+#include "Widgets/Views/STreeView.h"
 
 #if WITH_CHEATS
 
-// MODDING EDIT: missing header :(
-// #include "FGCheatBoardMenuElements.h"
+
+#include "FGCheatBoardMenuElements.h"
 
 
 /**
@@ -51,19 +43,19 @@ public:
 
 	/** This is just the base, that is supposed to show propts for the user to input data.
 	 * this is overloaded per property type */
-	void ShowInputWindowFor( UProperty* prop );
+	void ShowInputWindowFor( FProperty* prop );
 
 	/** Propmts the user with true and false inputs */
-	void ShowInputWindowFor( UBoolProperty* prop );
+	void ShowInputWindowFor( FBoolProperty* prop );
 
 	/** Propmts the user with true and false inputs */
-	void ShowInputWindowFor( UNumericProperty* prop );
+	void ShowInputWindowFor( FNumericProperty* prop );
 	
 	/** Propmts the user to input a resource class */
 	void ShowInputWindowFor( UClass* inClass );
 
 	/** Propmts the user to input a text, FString or UText. (No FName yet) */
-	void ShowInputWindowFor( UStrProperty* prop );
+	void ShowInputWindowFor( FStrProperty* prop );
 
 	/** Propmts the user to input a color */
 	void ShowInputWindowFor( FLinearColor color );	
@@ -74,8 +66,7 @@ public:
 	void SetFilterTextboxFocus() const;
 	void ResetMenu();
 
-	// MODDING EDIT: missing header :(
-	// void ShowMenu( CheatMenuCategory* newMenu, FString title, FString filtervalue );
+	void ShowMenu( CheatMenuCategory* newMenu, FString title, FString filtervalue );
 	/** This finds all the functions in UFGCheatManager */
 	TArray< UFunction* > GetAllCheats();
 
@@ -83,11 +74,9 @@ public:
 	 *
 	 * @ param func - The cheat function the player clicked
 	 */
-	// MODDING EDIT: missing header :(
-	// FReply OnCheatClicked( CheatMenuElementPtr cheat );
+	FReply OnCheatClicked( CheatMenuElementPtr cheat );
 
-	// MODDING EDIT: missing header :(
-	// FReply OnCheatFavoriteToggle( CheatMenuElementPtr cheat );
+	FReply OnCheatFavoriteToggle( CheatMenuElementPtr cheat );
 
 	/** Called when the players commits text in the input window */
 	void OnInputTextCommited( const FText& InText, ETextCommit::Type InCommitType );
@@ -116,7 +105,7 @@ public:
 	void OnSetColorFromColorPicker( FLinearColor newColor );
 
 	/** Get the next property for mFunctionWaitingForParms, where the current is mPropertyWaitingForInput*/
-	UProperty* GetNextProperty();
+	FProperty* GetNextProperty();
 
 public:
 
@@ -149,11 +138,10 @@ private:
 	  * trying to write more properties to it */
 	uint8* mParameters;
 	uint8 mCurrentParameterIndex = 0;
-	// MODDING EDIT: missing header :(
-	// CheatMenuObject* mCurrentCheat = nullptr;
+	CheatMenuObject* mCurrentCheat = nullptr;
 
 	/** This is the property we asked for input about */
-	UProperty* mPropertyWaitingForInput;
+	FProperty* mPropertyWaitingForInput;
 
 	/** The textstyle used in this widget */
 	FTextBlockStyle* mButtonTextStyle;
@@ -166,33 +154,24 @@ private:
 	TArray< TSharedRef< SWidget > > mButtons;
 
 
-	// MODDING EDIT: missing header :(
-	// TSharedPtr< CheatMenuTreeView> mTreeMenu;
+	TSharedPtr< CheatMenuTreeView> mTreeMenu;
 
 
 
 
 	/** Called to generate a widget for the specified tree item */
-	// MODDING EDIT: missing header :(
-	// TSharedRef<ITableRow> CheatMenu_OnGenerateRow( CheatMenuElementPtr Item, const TSharedRef<STableViewBase>& OwnerTable );
+	TSharedRef<ITableRow> CheatMenu_OnGenerateRow( CheatMenuElementPtr Item, const TSharedRef<STableViewBase>& OwnerTable );
 
-	// MODDING EDIT: missing header :(
-	// void GetVisibleChildren( CheatMenuElement* Item, TArray< CheatMenuElementPtr >& OutChildren );
+	void GetVisibleChildren( CheatMenuElement* Item, TArray< CheatMenuElementPtr >& OutChildren );
 	/** Given a tree item, fills an array of child items */
-	// MODDING EDIT: missing header :(
-	// void CheatMenu_OnGetChildren( CheatMenuElementPtr Item, TArray< CheatMenuElementPtr >& OutChildren );
+	void CheatMenu_OnGetChildren( CheatMenuElementPtr Item, TArray< CheatMenuElementPtr >& OutChildren );
 
 	/** Called when the user clicks on an  item, or when selection changes by some other means */
-	// MODDING EDIT: missing header :(
-	// void CheatMenu_OnSelectionChanged( CheatMenuElementPtr Item, ESelectInfo::Type SelectInfo );
+	void CheatMenu_OnSelectionChanged( CheatMenuElementPtr Item, ESelectInfo::Type SelectInfo );
 
-	// MODDING EDIT: missing header :(
-	// void CheatMenu_OnMouseClick( CheatMenuElementPtr Item );
+	void CheatMenu_OnMouseClick( CheatMenuElementPtr Item );
 	/*UPROPERTY( Config )
 	TArray< UClass* > mPopularUClassChoices;*/
 
-
-public:
-	FORCEINLINE ~SFGCheatBoardWidget() = default;
 };
 #endif

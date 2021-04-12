@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
 
 #include "Serialization/ArchiveUObject.h"
 #include "EngineGlobals.h"
@@ -10,7 +11,7 @@
 /** 
  * Our modded version of object writer. When this is used we serialize the objects name and path
  */
-class FACTORYGAME_API FObjectWriterFName : public FObjectWriter
+class FObjectWriterFName : public FObjectWriter
 {
 public:
 	FObjectWriterFName( UObject* Obj, TArray<uint8>& InBytes, int32 saveVersion );
@@ -18,7 +19,4 @@ public:
 	virtual FObjectWriterFName& operator<<( class UObject*& Res ) override;
 	virtual FArchive& operator<<( class FName& N ) override;
 
-
-public:
-	FORCEINLINE ~FObjectWriterFName() = default;
 };

@@ -1,19 +1,15 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGMessageBase.h"
+#include "UI/Message/FGMessageBase.h"
 #include "FGAudioMessage.generated.h"
 
 DECLARE_DYNAMIC_DELEGATE( FAudioMessageConcludedDelegate );
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FAudioSubtitlePair
+struct FAudioSubtitlePair
 {
 	GENERATED_BODY()
 
@@ -33,9 +29,6 @@ struct FACTORYGAME_API FAudioSubtitlePair
 	/** Sender for this part of message */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Audio Message" )
 	TSubclassOf< class UFGMessageSender > SenderClass;
-
-public:
-	FORCEINLINE ~FAudioSubtitlePair() = default;
 };
 
 
@@ -128,7 +121,4 @@ private:
 
 	UPROPERTY()
 	class UInputComponent* mAudioMessageInputComponent;
-
-public:
-	FORCEINLINE ~UFGAudioMessage() = default;
 };

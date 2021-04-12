@@ -1,12 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../FGOptionsSettings.h"
+#include "FGOptionsSettings.h"
 #include "FGDynamicOptionsRow.generated.h"
 
 /**
@@ -32,11 +30,26 @@ protected:
 	UFUNCTION( Blueprintpure, Category = "Option" )
 	FORCEINLINE UFGOptionsValueController* GetValueControllerWidget() const { return mValueControllerWidget; }
 
+	UFUNCTION( BlueprintPure, Category = "Option" )
+	bool IsPendingApply();
+
+	UFUNCTION( BlueprintPure, Category = "Option" )
+	bool IsPendingRestart();
+
 	UFUNCTION( BlueprintImplementableEvent, Category = "Option" )
 	void OnOptionRowInit();
 
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option" )
 	void OnOptionValueUpdated();
+
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	void OnOptionApplied();
+
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	void OnOptionReverted();
+
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option" )
+	void UpdatePendingIconsVisibilty();
 
 private:
 
@@ -49,7 +62,4 @@ private:
 
 	UPROPERTY()
 	UFGOptionsValueController* mValueControllerWidget;
-
-public:
-	FORCEINLINE ~UFGDynamicOptionsRow() = default;
 };

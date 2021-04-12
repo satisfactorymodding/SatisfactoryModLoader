@@ -1,7 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
-#include "UObject/Class.h"
-#include "PhysxUserData.h"
+
 #include "VehicleWheel.h"
 #include "FGVehicleWheel.generated.h"
 
@@ -70,7 +69,4 @@ public:
 		PxF32& wheelTorque, PxF32& tireLongForceMag, PxF32& tireLatForceMag, PxF32& tireAlignMoment);
 
 	static class UTireConfig* GetDefaultTireConfig();
-
-public:
-	FORCEINLINE ~UFGVehicleWheel() = default;
 };

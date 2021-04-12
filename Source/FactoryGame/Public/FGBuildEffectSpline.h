@@ -1,7 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -33,7 +32,4 @@ public:
 	/** Attachment for this effect, can be null */
 	UPROPERTY( BlueprintReadOnly, Category = "FactoryGame|Effect" , Meta = (ExposeOnSpawn = "true") )
 	class AFGPipeBuilderTrail* mAttachment;
-
-public:
-	FORCEINLINE ~AFGBuildEffectSpline() = default;
 };

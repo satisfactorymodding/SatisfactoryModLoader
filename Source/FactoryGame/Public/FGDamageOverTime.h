@@ -1,10 +1,8 @@
-#pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "Object.h"
+#pragma once
+
+#include "UObject/Object.h"
 #include "FGDamageOverTime.generated.h"
 
 /**
@@ -15,7 +13,6 @@ class FACTORYGAME_API UFGDamageOverTime : public UObject
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	UFGDamageOverTime();
 
 	/**
@@ -74,7 +71,4 @@ protected:
 	/** Only deal damage to subclasses of these actor classes */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	TArray< TSubclassOf< class AActor > > mActorFilter;
-
-public:
-	FORCEINLINE ~UFGDamageOverTime() = default;
 };

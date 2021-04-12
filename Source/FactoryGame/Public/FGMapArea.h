@@ -1,8 +1,6 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -38,7 +36,4 @@ protected:
 	/** This is the name the player has given this area */
 	UPROPERTY()
 	FText mUserSetDisplayName;
-
-public:
-	FORCEINLINE ~UFGMapArea() = default;
 };

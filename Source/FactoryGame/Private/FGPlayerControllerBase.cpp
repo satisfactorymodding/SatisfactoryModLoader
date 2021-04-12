@@ -4,7 +4,7 @@
 #include "FGCheatManager.h"
 
 AFGPlayerControllerBase::AFGPlayerControllerBase() : Super() {
-	this->mAllowedInputWhenDead.Add(TEXT("PrimaryFire")); this->mAllowedInputWhenDead.Add(TEXT("PauseGame")); this->mAllowedInputWhenDead.Add(TEXT("Chat"));
+	this->mAllowedInputWhenDead.Add(TEXT("SecondaryFire")); this->mAllowedInputWhenDead.Add(TEXT("PauseGame")); this->mAllowedInputWhenDead.Add(TEXT("Chat"));
 	this->CheatClass = UFGCheatManager::StaticClass();
 }
 void AFGPlayerControllerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
@@ -19,6 +19,8 @@ void AFGPlayerControllerBase::FlushPressedKeys(){ }
 bool AFGPlayerControllerBase::RebindActionKey(FFGKeyMapping newKeyMapping){ return bool(); }
 void AFGPlayerControllerBase::ResetInputBindings(){ }
 void AFGPlayerControllerBase::UpdatePlayerInput(){ }
+void AFGPlayerControllerBase::OnGamepadInputEnabledUpdated(FString updatedCvar){ }
+void AFGPlayerControllerBase::OnMouseSensitivityUpdated(FString updatedCvar){ }
 void AFGPlayerControllerBase::SetMouseSensitivity(float newSense){ }
 float AFGPlayerControllerBase::GetMouseSensitivity(){ return float(); }
 float AFGPlayerControllerBase::GetMouseSensitivityX(){ return float(); }

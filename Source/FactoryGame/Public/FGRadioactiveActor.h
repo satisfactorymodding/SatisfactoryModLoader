@@ -1,7 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -29,7 +28,4 @@ private:
 	 */
 	UPROPERTY( EditInstanceOnly, Category = "Radioactivity" )
 	float mRadioactiveDecay;
-
-public:
-	FORCEINLINE ~AFGRadioactiveActor() = default;
 };

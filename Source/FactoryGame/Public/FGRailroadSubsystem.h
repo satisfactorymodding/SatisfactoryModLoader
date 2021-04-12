@@ -1,28 +1,22 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGRailroadVehicle.h"
-#include "Buildables/FGBuildableRailroadTrack.h"
-#include "GraphAStar.h"
-#include "RailroadNavigation.h"
 #include "FGRailroadSubsystem.generated.h"
 
+
+// Group for the detailed stats for this subsystem.
+DECLARE_STATS_GROUP( TEXT( "RailroadSubsystem" ), STATGROUP_RailroadSubsystem, STATCAT_Advanced );
 
 
 /**
  * Struct representing a set of interconnected tracks.
  */
 USTRUCT()
-struct FACTORYGAME_API FTrackGraph
+struct FTrackGraph
 {
 	GENERATED_BODY()
 public:
@@ -43,9 +37,6 @@ public:
 	//@todotrains Signaling, consider if this and mHasTrackGraphsChanged is needed.
 	/** Has this track graph changed, tracks connected, rolling stock added or removed. */
 	uint8 HasChanged:1;
-
-public:
-	FORCEINLINE ~FTrackGraph() = default;
 };
 
 
@@ -180,6 +171,14 @@ public:
 	/** Remove a track segment. Called on dismantle. */
 	void RemoveTrack( class AFGBuildableRailroadTrack* track );
 
+	/**
+	 * Get the power connection that the locomotives power shoe connects to (the third rail).
+	 * 
+	 * Only valid to call on server.
+	 * 
+	 * @return The third rail power connection for the given track, nullptr if the track is not valid or not part of a valid graph.
+	 */
+	class UFGPowerConnectionComponent* GetThirdRailForTrack( const class AFGBuildableRailroadTrack* track ) const;
 
 
 	/***************************************************************************************************
@@ -412,7 +411,4 @@ private:
 	/** All the trains in the world. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGTrain* > mTrains;
-
-public:
-	FORCEINLINE ~AFGRailroadSubsystem() = default;
 };

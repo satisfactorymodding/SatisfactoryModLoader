@@ -1,10 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGFactoryBuildingHologram.h"
+#include "Hologram/FGFactoryBuildingHologram.h"
 #include "FGWallHologram.generated.h"
 
 /**
@@ -43,7 +41,4 @@ private:
 	float mSnapBottomHitZoneRatio = 0.2f;
 
 	class AFGBuildableWall* mUpgradeTarget = nullptr;
-
-public:
-	FORCEINLINE ~AFGWallHologram() = default;
 };

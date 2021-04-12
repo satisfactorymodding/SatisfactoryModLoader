@@ -1,4 +1,4 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
@@ -33,7 +33,4 @@ struct FACTORYGAME_API FUnits
 	/** Volume */
 	static FORCEINLINE float LiterToM3( float liter ) { return liter * 1000.f; }
 	static FORCEINLINE float M3ToLiter( float m3 ) { return m3 / 1000.f; }
-
-public:
-	FORCEINLINE ~FUnits() = default;
 };

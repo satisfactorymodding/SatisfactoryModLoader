@@ -1,18 +1,13 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
-#include "TextProperty.h"
+
 #include "GameFramework/PlayerInput.h"
-#include "Kismet/BlueprintFunctionLibrary.h"
-#include "Input/Events.h"
 #include "FGInputLibrary.generated.h"
 
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FFGKeyMapping
+struct FFGKeyMapping
 {
 	GENERATED_BODY()
 
@@ -30,9 +25,6 @@ struct FACTORYGAME_API FFGKeyMapping
 	UPROPERTY( BlueprintReadOnly, Category = "Input" )
 	bool IsAxisMapping;
 
-
-public:
-	FORCEINLINE ~FFGKeyMapping() = default;
 };
 
 /**
@@ -118,7 +110,4 @@ public:
 
 private:
 	static const TArray<FString> IRRELEVANT_PREFIXES;
-
-public:
-	FORCEINLINE ~UFGInputLibrary() = default;
 };

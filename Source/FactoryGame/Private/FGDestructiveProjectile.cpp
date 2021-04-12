@@ -9,8 +9,8 @@ AFGDestructiveProjectile::AFGDestructiveProjectile() : Super() {
 	this->mDestroysFoliage = true;
 	this->mMaxParticleSpawnsPerDetonation = 30;
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bReplicateMovement = true;
-	this->bReplicates = true;
+	this->SetReplicatingMovement(true);
+	this->SetReplicates(true);
 	this->InitialLifeSpan = 3;
 }
 void AFGDestructiveProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(); }

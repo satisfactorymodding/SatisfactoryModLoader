@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
@@ -25,6 +21,10 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	// End AActor interface
+
+	// Rep detail actor interface. At present this building doesn't utilize its detail actor and thus needs to override the locking behaviour on its inv comp
+	virtual void OnReplicationDetailActorCreated() override;
+	virtual void OnReplicationDetailActorRemoved() override;
 
 	/** Get the inventory that holds the purchases we made in the resource sink shop */
 	UFUNCTION( BlueprintPure, Category = "Resource Sink Shop" )
@@ -53,7 +53,4 @@ private:
 	UPROPERTY( Transient )
 	class AFGResourceSinkSubsystem* mResourceSinkSubsystem;
 
-
-public:
-	FORCEINLINE ~AFGBuildableResourceSinkShop() = default;
 };

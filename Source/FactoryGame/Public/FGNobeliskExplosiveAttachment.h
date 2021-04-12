@@ -1,8 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Equipment/FGWeaponAttachment.h"
@@ -41,7 +39,4 @@ protected:
 	bool mIsLoaded;
 
 
-
-public:
-	FORCEINLINE ~AFGNobeliskExplosiveAttachment() = default;
 };

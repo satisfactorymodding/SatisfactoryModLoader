@@ -9,7 +9,6 @@ void UFGConsoleCommandManager::SetSessionName(FString newSessionName){ }
 void UFGConsoleCommandManager::SaveWithNewSessionName(const FString& saveName, const FString& sessionName){ }
 void UFGConsoleCommandManager::TrackAllAkStats(){ }
 void UFGConsoleCommandManager::TrackAkComponents(bool byClass){ }
-void UFGConsoleCommandManager::TrackAkMemoryPools(){ }
 void UFGConsoleCommandManager::TrackAkComponentsWithNoPositionOrOwner(){ }
 void UFGConsoleCommandManager::DumpFactoryMaterialInstanceManagerStats(){ }
 void UFGConsoleCommandManager::CrashTheGame(){ }
@@ -18,3 +17,4 @@ void UFGConsoleCommandManager::FixupBuiltByRecipeInOldSave(bool reapplyRecipeIfB
 void UFGConsoleCommandManager::DumpFactoryStatsToLog(){ }
 void UFGConsoleCommandManager::CopyPlayerCoordinates(){ }
 void UFGConsoleCommandManager::DumpPlayerCoordinates(const FString& label , bool copyToClipboard){ }
+void UFGConsoleCommandManager::DumpDynamicOptionsSettings(){ }

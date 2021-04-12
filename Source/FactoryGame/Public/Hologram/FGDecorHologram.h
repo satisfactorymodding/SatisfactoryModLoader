@@ -1,12 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableHologram.h"
+#include "Hologram/FGBuildableHologram.h"
 #include "FGDecorHologram.generated.h"
 
 
@@ -36,7 +32,4 @@ protected:
 	/** The mesh we want to set to our decor to */
 	UPROPERTY( Replicated )
 	class UStaticMesh* mDecorMesh;
-
-public:
-	FORCEINLINE ~AFGDecorHologram() = default;
 };

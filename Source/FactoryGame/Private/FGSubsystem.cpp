@@ -4,5 +4,5 @@
 
 AFGSubsystem::AFGSubsystem() : Super() {
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }

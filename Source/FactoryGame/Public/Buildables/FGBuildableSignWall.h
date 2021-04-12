@@ -1,31 +1,16 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableWall.h"
+#include "Buildables/FGBuildableWall.h"
 #include "FGBuildableSignWall.generated.h"
 
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSignWallData
+struct FSignWallData
 {
 	GENERATED_BODY()
-public: // MODDING EDIT?
-	/** Index of the selected color for the text from the FGSignSettings color data array  */
-	UPROPERTY(SaveGame, BlueprintReadWrite, Category = "SignWall")
-	int32 TextColorIndex;
-
-	/** Index of the selected color for the background from the FGSignSettings color data array  */
-	UPROPERTY(SaveGame, BlueprintReadWrite, Category = "SignWall")
-		int32 BackgroundColorIndex;
-
-	/** Text to be displayed on the sign */
-	UPROPERTY(SaveGame, BlueprintReadWrite, Category = "SignWall")
-		FString SignText;
 
 	FSignWallData() :
 		TextColorIndex( 0 ),
@@ -33,9 +18,18 @@ public: // MODDING EDIT?
 		SignText( "THIS IS A WALL SIGN" )
 	{}
 
+	/** Index of the selected color for the text from the FGSignSettings color data array  */
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignWall" )
+	int32 TextColorIndex;
 
-public:
-	FORCEINLINE ~FSignWallData() = default;
+	/** Index of the selected color for the background from the FGSignSettings color data array  */
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignWall" )
+	int32 BackgroundColorIndex;
+
+	/** Text to be displayed on the sign */
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignWall" )
+	FString SignText;
+
 };
 
 
@@ -95,7 +89,4 @@ private:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_SignData )
 	FSignWallData mSignData;
 	
-
-public:
-	FORCEINLINE ~AFGBuildableSignWall() = default;
 };

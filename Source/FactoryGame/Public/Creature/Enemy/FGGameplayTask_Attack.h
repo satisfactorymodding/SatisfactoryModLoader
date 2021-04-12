@@ -1,13 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Animation/AnimInstance.h"
-#include "FGGameplayTask_Base.h"
-#include "../../AI/FGAttack.h"
+#include "Creature/Enemy/FGGameplayTask_Base.h"
+#include "AI/FGAttack.h"
 #include "FGGameplayTask_Attack.generated.h"
 
 
@@ -39,7 +36,4 @@ protected:
 protected:
 	UPROPERTY( Replicated )
 	TSubclassOf< class UFGAttack > mAttackClass;
-
-public:
-	FORCEINLINE ~UFGGameplayTask_Attack() = default;
 };

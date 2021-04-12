@@ -1,10 +1,8 @@
-// Copyright 2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
-#include "FGReplicationDetailActor.h"
+#include "Replication/FGReplicationDetailActor.h"
 #include "FGReplicationDetailActor_BuildableFactory.generated.h"
 
 UCLASS()
@@ -22,10 +20,15 @@ public:
 
 	FORCEINLINE class UFGInventoryComponent* GetInventoryPotential() const { return mInventoryPotential; };
 
-protected:
-	UPROPERTY( Replicated )
-	class UFGInventoryComponent* mInventoryPotential;
+	/** Delegate that will fire (on clients) when mInventoryPotential has replicated */
+	DECLARE_DELEGATE( FOnInventoryPotentialChanged )
+	FOnInventoryPotentialChanged OnHasCompletedInitialReplicationDelegate;
 
-public:
-	FORCEINLINE ~AFGReplicationDetailActor_BuildableFactory() = default;
+protected:
+	UFUNCTION()
+	void OnRep_Inventory();
+
+protected:
+	UPROPERTY( ReplicatedUsing = OnRep_Inventory )
+	class UFGInventoryComponent* mInventoryPotential;
 };

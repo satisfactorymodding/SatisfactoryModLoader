@@ -1,11 +1,9 @@
-// Copyright 2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGReplicationDependencyActorInterface.h"
-#include "../FGInventoryComponent.h"
+#include "Replication/FGReplicationDependencyActorInterface.h"
+#include "FGInventoryComponent.h"
 #include "FGReplicationDetailActor.generated.h"
 
 /**
@@ -33,6 +31,9 @@ public:
 	/** Refreshes the replicated data values based on their corresponding values in the owning actor */
 	virtual void UpdateInternalReplicatedValues();
 
+	/** Remove this actor from its owning buildable, will then call destroy after notifying and flushing */
+	virtual void RemoveDetailActorFromOwner();
+
 	/** Run any logic needed prior to saving. If pointers have been moved this is the spot to copy over actor representation data. */
 	virtual void OnPreSaveGame();
 
@@ -53,7 +54,4 @@ protected:
 
 	/** Checks whether this actor is relevant to a connection. */
 	virtual bool IsNetRelevantFor( const AActor* realViewer, const AActor* viewTarget, const FVector& srcLocation ) const override;
-
-public:
-	FORCEINLINE ~AFGReplicationDetailActor() = default;
 };

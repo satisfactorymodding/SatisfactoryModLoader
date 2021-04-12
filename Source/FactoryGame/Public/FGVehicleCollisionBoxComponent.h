@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Components/BoxComponent.h"
 #include "FGWheeledVehicle.h"
@@ -49,7 +47,4 @@ public:
 
 private:
 	class AFGWheeledVehicle* OwnerVehicle;
-
-public:
-	FORCEINLINE ~UFGVehicleCollisionBoxComponent() = default;
 };

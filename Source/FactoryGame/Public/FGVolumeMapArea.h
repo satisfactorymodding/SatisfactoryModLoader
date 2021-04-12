@@ -1,9 +1,6 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Volume.h"
@@ -51,7 +48,4 @@ private:
 	/** A cached game state */
 	class AFGGameState* mCachedGameState;
 	
-
-public:
-	FORCEINLINE ~AFGVolumeMapArea() = default;
 };

@@ -1,10 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Tickable.h"
 #include "AISystem.h"
@@ -33,9 +29,6 @@ struct FACTORYGAME_API FSpawnerInfo
 
 	UPROPERTY()
 	float DistanceSq;
-
-public:
-	FORCEINLINE ~FSpawnerInfo() = default;
 };
 
 /**
@@ -233,7 +226,4 @@ private:
 
 	/** Handle to the last async trace performed */
 	FTraceHandle mLastAsyncTraceHandle;
-
-public:
-	FORCEINLINE ~UFGAISystem() = default;
 };

@@ -1,11 +1,9 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGFactoryHologram.h"
+#include "Hologram/FGFactoryHologram.h"
 #include "FGConveyorAttachmentHologram.generated.h"
 
 /**
@@ -70,7 +68,4 @@ private:
 
 	/** The offset we snapped on the conveyor. */
 	float mSnappedConveyorOffset;
-
-public:
-	FORCEINLINE ~AFGConveyorAttachmentHologram() = default;
 };

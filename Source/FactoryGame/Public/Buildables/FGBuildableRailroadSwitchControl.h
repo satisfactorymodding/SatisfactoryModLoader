@@ -1,13 +1,24 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableFactory.h"
-#include "../FGUseableInterface.h"
+#include "Buildables/FGBuildableFactory.h"
+#include "FGUseableInterface.h"
 #include "FGBuildableRailroadSwitchControl.generated.h"
+
+/**
+ * Struct containing packaged switch data so we can get an OnRep for them as a group.
+ */
+USTRUCT()
+struct FSwitchData
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY()
+	uint8 Position = 0;
+	UPROPERTY()
+	uint8 NumPositions = 1;
+};
 
 /**
  * A component for controlling a switch's position.
@@ -42,34 +53,42 @@ public:
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	// End IFGUseableInterface
 
-	/** Get the current switch location. */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Switch" )
-	FORCEINLINE int32 GetSwitchPosition() const { return mSwitchPosition; }
+	/** Get the current switch position. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Switch" )
+	FORCEINLINE int32 GetSwitchPosition() const { return mSwitchData.Position; }
+
+	/** Get the total number of switch position. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Switch" )
+	FORCEINLINE int32 GetNumSwitchPositions() const { return mSwitchData.NumPositions; }
 
 	/** Toggle the switch position to the next track. */
 	void ToggleSwitchPosition();
 
 	/** Called when switch changes position, server only */
 	UFUNCTION()
-	void OnSwitchPositionChanged( int32 newPosition );
+	void OnSwitchPositionChanged( int32 newPosition, int32 numPositions );
 
 	/** Let blueprint get a chance to update the visuals after the switch  */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "FactoryGame|Railroad|Switch" )
 	void UpdateSwitchPositionVisuals();
+
+	/**
+	 * Sets the controlled connection when this switch is constructed.
+	 * Note that the track the controlled connection belongs to and its connected components track must have had its begin play called.
+	 * Must be called, prior to this actors BeginPlay.
+	 */
+	void SetControlledConnection( class UFGRailroadTrackConnectionComponent* controlledConnection );
+
 protected:
 	UFUNCTION()
-	void OnRep_SwitchPosition();
-private:
-	friend class AFGRailroadTrackHologram;
+	void OnRep_SwitchData();
 
-	/** Connection we control. */
-	UPROPERTY( SaveGame )
+private:
+	/** Connection we control, might become null if the track is removed but not the control (mods and save game editing). */
+	UPROPERTY( SaveGame, Replicated )
 	class UFGRailroadTrackConnectionComponent* mControlledConnection;
 
-	/** Current switch position read from the controlled connection, polled each tick. */
-	UPROPERTY( ReplicatedUsing = OnRep_SwitchPosition, Meta = (NoAutoJson = true) )
-	int32 mSwitchPosition;
-
-public:
-	FORCEINLINE ~AFGBuildableRailroadSwitchControl() = default;
+	/** Current switch position read from the controlled connection. */
+	UPROPERTY( ReplicatedUsing = OnRep_SwitchData, Meta = (NoAutoJson = true) )
+	FSwitchData mSwitchData;
 };

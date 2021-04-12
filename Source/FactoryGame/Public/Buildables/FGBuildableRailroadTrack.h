@@ -1,12 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "FGInstancedSplineMeshComponent.h"
@@ -26,7 +22,7 @@ public:
 	static const FRailroadTrackPosition InvalidTrackPosition;
 
 	FRailroadTrackPosition();
-	FORCEINLINE FRailroadTrackPosition( class AFGBuildableRailroadTrack* track, float offset, float forward );
+	FRailroadTrackPosition( class AFGBuildableRailroadTrack* track, float offset, float forward );
 	FRailroadTrackPosition( const FRailroadTrackPosition& position );
 	~FRailroadTrackPosition();
 
@@ -71,15 +67,12 @@ public:
 
 /** Enable custom serialization of FRailroadTrackPosition */
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FRailroadTrackPosition > : public TStructOpsTypeTraitsBase2< FRailroadTrackPosition >
+struct TStructOpsTypeTraits< FRailroadTrackPosition > : public TStructOpsTypeTraitsBase2< FRailroadTrackPosition >
 {
 	enum
 	{
 		WithSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FRailroadTrackPosition >() = default;
 };
 
 
@@ -151,27 +144,15 @@ public:
 	/** @return The track graph this track belongs to. */
 	FORCEINLINE int32 GetTrackGraphID() const { return mTrackGraphID; }
 
-	//@todoconveyor This could be shared with conveyors later.
-	template< typename MeshConstructor >
-	static void BuildSplineMeshes(
-		class USplineComponent* spline,
-		UStaticMesh* mesh,
-		float meshLength,
-		TArray< USplineMeshComponent* >& meshPool,
-		MeshConstructor meshConstructor );
-
-	static void BuildSplineMeshes(
-		class USplineComponent* spline,
-        UStaticMesh* mesh,
-		float meshLength,
-		UFGInstancedSplineMeshComponent* splineInstances );
-
-	static void BuildSplineCollisions(
-		class USplineComponent* spline,
-		const FVector& collisionExtent,
-		float collisionSpacing,
-		const FVector& collisionOffset,
-		FName collisionProfile );
+	/**
+	 * Get the third rail power connection for this track.
+	 * The third rail is not unique per track segment but is the same for all tracks in a graph.
+	 * 
+	 * @note Only valid on server.
+	 * 
+	 * @return The third rail, nullptr if client or track is not connected to a valid graph.
+	 */
+	class UFGPowerConnectionComponent* GetThirdRail() const;
 
 private:
 	void SetTrackGraphID( int32 trackGraphID );
@@ -192,7 +173,7 @@ private:
 	/** The spline component for this train track. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class USplineComponent* mSplineComponent;
-	
+
 	/** The spline meshes for this train track. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
@@ -201,9 +182,12 @@ private:
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	TArray< FSplinePointData > mSplineData;
 
-	/** This tracks connection component. */
-	UPROPERTY( SaveGame )
-	class UFGRailroadTrackConnectionComponent* mConnections[ 2 ];
+	//@todo 2020-07-06 G2: Tracks built during play does not replicate the inner data for the second component in this array.
+	//                     Index 0 replicates fine, index 1 does not, if the client reconnects the data is replicated on initial,
+	//                     but during play... nothing. mConnectedComponents stays empty for index 1 for some unknown reason.
+	/** This tracks connection components. Created locally with net stable naming. */
+	UPROPERTY()
+	TArray< class UFGRailroadTrackConnectionComponent* > mConnections;
 
 	/** Was this track created and is owned by a platform. */
 	UPROPERTY( EditDefaultsOnly, Category = "Track" )
@@ -214,7 +198,4 @@ private:
 
 	/** Length of this track. [cm] */
 	float mLength;
-
-public:
-	FORCEINLINE ~AFGBuildableRailroadTrack() = default;
 };

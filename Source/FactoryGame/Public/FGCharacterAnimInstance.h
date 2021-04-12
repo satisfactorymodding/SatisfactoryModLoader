@@ -1,9 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
+#include "FGCharacterBase.h"
 #include "Animation/AnimInstance.h"
 #include "FGCharacterAnimInstance.generated.h"
 
@@ -19,11 +18,11 @@ public:
 	UFGCharacterAnimInstance();
 	
 	/** Caching stuff */
-	virtual void NativeUpdateAnimation( float DeltaSeconds );
+	virtual void NativeUpdateAnimation( float DeltaSeconds ) override;
 
 	/** Our pawn has taken point damage */
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Pawn" )
-	void OnPointDamageTaken( FVector shootDIrection );
+	void OnPointDamageTaken( FVector shootDirection );
 
 
 	/** Our pawn has taken any damage */
@@ -246,7 +245,4 @@ public:
 	/** What to collide against in pre land */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
 	TArray< TEnumAsByte< ECollisionChannel > > mPreLandCollisionChannels;
-
-public:
-	FORCEINLINE ~UFGCharacterAnimInstance() = default;
 };

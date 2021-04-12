@@ -1,23 +1,20 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "UMG.h"
-#include "UserWidget.h"
+#include "Blueprint/UserWidget.h"
 #include "FGInteractWidget.generated.h"
 
 
 /**
- * Base class for all stackable widgets in the game.
+ * Base class for stackable widgets in the game such as building interaction windows.
  */
 UCLASS( config = Engine )
 class FACTORYGAME_API UFGInteractWidget : public UUserWidget
 {
 	GENERATED_BODY()
 public:
-	//@todo Comments?
-
 	UFGInteractWidget( const FObjectInitializer& ObjectInitializer );
 
 	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
@@ -66,11 +63,11 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE bool GetUseGamepadCursor() { return mUseGamepadCursor; }
 
-	/** Sets default focuswidget */
+	/** Sets default focus widget */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	void SetDefaultFocusWidget( UWidget* focusWidget );
 
-	/** Returns default focuswidget */
+	/** Returns default focus widget */
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE UWidget* GetDefaultFocusWidget() { return mDefaultFocusWidget; }
 
@@ -90,16 +87,18 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Custom Tick" )
 	FORCEINLINE float GetCustomTickRate() const { return mCustomTickRate; }
 
-protected: 
+protected:
+	// Begin UUserWidget interface
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
 	virtual void NativeOnRemovedFromFocusPath( const FFocusEvent& InFocusEvent ) override;
+	// End UUserWidget interface
+
 	// Requirement check to verify before calling blueprint Init
 	virtual bool NativeCanCallInit();
-	
 
 private: 
-	/** Internal function that checks for requierments being met before calling init */
+	/** Internal function that checks for requirements being met before calling init */
 	void NativeTestAndQueueInit();
 
 public:
@@ -143,6 +142,7 @@ public:
 	/** Class of the default widget we want to give focus to */
 	UPROPERTY( config, EditDefaultsOnly, Category = "UI" ) 
 	TSubclassOf< UUserWidget > mDefaultFocusWidgetClass;
+
 protected:
 	/** Should gamepad act as cursor when using this widget? */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
@@ -166,8 +166,4 @@ protected:
 	/** Does this widget support stacking widgets on top? */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mSupportsStacking;
-
-
-public:
-	FORCEINLINE ~UFGInteractWidget() = default;
 };

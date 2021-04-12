@@ -1,11 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
@@ -95,7 +90,4 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipe Support" )
 	bool mUseStaticHeight;
 
-
-public:
-	FORCEINLINE ~AFGBuildablePipelineSupport() = default;
 };

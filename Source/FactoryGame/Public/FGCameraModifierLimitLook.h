@@ -1,8 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Camera/CameraModifier.h"
@@ -36,7 +34,4 @@ public:
 	/** The max rotation in yaw ( abs value ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Limited Look" )
 	float mMaxYaw;
-
-public:
-	FORCEINLINE ~UFGCameraModifierLimitLook() = default;
 };

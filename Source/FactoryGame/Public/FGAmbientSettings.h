@@ -1,44 +1,43 @@
-#pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "Object.h"
+#pragma once
+
+#include "UObject/Object.h"
 #include "FGAmbientSettings.generated.h"
 
 UCLASS( Abstract, BlueprintType, Blueprintable )
-class FACTORYGAME_API UFGAmbientSettings : public UObject
+class UFGAmbientSettings : public UObject
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	UFGAmbientSettings();
 
 	/** Get the event that is played whenever you get close to the ambient volume */
-	UFUNCTION( BlueprintNativeEvent, Category = "Audio" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing=mHave_GetEnterOuterVolumeEvent, Category = "Audio" )
 	class UAkAudioEvent* GetEnterOuterVolumeEvent() const;
 
 	/** Get the event that is played whenever you get close to the ambient volume */
-	UFUNCTION( BlueprintNativeEvent, Category = "Audio" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_GetEnterOuterVolumeEvent, Category = "Audio" )
 	class UAkAudioEvent* GetEnterInnerVolumeEvent() const;
 
 	/** Called when we are getting close to the attenuation radius of the ambient volume */
-	UFUNCTION( BlueprintNativeEvent, Category = "Audio" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing=mHave_OnEnterOuterVolume, Category = "Audio" )
 	void OnEnterOuterVolume( class UAkComponent* ambientComponent ) const;
 
 	/** Called when we are far away from the attenuation radius of the ambient volume */
-	UFUNCTION( BlueprintNativeEvent, Category = "Audio" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_OnExitOuterVolume, Category = "Audio" )
 	void OnExitOuterVolume( class UAkComponent* ambientComponent ) const;
 
 	/** Called when the camera is entering the the ambient volume */
-	UFUNCTION( BlueprintNativeEvent, Category = "Audio" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_OnEnterInnerVolume, Category = "Audio" )
 	void OnEnterInnerVolume( class UAkComponent* ambientComponent ) const;
 
 	/** Called when the camera is leaving the ambient volume */
-	UFUNCTION( BlueprintNativeEvent, Category = "Audio" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_OnExitInnerVolume, Category = "Audio" )
 	void OnExitInnerVolume( class UAkComponent* ambientComponent ) const;
 
 	/** Check if we should ignore the rotation of the listener when inside the volume */
-	UFUNCTION( BlueprintNativeEvent, Category = "Audio" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_ShouldIgnoreListenerRotation, Category = "Audio" )
 	bool ShouldIgnoreListenerRotation() const;
 
 #if WITH_EDITOR
@@ -74,7 +73,4 @@ private:
 	uint8 mHave_OnExitInnerVolume:1;
 	uint8 mHave_ShouldIgnoreListenerRotation:1;
 	uint8 mHave_GetEnterInnerVolumeEvent : 1;
-
-public:
-	FORCEINLINE ~UFGAmbientSettings() = default;
 };

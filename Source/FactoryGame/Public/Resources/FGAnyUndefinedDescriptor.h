@@ -1,6 +1,5 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
-#include "UObject/Class.h"
 
 #include "Resources/FGItemDescriptor.h"
 #include "FGAnyUndefinedDescriptor.generated.h"
@@ -15,7 +14,4 @@ class FACTORYGAME_API UFGAnyUndefinedDescriptor : public UFGItemDescriptor
 	GENERATED_BODY()
 public:
 	UFGAnyUndefinedDescriptor();
-
-public:
-	FORCEINLINE ~UFGAnyUndefinedDescriptor() = default;
 };

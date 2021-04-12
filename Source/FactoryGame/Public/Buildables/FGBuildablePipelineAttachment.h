@@ -1,13 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "../FGFluidIntegrantInterface.h"
+#include "FGFluidIntegrantInterface.h"
 #include "FGBuildablePipelineAttachment.generated.h"
 
 /**
@@ -39,9 +36,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
 	float mRadius;
 
-	/** Fluid Box volume scale. WIll multiply the determined volume by this scalar ( useful if the object is physically smaller than its desired volume ) */
+	/** Volume of the fluid box inside this attachment. [m3] */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline Attachment" )
-	float mFluidBoxVolumeScale;
+	float mFluidBoxVolume;
 
 	/** Fluid box belonging to this integrant */
 	UPROPERTY( SaveGame )
@@ -57,8 +54,4 @@ protected:
 	*/
 	UPROPERTY()
 	TSubclassOf< class UFGItemDescriptor > mCachedFluidDescriptor;
-
-
-public:
-	FORCEINLINE ~AFGBuildablePipelineAttachment() = default;
 };

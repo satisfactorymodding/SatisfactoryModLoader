@@ -1,10 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -67,6 +63,23 @@ public:
 	/** @return true if this circuit is replicating detailed information about it; false otherwise. */
 	bool IsReplicatingDetails() const { return mReplicateDetails; }
 
+	int32 GetCircuitGroupID() { return mCircuitGroupId; }
+
+	TArray< class UFGCircuitConnectionComponent* >& GetComponents() { return mComponents; }
+
+	/** Logs the internal state of this circuit. */
+	void Debug_LogState() const;
+
+	/**
+	 * @return true if this circuit can be removed without any impact on game logic, false otherwise.
+	*/
+	virtual bool IsTrivial() const;
+
+	/**
+	 * Called just after this circuit has been removed from the subsystem
+	 */
+	virtual void OnRemoved() {}
+
 protected:
 	/** Checks if our outer has authority, and assumes that if they have, then so do we. */
 	bool HasAuthority() const;
@@ -79,14 +92,18 @@ protected:
 
 	/** Called by the circuit subsystem when changes are made to the circuitry. */
 	virtual void OnCircuitChanged();
+
+	/** @return a newly created circuit of the same type as this circuit, preserving some of the state of this circuit. Will be nullptr if not overridden. */
+	virtual UFGCircuit* SplitCircuit( AFGCircuitSubsystem* subsystem ) const { return nullptr; }
 	
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent );
-	void Debug_LogState() const;
 
 private:
 	/** Set if we should replicate details. */
 	void SetReplicateDetails( bool replicateDetails );
+
+	virtual UFGCircuitGroup* CreateCircuitGroup( AFGCircuitSubsystem* subsystem ) const { return nullptr; }
 
 protected:
 	/** The id used to identify this circuit. */
@@ -107,6 +124,8 @@ protected:
 
 	/** If this buildable is replicating details, i.e. for the UI. */
 	uint8 mReplicateDetails : 1;
+
+	int32 mCircuitGroupId;
 private:
 	friend class AFGCircuitSubsystem;
 	friend class UFGCheatManager;
@@ -114,7 +133,22 @@ private:
 	/** All players interacting with a building that's connected to this circuit */
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
+};
 
+UCLASS( Abstract )
+class FACTORYGAME_API UFGCircuitGroup : public UObject
+{
+	GENERATED_BODY()
 public:
-	FORCEINLINE ~UFGCircuit() = default;
+	virtual void PushCircuit( UFGCircuit* circuit ) { }
+	virtual void Reset() { }
+	/**
+	* Make structural changes to the circuit group as needed.
+	* @returns true if such changes were made that the circuit groups need to be rebuilt and pre-tick restarted, false otherwise.
+	*/
+	virtual bool PreTickCircuitGroup( float dt, bool hasAuthority ) { return false; }
+	virtual void TickCircuitGroup( float dt, bool hasAuthority ) { }
+	//~ Begin UFGCircuitGroup -> AFGBuildableCircuitSwitch visitor pattern
+	virtual void VisitCircuitBridge( class AFGBuildableCircuitBridge* circuitBridge ) { }
+	//~ End UFGCircuitGroup -> AFGBuildableCircuitSwitch visitor pattern
 };

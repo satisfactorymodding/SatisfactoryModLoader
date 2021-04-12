@@ -1,7 +1,6 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGBuildCategory.h"
@@ -18,7 +17,4 @@ class FACTORYGAME_API UFGBuildSubCategory : public UFGBuildCategory
 	
 	
 	
-
-public:
-	FORCEINLINE ~UFGBuildSubCategory() = default;
 };

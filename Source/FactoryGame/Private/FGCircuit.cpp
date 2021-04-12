@@ -22,10 +22,11 @@ void UFGCircuit::MarkAsChanged(){ }
 void UFGCircuit::MarkForFullRebuild(){ }
 void UFGCircuit::RegisterInteractingPlayer( AFGCharacterPlayer* player){ }
 void UFGCircuit::UnregisterInteractingPlayer( AFGCharacterPlayer* player){ }
+void UFGCircuit::Debug_LogState() const{ }
+bool UFGCircuit::IsTrivial() const{ return bool(); }
 bool UFGCircuit::HasAuthority() const{ return bool(); }
 AFGCircuitSubsystem* UFGCircuit::GetOwningCircuitSubsystem() const{ return nullptr; }
 void UFGCircuit::TickCircuit(float dt){ }
 void UFGCircuit::OnCircuitChanged(){ }
 void UFGCircuit::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }
-void UFGCircuit::Debug_LogState() const{ }
 void UFGCircuit::SetReplicateDetails(bool replicateDetails){ }

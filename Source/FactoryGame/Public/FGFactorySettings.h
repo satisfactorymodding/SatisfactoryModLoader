@@ -1,11 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Resources/FGItemDescriptor.h"
 #include "FGMaterialEffect_Build.h"
@@ -13,7 +8,7 @@
 #include "FGFactorySettings.generated.h"
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FCategory
+struct FCategory
 {
 	GENERATED_BODY()
 
@@ -33,13 +28,10 @@ struct FACTORYGAME_API FCategory
 	/** Icon for the category */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
 	FSlateBrush Icon;
-
-public:
-	FORCEINLINE ~FCategory() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FViscosityToPuddlePair
+struct FViscosityToPuddlePair
 {
 	GENERATED_BODY()
 	
@@ -55,9 +47,6 @@ struct FACTORYGAME_API FViscosityToPuddlePair
 	/** Required puddle amount before this fluid viscosity can be moved from a fluid box [ 0 , 1 ] normalized fill amount */
 	UPROPERTY( EditDefaultsOnly, meta = ( ClampMin = "0.0", ClampMax = "1.0" ) )
 	float Puddle;
-
-public:
-	FORCEINLINE ~FViscosityToPuddlePair() = default;
 };
 
 /**
@@ -252,7 +241,4 @@ public:
 	*/
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	TArray< FViscosityToPuddlePair > mViscosityToPuddlePairs;
-
-public:
-	FORCEINLINE ~UFGFactorySettings() = default;
 };

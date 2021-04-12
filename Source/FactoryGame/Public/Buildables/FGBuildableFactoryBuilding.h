@@ -1,10 +1,24 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "FGBuildableFactoryBuilding.generated.h"
+
+UENUM()
+enum class EFoundationSide : uint8
+{
+	FoundationFront UMETA(DisplayName = "Front"),
+	FoundationRight UMETA( DisplayName = "Right" ),
+	FoundationBack UMETA( DisplayName = "Back" ),
+	FoundationLeft UMETA( DisplayName = "Left" ),
+	FoundationTop UMETA( DisplayName = "Top" ),
+	FoundationBottom UMETA( DisplayName = "Bottom" ),
+
+	FoundationNumSides UMETA( DisplayName = "Num Sides" ),
+
+	Invalid UMETA( DisplayName = "Invalid" )
+};
 
 /** Disable snapping on specific sides. */
 USTRUCT( BlueprintType )
@@ -18,6 +32,8 @@ public:
 public:
 	FFoundationSideSelectionFlags();
 	FFoundationSideSelectionFlags( bool defaults );
+
+	bool GetValueForSide( EFoundationSide Side );
 
 	FFoundationSideSelectionFlags RotateEdges( int32 steps ) const;
 
@@ -34,9 +50,21 @@ public:
 	uint8 Top : 1;
 	UPROPERTY( EditDefaultsOnly, Category = "Sides" )
 	uint8 Bottom : 1;
+};
 
-public:
-	FORCEINLINE ~FFoundationSideSelectionFlags() = default;
+struct FFoundationSideNormal
+{
+	FFoundationSideNormal() {}
+	FFoundationSideNormal( EFoundationSide side, FVector normal ) : Side( side ), LocalNormal( normal ) {}
+	
+	EFoundationSide Side = EFoundationSide::Invalid;
+	FVector LocalNormal = FVector{ EForceInit::ForceInit };
+};
+
+struct FFoundationHelpers
+{
+	static FVector GetLocalSpaceNormalFromFoundationSide( EFoundationSide side );
+	static FFoundationSideNormal FindBestMatchingFoundationSideFromLocalNormal( class AFGBuildableFoundation* foundation, FVector normal );
 };
 
 /**
@@ -56,7 +84,4 @@ private:
 	/** Mesh component for the factory building. */
 	UPROPERTY( VisibleAnywhere )
 	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
-
-public:
-	FORCEINLINE ~AFGBuildableFactoryBuilding() = default;
 };

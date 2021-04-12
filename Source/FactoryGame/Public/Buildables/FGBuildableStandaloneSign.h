@@ -1,12 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "../FGSignInterface.h"
-#include "../FGSignificanceInterface.h"
+#include "FGSignInterface.h"
+#include "FGSignificanceInterface.h"
 #include "Buildables/FGBuildable.h"
 #include "FGBuildableStandaloneSign.generated.h"
 
@@ -126,7 +124,4 @@ protected:
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SignData )
 	FSignData mSignData;
 
-
-public:
-	FORCEINLINE ~AFGBuildableStandaloneSign() = default;
 };

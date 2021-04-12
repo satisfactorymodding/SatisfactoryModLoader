@@ -1,10 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGPoleHologram.h"
+#include "Hologram/FGPoleHologram.h"
 #include "FGConveyorPoleHologram.generated.h"
 
 /**
@@ -29,7 +28,4 @@ private:
 	/** The connection conveyors snap to, used when placing a pole automatically. */
 	UPROPERTY( )
 	UFGFactoryConnectionComponent* mSnapConnection;
-
-public:
-	FORCEINLINE ~AFGConveyorPoleHologram() = default;
 };

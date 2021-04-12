@@ -1,58 +1,43 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGOnlineSessionClient.h"
 #include "Engine/LocalPlayer.h"
 #include "OnlineSubsystemTypes.h"
-#include "Online.h"
 #include "FGErrorMessage.h"
-#include "CoreOnline.h"
+#include "UObject/CoreOnline.h"
 #include "FindSessionsCallbackProxy.h"
 // MODDING EDIT: Online stuff...
 //#include "EOSSDKForwards.h"
 #include "PlayerPresenceState.h"
-#include "NAT.h"
 #include "FGLocalPlayer.generated.h"
 
+
 UCLASS()
-class FACTORYGAME_API UFGEM_LoggedOutFromOnlineService : public UFGErrorMessage
+class UFGEM_LoggedOutFromOnlineService : public UFGErrorMessage
 {
 	GENERATED_BODY()
 public:
 	UFGEM_LoggedOutFromOnlineService();
-
-public:
-	FORCEINLINE ~UFGEM_LoggedOutFromOnlineService() = default;
 };
 
 UCLASS()
-class FACTORYGAME_API UFGEM_LostConnectionWithOnlineService : public UFGErrorMessage
+class UFGEM_LostConnectionWithOnlineService : public UFGErrorMessage
 {
 	GENERATED_BODY()
 public:
 	UFGEM_LostConnectionWithOnlineService();
-
-public:
-	FORCEINLINE ~UFGEM_LostConnectionWithOnlineService() = default;
 };
 
 UCLASS()
-class FACTORYGAME_API UFGEM_FailedToLoginToOnlineService : public UFGErrorMessage
+class UFGEM_FailedToLoginToOnlineService : public UFGErrorMessage
 {
 	GENERATED_BODY()
 public:
 	UFGEM_FailedToLoginToOnlineService();
-
-public:
-	FORCEINLINE ~UFGEM_FailedToLoginToOnlineService() = default;
 };
 
 enum EFrindsListState
@@ -84,7 +69,7 @@ enum class ECreateSessionState : uint8
 };
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FFGOnlineFriend
+struct FFGOnlineFriend
 {
 	GENERATED_BODY()
 
@@ -112,12 +97,9 @@ struct FACTORYGAME_API FFGOnlineFriend
 
 	/** Internal friend data */
 	TSharedPtr<FOnlineFriend> Friend;
-
-public:
-	FORCEINLINE ~FFGOnlineFriend() = default;
 };
 
-FORCEINLINE FString VarToFString( const FFGOnlineFriend& f ){ return FString::Printf( TEXT(/*"%s"), *VarToFString(f.Friend->GetUserId()) MODDING EDIT*/ "")); }
+FORCEINLINE FString VarToFString( const FFGOnlineFriend& f ){ return FString::Printf( TEXT("%s"), *VarToFString(f.Friend->GetUserId()) ); }
 
 FORCEINLINE uint32 GetTypeHash( const FFGOnlineFriend& onlineFriend )
 {
@@ -131,10 +113,11 @@ FORCEINLINE uint32 GetTypeHash( const FFGOnlineFriend& onlineFriend )
 }
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreateSessionStateChanged, ECreateSessionState, newState );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnMultiplayerStatusUpdated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnAccountConnectionComplete, const FName, currentPlatform, EEosAccountConnectionResult, result );
 
 
-struct FACTORYGAME_API FSessionInformation
+struct FSessionInformation
 {
 	FSessionInformation() :
 		MapName(TEXT("")),
@@ -182,22 +165,16 @@ struct FACTORYGAME_API FSessionInformation
 	bool IsOfflineGame;
 private:
 	ECreateSessionState State;
-
-public:
-	FORCEINLINE ~FSessionInformation() = default;
 };
 
 // Workaround as it seems like you can't have a TArray<FFGOnlineFriends> exposed to a Dynamic multicast delegate
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FUpdatedFriends
+struct FUpdatedFriends
 {
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FFGOnlineFriend> Friends;
-
-public:
-	FORCEINLINE ~FUpdatedFriends() = default;
 };
 
 
@@ -247,6 +224,13 @@ public:
 	virtual void PlayerRemoved() override;
 	//~End ULocalPlayer interface
 
+	/** Listen to option changes we care about */
+	void SubscribeToOptionUpdates();
+	
+	/** Triggered when Maintain Y Axis FOV option have changed */
+	UFUNCTION()
+    void OnMaintainYAxisFOVUpdated( FString updatedCvar );
+
 	/** Get in what state our login is */
 	UFUNCTION(BlueprintPure,Category="Online")
 	TEnumAsByte<ELoginState> GetLoginState() const;
@@ -271,6 +255,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Online")
 	FString GetUsernameSteam() const;
 
+	/** Are we waiting for an response from EOS connect login */
+	UFUNCTION(BlueprintPure, Category = "Online")
+    bool IsWaitingForEOSConnectLoginResponse() const { return mIsWaitingForEOSConnectLogin; }
+
+	/** Did we press continue without multiplayer in the connection popup? */
+	UFUNCTION(BlueprintPure, Category = "Online")
+    bool GetContinueWithoutMultiplayer() const { return mContinueWithoutMultiplayer; }
+
 	/**
 	 * Get the list of friends of the current user
 	 * @param out_friends - the list of the friends if this returns true
@@ -292,6 +284,11 @@ public:
 	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
 	UFUNCTION()
 	void UpdatePresence();
+
+	UFUNCTION()
+	void CheckForStartupArguments();
+
+	void TestSteamCommandLineArgs(FString &sessionId);
 
 	/** Called regularly to update the users presence, can also be called to force update presence and delays the next presence update */
 	UFUNCTION()
@@ -321,6 +318,8 @@ public:
 	/** Create a new account connection without connection to an existing account */
 	void CreateNewAccountConnection( const FName currentPlatform );
 
+	void BroadcastAccountConnectionStepResult(const FName currentPlatform, EEosAccountConnectionResult result);
+
 	/** Prompt the user to login and link that account */
 	void LoginAndConnectAccount( const FName currentPlatform );
 
@@ -345,6 +344,8 @@ public:
 
 	UFUNCTION( BlueprintCallable )
 	void LogoutEpicAccountPortal();
+
+	void ContinueWithoutMultiplayer();
 
 protected:
 	//~Begin Online Delegates
@@ -380,6 +381,12 @@ protected:
 	void OnPresenceReceivedSteam(const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence);
 	//~End OnlinePresence deleages
 
+	//* Ends the current session. If successfully ended session it will call DestroyCurrentSession_SetupServer, otherwise throw an error */
+	void EndCurrentSession_SetupServer( FName sessionName );
+
+	//* Destroys the current session. If successfully destroyed session it will call OnPreviousSessionCleanedup_SetupServer, otherwise throw an error */
+	void DestroyCurrentSession_SetupServer( FName sessionName );
+	
 	void OnPreviousSessionCleanedup_SetupServer( FName sessionName, bool wasSuccessful );
 	void OnSessionCreated_SetupServer( FName sessionName, bool wasSuccessful );
 	void OnPresenceUpdated_SetupServer( const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence );
@@ -439,9 +446,19 @@ private:
 	/** Push error and autosave the game */
 	void PushErrorAndAutosave( TSubclassOf<class UFGErrorMessage> errorMessage );
 
+	/** Set waiting variable and broadcast changes with delegate */
+	void SetIsWaitingForEOSConnectLogin( bool waiting );
+
+	/** Exits current setup of server and throws an error message popup */
+	void FailedToSetupServer();
+
 public:
 	/** Called when the when we have a result from connection accounts */
 	FOnAccountConnectionComplete mOnAccountConnectionComplete;
+
+	/** Called when the state of waiting for EOS connect login response changed or we continued playing without multiplayer*/
+	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
+	FOnMultiplayerStatusUpdated mOnMultiplayerStatusUpdated;
 
 	UFUNCTION()
 	void OnComandlineInviteSearchComplete(FBlueprintSessionResult result);
@@ -477,6 +494,8 @@ protected:
 	FTimerHandle mPresenceUpdateHandle;
 	FTimerHandle mPresenceUpdateHandleSteam;
 	FTimerHandle mSteamConnectyAccountDelayHandle;
+
+	FTimerHandle mCheckStartupArgumentsHanlde;
 
 	// For detecting player disconnects from services
 	FDelegateHandle mOnConnectionStatusChangedHandle;
@@ -530,14 +549,13 @@ protected:
 		STRS_TriggerRetry
 	};
 	ESteamTaskRetryState mSteamRetryState;
+	bool mContinueWithoutMultiplayer = false;
 	bool mIsWaitingToConnectSteamAccount = false;
+	bool mIsWaitingForEOSConnectLogin = false;
 	bool mIsWaitingForEpicLogout = false;
 	bool mIsWaitingForEpicAccountSwap = false;
 	bool mHasTriedConnectingSteam = false;
 	bool mStartedAccountConnectionProcess = false;
 	bool mHastTriedLoggingIn = false;
 	bool mAutoSignedOutEpicDueToIncompatibility = false;
-
-public:
-	FORCEINLINE ~UFGLocalPlayer() = default;
 };

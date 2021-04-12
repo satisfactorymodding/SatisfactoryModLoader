@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UnrealString.h"
 
 #include "FGObjectReference.h"
 #include "SaveErrors.generated.h"
@@ -22,9 +23,6 @@ struct FACTORYGAME_API FErrors
 	/** All unknown classes */
 	UPROPERTY()
 	TSet<FString> UnknownClasses;
-
-public:
-	FORCEINLINE ~FErrors() = default;
 };
 
 struct FACTORYGAME_API FSaveErrors
@@ -76,7 +74,4 @@ private:
 private:
 	/** All errors */
 	static FErrors Errors;
-
-public:
-	FORCEINLINE ~FSaveErrors() = default;
 };

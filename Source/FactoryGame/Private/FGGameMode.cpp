@@ -54,4 +54,4 @@ void AFGGameMode::PartitionPlayerStartsByOccupancy(const TArray<  APlayerStart* 
 		TSubclassOf<  APawn > pawnClassToFit,
 		TArray<  APlayerStart* >& out_unOccupied,
 		TArray<  APlayerStart* >& out_occupied){ }
-bool AFGGameMode::CompareUniqueNetIdBetweenOSS(FUniqueNetIdRepl& newID, FUniqueNetIdRepl& savedID){ return bool(); }
+bool AFGGameMode::CompareUniqueNetIdBetweenOSS(const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID){ return bool(); }

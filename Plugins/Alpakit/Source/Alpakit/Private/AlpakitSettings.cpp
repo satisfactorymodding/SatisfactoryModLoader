@@ -1,5 +1,9 @@
 #include "AlpakitSettings.h"
 
-UAlpakitSettings::UAlpakitSettings(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
-{
+UAlpakitSettings* UAlpakitSettings::Get() {
+    return GetMutableDefault<UAlpakitSettings>();
+}
+
+void UAlpakitSettings::SaveSettings() {
+    SaveConfig();
 }

@@ -1,14 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
-#include "FGSplineHologram.h"
-#include "FGBuildableHologram.h"
+#include "Hologram/FGSplineHologram.h"
 #include "Components/SplineComponent.h"
-#include "Components/SplineMeshComponent.h"
 #include "FGRailroadTrackHologram.generated.h"
 
 
@@ -22,12 +17,16 @@ class FACTORYGAME_API AFGRailroadTrackHologram : public AFGSplineHologram
 public:
 	AFGRailroadTrackHologram();
 
+	// Begin AActor interface
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
+	// End AActor interface
 
 	// Begin AFGHologram interface
 	virtual class USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual int32 GetBaseCostMultiplier() const override;
+	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	// End AFGHologram interface
 
@@ -42,8 +41,8 @@ public:
 	 */
 	void SetLocationAndRotationFromPlatformConnections( class UFGTrainPlatformConnection* connectionOne, class UFGTrainPlatformConnection* connectionTwo );
 
-	/** Get a reference to the stored snapped connection references (excludes null snapped compoents ) */
-	TArray<class UFGRailroadTrackConnectionComponent*> GetSnappedConnectionComponents();
+	/** Get a reference to the stored snapped connection references (excludes null snapped components) */
+	TArray< class UFGRailroadTrackConnectionComponent* > GetSnappedConnectionComponents();
 
 protected:
 	// Begin AFGBuildableHologram interface
@@ -57,6 +56,9 @@ protected:
 	// End AFGSplineHologram interface
 
 private:
+	void TryFindAndSnapToOverlappingConnection( int32 forConnectionIndex, FVector& inout_newLocation, FVector& inout_newTangent );
+	void TryPlaceSwitchControl( int32 forConnectionIndex );
+
 	bool ValidateGrade();
 	bool ValidateCurvature();
 
@@ -68,6 +70,10 @@ private:
 		const FVector& endConnectionNormal );
 
 private:
+	/** If we drag out a turnout, this is the switch control to spawn. */
+	UPROPERTY( EditDefaultsOnly, Category = "Tracks" )
+	TSubclassOf<class UFGRecipe> mDefaultSwitchControlRecipe;
+
 	/** Length restriction of the track. [cm] */
 	UPROPERTY( EditDefaultsOnly, Category = "Tracks" )
 	float mMinLength;
@@ -104,6 +110,7 @@ private:
 	class UStaticMesh* mMesh;
 	float mMeshLength;
 
-public:
-	FORCEINLINE ~AFGRailroadTrackHologram() = default;
+	/** Optional child hologram to build if we are dragging out a turnout */
+	UPROPERTY( Replicated )
+	class AFGRailroadSwitchControlHologram* mSwitchControls[ 2 ];
 };

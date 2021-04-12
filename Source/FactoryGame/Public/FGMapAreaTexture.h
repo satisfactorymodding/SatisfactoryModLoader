@@ -1,16 +1,13 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "FGMapAreaTexture.generated.h"
 
 USTRUCT()
-struct FACTORYGAME_API FColorMapAreaPair
+struct FColorMapAreaPair
 {
 	GENERATED_BODY();
 
@@ -43,9 +40,6 @@ struct FACTORYGAME_API FColorMapAreaPair
 	int32 MaxX;
 	UPROPERTY()
 	int32 MaxY;
-
-public:
-	FORCEINLINE ~FColorMapAreaPair() = default;
 };
 
 
@@ -132,7 +126,4 @@ private:
 
 	UPROPERTY()
 	class AFGGameState* mCachedGameState;
-
-public:
-	FORCEINLINE ~UFGMapAreaTexture() = default;
 };

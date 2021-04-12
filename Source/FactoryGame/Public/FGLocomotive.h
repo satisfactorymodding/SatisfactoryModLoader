@@ -1,10 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGRailroadVehicle.h"
 #include "FGLocomotiveMovementComponent.h"
@@ -37,6 +33,7 @@ public:
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void Tick( float dt ) override;
 	// End AActor interface
 
 	// Begin ADriveablePawn/AFGVehicle interface
@@ -45,6 +42,7 @@ public:
 	// End ADriveablePawn/AFGVehicle interface
 		
 	// Begin ARailroadVehicle interface
+	virtual void UpdatePower() override;
 	virtual class UFGPowerConnectionComponent* GetSlidingShoe() const override { return mSlidingShoe; }
 	// End ARailroadVehicle interface
 
@@ -81,10 +79,6 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Locomotive" )
 	UFGPowerInfoComponent* GetPowerInfo() const { return mPowerInfo; }
 
-	/** Used by the movement component to control the power usage. */
-	void SetPowerConsumption( float pct );
-	void SetPowerRegeneration( float pct );
-
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 
@@ -92,7 +86,19 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|Railroad|Locomotive" )
 	void OnNameChanged();
 
+	/** Return the current state of HasPower replicated from Server to client */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Locomotive" )
+	bool HasPower() const { return mHasPower; }
+
+protected:
+	UFUNCTION( BlueprintImplementableEvent )
+	void UpdateVFX();
+	
 private:
+	/** Used by the movement component to control the power usage. */
+	void SetPowerConsumption( float pct );
+	void SetPowerRegeneration( float pct );
+	
 	UFUNCTION()
 	void OnRep_ReplicatedMovementTransform()
 	{
@@ -105,11 +111,11 @@ public:
 
 private:
 	/** The power consumption of this electric locomotive, min is idle power consumption and max is power consumption at maximum torque. */
-	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = 0, UIMin = 0 ) )
+	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = 0, UIMin = 0, AddAutoJSON = true ) )
 	FFloatInterval mPowerConsumption;
 
 	/** The sliding shoe making contact with the third rail. */
-	UPROPERTY()
+	UPROPERTY( )
 	class UFGPowerConnectionComponent* mSlidingShoe;
 
 	/** The power info for this train, draw power from the circuit. */
@@ -120,10 +126,11 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_ReplicatedMovementTransform )
 	FTransform mReplicatedMovementTransform;
 
+	/** Has power. Used to keep clients in sync with circuit power state */
+	UPROPERTY( Replicated )
+	uint8 mHasPower : 1;
+
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )
 	class UFGLocomotiveMovementComponent* mVehicleMovement;
-
-public:
-	FORCEINLINE ~AFGLocomotive() = default;
 };

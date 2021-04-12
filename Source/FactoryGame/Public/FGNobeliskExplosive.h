@@ -1,8 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGDestructiveProjectile.h"
@@ -55,7 +53,4 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Nobelisk" )
 	FRotator mThrowRotation;
 
-
-public:
-	FORCEINLINE ~AFGNobeliskExplosive() = default;
 };

@@ -1,11 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
-#include "../FGGamePhaseManager.h"
+#include "FGGamePhaseManager.h"
 #include "FGGamePhaseReachedDependency.generated.h"
 
 /**
@@ -27,7 +26,4 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	TEnumAsByte< EGamePhase > mGamePhase;
 
-
-public:
-	FORCEINLINE ~UFGGamePhaseReachedDependency() = default;
 };

@@ -5,7 +5,8 @@
 UFGInventoryComponentEquipment::UFGInventoryComponentEquipment() : Super() {
 	this->mActiveEquipmentIndex = -1;
 	this->mDefaultInventorySize = 1;
-	this->bReplicates = true;
+	this->mCanBeRearrange = true;
+	this->SetIsReplicatedByDefault(true);
 }
 AFGEquipment* UFGInventoryComponentEquipment::GetEquipmentInInventory() const{ return nullptr; }
 EEquipmentSlot UFGInventoryComponentEquipment::GetEquipmentSlotEnum() const{ return EEquipmentSlot(); }

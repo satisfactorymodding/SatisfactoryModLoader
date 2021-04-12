@@ -1,10 +1,9 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "NAT.h"
-#include "GameFramework/OnlineReplStructs.h"
 #include "FGOnlineSessionSettings.generated.h"
 
 UENUM(BlueprintType)
@@ -22,7 +21,7 @@ enum ESessionVisibility
  * the variable name, then the variables is converted to strings and back.
  */
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FFGOnlineSessionSettings
+struct FFGOnlineSessionSettings
 {
 	GENERATED_BODY()
 
@@ -53,7 +52,4 @@ struct FACTORYGAME_API FFGOnlineSessionSettings
 	/** Hosts nat type */
 	UPROPERTY(BlueprintReadOnly)
 	ECachedNATType		NATType;
-
-public:
-	FORCEINLINE ~FFGOnlineSessionSettings() = default;
 };

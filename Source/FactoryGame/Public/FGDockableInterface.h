@@ -1,6 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Interface.h"
-#include "UObject/Class.h"
 
 #include "FGDockableInterface.generated.h"
 
@@ -15,27 +15,19 @@ enum class EDockStationType : uint8
 	DST_NONE			UMETA( DisplayName = "None" ),
 	DST_TRUCK			UMETA( DisplayName = "Truck" ),
 	DST_TRAIN			UMETA( DisplayName = "Train" ),
+	DST_DRONE			UMETA( DisplayName = "Drone" ),
 	DST_LAST_ENUM		UMETA( Hidden )
 };
 
 /**
- * For blueprint support of the interface, we will never add anything to it, just use it to
- * have a UCLASS to be able to access
+ * Interface for all dockable actors out there, i.e. trucks and trains.
  */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGDockableInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGDockableInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGDockableInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
-/**
- * @brief Interface for all dockable classes out there, i.e. trucks and trains.
- */
 class FACTORYGAME_API IFGDockableInterface
 {
 	GENERATED_IINTERFACE_BODY()
@@ -71,7 +63,4 @@ class FACTORYGAME_API IFGDockableInterface
 	/** Notify for when loading/unloading are completed */
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Docking" )
 	void OnTransferComplete();
-
-public:
-	FORCEINLINE IFGDockableInterface() = default;
 };

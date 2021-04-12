@@ -1,14 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "../FGFluidIntegrantInterface.h"
+#include "FGFluidIntegrantInterface.h"
 #include "FGBuildableCheatFluidSpawner.generated.h"
 
 /**
@@ -33,6 +29,13 @@ public:
 	virtual bool CanProduce_Implementation() const override;
 	// End AFGBuildableFactory interface
 
+	/** Set this spawner enabled/disabled */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat|CheatFluidSpawner" )
+	void SetEnabled( bool isEnabled );
+	/** true if this spawner is enabled. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat|CheatFluidSpawner" )
+    bool IsEnabled() const { return mIsEnabled; }
+	
 	/** Allow blueprint to set the resource type. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat|CheatFluidSpawner" )
 	void SetResourceType( TSubclassOf< UFGItemDescriptor > type );
@@ -44,6 +47,10 @@ protected:
 	// End AFGBuildableFactory interface
 
 protected:
+	/** Is the spawner outputting anything, useful for testing setups where multiple spawners are used. */
+	UPROPERTY( SaveGame )
+	bool mIsEnabled = true;
+	
 	/** Resource type to spawn. */
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	TSubclassOf< UFGItemDescriptor > mResourceType;
@@ -68,7 +75,4 @@ private:
 	/** Simulation data for this fluid integrant. */
 	UPROPERTY( SaveGame )
 	FFluidBox mFluidBox;
-
-public:
-	FORCEINLINE ~AFGBuildableCheatFluidSpawner() = default;
 };

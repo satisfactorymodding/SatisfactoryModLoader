@@ -1,14 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGRecipe.h"
-#include "Resources/FGItemDescriptor.h"
 #include "Resources/FGItemDescriptor.h"
 #include "UObject/NoExportTypes.h"
 #include "AssetBundleData.h"
@@ -37,9 +32,6 @@ public:
 
 	/** For debugging */
 	FString ToString() const;
-
-public:
-	FORCEINLINE ~FResearchRecipeReward() = default;
 };
 
 
@@ -133,7 +125,4 @@ private:
 	/** Asset Bundle data computed at save time. In cooked builds this is accessible from AssetRegistry */
 	UPROPERTY()
 	FAssetBundleData mAssetBundleData;
-
-public:
-	FORCEINLINE ~UFGResearchRecipe() = default;
 };

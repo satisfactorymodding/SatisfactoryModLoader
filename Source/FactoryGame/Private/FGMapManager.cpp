@@ -7,7 +7,7 @@ AFGMapManager* AFGMapManager::Get(UObject* worldContext){ return nullptr; }
 AFGMapManager::AFGMapManager() : Super() {
 	this->PrimaryActorTick.TickGroup = TG_DuringPhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0.100000001490116;
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }
 void AFGMapManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGMapManager::BeginPlay(){ }
@@ -21,7 +21,7 @@ bool AFGMapManager::NeedTransform_Implementation(){ return bool(); }
 bool AFGMapManager::ShouldSave_Implementation() const{ return bool(); }
 void AFGMapManager::RequestFogOfWarData( AFGPlayerController* playerController){ }
 void AFGMapManager::TransferFogOfWarData(){ }
-void AFGMapManager::SyncFogOfWarChanges(const TArray<uint8>& fogOfWarRawData, int32 index){ }
+void AFGMapManager::SyncFogOfWarChanges(const TArray<uint8>& fogOfWarRawData, int32 finalIndex){ }
 void AFGMapManager::SetupFogOfWarTexture(){ }
 void AFGMapManager::InitialFogOfWarRequest(){ }
 void AFGMapManager::SetupRepresentationManager(){ }

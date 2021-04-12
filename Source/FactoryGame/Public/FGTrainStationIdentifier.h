@@ -1,10 +1,7 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
-#include "TextProperty.h"
+
 #include "GameFramework/Info.h"
 #include "FGSaveInterface.h"
 #include "FGTrainStationIdentifier.generated.h"
@@ -39,7 +36,7 @@ public:
 
 	/** Get the name of this station. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
-	FORCEINLINE FText GetStationName() const { return mStationName; }
+	FText GetStationName() const { return mStationName; }
 
 	/** Set the name of this station, must be called on server. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|StationIdentifier" )
@@ -47,7 +44,7 @@ public:
 
 	/** Get the track this station belongs to. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
-	FORCEINLINE int32 GetTrackGraphID() const { return mTrackGraphID; }
+	int32 GetTrackGraphID() const { return mTrackGraphID; }
 
 private:
 	UFUNCTION()
@@ -65,7 +62,4 @@ public:
 	/** Cached here for clients. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_StationName )
 	FText mStationName;
-
-public:
-	FORCEINLINE ~AFGTrainStationIdentifier() = default;
 };

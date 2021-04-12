@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "HologramSplinePathMode.generated.h"

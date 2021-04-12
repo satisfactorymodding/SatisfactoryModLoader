@@ -1,15 +1,12 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGConnectionComponent.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
-#include "Buildables/FGBuildableRailroadTrack.h"
 #include "FGRailroadTrackConnectionComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRailRoadConnectionSwitched, int32, newSwitch );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnRailRoadConnectionSwitched, int32, newPosition, int32, numPositions );
 
 /**
  * The actual track connection placed in the editor.
@@ -91,29 +88,34 @@ public:
 	 * >1: Turnout.
 	 *
 	 * @return The number of connections, i.e. switch positions.
+	 *
+	 * Note: On client use the switch control instead.
 	 */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Track" )
 	FORCEINLINE int32 GetNumSwitchPositions() const { return mConnectedComponents.Num(); }
 
 	/**
-	 * @return The current switch position [0,n]; 0 if not a switch.
+	 * @return The current switch position [0,n]; 0 if not a switch. Not valid on client.
+	 *
+	 * Note: On client use the switch control instead.
 	 */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Track" )
 	FORCEINLINE int32 GetSwitchPosition() const { return mSwitchPosition; }
 
 	/**
-	 * Set the current switch position.
+	 * Set the current switch position, not valid to call on client.
 	 * @param position Will be clamped to the valid range [0,n].
+	 *
+	 * Note: On client use the switch control instead.
 	 */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Track" )
 	void SetSwitchPosition( int32 position );
 
 	/**
 	 * Set the current switch position to match the given connections track.
+	 *
+	 * Note: On client use the switch control instead.
 	 */
 	void SetSwitchPosition( class AFGBuildableRailroadTrack* track );
 
-	/** @return The switch control, if any. */
+	/** @return The switch control, if any. Valid on client. */
 	class AFGBuildableRailroadSwitchControl* GetSwitchControl() const { return mSwitchControl; }
 
 	/** @return The station at the connection, if any. */
@@ -151,6 +153,7 @@ private:
 	/** Internal helper functions to add/remove connection. */
 	void AddConnectionInternal( UFGRailroadTrackConnectionComponent* toComponent );
 	void RemoveConnectionInternal( UFGRailroadTrackConnectionComponent* toComponent );
+	void OnConnectionsChangedInternal();
 
 	void ClampSwitchPosition();
 
@@ -167,7 +170,7 @@ private:
 	TArray< UFGRailroadTrackConnectionComponent* > mConnectedComponents;
 
 	/** If this is a switch, this is the switch position. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( Replicated, SaveGame )
 	int32 mSwitchPosition;
 
 	/** The switch control associated with this connection, if any. */
@@ -181,7 +184,4 @@ private:
 	/** The signal associated with this connection, if any. */
 	UPROPERTY()
 	class AFGBuildableRailroadSignal* mSignal; //@todotrains
-
-public:
-	FORCEINLINE ~UFGRailroadTrackConnectionComponent() = default;
 };

@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGConnectionComponent.h"
@@ -31,7 +28,7 @@ enum class EPipeConnectionType : uint8
 
 
 
-//@todoPipes Move the base to its own header file
+//@todo-Pipes Move the base to its own header file
 
 /**
  * Connection base used to link generic pipes together
@@ -49,10 +46,6 @@ public:
 	virtual void OnRegister() override;
 	virtual void OnUnregister() override;
 	// End ActorComponent interface
-
-	// Begin save interface
-	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	// End save interface
 
 	/** Set the conveyor clearance for this connection. */
 	FORCEINLINE void SetConnectorClearance( float clearance ){ mConnectorClearance = clearance; }
@@ -153,15 +146,8 @@ protected:
 	FName mPipeType = "Base"; //used to find matching types for snapping and so on
 
 	/** Connection to another component. If this is set we're connected. */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	class UFGPipeConnectionComponentBase* mConnectedComponent;
-
-	/** Light-weight connected indication for clients. */
-	UPROPERTY( Replicated )
-	bool mHasConnectedComponent = false;
-
-public:
-	FORCEINLINE ~UFGPipeConnectionComponentBase() = default;
 };
 
 
@@ -255,7 +241,7 @@ private:
 	void SetPipeNetworkID( int32 networkID );
 
 	/** OnRep to track changes and notify outer actors of changes 
-	*@todoPipes This is a rather ugly necessity of the fluid descriptor residing on connections and being needed by pipelines
+	*@todo-Pipes This is a rather ugly necessity of the fluid descriptor residing on connections and being needed by pipelines
 	*			The way its set up there is no reliable way for client pipelines to know when their fluid descriptor has been set				
 	*/
 	UFUNCTION()
@@ -263,38 +249,36 @@ private:
 
 public: // MODDING EDIT: protected -> public
 	/** The inventory of this connection. This can be null in many cases. */
-    // MODDING EDIT VERY Experimental most buildings handle this on their own. Writing to it maybe crashes.
-	UPROPERTY( BlueprintReadWrite, SaveGame )
+	// @todoPipes - I don't think this is used anymore. This should be fully deprecated and removed. This is a carry over from conveyor belts. 
+	// The final implementation of pipes works by them being pushed to from buildings (rather than pulling like belts), so they don't need an inventory to access
+	UPROPERTY( BlueprintReadWrite, SaveGame ) // MODDING EDIT: BPRW - VERY Experimental most buildings handle this on their own. Writing to it maybe crashes.
 	class UFGInventoryComponent* mConnectionInventory;
 
 	/**
-	 * The inventory index utilized by this connection ( -1 for none specified ). Only relevant if an inventory is set
+	 * The inventory index utilized by this connection ( -1 for none specified )
 	 * Unlike the Factory Connections this access index is also used to determine if a connection should be pushed to from manufacturing
 	 * buildables. This is because fluids should belong to a single stack in an inventory and if none is specified then a pipe should
 	 * not be eligible to receive liquid. There may be a better way to handle this but that is how its operating.
 	 */
-    //MODDING EDIT Experimental !!! Writing to it maybe crashes
-	UPROPERTY( BlueprintReadWrite, SaveGame )
+	UPROPERTY( BlueprintReadWrite, SaveGame ) //MODDING EDIT: BPRW - Experimental!!! Writing to it maybe crashes
 	int32 mInventoryAccessIndex;
 
 	/**
 	 * The network this connection is connected to. INDEX_NONE if not connected.
 	 * @note - This ID may change at any time when changes occurs in the network. Do not save copies of it!
 	 */
-    // MODDING EDIT: BPReadOnly
-	UPROPERTY( SaveGame, BlueprintReadOnly, VisibleAnywhere, Replicated, Category = "Connection" )
+	UPROPERTY( BlueprintReadOnly, SaveGame, VisibleAnywhere, Replicated, Category = "Connection" ) // MODDING EDIT: BPReadOnly
 	int32 mPipeNetworkID;
 
 	/**
 	 * The Fluid Descriptor class this connection has. This is defined network wide. This is merely a cached value to save frequent lookups when pushing and pulling liquids
 	 */
-	//@todoPipes This is ugly and bad for performance.
+	//@todo-Pipes This is ugly and bad for performance.
 	//           But on the server the descriptor is pushed from the subsystem when it changes.
 	//           We cannot do that on the client cause it does not have a graph built.
 	//           And the pipe network id gets wonky on the client as well... and
 	//           we need this to work for the play test so for now lets go with ugly.
-	// MODDING EDIT: BPReadOnly, VisibleAnywhere
-    UPROPERTY( BlueprintReadOnly, VisibleAnywhere, ReplicatedUsing = OnRep_FluidDescriptor )
+	UPROPERTY( BlueprintReadOnly, VisibleAnywhere, ReplicatedUsing = OnRep_FluidDescriptor ) // MODDING EDIT: BPReadOnly, VisibleAnywhere
 	TSubclassOf< class UFGItemDescriptor > mFluidDescriptor;
 
 protected: // MODDING EDIT
@@ -318,7 +302,4 @@ private:
 
 	/** Cached Owner. Valid if owner is a pipeline. Null otherwise (Not a UPROPERTY because this component must have an owner and null is okay )*/
 	class AFGBuildablePipeline* mCachedPipelineOwner;
-
-public:
-	FORCEINLINE ~UFGPipeConnectionComponent() = default;
 };

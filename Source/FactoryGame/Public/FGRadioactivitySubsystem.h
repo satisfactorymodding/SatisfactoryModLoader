@@ -1,11 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "ItemAmount.h"
@@ -13,7 +8,7 @@
 
 
 /** Description of a radioactive emitter. */
-struct FACTORYGAME_API FRadioactiveEmitter
+struct FRadioactiveEmitter
 {
 public:
 	FRadioactiveEmitter() :
@@ -35,15 +30,12 @@ public:
 	/** Location where radiation is emitted. */
 	FVector LocalLocation;
 	FVector CachedWorldLocation;
-
-public:
-	FORCEINLINE ~FRadioactiveEmitter() = default;
 };
 
 
 /** Description of a radioactive source. */
 USTRUCT()
-struct FACTORYGAME_API FRadioactiveSource
+struct FRadioactiveSource
 {
 	GENERATED_BODY()
 public:
@@ -53,13 +45,10 @@ public:
 
 
 	TArray< FRadioactiveEmitter > Emitters;
-
-public:
-	FORCEINLINE ~FRadioactiveSource() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FRemoveEmitterID
+struct FRemoveEmitterID
 {
 	GENERATED_BODY()
 public:
@@ -78,13 +67,10 @@ public:
 	UObject* Owner;
 
 	int32 UID;
-
-public:
-	FORCEINLINE ~FRemoveEmitterID() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FSetEmitterID
+struct FSetEmitterID
 {
 	GENERATED_BODY()
 public:
@@ -122,9 +108,6 @@ public:
 	int32 ItemAmount;
 
 	int32 UID;
-
-public:
-	FORCEINLINE ~FSetEmitterID() = default;
 };
 
 
@@ -249,7 +232,4 @@ private:
 
 	/** The max accumulated intensity that can be registered from radioactive emitters */
 	float mMaxIntensity;
-
-public:
-	FORCEINLINE ~AFGRadioactivitySubsystem() = default;
 };

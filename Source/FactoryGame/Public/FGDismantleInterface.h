@@ -1,30 +1,19 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Interface.h"
-#include "UObject/Class.h"
 
 #include "FGInventoryComponent.h"
 #include "FGDismantleInterface.generated.h"
 
 /**
-* For blueprint support of the interface, we will never add anything to it, just use it to
-* have a UCLASS to be able to access
-*/
+ * Interface for actors that can be dismantled by the buildgun.
+ */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGDismantleInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGDismantleInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGDismantleInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
-/**
-* @brief Interface for all "dismantle-able" classes out there
-*/
 class FACTORYGAME_API IFGDismantleInterface
 {
 	GENERATED_IINTERFACE_BODY()
@@ -82,9 +71,6 @@ class FACTORYGAME_API IFGDismantleInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
 	void StopIsLookedAtForDismantle( AFGCharacterPlayer* byCharacter );
-
-public:
-	FORCEINLINE IFGDismantleInterface() = default;
 };
 
 /**
@@ -98,7 +84,4 @@ struct FACTORYGAME_API FDismantleHelpers
 	 * @param refund			The refund to drop.
 	 */
 	static void DropRefundOnGround( class AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund );
-
-public:
-	FORCEINLINE ~FDismantleHelpers() = default;
 };

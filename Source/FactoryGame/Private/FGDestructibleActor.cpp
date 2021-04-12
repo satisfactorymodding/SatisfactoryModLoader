@@ -5,7 +5,8 @@
 
 AFGDestructibleActor::AFGDestructibleActor() : Super() {
 	this->mStaticMeshProxy = CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(TEXT("StaticMeshProxy"));
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 }
 void AFGDestructibleActor::BeginPlay(){ }
 float AFGDestructibleActor::TakeDamage(float damage,  FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser){ return float(); }

@@ -1,18 +1,16 @@
-// Copyright 2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGMapFunctionLibrary.generated.h"
 
 
 UCLASS()
-class FACTORYGAME_API UFGMapFunctionLibrary : public UBlueprintFunctionLibrary
+class UFGMapFunctionLibrary : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
 public:
-
 	/** Get the bounds of the world */
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	static void GetWorldBounds( class UObject* worldContext, FVector2D& min, FVector2D& max );
@@ -29,8 +27,4 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "Map" )
 	static float GetMapDistance ( const AFGMinimapCaptureActor* minimapCaptureActor, float worldDistance, float mapResolution );
-
-
-public:
-	FORCEINLINE ~UFGMapFunctionLibrary() = default;
 };

@@ -1,17 +1,13 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableConveyorAttachment.h"
+#include "Buildables/FGBuildableConveyorAttachment.h"
 #include "FGBuildableAttachmentSplitter.generated.h"
 
 USTRUCT()
-struct FACTORYGAME_API FConveyorSpaceData
+struct FConveyorSpaceData
 {
 	GENERATED_BODY()
 public:
@@ -30,9 +26,6 @@ public:
 
 	// if the conveyor has a new item on it.
 	bool HasNewItem;
-
-public:
-	FORCEINLINE ~FConveyorSpaceData() = default;
 };
 
 /**
@@ -91,7 +84,4 @@ private:
 	UPROPERTY( Transient )
 	TMap<UFGFactoryConnectionComponent*, FConveyorSpaceData> mConveyorSpaceData;
 
-
-public:
-	FORCEINLINE ~AFGBuildableAttachmentSplitter() = default;
 };

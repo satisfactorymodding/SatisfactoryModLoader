@@ -1,6 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "FGVersionFunctionLibrary.generated.h"
@@ -33,7 +33,4 @@ public:
 	/** Get what version of the game we are running */
 	UFUNCTION( BlueprintPure, Category = "Development" )
 	static EGameVersion GetGameVersion();
-
-public:
-	FORCEINLINE ~UFGVersionFunctionLibrary() = default;
 };

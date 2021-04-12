@@ -1,10 +1,9 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGFactoryBuildingHologram.h"
+#include "Hologram/FGFactoryBuildingHologram.h"
 #include "FGWalkwayHologram.generated.h"
 
 /**
@@ -29,7 +28,4 @@ private:
 	float mSize;
 	float mElevation;
 	FFoundationSideSelectionFlags mDisableSnapOn;
-
-public:
-	FORCEINLINE ~AFGWalkwayHologram() = default;
 };

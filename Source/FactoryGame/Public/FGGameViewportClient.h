@@ -1,7 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Engine/GameViewportClient.h"
@@ -24,6 +23,7 @@ public:
 	virtual void ReceivedFocus( FViewport* Viewport ) override;
 	//~ End FViewportClient Interface.
 
-public:
-	FORCEINLINE ~UFGGameViewportClient() = default;
+	/** When full screen command is triggered we handle it hear */
+	bool HandleToggleFullscreenCommand() override;
+
 };

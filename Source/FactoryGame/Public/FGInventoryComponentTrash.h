@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGInventoryComponent.h"
 #include "FGInventoryComponentTrash.generated.h"
@@ -26,7 +24,4 @@ private:
 	/** Can item be trashed? */
 	UFUNCTION()
 	bool IsValidItem( TSubclassOf< class UFGItemDescriptor > resource ) const;
-
-public:
-	FORCEINLINE ~UFGInventoryComponentTrash() = default;
 };

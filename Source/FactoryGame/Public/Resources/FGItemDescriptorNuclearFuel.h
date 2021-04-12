@@ -1,10 +1,8 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGItemDescriptor.h"
+#include "Resources/FGItemDescriptor.h"
 #include "FGItemDescriptorNuclearFuel.generated.h"
 
 /**
@@ -33,7 +31,4 @@ private:
 	/** How much waste to produce */
 	UPROPERTY( EditDefaultsOnly, Category = "Nuclear Fuel" )
 	int32 mAmountOfWaste;
-
-public:
-	FORCEINLINE ~UFGItemDescriptorNuclearFuel() = default;
 };

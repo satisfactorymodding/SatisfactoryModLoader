@@ -1,19 +1,12 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "../ItemAmount.h"
-#include "../FGSaveInterface.h"
-#include "../CharacterAnimationTypes.h"
-#include "../Replication/FGReplicationDependencyActorInterface.h"
-#include "Components/InputComponent.h"
-#include "Blueprint/UserWidget.h"
+#include "ItemAmount.h"
+#include "FGSaveInterface.h"
+#include "CharacterAnimationTypes.h"
+#include "Replication/FGReplicationDependencyActorInterface.h"
 #include "FGEquipment.generated.h"
 
 //Equipments are equip on different slots on the player. One EQ per slot. These are the slots.
@@ -60,6 +53,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	virtual void UnEquip();
 
+	/** Called whenever the character changes movement mode. */
+	virtual void OnCharacterMovementModeChanged( EMovementMode PreviousMovementMode, uint8 PreviousCustomMode, EMovementMode NewMovementMode, uint8 NewCustomMode );
+
 	/** Called on the owner, client or server but not both. */
 	void OnDefaultPrimaryFirePressed();
 
@@ -77,7 +73,7 @@ public:
 
 	/** Native only function that does default stuff needed for the default primary fire event */
 	UFUNCTION()
-	void DoDefaultPrimaryFire_Native();
+	virtual void DoDefaultPrimaryFire_Native();
 
 	/** Native only function that does default stuff needed for the default primary fire event */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
@@ -88,7 +84,7 @@ public:
 	 * @return - true if equiped; otherwise false.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-	FORCEINLINE bool IsEquipped() const { return Instigator != nullptr; }
+	FORCEINLINE bool IsEquipped() const { return GetInstigator() != nullptr; }
 
 	/**
 	 * Convenience blueprint function to return Instigator as a FGCharacterPlayer
@@ -161,8 +157,12 @@ public:
 	 * @param damageCauser - the actor who damaged us
 	 * @return the adjusted damage
 	 **/
-	UFUNCTION( BlueprintNativeEvent, Category = "Damage" )
+	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_AdjustDamage, Category = "Damage" )
 	float AdjustDamage( float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
+
+	/** When using this equipment, the character use distance will be increased to this amount. */
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+    virtual float GetCharacterUseDistanceOverride() const { return 0.0f; }
 
 	/** Returns the enum for the equipment slot, ARMS, BACK etc. */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
@@ -179,12 +179,25 @@ public:
 	void SetFirstTimeEquipped( bool firstTime ) { mFirstTimeEquipped = firstTime; }
 
 	/** @return idle pose animation, can be NULL */
-	UFUNCTION( BlueprintPure, Category = "Driveable" )
+	UFUNCTION( BlueprintPure, Category = "Animation" )
 	class UAnimSequence* GetIdlePoseAnimation() const { return mIdlePoseAnimation; }
 
 	/** @return idle pose animation for 3p, can be NULL */
-	UFUNCTION( BlueprintPure, Category = "Driveable" )
+	UFUNCTION( BlueprintPure, Category = "Animation" )
 	class UAnimSequence* GetIdlePoseAnimation3p() const { return mIdlePoseAnimation3p; }
+
+	/** @return crouch pose animation for 3p, can be NULL */
+	UFUNCTION( BlueprintPure, Category = "Animation" )
+    class UAnimSequence* GetCrouchPoseAnimation3p() const { return mCrouchPoseAnimation3p; }
+
+	/** @return slide pose animation for 3p, can be NULL */
+	UFUNCTION( BlueprintPure, Category = "Animation" )
+    class UAnimSequence* GetSlidePoseAnimation3p() const { return mSlidePoseAnimation3p; }
+
+	/** @return idle pose animation for 3p, can be NULL */
+	UFUNCTION( BlueprintPure, Category = "Animation" )
+    class UAimOffsetBlendSpace* GetAttachmentIdleAO() const { return mAttachmentIdleAO; }
+	
 protected:
 	/** Was the equipment equipped. */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
@@ -321,10 +334,19 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
 	class UAnimSequence* mIdlePoseAnimation3p;
 
+	/** Crouch animation to play when equipped in 3p. Can be null if we don't want to play any special animation */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	class UAnimSequence* mCrouchPoseAnimation3p;
+
+	/** Slide animation to play when equipped in 3p. Can be null if we don't want to play any special animation */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	class UAnimSequence* mSlidePoseAnimation3p;
+
 	/** Should we use the default primary fire implementation */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	bool mUseDefaultPrimaryFire;
 
-public:
-	FORCEINLINE ~AFGEquipment() = default;
+	/** Aim offset to override with */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
+	class UAimOffsetBlendSpace* mAttachmentIdleAO;
 };

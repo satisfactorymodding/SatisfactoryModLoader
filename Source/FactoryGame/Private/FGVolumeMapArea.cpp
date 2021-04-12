@@ -3,7 +3,7 @@
 #include "FGVolumeMapArea.h"
 
 #if WITH_EDITOR
-void AFGVolumeMapArea::CheckForErrors(){ }
+void AFGVolumeMapArea::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGVolumeMapArea::AFGVolumeMapArea() : Super() {
 	

@@ -1,18 +1,13 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "../ItemAmount.h"
-#include "../FGBuildableSubsystem.h"
-#include "../FGConstructionMessageInterface.h"
-#include "HologramSplinePathMode.h"
-#include "Script.h"
-#include "../ItemAmount.h"
-#include "Components/MeshComponent.h"
+#include "ItemAmount.h"
+#include "FGBuildableSubsystem.h"
+#include "FGConstructionMessageInterface.h"
+#include "Hologram/HologramSplinePathMode.h"
+#include "UObject/Script.h"
 #include "FGHologram.generated.h"
 
 //For UE4 Profiler ~ Stat Group
@@ -37,8 +32,6 @@ enum class EHologramScrollMode : uint8
  *
  * Note : Do not use SetActorLocation(), SetActorRotation() etc to move a hologram.
  *       Use SetHologramLocationAndRotation() instead as this handles snapping etc.
- *
- *
  */
 UCLASS( hidecategories = ( "Actor", "Input", "Replication", "Rendering", "Actor Tick" ) )
 class FACTORYGAME_API AFGHologram : public AActor, public IFGConstructionMessageInterface
@@ -231,10 +224,6 @@ public:
 	/** Set hologram to snap to guide lines */
 	virtual void SetSnapToGuideLines( bool isEnabled );
 
-	/** Set hologram to snap to guide lines on server */
-	UFUNCTION( Server, Reliable, WithValidation )
-	void Server_SetSnapToGuideLines( bool isEnabled );
-
 	/** @return true if no snap mode is enabled; false otherwise. */
 	UFUNCTION( BlueprintPure, Category = "Hologram" )
 	FORCEINLINE bool GetNoSnapMode() const { return mNoSnapMode; }
@@ -380,7 +369,7 @@ protected:
 	void SetupClearanceDetector( class UBoxComponent* boxComponent );
 
 	/** Duplicate component for the hologram */
-	template<typename T>
+	template< typename T >
 	T* DuplicateComponent( USceneComponent* attachParent, T* templateComponent, const FName& componentName );
 
 	/**
@@ -425,16 +414,6 @@ protected:
 	 * @return - The newly created component.
 	 */
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
-
-	/**
-	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
-	 * Setup a custom depth component for each mesh.
-	 * Default it's called for every mush when setting up components.
-	 * @note Hax to get custom depth to work with translucent materials.
-	 * @note This does not work well with animated skeletal meshes, so do not add animations to holograms.
-	 * @todo FIXME when custom depth works with translucent materials.
-	 */
-	virtual void SetupDepthMeshComponent( USceneComponent* attachParent, UMeshComponent* componentTemplate );
 
 	/** Mark the hologram as changed. */
 	void SetIsChanged();
@@ -556,8 +535,8 @@ protected:
 	TSubclassOf< AActor > mBuildClass;
 
 	UPROPERTY( EditDefaultsOnly )
-	bool mUseBuildClearanceOverlapSnapp = false
-		;
+	bool mUseBuildClearanceOverlapSnapp = false;
+
 	bool mUseAutomaticBuildClearanceOverlapSnapp = true;
 
 	/** The reason why we couldn't construct this hologram, if it's empty then we can construct it */
@@ -565,11 +544,11 @@ protected:
 
 private:
 	/** Who is building */
-	UPROPERTY( Replicated /*, CustomSerialization*/ )
+	UPROPERTY( Replicated, CustomSerialization )
 	APawn* mConstructionInstigator;
 
 	/** If this hologram is disabled and should not be visible or constructed. */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	bool mIsDisabled;
 
 	/** If the hologram has changed, i.e. multi step placement or rotation. */
@@ -584,16 +563,13 @@ private:
 	bool mIsPendingToBeConstructed = false;
 
 	/** Temp memory holders for when holograms are serialized for construction messages (replication) */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	FVector mConstructionPosition;
 
 	/** Temp memory holders for when holograms are serialized for construction messages (replication) */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	FRotator mConstructionRotation;
 public:
-
-public:
-	FORCEINLINE ~AFGHologram() = default;
 };
 
 template<typename T>

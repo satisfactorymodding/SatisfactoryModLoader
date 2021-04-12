@@ -1,13 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "FGCreature.h"
-#include "../FGSaveInterface.h"
+#include "Creature/FGCreature.h"
+#include "FGSaveInterface.h"
 #include "FGCreatureSpawner.generated.h"
 
 /** Data we need to know/save about spawns in this spawner */
@@ -48,25 +45,19 @@ struct FACTORYGAME_API FSpawnData
 	/** How much weight this creature adds to spawn calculations */
 	UPROPERTY( SaveGame )
 	float SpawnWeight;
-
-public:
-	FORCEINLINE ~FSpawnData() = default;
 };
 
 UCLASS()
 class FACTORYGAME_API AFGCreatureSpawner : public AActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
-	
 public:	
-	// Sets default values for this actor's properties
 	AFGCreatureSpawner();
 
 	// BEGIN AActor interface
 	virtual void BeginPlay() override;
-
-	/** Moved in the editor, on done, calculate spawn locations */
 	#if WITH_EDITOR
+	/** Moved in the editor, on done, calculate spawn locations */
 	virtual void PostEditMove( bool bFinished ) override;
 	#endif
 	// END AActor interface
@@ -282,7 +273,4 @@ public:
 
 	/** Is the async overlap done? */
 	bool mOverlapCheckIsReady;
-
-public:
-	FORCEINLINE ~AFGCreatureSpawner() = default;
 };

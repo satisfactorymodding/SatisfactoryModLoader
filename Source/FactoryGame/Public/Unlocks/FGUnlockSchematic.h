@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Unlocks/FGUnlock.h"
@@ -34,7 +31,4 @@ public: // MODDING EDIT: protected -> public
 	UPROPERTY( BlueprintReadWrite, EditDefaultsOnly ) // MODDING EDIT: BPRW
 	TArray< TSubclassOf< class UFGSchematic > > mSchematics;
 
-
-public:
-	FORCEINLINE ~UFGUnlockSchematic() = default;
 };

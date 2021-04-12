@@ -7,7 +7,7 @@ AFGRailroadSubsystem::AFGRailroadSubsystem() : Super() {
 	this->mConnectDistance = 200;
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }
 void AFGRailroadSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGRailroadSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
@@ -41,6 +41,7 @@ void AFGRailroadSubsystem::UpdateCargoPlatformPowerConnection(int32 trackGraphID
 bool AFGRailroadSubsystem::MoveTrackPosition( FRailroadTrackPosition& position, float delta, float& out_movedDelta){ return bool(); }
 void AFGRailroadSubsystem::AddTrack( AFGBuildableRailroadTrack* track){ }
 void AFGRailroadSubsystem::RemoveTrack( AFGBuildableRailroadTrack* track){ }
+UFGPowerConnectionComponent* AFGRailroadSubsystem::GetThirdRailForTrack(const  AFGBuildableRailroadTrack* track) const{ return nullptr; }
 void AFGRailroadSubsystem::TickTrackGraphs(float dt){ }
 void AFGRailroadSubsystem::RebuildTrackGraph(int32 graphID){ }
 void AFGRailroadSubsystem::RefreshPlatformPowerConnectionsFromStation( AFGBuildableRailroadStation* station,  UFGCircuitConnectionComponent* connectTo){ }

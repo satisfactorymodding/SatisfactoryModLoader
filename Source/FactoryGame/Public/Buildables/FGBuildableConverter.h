@@ -1,11 +1,8 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableManufacturer.h"
+#include "Buildables/FGBuildableManufacturer.h"
 #include "FGBuildableConverter.generated.h"
 
 UCLASS( Blueprintable, Meta = (AutoJson=false) )
@@ -63,7 +60,4 @@ protected:
 	// this little guy ensures that the input index for consuming ingredients keeps cycling across all inputs.
 	// otherwise there could be a bias between which inputs are used across production cycles.
 	int32 mPreservedInputIndex;
-
-public:
-	FORCEINLINE ~AFGBuildableConverter() = default;
 };

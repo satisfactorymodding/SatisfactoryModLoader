@@ -4,3 +4,4 @@
 
 bool UFGUseState::CanUseInState(TSubclassOf<UFGUseState> state){ return bool(); }
 void FUseState::SetUseState(TSubclassOf<UFGUseState> newState){ }
+UFGUseableInterface::UFGUseableInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

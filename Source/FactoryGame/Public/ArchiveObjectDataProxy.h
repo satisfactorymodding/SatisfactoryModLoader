@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/World.h"
 
 #include "Serialization/ArchiveProxy.h"
 #include "EngineGlobals.h"
@@ -12,7 +13,7 @@
  *
  * As it's a FArchiveProxy, this object doesn't have any own data to work with, but will work with the passed in data in it's constructor
  */
-class FACTORYGAME_API FArchiveObjectDataProxy : public FArchiveProxy
+class FArchiveObjectDataProxy : public FArchiveProxy
 {
 public:
 	/** Ctor */
@@ -22,7 +23,4 @@ public:
 	FArchive& operator<<( class UObject*& Res ) override;
 private:
 	class UWorld* mWorld;
-
-public:
-	FORCEINLINE ~FArchiveObjectDataProxy() = default;
 };

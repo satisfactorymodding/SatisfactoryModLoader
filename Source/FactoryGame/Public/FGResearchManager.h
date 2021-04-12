@@ -1,10 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
@@ -62,9 +58,6 @@ struct FACTORYGAME_API FResearchData
 	UPROPERTY( SaveGame )
 	TArray<TSubclassOf<class UFGSchematic>> PendingRewards;
 
-
-public:
-	FORCEINLINE ~FResearchData() = default;
 };
 FORCEINLINE bool IsValidForLoad( const FResearchData& element );
 
@@ -101,9 +94,6 @@ struct FACTORYGAME_API FResearchTime
 	/** The time stamp for when the research is completed. When saved it represents how much time is left for research */
 	UPROPERTY( SaveGame )
 	float ResearchCompleteTimestamp;
-
-public:
-	FORCEINLINE ~FResearchTime() = default;
 };
 FORCEINLINE bool IsValidForLoad( const FResearchTime& element );
 
@@ -142,8 +132,7 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void PreInitializeComponents() override;
 
-	//MODDING EDIT: forceinline world accessor
-	MODDING_SHIPPING_FORCEINLINE static AFGResearchManager* Get(class UWorld* world) { return Get(static_cast<UObject*>(world)); }
+	static AFGResearchManager* Get( class UWorld* world );
 
 	UFUNCTION( BlueprintPure, Category = "Research", DisplayName = "GetResearchManager", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGResearchManager* Get( class UObject* worldContext );
@@ -240,11 +229,14 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Research" )
 	void SetActivated( bool inActivate ) { mIsActivated = inActivate; }
 protected:
+	// MODDING EDIT: expose access to internal state to content registry
+	friend class AModContentRegistry;
+    
 	UFUNCTION()
 	void OnRep_OngoingResearch();
 
-	UFUNCTION( Reliable, Client )
-	void Client_NewResearchStarted( TSubclassOf< class UFGSchematic > research );
+	UFUNCTION( Reliable, NetMulticast )
+	void Multicast_ResearchCompleted( TSubclassOf< class UFGSchematic > research );
 
 	/** Populates list with all available research trees in the game */
 	void PopulateResearchTreeList();
@@ -261,15 +253,17 @@ protected:
 	/** Called when the local player builds anything */
 	UFUNCTION()
 	void OnBuildingBuiltGlobal( class AFGBuildable* buildable );
+	
+	/** Checks if a research tree is valid for addition to the available research trees list. */
+	bool CanAddToAvailableResearchTrees( TSubclassOf< UFGResearchTree > researchTree ) const;
 
 	/** Whether multiple concurrent research can be conducted, or only one at a time. */
 	UPROPERTY( EditDefaultsOnly, Category = "Research" )
 	bool mCanConductMultipleResearch;
 
-public: // MODDING EDIT
-	UPROPERTY( Transient )
-	TArray<TSubclassOf<class UFGResearchTree>> mAllResearchTrees;
-protected:
+	UPROPERTY( Transient, Replicated )
+	TArray<TSubclassOf<class UFGResearchTree>> mAvailableResearchTrees;
+
 	UPROPERTY( SaveGame, Replicated )
 	TArray<TSubclassOf<class UFGResearchTree>> mUnlockedResearchTrees;
 
@@ -289,6 +283,9 @@ private:
 	UFUNCTION()
 	void OnResearchTimerComplete( TSubclassOf<class UFGSchematic> schematic );
 
+public: // MODDING EDIT Accessor
+	FORCEINLINE void OnResearchTimerCompleteAccessor(TSubclassOf<class UFGSchematic> schematic) { OnResearchTimerComplete(schematic); };
+private:
 	bool PayForResearch( UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic ) const;
 
 	/** Claim pending rewards. One alternate recipe or give back one hard drive */
@@ -305,7 +302,4 @@ private:
 private:
 	friend class UFGCheatManager;
 
-
-public:
-	FORCEINLINE ~AFGResearchManager() = default;
 };

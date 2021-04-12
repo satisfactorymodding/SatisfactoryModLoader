@@ -1,10 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGFactoryBuildingHologram.h"
+#include "Hologram/FGFactoryBuildingHologram.h"
 #include "FGFoundationHologram.generated.h"
 
 /**
@@ -26,7 +24,6 @@ public:
 	// End AFGHologram interface
 
 	// Begin AFGBuildableHologram interface
-	virtual void ConfigureSnappedBuilding( class AFGBuildable* inBuildable ) const override;
 	virtual void CheckValidFloor() override;
 	// End AFGBuildableHologram interface
 
@@ -42,8 +39,5 @@ protected:
 
 	/** Ratios for the snapping zones, how much of the wall to hit for snap to either direction. */
 	float mSnapVerticalHitZoneRatio = 0.25f;
-	float mSnapCenterHitZoneRatio = 0.33f; // This ratio is measured from the center.
-
-public:
-	FORCEINLINE ~AFGFoundationHologram() = default;
+	float mSideSnapDistanceFromEdgeThreshold = 200.0f; // Distance from the edge of the platform determining when foundation should snap on the side.
 };

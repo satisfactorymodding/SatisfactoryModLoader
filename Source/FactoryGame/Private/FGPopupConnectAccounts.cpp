@@ -3,7 +3,10 @@
 #include "FGPopupConnectAccounts.h"
 
 void UFGPopupConnectAccounts::NativeConstruct(){ }
+void UFGPopupConnectAccounts::NativeDestruct(){ }
 void UFGPopupConnectAccounts::OnNativeConnectAccountsEvent(const FName currentPlatform, EEosAccountConnectionResult result){ }
+void UFGPopupConnectAccounts::OnNativeWaitingForEOSConnectLoginUpdated(){ }
+void UFGPopupConnectAccounts::ContinueWithoutMultiplayer(){ }
 void UFGPopupConnectAccounts::ConnectAccount(){ }
 void UFGPopupConnectAccounts::LoginAndConnectAccount(){ }
 void UFGPopupConnectAccounts::CreateNewAccountConnection(){ }

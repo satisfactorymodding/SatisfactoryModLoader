@@ -1,13 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableFactory.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActor_Storage.h"
+#include "Buildables/FGBuildableFactory.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "Replication/FGReplicationDetailActor_Storage.h"
 #include "FGBuildableStorage.generated.h"
 
 /**
@@ -34,11 +31,15 @@ public:
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_Storage::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
 	/** Get the storage inventory from this storage box. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
 	FORCEINLINE class UFGInventoryComponent* GetStorageInventory() { return mStorageInventoryHandler->GetActiveInventoryComponent(); }
+
+	/** Get the initial (non-repdetail) inventory. This is only available on Server */
+	FORCEINLINE class UFGInventoryComponent* GetInitialStorageInventory() { return mStorageInventory; }
 
 protected:
 	friend class AFGReplicationDetailActor_Storage;
@@ -82,7 +83,4 @@ private:
 
 private:
 	class AFGReplicationDetailActor_Storage* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_Storage>( mReplicationDetailActor ); };
-
-public:
-	FORCEINLINE ~AFGBuildableStorage() = default;
 };

@@ -1,10 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
@@ -59,9 +55,6 @@ struct FACTORYGAME_API FPhaseTierInfo
 	/** Message sent when this phase is unlocked */
 	UPROPERTY( EditDefaultsOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > PhaseUnlockedMessage;
-
-public:
-	FORCEINLINE ~FPhaseTierInfo() = default;
 };
 
 /**
@@ -85,9 +78,6 @@ struct FACTORYGAME_API FPhaseCost
 	/** Cost of this tier */
 	UPROPERTY( EditDefaultsOnly, SaveGame )
 	TArray< FItemAmount > Cost;
-
-public:
-	FORCEINLINE ~FPhaseCost() = default;
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnGamePhaseUpdated, EGamePhase, gamePhase );
@@ -180,7 +170,4 @@ public:
 	/** Called when the game phase is updated */
 	UPROPERTY( BlueprintAssignable, Category = "Recipe" )
 	FOnGamePhaseUpdated mOnGamePhaseChanged;
-
-public:
-	FORCEINLINE ~AFGGamePhaseManager() = default;
 };

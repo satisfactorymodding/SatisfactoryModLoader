@@ -1,11 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
-#include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipment.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "FGJetPack.generated.h"
 
 UCLASS()
@@ -82,13 +80,10 @@ private:
 
 	/** The player is holding down the thrust key and wants to thrust */
 	bool mWantsToThrust;
-//MODDING EDIT
-public:
+
+public:	// MODDING EDIT public
 	/** A cached instance of the instigators movementcomponent */
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
-
-public:
-	FORCEINLINE ~AFGJetPack() = default;
 };
 
 UCLASS()
@@ -120,9 +115,6 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_IsThrusting )
 	bool mIsThrusting;
 
-
-public:
-	FORCEINLINE ~AFGJetPackAttachment() = default;
 };
 
 

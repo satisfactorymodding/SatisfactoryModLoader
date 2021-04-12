@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
@@ -21,7 +18,4 @@ public:
 public:
 	UPROPERTY( EditAnywhere, config, Category = "Custom Classes" )
 	TArray<TSubclassOf<UObject>> mCustomClasses;
-
-public:
-	FORCEINLINE ~UFGAutoJsonExportSettings() = default;
 };

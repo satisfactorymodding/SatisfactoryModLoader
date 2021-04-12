@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Class.h"
 
 #include "FGErrorMessage.generated.h"
 
@@ -46,7 +47,4 @@ protected:
 	// @todo:	Do we want to add string payload that can be used to attach more information about the error
 	//			or are we content with creating a new error message for each error (potentially a "GenericError subclass that we can use that overloads "GetErrorMessage")?
 	// @todo: Add priority for the order in which the user should be shown the errors or potentially remove errors of lower priority from the queue
-
-public:
-	FORCEINLINE ~UFGErrorMessage() = default;
 };

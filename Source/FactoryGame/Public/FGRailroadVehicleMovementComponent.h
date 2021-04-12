@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/PawnMovementComponent.h"
 #include "WheeledVehicleMovementComponent.h"
@@ -29,9 +27,6 @@ struct FACTORYGAME_API FWheelsetSetup
 
 	/** Where the axle/swivel center is along the vehicles X axis relative to the root. Calculated from the mesh. */
 	float Offset;
-
-public:
-	FORCEINLINE ~FWheelsetSetup() = default;
 };
 
 /**
@@ -54,9 +49,6 @@ struct FACTORYGAME_API FCouplerSetup
 
 	/** Where the coupler's base is along the vehicles X axis relative to the root. Calculated from the mesh. */
 	float Offset;
-
-public:
-	FORCEINLINE ~FCouplerSetup() = default;
 };
 
 /**
@@ -96,11 +88,9 @@ inline float RadiansToGrade( float rad )
 UCLASS()
 class FACTORYGAME_API UFGRailroadVehicleMovementComponent : public UPawnMovementComponent
 {
-	// MODDING EDIT
-	GENERATED_BODY()
+	GENERATED_UCLASS_BODY()
 
 public:
-	UFGRailroadVehicleMovementComponent(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
 	/** Get the owning railroad vehicle. */
 	class AFGRailroadVehicle* GetOwningRailroadVehicle() const;
 
@@ -123,7 +113,7 @@ public:
 	virtual void TickTractionAndFriction( float dt );
 
 	/** Move the physics of the vehicle to the new track position. */
-	void MoveVehicle( float dt, float distance, FRailroadTrackPosition newTrackPosition );
+	void MoveVehicle( float dt, float distance, FRailroadTrackPosition newTrackPosition, bool shouldMoveComponent );
 
 	/** Updates the coupler rotation and length, called after move vehicle has been called on the whole train. */
 	void UpdateCouplerRotationAndLength();
@@ -133,7 +123,7 @@ public:
 	
 	/** Get the total mass (gross) of this vehicle, tare + payload. [kg] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	FORCEINLINE float GetMass() const { return mMass + mPayloadMass; }
+	float GetMass() const { return mMass + mPayloadMass; }
 
 	/** Get the unloaded mass of this vehicle, tare. [kg] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -167,7 +157,7 @@ public:
 	FORCEINLINE void SetForwardSpeed( float velocity ) { mVelocity = velocity; }
 
 	/** Get the gravitational force acting on this vehicle. [N] [kg cm/s^2] */
-	FORCEINLINE float GetGravitationalForce() const { return GetMass() * -GetGravityZ(); }
+	float GetGravitationalForce() const { return GetMass() * -GetGravityZ(); }
 
 	/** Get the tractive force for this vehicle, this have a direction. [N] [kg cm/s^2] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -233,7 +223,7 @@ public:
 
 	/** Get number of wheel sets */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	FORCEINLINE int32 GetNumWheelsets() const { return mWheelsetSetups.Num(); };
+	int32 GetNumWheelsets() const { return mWheelsetSetups.Num(); };
 
 	/** Get the rotation for a wheelset. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -241,7 +231,7 @@ public:
 
 	/** Get the rotation for the wheels around the axle. [degrees]. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	FORCEINLINE float GetWheelRotation() const { return mWheelRotation; }
+	float GetWheelRotation() const { return mWheelRotation; }
 
 	/** Get the offset for a wheelset relative to the root bone along the forward (X) axis. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -401,7 +391,4 @@ protected:
 	 * Force added by tracks gradient, i.e. gravity.
 	 */
 	float mGradientResistance;
-
-public:
-	FORCEINLINE ~UFGRailroadVehicleMovementComponent() = default;
 };

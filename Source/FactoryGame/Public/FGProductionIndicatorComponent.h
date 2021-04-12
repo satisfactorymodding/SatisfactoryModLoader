@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "Buildables/FGBuildableFactory.h"
 #include "FGProductionIndicatorComponent.generated.h"
@@ -41,7 +39,4 @@ private:
 
 	/** Not UPROPERTY as this will never live longer than it's outer, cached version of it's main meshes */
 	TArray< UMeshComponent* > mCachedMainMeshes;
-
-public:
-	FORCEINLINE ~UFGProductionIndicatorComponent() = default;
 };

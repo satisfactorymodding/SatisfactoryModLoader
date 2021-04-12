@@ -1,7 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Hologram/FGBuildableHologram.h"
@@ -28,6 +27,14 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	bool mIsRotationAllowed;
 
+	/** Whether or not it is possible to snap to the ceiling. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	bool mCanSnapToFoundationCeiling;
+
+	/** Whether or not it is possible to snap to the side of foundations. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	bool mCanSnapToFoundationSide;
+
 	/** The rotation step for when rotating, if 0 then use the default granularity. */
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	int32 mRotationStep;
@@ -36,6 +43,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	FVector2D mSnapOffset;
 
-public:
-	FORCEINLINE ~AFGWallAttachmentHologram() = default;
+	/** Distance to inset the hologram when attaching to a foundation. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	float mFoundationSnappingInset;
 };

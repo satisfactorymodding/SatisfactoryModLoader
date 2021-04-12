@@ -3,7 +3,6 @@
 #include "FGLocomotiveMovementComponent.h"
 
 void UFGLocomotiveMovementComponent::TickComponent(float dt, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction){ }
-void UFGLocomotiveMovementComponent::GetLifetimeReplicatedProps( TArray<class FLifetimeProperty,  FDefaultAllocator> & OutReplicatedProps) const{ }
 void UFGLocomotiveMovementComponent::ComputeConstants(){ }
 void UFGLocomotiveMovementComponent::TickSlaveInput(float dt, const UFGLocomotiveMovementComponent* master){ }
 void UFGLocomotiveMovementComponent::TickTractionAndFriction(float dt){ }
@@ -23,3 +22,5 @@ void UFGLocomotiveMovementComponent::ServerUpdateState_Implementation(int32 inRe
 bool UFGLocomotiveMovementComponent::ServerUpdateState_Validate(int32 inReverserInput, float inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput){ return bool(); }
 void UFGLocomotiveMovementComponent::UseReplicatedState(){ }
 void UFGLocomotiveMovementComponent::UseMultipleUnitMasterState(const UFGLocomotiveMovementComponent* master){ }
+UFGLocomotiveMovementComponent::UFGLocomotiveMovementComponent(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+void UFGLocomotiveMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }

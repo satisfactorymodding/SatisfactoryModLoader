@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
@@ -101,7 +100,4 @@ protected:
 	uint8 mIsAirBrakesApplied : 1;
 	uint8 mIsDynamicBrakesApplied : 1;
 	uint8 mIsThrottleApplied : 1;
-
-public:
-	FORCEINLINE ~UFGRailroadVehicleSoundComponent() = default;
 };

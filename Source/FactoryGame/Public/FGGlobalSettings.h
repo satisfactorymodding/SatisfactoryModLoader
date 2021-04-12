@@ -1,10 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "Object.h"
+#include "UObject/Object.h"
 #include "FGGlobalSettings.generated.h"
 
 /**
@@ -14,14 +12,7 @@ UCLASS( Blueprintable, config = Engine, defaultconfig )
 class FACTORYGAME_API UFGGlobalSettings : public UObject
 {
 	GENERATED_BODY()
-
 public:
-	/** Called during startup of factorygame module */
-	static void Initialize();
-
-	/** Called during shutdown of factorygame module */
-	static void Shutdown();
-
 	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static class UFGGlobalSettings* GetGlobalSettingsClassCDO();
 
@@ -79,7 +70,4 @@ protected:
 
 	/** The actual class */
 	static TSubclassOf< UFGGlobalSettings > mGlobalSettingsClass;
-
-public:
-	FORCEINLINE ~UFGGlobalSettings() = default;
 };

@@ -1,7 +1,5 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 #include "GameFramework/Actor.h"
 #include "Equipment/FGWeaponProjectileFire.h"
 #include "FGProjectile.generated.h"
@@ -136,7 +134,4 @@ private:
 
 	/** Was projectile fired by a weapon */
 	bool mWasFiredByWeapon;
-
-public:
-	FORCEINLINE ~AFGProjectile() = default;
 };

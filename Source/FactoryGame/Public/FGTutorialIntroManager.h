@@ -1,11 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
@@ -14,10 +9,11 @@
 #include "FGTutorialIntroManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FIntroSequenceStateUpdate );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FCurrentIntroStepUpdate );
 
 //Steps in the intro tutorial
 UENUM( BlueprintType )
-enum class EIntroTutorialSteps :uint8
+enum class EIntroTutorialSteps : uint8
 {
 	ITS_NONE			UMETA( DisplayName = "No tutorial" ),
 	ITS_INTRO			UMETA( DisplayName = "Intro state with message" ),
@@ -36,7 +32,7 @@ enum class EIntroTutorialSteps :uint8
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FRecipeAmountPair
+struct FRecipeAmountPair
 {
 	GENERATED_BODY()
 
@@ -47,13 +43,10 @@ struct FACTORYGAME_API FRecipeAmountPair
 	/** How many of given recipe */
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
 	int32 Amount;
-
-public:
-	FORCEINLINE ~FRecipeAmountPair() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FTutorialHintData
+struct FTutorialHintData
 {
 	GENERATED_BODY()
 
@@ -68,24 +61,6 @@ struct FACTORYGAME_API FTutorialHintData
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
 	TSubclassOf< class UFGMessageBase > Message;
-
-public:
-	FORCEINLINE ~FTutorialHintData() = default;
-};
-
-struct FACTORYGAME_API FFindByIntroID
-{
-	EIntroTutorialSteps TutorialStep;
-
-	FFindByIntroID( EIntroTutorialSteps InTutorialStep ) : TutorialStep( InTutorialStep ) { }
-
-	bool operator() ( const FTutorialHintData Element ) const
-	{
-		return ( TutorialStep == Element.ID );
-	}
-
-public:
-	FORCEINLINE ~FFindByIntroID() = default;
 };
 
 UCLASS( abstract )
@@ -236,6 +211,10 @@ public:
 	/** Called when mHasCompletedIntroSequence updates */
 	UPROPERTY(BlueprintAssignable,Category="Tutorial")
 	FIntroSequenceStateUpdate mOnIntroSequenceStateUpdated;
+
+	/** Called when mCurrentLocalTutorial updates */
+	UPROPERTY(BlueprintAssignable,Category="Tutorial")
+	FCurrentIntroStepUpdate mOnCurrentIntroStepUpdated;
 
 protected:
 	/** Has a trading post been built */
@@ -389,7 +368,4 @@ private:
 	/** Bool for when codex has been opened */
 	UPROPERTY( SaveGame )
 	bool mDidOpenCodex;
-
-public:
-	FORCEINLINE ~AFGTutorialIntroManager() = default;
 };

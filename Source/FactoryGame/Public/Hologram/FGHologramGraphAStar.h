@@ -1,17 +1,13 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
 
-struct FACTORYGAME_API FHologramGraphAStarDefaultPolicy
+struct FHologramGraphAStarDefaultPolicy
 {
 	static const int32 NodePoolSize = 64;
 	static const int32 OpenSetSize = 64;
 	static const int32 FatalPathLength = 10000;
 	static const bool bReuseNodePoolInSubsequentSearches = true;
-
-public:
-	FORCEINLINE ~FHologramGraphAStarDefaultPolicy() = default;
 };
 
 enum EHologramGraphAStarResult
@@ -27,7 +23,7 @@ enum EHologramGraphAStarResult
  *	Extend this class and pass as a parameter to FHologramGraphAStar for additional functionality
  */
 template<typename THologramGraph>
-struct FACTORYGAME_API FHologramGraphAStarDefaultNode
+struct FHologramGraphAStarDefaultNode
 {
 	typedef typename THologramGraph::FNodeRef FGraphNodeRef;
 
@@ -57,9 +53,6 @@ struct FACTORYGAME_API FHologramGraphAStarDefaultNode
 	FORCEINLINE void MarkNotClosed() { bIsClosed = false; }
 	FORCEINLINE bool IsOpened() const { return bIsOpened; }
 	FORCEINLINE bool IsClosed() const { return bIsClosed; }
-
-public:
-	FORCEINLINE ~FHologramGraphAStarDefaultNode() = default;
 };
 
 /**
@@ -85,7 +78,7 @@ public:
 
 
 template<typename THologramGraph, typename Policy = FHologramGraphAStarDefaultPolicy, typename TSearchNode = FHologramGraphAStarDefaultNode<THologramGraph> >
-struct FACTORYGAME_API FHologramGraphAStar
+struct FHologramGraphAStar
 {
 	typedef typename THologramGraph::FNodeRef FGraphNodeRef;
 	typedef TSearchNode FSearchNode;
@@ -416,7 +409,4 @@ struct FACTORYGAME_API FHologramGraphAStar
 
 		return EHologramGraphAStarResult::HologramSearchSuccess;
 	}
-
-public:
-	FORCEINLINE ~FHologramGraphAStar() = default;
 };

@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "UObject/Class.h"
 
 #include "FGUseableInterface.h"
 #include "GameFramework/Actor.h"
@@ -64,7 +62,4 @@ protected:
 
 	/** The component we want to pickup from */
 	TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > mPickupComponent;
-
-public:
-	FORCEINLINE ~AFGFoliagePickup() = default;
 };

@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "Engine/StaticMesh.h"
-#include "UObject/Class.h"
 
 #include "Buildables/FGBuildableFactory.h"
 #include "Components/SceneComponent.h"
@@ -29,6 +26,7 @@ public:
 	void SetInstanced( bool isInstanced );
 
 	/** Called when the buildings indicator status changes. */
+	UFUNCTION()
 	void OnProductionStatusChanged( EProductionStatus newStatus );
 
 	/** This sets the cached status to IS_NONE so that an update is forced next frame */
@@ -51,7 +49,4 @@ private:
 
 	/* Don't need to be a UPROPERTY as it's only meant as a shortcut to an object that is already managed elsewhere and guaranteed to live longer than this component. */
 	UFGProductionIndicatorInstanceManager* mInstanceManager;
-
-public:
-	FORCEINLINE ~UFGProductionIndicatorInstanceComponent() = default;
 };

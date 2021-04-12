@@ -1,13 +1,9 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableConveyorBase.h"
+#include "Buildables/FGBuildableConveyorBase.h"
 #include "FGBuildableConveyorLift.generated.h"
 
 /** Base for conveyor lifts. */
@@ -18,6 +14,8 @@ class FACTORYGAME_API AFGBuildableConveyorLift : public AFGBuildableConveyorBase
 public:
 	AFGBuildableConveyorLift();
 
+	friend class AFGConveyorItemSubsystem;
+	
 	// Begin AActor Interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
@@ -26,13 +24,23 @@ public:
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	// End Buildable interface
+	
+	// Begin IFGDismantleInterface
+	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	// End IFGDismantleInterface
 
 	/** Get the height for this lift. */
 	float GetHeight() const { return FMath::Abs( mTopTransform.GetTranslation().Z ); }
 
+	/** Overrided as conveyor lifts lack primitives so they never recieve this otherwise */
+	virtual float GetLastRenderTime() const override;
+
+	void DestroyVisualItems();
+	
 protected:
 	// Begin AFGBuildableConveyorBase interface
-	virtual void TickItemTransforms( float dt ) override;
+	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) override;
+	virtual void TickRadioactivity() override;
 	// End AFGBuildableConveyorBase interface
 
 private:
@@ -102,8 +110,6 @@ private:
 	UPROPERTY( Meta = ( NoAutoJson ) )
 	TMap< FName, class UInstancedStaticMeshComponent* > mItemMeshMap;
 
-public:
-	FORCEINLINE ~AFGBuildableConveyorLift() = default;
 };
 
 

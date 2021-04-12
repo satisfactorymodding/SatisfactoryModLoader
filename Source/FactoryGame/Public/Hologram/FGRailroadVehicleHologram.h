@@ -1,10 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
-#include "FGVehicleHologram.h"
-#include "../FGRailroadSubsystem.h"
+#include "Hologram/FGVehicleHologram.h"
+#include "FGRailroadSubsystem.h"
 #include "FGRailroadVehicleHologram.generated.h"
 
 /**
@@ -30,6 +29,7 @@ public:
 
 protected:
 	// Begin AFGHologram interface
+	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void CheckValidPlacement() override;
 	// End of AFGHologram interface
 
@@ -56,7 +56,4 @@ private:
 	/** The snapped vehicle. */
 	UPROPERTY()
 	class AFGRailroadVehicle* mSnappedVehicle;
-
-public:
-	FORCEINLINE ~AFGRailroadVehicleHologram() = default;
 };

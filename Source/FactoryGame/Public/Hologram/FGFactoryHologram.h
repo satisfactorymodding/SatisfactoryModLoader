@@ -1,13 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableHologram.h"
-#include "FGBuildGuide.h"
-#include "../FGFactoryConnectionComponent.h"
+#include "Hologram/FGBuildableHologram.h"
+#include "Hologram/FGBuildGuide.h"
+#include "FGFactoryConnectionComponent.h"
 #include "FGFactoryHologram.generated.h"
 
 /**
@@ -49,8 +46,9 @@ protected:
 	UPROPERTY()
 	class UMaterialInterface* mClearanceMaterial;
 
-	TMap<class UObject*, class AFGBuildGuide*> mGuideLineBuildings;
+	/** Should this building also use the TC_BuildGuide when sweeping for aligned buildings? */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|Hologram" )
+	bool mIncludeBuildGuideTraceChannel;
 
-public:
-	FORCEINLINE ~AFGFactoryHologram() = default;
+	TMap<class UObject*, class AFGBuildGuide*> mGuideLineBuildings;
 };

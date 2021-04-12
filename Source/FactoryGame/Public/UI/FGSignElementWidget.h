@@ -1,21 +1,16 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "FGSignElementWidget.generated.h"
 
-struct FACTORYGAME_API FSignElementWidgetData
+struct FSignElementWidgetData
 {
 	class UFGSignCanvasWidget* CanvasParent;
 	class UFGSignElementData* ElementData;
 	class UCanvasPanelSlot* PanelSlot;
-
-public:
-	FORCEINLINE ~FSignElementWidgetData() = default;
 };
 
 /**
@@ -102,7 +97,4 @@ protected:
 	// Tracks mouse cursor offset on a drag operation
 	FVector2D mDragOffset;
 
-
-public:
-	FORCEINLINE ~UFGSignElementWidget() = default;
 };

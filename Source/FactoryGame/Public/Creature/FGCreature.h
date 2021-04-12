@@ -1,13 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "../FGCharacterBase.h"
-#include "../FGUseableInterface.h"
+#include "FGCharacterBase.h"
+#include "FGUseableInterface.h"
 #include "FGCreature.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FRotationDoneDelegate, APawn*, PawnRotated );
@@ -31,7 +27,7 @@ enum class EMoveSpeed :uint8
 };
 
 USTRUCT( BlueprintType ) 
-struct FACTORYGAME_API FMoveSpeedPair
+struct FMoveSpeedPair
 {
 	GENERATED_BODY()
 
@@ -40,25 +36,20 @@ struct FACTORYGAME_API FMoveSpeedPair
 
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
 	float Speed;
-
-public:
-	FORCEINLINE ~FMoveSpeedPair() = default;
 };
 
 /**
- * 
+ * Base class for passive creatures in the game, see AFGEnemy for aggressive creatures.
  */
 UCLASS()
 class FACTORYGAME_API AFGCreature : public AFGCharacterBase
 {
 	GENERATED_BODY()
 public:
-	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-
-	/** ctor */
 	AFGCreature( const FObjectInitializer& ObjectInitializer );
-
+	
 	// Begin AActor Interface
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	virtual void PreInitializeComponents() override;
 	virtual void Tick( float deltaTime ) override;
@@ -177,22 +168,37 @@ public:
 
 	/** Called if the spawner has successfully recoupled itself with this creature */
 	void ClearKillOrphanTimer();
-private:
-	UFUNCTION()
-	void OnRep_TargetRotation();
 
 protected:
 	// We want the AI system to be able to optimize our actor without exposing that functionality
 	friend class UFGAISystem;
 
 	UFUNCTION()
-	void OnRep_IsEnabled();
+    void OnRep_IsEnabled();
 
 	/** Set our enabled state */
 	void SetEnabled( EEnabled enabled );
 
 	/** Kills of creatures that have no spawner unless they have set mNeedsSpawner to false */
 	void KillOrphanCreature();
+	
+private:
+	UFUNCTION()
+	void OnRep_TargetRotation();
+	
+public:
+	/** Spline we are set to follow */
+	UPROPERTY( SaveGame, EditInstanceOnly, Category = "Creature" )
+	class AFGSplinePath* mSpline;
+
+	/** Called when we are done with rotation movement */
+	UPROPERTY( BlueprintAssignable, Category = "Movement", DisplayName = "OnRotationDone" )
+	FRotationDoneDelegate mRotationDoneDelegate;
+
+	/** Indicates if we should optimize this creatures mesh ( disable ticking ) when looking at it from a distance ( not good on large creatures ) */
+	UPROPERTY( EditDefaultsOnly, Category = "Creature" )
+	bool mShouldOptimizeMeshWhenVisible;
+
 protected:
 	/** How big navmesh do we want to generate */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
@@ -217,22 +223,11 @@ protected:
 	/** Class of item to drop when dead */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	TSubclassOf< class AFGItemPickup > mItemToDrop;
-public:
-	/** Spline we are set to follow */
-	UPROPERTY( SaveGame, EditInstanceOnly, Category = "Creature" )
-	class AFGSplinePath* mSpline;
-
-	/** Called when we are done with rotation movement */
-	UPROPERTY( BlueprintAssignable, Category = "Movement", DisplayName = "OnRotationDone" )
-	FRotationDoneDelegate mRotationDoneDelegate;
 
 	/** Array with information about different speeds that this creature can use */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
 	TArray< FMoveSpeedPair > mMoveSpeedData;
-
-	/** Indicates if we should optimize this creatures mesh ( disable ticking ) when looking at it from a distance ( not good on large creatures ) */
-	UPROPERTY( EditDefaultsOnly, Category = "Creature" )
-	bool mShouldOptimizeMeshWhenVisible;
+	
 private: 
 	/** Should this creature be able to persist in the world */
 	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Creature" )
@@ -314,7 +309,4 @@ private:
 	/** At what distance this creature can spawn from */
 	UPROPERTY( EditDefaultsOnly, Category = "Spawning" )
 	float mSpawnDistance;
-
-public:
-	FORCEINLINE ~AFGCreature() = default;
 };

@@ -1,11 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
@@ -65,6 +60,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
 	bool IsRecipeAvailable( TSubclassOf< UFGRecipe > recipeClass );
 
+	/** Is the given buildable available to build? */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
+    bool IsBuidlingAvailable( TSubclassOf< class AFGBuildable > buildableClass ) const;
+
 	/** Find all recipes using the given item as an ingredient. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Recipe" )
 	TArray< TSubclassOf< UFGRecipe > > FindRecipesByIngredient( TSubclassOf< UFGItemDescriptor > ingredient ) const;
@@ -83,11 +82,27 @@ private:
 	/** Filters recipes for a given producer. */
 	void FilterRecipesByProducer( const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes );
 
+	/** Checks if a recipe is valid for addition to the available recipes list. */
+	bool CanAddToAvailableRecipes( TSubclassOf< UFGRecipe > recipe ) const;
+
+	/** Checks if a recipe is valid for addition depending on it relevant events  */
+	bool ShouldAddRecipeByEvent( TSubclassOf< UFGRecipe > recipe ) const;
+
+	/** Steps through mAvailableRecipes and looks for buildings that we can build to add to mAvailableBuildings */
+	void PopulateAvailableBuildings();
+
+	/** Called when mAvailableRecipes have been replicated. used to generate mAvailableBuildings on client */
+	UFUNCTION()
+    void OnRep_AvailableRecipes();
+	
 private:
+	//MODDING EDIT: Expose to AModContentRegistry
+	friend class AModContentRegistry;
 	/** All recipes that are available to the producers, i.e. build gun, workbench, manufacturers etc. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_AvailableRecipes )
 	TArray< TSubclassOf< UFGRecipe > > mAvailableRecipes;
 
-public:
-	FORCEINLINE ~AFGRecipeManager() = default;
+	/** All buildings that are available to produce in build gun. Generated from mAvailableRecipes. */
+	UPROPERTY( Transient )
+	TArray< TSubclassOf< class AFGBuildable > > mAvailableBuildings;
 };

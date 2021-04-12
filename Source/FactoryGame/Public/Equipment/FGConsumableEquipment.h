@@ -1,8 +1,8 @@
-#pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "FGEquipment.h"
+#pragma once
+
+#include "Equipment/FGEquipment.h"
 #include "FGConsumableEquipment.generated.h"
 
 /** Used to hold consumeables, so we can eat berries, and consume medpacks a.s.o */
@@ -41,7 +41,4 @@ protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
 protected:
-
-public:
-	FORCEINLINE ~AFGConsumableEquipment() = default;
 };

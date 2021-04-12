@@ -1,10 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "Buildables/FGBuildable.h"
-#include "FGBuildableFactory.h"
 #include "FGBuildableRailroadSignal.generated.h"
 
 /**
@@ -16,7 +14,4 @@ class FACTORYGAME_API AFGBuildableRailroadSignal : public AFGBuildable
 	GENERATED_BODY()
 public:
 	//@todo Implement
-
-public:
-	FORCEINLINE ~AFGBuildableRailroadSignal() = default;
 };

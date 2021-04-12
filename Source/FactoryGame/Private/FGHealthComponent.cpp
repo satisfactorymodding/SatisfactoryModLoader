@@ -3,11 +3,10 @@
 #include "FGHealthComponent.h"
 
 #if WITH_EDITOR
-void UFGHealthComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ }
+void UFGHealthComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 void UFGHealthComponent::BeginPlay(){ }
 void UFGHealthComponent::PostLoad(){ Super::PostLoad(); }
-void UFGHealthComponent::GetLifetimeReplicatedProps( TArray<class FLifetimeProperty,  FDefaultAllocator> & OutReplicatedProps) const{ }
 void UFGHealthComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGHealthComponent::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGHealthComponent::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -37,3 +36,4 @@ void UFGHealthComponent::SetReplicateDamageEvents(bool setReplicates){ }
 void UFGHealthComponent::SetReplicateDeathEvents(bool setReplicates){ }
 float UFGHealthComponent::AdjustDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
 void UFGHealthComponent::Died(bool forceNotifies){ }
+void UFGHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }

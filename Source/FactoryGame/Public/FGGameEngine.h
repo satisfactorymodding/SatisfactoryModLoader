@@ -1,7 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/World.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Engine/GameEngine.h"
 #include "FGEngineCommon.h"
@@ -9,9 +8,8 @@
 #include "FGGameEngine.generated.h"
 
 
-
 UCLASS()
-class FACTORYGAME_API UFGGameEngine : public UGameEngine, public IFGWorldCreationInterface
+class UFGGameEngine : public UGameEngine, public IFGWorldCreationInterface
 {
 	GENERATED_BODY()
 public:
@@ -20,6 +18,7 @@ public:
 	virtual void Start() override;
 	virtual void PreExit() override;
 	virtual void Tick( float deltaSeconds, bool idleMode ) override;
+	virtual bool LoadMap( FWorldContext& WorldContext, FURL URL, class UPendingNetGame* Pending, FString& Error ) override;
 	// End UEngine interface
 
 	//~ Begin IFGWorldCreationInterface interface
@@ -32,7 +31,4 @@ protected:
 	/** Shared implementation for world creation */
 	UPROPERTY()
 	FFGEngineCommon mEngineCommonImp;
-
-public:
-	FORCEINLINE ~UFGGameEngine() = default;
 };

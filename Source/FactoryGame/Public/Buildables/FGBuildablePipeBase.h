@@ -1,16 +1,13 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "FGInstancedSplineMeshComponent.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
 #include "Components/SplineComponent.h"
-#include "../FGSignificanceInterface.h"
+#include "FGSignificanceInterface.h"
 #include "FGBuildablePipeBase.generated.h"
 
 
@@ -77,7 +74,7 @@ public:
 	static constexpr float DEFAULT_PIPE_HEIGHT = 175.f;
 
 	const static float PIPE_COST_LENGTH_MULTIPLIER;
-// MODDING EDIT protected:
+public: // MODDING EDIT protected -> public
 	/** Mesh to use for his conveyor. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	class UStaticMesh* mMesh;
@@ -88,6 +85,9 @@ public:
 
 	/** Length of the pipe in centimeters. */
 	float mLength;
+
+	/** Should we use per segment or should we try to scale the mesh to fit. **/
+	bool mUsePerSegmentSplining;
 
 	/**
 	 * First connection on the pipe (can be an input and an output, because, again, pipes)
@@ -120,9 +120,6 @@ private:
 
 	/** Is this buildable significant, i.e. is within significance range */
 	bool mIsSignificant;
-
-public:
-	FORCEINLINE ~AFGBuildablePipeBase() = default;
 };
 
 

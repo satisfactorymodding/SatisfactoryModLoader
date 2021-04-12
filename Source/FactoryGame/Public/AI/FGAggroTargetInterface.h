@@ -1,28 +1,18 @@
-#pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "UObject/Interface.h"
+#pragma once
+
 #include "FGAggroTargetInterface.generated.h"
 
 /**
-* For blueprint support of the interface, we will never add anything to it, just use it to
-* have a UCLASS to be able to access
-*/
+ * Interface for actors that can be aggroed by enemies.
+ */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGAggroTargetInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGAggroTargetInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGAggroTargetInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
-/**
-* @brief Interface for everything that can be in the inventory
-*/
 class FACTORYGAME_API IFGAggroTargetInterface
 {
 	GENERATED_IINTERFACE_BODY()
@@ -64,7 +54,4 @@ class FACTORYGAME_API IFGAggroTargetInterface
 	virtual void UnregisterIncomingAttacker( class AFGEnemyController* forController ) = 0;
 
 	virtual bool IsDynamic() = 0;*/
-
-public:
-	FORCEINLINE IFGAggroTargetInterface() = default;
 };

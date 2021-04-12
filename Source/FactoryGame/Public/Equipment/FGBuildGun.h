@@ -1,16 +1,12 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "FGEquipment.h"
-#include "../FGRecipeProducerInterface.h"
-#include "FGEquipmentAttachment.h"
-#include "../Inventory.h"
+#include "Equipment/FGEquipment.h"
+#include "FGRecipeProducerInterface.h"
+#include "Equipment/FGEquipmentAttachment.h"
+#include "Inventory.h"
 #include "FGBuildGun.generated.h"
 
  /**
@@ -49,10 +45,10 @@ public:
 	virtual bool IsSupportedForNetworking() const override;
 
 	/** This is overloaded so that we can call Server/Client functions in this object by using the Callspace of the outer BuildGun. */
-	int32 GetFunctionCallspace( UFunction* Function, void* Parameters, FFrame* Stack ) override;
+	virtual int32 GetFunctionCallspace( UFunction* Function, FFrame* Stack ) override;
 
 	/** This is overloaded so that we can call Server/Client functions in this object by using the NetDriver of the outer BuildGun.*/
-	bool CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack ) override;
+	virtual bool CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack ) override;
 
 	/** Checks if the outer build gun has authority. */
 	UFUNCTION( BlueprintPure, Category = "BuildGunState" )
@@ -192,9 +188,6 @@ private:
 
 	/** Is this state active? */
 	bool mIsActive;
-
-public:
-	FORCEINLINE ~UFGBuildGunState() = default;
 };
 
 /**
@@ -424,9 +417,6 @@ private:
 	bool mWaitingForPrimaryFireRelease;
 
 	bool mHasHookedUpBuildStateUserSettings = false; //[DavalliusA:Thu/23-01-2020] not happy with this, but didn't find a function that is only called once and where we know we have a local instagator or not 
-
-public:
-	FORCEINLINE ~AFGBuildGun() = default;
 };
 
 /**
@@ -436,7 +426,4 @@ UCLASS()
 class FACTORYGAME_API AFGBuildGunAttachment : public AFGEquipmentAttachment
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~AFGBuildGunAttachment() = default;
 };

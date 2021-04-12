@@ -1,6 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGRiverSpline.generated.h"
@@ -36,7 +36,4 @@ protected:
 	/** If true, then we should have no audio */
 	UPROPERTY( BlueprintReadOnly, EditInstanceOnly, Category = "Audio" )
 	bool mShouldHaveAudio;
-
-public:
-	FORCEINLINE ~AFGRiverSpline() = default;
 };

@@ -1,12 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGInventoryComponent.h"
-#include "Equipment/FGEquipment.h"
 #include "FGInventoryComponentEquipment.generated.h"
 
 class AFGEquipment;
@@ -90,7 +86,4 @@ private:
 	/** Index of the active equipment*/
 	UPROPERTY( SaveGame, Replicated )
 	int32 mActiveEquipmentIndex;
-
-public:
-	FORCEINLINE ~UFGInventoryComponentEquipment() = default;
 };

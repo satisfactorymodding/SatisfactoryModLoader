@@ -1,7 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "CharacterAnimationTypes.h"
@@ -18,10 +17,14 @@ class FACTORYGAME_API UFGAnimPlayer : public UFGCharacterAnimInstance
 public:	
 	/** Caching stuff */
 	virtual void NativeUpdateAnimation( float DeltaSeconds ) override;
-
+	virtual void NativeUninitializeAnimation() override;
 	/** Sets value for arm slot */
 	void CacheArmSlotData();
 
+	/** Executed when the Animation is uninitialized */
+	UFUNCTION(BlueprintImplementableEvent)
+    void BlueprintUninitializeAnimation();
+	
 	/** Sets value for back slot */
 	void CacheBackSlotData();
 private:
@@ -45,6 +48,7 @@ public:
 	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
 	class AFGCharacterPlayer* mCharacter;
 
-public:
-	FORCEINLINE ~UFGAnimPlayer() = default;
+	/** is this character not controlled by anyone */
+	UPROPERTY( BlueprintReadOnly, Category = "Anim Player" )
+	bool mIsIdling;
 };

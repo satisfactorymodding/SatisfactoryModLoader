@@ -1,8 +1,8 @@
-#pragma once
-#include "Array.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "FGEquipmentAttachment.h"
+#pragma once
+
+#include "Equipment/FGEquipmentAttachment.h"
 #include "FGWeaponAttachment.generated.h"
 
 UCLASS()
@@ -38,7 +38,4 @@ protected:
 	/** Location that was hit ( or sometimes shoot direction ) */
 	FVector mFlashLocation;
 
-
-public:
-	FORCEINLINE ~AFGWeaponAttachment() = default;
 };

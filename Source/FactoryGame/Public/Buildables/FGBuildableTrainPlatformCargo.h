@@ -1,23 +1,12 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "SubclassOf.h"
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableTrainPlatform.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActor_CargoPlatform.h"
-#include "../FGFreightWagon.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActor_CargoPlatform.h"
-#include "FGBuildableFactory.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActor_CargoPlatform.h"
+#include "Buildables/FGBuildableTrainPlatform.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "Replication/FGReplicationDetailActor_CargoPlatform.h"
+#include "FGFreightWagon.h"
 #include "FGBuildableTrainPlatformCargo.generated.h"
 
 /**
@@ -98,6 +87,7 @@ public:
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_CargoPlatform::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
 	// Begin BuildableTrainPlatform Implementation
@@ -311,7 +301,4 @@ private:
 	float mReplicatedInflowRate;
 
 	/******** End Pipe Flow Output Params ********/
-
-public:
-	FORCEINLINE ~AFGBuildableTrainPlatformCargo() = default;
 };

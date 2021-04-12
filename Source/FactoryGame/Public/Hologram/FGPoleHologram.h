@@ -1,13 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGFactoryHologram.h"
-#include "../Resources/FGPoleDescriptor.h"
+#include "Hologram/FGFactoryHologram.h"
+#include "Resources/FGPoleDescriptor.h"
 #include "FGPoleHologram.generated.h"
 
 
@@ -89,9 +85,6 @@ private:
 	UPROPERTY()
 	class USceneComponent* mPoleHeightComponent;
 
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	float mPoleHeight;
-
-public:
-	FORCEINLINE ~AFGPoleHologram() = default;
 };

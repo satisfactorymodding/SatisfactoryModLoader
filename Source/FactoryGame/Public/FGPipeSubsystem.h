@@ -1,16 +1,16 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGPipeSubsystem.generated.h"
+
+
+// Group for the detailed stats for this subsystem.
+DECLARE_STATS_GROUP( TEXT( "PipeSubsystem" ), STATGROUP_PipeSubsystem, STATCAT_Advanced );
+
 
 /**
  * Subsystem that manages all pipes in the game, grouping them into networks and managing the simulation of the networks.
@@ -44,6 +44,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes", Meta = ( DefaultToSelf = "worldContext" ) )
 	static AFGPipeSubsystem* GetPipeSubsystem( UObject* worldContext );
 
+	
 	/***************************************************************************************************
 	 * Functions to manage the fluid networks.
 	 */
@@ -111,10 +112,20 @@ public:
 	/** Remove a fluid integrant. Called when the owning actor is dismantled */
 	void UnregisterFluidIntegrant( class IFGFluidIntegrantInterface* fluidIntegrant );
 
+
+	/***************************************************************************************************
+	 * Functions for debugging fluid networks.
+	 */
+	void Debug_ClearDisplayDebugList();
+	void Debug_AddToDisplayDebugList( int32 networkID );
+	void Debug_AddProbedFluidIntegrant( class IFGFluidIntegrantInterface* integrant );
+	void Debug_RemoveProbedFluidIntegrant( class IFGFluidIntegrantInterface* integrant );
+	void Debug_ClearProbedFluidIntegrants();
+
 private:
 	int32 GenerateUniqueID();
 
-	void TickPipeNetworks( float dt );
+	void SimulatePipeNetworks( float dt );
 
 	/**
 	 * Internal helper to rebuild a network.
@@ -132,6 +143,41 @@ private:
 	/** Adds a fluid integrant to an existing network. Performs a merge on the network if its already connected */
 	void AddFluidIntegrantToNetwork( class IFGFluidIntegrantInterface* fluidIntegrant, int32 networkID );
 
+	/** Function that handle the pipe probing. */
+	void Debug_ProbeIntegrant();
+	/** Struct containing all data for one pipe probe. */
+	struct ProbeData
+	{
+		class IFGFluidIntegrantInterface* Integrant;
+
+		/** Graph points */
+		static const int32 POINTS_TO_KEEP = 600;
+		
+		TArray< float > ContentPoints;
+		FVector2D ContentRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > ContentLimits;
+		
+		TArray< float > FlowPoints;
+		FVector2D FlowRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > FlowLimits;
+
+		TArray< float > FlowLimitPoints;
+		FVector2D FlowLimitRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > FlowLimitLimits;
+
+		TArray< float > PressurePoints;
+		FVector2D PressureRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > PressureLimits;
+
+		TArray< float > DeltaPressurePoints;
+		FVector2D DeltaPressureRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > DeltaPressureLimits;
+
+		TArray< float > PressureGroupPoints;
+		FVector2D PressureGroupRange = FVector2D::ZeroVector;
+		TArray< TTuple< FLinearColor, float > > PressureGroupLimits;
+	};
+
 private:
 	int32 mIDCounter;
 
@@ -139,6 +185,10 @@ private:
 	UPROPERTY()
 	TMap< int32, class AFGPipeNetwork* > mNetworks;
 
-public:
-	FORCEINLINE ~AFGPipeSubsystem() = default;
+	/** List of networks to show debug for, if empty all networks are displayed. */
+	UPROPERTY()
+	TArray< class AFGPipeNetwork* > mDisplayDebugNetworkList;
+
+	/** Data for probed pipes. */
+	TArray< ProbeData > mProbeData;
 };

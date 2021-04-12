@@ -1,18 +1,14 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSettings.h"
 #include "Resources/FGItemDescriptor.h"
+#include "Resources/FGResourceNode.h"
 #include "FGResourceSettings.generated.h"
 
 USTRUCT()
-struct FACTORYGAME_API FItemSettings
+struct FItemSettings
 {
 	GENERATED_BODY()
 
@@ -42,9 +38,6 @@ struct FACTORYGAME_API FItemSettings
 	class UMaterial* MasterMaterial;
 
 	// Might be a idea to put the stage class here if we want some really special icons...
-
-public:
-	FORCEINLINE ~FItemSettings() = default;
 };
 
 /**  */
@@ -72,9 +65,6 @@ struct FACTORYGAME_API FResourceDepositPackage
 	/** How much to get per "mine cycle" */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "ResourceDepositPackage" )
 	int32 MiningAmount;
-
-public:
-	FORCEINLINE ~FResourceDepositPackage() = default;
 };
 
 /**
@@ -134,6 +124,9 @@ public:
 	/** The class of item we want to drop when we drop something */
 	UPROPERTY( EditDefaultsOnly, Category = "Drops" )
 	TSubclassOf< class AFGItemPickup_Spawnable > mItemDropClass;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Power" )
+	TMap< TEnumAsByte< EResourcePurity >, UCurveFloat* > mGeyserPowerOutputCurves;
 
 #if WITH_EDITORONLY_DATA
 	/** The stage that should be used to make icons */
@@ -144,7 +137,4 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category="Icon")
 	TArray< FItemSettings > mIconSettings;
 #endif
-
-public:
-	FORCEINLINE ~UFGResourceSettings() = default;
 };

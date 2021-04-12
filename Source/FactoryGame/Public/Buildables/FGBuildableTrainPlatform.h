@@ -1,13 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "FGBuildableRailroadTrack.h"
-#include "FGBuildableFactory.h"
+#include "Buildables/FGBuildableRailroadTrack.h"
 #include "FGBuildableTrainPlatform.generated.h"
 
 
@@ -134,7 +131,4 @@ protected:
 
 private:
 	friend class AFGTrainPlatformHologram; //@todotrains use this instead of setters and getters for everything.
-
-public:
-	FORCEINLINE ~AFGBuildableTrainPlatform() = default;
 };

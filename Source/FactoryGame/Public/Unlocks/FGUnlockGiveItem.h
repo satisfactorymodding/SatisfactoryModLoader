@@ -1,12 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Unlocks/FGUnlock.h"
-#include "../FGSchematic.h"
+#include "FGSchematic.h"
 #include "FGUnlockGiveItem.generated.h"
 
 /**
@@ -30,7 +28,4 @@ public: // MODDING EDIT: protected -> public
 	UPROPERTY( EditDefaultsOnly )
 	TArray< FItemAmount > mItemsToGive;
 
-
-public:
-	FORCEINLINE ~UFGUnlockGiveItem() = default;
 };

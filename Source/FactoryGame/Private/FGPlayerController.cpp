@@ -8,6 +8,7 @@ AFGPlayerController::AFGPlayerController() : Super() {
 	this->mMapAreaCheckInterval = 0.25;
 	this->mMinPhotoModeFOV = 5;
 	this->mMaxPhotoModeFOV = 175;
+	this->mMusicPlayerTickIntervalStart = 1.5;
 	this->CheatClass = UFGCheatManager::StaticClass();
 }
 bool AFGPlayerController::ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor){ return bool(); }
@@ -32,6 +33,7 @@ void AFGPlayerController::Suicide(){ }
 bool AFGPlayerController::NeedRespawn() const{ return bool(); }
 void AFGPlayerController::SetRespawningFromDeath(bool respawningFromDeath){ }
 bool AFGPlayerController::GetRespawningFromDeath(){ return bool(); }
+void AFGPlayerController::OnFOVUpdated(FString cvar){ }
 void AFGPlayerController::ExecuteShortcut(int32 shortcutIndex){ }
 void AFGPlayerController::GetCurrentShortcuts(TArray<  UFGHotbarShortcut* >& out_shortcuts){ }
 void AFGPlayerController::GetPresetShortcuts(int32 presetHotbarIndex, TArray<  UFGHotbarShortcut* >& out_shortcuts){ }
@@ -55,10 +57,11 @@ int32 AFGPlayerController::GetRecipeShortcutIndex(TSubclassOf<  UFGRecipe > reci
 int32 AFGPlayerController::GetShortcutIndexFromKey(const FKeyEvent& key){ return int32(); }
 void AFGPlayerController::Server_RequestFogOfWarData_Implementation(){ }
 bool AFGPlayerController::Server_RequestFogOfWarData_Validate(){ return bool(); }
-void AFGPlayerController::Client_TransferFogOfWarData_Implementation(const TArray<uint8>& fogOfWarRawData, int32 index){ }
+void AFGPlayerController::Client_TransferFogOfWarData_Implementation(const TArray<uint8>& fogOfWarRawData, int32 finalIndex){ }
 float AFGPlayerController::GetObjectScreenRadius(AActor* actor, float boundingRadius){ return float(); }
 float AFGPlayerController::GetScreenBasedObjectRadius(AActor* actor, float screenRadius){ return float(); }
 void AFGPlayerController::Client_AddMessage_Implementation(TSubclassOf<  UFGMessageBase > newMessage){ }
+void AFGPlayerController::Client_AnswerCall_Implementation(TSubclassOf<  UFGAudioMessage > messageToAnswer){ }
 bool AFGPlayerController::GetPlayerHasMessage(TSubclassOf<  UFGMessageBase > newMessage){ return bool(); }
 void AFGPlayerController::SetDisabledInputGate(FDisabledInputGate newDisabledInputGate){ }
 void AFGPlayerController::Server_DealImpactDamage_Implementation(const FHitResult& impact, FVector forwardVector, float damage, TSubclassOf< UDamageType > damageType, AActor* inInstigator){ }
@@ -71,10 +74,15 @@ void AFGPlayerController::AcknowledgePossession( APawn* P){ }
 void AFGPlayerController::CycleToNextHotbar(){ }
 void AFGPlayerController::CycleToPreviousHotbar(){ }
 bool AFGPlayerController::GetPresenceState(FPlayerPresenceState& outState) const{ return bool(); }
+TSubclassOf< UFGMapArea > AFGPlayerController::GetCurrentMapArea() const{ return TSubclassOf<UFGMapArea>(); }
+void AFGPlayerController::OnAreaEnteredServer_Implementation(TSubclassOf< UFGMapArea > newArea){ }
+void AFGPlayerController::OnSecondaryFire(){ }
+void AFGPlayerController::AddMusicPlayer(UObject* musicPlayer){ }
+void AFGPlayerController::RemoveMusicPlayer(UObject* musicPlayer){ }
+void AFGPlayerController::UpdateMusicPlayers(float dt){ }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
-void AFGPlayerController::OnPrimaryFire(){ }
 void AFGPlayerController::SetupInputComponent(){ }
 void AFGPlayerController::BuildInputStack(TArray< UInputComponent* >& inputStack){ }
 void AFGPlayerController::OnAttentionPingPressed(){ }
@@ -82,7 +90,6 @@ void AFGPlayerController::OnDismantlePortableMiner_Implementation( AFGPortableMi
 void AFGPlayerController::OnDismantleGolfCart_Implementation( AFGWheeledVehicle* inGolfCart){ }
 void AFGPlayerController::CheckPawnMapArea(){ }
 bool AFGPlayerController::InitMapAreaCheckFunction(){ return bool(); }
-TSubclassOf< UFGMapArea > AFGPlayerController::GetCurrentMapArea() const{ return TSubclassOf<UFGMapArea>(); }
 void AFGPlayerController::EnterChatMessage(const FString& inMessage){ }
 void AFGPlayerController::OnDisabledInputGateChanged_Implementation(){ }
 void AFGPlayerController::EnablePhotoMode(bool isEnabled){ }

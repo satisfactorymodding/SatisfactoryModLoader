@@ -19,8 +19,8 @@ bool AFGDriveablePawn::CanDriverEnter( AFGCharacterPlayer* character){ return bo
 bool AFGDriveablePawn::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
 bool AFGDriveablePawn::DriverLeave(bool keepDriving){ return bool(); }
 void AFGDriveablePawn::AttachDriver( AFGCharacterPlayer* driver){ }
+bool AFGDriveablePawn::GetSafeExitLocation( AFGCharacterPlayer* exitingCharacter, const FVector& exitOffset, FVector& out_location, FRotator& out_rotation) const{ return bool(); }
 void AFGDriveablePawn::OnDrivingStatusChanged(){ }
 void AFGDriveablePawn::PlaceExitingDriver(){ }
 void AFGDriveablePawn::SetDriving(bool isDriving){ }
-bool AFGDriveablePawn::GetSafeExitLocation( AFGCharacterPlayer* exitingCharacter, const FVector& exitOffset, FVector& out_location, FRotator& out_rotation) const{ return bool(); }
 void AFGDriveablePawn::OnRep_IsDriving(){ }

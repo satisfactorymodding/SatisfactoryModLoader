@@ -1,12 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "Components/SplineMeshComponent.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
@@ -15,33 +9,27 @@
 #include "FGOutlineComponent.generated.h"
 
 USTRUCT()
-struct FACTORYGAME_API FCachedMaterialInterfaceArray
+struct FCachedMaterialInterfaceArray
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY()
 	TArray<class UMaterialInterface*> MaterialInterfaces;
-
-public:
-	FORCEINLINE ~FCachedMaterialInterfaceArray() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FCachedMeshToMaterialObject
+struct FCachedMeshToMaterialObject
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY()
 	TMap<class UMeshComponent*, FCachedMaterialInterfaceArray > CachedMaterialInterfaces;
-
-public:
-	FORCEINLINE ~FCachedMeshToMaterialObject() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FCachedSplineMeshToMaterialObject
+struct FCachedSplineMeshToMaterialObject
 {
 	GENERATED_BODY()
 
@@ -51,9 +39,6 @@ public:
 
 	UPROPERTY()
 	TArray<UMaterialInterface*> InstancedMaterialInterfaces;
-
-public:
-	FORCEINLINE ~FCachedSplineMeshToMaterialObject() = default;
 };
 
 
@@ -135,9 +120,8 @@ protected:
 	UPROPERTY()
 	TMap<class UFGSplineComponent*, FCachedSplineMeshToMaterialObject> mCachedSplineComponentMaterials;
 
-	// MODDING EDIT
-	//UPROPERTY()
-	//TMap<class UProxyInstancedStaticMeshComponent*, FCachedMaterialInterfaceArray> mCachedProxyMeshMaterials;
+	UPROPERTY()
+	TMap<class UProxyInstancedStaticMeshComponent*, FCachedMaterialInterfaceArray> mCachedProxyMeshMaterials;
 
 private:
 	bool IsOwnedByLocalPlayer();
@@ -149,7 +133,4 @@ private:
 	TWeakObjectPtr< UFGMaterialEffectComponent > mBuildEffect;
 
 	EOutlineColor mLastOutlineColor;
-
-public:
-	FORCEINLINE ~UFGOutlineComponent() = default;
 };

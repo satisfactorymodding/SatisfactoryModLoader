@@ -1,7 +1,8 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Interface.h"
-#include "Text.h"
-#include "TextProperty.h"
+
+#include "FGActorRepresentation.h"
 #include "FGActorRepresentationInterface.generated.h"
 
 /**
@@ -11,17 +12,9 @@
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGActorRepresentationInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGActorRepresentationInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGActorRepresentationInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
-/**
-*
-*/
 class FACTORYGAME_API IFGActorRepresentationInterface
 {
 	GENERATED_IINTERFACE_BODY()
@@ -93,7 +86,4 @@ class FACTORYGAME_API IFGActorRepresentationInterface
 
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "Representation" )
 	ECompassViewDistance SetActorCompassViewDistance( ECompassViewDistance compassViewDistance );
-
-public:
-	FORCEINLINE IFGActorRepresentationInterface() = default;
 };

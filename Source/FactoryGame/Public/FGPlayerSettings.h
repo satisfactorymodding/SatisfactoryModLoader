@@ -1,7 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/DeveloperSettings.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGPlayerState.h"
 #include "FGPlayerSettings.generated.h"
@@ -19,7 +18,4 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Inventory Slots", meta = ( ToolTip = "The number of starting slots for players arm equipments" ) )
 	int32 mDefaultArmEquipmentSlots;
-
-public:
-	FORCEINLINE ~UFGPlayerSettings() = default;
 };

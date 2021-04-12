@@ -1,12 +1,9 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGEnemy.h"
+#include "Creature/Enemy/FGEnemy.h"
 #include "FGCrabHatcher.generated.h"
 
 /**
@@ -76,7 +73,4 @@ protected:
 
 	bool mDidStartExpanding;
 	
-
-public:
-	FORCEINLINE ~AFGCrabHatcher() = default;
 };

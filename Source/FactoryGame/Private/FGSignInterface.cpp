@@ -13,7 +13,7 @@ bool UFGSignElementData::NeedTransform_Implementation(){ return bool(); }
 bool UFGSignElementData::ShouldSave_Implementation() const{ return bool(); }
 FSignData::FSignData(const FSignData& data){ }
 void FSignData::Init( IFGSignInterface* signInterface){ }
-bool FSignData::Serialize(FArchive& ar){ 
+bool FSignData::Serialize(FArchive& ar) {
 	if (ar.ArIsSaveGame) {
 		ar << BackgroundColorIndex;
 	}

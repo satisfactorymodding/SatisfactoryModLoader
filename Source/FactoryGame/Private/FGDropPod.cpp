@@ -6,14 +6,11 @@
 AFGDropPod::AFGDropPod() : Super() {
 	this->mAmountOfInventorySlots = 1;
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("PowerInfoComponent"));
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }
 void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGDropPod::PostLoad(){ Super::PostLoad(); }
 void AFGDropPod::BeginPlay(){ }
 void AFGDropPod::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGDropPod::Tick(float DeltaSeconds){ }
 void AFGDropPod::GainedSignificance_Implementation(){ }
 void AFGDropPod::LostSignificance_Implementation(){ }
 void AFGDropPod::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -36,5 +33,5 @@ void AFGDropPod::RollLoot_Implementation(){ }
 void AFGDropPod::OnRepair_Implementation( AFGCharacterPlayer* InteractingCharacter){ }
 FDropPackage AFGDropPod::RollDropPackage(TArray<TSubclassOf<class UFGItemDescriptor>> includedItems){ return FDropPackage(); }
 void AFGDropPod::GenerateDropPodInventory(TArray<TSubclassOf<class UFGItemDescriptor>> includedItems, int32 numItemsCreated){ }
+void AFGDropPod::OnHasPowerChanged( UFGPowerInfoComponent* info){ }
 void AFGDropPod::OnRep_HasBeenOpened(){ }
-void AFGDropPod::OnPowerConnectionChanged( UFGCircuitConnectionComponent* connection){ }

@@ -1,13 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #if WITH_EDITOR
 #include "UnrealEdMisc.h"
@@ -19,24 +12,17 @@
 #include "FGSubsystem.h"
 #include "FGWorldSettings.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class FACTORYGAME_API AFGWorldSettings : public AWorldSettings, public IFGSaveInterface
 {
 	GENERATED_BODY() 
 public:
-	/** Ctor */
 	AFGWorldSettings();
 
-	/** Getter for buildablesubsystem */
+	/** Getters for the subsystems */
 	FORCEINLINE class AFGBuildableSubsystem* GetBuildableSubsystem() const { return mBuildableSubsystem; }
-
-	/** Get the foundation subsystem. */
-	FORCEINLINE class AFGFoundationSubsystem* GetFoundationSubsystem() { return mFoundationSubsystem; }
-
 	FORCEINLINE class AFGFoliageRemovalSubsystem* GetFoliageRemovalSubsystem() const { return mFoliageRemovalSubsystem; }
+	FORCEINLINE class AFGConveyorItemSubsystem* GetConveyorItemSubsystem() const { return mConveyorItemSubsystem; }
 
 	// Begin UObject interface
 	virtual void BeginDestroy() override;
@@ -170,14 +156,18 @@ protected:
 	UPROPERTY( EditInstanceOnly, Category = "Time", meta = ( UIMin = 0, UIMax = 24, ClampMin = 0, ClampMax = 24 ) )
 	float mStartTimeOfDay;
 private:
+
 	UPROPERTY( SaveGame )
 	class AFGBuildableSubsystem* mBuildableSubsystem;
-	UPROPERTY( SaveGame )
-	class AFGFoundationSubsystem* mFoundationSubsystem;
+
 	UPROPERTY()
 	class AFGAudioVolumeSubsystem* mAudioVolumeSubsystem;
+
 	UPROPERTY()
 	class AFGFoliageRemovalSubsystem* mFoliageRemovalSubsystem;
+
+	UPROPERTY()
+	class AFGConveyorItemSubsystem* mConveyorItemSubsystem; 
 
 #if WITH_EDITORONLY_DATA
 	/** Set the hour you want to preview here, 16.25 means 16h 15min */
@@ -187,10 +177,7 @@ private:
 	/** Used to get callbacks whenever a actor is spawned, so we can populate mExponentialHeightFog */
 	FDelegateHandle mActorSpawnedDelegateHandle;
 
-	/** For updateing time of day when map changes in editor */
+	/** For updating time of day when map changes in editor */
 	FDelegateHandle mOnMapChangedDelegateHandle;
 #endif
-
-public:
-	FORCEINLINE ~AFGWorldSettings() = default;
 };

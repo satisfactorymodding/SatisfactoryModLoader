@@ -1,8 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -25,7 +23,4 @@ public:
 protected:
 	UPROPERTY( EditDefaultsOnly )
 	class UStaticMeshComponent* mMesh;
-
-public:
-	FORCEINLINE ~AFGCrashSiteDebrisActor() = default;
 };

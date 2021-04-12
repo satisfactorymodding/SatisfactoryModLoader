@@ -1,11 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
-#include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipment.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "Camera/CameraShake.h"
 #include "FGParachute.generated.h"
 
@@ -16,9 +14,6 @@ class FACTORYGAME_API UFGParachuteCameraShake : public UCameraShake
 	GENERATED_BODY()
 	public:
 		UFGParachuteCameraShake();
-
-public:
-	FORCEINLINE ~UFGParachuteCameraShake() = default;
 };
 
 /**
@@ -75,9 +70,6 @@ private:
 	/** A cached instance of the instigators movement */
 	UPROPERTY()
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
-
-public:
-	FORCEINLINE ~AFGParachute() = default;
 };
 
 
@@ -111,7 +103,4 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_IsDeployed )
 	bool mIsDeployed;
 
-
-public:
-	FORCEINLINE ~AFGParachuteAttachment() = default;
 };

@@ -1,11 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSaveInterface.h"
 #include "GameFramework/GameState.h"
@@ -40,6 +35,7 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void Tick( float delta ) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -121,6 +117,9 @@ public:
 	FORCEINLINE class AFGPipeSubsystem* GetPipeSubsystem() const { return mPipeSubsystem; }
 	FORCEINLINE class AFGResourceSinkSubsystem* GetResourceSinkSubsystem() const { return mResourceSinkSubsystem; }
 	FORCEINLINE class AFGItemRegrowSubsystem* GetItemRegrowSubsystem() const { return mItemRegrowSubsystem; }
+	FORCEINLINE class AFGEventSubsystem* GetEventSubsystem() const { return mEventSubsystem; }
+	FORCEINLINE class AFGWorldGridSubsystem* GetWorldGridSubsystem() const { return mWorldGridSubsystem; }
+	FORCEINLINE class AFGDroneSubsystem* GetDroneSubsystem() const { return mDroneSubsystem; }
 
 	/** Helper to access the actor representation manager */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation", meta = ( DeprecatedFunction, DeprecationMessage = "Use global getter instead" ) )
@@ -217,6 +216,10 @@ public:
 	FLinearColor GetBuildingColorPrimary_Linear( uint8 slot );
 	FLinearColor GetBuildingColorSecondary_Linear( uint8 slot );
 
+	/* Server - Called to propogate building lighting color changes to buildable subsystem */
+	UFUNCTION(BlueprintCallable, Server, Reliable, Category="FactoryGame|Buildable|Light")
+	void Server_SetBuildableLightColorSlot( uint8 slotIdx, FLinearColor color );
+
 	/** Called both on client and server. Apply primary color changes to the buildable subsystem*/
 	UFUNCTION()
 	void OnRep_BuildingColorSlotPrimary_Linear();
@@ -224,6 +227,10 @@ public:
 	/** Called both on client and server. Apply secondary color changes to the buildable subsystem*/
 	UFUNCTION()
 	void OnRep_BuildingColorSlotSecondary_Linear();
+
+	/** Called both on client and server when the buildable light color slots have been updated. Relays changes to buildable subsystem */
+	UFUNCTION()
+	void OnRep_BuildableLightColorSlots();
 
 	void ClaimPlayerColor( class AFGPlayerState* playerState );
 	
@@ -238,6 +245,10 @@ public:
 
 	/** Set the planned restart in time seconds */
 	void SetPlannedServerRestartWorldTime( float worldTimeSeconds );
+
+	/** Gets the Local date and time on the server */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|DateTime" )
+    FDateTime GetServerLocalDateTime() const;
 	
 	/** Called both on client and server for syncing session names for connected players*/
 	UFUNCTION()
@@ -335,7 +346,13 @@ private:
 	class AFGItemRegrowSubsystem* mItemRegrowSubsystem;
 	UPROPERTY()
 	class AFGVehicleSubsystem* mVehicleSubsystem;
-
+	UPROPERTY( Replicated )
+	class AFGEventSubsystem* mEventSubsystem;
+	UPROPERTY()
+	class AFGWorldGridSubsystem* mWorldGridSubsystem;
+	UPROPERTY( Replicated )
+	class AFGDroneSubsystem* mDroneSubsystem;
+	
 	/** This array keeps track of what map areas have been visited this game */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapAreaVisited )
 	TArray< TSubclassOf< UFGMapArea > > mVisitedMapAreas;
@@ -368,6 +385,10 @@ private:
 	 */
 	UPROPERTY( ReplicatedUsing = OnRep_BuildingColorSlotSecondary_Linear, EditDefaultsOnly, Category = "Customization" )
 	TArray<FLinearColor> mBuildingColorSlotsSecondary_Linear;
+
+	/** The player adjustable color slots used by the buildable lights. We store it here instead of buildable subsystem since that subsystem isn't replicated */ 
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_BuildableLightColorSlots )
+	TArray< FLinearColor > mBuildableLightColorSlots;
 
 	/** Track whether or not colors have been initialized by the subsystem. This is here to support an old legacy save issue */
 	bool mHasInitializedColorSlots;
@@ -418,7 +439,8 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	bool mIsSpaceElevatorBuilt;
 
+	/** The local date and time on the server represented in ticks at the time of the init of this game state. */
+	UPROPERTY( Replicated )
+	int64 mServerLocalDateTimeTicksAtInit;
 
-public:
-	FORCEINLINE ~AFGGameState() = default;
 };

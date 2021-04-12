@@ -1,11 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildDescriptor.h"
+#include "Resources/FGBuildDescriptor.h"
 #include "FGVehicleDescriptor.generated.h"
 
 /**
@@ -44,9 +41,6 @@ public:
 	static FText mOverrideDisplayNameAndDescription;
 
 	/** The vehicle this descriptor describes. */
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = ( AddAutoJSON = true ) )
 	TSubclassOf< class AFGVehicle > mVehicleClass;
-
-public:
-	FORCEINLINE ~UFGVehicleDescriptor() = default;
 };

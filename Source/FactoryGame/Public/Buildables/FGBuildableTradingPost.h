@@ -1,13 +1,9 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableFactory.h"
-#include "FGBuildableGenerator.h"
+#include "Buildables/FGBuildableFactory.h"
+#include "Buildables/FGBuildableGenerator.h"
 #include "FGBuildableTradingPost.generated.h"
 
 /**
@@ -49,10 +45,6 @@ public:
 	/** Handles the storage visibility depending on tutorial step */
 	UFUNCTION( BlueprintCallable, Category = "Trading Post" )
 	void UpdateStorageVisibility();
-
-	/** Returns the inventory component used in the storage box */
-	UFUNCTION( BlueprintPure, Category = "Trading Post" )
-	FORCEINLINE UFGInventoryComponent* GetStorageInventory() { return mStorageInventory; }
 
 	/** Returns level of trading post upgrade */
 	UFUNCTION( BlueprintPure, Category = "Trading Post" )
@@ -154,10 +146,6 @@ protected:
 	UPROPERTY()
 	class AFGSchematicManager* mSchematicManager;
 
-	/** The inventory to store everything in. */
-	UPROPERTY( SaveGame, Replicated )
-	class UFGInventoryComponent* mStorageInventory;
-
 	/** The starting resources in the tradingpost storage */
 	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
 	TArray< FItemAmount > mDefaultResources;
@@ -185,7 +173,4 @@ protected:
 	/** Bool to sync playing of build and upgrade effects */
 	UPROPERTY( ReplicatedUsing = OnRep_NeedPlayingBuildEffect )
 	bool mNeedPlayingBuildEffectNotification;
-
-public:
-	FORCEINLINE ~AFGBuildableTradingPost() = default;
 };

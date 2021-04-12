@@ -1,11 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGActorRepresentation.h"
@@ -139,7 +134,4 @@ private:
 	/** These are representation that the local player adds for them selves, often temporary stuff that others shouldn't see */
 	UPROPERTY()
 	TArray< UFGActorRepresentation* > mLocalRepresentations;
-
-public:
-	FORCEINLINE ~AFGActorRepresentationManager() = default;
 };

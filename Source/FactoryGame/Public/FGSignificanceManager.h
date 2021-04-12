@@ -1,8 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "SignificanceManager.h"
@@ -32,9 +30,6 @@ struct FACTORYGAME_API FGainSignificanceData
 	GENERATED_BODY()
 	EFGSignificanceType SignificanceType; 
 	int32				GainSignificanceDistance;
-
-public:
-	FORCEINLINE ~FGainSignificanceData() = default;
 };
 
 /**
@@ -158,7 +153,4 @@ private:
 
 	/** Current value of sorting timer */
 	float mSortTimer;
-
-public:
-	FORCEINLINE ~UFGSignificanceManager() = default;
 };

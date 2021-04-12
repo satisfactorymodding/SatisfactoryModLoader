@@ -10,6 +10,7 @@ AFGGameState::AFGGameState() : Super() {
 void AFGGameState::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGGameState::Tick(float delta){ }
+void AFGGameState::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGGameState::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -45,12 +46,15 @@ bool AFGGameState::Server_SetBuildingColorInSlotLinear_Validate(uint8 slotIdx, F
 uint8 AFGGameState::GetNbColorSlotsExposedToPlayers(){ return uint8(); }
 FLinearColor AFGGameState::GetBuildingColorPrimary_Linear(uint8 slot){ return FLinearColor(); }
 FLinearColor AFGGameState::GetBuildingColorSecondary_Linear(uint8 slot){ return FLinearColor(); }
+void AFGGameState::Server_SetBuildableLightColorSlot_Implementation(uint8 slotIdx, FLinearColor color){ }
 void AFGGameState::OnRep_BuildingColorSlotPrimary_Linear(){ }
 void AFGGameState::OnRep_BuildingColorSlotSecondary_Linear(){ }
+void AFGGameState::OnRep_BuildableLightColorSlots(){ }
 void AFGGameState::ClaimPlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ReleasePlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ItemPickedUp(TSubclassOf<  UFGItemDescriptor > itemClass){ }
 void AFGGameState::SetPlannedServerRestartWorldTime(float worldTimeSeconds){ }
+FDateTime AFGGameState::GetServerLocalDateTime() const{ return FDateTime(); }
 void AFGGameState::OnRep_OnlineSessionName(){ }
 void AFGGameState::OnRep_OnlineSessionVisibility(){ }
 void AFGGameState::CheckRestartTime(){ }

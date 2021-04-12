@@ -1,10 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGSplineHologram.h"
+#include "Hologram/FGSplineHologram.h"
 #include "FGRailroadBridgeHologram.generated.h"
 
 
@@ -36,7 +35,4 @@ private:
 	UPROPERTY()
 	class AFGBuildableFoundation* mSnappedFoundation[ 2 ];
 	FTransform mSnappedTransform[ 2 ];
-
-public:
-	FORCEINLINE ~AFGRailroadBridgeHologram() = default;
 };

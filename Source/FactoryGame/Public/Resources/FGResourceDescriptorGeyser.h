@@ -1,10 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGResourceDescriptor.h"
+#include "Resources/FGResourceDescriptor.h"
 #include "FGResourceDescriptorGeyser.generated.h"
 
 /**
@@ -16,7 +15,4 @@ class FACTORYGAME_API UFGResourceDescriptorGeyser : public UFGResourceDescriptor
 	GENERATED_BODY()
 	
 	
-
-public:
-	FORCEINLINE ~UFGResourceDescriptorGeyser() = default;
 };

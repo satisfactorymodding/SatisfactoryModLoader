@@ -1,16 +1,11 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableGenerator.h"
-#include "../Replication/FGReplicationDetailInventoryComponent.h"
-#include "../Replication/FGReplicationDetailActorOwnerInterface.h"
-#include "../Replication/FGReplicationDetailActor_GeneratorFuel.h"
+#include "Buildables/FGBuildableGenerator.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "Replication/FGReplicationDetailActorOwnerInterface.h"
+#include "Replication/FGReplicationDetailActor_GeneratorFuel.h"
 #include "FGBuildableGeneratorFuel.generated.h"
 
 /**
@@ -39,6 +34,7 @@ public:
 
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_GeneratorFuel::StaticClass(); };
+	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
 	// Begin IFGDismantleInterface
@@ -174,7 +170,7 @@ private:
 
 	class AFGReplicationDetailActor_GeneratorFuel* GetCastRepDetailsActor() const;
 
-public:
+public: // MODDING EDIT protected -> public
 	friend class AFGReplicationDetailActor_GeneratorFuel;
 
 	/** Maintainer of the active storage component for this actor. Use this to get the active inventory component. */
@@ -197,6 +193,15 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Power" )
 	EResourceForm mFuelResourceForm;
 
+	/** 
+	*	The quantity of inventory to be loaded for use during generation.
+	*	Any quantity less than this will fail to load and halt generation of electricity.
+	*	This is used for fuels so 1 liter isn't loaded constantly which makes the progress bar worthless
+	*	@note - 1 unit equates to 1 Liter. So 1000 units would be 1 Cubic Meter.
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Power" )
+	int32 mFuelLoadAmount;
+
 	/** Does this generator require a secondary NON fuel source to generate power? */
 	UPROPERTY( EditDefaultsOnly, Category = "Power" )
 	bool mRequiresSupplementalResource;
@@ -217,8 +222,12 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( EditCondition = mRequiresSupplementalResource ) )
 	float mSupplementalToPowerRatio;
 
+	/** If true, the generator always produces at full capacity; if false, it only produces on-demand */
+	UPROPERTY( EditDefaultsOnly, Category = "Power" )
+	bool mIsFullBlast;
+
 	/** @todo: Cleanup, this shouldn't need to be replicated, clients should be able to fetch this anyway. Static index of fuel slot? */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_FuelInventory )
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mFuelInventory;
 
 	/** Cached input connections */
@@ -254,7 +263,4 @@ public:
 	/** Type of the currently burned piece of fuel. */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	TSubclassOf< class UFGItemDescriptor > mCurrentFuelClass;
-
-public:
-	FORCEINLINE ~AFGBuildableGeneratorFuel() = default;
 };

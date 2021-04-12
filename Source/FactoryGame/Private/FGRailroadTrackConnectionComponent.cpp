@@ -4,8 +4,8 @@
 
 UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Super() {
 	this->mSwitchPosition = -1;
-	this->bReplicates = true;
 	this->bNetAddressable = true;
+	this->SetIsReplicatedByDefault(true);
 }
 void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
@@ -26,4 +26,5 @@ void UFGRailroadTrackConnectionComponent::SetTrackPosition(const FRailroadTrackP
 void UFGRailroadTrackConnectionComponent::SortConnections(){ }
 void UFGRailroadTrackConnectionComponent::AddConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
 void UFGRailroadTrackConnectionComponent::RemoveConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }
+void UFGRailroadTrackConnectionComponent::OnConnectionsChangedInternal(){ }
 void UFGRailroadTrackConnectionComponent::ClampSwitchPosition(){ }

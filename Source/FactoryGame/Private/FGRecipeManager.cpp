@@ -17,8 +17,13 @@ void AFGRecipeManager::GetAllAvailableRecipes(TArray< TSubclassOf< UFGRecipe > >
 void AFGRecipeManager::GetAvailableRecipesForProducer(TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes){ }
 void AFGRecipeManager::GetAffordableRecipesForProducer( AFGCharacterPlayer* player, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes){ }
 bool AFGRecipeManager::IsRecipeAvailable(TSubclassOf< UFGRecipe > recipeClass){ return bool(); }
+bool AFGRecipeManager::IsBuidlingAvailable(TSubclassOf<  AFGBuildable > buildableClass) const{ return bool(); }
 TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByIngredient(TSubclassOf< UFGItemDescriptor > ingredient) const{ return TArray<TSubclassOf<UFGRecipe> >(); }
 TArray< TSubclassOf< UFGRecipe > > AFGRecipeManager::FindRecipesByProduct(TSubclassOf< UFGItemDescriptor > product) const{ return TArray<TSubclassOf<UFGRecipe> >(); }
 void AFGRecipeManager::ResetAllRecipes(){ }
 void AFGRecipeManager::Debug_DumpStateToLog() const{ }
 void AFGRecipeManager::FilterRecipesByProducer(const TArray< TSubclassOf< UFGRecipe > >& inRecipes, TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes){ }
+bool AFGRecipeManager::CanAddToAvailableRecipes(TSubclassOf< UFGRecipe > recipe) const{ return bool(); }
+bool AFGRecipeManager::ShouldAddRecipeByEvent(TSubclassOf< UFGRecipe > recipe) const{ return bool(); }
+void AFGRecipeManager::PopulateAvailableBuildings(){ }
+void AFGRecipeManager::OnRep_AvailableRecipes(){ }

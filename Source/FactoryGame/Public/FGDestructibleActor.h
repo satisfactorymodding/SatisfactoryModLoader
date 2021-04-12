@@ -1,10 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "DestructibleActor.h"
 #include "FGSaveInterface.h"
@@ -70,7 +66,4 @@ private:
 
 	/** Timer handle for delaying destroy */
 	FTimerHandle mDestroyTimerHandle;
-
-public:
-	FORCEINLINE ~AFGDestructibleActor() = default;
 };

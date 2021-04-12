@@ -1,9 +1,7 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
-#include "FGInventoryComponent.h"
+
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "FGFoliageLibrary.generated.h"
@@ -51,7 +49,4 @@ protected:
 
 	/** Returns an array of stacks that can be added to the player inventory. */
 	static TArray<FInventoryStack> GetValidInventoryStacks( class UFGFoliageResourceUserData* foliageUserData );
-
-public:
-	FORCEINLINE ~UFGFoliageLibrary() = default;
 };

@@ -1,0 +1,19 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Alpakit.Automation", "Alpakit.Automation.csproj", "{A777BF44-017F-4E69-916A-A62D06D63556}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Development|Any CPU = Development|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A777BF44-017F-4E69-916A-A62D06D63556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A777BF44-017F-4E69-916A-A62D06D63556}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A777BF44-017F-4E69-916A-A62D06D63556}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A777BF44-017F-4E69-916A-A62D06D63556}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A777BF44-017F-4E69-916A-A62D06D63556}.Development|Any CPU.ActiveCfg = Development|Any CPU
+		{A777BF44-017F-4E69-916A-A62D06D63556}.Development|Any CPU.Build.0 = Development|Any CPU
+	EndGlobalSection
+EndGlobal

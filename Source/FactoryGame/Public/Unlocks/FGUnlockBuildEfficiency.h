@@ -1,10 +1,9 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGUnlock.h"
+#include "Unlocks/FGUnlock.h"
 #include "FGUnlockBuildEfficiency.generated.h"
 
 /**
@@ -20,7 +19,4 @@ public:
 	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 
-
-public:
-	FORCEINLINE ~UFGUnlockBuildEfficiency() = default;
 };

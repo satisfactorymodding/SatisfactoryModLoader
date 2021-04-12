@@ -1,8 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
@@ -67,6 +65,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "LinkedList" )
 	void SetClosestPointAsTarget();
 
+	/**
+	 * Finds the target point closes to the vehicle owning this list 
+	 * @param withinLookAngle -1 means ignore look angle
+	 * */
+	class AFGTargetPoint* FindBestTarget( float withinLookAngle = -1.0f  );
+
 	/** Clears the linked list and destroyes the targets */
 	UFUNCTION( BlueprintCallable, Category = "Path" )
 	void ClearRecording();
@@ -86,7 +90,4 @@ private:
 	/** Max length that the linked list can be */
 	UPROPERTY( EditDefaultsOnly, Category = "LinkedList" )
 	int32 mMaxLength;
-
-public:
-	FORCEINLINE ~UFGTargetPointLinkedList() = default;
 };

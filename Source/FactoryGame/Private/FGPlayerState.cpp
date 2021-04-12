@@ -70,6 +70,11 @@ bool AFGPlayerState::Server_SetCompassFilter_Validate(ERepresentationType repres
 void AFGPlayerState::UpdateOwningPawnActorRepresentation() const{ }
 void AFGPlayerState::DumpHotbars(){ }
 void AFGPlayerState::UpdateNumObservedInventorySlots(){ }
+bool AFGPlayerState::IsShopFavorite(TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
+TArray<TSubclassOf<class UFGSchematic>> AFGPlayerState::GetShopFavorites() const{ return TArray<TSubclassOf<class UFGSchematic>>(); }
+void AFGPlayerState::SaveAsShopFavorite(TSubclassOf<class UFGSchematic> schematic){ }
+void AFGPlayerState::RemoveAsShopFavorite(TSubclassOf<class UFGSchematic> schematic){ }
+void AFGPlayerState::RemoveAllShopFavorites(){ }
 void AFGPlayerState::OnRep_HotbarShortcuts(){ }
 void AFGPlayerState::OnRep_CurrentHotbarIndex(){ }
 void AFGPlayerState::Server_UpdateNumObservedInventorySlots_Implementation(){ }

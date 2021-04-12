@@ -1,7 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Equipment/FGEquipment.h"
@@ -61,9 +60,6 @@ private:
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
 
 	float mMaxFallSpeedBeforeDamage;
-
-public:
-	FORCEINLINE ~AFGJumpingStilts() = default;
 };
 
 
@@ -73,7 +69,4 @@ class FACTORYGAME_API AFGJumpingStiltsAttachment : public AFGEquipmentAttachment
 	GENERATED_BODY()
 
 
-
-public:
-	FORCEINLINE ~AFGJumpingStiltsAttachment() = default;
 };

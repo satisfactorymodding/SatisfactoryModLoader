@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Components/StaticMeshComponent.h"
@@ -39,7 +36,4 @@ private:
 	/** Pipeline we indicate status for. */
 	UPROPERTY()
 	class AFGBuildablePipeline* mPipeline;
-
-public:
-	FORCEINLINE ~UFGPipelineFlowIndicatorComponent() = default;
 };

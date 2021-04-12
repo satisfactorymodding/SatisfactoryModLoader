@@ -1,16 +1,19 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "SubclassOf.h"
 
 #include "ItemDrop.generated.h"
 
-/** */
+
+/**
+ * Specify items dropped by picking up foliage.
+ */
 USTRUCT(BlueprintType)
 struct FACTORYGAME_API FItemDrop
 {
 	GENERATED_BODY()
 
-		/** ctor */
-		FItemDrop() :
+	FItemDrop() :
 		ItemClass( nullptr )
 	{
 		NumItems.Min = 1;
@@ -27,11 +30,11 @@ struct FACTORYGAME_API FItemDrop
 
 	/** Get a random amount of items in range */
 	int32 GetRandomItemAmount() const;
-
-public:
-	FORCEINLINE ~FItemDrop() = default;
 };
 
+/**
+ * Specify items dropped by picking up foliage, with a random chance.
+ */
 USTRUCT(BlueprintType)
 struct FACTORYGAME_API FItemDropWithChance
 {
@@ -52,7 +55,4 @@ struct FACTORYGAME_API FItemDropWithChance
 	/** The drop to be given if we gain the item */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = (ShowOnlyInnerProperties) )
 	FItemDrop Drop;
-
-public:
-	FORCEINLINE ~FItemDropWithChance() = default;
 };

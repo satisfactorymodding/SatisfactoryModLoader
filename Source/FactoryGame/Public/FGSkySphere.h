@@ -1,13 +1,13 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "Curves/CurveLinearColor.h"
-#include "Curves/CurveFloat.h"
 #include "FGSkySphere.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSkySphereSettings
+struct FSkySphereSettings
 {
 	GENERATED_BODY()
 	
@@ -51,9 +51,6 @@ struct FACTORYGAME_API FSkySphereSettings
 	bool OverrideSunIntensity;
 	bool OverrideMoonLightColor;
 	bool OverrideMoonIntensity;
-
-public:
-	FORCEINLINE ~FSkySphereSettings() = default;
 };
 
 UCLASS(HideCategories=(Input,Rendering))
@@ -61,7 +58,6 @@ class FACTORYGAME_API AFGSkySphere : public AActor, public ICurvePanningInterfac
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	AFGSkySphere();
 
 	// Begin AActor interface
@@ -103,7 +99,7 @@ protected:
 	/** Setup so that we get calls to UpdatePreview whenever time of day is updated in the editor */
 	void SetupPreviewDelegate();
 #endif
-public: // MODDING EDIT
+public: // MODDING EDIT protected -> public
 	/** How the sunlight changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="Curves|Sun")
 	FRuntimeCurveLinearColor mSunLightColorCurve;
@@ -143,11 +139,11 @@ public: // MODDING EDIT
 	/** How does the occlusion tint intensity change during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkyLight" )
 	FRuntimeCurveLinearColor mOcclusionTintColor;
-	
+
 	/** How the color of the horizon changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
 	FRuntimeCurveLinearColor mHorizonColorCurve;
-	
+
 	/** How the color of the zenith changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Curves|SkySphere" )
 	FRuntimeCurveLinearColor mZenithColorCurve;
@@ -184,7 +180,4 @@ public: // MODDING EDIT
 	float mViewMinInput;
 	float mViewMaxInput;
 #endif
-
-public:
-	FORCEINLINE ~AFGSkySphere() = default;
 };

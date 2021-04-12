@@ -1,9 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "UObject/NoExportTypes.h"
 #include "FGActorRepresentation.generated.h"
@@ -24,7 +21,9 @@ enum class ERepresentationType : uint8
 	RT_Train					UMETA( DisplayName = "Train" ),
 	RT_TrainStation				UMETA( DisplayName = "TrainStation" ),
 	RT_Vehicle					UMETA( DisplayName = "Vehicle" ),
-	RT_VehicleDockingStation	UMETA( DisplayName = "VehicleDockingStation" )
+	RT_VehicleDockingStation	UMETA( DisplayName = "VehicleDockingStation" ),
+	RT_DronePort				UMETA( DisplayName = "DronePort" ),
+	RT_Drone					UMETA( DisplayName = "Drone" )
 };
 
 UENUM( BlueprintType )
@@ -44,6 +43,72 @@ enum class ECompassViewDistance : uint8
 	CVD_Mid				UMETA( DisplayName = "Mid" ),
 	CVD_Far				UMETA( DisplayName = "Far" ),
 	CVD_Always			UMETA( DisplayName = "Always" )
+};
+
+// Optimized struct for representation locations. Z Location is not needed nor is the higher precision of 32bit floats
+// Net_QuantizedVector is also a nice way to do this but this is even smaller (44bits vs. 60bits)
+USTRUCT()
+struct FACTORYGAME_API FRepresentationVector2D
+{
+	GENERATED_BODY()
+
+	// Default Construct No initialization
+	FORCEINLINE FRepresentationVector2D() {}
+
+	// Construct from 2 floats
+	FRepresentationVector2D( float inX, float inY ) :
+		X(inX), 
+		Y(inY)
+	{ }
+
+
+	FORCEINLINE FRepresentationVector2D& operator=( const FRepresentationVector2D& other )
+	{
+		this->X = other.X;
+		this->Y = other.Y;
+
+		return *this;
+	}
+
+	FORCEINLINE FRepresentationVector2D& operator=( const FVector& other )
+	{
+		this->X = other.X;
+		this->Y = other.Y;
+
+		return *this;
+	}
+
+	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess )
+	{
+		bOutSuccess = true;
+		if( Ar.IsSaving() )
+		{
+			WriteFixedCompressedFloat<1048576, 22>( X, Ar );
+			WriteFixedCompressedFloat<1048576, 22>( Y, Ar );
+		}
+		else
+		{
+			ReadFixedCompressedFloat<1048576, 22>( X, Ar );
+			ReadFixedCompressedFloat<1048576, 22>( Y, Ar );
+		}
+
+		return true;
+	}
+
+	// Components
+	UPROPERTY()
+	float X;
+	UPROPERTY()
+	float Y;
+};
+
+template<>
+struct TStructOpsTypeTraits<FRepresentationVector2D> : public TStructOpsTypeTraitsBase2<FRepresentationVector2D>
+{
+	enum
+	{
+		WithNetSerializer = true,
+	};
 };
 
 /**
@@ -179,7 +244,7 @@ private:
 
 	/** This is the actor location */
 	UPROPERTY( Replicated )
-	FVector_NetQuantize mActorLocation;
+	FRepresentationVector2D mActorLocation;
 
 	/** This is the actor rotation */
 	UPROPERTY( Replicated )
@@ -228,7 +293,4 @@ private:
 	/** How far away this representation should be shown in the compass */
 	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
 	ECompassViewDistance mCompassViewDistance;
-
-public:
-	FORCEINLINE ~UFGActorRepresentation() = default;
 };

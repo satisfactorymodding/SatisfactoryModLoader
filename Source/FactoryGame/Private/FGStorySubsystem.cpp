@@ -2,6 +2,17 @@
 
 #include "FGStorySubsystem.h"
 
+void FActiveStoryQueue::ResetStoryQueue(){ }
+TSubclassOf< class UFGMessageBase > FActiveStoryQueue::PopMessage(){ return TSubclassOf<class UFGMessageBase>(); }
+TSubclassOf< class UFGMessageBase > FActiveStoryQueue::PopBarkMessage(){ return TSubclassOf<class UFGMessageBase>(); }
+AFGStorySubsystem::AFGStorySubsystem() : Super() {
+	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 1;
+	this->bAlwaysRelevant = true;
+	this->SetReplicates(true);
+}
+AFGStorySubsystem* AFGStorySubsystem::Get(UWorld* world){ return nullptr; }
+AFGStorySubsystem* AFGStorySubsystem::Get(UObject* worldContext){ return nullptr; }
+void AFGStorySubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGStorySubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGStorySubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGStorySubsystem::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -10,10 +21,20 @@ void AFGStorySubsystem::GatherDependencies_Implementation(TArray< UObject* >& ou
 bool AFGStorySubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGStorySubsystem::ShouldSave_Implementation() const{ return bool(); }
 void AFGStorySubsystem::BeginPlay(){ }
+void AFGStorySubsystem::Tick(float DeltaSeconds){ }
 void AFGStorySubsystem::OnSchematicPurchased(TSubclassOf< UFGSchematic > newSchematic){ }
 void AFGStorySubsystem::AddPlayer( AFGCharacterPlayer* inPlayer){ }
 void AFGStorySubsystem::OnPlayerAddedItemToInventory(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
 void AFGStorySubsystem::OnResearchRecipeTimerComplete(TSubclassOf<class UFGSchematic> schematic){ }
 void AFGStorySubsystem::OnResearchTreeUnlocked(TSubclassOf<UFGResearchTree> researchTree){ }
 void AFGStorySubsystem::OnMapAreaVisited(TSubclassOf<  UFGMapArea > mapArea){ }
+void AFGStorySubsystem::OnAudioMessageFinishedPlaying(TSubclassOf<  UFGMessageBase > messageClass){ }
+void AFGStorySubsystem::TriggerNextStoryMessageInQueue(){ }
+void AFGStorySubsystem::TriggerNextBarkMessageInQueue(){ }
+void AFGStorySubsystem::GetStoryDebugData(TArray<FString>& out_debugData){ }
+void AFGStorySubsystem::StartNextStoryQueue(){ }
+void AFGStorySubsystem::ResetAllStoryQueues(){ }
+void AFGStorySubsystem::ResetCurrentStoryQueue(){ }
 void AFGStorySubsystem::SetupDelegates(){ }
+void AFGStorySubsystem::OnGamePhaseUpdated(EGamePhase gamePhase){ }
+void AFGStorySubsystem::UpdateStoryQueue(){ }

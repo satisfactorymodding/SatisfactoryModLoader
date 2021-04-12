@@ -1,14 +1,10 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGEquipment.h"
-#include "../FGSchematic.h"
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipment.h"
+#include "FGSchematic.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "FGObjectScanner.generated.h"
 
 UENUM()
@@ -70,9 +66,6 @@ private:
 	/** Required schematic to search for this object. None means no requirement. */
 	UPROPERTY( EditDefaultsOnly )
 	TSoftClassPtr< class UFGSchematic > RequiredSchematic;
-
-public:
-	FORCEINLINE ~FScannableDetails() = default;
 };
 
 /**
@@ -233,9 +226,6 @@ private:
 
 	/** if we had a closest object last frame */
 	bool mHadClosestObject;
-
-public:
-	FORCEINLINE ~AFGObjectScanner() = default;
 };
 
 
@@ -279,9 +269,6 @@ private:
 	/** Scanner light color */
 	UPROPERTY( ReplicatedUsing = OnRep_ScannerLightColor )
 	FColor mScannerLightColor;
-
-public:
-	FORCEINLINE ~AFGObjectScannerAttachment() = default;
 };
 
 FORCEINLINE TSubclassOf< class UFGSchematic > FScannableDetails::GetRequiredSchematic() const

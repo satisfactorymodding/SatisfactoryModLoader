@@ -1,10 +1,9 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildablePole.h"
+#include "Buildables/FGBuildablePole.h"
 #include "FGConveyorPoleStackable.generated.h"
 
 /**
@@ -19,7 +18,4 @@ public:
 	
 	/** Sets the connection component to be at correct height and registers */
 	virtual void SetupConnectionComponent();
-
-public:
-	FORCEINLINE ~AFGConveyorPoleStackable() = default;
 };

@@ -1,11 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
@@ -70,7 +65,7 @@ public:
 	
 	/** Returns the number of points left until you receive the next coupon */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ResourceSink" )
-	int32 GetNumPointsToNextCoupon() const;
+	int64 GetNumPointsToNextCoupon() const;
 	
 	/** Returns the percentage (normalized value) of your progression towards the next coupon */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ResourceSink" )
@@ -166,12 +161,12 @@ private:
 
 	/** The timer handle that is used to trigger updates of the global points history of the resource sink subsystem */
 	FTimerHandle mCalculateHistoryTimer;
-//MODDING EDIT:
-public:
+
+public: //MODDING EDIT: public
 	/** Cached points per itemdescriptor */
 	UPROPERTY( Transient )
 	TMap< TSubclassOf< class UFGItemDescriptor >, int32 > mResourceSinkPoints;
-private:
+private: // MODDING EDIT
 	/** Cached number of points we need to reach to unlock a new coupon */
 	TArray<int64> mRewardLevels;
 	
@@ -193,7 +188,4 @@ private:
 	/** Have we sunken a item of the coupon class, Used to give a schematic */
 	UPROPERTY( SaveGame )
 	bool mIsCouponEverSunk;
-
-public:
-	FORCEINLINE ~AFGResourceSinkSubsystem() = default;
 };

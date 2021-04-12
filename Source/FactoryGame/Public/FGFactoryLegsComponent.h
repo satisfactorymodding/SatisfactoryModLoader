@@ -1,17 +1,17 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Components/SceneComponent.h"
 #include "FGSaveInterface.h"
-#include "DefaultValueHelper.h"
+#include "Misc/DefaultValueHelper.h"
 #include "FGFactoryLegsComponent.generated.h"
 
+/**
+ * Information about one leg on a factory.
+ */
 USTRUCT()
-struct FACTORYGAME_API FFeetOffset
+struct FFeetOffset
 {
 	GENERATED_BODY()
 public:
@@ -22,7 +22,24 @@ public:
 
 	FName GetSocket() const;
 public:
-	/** The name of the foot's socket. */
+	bool NetSerialize( FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess )
+	{
+		Ar << FeetIndex;
+		
+		bOutSuccess = true;
+		if( Ar.IsSaving() )
+		{
+			bOutSuccess = WriteFixedCompressedFloat<16384, 16>( OffsetZ, Ar );
+		}
+		else
+		{
+			bOutSuccess = ReadFixedCompressedFloat<16384, 16>( OffsetZ, Ar );
+		}
+
+		return bOutSuccess;
+	}
+
+	/** The index from the foot's socket name, i.e. foot_04 would be 4. */
 	UPROPERTY( SaveGame )
 	uint8 FeetIndex;
 
@@ -33,11 +50,24 @@ public:
 	/** Does this foot have a valid offset, only used during hologram placement. */
 	UPROPERTY( NotReplicated )
 	bool IsValidOffset;
-
-public:
-	FORCEINLINE ~FFeetOffset() = default;
 };
 
+template<>
+struct TStructOpsTypeTraits<FFeetOffset> : public TStructOpsTypeTraitsBase2<FFeetOffset>
+{
+	enum
+	{
+		WithNetSerializer = true,
+	};
+};
+
+/**
+ * Class that manages the legs on a factory.
+ * This component does:
+ *   Trace for foot offsets for each leg.
+ *   Save the offsets in the save game.
+ *   Auto-create the legs on register and remove them on unregister.
+ */
 UCLASS( ClassGroup = ( Custom ), meta = ( BlueprintSpawnableComponent ) )
 class FACTORYGAME_API UFGFactoryLegsComponent : public USceneComponent, public IFGSaveInterface
 {
@@ -125,6 +155,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
 	float mMaxLegLengthOverride;
 
+	/** Minimum trace length that the buildable should make before spawning legs, -1 means always spawn*/
+	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
+	float mMinimumLegLength;
+
 private:
 	/** The created leg components for this building */
 	UPROPERTY( Transient )
@@ -137,7 +171,4 @@ private:
 	/** Stored so that we know the offset of the feet */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< FFeetOffset > mCachedFeetOffset;
-
-public:
-	FORCEINLINE ~UFGFactoryLegsComponent() = default;
 };

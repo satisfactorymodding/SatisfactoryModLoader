@@ -4,7 +4,7 @@
 
 float FVehicleEngineData6W::FindPeakTorque() const{ return float(); }
 #if WITH_EDITOR
-void UFGWheeledVehicleMovementComponent6W::PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent){ }
+void UFGWheeledVehicleMovementComponent6W::PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 void UFGWheeledVehicleMovementComponent6W::Serialize(FArchive & Ar){ Super::Serialize(Ar); }
 void UFGWheeledVehicleMovementComponent6W::ComputeConstants(){ }
@@ -29,3 +29,4 @@ void UFGWheeledVehicleMovementComponent6W::GetVehicleAutoBoxSetup(const FVehicle
 void UFGWheeledVehicleMovementComponent6W::GetVehicleGearSetup(const FVehicleTransmissionData6W& Setup, PxVehicleGearsData& PxSetup){ }
 void UFGWheeledVehicleMovementComponent6W::ComputeAckermannSteerAngles(const float steer, const float steerGain, const float ackermannAccuracy, const float width, const float axleSeparation, float* leftAckermannSteerAngle, float* rightAckermannSteerAngle){ }
 void UFGWheeledVehicleMovementComponent6W::ComputeAckermannCorrectedSteerAngles(PxVehicleDriveSimDataNW& driveSimData, PxVehicleWheelsSimData& wheelsSimData, const float steer){ }
+UFGWheeledVehicleMovementComponent6W::UFGWheeledVehicleMovementComponent6W(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

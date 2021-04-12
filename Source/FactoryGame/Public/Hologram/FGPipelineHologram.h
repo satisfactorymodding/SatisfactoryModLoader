@@ -1,15 +1,9 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "Components/SplineMeshComponent.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "HologramHelpers.h"
+#include "Hologram/HologramHelpers.h"
 #include "Hologram/FGSplineHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGPipelineHologram.generated.h"
@@ -30,21 +24,22 @@ public:
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
+	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-
-	void RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal );
-
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease )  override;
 	virtual int32 GetBaseCostMultiplier() const override;
+	virtual AActor* GetUpgradedActor() const override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void GetSupportedScrollModes( TArray< EHologramScrollMode >* out_modes ) const override;
 	virtual void GetSupportedSplineModes_Implementation( TArray< EHologramSplinePathMode >& out_splineModes ) const override;
-	bool IsValidHitResult( const FHitResult& hitResult ) const override;
-	void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
-	bool TrySnapToActor( const FHitResult& hitResult ) override;
-	void OnInvalidHitResult() override;
-	void Scroll( int32 delta ) override;
+	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
+	virtual void OnInvalidHitResult() override;
+	virtual void Scroll( int32 delta ) override;
 	virtual bool CanTakeNextBuildStep() const override;
+	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
+	virtual void SetSnapToGuideLines( bool isEnabled ) override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface
@@ -53,21 +48,13 @@ public:
 	virtual void ServerPostConstructMessageDeserialization() override;
 	// End FGConstructionMessageInterface
 
-	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
-
-	//[DavalliusA:Fri/13-12-2019]  Not here anymore. Set the build step instead with the EPipeHologramBuildStep
-	/** Set point index directly */
-	//void SetActivePointIndex( int32 newIndex ){ mActivePointIdx = newIndex; }
-
+	// Begin FGSplineHologram Interface
 	virtual void ResetBuildSteps() override;
+	virtual bool IsConnectionSnapped( bool lastConnection ) override;
+	// End FGSplineHologram Interface
 
 	/** Returns reference to spline point data */
 	void GetLastSplineData( FSplinePointData &data );
-
-	/** Checks if we have snapped to any connection */
-	virtual bool IsConnectionSnapped( bool lastConnection ) override;
-
-	void SetSnapToGuideLines( bool isEnabled ) override;
 
 protected:
 	// Begin AFGBuildableHologram Interface
@@ -84,12 +71,13 @@ protected:
 	FORCEINLINE class AFGPipelineSupportHologram* GetChildPoleHologram() const { return mChildPoleHologram; }
 
 private:
-	/** Get the number of sections this conveyor has. Used for cost, max length etc. */
-	int32 GetNumSections() const;
+	void RouteSelectedSplineMode( FVector startLocation, FVector startNormal, FVector endLocation, FVector endNormal );
 
 	/** Update the spline on the client. */
 	UFUNCTION()
 	void UpdateSplineComponent();
+
+	float GetSplineLength();
 
 	void UpdateConnectionComponentsFromSplineData();
 
@@ -180,6 +168,10 @@ private:
 	UPROPERTY()
 	class UFGPipeConnectionComponentBase* mSnappedConnectionComponents[ 2 ];
 
+	/** If we upgrade another pipeline this is the pipeline we replace. */
+	UPROPERTY()
+	class AFGBuildablePipeline* mUpgradedPipeline;
+	
 	/** Class of conveyor pole to place at the end. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	TSubclassOf< class UFGRecipe > mDefaultPipelineSupportRecipe;
@@ -196,9 +188,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	float mMinBendRadius = 75;
 
-	/** Maximum number of meshes per pipe */
+	/** Maximum length that can be built. [cm] */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
-	int32 mMaxLength;
+	float mMaxSplineLength = 5600.1f;
 
 	/** Arrow to indicate the direction of the conveyor while placing it. */
 	UPROPERTY()
@@ -224,7 +216,4 @@ private:
 	float mMeshLength;
 
 	bool mPoleSnappedToActor = false;
-
-public:
-	FORCEINLINE ~AFGPipelineHologram() = default;
 };

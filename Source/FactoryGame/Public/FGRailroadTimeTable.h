@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Info.h"
 #include "FGSaveInterface.h"
@@ -24,10 +21,6 @@ public:
 	/** Time to stay. */
 	UPROPERTY( SaveGame, BlueprintReadWrite )
 	float Duration = 0.0f;
-
-public:
-	FORCEINLINE FTimeTableStop() = default;
-	FORCEINLINE ~FTimeTableStop() = default;
 };
 
 /**
@@ -114,7 +107,4 @@ private:
 	/** Current stop the train is at or heading to. */
 	UPROPERTY( SaveGame )
 	int32 mCurrentStop;
-
-public:
-	FORCEINLINE ~AFGRailroadTimeTable() = default;
 };

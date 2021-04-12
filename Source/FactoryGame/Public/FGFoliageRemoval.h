@@ -1,18 +1,17 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGSaveInterface.h"
 #include "Engine/NetSerialization.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "FGFoliageRemoval.generated.h"
 
 /** Data about removed instances */
 /** We can't send the id of the instance to clients, as that requires us to maintain a commandbuffer with all done commands to be able to get the same id's a server/client */
 USTRUCT()
-struct FACTORYGAME_API FRemovedInstance : public FFastArraySerializerItem
+struct FRemovedInstance : public FFastArraySerializerItem
 {
 	GENERATED_BODY()
 	
@@ -34,14 +33,11 @@ struct FACTORYGAME_API FRemovedInstance : public FFastArraySerializerItem
 	/** Stored in localspace */
 	UPROPERTY( SaveGame, NotReplicated ) 
 	FTransform Transform;
-
-public:
-	FORCEINLINE ~FRemovedInstance() = default;
 };
 
 /** Wrapper around the Items struct to enable custom delta serialization (we send a part of the data to the client every frame instead of sending it all in one frame) */
 USTRUCT()
-struct FACTORYGAME_API FRemovedInstanceArray : public FFastArraySerializer
+struct FRemovedInstanceArray : public FFastArraySerializer
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -67,27 +63,21 @@ struct FACTORYGAME_API FRemovedInstanceArray : public FFastArraySerializer
 	
 	// This does the delta sending of data
 	bool NetDeltaSerialize( FNetDeltaSerializeInfo & DeltaParms );
-
-public:
-	FORCEINLINE ~FRemovedInstanceArray() = default;
 };
 
 /** Enables NetDeltaSerialize in FRemovedInstanceArray with template magic */
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FRemovedInstanceArray > : public TStructOpsTypeTraitsBase2< FRemovedInstanceArray >
+struct TStructOpsTypeTraits< FRemovedInstanceArray > : public TStructOpsTypeTraitsBase2< FRemovedInstanceArray >
 {
 	enum
 	{
 		WithNetDeltaSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FRemovedInstanceArray >() = default;
 };
 
 
 UCLASS(notplaceable)
-class FACTORYGAME_API AFGFoliageRemoval : public AActor, public IFGSaveInterface
+class FACTORYGAME_API AFGFoliageRemoval : public AFGStaticReplicatedActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
 public:	
@@ -205,7 +195,4 @@ protected:
 
 	// Flag to indicate whether this removal actor is allowed to run apply. Needs to be setup by FoliageSubSystem first. 
 	uint8 mMarkedByFoliageSubSystem:1;
-
-public:
-	FORCEINLINE ~AFGFoliageRemoval() = default;
 };

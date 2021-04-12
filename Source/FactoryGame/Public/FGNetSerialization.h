@@ -1,13 +1,13 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
 
 #include "Engine/NetSerialization.h"
 #include "FGNetSerialization.generated.h"
 
 /** Base struct for items using Custom Fast TArray Replication */
 USTRUCT()
-struct FACTORYGAME_API FCustomFastArraySerializerItem
+struct FCustomFastArraySerializerItem
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -74,14 +74,11 @@ struct FACTORYGAME_API FCustomFastArraySerializerItem
 	* NOTE: intentionally not virtual; invoked via templated code, @see FExampleItemEntry
 	*/
 	FORCEINLINE FString GetDebugString() { return FString( TEXT( "" ) ); }
-
-public:
-	FORCEINLINE ~FCustomFastArraySerializerItem() = default;
 };
 
 /** Base struct for wrapping the array used in Custom Fast TArray Replication */
 USTRUCT()
-struct FACTORYGAME_API FCustomFastArraySerializer
+struct FCustomFastArraySerializer
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -151,33 +148,24 @@ private:
 	// Cached item counts, used for fast sanity checking when writing.
 	int32				CachedNumItems;
 	int32				CachedNumItemsToConsiderForWriting;
-
-public:
-	FORCEINLINE ~FCustomFastArraySerializer() = default;
 };
 
-struct FACTORYGAME_API FStableRemover
+struct FStableRemover
 {
 	template< typename T >
 	static void RemoveItem( TArray<T>& a, int32 idx )
 	{
 		a.RemoveAt( idx, 1, false );
 	}
-
-public:
-	FORCEINLINE ~FStableRemover() = default;
 };
 
-struct FACTORYGAME_API FFastRemover
+struct FFastRemover
 {
 	template< typename T >
 	static void RemoveItem( TArray<T>& a, int32 idx )
 	{
 		a.RemoveAtSwap( idx, 1, false );
 	}
-
-public:
-	FORCEINLINE ~FFastRemover() = default;
 };
 
 /** The function that implements Fast TArray Replication  */

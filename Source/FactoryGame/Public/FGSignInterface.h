@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSaveInterface.h"
@@ -31,7 +28,7 @@ enum class ESignElementType : uint8
 
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSignElementConstraints
+struct FSignElementConstraints
 {
 	GENERATED_BODY()
 
@@ -51,9 +48,6 @@ struct FACTORYGAME_API FSignElementConstraints
 	UPROPERTY( EditDefaultsOnly, Category = "SignData" )
 	float MaxScale;
 
-
-public:
-	FORCEINLINE ~FSignElementConstraints() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -83,9 +77,6 @@ struct FACTORYGAME_API FSignPixelColumn
 			return nullptr;
 		}
 	}
-
-public:
-	FORCEINLINE ~FSignPixelColumn() = default;
 };
 
 UCLASS( BlueprintType )
@@ -128,9 +119,6 @@ public:
 	UPROPERTY( SaveGame )
 	FVector2D mPixelDimensions;
 
-
-public:
-	FORCEINLINE ~UFGSignLayer() = default;
 };
 
 //@todoSigns : Change all blueprint read / write properties over to getters / setters where applicable
@@ -194,9 +182,6 @@ public:
 
 	UPROPERTY( BlueprintReadOnly, Category = "SignData" )
 	bool mIsElementStatic;
-
-public:
-	FORCEINLINE ~UFGSignElementData() = default;
 };
 
 UCLASS( BlueprintType )
@@ -216,9 +201,6 @@ public:
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignData" )
 	FVector2D mDimensions;
 
-
-public:
-	FORCEINLINE ~UFGSignPixelData() = default;
 };
 
 
@@ -253,9 +235,6 @@ public:
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignData" )
 	EHorizontalSignTextAlignment mTextAlignmentHorizontal;
 
-
-public:
-	FORCEINLINE ~UFGSignTextData() = default;
 };
 
 UCLASS( BlueprintType )
@@ -277,14 +256,11 @@ public:
 	// Index pointing to a location in the FGSignSettings Icon array
 	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "SignData" )
 	int32 mIconIndex;
-
-public:
-	FORCEINLINE ~UFGSignIconData() = default;
 };
 
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSignData
+struct FSignData
 {
 	GENERATED_BODY()
 
@@ -330,33 +306,24 @@ struct FACTORYGAME_API FSignData
 	int32 BackgroundColorIndex;
 
 
-
-public:
-	FORCEINLINE ~FSignData() = default;
 };
 
 /** Enable custom serialization of FRailroadTrackPosition */
 template<>
-struct FACTORYGAME_API TStructOpsTypeTraits< FSignData > : public TStructOpsTypeTraitsBase2< FSignData >
+struct TStructOpsTypeTraits< FSignData > : public TStructOpsTypeTraitsBase2< FSignData >
 {
 	enum
 	{
 		WithSerializer = true
 	};
-
-public:
-	FORCEINLINE ~TStructOpsTypeTraits< FSignData >() = default;
 };
 
 
 // Sign Interface
-UINTERFACE( MinimalAPI, Blueprintable )
+UINTERFACE( Blueprintable )
 class UFGSignInterface : public UInterface
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGSignInterface() = default;
 };
 
 /**
@@ -397,7 +364,4 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "SignData" )
 	FVector2D GetGridSquareDimensions();
 
-
-public:
-	FORCEINLINE IFGSignInterface() = default;
 };

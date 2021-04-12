@@ -17,3 +17,5 @@ void UFGDotComponent::StartDamageTimer(){ }
 void UFGDotComponent::OnPrimitiveComponentEntered(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool fromSweep, const FHitResult& sweepResult){ }
 void UFGDotComponent::OnPrimitiveComponentExited(UPrimitiveComponent* overlappedComp, AActor* other, UPrimitiveComponent* otherComp, int32 otherBodyIndex){ }
 void UFGDotComponent::DamageContainingActors(){ }
+void UFGDotComponent::AddActorToDamage(AActor* actor){ }
+void UFGDotComponent::RemoveActorToDamage(AActor* actor){ }

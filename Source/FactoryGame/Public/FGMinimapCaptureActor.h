@@ -1,9 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Engine/SceneCapture2D.h"
@@ -17,31 +14,22 @@ UCLASS()
 class FACTORYGAME_API UFGHeightWaterUserData : public UAssetUserData
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGHeightWaterUserData() = default;
 };
 
 UCLASS()
 class FACTORYGAME_API UFGHeightFoliageUserData : public UAssetUserData
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGHeightFoliageUserData() = default;
 };
 
 UCLASS()
 class FACTORYGAME_API UFGHeightHideUserData : public UAssetUserData
 {
 	GENERATED_BODY()
-
-public:
-	FORCEINLINE ~UFGHeightHideUserData() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FFGHeightData
+struct FFGHeightData
 {
 	GENERATED_BODY()
 
@@ -68,9 +56,6 @@ struct FACTORYGAME_API FFGHeightData
 		lowestZ = FMath::Clamp(FMath::Min( zValue, lowestZ ), minZ, maxZ);
 		highestZ = FMath::Max( zValue, highestZ );
 	}
-
-public:
-	FORCEINLINE ~FFGHeightData() = default;
 };
 
 UENUM()
@@ -152,7 +137,4 @@ protected:
 	UPROPERTY( EditInstanceOnly, Category = "Minimap" )
 	UFGMapAreaTexture* mMapAreaTexture;
 	
-
-public:
-	FORCEINLINE ~AFGMinimapCaptureActor() = default;
 };

@@ -1,7 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
@@ -15,11 +14,9 @@
 
 /** The Slot for the UFGListView, contains the widget that is laid out in the list. */
 UCLASS()
-class FACTORYGAME_API UFGListViewSlot : public UPanelSlot
+class UFGListViewSlot : public UPanelSlot
 {
-	// MODDING EDIT
-	GENERATED_BODY()
-	UFGListViewSlot(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+	GENERATED_UCLASS_BODY()
 public:
 	// UVisual interface
 	virtual void ReleaseSlateResources( bool bReleaseChildren ) override;
@@ -34,7 +31,4 @@ private:
 
 	/** A raw pointer to the slot to allow us to adjust the size, padding...etc at runtime. */
 	SVerticalBox::FSlot* mSlot;
-
-public:
-	FORCEINLINE ~UFGListViewSlot() = default;
 };

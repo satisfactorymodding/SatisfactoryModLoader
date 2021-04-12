@@ -11,7 +11,7 @@ UFGWorkBench::UFGWorkBench() : Super() {
 	this->mCooldownDelay = 1.5;
 	this->mIsFatigueEnabled = true;
 	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = true; this->PrimaryComponentTick.bStartWithTickEnabled = true; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true; this->PrimaryComponentTick.TickInterval = 0;
-	this->bReplicates = true;
+	this->SetIsReplicatedByDefault(true);
 	this->bAutoActivate = true;
 }
 void UFGWorkBench::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }

@@ -1,16 +1,14 @@
-#pragma once
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "CoreMinimal.h"
-#include "UObject/ObjectMacros.h"
+#pragma once
 
 /** A bool that can be undefined */
 UENUM()
 enum class EUndefinedBool : uint8
 {
-	UB_Undefined = 0,	 // MODDING EDIT (= 0)
-	UB_False = 1,		 // MODDING EDIT (= 1)
-	UB_True = 2			 // MODDING EDIT (= 2)
+	UB_Undefined,
+	UB_False,
+	UB_True
 };
 
 inline bool operator==( EUndefinedBool e, bool b );

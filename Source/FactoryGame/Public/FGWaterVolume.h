@@ -1,9 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "UndefinedBool.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
@@ -25,8 +22,14 @@ public:
 	/** ctor */
 	AFGWaterVolume();
 
+	//~ Begin UObject Interface
+	virtual void PostInitProperties() override;
+	//~ End UObject Interface
+
+	//~ Begin AActor Interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	//~ End AActor Interface
 
 	// Begin APhysicsVolume interface
 	virtual bool IsOverlapInVolume( const class USceneComponent& testComponent ) const override;
@@ -66,15 +69,15 @@ public:
 	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
 
 	// Begin Extractable Resource Interface
-	virtual void SetIsOccupied_Implementation( bool occupied ) override;
-	virtual bool IsOccupied_Implementation() const override;
-	virtual bool CanBecomeOccupied_Implementation() const override;
-	virtual bool HasAnyResources_Implementation() const override;
-	virtual TSubclassOf<class UFGResourceDescriptor> GetResourceClass_Implementation() const override;
-	virtual int32 ExtractResource_Implementation( int32 amount ) override;
-	virtual float GetExtractionSpeedMultiplier_Implementation() const override;
-	virtual FVector GetPlacementLocation_Implementation( const FVector& hitLocation ) const override;
-	virtual bool CanPlaceResourceExtractor_Implementation() const override;
+	virtual void SetIsOccupied( bool occupied ) override;
+	virtual bool IsOccupied() const override;
+	virtual bool CanBecomeOccupied() const override;
+	virtual bool HasAnyResources() const override;
+	virtual TSubclassOf<class UFGResourceDescriptor> GetResourceClass() const override;
+	virtual int32 ExtractResource( int32 amount ) override;
+	virtual float GetExtractionSpeedMultiplier() const override;
+	virtual FVector GetPlacementLocation( const FVector& hitLocation ) const override;
+	virtual bool CanPlaceResourceExtractor() const override;
 	// End Extractable Resource Interface
 
 #if WITH_EDITOR
@@ -139,7 +142,4 @@ private:
 	/** Significance range of water volume */
 	float mSignificanceRange;
 
-
-public:
-	FORCEINLINE ~AFGWaterVolume() = default;
 };

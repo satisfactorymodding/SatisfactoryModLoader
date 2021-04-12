@@ -1,17 +1,29 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/CoreNet.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
+#include "Buildables/FGBuildableCircuitBridge.h"
+#include "UI/Message/FGMessageBase.h"
 #include "FGCircuitSubsystem.generated.h"
 
+/**
+ * Message to be displayed when the sum stored battery power of a circuit has had a certain share depleted
+ */
+UCLASS( Blueprintable )
+class FACTORYGAME_API UFGCriticalBatteryDepletionMessage : public UFGMessageBase
+{
+	GENERATED_BODY()
+public:
+	UFGCriticalBatteryDepletionMessage();
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|Power" )
+	float GetCriticalBatteryDepletionPercent() const { return mCriticalBatteryDepletionPercent; }
+
+private:
+	float mCriticalBatteryDepletionPercent = 0.0f;
+};
 
 /**
  * Subsystem to handle all circuits, connects, disconnects.
@@ -26,7 +38,6 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
 	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
-    
 	virtual void CallPreReplication(UNetDriver* NetDriver) override;
 
 	/** Get the circuit subsystem. */
@@ -106,7 +117,12 @@ public:
 	 */
 	void RemoveComponent( class UFGCircuitConnectionComponent* component );
 
-protected:
+	void SetCircuitBridgesModified();
+	void AddCircuitBridge( TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge );
+	void RemoveCircuitBridge( TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge );
+
+	class UFGCircuitGroup* GetCircuitGroup( int32 circuitGroupId ) { return mCircuitGroups[ circuitGroupId ]; }
+
 	/** Called when a power circuit lost power. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Circuits|Power" )
 	void PowerCircuit_OnFuseSet();
@@ -115,6 +131,17 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Circuits|Power" )
 	void PowerCircuit_OnFuseReset();
 
+	/** Called when the batteries have depleted a certain share of their capacity. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Circuits|Power" )
+	void PowerCircuit_OnCriticalBatteryDepletion( float depletionPercent );
+
+	/** Debugging function to dump stats of all circuits to the log */
+	void Debug_DumpCircuitsToLog();
+
+	/** Event that will fire whenever one or more circuits have changed */
+	DECLARE_EVENT( AFGCircuitSubsystem, FOnCircuitsChanged )
+	FOnCircuitsChanged OnCircuitsChangedEvent;
+	
 private:
 	/** Let the clients know about changes in the circuits. */
 	UFUNCTION()
@@ -126,7 +153,10 @@ private:
 	/** Internal helpers to manage circuits. */
 	void MergeCircuits( int32 first, int32 second );
 	int32 CreateCircuit( TSubclassOf< class UFGCircuit > circuitClass );
+	int32 SplitCircuit( const UFGCircuit* circuit );
 	void RemoveCircuit( int32 circuitID );
+
+	void RebuildCircuitGroups();
 
 	/**
 	 * Internal helper to rebuild a circuit.
@@ -135,13 +165,24 @@ private:
 	void RebuildCircuit( int32 circuitID );
 
 	/** Adds a connection component to a circuit, performs a circuit merge if the component is already connected to another circuit. */
-	void AddComponentToCircuit( class UFGCircuitConnectionComponent* component, int32 circuitID );
+	void AddComponentToCircuit( class UFGCircuitConnectionComponent* component, int32 circuitID, bool rebuildTrivialCircuits );
 	/** Removes a connection component from it's circuit. If the connection component does not have a valid circuit ID this does nothing. */
 	void RemoveComponentFromCircuit( class UFGCircuitConnectionComponent* component );
 
-private:
-	friend class UFGPowerCircuit;
+public:
+	/**
+	* Power circuits: the share of the battery capacity that can be depleted before a warning is raised, in the interval [0.0, 1.0].
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Power Circuit")
+	float mCriticalBatteryDepletionPercent = 0.25f;
 
+	/**
+	* Power circuits: the minimum time that has to pass between battery warnings, in minutes.
+	*/
+	UPROPERTY( EditDefaultsOnly, Category = "Power Circuit")
+	float mMinimumBatteryWarningInterval = 10.0f;
+
+private:
 	/** Map with all circuits and the circuit ID as the key. */
 	UPROPERTY()
 	TMap< int32, class UFGCircuit* > mCircuits;
@@ -153,6 +194,9 @@ private:
 	/** Counter for generating new circuit ids. */
 	int32 IDCounter;
 
-public:
-	FORCEINLINE ~AFGCircuitSubsystem() = default;
+	TSet< TWeakObjectPtr< AFGBuildableCircuitBridge > > mCircuitBridges;
+	bool mIsCircuitGroupsDirty;
+
+	UPROPERTY()
+	TArray< class UFGCircuitGroup* > mCircuitGroups;
 };

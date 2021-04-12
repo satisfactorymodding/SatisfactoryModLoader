@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "Engine/StaticMesh.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Resources/FGEquipmentDescriptor.h"
@@ -62,7 +58,4 @@ protected:
 	/** The actor to spawn on primary fire press if we want one, can be null */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	TSubclassOf< class AActor > mDecorationActorClass;
-
-public:
-	FORCEINLINE ~UFGDecorationDescriptor() = default;
 };

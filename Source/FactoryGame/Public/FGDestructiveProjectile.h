@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGProjectile.h"
@@ -11,7 +8,7 @@
 
 /** Holds the information necessary for spawning destroyed effects after all overlap calculations */
 USTRUCT()
-struct FACTORYGAME_API FDestroyedFoliageEffectData
+struct FDestroyedFoliageEffectData
 {
 	GENERATED_BODY()
 
@@ -35,11 +32,7 @@ struct FACTORYGAME_API FDestroyedFoliageEffectData
 	class UParticleSystem* DestroyedEffect;
 	UPROPERTY()
 	int32 Priority;
-
-public:
-	FORCEINLINE ~FDestroyedFoliageEffectData() = default;
 };
-
 
 /**
  *  Base class for any projectile that should destroy foliage or actors
@@ -49,7 +42,6 @@ UCLASS()
 class FACTORYGAME_API AFGDestructiveProjectile : public AFGProjectile
 {
 	GENERATED_BODY()
-
 public:
 	AFGDestructiveProjectile();
 
@@ -102,7 +94,4 @@ private:
 
 	/** Holds a list of all actors within the blast radius implementing IFGExplosiveDestructableInterface */
 	TArray< AActor* > mRelevantOverlappedActors;
-
-public:
-	FORCEINLINE ~AFGDestructiveProjectile() = default;
 };

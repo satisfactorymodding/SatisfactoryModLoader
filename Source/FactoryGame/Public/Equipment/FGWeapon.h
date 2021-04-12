@@ -1,14 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
-#include "FGEquipment.h"
-#include "FGEquipmentAttachment.h"
+#include "Equipment/FGEquipment.h"
+#include "Equipment/FGEquipmentAttachment.h"
 #include "FGWeapon.generated.h"
 
 
@@ -19,26 +15,24 @@ UCLASS()
 class FACTORYGAME_API AFGWeapon : public AFGEquipment
 {
 	GENERATED_BODY()
-	
 public:
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
-	/** Ctor */
 	AFGWeapon();
 
 	// Begin AFGEquipment interface
 	virtual bool ShouldSaveState() const override;
-	// End
+	// End AFGEquipment interface
 
 	/**
-	* Put the weapon away.
-	*/
+	 * Put the weapon away.
+	 */
 	virtual void UnEquip();
 
 	/**
-	* bring up weapon and assign hud if local player
-	*/
+	 * bring up weapon and assign hud if local player
+	 */
 	virtual void Equip( class AFGCharacterPlayer* character ) override;
 
 	/**to be called when equipping a weapon on a local player. Enabling weapons to affect the hud. */
@@ -116,6 +110,8 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Weapon" )
 	void PlayFireReleasedEffects();
 
+	/** Is sprinting allowed when firing this weapon */
+	FORCEINLINE virtual bool ShouldBlockSprintWhenFiring(){ return mBlockSprintWhenFiring; }
 protected:
 	// Begin AFGEquipment interface
 	virtual void AddEquipmentActionBindings();
@@ -204,10 +200,10 @@ protected:
 
 	/** A cast reference to the spawned child equipment, if it exists*/
 	class AFGWeaponChild* mChildWeapon;
-
-
-public:
-	FORCEINLINE ~AFGWeapon() = default;
+private:
+	/** Indicates if this weapon will block character from sprinting when fired */
+	UPROPERTY( EditDefaultsOnly )
+	bool mBlockSprintWhenFiring;
 };
 
 

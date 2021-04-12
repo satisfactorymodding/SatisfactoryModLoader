@@ -1,15 +1,14 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "WheeledVehicleMovementComponent4W.h"
-#include "PhysicsPublic.h"
-#include "PhysXPublic.h"
 #include "FGWheeledVehicle.h"
+#include "DSOLGearbox.h"
 #include "FGWheeledVehicleMovementComponent4W.generated.h"
 
 UCLASS(meta = (BlueprintSpawnableComponent))
-class FACTORYGAME_API UFGWheeledVehicleMovementComponent4W : public UWheeledVehicleMovementComponent4W
+class UFGWheeledVehicleMovementComponent4W : public UWheeledVehicleMovementComponent4W
 {
 	GENERATED_BODY()
 public:
@@ -74,8 +73,5 @@ private:
 
 	/** Array of PhysXWheel User defineable data that are passed to the shader */
 	TArray<FPhysxWheelUserData> mPhysxWheelUserData;
-
-public:
-	FORCEINLINE ~UFGWheeledVehicleMovementComponent4W() = default;
 };
 

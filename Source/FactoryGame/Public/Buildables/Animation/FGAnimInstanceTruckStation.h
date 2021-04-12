@@ -1,7 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
@@ -32,14 +31,11 @@ struct FACTORYGAME_API FAnimInstanceProxyTruckStation : public FAnimInstanceProx
 	{
 	}
 
-	/** Called when our anim instance is being initialized */
+	// Begin FAnimInstanceProxy
 	virtual void Initialize( UAnimInstance* InAnimInstance ) override;
-
 	virtual void PreUpdate( UAnimInstance* InAnimInstance, float DeltaSeconds ) override;
-
 	virtual void Update( float DeltaSeconds ) override;
-
-
+	// End FAnimInstanceProxy
 public:
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	FName StateMachineName;
@@ -75,33 +71,17 @@ public:
 
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	uint8 UnloadToOfflineTransition : 1;
-
-public:
-	FORCEINLINE ~FAnimInstanceProxyTruckStation() = default;
 };
 
-/**
- * 
- */
 UCLASS()
 class FACTORYGAME_API UFGAnimInstanceTruckStation : public UAnimInstance
 {
 	GENERATED_BODY()
 protected:
-	UPROPERTY( Transient, BlueprintReadOnly, Category = "Factory Anim", meta = (AllowPrivateAccess = "true") )
-	FAnimInstanceProxyTruckStation mProxy;;
-
-	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override
-	{
-		return &mProxy;
-	}
-
-	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* InProxy ) override
-	{
-
-	}
-
-	friend struct FAnimInstanceProxyTruckStation;
+	// Begin UAnimInstance
+	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override { return &mProxy; }
+	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* InProxy ) override {}
+	// End UAnimInstance
 public:
 	/** Time factory should spend ramping up */
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
@@ -114,7 +94,7 @@ public:
 	/**Name of the state machine that does stuff*/
 	UPROPERTY( EditDefaultsOnly, Category = "Anim" )
 	FName mStateMachineName;
-
-public:
-	FORCEINLINE ~UFGAnimInstanceTruckStation() = default;
+protected:
+	UPROPERTY( Transient, BlueprintReadOnly, Category = "Factory Anim", meta = (AllowPrivateAccess = "true") )
+	FAnimInstanceProxyTruckStation mProxy;
 };

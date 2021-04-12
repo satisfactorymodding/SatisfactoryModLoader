@@ -3,7 +3,8 @@
 #include "FGDecorationActor.h"
 
 AFGDecorationActor::AFGDecorationActor() : Super() {
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 }
 void AFGDecorationActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGDecorationActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

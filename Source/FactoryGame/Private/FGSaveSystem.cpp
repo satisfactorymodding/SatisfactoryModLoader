@@ -9,6 +9,7 @@ void UFGSaveSystem::Init(){ }
 FString UFGSaveSystem::GetSaveDirectoryPath(){ return FString(); }
 bool UFGSaveSystem::GetUserSaveDirectoryPath(const UWorld* world, FString& out_dirPath){ return bool(); }
 FString UFGSaveSystem::GetCommonSaveDirectoryPath(){ return FString(); }
+FString UFGSaveSystem::GetBackupSaveDirectoryPath(){ return FString(); }
 void UFGSaveSystem::GetSourceSaveDirectoriesPaths(const UWorld* world, TArray<FString>& out_sourceSaves){ }
 UFGSaveSystem* UFGSaveSystem::Get( UWorld* world){ return nullptr; }
 UFGSaveSystem* UFGSaveSystem::Get( UObject* worldContext){ return nullptr; }
@@ -32,6 +33,7 @@ bool UFGSaveSystem::FindNewClassName(const FString& oldClassName, FString& out_n
 bool UFGSaveSystem::FindNewObjectName(const FString& oldObjectName, FString& out_newObjectName){ return bool(); }
 bool UFGSaveSystem::MoveSaveFileFromCommonToEpicLocation(const UWorld* world, const FString& saveName){ return bool(); }
 bool UFGSaveSystem::SaveFileExistsInCommonSaveDirectory(const FString& saveName){ return bool(); }
+void UFGSaveSystem::BackupSaveCleanup(){ }
 void UFGSaveSystem::MigrateSavesToNewLocation(const FString& oldSaveLocation){ }
 void UFGSaveSystem::FindSaveGames_Internal(const FString& saveDirectory, TArray<FSaveHeader>& out_saveGames){ }
 FString UFGSaveSystem::SaveNameToFileName(const FString& directory, const FString& saveName){ return FString(); }

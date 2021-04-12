@@ -2,9 +2,7 @@
 
 #include "FGGameSession.h"
 
-AFGGameSession::AFGGameSession() : Super() {
-	
-}
+AFGGameSession::AFGGameSession(){ }
 void AFGGameSession::UpdateGameSession(){ }
 void AFGGameSession::SessionIdUpdated(){ }
 void AFGGameSession::Destroyed(){ }

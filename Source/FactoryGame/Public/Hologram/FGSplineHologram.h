@@ -1,11 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableHologram.h"
+#include "Hologram/FGBuildableHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGSplineHologram.generated.h"
 
@@ -41,9 +38,6 @@ public:
 	// Handles the pending hologram state copy
 	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 
-	/** Set point index directly */
-	//void SetActivePointIndex( int32 newIndex ){ mActivePointIdx = newIndex; }
-
 	/** Checks if we have snapped to any connection */
 	virtual bool IsConnectionSnapped( bool lastConnection );
 
@@ -73,11 +67,11 @@ protected:
 	class USplineComponent* mSplineComponent;
 
 	/** This is the data needed to create the spline component (local space). */
-	UPROPERTY( ReplicatedUsing = OnRep_SplineData /*, CustomSerialization*/ )
+	UPROPERTY( ReplicatedUsing = OnRep_SplineData, CustomSerialization )
 	TArray< FSplinePointData > mSplineData;
 
 	/** Used in the construction message to determine if this has snapped to an existing connection or not */
-	UPROPERTY( /*CustomSerialization*/ )
+	UPROPERTY( CustomSerialization )
 	uint8 mIsConnectionSnappedOnConstruction;
 
 	UPROPERTY( Replicated )
@@ -85,7 +79,4 @@ protected:
 
 	/** Index of the currently moved point. */
 	int32 mActivePointIdx;
-
-public:
-	FORCEINLINE ~AFGSplineHologram() = default;
 };

@@ -1,7 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGUseableInterface.h"
@@ -90,6 +89,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Production" )
 	FORCEINLINE float GetExtractionProgress() const { return mCurrentExtractProgress; }
 
+	/** @return Get the ExtractCycleTime. */
+	UFUNCTION( BlueprintPure, Category = "Production" )
+    FORCEINLINE float GetExtractCycleTime() const { return mExtractCycleTime; }
+
 private:
 	/** Calls Start/Stop Producing on client */
 	UFUNCTION()
@@ -125,7 +128,4 @@ private:
 	bool mIsProducing;
 
 
-
-public:
-	FORCEINLINE ~AFGPortableMiner() = default;
 };

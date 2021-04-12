@@ -3,7 +3,8 @@
 #include "FGInteractActor.h"
 
 AFGInteractActor::AFGInteractActor() : Super() {
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 }
 void AFGInteractActor::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
 void AFGInteractActor::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

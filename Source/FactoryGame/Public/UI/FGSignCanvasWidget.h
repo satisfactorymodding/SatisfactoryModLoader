@@ -1,9 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Components/CanvasPanel.h"
 #include "Blueprint/UserWidget.h"
@@ -14,7 +11,7 @@
  *	Custom widget that contains a canvas panel widget for holding sign design elements
  */
 UCLASS()
-class FACTORYGAME_API UFGSignCanvasWidget : public UUserWidget
+class UFGSignCanvasWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
@@ -102,7 +99,4 @@ private:
 
 	class UFGSignElementWidget* GetElementWidgetById( int32 id );
 
-
-public:
-	FORCEINLINE ~UFGSignCanvasWidget() = default;
 };

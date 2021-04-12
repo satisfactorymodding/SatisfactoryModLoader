@@ -1,13 +1,9 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGFactoryHologram.h"
+#include "Hologram/FGFactoryHologram.h"
 #include "FGTrainPlatformHologram.generated.h"
 
 /**
@@ -41,6 +37,7 @@ protected:
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual int32 GetRotationStep() const override;
 	virtual void CheckClearance() override;
+	virtual void OnHologramTransformUpdated() override;
 	// End AFGHologram interface
 
 	/** Check for platform connections to snap to */
@@ -87,7 +84,4 @@ private:
 
 	/** Track changes to the scroll direction */
 	int32 mPreviousScrollTrackDirection;
-
-public:
-	FORCEINLINE ~AFGTrainPlatformHologram() = default;
 };

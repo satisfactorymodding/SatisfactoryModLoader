@@ -1,13 +1,50 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGUnlock.h"
+
+#include "Resources/FGResourceDescriptorGeyser.h"
+#include "Resources/FGResourceNode.h"
+#include "Unlocks/FGUnlock.h"
 #include "FGUnlockScannableResource.generated.h"
+
+
+USTRUCT( BlueprintType )
+struct FScannableResourcePair
+{
+	GENERATED_BODY()
+
+	FScannableResourcePair() :
+		ResourceDescriptor( nullptr )
+	{
+		ResourceNodeType = EResourceNodeType::Node;
+	}
+
+	FScannableResourcePair( TSubclassOf< class UFGResourceDescriptor > resourceDescriptor ) :
+    ResourceDescriptor( resourceDescriptor )
+	{
+		if( resourceDescriptor->IsChildOf( UFGResourceDescriptorGeyser::StaticClass() ) )
+		{
+			ResourceNodeType = EResourceNodeType::Geyser; // Special case for geyser when loading old saves and migrating to new pair system
+		}
+		ResourceNodeType = EResourceNodeType::Node;
+	}
+
+	FScannableResourcePair( TSubclassOf< class UFGResourceDescriptor > resourceDescriptor, EResourceNodeType resourceNodeType ) :
+	ResourceDescriptor( resourceDescriptor ),
+	ResourceNodeType( resourceNodeType )
+	{}
+	
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	TSubclassOf< class UFGResourceDescriptor > ResourceDescriptor;
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	EResourceNodeType ResourceNodeType;
+
+	bool operator ==(const FScannableResourcePair& other) const;
+
+	bool operator !=(const FScannableResourcePair& other) const;
+};
 
 /**
  * Unlocks scanning of the specified resources
@@ -22,19 +59,23 @@ public:
 	virtual void Apply( class AFGUnlockSubsystem* unlockSubssytem ) override;
 	// End FGUnlock interface
 
+	// Only for migrate mResourcesToAddToScanner to new system
+	virtual void PostLoad() override;
+
 #if WITH_EDITORONLY_DATA
-	void Init( TArray< TSubclassOf< class UFGResourceDescriptor > > resources ) { mResourcesToAddToScanner = resources; }
+	//void Init( TArray< TSubclassOf< class UFGResourceDescriptor > > resources ) { mResourcesToAddToScanner = resources; }
 #endif
 
 	UFUNCTION( BlueprintPure, Category=Unlocks )
-	FORCEINLINE TArray< TSubclassOf< class UFGResourceDescriptor > > GetResourcesToAddToScanner() const { return mResourcesToAddToScanner; }
+	FORCEINLINE TArray< FScannableResourcePair > GetResourcesToAddToScanner() const { return mResourcePairsToAddToScanner; }
 
 protected:
 	/**  These are the resources that are scannable after this unlock */
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY() //@todok2 Deprecated remove this when all assets been resaved.
 	TArray< TSubclassOf< class UFGResourceDescriptor > > mResourcesToAddToScanner;
 
+	/**  These are the resources that are scannable after this unlock */
+	UPROPERTY( EditDefaultsOnly )
+	TArray< FScannableResourcePair > mResourcePairsToAddToScanner;
 
-public:
-	FORCEINLINE ~UFGUnlockScannableResource() = default;
 };

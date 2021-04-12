@@ -1,15 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGBuildableTrainPlatform.h"
-#include "FGBuildableFactory.h"
-#include "FGBuildableTrainPlatform.h"
-#include "../FGTrainPlatformConnection.h"
-#include "FGBuildableRailroadTrack.h"
+#include "Buildables/FGBuildableTrainPlatform.h"
 #include "FGBuildableRailroadStation.generated.h"
 
 
@@ -95,7 +88,4 @@ private:
 
 	/** Stores the distance from the perfect center of the platform that a docked loco has stopped. Used to position the claw arm when loading/unloading. */
 	float mDockedPositionOffset;
-
-public:
-	FORCEINLINE ~AFGBuildableRailroadStation() = default;
 };

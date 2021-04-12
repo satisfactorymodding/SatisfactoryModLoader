@@ -1,7 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "Blueprint/UserWidget.h"
 #include "FGButtonWidget.generated.h"
@@ -20,10 +19,12 @@ public:
 	/** Sets our internal button that will be used for focus handling */
 	UFUNCTION( BlueprintCallable, Category = "Interaction" )
 	void SetButton( class UButton* inButton );
+
+	/** Simulate a key press of this button */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Interaction" )
+	void SimulateKeyPress();
+
 private:
 	/** Reference to the UButton we have internally */
 	class UButton* mInternalButton;
-
-public:
-	FORCEINLINE ~UFGButtonWidget() = default;
 };

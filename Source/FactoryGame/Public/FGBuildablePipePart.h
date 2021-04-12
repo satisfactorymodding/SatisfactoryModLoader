@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
@@ -72,9 +68,6 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipe Support" )
 	bool mUseStaticHeight;
 
-
-public:
-	FORCEINLINE ~AFGBuildablePipePart() = default;
 };
 
 UCLASS()
@@ -90,7 +83,4 @@ class FACTORYGAME_API AFGBuildablePipeHyperPart : public AFGBuildablePipePart, p
 	virtual bool OnPipeEnter_Implementation( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough = nullptr, const AActor* fromPipe = nullptr ) override;
 	// End FGHyperTube Interface
 
-
-public:
-	FORCEINLINE ~AFGBuildablePipeHyperPart() = default;
 };

@@ -1,10 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGResourceExtractorHologram.h"
+#include "Hologram/FGResourceExtractorHologram.h"
 #include "FGGeoThermalGeneratorHologram.generated.h"
 
 /**
@@ -23,6 +21,7 @@ protected:
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
 
-public:
-	FORCEINLINE ~AFGGeoThermalGeneratorHologram() = default;
+	// Begin AFGResourceExtractorHologram Interface
+	virtual bool CanOccupyResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const override;
+	// End AFGResourceExtractorHologram Interface
 };

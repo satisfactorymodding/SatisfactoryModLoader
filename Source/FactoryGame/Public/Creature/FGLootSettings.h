@@ -1,8 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "UObject/NoExportTypes.h"
 #include "FGLootSettings.generated.h"
@@ -19,7 +17,4 @@ public:
 	/** Gets default object for loot settings */
 	UFUNCTION( BlueprintPure, Category = "LootSettings|Utilities", meta = ( DeterminesOutputType = "inClass") )
 	static UObject* GetLootSettingsDefaultObject( TSubclassOf< UFGLootSettings >  inClass );
-
-public:
-	FORCEINLINE ~UFGLootSettings() = default;
 };

@@ -1,14 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGCreatureController.h"
-#include "FGAggroTargetInterface.h"
-#include "Curves/CurveFloat.h"
+#include "AI/FGCreatureController.h"
 #include "FGEnemyController.generated.h"
 
 class FGAggroTargetInterface;
@@ -71,46 +65,27 @@ struct FACTORYGAME_API FAggroEntry
 	UPROPERTY( BlueprintReadWrite, Category = "Aggro" )
 	EIgnore						Ignore;
 	float						LastIgnoreTime;
-
-public:
-	FORCEINLINE ~FAggroEntry() = default;
-};
-
-struct FACTORYGAME_API FFindByAggroTarget
-{
-	TScriptInterface< IFGAggroTargetInterface >	AggroTarget;
-
-	FFindByAggroTarget( TScriptInterface< IFGAggroTargetInterface > InAggroTarget ) : AggroTarget( InAggroTarget ) { }
-
-	bool operator() ( const FAggroEntry Element ) const
-	{
-		return ( AggroTarget == Element.AggroTarget );
-	}
-
-
-public:
-	FORCEINLINE ~FFindByAggroTarget() = default;
 };
 
 /**
- * 
+ * Base class for hostile creatures.
  */
 UCLASS()
 class FACTORYGAME_API AFGEnemyController : public AFGCreatureController
 {
 	GENERATED_BODY()
-
 public:
-	/** ctor */
 	AFGEnemyController( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 
 	//~ Begin AController Interface
 	virtual void OnPossess( APawn* InPawn ) override;
 	virtual void OnUnPossess() override;
+	virtual void Destroyed() override;
 	//~ End AController Interface
-
-	/** Override the startpanic */
-	virtual void StartPanic_Implementation();
+	
+	// Begin AFGCreatureController interface
+	virtual void StartPanic_Implementation() override;
+	// End AFGCreatureController interface
 
 	/**
 	 * Removes specified target from Aggro list                                                                    
@@ -363,6 +338,11 @@ public:
 	/** Resets the variable mLastValidLocation to an invalid location */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|AI" ) 
 	void ResetLastValidTargetLocation() { mLastValidLocation = FAISystem::InvalidLocation; } 
+
+	virtual void CreatureDied();
+
+	/** Clears aggro target if any and stop updating for new targets */
+	void CancelAggroTasks();
 public:
 	/** Handle that cares about how often we update the aggro for our AI */
 	FTimerHandle mUpdateAggroHandle;
@@ -469,6 +449,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	float mPanicIgnoreTime;
 
-public:
-	FORCEINLINE ~AFGEnemyController() = default;
+	/** Indicates if we already have cancels aggro tasks */
+	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	bool mDidCancelAggroTasks;
 };

@@ -1,11 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
@@ -29,9 +24,6 @@ struct FACTORYGAME_API FSchematicCost
 	/** Amount paid off */
 	UPROPERTY( SaveGame, EditDefaultsOnly )
 	TArray< FItemAmount > ItemCost;
-
-public:
-	FORCEINLINE ~FSchematicCost() = default;
 };
 
 /**
@@ -83,9 +75,13 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
-	/** Returns the available schematics in the game. */
+	/** Returns the available schematics in the game that have meet their dependencies. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
 	void GetAvailableSchematics( TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
+
+	/** Returns the available schematics in the game of the given types that have meet their dependencies. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
+	void GetAvailableSchematicsOfTypes( TArray<ESchematicType> types, TArray< TSubclassOf< UFGSchematic > >& out_schematics ) const;
 
 	/** Returns the schematics the players have purchased of the given types. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Schematic" )
@@ -115,10 +111,11 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, bool accessedViaCheats = false );
 
+private: //MODDING EDIT: hide AddAvailableSchematic to force ContentRegistry usage
 	/** adds a schematic to available schematics */
-	UFUNCTION( BlueprintCallable, Category = "Schematic" )
+	UFUNCTION(BlueprintCallable, Category = "Schematic", BlueprintInternalUseOnly)
 	void AddAvailableSchematic( TSubclassOf< UFGSchematic > schematicClassToAdd );
-	
+public:
 	/** Gives you the base cost, after random, for a schematic */
 	UFUNCTION( BlueprintPure, DisplayName = "GetCostFor_Deprecated", Category = "Schematic", meta = ( DeprecatedFunction, DeprecationMessage = "Get the cost from the Schematic directly" ) )
 	TArray< FItemAmount > GetCostFor( TSubclassOf< UFGSchematic > schematic );
@@ -182,6 +179,9 @@ public:
 	void Debug_DumpStateToLog() const;
 	TArray< TSubclassOf< class UFGRecipe > > Debug_GetAllRecipes() const;
 
+	/** Checks if it's valid to give access to the given schematic */
+	bool CanGiveAccessToSchematic( TSubclassOf< UFGSchematic > schematic ) const;
+
 private:
 	/** Populate list with all schematics */
 	void PopulateSchematicsLists();
@@ -205,6 +205,9 @@ private:
 	void RemoveSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
 
 protected:	
+	//MODDING EDIT: expose access to internal state to content registry
+	friend class AModContentRegistry;
+    
 	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */
 	UPROPERTY()
 	TArray< TSubclassOf< UFGSchematic > > mAllSchematics;
@@ -249,7 +252,4 @@ protected:
 	/** Message sent when trading post ship has returned */
 	UPROPERTY( EditDefaultsOnly, Category = "Message" )
 	TSubclassOf< class UFGMessageBase > mShipReturnedMessage;
-
-public:
-	FORCEINLINE ~AFGSchematicManager() = default;
 };

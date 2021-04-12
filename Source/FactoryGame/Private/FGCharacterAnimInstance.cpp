@@ -15,7 +15,7 @@ UFGCharacterAnimInstance::UFGCharacterAnimInstance() : Super() {
 	this->mPreLandCollisionChannels.Add(ECC_WorldStatic);
 }
 void UFGCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds){ }
-void UFGCharacterAnimInstance::OnPointDamageTaken_Implementation(FVector shootDIrection){ }
+void UFGCharacterAnimInstance::OnPointDamageTaken_Implementation(FVector shootDirection){ }
 void UFGCharacterAnimInstance::OnAnyDamageTaken_Implementation(){ }
 void UFGCharacterAnimInstance::OnRadialDamageTaken_Implementation(){ }
 FRotator UFGCharacterAnimInstance::GetDesiredWalkRotation(){ return FRotator(); }

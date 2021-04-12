@@ -1,16 +1,17 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGRenderTargetStage.generated.h"
 
+//@todo-cleanup Part of an old system not used for years, should be cleaned out probably.
 UCLASS(HideCategories=(Input,Actor))
-class FACTORYGAME_API AFGRenderTargetStage : public AActor
+class AFGRenderTargetStage : public AActor
 {
 	GENERATED_BODY()
 public:
-	// Ctor
 	AFGRenderTargetStage();
 
 	//~ Begin AActor interface
@@ -90,7 +91,4 @@ protected:
 	/** If true, then we create our own render target every time we want to play */
 	UPROPERTY(EditDefaultsOnly,Category="Stage|RenderTarget")
 	uint8 mDynamicRenderTarget:1;
-
-public:
-	FORCEINLINE ~AFGRenderTargetStage() = default;
 };

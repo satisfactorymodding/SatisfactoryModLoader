@@ -1,12 +1,6 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
-#include "Engine/World.h"
+
 #include "FGSaveSystem.h"
 #include "GameFramework/GameMode.h"
 #include "FGSaveInterface.h"
@@ -14,7 +8,7 @@
 
 class UFGRemoteCallObject;
 
-UCLASS(config = Game )
+UCLASS( config = Game )
 class FACTORYGAME_API AFGGameMode : public AGameMode, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -152,7 +146,7 @@ private:
 	* This is just a failsafe when loading a save file on a new platform. Otherwise this logic is handled by AGameMode::FindInactivePlayer
 	* Returns true for some special cases. Check implementation for more details
 	*/
-	bool CompareUniqueNetIdBetweenOSS( FUniqueNetIdRepl& newID, FUniqueNetIdRepl& savedID );
+	bool CompareUniqueNetIdBetweenOSS( const FUniqueNetIdRepl& newID, const FUniqueNetIdRepl& savedID );
 
 protected:
 	UPROPERTY()
@@ -216,7 +210,4 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Default" )
 	bool mIsMainMenu;
-
-public:
-	FORCEINLINE ~AFGGameMode() = default;
 };

@@ -1,10 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -17,7 +13,7 @@
  * Debris meshes that can be spawned and how many.
  */
 USTRUCT()
-struct FACTORYGAME_API FDebrisMesh
+struct FDebrisMesh
 {
 	GENERATED_BODY()
 public:
@@ -30,16 +26,13 @@ public:
 	/** How many to spawn, note that the upper limit is guaranteed while the lower limit is not. */
 	UPROPERTY( EditDefaultsOnly, Category = "Mesh" )
 	FInt32Interval Num;
-
-public:
-	FORCEINLINE ~FDebrisMesh() = default;
 };
 
 /**
  * Debris actors that can be spawned and how many.
  */
 USTRUCT()
-struct FACTORYGAME_API FDebrisActor
+struct FDebrisActor
 {
 	GENERATED_BODY()
 public:
@@ -52,16 +45,13 @@ public:
 	/** How many to spawn, note that the upper limit is guaranteed while the lower limit is not. */
 	UPROPERTY( EditDefaultsOnly, Category = "Actor" )
 	FInt32Interval Num;
-
-public:
-	FORCEINLINE ~FDebrisActor() = default;
 };
 
 /**
  * Item drops that can be spawned and how many.
  */
 USTRUCT()
-struct FACTORYGAME_API FDebrisItemDrop
+struct FDebrisItemDrop
 {
 	GENERATED_BODY()
 public:
@@ -80,9 +70,6 @@ protected:
 	/** Item to create pickup for. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	TSoftClassPtr< class UFGItemDescriptor > ItemClass;
-
-public:
-	FORCEINLINE ~FDebrisItemDrop() = default;
 };
 
 
@@ -90,7 +77,7 @@ public:
  * Struct containing the saved simulation for meshes.
  */
 USTRUCT()
-struct FACTORYGAME_API FSimulatedMeshTransform
+struct FSimulatedMeshTransform
 {
 	GENERATED_BODY()
 public:
@@ -102,16 +89,13 @@ public:
 
 	UPROPERTY()
 	FTransform MeshTransform;
-
-public:
-	FORCEINLINE ~FSimulatedMeshTransform() = default;
 };
 
 /**
  * Struct containing the saved simulation for actors.
  */
 USTRUCT()
-struct FACTORYGAME_API FSimulatedActorTransform
+struct FSimulatedActorTransform
 {
 	GENERATED_BODY()
 public:
@@ -123,16 +107,13 @@ public:
 
 	UPROPERTY()
 	FTransform ActorTransform;
-
-public:
-	FORCEINLINE ~FSimulatedActorTransform() = default;
 };
 
 /**
  * Struct containing the saved simulation for actors.
  */
 USTRUCT()
-struct FACTORYGAME_API FSimulatedItemDropTransform
+struct FSimulatedItemDropTransform
 {
 	GENERATED_BODY()
 public:
@@ -140,9 +121,6 @@ public:
 
 	UPROPERTY()
 	FTransform ItemDropTransform;
-
-public:
-	FORCEINLINE ~FSimulatedItemDropTransform() = default;
 };
 
 /**

@@ -4,7 +4,7 @@
 
 void UFGCheatManager::InitCheatManager(){ }
 bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
-int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, void* Parameters, FFrame* Stack){ return int32(); }
+int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGCheatManager::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
 bool UFGCheatManager::ReplicateSubobjects( UActorChannel *Channel,  FOutBunch *Bunch, FReplicationFlags *RepFlags){ return bool(); }
 void UFGCheatManager::NoCost(bool enabled){ }
@@ -26,14 +26,20 @@ bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
 void UFGCheatManager::PlayerNoClipModeOnFly(bool ghostMode){ }
 bool UFGCheatManager::PlayerNoClipModeOnFly_Get(){ return bool(); }
 void UFGCheatManager::ClearGiveItemPopularList(){ }
-void UFGCheatManager::GiveALLSchematics(){ }
+void UFGCheatManager::GiveAllSchematics(){ }
 void UFGCheatManager::GiveAllSchematicsAndPhases(){ }
 void UFGCheatManager::GiveAvailableSchematics(){ }
+void UFGCheatManager::GiveActiveMilestoneSchematic(){ }
 void UFGCheatManager::GiveCheatSchematics(){ }
 void UFGCheatManager::GivePrototypeSchematics(){ }
 void UFGCheatManager::GiveStorySchematics(){ }
 void UFGCheatManager::GiveStartingResearch(){ }
 void UFGCheatManager::GiveAllResearchTrees(){ }
+void UFGCheatManager::TriggerNextStoryMessageInQueue(){ }
+void UFGCheatManager::TriggerNextBarkMessageInQueue(){ }
+void UFGCheatManager::StartNextStoryQueue(){ }
+void UFGCheatManager::ResetAllStoryQueues(){ }
+void UFGCheatManager::ResetCurrentStoryQueue(){ }
 void UFGCheatManager::RebuildPowerCircuits(){ }
 void UFGCheatManager::EnableBuildableTick(bool enable){ }
 bool UFGCheatManager::EnableBuildableTick_Get(){ return bool(); }
@@ -44,6 +50,7 @@ void UFGCheatManager::RemoveAllFoliage(int32 maxNumInstances){ }
 void UFGCheatManager::PardonAllPlayers(){ }
 void UFGCheatManager::ClearPardon(){ }
 void UFGCheatManager::SetTimeOfDay(int32 hour, int32 minute){ }
+void UFGCheatManager::SetTimeSpeedMultiplierResetTime(int32 resetHour){ }
 int32 UFGCheatManager::SetTimeOfDay_hour_Get(){ return int32(); }
 int32 UFGCheatManager::SetTimeOfDay_minute_Get(){ return int32(); }
 void UFGCheatManager::ShowFactoryOnly(bool environmentHidden){ }
@@ -66,6 +73,7 @@ void UFGCheatManager::ResetFuses(){ }
 void UFGCheatManager::ToggleCameraMode(){ }
 void UFGCheatManager::GiveSchematicsOfTier(int32 tier){ }
 void UFGCheatManager::SetGamePhase(EGamePhase phase){ }
+void UFGCheatManager::SetNextGamePhase(){ }
 void UFGCheatManager::TestSharedInventoryPtr(){ }
 void UFGCheatManager::ForceSpawnCreatures(){ }
 void UFGCheatManager::DumpNonDormantActors(){ }
@@ -85,7 +93,6 @@ void UFGCheatManager::DumpHotbarShortcuts(){ }
 void UFGCheatManager::EnableInstancingOnFactory(bool enabled){ }
 void UFGCheatManager::DumpActorRepresentations(){ }
 void UFGCheatManager::DumpSignificanceManagedObjects(){ }
-void UFGCheatManager::DumpDynamicOptionsSettings(){ }
 void UFGCheatManager::PurgeInactiveClientsFromSave(bool fetchInventories){ }
 void UFGCheatManager::PurgeAllBeaconsFromSave(){ }
 void UFGCheatManager::ListItemPickups(){ }
@@ -119,10 +126,32 @@ void UFGCheatManager::RebuildFactoryLegsOneTileAroundPlayer(){ }
 void UFGCheatManager::ResetGamePhases(){ }
 void UFGCheatManager::DumpGamePhases(){ }
 void UFGCheatManager::ToggleTrainSelfDriving(){ }
-void UFGCheatManager::FillFirstPipeInEachNetwork(){ }
-void UFGCheatManager::EmptyAllPipes(){ }
-void UFGCheatManager::ResetAllPipes(){ }
-void UFGCheatManager::ToggleDebuggingOnPipe(){ }
+void UFGCheatManager::PipeFillFirstInEachNetwork(){ }
+void UFGCheatManager::PipeEmptyAll(){ }
+void UFGCheatManager::PipeResetAll(){ }
+void UFGCheatManager::PipePrintMinSizes(){ }
+void UFGCheatManager::PipeSetVerboseLoggingOnAimedFluidBox(bool enabled){ }
+void UFGCheatManager::PipeEnableProbingOnAimedIntegrant(){ }
+void UFGCheatManager::PipeDisableProbingOnAimedIntegrant(){ }
+void UFGCheatManager::PipeClearProbingOnAllPipe(){ }
+void UFGCheatManager::PipeAddSelectedNetworkToDisplayDebugList(){ }
+void UFGCheatManager::PipeClearDisplayDebugList(){ }
+void UFGCheatManager::PipePrintTweakables(){ }
+void UFGCheatManager::PipeTweakMaximumFlow(float rate){ }
+void UFGCheatManager::PipeTweakMinimumMaxContent(float minimumMaxContent, bool keepRelativeContent){ }
+void UFGCheatManager::PipeTweakPressureLoss(float pressureLoss){ }
+void UFGCheatManager::PipeTweakOverfill(float maxOverfillPct, float maxOverfillForPressure){ }
+void UFGCheatManager::PipeTweakGravity(float gravity){ }
+void UFGCheatManager::PipeTweakFluidFriction(float fluidFriction){ }
+void UFGCheatManager::PipeTweakFluidDensity(float fluidDensity){ }
+void UFGCheatManager::PipeTweakFluidViscosity(float fluidViscosity){ }
 void UFGCheatManager::DupeComponentInCircuit(int32 target){ }
 void UFGCheatManager::DupeComponentToAnotherCircuit(int32 source, int32 target){ }
 void UFGCheatManager::DumpConnectionString(){ }
+void UFGCheatManager::FillAllFreightCars(float pct){ }
+void UFGCheatManager::EmptyAllFreightCars(){ }
+void UFGCheatManager::DumpCircuitsToLog(){ }
+UActorComponent* UFGCheatManager::GetOuterPlayersUseComponent() const{ return nullptr; }
+AActor* UFGCheatManager::GetOuterPlayersUseActor() const{ return nullptr; }
+AActor* UFGCheatManager::GetOuterPlayersAimedAtActor(FVector& out_aimLocation) const{ return nullptr; }
+IFGFluidIntegrantInterface* UFGCheatManager::GetOuterPlayerAimedAtFluidInterface() const{ return nullptr; }

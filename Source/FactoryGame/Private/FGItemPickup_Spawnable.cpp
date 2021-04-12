@@ -6,8 +6,10 @@
 AFGItemPickup_Spawnable::AFGItemPickup_Spawnable() : Super() {
 	this->mMeshComponent = CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(TEXT("Mesh"));
 	this->mDestroyOnPickup = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 }
+void AFGItemPickup_Spawnable::PostLoad(){ Super::PostLoad(); }
 void AFGItemPickup_Spawnable::BeginPlay(){ }
 bool AFGItemPickup_Spawnable::ShouldSave_Implementation() const{ return bool(); }
 bool AFGItemPickup_Spawnable::NeedTransform_Implementation(){ return bool(); }

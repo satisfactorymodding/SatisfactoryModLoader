@@ -1,9 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "CoreMinimal.h"
@@ -12,7 +9,7 @@
 
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FTutorialData
+struct FTutorialData
 {
 	GENERATED_BODY()
 
@@ -21,29 +18,8 @@ struct FACTORYGAME_API FTutorialData
 
 	UPROPERTY( EditDefaultsOnly, Category = "Tutorial" )
 	TSubclassOf< class UFGMessageBase > MessageID;
-
-public:
-	FORCEINLINE ~FTutorialData() = default;
 };
 
-struct FACTORYGAME_API FFindByClassBuilt
-{
-	TSubclassOf< UObject > ClassBuilt;
-
-	FFindByClassBuilt( TSubclassOf< UObject > InClassBuilt ) : ClassBuilt( InClassBuilt ) { }
-
-	bool operator() ( const FTutorialData Element ) const
-	{
-		return ( ClassBuilt == Element.ClassBuilt );
-	}
-
-public:
-	FORCEINLINE ~FFindByClassBuilt() = default;
-};
-
-/**
- * 
- */
 UCLASS( Blueprintable )
 class FACTORYGAME_API UFGTutorialSubsystem : public UObject, public IFGSaveInterface
 {
@@ -96,7 +72,4 @@ public:
 	/** Needed to set up delegates */
 	UPROPERTY( SaveGame )
 	class AFGPlayerState* mOwningPlayerState;
-
-public:
-	FORCEINLINE ~UFGTutorialSubsystem() = default;
 };

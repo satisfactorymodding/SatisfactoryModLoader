@@ -1,9 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGPlayerControllerBase.h"
 #include "FGChatManager.h"
@@ -12,9 +9,8 @@
 #include "PlayerPresenceState.h"
 #include "FGPlayerController.generated.h"
 
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPawnChangedDelegate, APawn*, newPawn );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPlayerEnteredAreaDelegate, TSubclassOf< class UFGMapArea >, mapArea );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FPlayerEnteredAreaDelegate, AFGPlayerControllerBase*, playerController, TSubclassOf< class UFGMapArea >, mapArea );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FDisabledInputGateDelegate, FDisabledInputGate, newDisabledInputGate );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnToggleInventory, bool, isOpen );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnToggleInteractionUI, bool, isOpen, TSubclassOf< class UUserWidget >, interactionClass );
@@ -94,6 +90,10 @@ public:
 
 	/** Did we just kill ourselves */
 	bool GetRespawningFromDeath();
+
+	/** Called when the option for FOV changed */
+	UFUNCTION()
+	void OnFOVUpdated( FString cvar );
 
 	/** Execute the hotbar shortcut with the specified index */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
@@ -216,7 +216,7 @@ public:
 
 	/** Transfer fog of war data to the client */
 	UFUNCTION( Reliable, Client )
-	void Client_TransferFogOfWarData( const TArray<uint8>& fogOfWarRawData, int32 index );
+	void Client_TransferFogOfWarData( const TArray<uint8>& fogOfWarRawData, int32 finalIndex );
 
 	/** Gets the size on the viewport of the given actor */
 	UFUNCTION( BlueprintPure, Category = "HUD" )
@@ -229,6 +229,10 @@ public:
 	/** Gets called on the client */
 	UFUNCTION( Reliable, Client, BlueprintCallable )
 	void Client_AddMessage( TSubclassOf< class UFGMessageBase > newMessage );
+
+	/** Gets called on the client */
+	UFUNCTION( Reliable, Client )
+    void Client_AnswerCall( TSubclassOf< class UFGAudioMessage > messageToAnswer );
 
 	/** Gets called on the client */
 	UFUNCTION( BlueprintCallable, Category = "Message" )
@@ -279,6 +283,7 @@ public:
 	virtual void AcknowledgePossession( class APawn* P ) override;
 
 	/** Getter for proximity subsystem */
+	UFUNCTION( BlueprintPure, Category = "Proximity" )
 	FORCEINLINE class AFGProximitySubsystem* GetProximitySubsystem() const { return mProximitySubsystem; }
 
 	/** Changes the current hotbar to the next index, wraps around  */
@@ -292,8 +297,41 @@ public:
 
 	virtual bool GetPresenceState(FPlayerPresenceState& outState) const override;
 
-// Modding Edit: make public
-public:
+	/** Templated getter for RCO */
+	template<typename T>
+	FORCEINLINE T* GetRemoteCallObjectOfClass() 
+	{ 
+		return Cast<T>(GetRemoteCallObjectOfClass(T::StaticClass()));
+	}
+
+	/** Returns the map area that the pawn is currently in */
+	UFUNCTION( BlueprintPure, Category = "Map" )
+    TSubclassOf< UFGMapArea > GetCurrentMapArea() const;
+
+	UFUNCTION( BlueprintPure, Category = "Map" )
+	FORCEINLINE bool HasCurrentAreaBeenPreviouslyVisited() const { return mCurrentAreaWasPreviouslyVisited; }
+
+	UFUNCTION(Server, Reliable)
+	void OnAreaEnteredServer(TSubclassOf< UFGMapArea > newArea);
+
+	/** User pressed secondary fire button */
+	UFUNCTION()
+    virtual void OnSecondaryFire();
+
+	/** Adds a new music player for this controller to manage sound levels on */
+	UFUNCTION( BlueprintCallable, Category = "Music Player" )
+	void AddMusicPlayer( UObject* musicPlayer);
+
+	/** Adds a new music player for this controller to manage sound levels on */
+	UFUNCTION( BlueprintCallable, Category = "Music Player" )
+    void RemoveMusicPlayer( UObject* musicPlayer);
+
+	/** Updates RTPCs for all music player objects that have registered with this controller */
+	void UpdateMusicPlayers( float dt );
+protected:
+	//MODDING EDIT: Allow access from SMLRemoteCallObject
+	friend class USMLRemoteCallObject;
+	
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 
@@ -321,10 +359,6 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Sounds" )
 	UAkComponent* OnSetupMovementWind();
 
-	/** User pressed primary fire button */
-	UFUNCTION()
-	virtual void OnPrimaryFire();
-
 	// Begin APlayerController interface
 	virtual void SetupInputComponent() override;
 	virtual void BuildInputStack( TArray< UInputComponent* >& inputStack ) override;
@@ -348,14 +382,8 @@ public:
 	/** Caches a lot off stuff needed for the map area checks */
 	bool InitMapAreaCheckFunction();
 
-	/** Returns the map area that the pawn is currently in */
-	UFUNCTION( BlueprintPure, Category = "Map" )
-	TSubclassOf< UFGMapArea > GetCurrentMapArea() const;
-
-public: // MODDING EDIT
 	UFUNCTION( BlueprintCallable, Category = "Chat" )
 	void EnterChatMessage( const FString& inMessage );
-protected: // MODDING EDIT
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Input" )
 	void OnDisabledInputGateChanged();
@@ -465,6 +493,9 @@ protected:
 	TSubclassOf< class UFGMapArea > mCurrentMapArea;
 
 	UPROPERTY()
+	bool mCurrentAreaWasPreviouslyVisited;
+
+	UPROPERTY()
 	UAkComponent* mMovementWindComp;
 
 	FVector mMovementWindVelocityBuffer;
@@ -522,6 +553,14 @@ private:
 	UPROPERTY()
 	class AFGProximitySubsystem* mProximitySubsystem;
 
-public:
-	FORCEINLINE ~AFGPlayerController() = default;
+	/** How often to run UpdateMusicPlayers  */
+	UPROPERTY( EditDefaultsOnly, Category = "Photo Mode" )
+	float mMusicPlayerTickIntervalStart;
+
+	/** Time left until next tick */
+	float mMusicPlayerTickInterval;
+
+	/** List of music player to keep track of  */
+	UPROPERTY()
+	TArray< UObject* > mMusicPlayerList;
 };

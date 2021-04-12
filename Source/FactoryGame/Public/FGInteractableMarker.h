@@ -1,8 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Components/SplineMeshComponent.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -46,7 +44,4 @@ protected:
 private:
 	UPROPERTY()
 	class AFGPlayerController* mCachePlayerController;
-
-public:
-	FORCEINLINE ~AFGInteractableMarker() = default;
 };

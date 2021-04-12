@@ -1,7 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
@@ -50,7 +49,4 @@ public:
 	/** Get the world location and direction of this track position. Zero vectors if the track is not valid. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|TrackPosition" )
 	static void GetWorldLocationAndDirection( const struct FRailroadTrackPosition& position, FVector& out_location, FVector& out_direction );
-
-public:
-	FORCEINLINE ~UFGRailroadFunctionLibrary() = default;
 };

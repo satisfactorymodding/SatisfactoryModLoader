@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSettings.h"
@@ -58,7 +54,4 @@ private:
 	/** The list of schematics after the valid list is weighed by probability */
 	TArray<TSubclassOf<class UFGSchematic>> GetFinalSchematicRewards( const TArray<TSubclassOf<class UFGSchematic>>& allValidSchematicDrops ) const;
 
-
-public:
-	FORCEINLINE ~UFGHardDriveSettings() = default;
 };

@@ -1,7 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/Scene.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "Curves/CurveFloat.h"
@@ -9,8 +8,9 @@
 #include "FGSkySphere.h"
 #include "FGAtmosphereVolume.generated.h"
 
+
 USTRUCT()
-struct FACTORYGAME_API FExponentialFogSettings
+struct FExponentialFogSettings
 {
 	GENERATED_BODY()
 
@@ -97,9 +97,6 @@ struct FACTORYGAME_API FExponentialFogSettings
 	uint8 EnableFogMaxOpacity : 1;
 	uint8 EnableStartDistance : 1;
 	uint8 EnableFogCutoffDistance : 1;
-
-public:
-	FORCEINLINE ~FExponentialFogSettings() = default;
 };
 
 
@@ -541,7 +538,4 @@ private:
 	float mViewMinInput;
 	float mViewMaxInput;
 #endif
-
-public:
-	FORCEINLINE ~AFGAtmosphereVolume() = default;
 };

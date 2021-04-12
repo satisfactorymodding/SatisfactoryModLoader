@@ -1,24 +1,28 @@
-#pragma once
-#include "GameFramework/Actor.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "../FGSchematic.h"
-#include "../FGTutorialIntroManager.h"
-#include "FGBaseUI.h"
+#pragma once
+
+#include "FGSchematic.h"
+#include "FGTutorialIntroManager.h"
+#include "UI/FGBaseUI.h"
 #include "FGGameUI.generated.h"
 
 class UFGInteractWidget;
 
-/** Delegate for when mouse button is pressed in Game UI. 
-This should be handle by a proper focus/UI system and this is a temporary workaround */
+/**
+ * Delegate for when mouse button is pressed in Game UI.
+ * This should be handle by a proper focus/UI system and this is a temporary workaround.
+ */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnMouseButtonDown, const FGeometry&, InGeometry, const FPointerEvent&, InMouseEvent );
 
 /**
-* Base class for all inventory widgets, contains a lot of helper functions to extract
-* interesting information buildings
-*/
+ * Base class for the game UI located in the HUD.
+ * 
+ * This handles for example:
+ *	Handling on screen audio messages.
+ *	Handling pawn specific HUDs.
+ *	Handling building interaction windows.
+ */
 UCLASS()
 class FACTORYGAME_API UFGGameUI : public UFGBaseUI
 {
@@ -28,8 +32,9 @@ public:
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "UI" )
 	void PopAllWidgets(); 
 
-	/** Tick tock */
-	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime );
+	// Begin UUserWidget interface
+	virtual void NativeTick( const FGeometry& MyGeometry, float InDeltaTime ) override;
+	// End UUserWidget interface
 
 	/** Adds the cheat widget */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
@@ -39,7 +44,7 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
 	void HandleFocusLost();
 
-	/** Returnswidget stack */
+	/** Returns widget stack */
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE TArray< UFGInteractWidget * > GetInteractWidgetStack() { return mInteractWidgetStack; }
 
@@ -55,11 +60,15 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI")
 	void PushWidget(UFGInteractWidget* Widget);
 
+	/* Pushes a notification widget */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI")
+	void PushNotificationWidget( class UFGPushNotificationWidget* Widget );
+
 	/* Removes widget */
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable , Category = "UI")
 	bool PopWidget(UFGInteractWidget* WidgetToRemove );
 
-	/** Returnswidget array with pending messages */
+	/** Returns widget array with pending messages */
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE	TArray< TSubclassOf< class UFGMessageBase > > GetPendingMessages() { return mPendingMessages; }
 
@@ -70,6 +79,18 @@ public:
 	/** Handle message. Usually grabbed from the pending message list at appropriate time */
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	void ReceivedMessage( TSubclassOf< class UFGMessageBase > inMessage );
+
+	/** Handle call message. Usually grabbed from the pending message list at appropriate time */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    void ReceivedCall( TSubclassOf< class UFGAudioMessage > inMessage );
+
+	/** Handle audio message. Usually grabbed from the pending message list at appropriate time */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    void ReceivedAudioMessage( TSubclassOf< class UFGAudioMessage > inMessage );
+
+	/** Answer a call that is shown on the screen */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    void AnswerCall( TSubclassOf< class UFGAudioMessage > inMessage );
 
 	/** Handle pending messages and push them at appropriate time */
 	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
@@ -87,7 +108,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE class UFGAudioMessage* GetCurrentAudioMessage(){ return mCurrentAudioMessage; }
 
-	/** Called from ingame when the cancel key ( escape ) was pressed when no widget has focus */
+	/** Called from in-game when the cancel key ( escape ) was pressed when no widget has focus */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	void CancelPressed();
 
@@ -95,7 +116,7 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
 	void RemoveAudioMessage();
 
-	/** Returns the owning fgpawn by looking at ower and vehicle driver */
+	/** Returns the owning pawn by looking at owner and vehicle driver */
 	class AFGCharacterPlayer* GetFGCharacter();
 
 	/** Adds new tutorial info to be displayed */
@@ -130,11 +151,11 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI" )
 	void RemovePawnHUD();
 
-	/** Temp Solution to remove depenencies*/
+	/** Temp Solution to remove dependencies */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
 	void ShowDirectionalSubtitle(const FText& Subtitle, AActor* Instigator, float Duration , bool bUseDuration );
 	
-	/** Temp Solution to remove depenencies*/
+	/** Temp Solution to remove dependencies */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "UI" )
 	void StopSubtitle(AActor* Instigator);
 
@@ -150,6 +171,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Radiation" )
 	void OnRadiationIntensityUpdated( float radiationIntensity, float radiationImmunity );
 
+	/** Called when we go from connected to disconnected or vice versa with a hoverpack. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|HUD|HoverPack" )
+    void OnHoverPackConnectionStatusUpdated( const bool HasConnection );
+
 	/** Play a audio message in the UI */
 	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category ="FactoryGame|Message")
 	void PlayAudioMessage( TSubclassOf<UFGAudioMessage> messageClass );
@@ -157,6 +182,10 @@ public:
 	/** Finds a widget in the interact widget stack, returns null if not found */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|UI")
 	UFGInteractWidget* FindWidgetByClass( TSubclassOf<UFGInteractWidget> widgetClass );
+
+	/** Get the on screen call widget */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    class UFGOnScreenCallWidget* GetOnScreenCallWidget() const;
 
 	/** Call this to setup the hud for resuming the game */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|HUD")
@@ -170,10 +199,14 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Quick Search" )
 	void ShowQuickSearch();
 
+	/** Show attention ping in the HUD */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|HUD" )
+	void ShowAttentionPing( AFGPlayerState* playerState, FVector worldLocation );
+
 protected:
-	// Begin UUserwidget interface
+	// Begin UUserWidget interface
 	virtual FReply NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;
-	// End UUserwidget interface
+	// End UUserWidget interface
 
 public:
 	/** Array with messages that the player has stocked up */
@@ -205,7 +238,4 @@ private:
 
 	/** Timer value used so that we don't push audio message direct after another */
 	float mAudioMessageCooldown;
-
-public:
-	FORCEINLINE ~UFGGameUI() = default;
 };

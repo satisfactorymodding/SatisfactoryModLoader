@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Class.h"
 
 #include "GameFramework/PlayerStart.h"
 #include "FGPlayerStartTradingPost.generated.h"
@@ -15,7 +16,4 @@ public:
 	AFGPlayerStartTradingPost( const FObjectInitializer& ObjectInitializer );
 public:
 	static const FName STATIC_PLAYER_START_TAG;
-
-public:
-	FORCEINLINE ~AFGPlayerStartTradingPost() = default;
 };

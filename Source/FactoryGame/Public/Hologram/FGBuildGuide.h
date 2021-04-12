@@ -1,17 +1,12 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Misc/Guid.h"
-#include "Engine/StaticMesh.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "FGBuildGuide.generated.h"
 
-struct FACTORYGAME_API FGuideLineBuildingSweepData
+struct FGuideLineBuildingSweepData
 {
 	FGuideLineBuildingSweepData( class AActor* building, float angle )
 	{
@@ -21,9 +16,6 @@ struct FACTORYGAME_API FGuideLineBuildingSweepData
 
 	class AActor* mBuilding;
 	float mAngle;
-
-public:
-	FORCEINLINE ~FGuideLineBuildingSweepData() = default;
 };
 
 UENUM()
@@ -33,7 +25,7 @@ enum class EGuideLineType : uint8
 	GLT_ConveyorBelt	UMETA( DisplayName = "Conveyor Belt" ),
 };
 
-struct FACTORYGAME_API FBuildingGuideLineData
+struct FBuildingGuideLineData
 {
 public:
 	FBuildingGuideLineData( class UObject* referenceObject, FVector startPoint, FVector endPoint, EGuideLineType lineType = EGuideLineType::GLT_Default ) :
@@ -48,9 +40,6 @@ public:
 	FVector mStartPoint;
 	FVector mEndPoint;
 	EGuideLineType mGuideLineType;
-
-public:
-	FORCEINLINE ~FBuildingGuideLineData() = default;
 };
 
 UCLASS()
@@ -79,7 +68,7 @@ public:
 	/** Checks whether there's anything obstructing the guide lines. */
 	static bool IsClearPathToHologram( class UWorld* world, FVector start, FVector end, TSet<class AActor*> excludedActors, ECollisionChannel collisionChannel );
 
-	static TArray<FGuideLineBuildingSweepData> SweepForAlignedBuildings( class AActor* actor, FVector guidelinesBase );
+	static TArray<FGuideLineBuildingSweepData> SweepForAlignedBuildings( class AActor* actor, FVector guidelinesBase, bool includeBuideGuideTrace = false );
 
 	static bool IsWithinRange( float value, float min, float max, bool inclusive = true );
 
@@ -104,7 +93,4 @@ protected:
 
 private:
 
-
-public:
-	FORCEINLINE ~AFGBuildGuide() = default;
 };

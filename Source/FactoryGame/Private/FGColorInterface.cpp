@@ -2,3 +2,4 @@
 
 #include "FGColorInterface.h"
 
+UFGColorInterface::UFGColorInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}

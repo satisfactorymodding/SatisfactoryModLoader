@@ -1,15 +1,11 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
+#include "Unlocks/FGUnlockScannableResource.h"
 #include "FGUnlockSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FUnlockMoreInventorySlots, int32, newUnlockedSlots );
@@ -48,7 +44,7 @@ public:
 
 	void Init();
 	void UnlockRecipe( TSubclassOf< class UFGRecipe > recipe );
-	void UnlockScannableResource( TSubclassOf< class UFGResourceDescriptor > newResource );
+	void UnlockScannableResource( FScannableResourcePair newResource );
 	void UnlockMap();
 	void UnlockBuildEfficiency();
 	void UnlockBuildOverclock();
@@ -56,7 +52,11 @@ public:
 	void UnlockArmEquipmentSlots( int32 numSlotsToUnlock );
 
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
-	FORCEINLINE TArray< TSubclassOf< class UFGResourceDescriptor > > GetScannableResources() const{ return mScannableResources; }
+	TArray<TSubclassOf<class UFGResourceDescriptor>> GetScannableResources() const;
+
+	/** Can we scan for this resource class and node type? */
+	bool IsNodeScannable( FScannableResourcePair scannableResourcePair );
+	
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	FORCEINLINE bool GetIsMapUnlocked() const { return mIsMapUnlocked; }
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
@@ -114,8 +114,13 @@ protected:
 
 private:
 	/** These are the resources the players can use their scanner to find */
-	UPROPERTY( Savegame, Replicated )
+	//@todok2 Deprecated Look into if we can remove this. Do we really need to save this or can we get away with removing it?
+	UPROPERTY( Savegame )
 	TArray< TSubclassOf< class UFGResourceDescriptor > > mScannableResources;
+
+	/** These are the resources the players can use their scanner to find */
+	UPROPERTY( Savegame, Replicated )
+	TArray< FScannableResourcePair > mScannableResourcesPairs;
 
 	/** Did the player unlock the minimap? */
 	UPROPERTY( Savegame, Replicated )
@@ -143,7 +148,4 @@ private:
 	UPROPERTY( Savegame, Replicated )
 	int32 mNumTotalArmEquipmentSlots;
 
-
-public:
-	FORCEINLINE ~AFGUnlockSubsystem() = default;
 };

@@ -1,9 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGMaterialEffectComponent.h"
@@ -50,7 +47,4 @@ private:
 	/** The speed of this effect. */
 	UPROPERTY()
 	float mSpeed;
-
-public:
-	FORCEINLINE ~UFGMaterialEffect_Build() = default;
 };

@@ -1,18 +1,10 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGVehicle.h"
 #include "ItemAmount.h"
-#include "PhysicsPublic.h"
 #include "PhysXPublic.h"
-#include "WheeledVehicle.h"
 #include "FGWheeledVehicle.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FTranferStatusChanged );
@@ -23,8 +15,7 @@ USTRUCT( BlueprintType )
 struct FACTORYGAME_API FTireData
 {
 	GENERATED_BODY()
-
-	//bool IsInAir;
+	
 	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
 	UPhysicalMaterial* SurfaceMaterial;
 
@@ -42,10 +33,6 @@ struct FACTORYGAME_API FTireData
 
 	UPROPERTY( BlueprintReadOnly, Category = "Vehicle" )
 	bool IsInAir;
-	//float TireFriction;
-
-public:
-	FORCEINLINE ~FTireData() = default;
 };
 
 USTRUCT( BlueprintType )
@@ -60,14 +47,10 @@ struct FACTORYGAME_API FTireTrackDecalDetails
 	/** Material to use as an override */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	class UMaterial* DecalMaterialOverride;
-
-
-public:
-	FORCEINLINE ~FTireTrackDecalDetails() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSurfaceParticlePair
+struct FSurfaceParticlePair
 {
 	GENERATED_BODY()
 
@@ -76,13 +59,10 @@ struct FACTORYGAME_API FSurfaceParticlePair
 
 	UPROPERTY( EditDefaultsOnly, Category = "SurfaceParticlePair" )
 	TEnumAsByte< EPhysicalSurface > Surface;
-
-public:
-	FORCEINLINE ~FSurfaceParticlePair() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FParticleTemplatePair
+struct FParticleTemplatePair
 {
 	GENERATED_BODY()
 
@@ -93,45 +73,15 @@ struct FACTORYGAME_API FParticleTemplatePair
 
 	UPROPERTY()
 	UParticleSystemComponent* Particle;
-
-
-public:
-	FORCEINLINE ~FParticleTemplatePair() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FTireParticleCollection
+struct FTireParticleCollection
 {
 	GENERATED_BODY()
 
 	UPROPERTY()
 	TArray< FParticleTemplatePair > Collection;
-
-public:
-	FORCEINLINE ~FTireParticleCollection() = default;
-};
-
-/* DSOL (Don't shift on (wheel) load) dynamic gearbox data */
-struct FACTORYGAME_API DSOLDynGearboxData
-{
-	bool mWasShiftingUp;
-	bool mWasShiftingDown;
-	int32 mTargetGear = 1;
-	float mGearSwitchTime;
-	float mSlopeShiftRatio; //Multiplier to affect shifting gears up and down on a slope
-
-public:
-	FORCEINLINE ~DSOLDynGearboxData() = default;
-};
-
-/* DSOL (Don't shift on (wheel) load) dynamic gearbox data */
-struct FACTORYGAME_API DSOLSetupData
-{
-	int mNumberOfGears;
-	float mDownShiftLatency;
-
-public:
-	FORCEINLINE ~DSOLSetupData() = default;
 };
 
 /**
@@ -141,7 +91,7 @@ public:
 * between the 4W & 6W movement components
 */
 USTRUCT()
-struct FACTORYGAME_API FReplicatedAddedVelocitiesState
+struct FReplicatedAddedVelocitiesState
 {
 	GENERATED_USTRUCT_BODY()
 
@@ -156,9 +106,6 @@ struct FACTORYGAME_API FReplicatedAddedVelocitiesState
 	// input replication: angular velocity yaw
 	UPROPERTY()
 	float AddedAngularVelocityInputYaw;
-
-public:
-	FORCEINLINE ~FReplicatedAddedVelocitiesState() = default;
 };
 
 /**
@@ -266,25 +213,6 @@ public:
 	UFUNCTION()
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
 
-	///////////////////////DSOL Gearbox Stuff////////////////////////////////
-	// "Don't Shift On Load" gearbox. Doesn't shift up if there is load on 
-	// the tires. Useful for climbing uphill.
-	// I'm putting this functionality here because it is a common object 
-	// for movement components to access without modifying the engine.
-	// The flag to enable/disable this, however, will be in the 
-	// movement components. This mean we must manually also 
-	// call this from movement components.
-	/////////////////////////////////////////////////////////////////////////
-
-	/** Simulates an automatic gearbox that does not shift up when there is load on the tires (useful when driving uphill) */
-	static void SimulateDSOLGearBox( float DeltaTime,
-									 float RawThrottleInput,
-									 DSOLSetupData& setupData,
-									 DSOLDynGearboxData& gearboxData, 
-									 PxVehicleWheelsSimData& wheelsSimData, 
-									 PxVehicleDriveDynData& driveDynData, 
-									 PxVehicleDriveSimData& driveSimData );
-
 	/**Returns the simulation component */
 	UFUNCTION( BlueprintPure, Category = "Simulation" )
 	FORCEINLINE UFloatingPawnMovement* GetSimulationComponent() { return mSimulationMovementComponent; }
@@ -389,6 +317,12 @@ protected:
 	UFUNCTION()
 	void UseReplicatedState();
 
+	UFUNCTION()
+	void SmoothMovementReplication(float DeltaTime);
+
+	UFUNCTION(Server, Unreliable)
+	void ReplicateMovementClientToServer(FVector AuthoritativeLoc, FQuat AuthoritativeQuat, FVector AuthoritativeVelocity);
+
 private:
 	/** Tick helpers */
 	void UpdateAirStatus();
@@ -439,13 +373,8 @@ public:
 	FTranferStatusChanged TranferStatusChangedDelegate;
 
 protected:
-
-	// replicated state of vehicle 
-	UPROPERTY( Transient, Replicated )
-	FReplicatedAddedVelocitiesState mReplicatedState;
-
 	/** This vehicles fuel consumption in MW/s */
-	UPROPERTY( EditDefaultsOnly, Category = "Fuel" )
+	UPROPERTY( EditDefaultsOnly, Category = "Fuel", meta = ( AddAutoJSON = true ) )
 	float mFuelConsumption;
 
 	/** Amount left of the currently burned piece of fuel. In megawatt seconds (MWs). */
@@ -554,7 +483,23 @@ protected:
 	/** Collision box for detecting overlaps with foliage only. Shape modified in BP */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	UBoxComponent* mFoliageCollideBox;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
+	FVector mAuthoritativeLocation;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
+	FQuat mAuthoritativeRotation;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
+	FVector mAuthoritativeLinearVel;
+	
+	FDateTime mLastAccurateLocation;	
+	
 private:
+	/** replicated state of vehicle. */
+	UPROPERTY( Transient, Replicated )
+	FReplicatedAddedVelocitiesState mReplicatedState;
+	
 	/** Our component used for simulated movement */
 	UPROPERTY()
 	class UFloatingPawnMovement* mSimulationMovementComponent;
@@ -567,7 +512,7 @@ private:
 	UPROPERTY( VisibleDefaultsOnly, SaveGame, Replicated )
 	class UFGInventoryComponent* mStorageInventory;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
+	UPROPERTY( EditDefaultsOnly, Category = "Vehicle", meta = ( AddAutoJSON = true ) )
 	int32 mInventorySize;
 
 	UPROPERTY()
@@ -725,7 +670,4 @@ private:
 	/** Do we need fuel to drive */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	bool mNeedsFuelToDrive;
-
-public:
-	FORCEINLINE ~AFGWheeledVehicle() = default;
 };

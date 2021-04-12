@@ -5,7 +5,7 @@
 AFGPipeSubsystem::AFGPipeSubsystem() : Super() {
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }
 void AFGPipeSubsystem::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGPipeSubsystem::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -26,11 +26,17 @@ void AFGPipeSubsystem::FlushPipeNetwork(int32 networkID){ }
 void AFGPipeSubsystem::FlushPipeNetworkFromIntegrant(AActor* integrantActor){ }
 void AFGPipeSubsystem::RegisterFluidIntegrant( IFGFluidIntegrantInterface* fluidIntegrant){ }
 void AFGPipeSubsystem::UnregisterFluidIntegrant( IFGFluidIntegrantInterface* fluidIntegrant){ }
+void AFGPipeSubsystem::Debug_ClearDisplayDebugList(){ }
+void AFGPipeSubsystem::Debug_AddToDisplayDebugList(int32 networkID){ }
+void AFGPipeSubsystem::Debug_AddProbedFluidIntegrant( IFGFluidIntegrantInterface* integrant){ }
+void AFGPipeSubsystem::Debug_RemoveProbedFluidIntegrant( IFGFluidIntegrantInterface* integrant){ }
+void AFGPipeSubsystem::Debug_ClearProbedFluidIntegrants(){ }
 int32 AFGPipeSubsystem::GenerateUniqueID(){ return int32(); }
-void AFGPipeSubsystem::TickPipeNetworks(float dt){ }
+void AFGPipeSubsystem::SimulatePipeNetworks(float dt){ }
 void AFGPipeSubsystem::RebuildPipeNetwork(int32 networkID){ }
 void AFGPipeSubsystem::MergePipeNetworks(int32 first, int32 second){ }
 int32 AFGPipeSubsystem::CreatePipeNetwork(){ return int32(); }
 void AFGPipeSubsystem::RemovePipeNetwork(int32 networkID){ }
 void AFGPipeSubsystem::RemoveFluidIntegrantFromNetwork( IFGFluidIntegrantInterface* fluidIntegrant){ }
 void AFGPipeSubsystem::AddFluidIntegrantToNetwork( IFGFluidIntegrantInterface* fluidIntegrant, int32 networkID){ }
+void AFGPipeSubsystem::Debug_ProbeIntegrant(){ }

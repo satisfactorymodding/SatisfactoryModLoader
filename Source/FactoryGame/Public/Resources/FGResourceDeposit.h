@@ -1,25 +1,19 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "../FGResourceSettings.h"
-#include "FGResourceNode.h"
+#include "FGResourceSettings.h"
+#include "Resources/FGResourceNode.h"
 #include "FGResourceDeposit.generated.h"
 
 /**
- * 
+ * A smaller resource deposit that can only be mined by hand.
  */
 UCLASS()
 class FACTORYGAME_API AFGResourceDeposit : public AFGResourceNode
 {
 	GENERATED_BODY()
-	
 public:	
 	AFGResourceDeposit();
 
@@ -88,7 +82,4 @@ public:
 
 	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TSubclassOf< class UFGResourceDescriptor > mOverrideResourceClass;
-
-public:
-	FORCEINLINE ~AFGResourceDeposit() = default;
 };

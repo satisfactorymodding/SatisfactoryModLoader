@@ -1,8 +1,7 @@
-#pragma once
-#include "Array.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
-#include "UObject/Interface.h"
+#pragma once
+
 #include "FGSaveInterface.generated.h"
 
 /** Customize this for complex types to be able to sanitize structs from a array */
@@ -42,23 +41,15 @@ bool SAVE_CLASS::NeedTransform_Implementation(){ return NeedTransform; } \
 bool SAVE_CLASS::ShouldSave_Implementation() const { return true; }
 
 /**
-* For blueprint support of the interface, we will never add anything to it, just use it to
-* have a UCLASS to be able to access
-*/
+ * If you want your actor to be saved, implement this!
+ * This will make an actor be detected by the save system and have it's SaveGame properties saved.
+ */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGSaveInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGSaveInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGSaveInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
-/**
-* @brief If you want your actor to be saved, implement this!
-*/
 class FACTORYGAME_API IFGSaveInterface
 {
 	GENERATED_IINTERFACE_BODY()
@@ -123,7 +114,4 @@ class FACTORYGAME_API IFGSaveInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent )
 	bool NeedTransform();
-
-public:
-	FORCEINLINE IFGSaveInterface() = default;
 };

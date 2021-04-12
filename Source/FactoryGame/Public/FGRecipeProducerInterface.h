@@ -1,31 +1,20 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Interface.h"
-#include "UObject/Class.h"
 
 #include "FGRecipeProducerInterface.generated.h"
 
 /**
-* For blueprint support of the interface, we will never add anything to it, just use it to
-* have a UCLASS to be able to access
-*/
+ * Interface to identify classes that can produce recipies, e.g. buildgun, manufacturer, workbench.
+ * This makes them selectable as produced in, in the recipe and UI.
+ */
 UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGRecipeProducerInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGRecipeProducerInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGRecipeProducerInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
-/**
-*
-*/ 
 class FACTORYGAME_API IFGRecipeProducerInterface
 {
 	GENERATED_IINTERFACE_BODY()
-
-public:
-	FORCEINLINE IFGRecipeProducerInterface() = default;
 };

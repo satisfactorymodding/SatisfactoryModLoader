@@ -1,12 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildableAttachmentSplitter.h"
+#include "Buildables/FGBuildableAttachmentSplitter.h"
 #include "FGBuildableSplitterSmart.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnSortRulesChanged );
@@ -16,7 +13,6 @@ struct FACTORYGAME_API FSplitterSortRule
 {
 	GENERATED_BODY()
 public:
-
 	FSplitterSortRule() :
 		ItemClass( nullptr ),
 		OutputIndex( INDEX_NONE )
@@ -36,9 +32,6 @@ public:
 	/** Which output to send this to. */
 	UPROPERTY( SaveGame, BlueprintReadWrite, EditDefaultsOnly, Category = "Sort Rule" )
 	int32 OutputIndex;
-
-public:
-	FORCEINLINE ~FSplitterSortRule() = default;
 };
 
 /**
@@ -121,7 +114,4 @@ private:
 	UPROPERTY( SaveGame )
 	int32 mLastOutputIndex;
 
-
-public:
-	FORCEINLINE ~AFGBuildableSplitterSmart() = default;
 };

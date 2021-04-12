@@ -3,5 +3,6 @@
 #include "FGBeacon.h"
 
 AFGBeacon::AFGBeacon() : Super() {
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 }

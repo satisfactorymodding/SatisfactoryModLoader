@@ -1,10 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGFactoryHologram.h"
+#include "Hologram/FGFactoryHologram.h"
 #include "FGSpaceElevatorHologram.generated.h"
 
 /**
@@ -19,7 +18,4 @@ class FACTORYGAME_API AFGSpaceElevatorHologram : public AFGFactoryHologram
 	virtual void CheckValidPlacement() override;
 	// End AFGHologram interface
 	
-
-public:
-	FORCEINLINE ~AFGSpaceElevatorHologram() = default;
 };

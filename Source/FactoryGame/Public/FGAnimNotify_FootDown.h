@@ -1,6 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "FGAnimNotify_FootDown.generated.h"
@@ -25,7 +25,4 @@ protected:
 	/** Should play a sound.  */
 	UPROPERTY( EditAnywhere, Category = "Foot" )
 	bool mPlaySound;
-
-public:
-	FORCEINLINE ~UFGAnimNotify_FootDown() = default;
 };

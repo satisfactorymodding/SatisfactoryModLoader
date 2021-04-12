@@ -1,9 +1,8 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/Scene.h"
-#include "Array.h"
-#include "UObject/Class.h"
-#include "Interfaces/Interface_PostProcessVolume.h"
-#include "Object.h"
+
+#include "UObject/Object.h"
 #include "FGSharedPostProcessSettings.generated.h"
 
 void InsertPPVolume( IInterface_PostProcessVolume* volume, TArray< IInterface_PostProcessVolume* >& out_volumeArray );
@@ -12,7 +11,7 @@ void InsertPPVolume( IInterface_PostProcessVolume* volume, TArray< IInterface_Po
 * Presets for post process settings for water volumes
 */
 UCLASS( Abstract, Blueprintable )
-class FACTORYGAME_API UFGSharedPostProcessSettings : public UObject
+class UFGSharedPostProcessSettings : public UObject
 {
 	GENERATED_BODY()
 public:
@@ -40,7 +39,4 @@ protected:
 	/** Priority of the post process effect */
 	UPROPERTY( EditDefaultsOnly, Category = "PostProcess" )
 	float mPriority;
-
-public:
-	FORCEINLINE ~UFGSharedPostProcessSettings() = default;
 };

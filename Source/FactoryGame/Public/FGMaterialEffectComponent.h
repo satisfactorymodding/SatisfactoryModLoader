@@ -1,10 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
@@ -13,7 +9,7 @@
 
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FCostIngredientEffectActorInfo
+struct FCostIngredientEffectActorInfo
 {
 	GENERATED_BODY()
 
@@ -28,13 +24,10 @@ struct FACTORYGAME_API FCostIngredientEffectActorInfo
 	/** Where this cost actor should travel to */
 	UPROPERTY( BlueprintReadWrite )
 	FVector TargetLocation;
-
-public:
-	FORCEINLINE ~FCostIngredientEffectActorInfo() = default;
 };
 
 USTRUCT()
-struct FACTORYGAME_API FCachedMaterialArray
+struct FCachedMaterialArray
 {
 	GENERATED_BODY()
 
@@ -47,9 +40,6 @@ struct FACTORYGAME_API FCachedMaterialArray
 
 	UPROPERTY()
 	TWeakObjectPtr<UMeshComponent> MeshComponent;
-
-public:
-	FORCEINLINE ~FCachedMaterialArray() = default;
 };
 
 /**
@@ -168,7 +158,4 @@ protected:
 	/** The cached override materials present before initializing (Takes into account custom override materials on meshes)*/
 	UPROPERTY()
 	TArray< FCachedMaterialArray > mOverrideMaterials;
-
-public:
-	FORCEINLINE ~UFGMaterialEffectComponent() = default;
 };

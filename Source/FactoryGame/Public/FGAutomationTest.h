@@ -1,5 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UnrealString.h"
 
 #include "CoreMinimal.h"
 #include "Misc/AutomationTest.h"

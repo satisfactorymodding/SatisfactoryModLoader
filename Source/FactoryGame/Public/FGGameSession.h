@@ -1,11 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "Engine/World.h"
-#include "UnrealString.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGOnlineSessionSettings.h"
@@ -122,7 +117,4 @@ private:
 	/** List of logged in admins */
 	UPROPERTY()
 	TArray<class APlayerController*> mLoggedInAdmins;
-
-public:
-	FORCEINLINE ~AFGGameSession() = default;
 };

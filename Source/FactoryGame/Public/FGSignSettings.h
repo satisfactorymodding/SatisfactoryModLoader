@@ -1,18 +1,15 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSignInterface.h"
 #include "FGSettings.h"
-#include "Materials/Material.h"
 #include "FGSignSettings.generated.h"
 
 
 USTRUCT( Blueprintable )
-struct FACTORYGAME_API FSignColorData
+struct FSignColorData
 {
 	GENERATED_BODY()
 
@@ -35,9 +32,6 @@ struct FACTORYGAME_API FSignColorData
 	/** The BACKGROUND material instance is created at runtime and stored here when it is needed */
 	UPROPERTY()
 	UMaterialInstanceDynamic* BackgroundMaterialInstance;
-
-public:
-	FORCEINLINE ~FSignColorData() = default;
 };
 
 
@@ -107,7 +101,4 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
 	TArray<FSignColorData> mSignColorData;
 
-
-public:
-	FORCEINLINE ~UFGSignSettings() = default;
 };

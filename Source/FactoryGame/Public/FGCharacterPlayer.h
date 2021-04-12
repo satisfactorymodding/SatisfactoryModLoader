@@ -1,11 +1,5 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 #include "FGCharacterBase.h"
 #include "AI/FGAggroTargetInterface.h"
 #include "FGInventoryComponent.h"
@@ -38,9 +32,10 @@ struct FACTORYGAME_API FDisabledInputGate
 	GENERATED_USTRUCT_BODY()
 
 public:
-	FDisabledInputGate();
+	FDisabledInputGate() : FDisabledInputGate( false )
+	{}
 
-	FORCEINLINE FDisabledInputGate( bool disabled ) :
+	FDisabledInputGate( bool disabled ) :
 		mBuildGun( disabled ),
 		mDismantle( disabled ),
 		mFlashLight( disabled ),
@@ -52,7 +47,8 @@ public:
 		mJump( disabled ),
 		mChat( disabled ),
 		mUse( disabled ),
-		mVehicleRecording( disabled )
+		mVehicleRecording( disabled ),
+		mCrouch( disabled )
 	{}
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
@@ -79,11 +75,9 @@ public:
 	uint8 mUse : 1;
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
 	uint8 mVehicleRecording : 1;
-
-public:
-	FORCEINLINE ~FDisabledInputGate() = default;
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, category = "Input" )
+    uint8 mCrouch : 1;
 };
-FORCEINLINE FDisabledInputGate::FDisabledInputGate() : FDisabledInputGate( false ) {}
 
 /**
 * not dead, cant revive
@@ -93,12 +87,8 @@ class FACTORYGAME_API UFGUseState_ReviveInvalid_PlayerNotDead : public UFGUseSta
 {
 	GENERATED_BODY()
 public:
-	UFGUseState_ReviveInvalid_PlayerNotDead();
-
-public:
-	FORCEINLINE ~UFGUseState_ReviveInvalid_PlayerNotDead() = default;
+	UFGUseState_ReviveInvalid_PlayerNotDead() : Super() { mIsUsableState = false; }
 };
-FORCEINLINE UFGUseState_ReviveInvalid_PlayerNotDead::UFGUseState_ReviveInvalid_PlayerNotDead() { mIsUsableState = false; }
 
 /**
 * Revive valid
@@ -108,12 +98,8 @@ class FACTORYGAME_API UFGUseState_ReviveValid : public UFGUseState
 {
 	GENERATED_BODY()
 public:
-	UFGUseState_ReviveValid();
-
-public:
-	FORCEINLINE ~UFGUseState_ReviveValid() = default;
+	UFGUseState_ReviveValid() : Super() { mIsUsableState = true; }
 };
-FORCEINLINE UFGUseState_ReviveValid::UFGUseState_ReviveValid() { mIsUsableState = true; }
 
 /**
  * Base class for all player characters in the game.
@@ -145,13 +131,14 @@ public:
 	virtual void OnRep_Controller() override;
 	virtual void AddControllerPitchInput( float Val ) override;
 	virtual void Jump() override;
-	virtual void OnJumped_Implementation()override;
+	virtual void OnJumped_Implementation() override;
 
 	virtual bool CanJumpInternal_Implementation() const;
 	// End Pawn Interface
 
 	// Begin ACharacter Interface
-	virtual void OnEndCrouch( float HalfHeightAdjust, float ScaledHalfHeightAdjust );
+	virtual void OnStartCrouch( float HeightAdjust, float ScaledHeightAdjust ) override;
+	virtual void OnEndCrouch( float HeightAdjust, float ScaledHeightAdjust ) override;
 	// End ACharacter Interface
 
 	// Begin AFGCharacterBase interface
@@ -195,6 +182,9 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	//~End IFGSaveInterface
+
+	// Setup run when this player ahve been possessed.
+	void OnPossessedSetup();
 
 	/** Blueprint function that ticks visual things not needed on dedicated server */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
@@ -276,6 +266,9 @@ public:
 	/** Returns 1p or 3p mesh */
 	virtual USkeletalMeshComponent* GetMainMesh() const override;
 
+	/** Set vehicle that is pending client attach when joining */
+	void SetWaitingClientAttachDrivable( class AFGDriveablePawn* drivablePawn ) { mWaitingClientAttachDrivable = drivablePawn; }
+
 	/** Switches between camera modes */
 	UFUNCTION()
 	void ToggleCameraMode();
@@ -287,6 +280,14 @@ public:
 	/** Stop focus aiming */
 	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
 	void StopFocusAim();
+
+	/** Start pressing jump */
+	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
+    void StartPressingJump();
+
+	/** Stop pressing jump */
+	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
+    void StopPressingJump();
 
 	/** Starts the free rotate mode */
 	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
@@ -371,6 +372,8 @@ public:
 	 */
 	void StartDriving( class AFGDriveablePawn* vehicle );
 	void StopDriving( class AFGDriveablePawn* vehicle );
+
+	UFGGameUI* GetGameUI();
 
 	/** See if we have spawned our initial gear, if not, spawn it here */
 	void TrySpawnInitialGear();
@@ -457,6 +460,9 @@ public:
 	/** Getter for the world location of the Camera component */
 	FORCEINLINE FVector GetCameraComponentWorldLocation() { return mCameraComponent->GetComponentToWorld().GetLocation(); }
 
+	/** Getter for the world location of the Camera component */
+	FORCEINLINE FVector GetCameraComponentForwardVector() { return mCameraComponent->GetForwardVector(); }
+
 	/** Where to drop a inventory item if we drop one */
 	UFUNCTION( BlueprintNativeEvent, Category = "Inventory" )
 	FVector GetInventoryDropLocation( const class UFGInventoryComponent* component, FInventoryStack stack );
@@ -478,10 +484,6 @@ public:
 
 	//Cheats
 	virtual void ClientCheatFly_Implementation() override;
-	virtual void CheatJump();
-	virtual void StopCheatJump();
-	virtual void CheatCrouch();
-	virtual void StopCheatCrouch();
 	virtual void CheatToggleGhostFly();
 	virtual void CheatToggleGhostFly( bool ghostModeActive );
 	virtual bool CheatToggleGhostFlyIsActive();
@@ -525,6 +527,22 @@ public:
 	UFUNCTION( NetMulticast, Reliable, WithValidation, Category = "Hyper Tubes" )
 	void Client_HyperTubeEnd( FVector point, FVector velocity, float startTime );
 
+	void ZiplineStart( AActor* ziplineActor, FVector actorForward );
+	void ZiplineEnd( FVector exitForce = FVector::ZeroVector );
+
+	UFUNCTION( BlueprintCosmetic,BlueprintImplementableEvent, Category = "Zipline" )
+	void StartZiplineEffects();
+
+	UFUNCTION( BlueprintCosmetic,BlueprintImplementableEvent, Category = "Zipline" )
+    void StopZiplineEffects();
+	
+	UFUNCTION( NetMulticast, Reliable, WithValidation, Category = "Zipline" )
+    void Multicast_ZiplineStart( AActor* ziplineActor, FVector actorForward );
+	UFUNCTION( NetMulticast, Reliable, WithValidation, Category = "Zipline" )
+    void Multicast_ZiplineEnd( FVector exitForce = FVector::ZeroVector );
+
+	/** Spawn particle for now */
+	void PlayZiplineEffects( FVector inLocation );
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent( class UInputComponent* InputComponent ) override;
@@ -698,9 +716,6 @@ protected:
 	FORCEINLINE float GetArmBoneLocation() const { return mArmBoneLocation; }
 
 	void DebugBuildablesInFrustum();
-
-
-
 public:
 	// Callbacks used by the replication graph to build dependency lists
 	/** Event for when equipment that is should always be replicated on the player is spawned */
@@ -752,8 +767,6 @@ private:
 	void UpdateHeadBob();
 
 	void NotifyGameStatePlayerAdded();
-
-	UFGGameUI* GetGameUI();
 
 	/** Update the UI with status if we are in radioactive zone or not*/
 	void UpdateGameUIRadiationStatus();
@@ -845,6 +858,10 @@ protected:
 	/* Reference to the resource miner */
 	UPROPERTY( SaveGame, Replicated )
 	class AFGResourceMiner* mResourceMiner;
+
+	/** Reference to pending Vehicle (this is set when a client joins that left while in a game. This is used when the player joins so they can locally run their AttachDriver logic on the vehicle*/
+	UPROPERTY( Replicated )
+	class AFGDriveablePawn* mWaitingClientAttachDrivable;
 
 	/** The best usable actor nearby. */
 	UPROPERTY()
@@ -1139,10 +1156,15 @@ private:
 
 	/** If enable th einput vector will use the look direction as the forward vector */
 	bool mIsUsingFull3DInput = false;
+
+	/** How many enemies are engaged in combat with this character */
+	UPROPERTY( Replicated )
+	int32 mIncomingAttackers;
+
+	/* Particle associated with zipline */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
+    class UParticleSystem* mZiplineParticle;
 public:
 	UPROPERTY( BlueprintReadWrite, Category = "FactoryGame|Movement|Crouch" )
 	bool mNoUpdate;
-
-public:
-	FORCEINLINE ~AFGCharacterPlayer() = default;
 };

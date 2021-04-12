@@ -1,11 +1,7 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
-#include "RHI.h"
+
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"
@@ -16,23 +12,25 @@ DECLARE_STATS_GROUP( TEXT( "MapManager" ), STATGROUP_MapManager, STATCAT_Advance
 DECLARE_LOG_CATEGORY_EXTERN( LogMapManager, Log, All );
 
 USTRUCT()
-struct FACTORYGAME_API FFogOfWarQueuePair
+struct FFogOfWarQueuePair
 {
 	GENERATED_BODY()
 
 	FFogOfWarQueuePair() :
-		playerController( nullptr ),
-		currentPackageIndex( 0 )
+		PlayerController( nullptr ),
+		CurrentProgressIndex( 0 )
 	{
+		CompressedFogOfWar.Reset();
 	}
 
 	UPROPERTY()
-	class AFGPlayerController* playerController;
+	class AFGPlayerController* PlayerController;
 
-	int32 currentPackageIndex;
+	// The index of the progress through the compressed data for this transfer
+	int32 CurrentProgressIndex;
+	// Array to hold the compressed data per transfer
+	TArray<uint8> CompressedFogOfWar;
 
-public:
-	FORCEINLINE ~FFogOfWarQueuePair() = default;
 };
 
 /**
@@ -79,7 +77,7 @@ public:
 	void TransferFogOfWarData();
 
 	/** Receive fog of war data via player controller  */
-	void SyncFogOfWarChanges( const TArray<uint8>& fogOfWarRawData, int32 index );
+	void SyncFogOfWarChanges( const TArray<uint8>& fogOfWarRawData, int32 finalIndex );
 
 private:
 	
@@ -108,14 +106,16 @@ private:
 	/** The raw pixel data for the fog of war texture. Each element represents a channel for a pixel */
 	UPROPERTY( SaveGame )
 	TArray<uint8> mFogOfWarRawData;
+	UPROPERTY()
+	TArray<uint8> mClientFogOfWarBuffer;
+
+
 	/** The size of the raw pixel data array */
 	int32 mFogOfWarDataSize;
 	/** The resolution for the fog of war texture */
 	int32 mFogOfWarResolution;
-	/** Number of pixels we will send per packet when we transfer fog of war to clients */
-	int32 mFogOfWarPixelsPerPacket;
-	/** Number of packets that will be sent when we transfer fog of war to clients */
-	int32 mFogOfWarNumberOfPackets;
+	/** Size (in bytes) we will allow for a single fog of war packet */
+	int32 mFogOfWarNetPacketSize;
 	/** The fog of war texture that is used for the map */
 	UPROPERTY()
 	UTexture2D* mFogOfWarTexture;
@@ -153,7 +153,4 @@ private:
 	/** The pixel data array contains 4 uint8 per pixel. We only need to change 1 during runtime and the red channel is used in the material.
 	So we stick with an offset of 2 for now. */
 	const static int32 PIXEL_OFFSET;
-
-public:
-	FORCEINLINE ~AFGMapManager() = default;
 };

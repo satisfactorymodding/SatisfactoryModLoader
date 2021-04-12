@@ -1,8 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
@@ -60,7 +58,4 @@ protected:
 	/** Flag for whether the actor is being dismantled */
 	int32 mIsDismantled : 1;
 
-
-public:
-	FORCEINLINE ~AFGStartingPod() = default;
 };

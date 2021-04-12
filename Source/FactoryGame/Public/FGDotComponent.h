@@ -1,8 +1,6 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "Components/SceneComponent.h"
 #include "FGDotComponent.generated.h"
@@ -16,7 +14,6 @@ class FACTORYGAME_API UFGDotComponent : public USceneComponent
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	UFGDotComponent();
 
 	//~ Begin UObject interface
@@ -48,9 +45,14 @@ protected:
 	/** Called by timer to tell us to damage the containing actors */
 	UFUNCTION()
 	void DamageContainingActors();
+
+private:
+	void AddActorToDamage( AActor* actor );
+	void RemoveActorToDamage( AActor* actor );
+	
 protected:
 	/** The dot we should apply to things in the primitive component we are attached to */
-	UPROPERTY( EditAnywhere, Category="Dot")
+	UPROPERTY( EditAnywhere, Category = "Dot" )
 	TSubclassOf< class UFGDamageOverTime > mDotClass;
 
 	/** The actors we want to damage */
@@ -59,7 +61,4 @@ protected:
 
 	/** handle to keep track of when we want to damage actors */
 	FTimerHandle mDamageTimerHandle;
-
-public:
-	FORCEINLINE ~UFGDotComponent() = default;
 };

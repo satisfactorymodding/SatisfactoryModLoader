@@ -1,7 +1,6 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Hologram/FGFactoryHologram.h"
@@ -33,7 +32,4 @@ private:
 
 private:
 	float mStackingHeight;
-
-public:
-	FORCEINLINE ~AFGPipeReservoirHologram() = default;
 };

@@ -1,7 +1,8 @@
-#pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
+#pragma once
+
+#include "AI/FGAggroTargetInterface.h"
 #include "FGAttack.generated.h"
 
 
@@ -10,12 +11,11 @@ class FACTORYGAME_API UFGAttack : public UObject
 {
 	GENERATED_BODY()
 public:
-	/** ctor */
 	UFGAttack();
 
 	/**
-	/ Handles the attack logic, differs depending on type of attack ( ex melee, ranged etc )                                                                   
-	*/
+	 * Handles the attack logic, differs depending on type of attack ( ex melee, ranged etc )                                                                   
+	 */
 	virtual void PerformAttack( TScriptInterface< class IFGAggroTargetInterface >	aggroTarget, class AFGEnemy* sourceActor ) PURE_VIRTUAL( UFGAttack::PerformAttack, );
 
 	/** Get attack range */
@@ -73,7 +73,4 @@ protected:
 	/** Angle that target must be within in order to hit with attack ( 180 = full circle hit area ) */
 	UPROPERTY( EditDefaultsOnly )
 	float mAttackAngle;
-
-public:
-	FORCEINLINE ~UFGAttack() = default;
 };

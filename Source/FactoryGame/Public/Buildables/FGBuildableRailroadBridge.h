@@ -1,13 +1,11 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGBuildable.h"
+#include "Buildables/FGBuildable.h"
 #include "Components/SplineComponent.h"
-#include "../FGSplineComponent.h"
+#include "FGSplineComponent.h"
 #include "FGBuildableRailroadBridge.generated.h"
 
 /**
@@ -40,7 +38,4 @@ private:
 	/** Spline data saved in a compact form for saving and replicating. All the vectors are in local space. */
 	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
 	TArray< FSplinePointData > mSplineData;
-
-public:
-	FORCEINLINE ~AFGBuildableRailroadBridge() = default;
 };

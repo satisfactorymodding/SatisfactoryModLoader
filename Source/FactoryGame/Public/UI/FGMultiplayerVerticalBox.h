@@ -1,11 +1,12 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Class.h"
 
 #include "Components/VerticalBox.h"
 #include "FGMultiplayerVerticalBox.generated.h"
 
 UCLASS()
-class FACTORYGAME_API UFGMultiplayerVerticalBox : public UVerticalBox
+class UFGMultiplayerVerticalBox : public UVerticalBox
 {
 	GENERATED_BODY()
 
@@ -18,7 +19,4 @@ class FACTORYGAME_API UFGMultiplayerVerticalBox : public UVerticalBox
 protected:
 	// Specialized replace child at with no property sync, as we will create a new slot anyway
 	bool ReplaceChildAt_NoSync( int32 Index, UWidget* Content );
-
-public:
-	FORCEINLINE ~UFGMultiplayerVerticalBox() = default;
 };

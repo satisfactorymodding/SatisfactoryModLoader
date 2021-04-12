@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGVehicle.h"
@@ -12,7 +8,7 @@
 #include "FGPipeBuilder.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSplineSupportPair
+struct FSplineSupportPair
 {
 	GENERATED_BODY()
 
@@ -23,9 +19,6 @@ struct FACTORYGAME_API FSplineSupportPair
 	/** What recipe to use for the spline */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )
 	TSubclassOf< class UFGRecipe > SplineRecipeClass;
-
-public:
-	FORCEINLINE ~FSplineSupportPair() = default;
 };
 
 /**
@@ -186,7 +179,4 @@ public:
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "FactoryGame|PipeBuilder" )
 	float mTrailDistance;
 
-
-public:
-	FORCEINLINE ~AFGPipeBuilder() = default;
 };

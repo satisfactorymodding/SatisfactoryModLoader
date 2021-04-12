@@ -1,13 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGTrainPlatformHologram.h"
-#include "FGFactoryBuildingHologram.h"
+#include "Hologram/FGTrainPlatformHologram.h"
+#include "Hologram/FGFactoryBuildingHologram.h"
 #include "FGTrainStationHologram.generated.h"
 
 
@@ -29,7 +26,4 @@ protected:
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	// End AFGHologram interface
-
-public:
-	FORCEINLINE ~AFGTrainStationHologram() = default;
 };

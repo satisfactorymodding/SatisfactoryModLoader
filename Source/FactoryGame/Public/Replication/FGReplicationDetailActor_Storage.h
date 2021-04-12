@@ -1,10 +1,8 @@
-// Copyright 2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "UObject/Class.h"
 
-#include "FGReplicationDetailActor_BuildableFactory.h"
+#include "Replication/FGReplicationDetailActor_BuildableFactory.h"
 #include "FGReplicationDetailActor_Storage.generated.h"
 
 
@@ -18,14 +16,15 @@ public:
 
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void InitReplicationDetailActor( class AFGBuildable* owningActor ) override;
+	virtual void RemoveDetailActorFromOwner() override;
 	virtual void FlushReplicationActorStateToOwner() override;
 	virtual bool HasCompletedInitialReplication() const override;
 	
 	FORCEINLINE UFGInventoryComponent* GetStorageInventory() const { return mStorageInventory; }
-protected:
-	UPROPERTY( Replicated )
-	class UFGInventoryComponent* mStorageInventory;
 
-public:
-	FORCEINLINE ~AFGReplicationDetailActor_Storage() = default;
+protected:
+	using AFGReplicationDetailActor_BuildableFactory::OnRep_Inventory;
+
+	UPROPERTY( ReplicatedUsing = OnRep_Inventory )
+	class UFGInventoryComponent* mStorageInventory;
 };

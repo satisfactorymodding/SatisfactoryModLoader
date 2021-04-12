@@ -1,10 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
@@ -44,7 +40,4 @@ private:
 	/** How many items to check per frame */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame | ItemRegrow" )
 	int32 mMaxPerTick;
-
-public:
-	FORCEINLINE ~AFGItemRegrowSubsystem() = default;
 };

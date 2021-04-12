@@ -1,11 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
-#include "FGItemDescriptor.h"
+#include "Resources/FGItemDescriptor.h"
 #include "FGResourceDescriptor.generated.h"
 
 /**
@@ -118,7 +115,4 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Item|FX" )
 	FName mManualMiningAudioName;
 private:
-
-public:
-	FORCEINLINE ~UFGResourceDescriptor() = default;
 };

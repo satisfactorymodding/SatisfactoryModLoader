@@ -1,14 +1,10 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "FGSplineHologram.h"
-#include "../FGFactoryConnectionComponent.h"
+#include "Hologram/FGSplineHologram.h"
+#include "FGFactoryConnectionComponent.h"
 #include "FGConveyorLiftHologram.generated.h"
 
 
@@ -97,7 +93,7 @@ private:
 	class AFGBuildableConveyorLift* mUpgradedConveyorLift;
 
 	/** Transform of the top part of the lift, in actor local space. */
-	UPROPERTY( ReplicatedUsing = OnRep_TopTransform /*, CustomSerialization*/ )
+	UPROPERTY( ReplicatedUsing = OnRep_TopTransform, CustomSerialization )
 	FTransform mTopTransform;
 
 	/** Some snap and height restrictions */
@@ -126,7 +122,4 @@ private:
 	/** Arrow to indicate the direction of the lift while placing it. */
 	UPROPERTY()
 	class UStaticMeshComponent* mArrowComponent;
-
-public:
-	FORCEINLINE ~AFGConveyorLiftHologram() = default;
 };

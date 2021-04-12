@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
@@ -26,6 +25,10 @@ public:
 protected:
 	virtual void NativeTick( const FGeometry& myGeometry, float inDeltaTime ) override;
 
+	/** @param isPowerCircuitValid true if GetPowerCircuit returns a valid object, false otherwise */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Power" )
+	void IsPowerCircuitValidChanged( bool isPowerCircuitValid );
+
 public:
 	/** Delegate for getting the number of items to display. */
 	UPROPERTY( EditAnywhere, Category = "Events", DisplayName = "GetPowerCircuitEvent", meta = ( IsBindableEvent = "True" ) )
@@ -35,7 +38,4 @@ private:
 	/** Power circuit we're observing. */
 	UPROPERTY()
 	class UFGPowerCircuit*  mPowerCircuit;
-
-public:
-	FORCEINLINE ~UFGPowerCircuitWidget() = default;
 };

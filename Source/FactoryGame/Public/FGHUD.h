@@ -1,18 +1,9 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
 #pragma once 
-#include "Engine/World.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 #include "GameFramework/HUD.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGHUDBase.h"
 #include "FGHUD.generated.h"
-
-// MODDING EDIT: doesn't inherit the one from FactoryGame.h
-#ifndef WITH_CHEATS
-#define WITH_CHEATS 0
-#endif
 
 UENUM( BlueprintType )
 enum class ECrosshairState : uint8
@@ -27,6 +18,9 @@ enum class ECrosshairState : uint8
 		ECS_Build			UMETA( DisplayName = "Build" ),
 		ECS_Custom		UMETA( DisplayName = "Cutom" )
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPumpiModeChanged, bool, hideHUD );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPartialPumpiModeChanged, bool, partialHideHUD );
 
 UCLASS()
 class FACTORYGAME_API AFGHUD : public AFGHUDBase
@@ -189,6 +183,15 @@ private:
 	void PonderOpeningCheatBoard();
 #endif
 
+public:
+	/** Called when the pumpi mode changes. */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnPumpiModeChanged mOnPumpiModeChanged;
+
+	/** Called when the partial pumpi mode changes. */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnPartialPumpiModeChanged mOnPartialPumpiModeChanged;
+
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Game UI" )
 	TSubclassOf< UUserWidget > mGameUIClass;
@@ -272,7 +275,4 @@ private:
 	/** The latest created pawn HUD widget */
 	UPROPERTY()
 	UUserWidget* mPawnHUD;
-
-public:
-	FORCEINLINE ~AFGHUD() = default;
 };

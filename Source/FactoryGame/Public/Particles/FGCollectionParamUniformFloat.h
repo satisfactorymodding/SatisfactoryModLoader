@@ -1,7 +1,6 @@
-// Copyright 2016-2019 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Distributions/DistributionVector.h"
@@ -38,7 +37,4 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	float IntensityMax;
-
-public:
-	FORCEINLINE ~UFGCollectionParamUniformFloat() = default;
 };

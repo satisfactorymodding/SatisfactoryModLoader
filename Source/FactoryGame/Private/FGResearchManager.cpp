@@ -4,10 +4,11 @@
 
 AFGResearchManager::AFGResearchManager() : Super() {
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
+	this->SetReplicates(true);
 }
 void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
-void AFGResearchManager::PreInitializeComponents(){ }
+void AFGResearchManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
+AFGResearchManager* AFGResearchManager::Get( UWorld* world){ return nullptr; }
 AFGResearchManager* AFGResearchManager::Get( UObject* worldContext){ return nullptr; }
 void AFGResearchManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGResearchManager::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -30,12 +31,13 @@ void AFGResearchManager::GetPendingRewards(TSubclassOf<class UFGSchematic> schem
 void AFGResearchManager::UpdateUnlockedResearchTrees(){ }
 void AFGResearchManager::UnlockResearchTree(TSubclassOf<class UFGResearchTree> researchTree){ }
 void AFGResearchManager::OnRep_OngoingResearch(){ }
-void AFGResearchManager::Client_NewResearchStarted_Implementation(TSubclassOf<  UFGSchematic > research){ }
+void AFGResearchManager::Multicast_ResearchCompleted_Implementation(TSubclassOf<  UFGSchematic > research){ }
 void AFGResearchManager::PopulateResearchTreeList(){ }
 void AFGResearchManager::StartResearch(TSubclassOf<class UFGSchematic> schematic, TSubclassOf<  UFGResearchTree> initiatingResearchTree){ }
 void AFGResearchManager::GeneratePendingReward(FResearchData& researchData){ }
 void AFGResearchManager::SetupActivation(){ }
 void AFGResearchManager::OnBuildingBuiltGlobal( AFGBuildable* buildable){ }
+bool AFGResearchManager::CanAddToAvailableResearchTrees(TSubclassOf< UFGResearchTree > researchTree) const{ return bool(); }
 void AFGResearchManager::OnResearchTimerComplete(TSubclassOf<class UFGSchematic> schematic){ }
 bool AFGResearchManager::PayForResearch(UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 void AFGResearchManager::ClaimPendingRewards(AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex){ }

@@ -1,10 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGInteractActor.h"
 #include "FGSaveInterface.h"
@@ -21,7 +17,7 @@ enum class EFGCrateIconType : uint8
 /**
  * @todo Comment me please!
  */
-UCLASS(Blueprintable)
+UCLASS()
 class FACTORYGAME_API AFGCrate : public AFGInteractActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -46,8 +42,8 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
-	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
-	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
+	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
+	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
 
 	/** @return The crates inventory; cannot be null. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -70,11 +66,13 @@ private:
 	/** The inventory of this crate */
 	UPROPERTY( SaveGame, Replicated )
 	class UFGInventoryComponent* mInventory;
+
+	/** Players interacting with this crate, used to toggle dormancy */
+	UPROPERTY()
+	TArray< class AFGCharacterPlayer* > mInteractingPlayers;
+
 protected:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Compass" )
 	EFGCrateIconType mIconType;
 
-
-public:
-	FORCEINLINE ~AFGCrate() = default;
 };

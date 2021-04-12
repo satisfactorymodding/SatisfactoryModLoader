@@ -1,12 +1,11 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "../../Plugins/Wwise/Source/AkAudio/Classes/AkAudioEvent.h"
-#include "Array.h"
-#include "UObject/Class.h"
 
 #include "FGWaterAudio.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FPawnImpactAudio
+struct FPawnImpactAudio
 {
 	GENERATED_BODY()
 
@@ -17,13 +16,10 @@ struct FACTORYGAME_API FPawnImpactAudio
 	/** Event to post if the pawn has the specified velocity */
 	UPROPERTY( EditAnywhere, Category = "Audio" )
 	class UAkAudioEvent* ImpactEvent;
-
-public:
-	FORCEINLINE ~FPawnImpactAudio() = default;
 };
 
 UCLASS(Abstract,Blueprintable)
-class FACTORYGAME_API UFGWaterAudio : public UObject
+class UFGWaterAudio : public UObject
 {
 	GENERATED_BODY()
 public:
@@ -46,7 +42,4 @@ protected:
 	/** Audio effects to play whenever a pawn hits the water surface with a specified velocity */
 	UPROPERTY( EditDefaultsOnly, Category = "Water|Audio" )
 	TArray<FPawnImpactAudio> mImpactAudioMap;
-
-public:
-	FORCEINLINE ~UFGWaterAudio() = default;
 };

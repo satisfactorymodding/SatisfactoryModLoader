@@ -1,23 +1,19 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "UObject/Interface.h"
 
 #include "FGReplicationDependencyActorInterface.generated.h"
 
+/**
+ * @todo Please comment me
+ */
 UINTERFACE( )
 class FACTORYGAME_API UFGReplicationDependencyActorInterface : public UInterface
 {
-	
- GENERATED_BODY()
-	UFGReplicationDependencyActorInterface(const class FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {} 
-
-public:
-	FORCEINLINE ~UFGReplicationDependencyActorInterface() = default;
+	GENERATED_UINTERFACE_BODY()
 };
 
 class FACTORYGAME_API IFGReplicationDependencyActorInterface
 {
 	GENERATED_IINTERFACE_BODY()
-
-public:
-	FORCEINLINE IFGReplicationDependencyActorInterface() = default;
 };

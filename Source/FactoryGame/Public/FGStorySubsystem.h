@@ -1,10 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "CoreMinimal.h"
@@ -13,10 +9,12 @@
 #include "FGSchematic.h"
 #include "FGMapArea.h"
 #include "FGResearchRecipe.h"
+#include "FGStoryQueue.h"
+#include "FGGamePhaseManager.h"
 #include "FGStorySubsystem.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FMapAreaVisitedData
+struct FMapAreaVisitedData
 {
 	GENERATED_BODY()
 
@@ -37,28 +35,10 @@ private:
 	/** Schematic to unlock ( if any ) */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< class UFGSchematic > SchematicClass;
-
-public:
-	FORCEINLINE ~FMapAreaVisitedData() = default;
-};
-
-struct FACTORYGAME_API FFindByMapAreFound
-{
-	TSubclassOf< UObject > MapAreaFound;
-
-	FFindByMapAreFound( TSubclassOf< UObject > InMapAreaFound ) : MapAreaFound( InMapAreaFound ) { }
-
-	bool operator() ( const FMapAreaVisitedData Element ) const
-	{
-		return ( MapAreaFound == Element.MapAreaClass );
-	}
-
-public:
-	FORCEINLINE ~FFindByMapAreFound() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FItemFoundData
+struct FItemFoundData
 {
 	GENERATED_BODY()
 
@@ -86,28 +66,10 @@ private:
 	/** Item descriptor we are looking for */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< class UFGItemDescriptor > ItemClass;
-
-public:
-	FORCEINLINE ~FItemFoundData() = default;
-};
-
-struct FACTORYGAME_API FFindByItemFound
-{
-	TSubclassOf< UObject > ItemFound;
-
-	FFindByItemFound( TSubclassOf< UObject > InItemFound ) : ItemFound( InItemFound ) { }
-
-	bool operator() ( const FItemFoundData Element ) const
-	{
-		return ( ItemFound == Element.GetItemDescriptor() && !Element.WasFound );
-	}
-
-public:
-	FORCEINLINE ~FFindByItemFound() = default;
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSchematicMessagePair
+struct FSchematicMessagePair
 {
 	GENERATED_BODY()
 
@@ -121,13 +83,10 @@ private:
 	/** Associated schematic */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr< UFGSchematic > SchematicUnlocked;
-
-public:
-	FORCEINLINE ~FSchematicMessagePair() = default;
 };
 
 USTRUCT(BlueprintType)
-struct FACTORYGAME_API FResearchTreeMessageData
+struct FResearchTreeMessageData
 {
 	GENERATED_BODY()
 
@@ -145,19 +104,93 @@ private:
 	/** Associated research tree */
 	UPROPERTY( EditDefaultsOnly, Category = "Story" )
 	TSoftClassPtr<class UFGResearchTree> ResearchTree;
+};
 
-public:
-	FORCEINLINE ~FResearchTreeMessageData() = default;
+// Proptype struct for active story queue. @todok2 Clean Up.
+USTRUCT( BlueprintType )
+struct FActiveStoryQueue
+{
+	GENERATED_BODY()
+	
+	FActiveStoryQueue() :
+	StoryQueueClass( nullptr ),
+	StoryQueueIndex( 0 ),
+	MessageIndex( 0 ),
+	BarkMessageIndex( 0 ),
+	PendingMessageFromMilestone( false ),
+    PendingMessageTimer( 0.0f ),
+    TimeSinceLastMessage( 0.0f ),
+	StoryMessageCurrentlyPlaying( nullptr )
+	{};
+
+	FActiveStoryQueue( TSubclassOf<class UFGStoryQueue> storyQueueClass, int32 storyQueueIndex ) :
+	StoryQueueClass( storyQueueClass ),
+	StoryQueueIndex( storyQueueIndex ),
+	MessageIndex( 0 ),
+	BarkMessageIndex( 0 ),
+	PendingMessageFromMilestone( false ),
+	PendingMessageTimer( 0.0f ),
+	TimeSinceLastMessage( 0.0f ),
+	StoryMessageCurrentlyPlaying( nullptr )
+	{};
+
+	FORCEINLINE bool IsValid() const
+	{
+		return StoryQueueClass != nullptr;
+	}
+
+	void ResetStoryQueue();
+
+	FORCEINLINE bool ContainsUnplayedMessages() const;
+
+	FORCEINLINE bool ContainsUnplayedBarkMessages() const;
+
+	TSubclassOf< class UFGMessageBase > PopMessage();
+
+	TSubclassOf< class UFGMessageBase > PopBarkMessage();
+
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Story" )
+	TSubclassOf<class UFGStoryQueue> StoryQueueClass;
+
+	int32 StoryQueueIndex;
+
+	int32 MessageIndex;
+
+	int32 BarkMessageIndex;
+
+	bool PendingMessageFromMilestone;
+
+	float PendingMessageTimer;
+
+	float TimeSinceLastMessage;
+
+	// The message we are waiting for to finish playing. This is used so we don't start ticking TimeSinceLastMessage until we actually played the message.
+	UPROPERTY()
+	TSubclassOf< class UFGMessageBase > StoryMessageCurrentlyPlaying;
+
 };
 
 /**
  * 
  */
-UCLASS( abstract, Blueprintable )
+UCLASS( abstract )
 class FACTORYGAME_API AFGStorySubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
 public:
+	AFGStorySubsystem();
+
+	/** Get the Story Subsystem, this should always return something unless you call it really early. */
+	static AFGStorySubsystem* Get( UWorld* world );
+
+	/** Get the Story Subsystem from a world context, this should always return something unless you call it really early. */
+	UFUNCTION( BlueprintPure, Category = "Story", DisplayName = "GetStorySubsystem", Meta = ( DefaultToSelf = "worldContext" ) )
+    static AFGStorySubsystem* Get( UObject* worldContext );
+
+	// Begin AActor interface
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	// End AActor interface
+	
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
@@ -170,12 +203,16 @@ public:
 
 	//~ Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 	//~ End AActor interface
+
+	UFUNCTION( BlueprintPure, Category = "Story" )
+	TSubclassOf< class UFGStoryQueue > GetActiveStoryQueueClass() const { return mActiveStoryQueueClass; } 
 
 	/** Called when a schematic is unlocked */
 	UFUNCTION()
 	void OnSchematicPurchased( TSubclassOf< UFGSchematic > newSchematic );
-
+	
 	/** A player was added to the game */
 	UFUNCTION()
 	void AddPlayer( class AFGCharacterPlayer* inPlayer );
@@ -195,14 +232,54 @@ public:
 	/** Delegate for when a map area is visited for the first time by anyone */
 	UFUNCTION()
 	void OnMapAreaVisited( TSubclassOf< class UFGMapArea > mapArea );
+
+	/** Triggered when an audio message has finished playing. */
+    void OnAudioMessageFinishedPlaying( TSubclassOf< class UFGMessageBase > messageClass );
+
+	/** Trigger the next story message in queue. If no story message is left in the queue nothing will happen*/
+	void TriggerNextStoryMessageInQueue();
+
+	/** Trigger the next story message in queue. If we still have story messages left in the queue nothing will happen*/
+	void TriggerNextBarkMessageInQueue();
+
+	void GetStoryDebugData( TArray<FString>& out_debugData );
+
+	/** Only for cheat menu. Starts the next story queue in the list if there is one available. Doesn't take into account for depencies or if the current queue is finished */
+	void StartNextStoryQueue();
+
+	/** Only for cheat menu. Resets all story queues and start from the begining */
+	void ResetAllStoryQueues();
+
+	/** Only for cheat menu. Reset the current story queue */
+	void ResetCurrentStoryQueue();
+	
 protected:
 	/** Sets up initial delegates */
 	UFUNCTION()
 	void SetupDelegates();
+
+private:
+	UFUNCTION()
+	void OnGamePhaseUpdated( EGamePhase gamePhase );
+	
+	UFUNCTION()
+	void UpdateStoryQueue();
+	
 public:
+	
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mActivePlayers;
 private:
+	UPROPERTY( EditDefaultsOnly, Category = "Story" )
+	TArray< TSubclassOf< class UFGStoryQueue > > mStoryQueues;
+
+	UPROPERTY( SaveGame )
+	FActiveStoryQueue mActiveStoryQueue;
+
+	/** Part of mActiveStoryQueue but we only need the class replicated */ 
+	UPROPERTY( Replicated )
+	TSubclassOf< class UFGStoryQueue > mActiveStoryQueueClass;
+	
 	/** array of schematic/message pairs */
 	UPROPERTY( EditDefaultsOnly, Category = "Story|Schematic" )
 	TArray< FSchematicMessagePair > mSchematicMessageData;
@@ -216,9 +293,6 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Story|Research" )
 	TSubclassOf<class UFGMessageBase> mResearchTimerCompleteMessage;
-
-public:
-	FORCEINLINE ~AFGStorySubsystem() = default;
 };
 
 FORCEINLINE TSubclassOf< UFGSchematic > FSchematicMessagePair::GetSchematic() const
@@ -233,8 +307,7 @@ FORCEINLINE bool FItemFoundData::IsSchematicValid() const
 
 FORCEINLINE TSubclassOf< UFGSchematic > FItemFoundData::GetSchematic() const
 {
-	// MODDING EDIT
-	//checkDev(SchematicClass.IsValid());
+	checkDev(SchematicClass.IsValid());
 	return SchematicClass.Get();
 }
 
@@ -250,7 +323,6 @@ FORCEINLINE bool FMapAreaVisitedData::IsSchematicValid() const
 
 FORCEINLINE TSubclassOf< UFGSchematic > FMapAreaVisitedData::GetSchematic() const
 {
-	// MODDING EDIT
-	//checkDev(SchematicClass.IsValid());
+	checkDev(SchematicClass.IsValid());
 	return SchematicClass.Get();
 }

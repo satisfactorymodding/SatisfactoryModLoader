@@ -1,10 +1,8 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
-#include "FGWeapon.h"
+#include "Equipment/FGWeapon.h"
 #include "FGWeaponInstantFire.generated.h"
 
 UCLASS()
@@ -60,7 +58,4 @@ public:
 	/** The particle to use when hitting the ground */
 	UPROPERTY( EditDefaultsOnly )
 	class UParticleSystem* mHitParticleEffect;
-
-public:
-	FORCEINLINE ~AFGWeaponInstantFire() = default;
 };

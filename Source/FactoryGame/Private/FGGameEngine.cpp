@@ -6,6 +6,7 @@ void UFGGameEngine::Init(IEngineLoop* inEngineLoop){ }
 void UFGGameEngine::Start(){ }
 void UFGGameEngine::PreExit(){ }
 void UFGGameEngine::Tick(float deltaSeconds, bool idleMode){ }
+bool UFGGameEngine::LoadMap(FWorldContext& WorldContext, FURL URL,  UPendingNetGame* Pending, FString& Error){ return bool(); }
 UWorld* UFGGameEngine::CreateWorld(const FString& worldName){ return nullptr; }
 void UFGGameEngine::DestroyWorld( UWorld* world){ }
 bool UFGGameEngine::Exec( UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar){ return bool(); }

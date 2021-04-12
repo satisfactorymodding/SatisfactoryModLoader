@@ -7,8 +7,8 @@ AFGActorRepresentationManager* AFGActorRepresentationManager::Get(UObject* world
 AFGActorRepresentationManager::AFGActorRepresentationManager() : Super() {
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
 	this->bAlwaysRelevant = true;
-	this->bReplicates = true;
-	this->NetUpdateFrequency = 5;
+	this->SetReplicates(true);
+	this->NetUpdateFrequency = 2;
 }
 void AFGActorRepresentationManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGActorRepresentationManager::PreReplication(IRepChangedPropertyTracker& changedPropertyTracker){ }

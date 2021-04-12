@@ -1,11 +1,13 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGHotbarShortcut.h"
 #include "FGRecipeShortcut.generated.h"
 
+/**
+ * A specific type of hotbar shortcut that is used for building recipes.
+ */
 UCLASS()
 class FACTORYGAME_API UFGRecipeShortcut : public UFGHotbarShortcut
 {
@@ -36,7 +38,4 @@ protected:
 protected:
 	UPROPERTY( ReplicatedUsing=OnRep_Recipe, SaveGame )
 	TSubclassOf< class UFGRecipe > mRecipeToActivate;
-
-public:
-	FORCEINLINE ~UFGRecipeShortcut() = default;
 };

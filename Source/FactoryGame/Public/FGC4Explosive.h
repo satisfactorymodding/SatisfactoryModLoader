@@ -1,9 +1,6 @@
-// Copyright 2016 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/Actor.h"
 #include "FGC4Explosive.generated.h"
@@ -47,7 +44,4 @@ protected:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsDetonated )
 	bool mIsDetonated;
 
-
-public:
-	FORCEINLINE ~AFGC4Explosive() = default;
 };

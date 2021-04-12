@@ -1,14 +1,10 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Engine/Level.h"
-#include "Engine/World.h"
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
+#include "FGFoliageResourceUserData.h"
 #include "FGFoliageRemovalSubsystem.generated.h"
 
 #define DEBUG_FOLIAGE_REMOVAL_SUBSYSTEM ( ( UE_BUILD_SHIPPING == 0 ) && 1 )
@@ -72,7 +68,25 @@ public:
 	* @return true if there was any foliage close by
 	**/
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	bool GetClosestFoliage( const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, class UHierarchicalInstancedStaticMeshComponent*& out_component, bool isLocalSpace, int32& out_instanceId, FVector& out_instanceLocation );
+	bool GetClosestFoliage( const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, class UHierarchicalInstancedStaticMeshComponent*& out_component, bool isLocalSpace, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte<EProximityEffectTypes> &out_Type );
+
+	/**
+	* Finds the closest foliage instance to a location
+	*
+	* @network: Server and Client
+	*
+	* @param location - the location you want to look around
+	* @param maxDistance - max distance from the location that the foliage needs to exist (note, looks at the root location of the foliage, not the bounds)
+	* @param foliageIdentifier - find foliage that matches this tag
+	* @param desiredTypes - Array of types that the system should consider
+	* @param out_component - the closest component of foliage, only valid if we return true
+	* @param out_instanceId - id of the foliage we want to remove, only valid if we return true
+	* @param out_instanceLocation - the location of the instance, only valid if we return true
+	* @param out_Type - The type the system picked an instance from.
+	* @return true if there was any foliage close by
+	**/
+	UFUNCTION( BlueprintCallable, Category = "Foliage" )
+	bool GetFoliageAroundLocationOfGivenTypes( const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, TArray<TEnumAsByte<EProximityEffectTypes>> desiredTypes, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte<EProximityEffectTypes> &out_Type);
 
 	/**
 	 * Finds the closest foliage instance to a location in a specified component
@@ -105,6 +119,12 @@ public:
 	void GetClosestFoliageArrayForComponent( const TArray<FVector>& locations, float maxDistance, const class UHierarchicalInstancedStaticMeshComponent* component, bool isLocalSpace, TArray<int32>& out_instanceArray );
 
 	/**
+	 * Takes the foliage component and checks if it is indeed in a cave level or not.
+	 */
+	UFUNCTION(BlueprintPure	, Category = "Foliage")
+	static bool IsFoliageComponentInACave(UHierarchicalInstancedStaticMeshComponent* TestComponent);
+	
+	/**
 	 * Finds foliage within a provided radius to a specified location.
 	 * 
 	 * 
@@ -135,9 +155,9 @@ public:
 	void UnRegister( class AFGFoliageRemoval* actor );
 
 	/**
-	 * @return true if the static mesh is removable
+	 * @return true if the foliage type is removable
 	 */
-	virtual bool IsRemovable( class UStaticMesh* staticMesh ) const;
+	bool IsRemovable( class UFoliageType* foliageType ) const;
 
 	// Begin FactoryStatHelpers functions
 	int32 Stat_NumRemovedInstances() const;
@@ -271,7 +291,4 @@ protected:
 
 	/** All foliage mesh components that have potential for contain instances to remove */
 	TArray<class UHierarchicalInstancedStaticMeshComponent*> mFoilageMeshComponents; // @todogc: Verify that this is safe have without UPROPERTY
-
-public:
-	FORCEINLINE ~AFGFoliageRemovalSubsystem() = default;
 };

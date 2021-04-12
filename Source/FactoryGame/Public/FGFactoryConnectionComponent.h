@@ -1,10 +1,6 @@
-// Copyright 2016-2020 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Engine/World.h"
-#include "Array.h"
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "FGConnectionComponent.h"
 #include "FGInventoryComponent.h"
@@ -26,7 +22,7 @@
 //@todo This is unused and is only confusing, remove it later -G2 2020-05-29
 /**
  * Type of connections in the game.
- * @todoPipes - This is old, we're shifting to a different connection component type for pipes as they don't need most of the special logic in the factory connection
+ * @todo-Pipes - This is old, we're shifting to a different connection component type for pipes as they don't need most of the special logic in the factory connection
  */
 UENUM( BlueprintType )
 enum class EFactoryConnectionConnector : uint8
@@ -117,7 +113,10 @@ public:
 	 * @return - true if connected; otherwise false. Always false if attached to hologram, snap only or bad index configuration.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|FactoryConnection" )
-	bool IsConnected() const;
+	FORCEINLINE bool IsConnected() const
+	{
+		return mHasConnectedComponent;
+	}
 
 	/** Return the inventory associated with this connection. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
@@ -270,7 +269,4 @@ protected:
 	/** Forward implementation details to our owner. */
 	UPROPERTY( EditDefaultsOnly, Category = "Connection" )
 	bool mForwardPeekAndGrabToBuildable;
-
-public:
-	FORCEINLINE ~UFGFactoryConnectionComponent() = default;
 };

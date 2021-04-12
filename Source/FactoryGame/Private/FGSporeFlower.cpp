@@ -3,7 +3,8 @@
 #include "FGSporeFlower.h"
 
 AFGSporeFlower::AFGSporeFlower() : Super() {
-	this->bReplicates = true;
+	this->SetReplicates(true);
+	this->NetDormancy = DORM_Initial;
 }
 void AFGSporeFlower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGSporeFlower::BeginPlay(){ }

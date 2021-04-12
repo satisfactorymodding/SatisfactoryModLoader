@@ -1,21 +1,20 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
+
 #pragma once
-#include "Array.h"
-#include "UnrealString.h"
-#include "UObject/Class.h"
 
 #include "GameFramework/GameUserSettings.h"
 #include "GameFramework/PlayerInput.h"
 #include "FGInputLibrary.h"
+#include "FGOptionsSettings.h"
+#include "OptionValueContainer.h"
 #include "FGGameUserSettings.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FArachnophobiaModeChangedDelegate, bool, isArachnophobiaMode );
-DECLARE_DYNAMIC_DELEGATE( FOptionUpdated );
+DECLARE_DYNAMIC_DELEGATE_OneParam( FOptionUpdated, FString, updatedCvar );
 
-/**
- * Name and value combination for the options with audio
- */
+/** Name and value combination for the options with audio */
 USTRUCT()
-struct FACTORYGAME_API FAudioVolumeMap
+struct FAudioVolumeMap
 {
 	GENERATED_BODY()
 	
@@ -26,25 +25,18 @@ struct FACTORYGAME_API FAudioVolumeMap
 	/** The stored value of the RTPC */
 	UPROPERTY()
 	float Value;
-
-public:
-	FORCEINLINE ~FAudioVolumeMap() = default;
+	
 };
 
-/**
-* Holds delegates to be called when a specific option is changed 
-*/
+/** Holds delegates to be called when a specific option is changed */
 USTRUCT()
-struct FACTORYGAME_API FOptionUpdateDelegateData
+struct FOptionUpdateDelegateData
 {
 	GENERATED_BODY();
 public:
 
 	UPROPERTY()
 	TArray<FOptionUpdated> OptionUpdatedDelegates;
-
-public:
-	FORCEINLINE ~FOptionUpdateDelegateData() = default;
 };
 
 UCLASS(BlueprintType)
@@ -55,123 +47,74 @@ public:
 
 	//~Begin GameUserSettings interface
 	virtual void ApplyNonResolutionSettings() override;
-	virtual void SetToDefaults() override; // Only video settings
-	virtual void ResetToCurrentSettings() override; // Only video settings
-	virtual void ValidateSettings() override;
+	virtual void ApplyResolutionSettings( bool bCheckForCommandLineOverrides ) override;
+	virtual void ApplySettings( bool bCheckForCommandLineOverrides ) override;
+	virtual void SaveSettings() override;
 	virtual void LoadSettings( bool bForceReload = false ) override;
+	virtual float GetEffectiveFrameRateLimit() override;
+	virtual void ConfirmVideoMode() override;
 	//~End GameUserSettings interfaces
+	
+	/** Reset the option with the given cvar */
+	void ResetOption( FString cvar );
 
-	/** Reset audio settings to default settings */
+	/** Called after all options in the category have been reseted. Used if we need to do something after a category is reseted */
 	UFUNCTION( BlueprintCallable, Category = Settings )
-	virtual void SetAudioToDefaults();
+	void ResetOptionCategory( EOptionCategory optionCategory );
 
-	/** Reset audio settings to current settings */
 	UFUNCTION( BlueprintCallable, Category = Settings )
-	virtual void ResetAudioToCurrentSettings();
+	void RevertUnsavedChanges();
+
+	void SetupBindings();
+
+	UFUNCTION( BlueprintPure, Category = Settings )
+	virtual bool IsStableVideoModeDirty();
+
+	UFUNCTION( BlueprintCallable, Category = Settings )
+	virtual void ResetVideoModeToLatestStable();
+
+	UFUNCTION( BlueprintCallable, Category = Settings )
+	virtual void ConfirmStableVideoMode();
+
+	/** If we are switching to fullscreen mode make sure we have a valid resolution */
+	void SanitizeResolution();
+
+	/** Switch between fullscreen and windowed mode */
+	void ToggleFullscreenMode();
 
 	/** Returns the game local machine settings (resolution, windowing mode, scalability settings, etc...) */
 	UFUNCTION( BlueprintCallable, Category = Settings )
 	static UFGGameUserSettings* GetFGGameUserSettings();
 
-	/** Set the audio volume for a specified channel */
-	UFUNCTION(BlueprintCallable,Category="FactoryGame|Settings")
-	void SetAudioVolume( FString name, float value );
+	UFUNCTION()
+	void UpdateAudioOption( FString updatedCvar );
 
-	/** Gets the audio volumes for all channels */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	float GetAudioVolume( FString name );
+	/** Triggered when arachnophobia mode option have changed */
+	UFUNCTION()
+	void OnArachnophobiaModeUpdated( FString updatedCvar );
 
-	/** Set Arachnophobia Mode */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetArachnophobiaMode( bool newArachnophobiaMode );
+	/** Triggered when foliage quality option have changed */
+	UFUNCTION()
+	void OnFoliageQualityUpdated( FString updatedCvar );
 
-	/** Get Arachnophobia Mode */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE bool GetArachnophobiaMode() { return mIsArachnophobiaMode; }
+	/** Triggered when motion blur option have changed */
+	UFUNCTION()
+	void OnMotionBlurEnabledUpdated( FString updatedCvar );
 
-	/** Set Inverty Y mode */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetInvertedLook( bool newInvertLook );
+	/** Triggered when Pool light quality scalabilty cvar have changed */
+	UFUNCTION()
+	void OnPoolLightQualityUpdated( FString updatedCvar );
 
-	/** Get Inverty Y mode */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE bool GetInvertedLook() { return mInvertY; }
-
-	/** Set HoldToSprint */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetHoldToSprint( bool newHoldToSprint );
-
-	/** Get HoldToSprint */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE bool GetHoldToSprint() { return mHoldToSprint; }
-
-	/** Set AutoSortInventory */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetAutoSortInventory( bool shouldAutoSort );
-
-	/** Get whether inventory should auto sort */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE bool GetAutoSortInventory() { return mAutoSortInventory; }
-
-	/** Set FOV */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetFOV( int32 newFOV );
-
-	/** Get FOV */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE int32 GetFOV() { return mFOV; }
-
-	/** Sets the user setting for motion blur */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetMotionBlurEnabled( bool enable );
-
-	/** Returns the user setting for motion blur */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool IsMotionBlurEnabled();
-
-	/** Checks if the motion blur user setting is different from current system setting */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool IsMotionBlurDirty() const;
-
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetHZBOEnabled( bool enable );
-
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool IsHZBOEnabled();
-
-	bool IsHZBODirty() const;
-
+	/** Triggered when network quality option have changed */
+	UFUNCTION()
+	void OnNetworkQualityUpdated( FString updatedCvar );
+	
 	/** Returns the default quality setting value */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	int32 GetDefaultQualitySetting( FString settingName );
-
-	/** Sets the user setting for network quality */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetNeworkQuality( int32 newNetworkQuality );
-
-	/** Returns the user setting for network quality */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE int32 GetNeworkQuality() { return mNetworkQuality;  }
+	int32 GetDefaultPostProcessQualitySetting( FString settingName );
 
 	/** Update network values in config files */
 	void RefreshNetworkQualityValues();
-
-	/** Update if a restart is required for setttings to take full effect */
-	void UpdateIsRestartRequired();
-
-	/** Is the provided setting using a custom quality setting  */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool IsUsingCustomQualitySetting( FString settingName );
-
-	/** Is post process using a custom setting  */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool IsPostProcessUsingCustomSettings();
-
-	virtual void SetPostProcessingQuality( int32 Value ) override;
-
-	/** Update the custom post process settings like motion blur etc. */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void UpdatePostProcessSettings();
 
 	/** Get custom bindings */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
@@ -183,71 +126,57 @@ public:
 	/** Clears array of custom mappings */
 	void RemoveAllCustomActionMappings();
 
-	/** Get mHeadBobScale */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE float GetHeadBobScale() { return mHeadBobScale; }
-
-	/** Set mHeadBobScale */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetHeadBobScale( float newHeadBobScale );
-
-	UFUNCTION(BlueprintPure, Category = "FactoryGame|Settings")
-	FORCEINLINE bool GetAnalyticsDisabled() { return mAnalyticsDisabled; }
-
-	// MODDING EDIT
-	///** Updates the GameUserSettings for analytics and updates the analytics to respond to this change. */
-	//UFUNCTION( BlueprintCallable, Category = "Settings" )
-	//void SetAnalyticsDisabled( bool isDisabled, UAnalyticsService* analyticsService );
-
-	/** Get if we require restart for the setting to apply */
+	/** Get if we require restart of the session for the settings to apply */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Settings")
-	bool GetRequireRestart() const{ return mRestartRequired; }
+    bool GetRequireSessionRestart() const;
 
-	/** Clear that we require restart for setting to apply */
-	UFUNCTION( BlueprintCallable, Category="FactoryGame|Settings")
-	void ClearRequireRestart(){ mRestartRequired = false; }
+	/** Get if we require restart of the game for the settings to apply */
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Settings")
+    bool GetRequireGameRestart() const;
 
-	/** Gets the autosave interval */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE int32 GetAutosaveInterval() { return mAutosaveInterval;  }
-
-	/** Updates the autosave interval */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetAutosaveInterval( int32 newInterval );
-
-	void ApplyAutosaveInterval();
-
-	/** Gets if we should show the take break notification */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	FORCEINLINE bool GetShowBreakNotification() { return mShowBreakNotification; }
-
-	/** Sets if we should show the take break notification */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetShowBreakNotification( bool enabled );
-
-	/** Get the option value for a bool */
+	/** Get the applied/active option value for a bool */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
 	bool GetBoolOptionValue( FString cvar );
 	
-	/** Set the option value for a bool */
+	/** Set the applied/active option value for a bool */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetBoolOptionValue( FString cvar, bool value, bool updateInstantly = false, bool requireRestart = false );
+	void SetBoolOptionValue( FString cvar, bool value );
 
-	/** Get the option value for a integer */
+	/** Get the applied/active option value for a integer */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
 	int32 GetIntOptionValue( FString cvar );
 
 	/** Set the option value for a integer */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetIntOptionValue( FString cvar, int32 value, bool updateInstantly = false, bool requireRestart = false );
+	void SetIntOptionValue( FString cvar, int32 newValue );
 
 	/** Get the option value for a float */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
 	float GetFloatOptionValue( FString cvar );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	float GetFloatUIDisplayValue( FString cvar );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	int32 GetIntUIDisplayValue( FString cvar );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	bool GetBoolUIDisplayValue( FString cvar );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	bool HasAnyUnsavedOptionValueChanges();
+
+	/** Get if we have a pending option value waiting to be applied for this cvar */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	bool HasPendingApplyOptionValue( FString cvar );
+
+	/** Get if we have a pending option value waiting to be applied for this cvar after we restart game or session */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	bool HasPendingAnyRestartOptionValue( FString cvar );
 	
 	/** Set the option value for a float */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetFloatOptionValue( FString cvar, float value, bool updateInstantly = false, bool requireRestart = false );
+	void SetFloatOptionValue( FString cvar, float newValue );
 
 	/** Update the console variable with a new int value */
 	void SetCvarValue( FString cvar, int32 value );
@@ -256,12 +185,15 @@ public:
 	void SetCvarValue( FString cvar, float value );
 	
 	/** Setup the default value for an int option, registers a cvar if it doesn't already exists */
-	void SetDefaultIntOptionValue( FString cvar, int32 value, FText tooltip );
+	void InitDefaultIntOptionValue( FString cvar, int32 value, FText tooltip, EOptionApplyType optionApplyType );
 
 	/** Setup the default value for an float option, registers a cvar if it doesn't already exists */
-	void SetDefaultFloatOptionValue( FString cvar, float value, FText tooltip );
+	void InitDefaultFloatOptionValue( FString cvar, float value, FText tooltip, EOptionApplyType optionApplyType );
 	
 	void SetupDefaultOptionsValues();
+
+	/** Bind up events for changing RTPC audio volume when audio cvar is changed */
+	void SetupAudioOption( struct FOptionRowData data );
 
 	/** Register an int console variable */
 	void RegisterConsoleVariable( FString cvar, int32 value, FString tooltip );
@@ -271,11 +203,19 @@ public:
 	
 	/** Apply settings that have been changed and are pending */
 	void ApplyPendingChanges();
-	
-	/** Apply changes that require a restart, only do this when exiting the game */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void ApplyRestartRequiredChanges();
 
+	/** Check if any cvar should be checked and applied */
+	void CheckForCvarOverrides();
+	
+	/** Check if any cvar should be checked and applied for video settings */
+	void CheckForVideoCvarOverrides();
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void OnExitToMainMenu();
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void OnExitToDesktop();
+	
 	static void CVarSinkHandler();
 
 	/** CVar sink. Update the internal values so they are the same as the console variables  */
@@ -293,17 +233,45 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject );
 	
+	/** Get language data */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	TMap<FString, FText> GetLanguageData();
+
+	/** Set the language data */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void SetLanguageData( TMap<FString, FText> languageData );
+
+	/** Get the secondary language for quick switch language functionality */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	FORCEINLINE FString GetSecondaryLanguage() const { return mSecondaryLanguage; }
+
+	/** Set the secondary language for quick switch language functionality */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void SetSecondaryLanguage( FString language ) { mSecondaryLanguage = language; }
+
+	/** Set the primary language for quick switch language functionality */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+    void SetPrimaryLanguage( FString language ) { mPrimaryLanguage = language; }
+
+	/** Quick switch language between primary and secondary language */
+	void QuickSwitchLanguage();
+
+	/** Reset language to default language if it's been changed by quick switch. Used on exit to revert back changes */
+	void ResetLanguageToPrimary();
+
+	/** Migrate old options to new system */
+	void HandleFGGameUserSettingsVersionChanged();
+
 	/** Debug */
 	void DumpDynamicOptionsSettings();
 
-private:
-	void UpdateFoliageQualityChanges();
+	void GetOptionsDebugData( TArray<FString>& out_debugData );
 
+private:
+	friend class OptionValueContainer;
+	
 	/** Can we use this cvar? trims and checks for empty string */
 	bool ValidateCVar( FString &cvar );
-
-	void SetOptionValue( FString cvar, int32 value );
-	void SetOptionValue( FString cvar, float value );
 
 	void BroadcastDynamicOptionUpdate( FString cvar );
 
@@ -356,7 +324,7 @@ protected:
 	UPROPERTY( Config )
 	uint8 mHoldToSprint:1;
 
-	UPROPERTY( Config )
+	UPROPERTY( Config ) // @todok2 SEEMS TO HAVE BEEN REMOVED. Should it be added back?
 	uint8 mAutoSortInventory:1;
 
 	/** Whether the user has opted out of analytics or not */
@@ -379,24 +347,21 @@ protected:
 	FOptionUpdated OptionUpdatedDelegate;
 
 private:
-
 	/** The changed values that we want to save to file */
 	UPROPERTY( Config )
 	TMap<FString, int32> mIntValues;
 	UPROPERTY( Config )
 	TMap<FString, float> mFloatValues;
 
-	/** What we should apply when we save */
-	TMap<FString, int32> mPendingIntValueChanges;
-	TMap<FString, float> mPendingFloatValueChanges;
+	TArray<FString> mAudioOptions;
 
-	/** What we should apply when we exit the game. These options requires a restart to be changed */
-	TMap<FString, int32> mRestartRequiredIntValueChanges;
-	TMap<FString, float> mRestartRequiredFloatValueChanges;
+	OptionValueContainer mOptionValueContainer;
 
-	/** The default option values for reset */
-	TMap<FString, int32> mDefaultIntValues;
-	TMap<FString, float> mDefaultFloatValues;
+	/** The last stable window mode that the user have confirmed working by accepting the window mode change. Differs from base classes last confirmed window mode which changes when we apply settings. We want to keep it a little longer if we need to auto revert if we reach a weird state */
+	int32 mLastStableWindowMode;
+
+	/** Same as last stable window mode above but holds the last stable resolution instead */
+	FIntPoint mLastStableResolution;
 
 	/** All options that have been subscribed to and the delegates that will be called when the relevant option updates */
 	TMap<FString, FOptionUpdateDelegateData> SubscribedOptions;
@@ -404,11 +369,23 @@ private:
 	/** CVar sink that let use listen for changes in CVars and update or internal values accordingly */
 	static FAutoConsoleVariableSink mCVarSink;
 
-	/** const variables */
-	static const FString MOTION_BLUR_QUALITY;
-	static const FString HZBO_SETTING;
-	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
+	/** language data so we can fetch it later and populate the language dropdown */
+	TMap<FString, FText> mLanguageData;
 
-public:
-	FORCEINLINE ~UFGGameUserSettings() = default;
+	/** The current selected secondary language. Used for localization debugging and quick switching of languages */
+	UPROPERTY( Config )
+	FString mSecondaryLanguage;
+	
+	/** The current set priamry language. Used for to know what to switch back to when using quick switch to go to primary language. */
+	UPROPERTY( Config )
+    FString mPrimaryLanguage;
+
+	/** Which version of game user settings dow we have saved. Used to migrate or perform actions when options are updated/refactored */
+	UPROPERTY(config)
+	uint32 CurrentFGGameUserSettingsVersion;
+
+	/** const variables */
+	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;
 };
+
+

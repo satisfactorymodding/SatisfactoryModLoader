@@ -1,74 +1,66 @@
+// Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
-#include "Engine/StaticMesh.h"
-#include "Array.h"
-#include "UObject/Class.h"
-//<CSS>
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
-
 
 #include "FactoryGame.h"
 #include "Components/SceneComponent.h"
 #include "BuildableColorSlotBase.h"
+#include "FGOptimizationSettings.h"
 #include "FGColoredInstanceManager.generated.h"
 
-class UHierarchicalInstancedStaticMeshComponent;
-class AFGBuildableSubsystem;
 
 /**
-*
-*/
+ * Handles building instancing and coloring.
+ */
 UCLASS( ClassGroup = FactoryGame )
 class FACTORYGAME_API UFGColoredInstanceManager : public USceneComponent
 {
 	GENERATED_BODY()
 public:
-	UFGColoredInstanceManager();
-
 	struct InstanceHandle
 	{
 		FORCEINLINE bool IsInstanced() const
 		{
-			return handleID >= 0;
+			return HandleID >= 0;
 		}
 	private:
-		int32 handleID = INDEX_NONE;
-		uint8 colorIndex = UINT8_MAX;
 		friend UFGColoredInstanceManager;
+
+		int32 HandleID = INDEX_NONE;
+		uint8 ColorIndex = UINT8_MAX;
 	};
 
-	virtual void OnUnregister() override;
-	virtual void OnRegister() override;
+	// Begin AActorComponent interface
+	virtual bool RequiresGameThreadEndOfFrameRecreate() const override { return true; }
+	// End AActorComponent interface
 
+	// Setup the necessary instance lists on our outer. Component must be registered before this is called.
+	void SetupInstanceLists( UStaticMesh* staticMesh, bool makeSingleColor = false, bool useAsOccluder = false, EDistanceCullCategory CullCategory = EDistanceCullCategory::FGDDC_NEVERCULL );
+
+	// Functions to manage the instances handled by this class, setup must be called prior to using these.
 	void ClearInstances();
-
 	void AddInstance( const FTransform& transform, InstanceHandle& handle, uint8 colorIndex );
 	void RemoveInstance( InstanceHandle& handle );
-	void MoveInstance( const FTransform& transform, InstanceHandle& handle, uint8 newColorIndex ); //[DavalliusA:Fri/15-02-2019] wish we could remove the need to send the transform, but didn't find a way to read it from the current instance, so let's send it for now. In worst case we can store it in the handle later... or something.
+	void MoveInstance( const FTransform& transform, InstanceHandle& handle, uint8 newColorIndex );
 
-	virtual bool RequiresGameThreadEndOfFrameRecreate() const override { return true; }
+	FORCEINLINE EDistanceCullCategory GetCullCategory() { return mCullCategory; }
 
-	void SetupInstanceLists( UStaticMesh* staticMesh, bool makeCingleColor = false );
-
-	void UpdateMaterialColors();
-
-	UHierarchicalInstancedStaticMeshComponent* GetHierarchicalMesh( uint8 colorIndex );
-
-	bool IsSingleColorOnly() { return mSingleColorOnly; }
-
-	//[DavalliusA:Fri/22-02-2019] olny used for local quick reference. Don't need to be a property. Will be fetching color slot data from it when updating color slots.
-	AFGBuildableSubsystem* mBuildableSubSystem = nullptr;
 private:
+	void UpdateMaterialColors();
+	class UHierarchicalInstancedStaticMeshComponent* CreateHierarchicalInstancingComponent( class UStaticMesh* staticMesh, bool useAsOccluder, FVector2D& minMaxCullDistance );
 
+private:
+	/** If we are only using a single color we can skip creating a HISM for every color. */
 	bool mSingleColorOnly = false;
 
+	/**
+	 * All instances managed, one instance list per indicator status.
+	 * Since these need to be attached to an actor to be rendered, our outer is used for this purpose.
+	 */
 	UPROPERTY()
-	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ BUILDABLE_COLORS_MAX_SLOTS ];
+	class UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ BUILDABLE_COLORS_MAX_SLOTS ];
 
+	/** Handles from all the managed indicators. */
 	TArray< InstanceHandle* > mHandles[ BUILDABLE_COLORS_MAX_SLOTS ];
 
-
-public:
-	FORCEINLINE ~UFGColoredInstanceManager() = default;
+	EDistanceCullCategory mCullCategory;
 };
-
-//</CSS>

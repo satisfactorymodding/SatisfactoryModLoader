@@ -1,10 +1,11 @@
-#pragma once
-#include "UObject/Class.h"
-
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
-#include "FGBuildable.h"
+
+#pragma once
+
+#include "Buildables/FGBuildable.h"
 #include "FGBuildablePoleBase.generated.h"
 
 
@@ -33,7 +34,4 @@ public:
 	{
 		return mStackHeight;
 	}
-
-public:
-	FORCEINLINE ~AFGBuildablePoleBase() = default;
 };

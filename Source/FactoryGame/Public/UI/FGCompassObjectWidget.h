@@ -1,11 +1,10 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "../FGActorRepresentation.h"
+#include "FGActorRepresentation.h"
 #include "FGCompassObjectWidget.generated.h"
 
 /**
@@ -133,7 +132,4 @@ private:
 
 	/** The last cached distance between the actor this object is representing and the player*/
 	float LastCachedDistanceFromPlayer;
-
-public:
-	FORCEINLINE ~UFGCompassObjectWidget() = default;
 };

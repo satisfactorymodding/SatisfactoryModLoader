@@ -1,7 +1,6 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "GameplayTask.h"
@@ -21,7 +20,4 @@ public:
 	UPROPERTY()
 	class AFGEnemy* mCachedPawn;
 	
-
-public:
-	FORCEINLINE ~UFGGameplayTask_Base() = default;
 };

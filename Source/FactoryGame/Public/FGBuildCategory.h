@@ -1,8 +1,6 @@
-// Copyright 2017 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "SubclassOf.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
 #include "Styling/SlateBrush.h"
@@ -35,7 +33,4 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Build Category" )
 	FSlateBrush mCategoryIcon;
 	
-
-public:
-	FORCEINLINE ~UFGBuildCategory() = default;
 };

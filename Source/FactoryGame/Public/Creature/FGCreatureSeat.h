@@ -1,12 +1,9 @@
-// Copyright 2016-2018 Coffee Stain Studios. All Rights Reserved.
+// Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
-#include "Array.h"
-#include "GameFramework/Actor.h"
-#include "UObject/Class.h"
 
 #include "CoreMinimal.h"
-#include "../FGDriveablePawn.h"
+#include "FGDriveablePawn.h"
 #include "FGCreatureSeat.generated.h"
 
 /**
@@ -33,7 +30,4 @@ public:
 	/** The creature this seat is on */
 	UPROPERTY( SaveGame, Replicated, BlueprintReadWrite, Meta = ( ExposeOnSpawn ) )
 	class AFGCreature* mMountedCreature;
-
-public:
-	FORCEINLINE ~AFGCreatureSeat() = default;
 };
