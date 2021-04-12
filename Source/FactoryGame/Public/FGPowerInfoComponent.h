@@ -83,11 +83,11 @@ public:
 	 * @note This is updated once per frame so if setting target consumption the result is available next frame.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
-	bool HasPower() const { return mHasPower; }
+	FORCEINLINE bool HasPower() const { return mHasPower; }
 
 	/** @return true if the grid is overloaded and the fuse has been triggered; false otherwise. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Circuits|PowerInfo" )
-	bool IsFuseTriggered() const { return mIsFuseTriggered; }
+	FORCEINLINE bool IsFuseTriggered() const { return mIsFuseTriggered; }
 
 	/**
 	 * Set the power we want from the circuit.

@@ -155,6 +155,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
 	float mMaxLegLengthOverride;
 
+	/** Minimum trace length that the buildable should make before spawning legs, -1 means always spawn*/
+	UPROPERTY( EditDefaultsOnly, Category = "Legs" )
+	float mMinimumLegLength;
+
 private:
 	/** The created leg components for this building */
 	UPROPERTY( Transient )

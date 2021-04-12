@@ -74,11 +74,15 @@ protected:
 	virtual void Factory_PushPipeOutput_Implementation( float dt ) override;
 	// End Factory_ Interface
 
+	// Begin AFGBuildableFactory Interface
 	virtual void OnRep_ReplicationDetailActor() override;
-
-	virtual void OnExtractableResourceSet() override;
-
 	virtual void OnRep_CurrentPotential() override;
+	// End AFGBuildableFactory Interface
+
+	// Begin AFGBuildableResourceExtractorBase Interface
+	virtual void OnExtractableResourceSet() override;
+	virtual void OnRep_ExtractableResource() override;
+	// End AFGBuildableResourceExtractorBase Interface
 
 private:
 	void CalculateProductionCycleTime();

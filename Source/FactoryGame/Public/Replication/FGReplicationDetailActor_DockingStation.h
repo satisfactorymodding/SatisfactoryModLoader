@@ -25,9 +25,11 @@ public:
 	FORCEINLINE UFGInventoryComponent* GetFuelInventory() const { return mFuelInventory; }
 
 protected:
-	UPROPERTY( Replicated )
+	using AFGReplicationDetailActor_BuildableFactory::OnRep_Inventory;
+
+	UPROPERTY( ReplicatedUsing = OnRep_Inventory )
 	class UFGInventoryComponent* mCargoInventory;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_Inventory )
 	class UFGInventoryComponent* mFuelInventory;
 };

@@ -49,5 +49,6 @@ void AFGBuildableConveyorBelt::SetShadowCasting(bool inStateBelt, bool inStateIt
 void AFGBuildableConveyorBelt::DestroyVisualItems(){ }
 bool AFGBuildableConveyorBelt::VerifyDefaults(FString& out_message){ return bool(); }
 void AFGBuildableConveyorBelt::TickItemTransforms(float dt, bool bOnlyTickRadioActive){ }
+void AFGBuildableConveyorBelt::TickRadioactivity(){ }
 void AFGBuildableConveyorBelt::TickSingleItemTransform(const FConveyorBeltItem& item, TMap< FName, int32 >& instanceCounts,  AFGRadioactivitySubsystem* radioactiveSubsystem){ }
 void AFGBuildableConveyorBelt::GetConveyorMaterials(TArray<UMaterialInterface*, TInlineAllocator<4>>& out_materials){ }

@@ -21,7 +21,7 @@ struct FACTORYGAME_API FLightSourceControlData
 	int32 ColorSlotIndex = 0;
 	/** Intensity of the light */
 	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Light" )
-	float Intensity = 10.f;
+	float Intensity = 1.f;
 	/** Should it only light up during the night? or always! */
 	UPROPERTY( SaveGame, EditAnywhere, BlueprintReadWrite, Category = "Light" )
 	bool IsTimeOfDayAware = false;
@@ -71,6 +71,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
     bool HasPower() const { return mHasPower; }
 
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
+	float GetDefaultPowerConsumption() const { return mPowerConsumption; }
+
 	/** Called when light color slots have been updated */
 	void OnLightColorSlotsUpdated( const TArray< FLinearColor >& colors );
 
@@ -108,6 +111,9 @@ private:
 	
 	// Update current light color by fetching the color that corresponds to the current light control data slot index
 	void UpdateCurrentLightColor();
+
+	// Update the power consumption of the light.
+	void UpdatePowerConsumption();
 	
 private:
 	/** Is the light on or off. */

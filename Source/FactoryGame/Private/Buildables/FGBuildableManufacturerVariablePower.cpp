@@ -29,7 +29,7 @@ AFGBuildableManufacturerVariablePower::AFGBuildableManufacturerVariablePower() :
 	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
 	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
+	this->NetDormancy = DORM_Initial;
 	this->NetCullDistanceSquared = 5624999936;
 }
 void AFGBuildableManufacturerVariablePower::BeginPlay(){ }

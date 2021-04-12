@@ -3,9 +3,9 @@
 
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "Buildables/FGBuildableFactory.h"
-//MODDING EDIT Add USceneComponent.h include
-#include "Components/SceneComponent.h"
+#include "Components/SceneComponent.h" //MODDING EDIT
 #include "FGProductionIndicatorInstanceManager.generated.h"
+
 
 /**
  * Instanced production indicator, used on factories to display their status.

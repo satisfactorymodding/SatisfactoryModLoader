@@ -72,6 +72,9 @@ struct FSaveHeader
 		// @2021-01-22 UE4.25 Engine Upgrade. FEditorObjectVersion Changes occurred (notably with FText serialization)
 		UE425EngineUpdate,
 
+		// @2021-03-24 Added Modding properties and support
+		AddedModdingParams,
+
 		// -----<new versions can be added above this line>-----
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1 // Last version to use
@@ -79,7 +82,7 @@ struct FSaveHeader
 
 	FSaveHeader();
 
-	FSaveHeader( int32 saveVersion, int32 buildVersion, FString mapName, FString mapOptions, FString sessionName, int32 playDurationSeconds, FDateTime saveDateTime, ESessionVisibility sessionVisibility, int32 editorObjectVersion ) :
+	FSaveHeader( int32 saveVersion, int32 buildVersion, FString mapName, FString mapOptions, FString sessionName, int32 playDurationSeconds, FDateTime saveDateTime, ESessionVisibility sessionVisibility, int32 editorObjectVersion, FString metaData, bool isModdedSave ) :
 		SaveVersion( saveVersion ),
 		BuildVersion( buildVersion ),
 		MapName( mapName ),
@@ -88,7 +91,9 @@ struct FSaveHeader
 		PlayDurationSeconds( playDurationSeconds ),
 		SaveDateTime( saveDateTime ),
 		SessionVisibility( sessionVisibility ),
-		EditorObjectVersion( editorObjectVersion )
+		EditorObjectVersion( editorObjectVersion ),
+		ModMetadata( metaData ),
+		IsModdedSave( isModdedSave )
 	{
 	}
 
@@ -121,6 +126,12 @@ struct FSaveHeader
 
 	/** Save the FEditorObjectVersion that this save file was written with */
 	int32 EditorObjectVersion;
+
+	/** Generic MetaData - Requested by Mods */
+	FString ModMetadata;
+
+	/** Was this save ever saved with mods enabled? */
+	bool IsModdedSave;
 
 	// @todosave: Add LastPlayDate as uint64 (Timestamp)
 	// @todosave: Add if it's a autosave

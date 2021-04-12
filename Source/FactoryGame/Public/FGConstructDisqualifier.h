@@ -50,7 +50,7 @@ class FACTORYGAME_API UFGCDInvalidAimLocation : public UFGConstructDisqualifier
 
 	UFGCDInvalidAimLocation()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidAimLocation", "Invalid Aim Location!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidAimLocation", "Invalid aim location!" );
 	}
 };
 
@@ -61,7 +61,7 @@ class FACTORYGAME_API UFGCDUnaffordable : public UFGConstructDisqualifier
 	
 	UFGCDUnaffordable()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDUnaffordable", "Can't Afford!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDUnaffordable", "Can't afford!" );
 	}
 };
 
@@ -73,7 +73,7 @@ class FACTORYGAME_API UFGCDInvalidPlacement : public UFGConstructDisqualifier
 
 	UFGCDInvalidPlacement()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidPlacement", "Invalid Placement!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidPlacement", "Invalid placement!" );
 	}
 };
 
@@ -84,7 +84,7 @@ class FACTORYGAME_API UFGCDEncroachingClearance : public UFGConstructDisqualifie
 
 	UFGCDEncroachingClearance()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingClearance", "Encroaching other's Clearance!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingClearance", "Encroaching other's clearance!" );
 	}
 };
 
@@ -106,7 +106,7 @@ class FACTORYGAME_API UFGCDInvalidFloor : public UFGConstructDisqualifier
 
 	UFGCDInvalidFloor()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidFloor", "Floor is too Steep!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidFloor", "Floor is too steep!" );
 	}
 };
 
@@ -139,7 +139,7 @@ class FACTORYGAME_API UFGCDMustSnapToCeiling : public UFGConstructDisqualifier
 
 	UFGCDMustSnapToCeiling()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapToCeiling", "This must be built in the ceiling!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapToCeiling", "This must be built on a ceiling!" );
 	}
 };
 
@@ -172,7 +172,7 @@ class FACTORYGAME_API UFGCDMustSnapStation : public UFGConstructDisqualifier
 
 	UFGCDMustSnapStation()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapStation", "Must snap to a station!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapStation", "Must snap to a Drone Port!" );
 	}
 };
 
@@ -183,7 +183,7 @@ class FACTORYGAME_API UFGCDOccupiedStation : public UFGConstructDisqualifier
 
 	UFGCDOccupiedStation()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDOccupiedStation", "Station is currently occupied!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDOccupiedStation", "Drone Port is currently occupied!" );
 	}
 };
 
@@ -194,7 +194,7 @@ class FACTORYGAME_API UFGCDDroneStationHasDrone : public UFGConstructDisqualifie
 
 	UFGCDDroneStationHasDrone()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDDroneStationHasDrone", "Station already has a drone assigned to it!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDDroneStationHasDrone", "Port already has a drone assigned to it!" );
 	}
 };
 
@@ -227,7 +227,7 @@ class UFGCDResourceNodeIsOccuped : public UFGConstructDisqualifier
 
 	UFGCDResourceNodeIsOccuped()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDResourceNodeIsOccuped", "Resource Node is Occupied!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDResourceNodeIsOccuped", "Resource Node is occupied!" );
 	}
 };
 
@@ -238,7 +238,7 @@ class FACTORYGAME_API UFGCDResourceIsTooShallow : public UFGConstructDisqualifie
 
 	UFGCDResourceIsTooShallow()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDResourceIsTooShallow", "Resource is not Deep Enough!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDResourceIsTooShallow", "Resource is not deep enough!" );
 	}
 };
 
@@ -249,7 +249,7 @@ class FACTORYGAME_API UFGCDNeedsWaterVolume : public UFGConstructDisqualifier
 
 	UFGCDNeedsWaterVolume()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsWaterVolume", "You need to place this on Deep Water!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDNeedsWaterVolume", "You need to place this on deep water!" );
 	}
 };
 

@@ -41,7 +41,6 @@ void UFGInventoryComponent::Server_SortInventory_Implementation(){ }
 bool UFGInventoryComponent::Server_SortInventory_Validate(){ return bool(); }
 bool UFGInventoryComponent::HasAuthority() const{ return bool(); }
 bool UFGInventoryComponent::IsItemAllowed(TSubclassOf< UFGItemDescriptor > item, const int32 idx) const{ return bool(); }
-bool UFGInventoryComponent::IsValidIndex(int32 idx) const{ return bool(); }
 int32 UFGInventoryComponent::FindEmptyIndex() const{ return int32(); }
 int32 UFGInventoryComponent::GetFirstIndexWithItem(int32 StartIndex) const{ return int32(); }
 int32 UFGInventoryComponent::AddStack(const FInventoryStack& stack, bool allowPartialAdd){ return int32(); }

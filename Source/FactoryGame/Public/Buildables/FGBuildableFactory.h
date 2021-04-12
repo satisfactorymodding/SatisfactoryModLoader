@@ -115,7 +115,7 @@ public:
 	 * @return true if we have power; false if we do not have power or does not run on power.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
-    bool HasPower() const
+	bool HasPower() const
 	{
 		return Factory_HasPower();
 	}
@@ -127,11 +127,11 @@ public:
 	}
 	
 	/**
-	* Check if this machine runs on power.
-	* @return - true if this machine runs on power; false if it does not.
-	*/
+	 * Check if this machine runs on power.
+	 * @return - true if this machine runs on power; false if it does not.
+	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Power" )
-    bool RunsOnPower() const { return Factory_RunsOnPower(); }
+	bool RunsOnPower() const { return Factory_RunsOnPower(); }
 
 	/* Native only version of RunsOnPower for inlining. */
 	FORCEINLINE virtual bool Factory_RunsOnPower() const
@@ -178,7 +178,7 @@ public:
 	 * @return - true if producing; otherwise false.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|Production" )
-    bool IsProducing() const
+	bool IsProducing() const
 	{
 		return Factory_IsProducing();
 	}
@@ -422,6 +422,12 @@ private:
 
 	class AFGReplicationDetailActor_BuildableFactory* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_BuildableFactory>( mReplicationDetailActor ); } // @todo: make this a static function instead
 
+	//////////////////////////////////////////////////////////////////////////
+	/// Push Model Replication Setters
+	void SetIsProducing( uint8 isProducing );
+	void SetHasPower( uint8 hasPower );
+	void SetCurrentProductivity( uint8 productivity );
+
 public:
 	/** Power consumption of this factory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( ClampMin = "0.0" ) )
@@ -537,11 +543,12 @@ protected:
 	UPROPERTY( BlueprintAssignable, Category = "Replication Detail Actor Owner Interface" )
 	FOnReplicationDetailActorCreated OnReplicationDetailActorCreatedEvent;
 
-private: 
+private:
 	/** The input we place a crystal in to unlock the potential */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mInventoryPotential;
 
+	UPROPERTY()
 	class UFGReplicationDetailInventoryComponent* mInventoryPotentialHandler;
 
 	/** This is the current potential (overclock, overcharge) of this factory [0..N]

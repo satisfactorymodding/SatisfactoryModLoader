@@ -46,7 +46,6 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	// End AActor interface
@@ -228,7 +227,7 @@ private:
 	EItemTransferringStage mItemTransferringStage;
 
 	/** Current progress on transfer from/to docking station ( in seconds ) */
-	UPROPERTY( Replicated )
+	UPROPERTY()
 	float mTransferProgress;
 
 	/** How long time it takes to transfer one stack of item from/to docking station ( in seconds ) */

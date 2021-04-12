@@ -8,6 +8,7 @@
 AFGPipelineSupportHologram::AFGPipelineSupportHologram() : Super() {
 	this->mCanAdjustVerticalAngle = true;
 	this->mMaxPlacementFloorAngle = 35;
+	this->mUseGradualFoundationRotations = true;
 	this->mValidHitClasses.Add(AFGBuildableFoundation::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRailroadTrack::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRoad::StaticClass());
 	this->mUseBuildClearanceOverlapSnapp = true;
 	this->SetHidden(true);

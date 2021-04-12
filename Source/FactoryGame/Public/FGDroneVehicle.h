@@ -48,7 +48,7 @@ struct FDroneDockingStateInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY( SaveGame )
 	EDroneDockingState State;
 
 	UPROPERTY()
@@ -445,7 +445,7 @@ public:
 
 	bool GrabRequiredBatteriesForTrip( class AFGBuildableDroneStation* FromStation, class AFGBuildableDroneStation* ToStation, bool AllowTravelWithoutCost );
 	
-	void TravelToStation( class AFGBuildableDroneStation* station, bool ShouldTransferItems );
+	bool TravelToStation( class AFGBuildableDroneStation* station, bool ShouldTransferItems );
 
 	void BeginNewTrip( class AFGBuildableDroneStation* Station );
 	void EndCurrentTrip( bool Completed );
@@ -592,7 +592,7 @@ private:
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_FlyingMode )
 	EDroneFlyingMode mCurrentFlyingMode;
 
-	UPROPERTY( ReplicatedUsing=OnRep_DockingState )
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_DockingState )
 	FDroneDockingStateInfo mCurrentDockingState;
 
 	UPROPERTY( SaveGame )

@@ -40,7 +40,7 @@ public:
 };
 
 UCLASS(BlueprintType)
-class UFGGameUserSettings : public UGameUserSettings
+class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings
 {
 	GENERATED_BODY()
 public:

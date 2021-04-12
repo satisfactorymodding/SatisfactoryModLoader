@@ -3,8 +3,8 @@
 #include "FGBackgroundThread.h"
 #include "Components/SceneComponent.h"
 
-DEFINE_LOG_CATEGORY(LogPoolSystem);
 
+DEFINE_LOG_CATEGORY(LogPoolSystem);
 bool FPoolInstanceBase::ResolveHitResults(const TArray<FHitResult>& inHits, const TArray<UClass*>& classesToCheckAgainst, FVector& outHitLocation, float& inNearestDistance){ return bool(); }
 #if 0
 #endif 
@@ -45,17 +45,16 @@ void FFGBackgroundThread::UpdateRelevance(const FVector playerLocation, const FV
 void FFGBackgroundThread::InitializeDefaultPoolComponents(){ }
 void FFGBackgroundThread::UpdateItems(TArray<FPoolItem*> &Bucket, const FVector pawnLocation, const FVector pawnForwardVector){ }
 void FFGBackgroundThread::DumpDebug(){ }
-void FFGBackgroundThread::UpdateScalabilityValues(){ }
+void FFGBackgroundThread::RefreshScalabilityVariables(){ }
+void FFGBackgroundThread::ApplyScalability(){ }
 void APoolRoot::UpdateBuildingState( AFGBuildable* Building, int32 FlagsToSet){ }
 void APoolRoot::DisplayDebug(UCanvas* Canvas, const FDebugDisplayInfo& DebugDisplay, float& YL, float& YPos){ }
-void APoolRoot::SetFlag(AFGBuildable* Buildable, int32 Flags){ }
+void APoolRoot::SetFlag(AFGBuildable* Buildable,  int32 Flags){ }
 void APoolRoot::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-#if WITH_EDITORONLY_DATA
-#endif 
 AFGDecorationTemplate::AFGDecorationTemplate() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 }
-TArray<class UFGPoolableProxyComponentBase*> AFGDecorationTemplate::GetPoolAbleComponentsFromSubclass(const UClass* InActorClass){ return TArray<class UFGPoolableProxyComponentBase*>(); }
+TArray< class UFGPoolableProxyComponentBase* > AFGDecorationTemplate::GetPoolAbleComponentsFromSubclass(const UClass* InActorClass){ return TArray<class UFGPoolableProxyComponentBase*>(); }
 UFGPoolableProxyComponentBase::UFGPoolableProxyComponentBase() : Super() {
 	this->bHiddenInGame = true;
 }

@@ -24,10 +24,12 @@ AFGCentralStorageContainer::AFGCentralStorageContainer() : Super() {
 	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
 	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
 	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
+	this->mForceNetUpdateOnRegisterPlayer = true;
+	this->mToggleDormancyOnInteraction = true;
 	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
 	this->bAlwaysRelevant = true;
 	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
+	this->NetDormancy = DORM_Initial;
 	this->NetCullDistanceSquared = 5624999936;
 }
 void AFGCentralStorageContainer::BeginPlay(){ }

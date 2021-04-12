@@ -29,17 +29,17 @@ public:
 	void ClearReplicationInventoryComponent();
 
 	/** Returns the active inventory component */
-	FORCEINLINE class UFGInventoryComponent* GetActiveInventoryComponent() const { return mActiveInventoryComponent; }
+	FORCEINLINE class UFGInventoryComponent* GetActiveInventoryComponent() const { return mActiveInventoryComponent.Get(); }
 
 	/** Returns whether or not a MainInventoryComponent has been set */
-	FORCEINLINE bool HasMainInventoryComponent() const { return IsValid( mMainInventoryComponent ); }
+	FORCEINLINE bool HasMainInventoryComponent() const { return mMainInventoryComponent.IsValid(); }
 
 protected:
 	// The active InventoryComponent returned
-	class UFGInventoryComponent* mActiveInventoryComponent;
+	TWeakObjectPtr< class UFGInventoryComponent > mActiveInventoryComponent;
 
-	class UFGInventoryComponent* mMainInventoryComponent; // Original InventoryComponent
-	class UFGInventoryComponent* mReplicationInventoryComponent; // The dynamically replicated InventoryComponent that is created on demand
+	TWeakObjectPtr< class UFGInventoryComponent > mMainInventoryComponent; // Original InventoryComponent
+	TWeakObjectPtr< class UFGInventoryComponent > mReplicationInventoryComponent; // The dynamically replicated InventoryComponent that is created on demand
 
-	class AFGReplicationDetailActor* mReplicationDetailActor; // Replication Detail Actor owning the replication InventoryComponent
+	TWeakObjectPtr< class AFGReplicationDetailActor > mReplicationDetailActor; // Replication Detail Actor owning the replication InventoryComponent
 };

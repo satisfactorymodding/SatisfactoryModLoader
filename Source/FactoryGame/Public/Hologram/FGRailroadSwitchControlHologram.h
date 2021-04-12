@@ -28,6 +28,8 @@ public:
 protected:
 	// Begin AFGHologram
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
+	virtual void CheckClearance() override;
+	virtual void CheckValidFloor() override;
 	// End AFGHologram
 
 private:

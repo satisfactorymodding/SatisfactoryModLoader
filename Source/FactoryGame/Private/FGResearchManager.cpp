@@ -31,7 +31,7 @@ void AFGResearchManager::GetPendingRewards(TSubclassOf<class UFGSchematic> schem
 void AFGResearchManager::UpdateUnlockedResearchTrees(){ }
 void AFGResearchManager::UnlockResearchTree(TSubclassOf<class UFGResearchTree> researchTree){ }
 void AFGResearchManager::OnRep_OngoingResearch(){ }
-void AFGResearchManager::Client_NewResearchStarted_Implementation(TSubclassOf<  UFGSchematic > research){ }
+void AFGResearchManager::Multicast_ResearchCompleted_Implementation(TSubclassOf<  UFGSchematic > research){ }
 void AFGResearchManager::PopulateResearchTreeList(){ }
 void AFGResearchManager::StartResearch(TSubclassOf<class UFGSchematic> schematic, TSubclassOf<  UFGResearchTree> initiatingResearchTree){ }
 void AFGResearchManager::GeneratePendingReward(FResearchData& researchData){ }

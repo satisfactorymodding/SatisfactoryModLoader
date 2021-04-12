@@ -183,6 +183,10 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|UI")
 	UFGInteractWidget* FindWidgetByClass( TSubclassOf<UFGInteractWidget> widgetClass );
 
+	/** Get the on screen call widget */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    class UFGOnScreenCallWidget* GetOnScreenCallWidget() const;
+
 	/** Call this to setup the hud for resuming the game */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|HUD")
 	void ResumeGame();

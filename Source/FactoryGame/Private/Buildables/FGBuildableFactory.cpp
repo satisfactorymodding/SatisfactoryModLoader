@@ -16,6 +16,7 @@ AFGBuildableFactory::AFGBuildableFactory() : Super() {
 	this->mMaxPotentialIncreasePerCrystal = 0.5;
 	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
 	this->mFluidStackSizeMultiplier = 1;
+	this->mInventoryPotentialHandler = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT("InventoryPotentialHandler"));
 	this->mCurrentPotential = 1;
 	this->mSignificanceRange = 18000;
 	this->mHologramClass = AFGFactoryHologram::StaticClass();
@@ -95,3 +96,6 @@ AFGReplicationDetailActor* AFGBuildableFactory::GetOrCreateReplicationDetailActo
 void AFGBuildableFactory::OnRep_CurrentPotential(){ }
 void AFGBuildableFactory::OnRep_IsProducing(){ }
 void AFGBuildableFactory::OnPotentialInventoryItemRemoved(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }
+void AFGBuildableFactory::SetIsProducing(uint8 isProducing){ }
+void AFGBuildableFactory::SetHasPower(uint8 hasPower){ }
+void AFGBuildableFactory::SetCurrentProductivity(uint8 productivity){ }

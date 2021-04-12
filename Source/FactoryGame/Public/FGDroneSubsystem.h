@@ -72,6 +72,11 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Drones" )
 	void Server_PairStations( AFGDroneStationInfo* origin, AFGDroneStationInfo* target );
 
+	void SetUniqueStationName( AFGDroneStationInfo* stationInfo, const FString& prefix ) const;
+
+private:
+	bool TrySetStationName( AFGDroneStationInfo* stationInfo, const FString& name ) const;
+
 private:
 	/** All the drone stations in the world */
 	UPROPERTY( Replicated )

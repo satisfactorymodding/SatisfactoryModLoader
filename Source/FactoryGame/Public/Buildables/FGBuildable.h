@@ -369,6 +369,9 @@ protected:
 
 	UFUNCTION( BlueprintPure, Category="Buildable" )
 	bool ShouldModifyWorldGrid() const { return mShouldModifyWorldGrid; }
+
+	/** Setter for mDidFirstTimeUse so we can ensure that it is flagged for replication property */
+	void SetDidFirstTimeUse( bool didUse );
 	
 private:
 	/** Create a stat for the buildable */
@@ -508,6 +511,10 @@ protected:
 	/** Whether or not this building should use ForceNetUpdate() when a player registers/unregisters from it. */
 	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
 	bool mForceNetUpdateOnRegisterPlayer;
+	
+	/** Whether or not this building should set Dorm_Awake when a player registers interaction and to set Dorm_DormantAll when no more players are interacting. */
+	UPROPERTY( EditDefaultsOnly, Category = "Replication" )
+	bool mToggleDormancyOnInteraction;
 
 	/** Flag for whether the build effect is active */
 	uint8 mBuildEffectIsPlaying : 1;

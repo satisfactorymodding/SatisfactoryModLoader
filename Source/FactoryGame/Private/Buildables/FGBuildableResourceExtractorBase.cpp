@@ -43,4 +43,5 @@ void AFGBuildableResourceExtractorBase::SetExtractableResource(TScriptInterface<
 void AFGBuildableResourceExtractorBase::SetResourceNode( AFGResourceNode* resourceNode){ }
 UParticleSystem* AFGBuildableResourceExtractorBase::GetMiningParticle(){ return nullptr; }
 bool AFGBuildableResourceExtractorBase::CanOccupyResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
+bool AFGBuildableResourceExtractorBase::IsAllowedOnResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
 void AFGBuildableResourceExtractorBase::OnExtractableResourceSet(){ }

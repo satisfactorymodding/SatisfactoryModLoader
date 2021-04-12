@@ -23,6 +23,7 @@ void AFGBuildableConveyorLift::Upgrade_Implementation(AActor* newActor){ }
 float AFGBuildableConveyorLift::GetLastRenderTime() const{ return float(); }
 void AFGBuildableConveyorLift::DestroyVisualItems(){ }
 void AFGBuildableConveyorLift::TickItemTransforms(float dt, bool bOnlyTickRadioActive){ }
+void AFGBuildableConveyorLift::TickRadioactivity(){ }
 FBoxCenterAndExtent AFGBuildableConveyorLift::FitClearance(float transformZ,
 		float stepHeight,
 		const FVector2D& extend2D,

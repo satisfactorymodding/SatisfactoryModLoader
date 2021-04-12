@@ -3,7 +3,7 @@
 #include "FGCalendarRewards.h"
 
 #if WITH_EDITOR
-EDataValidationResult UFGCalendarRewards::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult(); }
+EDataValidationResult UFGCalendarRewards::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult::Valid; }
 #endif 
 TArray< FItemAmount > UFGCalendarRewards::GetSlotRewards(TSubclassOf< UFGCalendarRewards > inClass){ return TArray<FItemAmount>(); }
 TArray< FItemAmount > UFGCalendarRewards::GetRandomRewards(TSubclassOf< UFGCalendarRewards > inClass){ return TArray<FItemAmount>(); }

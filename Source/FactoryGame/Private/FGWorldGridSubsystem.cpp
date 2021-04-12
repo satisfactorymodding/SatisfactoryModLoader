@@ -5,7 +5,6 @@
 FFGWorldGridCellData::FFGWorldGridCellData(){ }
 FFGWorldGridCell::FFGWorldGridCell(){ }
 FFGWorldGridCell::FFGWorldGridCell(const FFGWorldGridCellData& Data, const FVector& WorldLocation, int32 CellIndex){ }
-float FFGWorldGridCell::GetElevation() const{ return float(); }
 void FFGWorldGridCell::OnTraceCompleted(const FTraceHandle& Handle, FTraceDatum& Data){ }
 void UFGWorldGridDataAsset::AssignWorldCells(TArray<FFGWorldGridCellData>&& Cells, const FVector2D& GridMin, const FVector2D& GridMax, int32 Divisions){ }
 void UFGWorldGridDataAsset::DebugDraw(){ }
@@ -17,12 +16,11 @@ AFGWorldGridSubsystem::AFGWorldGridSubsystem() : Super() {
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UWorld* world){ return nullptr; }
 AFGWorldGridSubsystem* AFGWorldGridSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGWorldGridSubsystem::UpdateCellContainingBuildable( AFGBuildable* pBuildable){ }
-FVector2D AFGWorldGridSubsystem::GetWorldGridCoordinatesForLocation(const FVector& WorldLocation) const{ return FVector2D(); }
 FFGWorldGridCell* AFGWorldGridSubsystem::GetCellContainingWorldLocation(const FVector& WorldLocation){ return nullptr; }
-int32 AFGWorldGridSubsystem::GetCellIndexFromWorldLocation(const FVector& WorldLocation) const{ return int32(); }
+FFGWorldGridCell* AFGWorldGridSubsystem::GetClosestCellToWorldLocation(const FVector& WorldLocation){ return nullptr; }
 TArray<const FFGWorldGridCell*> AFGWorldGridSubsystem::GetCellNeighbours(const FFGWorldGridCell* Cell) const{ return TArray<const FFGWorldGridCell*>(); }
-TArray<const FFGWorldGridCell*> AFGWorldGridSubsystem::GetCellNeighboursFromindex(int32 Index) const{ return TArray<const FFGWorldGridCell*>(); }
-FVector2D AFGWorldGridSubsystem::GetCellSize() const{ return FVector2D(); }
+TArray<const FFGWorldGridCell*> AFGWorldGridSubsystem::GetCellNeighboursFromIndex(int32 Index) const{ return TArray<const FFGWorldGridCell*>(); }
+TArray<int32> AFGWorldGridSubsystem::GetCellNeighbourIndicesFromIndex(int32 Index) const{ return TArray<int32>(); }
 void AFGWorldGridSubsystem::BeginPlay(){ }
 void AFGWorldGridSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGWorldGridSubsystem::Tick(float DeltaSeconds){ }

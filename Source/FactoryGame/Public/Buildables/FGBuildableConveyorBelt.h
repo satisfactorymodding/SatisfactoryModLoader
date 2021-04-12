@@ -149,6 +149,7 @@ protected:
 
 	// Begin AFGBuildableConveyorBase interface
 	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) override;
+	virtual void TickRadioactivity() override;
 	// End AFGBuildableConveyorBase interface
 
 private:

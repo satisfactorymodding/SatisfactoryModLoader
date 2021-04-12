@@ -53,16 +53,22 @@ public:
 	class UParticleSystem* GetMiningParticle();
 
 	 //type names are used to match types for upgrades and such
-	FName GetExtractorTypeName() { return mExtractorTypeName; }
+	FName GetExtractorTypeName() const { return mExtractorTypeName; }
 
 	/** Can this extractor occupy a resource node? */
 	bool CanOccupyResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const;
+
+	/** Can this extractor occupy a resource node, given that it is not already occupied? */
+	bool IsAllowedOnResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const;
 
 protected:
 	AActor* GetExtractableResourceActor() const { return mExtractableResource; }
 
 	virtual AActor* TryFindMissingResource() { return nullptr; }
 	virtual void OnExtractableResourceSet();
+
+	UFUNCTION()
+	virtual void OnRep_ExtractableResource() { }
 
 protected:
 	friend class AFGResourceExtractorHologram;
@@ -99,7 +105,7 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	class AFGResourceNode* mExtractResourceNode;
 
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_ExtractableResource )
 	AActor* mExtractableResource;
 
 };

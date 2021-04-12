@@ -495,7 +495,8 @@ protected:
 		}
 
 		FVector CellOrigin;
-		const float LowPrioMaxLength = 201.f; // Slightly over 200 so belts snapped to the grid that are 200 exactly fall into the low prio group
+		const float LowPrioConveyorMaxLength = 201.f; // Slightly over 200 so belts snapped to the grid that are 200 exactly fall into the low prio group
+		const float LowPrioPipelineMaxLength = 499.f; // Larger than conveyors as pipes smaller than this cannot have flow indicators
 
 		// All actors that belong in this cell. Added / Removed from Graph Notifies. Used to find the connection info for each actor
 		TArray < AActor* > ActorList;

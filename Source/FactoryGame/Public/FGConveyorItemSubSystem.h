@@ -7,7 +7,6 @@
 #include "Buildables/FGBuildableConveyorBelt.h"
 #include "Buildables/FGBuildableConveyorLift.h"
 #include "FGSubsystem.h"
-#include "RenderCommandFence.h"
 #include "FGConveyorItemSubSystem.generated.h"
 
 class AConveyorBeltItemProxy;

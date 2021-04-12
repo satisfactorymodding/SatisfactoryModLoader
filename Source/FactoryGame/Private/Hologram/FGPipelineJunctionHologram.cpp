@@ -17,6 +17,7 @@ AFGPipelineJunctionHologram::AFGPipelineJunctionHologram() : Super() {
 	this->mWallSnapOffset.X = 0; this->mWallSnapOffset.Y = 75;
 	this->mIncludeBuildGuideTraceChannel = true;
 	this->mMaxPlacementFloorAngle = 35;
+	this->mUseGradualFoundationRotations = true;
 	this->mValidHitClasses.Add(AFGBuildableFoundation::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRailroadTrack::StaticClass()); this->mValidHitClasses.Add(AFGBuildableRoad::StaticClass()); this->mValidHitClasses.Add(AFGBuildablePipeline::StaticClass()); this->mValidHitClasses.Add(AFGBuildablePipelineAttachment::StaticClass()); this->mValidHitClasses.Add(AFGBuildableWall::StaticClass());
 	this->mUseBuildClearanceOverlapSnapp = true;
 	this->SetHidden(true);

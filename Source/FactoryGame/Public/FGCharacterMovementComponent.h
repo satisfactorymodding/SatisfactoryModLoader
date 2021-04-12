@@ -102,7 +102,8 @@ struct FACTORYGAME_API FPlayerZiplineData
 	/* World direction we're headed */
 	UPROPERTY( BlueprintReadOnly, Category = "Zipline Data" )
 	FVector Direction;
-	FVector StartPoint;
+	
+	FVector EndPoint;
 
 	/* Velocity applied last frame from zipline movement */
 	UPROPERTY( BlueprintReadOnly, Category = "Zipline Data" )
@@ -111,8 +112,6 @@ struct FACTORYGAME_API FPlayerZiplineData
 	FVector LastCorrectionVelocityApplied;
 
 	FVector ProjectedZiplineLocation;
-
-	float VelocityLerp;
 
 	/** Multiplier that controls speed based on angle of travel */
 	UPROPERTY( BlueprintReadOnly, Category = "Zipline Data" )
@@ -446,7 +445,7 @@ public:
 	UPROPERTY()
 	class AFGCharacterPlayer* mFGCharacterOwner;
 
-private: 
+private:
 	friend class FSavedMove_FGMovement;
 
 	/** A cached instance of the equipment that issued jet pack thrust */
@@ -529,9 +528,9 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Movement|Zipline" )
 	float mZiplineSpeed;
 
-	/* 0-1 value determining how much speed we start with when ziplining */
-	UPROPERTY( EditDefaultsOnly, Category = "Movement|Zipline", meta=(ClampMin="0", ClampMax="1", UIMin="0", UIMax="1") )
-	float mZiplineInitialVelocityPercentage;
+	/* The speed of which the character corrects its position when ziplining. */
+	UPROPERTY( EditDefaultsOnly, Category = "Movement|Zipline" )
+	float mZiplineCorrectionSpeedMultiplier;
 
 	/* How fast we interpolate to max speed when ziplining */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement|Zipline" )

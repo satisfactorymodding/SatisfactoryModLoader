@@ -23,3 +23,4 @@ void AFGResourceExtractorHologram::ConfigureActor( AFGBuildable* inBuildable) co
 void AFGResourceExtractorHologram::CheckResourcesAvailable(){ }
 void AFGResourceExtractorHologram::TrySnapToExtractableResource(const FHitResult& hitResult, FVector& newHitLocation){ }
 bool AFGResourceExtractorHologram::CanOccupyResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
+bool AFGResourceExtractorHologram::IsAllowedOnResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }

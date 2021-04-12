@@ -194,6 +194,7 @@ protected:
 	bool mHaveSnappedWithPlacementOverlap = false; //used to make sure we only do snapping once, or we might get pushed back in to what we moved out from
 
 	//If set to true, the building will be allowed to snap to 45 degree intervals on fonudations instead of only 90 as the default.
+	UPROPERTY( EditDefaultsOnly )
 	bool mUseGradualFoundationRotations = false;
 
 	UPROPERTY( EditDefaultsOnly, meta = ( EditCondition = "mUseBuildClearanceOverlapSnapp" ) )

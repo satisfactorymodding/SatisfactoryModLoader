@@ -152,6 +152,9 @@ public:
 	void SetTimeOfDay( int32 hour, int32 minute = 0 );
 
 	UFUNCTION( exec, CheatBoard, category = "World/Time" )
+    void SetTimeSpeedMultiplierResetTime( int32 resetHour );
+
+	UFUNCTION( exec, CheatBoard, category = "World/Time" )
 	int32 SetTimeOfDay_hour_Get();
 
 	UFUNCTION( exec, CheatBoard, category = "World/Time" )

@@ -45,7 +45,11 @@ protected:
 
 	virtual void TrySnapToExtractableResource( const FHitResult& hitResult, FVector& newHitLocation );
 
+	/** Can this extractor occupy a resource node? */
 	virtual bool CanOccupyResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const;
+
+	/** Can this extractor occupy a resource node, given that it is not already occupied? */
+	virtual bool IsAllowedOnResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const;
 
 protected:
 	UPROPERTY()
@@ -57,8 +61,5 @@ protected:
 
 	UPROPERTY( )
 	class AFGBuildableResourceExtractorBase* mUpgradeTarget = nullptr;
-
-	/** name used to match types of extractors for compatibility when upgrading */
-	FName mExtractorTypeName = "";
 
 };

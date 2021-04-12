@@ -211,7 +211,7 @@ public: // MODDING EDIT: protected -> public
 	TArray< class UFGUnlock* > mUnlocks;
 
 	/** Icon used when displaying this schematic */
-	UPROPERTY( EditDefaultsOnly, Category = "UI", meta = (NoAutoJson = true) )
+	UPROPERTY( EditDefaultsOnly, Category = "UI" )
 	FSlateBrush mSchematicIcon;
 	
 	/** Small version of the icon used when displaying this schematic  */

@@ -26,7 +26,9 @@ public:
 	FORCEINLINE class UFGInventoryComponent* GetOutputInventory() const { return mOutputInventory; };
 
 protected:
-	UPROPERTY( Replicated )
+	using AFGReplicationDetailActor_BuildableFactory::OnRep_Inventory;
+
+	UPROPERTY( ReplicatedUsing = OnRep_Inventory )
 	class UFGInventoryComponent* mOutputInventory;
 	
 };

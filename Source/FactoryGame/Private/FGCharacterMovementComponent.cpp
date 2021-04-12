@@ -12,7 +12,7 @@ UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mBoostJumpVelocityMultiplier = 1.29999995231628;
 	this->mBoostJumpTimeWindow = 0.150000005960464;
 	this->mZiplineSpeed = 1200;
-	this->mZiplineInitialVelocityPercentage = 0.5;
+	this->mZiplineCorrectionSpeedMultiplier = 10;
 	this->mZiplineVelocityInterpolationSpeed = 1;
 	this->mZiplineSpeedMultiplierUp = 0.5;
 	this->mZiplineSpeedMultiplierDown = 1.29999995231628;

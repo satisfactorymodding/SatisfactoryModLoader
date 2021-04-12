@@ -113,7 +113,7 @@ public:
 	virtual void TickTractionAndFriction( float dt );
 
 	/** Move the physics of the vehicle to the new track position. */
-	void MoveVehicle( float dt, float distance, FRailroadTrackPosition newTrackPosition );
+	void MoveVehicle( float dt, float distance, FRailroadTrackPosition newTrackPosition, bool shouldMoveComponent );
 
 	/** Updates the coupler rotation and length, called after move vehicle has been called on the whole train. */
 	void UpdateCouplerRotationAndLength();

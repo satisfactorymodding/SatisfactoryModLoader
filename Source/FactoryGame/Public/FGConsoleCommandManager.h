@@ -61,10 +61,10 @@ public:
 	void FixupBuiltByRecipeInOldSave( bool reapplyRecipeIfBetterMatchFound = false );
 
 	/** Dump some stats about the factory to the log such as number of buildings and kilometers of railway built. */
-	UFUNCTION( exec, CheatBoard, category = "Log" )
+	UFUNCTION( exec )
 	void DumpFactoryStatsToLog();
 
-	/** Copy the player coordinates to cliboard */
+	/** Copy the player coordinates to clipboard */
 	UFUNCTION( exec )
 	void CopyPlayerCoordinates();
 
@@ -72,6 +72,6 @@ public:
 	UFUNCTION( exec )
 	void DumpPlayerCoordinates( const FString& label = TEXT(""), bool copyToClipboard = false );
 
-	UFUNCTION( exec, CheatBoard, category = "Log" )
+	UFUNCTION( exec )
 	void DumpDynamicOptionsSettings();
 };

@@ -3,7 +3,6 @@
 #pragma once
 
 #include "SharedInventoryStatePtr.h"
-#include "FactoryGame.h" // MODDING EDIT
 #include "FGSaveInterface.h"
 #include "Resources/FGItemDescriptor.h"
 #include "ItemAmount.h"
@@ -188,7 +187,10 @@ public:
 	 * @return true if the index is a valid index.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	bool IsValidIndex( int32 idx ) const;
+	FORCEINLINE bool IsValidIndex( int32 idx ) const
+	{
+		return idx >= 0 && idx < mInventoryStacks.Num();
+	}
 
 	/**
 	 * @return first empty index, -1 if none is found
@@ -346,7 +348,7 @@ public:
 
 	/** The total size of the inventory, when accessing inventory linearly using indices. */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
-	int32 GetSizeLinear() const { return mInventoryStacks.Num(); }
+	FORCEINLINE int32 GetSizeLinear() const { return mInventoryStacks.Num(); }
 
 	/** Returns index of the stack that has percentually the most items */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )

@@ -235,8 +235,8 @@ protected:
 	UFUNCTION()
 	void OnRep_OngoingResearch();
 
-	UFUNCTION( Reliable, Client )
-	void Client_NewResearchStarted( TSubclassOf< class UFGSchematic > research );
+	UFUNCTION( Reliable, NetMulticast )
+	void Multicast_ResearchCompleted( TSubclassOf< class UFGSchematic > research );
 
 	/** Populates list with all available research trees in the game */
 	void PopulateResearchTreeList();

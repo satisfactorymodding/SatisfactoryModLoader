@@ -26,10 +26,12 @@ public:
 	FORCEINLINE float GetCurrentManufacturingProgress() const { return mCurrentManufacturingProgress; }
 
 protected:
-	UPROPERTY( Replicated )
+	using AFGReplicationDetailActor_BuildableFactory::OnRep_Inventory;
+
+	UPROPERTY( ReplicatedUsing = OnRep_Inventory )
 	class UFGInventoryComponent* mInputInventory;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_Inventory )
 	class UFGInventoryComponent* mOutputInventory;
 
 	UPROPERTY( Replicated )

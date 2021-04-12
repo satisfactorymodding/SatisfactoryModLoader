@@ -52,6 +52,7 @@ void AFGBuildableResourceExtractor::Factory_StartProducing(){ }
 void AFGBuildableResourceExtractor::Factory_TickProducing(float dt){ }
 void AFGBuildableResourceExtractor::Factory_PushPipeOutput_Implementation(float dt){ }
 void AFGBuildableResourceExtractor::OnRep_ReplicationDetailActor(){ }
-void AFGBuildableResourceExtractor::OnExtractableResourceSet(){ }
 void AFGBuildableResourceExtractor::OnRep_CurrentPotential(){ }
+void AFGBuildableResourceExtractor::OnExtractableResourceSet(){ }
+void AFGBuildableResourceExtractor::OnRep_ExtractableResource(){ }
 void AFGBuildableResourceExtractor::CalculateProductionCycleTime(){ }

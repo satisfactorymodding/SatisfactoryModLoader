@@ -17,7 +17,6 @@ void UFGFactoryConnectionComponent::SetInventory( UFGInventoryComponent* invento
 void UFGFactoryConnectionComponent::SetInventoryAccessIndex(int32 index){ }
 void UFGFactoryConnectionComponent::SetConnection( UFGFactoryConnectionComponent* toComponent){ }
 void UFGFactoryConnectionComponent::ClearConnection(){ }
-bool UFGFactoryConnectionComponent::IsConnected() const{ return bool(); }
 EFactoryConnectionDirection UFGFactoryConnectionComponent::GetCompatibleSnapDirection() const{ return EFactoryConnectionDirection(); }
 bool UFGFactoryConnectionComponent::CanSnapTo(UFGFactoryConnectionComponent* otherConnection) const{ return bool(); }
 bool UFGFactoryConnectionComponent::CanConnectTo(UFGFactoryConnectionComponent* otherConnection) const{ return bool(); }

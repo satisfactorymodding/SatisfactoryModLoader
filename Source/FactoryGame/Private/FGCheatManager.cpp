@@ -50,6 +50,7 @@ void UFGCheatManager::RemoveAllFoliage(int32 maxNumInstances){ }
 void UFGCheatManager::PardonAllPlayers(){ }
 void UFGCheatManager::ClearPardon(){ }
 void UFGCheatManager::SetTimeOfDay(int32 hour, int32 minute){ }
+void UFGCheatManager::SetTimeSpeedMultiplierResetTime(int32 resetHour){ }
 int32 UFGCheatManager::SetTimeOfDay_hour_Get(){ return int32(); }
 int32 UFGCheatManager::SetTimeOfDay_minute_Get(){ return int32(); }
 void UFGCheatManager::ShowFactoryOnly(bool environmentHidden){ }

@@ -113,6 +113,7 @@ bool AFGBuildable::HasMaterialInstanceManagerForMaterialName(const FString& look
 UFGFactoryMaterialInstanceManager* AFGBuildable::GetMaterialInstanceManagerForMaterialName(const FString& lookupName){ return nullptr; }
 bool AFGBuildable::AddMaterialInstanceManagerForMaterialName(const FString& lookupName,  UFGFactoryMaterialInstanceManager* materialInstanceManager){ return bool(); }
 void AFGBuildable::CleanUpMaterialInstanceMappingsInSubsystem(){ }
+void AFGBuildable::SetDidFirstTimeUse(bool didUse){ }
 void AFGBuildable::CreateFactoryStatID() const{ }
 void AFGBuildable::SetReplicateDetails(bool replicateDetails){ }
 bool AFGBuildable::CheckFactoryConnectionComponents(FString& out_message){ return bool(); }
