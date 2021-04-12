@@ -21,7 +21,6 @@ public:
 	static FVector ConvertRotationToFVect(FbxQuaternion Quaternion, bool bInvertRot);
 	static FQuat ConvertRotToQuat(FbxQuaternion Quaternion);
 	static float ConvertDist(FbxDouble Distance);
-	static bool ConvertPropertyValue(FbxProperty& FbxProperty, UProperty& UnrealProperty, union UPropertyValue& OutUnrealPropertyValue);
 	static FTransform ConvertTransform(FbxAMatrix Matrix);
 	static FMatrix ConvertMatrix(FbxAMatrix Matrix);
 

@@ -35,9 +35,7 @@ void UTextureAssetSerializer::SerializeTextureData(const FString& ContextString,
     FTexture2DMipMap& FirstMipMap = PlatformData->Mips[0];
     const FString PixelFormatName = PixelFormatEnum->GetNameStringByValue((int64) PixelFormat);
     
-    //Lock mipmap data and obtain pointer to compressed data
-    const int32 NumSlices = PlatformData->GetNumSlices();
-    const uint8* CompressedData = (const uint8*) FirstMipMap.BulkData.LockReadOnly();
+	const int32 NumSlices = PlatformData->GetNumSlices();
     const int32 TextureWidth = FirstMipMap.SizeX;
     const int32 TextureHeight = FirstMipMap.SizeY;
     check(FirstMipMap.SizeZ == 1);
@@ -48,44 +46,38 @@ void UTextureAssetSerializer::SerializeTextureData(const FString& ContextString,
     Data->SetNumberField(TEXT("NumSlices"), NumSlices);
     Data->SetStringField(TEXT("CookedPixelFormat"), PixelFormatName);
 
-    TArray<uint8> CombinedDecompressedData;
-
     //When we are operating on one slice only, we can perform some optimizations to avoid unnecessary copying
     const int32 NumBytesPerSlice = FirstMipMap.BulkData.GetBulkDataSize() / NumSlices;
-    const bool bHaveOnlyOneSlice = NumSlices == 1;
-    
-    //Extract every slice and stitch them into the single texture
-    for (int i = 0; i < NumSlices; i++) {
-        TArray<uint8> OutDecompressedData;
-        FString OutErrorMessage;
-        
-        //Copy right into combined data array when we have one slice only, skip copying data altogether
-        TArray<uint8>& ActualOutputArray = bHaveOnlyOneSlice ? CombinedDecompressedData : OutDecompressedData;
-        const bool bSuccess = FTextureDecompressor::DecompressTextureData(PixelFormat, CompressedData, TextureWidth, TextureHeight, ActualOutputArray, &OutErrorMessage);
 
-        //Make sure extraction was successful. Theoretically only failure reason would be unsupported format, but we should support most of the used formats
-        checkf(bSuccess, TEXT("Failed to extract Texture %s (%dx%d, format %s): %s"), *ContextString, TextureWidth, TextureHeight, *PixelFormatName, *OutErrorMessage);
+	//Retrieve a copy of the bulk data and use it for decompression
+	void* RawCompressedDataCopy = NULL;
+	FirstMipMap.BulkData.GetCopy(&RawCompressedDataCopy, false);
+	check(RawCompressedDataCopy);
 
-        //Avoid doing all of that if we have one slice only
-        if (!bHaveOnlyOneSlice) {
-            //Add slice to combined decompressed data array
-            //Avoid using Append because it is too expensive, just add unitialized elements and then memcpy them
-            const int32 DataOffsetInArray = CombinedDecompressedData.Num();
-            CombinedDecompressedData.AddUninitialized(OutDecompressedData.Num());
-            FPlatformMemory::Memcpy(&CombinedDecompressedData[DataOffsetInArray], OutDecompressedData.GetData(), OutDecompressedData.Num());
-        }
+	TArray<uint8> OutDecompressedData;
+	uint8* CurrentCompressedData = (uint8*) RawCompressedDataCopy;
+		
+	//Extract every slice and stitch them into the single texture
+	for (int i = 0; i < NumSlices; i++) {
+		FString OutErrorMessage;
         
-        //Skip amount of bytes read per slice from compressed data buffer
-        CompressedData += NumBytesPerSlice;
-    }
+		//Append texture data into the output array, which results in texture being stitched vertically
+		const bool bSuccess = FTextureDecompressor::DecompressTextureData(PixelFormat, CurrentCompressedData, TextureWidth, TextureHeight, OutDecompressedData, &OutErrorMessage);
+
+		//Make sure extraction was successful. Theoretically only failure reason would be unsupported format, but we should support most of the used formats
+		checkf(bSuccess, TEXT("Failed to extract Texture %s (%dx%d, format %s): %s"), *ContextString, TextureWidth, TextureHeight, *PixelFormatName, *OutErrorMessage);
+			
+		//Skip amount of bytes read per slice from compressed data buffer
+		CurrentCompressedData += NumBytesPerSlice;
+	}	
     
-    //Unlock mipmap data since we don't need it anymore
-    FirstMipMap.BulkData.Unlock();
+    //Free bulk data copy that was allocated by GetCopy call
+    FMemory::Free(RawCompressedDataCopy);
 
     if (bResetAlpha) {
         //Reset alpha if we have been requested to
         const int32 TotalPixelsWithSlices = TextureWidth * TextureHeight * NumSlices;
-        ClearAlphaFromBGRA8Texture(CombinedDecompressedData.GetData(), TotalPixelsWithSlices);
+        ClearAlphaFromBGRA8Texture(OutDecompressedData.GetData(), TotalPixelsWithSlices);
     }
 
     //Save data in PNG format and store bytes in serialization context
@@ -94,7 +86,7 @@ void UTextureAssetSerializer::SerializeTextureData(const FString& ContextString,
 
     //TextureHeight should be multiplied by amount of splices because we basically stack textures vertically by appending data to the end of buffer
     const int32 ActualTextureHeight = TextureHeight * NumSlices;
-    check(ImageWrapper->SetRaw(CombinedDecompressedData.GetData(), CombinedDecompressedData.Num(), TextureWidth, ActualTextureHeight, ERGBFormat::BGRA, 8));
+    check(ImageWrapper->SetRaw(OutDecompressedData.GetData(), OutDecompressedData.Num(), TextureWidth, ActualTextureHeight, ERGBFormat::BGRA, 8));
     const TArray64<uint8>& PNGResultData = ImageWrapper->GetCompressed();
 
     //Store data in serialization context

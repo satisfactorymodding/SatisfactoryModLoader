@@ -170,7 +170,7 @@ TArray<FReflectedPropertyInfo> FReflectedObjectState::GetAllProperties() const {
     UStruct* ObjectStruct = GetStructObject();
     TArray<FReflectedPropertyInfo> OutPropertyInfo;
     if (ObjectStruct != NULL) {
-        for(UProperty* Property = ObjectStruct->PropertyLink; Property; Property = Property->PropertyLinkNext) {
+        for(FProperty* Property = ObjectStruct->PropertyLink; Property; Property = Property->PropertyLinkNext) {
             if (Property->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
                 const FName Name = Property->GetFName();
                 const EReflectedPropertyType PropertyType = DeterminePropertyType(Property);
@@ -459,7 +459,7 @@ bool ComparePropertyNames(FName Name, FName Pattern, bool bStripName) {
     return bStripName ? (Name.ToString().StartsWith(Pattern.ToString())) : (Name == Pattern);
 }
 
-bool CheckPropertyFlags(UProperty* Property, bool bCheckForWriteable) {
+bool CheckPropertyFlags(FProperty* Property, bool bCheckForWriteable) {
     return Property->HasAnyPropertyFlags(CPF_BlueprintVisible) &&
         (!bCheckForWriteable || !Property->HasAnyPropertyFlags(CPF_BlueprintReadOnly));
 }

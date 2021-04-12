@@ -172,7 +172,7 @@ void FAssetHelper::SerializeScriptStruct(TSharedPtr<FJsonObject> OutObject, UScr
     OutObject->SetStringField(TEXT("StructFlags"), FString::Printf(TEXT("%d"), Struct->StructFlags));
 }
 
-void FAssetHelper::SerializeProperty(TSharedPtr<FJsonObject> OutObject, UProperty* Property, UObjectHierarchySerializer* ObjectHierarchySerializer) {
+void FAssetHelper::SerializeProperty(TSharedPtr<FJsonObject> OutObject, FProperty* Property, UObjectHierarchySerializer* ObjectHierarchySerializer) {
     OutObject->SetStringField(TEXT("ObjectClass"), Property->GetClass()->GetName());
     OutObject->SetStringField(TEXT("ObjectName"), Property->GetName());
     
@@ -187,7 +187,12 @@ void FAssetHelper::SerializeProperty(TSharedPtr<FJsonObject> OutObject, UPropert
     OutObject->SetStringField(TEXT("RepNotifyFunc"), Property->RepNotifyFunc.ToString());
 
     //Serialize additional data depending on property type
-    if (UEnumProperty* EnumProperty = Cast<UEnumProperty>(Property)) {
+	if (FObjectPropertyBase* ObjectProperty = CastField<FObjectPropertyBase>(Property)) {
+		//For object properties, we serialize object type
+		const int32 ObjectClassIndex = ObjectHierarchySerializer->SerializeObject(ObjectProperty->PropertyClass);
+		OutObject->SetNumberField(TEXT("PropertyClass"), ObjectClassIndex);
+		
+	} else if (FEnumProperty* EnumProperty = CastField<FEnumProperty>(Property)) {
         //For enum properties, we serialize Enum and UnderlyingProperty
         const int32 EnumObjectIndex = ObjectHierarchySerializer->SerializeObject(EnumProperty->GetEnum());
         OutObject->SetNumberField(TEXT("Enum"), EnumObjectIndex);
@@ -196,44 +201,44 @@ void FAssetHelper::SerializeProperty(TSharedPtr<FJsonObject> OutObject, UPropert
         SerializeProperty(UnderlyingProp, EnumProperty->GetUnderlyingProperty(), ObjectHierarchySerializer);
         OutObject->SetObjectField(TEXT("UnderlyingProp"), UnderlyingProp);
 
-    } else if (UStructProperty* StructProperty = Cast<UStructProperty>(Property)) {
+    } else if (FStructProperty* StructProperty = CastField<FStructProperty>(Property)) {
         //Serialize structure type of this property
         const int32 StructObjectIndex = ObjectHierarchySerializer->SerializeObject(StructProperty->Struct);
         OutObject->SetNumberField(TEXT("Struct"), StructObjectIndex);
 
-    } else if (UArrayProperty* ArrayProperty = Cast<UArrayProperty>(Property)) {
+    } else if (FArrayProperty* ArrayProperty = CastField<FArrayProperty>(Property)) {
         //Serialize inner property for array
         const TSharedPtr<FJsonObject> InnerProperty = MakeShareable(new FJsonObject());
         SerializeProperty(InnerProperty, ArrayProperty->Inner, ObjectHierarchySerializer);
         OutObject->SetObjectField(TEXT("Inner"), InnerProperty);
         
-    } else if (UBoolProperty* BoolProperty = Cast<UBoolProperty>(Property)) {
+    } else if (FBoolProperty* BoolProperty = CastField<FBoolProperty>(Property)) {
         //Serialize bool property native type and size
         OutObject->SetNumberField(TEXT("BoolSize"), BoolProperty->ElementSize);
         OutObject->SetBoolField(TEXT("NativeBool"), BoolProperty->IsNativeBool());
         
-    } else if (UByteProperty* ByteProperty = Cast<UByteProperty>(Property)) {
+    } else if (FByteProperty* ByteProperty = CastField<FByteProperty>(Property)) {
         //Serialize Enum for legacy enum properties (TByteAsEnum)
         const int32 EnumObjectIndex = ObjectHierarchySerializer->SerializeObject(ByteProperty->Enum);
         OutObject->SetNumberField(TEXT("Enum"), EnumObjectIndex);
         
-    } else if (UClassProperty* ClassProperty = Cast<UClassProperty>(Property)) {
+    } else if (FClassProperty* ClassProperty = CastField<FClassProperty>(Property)) {
         //For class property, we need to serialize MetaClass
         const int32 MetaClassIndex = ObjectHierarchySerializer->SerializeObject(ClassProperty->MetaClass);
         OutObject->SetNumberField(TEXT("MetaClass"), MetaClassIndex);
         
-    } else if (FDelegateProperty* DelegateProperty = Cast<FDelegateProperty>(Property)) {
+    } else if (FDelegateProperty* DelegateProperty = CastField<FDelegateProperty>(Property)) {
         //For delegate properties, we need to serialize signature function
         //Since it will always be present in the Child array too, we serialize just it's name
         //and not actual full UFunction object
         OutObject->SetStringField(TEXT("SignatureFunction"), DelegateProperty->SignatureFunction->GetName());
         
-    } else if (UInterfaceProperty* InterfaceProperty = Cast<UInterfaceProperty>(Property)) {
+    } else if (FInterfaceProperty* InterfaceProperty = CastField<FInterfaceProperty>(Property)) {
         //For interface properties, we serialize interface type class
         const int32 InterfaceClassIndex = ObjectHierarchySerializer->SerializeObject(InterfaceProperty->InterfaceClass);
         OutObject->SetNumberField(TEXT("InterfaceClass"), InterfaceClassIndex);
         
-    } else if (UMapProperty* MapProperty = Cast<UMapProperty>(Property)) {
+    } else if (FMapProperty* MapProperty = Cast<FMapProperty>(Property)) {
         //For map properties, we just serialize key property type and value property type
         const TSharedPtr<FJsonObject> KeyProperty = MakeShareable(new FJsonObject());
         SerializeProperty(KeyProperty, MapProperty->KeyProp, ObjectHierarchySerializer);
@@ -243,17 +248,17 @@ void FAssetHelper::SerializeProperty(TSharedPtr<FJsonObject> OutObject, UPropert
         SerializeProperty(ValueProperty, MapProperty->ValueProp, ObjectHierarchySerializer);
         OutObject->SetObjectField(TEXT("ValueProp"), ValueProperty);
         
-    } else if (UMulticastDelegateProperty* MulticastDelegateProperty = Cast<UMulticastDelegateProperty>(Property)) {
+    } else if (FMulticastDelegateProperty* MulticastDelegateProperty = CastField<FMulticastDelegateProperty>(Property)) {
         //For multicast delegate properties, record signature function name
         OutObject->SetStringField(TEXT("SignatureFunction"), MulticastDelegateProperty->SignatureFunction->GetName());
         
-    } else if (USetProperty* SetProperty = Cast<USetProperty>(Property)) {
+    } else if (FSetProperty* SetProperty = CastField<FSetProperty>(Property)) {
         //For set properties, serialize element type
         const TSharedPtr<FJsonObject> ElementType = MakeShareable(new FJsonObject());
         SerializeProperty(ElementType, SetProperty->ElementProp, ObjectHierarchySerializer);
         OutObject->SetObjectField(TEXT("ElementType"), ElementType);
         
-    } else if (USoftClassProperty* SoftClassProperty = Cast<USoftClassProperty>(Property)) {
+    } else if (FSoftClassProperty* SoftClassProperty = Cast<FSoftClassProperty>(Property)) {
         //For soft class property, we serialize MetaClass
         const int32 MetaClassIndex = ObjectHierarchySerializer->SerializeObject(SoftClassProperty->MetaClass);
         OutObject->SetNumberField(TEXT("MetaClass"), MetaClassIndex);
@@ -304,7 +309,7 @@ void FAssetHelper::SerializeFunction(TSharedPtr<FJsonObject> OutObject, UFunctio
 FString FAssetHelper::PropertyPathToString(const FCachedPropertyPath& Path) {
     FString OutString;
     UStruct* StructObject = FindObjectChecked<UStruct>(NULL, TEXT("/Script/PropertyPath.CachedPropertyPath"));
-    UProperty* Property = StructObject->FindPropertyByName(TEXT("Segments"));
+    FProperty* Property = StructObject->FindPropertyByName(TEXT("Segments"));
     check(Property != nullptr);
     const TArray<FPropertyPathSegment>* Segments = Property->ContainerPtrToValuePtr<const TArray<FPropertyPathSegment>>(&Path);
 	

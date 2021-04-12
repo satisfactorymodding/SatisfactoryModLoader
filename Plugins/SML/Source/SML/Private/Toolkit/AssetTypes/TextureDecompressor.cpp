@@ -67,8 +67,8 @@ bool FTextureDecompressor::DecompressTextureData(EPixelFormat PixelFormat, const
     const int32 NumPixels = TextureWidth * TextureHeight;
 
     //Reserve enough space in decompressed data array (we use BGRA8, so 4 channels and 8 bits for channel)
-    OutDecompressedData.AddUninitialized(NumPixels * 4);
-    uint8* DestData = OutDecompressedData.GetData();
+    const int32 DataOffset = OutDecompressedData.AddUninitialized(NumPixels * 4);
+    uint8* DestData = &OutDecompressedData[DataOffset];
     const uint32 TargetPixelFormat = DETEX_PIXEL_FORMAT_BGRA8;
     bool bSuccess;
 

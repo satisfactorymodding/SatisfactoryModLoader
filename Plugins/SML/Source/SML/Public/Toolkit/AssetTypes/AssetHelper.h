@@ -39,7 +39,7 @@ public:
     static void SerializeScriptStruct(TSharedPtr<FJsonObject> OutObject, UScriptStruct* Struct, UObjectHierarchySerializer* ObjectHierarchySerializer);
 
     /** Serializes UProperty object in a way mirroring native UProperty::Serialize implementation */
-    static void SerializeProperty(TSharedPtr<FJsonObject> OutObject, UProperty* Property, UObjectHierarchySerializer* ObjectHierarchySerializer);
+    static void SerializeProperty(TSharedPtr<FJsonObject> OutObject, FProperty* Property, UObjectHierarchySerializer* ObjectHierarchySerializer);
 
     /** Serializes UFunction object in a way mirroring native UFunction::Serialize implementation */
     static void SerializeFunction(TSharedPtr<FJsonObject> OutObject, UFunction* Function, UObjectHierarchySerializer* ObjectHierarchySerializer);

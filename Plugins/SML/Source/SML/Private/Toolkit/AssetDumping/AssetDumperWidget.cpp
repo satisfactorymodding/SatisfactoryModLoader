@@ -213,11 +213,15 @@ TSharedRef<SVerticalBox> SAssetDumperWidget::CreateSettingsCategory() {
     ]
 	+SVerticalBox::Slot().Padding(FMargin(5.0f, 2.0f)).AutoHeight()[
         SNew(SHorizontalBox)
-        +SHorizontalBox::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).Padding(FMargin(0.0f, 0.0f, 2.0f, 0.0f)).AutoWidth()[
+        +SHorizontalBox::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).AutoWidth()[
             SNew(STextBlock)
-            .Text(LOCTEXT("AssetDumper_Settings_MaxPackagesTick", "Max Packages to Process Per Tick"))
+            .Text(LOCTEXT("AssetDumper_Settings_MaxPackagesTick", "Max Packages to Process Per Tick: "))
         ]
-        +SHorizontalBox::Slot().AutoWidth().HAlign(HAlign_Left).VAlign(VAlign_Center)[
+        +SHorizontalBox::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(FMargin(2.0f, 0.0f, 2.0f, 0.0f)).AutoWidth()[
+            SNew(STextBlock)
+            .Text_Lambda([this]() { return FText::FromString(FString::FromInt(AssetDumpSettings.MaxPackagesToProcessInOneTick)); })
+        ]
+        +SHorizontalBox::Slot().FillWidth(1.0f).HAlign(HAlign_Fill).VAlign(VAlign_Center)[
         	SNew(SSlider)
         	.StepSize(1)
         	.MaxValue(FPlatformMisc::NumberOfCoresIncludingHyperthreads())
@@ -231,11 +235,15 @@ TSharedRef<SVerticalBox> SAssetDumperWidget::CreateSettingsCategory() {
     ]
 	+SVerticalBox::Slot().Padding(FMargin(5.0f, 2.0f)).AutoHeight()[
         SNew(SHorizontalBox)
-        +SHorizontalBox::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).Padding(FMargin(0.0f, 0.0f, 2.0f, 0.0f)).AutoWidth()[
+        +SHorizontalBox::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).AutoWidth()[
             SNew(STextBlock)
-            .Text(LOCTEXT("AssetDumper_Settings_MaxLoadRequests", "Max Load Requests In-Fly"))
+            .Text(LOCTEXT("AssetDumper_Settings_MaxLoadRequests", "Max Load Requests In-Fly: "))
         ]
-        +SHorizontalBox::Slot().AutoWidth().HAlign(HAlign_Left).VAlign(VAlign_Center)[
+        +SHorizontalBox::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(FMargin(2.0f, 0.0f, 2.0f, 0.0f)).AutoWidth()[
+            SNew(STextBlock)
+            .Text_Lambda([this]() { return FText::FromString(FString::FromInt(AssetDumpSettings.MaxLoadRequestsInFly)); })
+        ]
+        +SHorizontalBox::Slot().FillWidth(1.0f).HAlign(HAlign_Fill).VAlign(VAlign_Center)[
             SNew(SSlider)
             .StepSize(1)
             .MaxValue(16)
@@ -249,11 +257,15 @@ TSharedRef<SVerticalBox> SAssetDumperWidget::CreateSettingsCategory() {
     ]
 	+SVerticalBox::Slot().Padding(FMargin(5.0f, 2.0f)).AutoHeight()[
         SNew(SHorizontalBox)
-        +SHorizontalBox::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).Padding(FMargin(0.0f, 0.0f, 2.0f, 0.0f)).AutoWidth()[
+        +SHorizontalBox::Slot().HAlign(HAlign_Left).VAlign(VAlign_Center).AutoWidth()[
             SNew(STextBlock)
-            .Text(LOCTEXT("AssetDumper_Settings_MaxLoadRequestsInQueue", "Max Packages In Process Queue"))
+            .Text(LOCTEXT("AssetDumper_Settings_MaxLoadRequestsInQueue", "Max Packages In Process Queue: "))
         ]
-        +SHorizontalBox::Slot().AutoWidth().HAlign(HAlign_Left).VAlign(VAlign_Center)[
+        +SHorizontalBox::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center).Padding(FMargin(2.0f, 0.0f, 2.0f, 0.0f)).AutoWidth()[
+            SNew(STextBlock)
+            .Text_Lambda([this]() { return FText::FromString(FString::FromInt(AssetDumpSettings.MaxPackagesInProcessQueue)); })
+        ]
+        +SHorizontalBox::Slot().FillWidth(1.0f).HAlign(HAlign_Fill).VAlign(VAlign_Center)[
             SNew(SSlider)
             .StepSize(1)
             .MaxValue(64)
@@ -304,7 +316,13 @@ FReply SAssetDumperWidget::OnAssetDumpButtonPressed() {
 	}
 
 	//Gather asset data from asset registry, might take a fair bit of time if selection is big enough
+	SelectedAssetsStruct->LogSettings();
 	SelectedAssetsStruct->GatherAssetsData();
+
+	//Skip dumping if we have nothing to dump that matches all filters
+	if (SelectedAssetsStruct->GetGatheredAssets().Num() == 0) {
+		return FReply::Handled();
+	}
 	
 	//Start asset dumper with gathered assets and provided settings, and then open console window
 	const TSharedRef<FAssetDumpProcessor> Processor = FAssetDumpProcessor::StartAssetDump(AssetDumpSettings, SelectedAssetsStruct->GetGatheredAssets());

@@ -47,7 +47,7 @@ struct FAssetTypeSerializerMacros_ToStringHelper<FName> {
 	TArray<TSharedPtr<FJsonValue>> VariableName; \
     for (const decltype(MapValue)::ElementType& Pair : MapValue) { \
     	TSharedPtr<FJsonObject> PairObject = MakeShareable(new FJsonObject()); \
-    	PairObject->SetStringField(TEXT("Key"), FAssetTypeSerializerMacros_ToStringHelper<decltype(Pair.Key)>::ValueToString(Pair.Key)); \
+    	PairObject->SetStringField(TEXT("Key"), FAssetTypeSerializerMacros_Internals::ValueToString<decltype(Pair.Key)>(Pair.Key)); \
     	PairObject->SetObjectField(TEXT("Value"), SERIALIZE_STRUCT_VALUE(Pair.Value)); \
     	VariableName.Add(MakeShareable(new FJsonValueObject(PairObject))); \
     }
@@ -64,6 +64,11 @@ private:
 		return T::StaticStruct();
 	}
 public:
+	template<typename T>
+	static FString ValueToString(const T& SourceValue) {
+		return FAssetTypeSerializerMacros_ToStringHelper<T>::ValueToString(SourceValue);
+	}
+	
 	template<typename T>
     static UScriptStruct* GetScriptStruct() {
 		return T::StaticStruct();

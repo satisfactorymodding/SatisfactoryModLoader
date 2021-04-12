@@ -4,6 +4,12 @@
 
 #pragma warning(push)
 #pragma warning(disable: 4668)
+
+#ifdef TEXT
+    #undef TEXT
+#endif
+
+#include "Windows/MinWindows.h"
 #include "Windows/COMPointer.h"
 #include "Windows/AllowWindowsPlatformTypes.h"
     #include <commdlg.h>
@@ -11,6 +17,10 @@
     #include <LM.h>
 #include "Windows/HideWindowsPlatformTypes.h"
 #pragma warning(pop)
+
+#ifdef TEXT_PASTE
+    #define TEXT(x) TEXT_PASTE(x)
+#endif
 
 /** Disables all Slate windows while system modal dialog is open, and automatically enables them back on scope exit */
 class FScopedSystemModalMode {

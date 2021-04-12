@@ -29,8 +29,8 @@ void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSu
 
 void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
     
-    static UStructProperty* NodeDataStructProperty = NULL;
-    static UClassProperty* SchematicStructProperty = NULL;
+    static FStructProperty* NodeDataStructProperty = NULL;
+    static FClassProperty* SchematicStructProperty = NULL;
     static UClass* ResearchTreeNodeClass = NULL;
     
     //Lazily initialize research tree node reflection properties for faster access
@@ -40,8 +40,8 @@ void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree
         //Make sure class is not garbage collected
         ResearchTreeNodeClass->AddToRoot();
         
-        NodeDataStructProperty = FReflectionHelper::FindPropertyChecked<UStructProperty>(ResearchTreeNodeClass, TEXT("mNodeDataStruct"));
-        SchematicStructProperty = FReflectionHelper::FindPropertyByShortNameChecked<UClassProperty>(NodeDataStructProperty->Struct, TEXT("Schematic"));
+        NodeDataStructProperty = FReflectionHelper::FindPropertyChecked<FStructProperty>(ResearchTreeNodeClass, TEXT("mNodeDataStruct"));
+        SchematicStructProperty = FReflectionHelper::FindPropertyByShortNameChecked<FClassProperty>(NodeDataStructProperty->Struct, TEXT("Schematic"));
         
         check(SchematicStructProperty->MetaClass->IsChildOf(UFGSchematic::StaticClass()));
     }

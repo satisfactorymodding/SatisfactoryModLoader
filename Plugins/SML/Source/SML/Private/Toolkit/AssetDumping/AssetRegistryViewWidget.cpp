@@ -1,5 +1,7 @@
 #include "Toolkit/AssetDumping/AssetRegistryViewWidget.h"
 #include "AssetRegistryModule.h"
+#include "SatisfactoryModLoader.h"
+#include "Toolkit/AssetDumping/AssetTypeSerializerMacros.h"
 #define LOCTEXT_NAMESPACE "SML"
 
 bool FSelectedAssetsStruct::ProcessIncludedPathAsset(const FAssetData& AssetData) {
@@ -186,11 +188,11 @@ void FAssetTreeNode::PopulateSelectedAssets(const TSharedPtr<FSelectedAssetsStru
 				SelectedAssets->AddExcludedPackagePath(Path);
 			}
 		}
+	}
 
-		//Dispatch call to children nodes
-		for (const TSharedPtr<FAssetTreeNode>& ChildNode : Children) {
-			ChildNode->PopulateSelectedAssets(SelectedAssets);
-		}
+	//Dispatch call to children nodes
+	for (const TSharedPtr<FAssetTreeNode>& ChildNode : Children) {
+		ChildNode->PopulateSelectedAssets(SelectedAssets);
 	}
 }
 
@@ -269,4 +271,24 @@ TSharedRef<SWidget> SAssetTreeNodeRow::GenerateWidgetForColumn(const FName& InCo
 
 TSharedRef<ITableRow> SAssetRegistryViewWidget::OnCreateRow(const TSharedPtr<FAssetTreeNode> TreeNode, const TSharedRef<STableViewBase>& Owner) const {
 	return SNew(SAssetTreeNodeRow, Owner, TreeNode);
+}
+
+#define CHECK_AND_LOG_PARAM(ParamName, TitleText) \
+	if (ParamName.Num()) { \
+		UE_LOG(LogSatisfactoryModLoader, Display, TitleText); \
+		for (const decltype(ParamName)::ElementType& Element : ParamName) { \
+			UE_LOG(LogSatisfactoryModLoader, Display, TEXT("- %s"), *FAssetTypeSerializerMacros_Internals::ValueToString<decltype(ParamName)::ElementType>(Element)); \
+		} \
+	}
+
+void FSelectedAssetsStruct::LogSettings() {
+	UE_LOG(LogSatisfactoryModLoader, Display, TEXT("================= BEGIN SETTINGS FOR ASSET GATHERER ================"));
+	
+	CHECK_AND_LOG_PARAM(AssetClassesWhitelist, TEXT("Whitelisted Asset Classes: "));
+	CHECK_AND_LOG_PARAM(IncludedPackagePaths, TEXT("Included Package Paths: "));
+	CHECK_AND_LOG_PARAM(IncludedPackageNames, TEXT("Force Included Packages: "));
+	CHECK_AND_LOG_PARAM(ExcludedPackagePaths, TEXT("Excluded Package Paths: "));
+	CHECK_AND_LOG_PARAM(ExcludedPackageNames, TEXT("Excluded Packages: "));
+	
+	UE_LOG(LogSatisfactoryModLoader, Display, TEXT("================== END SETTINGS FOR ASSET GATHERER ================="));
 }

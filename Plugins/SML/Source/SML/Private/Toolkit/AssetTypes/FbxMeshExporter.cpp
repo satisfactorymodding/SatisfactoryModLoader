@@ -16,13 +16,6 @@ FString GetNameForUVChannel(uint32 Index) {
     return FString::Printf(TEXT("uv%d"), Index + 1);
 }
 
-void WrappedStaticMeshConstructor(const FObjectInitializer& Initializer) {
-	new((EInternal*)Initializer.GetObj()) UStaticMesh(Initializer);
-	UStaticMesh* StaticMesh = static_cast<UStaticMesh*>(Initializer.GetObj());
-	StaticMesh->bAllowCPUAccess = true;
-	UE_LOG(LogTemp, Fatal, TEXT("Poggers, constructor is called!~"));
-}
-
 void FFbxMeshExporter::RegisterStaticMeshCPUAccessHook() {
 	//UObject system should be initialized at this point so we can change UStaticMesh CDO
 	check(UObjectInitialized());
@@ -31,9 +24,11 @@ void FFbxMeshExporter::RegisterStaticMeshCPUAccessHook() {
 
 FbxManager* AllocateFbxManagerForExport() {
 	FbxManager* FbxManager = FbxManager::Create();
+	check(FbxManager);
 
 	//Initialize root I/O settings for created manager
 	FbxIOSettings* IOSettings = FbxIOSettings::Create(FbxManager, IOSROOT);
+	check(IOSettings);
 	
 	//IOSettings->SetBoolProp(EXP_FBX_MATERIAL, true);
 	IOSettings->SetBoolProp(EXP_FBX_TEXTURE, true);

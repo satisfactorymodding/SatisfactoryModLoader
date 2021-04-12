@@ -4,6 +4,7 @@
 #include "Toolkit/AssetTypes/AssetHelper.h"
 
 FSerializationContext::FSerializationContext(const FString& RootOutputDirectory, const FAssetData& AssetData, UPackage* Package) {
+	this->AssetSerializedData = MakeShareable(new FJsonObject());
 	this->PropertySerializer = NewObject<UPropertySerializer>();
 	this->ObjectHierarchySerializer = NewObject<UObjectHierarchySerializer>();
 
@@ -17,6 +18,9 @@ FSerializationContext::FSerializationContext(const FString& RootOutputDirectory,
 
 	this->RootOutputDirectory = RootOutputDirectory;
 	this->PackageBaseDirectory = FPaths::Combine(RootOutputDirectory, AssetData.PackagePath.ToString());
+
+	//Make sure package base directory exists
+	FPlatformFileManager::Get().GetPlatformFile().CreateDirectoryTree(*PackageBaseDirectory);
 
 	//Retrieve universal asset object
 	UObject* AssetObject;
@@ -46,7 +50,6 @@ void FSerializationContext::Finalize() const {
 	RootObject->SetStringField(TEXT("AssetClass"), AssetData.AssetClass.ToString());
 	RootObject->SetStringField(TEXT("AssetPackage"), Package->GetName());
 	RootObject->SetStringField(TEXT("AssetName"), AssetData.AssetName.ToString());
-	RootObject->SetStringField(TEXT("DumpGenerationTime"), FDateTime::Now().ToString());
 	
 	RootObject->SetObjectField(TEXT("AssetSerializedData"), AssetSerializedData);
 	RootObject->SetArrayField(TEXT("ObjectHierarchy"), ObjectHierarchySerializer->FinalizeSerialization());

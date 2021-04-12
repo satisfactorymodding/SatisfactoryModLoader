@@ -226,7 +226,7 @@ bool IsCompatibleConfigurationClassChange(UClass* OldConfigurationClass, UClass*
 
 void UConfigManager::RegisterModConfiguration(TSubclassOf<UModConfiguration> Configuration) {
     checkf(Configuration, TEXT("Attempt to register NULL configuration"));
-    UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Registering configuration %s"), *Configuration->GetPathName());
+    UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Registering configuration %s"), *Configuration->GetPathName());
 
     UModConfiguration* ClassDefaultObject = Configuration.GetDefaultObject();
     const FConfigId ConfigId = ClassDefaultObject->ConfigId;

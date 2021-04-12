@@ -19,7 +19,7 @@ UWidget* CreateModSubMenuWidget(UUserWidget* OwningWidget) {
 		return NULL;
 	}
 	UUserWidget* NewWidget = UUserWidget::CreateWidgetInstance(*OwningWidget, MenuBaseClass, TEXT("ModListSubMenu"));
-	FReflectionHelper::SetPropertyValue<UObjectProperty>(NewWidget, TEXT("mOwningMenu"), OwningWidget);
+	FReflectionHelper::SetPropertyValue<FObjectProperty>(NewWidget, TEXT("mOwningMenu"), OwningWidget);
 	return NewWidget;
 }
 
@@ -62,9 +62,9 @@ void FMainMenuPatch::ApplyMainMenuPatch(UUserWidget* MenuWidget) {
 	FReflectionHelper::CallScriptFunction(ButtonWidget, TEXT("SetTitle"), &ButtonText);
 	
 	if (ModSubMenuWidget != NULL) {
-		FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mSwitcherWidget"), SwitcherWidget);
-		FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mTargetWidget"), ModSubMenuWidget);
-		FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mParentList"), ParentPanel);
+		FReflectionHelper::SetPropertyValue<FObjectProperty>(ButtonWidget, TEXT("mSwitcherWidget"), SwitcherWidget);
+		FReflectionHelper::SetPropertyValue<FObjectProperty>(ButtonWidget, TEXT("mTargetWidget"), ModSubMenuWidget);
+		FReflectionHelper::SetPropertyValue<FObjectProperty>(ButtonWidget, TEXT("mParentList"), ParentPanel);
 	}
 	ParentPanel->AddChild(ButtonWidget);
 		

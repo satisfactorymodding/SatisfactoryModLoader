@@ -13,7 +13,7 @@
 #include "ModLoading/ModLoadingLibrary.h"
 
 void FOptionsKeybindPatch::CategorizeKeyBindingsByModReference(FScriptArrayHelper& InKeyBindings, UScriptStruct* KeyBindStructClass, TMap<FString, TArray<int32>>& OutCategorizedNames) {
-    UNameProperty* ActionNameProperty = FReflectionHelper::FindPropertyByShortNameChecked<UNameProperty>(KeyBindStructClass, TEXT("ActionName"));
+    FNameProperty* ActionNameProperty = FReflectionHelper::FindPropertyByShortNameChecked<FNameProperty>(KeyBindStructClass, TEXT("ActionName"));
     check(ActionNameProperty);
 
     for (int32 i = 0; i < InKeyBindings.Num(); i++) {
@@ -73,7 +73,7 @@ void FOptionsKeybindPatch::PopulateKeyBindButtonList(UUserWidget* ContextWidget,
             void* KeyBindDataPtr = KeyBindingsArray.GetRawPtr(KeyBindIndex);
             UUserWidget* ButtonWidget = UWidgetBlueprintLibrary::Create(ContextWidget, KeyBindButtonWidgetClass, OwningController);
             FReflectionHelper::SetStructPropertyValue(ButtonWidget, TEXT("mKeyBindData"), KeyBindDataPtr);
-            FReflectionHelper::SetPropertyValue<UObjectProperty>(ButtonWidget, TEXT("mKeyBindParent"), ContextWidget);
+            FReflectionHelper::SetPropertyValue<FObjectProperty>(ButtonWidget, TEXT("mKeyBindParent"), ContextWidget);
             ButtonBox->AddChildToVerticalBox(ButtonWidget);
         }
     }
@@ -88,7 +88,7 @@ void FOptionsKeybindPatch::HandleRefreshKeyBindingsHook(FBlueprintHookHelper& Ho
     //Retrieve key bindings by calling blueprint method
     FScriptArray OutKeyBindDataArray;
     UFunction* Function = FReflectionHelper::CallScriptFunction(HookHelper.GetContext(), TEXT("GetKeybindData"), &OutKeyBindDataArray);
-    UArrayProperty* FirstParameter = Cast<UArrayProperty>(FReflectionHelper::FindParameterByIndex(Function, 0));
+    FArrayProperty* FirstParameter = CastField<FArrayProperty>(FReflectionHelper::FindParameterByIndex(Function, 0));
     FScriptArrayHelper KeyBindingsArrayHelper(FirstParameter, &OutKeyBindDataArray);
     
     //KeyBind data is returned in the array, process each element and divide them by mod display name

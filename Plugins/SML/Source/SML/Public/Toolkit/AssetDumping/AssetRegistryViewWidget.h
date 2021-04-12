@@ -2,7 +2,7 @@
 #include "Slate.h"
 
 /** Struct used to gather data about selected assets from the asset tree */
-struct FSelectedAssetsStruct {
+struct SML_API FSelectedAssetsStruct {
 private:
 	/** Package paths we should include, will also include all sub-paths recursively */
 	TArray<FString> IncludedPackagePaths;
@@ -42,11 +42,14 @@ public:
 	/** Performs asset registry lookup using included and excluded asset paths */
 	void GatherAssetsData();
 
+	/** Logs active settings for this instance into the game log */
+	void LogSettings();
+
 	/** Returns the map of gathered assets. Keep in mind you need to use GatherAssetsData before using it */
 	FORCEINLINE const TMap<FName, FAssetData>& GetGatheredAssets() const { return GatheredAssetPackages; }
 };
 
-struct FAssetTreeNode : TSharedFromThis<FAssetTreeNode> {
+struct SML_API FAssetTreeNode : TSharedFromThis<FAssetTreeNode> {
 public:
 	/** Whenever this node represents a complete asset path, or just a directory */
 	bool bIsLeafNode;
@@ -84,7 +87,7 @@ public:
 	void PopulateSelectedAssets(const TSharedPtr<FSelectedAssetsStruct>& SelectedAssets);
 };
 
-class SAssetRegistryViewWidget : public SCompoundWidget {
+class SML_API SAssetRegistryViewWidget : public SCompoundWidget {
 public:
 	SLATE_BEGIN_ARGS(SAssetRegistryViewWidget) {}
 	SLATE_END_ARGS()
@@ -103,7 +106,7 @@ protected:
 	void GetNodeChildren(const TSharedPtr<FAssetTreeNode> TreeNode, TArray<TSharedPtr<FAssetTreeNode>>& OutChildren) const;
 };
 
-class SAssetTreeNodeRow : public SMultiColumnTableRow<TSharedPtr<FAssetTreeNode>> {
+class SML_API SAssetTreeNodeRow : public SMultiColumnTableRow<TSharedPtr<FAssetTreeNode>> {
 	SLATE_BEGIN_ARGS(SAssetTreeNodeRow) {}
 	SLATE_END_ARGS()
 public:

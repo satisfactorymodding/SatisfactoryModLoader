@@ -19,9 +19,9 @@ public:
     static FORCEINLINE FDynamicStructInfo CheckStructParameter(UObject* Context, FFrame& Stack) {
         Stack.MostRecentProperty = NULL;
         Stack.MostRecentPropertyAddress = NULL;
-        Stack.StepCompiledIn<UStructProperty>(NULL);
+        Stack.StepCompiledIn<FStructProperty>(NULL);
 
-        UStructProperty* StructProperty = Cast<UStructProperty>(Stack.MostRecentProperty);
+        FStructProperty* StructProperty = CastField<FStructProperty>(Stack.MostRecentProperty);
         if (StructProperty == NULL) {
             const FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AccessViolation,
                 INVTEXT("Tried to pass non-struct object to UFUNCTION. Only structs are supported"));
@@ -48,7 +48,7 @@ public:
     
     template <typename T>
     static T* FindPropertyByShortNameChecked(UStruct* Class, const TCHAR* PropertyName) {
-        for(UProperty* Property = Class->PropertyLink; Property; Property = Property->PropertyLinkNext) {
+        for(FProperty* Property = Class->PropertyLink; Property; Property = Property->PropertyLinkNext) {
             if (Property->GetName().StartsWith(PropertyName)) {
                 if (T* CastedProperty = Cast<T>(Property)) {
                     return CastedProperty;
@@ -68,14 +68,14 @@ public:
 
     template<typename T>
     static T* GetObjectPropertyValue(const UObject* Object, const TCHAR* PropertyName) {
-        UObject* FieldValue = GetPropertyValue<UObjectProperty>(Object, PropertyName);
+        UObject* FieldValue = GetPropertyValue<FObjectProperty>(Object, PropertyName);
         T* CastedValue = Cast<T>(FieldValue);
         checkf(CastedValue, TEXT("Cannot cast class property %s:%s value to type %s"), *Object->GetClass()->GetPathName(), PropertyName, *T::StaticClass()->GetName());
         return CastedValue;
     }
 
     static void SetStructPropertyValue(UObject* Object, const TCHAR* PropertyName, const void* ValuePointer, int32 ArrayIndex = 0) {
-        UStructProperty* Property = Cast<UStructProperty>(Object->GetClass()->FindPropertyByName(PropertyName));
+        FStructProperty* Property = CastField<FStructProperty>(Object->GetClass()->FindPropertyByName(PropertyName));
         checkf(Property, TEXT("Property not found in class %s: %s"), *Object->GetClass()->GetPathName(), PropertyName);
         void* DestAddress = Property->ContainerPtrToValuePtr<void>(Object, ArrayIndex);
         Property->CopyValuesInternal(DestAddress, ValuePointer, 1);
@@ -83,14 +83,14 @@ public:
 
     template<typename T>
     static void SetPropertyValue(UObject* Object, const TCHAR* PropertyName, const typename T::TCppType& Value, int32 ArrayIndex = 0) {
-        T* Property = Cast<T>(Object->GetClass()->FindPropertyByName(PropertyName));
+        T* Property = CastField<T>(Object->GetClass()->FindPropertyByName(PropertyName));
         checkf(Property, TEXT("Property not found in class %s: %s"), *Object->GetClass()->GetPathName(), PropertyName);
         Property->SetPropertyValue_InContainer(Object, Value, ArrayIndex);
     }
 
-    static UProperty* FindParameterByIndex(UFunction* Function, int32 Index) {
+    static FProperty* FindParameterByIndex(UFunction* Function, int32 Index) {
         int32 CurrentIndex = 0;
-        for(TFieldIterator<UProperty> It(Function); It && (It->PropertyFlags & CPF_Parm); ++It) {
+        for(TFieldIterator<FProperty> It(Function); It && (It->PropertyFlags & CPF_Parm); ++It) {
             if (CurrentIndex++ == Index)
                 return *It;
         }

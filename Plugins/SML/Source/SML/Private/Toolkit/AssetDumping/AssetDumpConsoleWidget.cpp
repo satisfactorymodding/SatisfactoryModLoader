@@ -9,7 +9,6 @@ void SAssetDumpConsoleWidget::Construct(const FArguments& InArgs, TSharedRef<FAs
 	GLog->AddOutputDevice(this);
 	
 	this->MessagesTextBox = SNew(SMultiLineEditableTextBox)
-		.ForegroundColor(FLinearColor::Gray)
 		.Marshaller(MessagesTextMarshaller)
 		.IsReadOnly(true)
 		.AlwaysShowScrollbars(true)
@@ -26,16 +25,16 @@ void SAssetDumpConsoleWidget::Construct(const FArguments& InArgs, TSharedRef<FAs
 		]
 		+SVerticalBox::Slot().AutoHeight()[
 			SNew(SOverlay)
-			+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center)[
-				SNew(SProgressBar)
+            +SOverlay::Slot().HAlign(HAlign_Fill).VAlign(VAlign_Center)[
+                SNew(SProgressBar)
                 .Percent_Lambda([this](){
-					return AssetDumpProcessor.IsValid() ? AssetDumpProcessor->GetProgressPct() : 1.0f;
+                    return AssetDumpProcessor.IsValid() ? AssetDumpProcessor->GetProgressPct() : 1.0f;
                 })
-			]
-			+SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center)[
-				SNew(STextBlock)
-				.Text_Raw(this, &SAssetDumpConsoleWidget::GetProgressBarText)
-			]
+            ]
+            +SOverlay::Slot().HAlign(HAlign_Center).VAlign(VAlign_Center)[
+                SNew(STextBlock)
+                .Text_Raw(this, &SAssetDumpConsoleWidget::GetProgressBarText)
+            ]
 		]
 	];
 	
@@ -128,6 +127,11 @@ void FAssetDumpConsoleTextLayoutMarshaller::GetText(FString& TargetString, const
 bool FAssetDumpConsoleTextLayoutMarshaller::AppendPendingMessage(const TCHAR* InText, const ELogVerbosity::Type InVerbosity, const FName& InCategory) {
 	//Skip SetColor events, they do not represent normal logging
 	if (InVerbosity == ELogVerbosity::SetColor) {
+		return false;
+	}
+
+	//Skip Niagara logs, it likes to spam warnings in the main menu scene, same for Online Identity logging
+	if (InCategory == TEXT("LogNiagara") || InCategory == TEXT("LogOnlineIdentity")) {
 		return false;
 	}
 

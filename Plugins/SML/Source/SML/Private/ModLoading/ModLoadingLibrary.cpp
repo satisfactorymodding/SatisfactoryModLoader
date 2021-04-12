@@ -117,7 +117,10 @@ bool UModLoadingLibrary::GetLoadedModInfo(const FString& Name, FModInfo& OutModI
 }
 
 void UModLoadingLibrary::Initialize(FSubsystemCollectionBase& Collection) {
-    //Add some callbacks to handle plugins being mounted later in the lifecycle gracefully
+#if WITH_EDITOR
+	return;
+#endif
+	//Add some callbacks to handle plugins being mounted later in the lifecycle gracefully
     IPluginManager::Get().OnNewPluginCreated().AddUObject(this, &UModLoadingLibrary::OnNewPluginCreated);
     IPluginManager::Get().OnNewPluginMounted().AddUObject(this, &UModLoadingLibrary::OnNewPluginCreated);
 
