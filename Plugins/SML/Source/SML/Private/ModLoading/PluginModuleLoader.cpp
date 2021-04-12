@@ -4,6 +4,11 @@
 #include "Util/BlueprintAssetHelperLibrary.h"
 #include "SatisfactoryModLoader.h"
 
+//Switch to enable mod loading in editor. Currently it's disabled because we don't have proper FactoryGame editor build
+#ifndef ENABLE_MOD_LOADING_IN_EDITOR
+#define ENABLE_MOD_LOADING_IN_EDITOR 0
+#endif
+
 static bool PluginModuleLoaderExec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar) {
 	if (FParse::Command(&Cmd, TEXT("TestPluginModuleLoader"))) {
 		TArray<FDiscoveredModule> DiscoveredModules = FPluginModuleLoader::FindRootModulesOfType(UModModule::StaticClass());
@@ -22,17 +27,6 @@ static bool PluginModuleLoaderExec(UWorld* InWorld, const TCHAR* Cmd, FOutputDev
 		Ar.Logf(TEXT("Owner of the package %s is %s"), *TargetPackageName, *OwnerPluginName);
 		return true;
 	}
-	/*if (FParse::Command(&Cmd, TEXT("ListMountedPaks"))) {
-		TArray<FString> MountedPaksFilenames;
-		FPakPlatformFile* PakPlatformFile = (FPakPlatformFile*) FPlatformFileManager::Get().GetPlatformFile(TEXT("PakFile"));
-		PakPlatformFile->GetMountedPakFilenames(MountedPaksFilenames);
-
-		Ar.Log(TEXT("Mounted pak filenames: "));
-		for (const FString& PakFilename : MountedPaksFilenames) {
-			Ar.Logf(TEXT("%s"), *PakFilename);
-		}
-		return true;
-	}*/
 	return false;
 }
 
@@ -77,7 +71,12 @@ TArray<FDiscoveredModule> FPluginModuleLoader::FindRootModulesOfType(TSubclassOf
 }
 
 bool FPluginModuleLoader::ShouldLoadModulesForWorld(UWorld* World) {
+	//Disable module loading in editor if it's disabled by the macro
+#if WITH_EDITOR && ENABLE_MOD_LOADING_IN_EDITOR == 0
+	return false;
+#else
 	return World->WorldType == EWorldType::Game || World->WorldType == EWorldType::PIE;
+#endif
 }
 
 static FStaticSelfRegisteringExec PluginModuleLoaderExecRegistration(&PluginModuleLoaderExec);

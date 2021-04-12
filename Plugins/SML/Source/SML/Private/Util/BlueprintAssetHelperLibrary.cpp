@@ -58,7 +58,7 @@ FString FindOwnerPluginForModuleName(const FString& ModuleName, bool bTreatNonMo
 	//Iterate mod plugin modules and find the owning plugin for them
 	const TArray<TSharedRef<IPlugin>> EnabledPlugins = IPluginManager::Get().GetEnabledPlugins();
 	for (const TSharedRef<IPlugin>& Plugin : EnabledPlugins) {
-		if (Plugin->GetType() == EPluginType::Mod || !bTreatNonModPluginsAsGame) {
+		if (UModLoadingLibrary::IsPluginAMod(Plugin.Get()) || !bTreatNonModPluginsAsGame) {
 			for (const FModuleDescriptor& ModuleDescriptor : Plugin->GetDescriptor().Modules) {
 				if (ModuleDescriptor.Name == *ModuleName) {
 					return Plugin->GetName();
@@ -80,7 +80,7 @@ FString FindOwnerPluginForMountPoint(const FString& MountPoint, bool bTreatNonMo
 		const FString PluginMountPath = Plugin->GetMountedAssetPath();
 		if (PluginMountPath.Mid(1, PluginMountPath.Len() - 2) == MountPoint) {
 			//We only want to use plugin name for mods
-			if (Plugin->GetType() == EPluginType::Mod || !bTreatNonModPluginsAsGame) {
+			if (UModLoadingLibrary::IsPluginAMod(Plugin.Get()) || !bTreatNonModPluginsAsGame) {
 				return Plugin->GetName();
 			}
 			
