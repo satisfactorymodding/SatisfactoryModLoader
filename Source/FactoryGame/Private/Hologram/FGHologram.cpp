@@ -77,6 +77,7 @@ void AFGHologram::CheckCanAfford( UFGInventoryComponent* inventory){ }
 void AFGHologram::OnSnap(){ }
 void AFGHologram::OnRep_PlacementMaterial(){ }
 void AFGHologram::SetMaterial( UMaterialInterface* material){ }
+void AFGHologram::SetMaterialState(bool IsValidPlacement){ }
 TSubclassOf< AActor > AFGHologram::GetActorClass() const{ return TSubclassOf<AActor>(); }
 USceneComponent* AFGHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 void AFGHologram::SetIsChanged(){ }

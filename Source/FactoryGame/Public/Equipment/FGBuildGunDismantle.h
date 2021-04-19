@@ -104,6 +104,11 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "BuildGunState|Dismantle" )
 	FOnMultiDismantleStateChanged OnMultiDismantleStateChanged;
 
+	/** Material used on stencil proxies, needed to overwrite decal material domain shaders.
+	 * otherwise the depth is incorrect in the stencil buffer. */
+	UPROPERTY( EditDefaultsOnly )
+	UMaterialInterface* mHoverProxyMaterial;
+	
 protected:
 	void Internal_OnMultiDismantleStateChanged(bool newValue);
 
@@ -139,6 +144,15 @@ private:
 	/** Validates the list of pending dismantle actors and removes any stale pointers */
 	void ClearStaleDismantleActors();
 
+	/** Adds instances to the proxy component( s ) */
+	void CreateStencilProxy( AActor* selected );
+
+	void DestroySingleStencilProxy( AActor* actor );
+	
+	void DestroyStencilProxies(bool destroyComponents = true);
+
+	/** Reset stencil value on every mesh component that has a render state. */
+	void ResetStencilValues( TArray<AActor*> selectedActors );
 private:
 	/** State bool for whether multi-select is in effect */
 	bool mIsMultiSelectActive;
@@ -153,6 +167,10 @@ private:
 	/** The actor to dismantle (simulated locally on client). */
 	UPROPERTY(Transient)
 	TArray<class AActor*> mPendingDismantleActors;
+
+	/** Stencil meshes to mark dismantle with */
+	UPROPERTY(Transient)
+	TMap< UStaticMesh*, UInstancedStaticMeshComponent*> mPendingDismantleStencilMeshes;
 	
 	/** Cached dismantle refunds on server that is replicated */
 	UPROPERTY(Transient, ReplicatedUsing = OnRep_PeekDismantleRefund )

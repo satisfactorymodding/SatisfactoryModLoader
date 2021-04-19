@@ -401,13 +401,19 @@ protected:
 	virtual void SetMaterial( class UMaterialInterface* material );
 
 	/**
+	* Set the stencil value on the hologram meshes.
+	*
+	*/
+	virtual void SetMaterialState( bool IsValidPlacement );
+
+	/**
 	 * Get the actor this build gun constructs
 	 */
 	//@todo This has the same name as a deprecated function in Actor, rename.
 	TSubclassOf< AActor > GetActorClass() const;
 
 	/**
-	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
+	 * Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
 	 * Setup a component from the buildable template.
 	 * @param attachParent - Set the new component's AttachParent to this.
 	 * @param componentTemplate - Create the component using this template.

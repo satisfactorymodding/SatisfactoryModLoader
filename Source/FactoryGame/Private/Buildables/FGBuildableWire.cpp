@@ -28,7 +28,7 @@ UFGCircuitConnectionComponent* AFGBuildableWire::GetOppositeConnection(const  UF
 void AFGBuildableWire::Disconnect(){ }
 void AFGBuildableWire::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildableWire::UpdateWireMesh(){ }
-void AFGBuildableWire::Connect( UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ }
+bool AFGBuildableWire::Connect( UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ return bool(); }
 bool AFGBuildableWire::IsConnected() const{ return bool(); }
 void AFGBuildableWire::OnRep_Locations(){ }
 FName AFGBuildableWire::mWireMeshTag = FName();

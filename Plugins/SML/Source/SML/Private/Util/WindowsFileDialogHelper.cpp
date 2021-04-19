@@ -1,6 +1,7 @@
 #include "Util/FileDialogHelper.h"
 #include "Misc/Paths.h"
 #include "Framework/Application/SlateApplication.h"
+#include "HAL/ThreadHeartBeat.h"
 
 #pragma warning(push)
 #pragma warning(disable: 4668)
