@@ -11,13 +11,12 @@
 
 AWorldModuleManager* AWorldModuleManager::Get(UObject* WorldContext) {
     UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::Assert);
-    AGameStateBase* GameState = World->GetGameState();
-    check(GameState);
-    UWorldModuleManagerComponent* ModuleManagerComponent = GameState->FindComponentByClass<UWorldModuleManagerComponent>();
+    check(World);
     
+    UWorldModuleManagerComponent* ModuleManagerComponent = FindObject<UWorldModuleManagerComponent>(World, TEXT("WorldModuleManagerComponent"));
     if (ModuleManagerComponent == NULL) {
         //World Module Manager has not been initialized yet, perform lazy initialization
-        ModuleManagerComponent = NewObject<UWorldModuleManagerComponent>(GameState, TEXT("WorldModuleManagerComponent"));
+        ModuleManagerComponent = NewObject<UWorldModuleManagerComponent>(World, TEXT("WorldModuleManagerComponent"));
         check(ModuleManagerComponent);
         ModuleManagerComponent->SpawnModuleManager();
         ModuleManagerComponent->RegisterComponent();
