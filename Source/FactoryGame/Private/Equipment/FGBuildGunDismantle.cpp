@@ -30,3 +30,7 @@ void UFGBuildGunStateDismantle::ClearPendingSelectedActors(){ }
 bool UFGBuildGunStateDismantle::DoesReplicatedPeekDataMatch() const{ return bool(); }
 void UFGBuildGunStateDismantle::UpdatePeekDismantleRefunds(){ }
 void UFGBuildGunStateDismantle::ClearStaleDismantleActors(){ }
+void UFGBuildGunStateDismantle::CreateStencilProxy(AActor* selected){ }
+void UFGBuildGunStateDismantle::DestroySingleStencilProxy(AActor* actor){ }
+void UFGBuildGunStateDismantle::DestroyStencilProxies(bool destroyComponents){ }
+void UFGBuildGunStateDismantle::ResetStencilValues(TArray<AActor*> selectedActors){ }

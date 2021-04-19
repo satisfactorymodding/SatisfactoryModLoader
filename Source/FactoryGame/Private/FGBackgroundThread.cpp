@@ -40,6 +40,7 @@ void FFGBackgroundThread::ResolveRegisterActor_internal(){ }
 void FFGBackgroundThread::ResolveHandleStates_internal(){ }
 void FFGBackgroundThread::ResolveUpdates_internal(){ }
 void FFGBackgroundThread::ResolveEnvironmentAwareness_internal(){ }
+void FFGBackgroundThread::CleanupTasks(){ }
 void FFGBackgroundThread::UpdateBuckets(const FVector playerLocation){ }
 void FFGBackgroundThread::UpdateRelevance(const FVector playerLocation, const FVector playerViewDirection, TArray<FPoolItem*> &Items){ }
 void FFGBackgroundThread::InitializeDefaultPoolComponents(){ }
