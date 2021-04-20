@@ -50,3 +50,7 @@ TSharedPtr<FJsonObject> UStaticMeshAssetSerializer::SerializeBodySetup(UBodySetu
 FName UStaticMeshAssetSerializer::GetAssetClass() const {
     return UStaticMesh::StaticClass()->GetFName();
 }
+
+bool UStaticMeshAssetSerializer::SupportsParallelDumping() const {
+	return false;
+}

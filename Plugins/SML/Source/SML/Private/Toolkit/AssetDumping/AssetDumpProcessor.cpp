@@ -4,6 +4,8 @@
 #include "Toolkit/AssetDumping/AssetTypeSerializer.h"
 #include "Toolkit/AssetDumping/SerializationContext.h"
 
+using FInlinePackageArray = TArray<UPackage*, TInlineAllocator<16>>;
+
 FAssetDumpSettings::FAssetDumpSettings() :
 		RootDumpDirectory(FPaths::ProjectDir() + TEXT("AssetDump/")),
         MaxLoadRequestsInFly(4),
@@ -17,11 +19,13 @@ FAssetDumpSettings::FAssetDumpSettings() :
 TSharedPtr<FAssetDumpProcessor> FAssetDumpProcessor::ActiveDumpProcessor = NULL;
 
 FAssetDumpProcessor::FAssetDumpProcessor(const FAssetDumpSettings& Settings, const TArray<FAssetData>& InAssets) {
+	this->Settings = Settings;
 	this->PackagesToLoad = InAssets;
 	InitializeAssetDump();
 }
 
 FAssetDumpProcessor::FAssetDumpProcessor(const FAssetDumpSettings& Settings, const TMap<FName, FAssetData>& InAssets) {
+	this->Settings = Settings;
 	InAssets.GenerateValueArray(this->PackagesToLoad);
 	InitializeAssetDump();
 }
@@ -72,7 +76,7 @@ void FAssetDumpProcessor::Tick(float DeltaTime) {
 	}
 
 	//Process pending dump requests in parallel for loop
-	TArray<UPackage*> PackagesToProcessThisTick;
+	FInlinePackageArray PackagesToProcessThisTick;
 	PackagesToProcessThisTick.Reserve(Settings.MaxPackagesToProcessInOneTick);
 
 	//Lock packages array and copy elements from it
@@ -85,14 +89,35 @@ void FAssetDumpProcessor::Tick(float DeltaTime) {
 
 	this->LoadedPackagesCriticalSection.Unlock();
 
-	//Now iterate assets and dump each of them
-	EParallelForFlags Flags = EParallelForFlags::Unbalanced;
-	if (Settings.bForceSingleThread) {
-		Flags |= EParallelForFlags::ForceSingleThread;
+	FInlinePackageArray PackagesToProcessParallel;
+	FInlinePackageArray PackagesToProcessInMainThread;
+
+	for (UPackage* Package : PackagesToProcessThisTick) {
+		const FAssetData* AssetData = AssetDataByPackageName.FindChecked(Package->GetFName());
+		UAssetTypeSerializer* Serializer = UAssetTypeSerializer::FindSerializerForAssetClass(AssetData->AssetClass);
+
+		if (Serializer->SupportsParallelDumping()) {
+			PackagesToProcessParallel.Add(Package);
+		} else {
+			PackagesToProcessInMainThread.Add(Package);
+		}
 	}
-	ParallelFor(PackagesToProcessThisTick.Num(), [this, &PackagesToProcessThisTick](const int32 PackageIndex) {
-		PerformAssetDumpForPackage(PackagesToProcessThisTick[PackageIndex]);
-	}, Flags);
+
+	if (PackagesToProcessParallel.Num()) {
+		EParallelForFlags ParallelFlags = EParallelForFlags::Unbalanced;
+		if (Settings.bForceSingleThread) {
+			ParallelFlags |= EParallelForFlags::ForceSingleThread;
+		}
+		ParallelFor(PackagesToProcessParallel.Num(), [this, &PackagesToProcessParallel](const int32 PackageIndex) {
+            PerformAssetDumpForPackage(PackagesToProcessParallel[PackageIndex]);
+        }, ParallelFlags);
+	}
+
+	if (PackagesToProcessInMainThread.Num()) {
+		for (int32 i = 0; i < PackagesToProcessInMainThread.Num(); i++) {
+			PerformAssetDumpForPackage(PackagesToProcessInMainThread[i]);
+		}
+	}
 
 	if (CurrentPackageToLoadIndex >= PackagesToLoad.Num() &&
 		PackageLoadRequestsInFlyCounter.GetValue() == 0 &&

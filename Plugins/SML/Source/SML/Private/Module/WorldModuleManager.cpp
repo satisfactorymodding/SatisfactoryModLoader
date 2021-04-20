@@ -9,24 +9,12 @@
 #include "Module/GameWorldModule.h"
 #include "Module/MenuWorldModule.h"
 
-AWorldModuleManager* AWorldModuleManager::Get(UObject* WorldContext) {
-    UWorld* World = GEngine->GetWorldFromContextObject(WorldContext, EGetWorldErrorMode::Assert);
-    AGameStateBase* GameState = World->GetGameState();
-    check(GameState);
-    UWorldModuleManagerComponent* ModuleManagerComponent = GameState->FindComponentByClass<UWorldModuleManagerComponent>();
-    
-    if (ModuleManagerComponent == NULL) {
-        //World Module Manager has not been initialized yet, perform lazy initialization
-        ModuleManagerComponent = NewObject<UWorldModuleManagerComponent>(GameState, TEXT("WorldModuleManagerComponent"));
-        check(ModuleManagerComponent);
-        ModuleManagerComponent->SpawnModuleManager();
-        ModuleManagerComponent->RegisterComponent();
-    }
-    
-    return ModuleManagerComponent->GetModuleManager();
+UWorldModuleManager::UWorldModuleManager() {
+	this->bPostponeInitializeModules = false;
+	this->bPostponePostInitializeModules = false;
 }
 
-UWorldModule* AWorldModuleManager::FindModule(const FName& ModReference) const {
+UWorldModule* UWorldModuleManager::FindModule(const FName& ModReference) const {
     UWorldModule* const* WorldModule = RootModuleMap.Find(ModReference);
     if (WorldModule != NULL) {
         return *WorldModule;
@@ -34,25 +22,49 @@ UWorldModule* AWorldModuleManager::FindModule(const FName& ModReference) const {
     return NULL;
 }
 
-void AWorldModuleManager::RegisterModuleManager() {
-    //Spawn mod modules as soon as world actors are initialized (e.g static map objects are spawned)
-    FWorldDelegates::OnWorldInitializedActors.AddLambda([](const UWorld::FActorsInitializedParams Params) {
-        if (FPluginModuleLoader::ShouldLoadModulesForWorld(Params.World)) {
-            AWorldModuleManager* ModuleManager = AWorldModuleManager::Get(Params.World);
-            ModuleManager->Initialize();
-        }
-    });
-    
-    //Post initialize mod modules when world is fully loaded and is ready to be used
-    FCoreUObjectDelegates::PostLoadMapWithWorld.AddLambda([](UWorld* World){
-        if (FPluginModuleLoader::ShouldLoadModulesForWorld(World)) {
-            AWorldModuleManager* ModuleManager = AWorldModuleManager::Get(World);
-            ModuleManager->PostInitialize();
-        }
-    });
+bool UWorldModuleManager::ShouldCreateSubsystem(UObject* Outer) const {
+	UWorld* WorldOuter = CastChecked<UWorld>(Outer);
+	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
 }
 
-void AWorldModuleManager::Initialize() {
+void UWorldModuleManager::Initialize(FSubsystemCollectionBase& Collection) {
+	UWorld* OuterWorld = GetWorld();
+	OuterWorld->GameStateSetEvent.AddUObject(this, &UWorldModuleManager::OnGameStateSet);
+	OuterWorld->OnActorsInitialized.AddUObject(this, &UWorldModuleManager::InitializeModules);
+	OuterWorld->OnWorldBeginPlay.AddUObject(this, &UWorldModuleManager::PostInitializeModules);
+	ConstructModules();
+}
+
+void UWorldModuleManager::OnGameStateSet(AGameStateBase*) {
+	if (bPostponeInitializeModules) {
+		DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
+		this->bPostponeInitializeModules = false;
+	}
+
+	if (bPostponePostInitializeModules) {
+		DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
+		this->bPostponePostInitializeModules = false;
+	}
+}
+
+void UWorldModuleManager::InitializeModules(const UWorld::FActorsInitializedParams&) {
+	if (GetWorld()->GetGameState()) {
+		DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
+	} else {
+		this->bPostponeInitializeModules = true;
+	}
+}
+
+void UWorldModuleManager::PostInitializeModules() {
+	if (GetWorld()->GetGameState()) {
+		DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
+	} else {
+		this->bPostponePostInitializeModules = true;
+	}
+}
+
+
+void UWorldModuleManager::ConstructModules() {
     //Use game world module by default
     TSubclassOf<UWorldModule> ModuleTypeClass = UGameWorldModule::StaticClass();
 
@@ -85,17 +97,11 @@ void AWorldModuleManager::Initialize() {
     
     UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Discovered %d world modules of class %s"), AlreadyLoadedMods.Num(), *ModuleTypeClass->GetName());
     
-    //Dispatch lifecycle events in a sequence
+    //Dispatch construction lifecycle event
     DispatchLifecycleEvent(ELifecyclePhase::CONSTRUCTION);
-    DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
 }
 
-void AWorldModuleManager::PostInitialize() {
-    //Finish loading and dispatch post init now
-    DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
-}
-
-void AWorldModuleManager::CreateRootModule(const FName& ModReference, TSubclassOf<UWorldModule> ObjectClass) {
+void UWorldModuleManager::CreateRootModule(const FName& ModReference, TSubclassOf<UWorldModule> ObjectClass) {
     //Allocate module object and set mod reference
     UWorldModule* RootWorldModule = NewObject<UWorldModule>(this, ObjectClass, ModReference);
     check(RootWorldModule);
@@ -106,7 +112,7 @@ void AWorldModuleManager::CreateRootModule(const FName& ModReference, TSubclassO
     RootModuleList.Add(RootWorldModule);
 }
 
-void AWorldModuleManager::DispatchLifecycleEvent(ELifecyclePhase Phase) {
+void UWorldModuleManager::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     //Notify log of our current loading phase, in case of things going wrong
     UE_LOG(LogSatisfactoryModLoader, Log, TEXT("Dispatching lifecycle event %s to world %s modules"), 
         *UModModule::LifecyclePhaseToString(Phase), *GetWorld()->GetMapName());
@@ -115,12 +121,4 @@ void AWorldModuleManager::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     for (UWorldModule* RootModule : RootModuleList) {
         RootModule->DispatchLifecycleEvent(Phase);
     }
-}
-
-void UWorldModuleManagerComponent::SpawnModuleManager() {
-    FActorSpawnParameters SpawnParams;
-    SpawnParams.Owner = GetOwner();
-    SpawnParams.Name = TEXT("WorldModuleManager");
-    this->ModuleManager = GetWorld()->SpawnActor<AWorldModuleManager>(SpawnParams);
-    check(ModuleManager);
 }

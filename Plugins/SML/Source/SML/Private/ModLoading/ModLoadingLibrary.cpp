@@ -2,7 +2,6 @@
 #include "PluginDescriptor.h"
 #include "SatisfactoryModLoader.h"
 #include "Interfaces/IPluginManager.h"
-#include "Module/WorldModuleManager.h"
 #include "Util/ImageLoadingUtil.h"
 #include "Json.h"
 
@@ -127,9 +126,6 @@ void UModLoadingLibrary::Initialize(FSubsystemCollectionBase& Collection) {
     //Initialize metadata and check dependencies for plugins that have already been loaded
     ReloadPluginMetadata();
     VerifyPluginDependencies();
-
-    //TODO Feels really out of place here, but making a separate subsystem just for registering world loading hooks is odd
-    AWorldModuleManager::RegisterModuleManager();
 }
 
 FSMLPluginDescriptorMetadata UModLoadingLibrary::FindMetadataOrFallback(IPlugin& Plugin) {

@@ -54,6 +54,15 @@ private:
     /** Exports animation sequence into the given fbx animation layer */
     static void ExportAnimSequence(const UAnimSequence* AnimSeq, TArray<FbxNode*>& BoneNodes, USkeletalMesh* SkeletalMesh, FbxAnimStack* AnimStack, FbxAnimLayer* InAnimLayer, float AnimStartOffset, float AnimEndOffset, float AnimPlayRate, float StartTime);
 
+	/** Setups animation stack for exporting unreal animations */
+	static bool SetupAnimStack(const UAnimSequence* AnimSequence, FbxAnimStack* AnimStack);
+	
+	/** Exports custom animation curves into fbx curves */
+	static void ExportCustomAnimCurvesToFbx(const TMap<FName, FbxAnimCurve*>& CustomCurves, const UAnimSequence* AnimSequence, float AnimStartOffset, float AnimEndOffset, float AnimPlayRate, float StartTime);
+	
+	/** Iterates lambda inside of the anim sequence context passing various time values to it */
+    static void IterateInsideAnimSequence(const UAnimSequence* AnimSeq, float AnimStartOffset, float AnimEndOffset, float AnimPlayRate, float StartTime, TFunctionRef<void(float, FbxTime, bool)> IterationLambda);
+	
     /** Corrects interpolation on angle curves so that -179 -> 179 degrees interpolation doesn't go the whole circle */
     static void CorrectAnimTrackInterpolation(TArray<FbxNode*>& BoneNodes, FbxAnimLayer* InAnimLayer);
     

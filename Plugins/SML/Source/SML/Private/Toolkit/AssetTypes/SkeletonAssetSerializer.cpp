@@ -118,3 +118,7 @@ void USkeletonAssetSerializer::SerializeSmartNameContainer(const FSmartNameConta
 FName USkeletonAssetSerializer::GetAssetClass() const {
     return USkeleton::StaticClass()->GetFName();
 }
+
+bool USkeletonAssetSerializer::SupportsParallelDumping() const {
+	return false;
+}

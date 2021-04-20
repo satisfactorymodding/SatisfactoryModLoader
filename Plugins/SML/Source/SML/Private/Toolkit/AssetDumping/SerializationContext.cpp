@@ -7,12 +7,13 @@ FSerializationContext::FSerializationContext(const FString& RootOutputDirectory,
 	this->AssetSerializedData = MakeShareable(new FJsonObject());
 	this->PropertySerializer = NewObject<UPropertySerializer>();
 	this->ObjectHierarchySerializer = NewObject<UObjectHierarchySerializer>();
+	this->ObjectHierarchySerializer->SetPropertySerializer(PropertySerializer);
 
 	this->PropertySerializer->AddToRoot();
 	this->ObjectHierarchySerializer->AddToRoot();
 
 	//Object hierarchy serializer will also root package object by referencing it
-	this->ObjectHierarchySerializer->Initialize(Package, PropertySerializer);
+	this->ObjectHierarchySerializer->InitializeForSerialization(Package);
 	this->Package = Package;
 	this->AssetData = AssetData;
 

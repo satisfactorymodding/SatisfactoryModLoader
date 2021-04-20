@@ -56,6 +56,26 @@ bool StaticAssetDumperExec(UWorld* World, const TCHAR* Command, FOutputDevice& A
 		Ar.Log(TEXT("Asset dump started successfully, game will shutdown on finish"));
 		return true;
 	}
+
+	if (FParse::Command(&Command, TEXT("ListUnknownAssetClasses"))) {
+		TArray<FName> SupportedClasses;
+		for (UAssetTypeSerializer* Serializer : UAssetTypeSerializer::GetAvailableAssetSerializers()) {
+			SupportedClasses.Add(Serializer->GetAssetClass());
+			Serializer->GetAdditionallyHandledAssetClasses(SupportedClasses);
+		}
+
+		TArray<FName> UnknownAssetClasses;
+		FSelectedAssetsStruct::FindUnknownAssetClasses(SupportedClasses, UnknownAssetClasses);
+		if (UnknownAssetClasses.Num() > 0) {
+			Ar.Log(TEXT("Unknown asset classes in asset registry: "));
+			for (const FName& AssetClass : UnknownAssetClasses) {
+				Ar.Logf(TEXT(" - '%s'"), *AssetClass.ToString());
+			}
+		} else {
+			Ar.Logf(TEXT("No unknown asset classes found in asset registry"));
+		}
+		return true;
+	}
 	return false;
 }
 

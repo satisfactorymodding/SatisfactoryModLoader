@@ -5,7 +5,7 @@
 #include "Subsystem/ModSubsystemHolder.h"
 #include "SubsystemHolderRegistry.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogSubsystemHolderRegistry, Log, Log);
+DECLARE_LOG_CATEGORY_EXTERN(LogSubsystemHolderRegistry, Log, All);
 
 /** Structure holding information about subsystem holder entry registered */
 USTRUCT()

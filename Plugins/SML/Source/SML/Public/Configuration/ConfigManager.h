@@ -12,7 +12,7 @@
 class UUserWidget;
 class URootConfigValueHolder;
 
-DECLARE_LOG_CATEGORY_EXTERN(LogConfigManager, Log, Log)
+DECLARE_LOG_CATEGORY_EXTERN(LogConfigManager, Log, All)
 
 /** Describes active configuration data */
 USTRUCT()

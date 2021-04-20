@@ -6,7 +6,7 @@
 
 /** Manages registered world modules and their lifecycle events */
 UCLASS(NotBlueprintable)
-class SML_API AWorldModuleManager : public AInfo {
+class SML_API UWorldModuleManager : public UWorldSubsystem {
     GENERATED_BODY()
 private:
     /** Root map of modules for every registered mod reference */
@@ -17,39 +17,33 @@ private:
     UPROPERTY()
     TArray<UWorldModule*> RootModuleList;
 public:
-    /** Retrieves world module manager for provided world */
-    UFUNCTION(BlueprintPure)
-    static AWorldModuleManager* Get(UObject* WorldContext); 
-    
+	UWorldModuleManager();
+	
     /** Retrieves world module by provided mod reference */
     UFUNCTION(BlueprintPure)
     UWorldModule* FindModule(const FName& ModReference) const;
+
+    virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 private:
-    friend class UModLoadingLibrary;
-    
-    /** Registers world module manager */
-    static void RegisterModuleManager();
-    
+	bool bPostponeInitializeModules;
+	bool bPostponePostInitializeModules;
+
+	/** Called when game state is set on world, used to trigger postponed initialization on remote clients */
+	void OnGameStateSet(class AGameStateBase* GameState);
+	
+	/** Called very early to construct module objects, right after world initialization */
+	void ConstructModules();
+	
     /** Called when world actors have been initialized */
-    void Initialize();
+    void InitializeModules(const UWorld::FActorsInitializedParams& Params);
 
     /** Called when world post initialization has been completed */
-    void PostInitialize();
+    void PostInitializeModules();
     
     /** Allocates root module object for instance and registers it */
     void CreateRootModule(const FName& ModReference, TSubclassOf<UWorldModule> ObjectClass);
 
     /** Dispatches lifecycle event to all registered modules */
     void DispatchLifecycleEvent(ELifecyclePhase Phase);
-};
-
-UCLASS()
-class SML_API UWorldModuleManagerComponent : public UActorComponent {
-    GENERATED_BODY()
-private:
-    UPROPERTY()
-    AWorldModuleManager* ModuleManager;
-public:
-    void SpawnModuleManager();
-    FORCEINLINE AWorldModuleManager* GetModuleManager() const { return ModuleManager; }
 };

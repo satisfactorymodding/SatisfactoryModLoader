@@ -3,7 +3,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "BlueprintLoggingLibrary.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogBlueprintLogging, Verbose, Verbose);
+DECLARE_LOG_CATEGORY_EXTERN(LogBlueprintLogging, Verbose, All);
 
 #define IMPLEMENT_BP_LOG_FUNCTION(Verbosity) \
     { \

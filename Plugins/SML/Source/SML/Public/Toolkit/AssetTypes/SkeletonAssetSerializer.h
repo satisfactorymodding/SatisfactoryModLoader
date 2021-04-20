@@ -13,4 +13,5 @@ public:
     static void SerializeSmartNameContainer(const struct FSmartNameContainer& Container, TSharedPtr<class FJsonObject> OutObject);
     
     virtual FName GetAssetClass() const override;
+	virtual bool SupportsParallelDumping() const override;
 };

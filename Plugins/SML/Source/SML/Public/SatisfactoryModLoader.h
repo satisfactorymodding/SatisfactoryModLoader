@@ -2,7 +2,7 @@
 #include "SMLConfiguration.h"
 #include "Util/SemVersion.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogSatisfactoryModLoader, Log, Log);
+DECLARE_LOG_CATEGORY_EXTERN(LogSatisfactoryModLoader, Log, All);
 
 /** Describes a set of known attributes returned by GetExtraAttributes() */
 struct SML_API FModLoaderExtraAttributes {

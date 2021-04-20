@@ -292,3 +292,19 @@ void FSelectedAssetsStruct::LogSettings() {
 	
 	UE_LOG(LogSatisfactoryModLoader, Display, TEXT("================== END SETTINGS FOR ASSET GATHERER ================="));
 }
+
+void FSelectedAssetsStruct::FindUnknownAssetClasses(const TArray<FName>& KnownAssetClasses, TArray<FName>& OutUnknownClasses) {
+	TSet<FName> KnownAssetClassesSet;
+	KnownAssetClassesSet.Append(KnownAssetClasses);
+	TSet<FName> UnknownAssetClassesSet;
+
+	FAssetRegistryModule& AssetRegistryModule = FModuleManager::LoadModuleChecked<FAssetRegistryModule>(TEXT("AssetRegistry"));
+	IAssetRegistry& AssetRegistry = AssetRegistryModule.GetRegistry();
+	AssetRegistry.EnumerateAllAssets([&](const FAssetData& AssetData) {
+        if (!KnownAssetClassesSet.Contains(AssetData.AssetClass)) {
+			UnknownAssetClassesSet.Add(AssetData.AssetClass);
+        }
+        return true;
+    });
+	OutUnknownClasses = UnknownAssetClassesSet.Array();
+}

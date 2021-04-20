@@ -28,3 +28,7 @@ void UAnimationSequenceAssetSerializer::SerializeAsset(TSharedRef<FSerialization
 FName UAnimationSequenceAssetSerializer::GetAssetClass() const {
     return UAnimSequence::StaticClass()->GetFName();
 }
+
+bool UAnimationSequenceAssetSerializer::SupportsParallelDumping() const {
+	return false;
+}

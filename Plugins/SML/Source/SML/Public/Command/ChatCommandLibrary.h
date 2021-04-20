@@ -4,7 +4,7 @@
 #include "command/ChatCommandInstance.h"
 #include "ChatCommandLibrary.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogChatCommand, Log, Log);
+DECLARE_LOG_CATEGORY_EXTERN(LogChatCommand, Log, All);
 
 UCLASS(NotBlueprintable)
 class SML_API AChatCommandSubsystem : public AFGSubsystem {

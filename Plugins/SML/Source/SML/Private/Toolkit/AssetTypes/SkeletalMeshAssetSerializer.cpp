@@ -61,3 +61,7 @@ void USkeletalMeshAssetSerializer::SerializeReferenceSkeleton(const FReferenceSk
 FName USkeletalMeshAssetSerializer::GetAssetClass() const {
     return USkeletalMesh::StaticClass()->GetFName();
 }
+
+bool USkeletalMeshAssetSerializer::SupportsParallelDumping() const {
+	return false;
+}

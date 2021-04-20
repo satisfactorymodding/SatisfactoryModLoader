@@ -34,6 +34,9 @@ public:
 	/** Determines whenever this asset should be serialized by default */
 	virtual bool ShouldSerializeByDefault() const { return false; }
 
+	/** Determines whenever this serializer supports being run in parallel in worker threads. Override and return false if you depend on main thread state */
+	virtual bool SupportsParallelDumping() const { return true; }
+
     /**
      * Returns serializer capable of serializing asset of specified class
      * or NULL if such serializer cannot be resolved.

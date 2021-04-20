@@ -5,7 +5,7 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "NetworkHandler.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogModNetworkHandler, Log, Log);
+DECLARE_LOG_CATEGORY_EXTERN(LogModNetworkHandler, Log, All);
 DECLARE_DELEGATE_TwoParams(FMessageReceived, class UNetConnection* /*Connection*/, FString /*Data*/);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FWelcomePlayer, UWorld* /*ServerWorld*/, class UNetConnection* /*Connection*/);
 DECLARE_MULTICAST_DELEGATE_OneParam(FClientInitialJoin, class UNetConnection* /*Connection*/);

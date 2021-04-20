@@ -33,8 +33,10 @@ public:
     void SerializeObjectPropertiesIntoObject(UObject* Object, TSharedPtr<FJsonObject> OutObject);
     
     void DeserializeObjectProperties(const TSharedRef<FJsonObject>& Properties, UObject* Object);
-    
-    void Initialize(UPackage* SourcePackage, UPropertySerializer* PropertySerializer);
+
+	void SetPropertySerializer(UPropertySerializer* PropertySerializer);
+	
+    void InitializeForSerialization(UPackage* SourcePackage);
 
     /** Allows serialization of class with native Serialize override */
     void AllowNativeClassSerialization(UClass* ClassToAllow);
@@ -53,7 +55,9 @@ public:
      */
     void SetAllowExportedObjectSerialization(bool bAllowExportedObjectSerialization);
     
-    void InitializeForDeserialization(const TArray<TSharedPtr<FJsonObject>>& ObjectsArray);
+    void InitializeForDeserialization(const TArray<TSharedPtr<FJsonValue>>& ObjectsArray);
+	void SetPackageForDeserialization(UPackage* SelfPackage);
+	
     UObject* DeserializeObject(int32 Index);
     
     int32 SerializeObject(UObject* Object);

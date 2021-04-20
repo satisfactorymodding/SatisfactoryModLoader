@@ -45,6 +45,9 @@ public:
 	/** Logs active settings for this instance into the game log */
 	void LogSettings();
 
+	/** Find unknown asset classes in the asset registry */
+	static void FindUnknownAssetClasses(const TArray<FName>& KnownAssetClasses, TArray<FName>& OutUnknownClasses);
+
 	/** Returns the map of gathered assets. Keep in mind you need to use GatherAssetsData before using it */
 	FORCEINLINE const TMap<FName, FAssetData>& GetGatheredAssets() const { return GatheredAssetPackages; }
 };

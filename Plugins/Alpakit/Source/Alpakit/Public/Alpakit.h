@@ -5,7 +5,7 @@
 #include "AssetData.h"
 #include "Dom/JsonObject.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogAlpakit, Verbose, Verbose);
+DECLARE_LOG_CATEGORY_EXTERN(LogAlpakit, Verbose, All);
 
 class FAlpakitModule : public IModuleInterface {
 public:

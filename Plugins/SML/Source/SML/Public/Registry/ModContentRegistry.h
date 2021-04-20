@@ -6,7 +6,7 @@
 #include "Engine/DataTable.h"
 #include "ModContentRegistry.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogContentRegistry, Log, Log);
+DECLARE_LOG_CATEGORY_EXTERN(LogContentRegistry, Log, All);
 
 /** Holds basic information about a single content registration entry */
 //Should be very lightweight for network serialization, that's why we use FName and not FString here
