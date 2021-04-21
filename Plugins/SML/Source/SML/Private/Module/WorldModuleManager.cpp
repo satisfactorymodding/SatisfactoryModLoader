@@ -8,6 +8,7 @@
 #include "ModLoading/PluginModuleLoader.h"
 #include "Module/GameWorldModule.h"
 #include "Module/MenuWorldModule.h"
+#include "Registry/ModContentRegistry.h"
 
 UWorldModuleManager::UWorldModuleManager() {
 	this->bPostponeInitializeModules = false;
@@ -32,15 +33,24 @@ void UWorldModuleManager::Initialize(FSubsystemCollectionBase& Collection) {
 	OuterWorld->GameStateSetEvent.AddUObject(this, &UWorldModuleManager::OnGameStateSet);
 	OuterWorld->OnActorsInitialized.AddUObject(this, &UWorldModuleManager::InitializeModules);
 	OuterWorld->OnWorldBeginPlay.AddUObject(this, &UWorldModuleManager::PostInitializeModules);
-	ConstructModules();
 }
 
 void UWorldModuleManager::OnGameStateSet(AGameStateBase*) {
+	//We want to postpone initialization by one more tick, because OnGameStateSet is basically
+	//called from AGameStateBase, which is too early for any kind of initialization inside of the AFGGameState
+	//It will be done right after broadcasting event though, so just delaying registration solves the problem
+	if (bPostponeInitializeModules || bPostponePostInitializeModules) {
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWorldModuleManager::OnGameStateFullyInitialized);
+	}
+}
+
+void UWorldModuleManager::OnGameStateFullyInitialized() {
 	if (bPostponeInitializeModules) {
 		DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
+		NotifyContentRegistry();
 		this->bPostponeInitializeModules = false;
 	}
-
+    
 	if (bPostponePostInitializeModules) {
 		DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
 		this->bPostponePostInitializeModules = false;
@@ -48,19 +58,39 @@ void UWorldModuleManager::OnGameStateSet(AGameStateBase*) {
 }
 
 void UWorldModuleManager::InitializeModules(const UWorld::FActorsInitializedParams&) {
+	//We always construct modules when world actors are initialized,
+	//because actors are not supposed to try and access registry and subsystems in the construction phase
+	//It's still useful to do it here though, because that way modules on remote
+	//get the chance to handle OnWorldActorsInitialized event (which they won't get in init because
+	//it will get postponed since game state is not replicated yet)
+	ConstructModules();
+
+	//Initialized can be delayed when we haven't replicated game state yet,
+	//modules can still use construct to react specifically to OnWorldActorsInitialized event
 	if (GetWorld()->GetGameState()) {
 		DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
+		NotifyContentRegistry();
 	} else {
 		this->bPostponeInitializeModules = true;
 	}
 }
 
 void UWorldModuleManager::PostInitializeModules() {
+	//Post initialization can be postponed if we haven't replicated game state yet
+	//Overall, OnWorldBeginPlay is a very simple event which just means that all of the actors in the world
+	//had BeginPlay dispatched, technically making it earliest place where world is fully initialized
+	//It's okay to run initialization a bit later on remote, since world is already fully initialized at this point
 	if (GetWorld()->GetGameState()) {
 		DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
 	} else {
 		this->bPostponePostInitializeModules = true;
 	}
+}
+
+void UWorldModuleManager::NotifyContentRegistry() {
+	AModContentRegistry* ContentRegistry = AModContentRegistry::Get(this);
+	check(ContentRegistry);
+	ContentRegistry->NotifyModuleRegistrationFinished();
 }
 
 

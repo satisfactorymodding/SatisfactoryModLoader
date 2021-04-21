@@ -15,12 +15,27 @@ UObjectHierarchySerializer::UObjectHierarchySerializer() {
     APPEND_DEFAULT_SERIALIZABLE_NATIVE_CLASSES(AllowedNativeSerializeClasses.Add);
 }
 
-void UObjectHierarchySerializer::Initialize(UPackage* NewSourcePackage, UPropertySerializer* NewPropertySerializer) {
-    check(NewSourcePackage);
-    this->SourcePackage = NewSourcePackage;
-    check(NewPropertySerializer);
-    this->PropertySerializer = NewPropertySerializer;
-    NewPropertySerializer->ObjectHierarchySerializer = this;
+void UObjectHierarchySerializer::SetPropertySerializer(UPropertySerializer* NewPropertySerializer) {
+	check(NewPropertySerializer);
+	this->PropertySerializer = NewPropertySerializer;
+	NewPropertySerializer->ObjectHierarchySerializer = this;
+}
+
+void UObjectHierarchySerializer::InitializeForDeserialization(const TArray<TSharedPtr<FJsonValue>>& ObjectsArray) {
+	this->LastObjectIndex = ObjectsArray.Num();
+	for (int32 i = 0; i < LastObjectIndex; i++) {
+		SerializedObjects.Add(i, ObjectsArray[i]->AsObject());
+	}
+}
+
+void UObjectHierarchySerializer::InitializeForSerialization(UPackage* NewSourcePackage) {
+	check(NewSourcePackage);
+	this->SourcePackage = NewSourcePackage;
+}
+
+void UObjectHierarchySerializer::SetPackageForDeserialization(UPackage* SelfPackage) {
+	check(SelfPackage);
+	this->SourcePackage = SelfPackage;
 }
 
 void UObjectHierarchySerializer::AllowNativeClassSerialization(UClass* ClassToAllow) {
@@ -153,13 +168,6 @@ void UObjectHierarchySerializer::DeserializeObjectProperties(const TSharedRef<FJ
     }
 }
 
-void UObjectHierarchySerializer::InitializeForDeserialization(const TArray<TSharedPtr<FJsonObject>>& ObjectsArray) {
-    this->LastObjectIndex = ObjectsArray.Num();
-    for (int32 i = 0; i < LastObjectIndex; i++) {
-        SerializedObjects.Add(i, ObjectsArray[i]);
-    }
-}
-
 TArray<TSharedPtr<FJsonValue>> UObjectHierarchySerializer::FinalizeSerialization() {
     TArray<TSharedPtr<FJsonValue>> ObjectsArray;
     for (int32 i = 0; i < LastObjectIndex; i++) {
@@ -195,19 +203,13 @@ UObject* UObjectHierarchySerializer::DeserializeExportedObject(TSharedPtr<FJsonO
      
     const EObjectFlags ObjectLoadFlags = (EObjectFlags) ObjectJson->GetIntegerField(TEXT("ObjectFlags"));
     const FString ObjectName = ObjectJson->GetStringField(TEXT("ObjectName"));
-    UObject* Template = UObject::GetArchetypeFromRequiredInfo(ObjectClass, OuterObject, *ObjectName, ObjectLoadFlags);
+    UObject* Template = GetArchetypeFromRequiredInfo(ObjectClass, OuterObject, *ObjectName, ObjectLoadFlags);
 
     //Give native deserializer a chance to handle object allocation
-    const bool bShouldDeserializeProperties = true;
-    UObject* ConstructedObject = NULL;
-
-    //Construct object manually if native deserializer didn't handle it
-    if (ConstructedObject == NULL) {
-        ConstructedObject = StaticConstructObject_Internal(ObjectClass, OuterObject, *ObjectName, ObjectLoadFlags, EInternalObjectFlags::None, Template);
-    }
+    UObject* ConstructedObject = StaticConstructObject_Internal(ObjectClass, OuterObject, *ObjectName, ObjectLoadFlags, EInternalObjectFlags::None, Template);
 
     //Deserialize object properties now
-    if (bShouldDeserializeProperties && ObjectJson->HasField(TEXT("Properties"))) {
+    if (ObjectJson->HasField(TEXT("Properties"))) {
         const TSharedPtr<FJsonObject>& Properties = ObjectJson->GetObjectField(TEXT("Properties"));
         if (Properties.IsValid()) {
             DeserializeObjectProperties(Properties.ToSharedRef(), ConstructedObject);

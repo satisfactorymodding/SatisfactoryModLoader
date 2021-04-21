@@ -34,9 +34,9 @@ public:
     
     void DeserializeObjectProperties(const TSharedRef<FJsonObject>& Properties, UObject* Object);
 
-	void SetPropertySerializer(UPropertySerializer* PropertySerializer);
+	void SetPropertySerializer(UPropertySerializer* NewPropertySerializer);
 	
-    void InitializeForSerialization(UPackage* SourcePackage);
+    void InitializeForSerialization(UPackage* NewSourcePackage);
 
     /** Allows serialization of class with native Serialize override */
     void AllowNativeClassSerialization(UClass* ClassToAllow);

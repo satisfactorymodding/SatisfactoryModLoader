@@ -1,9 +1,14 @@
 #include "Registry/ModContentRegistry.h"
+
+
+#include "FGGameInstance.h"
+#include "FGGameState.h"
 #include "FGRecipeManager.h"
 #include "FGResearchManager.h"
 #include "FGResourceSinkSettings.h"
 #include "FGResourceSinkSubsystem.h"
 #include "FGSchematicManager.h"
+#include "FGTutorialIntroManager.h"
 #include "Unlocks/FGUnlockRecipe.h"
 #include "IPlatformFilePak.h"
 #include "Subsystem/ModSubsystemHolder.h"
@@ -17,6 +22,18 @@
 DEFINE_LOG_CATEGORY(LogContentRegistry);
 
 static bool GIsRegisteringVanillaContent = false;
+
+/** Makes sure provided object instance is valid, crashes with both script call stack and native stack trace if it's not */
+#define CHECK_PROVIDED_OBJECT_VALID(Object, Message, ...) \
+	if (!IsValid(Object)) { \
+		const FString Context = FString::Printf(Message, __VA_ARGS__); \
+		/* Attempt to use cached script frame pointer first, then fallback to global script callstack (which is not available in shipping by default) */ \
+		const FString ScriptCallstack = ActiveScriptFramePtr ? ActiveScriptFramePtr->GetStackTrace() : FFrame::GetScriptCallstack(); \
+		UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), *Context); \
+		UE_LOG(LogContentRegistry, Error, TEXT("Script Callstack: %s"), *ScriptCallstack); \
+		UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register invalid content in mod content registry: %s. Script callstack: %s"), *Context, *ScriptCallstack); \
+	}
+
 
 void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
     const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);
@@ -102,6 +119,8 @@ void AModContentRegistry::DisableVanillaContentRegistration() {
 }
 
 FName AModContentRegistry::FindContentOwnerFast(UClass* ContentClass) {
+	checkf(ContentClass, TEXT("NULL ContentClass passed to FindContentOwnerFast"));
+	
     //Shortcut used for quickly registering vanilla content
     if (GIsRegisteringVanillaContent) {
         return FACTORYGAME_MOD_NAME;
@@ -114,6 +133,11 @@ FName AModContentRegistry::FindContentOwnerFast(UClass* ContentClass) {
         return FACTORYGAME_MOD_NAME;
     }
     return *ContentOwnerName;
+}
+
+void AModContentRegistry::NotifyModuleRegistrationFinished() {
+	UE_LOG(LogContentRegistry, Log, TEXT("Module content registration finished notify received"));
+	FreezeRegistryState();
 }
 
 void AModContentRegistry::FlushStateToSchematicManager(AFGSchematicManager* SchematicManager) const {
@@ -188,11 +212,14 @@ void AModContentRegistry::FreezeRegistryState() {
 
 void AModContentRegistry::EnsureRegistryUnfrozen() const {
     if (bIsRegistryFrozen) {
-        UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register object in frozen mod content registry"));
+        UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register object in frozen mod content registry. "
+        	"Make sure your modded content registration is happening in the 'Initialization' Lifecycle Phase and not 'Post Initialization'"));
     }
 }
 
 void AModContentRegistry::CheckSavedDataForMissingObjects() {
+	checkf(bIsRegistryFrozen, TEXT("CheckSavedDataForMissingObjects called before registry is frozen"));
+	
     AFGRecipeManager* RecipeManager = AFGRecipeManager::Get(this);
     AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
     AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
@@ -213,6 +240,26 @@ void AModContentRegistry::CheckSavedDataForMissingObjects() {
     }
 }
 
+void AModContentRegistry::UnlockTutorialSchematics() {
+	UFGGameInstance* GameInstance = Cast<UFGGameInstance>(GetGameInstance());
+	AFGTutorialIntroManager* TutorialIntroManager = AFGTutorialIntroManager::Get(this);
+	AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
+	
+	if (SchematicManager && (GameInstance && GameInstance->GetSkipOnboarding() || TutorialIntroManager && TutorialIntroManager->GetIsTutorialCompleted())) {
+		for (const TSharedPtr<FSchematicRegistrationInfo>& RegistrationInfo : SchematicRegistryState.GetAllObjects()) {
+			const TSubclassOf<UFGSchematic> Schematic = RegistrationInfo->RegisteredObject;
+
+			//TODO using GiveAccessToSchematic has some side effects, for example unwanted ADA messages
+			//We should probably look into modifying list directly, but that would essentially mean conflicts with AFGUnlockSystem
+			//and other kinds of nasty stuff, so for now i'm leaving as it is while we're looking for a better solution
+			if (UFGSchematic::GetType(Schematic) == ESchematicType::EST_Tutorial &&
+					SchematicManager->mPurchasedSchematics.Find(Schematic) == INDEX_NONE) {
+				SchematicManager->GiveAccessToSchematic(Schematic);
+			}
+		}
+    }
+}
+
 void AModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schematic) {
     //Update research trees in case they depend on schematic unlocked dependency
     AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
@@ -228,8 +275,12 @@ void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRec
 
     for (const FItemAmount& ItemAmount : AllReferencedItems) {
         const TSubclassOf<UFGItemDescriptor>& ItemDescriptor = ItemAmount.ItemClass;
+
+    	CHECK_PROVIDED_OBJECT_VALID(ItemDescriptor, TEXT("Recipe '%s' registered by %s contains invalid NULL ItemDescriptor in it's Ingredients or Results"),
+                *Recipe->GetPathName(), *ModReference.ToString());
+    	
         TSharedPtr<FItemRegistrationInfo> ItemRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
-        if (!ItemRegistrationInfo.IsValid()) {
+        if (!ItemRegistrationInfo.IsValid()) {        	
             const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
             ItemRegistrationInfo = RegisterItemDescriptor(OwnerModReference, ModReference, ItemDescriptor);
         }
@@ -239,7 +290,8 @@ void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRec
 }
 
 TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor) {
-    return ItemRegistryState.RegisterObject(MakeRegistrationInfo<FItemRegistrationInfo>(ItemDescriptor, OwnerModReference, RegistrarModReference));
+	checkf(ItemDescriptor, TEXT("Attempt to register NULL ItemDescriptor, mod reference: %s"), *RegistrarModReference.ToString());
+	return ItemRegistryState.RegisterObject(MakeRegistrationInfo<FItemRegistrationInfo>(ItemDescriptor, OwnerModReference, RegistrarModReference));
 }
 
 void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicManager,
@@ -313,9 +365,9 @@ void AModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollec
     ModContentRegistry->ResearchTreeRegistryState.AddReferencedObjects(InThis, Collector);
 }
 
-void AModContentRegistry::RegisterSchematic(FName ModReference, TSubclassOf<UFGSchematic> Schematic) {
-    check(Schematic.Get() != NULL);
-
+void AModContentRegistry::RegisterSchematic(const FName ModReference, const TSubclassOf<UFGSchematic> Schematic) {
+	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("Attempt to register NULL Schematic. Mod Reference: %s"), *ModReference.ToString());
+	
     if (!SchematicRegistryState.ContainsObject(Schematic)) {
         EnsureRegistryUnfrozen();
 
@@ -327,7 +379,11 @@ void AModContentRegistry::RegisterSchematic(FName ModReference, TSubclassOf<UFGS
         //Register referenced recipes automatically and associate schematic with them
         TArray<TSubclassOf<UFGRecipe>> OutReferencedRecipes;
         ExtractRecipesFromSchematic(Schematic, OutReferencedRecipes);
-        for (const TSubclassOf<UFGRecipe>& Recipe : OutReferencedRecipes) {
+
+    	for (const TSubclassOf<UFGRecipe>& Recipe : OutReferencedRecipes) {
+    		CHECK_PROVIDED_OBJECT_VALID(Recipe, TEXT("Schematic '%s' registered by %s references invalid NULL Recipe in it's Unlocks Array"),
+    			*Schematic->GetPathName(), *ModReference.ToString());
+        	
             RegisterRecipe(ModReference, Recipe);
             const TSharedPtr<FRecipeRegistrationInfo> RecipeRegistrationInfo = RecipeRegistryState.FindObject(Recipe);
             RecipeRegistrationInfo->ReferencedBy.Add(Schematic);
@@ -338,8 +394,8 @@ void AModContentRegistry::RegisterSchematic(FName ModReference, TSubclassOf<UFGS
     }
 }
 
-void AModContentRegistry::RegisterResearchTree(FName ModReference, TSubclassOf<UFGResearchTree> ResearchTree) {
-    check(ResearchTree.Get() != NULL);
+void AModContentRegistry::RegisterResearchTree(const FName ModReference, const TSubclassOf<UFGResearchTree> ResearchTree) {
+	CHECK_PROVIDED_OBJECT_VALID(ResearchTree, TEXT("Attempt to register NULL ResearchTree. Mod Reference: %s"), *ModReference.ToString());
 
     if (!ResearchTreeRegistryState.ContainsObject(ResearchTree)) {
         EnsureRegistryUnfrozen();
@@ -352,7 +408,11 @@ void AModContentRegistry::RegisterResearchTree(FName ModReference, TSubclassOf<U
         //Register referenced schematics automatically and associate research tree with them
         TArray<TSubclassOf<UFGSchematic>> OutReferencedSchematics;
         ExtractSchematicsFromResearchTree(ResearchTree, OutReferencedSchematics);
+    	
         for (const TSubclassOf<UFGSchematic>& Schematic : OutReferencedSchematics) {
+        	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("ResearchTree '%s' registered by %s references invalid NULL Schematic in one of it's Nodes"),
+        		*ResearchTree->GetPathName(), *ModReference.ToString());
+        	
             RegisterSchematic(ModReference, Schematic);
             const TSharedPtr<FSchematicRegistrationInfo> SchematicRegistrationInfo = SchematicRegistryState.FindObject(Schematic);
             SchematicRegistrationInfo->ReferencedBy.Add(ResearchTree);
@@ -363,8 +423,8 @@ void AModContentRegistry::RegisterResearchTree(FName ModReference, TSubclassOf<U
     }
 }
 
-void AModContentRegistry::RegisterRecipe(FName ModReference, TSubclassOf<UFGRecipe> Recipe) {
-    check(Recipe.Get() != NULL);
+void AModContentRegistry::RegisterRecipe(const FName ModReference, const TSubclassOf<UFGRecipe> Recipe) {
+	CHECK_PROVIDED_OBJECT_VALID(Recipe, TEXT("Attempt to register NULL Recipe. Mod Reference: %s"), *ModReference.ToString());
 
     if (!RecipeRegistryState.ContainsObject(Recipe)) {
         EnsureRegistryUnfrozen();
@@ -383,6 +443,8 @@ void AModContentRegistry::RegisterRecipe(FName ModReference, TSubclassOf<UFGReci
 }
 
 void AModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable) {
+	CHECK_PROVIDED_OBJECT_VALID(PointTable, TEXT("Attempt to register NULL ResourceSinkPointTable. Mod Reference: %s"), *ModReference.ToString());
+	
     AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
 
     if (ResourceSinkSubsystem != NULL && PointTable != NULL) {
@@ -429,17 +491,22 @@ TArray<FItemRegistrationInfo> AModContentRegistry::GetObtainableItemDescriptors(
     return OutRegistrationInfo;
 }
 
-FItemRegistrationInfo AModContentRegistry::GetItemDescriptorInfo(TSubclassOf<UFGItemDescriptor> ItemDescriptor) {
+FItemRegistrationInfo AModContentRegistry::GetItemDescriptorInfo(const TSubclassOf<UFGItemDescriptor> ItemDescriptor) {
+	//Remove blank registration info if provided item descriptor is not valid
+	if (!IsValid(ItemDescriptor)) {
+		return FItemRegistrationInfo{};
+	}
+	
     //Use cached registration information if it's available
     const TSharedPtr<FItemRegistrationInfo> CachedRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
     if (CachedRegistrationInfo.IsValid()) {
         return *CachedRegistrationInfo;
     }
+	
     //Item descriptor was not referenced in any registered recipe, fallback to registrar name = owner name logic
     const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
     return *RegisterItemDescriptor(OwnerModReference, OwnerModReference, ItemDescriptor);
 }
-
 
 AModContentRegistry::AModContentRegistry() {
     bReplicates = true;
@@ -449,6 +516,7 @@ AModContentRegistry::AModContentRegistry() {
     ResearchManagerInternalState = -1;
     bSubscribedToSchematicManager = false;
     PrimaryActorTick.bCanEverTick = true;
+	ActiveScriptFramePtr = NULL;
 }
 
 AModContentRegistry* AModContentRegistry::Get(UObject* WorldContext) {
@@ -457,9 +525,18 @@ AModContentRegistry* AModContentRegistry::Get(UObject* WorldContext) {
 }
 
 void AModContentRegistry::BeginPlay() {
-    //Freeze registry now, when BeginPlay is dispatched we already have save loaded
-    FreezeRegistryState();
-    CheckSavedDataForMissingObjects();
+    //We should be frozen at this point already on host clients (freezing there happens before BeginPlay is dispatched to world actors)
+	//For remote clients we are not frozen yet most likely, but checking save data for remote clients is pointless anyway
+    if (HasAuthority()) {
+    	CheckSavedDataForMissingObjects();
+    }
+
+	//Give instant access to tutorial schematics if we have finished tutorial or have been asked to skip onboarding
+	//We have to do it here since SchematicManager does it in BeginPlay by iterating mAllSchematics, and since we overwrite vanilla
+	//function so all schematic is empty, it ends up not unlocking any tutorial schematics
+	if (HasAuthority()) {
+		UnlockTutorialSchematics();
+	}
 }
 
 void AModContentRegistry::Tick(float DeltaSeconds) {
@@ -489,4 +566,51 @@ void AModContentRegistry::Tick(float DeltaSeconds) {
             ResearchManagerInternalState = ResearchTreeRegistryCounter;
         }
     }
+}
+
+#define P_SET_ACTIVE_FRAME P_THIS->ActiveScriptFramePtr = &Stack;
+#define P_RESET_ACTIVE_FRAME P_THIS->ActiveScriptFramePtr = NULL;
+
+DEFINE_FUNCTION(AModContentRegistry::execRegisterResourceSinkItemPointTable) {
+	P_GET_PROPERTY(FNameProperty, ModReference);
+	P_GET_OBJECT(UDataTable, PointTable);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_SET_ACTIVE_FRAME;
+	P_THIS->RegisterResourceSinkItemPointTable(ModReference, PointTable);
+	P_RESET_ACTIVE_FRAME;
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(AModContentRegistry::execRegisterRecipe) {
+	P_GET_PROPERTY(FNameProperty,Z_Param_ModReference);
+	P_GET_OBJECT(UClass,Z_Param_Recipe);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_SET_ACTIVE_FRAME;
+	P_THIS->RegisterRecipe(Z_Param_ModReference,Z_Param_Recipe);
+	P_RESET_ACTIVE_FRAME;
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(AModContentRegistry::execRegisterResearchTree) {
+	P_GET_PROPERTY(FNameProperty, ModReference);
+	P_GET_OBJECT(UClass, ResearchTree);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_SET_ACTIVE_FRAME;
+	P_THIS->RegisterResearchTree(ModReference, ResearchTree);
+	P_RESET_ACTIVE_FRAME;
+	P_NATIVE_END;
+}
+
+DEFINE_FUNCTION(AModContentRegistry::execRegisterSchematic) {
+	P_GET_PROPERTY(FNameProperty, ModReference);
+	P_GET_OBJECT(UClass, Schematic);
+	P_FINISH;
+	P_NATIVE_BEGIN;
+	P_SET_ACTIVE_FRAME;
+	P_THIS->RegisterSchematic(ModReference, Schematic);
+	P_RESET_ACTIVE_FRAME;
+	P_NATIVE_END;
 }

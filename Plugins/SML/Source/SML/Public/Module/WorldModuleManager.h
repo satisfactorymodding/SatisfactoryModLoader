@@ -31,6 +31,9 @@ private:
 
 	/** Called when game state is set on world, used to trigger postponed initialization on remote clients */
 	void OnGameStateSet(class AGameStateBase* GameState);
+
+	/** Called when game state is received and fully initialized (e.g on the next frame from OnGameStateSet) */
+	void OnGameStateFullyInitialized();
 	
 	/** Called very early to construct module objects, right after world initialization */
 	void ConstructModules();
@@ -40,6 +43,9 @@ private:
 
     /** Called when world post initialization has been completed */
     void PostInitializeModules();
+
+	/** Notifies content registry that modded content registration has been finished */
+	void NotifyContentRegistry();
     
     /** Allocates root module object for instance and registers it */
     void CreateRootModule(const FName& ModReference, TSubclassOf<UWorldModule> ObjectClass);
