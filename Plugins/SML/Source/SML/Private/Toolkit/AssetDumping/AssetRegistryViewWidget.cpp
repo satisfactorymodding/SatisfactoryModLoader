@@ -120,7 +120,7 @@ void FAssetTreeNode::RegenerateChildren() {
 		TSharedPtr<FAssetTreeNode> Node = MakeChildNode();
 		Node->bIsLeafNode = true;
 		Node->NodeName = AssetData.AssetName.ToString();
-		Node->Path = AssetData.ObjectPath.ToString();
+		Node->Path = AssetData.PackageName.ToString();
 		Node->AssetClass = AssetData.AssetClass;
 	}
 }
