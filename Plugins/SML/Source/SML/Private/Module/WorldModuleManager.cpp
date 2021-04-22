@@ -1,6 +1,6 @@
 ﻿#include "Module/WorldModuleManager.h"
-
 #include "FGGameMode.h"
+#include "FGGameState.h"
 #include "GameFramework/GameStateBase.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
@@ -9,11 +9,7 @@
 #include "Module/GameWorldModule.h"
 #include "Module/MenuWorldModule.h"
 #include "Registry/ModContentRegistry.h"
-
-UWorldModuleManager::UWorldModuleManager() {
-	this->bPostponeInitializeModules = false;
-	this->bPostponePostInitializeModules = false;
-}
+#include "Subsystem/SubsystemActorManager.h"
 
 UWorldModule* UWorldModuleManager::FindModule(const FName& ModReference) const {
     UWorldModule* const* WorldModule = RootModuleMap.Find(ModReference);
@@ -23,68 +19,36 @@ UWorldModule* UWorldModuleManager::FindModule(const FName& ModReference) const {
     return NULL;
 }
 
+void UWorldModuleManager::WaitForGameState(FLatentActionInfo& LatentInfo) {
+	
+}
+
 bool UWorldModuleManager::ShouldCreateSubsystem(UObject* Outer) const {
 	UWorld* WorldOuter = CastChecked<UWorld>(Outer);
 	return FPluginModuleLoader::ShouldLoadModulesForWorld(WorldOuter);
 }
 
 void UWorldModuleManager::Initialize(FSubsystemCollectionBase& Collection) {
+	//Make sure USubsystemActorManager is initialized before us, so it registers OnActorsInitialized
+	//callback earlier and gets vanilla systems registered before modules are constructed
+	Collection.InitializeDependency(USubsystemActorManager::StaticClass());
+	
 	UWorld* OuterWorld = GetWorld();
-	OuterWorld->GameStateSetEvent.AddUObject(this, &UWorldModuleManager::OnGameStateSet);
 	OuterWorld->OnActorsInitialized.AddUObject(this, &UWorldModuleManager::InitializeModules);
 	OuterWorld->OnWorldBeginPlay.AddUObject(this, &UWorldModuleManager::PostInitializeModules);
 }
 
-void UWorldModuleManager::OnGameStateSet(AGameStateBase*) {
-	//We want to postpone initialization by one more tick, because OnGameStateSet is basically
-	//called from AGameStateBase, which is too early for any kind of initialization inside of the AFGGameState
-	//It will be done right after broadcasting event though, so just delaying registration solves the problem
-	if (bPostponeInitializeModules || bPostponePostInitializeModules) {
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWorldModuleManager::OnGameStateFullyInitialized);
-	}
-}
-
-void UWorldModuleManager::OnGameStateFullyInitialized() {
-	if (bPostponeInitializeModules) {
-		DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
-		NotifyContentRegistry();
-		this->bPostponeInitializeModules = false;
-	}
-    
-	if (bPostponePostInitializeModules) {
-		DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
-		this->bPostponePostInitializeModules = false;
-	}
-}
-
 void UWorldModuleManager::InitializeModules(const UWorld::FActorsInitializedParams&) {
-	//We always construct modules when world actors are initialized,
-	//because actors are not supposed to try and access registry and subsystems in the construction phase
-	//It's still useful to do it here though, because that way modules on remote
-	//get the chance to handle OnWorldActorsInitialized event (which they won't get in init because
-	//it will get postponed since game state is not replicated yet)
+	//We cannot construct modules earlier because before that moment world just lacks
+	//information about it's type and authority game mode object on host
 	ConstructModules();
 
-	//Initialized can be delayed when we haven't replicated game state yet,
-	//modules can still use construct to react specifically to OnWorldActorsInitialized event
-	if (GetWorld()->GetGameState()) {
-		DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
-		NotifyContentRegistry();
-	} else {
-		this->bPostponeInitializeModules = true;
-	}
+	DispatchLifecycleEvent(ELifecyclePhase::INITIALIZATION);
+	NotifyContentRegistry();
 }
 
 void UWorldModuleManager::PostInitializeModules() {
-	//Post initialization can be postponed if we haven't replicated game state yet
-	//Overall, OnWorldBeginPlay is a very simple event which just means that all of the actors in the world
-	//had BeginPlay dispatched, technically making it earliest place where world is fully initialized
-	//It's okay to run initialization a bit later on remote, since world is already fully initialized at this point
-	if (GetWorld()->GetGameState()) {
-		DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
-	} else {
-		this->bPostponePostInitializeModules = true;
-	}
+	DispatchLifecycleEvent(ELifecyclePhase::POST_INITIALIZATION);
 }
 
 void UWorldModuleManager::NotifyContentRegistry() {
@@ -92,7 +56,6 @@ void UWorldModuleManager::NotifyContentRegistry() {
 	check(ContentRegistry);
 	ContentRegistry->NotifyModuleRegistrationFinished();
 }
-
 
 void UWorldModuleManager::ConstructModules() {
     //Use game world module by default
@@ -152,3 +115,32 @@ void UWorldModuleManager::DispatchLifecycleEvent(ELifecyclePhase Phase) {
         RootModule->DispatchLifecycleEvent(Phase);
     }
 }
+
+void FWaitForGameStateLatentAction::UpdateOperation(FLatentResponse& Response) {
+	UWorld* WorldObject = TargetWorld.Get();
+	bool bHasCompleted = false;
+
+	if (WorldObject) {
+		AGameStateBase* GameState = WorldObject->GetGameState();
+		if (GameState != NULL) {
+			//If Game State represents Factory Game State, we want to also wait until all client subsystems are valid
+			if (AFGGameState* FactoryGameState = Cast<AFGGameState>(GameState)) {
+				bHasCompleted = FactoryGameState->AreClientSubsystemsValid();
+			} else {
+				//Otherwise we are completed as soon as game state is replicated to the client
+				bHasCompleted = true;
+			}
+		}
+	} else {
+		//World objet has been garbage collected, we need to complete anyway
+		bHasCompleted = true;
+	}
+
+	Response.FinishAndTriggerIf(bHasCompleted, ExecutionFunction, OutputLink, CallbackTarget);
+}
+
+#if WITH_EDITOR
+FString FWaitForGameStateLatentAction::GetDescription() const {
+	return TEXT("Wait For GameState");
+}
+#endif

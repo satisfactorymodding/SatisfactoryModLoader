@@ -2,8 +2,8 @@
 #include "FGResearchTree.h"
 #include "FGSchematic.h"
 #include "FGRecipe.h"
-#include "FGSubsystem.h"
 #include "Engine/DataTable.h"
+#include "Subsystem/ModSubsystem.h"
 #include "ModContentRegistry.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogContentRegistry, Log, All);
@@ -140,7 +140,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRecipeRegistered, TSubclassOf<UF
  * after that moment registry is frozen and no changes can be made after that
  */
 UCLASS()
-class SML_API AModContentRegistry : public AFGSubsystem {
+class SML_API AModContentRegistry : public AModSubsystem {
     GENERATED_BODY()
 public:
     AModContentRegistry();
@@ -273,8 +273,24 @@ public:
 
     //Add objects from registry states to reference collector
     static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
+	
+	//Callbacks to be fired when new entries are registered
+	
+	/** Called when recipe is registered into content registry */
+	UPROPERTY(BlueprintAssignable)
+	FOnRecipeRegistered OnRecipeRegistered;
+
+	/** Called when schematic is registered into content registry */
+	UPROPERTY(BlueprintAssignable)
+	FOnSchematicRegistered OnSchematicRegistered;
+
+	/** Called when research tree is registered into the registry */
+	UPROPERTY(BlueprintAssignable)
+	FOnResearchTreeRegistered OnResearchTreeRegistered;
+protected:
+	/** Called early when subsystem is spawned */
+	virtual void Init() override;
 private:
-    friend class USMLSubsystemHolder;
     friend class FSatisfactoryModLoader;
 	friend class UWorldModuleManager;
 
@@ -288,16 +304,12 @@ private:
     /** True when we have subscribed to schematic manager delegates already */
     bool bSubscribedToSchematicManager;
 
+	/** Pending registrations of item sink point tables */
+	UPROPERTY()
+	TMap<UDataTable*, FName> PendingItemSinkPointsRegistrations;
+
 	/** Pointer to the currently active script callstack frame, used for debugging purposes */
 	FFrame* ActiveScriptFramePtr;
-
-    ///Callbacks to be fired when new entries are registered
-    UPROPERTY()
-    FOnRecipeRegistered OnRecipeRegistered;
-    UPROPERTY()
-    FOnSchematicRegistered OnSchematicRegistered;
-    UPROPERTY()
-    FOnResearchTreeRegistered OnResearchTreeRegistered;
 
     /**
      * Map with cached registration info for each discovered item descriptor class
@@ -333,9 +345,10 @@ private:
 
 	/** Called when module content registration is finished and registry can be frozen */
 	void NotifyModuleRegistrationFinished();
-    
-    /** Called early when subsystem is spawned */
-    void Init();
+
+	/** Flushed pending resource sink registrations into the resource sink subsystem, if it is available */
+	void FlushPendingResourceSinkRegistrations();
+   
     /** Freezes registry in place and clears out all unreferenced objects */
     void FreezeRegistryState();
     /** Ensures that registry is not frozen and we can perform registration */

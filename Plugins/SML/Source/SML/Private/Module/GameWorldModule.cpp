@@ -1,14 +1,30 @@
 #include "Module/GameWorldModule.h"
 #include "Command/ChatCommandLibrary.h"
 #include "Registry/ModContentRegistry.h"
+#include "Subsystem/SubsystemActorManager.h"
 
 void UGameWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     //Register default content before calling blueprint event logic
+	if (Phase == ELifecyclePhase::CONSTRUCTION) {
+		RegisterConstructionPhaseContent();
+	}
+	
     if (Phase == ELifecyclePhase::INITIALIZATION) {
         RegisterDefaultContent();
     }
-    
     Super::DispatchLifecycleEvent(Phase);
+}
+
+
+void UGameWorldModule::RegisterConstructionPhaseContent() {
+	//Register mod subsystem actors very early so other mods can access them during Initialization phase
+	UWorld* WorldObject = GetWorld();
+	USubsystemActorManager* SubsystemActorManager = WorldObject->GetSubsystem<USubsystemActorManager>();
+	check(SubsystemActorManager);
+	
+	for (const TSubclassOf<AModSubsystem>& SubsystemClass : ModSubsystems) {
+		SubsystemActorManager->RegisterSubsystemActor(SubsystemClass);
+	}
 }
 
 void UGameWorldModule::RegisterDefaultContent() {
@@ -16,6 +32,7 @@ void UGameWorldModule::RegisterDefaultContent() {
     UWorld* WorldObject = GetWorld();
     AModContentRegistry* ModContentRegistry = AModContentRegistry::Get(WorldObject);
     AChatCommandSubsystem* ChatCommandSubsystem = AChatCommandSubsystem::Get(WorldObject);
+	check(ModContentRegistry);
 
     //Register schematics
     for (const TSubclassOf<UFGSchematic>& Schematic : mSchematics) {

@@ -5,7 +5,7 @@
 #include "Command/SMLCommands/InfoCommandInstance.h"
 #include "Command/SMLCommands/PlayerListCommandInstance.h"
 #include "SatisfactoryModLoader.h"
-#include "Subsystem/SMLSubsystemHolder.h"
+#include "Subsystem/SubsystemActorManager.h"
 
 DEFINE_LOG_CATEGORY(LogChatCommand);
 
@@ -19,11 +19,16 @@ void PrintCommandOnlyUsableByPlayer(UCommandSender* Player) {
 	Player->SendChatMessage(TEXT("This command is only usable by players."), FLinearColor::Red);
 }
 
+AChatCommandSubsystem::AChatCommandSubsystem() {
+	this->ReplicationPolicy = ESubsystemReplicationPolicy::SpawnOnServer;
+}
+
 AChatCommandSubsystem* AChatCommandSubsystem::Get(UObject* WorldContext) {
-	USMLSubsystemHolder* Holder = UModSubsystemHolder::GetSubsystemHolder<USMLSubsystemHolder>(WorldContext);
-	if (Holder == nullptr)
-		return nullptr;
-	return Holder->GetChatCommandSubsystem();
+	UWorld* WorldObject = GEngine->GetWorldFromContextObjectChecked(WorldContext);
+	USubsystemActorManager* SubsystemActorManager = WorldObject->GetSubsystem<USubsystemActorManager>();
+	check(SubsystemActorManager);
+
+	return SubsystemActorManager->GetSubsystemActor<AChatCommandSubsystem>();
 }
 
 AChatCommandInstance* AChatCommandSubsystem::FindCommandByName(const FString& Name) {

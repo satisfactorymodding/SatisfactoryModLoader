@@ -11,7 +11,6 @@
 #include "Network/SMLConnection/SMLNetworkManager.h"
 #include "Patching/Patch/CheatManagerPatch.h"
 #include "Player/SMLRemoteCallObject.h"
-#include "Registry/SubsystemHolderRegistry.h"
 #include "Patching/Patch/MainMenuPatch.h"
 #include "Patching/Patch/OfflinePlayerHandler.h"
 #include "Patching/Patch/OptionsKeybindPatch.h"
@@ -104,9 +103,6 @@ void FSatisfactoryModLoader::CheckGameVersion() {
 }
 
 void FSatisfactoryModLoader::RegisterSubsystemPatches() {
-    //Initialize patches required for subsystem holder registry to function
-    USubsystemHolderRegistry::InitializePatches();
-    
     //Disable vanilla content resolution by patching vanilla lookup methods
     AModContentRegistry::DisableVanillaContentRegistration();
 

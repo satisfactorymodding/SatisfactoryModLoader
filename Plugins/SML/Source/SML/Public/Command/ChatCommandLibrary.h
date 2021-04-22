@@ -1,13 +1,13 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "FGSubsystem.h"
 #include "command/ChatCommandInstance.h"
+#include "Subsystem/ModSubsystem.h"
 #include "ChatCommandLibrary.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogChatCommand, Log, All);
 
 UCLASS(NotBlueprintable)
-class SML_API AChatCommandSubsystem : public AFGSubsystem {
+class SML_API AChatCommandSubsystem : public AModSubsystem {
 	GENERATED_BODY()
 private:
 	//Array of registered command actors
@@ -17,6 +17,8 @@ private:
 	UPROPERTY()
 	TMap<FString, AChatCommandInstance*> CommandByNameMap;
 public:
+	AChatCommandSubsystem();
+	
 	/**
 	 * Retrieves Chat Command Subsystem instance for a given world
 	 * Will always return something unless called really early
@@ -75,9 +77,7 @@ public:
 	*/
 	UFUNCTION(BlueprintPure, Category = "Utilities|ChatCommand", meta = (WorldContext = "WorldContext"))
 	static TArray<class AFGPlayerController*> ParsePlayerName(UCommandSender* Caller, const FString& Name, UObject* WorldContext);
-private:
-	friend class USMLSubsystemHolder;
-
+protected:
 	/** Initializes builtin commands for the command subsystem */
-	void Init();
+	virtual void Init() override;
 };

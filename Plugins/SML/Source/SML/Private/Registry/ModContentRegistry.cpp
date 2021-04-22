@@ -11,12 +11,11 @@
 #include "FGTutorialIntroManager.h"
 #include "Unlocks/FGUnlockRecipe.h"
 #include "IPlatformFilePak.h"
-#include "Subsystem/ModSubsystemHolder.h"
 #include "Patching/NativeHookManager.h"
 #include "Reflection/ReflectionHelper.h"
-#include "Subsystem/SMLSubsystemHolder.h"
 #include "Engine/AssetManager.h"
 #include "ModLoading/ModLoadingLibrary.h"
+#include "Subsystem/SubsystemActorManager.h"
 #include "Util/BlueprintAssetHelperLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogContentRegistry);
@@ -445,21 +444,12 @@ void AModContentRegistry::RegisterRecipe(const FName ModReference, const TSubcla
 void AModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable) {
 	CHECK_PROVIDED_OBJECT_VALID(PointTable, TEXT("Attempt to register NULL ResourceSinkPointTable. Mod Reference: %s"), *ModReference.ToString());
 	
-    AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
-
-    if (ResourceSinkSubsystem != NULL && PointTable != NULL) {
-        checkf(PointTable->RowStruct != nullptr &&
-               PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
-               TEXT("Invalid AWESOME Sink item points table in mod %s: Row Type should be Resource Sink Points Data"),
-               *ModReference.ToString());
-        
-        TArray<FResourceSinkPointsData*> OutModPointsData;
-        PointTable->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
-        for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
-            int32 Points = FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints);
-            ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, Points);
-        }
-    }
+	checkf(PointTable->RowStruct != nullptr && PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
+            TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
+            *ModReference.ToString(), *PointTable->GetPathName());
+	
+	this->PendingItemSinkPointsRegistrations.Add(PointTable, ModReference);
+	FlushPendingResourceSinkRegistrations();
 }
 
 TArray<FItemRegistrationInfo> AModContentRegistry::GetLoadedItemDescriptors() {
@@ -509,22 +499,28 @@ FItemRegistrationInfo AModContentRegistry::GetItemDescriptorInfo(const TSubclass
 }
 
 AModContentRegistry::AModContentRegistry() {
-    bReplicates = true;
-    bAlwaysRelevant = true;
     bIsRegistryFrozen = false;
     SchematicManagerInternalState = -1;
     ResearchManagerInternalState = -1;
     bSubscribedToSchematicManager = false;
     PrimaryActorTick.bCanEverTick = true;
 	ActiveScriptFramePtr = NULL;
+	
+	//Mod Content Registry is always Local and Spawned on both Client and Server separately
+	this->ReplicationPolicy = ESubsystemReplicationPolicy::SpawnLocal;
 }
 
 AModContentRegistry* AModContentRegistry::Get(UObject* WorldContext) {
-    USMLSubsystemHolder* SubsystemHolder = UModSubsystemHolder::GetSubsystemHolder<USMLSubsystemHolder>(WorldContext);
-    return SubsystemHolder != NULL ? SubsystemHolder->GetModContentRegistry() : NULL;
+	UWorld* WorldObject = GEngine->GetWorldFromContextObjectChecked(WorldContext);
+    USubsystemActorManager* SubsystemActorManager = WorldObject->GetSubsystem<USubsystemActorManager>();
+	check(SubsystemActorManager);
+	
+	return SubsystemActorManager->GetSubsystemActor<AModContentRegistry>();
 }
 
 void AModContentRegistry::BeginPlay() {
+	Super::BeginPlay();
+	
     //We should be frozen at this point already on host clients (freezing there happens before BeginPlay is dispatched to world actors)
 	//For remote clients we are not frozen yet most likely, but checking save data for remote clients is pointless anyway
     if (HasAuthority()) {
@@ -566,6 +562,29 @@ void AModContentRegistry::Tick(float DeltaSeconds) {
             ResearchManagerInternalState = ResearchTreeRegistryCounter;
         }
     }
+
+	if (PendingItemSinkPointsRegistrations.Num()) {
+		FlushPendingResourceSinkRegistrations();
+	}
+}
+
+void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
+	AFGResourceSinkSubsystem* ResourceSinkSubsystem = AFGResourceSinkSubsystem::Get(this);
+
+	if (ResourceSinkSubsystem != NULL) {
+		for (const TPair<UDataTable*, FName>& Pair : PendingItemSinkPointsRegistrations) {
+			UE_LOG(LogContentRegistry, Log, TEXT("Registering Resource Sink Points Table '%s' from Mod %s"), *Pair.Key->GetPathName(), *Pair.Value.ToString());;
+			
+			TArray<FResourceSinkPointsData*> OutModPointsData;
+			Pair.Key->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
+			for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
+				int32 Points = FMath::Max(ModItemRow->Points, ModItemRow->OverriddenResourceSinkPoints);
+				ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, Points);
+			}
+		}
+		
+		PendingItemSinkPointsRegistrations.Empty();
+	}
 }
 
 #define P_SET_ACTIVE_FRAME P_THIS->ActiveScriptFramePtr = &Stack;

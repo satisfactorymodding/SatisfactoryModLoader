@@ -2,7 +2,6 @@
 #include "Configuration/ConfigManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
 #include "Registry/ModKeyBindRegistry.h"
-#include "Registry/SubsystemHolderRegistry.h"
 #include "Engine/Engine.h"
 
 UGameInstance* UGameInstanceModule::GetGameInstance() const {
@@ -36,7 +35,6 @@ void UGameInstanceModule::RegisterDefaultContent() {
     //Register default content
     UGameInstance* GameInstance = GetGameInstance();
     UConfigManager* ConfigManager = GameInstance->GetEngine()->GetEngineSubsystem<UConfigManager>();
-    USubsystemHolderRegistry* SubsystemHolderRegistry = GameInstance->GetSubsystem<USubsystemHolderRegistry>();
     UItemTooltipSubsystem* ItemTooltipSubsystem = GameInstance->GetSubsystem<UItemTooltipSubsystem>();
 
     const FString OwnerModReferenceString = GetOwnerModReference().ToString();
@@ -44,11 +42,6 @@ void UGameInstanceModule::RegisterDefaultContent() {
     //Register mod configurations first
     for (const TSubclassOf<UModConfiguration>& Configuration : ModConfigurations) {
         ConfigManager->RegisterModConfiguration(Configuration);
-    }
-    
-    //Subsystems holders
-    for (UClass* SubsystemHolderClass : ModSubsystems) {
-        SubsystemHolderRegistry->RegisterSubsystemHolder(OwnerModReferenceString, SubsystemHolderClass);
     }
 
     for (UClass* GlobalTooltipProvider : GlobalItemTooltipProviders) {

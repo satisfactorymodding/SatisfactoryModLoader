@@ -58,16 +58,23 @@ UObjectMetadata* UModNetworkHandler::GetMetadataForConnection(UNetConnection* Co
 }
 
 void UModNetworkHandler::InitializePatches() {
+	
     UNetConnection* NetConnectionInstance = GetMutableDefault<UNetConnection>();
     SUBSCRIBE_METHOD_VIRTUAL_AFTER(UNetConnection::CleanUp, NetConnectionInstance, [=](UNetConnection* Connection) {
-        UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
-        NetworkHandler->Metadata.Remove(Connection);
+    	//We need to check GEngine for NULL because this method will be called during final garbage purge
+    	//on engine shutdown, at this phase engine has pretty much exited and was destroyed already
+        if (GEngine != NULL) {
+        	UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
+        	NetworkHandler->Metadata.Remove(Connection);
+        }
     });
+	
     UWorld* WorldObjectInstance = GetMutableDefault<UWorld>();
     SUBSCRIBE_METHOD_VIRTUAL_AFTER(UWorld::WelcomePlayer, WorldObjectInstance, [=](UWorld* ServerWorld, UNetConnection* Connection) {
         UModNetworkHandler* NetworkHandler = GEngine->GetEngineSubsystem<UModNetworkHandler>();
         NetworkHandler->OnWelcomePlayer().Broadcast(ServerWorld, Connection);
     });
+	
     SUBSCRIBE_METHOD_AFTER(UPendingNetGame::SendInitialJoin, [=](UPendingNetGame* NetGame) {
         if (NetGame->NetDriver != nullptr) {
             UNetConnection* ServerConnection = NetGame->NetDriver->ServerConnection;
@@ -77,6 +84,7 @@ void UModNetworkHandler::InitializePatches() {
             }
         }
     });
+	
     auto MessageHandler = [=](auto& Call, void*, UNetConnection* Connection, uint8 MessageType, class FInBunch& Bunch) {
         if (MessageType == NMT_ModMessage) {
             FString ModId; int32 MessageId; FString Content;

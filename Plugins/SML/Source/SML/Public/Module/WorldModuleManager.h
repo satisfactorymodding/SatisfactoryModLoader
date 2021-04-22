@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
-#include "GameFramework/Info.h"
+#include "LatentActions.h"
 #include "Module/WorldModule.h"
 #include "WorldModuleManager.generated.h"
 
@@ -17,24 +17,20 @@ private:
     UPROPERTY()
     TArray<UWorldModule*> RootModuleList;
 public:
-	UWorldModuleManager();
-	
     /** Retrieves world module by provided mod reference */
     UFUNCTION(BlueprintPure)
     UWorldModule* FindModule(const FName& ModReference) const;
 
+	/**
+	 * Waits until Game State Actor is fully Replicated and Available for retrieval via Get Game State function.
+	 * Also waits until Factory Game client subsystems are fully replicated before returning
+	 */
+	UFUNCTION(BlueprintCallable, meta = (Latent, LatentInfo = "LatentInfo"))
+    static void WaitForGameState(struct FLatentActionInfo& LatentInfo);
+
     virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 private:
-	bool bPostponeInitializeModules;
-	bool bPostponePostInitializeModules;
-
-	/** Called when game state is set on world, used to trigger postponed initialization on remote clients */
-	void OnGameStateSet(class AGameStateBase* GameState);
-
-	/** Called when game state is received and fully initialized (e.g on the next frame from OnGameStateSet) */
-	void OnGameStateFullyInitialized();
-	
 	/** Called very early to construct module objects, right after world initialization */
 	void ConstructModules();
 	
@@ -52,4 +48,25 @@ private:
 
     /** Dispatches lifecycle event to all registered modules */
     void DispatchLifecycleEvent(ELifecyclePhase Phase);
+};
+
+class SML_API FWaitForGameStateLatentAction final : public FPendingLatentAction {
+private:
+	FName ExecutionFunction;
+	int32 OutputLink;
+	FWeakObjectPtr CallbackTarget;
+	TWeakObjectPtr<UWorld> TargetWorld;
+	
+public:
+	FORCEINLINE explicit FWaitForGameStateLatentAction(const FLatentActionInfo& LatentInfo, UWorld* InTargetWorld):
+            ExecutionFunction(LatentInfo.ExecutionFunction),
+            OutputLink(LatentInfo.Linkage),
+            CallbackTarget(LatentInfo.CallbackTarget),
+			TargetWorld(InTargetWorld) {}
+
+	virtual void UpdateOperation(FLatentResponse& Response) override;
+
+#if WITH_EDITOR
+	virtual FString GetDescription() const override;
+#endif
 };
