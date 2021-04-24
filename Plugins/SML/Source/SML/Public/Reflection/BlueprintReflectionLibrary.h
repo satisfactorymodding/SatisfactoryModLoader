@@ -138,8 +138,10 @@ public:
 
     DECLARE_FUNCTION(execGetClassDefaultObject) {
         P_GET_OBJECT(UClass, Class);
+    	P_FINISH;
         checkf(Class, TEXT("GetClassDefaultObject: received NULL class"));
 
+    	P_NATIVE_BEGIN;
         UPackage* OutermostPackage = Stack.Node->GetOutermost();
         const FString PackageOwner = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(OutermostPackage->GetName());
         const FString ClassOwner = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(Class->GetOuterUPackage()->GetName());
@@ -148,12 +150,15 @@ public:
                 *OutermostPackage->GetName(), *PackageOwner, *Class->GetPathName(), *ClassOwner);
         }
         *(UObject**)RESULT_PARAM = GetClassDefaultObject(Class);
+    	P_NATIVE_END;
     }
 
     DECLARE_FUNCTION(execDeflectStruct) {
         P_GET_STRUCT(FReflectedObject, ReflectedObject);
         const FDynamicStructInfo StructInfo = FReflectionHelper::CheckStructParameter(Context, Stack);
         P_FINISH;
+
+    	P_NATIVE_BEGIN;
         if (StructInfo.Struct != NULL) {
             const FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AccessViolation,
               INVTEXT("Tried to pass NULL struct to DeflectStruct"));
@@ -161,11 +166,14 @@ public:
             return;
         }
         DeflectStruct(ReflectedObject, StructInfo);
+    	P_NATIVE_END;
     }
 
     DECLARE_FUNCTION(execReflectStruct) {
         const FDynamicStructInfo StructInfo = FReflectionHelper::CheckStructParameter(Context, Stack);
         P_FINISH;
+
+    	P_NATIVE_BEGIN;
         if (StructInfo.Struct != NULL) {
             const FBlueprintExceptionInfo ExceptionInfo(EBlueprintExceptionType::AccessViolation,
               INVTEXT("Tried to pass NULL struct to ReflectStruct"));
@@ -174,5 +182,6 @@ public:
         }
         FReflectedObject ReflectedObject = ReflectStruct(StructInfo);
         *(FReflectedObject*)RESULT_PARAM = ReflectedObject;
+    	P_NATIVE_END;
     }
 };

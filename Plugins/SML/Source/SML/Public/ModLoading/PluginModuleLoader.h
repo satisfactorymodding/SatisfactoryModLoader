@@ -15,4 +15,7 @@ public:
 
 	/** Determines whenever we want to load modules for the provided world. Generally, we want to load modules only for standalone and PIE worlds */
 	static bool ShouldLoadModulesForWorld(UWorld* World);
+
+	/** Returns true if this world represents a main menu world */
+	static bool IsMainMenuWorld(UWorld* World);
 };

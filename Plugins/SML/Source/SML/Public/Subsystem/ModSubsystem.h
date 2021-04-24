@@ -1,6 +1,7 @@
 #pragma once
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
+#include "ModSubsystem.generated.h"
 
 /** Describes subsystem policy regarding replication and spawning */
 UENUM(BlueprintType)

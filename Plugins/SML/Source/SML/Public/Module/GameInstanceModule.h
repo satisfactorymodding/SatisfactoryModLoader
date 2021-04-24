@@ -67,14 +67,6 @@ public:
     /** Key Bindings for this mod to be registered */
     UPROPERTY(EditDefaultsOnly, Category = Default)
     TArray<FModKeyBindingInfo> ModKeyBindings;
-    
-    /**
-    * List of subsystem holders to register
-    * Subsystem holders are created for each game world initialized
-    * and hold references to custom mod subsystems
-    */
-    UPROPERTY(EditDefaultsOnly, Category = Default)
-    TArray<TSubclassOf<UModSubsystemHolder>> ModSubsystems;
 
     /**
     * List of classes for objects implementing ISMLItemTooltipProvider

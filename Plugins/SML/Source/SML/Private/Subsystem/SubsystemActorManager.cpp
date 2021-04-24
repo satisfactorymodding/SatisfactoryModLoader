@@ -6,7 +6,6 @@
 
 DEFINE_LOG_CATEGORY(LogSubsystemManager)
 
-
 void USubsystemActorManager::SpawnSubsystemActor(const TSubclassOf<AModSubsystem> SubsystemClass) {
 	const ESubsystemReplicationPolicy ReplicationPolicy = SubsystemClass.GetDefaultObject()->ReplicationPolicy;
 
@@ -14,7 +13,7 @@ void USubsystemActorManager::SpawnSubsystemActor(const TSubclassOf<AModSubsystem
 	const FString SubsystemName = FString::Printf(TEXT("%s_%s"), *OwnerModReference, *SubsystemClass->GetName());
 	
 	AModSubsystem* SpawnedSubsystem = FindSubsystemActorByName(SubsystemClass, *SubsystemName);
-
+	
 	//We only want to modify subsystem actor if we should spawn it with given policy at all
 	if (ShouldSpawnSubsystemWithPolicy(ReplicationPolicy)) {
 
@@ -76,6 +75,10 @@ void USubsystemActorManager::OnWorldActorCreated(AActor* SpawnedActor) {
 	}
 }
 
+USubsystemActorManager::USubsystemActorManager() {
+	this->bNativeSubsystemsRegistered = false;
+}
+
 void USubsystemActorManager::RegisterSubsystemActor(TSubclassOf<AModSubsystem> SubsystemClass) {
 	checkf(SubsystemClass, TEXT("Attempt to register NULL ModSubsystem"));
 	checkf(!SubsystemClass->HasAnyClassFlags(CLASS_Abstract), TEXT("Attempt to register Abstract ModSubsystem: '%s'"), *SubsystemClass->GetPathName());
@@ -113,10 +116,18 @@ void USubsystemActorManager::Initialize(FSubsystemCollectionBase& Collection) {
 	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &USubsystemActorManager::OnWorldActorCreated));
 }
 
-void USubsystemActorManager::OnWorldActorsInitialized(const UWorld::FActorsInitializedParams&) {
+void USubsystemActorManager::MakeSureNativeSubsystemsRegistered() {
 	//Register native SML actor subsystems
-	RegisterSubsystemActor(AModContentRegistry::StaticClass());
-	RegisterSubsystemActor(AChatCommandSubsystem::StaticClass());
+	if (!FPluginModuleLoader::IsMainMenuWorld(GetWorld()) && !bNativeSubsystemsRegistered) {
+		UE_LOG(LogSubsystemManager, Log, TEXT("Registering default SML subsystems"));
+		RegisterSubsystemActor(AModContentRegistry::StaticClass());
+		RegisterSubsystemActor(AChatCommandSubsystem::StaticClass());
+		this->bNativeSubsystemsRegistered = true;
+	}
+}
+
+void USubsystemActorManager::OnWorldActorsInitialized(const UWorld::FActorsInitializedParams&) {
+	MakeSureNativeSubsystemsRegistered();
 }
 
 AModSubsystem* USubsystemActorManager::FindSubsystemActorByName(TSubclassOf<AModSubsystem> ActorClass, const FName ActorName) const {

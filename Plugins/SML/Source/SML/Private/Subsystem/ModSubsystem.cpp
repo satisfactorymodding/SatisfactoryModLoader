@@ -2,6 +2,7 @@
 
 AModSubsystem::AModSubsystem() {
 	this->bNetLoadOnClient = false;
+	this->bReplicates = false;
 	this->bInitDispatched = false;
 }
 

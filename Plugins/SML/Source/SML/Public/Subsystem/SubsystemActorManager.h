@@ -2,10 +2,11 @@
 #include "CoreMinimal.h"
 #include "LatentActions.h"
 #include "Subsystem/ModSubsystem.h"
+#include "SubsystemActorManager.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSubsystemManager, Log, All)
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnModSubsystemAvailable, AModSubsystem*);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnModSubsystemAvailable, AModSubsystem*, Subsystem);
 
 UCLASS()
 class SML_API USubsystemActorManager : public UWorldSubsystem {
@@ -22,7 +23,11 @@ private:
 	/** Called when modded subsystem instance has been spawned and initialized */
 	UPROPERTY()
 	FOnModSubsystemAvailable OnModSubsystemAvailable;
+
+	bool bNativeSubsystemsRegistered;
 public:
+	USubsystemActorManager();
+	
 	/** Registers subsystem actor and spawns it in the world instantly, if it's applicable to spawning with provided policy */
 	UFUNCTION(BlueprintCallable)
 	void RegisterSubsystemActor(TSubclassOf<AModSubsystem> SubsystemClass);
@@ -38,11 +43,14 @@ public:
 	/** Retrieves subsystem actor of the provided class or NULL if it does not exist, template version for C++ mods */
 	template<typename T>
 	FORCEINLINE T* GetSubsystemActor() {
-		return CastChecked<T>(K2_GetSubsystemActor(T::StaticClass()));
+		return Cast<T>(K2_GetSubsystemActor(T::StaticClass()));
 	}
 
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+
+	/** Makes sure native SML subsystems are registered and ready for use */
+	void MakeSureNativeSubsystemsRegistered();
 private:
 	friend AModSubsystem;
 

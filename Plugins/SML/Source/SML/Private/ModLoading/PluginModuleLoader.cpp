@@ -1,5 +1,6 @@
 #include "ModLoading/PluginModuleLoader.h"
 #include "AssetRegistryModule.h"
+#include "FGGameMode.h"
 #include "IPlatformFilePak.h"
 #include "Util/BlueprintAssetHelperLibrary.h"
 #include "SatisfactoryModLoader.h"
@@ -77,6 +78,11 @@ bool FPluginModuleLoader::ShouldLoadModulesForWorld(UWorld* World) {
 #else
 	return World->WorldType == EWorldType::Game || World->WorldType == EWorldType::PIE;
 #endif
+}
+
+bool FPluginModuleLoader::IsMainMenuWorld(UWorld* World) {
+	AFGGameMode* GameMode = Cast<AFGGameMode>(World->GetAuthGameMode());
+	return GameMode != NULL && GameMode->IsMainMenuGameMode();
 }
 
 static FStaticSelfRegisteringExec PluginModuleLoaderExecRegistration(&PluginModuleLoaderExec);

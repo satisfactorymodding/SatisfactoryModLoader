@@ -2,7 +2,6 @@
 #include "SatisfactoryModLoader.h"
 #include "ModLoading/PluginModuleLoader.h"
 #include "Registry/RemoteCallObjectRegistry.h"
-#include "Registry/SubsystemHolderRegistry.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
 
 UGameInstanceModuleManager::UGameInstanceModuleManager() {
@@ -56,7 +55,6 @@ void UGameInstanceModuleManager::Initialize(FSubsystemCollectionBase& Collection
 }
 
 void UGameInstanceModuleManager::EnsureSMLSubsystemsInitialized() {
-    EnsureSubsystemInitialized(USubsystemHolderRegistry::StaticClass());
     EnsureSubsystemInitialized(URemoteCallObjectRegistry::StaticClass());
     EnsureSubsystemInitialized(UItemTooltipSubsystem::StaticClass());
 }

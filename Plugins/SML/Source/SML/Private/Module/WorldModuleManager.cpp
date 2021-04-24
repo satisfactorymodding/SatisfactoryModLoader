@@ -39,6 +39,11 @@ void UWorldModuleManager::Initialize(FSubsystemCollectionBase& Collection) {
 }
 
 void UWorldModuleManager::InitializeModules(const UWorld::FActorsInitializedParams&) {
+	//I don't know why it's needed, apparently OnActorsInitialized delegate for some reason just
+	//doesn't give a shit about order of registration of the delegates
+	USubsystemActorManager* SubsystemActorManager = GetWorld()->GetSubsystem<USubsystemActorManager>();
+	SubsystemActorManager->MakeSureNativeSubsystemsRegistered();
+	
 	//We cannot construct modules earlier because before that moment world just lacks
 	//information about it's type and authority game mode object on host
 	ConstructModules();
@@ -53,17 +58,19 @@ void UWorldModuleManager::PostInitializeModules() {
 
 void UWorldModuleManager::NotifyContentRegistry() {
 	AModContentRegistry* ContentRegistry = AModContentRegistry::Get(this);
-	check(ContentRegistry);
-	ContentRegistry->NotifyModuleRegistrationFinished();
+
+	//Notify content registry only if it's available (for example, it is not available in main menu)
+	if (ContentRegistry != NULL) {
+		ContentRegistry->NotifyModuleRegistrationFinished();
+	}
 }
 
 void UWorldModuleManager::ConstructModules() {
     //Use game world module by default
     TSubclassOf<UWorldModule> ModuleTypeClass = UGameWorldModule::StaticClass();
 
-    //Use MenuWorldModule if we have a game mode and it is set to main menu
-    AFGGameMode* GameMode = Cast<AFGGameMode>(GetWorld()->GetAuthGameMode());
-    if (GameMode != NULL && GameMode->IsMainMenuGameMode()) {
+    //Use MenuWorldModule if we are in the main menu
+    if (FPluginModuleLoader::IsMainMenuWorld(GetWorld())) {
         ModuleTypeClass = UMenuWorldModule::StaticClass();
     }
 

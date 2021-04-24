@@ -15,7 +15,6 @@ void UGameWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase) {
     Super::DispatchLifecycleEvent(Phase);
 }
 
-
 void UGameWorldModule::RegisterConstructionPhaseContent() {
 	//Register mod subsystem actors very early so other mods can access them during Initialization phase
 	UWorld* WorldObject = GetWorld();
