@@ -1,8 +1,8 @@
 {
 	"FileVersion": 3,
 	"Version": 1,
-	"VersionName": "1.0",
 	"SemVersion": "1.0.0",
+	"VersionName": "1.0.0",
 	"FriendlyName": "Example Mod",
 	"Description": "A mod demonstrating capabilities of the Satisfactory and SML modding",
 	"Category": "Modding",

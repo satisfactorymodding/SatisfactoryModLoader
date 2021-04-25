@@ -1,16 +1,18 @@
 {
 	"FileVersion": 3,
-	"Version": 1,
-	"VersionName": "1.0",
+	"Version": 2,
+	"VersionName": "2.0.0",
 	"FriendlyName": "Alpakit",
-	"Description": "Pak your Satisfactory mods and copy them to get game folder",
+	"Description": "Pak your Satisfactory mods and copy them to the game folder",
 	"Category": "Modding",
 	"CreatedBy": "Mircea Roata",
 	"CreatedByURL": "",
-	"DocsURL": "",
+	"DocsURL": "https://docs.ficsit.app/",
 	"MarketplaceURL": "",
 	"SupportURL": "",
 	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"IsExperimentalVersion": false,
 	"Installed": false,
 	"Modules": [
 		{
