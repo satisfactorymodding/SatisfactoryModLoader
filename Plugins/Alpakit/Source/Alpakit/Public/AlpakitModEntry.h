@@ -11,10 +11,10 @@ class SAlpakitModEntry : public SCompoundWidget {
 
 	void Construct(const FArguments& Args, TSharedRef<IPlugin> InMod, TSharedRef<SAlpakitModEntryList> InOwner);
 	
-	void PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& nextEntries) const;
+	void PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& NextEntries) const;
 	void OnEnableCheckboxChanged(ECheckBoxState NewState);
 
-	inline bool IsSelected()
+	FORCEINLINE bool IsSelected()
 	{
 		return Checkbox && Checkbox->IsChecked();
 	}

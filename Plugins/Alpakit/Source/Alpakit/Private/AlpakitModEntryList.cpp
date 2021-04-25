@@ -21,11 +21,11 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
 			.SelectionMode(ESelectionMode::None)
 			.ListItemsSource(&FilteredMods)
 			.OnGenerateRow_Lambda(
-	           [this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
-	               return SNew(STableRow<TSharedRef<IPlugin>>, List)[
-	                   SNew(SAlpakitModEntry, Mod, SharedThis(this))
-	               ];
-	           })
+			   [this](TSharedRef<IPlugin> Mod, const TSharedRef<STableViewBase>& List) {
+				   return SNew(STableRow<TSharedRef<IPlugin>>, List)[
+					   SNew(SAlpakitModEntry, Mod, SharedThis(this))
+				   ];
+			   })
 		]];
 
 	LoadMods();
@@ -93,7 +93,7 @@ void SAlpakitModEntryList::Filter(const FString& InFilter) {
 	LastFilter = InFilter;
 	FilteredMods.Empty();
 
-	if (InFilter.IsEmpty()) 	{
+	if (InFilter.IsEmpty()) {
 		FilteredMods = Mods;
 	} else {
 		// tokenize filter keywords
@@ -122,43 +122,43 @@ void SAlpakitModEntryList::SetShowEngine(bool bInShowEngine) {
 }
 
 FReply SAlpakitModEntryList::PackageAllMods() {
-	TSharedPtr<SAlpakitModEntry> first;
-	TArray<TSharedPtr<SAlpakitModEntry>> nextEntries;
+	TSharedPtr<SAlpakitModEntry> First;
+	TArray<TSharedPtr<SAlpakitModEntry>> NextEntries;
 
 	UE_LOG(LogTemp, Display, TEXT("Alpakit All!"))
 
-	for (auto mod : FilteredMods) {
-		UE_LOG(LogTemp, Display, TEXT("Collecting Plugin %s!"), *mod->GetName())
+	for (TSharedRef<IPlugin> Mod : FilteredMods) {
+		UE_LOG(LogTemp, Display, TEXT("Collecting Plugin %s!"), *Mod->GetName())
 
-		auto tableRow = ModList->WidgetFromItem(mod);
-		if (!tableRow.IsValid()) {
+		TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
+		if (!TableRow.IsValid()) {
 			UE_LOG(LogTemp, Display, TEXT("TableRow not found!"))
 
 			continue;
 		}
 
-		auto modEntry = StaticCastSharedPtr<SAlpakitModEntry>(tableRow->GetContent());
-		if (!modEntry.IsValid()) {
+		TSharedPtr<SAlpakitModEntry> ModEntry = StaticCastSharedPtr<SAlpakitModEntry>(TableRow->GetContent());
+		if (!ModEntry.IsValid()) {
 			UE_LOG(LogTemp, Display, TEXT("TableRow content is not valid!"))
 
 			continue;
 		}
 
-		if(!modEntry->IsSelected()) {
-			UE_LOG(LogTemp, Display, TEXT("Plugin is not selected: %s"), * mod->GetName());
+		if(!ModEntry->IsSelected()) {
+			UE_LOG(LogTemp, Display, TEXT("Plugin is not selected: %s"), * Mod->GetName());
 
 			continue;
 		}
 
-		if (!first) {
-			first = modEntry.ToSharedRef();
+		if (!First) {
+			First = ModEntry.ToSharedRef();
 		} else {
-			nextEntries.Add(modEntry.ToSharedRef());
+			NextEntries.Add(ModEntry.ToSharedRef());
 		}
 	}
 
-	if (first) {
-		first->PackageMod(nextEntries);
+	if (First) {
+		First->PackageMod(NextEntries);
 	}
 
 	return FReply::Handled();

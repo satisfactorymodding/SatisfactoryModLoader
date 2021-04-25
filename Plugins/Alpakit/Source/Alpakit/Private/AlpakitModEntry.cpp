@@ -1,7 +1,6 @@
 #include "AlpakitModEntry.h"
 #include "AlpakitSettings.h"
 #include "AlpakitStyle.h"
-#include "IPlatformFilePak.h"
 #include "Async/Async.h"
 #include "UATHelper/Public/IUATHelperModule.h"
 
@@ -10,12 +9,12 @@
 void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InMod, TSharedRef<SAlpakitModEntryList> InOwner) {
 	Mod = InMod;
 
-	auto modSelectionSettings = UAlpakitModSelectionSettings::Get();
+	UAlpakitSettings* Settings = UAlpakitSettings::Get();
 	const FString PluginName = Mod->GetName();
 
 	Checkbox = SNew(SCheckBox)
 		.OnCheckStateChanged(this, &SAlpakitModEntry::OnEnableCheckboxChanged)
-		.IsChecked(modSelectionSettings->GetPluginSelection(PluginName));
+		.IsChecked(Settings->ModSelection.FindOrAdd(PluginName, false));
 
 	ChildSlot[
 		SNew(SHorizontalBox)
@@ -39,7 +38,7 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 				const FString DisplayText = FString::Printf(TEXT("%s (%s)"), *InMod->GetDescriptor().FriendlyName, *InMod->GetName());
 				return FText::FromString(DisplayText);
 			})
-            .HighlightText_Lambda([InOwner]() {
+			.HighlightText_Lambda([InOwner]() {
 				return FText::FromString(InOwner->GetLastFilter());
 			})
 		]
@@ -81,7 +80,7 @@ FText GetCurrentPlatformName() {
 #endif
 }
 
-void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& nextEntries) const {
+void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& NextEntries) const {
 	UAlpakitSettings* Settings = UAlpakitSettings::Get();
 	const FString PluginName = Mod->GetName();
 	const FString GamePath = Settings->SatisfactoryGamePath.Path;
@@ -94,35 +93,35 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& ne
 	if (Settings->bCopyModsToGame) {
 		AdditionalUATArguments.Append(TEXT("-CopyToGameDir "));
 	}
-	if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE && nextEntries.Num() == 0) {
+	if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE && NextEntries.Num() == 0) {
 		AdditionalUATArguments.Append(TEXT("-LaunchGame "));
 		AdditionalUATArguments.Append(GetArgumentForLaunchType(Settings->LaunchGameAfterPacking)).Append(TEXT(" "));
 	}
 
 	const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);
 
-	UE_LOG(LogTemp, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, nextEntries.Num());
+	UE_LOG(LogTemp, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
 
 	const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
-	                                            *ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
+												*ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
 
 	const FText PlatformName = GetCurrentPlatformName();
 	IUATHelperModule::Get().CreateUatTask(CommandLine, PlatformName,
 		LOCTEXT("PackageModTaskName", "Packaging Mod"),
 		LOCTEXT("PackageModTaskShortName", "Package Mod Task"),
 		FAlpakitStyle::Get().GetBrush("Alpakit.OpenPluginWindow"),
-		nextEntries.Num() == 0
+		NextEntries.Num() == 0
 			? (IUATHelperModule::UatTaskResultCallack)nullptr
-			: [nextEntries](FString resultType, double runTime) {
+			: [NextEntries](FString resultType, double runTime) {
 				AsyncTask(
 					ENamedThreads::GameThread,
-					[nextEntries]() {
-						auto nextMod = nextEntries[0];
+					[NextEntries]() {
+						TSharedPtr<SAlpakitModEntry> NextMod = NextEntries[0];
 
-						nextMod->PackageMod(
-							nextEntries.FilterByPredicate(
-								[nextMod](TSharedPtr<SAlpakitModEntry> x) {
-									return x != nextMod;
+						NextMod->PackageMod(
+							NextEntries.FilterByPredicate(
+								[NextMod](TSharedPtr<SAlpakitModEntry> X) {
+									return X != NextMod;
 								})
 							);
 					});
@@ -131,10 +130,12 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& ne
 
 void SAlpakitModEntry::OnEnableCheckboxChanged(ECheckBoxState NewState) {
 	// Save new checked state for the mod at the
-	auto modSelectionSettings = UAlpakitModSelectionSettings::Get();
+	UAlpakitSettings* Settings = UAlpakitSettings::Get();
 	const FString PluginName = Mod->GetName();
 
-	modSelectionSettings->SetPluginSelection(PluginName, NewState == ECheckBoxState::Checked);
+	Settings->ModSelection.Add(PluginName, NewState == ECheckBoxState::Checked);
+
+	Settings->SaveSettings();
 }
 
 #undef LOCTEXT_NAMESPACE
