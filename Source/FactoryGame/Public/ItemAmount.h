@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h" // MODDING EDIT: no PCH
 #include "Resources/FGItemDescriptor.h"
 #include "ItemAmount.generated.h"
 

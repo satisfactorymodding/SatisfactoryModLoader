@@ -114,6 +114,8 @@ UFGFactoryMaterialInstanceManager* AFGBuildable::GetMaterialInstanceManagerForMa
 bool AFGBuildable::AddMaterialInstanceManagerForMaterialName(const FString& lookupName,  UFGFactoryMaterialInstanceManager* materialInstanceManager){ return bool(); }
 void AFGBuildable::CleanUpMaterialInstanceMappingsInSubsystem(){ }
 void AFGBuildable::SetDidFirstTimeUse(bool didUse){ }
+TArray< UStaticMeshComponent* > AFGBuildable::CreateBuildEffectProxyComponents(){ return TArray<UStaticMeshComponent*>(); }
+void AFGBuildable::DestroyBuildEffectProxyComponents(){ }
 void AFGBuildable::CreateFactoryStatID() const{ }
 void AFGBuildable::SetReplicateDetails(bool replicateDetails){ }
 bool AFGBuildable::CheckFactoryConnectionComponents(FString& out_message){ return bool(); }

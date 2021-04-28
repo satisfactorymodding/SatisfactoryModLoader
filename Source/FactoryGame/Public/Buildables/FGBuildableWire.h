@@ -61,7 +61,7 @@ public:
 	void UpdateWireMesh();
 
 	/** Internal helper function to connect this wire. */ //[DavalliusA:Sun/16-02-2020] moved this out as it was needed for upgrades. If there is a reason to hide it, please make that clear, or I won't know why not to expose it.
-	void Connect( class UFGCircuitConnectionComponent* first, class UFGCircuitConnectionComponent* second );
+	bool Connect( class UFGCircuitConnectionComponent* first, class UFGCircuitConnectionComponent* second );
 
 private:
 

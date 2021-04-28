@@ -49,9 +49,6 @@ public class SML : ModuleRules
             PrivateDependencyModuleNames.Add("MainFrame");
         }
         
-        var factoryGamePchPath = new DirectoryReference(Path.Combine(Target.ProjectFile.Directory.ToString(), "Source", "FactoryGame", "Public", "FactoryGame.h"));
-        PrivatePCHHeaderFile = factoryGamePchPath.MakeRelativeTo(new DirectoryReference(ModuleDirectory));
-        
         var thirdPartyFolder = Path.Combine(ModuleDirectory, "../../ThirdParty");
         PublicIncludePaths.Add(Path.Combine(thirdPartyFolder, "include"));
         

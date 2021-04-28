@@ -12,4 +12,5 @@ void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister(); }
 void UFGColoredInstanceMeshProxy::SetColorSlot(uint8 colorSlotIndex){ }
 void UFGColoredInstanceMeshProxy::SetInstanced(bool setToInstanced){ }
 void UFGColoredInstanceMeshProxy::OnHiddenInGameChanged(){ }
+bool UFGColoredInstanceMeshProxy::ShouldCreateRenderState() const{ return bool(); }
 void UFGColoredInstanceMeshProxy::InstantiateInternal(){ }
