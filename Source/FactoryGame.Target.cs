@@ -13,6 +13,8 @@ public class FactoryGameTarget : TargetRules
 		CppStandard = CppStandardVersion.Cpp17;
 		ExtraModuleNames.AddRange(new[] {"FactoryGame"});
 		DefaultBuildSettings = BuildSettingsVersion.V2;
+		
+		bOverrideAppNameForSharedBuild = true;
 
 		bUseChecksInShipping = true;
 		bUseLoggingInShipping = true;
