@@ -10,7 +10,6 @@ namespace Alpakit.Automation
 {
 	public class FactoryGameParams
 	{
-		public string GameBuildId;
 		public bool CopyToGameDirectory;
 		public bool StartGame;
 		public string GameDirectory;
@@ -102,26 +101,6 @@ namespace Alpakit.Automation
 
 			projectParameters.ValidateAndLog();
 			return projectParameters;
-		}
-
-		private static string RetrieveBuildIdFromGame(string gameDir)
-		{
-			var versionFilePath = Path.Combine(gameDir, "Engine", "Binaries", "Win64", "FactoryGame-Win64-Shipping.version");
-			if (!FileExists(versionFilePath))
-			{
-				throw new AutomationException("Cannot find game version file at '{0}'", versionFilePath);
-			}
-
-			try
-			{
-				var versionObject = JsonObject.Read(new FileReference(versionFilePath));
-				var buildId = versionObject.GetStringField("BuildId");
-				return buildId;
-			}
-			catch (Exception ex)
-			{
-				throw new AutomationException("Failed to parse version JSON '{0}': {1}", versionFilePath, ex.Message);
-			}
 		}
 
 		private static void TryUpdateModulesFile(string filePath, string targetBuildId)
@@ -310,27 +289,20 @@ namespace Alpakit.Automation
 		}
 
 		public override void ExecuteBuild()
-		{
-			var gameBuildVersion = ParseOptionalStringParam("GameVersionOverride");
-			string maybeGameDirectory = null;
-			if (gameBuildVersion == null)
+        {
+            string gameDir = ParseOptionalStringParam("GameDir");
+            if (gameDir != null)
 			{
-				var gameDir = ParseRequiredStringParam("GameDir");
 				var bootstrapExePath = Path.Combine(gameDir, "FactoryGame.exe");
 				if (!FileExists(bootstrapExePath))
 				{
 					throw new AutomationException("Provided -GameDir is invalid: '{0}'", gameDir);
 				}
-				gameBuildVersion = RetrieveBuildIdFromGame(gameDir);
-				maybeGameDirectory = gameDir;
 			}
-
-			LogInformation("Game Build Id: {0}", gameBuildVersion);
 
 			var factoryGameParams = new FactoryGameParams
 			{
-				GameBuildId = gameBuildVersion,
-				GameDirectory = maybeGameDirectory,
+				GameDirectory = gameDir,
 				StartGame = ParseParam("LaunchGame"),
 				CopyToGameDirectory = ParseParam("CopyToGameDir")
 			};
@@ -348,7 +320,7 @@ namespace Alpakit.Automation
 			try
 			{
 				CopyBuildToStagingDirectory(projectParams, deploymentContexts);
-				PackagePluginProject(deploymentContexts, gameBuildVersion);
+				PackagePluginProject(deploymentContexts, "SML");
 				ArchivePluginProject(projectParams, deploymentContexts);
 				DeployPluginProject(projectParams, deploymentContexts, factoryGameParams);
 			}
