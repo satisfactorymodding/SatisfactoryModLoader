@@ -221,7 +221,7 @@ class FACTORYGAME_API UFGCDNeedsFrackingSatelliteNode : public UFGConstructDisqu
 };
 
 UCLASS()
-class UFGCDResourceNodeIsOccuped : public UFGConstructDisqualifier
+class FACTORYGAME_API UFGCDResourceNodeIsOccuped : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
 

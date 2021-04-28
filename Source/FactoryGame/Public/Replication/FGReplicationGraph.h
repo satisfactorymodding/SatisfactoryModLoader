@@ -165,18 +165,16 @@ private:
 };
 
 UCLASS()
-class UFGReplicationGraphNode_ConditionallyAlwaysRelevant : public UReplicationGraphNode_ActorList
+class FACTORYGAME_API UFGReplicationGraphNode_ConditionallyAlwaysRelevant : public UReplicationGraphNode_ActorList
 {
-public:
 	GENERATED_BODY()
-
+public:
 	// ~ begin UReplicationGraphNode_AlwaysRelevant_ForConnection implementation
 	virtual void GatherActorListsForConnection( const FConnectionGatherActorListParameters& Params ) override;
 	virtual void NotifyAddNetworkActor( const FNewReplicatedActorInfo& ActorInfo ) override;
 	virtual bool NotifyRemoveNetworkActor( const FNewReplicatedActorInfo& ActorInfo, bool bWarnIfNotFound = true ) override;
 	virtual void NotifyResetAllNetworkActors() override;
 	// ~ end UReplicationGraphNode_AlwaysRelevant_ForConnection implementation
-
 
 private:
 	FActorRepListRefView mAllReplicationActors;
@@ -185,12 +183,10 @@ private:
 
 // Grid Node for prioritizing Actors Close to the player and inside their view frustum. Based on the DynamicSpatialFrequency Node. Intended for Actors that don't move and have a heavy Networking footprint (Tex. Conveyors)
 UCLASS()
-class UFGReplicationGraphNode_ConveyorSpatialFrequency : public UReplicationGraphNode_GridCell
+class FACTORYGAME_API UFGReplicationGraphNode_ConveyorSpatialFrequency : public UReplicationGraphNode_GridCell
 {
 	GENERATED_BODY()
-
 public:
-
 	void InitializeFrequencyGrid( FVector2D origin, FVector2D cellSize, int32 subdivisions );
 
 	virtual void GatherActorListsForConnection( const FConnectionGatherActorListParameters& Params ) override;
@@ -780,7 +776,7 @@ protected:
 
 /** This is a specialized node for handling PlayerState replication in a frequency limited fashion. It tracks all player states but only returns a subset of them to the replication driver each frame. */
 UCLASS()
-class UFGReplicationGraphNode_PlayerStateFrequencyLimiter : public UReplicationGraphNode
+class FACTORYGAME_API UFGReplicationGraphNode_PlayerStateFrequencyLimiter : public UReplicationGraphNode
 {
 	GENERATED_BODY()
 
@@ -805,7 +801,7 @@ private:
 };
 
 UCLASS()
-class UFGReplicationGraphNode_AlwaysRelevant_ForConnection : public UReplicationGraphNode_AlwaysRelevant_ForConnection
+class FACTORYGAME_API UFGReplicationGraphNode_AlwaysRelevant_ForConnection : public UReplicationGraphNode_AlwaysRelevant_ForConnection
 {
 public:
 	GENERATED_BODY()

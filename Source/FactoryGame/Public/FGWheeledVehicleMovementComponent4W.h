@@ -8,7 +8,7 @@
 #include "FGWheeledVehicleMovementComponent4W.generated.h"
 
 UCLASS(meta = (BlueprintSpawnableComponent))
-class UFGWheeledVehicleMovementComponent4W : public UWheeledVehicleMovementComponent4W
+class FACTORYGAME_API UFGWheeledVehicleMovementComponent4W : public UWheeledVehicleMovementComponent4W
 {
 	GENERATED_BODY()
 public:
