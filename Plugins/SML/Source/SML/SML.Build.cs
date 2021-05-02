@@ -75,7 +75,7 @@ public class SML : ModuleRules
         }
         Log.TraceInformation("Environment: Branch = {0} BuildId = {1}", currentBranch, buildId);
         if (currentBranch != null && buildId != null) {
-            var buildMetadataString = currentBranch == "master" ? buildId : string.Format("{0}+{1}", currentBranch, buildId);
+            var buildMetadataString = currentBranch == "master" ? buildId : string.Format("{0}.{1}", currentBranch, buildId);
             PrivateDefinitions.Add(string.Format("SML_BUILD_METADATA=\"{0}\"", buildMetadataString));
         }
     }
