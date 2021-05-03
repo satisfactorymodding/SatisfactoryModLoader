@@ -22,7 +22,6 @@ public class Alpakit : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
-				"Json",
 		});
 	}
 }

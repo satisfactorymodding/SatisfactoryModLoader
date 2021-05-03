@@ -1,4 +1,5 @@
 #include "AlpakitModEntry.h"
+#include "Alpakit.h"
 #include "AlpakitSettings.h"
 #include "AlpakitStyle.h"
 #include "Async/Async.h"
@@ -90,7 +91,7 @@ void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& Ne
 
     const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);
 
-    UE_LOG(LogTemp, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
+    UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
 
     const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
                                                 *ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);

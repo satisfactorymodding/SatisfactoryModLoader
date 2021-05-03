@@ -1,5 +1,5 @@
 #include "AlpakitModEntryList.h"
-
+#include "Alpakit.h"
 #include "AlpakitModEntry.h"
 #include "Interfaces/IPluginManager.h"
 
@@ -125,25 +125,25 @@ FReply SAlpakitModEntryList::PackageAllMods() {
     TSharedPtr<SAlpakitModEntry> First;
     TArray<TSharedPtr<SAlpakitModEntry>> NextEntries;
 
-    UE_LOG(LogTemp, Display, TEXT("Alpakit All!"));
+    UE_LOG(LogAlpakit, Display, TEXT("Alpakit All!"));
 
     for (TSharedRef<IPlugin> Mod : FilteredMods) {
-        UE_LOG(LogTemp, Display, TEXT("Collecting Plugin %s!"), *Mod->GetName());
+        UE_LOG(LogAlpakit, Display, TEXT("Collecting Plugin %s!"), *Mod->GetName());
 
         TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
         if (!TableRow.IsValid()) {
-            UE_LOG(LogTemp, Display, TEXT("TableRow not found!"));
+            UE_LOG(LogAlpakit, Display, TEXT("TableRow not found!"));
             continue;
         }
 
         TSharedPtr<SAlpakitModEntry> ModEntry = StaticCastSharedPtr<SAlpakitModEntry>(TableRow->GetContent());
         if (!ModEntry.IsValid()) {
-            UE_LOG(LogTemp, Display, TEXT("TableRow content is not valid!"));
+            UE_LOG(LogAlpakit, Display, TEXT("TableRow content is not valid!"));
             continue;
         }
 
         if(!ModEntry->IsSelected()) {
-            UE_LOG(LogTemp, Display, TEXT("Plugin is not selected: %s"), * Mod->GetName());
+            UE_LOG(LogAlpakit, Display, TEXT("Plugin is not selected: %s"), * Mod->GetName());
             continue;
         }
 
