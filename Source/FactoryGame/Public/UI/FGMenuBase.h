@@ -6,7 +6,7 @@
 #include "FGMenuBase.generated.h"
 
 UCLASS(meta=(DisableNativeTick))
-class UFGMenuBase : public UUserWidget
+class FACTORYGAME_API UFGMenuBase : public UUserWidget
 {
 	GENERATED_BODY()
 public:

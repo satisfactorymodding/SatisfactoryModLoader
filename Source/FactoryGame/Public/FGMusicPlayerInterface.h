@@ -6,16 +6,13 @@
 #include "UObject/Interface.h"
 #include "FGMusicPlayerInterface.generated.h"
 
-// This class does not need to be modified.
+
 UINTERFACE( Blueprintable )
-class UFGMusicPlayerInterface : public UInterface
+class FACTORYGAME_API UFGMusicPlayerInterface : public UInterface
 {
 	GENERATED_BODY()
 };
 
-/**
-* 
-*/
 class FACTORYGAME_API IFGMusicPlayerInterface
 {
 	GENERATED_BODY()
@@ -24,7 +21,7 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Music Player" )
     void OnDistanceChanged( float distSquared, bool isClosest );
 
-	/** Is this mucic player active */
+	/** Is this music player active */
 	UFUNCTION( BlueprintNativeEvent, Category = "Music Player" )
     bool IsPlaying();
 
