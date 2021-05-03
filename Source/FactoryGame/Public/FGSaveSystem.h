@@ -41,7 +41,7 @@ typedef FString SessionNameType;
 
 /** The header with information about a save game */
 USTRUCT( BlueprintType )
-struct FSaveHeader
+struct FACTORYGAME_API FSaveHeader
 {
 	GENERATED_BODY()
 
@@ -175,7 +175,7 @@ enum class ESaveSortDirection : uint8
  * For when a artist/LD has changed the name of a map
  */
 USTRUCT()
-struct FMapRedirector
+struct FACTORYGAME_API FMapRedirector
 {
 	GENERATED_BODY()
 
@@ -192,7 +192,7 @@ DECLARE_DELEGATE_ThreeParams( FOnEnumerateSaveGamesComplete, bool, const TArray<
 DECLARE_DELEGATE_TwoParams( FOnDeleteSaveGameComplete, bool, void* );
 
 USTRUCT( BlueprintType )
-struct FSessionSaveStruct
+struct FACTORYGAME_API FSessionSaveStruct
 {
 	GENERATED_BODY()
 
@@ -223,8 +223,8 @@ struct FSessionSaveStruct
  * if the UI should use this interface directly, or if it should go through the admin interface when you are making a
  * BlueprintCallable function in this class.
  */
-UCLASS(Config=Engine)
-class UFGSaveSystem : public UObject
+UCLASS( Config = Engine )
+class FACTORYGAME_API UFGSaveSystem : public UObject
 {
 	GENERATED_BODY()
 public:

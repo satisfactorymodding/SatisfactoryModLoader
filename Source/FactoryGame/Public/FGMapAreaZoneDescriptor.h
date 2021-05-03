@@ -8,7 +8,7 @@
  * Used by different zones so that different zones can have different audio
  */
 UCLASS(abstract, Blueprintable)
-class UFGMapAreaZoneDescriptor : public UObject
+class FACTORYGAME_API UFGMapAreaZoneDescriptor : public UObject
 {
 	GENERATED_BODY()
 public:

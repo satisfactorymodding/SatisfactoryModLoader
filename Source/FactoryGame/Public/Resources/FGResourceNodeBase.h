@@ -26,7 +26,7 @@ enum class EResourceNodeType : uint8
 * The resource we are trying to pick can't be on a conveyor belt.
 */
 UCLASS()
-class UFGUseState_NonConveyorResource : public UFGUseState
+class FACTORYGAME_API UFGUseState_NonConveyorResource : public UFGUseState
 {
 	GENERATED_BODY()
 
