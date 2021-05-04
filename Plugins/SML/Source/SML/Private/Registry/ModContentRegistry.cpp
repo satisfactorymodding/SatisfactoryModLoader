@@ -536,6 +536,10 @@ void AModContentRegistry::BeginPlay() {
 }
 
 void AModContentRegistry::Tick(float DeltaSeconds) {
+	// Make sure client subsystems are fully replicated
+	AFGGameState* GameState = Cast<AFGGameState>(GetWorld()->GetGameState());
+    if(GameState == NULL || !GameState->AreClientSubsystemsValid()) return;
+
     //Make sure vanilla states are up to date with registry
     AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
     AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
