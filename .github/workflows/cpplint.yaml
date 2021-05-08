@@ -15,5 +15,4 @@ jobs:
       run: pip install cpplint
 
     - name: Run cpplint
-      run: cpplint --recursive .
-
+      run: cpplint --recursive . --exclude=Plugins/SML/ThirdParty --exclude=Source --linelength=140
