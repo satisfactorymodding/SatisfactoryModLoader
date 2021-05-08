@@ -6,20 +6,20 @@ static FName StyleSetName(TEXT("AlpakitStyle"));
 TSharedPtr< FSlateStyleSet > FAlpakitStyle::StyleInstance = NULL;
 
 void FAlpakitStyle::Initialize() {
-	if (!StyleInstance.IsValid()) {
-		StyleInstance = Create();
-		FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
-	}
+    if (!StyleInstance.IsValid()) {
+        StyleInstance = Create();
+        FSlateStyleRegistry::RegisterSlateStyle(*StyleInstance);
+    }
 }
 
 void FAlpakitStyle::Shutdown() {
-	FSlateStyleRegistry::UnRegisterSlateStyle(*StyleInstance);
-	ensure(StyleInstance.IsUnique());
-	StyleInstance.Reset();
+    FSlateStyleRegistry::UnRegisterSlateStyle(*StyleInstance);
+    ensure(StyleInstance.IsUnique());
+    StyleInstance.Reset();
 }
 
 FName FAlpakitStyle::GetStyleSetName() {
-	return StyleSetName;
+    return StyleSetName;
 }
 
 #define IMAGE_BRUSH(RelativePath, ...) FSlateImageBrush( Style->RootToContentDir( RelativePath, TEXT(".png") ), __VA_ARGS__)
@@ -34,25 +34,25 @@ const FVector2D Icon40x40(40.0f, 40.0f);
 const FVector2D Icon128x128(40.0f, 40.0f);
 
 bool ShouldUseHatIcon() {
-	const FDateTime DateTime = FDateTime::Now();
-	return (DateTime.GetMonthOfYear() == EMonthOfYear::December && DateTime.GetDay() >= 15) ||
-		(DateTime.GetMonthOfYear() == EMonthOfYear::January && DateTime.GetDay() <= 15);
+    const FDateTime DateTime = FDateTime::Now();
+    return (DateTime.GetMonthOfYear() == EMonthOfYear::December && DateTime.GetDay() >= 15) ||
+        (DateTime.GetMonthOfYear() == EMonthOfYear::January && DateTime.GetDay() <= 15);
 }
 
 TSharedRef<FSlateStyleSet> FAlpakitStyle::Create() {
-	TSharedRef<FSlateStyleSet> Style = MakeShareable(new FSlateStyleSet(StyleSetName));
-	Style->SetContentRoot(IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir() / TEXT("Resources"));
-	const FString IconName = ShouldUseHatIcon() ? TEXT("AlpakitHat40") : TEXT("Alpakit40");
-	Style->Set(TEXT("Alpakit.OpenPluginWindow"), new IMAGE_BRUSH(IconName, Icon40x40));
-	return Style;
+    TSharedRef<FSlateStyleSet> Style = MakeShareable(new FSlateStyleSet(StyleSetName));
+    Style->SetContentRoot(IPluginManager::Get().FindPlugin(TEXT("Alpakit"))->GetBaseDir() / TEXT("Resources"));
+    const FString IconName = ShouldUseHatIcon() ? TEXT("AlpakitHat40") : TEXT("Alpakit40");
+    Style->Set(TEXT("Alpakit.OpenPluginWindow"), new IMAGE_BRUSH(IconName, Icon40x40));
+    return Style;
 }
 
 void FAlpakitStyle::ReloadTextures() {
-	if (FSlateApplication::IsInitialized()) {
-		FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
-	}
+    if (FSlateApplication::IsInitialized()) {
+        FSlateApplication::Get().GetRenderer()->ReloadTextureResources();
+    }
 }
 
 const ISlateStyle& FAlpakitStyle::Get() {
-	return *StyleInstance;
+    return *StyleInstance;
 }

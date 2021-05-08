@@ -4,16 +4,16 @@
 
 class FAlpakitStyle {
 public:
-	static void Initialize();
-	static void Shutdown();
+    static void Initialize();
+    static void Shutdown();
 
-	/** reloads textures used by slate renderer */
-	static void ReloadTextures();
+    /** reloads textures used by slate renderer */
+    static void ReloadTextures();
 
-	static const ISlateStyle& Get();
+    static const ISlateStyle& Get();
 
-	static FName GetStyleSetName();
+    static FName GetStyleSetName();
 private:
-	static TSharedRef< class FSlateStyleSet > Create();
-	static TSharedPtr< class FSlateStyleSet > StyleInstance;
+    static TSharedRef< class FSlateStyleSet > Create();
+    static TSharedPtr< class FSlateStyleSet > StyleInstance;
 };

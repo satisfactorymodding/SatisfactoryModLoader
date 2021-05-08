@@ -21,7 +21,7 @@ public class Alpakit : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore"
+				"SlateCore",
 		});
 	}
 }
