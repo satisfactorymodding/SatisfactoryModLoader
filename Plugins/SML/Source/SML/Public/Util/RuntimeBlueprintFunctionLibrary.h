@@ -24,7 +24,7 @@
 #include "RuntimeBlueprintFunctionLibrary.generated.h"
 
 /**
- * 
+ *
  */
 
 UCLASS()
@@ -33,9 +33,9 @@ class SML_API URuntimeBlueprintFunctionLibrary : public UBlueprintFunctionLibrar
 
 public:
 
-    /** 
-    *	Use Object->ObjectName.Append("_C") as input 
-    *	Class must be Loaded 
+    /**
+    *    Use Object->ObjectName.Append("_C") as input
+    *    Class must be Loaded
     */
     UFUNCTION(BlueprintCallable, Category = "SML | Class")
     static UClass* FindClassByName(FString ClassNameInput);

@@ -159,6 +159,6 @@ void FWaitForGameStateLatentAction::UpdateOperation(FLatentResponse& Response) {
 
 #if WITH_EDITOR
 FString FWaitForGameStateLatentAction::GetDescription() const {
-	return TEXT("Wait For GameState");
+    return TEXT("Wait For GameState");
 }
 #endif

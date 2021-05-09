@@ -11,8 +11,8 @@
 DEFINE_LOG_CATEGORY(LogBlueprintHookManager);
 
 #define WRITE_UNALIGNED(Arr, Type, Value) \
-	Arr.AddUninitialized(sizeof(Type)); \
-	FPlatformMemory::WriteUnaligned<Type>(&AppendedCode[Arr.Num() - sizeof(Type)], (Type) Value);
+    Arr.AddUninitialized(sizeof(Type)); \
+    FPlatformMemory::WriteUnaligned<Type>(&AppendedCode[Arr.Num() - sizeof(Type)], (Type) Value);
 
 void UBlueprintHookManager::HandleHookedFunctionCall(FFrame& Stack, int32 HookOffset) {
     FFunctionHookInfo& FunctionHookInfo = HookedFunctions.FindChecked(Stack.Node);
@@ -21,17 +21,17 @@ void UBlueprintHookManager::HandleHookedFunctionCall(FFrame& Stack, int32 HookOf
 
 #if DEBUG_BLUEPRINT_HOOKING
 void DebugDumpFunctionScriptCode(UFunction* Function, int32 HookOffset, const FString& Postfix) {
-	const FString FileLocation = FPaths::RootDir() + FString::Printf(TEXT("BlueprintHookingDebug_%s_%s_at_%d_%s.json"), *Function->GetOuter()->GetName(), *Function->GetName(), HookOffset, *Postfix);
+    const FString FileLocation = FPaths::RootDir() + FString::Printf(TEXT("BlueprintHookingDebug_%s_%s_at_%d_%s.json"), *Function->GetOuter()->GetName(), *Function->GetName(), HookOffset, *Postfix);
 
-	FKismetBytecodeDisassemblerJson Disassembler;
-	const TArray<TSharedPtr<FJsonValue>> Statements = Disassembler.SerializeFunction(Function);
+    FKismetBytecodeDisassemblerJson Disassembler;
+    const TArray<TSharedPtr<FJsonValue>> Statements = Disassembler.SerializeFunction(Function);
 
-	FString OutJsonString;
-	const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutJsonString);
-	FJsonSerializer::Serialize(Statements, Writer);
+    FString OutJsonString;
+    const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&OutJsonString);
+    FJsonSerializer::Serialize(Statements, Writer);
 
-	FFileHelper::SaveStringToFile(OutJsonString, *FileLocation);
-	UE_LOG(LogBlueprintHookManager, Display, TEXT("Dumped hooked function bytecode to %s (%s)"), *FileLocation, *Postfix);
+    FFileHelper::SaveStringToFile(OutJsonString, *FileLocation);
+    UE_LOG(LogBlueprintHookManager, Display, TEXT("Dumped hooked function bytecode to %s (%s)"), *FileLocation, *Postfix);
 }
 #endif
 
@@ -40,7 +40,7 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, int32 Hook
     checkf(OriginalCode.Num() > HookOffset, TEXT("Invalid hook: HookOffset > Script.Num()"));
 
 #if DEBUG_BLUEPRINT_HOOKING
-	DebugDumpFunctionScriptCode(Function, HookOffset, TEXT("BeforeHook"));
+    DebugDumpFunctionScriptCode(Function, HookOffset, TEXT("BeforeHook"));
 #endif
 
     // Minimum amount of bytes required to insert unconditional jump with code offset
@@ -115,7 +115,7 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, int32 Hook
     FPlatformMemory::WriteUnaligned<CodeSkipSizeType>(&OriginalCode[HookOffset + 1], StartOfAppendedCode);
 
 #if DEBUG_BLUEPRINT_HOOKING
-	DebugDumpFunctionScriptCode(Function, HookOffset, TEXT("AfterHook"));
+    DebugDumpFunctionScriptCode(Function, HookOffset, TEXT("AfterHook"));
 #endif
 }
 

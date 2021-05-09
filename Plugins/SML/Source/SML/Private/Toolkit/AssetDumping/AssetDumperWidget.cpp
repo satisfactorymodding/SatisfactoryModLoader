@@ -84,29 +84,29 @@ void SAssetDumperWidget::Construct(const FArguments& InArgs) {
         SNew(SVerticalBox)
         + SVerticalBox::Slot().AutoHeight()[
             SNew(SExpandableArea)
-			.AreaTitle(LOCTEXT("AssetDumper_CatSettings", "Asset Dumper Settings"))
-			.InitiallyCollapsed(false)
-			.BodyContent()[
+            .AreaTitle(LOCTEXT("AssetDumper_CatSettings", "Asset Dumper Settings"))
+            .InitiallyCollapsed(false)
+            .BodyContent()[
                 CreateSettingsCategory()
             ]
         ]
         + SVerticalBox::Slot().AutoHeight()[
             SNew(SExpandableArea)
-			.AreaTitle(LOCTEXT("AssetDumper_CatTypes", "Asset Types Filter"))
-			.InitiallyCollapsed(true)
-			.BodyContent()[
+            .AreaTitle(LOCTEXT("AssetDumper_CatTypes", "Asset Types Filter"))
+            .InitiallyCollapsed(true)
+            .BodyContent()[
                 CreateAssetTypesTab()
             ]
         ]
         + SVerticalBox::Slot().AutoHeight()[
             SNew(SExpandableArea)
-			.AreaTitle(LOCTEXT("AssetDumper_AssetSelection", "Assets Selection"))
-			.InitiallyCollapsed(false)
-			.MaxHeight(400.0f)
-			.BodyContent()[
+            .AreaTitle(LOCTEXT("AssetDumper_AssetSelection", "Assets Selection"))
+            .InitiallyCollapsed(false)
+            .MaxHeight(400.0f)
+            .BodyContent()[
                 SNew(SScrollBox)
-				.Orientation(Orient_Vertical)
-				.ScrollBarAlwaysVisible(true)
+                .Orientation(Orient_Vertical)
+                .ScrollBarAlwaysVisible(true)
                 + SScrollBox::Slot()[
                     SAssignNew(AssetRegistryViewWidget, SAssetRegistryViewWidget)
                 ]
@@ -116,9 +116,9 @@ void SAssetDumperWidget::Construct(const FArguments& InArgs) {
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot().AutoWidth().HAlign(HAlign_Right)[
                 SAssignNew(AssetDumpButton, SButton)
-				.Text(LOCTEXT("AssetDumper_DumpButton", "Begin Asset Dumping"))
-				.IsEnabled_Lambda([]() { return FAssetDumpProcessor::GetActiveDumpProcessor().IsValid() == false; })
-				.OnClicked_Raw(this, &SAssetDumperWidget::OnAssetDumpButtonPressed)
+                .Text(LOCTEXT("AssetDumper_DumpButton", "Begin Asset Dumping"))
+                .IsEnabled_Lambda([]() { return FAssetDumpProcessor::GetActiveDumpProcessor().IsValid() == false; })
+                .OnClicked_Raw(this, &SAssetDumperWidget::OnAssetDumpButtonPressed)
             ]
         ]
     ];
@@ -152,22 +152,22 @@ TSharedRef<SHorizontalBox> SAssetDumperWidget::CreateAssetTypesTab() {
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot().AutoWidth()[
                 SNew(SBox)
-	            .WidthOverride(200)
-	            .HAlign(HAlign_Left)
-	            .Content()[
+                .WidthOverride(200)
+                .HAlign(HAlign_Left)
+                .Content()[
                     SNew(STextBlock)
                     .Text(FText::FromString(AssetClass.ToString()))
                 ]
             ]
             + SHorizontalBox::Slot().AutoWidth()[
                 SNew(SCheckBox)
-	            .IsChecked_Lambda(
+                .IsChecked_Lambda(
                                    [this, AssetClass]() {
                                        const bool bShouldSerialize = AssetClassSerializationRules.FindChecked(AssetClass);
                                        return bShouldSerialize ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
                                    }
                                )
-	            .OnCheckStateChanged_Lambda(
+                .OnCheckStateChanged_Lambda(
                                    [this, AssetClass](const ECheckBoxState NewState) {
                                        const bool bShouldSerialize = NewState == ECheckBoxState::Checked;
                                        this->AssetClassSerializationRules.Add(AssetClass, bShouldSerialize);
@@ -189,18 +189,18 @@ TSharedRef<SVerticalBox> SAssetDumperWidget::CreateSettingsCategory() {
             ]
             + SHorizontalBox::Slot().FillWidth(1.0f)[
                 SAssignNew(OutputPathText, SEditableTextBox)
-			.Text(FText::FromString(AssetDumpSettings.RootDumpDirectory))
-			.OnTextCommitted_Lambda(
+            .Text(FText::FromString(AssetDumpSettings.RootDumpDirectory))
+            .OnTextCommitted_Lambda(
                                                                 [this](const FText& NewText, ETextCommit::Type CommitReason) {
                                                                     AssetDumpSettings.RootDumpDirectory = NewText.ToString();
                                                                 }
                                                             )
-			.HintText(LOCTEXT("AssetDumper_Settings_OutputPath_Hint", "Type Output Folder Path..."))
+            .HintText(LOCTEXT("AssetDumper_Settings_OutputPath_Hint", "Type Output Folder Path..."))
             ]
             + SHorizontalBox::Slot().AutoWidth().HAlign(HAlign_Center).Padding(FMargin(2.0f, 0.0f, 0.0f, 0.0f))[
                 SNew(SButton)
-			.Text(INVTEXT("..."))
-			.OnClicked_Raw(this, &SAssetDumperWidget::OnBrowseOutputPathPressed)
+            .Text(INVTEXT("..."))
+            .OnClicked_Raw(this, &SAssetDumperWidget::OnBrowseOutputPathPressed)
             ]
         ]
         + SVerticalBox::Slot().Padding(FMargin(5.0f, 2.0f)).AutoHeight()[
@@ -211,13 +211,13 @@ TSharedRef<SVerticalBox> SAssetDumperWidget::CreateSettingsCategory() {
             ]
             + SHorizontalBox::Slot().AutoWidth().HAlign(HAlign_Left).VAlign(VAlign_Center)[
                 SNew(SCheckBox)
-        	.ToolTipText(LOCTEXT("AssetDumper_Settings_RegenerateAssets_Tooltip", "When checked, assets that have been dumped before will be overwritten. Otherwise, they are ignored."))
-        	.IsChecked_Lambda(
+            .ToolTipText(LOCTEXT("AssetDumper_Settings_RegenerateAssets_Tooltip", "When checked, assets that have been dumped before will be overwritten. Otherwise, they are ignored."))
+            .IsChecked_Lambda(
                                    [this]() {
                                        return AssetDumpSettings.bOverwriteExistingAssets ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
                                    }
                                )
-        	.OnCheckStateChanged_Lambda(
+            .OnCheckStateChanged_Lambda(
                                    [this](ECheckBoxState NewState) {
                                        AssetDumpSettings.bOverwriteExistingAssets = NewState == ECheckBoxState::Checked;
                                    }
@@ -257,12 +257,12 @@ TSharedRef<SVerticalBox> SAssetDumperWidget::CreateSettingsCategory() {
             ]
             + SHorizontalBox::Slot().FillWidth(1.0f).HAlign(HAlign_Fill).VAlign(VAlign_Center)[
                 SNew(SSlider)
-        	.StepSize(1)
-        	.MaxValue(FPlatformMisc::NumberOfCoresIncludingHyperthreads())
-        	.MinValue(1)
-        	.Value(AssetDumpSettings.MaxPackagesToProcessInOneTick)
-        	.ToolTipText(LOCTEXT("AssetDumper_Settings_MaxPackagesTick_Tooltip", "Specifies maximum number of packages to be processed in one tick."))
-        	.OnValueChanged_Lambda(
+            .StepSize(1)
+            .MaxValue(FPlatformMisc::NumberOfCoresIncludingHyperthreads())
+            .MinValue(1)
+            .Value(AssetDumpSettings.MaxPackagesToProcessInOneTick)
+            .ToolTipText(LOCTEXT("AssetDumper_Settings_MaxPackagesTick_Tooltip", "Specifies maximum number of packages to be processed in one tick."))
+            .OnValueChanged_Lambda(
                                  [this](float NewValue) {
                                      AssetDumpSettings.MaxPackagesToProcessInOneTick = (int32)NewValue;
                                  }

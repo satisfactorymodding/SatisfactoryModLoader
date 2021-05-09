@@ -30,9 +30,9 @@ FORCEINLINE FMemberFunctionPointer ConvertFunctionPointer(const TMemberFunctionP
     // Note that it might also mean that we are dealing with "proper" compiler with static function pointer size
     // (e.g anything different from Intel C++ and MSVC)
     checkf(FunctionPointerSize == 8 || FunctionPointerSize == 16, TEXT("Unsupported function pointer size received: \
-		Hooking can only support non-virtual multiple inheritence. \
-		This might be also caused by unsupported compiler. Currently, only MSVC and Intel C++ are supported\
-		Function pointer size: %d bytes."), FunctionPointerSize);
+        Hooking can only support non-virtual multiple inheritence. \
+        This might be also caused by unsupported compiler. Currently, only MSVC and Intel C++ are supported\
+        Function pointer size: %d bytes."), FunctionPointerSize);
 
     const FMemberFunctionPointer* RawFunctionPointer = (const FMemberFunctionPointer*)SourcePointer;
 

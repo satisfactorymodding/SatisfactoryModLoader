@@ -23,14 +23,14 @@ static bool GIsRegisteringVanillaContent = false;
 
 /** Makes sure provided object instance is valid, crashes with both script call stack and native stack trace if it's not */
 #define CHECK_PROVIDED_OBJECT_VALID(Object, Message, ...) \
-	if (!IsValid(Object)) { \
-		const FString Context = FString::Printf(Message, __VA_ARGS__); \
-		/* Attempt to use cached script frame pointer first, then fallback to global script callstack (which is not available in shipping by default) */ \
-		const FString ScriptCallstack = ActiveScriptFramePtr ? ActiveScriptFramePtr->GetStackTrace() : FFrame::GetScriptCallstack(); \
-		UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), *Context); \
-		UE_LOG(LogContentRegistry, Error, TEXT("Script Callstack: %s"), *ScriptCallstack); \
-		UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register invalid content in mod content registry: %s. Script callstack: %s"), *Context, *ScriptCallstack); \
-	}
+    if (!IsValid(Object)) { \
+        const FString Context = FString::Printf(Message, __VA_ARGS__); \
+        /* Attempt to use cached script frame pointer first, then fallback to global script callstack (which is not available in shipping by default) */ \
+        const FString ScriptCallstack = ActiveScriptFramePtr ? ActiveScriptFramePtr->GetStackTrace() : FFrame::GetScriptCallstack(); \
+        UE_LOG(LogContentRegistry, Error, TEXT("Attempt to register invalid content: %s"), *Context); \
+        UE_LOG(LogContentRegistry, Error, TEXT("Script Callstack: %s"), *ScriptCallstack); \
+        UE_LOG(LogContentRegistry, Fatal, TEXT("Attempt to register invalid content in mod content registry: %s. Script callstack: %s"), *Context, *ScriptCallstack); \
+    }
 
 void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSubclassOf<UFGRecipe>>& OutRecipes) {
     const TArray<UFGUnlock*> Unlocks = UFGSchematic::GetUnlocks(Schematic);

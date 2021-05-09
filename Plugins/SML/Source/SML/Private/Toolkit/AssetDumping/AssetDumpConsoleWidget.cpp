@@ -9,11 +9,11 @@ void SAssetDumpConsoleWidget::Construct(const FArguments& InArgs, TSharedRef<FAs
     GLog->AddOutputDevice(this);
 
     this->MessagesTextBox = SNew(SMultiLineEditableTextBox)
-		.Marshaller(MessagesTextMarshaller)
-		.IsReadOnly(true)
-		.AlwaysShowScrollbars(true)
-		.AutoWrapText(true)
-		.OnVScrollBarUserScrolled(this, &SAssetDumpConsoleWidget::OnUserScrolled);
+        .Marshaller(MessagesTextMarshaller)
+        .IsReadOnly(true)
+        .AlwaysShowScrollbars(true)
+        .AutoWrapText(true)
+        .OnVScrollBarUserScrolled(this, &SAssetDumpConsoleWidget::OnUserScrolled);
 
     ChildSlot[
         SNew(SVerticalBox)

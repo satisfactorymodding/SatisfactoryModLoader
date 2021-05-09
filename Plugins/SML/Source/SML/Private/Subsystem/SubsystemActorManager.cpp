@@ -163,7 +163,7 @@ void FWaitForSubsystemLatentAction::UpdateOperation(FLatentResponse& Response) {
 
 #if WITH_EDITOR
 FString FWaitForSubsystemLatentAction::GetDescription() const {
-	const TSubclassOf<AModSubsystem> SubsystemClassPinned = SubsystemClass.Get();
-	return FString::Printf(TEXT("Wait Until Mod Subsystem '%s' is Available"), *SubsystemClassPinned->GetPathName());
+    const TSubclassOf<AModSubsystem> SubsystemClassPinned = SubsystemClass.Get();
+    return FString::Printf(TEXT("Wait Until Mod Subsystem '%s' is Available"), *SubsystemClassPinned->GetPathName());
 }
 #endif

@@ -74,7 +74,7 @@ TArray<FDiscoveredModule> FPluginModuleLoader::FindRootModulesOfType(TSubclassOf
 bool FPluginModuleLoader::ShouldLoadModulesForWorld(UWorld* World) {
     // Disable module loading in editor if it's disabled by the macro
 #if WITH_EDITOR && ENABLE_MOD_LOADING_IN_EDITOR == 0
-	return false;
+    return false;
 #else
     return World->WorldType == EWorldType::Game || World->WorldType == EWorldType::PIE;
 #endif

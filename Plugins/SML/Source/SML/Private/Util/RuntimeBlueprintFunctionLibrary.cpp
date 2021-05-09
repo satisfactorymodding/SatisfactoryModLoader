@@ -16,7 +16,7 @@ UClass* URuntimeBlueprintFunctionLibrary::FindClassByName(FString ClassNameInput
 
 bool URuntimeBlueprintFunctionLibrary::IsEditor() {
 #if WITH_EDITOR
-	return true;
+    return true;
 #else
     return false;
 #endif
@@ -226,17 +226,17 @@ UConfigProperty* URuntimeBlueprintFunctionLibrary::GetModConfigurationPropertyBy
     if (!ConfigClass) return nullptr;
     UConfigManager* ConfigManager = GEngine->GetEngineSubsystem<UConfigManager>();
 #if WITH_EDITOR
-	// Assuming we have not registered in Editor World or similiar
-	// But also considering this might work in the Editor once someone emulates the Startup Registration on PIE Play
-	// we check only in Editor if Configurations are Empty. 
-	// Editor Widgets that are used while not in PIE dont have proper World Context.
-	// For this Function to work regardless on Play State in Editor
-	// This Function "Simulates" it being where it would be inGame
-	// This return is for Comsetic and visual pre-display only 
-	// while also allowing modification of Default Values.
-	if (ConfigManager->Configurations.Num() == 0) {
-		return ConfigClass.GetDefaultObject()->RootSection;
-	}
+    // Assuming we have not registered in Editor World or similiar
+    // But also considering this might work in the Editor once someone emulates the Startup Registration on PIE Play
+    // we check only in Editor if Configurations are Empty.
+    // Editor Widgets that are used while not in PIE dont have proper World Context.
+    // For this Function to work regardless on Play State in Editor
+    // This Function "Simulates" it being where it would be inGame
+    // This return is for Comsetic and visual pre-display only
+    // while also allowing modification of Default Values.
+    if (ConfigManager->Configurations.Num() == 0) {
+        return ConfigClass.GetDefaultObject()->RootSection;
+    }
 #endif
     for (auto i : ConfigManager->Configurations) {
         if (i.Value.ConfigurationClass == ConfigClass) {

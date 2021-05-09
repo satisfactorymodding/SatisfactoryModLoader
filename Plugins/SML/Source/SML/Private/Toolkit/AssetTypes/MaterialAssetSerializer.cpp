@@ -795,39 +795,39 @@ FString UMaterialAssetSerializer::ShaderFrequencyToString(uint8 ShaderFrequency)
 
 
 FString UMaterialAssetSerializer::ShaderPlatformToString(uint8 ShaderPlatform) {
-	switch (ShaderPlatform) {
-		case SP_PCD3D_SM5: return TEXT("PCD3D_SM5");
-		case SP_OPENGL_SM4: return TEXT("OPENGL_SM4");
-		case SP_PS4: return TEXT("OPENGL_SM4");
-		case SP_OPENGL_PCES2: return TEXT("OPENGL_PCES2");
-		case SP_XBOXONE_D3D12: return TEXT("XBOXONE_D3D12");
-		case SP_PCD3D_SM4: return TEXT("PCD3D_SM4");
-		case SP_OPENGL_SM5: return TEXT("OPENGL_SM5");
-		case SP_PCD3D_ES2: return TEXT("PCD3D_ES2");
-		case SP_OPENGL_ES2_ANDROID: return TEXT("OPENGL_ES2_ANDROID");
-		case SP_OPENGL_ES2_WEBGL: return TEXT("OPENGL_ES2_WEBGL");
-		case SP_OPENGL_ES2_IOS: return TEXT("OPENGL_ES2_IOS");
-		case SP_METAL: return TEXT("METAL");
-		case SP_METAL_MRT: return TEXT("METAL_MRT");
-		case SP_METAL_TVOS: return TEXT("METAL_TVOS");
-		case SP_METAL_MRT_TVOS: return TEXT("METAL_MRT_TVOS");
-		case SP_OPENGL_ES31_EXT: return TEXT("OPENGL_ES31_EXT");
-		case SP_PCD3D_ES3_1: return TEXT("PCD3D_ES3_1");
-		case SP_OPENGL_PCES3_1: return TEXT("OPENGL_PCES3_1");
-		case SP_METAL_SM5: return TEXT("METAL_SM5");
-		case SP_VULKAN_PCES3_1: return TEXT("VULKAN_PCES3_1");
-		case SP_METAL_SM5_NOTESS: return TEXT("METAL_SM5_NOTESS");
-		case SP_VULKAN_SM4: return TEXT("VULKAN_SM4");
-		case SP_VULKAN_SM5: return TEXT("VULKAN_SM5");
-		case SP_VULKAN_ES3_1_ANDROID: return TEXT("VULKAN_ES3_1_ANDROID");
-		case SP_METAL_MACES3_1: return TEXT("METAL_MACES3_1");
-		case SP_METAL_MACES2: return TEXT("METAL_MACES2");
-		case SP_OPENGL_ES3_1_ANDROID: return TEXT("OPENGL_ES3_1_ANDROID");
-		case SP_SWITCH: return TEXT("SWITCH");
-		case SP_SWITCH_FORWARD: return TEXT("SWITCH_FORWARD");
-		case SP_METAL_MRT_MAC: return TEXT("METAL_MRT_MAC");
-		default: checkf(0, TEXT("Unknown shader platform: %d"), ShaderPlatform); return TEXT("");
-	}
+    switch (ShaderPlatform) {
+        case SP_PCD3D_SM5: return TEXT("PCD3D_SM5");
+        case SP_OPENGL_SM4: return TEXT("OPENGL_SM4");
+        case SP_PS4: return TEXT("OPENGL_SM4");
+        case SP_OPENGL_PCES2: return TEXT("OPENGL_PCES2");
+        case SP_XBOXONE_D3D12: return TEXT("XBOXONE_D3D12");
+        case SP_PCD3D_SM4: return TEXT("PCD3D_SM4");
+        case SP_OPENGL_SM5: return TEXT("OPENGL_SM5");
+        case SP_PCD3D_ES2: return TEXT("PCD3D_ES2");
+        case SP_OPENGL_ES2_ANDROID: return TEXT("OPENGL_ES2_ANDROID");
+        case SP_OPENGL_ES2_WEBGL: return TEXT("OPENGL_ES2_WEBGL");
+        case SP_OPENGL_ES2_IOS: return TEXT("OPENGL_ES2_IOS");
+        case SP_METAL: return TEXT("METAL");
+        case SP_METAL_MRT: return TEXT("METAL_MRT");
+        case SP_METAL_TVOS: return TEXT("METAL_TVOS");
+        case SP_METAL_MRT_TVOS: return TEXT("METAL_MRT_TVOS");
+        case SP_OPENGL_ES31_EXT: return TEXT("OPENGL_ES31_EXT");
+        case SP_PCD3D_ES3_1: return TEXT("PCD3D_ES3_1");
+        case SP_OPENGL_PCES3_1: return TEXT("OPENGL_PCES3_1");
+        case SP_METAL_SM5: return TEXT("METAL_SM5");
+        case SP_VULKAN_PCES3_1: return TEXT("VULKAN_PCES3_1");
+        case SP_METAL_SM5_NOTESS: return TEXT("METAL_SM5_NOTESS");
+        case SP_VULKAN_SM4: return TEXT("VULKAN_SM4");
+        case SP_VULKAN_SM5: return TEXT("VULKAN_SM5");
+        case SP_VULKAN_ES3_1_ANDROID: return TEXT("VULKAN_ES3_1_ANDROID");
+        case SP_METAL_MACES3_1: return TEXT("METAL_MACES3_1");
+        case SP_METAL_MACES2: return TEXT("METAL_MACES2");
+        case SP_OPENGL_ES3_1_ANDROID: return TEXT("OPENGL_ES3_1_ANDROID");
+        case SP_SWITCH: return TEXT("SWITCH");
+        case SP_SWITCH_FORWARD: return TEXT("SWITCH_FORWARD");
+        case SP_METAL_MRT_MAC: return TEXT("METAL_MRT_MAC");
+        default: checkf(0, TEXT("Unknown shader platform: %d"), ShaderPlatform); return TEXT("");
+    }
 }
 
 

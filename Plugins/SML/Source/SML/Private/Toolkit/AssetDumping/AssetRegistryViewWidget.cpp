@@ -217,7 +217,7 @@ SAssetRegistryViewWidget::SAssetRegistryViewWidget() {
 void SAssetRegistryViewWidget::Construct(const FArguments& InArgs) {
     ChildSlot[
         SNew(STreeView<TSharedPtr<FAssetTreeNode>>)
-		.HeaderRow(
+        .HeaderRow(
                                                        SNew(SHeaderRow)
                                                        + SHeaderRow::Column(TEXT("ShouldDump"))
                                                          .DefaultLabel(LOCTEXT("AssetDumper_ColumnShouldDump", "Dump"))
@@ -232,7 +232,7 @@ void SAssetRegistryViewWidget::Construct(const FArguments& InArgs) {
                                                          .HAlignCell(HAlign_Left)
                                                          .HAlignHeader(HAlign_Center)
                                                    )
-		.SelectionMode(ESelectionMode::None)
+        .SelectionMode(ESelectionMode::None)
         .OnGenerateRow_Raw(this, &SAssetRegistryViewWidget::OnCreateRow)
         .OnGetChildren_Raw(this, &SAssetRegistryViewWidget::GetNodeChildren)
         .TreeItemsSource(&this->RootAssetPaths)
@@ -271,12 +271,12 @@ TSharedRef<SWidget> SAssetTreeNodeRow::GenerateWidgetForColumn(const FName& InCo
         return SNullWidget::NullWidget;
     }
     return SNew(SCheckBox)
-		.IsChecked_Lambda(
+        .IsChecked_Lambda(
                               [this]() {
                                   return TreeNode->IsChecked() ? ECheckBoxState::Checked : ECheckBoxState::Unchecked;
                               }
                           )
-		.OnCheckStateChanged_Lambda(
+        .OnCheckStateChanged_Lambda(
                               [this](ECheckBoxState NewState) {
                                   const bool bIsChecked = NewState == ECheckBoxState::Checked;
                                   TreeNode->UpdateSelectedState(bIsChecked, false);
@@ -289,12 +289,12 @@ TSharedRef<ITableRow> SAssetRegistryViewWidget::OnCreateRow(const TSharedPtr<FAs
 }
 
 #define CHECK_AND_LOG_PARAM(ParamName, TitleText) \
-	if (ParamName.Num()) { \
-		UE_LOG(LogSatisfactoryModLoader, Display, TitleText); \
-		for (const decltype(ParamName)::ElementType& Element : ParamName) { \
-			UE_LOG(LogSatisfactoryModLoader, Display, TEXT("- %s"), *FAssetTypeSerializerMacros_Internals::ValueToString<decltype(ParamName)::ElementType>(Element)); \
-		} \
-	}
+    if (ParamName.Num()) { \
+        UE_LOG(LogSatisfactoryModLoader, Display, TitleText); \
+        for (const decltype(ParamName)::ElementType& Element : ParamName) { \
+            UE_LOG(LogSatisfactoryModLoader, Display, TEXT("- %s"), *FAssetTypeSerializerMacros_Internals::ValueToString<decltype(ParamName)::ElementType>(Element)); \
+        } \
+    }
 
 void FSelectedAssetsStruct::LogSettings() {
     UE_LOG(LogSatisfactoryModLoader, Display, TEXT("================= BEGIN SETTINGS FOR ASSET GATHERER ================"));

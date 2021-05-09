@@ -23,7 +23,7 @@ void FNativeHookManagerInternal::SetHandlerListInstanceInternal(void* RealFuncti
 }
 
 #define CHECK_FUNCHOOK_ERR(arg) \
-	if (arg != FUNCHOOK_ERROR_SUCCESS) UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking function %s failed: funchook failed: %hs"), *DebugSymbolName, funchook_error_message(funchook));
+    if (arg != FUNCHOOK_ERROR_SUCCESS) UE_LOG(LogNativeHookManager, Fatal, TEXT("Hooking function %s failed: funchook failed: %hs"), *DebugSymbolName, funchook_error_message(funchook));
 
 void LogDebugAssemblyAnalyzer(const ANSICHAR* Message) {
     UE_LOG(LogNativeHookManager, Display, TEXT("AssemblyAnalyzer Debug: %hs"), Message);

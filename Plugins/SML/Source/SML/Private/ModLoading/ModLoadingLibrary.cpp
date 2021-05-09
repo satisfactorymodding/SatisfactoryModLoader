@@ -156,9 +156,9 @@ bool UModLoadingLibrary::IsPluginAMod(IPlugin& Plugin) {
     }
     // Project plugins are considered mods too when we're built with editor
 #if WITH_EDITOR
-	if (Plugin.GetType() == EPluginType::Project) {
-		return true;
-	}
+    if (Plugin.GetType() == EPluginType::Project) {
+        return true;
+    }
 #endif
     return false;
 }

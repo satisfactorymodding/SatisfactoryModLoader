@@ -68,6 +68,6 @@ public:
     virtual void UpdateOperation(FLatentResponse& Response) override;
 
 #if WITH_EDITOR
-	virtual FString GetDescription() const override;
+    virtual FString GetDescription() const override;
 #endif
 };

@@ -13,11 +13,11 @@ TSharedPtr<SWindow> FGameEditorHelper::GetMainWindow() {
         return GameEngine->GameViewportWindow.Pin();
     }
 #if WITH_EDITOR
-	// Try to use Mainframe module now, if we are built with editor
-	if(FModuleManager::Get().IsModuleLoaded("MainFrame")) {
-		IMainFrameModule& MainFrame = FModuleManager::LoadModuleChecked<IMainFrameModule>("MainFrame");
-		return MainFrame.GetParentWindow();
-	}
+    // Try to use Mainframe module now, if we are built with editor
+    if(FModuleManager::Get().IsModuleLoaded("MainFrame")) {
+        IMainFrameModule& MainFrame = FModuleManager::LoadModuleChecked<IMainFrameModule>("MainFrame");
+        return MainFrame.GetParentWindow();
+    }
 #endif
     checkf(0, TEXT("GetMainWindow called before engine is initialized"));
     return NULL;

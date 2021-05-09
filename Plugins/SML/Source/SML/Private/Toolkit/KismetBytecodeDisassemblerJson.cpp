@@ -996,7 +996,7 @@ float FKismetBytecodeDisassemblerJson::ReadFloat(int32& ScriptIndex) {
 
 CodeSkipSizeType FKismetBytecodeDisassemblerJson::ReadSkipCount(int32& ScriptIndex) {
 #if SCRIPT_LIMIT_BYTECODE_TO_64KB
-	return ReadWord(ScriptIndex);
+    return ReadWord(ScriptIndex);
 #else
     static_assert(sizeof(CodeSkipSizeType) == 4, "Update this code as size changed.");
     return ReadInt(ScriptIndex);

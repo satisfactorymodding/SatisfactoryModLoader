@@ -28,8 +28,8 @@ UClass* FClassGenerator::GenerateSimpleClass(const TCHAR* PackageName, const TCH
     ConstructedClassObject->SetSuperStruct(ParentClass);
     ConstructedClassObject->ClassWithin = UObject::StaticClass();
 #if WITH_EDITOR
-	// Field with cpp type info only exists in editor, in shipping SetCppTypeInfoStatic is empty
-	ConstructedClassObject->SetCppTypeInfoStatic(&TypeInfoStatic);
+    // Field with cpp type info only exists in editor, in shipping SetCppTypeInfoStatic is empty
+    ConstructedClassObject->SetCppTypeInfoStatic(&TypeInfoStatic);
 #endif
     // Register pending object, apply class flags, set static type info and link it
     ConstructedClassObject->RegisterDependencies();
