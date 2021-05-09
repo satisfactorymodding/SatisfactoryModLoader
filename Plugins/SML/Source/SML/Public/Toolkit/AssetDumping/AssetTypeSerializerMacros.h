@@ -35,12 +35,12 @@ struct FAssetTypeSerializerMacros_ToStringHelper;
 
 template<>
 struct FAssetTypeSerializerMacros_ToStringHelper<FString> {
-	FORCEINLINE static FString ValueToString(const FString& SourceValue) { return SourceValue; }
+    FORCEINLINE static FString ValueToString(const FString& SourceValue) { return SourceValue; }
 };
 
 template<>
 struct FAssetTypeSerializerMacros_ToStringHelper<FName> {
-	FORCEINLINE static FString ValueToString(const FName& SourceValue) { return SourceValue.ToString(); }
+    FORCEINLINE static FString ValueToString(const FName& SourceValue) { return SourceValue.ToString(); }
 };
 
 #define SERIALIZE_STRUCT_MAP(VariableName, MapValue) \
@@ -54,30 +54,31 @@ struct FAssetTypeSerializerMacros_ToStringHelper<FName> {
 
 struct FAssetTypeSerializerMacros_Internals {
 private:
-	template<typename T>
-	static UStruct* GetStaticStructOrClass(std::true_type) {
-		return T::StaticClass();
-	}
+    template<typename T>
+    static UStruct* GetStaticStructOrClass(std::true_type) {
+        return T::StaticClass();
+    }
 
-	template<typename T>
-	static UStruct* GetStaticStructOrClass(std::false_type) {
-		return T::StaticStruct();
-	}
+    template<typename T>
+    static UStruct* GetStaticStructOrClass(std::false_type) {
+        return T::StaticStruct();
+    }
+
 public:
-	template<typename T>
-	static FString ValueToString(const T& SourceValue) {
-		return FAssetTypeSerializerMacros_ToStringHelper<T>::ValueToString(SourceValue);
-	}
-	
-	template<typename T>
-    static UScriptStruct* GetScriptStruct() {
-		return T::StaticStruct();
-	}
+    template<typename T>
+    static FString ValueToString(const T& SourceValue) {
+        return FAssetTypeSerializerMacros_ToStringHelper<T>::ValueToString(SourceValue);
+    }
 
-	template<typename T>
+    template<typename T>
+    static UScriptStruct* GetScriptStruct() {
+        return T::StaticStruct();
+    }
+
+    template<typename T>
     static UStruct* GetStaticStructOrClass() {
-		return GetStaticStructOrClass<T>(std::is_base_of<UObject, T>());
-	}
+        return GetStaticStructOrClass<T>(std::is_base_of<UObject, T>());
+    }
 };
 
 #define DISABLE_SERIALIZATION(Class, PropertyName) \
