@@ -78,7 +78,7 @@ void UModKeyBindRegistry::RegisterModAxisBind(const FString& ModReference, FInpu
     //Try to find changed user settings for the key bind
     UFGGameUserSettings* UserSettings = UFGGameUserSettings::GetFGGameUserSettings();
     for (const FFGKeyMapping& KeyMap : UserSettings->GetKeyMappings()) {
-        if (KeyMap.IsAxisMapping) continue;
+        if (!KeyMap.IsAxisMapping) continue;
         if (KeyMap.AxisKeyMapping.AxisName == PositiveAxisMapping.AxisName) {
             if (KeyMap.AxisKeyMapping.Scale > 0) PositiveAxisMapping = KeyMap.AxisKeyMapping;
             if (KeyMap.AxisKeyMapping.Scale < 0) NegativeAxisMapping = KeyMap.AxisKeyMapping;
