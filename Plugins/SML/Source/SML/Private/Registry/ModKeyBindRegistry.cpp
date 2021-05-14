@@ -1,8 +1,10 @@
 #include "Registry/ModKeyBindRegistry.h"
+
+#include "FGGameUserSettings.h"
 #include "FGOptionsSettings.h"
 #include "GameFramework/InputSettings.h"
 
-void UModKeyBindRegistry::RegisterModKeyBind(const FString& ModReference, const FInputActionKeyMapping& KeyMapping, const FText& DisplayName) {
+void UModKeyBindRegistry::RegisterModKeyBind(const FString& ModReference, FInputActionKeyMapping KeyMapping, const FText& DisplayName) {
     UInputSettings* InputSettings = UInputSettings::GetInputSettings();
     UFGOptionsSettings* OptionsSettings = GetMutableDefault<UFGOptionsSettings>();
     const FString ModPrefix = FString::Printf(TEXT("%s."), *ModReference);
@@ -10,6 +12,16 @@ void UModKeyBindRegistry::RegisterModKeyBind(const FString& ModReference, const 
     //Ensure that we are prefixed by ModReference to allow unique identification
     const FString ActionName = KeyMapping.ActionName.ToString();
     checkf(ActionName.StartsWith(ModPrefix), TEXT("RegisterModKeyBind called with ActionName not being prefixed by ModReference"));
+
+    //Try to find changed user settings for the key bind
+    UFGGameUserSettings* UserSettings = UFGGameUserSettings::GetFGGameUserSettings();
+    for (const FFGKeyMapping& KeyMap : UserSettings->GetKeyMappings()) {
+        if (KeyMap.IsAxisMapping) continue;
+        if (KeyMap.ActionKeyMapping.ActionName == KeyMapping.ActionName) {
+            KeyMapping = KeyMap.ActionKeyMapping;
+            break;
+        }
+    }
     
     //Check for uniqueness. We want mapping registered only one time
     TArray<FInputActionKeyMapping> MappingsAlreadyRegistered;
@@ -53,7 +65,7 @@ void PerformChecksForModAxisBindings(const FInputAxisKeyMapping& PositiveAxisMap
     checkf(PositiveAxisMapping.Key.IsGamepadKey() == NegativeAxisMapping.Key.IsGamepadKey(), TEXT("Negative and Positive mappings should be same type"));
 }
 
-void UModKeyBindRegistry::RegisterModAxisBind(const FString& ModReference, const FInputAxisKeyMapping& PositiveAxisMapping, const FInputAxisKeyMapping& NegativeAxisMapping, const FText& PositiveDisplayName, const FText& NegativeDisplayName) {
+void UModKeyBindRegistry::RegisterModAxisBind(const FString& ModReference, FInputAxisKeyMapping PositiveAxisMapping, FInputAxisKeyMapping NegativeAxisMapping, const FText& PositiveDisplayName, const FText& NegativeDisplayName) {
     UInputSettings* InputSettings = UInputSettings::GetInputSettings();
     UFGOptionsSettings* OptionsSettings = GetMutableDefault<UFGOptionsSettings>();
     const FString ModPrefix = FString::Printf(TEXT("%s."), *ModReference);
@@ -62,6 +74,16 @@ void UModKeyBindRegistry::RegisterModAxisBind(const FString& ModReference, const
     const FString AxisName = PositiveAxisMapping.AxisName.ToString();
     checkf(AxisName.StartsWith(ModPrefix), TEXT("RegisterModAxisBind called with AxisName not being prefixed by ModReference"));
     PerformChecksForModAxisBindings(PositiveAxisMapping, NegativeAxisMapping);
+
+    //Try to find changed user settings for the key bind
+    UFGGameUserSettings* UserSettings = UFGGameUserSettings::GetFGGameUserSettings();
+    for (const FFGKeyMapping& KeyMap : UserSettings->GetKeyMappings()) {
+        if (!KeyMap.IsAxisMapping) continue;
+        if (KeyMap.AxisKeyMapping.AxisName == PositiveAxisMapping.AxisName) {
+            if (KeyMap.AxisKeyMapping.Scale > 0) PositiveAxisMapping = KeyMap.AxisKeyMapping;
+            if (KeyMap.AxisKeyMapping.Scale < 0) NegativeAxisMapping = KeyMap.AxisKeyMapping;
+        }
+    }
 
     //Ensure we don't have duplicate axis mappings already registered
     TArray<FInputAxisKeyMapping> MappingsAlreadyRegistered;

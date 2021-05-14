@@ -17,7 +17,7 @@ public:
      * @param DisplayName Name of the key binding used for options/controls menu
      */
     UFUNCTION(BlueprintCallable)
-    static void RegisterModKeyBind(const FString& ModReference, const FInputActionKeyMapping& KeyMapping, const FText& DisplayName);
+    static void RegisterModKeyBind(const FString& ModReference, FInputActionKeyMapping KeyMapping, const FText& DisplayName);
 
     /**
      * Registers given axis key mappings and associate them with given mod reference
@@ -34,5 +34,5 @@ public:
      * @param NegativeDisplayName Name of the negative axis binding for options/controls menu
      */
     UFUNCTION(BlueprintCallable)
-    static void RegisterModAxisBind(const FString& ModReference, const FInputAxisKeyMapping& PositiveAxisMapping, const FInputAxisKeyMapping& NegativeAxisMapping, const FText& PositiveDisplayName, const FText& NegativeDisplayName);
+    static void RegisterModAxisBind(const FString& ModReference, FInputAxisKeyMapping PositiveAxisMapping, FInputAxisKeyMapping NegativeAxisMapping, const FText& PositiveDisplayName, const FText& NegativeDisplayName);
 };

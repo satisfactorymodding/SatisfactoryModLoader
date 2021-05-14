@@ -4,9 +4,9 @@
 
 class FAlpakitCommands : public TCommands<FAlpakitCommands> {
 public:
-	FAlpakitCommands();
+    FAlpakitCommands();
 
-	virtual void RegisterCommands() override;
+    virtual void RegisterCommands() override;
 public:
-	TSharedPtr<FUICommandInfo> OpenPluginWindow;
+    TSharedPtr<FUICommandInfo> OpenPluginWindow;
 };
