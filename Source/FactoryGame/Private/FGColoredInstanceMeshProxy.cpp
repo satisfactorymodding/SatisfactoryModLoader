@@ -12,5 +12,14 @@ void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister(); }
 void UFGColoredInstanceMeshProxy::SetColorSlot(uint8 colorSlotIndex){ }
 void UFGColoredInstanceMeshProxy::SetInstanced(bool setToInstanced){ }
 void UFGColoredInstanceMeshProxy::OnHiddenInGameChanged(){ }
-bool UFGColoredInstanceMeshProxy::ShouldCreateRenderState() const{ return bool(); }
+bool UFGColoredInstanceMeshProxy::ShouldCreateRenderState() const { 
+#if WITH_EDITOR // Ensure visibility in blueprint & editor.
+    if( GetWorld()->WorldType == EWorldType::Editor || GetWorld()->WorldType == EWorldType::EditorPreview)
+    {
+        return true;
+    }
+#endif    
+    // only create when its blocking instancing.
+    return mBlockInstancing;
+}
 void UFGColoredInstanceMeshProxy::InstantiateInternal(){ }
