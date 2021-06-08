@@ -10,11 +10,10 @@ UCP_Integer::UCP_Integer() {
 TArray<FName> UCP_Integer::GetEnumNames() const {
 	if (EnumClass) {
 		TArray<FName> Out;
-		for (int32 i = 0; i < EnumClass->NumEnums(); i++)
-			Out.Add(EnumClass->GetNameByIndex(i));
+		for (int32 i = 0; i < EnumClass->NumEnums(); i++) {
+			Out.Add(*EnumClass->GetDisplayNameTextByIndex(i).ToString());
+		}
 		return Out;
 	}	
 	return TArray<FName>();
 }
-
-
