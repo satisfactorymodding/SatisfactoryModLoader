@@ -23,7 +23,7 @@ public:
     FString DisplayName;
 
     /** Tooltip visible to user hovering over this property */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property", meta = (MultiLine = true))
     FString Tooltip;
 
 	/** Whenever this value is only editable from main menu and disabled for editing in pause menu */
