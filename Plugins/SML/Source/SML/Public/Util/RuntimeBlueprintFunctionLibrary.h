@@ -28,6 +28,8 @@
  * 
  */
 
+DECLARE_DYNAMIC_DELEGATE_OneParam(FObjFunctionBind, UObject* , Object);
+
 
 
 UCLASS()
@@ -138,6 +140,11 @@ public:
 		/** Allows Font Editing. This needs to be called before PreConstruct. */
 		UFUNCTION(BlueprintCallable)
 		static void SetComboBoxFont(UComboBoxString* Box, FSlateFontInfo Font);
+
+		/** Allows Binding on BP Function. Function must be implemented in Blueprint */
+		UFUNCTION(BlueprintCallable)
+		static void BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName);
+	
 
 };
 

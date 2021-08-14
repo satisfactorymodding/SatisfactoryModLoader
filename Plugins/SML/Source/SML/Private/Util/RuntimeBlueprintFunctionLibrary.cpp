@@ -3,6 +3,9 @@
 #include "Util/RuntimeBlueprintFunctionLibrary.h"
 
 
+#include "Patching/BlueprintHookHelper.h"
+#include "Patching/BlueprintHookManager.h"
+
 
 UClass* URuntimeBlueprintFunctionLibrary::FindClassByName(FString ClassNameInput) {
 	// prevent crash from wrong user Input
@@ -337,4 +340,30 @@ void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSl
 	if (!Box)
 		return;
 	Box->Font = Font;
+}
+
+void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName)
+{
+		if(!Class)
+			return;
+		UFunction* Function = Class->FindFunctionByName(*FunctionName);
+		if (!Function || Function->IsNative())
+		{
+			if (!Function)
+			{
+				for (auto Prop = TFieldIterator<UFunction>(Class); Prop; ++Prop) {
+					if (!Prop)
+						continue;
+					UE_LOG(LogTemp, Error, TEXT("FunctionName : %s"), *Prop->GetName())
+				}
+			}
+			else
+				UE_LOG(LogTemp, Error, TEXT("Was not able to Bind on Function : %s Function is Native"), *FunctionName);
+
+			return;
+		}
+		UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
+		HookManager->HookBlueprintFunction(Function, [Binding](FBlueprintHookHelper& HookHelper) {
+            Binding.ExecuteIfBound(HookHelper.GetContext());
+        }, EPredefinedHookOffset::Return);
 }
