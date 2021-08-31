@@ -19,10 +19,10 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 
     ChildSlot[
         SNew(SHorizontalBox)
-        + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
+        + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
             Checkbox.ToSharedRef()
         ]
-        + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0)[
+        + SHorizontalBox::Slot().AutoWidth().Padding(0, 0, 5, 0).VAlign(VAlign_Center)[
             SNew(SButton)
             .Text(LOCTEXT("PackageModAlpakit", "Alpakit!"))
             .OnClicked_Lambda([this](){
@@ -33,7 +33,7 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
                 return FText::FromString(FString::Printf(TEXT("Alpakit %s"), *this->Mod->GetName()));
             })
         ]
-        + SHorizontalBox::Slot().FillWidth(1)[
+        + SHorizontalBox::Slot().FillWidth(1).VAlign(VAlign_Center)[
             SNew(STextBlock)
             .Text_Lambda([InMod]() {
                 const FString DisplayText = FString::Printf(TEXT("%s (%s)"), *InMod->GetDescriptor().FriendlyName, *InMod->GetName());
