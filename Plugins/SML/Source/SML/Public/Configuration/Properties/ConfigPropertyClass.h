@@ -11,7 +11,7 @@ public:
     bool bLimitBaseClass;
     
     /** Base class that values of this type should have */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "bLimitBaseClass"), Category = "Configuration Property")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "bLimitBaseClass",AllowAbstract = "true"), Category = "Configuration Property")
     UClass* BaseClass;
 
     /** Whenever to allow NULL class value on this property. If NULL is not allowed, it will fallback to default value instead */
@@ -19,7 +19,7 @@ public:
     bool bAllowNullValue;
 
     /** Current value of this class property. DO NOT SET DIRECTLY, USE SetClassValue */
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Configuration Property")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowAbstract = "true"), Category = "Configuration Property")
     UClass* Value;
 
     UConfigPropertyClass();

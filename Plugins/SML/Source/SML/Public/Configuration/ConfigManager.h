@@ -87,6 +87,8 @@ private:
     
     void OnTimerManagerAvailable(class FTimerManager* TimerManager);
 
+    void OnConfigMarkedDirty(FTimerManager* TimerManager);
+
     /** Saves configuration with specified id into the file system */
     void SaveConfigurationInternal(const FConfigId& ConfigId);
 
@@ -109,4 +111,7 @@ private:
         P_FINISH;
         P_THIS->FillConfigurationStruct(ConfigId, StructInfo);
     }
+	
+	
+	FTimerHandle SaveToDiskTimerHandle;
 };
