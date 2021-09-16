@@ -1,10 +1,7 @@
 #include "SatisfactoryModLoader.h"
-#include "Toolkit/AssetTypes/AssetHelper.h"
-#include "Toolkit/AssetTypes/FbxMeshExporter.h"
 #include "FGPlayerController.h"
 #include "Configuration/ConfigManager.h"
 #include "Tooltip/ItemTooltipSubsystem.h"
-#include "Toolkit/AssetTypes/MaterialAssetSerializer.h"
 #include "Registry/ModContentRegistry.h"
 #include "Network/NetworkHandler.h"
 #include "Registry/RemoteCallObjectRegistry.h"
@@ -15,7 +12,7 @@
 #include "Patching/Patch/OfflinePlayerHandler.h"
 #include "Patching/Patch/OptionsKeybindPatch.h"
 #include "Player/PlayerCheatManagerHandler.h"
-#include "Toolkit/OldToolkit/FGNativeClassDumper.h"
+// #include "Toolkit/OldToolkit/FGNativeClassDumper.h"
 
 #ifndef SML_BUILD_METADATA
 #define SML_BUILD_METADATA "unknown"
@@ -139,15 +136,6 @@ void FSatisfactoryModLoader::RegisterSubsystems() {
 
     //Register version checker for remote connections
     FSMLNetworkManager::RegisterMessageTypeAndHandlers();
-
-    //Initialize asset dumping and asset related stuff in cooked builds only
-    if (FPlatformProperties::RequiresCookedData()) {
-        //Make sure asset helper is set up correctly as it is needed for asset dumping
-        FAssetHelper::RunStaticTests();
-
-        //Register asset dumping related console commands
-        FGameNativeClassDumper::RegisterConsoleCommands();
-    }
 }
 
 void FSatisfactoryModLoader::PreInitializeModLoading() {
@@ -162,17 +150,6 @@ void FSatisfactoryModLoader::PreInitializeModLoading() {
     //changelist number is not actually correctly set, since it is built from scratch
     if (FPlatformProperties::RequiresCookedData()) {
         CheckGameVersion();
-    }
-
-    //Register these patches early so no materials/meshes loaded will skip them
-    //They will slow down game performance because of hooking in hot spots + extra memory consumption on CPU
-    //Same goes with UStaticMesh patch, it will increase memory usage on CPU and decrease loading speed
-    //We also do not need them in editor because asset dumping is cooked data-only
-    if (FPlatformProperties::RequiresCookedData()) {
-        if (SMLConfigurationPrivate.bDevelopmentMode) {
-            //UMaterialAssetSerializer::RegisterShaderInitRHIHook();
-            FFbxMeshExporter::RegisterStaticMeshCPUAccessHook();
-        }
     }
 
     //Show console if we have been asked to in configuration

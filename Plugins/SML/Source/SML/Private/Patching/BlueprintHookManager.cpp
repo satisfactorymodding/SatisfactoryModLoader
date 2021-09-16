@@ -3,7 +3,7 @@
 #include "Misc/FileHelper.h"
 #include "Serialization/JsonSerializer.h"
 #include "Serialization/JsonWriter.h"
-#include "Toolkit/KismetBytecodeDisassemblerJson.h"
+#include "Toolkit/KismetBytecodeDisassembler.h"
 
 //Whenever to debug blueprint hooking. When enabled, JSON files with script bytecode before and after installing hook will be generated
 #define DEBUG_BLUEPRINT_HOOKING 0
@@ -46,7 +46,7 @@ void UBlueprintHookManager::InstallBlueprintHook(UFunction* Function, int32 Hook
 	//Minimum amount of bytes required to insert unconditional jump with code offset
 	const int32 MinBytesRequired = 1 + sizeof(CodeSkipSizeType);
 
-	FKismetBytecodeDisassemblerJson Disassembler;
+	FSMLKismetBytecodeDisassembler Disassembler;
 	int32 BytesAvailable = 0;
 	
 	//Walk over statements until we collect enough bytes for a replacement
@@ -124,7 +124,7 @@ int32 UBlueprintHookManager::PreProcessHookOffset(UFunction* Function, int32 Hoo
 		//For now Kismet Compiler will always generate only one Return node, so all
 		//execution paths will end up either with executing it directly or jumping to it
 		//So we need to hook only in one place to handle all possible execution paths
-		FKismetBytecodeDisassemblerJson Disassembler;
+		FSMLKismetBytecodeDisassembler Disassembler;
 		int32 ReturnOffset;
 		const bool bIsValid = Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ReturnOffset);
 		checkf(bIsValid, TEXT("EX_Return not found for function %s"), *Function->GetPathName());
@@ -142,7 +142,7 @@ void FFunctionHookInfo::InvokeBlueprintHook(FFrame& Frame, int32 HookOffset) {
 }
 
 void FFunctionHookInfo::RecalculateReturnStatementOffset(UFunction* Function) {
-	FKismetBytecodeDisassemblerJson Disassembler;
+	FSMLKismetBytecodeDisassembler Disassembler;
 	int32 ReturnInstructionOffset;
 	Disassembler.FindFirstStatementOfType(Function, 0, EX_Return, ReturnInstructionOffset);
 	this->ReturnStatementOffset = ReturnInstructionOffset;

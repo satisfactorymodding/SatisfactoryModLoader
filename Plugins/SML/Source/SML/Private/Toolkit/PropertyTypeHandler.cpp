@@ -36,7 +36,7 @@ UObject* DeserializeObjectRef(const FString& ObjectPath, UClass* SelfScope) {
 	return LoadedObject;
 }
 
-FEdGraphPinType FPropertyTypeHelper::DeserializeGraphPinType(const TSharedRef<FJsonObject>& PinJson, UClass* SelfScope) {
+FEdGraphPinType FSMLPropertyTypeHelper::DeserializeGraphPinType(const TSharedRef<FJsonObject>& PinJson, UClass* SelfScope) {
 
 	FEdGraphPinType GraphPinType;
 	GraphPinType.PinCategory = *PinJson->GetStringField(TEXT("PinCategory"));
@@ -94,7 +94,7 @@ FString SerializeObjectRef(UObject* Object, UClass* SelfScope) {
 	return SelfScope && Object == SelfScope ? TEXT("<SELF>") : Object->GetPathName();
 }
 
-TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGraphPinType& GraphPinType, UClass* SelfScope) {
+TSharedRef<FJsonObject> FSMLPropertyTypeHelper::SerializeGraphPinType(const FEdGraphPinType& GraphPinType, UClass* SelfScope) {
 
 	TSharedRef<FJsonObject> TypeEntry = MakeShareable(new FJsonObject());
 	TypeEntry->SetStringField(TEXT("PinCategory"), GraphPinType.PinCategory.ToString());
@@ -151,7 +151,7 @@ TSharedRef<FJsonObject> FPropertyTypeHelper::SerializeGraphPinType(const FEdGrap
 
 bool GetPropertyCategoryInfo(const FProperty* TestProperty, FName& OutCategory, FName& OutSubCategory, UObject*& OutSubCategoryObject, bool& bOutIsWeakPointer);
 
-bool FPropertyTypeHelper::ConvertPropertyToPinType(const FProperty* Property, /*out*/ FEdGraphPinType& TypeOut) {
+bool FSMLPropertyTypeHelper::ConvertPropertyToPinType(const FProperty* Property, /*out*/ FEdGraphPinType& TypeOut) {
 	if (Property == nullptr) {
 		TypeOut.PinCategory = TEXT("bad_type");
 		return false;

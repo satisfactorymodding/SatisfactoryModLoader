@@ -414,3 +414,7 @@ HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerBefore(Hand
 #define SUBSCRIBE_METHOD_VIRTUAL_AFTER(MethodReference, SampleObjectInstance, Handler) \
 HookInvoker<decltype(&MethodReference), &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
 HookInvoker<decltype(&MethodReference), &MethodReference>::addHandlerAfter(Handler);
+
+#define SUBSCRIBE_METHOD_EXPLICIT_VIRTUAL_AFTER(MethodSignature, MethodReference, SampleObjectInstance, Handler) \
+HookInvoker<MethodSignature, &MethodReference>::InstallHook(TEXT(#MethodReference), SampleObjectInstance); \
+HookInvoker<MethodSignature, &MethodReference>::addHandlerAfter(Handler);

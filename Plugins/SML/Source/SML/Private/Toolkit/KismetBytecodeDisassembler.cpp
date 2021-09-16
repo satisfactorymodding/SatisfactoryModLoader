@@ -1,8 +1,8 @@
-#include "Toolkit/KismetBytecodeDisassemblerJson.h"
+#include "Toolkit/KismetBytecodeDisassembler.h"
 #include "Serialization/JsonSerializer.h"
 #include "Toolkit/PropertyTypeHandler.h"
 
-TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int32& ScriptIndex) {
+TSharedPtr<FJsonObject> FSMLKismetBytecodeDisassembler::SerializeExpression(int32& ScriptIndex) {
 	EExprToken Opcode = (EExprToken) ReadByte(ScriptIndex);
 	TSharedPtr<FJsonObject> Result = MakeShareable(new FJsonObject());
 	
@@ -50,12 +50,12 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		}
 	case EX_SetConst:
 		{
-			UProperty* InnerProp = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* InnerProp = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
 
 			Result->SetStringField(TEXT("Inst"), TEXT("SetConst"));
-			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			Result->SetObjectField(TEXT("InnerProperty"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
 			ReadInt(ScriptIndex); //Skip element amount
@@ -93,15 +93,15 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("MapConst"));
 
-			UProperty* KeyProp = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* KeyProp = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType KeyPropPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(KeyProp, KeyPropPinType);
-			Result->SetObjectField(TEXT("KeyProperty"), FPropertyTypeHelper::SerializeGraphPinType(KeyPropPinType, SelfScope.Get()));
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(KeyProp, KeyPropPinType);
+			Result->SetObjectField(TEXT("KeyProperty"), FSMLPropertyTypeHelper::SerializeGraphPinType(KeyPropPinType, SelfScope.Get()));
 				
-			UProperty* ValProp = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* ValProp = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType ValuePropPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(ValProp, ValuePropPinType);
-			Result->SetObjectField(TEXT("ValueProperty"), FPropertyTypeHelper::SerializeGraphPinType(ValuePropPinType, SelfScope.Get()));
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(ValProp, ValuePropPinType);
+			Result->SetObjectField(TEXT("ValueProperty"), FSMLPropertyTypeHelper::SerializeGraphPinType(ValuePropPinType, SelfScope.Get()));
 				
 			TArray<TSharedPtr<FJsonValue>> Values;
 			ReadInt(ScriptIndex); //Skip element amount
@@ -185,12 +185,12 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("LetValueOnPersistentFrame"));
 
-			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* Property = ReadPointer<FProperty>(ScriptIndex);
 			Result->SetStringField(TEXT("PropertyName"), Property->GetName());
 
 			FEdGraphPinType PropertyType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyType);
-			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyType, SelfScope.Get()));
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyType);
+			Result->SetObjectField(TEXT("PropertyType"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyType, SelfScope.Get()));
 				
 			Result->SetObjectField(TEXT("Expression"), SerializeExpression(ScriptIndex));
 			break;	
@@ -199,10 +199,10 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("StructMemberContext"));
 
-			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* Property = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
-			Result->SetObjectField(TEXT("PropertyType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
+			Result->SetObjectField(TEXT("PropertyType"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("PropertyName"), Property->GetName());
 				
 			Result->SetObjectField(TEXT("StructExpression"), SerializeExpression(ScriptIndex));
@@ -273,11 +273,11 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("LocalVariable"));
 			
-			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* Property = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 				
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			Result->SetObjectField(TEXT("VariableType"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -285,11 +285,11 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("DefaultVariable"));
 			
-			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* Property = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 			
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			Result->SetObjectField(TEXT("VariableType"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -297,11 +297,11 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("InstanceVariable"));
 			
-			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* Property = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 				
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			Result->SetObjectField(TEXT("VariableType"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -309,11 +309,11 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		{
 			Result->SetStringField(TEXT("Inst"), TEXT("LocalOutVariable"));
 			
-			UProperty* Property = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* Property = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(Property, PropertyPinType);
 				
-			Result->SetObjectField(TEXT("VariableType"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			Result->SetObjectField(TEXT("VariableType"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 			Result->SetStringField(TEXT("VariableName"), Property->GetName());
 			break;
 		}
@@ -477,11 +477,11 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			Result->SetNumberField(TEXT("SkipOffsetForNull"), SkipCount);
 				
 			// Property corresponding to the r-value data, in case the l-value needs to be mem-zero'd
-			UProperty* Field = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* Field = ReadPointer<FProperty>(ScriptIndex);
 			if (Field) {
 				FEdGraphPinType FieldPinType;
-				FPropertyTypeHelper::ConvertPropertyToPinType(Field, FieldPinType);
-				Result->SetObjectField(TEXT("RValuePropertyType"), FPropertyTypeHelper::SerializeGraphPinType(FieldPinType, SelfScope.Get()));
+				FSMLPropertyTypeHelper::ConvertPropertyToPinType(Field, FieldPinType);
+				Result->SetObjectField(TEXT("RValuePropertyType"), FSMLPropertyTypeHelper::SerializeGraphPinType(FieldPinType, SelfScope.Get()));
 				Result->SetStringField(TEXT("RValuePropertyName"), Field->GetName());
 			}
 			
@@ -675,7 +675,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 			//Enumerate over structure properties and sort them by property names
 			TSharedPtr<FJsonObject> Properties = MakeShareable(new FJsonObject());
 
-			for(UProperty* StructProp = Struct->PropertyLink; StructProp; StructProp = StructProp->PropertyLinkNext) {
+			for(FProperty* StructProp = Struct->PropertyLink; StructProp; StructProp = StructProp->PropertyLinkNext) {
 				// Skip transient and editor only properties, this needs to be synched with KismetCompilerVMBackend and ScriptCore
 				if (StructProp->PropertyFlags & CPF_Transient || (!bIsEditorOnlyStruct && StructProp->PropertyFlags & CPF_EditorOnly)) {
 					continue;
@@ -709,12 +709,12 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 		}
 	case EX_ArrayConst:
 		{
-			UProperty* InnerProp = ReadPointer<UProperty>(ScriptIndex);
+			FProperty* InnerProp = ReadPointer<FProperty>(ScriptIndex);
 			FEdGraphPinType PropertyPinType;
-			FPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
+			FSMLPropertyTypeHelper::ConvertPropertyToPinType(InnerProp, PropertyPinType);
 
 			Result->SetStringField(TEXT("Inst"), TEXT("ArrayConst"));
-			Result->SetObjectField(TEXT("InnerProperty"), FPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
+			Result->SetObjectField(TEXT("InnerProperty"), FSMLPropertyTypeHelper::SerializeGraphPinType(PropertyPinType, SelfScope.Get()));
 
 			TArray<TSharedPtr<FJsonValue>> Values;
 			ReadInt(ScriptIndex); //Skip element amount
@@ -968,7 +968,7 @@ TSharedPtr<FJsonObject> FKismetBytecodeDisassemblerJson::SerializeExpression(int
 	return Result;
 }
 
-TArray<TSharedPtr<FJsonValue>> FKismetBytecodeDisassemblerJson::SerializeFunction(UStruct* Function) {
+TArray<TSharedPtr<FJsonValue>> FSMLKismetBytecodeDisassembler::SerializeFunction(UStruct* Function) {
 	this->Script = Function->Script;
 	this->SelfScope = Function->GetTypedOuter<UClass>();
 
@@ -987,7 +987,7 @@ TArray<TSharedPtr<FJsonValue>> FKismetBytecodeDisassemblerJson::SerializeFunctio
 	return Statements;
 }
 
-bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UStruct* Function, int32 StartScriptIndex, uint8 ExpectedStatementOpcode, int32& OutStatementIndex) {
+bool FSMLKismetBytecodeDisassembler::FindFirstStatementOfType(UStruct* Function, int32 StartScriptIndex, uint8 ExpectedStatementOpcode, int32& OutStatementIndex) {
 	this->Script = Function->Script;
 	this->SelfScope = Function->GetTypedOuter<UClass>();
 
@@ -1007,7 +1007,7 @@ bool FKismetBytecodeDisassemblerJson::FindFirstStatementOfType(UStruct* Function
 	return false;
 }
 
-bool FKismetBytecodeDisassemblerJson::GetStatementLength(UStruct* Function, int32 ExpectedStatementIndex, int32& OutStatementLength) {
+bool FSMLKismetBytecodeDisassembler::GetStatementLength(UStruct* Function, int32 ExpectedStatementIndex, int32& OutStatementLength) {
 	this->Script = Function->Script;
 	this->SelfScope = Function->GetTypedOuter<UClass>();
 
@@ -1027,7 +1027,7 @@ bool FKismetBytecodeDisassemblerJson::GetStatementLength(UStruct* Function, int3
 }
 
 
-int32 FKismetBytecodeDisassemblerJson::ReadInt(int32& ScriptIndex) {
+int32 FSMLKismetBytecodeDisassembler::ReadInt(int32& ScriptIndex) {
 	int32 Value = Script[ScriptIndex]; ++ScriptIndex;
 	Value = Value | ((int32)Script[ScriptIndex] << 8); ++ScriptIndex;
 	Value = Value | ((int32)Script[ScriptIndex] << 16); ++ScriptIndex;
@@ -1036,7 +1036,7 @@ int32 FKismetBytecodeDisassemblerJson::ReadInt(int32& ScriptIndex) {
 	return Value;
 }
 
-uint64 FKismetBytecodeDisassemblerJson::ReadQword(int32& ScriptIndex) {
+uint64 FSMLKismetBytecodeDisassembler::ReadQword(int32& ScriptIndex) {
 	uint64 Value = Script[ScriptIndex]; ++ScriptIndex;
 	Value = Value | ((uint64)Script[ScriptIndex] << 8); ++ScriptIndex;
 	Value = Value | ((uint64)Script[ScriptIndex] << 16); ++ScriptIndex;
@@ -1049,32 +1049,32 @@ uint64 FKismetBytecodeDisassemblerJson::ReadQword(int32& ScriptIndex) {
 	return Value;
 }
 
-uint8 FKismetBytecodeDisassemblerJson::ReadByte(int32& ScriptIndex) {
+uint8 FSMLKismetBytecodeDisassembler::ReadByte(int32& ScriptIndex) {
 	uint8 Value = Script[ScriptIndex]; ++ScriptIndex;
 
 	return Value;
 }
 
-FString FKismetBytecodeDisassemblerJson::ReadName(int32& ScriptIndex) {
+FString FSMLKismetBytecodeDisassembler::ReadName(int32& ScriptIndex) {
 	const FScriptName ConstValue = *(FScriptName*)(Script.GetData() + ScriptIndex);
 	ScriptIndex += sizeof(FScriptName);
 
 	return ScriptNameToName(ConstValue).ToString();
 }
 
-uint16 FKismetBytecodeDisassemblerJson::ReadWord(int32& ScriptIndex) {
+uint16 FSMLKismetBytecodeDisassembler::ReadWord(int32& ScriptIndex) {
 	uint16 Value = Script[ScriptIndex]; ++ScriptIndex;
 	Value = Value | ((uint16)Script[ScriptIndex] << 8); ++ScriptIndex;
 	return Value;
 }
 
-float FKismetBytecodeDisassemblerJson::ReadFloat(int32& ScriptIndex) {
+float FSMLKismetBytecodeDisassembler::ReadFloat(int32& ScriptIndex) {
 	union { float f; int32 i; } Result;
 	Result.i = ReadInt(ScriptIndex);
 	return Result.f;
 }
 
-CodeSkipSizeType FKismetBytecodeDisassemblerJson::ReadSkipCount(int32& ScriptIndex) {
+CodeSkipSizeType FSMLKismetBytecodeDisassembler::ReadSkipCount(int32& ScriptIndex) {
 #if SCRIPT_LIMIT_BYTECODE_TO_64KB
 	return ReadWord(ScriptIndex);
 #else
@@ -1083,7 +1083,7 @@ CodeSkipSizeType FKismetBytecodeDisassemblerJson::ReadSkipCount(int32& ScriptInd
 #endif
 }
 
-FString FKismetBytecodeDisassemblerJson::ReadString8(int32& ScriptIndex) {
+FString FSMLKismetBytecodeDisassembler::ReadString8(int32& ScriptIndex) {
 	FString Result;
 
 	do {
@@ -1094,7 +1094,7 @@ FString FKismetBytecodeDisassemblerJson::ReadString8(int32& ScriptIndex) {
 	return Result;
 }
 
-FString FKismetBytecodeDisassemblerJson::ReadString16(int32& ScriptIndex) {
+FString FSMLKismetBytecodeDisassembler::ReadString16(int32& ScriptIndex) {
 	FString Result;
 
 	do {
@@ -1105,7 +1105,7 @@ FString FKismetBytecodeDisassemblerJson::ReadString16(int32& ScriptIndex) {
 	return Result;
 }
 
-FString FKismetBytecodeDisassemblerJson::ReadString(int32& ScriptIndex) {
+FString FSMLKismetBytecodeDisassembler::ReadString(int32& ScriptIndex) {
 	const EExprToken Opcode = (EExprToken) Script[ScriptIndex++];
 
 	switch (Opcode) {

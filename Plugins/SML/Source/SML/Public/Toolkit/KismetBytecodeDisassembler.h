@@ -2,7 +2,7 @@
 #include "CoreMinimal.h"
 #include "Dom/JsonObject.h"
 
-class SML_API FKismetBytecodeDisassemblerJson {
+class SML_API FSMLKismetBytecodeDisassembler {
 public:
 	/** Converts a single expression into json object */
 	TSharedPtr<FJsonObject> SerializeExpression(int32& ScriptIndex);
