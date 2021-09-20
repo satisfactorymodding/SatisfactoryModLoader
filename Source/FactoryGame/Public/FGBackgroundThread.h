@@ -771,7 +771,7 @@ public:
 
 #if WITH_EDITORONLY_DATA
 	/* Preview actor to make it easier to place component(s) */
-	UPROPERTY(EditAnywhere, meta = ( AllowPrivateAccess = "true") )
+	UPROPERTY(EditAnywhere, meta = ( AllowPrivateAccess = "true" ) )
 	UChildActorComponent* mChildActorComponent;
 #endif
 	
@@ -799,7 +799,7 @@ class FACTORYGAME_API UFGPoolableProxyComponentBase : public UStaticMeshComponen
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //
 // Begin developer settings
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FACTORYGAME_API FFGPoolType
 {
 	GENERATED_BODY()
@@ -870,7 +870,8 @@ class FACTORYGAME_API UFGPoolSettings : public UDeveloperSettings
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditDefaultsOnly, config)
+	public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, config)
 	TArray< FFGPoolType > PoolEntry;
 		
 public:
