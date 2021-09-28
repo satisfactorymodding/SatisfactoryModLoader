@@ -6,7 +6,7 @@ UFGWidgetSwitcherInterface::UFGWidgetSwitcherInterface(const FObjectInitializer&
 UFGWidgetSwitcher::UFGWidgetSwitcher() : Super() {
 	this->mFadeOutTime = 0.25;
 }
-void UFGWidgetSwitcher::ReleaseSlateResources(bool bReleaseChildren){ }
+void UFGWidgetSwitcher::ReleaseSlateResources(bool bReleaseChildren){ Super::ReleaseSlateResources(bReleaseChildren); }
 void UFGWidgetSwitcher::RemoveFromParent(){ }
 void UFGWidgetSwitcher::SetActiveWidgetIndex(int32 index){ }
 void UFGWidgetSwitcher::SetActiveWidget(UWidget* widget){ }

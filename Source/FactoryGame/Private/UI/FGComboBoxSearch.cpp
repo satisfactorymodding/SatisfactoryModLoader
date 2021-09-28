@@ -19,7 +19,7 @@ FString UFGComboBoxSearch::GetSelectedOption() const{ return FString(); }
 int32 UFGComboBoxSearch::GetSelectedIndex() const{ return int32(); }
 int32 UFGComboBoxSearch::GetOptionCount() const{ return int32(); }
 bool UFGComboBoxSearch::IsOpen() const{ return bool(); }
-void UFGComboBoxSearch::ReleaseSlateResources(bool bReleaseChildren){ }
+void UFGComboBoxSearch::ReleaseSlateResources(bool bReleaseChildren){ Super::ReleaseSlateResources(bReleaseChildren); }
 void UFGComboBoxSearch::PostInitProperties(){ Super::PostInitProperties(); }
 void UFGComboBoxSearch::Serialize(FArchive& Ar){ Super::Serialize(Ar); }
 void UFGComboBoxSearch::PostLoad(){ Super::PostLoad(); }
