@@ -9,9 +9,6 @@
 #include "FGActorRepresentation.h"
 #include "FGPlayerState.generated.h"
 
-typedef TSharedPtr<class IHttpRequest> FHttpRequestPtr;
-typedef TSharedPtr<class IHttpResponse, ESPMode::ThreadSafe> FHttpResponsePtr;
-
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubclassOf< class UFGItemDescriptor >, itemDesc );
 
 DECLARE_DELEGATE( FOnHotbarReplicated );

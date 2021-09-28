@@ -262,7 +262,7 @@ public:
 
 	/** Camera shake to play when sprinting */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
-	TSubclassOf< class UCameraShake > mSprintHeadBobShake;
+	TSubclassOf< class UMatineeCameraShake > mSprintHeadBobShake;
 
 	//@todo Are these used by Joel or legacy?
 	/** Sound played when equipping */

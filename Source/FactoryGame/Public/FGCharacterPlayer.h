@@ -440,11 +440,11 @@ public:
 
 	/** Gets the camera bobbing animation we want to use when sprinting ( can vary with equipment ) */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
-	TSubclassOf< class UCameraShake > GetDesiredSprintHeadBobShake();
+	TSubclassOf< class UMatineeCameraShake > GetDesiredSprintHeadBobShake();
 
 	/** Gets the camera bobbing animation we want to use when walking ( can vary with equipment ) */
 	UFUNCTION( BlueprintCallable, Category = "Movement" )
-	TSubclassOf< class UCameraShake > GetDesiredWalkHeadBobShake();
+	TSubclassOf< class UMatineeCameraShake > GetDesiredWalkHeadBobShake();
 
 	/**Gets a precasted movement component. We should be able to optimzie this by ensuring that this component is the right type when assigning it and then do a free cast here ans have it faster. So making this way of fetching it now. Even though it's not really faster atm, it can be optimized later.*/
 	class UFGCharacterMovementComponent* GetFGMovementComponent();
@@ -1026,15 +1026,15 @@ private:
 	bool mWantsSprintBobbing;
 
 	/** Reference to the current head bob shake we should use */
-	TSubclassOf< class UCameraShake > mCurrentHeadBobShake;
+	TSubclassOf< class UMatineeCameraShake > mCurrentHeadBobShake;
 
 	/** Reference to the default walk head bob shake */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	TSubclassOf< class UCameraShake > mDefaultWalkHeadBobShake;
+	TSubclassOf< class UMatineeCameraShake > mDefaultWalkHeadBobShake;
 
 	/** Reference to the default sprint head bob shake */
 	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
-	TSubclassOf< class UCameraShake > mDefaultSprintHeadBobShake;
+	TSubclassOf< class UMatineeCameraShake > mDefaultSprintHeadBobShake;
 
 	/** Vehicle currently driven by pawn. */
 	UPROPERTY( ReplicatedUsing = OnRep_DrivenVehicle )

@@ -99,8 +99,8 @@ bool AFGCharacterPlayer::Server_ToggleSwitchControl_Validate( AFGBuildableRailro
 void AFGCharacterPlayer::TickDrownDamage(float delta){ }
 void AFGCharacterPlayer::TickHealthGeneration(float delta){ }
 UFGLadderComponent* AFGCharacterPlayer::GetCurrentLadderComponent(){ return nullptr; }
-TSubclassOf< class UCameraShake > AFGCharacterPlayer::GetDesiredSprintHeadBobShake(){ return TSubclassOf<class UCameraShake>(); }
-TSubclassOf< class UCameraShake > AFGCharacterPlayer::GetDesiredWalkHeadBobShake(){ return TSubclassOf<class UCameraShake>(); }
+TSubclassOf< class UMatineeCameraShake > AFGCharacterPlayer::GetDesiredSprintHeadBobShake(){ return TSubclassOf<class UMatineeCameraShake>(); }
+TSubclassOf< class UMatineeCameraShake > AFGCharacterPlayer::GetDesiredWalkHeadBobShake(){ return TSubclassOf<class UMatineeCameraShake>(); }
 UFGCharacterMovementComponent* AFGCharacterPlayer::GetFGMovementComponent(){ return nullptr; }
 void AFGCharacterPlayer::SetWantSprintBobbing(bool wantBobbing){ }
 FVector AFGCharacterPlayer::GetInventoryDropLocation_Implementation(const  UFGInventoryComponent* component, FInventoryStack stack){ return FVector(); }

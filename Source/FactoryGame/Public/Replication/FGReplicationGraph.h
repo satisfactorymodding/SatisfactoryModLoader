@@ -193,8 +193,8 @@ public:
 	virtual void TearDown() override;
 
 	// Custom CSS Notifies. These will only be called if the cell has bShouldNotifyStaticActorChanges == true. This is an empty function on the base GridCell
-	virtual void OnStaticActorPutIntoCell( const FNewReplicatedActorInfo& ActorInfo ) override;
-	virtual void OnStaticActorRemovedFromCell( const FNewReplicatedActorInfo& ActorInfo ) override;
+	virtual void OnStaticActorPutIntoCell( const FNewReplicatedActorInfo& ActorInfo ) /*override*/;
+	virtual void OnStaticActorRemovedFromCell( const FNewReplicatedActorInfo& ActorInfo ) /*override*/;
 
 	// --------------------------------------------------------
 	struct FSpatializationZone
