@@ -12,6 +12,17 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FArachnophobiaModeChangedDelegate, bool, isArachnophobiaMode );
 DECLARE_DYNAMIC_DELEGATE_OneParam( FOptionUpdated, FString, updatedCvar );
 
+/** Our representation of the graphics RHI. Used in options menu to select which RHI they want to use.
+ * We call it API because I believe that concept is more known than RHI.
+ */
+UENUM( BlueprintType )
+enum class EGraphicsAPI : uint8
+{
+	EGR_DX11		UMETA( DisplayName = "DirectX 11 - Default" ),
+	EGR_DX12		UMETA( DisplayName = "DirectX 12" ),
+	EGR_Vulkan		UMETA( DisplayName = "Vulkan"  )
+};
+
 /** Name and value combination for the options with audio */
 USTRUCT()
 struct FAudioVolumeMap
@@ -245,19 +256,26 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
 	FORCEINLINE FString GetSecondaryLanguage() const { return mSecondaryLanguage; }
 
+	/** Set the primary language of the game. The store primary language is also used for quick switch language functionality */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void SetPrimaryLanguage(FString language);
+
 	/** Set the secondary language for quick switch language functionality */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetSecondaryLanguage( FString language ) { mSecondaryLanguage = language; }
-
-	/** Set the primary language for quick switch language functionality */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-    void SetPrimaryLanguage( FString language ) { mPrimaryLanguage = language; }
+	void SetSecondaryLanguage(FString language);
 
 	/** Quick switch language between primary and secondary language */
 	void QuickSwitchLanguage();
 
 	/** Reset language to default language if it's been changed by quick switch. Used on exit to revert back changes */
 	void ResetLanguageToPrimary();
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	EGraphicsAPI GetCurrentActiveGraphicsAPI() const;
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	EGraphicsAPI GetCurrentConfigGraphicsAPI() const;
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
+	void SetCurrentConfigGraphicsAPI( EGraphicsAPI newGraphicsAPI );
 
 	/** Migrate old options to new system */
 	void HandleFGGameUserSettingsVersionChanged();

@@ -3,9 +3,7 @@
 #include "FGConveyorItemSubSystem.h"
 
 void FInstanceLODs::UpdateVisibility(int32 NumInstances){ }
-void FInstanceLODs::AddBucketInstance(int32 Num, AActor* Outer){ }
-void FInstanceLODs::UpdateBuffers(UTexture2D* PositionBuffer, UTexture2D* OrientationBuffer){ }
-void FInstanceLODs::Initialize(AActor* Outer, UStaticMesh* Mesh, int32 Row, int32 LodLevel, UTexture2D* PositionBuffer, UTexture2D* OrientationBuffer){ }
+void FInstanceLODs::AddBucketComponents(int32 Num, AActor* Outer){ }
 void FInstanceLODs::AddInstance_Internal(AActor* Outer){ }
 AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->mInitialPreAllocatedNumberOfItemTypes = 8;
@@ -14,7 +12,6 @@ AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->mItemInstanceUpdateThreshold = 64;
 	this->mItemTypeIncrementSize = 8;
 	this->mMaxParallelTasks = 10;
-	this->mMaxInstancesPerComponent = 64;
 	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = false; this->PrimaryActorTick.TickInterval = 0.0166666675359011;
 	this->bAlwaysRelevant = true;
 }
@@ -23,14 +20,14 @@ void AFGConveyorItemSubsystem::RegisterBelt(AFGBuildableConveyorBase* newBelt){ 
 void AFGConveyorItemSubsystem::UnRegisterBelt(AFGBuildableConveyorBase* removedBelt){ }
 void AFGConveyorItemSubsystem::Tick(float DeltaSeconds){ }
 void AFGConveyorItemSubsystem::BeginPlay(){ }
+bool AFGConveyorItemSubsystem::HandleDisabledState(){ return false; }
 void AFGConveyorItemSubsystem::ResolvedRegistered(){ }
 void AFGConveyorItemSubsystem::ResolveRemoved(){ }
 void AFGConveyorItemSubsystem::ResolveNewTypes(){ }
-void AFGConveyorItemSubsystem::ComputeViewCullAndDistance(const FVector PlayerLocation, FConveyorActorContainer< const AFGBuildableConveyorBelt* >* Conveyors, FConveyorActorContainer< const AFGBuildableConveyorLift* >* Lifts){ }
-void AFGConveyorItemSubsystem::GatherTransformData(const TArray<bool> DistancesToUpdate, const FConveyorActorContainer< const AFGBuildableConveyorBelt* >* Belt, FConveyorActorContainer< const AFGBuildableConveyorLift* >* Lifts){ }
-void AFGConveyorItemSubsystem::BuildTextures(const TArray<bool> DistancesToUpdate){ }
-bool AFGConveyorItemSubsystem::Resize(){ return bool(); }
-void AFGConveyorItemSubsystem::UpdateInstanceBounds(const TArray<bool> DistancesToUpdate){ }
-void AFGConveyorItemSubsystem::SubmitUpdateTask(const AActor* Pawn, const TArray< bool > LodsToUpdate){ }
+void AFGConveyorItemSubsystem::ComputeViewCullAndDistance(const FVector PlayerLocation, FConveyorActorContainer<AFGBuildableConveyorBelt*>* Conveyors, FConveyorActorContainer<AFGBuildableConveyorLift*>* Lifts) { }
+void AFGConveyorItemSubsystem::GatherTransformData(const TArray<bool> DistancesToUpdate, FConveyorActorContainer<AFGBuildableConveyorBelt*>* Belt, FConveyorActorContainer<AFGBuildableConveyorLift*>* Lifts) { }
+void AFGConveyorItemSubsystem::UpdateGPUData(const TArray<bool> DistancesToUpdate) { }
+void AFGConveyorItemSubsystem::UpdateBuckets() { }
 void AFGConveyorItemSubsystem::Cleanup(TArray< bool > LodsToUpdate){ }
 TArray< bool > AFGConveyorItemSubsystem::UpdateTimers(float DeltaTime){ return TArray<bool>(); }
+bool AFGConveyorItemSubsystem::mIsConveyorRendererActive = false;

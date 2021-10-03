@@ -79,6 +79,9 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
 	bool CanDoDefaultPrimaryFire();
 
+	UFUNCTION( BlueprintCallable, Category= "Equipment" )
+	virtual void DisableEquipment();
+    
 	/**
 	 * Is this equipment equipped.
 	 * @return - true if equiped; otherwise false.

@@ -14,6 +14,7 @@ AFGChainsaw::AFGChainsaw() : Super() {
 }
 void AFGChainsaw::Tick(float dt){ }
 bool AFGChainsaw::ShouldSaveState() const{ return bool(); }
+void AFGChainsaw::DisableEquipment() { Super::DisableEquipment(); }
 void AFGChainsaw::UnEquip(){ }
 void AFGChainsaw::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool AFGChainsaw::DoesPlayerHaveChainsawEquipped( AFGCharacterPlayer* player){ return bool(); }

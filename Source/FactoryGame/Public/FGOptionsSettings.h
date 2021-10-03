@@ -44,6 +44,13 @@ enum class EOptionGamemodeType : uint8
 	OGT_OnlyInGame				UMETA( DisplayName = "Only In Game" )
 };
 
+UENUM( BlueprintType )
+enum class EOptionRHIType : uint8
+{
+	ORT_Always					UMETA( DisplayName = "Always" ),
+	ORT_DisableForVulkan		UMETA( DisplayName = "Disable For Vulkan" )
+};
+
 USTRUCT( BlueprintType )
 struct FIntegerSelection
 {
@@ -89,6 +96,7 @@ public:
 		OptionApplyType( EOptionApplyType::OAT_Normal ),
 		NetmodeAvailability( EOptionNetmodeType::ONT_ServerAndClient ),
 		GamemodeAvailability( EOptionGamemodeType::OGT_Always ),
+		RHIAvailability( EOptionRHIType::ORT_Always ),
 		CustomWidgetClass( nullptr )
 	{
 	}
@@ -146,6 +154,9 @@ public:
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	EOptionGamemodeType GamemodeAvailability;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	EOptionRHIType RHIAvailability;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	TSubclassOf< class UFGOptionsValueController > CustomWidgetClass;

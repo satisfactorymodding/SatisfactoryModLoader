@@ -25,6 +25,7 @@ void AFGEquipment::OnDefaultPrimaryFirePressed(){ }
 void AFGEquipment::Server_DefaultPrimaryFire_Implementation(){ }
 bool AFGEquipment::Server_DefaultPrimaryFire_Validate(){ return bool(); }
 void AFGEquipment::DoDefaultPrimaryFire_Native(){ }
+void AFGEquipment::DisableEquipment() { }
 bool AFGEquipment::CanDoDefaultPrimaryFire_Implementation(){ return bool(); }
 AFGCharacterPlayer* AFGEquipment::GetInstigatorCharacter() const{ return nullptr; }
 bool AFGEquipment::IsLocalInstigator() const{ return bool(); }

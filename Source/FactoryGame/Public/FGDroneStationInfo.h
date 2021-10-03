@@ -166,6 +166,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Drone Station|Info" )
     TArray< AFGDroneStationInfo* > GetConnectedStations() const { return mConnectedStations; }
 
+	UFUNCTION( BlueprintPure, Category = "Drone Station|Info" )
+	const FVector& GetStationLocation() const { return mStationLocation; }
+
 	UFUNCTION( BlueprintCallable, Category = "Drone Station|Info" )
     void PairStation( AFGDroneStationInfo* otherStation );
 

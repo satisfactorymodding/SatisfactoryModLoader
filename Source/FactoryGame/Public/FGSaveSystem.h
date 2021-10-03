@@ -75,6 +75,9 @@ struct FACTORYGAME_API FSaveHeader
 		// @2021-03-24 Added Modding properties and support
 		AddedModdingParams,
 
+		// @2021-04-15 UE4.26 Engine Upgrade. FEditorObjectVersion Changes occurred
+		UE426EngineUpdate,
+
 		// -----<new versions can be added above this line>-----
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1 // Last version to use

@@ -45,6 +45,7 @@ public:
 
 	// Begin AFGEquipment interface
 	virtual bool ShouldSaveState() const override;
+	virtual void DisableEquipment() override;
 	virtual void UnEquip() override;
 	// End
 

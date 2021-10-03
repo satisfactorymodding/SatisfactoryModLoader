@@ -243,7 +243,7 @@ public:
 		}
 
 		UNetReplicationGraphConnection* RepGraphConnection;
-		float MaxRatePCT = 0.65f; // Maximum % of the total budget
+		float MaxRatePCT = 0.35f; // Maximum % of the total budget
 		float MinRatePCT = 0.15f; // Minimum % of the total budget
 		float DefaultRatePCT = 0.3f;
 		float CurrentRatePCT = 0.3f;

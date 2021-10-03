@@ -63,8 +63,13 @@ void UFGGameUserSettings::UnsubscribeToDynamicOptionUpdate(FString cvar, const F
 void UFGGameUserSettings::UnsubscribeToAllDynamicOptionUpdate(UObject* boundObject){ }
 TMap<FString, FText> UFGGameUserSettings::GetLanguageData(){ return TMap<FString,FText>(); }
 void UFGGameUserSettings::SetLanguageData(TMap<FString, FText> languageData){ }
+void UFGGameUserSettings::SetPrimaryLanguage(FString language){ }
+void UFGGameUserSettings::SetSecondaryLanguage(FString language){ }
 void UFGGameUserSettings::QuickSwitchLanguage(){ }
 void UFGGameUserSettings::ResetLanguageToPrimary(){ }
+EGraphicsAPI UFGGameUserSettings::GetCurrentActiveGraphicsAPI() const { return EGraphicsAPI::EGR_DX11; }
+EGraphicsAPI UFGGameUserSettings::GetCurrentConfigGraphicsAPI() const { return EGraphicsAPI::EGR_DX11; }
+void UFGGameUserSettings::SetCurrentConfigGraphicsAPI(EGraphicsAPI newGraphicsAPI) { }
 void UFGGameUserSettings::HandleFGGameUserSettingsVersionChanged(){ }
 void UFGGameUserSettings::DumpDynamicOptionsSettings(){ }
 void UFGGameUserSettings::GetOptionsDebugData(TArray<FString>& out_debugData){ }
