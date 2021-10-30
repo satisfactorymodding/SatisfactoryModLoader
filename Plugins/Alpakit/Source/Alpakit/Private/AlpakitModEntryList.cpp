@@ -12,7 +12,7 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
             SNew(SHorizontalBox)
             + SHorizontalBox::Slot().AutoWidth()[
                 SNew(SButton)
-                .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit All!"))
+                .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit Selected!"))
                 .OnClicked(this,& SAlpakitModEntryList::PackageAllMods)
             ]
         ]
@@ -125,7 +125,7 @@ FReply SAlpakitModEntryList::PackageAllMods() {
     TSharedPtr<SAlpakitModEntry> First;
     TArray<TSharedPtr<SAlpakitModEntry>> NextEntries;
 
-    UE_LOG(LogAlpakit, Display, TEXT("Alpakit All!"));
+    UE_LOG(LogAlpakit, Display, TEXT("Alpakit Selected!"));
 
     for (TSharedRef<IPlugin> Mod : FilteredMods) {
         UE_LOG(LogAlpakit, Display, TEXT("Collecting Plugin %s!"), *Mod->GetName());
