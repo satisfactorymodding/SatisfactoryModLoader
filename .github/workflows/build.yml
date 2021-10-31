@@ -6,8 +6,13 @@ on:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: self-hosted
     steps:
+      - name: Cleanup
+        run: |
+          Remove-Item SML -Recurse -Force -Confirm:$false -ErrorAction Ignore
+          Remove-Item ue4 -Recurse -Force -Confirm:$false -ErrorAction Ignore
+
       - uses: actions/checkout@v2
         with:
           path: SML
