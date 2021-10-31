@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGRailroadVehicle.h"
+#include "FGRailroadSignalBlock.h"
 #include "FGRailroadSubsystem.generated.h"
 
 
@@ -12,11 +14,26 @@
 DECLARE_STATS_GROUP( TEXT( "RailroadSubsystem" ), STATGROUP_RailroadSubsystem, STATCAT_Advanced );
 
 
+UCLASS()
+class FACTORYGAME_API UFGRailroadRemoteCallObject : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_RerailTrain( class AFGTrain* train );
+	
+private:
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGRailroadRemoteCallObject = false;
+};
+
 /**
  * Struct representing a set of interconnected tracks.
  */
 USTRUCT()
-struct FTrackGraph
+struct FACTORYGAME_API FTrackGraph
 {
 	GENERATED_BODY()
 public:
@@ -26,6 +43,9 @@ public:
 	/** All the tracks that are connected (nodes in the graph) */
 	UPROPERTY()
 	TArray< class AFGBuildableRailroadTrack* > Tracks;
+	
+	/** All the signal blocks managed by this graph. */
+	TArray< TSharedPtr< FFGRailroadSignalBlock > > SignalBlocks;
 
 	/** This is the third rail the locomotives and stations connect to. */
 	UPROPERTY()
@@ -33,13 +53,29 @@ public:
 
 	/** Do this track graph need to be rebuilt, e.g. tracks have been removed. */
 	uint8 NeedFullRebuild:1;
-
-	//@todotrains Signaling, consider if this and mHasTrackGraphsChanged is needed.
-	/** Has this track graph changed, tracks connected, rolling stock added or removed. */
+	
+	/** Has this track graph changed, tracks connected, rolling stock added or removed, signals added or removed. */
 	uint8 HasChanged:1;
 };
 
 
+/**
+ * Struct for storing collisions to trigger at a later point when the world is loaded in.
+ */
+USTRUCT()
+struct FACTORYGAME_API FPendingTrainCollisionEvent
+{
+	GENERATED_BODY()
+public:
+	FVector Location = FVector::ZeroVector;
+	
+	TWeakObjectPtr< AFGRailroadVehicle > FirstHitVehicle = nullptr;
+	TWeakObjectPtr< AFGRailroadVehicle > SecondHitVehicle = nullptr;
+
+	//@todo-trains Add this when we need to save and reapply this on load.
+	float FirstTrainVelocity = 0.f;
+	float SecondTrainVelocity = 0.f;
+};
 
 /**
  * Actor for handling the railroad network and the trains on it.
@@ -51,6 +87,9 @@ class FACTORYGAME_API AFGRailroadSubsystem : public AFGSubsystem, public IFGSave
 public:
 	AFGRailroadSubsystem();
 
+	/** Called after this is spawned for additional setup prior to begin play. */
+	void Init();
+	
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void Serialize( FArchive& ar ) override;
@@ -83,6 +122,14 @@ public:
 	 * Functions to handle Trains
 	 */
 
+	/** How should the train (name, time table etc) be handled when a consist is split up, i.e. uncoupling occurs. */
+	enum class EDecouplingPolicy : uint8
+	{
+		UP_Auto,
+		UP_KeepTrainOnFirst,	// When the split occurs, keep the existing train on the first vehicle.
+		UP_KeepTrainOnSecond,	// When the split occurs, keep the existing train on the second vehicle.
+	};
+
 	/**
 	 * Adds the railroad vehicle to the subsystem, and gives it a train if it does not have one already.
 	 */
@@ -104,7 +151,7 @@ public:
 	 * De-couples two vehicles in a train.
 	 * To decouple a vehicle completely you need to run this for booth ends of the vehicle.
 	 */
-	void DecoupleTrains( AFGRailroadVehicle* firstVehicle, AFGRailroadVehicle* secondVehicle );
+	void DecoupleTrains( AFGRailroadVehicle* firstVehicle, AFGRailroadVehicle* secondVehicle, EDecouplingPolicy decouplePolicy );
 
 	/**
 	 * Get the distance between two train vehicles.
@@ -160,7 +207,7 @@ public:
 	 * Move a position along a track, leaving the current segment and entering a new if needed.
 	 * @return true on success, false if we did not move the whole distance.
 	 */
-	static bool MoveTrackPosition( struct FRailroadTrackPosition& position, float delta, float& out_movedDelta );
+	static bool MoveTrackPosition( struct FRailroadTrackPosition& position, float delta, float& out_movedDelta, float endStopDistance = 0.f );
 
 	/**
 	 * Add a new track segment.
@@ -180,6 +227,33 @@ public:
 	 */
 	class UFGPowerConnectionComponent* GetThirdRailForTrack( const class AFGBuildableRailroadTrack* track ) const;
 
+	/**
+	 * Get the power connection that the locomotives power shoe connects to (the third rail).
+	 * 
+	 * Only valid to call on server.
+	 * 
+	 * @return The third rail power connection for the given track graph, nullptr if the track graph is not valid.
+	 */
+	class UFGPowerConnectionComponent* GetThirdRailForTrackGraph( int32 trackGraphID ) const;
+
+	/***************************************************************************************************
+	 * Functions to handle signals.
+	 */
+
+	/**
+	 * Called when a signal is built or loaded so necessary structures can be rebuilt.
+	 */
+	void AddSignal( class AFGBuildableRailroadSignal* signal );
+
+	/**
+	 * Called when a signal is dismantled so necessary structures can be rebuilt.
+	 */
+	void RemoveSignal( class AFGBuildableRailroadSignal* signal );
+
+	/**
+	 * Get the active train scheduler.
+	 */
+	class AFGTrainScheduler* GetTrainScheduler() const;
 
 	/***************************************************************************************************
 	 * Iterator for train sets.
@@ -320,14 +394,70 @@ public:
 		const AFGRailroadVehicle* mCurrentVehicle;
 	};
 
+	/***************************************************************************************************
+	 * Debug functions
+	 */
+	void Debug_MarkAllGraphsAsChanged();
+	void Debug_MarkAllGraphsForFullRebuild();
+	
+protected:
+	/** Called when two trains collide, only called once. */
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Railroad" )
+	void OnTrainsCollided( class AFGTrain* first, class AFGTrain* second );
+	
 private:
 	void TickTrackGraphs( float dt );
+	void TickPendingCollisions( float dt );
+
+	void PurgeInvalidStationsFromTimeTables();
+
+	/** Simple hit result struct for the custom train collisions. */
+	struct FRailroadHitResult
+	{
+		/** Hit time, 1 means no hit < 1 mean a hit along the sweep, 0 means initial overlap. */
+		float Time = 1.f;
+		/** Vehicle that has been hit. */
+		AFGRailroadVehicle* Vehicle = nullptr;
+	};
+
+	/**
+	 * Solves the collisions for a vehicle in a train along its moved distance.
+	 */
+	FRailroadHitResult SolveVehicleCollisions(
+		class AFGTrain* forTrain,
+		class AFGRailroadVehicle* forVehicle,
+		FRailroadTrackPosition oldTrackPosition,
+		FRailroadTrackPosition newTrackPosition );
+
+	/**
+	 * Helper to do a simple capsule against capsule hit detection for the trains.
+	 * One of the capsules are moving and the other one is stationary.
+	 * 
+	 * @param capsuleSize		Size of the sweeping capsule, X is length, Y is radius.
+	 * @param startPos			Start position of the sweeping capsule.
+	 * @param endPos			End position of the sweeping capsule.
+	 * @param otherCapsuleSize	Size of the capsule we're sweeping against.
+	 * @param otherPos			Position of the capsule we're sweeping against.
+	 * 
+	 * @return Hit time, 1 means no hit < 1 mean a hit along the sweep, 0 means initial overlap.
+	 */
+	float SweepRailroadPositions(
+		FVector2D capsuleSize,
+		FRailroadTrackPosition startPos,
+		FRailroadTrackPosition endPos,
+		FVector2D otherCapsuleSize,
+		FRailroadTrackPosition otherPos );
 	
 	/**
 	 * Internal helper to rebuild a graph.
 	 * Note: This function might split, remove or otherwise change the graph so it is not safe to assume anything about the graph afterwards.
 	 */
 	void RebuildTrackGraph( int32 graphID );
+
+	/**
+	 * Internal helper to rebuild the signal blocks.
+	 */
+	void RebuildSignalBlocks( int32 graphID );
 
 	/** Call when updating a stations hidden power connection to update all platforms attached to that station */
 	void RefreshPlatformPowerConnectionsFromStation( class AFGBuildableRailroadStation* station, class UFGCircuitConnectionComponent* connectTo );
@@ -350,9 +480,6 @@ private:
 
 	void UpdateSimulationData( class AFGTrain* train, struct FTrainSimulationData& simData );
 
-	/** Called when the vehicles in a train changes, i.e. rolling stock is (de)coupled. */
-	void OnTrainOrderChanged( class AFGTrain* trainID );
-
 	/** Merge two track graphs to one. */
 	void MergeTrackGraphs( int32 first, int32 second );
 	/** Create a new track graph. */
@@ -365,9 +492,13 @@ private:
 	/** Tries to remove a track from it's current graph, if not part of a graph this does nothing. */
 	void RemoveTrackFromGraph( class AFGBuildableRailroadTrack* track );
 
+	/** Helpers to mark graphs dirty. */
+	void MarkGraphAsChanged( int32 graphID );
+	void MarkGraphForFullRebuild( int32 graphID );
+
 	/** Get a new UID for a track graph. */
 	int32 GenerateUniqueTrackGraphID();
-
+	
 public:
 	/**
 	 * How far apart can trains connect to each other.
@@ -381,9 +512,9 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	TSubclassOf< class AFGBuildableRailroadSwitchControl > mSwitchControlClass;
 
-	/** This is sound component used to play sounds on trains. */
+	/** Default train class to use when spawning trains. */
 	UPROPERTY( EditDefaultsOnly )
-	TSubclassOf< class UFGRailroadVehicleSoundComponent > mVehicleSoundComponentClass;
+	TSubclassOf< class AFGTrain > mTrainClass;
 
 private:
 	FDelegateHandle OnPhysScenePreTickHandle;
@@ -400,9 +531,6 @@ private:
 	UPROPERTY()
 	TMap< int32, FTrackGraph > mTrackGraphs;
 
-	/** If the track graphs has changed and dependent data needs an update. */
-	bool mHasTrackGraphsChanged;
-
 	/** All station identifiers in the world. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGTrainStationIdentifier* > mTrainStationIdentifiers;
@@ -411,4 +539,12 @@ private:
 	/** All the trains in the world. */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< class AFGTrain* > mTrains;
+
+	/** Pending collision events for trains that collide outside of the loaded world. */
+	TArray< FPendingTrainCollisionEvent > mPendingTrainCollisions;
+
+private:
+	/** Handles all the trains and their reservations inside the blocks. Only valid on server. */
+	UPROPERTY()
+	class AFGTrainScheduler* mTrainScheduler;
 };

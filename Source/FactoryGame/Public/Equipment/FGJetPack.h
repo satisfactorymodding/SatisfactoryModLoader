@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Equipment/FGEquipment.h"
 #include "Equipment/FGEquipmentAttachment.h"
 #include "FGJetPack.generated.h"
@@ -82,7 +83,6 @@ private:
 	/** The player is holding down the thrust key and wants to thrust */
 	bool mWantsToThrust;
 
-public:	// MODDING EDIT public
 	/** A cached instance of the instigators movementcomponent */
 	class UFGCharacterMovementComponent* mCachedMovementComponent;
 };

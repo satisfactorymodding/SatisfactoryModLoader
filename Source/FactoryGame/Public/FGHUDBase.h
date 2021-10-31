@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "FGHUDBase.generated.h"
@@ -29,6 +30,9 @@ public:
 
 	UFUNCTION( Exec )
 	void ToggleOptionsDebugOverlay();
+
+	UFUNCTION( Exec )
+	void ToggleStatisticsDebugOverlay();
 	
 	UFUNCTION( Exec )
 	void QuickSwitchLanguage();

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "FGSaveInterface.h"
 #include "Engine/NetSerialization.h"

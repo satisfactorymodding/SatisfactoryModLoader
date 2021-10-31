@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/CheatManager.h"
 #include "FGGamePhaseManager.h"
 #include "Interfaces/OnlineSharedCloudInterface.h"
@@ -106,10 +107,16 @@ public:
 	void GiveAllResearchTrees();
 
 	UFUNCTION( exec, CheatBoard, category = "Story" )
-	void TriggerNextStoryMessageInQueue();
+	void TriggerNextPrimaryStoryMessageInQueue();
 
 	UFUNCTION( exec, CheatBoard, category = "Story" )
-	void TriggerNextBarkMessageInQueue();
+	void TriggerNextSecondaryStoryMessageInQueue( int32 storyQueueIndex = 0 );
+
+	UFUNCTION( exec, CheatBoard, category = "Story" )
+	void TriggerNextFloatingMessageInPrimaryQueue();
+
+	UFUNCTION( exec, CheatBoard, category = "Story" )
+	void TriggerRandomTriggeredBarksMessage();
 
 	UFUNCTION( exec, CheatBoard, category = "Story" )
 	void StartNextStoryQueue();
@@ -160,6 +167,18 @@ public:
 	UFUNCTION( exec, CheatBoard, category = "World/Time" )
 	int32 SetTimeOfDay_minute_Get();
 
+	UFUNCTION( exec, CheatBoard, category = "World/Planets" )
+	void SetPlanetPosition( float value );
+
+	UFUNCTION( exec, CheatBoard, category = "World/Planets" )
+	void SetPlanetPositionDeg( int32 value );
+
+	UFUNCTION( exec, CheatBoard, category = "World/Planets" )
+	void SetPlanetMovementEnabled( bool enabled );
+
+	UFUNCTION( exec, CheatBoard, category = "World/Planets" )
+	void SetPlanetSpeedMultiplier( float multiplier );
+
 	/** Hide everything except the factory */
 	UFUNCTION( exec, CheatBoard, category = "Display" )
 	void ShowFactoryOnly( bool environmentHidden );
@@ -191,6 +210,8 @@ public:
 
 	UFUNCTION( exec, CheatBoard, category = "GUI" )
 	void PumpiMode( bool enable );
+	UFUNCTION( exec, CheatBoard, category = "GUI" )
+	void HiddenHUDMode( bool enable );
 
 	UFUNCTION( exec, CheatBoard, category = "GUI" )
 	bool PumpiMode_Get();
@@ -215,6 +236,33 @@ public:
 
 	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
 	void ToggleCameraMode();
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_ToggleAdvancedPhotoMode();
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_SetManualFocusDistance( float manualFocusDistance );
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_FocusTrackLookedAtObject();
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_SetAperture( float aperture );
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_ToggleDebug();
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_ResetToDefault();
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_AddCurrentPlayerPosAndRot();
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_PlaySequence();
+
+	UFUNCTION( exec, CheatBoard, category = "Player/Camera" )
+	void Photo_ToggleSequencer();
 
 	UFUNCTION( exec, CheatBoard, category = "Research" )
 	void GiveSchematicsOfTier( int32 tier );
@@ -269,6 +317,12 @@ public:
 	UFUNCTION( exec )
 	void VisitAllMapAreas();
 
+	UFUNCTION( exec, CheatBoard )
+	void RevealMap();
+
+	UFUNCTION( exec, CheatBoard )
+	void HideMap();
+
 	UFUNCTION( exec, CheatBoard, category = "World/Time" )
 	void SetAITickDistance( float distance );
 
@@ -292,6 +346,9 @@ public:
 
 	UFUNCTION( exec, CheatBoard, category = "Save/Load" )
 	void PurgeAllBeaconsFromSave();
+
+	UFUNCTION( exec, CheatBoard, category = "Save/Load" )
+	void PurgeDeathMarkersFromSave();
 
 	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void ListItemPickups();
@@ -355,6 +412,12 @@ public:
 
 	UFUNCTION( exec )
 	void FlipVehicle();
+
+	UFUNCTION( exec )
+	void ResetVehicleDeadlocks();
+
+	UFUNCTION( exec )
+	void ResetTheChosenWheeledVehicle();
 
 	UFUNCTION( exec )
 	void ListDebugStartingPoint();
@@ -461,6 +524,15 @@ public:
 	UFUNCTION( exec )
 	void DumpCircuitsToLog();
 
+	UFUNCTION( exec )
+	void RerailAllTrains();
+
+	UFUNCTION( exec )
+	void MarkTrackGraphsAsChanged();
+
+	UFUNCTION( exec )
+	void MarkTrackGraphsForRebuild();
+
 private:
 	class UActorComponent* GetOuterPlayersUseComponent() const;
 	class AActor* GetOuterPlayersUseActor() const;
@@ -471,4 +543,6 @@ public:
 	/** This is used to make picking the same classes in the cheat board easier */
 	UPROPERTY( Config )
 	TArray< UClass* > mPopularUClassChoices;
+
+	FTimerHandle mDebugFocusTimerHandle;
 };

@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSettings.h"
+#include "FGSubsystem.h"
+
 #include "FGSubsystemClasses.generated.h"
 
 /**
@@ -89,5 +92,13 @@ public:
 	/* Handles instance updating for conveyor items. */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGConveyorItemSubsystem > mConveyorItemSubsystemClass;
-
+	/** Handles statistics of the game. Number of buildings built */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGStatisticsSubsystem > mStatisticsSubsystemClass;
+	/** Handles sign data replication */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGSignSubsystem > mSignSubsystemClass;
+	/** Handles actions relevant for photo mode, Camera adjustments, Simple sequences etc. */ 
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGSubsystem > mPhotoModeManagerClass;
 };

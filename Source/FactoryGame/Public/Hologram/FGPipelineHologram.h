@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/HologramHelpers.h"
 #include "Hologram/FGSplineHologram.h"
@@ -31,15 +32,15 @@ public:
 	virtual AActor* GetUpgradedActor() const override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual void GetSupportedScrollModes( TArray< EHologramScrollMode >* out_modes ) const override;
-	virtual void GetSupportedSplineModes_Implementation( TArray< EHologramSplinePathMode >& out_splineModes ) const override;
+	virtual void GetSupportedBuildModes_Implementation( TArray<TSubclassOf<UFGHologramBuildModeDescriptor>>& out_buildmodes ) const override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
-	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void OnInvalidHitResult() override;
 	virtual void Scroll( int32 delta ) override;
-	virtual bool CanTakeNextBuildStep() const override;
 	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 	virtual void SetSnapToGuideLines( bool isEnabled ) override;
+	virtual float GetHologramHoverHeight() const override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface
@@ -61,9 +62,12 @@ protected:
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
 	virtual void CheckValidFloor() override;
-	virtual void CheckClearance() override;
 	virtual void CheckValidPlacement() override;
 	// End AFGBuildableHologram Interface
+
+	// Begin AFGHologram Interface
+	virtual void CheckClearance( const FVector& locationOffset ) override;
+	// End AFGHologram Interface
 
 	/** Creates the clearance detector used with Pipelines */
 	void SetupPipeClearanceDetector();
@@ -209,6 +213,24 @@ private:
 	/** All the generated collision meshes. */
 	UPROPERTY()
 	TArray< class UShapeComponent* > mCollisionMeshes;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeAuto;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeAuto2D;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeNoodle;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode")
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeHorzToVert;
+
+	// Forced direction resulting from a snap to a passthrough
+	FVector mForcedNormalDirection;
+
+	UPROPERTY()
+	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
 	/** Cached from the default buildable. */
 	UPROPERTY()

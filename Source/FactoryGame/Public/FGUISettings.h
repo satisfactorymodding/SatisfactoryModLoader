@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Engine/DeveloperSettings.h"
 #include "FGUISettings.generated.h"
 

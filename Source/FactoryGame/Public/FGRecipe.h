@@ -2,8 +2,8 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "ItemAmount.h"
-#include "Hologram/HologramSplinePathMode.h"
 #include "FGEventSubsystem.h"
 #include "FGRecipe.generated.h"
 
@@ -73,6 +73,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	static void SortByManufacturingMenuPriority( UPARAM( ref ) TArray< TSubclassOf< UFGRecipe > >& recipes );
 
+	/** Get the material customization assigned to a given recipe. This can be null */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
+	static TSubclassOf< class UFGCustomizationRecipe > GetMaterialCustomizationRecipe( TSubclassOf< UFGRecipe > recipe );
+
 	/** Get descriptor for recipe specified 
 	* @note - This will only return the first product so recipes that produce more than one will only return the first in the array.
 	*/
@@ -93,16 +97,16 @@ public:
 
 	float GetPowerConsumptionConstant() const { return mVariablePowerConsumptionConstant; }
 	float GetPowerConsumptionFactor() const { return mVariablePowerConsumptionFactor; }
+	
+	static bool IsProducedIn( TSubclassOf< class UFGRecipe > inClass, TSubclassOf< UObject > inProducer );
 
 #if WITH_EDITOR
 	/** Sets the products produced from this recipe. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Recipe" )
 	static void SetProduct( TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount > product );
 #endif
-
-	EHologramSplinePathMode GetLastSplineMode();
-	void SetLastSplineMode( EHologramSplinePathMode mode );
-public: // MODDING EDIT: protected -> public
+	
+protected:
 	friend class FRecipeDetails;
 
 	/** If we override the display name or get it from the first products item name. */
@@ -112,8 +116,6 @@ public: // MODDING EDIT: protected -> public
 	/** Overridden name for this recipe, if mDisplayNameOverride is false the first product's item name is used. */
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe", meta = ( EditCondition = mDisplayNameOverride ) )
 	FText mDisplayName;
-
-	EHologramSplinePathMode mLastSplineMode;
 
 	/** Ingredients needed to produce the products. */
 	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
@@ -142,6 +144,13 @@ public: // MODDING EDIT: protected -> public
 	/** Defines where this recipe can be produced */
 	UPROPERTY( EditDefaultsOnly, Meta = ( MustImplement = "FGRecipeProducerInterface", Category = "Recipe" ) )
 	TArray< TSoftClassPtr< UObject > > mProducedIn;
+
+	/** Material Descriptor Definition Recipe. This is the material descriptor recipe that corresponds to a building recipe. This is used 
+	 *	to calculate the correct total cost for this recipe when constructing. 
+	 *	Tex. If we have a Steel Wall, this should be the recipe that corresponds to the MaterialDesc_SteelWall
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Recipe" )
+	TSubclassOf< class UFGCustomizationRecipe > mMaterialCustomizationRecipe;
 
 	/** The events this recipe are present in */
 	UPROPERTY( EditDefaultsOnly, Category = "Events" )

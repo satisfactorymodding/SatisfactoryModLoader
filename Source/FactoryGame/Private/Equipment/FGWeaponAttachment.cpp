@@ -5,5 +5,7 @@
 void AFGWeaponAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGWeaponAttachment::PlayFireEffect_Implementation(FVector flashLocation){ }
 void AFGWeaponAttachment::Multicast_SetFlashLocation_Implementation(const FVector& newFlashLocation){ }
+void AFGWeaponAttachment::Multicast_PlayBeginFireEffect_Implementation(const FVector& location){ }
 void AFGWeaponAttachment::Multicast_PlayReloadEffectMulticast_Implementation(){ }
+void AFGWeaponAttachment::Multicast_SetIsLoaded_Implementation(bool isLoaded){ }
 void AFGWeaponAttachment::PlayerFired(FVector flashLocation){ }

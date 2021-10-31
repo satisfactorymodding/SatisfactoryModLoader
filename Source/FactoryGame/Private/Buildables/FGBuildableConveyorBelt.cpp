@@ -3,22 +3,20 @@
 #include "Buildables/FGBuildableConveyorBelt.h"
 #include "Hologram/FGConveyorBeltHologram.h"
 #include "Components/SplineComponent.h"
+#include "FGFactoryConnectionComponent.h"
+#include "Components/SceneComponent.h"
+#include "FGInstancedSplineMeshComponent.h"
 
 AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
-	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent")); this->mSplineComponent->SetupAttachment(this->RootComponent);
-	/* Skipping UFGInstancedSplineMeshComponent this->mInstancedSplineComponent */
+	this->mMesh = nullptr;
+	this->mMeshLength = 0.0;
+	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
+	this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent"));
+	this->mSoundSplineComponent = nullptr;
+	this->mSplineAudioEvent = nullptr;
 	this->mHologramClass = AFGConveyorBeltHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
+	this->mSplineComponent->SetupAttachment(RootComponent);
+	this->mInstancedSplineComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableConveyorBelt::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGBuildableConveyorBelt::BeginPlay(){ }
@@ -48,7 +46,8 @@ void AFGBuildableConveyorBelt::OnUseServerRepInput( AFGCharacterPlayer* byCharac
 void AFGBuildableConveyorBelt::SetShadowCasting(bool inStateBelt, bool inStateItems){ }
 void AFGBuildableConveyorBelt::DestroyVisualItems(){ }
 bool AFGBuildableConveyorBelt::VerifyDefaults(FString& out_message){ return bool(); }
-void AFGBuildableConveyorBelt::TickItemTransforms(float dt, bool bOnlyTickRadioActive){ }
+void AFGBuildableConveyorBelt::TickItemTransforms(float dt){ }
 void AFGBuildableConveyorBelt::TickRadioactivity(){ }
+void AFGBuildableConveyorBelt::Factory_UpdateRadioactivity( AFGRadioactivitySubsystem* subsystem){ }
 void AFGBuildableConveyorBelt::TickSingleItemTransform(const FConveyorBeltItem& item, TMap< FName, int32 >& instanceCounts,  AFGRadioactivitySubsystem* radioactiveSubsystem){ }
 void AFGBuildableConveyorBelt::GetConveyorMaterials(TArray<UMaterialInterface*, TInlineAllocator<4>>& out_materials){ }

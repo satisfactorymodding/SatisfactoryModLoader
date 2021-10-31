@@ -2,16 +2,73 @@
 
 #include "FGVehicleSubsystem.h"
 
+AFGSavedWheeledVehiclePath::AFGSavedWheeledVehiclePath() : Super() {
+	this->mPathName = TEXT("");
+	this->mOriginalVehicleType = nullptr;
+	this->mTargetList = nullptr;
+	this->mUserCount = 0;
+	this->mIsInUse = false;
+	this->mDistanceFromVehicle = 0.0;
+	this->mIsInUseByThisVehicle = false;
+	this->mFuelConsumptionPerTrip = 0.0;
+	this->mFuelType = nullptr;
+	this->bAlwaysRelevant = true;
+	this->bReplicates = true;
+}
+void AFGSavedWheeledVehiclePath::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGSavedWheeledVehiclePath::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+#ifdef DEBUG_SELF_DRIVING
+int AFGVehicleSubsystem::GetDebugLevel(){ return int(); }
+void AFGVehicleSubsystem::SetDebugLevel(int level){ }
+int AFGVehicleSubsystem::GetDebugTextLevel(){ return int(); }
+void AFGVehicleSubsystem::SetDebugTextLevel(int level){ }
+int AFGVehicleSubsystem::GetVehicleDeadlocksDebug(){ return int(); }
+void AFGVehicleSubsystem::SetVehicleDeadlocksDebug(int level){ }
+#endif 
 AFGVehicleSubsystem::AFGVehicleSubsystem() : Super() {
 	this->mMaxVehicleIterationsPerTick = 10;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
+void AFGVehicleSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGVehicleSubsystem::Tick(float dt){ }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UWorld* world){ return nullptr; }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UObject* worldContext){ return nullptr; }
 void AFGVehicleSubsystem::TickVehicleSimulation(float dt){ }
-float AFGVehicleSubsystem::FindClosestPlayerSq( AActor* actor) const{ return float(); }
+float AFGVehicleSubsystem::FindClosestPlayerSq( AFGVehicle* actor) const{ return float(); }
 void AFGVehicleSubsystem::AddVehicle( AFGVehicle* vehicle){ }
+void AFGVehicleSubsystem::AddWheeledVehicle( AFGWheeledVehicle* vehicle){ }
+void AFGVehicleSubsystem::AddTargetPoint( AFGTargetPoint* target){ }
 void AFGVehicleSubsystem::RemoveVehicle( AFGVehicle* vehicle){ }
+void AFGVehicleSubsystem::RemoveWheeledVehicle( AFGWheeledVehicle* vehicle){ }
+void AFGVehicleSubsystem::RemoveTargetPoint( AFGTargetPoint* targetToRemove, bool updateList){ }
+void AFGVehicleSubsystem::InvalidateTargetList(const AFGDrivingTargetList* targetList) const{ }
+bool AFGVehicleSubsystem::IsPathNameTaken(const FString& name) const{ return bool(); }
+void AFGVehicleSubsystem::SaveWheeledVehiclePath(const FString& saveName,  AFGWheeledVehicle* vehicle){ }
+void AFGVehicleSubsystem::UnsaveWheeledVehiclePath(AFGSavedWheeledVehiclePath* path){ }
+void AFGVehicleSubsystem::FindSavedWheeledVehiclePaths(const FString& textFilter, TSubclassOf<  AFGWheeledVehicle > typeFilter, const AFGWheeledVehicle* vehicle, TArray< AFGSavedWheeledVehiclePath* >& result){ }
+bool AFGVehicleSubsystem::IsWheeledVehiclePathInUse( AFGDrivingTargetList* targetList, const AFGWheeledVehicle* byVehicle) const{ return bool(); }
+void AFGVehicleSubsystem::CalculateWheeledVehiclePathStatus( AFGDrivingTargetList* targetList, bool& isSaved, int& userCount) const{ }
+int AFGVehicleSubsystem::CalculateWheeledVehicleUserCount( AFGDrivingTargetList* targetList) const{ return int(); }
+void AFGVehicleSubsystem::FindVehiclesUsingPath(const  AFGDrivingTargetList* targetList, TArray< AFGWheeledVehicle* >& result) const{ }
+void AFGVehicleSubsystem::AddTargetList( AFGDrivingTargetList* targetList){ }
+void AFGVehicleSubsystem::RemoveTargetList( AFGDrivingTargetList* targetList){ }
+float AFGVehicleSubsystem::CalculateStraightDistanceFromPrevious( AFGTargetPoint* targetPoint) const{ return float(); }
+void AFGVehicleSubsystem::UpdateTargetLists(){ }
+void AFGVehicleSubsystem::UpdateTargetList(AFGDrivingTargetList* targetList){ }
+void AFGVehicleSubsystem::UpdateTargetPoints(){ }
+void AFGVehicleSubsystem::FindTouchedTargets(const  USplineComponent* path, float segmentLength, float progresStart, float collisionAvoidanceDistance, TSet< TWeakObjectPtr<  AFGTargetPoint > >& claimTargets, TSet< TWeakObjectPtr<  AFGTargetPoint > >& essentialClaimTargets, TArray< FVector >& searchPoints, FVector& segmentCenter,  AFGWheeledVehicle* claimingVehicle){ }
+bool AFGVehicleSubsystem::TryToBeTheChosenWheeledVehicle( AFGWheeledVehicle* vehicle, const TArray< FVector >& searchPoints, FVector& segmentCenter, TSet< TWeakObjectPtr<  AFGWheeledVehicle > >& blockingVehicles){ return bool(); }
+void AFGVehicleSubsystem::ResetTheChosenWheeledVehicle(const  AFGWheeledVehicle* oldChosenVehicle){ }
+void AFGVehicleSubsystem::OnResetIsDeadlocked(const  AFGWheeledVehicle* vehicle){ }
+void AFGVehicleSubsystem::ResetAllDeadlocks(){ }
+void AFGVehicleSubsystem::AssignVehicleTargets(){ }
+void AFGVehicleSubsystem::DetectDeadlocks(){ }
+void AFGVehicleSubsystem::RescueLostVehicles(){ }
+void AFGVehicleSubsystem::TryRescueVehicle( AFGWheeledVehicle* vehicle){ }
+int AFGVehicleSubsystem::IsVehicleBlockingItself(const  AFGWheeledVehicle* sourceVehicle, const  AFGWheeledVehicle* blockedVehicle, TSet< const  AFGWheeledVehicle* >& visitedVehicles){ return int(); }

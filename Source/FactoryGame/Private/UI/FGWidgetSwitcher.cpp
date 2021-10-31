@@ -2,11 +2,16 @@
 
 #include "UI/FGWidgetSwitcher.h"
 
-UFGWidgetSwitcherInterface::UFGWidgetSwitcherInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGWidgetSwitcherInterface::UFGWidgetSwitcherInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+}
 UFGWidgetSwitcher::UFGWidgetSwitcher() : Super() {
 	this->mFadeOutTime = 0.25;
+	this->mPendingNewWidget = nullptr;
+	this->mEnteringWidget = nullptr;
+	this->mExitingWidget = nullptr;
 }
-void UFGWidgetSwitcher::ReleaseSlateResources(bool bReleaseChildren){ Super::ReleaseSlateResources(bReleaseChildren); }
+void UFGWidgetSwitcher::ReleaseSlateResources(bool bReleaseChildren){ }
 void UFGWidgetSwitcher::RemoveFromParent(){ }
 void UFGWidgetSwitcher::SetActiveWidgetIndex(int32 index){ }
 void UFGWidgetSwitcher::SetActiveWidget(UWidget* widget){ }

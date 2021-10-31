@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Replication/FGReplicationDetailActor.h"
 #include "FGReplicationDetailActorOwnerInterface.generated.h"
 

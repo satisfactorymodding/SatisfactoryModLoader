@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Components/BoxComponent.h"
 #include "FGLadderComponent.generated.h"
 
@@ -18,7 +19,11 @@ public:
 	virtual void OnUnregister() override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+
+	// TODO can be used when we spawn them dynamiclly.
 	virtual void TickComponent( float deltaTime, enum ELevelTick tickType, FActorComponentTickFunction* thisTickFunction ) override;
+	
+	void Update();
 	// End UActorComponent interface
 
 private:
@@ -43,6 +48,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Ladder" )
 	float mEndClimbingLookAngle;
 
+	// TODO can be removed when we spawn them dynamiclly.
+	UPROPERTY()
+	FTimerHandle mUpdateHandle;
 private:
 	/**
 	 * List of players that can potentially climb on the ladder, i.e. within grab distance.

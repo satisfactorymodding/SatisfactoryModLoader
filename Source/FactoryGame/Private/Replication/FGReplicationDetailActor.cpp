@@ -4,8 +4,16 @@
 #include "Components/SceneComponent.h"
 
 AFGReplicationDetailActor::AFGReplicationDetailActor() : Super() {
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = false;
+	this->PrimaryActorTick.bStartWithTickEnabled = false;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 	this->SetHidden(true);
-	this->SetReplicates(true);
+	this->bCanBeDamaged = false;
+	this->bReplicates = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("ReplicationDetailActor"));
 }
 AFGReplicationDetailActor* AFGReplicationDetailActor::CreateReplicationDetailActor(UClass* childClass,  IFGReplicationDetailActorOwnerInterface* owner){ return nullptr; }

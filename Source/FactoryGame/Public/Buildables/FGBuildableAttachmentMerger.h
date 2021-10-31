@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableConveyorAttachment.h"
 #include "FGBuildableAttachmentMerger.generated.h"
@@ -27,7 +28,7 @@ protected:
 	virtual void Factory_CollectInput_Implementation() override;
 	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
 	// End Factory_ interface
-public:	// MODDING EDIT private -> public
+private:
 	/** Cycles through the inputs, stores the input we want to check next. Index is for the mInputs array. */
 	UPROPERTY( SaveGame, Meta = (NoAutoJson) )
 	int32 mCurrentInputIndex;

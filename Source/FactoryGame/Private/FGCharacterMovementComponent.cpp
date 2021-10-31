@@ -3,19 +3,48 @@
 #include "FGCharacterMovementComponent.h"
 
 UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
-	this->mClimbSpeed = 500;
-	this->mMaxSprintSpeed = 900;
+	this->mLastJumpTimeStamp = 0.0;
+	this->mIsParachuting = false;
+	this->mClimbSpeed = 500.0;
+	this->mMaxSprintSpeed = 900.0;
 	this->mSprintMinDotResult = 0.75;
-	this->mJumpOffLadderVelocity = 300;
-	this->mMaxSlideAngle = 1.64999997615814;
+	this->mJumpOffLadderVelocity = 300.0;
+	this->mFGCharacterOwner = nullptr;
+	this->mCachedJetPack = nullptr;
+	this->mCachedParachute = nullptr;
+	this->mCachedHookshot = nullptr;
+	this->mCachedJumpingStilts = nullptr;
+	this->mCachedHoverPack = nullptr;
+	this->mCachedSurfedRailroadTrack = nullptr;
+	this->mOnLadder = nullptr;
+	this->mPipeData.mTravelingPipeHyper = nullptr;
+	this->mPipeData.mMinPipeSpeed = 300.0;
+	this->mPipeData.mPipeGravityStrength = 1500.0;
+	this->mPipeData.mPipeFriction = 0.05;
+	this->mPipeData.mPipeConstantAcceleration = 110.0;
+	this->mPipeData.mPipeCurveDamping = 0.4;
+	this->mSlideCurve = nullptr;
+	this->mSlopeCurve = nullptr;
+	this->mMaxSlideAngle = 1.65;
+	this->mBaseVelocity.X = 0.0;
+	this->mBaseVelocity.Y = 0.0;
+	this->mBaseVelocity.Z = 0.0;
 	this->mBoostJumpZMultiplier = 1.5;
-	this->mBoostJumpVelocityMultiplier = 1.29999995231628;
-	this->mBoostJumpTimeWindow = 0.150000005960464;
-	this->mZiplineSpeed = 1200;
-	this->mZiplineCorrectionSpeedMultiplier = 10;
-	this->mZiplineVelocityInterpolationSpeed = 1;
+	this->mBoostJumpVelocityMultiplier = 1.3;
+	this->mBoostJumpTimeWindow = 0.15;
+	this->mZiplineData.Direction.X = 0.0;
+	this->mZiplineData.Direction.Y = 0.0;
+	this->mZiplineData.Direction.Z = 0.0;
+	this->mZiplineData.LastVelocityApplied.X = 0.0;
+	this->mZiplineData.LastVelocityApplied.Y = 0.0;
+	this->mZiplineData.LastVelocityApplied.Z = 0.0;
+	this->mZiplineData.SpeedMultiplier = 0.0;
+	this->mZiplineData.AttachActor = nullptr;
+	this->mZiplineSpeed = 1200.0;
+	this->mZiplineCorrectionSpeedMultiplier = 10.0;
+	this->mZiplineVelocityInterpolationSpeed = 1.0;
 	this->mZiplineSpeedMultiplierUp = 0.5;
-	this->mZiplineSpeedMultiplierDown = 1.29999995231628;
+	this->mZiplineSpeedMultiplierDown = 1.3;
 }
 void UFGCharacterMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){ }
 FNetworkPredictionData_Client* UFGCharacterMovementComponent::GetPredictionData_Client() const{ return nullptr; }

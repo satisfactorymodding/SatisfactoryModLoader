@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Styling/SlateBrush.h"
 #include "Blueprint/UserWidget.h"
@@ -21,7 +22,7 @@ public:
 	void NativeInit( FVector2D size, class UFGSignElementWidget* elementWidget );
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "Sign Widget" )
-	void Init( class UFGSignElementData* elementData );
+	void Init( ); //@todoSigns - This needs to be setup again now that its not using elementdata
 
 	FORCEINLINE void SetElementReference( class UFGSignElementWidget* elementWidget );
 	FORCEINLINE class UFGSignElementWidget* GetElementReference() const;
@@ -44,7 +45,7 @@ protected:
 	class UFGSignElementWidget* mElementReference;
 
 	/************************************************************************/
-	/*					Begin Widget Bindings
+	/*					Begin Widget Bindings */
 	/************************************************************************/
 	UPROPERTY( meta = (BindWidget ))
 	class USizeBox* mSizeBox;
@@ -52,7 +53,7 @@ protected:
 	UPROPERTY( meta = (BindWidget ))
 	class UImage* mBackground;
 	/************************************************************************/
-	/*					End Widget Bindings
+	/*					End Widget Bindings */
 	/************************************************************************/
 
 };

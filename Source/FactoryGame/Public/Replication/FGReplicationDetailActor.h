@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Replication/FGReplicationDependencyActorInterface.h"
 #include "FGInventoryComponent.h"
 #include "FGReplicationDetailActor.generated.h"
@@ -45,6 +46,9 @@ public:
 
 	/** Validation function to check whether initial replication has occurred. Only works on client and overriden implementations. */
 	virtual bool HasCompletedInitialReplication() const;
+
+	/** Returns the buildable that owns this actor */
+	class AFGBuildable* GetOwningBuildable() const { return mOwningBuildable; }
 
 protected:
 

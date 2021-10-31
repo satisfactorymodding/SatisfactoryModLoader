@@ -3,12 +3,10 @@
 #include "Equipment/FGPortableMinerDispenser.h"
 
 AFGPortableMinerDispenser::AFGPortableMinerDispenser() : Super() {
-	this->mPlaceDistanceMax = 1000;
+	this->mPlaceDistanceMax = 1000.0;
+	this->mValidPlacementMaterial = nullptr;
+	this->mInvalidPlacementMaterial = nullptr;
 	this->mArmAnimation = EArmEquipment::AE_PortableMiner;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bOnlyRelevantToOwner = true;
-	this->bNetUseOwnerRelevancy = true;
-	this->SetReplicates(true);
 }
 void AFGPortableMinerDispenser::Tick(float DeltaSeconds){ }
 void AFGPortableMinerDispenser::BeginPlay(){ }

@@ -2,8 +2,6 @@
 
 #include "RailroadNavigation.h"
 
-FRailroadPathPoint::FRailroadPathPoint(){ }
-FRailroadPathFindingResult::FRailroadPathFindingResult(){ }
 FRailroadGraphAStarPathPoint::FRailroadGraphAStarPathPoint(int32 unused){ }
 FRailroadGraphAStarPathPoint::FRailroadGraphAStarPathPoint(UFGRailroadTrackConnectionComponent* connection){ }
 FRailroadGraphAStarPathPoint::FRailroadGraphAStarPathPoint(UFGRailroadTrackConnectionComponent* connection, bool ignoredStart){ }
@@ -18,8 +16,9 @@ float FRailroadGraphAStarFilter::GetTraversalCost(const FRailroadGraphAStarPathP
 bool FRailroadGraphAStarFilter::IsTraversalAllowed(const FRailroadGraphAStarPathPoint& nodeA, const FRailroadGraphAStarPathPoint& nodeB) const{ return bool(); }
 bool FRailroadGraphAStarFilter::WantsPartialSolution() const{ return bool(); }
 FRailroadPathFindingResult FRailroadNavigation::FindPathSync(AFGLocomotive* locomotive,
-		AFGBuildableRailroadStation* station){ return FRailroadPathFindingResult(); }
-EGraphAStarResult FRailroadNavigation::FindPathSyncInternal(UFGRailroadTrackConnectionComponent* start,
-		UFGRailroadTrackConnectionComponent* end,
-		bool hasStartPassedEnd,
+		AFGBuildableRailroadStation* station,
+		FRailroadGraphAStarFilter filter){ return FRailroadPathFindingResult(); }
+EGraphAStarResult FRailroadNavigation::FindPathSyncInternal(const FRailroadGraphAStarPathPoint& start,
+		const FRailroadGraphAStarPathPoint& end,
+		FRailroadGraphAStarFilter filter,
 		TArray< FRailroadGraphAStarPathPoint >& out_pathPoints){ return EGraphAStarResult(); }

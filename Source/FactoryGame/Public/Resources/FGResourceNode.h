@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Resources/FGResourceNodeBase.h"
 #include "FGUseableInterface.h"
 #include "Resources/FGExtractableResourceInterface.h"
@@ -149,20 +150,19 @@ protected:
 	/** Called when a resource is extracted. Never called on infinite resource nodes. */
 	virtual void UpdateRadioactivity();
 
-public: // MODDING EDIT: protected -> public
+protected:
 	/** How pure the resource is */
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category = "Resources" ) // MODDING EDIT: BPRW
+	UPROPERTY(EditInstanceOnly, Category= "Resources" )
 	TEnumAsByte<EResourcePurity> mPurity;
 
 	/** How pure the resource is */
-	UPROPERTY( EditInstanceOnly, BlueprintReadWrite, Category = "Resources" ) // MODDING EDIT: BPRW
+	UPROPERTY( EditInstanceOnly, Category = "Resources" )
 	TEnumAsByte<EResourceAmount> mAmount;
 
 	/** How much resources is left in this node */
 	UPROPERTY( SaveGame, Replicated, EditInstanceOnly, BlueprintReadOnly, Category="Resources")
 	int32 mResourcesLeft;
 
-protected: // MODDING EDIT
 	/** Can this resource node be used for placing resource extractors on */
 	UPROPERTY( EditDefaultsOnly, Category = "Resources" )
 	bool mCanPlaceResourceExtractor;

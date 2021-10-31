@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "CoreMinimal.h"
 #include "FGSaveInterface.h"
@@ -113,25 +114,21 @@ struct FActiveStoryQueue
 	GENERATED_BODY()
 	
 	FActiveStoryQueue() :
-	StoryQueueClass( nullptr ),
-	StoryQueueIndex( 0 ),
-	MessageIndex( 0 ),
-	BarkMessageIndex( 0 ),
-	PendingMessageFromMilestone( false ),
-    PendingMessageTimer( 0.0f ),
-    TimeSinceLastMessage( 0.0f ),
-	StoryMessageCurrentlyPlaying( nullptr )
+    StoryQueueClass( nullptr ),
+    MessageIndex( 0 ),
+    PendingMessageFromMilestone( false ),
+    PendingMessageFromMilestoneTimer( 0.0f ),
+    TimeSinceLastQueueMessage( 0.0f ),
+	LastPoppedMessage( nullptr )
 	{};
 
-	FActiveStoryQueue( TSubclassOf<class UFGStoryQueue> storyQueueClass, int32 storyQueueIndex ) :
-	StoryQueueClass( storyQueueClass ),
-	StoryQueueIndex( storyQueueIndex ),
-	MessageIndex( 0 ),
-	BarkMessageIndex( 0 ),
-	PendingMessageFromMilestone( false ),
-	PendingMessageTimer( 0.0f ),
-	TimeSinceLastMessage( 0.0f ),
-	StoryMessageCurrentlyPlaying( nullptr )
+	FActiveStoryQueue( TSubclassOf<class UFGStoryQueue> storyQueueClass ) :
+    StoryQueueClass( storyQueueClass ),
+    MessageIndex( 0 ),
+    PendingMessageFromMilestone( false ),
+    PendingMessageFromMilestoneTimer( 0.0f ),
+    TimeSinceLastQueueMessage( 0.0f ),
+	LastPoppedMessage( nullptr )
 	{};
 
 	FORCEINLINE bool IsValid() const
@@ -143,31 +140,46 @@ struct FActiveStoryQueue
 
 	FORCEINLINE bool ContainsUnplayedMessages() const;
 
-	FORCEINLINE bool ContainsUnplayedBarkMessages() const;
+	FORCEINLINE bool CanPlayMessage() const;
 
 	TSubclassOf< class UFGMessageBase > PopMessage();
 
-	TSubclassOf< class UFGMessageBase > PopBarkMessage();
+	bool DeclineCall( TSubclassOf< class UFGAudioMessage > messageToDecline );
 
-	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Story" )
+	void UpdateTimers( float dt );
+	
+	UPROPERTY(SaveGame, BlueprintReadOnly, EditDefaultsOnly, Category = "Story" )
 	TSubclassOf<class UFGStoryQueue> StoryQueueClass;
 
-	int32 StoryQueueIndex;
-
+	UPROPERTY( SaveGame )
 	int32 MessageIndex;
 
-	int32 BarkMessageIndex;
-
+	UPROPERTY( SaveGame )
 	bool PendingMessageFromMilestone;
 
-	float PendingMessageTimer;
+	UPROPERTY( SaveGame )
+	float PendingMessageFromMilestoneTimer;
 
-	float TimeSinceLastMessage;
+	UPROPERTY( SaveGame )
+	float TimeSinceLastQueueMessage;
 
-	// The message we are waiting for to finish playing. This is used so we don't start ticking TimeSinceLastMessage until we actually played the message.
-	UPROPERTY()
-	TSubclassOf< class UFGMessageBase > StoryMessageCurrentlyPlaying;
+	TSubclassOf< class UFGMessageBase > LastPoppedMessage;
 
+};
+
+/**
+* Simple container class so we can have an array of event triggered messages stored in an asset instead of working with it inline.
+* Helps with organisation of story subsystem
+*/
+UCLASS( Abstract, Blueprintable )
+class FACTORYGAME_API UFGEventTriggeredMessages: public UObject
+{
+	GENERATED_BODY()
+public:
+	static TArray< FEventTriggeredMessage > GetEventTriggeredMessages( TSubclassOf< UFGEventTriggeredMessages > inClass );
+protected:
+	UPROPERTY( EditDefaultsOnly, Category = "Event Triggered Messages" )
+	TArray< FEventTriggeredMessage > mEventTriggeredMessages;
 };
 
 /**
@@ -186,28 +198,27 @@ public:
 	/** Get the Story Subsystem from a world context, this should always return something unless you call it really early. */
 	UFUNCTION( BlueprintPure, Category = "Story", DisplayName = "GetStorySubsystem", Meta = ( DefaultToSelf = "worldContext" ) )
     static AFGStorySubsystem* Get( UObject* worldContext );
-
-	// Begin AActor interface
-	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
-	// End AActor interface
 	
 	// Begin IFGSaveInterface
-	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
+	virtual void PreLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override {}
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
-	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override;
-	virtual bool NeedTransform_Implementation() override;
-	virtual bool ShouldSave_Implementation() const override;
+	virtual void GatherDependencies_Implementation( TArray< UObject* >& out_dependentObjects ) override {}
+	virtual bool NeedTransform_Implementation() override { return false; }
+	virtual bool ShouldSave_Implementation() const override { return true; }
 	// End IFSaveInterface
 
 	//~ Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	//~ End AActor interface
+	
+	UFUNCTION( BlueprintCallable, Category = "Story" )
+	float GetMaximumDelayForCall( TSubclassOf< class UFGAudioMessage > messageClass ) const;
 
-	UFUNCTION( BlueprintPure, Category = "Story" )
-	TSubclassOf< class UFGStoryQueue > GetActiveStoryQueueClass() const { return mActiveStoryQueueClass; } 
+	UFUNCTION( BlueprintCallable, Category = "Story" )
+	bool IsPriorityCall( TSubclassOf< class UFGAudioMessage > messageClass ) const;
 
 	/** Called when a schematic is unlocked */
 	UFUNCTION()
@@ -236,22 +247,31 @@ public:
 	/** Triggered when an audio message has finished playing. */
     void OnAudioMessageFinishedPlaying( TSubclassOf< class UFGMessageBase > messageClass );
 
-	/** Trigger the next story message in queue. If no story message is left in the queue nothing will happen*/
-	void TriggerNextStoryMessageInQueue();
+	/** Called when we want to decline a call with the given message */
+	void DeclineCall( TSubclassOf< class UFGAudioMessage > messageToDecline );
 
-	/** Trigger the next story message in queue. If we still have story messages left in the queue nothing will happen*/
-	void TriggerNextBarkMessageInQueue();
+	/** Send the given message to all players */
+	void SendMessageToAllPlayers( TSubclassOf< UFGMessageBase > message );
 
-	void GetStoryDebugData( TArray<FString>& out_debugData );
+	/** Trigger the next story message in given queue. If no story message is left in the queue nothing will happen */
+	void TriggerNextStoryMessageInQueue( FActiveStoryQueue& storyQueue );
 
+	/** Trigger the next story message in primary queue if there is any left */
+	void Cheat_TriggerNextPrimaryStoryMessageInQueue();
+	/** Trigger the next story message in the secondary queue with the given index if there is any left */
+	void Cheat_TriggerNextSecondaryStoryMessageInQueue( int32 storyQueueIndex );
+	/** Trigger the next floating message in primary queue if there is any left */
+	void Cheat_TriggerNextFloatingMessageInPrimaryQueue();
+	/** Trigger a random triggered barks message if there is any left */
+	void Cheat_TriggerRandomTriggeredBarksMessage();
 	/** Only for cheat menu. Starts the next story queue in the list if there is one available. Doesn't take into account for depencies or if the current queue is finished */
-	void StartNextStoryQueue();
-
+	void Cheat_StartNextStoryQueue();
 	/** Only for cheat menu. Resets all story queues and start from the begining */
-	void ResetAllStoryQueues();
-
+	void Cheat_ResetAllStoryQueues();
 	/** Only for cheat menu. Reset the current story queue */
-	void ResetCurrentStoryQueue();
+	void Cheat_ResetCurrentStoryQueue();
+	
+	void GetStoryDebugData( TArray<FString>& out_debugData );
 	
 protected:
 	/** Sets up initial delegates */
@@ -263,36 +283,65 @@ private:
 	void OnGamePhaseUpdated( EGamePhase gamePhase );
 	
 	UFUNCTION()
-	void UpdateStoryQueue();
+	void UpdateStoryQueues();
+
+	void UpdatePrimaryStoryQueue();
+
+	void TickStoryQueues( float dt );
 	
 public:
 	
 	UPROPERTY()
 	TArray< class AFGCharacterPlayer* > mActivePlayers;
 private:
-	UPROPERTY( EditDefaultsOnly, Category = "Story" )
-	TArray< TSubclassOf< class UFGStoryQueue > > mStoryQueues;
-
-	UPROPERTY( SaveGame )
-	FActiveStoryQueue mActiveStoryQueue;
-
-	/** Part of mActiveStoryQueue but we only need the class replicated */ 
-	UPROPERTY( Replicated )
-	TSubclassOf< class UFGStoryQueue > mActiveStoryQueueClass;
-	
 	/** array of schematic/message pairs */
-	UPROPERTY( EditDefaultsOnly, Category = "Story|Schematic" )
+	UPROPERTY( EditDefaultsOnly, Category = "Gameplay Narrative" )
 	TArray< FSchematicMessagePair > mSchematicMessageData;
 
 	/** array of item descriptor class/message and if they have been found already */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Story|Item" )
+	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Gameplay Narrative" )
 	TArray< FItemFoundData > mItemFoundData;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Story|Research" )
+	UPROPERTY( EditDefaultsOnly, Category = "Gameplay Narrative" )
 	TArray<FResearchTreeMessageData> mResearchTreeMessageData;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Story|Research" )
+	UPROPERTY( EditDefaultsOnly, Category = "Gameplay Narrative" )
 	TSubclassOf<class UFGMessageBase> mResearchTimerCompleteMessage;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Primary Story Narrative" )
+	TArray< TSubclassOf< class UFGStoryQueue > > mPrimaryStoryQueues;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Secondary Story Narrative" )
+	TArray< TSubclassOf< class UFGStoryQueue > > mSecondaryStoryQueues;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Triggered Barks" )
+	TArray< TSubclassOf< class UFGEventTriggeredMessages > > mTriggeredBarks;
+
+	UPROPERTY( SaveGame )
+	FActiveStoryQueue mActivePrimaryStoryQueue;
+
+	UPROPERTY( SaveGame )
+	TArray<FActiveStoryQueue> mActiveSecondaryStoryQueues;
+
+	UPROPERTY( SaveGame )
+	int32 mNextPrimaryStoryQueueIndex;
+
+	/** How long has it been since we played any narrative message */
+	UPROPERTY( SaveGame )
+	float mTimeSinceLastGlobalMessage;
+
+	/** Minimum time we wait between story queue messages. i.e those that are triggered by time passed */
+	UPROPERTY( EditDefaultsOnly, Category = "Narrative timer" )
+	float mMinimumDelayBetweenStoryQueueMessages;
+
+	TSubclassOf< class UFGMessageBase > mCallWaitingToBeAnswered;
+
+	UPROPERTY( Transient )
+	TArray< FEventTriggeredMessage > mPendingFloatingMessages;
+
+	UPROPERTY( Transient )
+	TArray< FEventTriggeredMessage > mPendingTriggeredBarks;
+	
 };
 
 FORCEINLINE TSubclassOf< UFGSchematic > FSchematicMessagePair::GetSchematic() const

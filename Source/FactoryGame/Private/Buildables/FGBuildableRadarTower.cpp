@@ -3,42 +3,40 @@
 #include "Buildables/FGBuildableRadarTower.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "FGPowerInfoComponent.h"
+#include "Components/SceneComponent.h"
 
 #if WITH_EDITOR
 void AFGBuildableRadarTower::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 AFGBuildableRadarTower::AFGBuildableRadarTower() : Super() {
-	this->mMinRevealRadius = 60000;
-	this->mMaxRevealRadius = 150000;
+	this->mMinRevealRadius = 60000.0;
+	this->mMaxRevealRadius = 150000.0;
 	this->mNumRadarExpansionSteps = 4;
-	this->mRadarExpansionInterval = 300;
-	this->mPowerConsumptionExponent = 1.60000002384186;
-	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
-	this->mMinimumProducingTime = 2;
-	this->mMinimumStoppedTime = 5;
-	this->mNumCyclesForProductivity = 20;
-	this->mPendingPotential = 1;
-	this->mMinPotential = 0.00999999977648258;
-	this->mMaxPotential = 1;
-	this->mMaxPotentialIncreasePerCrystal = 0.5;
-	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
-	this->mFluidStackSizeMultiplier = 1;
-	this->mSignificanceRange = 18000;
-	this->mHologramClass = AFGFactoryHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
-	this->NetUpdateFrequency = 1;
+	this->mRadarExpansionInterval = 300.0;
+	this->mCurrentExpansionStep = 0;
+	this->mTimeToNextExpansion = 0.0;
+	this->mActorRepresentationTexture = nullptr;
+	this->NetUpdateFrequency = 1.0;
 }
 void AFGBuildableRadarTower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+bool AFGBuildableRadarTower::AddAsRepresentation(){ return bool(); }
+bool AFGBuildableRadarTower::UpdateRepresentation(){ return bool(); }
+bool AFGBuildableRadarTower::RemoveAsRepresentation(){ return bool(); }
+bool AFGBuildableRadarTower::IsActorStatic(){ return bool(); }
+FVector AFGBuildableRadarTower::GetRealActorLocation(){ return FVector(); }
+FRotator AFGBuildableRadarTower::GetRealActorRotation(){ return FRotator(); }
+UTexture2D* AFGBuildableRadarTower::GetActorRepresentationTexture(){ return nullptr; }
+FText AFGBuildableRadarTower::GetActorRepresentationText(){ return FText(); }
+void AFGBuildableRadarTower::SetActorRepresentationText(const FText& newText){ }
+FLinearColor AFGBuildableRadarTower::GetActorRepresentationColor(){ return FLinearColor(); }
+void AFGBuildableRadarTower::SetActorRepresentationColor(FLinearColor newColor){ }
+ERepresentationType AFGBuildableRadarTower::GetActorRepresentationType(){ return ERepresentationType(); }
+bool AFGBuildableRadarTower::GetActorShouldShowInCompass(){ return bool(); }
+bool AFGBuildableRadarTower::GetActorShouldShowOnMap(){ return bool(); }
+EFogOfWarRevealType AFGBuildableRadarTower::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
+float AFGBuildableRadarTower::GetActorFogOfWarRevealRadius(){ return float(); }
+ECompassViewDistance AFGBuildableRadarTower::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
+void AFGBuildableRadarTower::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 void AFGBuildableRadarTower::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableRadarTower::Factory_StartProducing(){ }
 void AFGBuildableRadarTower::Factory_StopProducing(){ }

@@ -89,6 +89,15 @@ struct FSaveCustomVersion
 		// 2020-06-02 Check if we have saved items in our inventory that is relevant to know if they are picked up
 		CheckPickedUpItems,
 
+		// 2021-02-05 Migrate Building Colros to FCustomUserColorData
+		PerInstanceCustomColors,
+
+		// 2021-09-14 Fix incorrect positioning of double ramp meshes. We then adjust position of double ramps in older saves in order to account for the change.
+		DoubleRampPositioning,
+
+		// 2021-09-21 Migrate FGTrain from native only to a blueprint class BP_Train.
+		TrainBlueprintClassAdded,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

@@ -2,4 +2,6 @@
 
 #include "FGRecipeProducerInterface.h"
 
-UFGRecipeProducerInterface::UFGRecipeProducerInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGRecipeProducerInterface::UFGRecipeProducerInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+}

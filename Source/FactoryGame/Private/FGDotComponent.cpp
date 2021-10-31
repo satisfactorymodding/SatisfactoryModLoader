@@ -6,6 +6,7 @@
 void UFGDotComponent::CheckForErrors(){ }
 #endif 
 UFGDotComponent::UFGDotComponent() : Super() {
+	this->mDotClass = nullptr;
 	this->bAutoActivate = true;
 }
 void UFGDotComponent::PostLoad(){ Super::PostLoad(); }

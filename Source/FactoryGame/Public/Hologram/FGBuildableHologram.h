@@ -2,8 +2,72 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGHologram.h"
+#include "Buildables/FGBuildable.h"
 #include "FGBuildableHologram.generated.h"
+
+UENUM()
+enum class EGuideLineType : uint8
+{
+	GLT_Default			UMETA( DisplayName = "Default" ),
+	GLT_ConveyorBelt	UMETA( DisplayName = "Conveyor Belt" ),
+	GLT_Pipe			UMETA( DisplayName = "Pipe" )
+};
+
+USTRUCT()
+struct FFGHologramGuidelineData
+{
+	GENERATED_BODY()
+
+	FFGHologramGuidelineData()
+		: mGuidelineObject( nullptr )
+		, mGuidelineLocationOffset( 0.0f )
+		, mGuidelineType( EGuideLineType::GLT_Default )
+	{}
+	
+	FFGHologramGuidelineData( class UObject* guidelineObject, const FTransform& transform, const FVector& guidelineLocationOffset, EGuideLineType type )
+		: mGuidelineObject( guidelineObject )
+		, mTransform( transform )
+		, mGuidelineLocationOffset( guidelineLocationOffset )
+		, mGuidelineType( type )
+	{	
+	}
+
+	// The object this guideline was created from
+	UPROPERTY()
+	class UObject* mGuidelineObject;
+
+	// Transform of the object the guideline was created for
+	FTransform mTransform;
+	
+	// How much the guideline location should be offset, in case of snapping with components
+	FVector mGuidelineLocationOffset;
+
+	// What type of guideline this is
+	EGuideLineType mGuidelineType;
+};
+
+USTRUCT()
+struct FFGHologramGuidelineSnapResult
+{
+	GENERATED_BODY()
+
+	FFGHologramGuidelineSnapResult()
+		: mSnapLocation( 0.0f )
+		, mSuccessfulSnap( false )
+	{
+	}
+
+	// The data for the guideline we snapped to
+	FFGHologramGuidelineData mSnappedGuidelineData;
+
+	// The resulting location of the snap
+	FVector mSnapLocation;
+
+	// Whether or not we successfully snapped to a guideline
+	bool mSuccessfulSnap;
+};
 
 /**
  * The base class for building holograms.
@@ -21,7 +85,6 @@ public:
 	static FName mInputConnectionMeshTag;
 	static FName mOutputConnectionMeshTag;
 	static FName mNeutralConnectionMeshTag;
-	static FName mClearanceComponentName;
 	static FName mPowerConnectionMeshTag;
 
 public:
@@ -30,27 +93,71 @@ public:
 
 	AFGBuildableHologram();
 
+	virtual void BeginPlay() override;
+
 	/** Set the buildable class for this hologram. Called from when spawning an hologram, before before BeginPlay is called. */
 	void SetBuildableClass( TSubclassOf< class AFGBuildable > buildableClass );
 
 	// AFGHologram interface
 	/** Net Construction Messages */
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;
+	
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
-	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
+	virtual void PreHologramPlacement() override;
+	virtual void PostHologramPlacement() override;
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
+	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	// End AFGHologram interface
 
 	class AFGBuildable* GetSnappedBuilding() { return mSnappedBuilding; }
+
+	/** Gets a list of all factory connection components of this hologram. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	const TArray< class UFGFactoryConnectionComponent* >& GetCachedFactoryConnectionComponents() const { return mCachedFactoryConnectionComponents; }
+	
+	/** Gets a list of all power connection components of this hologram. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	const TArray< class UFGPowerConnectionComponent* >& GetCachedPowerConnectionComponents() const { return mCachedPowerConnectionComponents; }
+
+	/** Gets a list of all pipe connection components of this hologram. */
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	const TArray< class UFGPipeConnectionComponent* >& GetCachedPipeConnectionComponents() const { return mCachedPipeConnectionComponents; }
+
+	/** Whether or not the specified buildable should be considered for our guideline alignments. */
+	virtual bool ShouldBuildableBeConsideredForGuidelines( class AFGBuildable* buildable ) const;
+
+	/** Checks if connections face the same direction and are in line with eachother in order for guidelines to be used. */
+	bool AreConnectionsAlignedForGuidelines( class UFGConnectionComponent* connection, class UFGConnectionComponent* otherConnection, const FVector& connectionOffset, float allowedAngleDeviation ) const;
+
+	/** Checks whether there's anything obstructing guidelines between start and end. */
+	bool IsClearPathForGuidelines( const FVector& start, const FVector& end, TSet< class AActor* > excludedActors ) const;
+
+	/** Sweep for nearby guideline sources the hologram can snap to. */
+	void SweepForNearbyGuidelines( const FVector& hologramLocation, TArray< FFGHologramGuidelineData >& out_guidelineData, float allowedAngleDeviation = 10.0f ) const;
+	
+	/** Used to snap to nearby guidelines of other actors. */
+	FFGHologramGuidelineSnapResult SnapHologramLocationToGuidelines( const FVector& hologramLocation );
+
+	/** Updates the visual representation for our snapped guideline. */
+	void UpdateGuidelineVisuals( const TArray< FFGHologramGuidelineData >& guidelineData );
+
+	void ClearGuidelineVisuals();
+
+	/**
+     * Function used to filter unwanted attachment points on the buildable based on hitresult. Such as removing all points which are pointing sideways.
+     */
+    virtual void FilterAttachmentPoints( TArray< const FFGAttachmentPoint* >& Points, class AFGBuildable* pBuildable, const FHitResult& HitResult ) const;
 
 protected:
 	// Begin AFGHologram interface
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void CheckValidPlacement() override;
 	virtual int32 GetRotationStep() const override;
-	// End AFGHologram interface
+	// End AFGHologram interface	
 
 	/** Helper function to snap to the factory building grid. */
 	void SnapToFloor( class AFGBuildable* floor, FVector& location, FRotator& rotation );
@@ -58,7 +165,7 @@ protected:
 	/** Helper function to snap to any side of a foundation.
 	 *  "location" should start as the position you want to snap.
 	 *  Both "location" and "rotation" will contain the result once done. */
-	void SnapToFoundationSide( class AFGBuildableFoundation* foundation, const FVector& localSideNormal, FVector& location, FRotator& rotation );
+	void SnapToFoundationSide( class AFGBuildableFoundation* foundation, const FVector& localSideNormal, EAxis::Type snapAxis, FVector& location, FRotator& rotation );
 
 	/** Helper function to snap to the side of a wall. */
 	void SnapToWall(
@@ -81,23 +188,15 @@ protected:
 	FORCEINLINE float GetMinPlacementFloorZ() const { return FMath::Cos( FMath::DegreesToRadians( mMaxPlacementFloorAngle ) ); }
 
 	/**
-	 * Helper to check if we stay clear of other buildings.
-	 * @return true if we stay clear of other buildings; false in we're overlapping other buildings clearance.
+	 * Function used to snap to other clearance boxes if our own clearance box is overlapping with them.
 	 */
-	virtual void CheckClearance();
+	void HandleClearanceSnapping( FVector& newLocation, FRotator& newRotation, const FHitResult& hitResult );
 
 	/**
-	 * Check clearance for specific a primitive and adds appropriate disqualifiers.
-	 * Do not override this, use CheckClearance in subclasses.
-	 * @return true if check found an overlap and added an disqualifier.
+	 * Function used to determine if a buildable is identical to ourselves in terms of position, rotation, etc.
+	 * Used to avoid overlapping buildables.
 	 */
-	bool CheckClearanceForPrimitive( UPrimitiveComponent* comp, const FComponentQueryParams& params = FComponentQueryParams::DefaultComponentQueryParams, bool allowSnapAndMoveAlongBuildings = false );
-
-	/**
-	 * Check clearance for specific shape and adds appropriate disqualifiers.
-	 * Used if a hologram needs cheap manual shape construction and checking and don't want any of the snapping logics and such
-	 */
-	bool CheckClearanceForShapeSimple( struct FCollisionShape& shape, FTransform transform, ECollisionChannel chanel, const FComponentQueryParams& params = FComponentQueryParams::DefaultComponentQueryParams );
+	virtual bool IsHologramIdenticalToBuildable( class AFGBuildable* buildable, const FVector& hologramLocationOffset ) const;
 
 	/**
 	* Configure function: Configuring the actor created from the hologram when executed.
@@ -158,9 +257,14 @@ protected:
 	void ConfigureBuildEffect( class AFGBuildable* inBuildable );
 
 	// Begin AFGHologram interface
-	virtual void SetupClearance( class UBoxComponent* boxComponent ) override;
+	virtual void SetupClearance( class UFGClearanceComponent* clearanceComponent ) override;
+	virtual void HandleClearanceOverlap( const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance ) override;
 	virtual void SetMaterial( class UMaterialInterface* material ) override;
+	virtual class UPrimitiveComponent* GetClearanceOverlapCheckComponent() const override;
 	// End AFGHologram interface
+
+	/** Call this to replace the transform and extent of the hologram clearance instead of setting it directly. */
+	void SetHologramClearanceTransformAndExtent( const FVector& newRelativeLocation, const FRotator& newRelativeRotation, const FVector& newExtent );
 
 	/** Setup the mesh for visualizing connections. */
 	void SetupFactoryConnectionMesh( class UFGFactoryConnectionComponent* connectionComponent );
@@ -172,12 +276,24 @@ protected:
 	TBuildableClass* GetDefaultBuildable() const
 	{
 		TBuildableClass* cdo = mBuildClass->GetDefaultObject< TBuildableClass >();
-		check( cdo );
+		fgcheck( cdo );
 		return cdo;
 	}
+	
+	/**
+	 * Returns best matching candidate for attaching to an attachment point.
+	 * Attachment points are in local space.
+	 */
+	virtual const FFGAttachmentPoint* SelectCandidateForAttachment( const TArray< const FFGAttachmentPoint* >& Candidates, class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FHitResult& HitResult );
+	
+	/**
+	 * Function called in order to attach to another point using one of our own.
+	 * The attachment points are in local space.
+	 */
+	virtual void AttachToBuildablePoint( class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint );
 
-private:
-	bool ApplyBuildingClearnaceSnapping( FRotator& newRotation, FVector& newLocation, AFGBuildable* snapTarget, FVector traceStart, FVector traceEnd );
+	void DelayApplyPrimitiveData();
+	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
 
 protected:
 	/** The maximum allowed angle on the floor for this hologram to be placed on (in degrees). */
@@ -186,23 +302,9 @@ protected:
 	UPROPERTY()
 	class UFGFactoryLegsComponent* mLegs;
 
-	FVector mOriginalPlacementLocation; //used to revert back placement modifications if the placement failed
-	bool mHasSetOriginalPlacementLocation = false;
-
-	bool  mPlacingOnSnapGrid; //used for the overlap snap logics on fonudations
-
-	bool mHaveSnappedWithPlacementOverlap = false; //used to make sure we only do snapping once, or we might get pushed back in to what we moved out from
-
 	//If set to true, the building will be allowed to snap to 45 degree intervals on fonudations instead of only 90 as the default.
-	UPROPERTY( EditDefaultsOnly )
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	bool mUseGradualFoundationRotations = false;
-
-	UPROPERTY( EditDefaultsOnly, meta = ( EditCondition = "mUseBuildClearanceOverlapSnapp" ) )
-	bool mBlockRepositionZOnClearanceOverlapSnapp = false;
-
-	UPROPERTY( EditDefaultsOnly, meta = ( EditCondition = "mUseBuildClearanceOverlapSnapp" ) )
-	bool mBlockResizeOnClearanceOverlapSnapp = false;
-
 
 	/** If the frame mesh should be used to highlight connections in hologram. */
 	uint32 mUseConveyorConnectionFrameMesh : 1;
@@ -216,16 +318,74 @@ protected:
 	/** If the arrow should be used to highlight the pipe connections in hologram */
 	uint32 mUsePipeConnectionArrowMesh : 1;
 
+	/** Cached array of all our factory connection components. */
+	TArray< class UFGFactoryConnectionComponent* > mCachedFactoryConnectionComponents;
 
+	/** Cached array of all our factory connection components. */
+	TArray< class UFGPowerConnectionComponent* > mCachedPowerConnectionComponents;
 
-	/** Component to check build clearance to other buildings. */
+	/** Cached array of all our factory connection components. */
+	TArray< class UFGPipeConnectionComponent* > mCachedPipeConnectionComponents;
+
+	/** Real clearance box extents. We save this because we shrink the clearance box a little bit to avoid rounding errors. */
+	FVector mRealClearanceBoxExtent;
+
+	/** Component used to check for clearance overlaps instead of the clearance box, if available. More closely matches the shape of the buildable. */
 	UPROPERTY()
-	class UBoxComponent* mClearanceBox;
+	class UFGComplexClearanceComponent* mComplexClearanceComponent;
+	
+	/** Mesh component used to display the active guideline */
+	UPROPERTY()
+	class UInstancedStaticMeshComponent* mInstancedGuidelineMeshComponent;
+
+	UPROPERTY()
+	FFGHologramGuidelineSnapResult mGuidelineSnapResult;
 
 	/** If we have snapped to another buildable, i.e. foundation, floor etc, this is it. */
 	UPROPERTY( CustomSerialization )
 	class AFGBuildable* mSnappedBuilding;
 
-	bool mIsAimingAtOtherBuilding = false;
-	bool mDidSnapDuetoClearance = false;
+	UPROPERTY( Transient )
+	const class UFGClearanceComponent* mSnappedClearanceBox;
+
+	bool mDidSnapDuetoClearance;
+
+	/** Whether or not we should check for valid floor. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mNeedsValidFloor;
+
+	/** Cached list of attachment points. */
+	TArray< FFGAttachmentPoint > mCachedAttachmentPoints;
+
+	/** The attachment point we've snapped to. */
+	FFGAttachmentPoint* mSnappedAttachmentPoint;
+	FFGAttachmentPoint* mPreviousSnappedAttachmentPoint;
+
+	/** Our own attachment point we've used for snapping. */
+	const FFGAttachmentPoint* mLocalSnappedAttachmentPoint;
+
+	/** Whether or not the hologram should align its rotation when snapping with attachment points so that the points face eachother. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mAlignRotationWithAttachmentPointDirection;
+
+	/** Whether or not we have to snap to an attachment point. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mMustSnapToAttachmentPoint;
+
+	/** Whether or not we can snap with our own attachment points to other objects. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mCanSnapWithAttachmentPoints;
+
+	/** How far away an attachment point is allowed to be in order to be valid for snapping. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	float mAttachmentPointSnapDistanceThreshold;
+
+	UPROPERTY()
+	FFactoryCustomizationData mCustomizationData;
+
+	/** The Color Swatch to use when building this hologram */
+	UPROPERTY()
+	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > mDefaultSwatch;
+
+	int32 mSelectedHologramAttachmentPointIndex;
 };

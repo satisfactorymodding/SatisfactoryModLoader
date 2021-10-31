@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGInventoryComponent.h"
 #include "FGInventoryComponentTrash.generated.h"
 

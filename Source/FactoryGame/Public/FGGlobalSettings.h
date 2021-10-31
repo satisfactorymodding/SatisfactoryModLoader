@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "FGGlobalSettings.generated.h"
 
@@ -37,6 +38,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Settings" )
 	static class UFGSignSettings* GetSignSettingsCDO();
 
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static class UFGIconLibrary* GetIconLibraryCDO();
+
+	UFUNCTION( BlueprintPure, Category = "Settings" )
+	static class UFGServerManagerSettings* GetServerManagerSettingsCDO();
+
 protected:
 	/** Settings for resources */
 	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
@@ -63,6 +70,13 @@ protected:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
 	TSubclassOf< class UFGSignSettings > mSignSettings;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
+	TSubclassOf< class UFGIconLibrary > mIconLibrary;
+
+	/** Settings for the server manager, which lives on the client */
+	UPROPERTY( EditDefaultsOnly, Category = "Settings" )
+	TSubclassOf< class UFGServerManagerSettings > mServerManagerSettings;
 
 	/** Default class for specifying the settings class */
 	UPROPERTY( config, noclear )

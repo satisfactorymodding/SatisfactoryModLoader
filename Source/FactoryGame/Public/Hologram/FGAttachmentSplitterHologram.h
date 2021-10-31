@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGConveyorAttachmentHologram.h"
 #include "FGAttachmentSplitterHologram.generated.h"
@@ -15,6 +16,10 @@ class FACTORYGAME_API AFGAttachmentSplitterHologram : public AFGConveyorAttachme
 	GENERATED_BODY()
 public:
 	AFGAttachmentSplitterHologram();
+
+	// Begin AActor Interface
+	virtual void BeginPlay() override;
+	// End AActor Interface
 
 	// Begin AFGHologram Interface
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Camera/CameraModifier.h"
 #include "FGCameraModifierSlide.generated.h"

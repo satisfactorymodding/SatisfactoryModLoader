@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "Styling/SlateBrush.h"
 #include "FGItemDescriptor.generated.h"
@@ -90,6 +91,14 @@ public:
 	/** How much radiation this item gives out, 0 means it's not radioactive. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static float GetRadioactiveDecay( TSubclassOf< UFGItemDescriptor > inClass );
+	FORCEINLINE static float GetRadioactiveDecay_inline( TSubclassOf< UFGItemDescriptor > inClass )
+	{
+		if( inClass )
+		{
+			return inClass->GetDefaultObject< UFGItemDescriptor >()->mRadioactiveDecay;
+		}
+		return 0.0f;		
+	}
 
 	/** Used to get the resource name in blueprints */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
@@ -149,8 +158,29 @@ public:
 	static bool RememberPickUp( TSubclassOf< UFGItemDescriptor > inClass );
 
 	/** Returns the item category */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
-	static TSubclassOf< UFGItemCategory > GetItemCategory( TSubclassOf< UFGItemDescriptor > inClass );
+	UE_DEPRECATED(4.26, "Use GetCategory instead")
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item",  meta = ( DeprecatedFunction, DeprecationMessage = "GetItemCategory is deprecated, use GetCategory instead" ) )
+	static TSubclassOf< class UFGItemCategory > GetItemCategory( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Get the category for this descriptor. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Organization" )
+	static TSubclassOf< class UFGCategory > GetCategory( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Get the category for this descriptor. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor|Organization" )
+	static void GetSubCategories( TSubclassOf< UFGItemDescriptor > inClass, TArray< TSubclassOf< class UFGCategory > >& out_subCategories );
+
+	/** Get the category for this descriptor of the given output class. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor|Organization", meta = (DeterminesOutputType = "outputCategoryClass") )
+	static TArray< TSubclassOf< class UFGCategory > > GetSubCategoriesOfClass( TSubclassOf< UFGItemDescriptor > inClass, TSubclassOf< class UFGCategory > outputCategoryClass );
+
+	/** Get the quick switch group for this building descriptor. */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Organization" )
+	static TSubclassOf< class UFGQuickSwitchGroup > GetQuickSwitchGroup( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** The order we want stuff in the build menu, lower is earlier */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Organization" )
+	static float GetMenuPriority( TSubclassOf< UFGItemDescriptor > inClass );
 
 	/** Returns the color of this is a fluid. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Fluid" )
@@ -269,7 +299,7 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( EditCondition = mUseDisplayNameAndDescription, HideEditConditionToggle, MultiLine = true ) )
 	FText mDescription;
 
-public: // MODDING EDIT: protected -> public
+protected:
 	/** Abbreviated name of the item */
 	UPROPERTY( EditDefaultsOnly, Category = "Item", meta = ( EditCondition = mUseDisplayNameAndDescription, HideEditConditionToggle ) )
 	FText mAbbreviatedDisplayName;
@@ -323,9 +353,20 @@ public: // MODDING EDIT: protected -> public
 	UPROPERTY( EditDefaultsOnly, Category = "Preview", meta = ( ShowOnlyInnerProperties, NoAutoJSON = true) )
 	FItemView mPreviewView;
 
-	/** The category for this item */
-	UPROPERTY( EditDefaultsOnly, Category = "Item" )
-	TSubclassOf< class UFGItemCategory > mItemCategory;
+	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
+	TSubclassOf< class UFGCategory > mCategory;
+
+	/** The sub categories in the build menu for this building */
+	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
+	TArray< TSubclassOf< class UFGCategory > > mSubCategories;
+
+	/** The quick switch group this building is sorted into in the build menu, used for fast switching between similiar buildings */
+	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
+	TSubclassOf< class UFGQuickSwitchGroup > mQuickSwitchGroup;
+
+	/** The order where this is displayed is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N] */
+	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
+	float mMenuPriority;
 
 #if WITH_EDITORONLY_DATA
 	/** Internal variable used when calculating the bounds of a descriptor */
@@ -402,6 +443,19 @@ public: // MODDING EDIT: protected -> public
 	int32 mResourceSinkPoints;
 
 private:
+	// BEGIN DEPRECATED
+	/** DEPRECATED @todok2 we should remove this when we are sure everything works but leaving it for now */
+	UPROPERTY( VisibleDefaultsOnly, Category = "DEPRECATED" )
+	TSubclassOf< class UFGItemCategory > mItemCategory;
+	
+	/** DEPRECATED @todok2 we should remove this when we are sure everything works but leaving it for now */
+	UPROPERTY( VisibleDefaultsOnly, Category = "DEPRECATED" )
+	TSubclassOf< class UFGCategory > mBuildCategory;
+	
+	/** DEPRECATED @todok2 we should remove this when we are sure everything works but leaving it for now */
+	UPROPERTY( VisibleDefaultsOnly, Category = "DEPRECATED" )
+	float mBuildMenuPriority;
+	// END DEPRECATED
 
 	/* Index used by the conveyor item subsystem.
 	 * Written onto the mutable default object. */

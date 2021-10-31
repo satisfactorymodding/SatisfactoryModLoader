@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
@@ -48,6 +49,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	void GetAllAvailableRecipes( TArray< TSubclassOf< UFGRecipe > >& out_recipes );
 
+	/** Gets all available Customization Recipes. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
+	void GetAllAvailableCustomizationRecipes( TArray< TSubclassOf< UFGCustomizationRecipe > >& out_recipes );
+
 	/** Gets the available recipes for the given class, may not be null. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	void GetAvailableRecipesForProducer( TSubclassOf< UObject > forProducer, TArray< TSubclassOf< UFGRecipe > >& out_recipes );
@@ -62,7 +67,11 @@ public:
 
 	/** Is the given buildable available to build? */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Recipe" )
-    bool IsBuidlingAvailable( TSubclassOf< class AFGBuildable > buildableClass ) const;
+    bool IsBuildingAvailable( const TSubclassOf< class AFGBuildable > buildableClass ) const;
+
+	/** Gets a list of available buildings inheriting from a certain buildable class. */
+	template< typename BuildingType >
+	TArray< TSubclassOf< BuildingType > > GetAvailableBuildingsOfType( ) const;
 
 	/** Find all recipes using the given item as an ingredient. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Recipe" )
@@ -96,13 +105,31 @@ private:
     void OnRep_AvailableRecipes();
 	
 private:
-	//MODDING EDIT: Expose to AModContentRegistry
-	friend class AModContentRegistry;
 	/** All recipes that are available to the producers, i.e. build gun, workbench, manufacturers etc. */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_AvailableRecipes )
 	TArray< TSubclassOf< UFGRecipe > > mAvailableRecipes;
+
+	/** All customization Recipes. A subset of all recipes for quicker customization look ups */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< TSubclassOf< UFGCustomizationRecipe > > mAvailableCustomizationRecipes;
 
 	/** All buildings that are available to produce in build gun. Generated from mAvailableRecipes. */
 	UPROPERTY( Transient )
 	TArray< TSubclassOf< class AFGBuildable > > mAvailableBuildings;
 };
+
+template< typename BuildingType >
+TArray< TSubclassOf< BuildingType > > AFGRecipeManager::GetAvailableBuildingsOfType() const
+{
+	TArray< TSubclassOf< BuildingType > > result;
+
+	for( const auto building : mAvailableBuildings )
+	{
+		if( building->IsChildOf( BuildingType::StaticClass() ) )
+		{
+			result.Add( TSubclassOf< BuildingType >( building ) );
+		}
+	}
+	
+	return result;
+}

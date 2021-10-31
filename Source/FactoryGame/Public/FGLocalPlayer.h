@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FactoryGame.h" // MODDING EDIT: no PCH
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGOnlineSessionClient.h"
@@ -10,9 +10,9 @@
 #include "OnlineSubsystemTypes.h"
 #include "FGErrorMessage.h"
 #include "UObject/CoreOnline.h"
+#include "EOSAccountHelpers.h"
 #include "FindSessionsCallbackProxy.h"
-// MODDING EDIT: Online stuff...
-//#include "EOSSDKForwards.h"
+#include "EOSSDKForwards.h"
 #include "PlayerPresenceState.h"
 #include "FGLocalPlayer.generated.h"
 
@@ -55,18 +55,6 @@ enum ELoginState
 	LS_FailedToLogin	UMETA(DisplayName = "FailedToLogin"),
 	LS_LoggingIn		UMETA(DisplayName="LoggingIn"),
 	LS_LoggedIn			UMETA(DisplayName="LoggedIn")
-};
-
-UENUM(BlueprintType)
-enum class ECreateSessionState : uint8
-{
-	CSS_NotCreateingSession,
-	CSS_CreatingSession,
-	CSS_DestroyingOldSession,
-	CSS_UpdatingPresence,
-	CSS_WaitingForPresenceToUpdate,
-	CSS_WaitingForLogin
-	
 };
 
 USTRUCT(BlueprintType)
@@ -113,60 +101,9 @@ FORCEINLINE uint32 GetTypeHash( const FFGOnlineFriend& onlineFriend )
 	return 0;
 }
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreateSessionStateChanged, ECreateSessionState, newState );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnMultiplayerStatusUpdated );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnAccountConnectionComplete, const FName, currentPlatform, EEosAccountConnectionResult, result );
 
-
-struct FSessionInformation
-{
-	FSessionInformation() :
-		MapName(TEXT("")),
-		Options(TEXT("")),
-		SaveSessionName(TEXT("")),
-		IsSessionCreationInFlight(false),
-		IsOfflineGame( false )
-	{
-	}
-
-	void Init( const FString& InMapName, const FString& InOptions, const FString& InSessionName, ESessionVisibility InVisibility );
-	void SendAnalytics( UWorld* world  );
-
-	void MarkAsOffline();
-
-	void Done()
-	{
-		IsSessionCreationInFlight = false;
-	}
-
-	void SetState( ECreateSessionState newState, FOnCreateSessionStateChanged& createSessionChanged );
-
-	ECreateSessionState GetState() const { return State; }
-	
-	/** Map we want to travel to */
-	FString MapName;
-	
-	/** Options when starting map */
-	FString Options;
-	
-	/** Name of the session */
-	FString SaveSessionName;
-	
-	/** Session visibility */
-	ESessionVisibility Visibility;
-
-	/** The name of the visiblity string passed */
-	static const TCHAR* VisibilityOptionName;
-	static const TCHAR* IpSocketString;
-
-	/** If true, we are creating a session and won't try to create any other at the same time */
-	bool IsSessionCreationInFlight;
-
-	/** If true, then we are creating a offline game */
-	bool IsOfflineGame;
-private:
-	ECreateSessionState State;
-};
 
 // Workaround as it seems like you can't have a TArray<FFGOnlineFriends> exposed to a Dynamic multicast delegate
 USTRUCT(BlueprintType)
@@ -264,6 +201,8 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Online")
     bool GetContinueWithoutMultiplayer() const { return mContinueWithoutMultiplayer; }
 
+	void SetupServerAndTravelToMap( const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility );
+
 	/**
 	 * Get the list of friends of the current user
 	 * @param out_friends - the list of the friends if this returns true
@@ -275,9 +214,6 @@ public:
 	/** Try to autologin to online service, don't try again if we have failed */
 	UFUNCTION(BlueprintCallable,Category="Online")
 	void AutoLogin();
-
-	// @todo: Potentially move to UFGOnlineSessionClient
-	void SetupServerAndTravelToMap( const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility );
 
 	/** Make sure our session presence patches the specified presence */
 	void CopyPresenceDataToLocalPresenceAndPushToServer( const TSharedRef<FOnlineUserPresence>& presence );
@@ -382,25 +318,8 @@ protected:
 	void OnPresenceReceivedSteam(const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence);
 	//~End OnlinePresence deleages
 
-	//* Ends the current session. If successfully ended session it will call DestroyCurrentSession_SetupServer, otherwise throw an error */
-	void EndCurrentSession_SetupServer( FName sessionName );
-
-	//* Destroys the current session. If successfully destroyed session it will call OnPreviousSessionCleanedup_SetupServer, otherwise throw an error */
-	void DestroyCurrentSession_SetupServer( FName sessionName );
-	
-	void OnPreviousSessionCleanedup_SetupServer( FName sessionName, bool wasSuccessful );
-	void OnSessionCreated_SetupServer( FName sessionName, bool wasSuccessful );
-	void OnPresenceUpdated_SetupServer( const class FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence );
-	UFUNCTION()
-	void OnLoginFailed_OpenMap( bool confirmClicked );
-	UFUNCTION()
-	void OnPresenceFailedToUpdate_OpenMap( bool confirmClicked );
-
 	void UpdateLoginState();
 
-	/** Create a offline session */
-	UFUNCTION()
-	void CreateOfflineSession_SetupServer( bool startOffline );
 	//~End Online Delegates
 
 	// @return true if we are able to autologin
@@ -415,22 +334,6 @@ protected:
 	/** Convert a login status to a login state */
 	ELoginState FromLoginStatus( ELoginStatus::Type from ) const;
 
-	/** Called on end of SetupServer-chain, waiting for presence to be properly updated */
-	UFUNCTION()
-	void OpenMap_WaitForPresence();
-
-	/** Called on end of SetupServer-chain, waiting for presence to be properly updated */
-	UFUNCTION()
-	void OpenMap_WaitForProductUserId();
-
-	/** the map that's setup in progress */
-	void OpenMap();
-
-	/** Pulls the current state of creating a session */
-	UFUNCTION(BlueprintPure,Category="FactoryGame|Session")
-	ECreateSessionState GetCurrentCreateSessionState() const;
-
-protected:
 	// Called whenever we get logged in
 	void OnLoggedIn();
 	
@@ -441,17 +344,12 @@ protected:
 	// Get friends that we don't have any presence data or similar for
 	void GetFriendsWithNoData( TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData );
 private:
-	// Return true if our presence has session id set
-	bool PresenceHasSessionId() const;
 
 	/** Push error and autosave the game */
 	void PushErrorAndAutosave( TSubclassOf<class UFGErrorMessage> errorMessage );
 
 	/** Set waiting variable and broadcast changes with delegate */
 	void SetIsWaitingForEOSConnectLogin( bool waiting );
-
-	/** Exits current setup of server and throws an error message popup */
-	void FailedToSetupServer();
 
 public:
 	/** Called when the when we have a result from connection accounts */
@@ -485,10 +383,6 @@ protected:
 	FDelegateHandle mOnQueryUserInfoForFriendListCompleteHandleSteam;
 	FDelegateHandle mOnPresenceReceivedSteam;
 
-	//only need one for session related stuff
-	FDelegateHandle mSetupServer_OnCreateSessionCompleteDelegateHandle;
-	FDelegateHandle mSetupServer_OnPresenceReceivedCompleteDelegateHandle;
-
 	//~~End OnlineUser delegates
 
 	// Handle for updating presence info
@@ -514,10 +408,6 @@ protected:
 	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
 	FOnFriendsListUpdated mOnFriendsListUpdated;
 	
-	/** Called when the session state has changed when creating a online game */
-	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
-	FOnCreateSessionStateChanged mOnCreateSessionStateChanged;
-
 	/** Called a friends presence is updated */
 	UPROPERTY(BlueprintAssignable,Category="FactoryGame|Online")
 	FOnFriendPresenceUpdated mOnFriendsPresenceUpdated;
@@ -528,9 +418,6 @@ protected:
 
 	/** Current state of the friends list */
 	EFrindsListState mFriendsListState;
-
-	/** Information about the current session that we are setting up */
-	FSessionInformation mCurrentSessionInformation;
 
 	TArray<FFGOnlineFriend> mCachedFriends;
 

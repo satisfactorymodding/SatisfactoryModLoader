@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGPopupInstigatorInterface.h"
 #include "UI/FGInteractWidget.h"
 #include "FGPopupWidget.generated.h"
@@ -37,6 +38,9 @@ public:
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
 	UObject* Instigator;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Popup" )
+	class UFGPopupWidgetContent* PopupContent = nullptr;
 		
 	UPROPERTY()
 	FPopupConfirmClicked PopupConfirmClickedDelegate_DEPRECATED;

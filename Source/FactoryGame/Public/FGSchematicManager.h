@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "ItemAmount.h"
@@ -111,11 +112,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	void GiveAccessToSchematic( TSubclassOf< UFGSchematic > schematicClass, bool accessedViaCheats = false );
 
-private: //MODDING EDIT: hide AddAvailableSchematic to force ContentRegistry usage
 	/** adds a schematic to available schematics */
-	UFUNCTION(BlueprintCallable, Category = "Schematic", BlueprintInternalUseOnly)
+	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	void AddAvailableSchematic( TSubclassOf< UFGSchematic > schematicClassToAdd );
-public:
+	
 	/** Gives you the base cost, after random, for a schematic */
 	UFUNCTION( BlueprintPure, DisplayName = "GetCostFor_Deprecated", Category = "Schematic", meta = ( DeprecatedFunction, DeprecationMessage = "Get the cost from the Schematic directly" ) )
 	TArray< FItemAmount > GetCostFor( TSubclassOf< UFGSchematic > schematic );
@@ -205,9 +205,6 @@ private:
 	void RemoveSchematicPayOff( TSubclassOf< class UFGSchematic > schematic );
 
 protected:	
-	//MODDING EDIT: expose access to internal state to content registry
-	friend class AModContentRegistry;
-    
 	/** All schematic assets that have been sucked up in the PopulateSchematicsList function. Contains cheats and all sort of schematic. */
 	UPROPERTY()
 	TArray< TSubclassOf< UFGSchematic > > mAllSchematics;

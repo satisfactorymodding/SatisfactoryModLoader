@@ -2,38 +2,11 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "FGSignInterface.h"
+#include "FGSignTypes.h"
 #include "FGSettings.h"
 #include "FGSignSettings.generated.h"
-
-
-USTRUCT( Blueprintable )
-struct FSignColorData
-{
-	GENERATED_BODY()
-
-	/** The static mesh that will be rendered on the actual sign in the world */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Sign Data Settings" )
-	FLinearColor SignColor;
-	
-	/** A text name to display with the icon inside of menus */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Sign Data Settings" )
-	FText ColorName;
-
-	/** The TEXT material instance is created at runtime and stored here when it is needed */
-	UPROPERTY()
-	UMaterialInstanceDynamic* TextMaterialInstance;
-
-	/** The ICON material instance is created at runtime and stored here when it is needed */
-	UPROPERTY()
-	UMaterialInstanceDynamic* IconMaterialInstance;
-
-	/** The BACKGROUND material instance is created at runtime and stored here when it is needed */
-	UPROPERTY()
-	UMaterialInstanceDynamic* BackgroundMaterialInstance;
-};
-
 
 
 
@@ -45,30 +18,24 @@ class FACTORYGAME_API UFGSignSettings : public UFGSettings
 {
 	GENERATED_BODY()
 	
+	UFGSignSettings();
+
 public:
 
 	/** Helper to get signs settings without going through UFGGlobalSettings */
 	static UFGSignSettings* Get();
 
-	UFUNCTION( BlueprintPure, Category = "Sign Data Settings" )
-	static const TArray<FSignColorData>& GetSignColorData();
+	/** Reverse lookup for getting the key name (string) for a sign element type */
+	FString GetStringKeyFromAttributeTag( SignTags::AttributeTag tag ) const;
 
-	/** Returns the corresponding text material instance from the sign color data array. If one does not exist yet it is created */
-	UFUNCTION( BlueprintPure, Category = "Sign Data Settings" )
-	static UMaterialInterface* GetTextMaterialInstanceFromIndex( int32 index );
-
-	/** Returns the corresponding icon material instance from the sign color data array. If one does not exist yet it is created */
-	UFUNCTION( BlueprintPure, Category = "Sign Data Settings" )
-	static UMaterialInterface* GetIconMaterialInstanceFromIndex( int32 index );
-
-	/** Returns the corresponding background material instance from the sign color data array. If one does not exist yet it is created */
-	UFUNCTION( BlueprintPure, Category = "Sign Data Settings" )
-	static UMaterialInterface* GetBackgroundMaterialInstanceFromIndex( int32 index );
-
-	/** Returns the index of the background meshes material index for the background material */
-	static int32 GetBackgroundMeshMaterialIndex();
+	/** Reverse lookup for getting the key name (string) for a sign element type */
+	FString GetStringKeyFromElementClass( TSubclassOf<UWidget> widgetClass ) const;
 
 public:
+	/** The size of the grid to use when snapping*/
+	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
+	int32 mGridSize;
+
 	/** Base material to be used for text component material instances */
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
 	UMaterial* mTextMaterial;
@@ -97,8 +64,34 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
 	FName mBackgroundMaterialColorParam;
 
-	/** Array of sign color data */
+	/** Icon to use in layout editor list */
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
-	TArray<FSignColorData> mSignColorData;
+	UTexture2D* mLayerIcon;
+
+	/** Icon to use in layout editor list */
+	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
+	UTexture2D* mTextIcon;
+
+	/** Icon to use in layout editor list */
+	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
+	UTexture2D* mIconIcon;
+
+	/** Icon to use in layout editor list */
+	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
+	UTexture2D* mPanelIcon;
+
+
+	// String tag to the widget type the string tag represents
+	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings")
+	TMap< FString, TSubclassOf< UWidget > > SignTagToElement;
+
+	// Element size enum to the actual font size it represents for text
+	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
+	TMap< ESignSizeDefinition, int32 > SizeDefinitionToFontSize;
+
+	// Element Size enum to the actual pixel size it represents for icons
+	UPROPERTY( EditDefaultsOnly, Category = "Sign Data Settings" )
+	TMap< ESignSizeDefinition, int32 > SizeDefinitionToIconSize;
+
 
 };

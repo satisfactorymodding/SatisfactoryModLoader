@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGInventoryComponent.h"
 #include "FGInventoryLibrary.generated.h"
 
@@ -18,8 +19,8 @@ public:
 	template< class T >
 	static T* CreateInventoryComponent( class AActor* owner, FName name )
 	{
-		check( owner );
-		check( name != NAME_None );
+		fgcheck( owner );
+		fgcheck( name != NAME_None );
 
 		return CastChecked< T >( CreateInventoryComponentOfClass( owner, T::StaticClass(), name ) );
 	}

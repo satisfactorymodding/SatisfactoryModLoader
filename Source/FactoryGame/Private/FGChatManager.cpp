@@ -8,9 +8,7 @@ AFGChatManager* AFGChatManager::Get(UWorld* world){ return nullptr; }
 AFGChatManager* AFGChatManager::Get(UObject* worldContext){ return nullptr; }
 AFGChatManager::AFGChatManager() : Super() {
 	this->mMaxNumMessagesInHistory = 50;
-	this->mMessageVisibleDuration = 10;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->mMessageVisibleDuration = 10.0;
 }
 FString AFGChatManager::GetChatMessageName(const FChatMessageStruct& inMessage){ return FString(); }
 FLinearColor AFGChatManager::GetChatMessageColor(const FChatMessageStruct& inMessage){ return FLinearColor(); }

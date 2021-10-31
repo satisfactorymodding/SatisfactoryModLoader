@@ -2,14 +2,26 @@
 
 #include "FGPlayerController.h"
 #include "FGCheatManager.h"
+#include "Components/SceneComponent.h"
 
 AFGPlayerController::AFGPlayerController() : Super() {
 	this->mCanAffectAudioVolumes = true;
+	this->mInputComponentChords = nullptr;
+	this->mAttentionPingActorClass = nullptr;
 	this->mMapAreaCheckInterval = 0.25;
+	this->mCurrentMapArea = nullptr;
+	this->mCurrentAreaWasPreviouslyVisited = false;
+	this->mMovementWindComp = nullptr;
+	this->mIsRespawning = false;
+	this->mCachedMapAreaTexture = nullptr;
+	this->mInTutorialMode = false;
+	this->mRespawnFromDeath = false;
+	this->mRespawnFromJoin = false;
 	this->mMinPhotoModeFOV = 5;
 	this->mMaxPhotoModeFOV = 175;
+	this->mPhotomodeInputComponent = nullptr;
+	this->mProximitySubsystem = nullptr;
 	this->mMusicPlayerTickIntervalStart = 1.5;
-	this->CheatClass = UFGCheatManager::StaticClass();
 }
 bool AFGPlayerController::ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor){ return bool(); }
 void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
@@ -46,7 +58,12 @@ void AFGPlayerController::ChangeNameOfPresetHotbar(int32 presetHotbarIndex, cons
 void AFGPlayerController::ChangeIconIndexOfPresetHotbar(int32 presetHotbarIndex, int32 iconIndex){ }
 bool AFGPlayerController::RemovePresetHotbar(int32 presetHotbarIndex){ return bool(); }
 void AFGPlayerController::CopyPresetHotbarToCurrentHotbar(int32 presetHotbarIndex){ }
-void AFGPlayerController::SetRecipeShortcutOnIndex(TSubclassOf<  UFGRecipe > recipe, int32 onIndex){ }
+void AFGPlayerController::SetRecipeShortcutOnIndex(TSubclassOf<  UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex){ }
+void AFGPlayerController::SetCustomizationShortcutOnIndex(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
+void AFGPlayerController::RemovePlayerColorPresetAtIndex(int32 index){ }
+void AFGPlayerController::Server_RemovePlayerColorPresetAtIndex_Implementation(int32 index){ }
+void AFGPlayerController::AddPlayerColorPreset(FText presetName, FLinearColor color){ }
+void AFGPlayerController::Server_AddPlayerColorPreset_Implementation(const FText& presetName, FLinearColor color){ }
 void AFGPlayerController::SetHotbarIndex(int32 newIndex){ }
 int32 AFGPlayerController::GetCurrentHotbarIndex(){ return int32(); }
 int32 AFGPlayerController::GetNumHotbars(){ return int32(); }
@@ -60,8 +77,9 @@ bool AFGPlayerController::Server_RequestFogOfWarData_Validate(){ return bool(); 
 void AFGPlayerController::Client_TransferFogOfWarData_Implementation(const TArray<uint8>& fogOfWarRawData, int32 finalIndex){ }
 float AFGPlayerController::GetObjectScreenRadius(AActor* actor, float boundingRadius){ return float(); }
 float AFGPlayerController::GetScreenBasedObjectRadius(AActor* actor, float screenRadius){ return float(); }
-void AFGPlayerController::Client_AddMessage_Implementation(TSubclassOf<  UFGMessageBase > newMessage){ }
+void AFGPlayerController::Client_AddMessage_Implementation(FPendingMessageQueue newMessageQueue){ }
 void AFGPlayerController::Client_AnswerCall_Implementation(TSubclassOf<  UFGAudioMessage > messageToAnswer){ }
+void AFGPlayerController::Client_DeclineCall_Implementation(TSubclassOf<  UFGAudioMessage > messageToDecline){ }
 bool AFGPlayerController::GetPlayerHasMessage(TSubclassOf<  UFGMessageBase > newMessage){ return bool(); }
 void AFGPlayerController::SetDisabledInputGate(FDisabledInputGate newDisabledInputGate){ }
 void AFGPlayerController::Server_DealImpactDamage_Implementation(const FHitResult& impact, FVector forwardVector, float damage, TSubclassOf< UDamageType > damageType, AActor* inInstigator){ }
@@ -80,6 +98,7 @@ void AFGPlayerController::OnSecondaryFire(){ }
 void AFGPlayerController::AddMusicPlayer(UObject* musicPlayer){ }
 void AFGPlayerController::RemoveMusicPlayer(UObject* musicPlayer){ }
 void AFGPlayerController::UpdateMusicPlayers(float dt){ }
+void AFGPlayerController::OnBuildGunStateChanged(EBuildGunState newState){ }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
@@ -99,8 +118,9 @@ void AFGPlayerController::IncrementPhotoModeFOV(){ }
 void AFGPlayerController::DecrementPhotoModeFOV(){ }
 void AFGPlayerController::SetupTutorial(){ }
 void AFGPlayerController::FinishRespawn(){ }
-void AFGPlayerController::Server_SetRecipeShortcutOnIndex_Implementation(TSubclassOf<class UFGRecipe> recipe, int32 onIndex){ }
-bool AFGPlayerController::Server_SetRecipeShortcutOnIndex_Validate(TSubclassOf<class UFGRecipe> recipe, int32 onIndex){ return bool(); }
+void AFGPlayerController::Server_SetRecipeShortcutOnIndex_Implementation(TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex){ }
+bool AFGPlayerController::Server_SetRecipeShortcutOnIndex_Validate(TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex){ return bool(); }
+void AFGPlayerController::Server_SetCustomizationShortcutOnIndex_Implementation(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
 void AFGPlayerController::Server_SetHotbarIndex_Implementation(int32 index){ }
 bool AFGPlayerController::Server_SetHotbarIndex_Validate(int32 index){ return bool(); }
 void AFGPlayerController::Server_CreatePresetHotbarFromCurrentHotbar_Implementation(const FText& presetName, int32 iconIndex){ }
@@ -123,4 +143,5 @@ void AFGPlayerController::Server_WaitForLevelStreaming(){ }
 void AFGPlayerController::Client_WaitForLevelStreaming_Implementation(){ }
 void AFGPlayerController::OnRep_IsRespawning(){ }
 void AFGPlayerController::DisablePawnMovement(bool isDisabled){ }
+void AFGPlayerController::SetRespawnUIVisibility(bool respawnUIVisibility){ }
 void AFGPlayerController::testAndProcesAdaMessages(AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds,  APlayerState* PlayerState,  AFGGameState* fgGameState){ }

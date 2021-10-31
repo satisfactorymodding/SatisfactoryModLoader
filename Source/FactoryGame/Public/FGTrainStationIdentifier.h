@@ -2,15 +2,17 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Info.h"
 #include "FGSaveInterface.h"
+#include "FGActorRepresentationInterface.h"
 #include "FGTrainStationIdentifier.generated.h"
 
 /**
  * Identifier for a train station that is always available on server and clients.
  */
 UCLASS()
-class FACTORYGAME_API AFGTrainStationIdentifier : public AInfo, public IFGSaveInterface
+class FACTORYGAME_API AFGTrainStationIdentifier : public AInfo, public IFGSaveInterface, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 public:
@@ -18,6 +20,8 @@ public:
 
 	// Begin AActor Interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	// End AActor Interface
 
 	// Begin IFGSaveInterface
@@ -29,6 +33,27 @@ public:
 	virtual bool NeedTransform_Implementation() override;
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
+
+	// Begin IFGActorRepresentationInterface
+	virtual bool AddAsRepresentation() override;
+	virtual bool UpdateRepresentation() override;
+	virtual bool RemoveAsRepresentation() override;
+	virtual bool IsActorStatic() override;
+	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
+	virtual class UTexture2D* GetActorRepresentationTexture() override;
+	virtual FText GetActorRepresentationText() override;
+	virtual void SetActorRepresentationText( const FText& newText ) override;
+	virtual FLinearColor GetActorRepresentationColor() override;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	virtual float GetActorFogOfWarRevealRadius() override;
+	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	// End IFGActorRepresentationInterface
 
 	/** Get the station actor, only valid on server. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
@@ -42,7 +67,7 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|StationIdentifier" )
 	void SetStationName( const FText& text );
 
-	/** Get the track this station belongs to. */
+	/** Get the track graph this station is located in. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|StationIdentifier" )
 	int32 GetTrackGraphID() const { return mTrackGraphID; }
 

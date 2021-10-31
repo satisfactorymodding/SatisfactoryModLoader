@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildable.h"
 #include "FGBuildableFactoryBuilding.generated.h"
 
@@ -64,7 +65,7 @@ struct FFoundationSideNormal
 struct FFoundationHelpers
 {
 	static FVector GetLocalSpaceNormalFromFoundationSide( EFoundationSide side );
-	static FFoundationSideNormal FindBestMatchingFoundationSideFromLocalNormal( class AFGBuildableFoundation* foundation, FVector normal );
+	static FFoundationSideNormal FindBestMatchingFoundationSideFromLocalNormal( const FVector& normal, FFoundationSideSelectionFlags exludeEdges = FFoundationSideSelectionFlags::NoEdges );
 };
 
 /**
@@ -80,8 +81,8 @@ public:
 protected:
 	FORCEINLINE class UFGColoredInstanceMeshProxy* GetMeshComponentProxy() const { return mMeshComponentProxy; }
 
-private:
+protected:
 	/** Mesh component for the factory building. */
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( EditDefaultsOnly )
 	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
 };

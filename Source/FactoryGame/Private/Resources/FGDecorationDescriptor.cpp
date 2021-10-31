@@ -3,11 +3,12 @@
 #include "Resources/FGDecorationDescriptor.h"
 
 UFGDecorationDescriptor::UFGDecorationDescriptor() : Super() {
-	this->mGroundMeshScale.X = 1; this->mGroundMeshScale.Y = 1; this->mGroundMeshScale.Z = 1;
-	this->mUseDisplayNameAndDescription = true;
-	this->mStackSize = EStackSize::SS_MEDIUM;
-	this->mCanBeDiscarded = true;
-	this->mForm = EResourceForm::RF_SOLID;
+	this->mGroundMesh = nullptr;
+	this->mGroundMeshScale.X = 1.0;
+	this->mGroundMeshScale.Y = 1.0;
+	this->mGroundMeshScale.Z = 1.0;
+	this->mMesh1p = nullptr;
+	this->mDecorationActorClass = nullptr;
 }
 UStaticMesh* UFGDecorationDescriptor::GetGroundMesh(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }
 UStaticMesh* UFGDecorationDescriptor::GetMesh1p(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }

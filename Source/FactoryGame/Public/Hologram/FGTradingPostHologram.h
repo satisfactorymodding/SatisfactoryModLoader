@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "FGTradingPostHologram.generated.h"
 

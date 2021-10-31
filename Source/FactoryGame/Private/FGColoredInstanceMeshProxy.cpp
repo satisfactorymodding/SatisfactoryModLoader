@@ -3,16 +3,26 @@
 #include "FGColoredInstanceMeshProxy.h"
 
 UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy() : Super() {
-	this->mCanBecolored = true;
-	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = false; this->PrimaryComponentTick.bStartWithTickEnabled = false; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false; this->PrimaryComponentTick.TickInterval = 0;
+	this->mBlockInstancing = false;
+	this->mOptimizationCategory = EDistanceCullCategory::FGDDC_NEVERCULL;
+	this->mNumCustomDataFloats = 20;
+	this->PrimaryComponentTick.TickGroup = ETickingGroup::TG_DuringPhysics;
+	this->PrimaryComponentTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryComponentTick.bTickEvenWhenPaused = false;
+	this->PrimaryComponentTick.bCanEverTick = false;
+	this->PrimaryComponentTick.bStartWithTickEnabled = false;
+	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
+	this->PrimaryComponentTick.TickInterval = 0.0;
 }
 void UFGColoredInstanceMeshProxy::BeginPlay(){ }
 void UFGColoredInstanceMeshProxy::OnRegister(){ Super::OnRegister(); }
 void UFGColoredInstanceMeshProxy::OnUnregister(){ Super::OnUnregister(); }
-void UFGColoredInstanceMeshProxy::SetColorSlot(uint8 colorSlotIndex){ }
+void UFGColoredInstanceMeshProxy::SetCustomizationData(const FFactoryCustomizationData& customizationData){ }
+void UFGColoredInstanceMeshProxy::SetHasPowerData(float newHasPower){ }
+void UFGColoredInstanceMeshProxy::SetUserDefinedData(TArray<float> userData){ }
 void UFGColoredInstanceMeshProxy::SetInstanced(bool setToInstanced){ }
 void UFGColoredInstanceMeshProxy::OnHiddenInGameChanged(){ }
-bool UFGColoredInstanceMeshProxy::ShouldCreateRenderState() const { 
+bool UFGColoredInstanceMeshProxy::ShouldCreateRenderState() const {
 #if WITH_EDITOR // Ensure visibility in blueprint & editor.
     if( GetWorld()->WorldType == EWorldType::Editor || GetWorld()->WorldType == EWorldType::EditorPreview)
     {

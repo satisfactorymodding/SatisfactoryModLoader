@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Components/BoxComponent.h"
 #include "Components/SplineComponent.h"

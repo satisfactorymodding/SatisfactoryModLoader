@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "FGDroneVehicle.h"
@@ -12,5 +13,11 @@ UCLASS()
 class FACTORYGAME_API AFGDroneTransport : public AFGDroneVehicle
 {
 	GENERATED_BODY()
+
+	// Begin IFGActorRepresentationInterface
+	virtual FRotator GetRealActorRotation() override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	// End IFGActorRepresentationInterface
 
 };

@@ -4,5 +4,5 @@
 
 void AFGRailroadSwitchControlHologram::SetHologramLocationAndRotationFromConnection( UFGRailroadTrackConnectionComponent* controlledConnection){ }
 void AFGRailroadSwitchControlHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
-void AFGRailroadSwitchControlHologram::CheckClearance(){ }
+void AFGRailroadSwitchControlHologram::CheckClearance(const FVector& locationOffset){ }
 void AFGRailroadSwitchControlHologram::CheckValidFloor(){ }

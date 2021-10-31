@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "AI/FGAggroTargetInterface.h"
 #include "FGAttack.generated.h"
 

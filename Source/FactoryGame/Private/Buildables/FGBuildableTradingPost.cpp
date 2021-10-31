@@ -6,37 +6,32 @@
 #include "Components/SceneComponent.h"
 
 AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
-	this->mSpawningGroundZOffset = 5;
-	this->mGroundSearchZDistance = 250;
-	this->mGenerator1Location = CreateDefaultSubobject<USceneComponent>(TEXT("Generator1Location")); this->mGenerator1Location->SetupAttachment(this->RootComponent);
-	this->mGenerator2Location = CreateDefaultSubobject<USceneComponent>(TEXT("Generator2Location")); this->mGenerator2Location->SetupAttachment(this->RootComponent);
-	this->mStorageLocation = CreateDefaultSubobject<USceneComponent>(TEXT("StorageLocation")); this->mStorageLocation->SetupAttachment(this->RootComponent);
-	this->mHubTerminalLocation = CreateDefaultSubobject<USceneComponent>(TEXT("HubTerminalLocation")); this->mHubTerminalLocation->SetupAttachment(this->RootComponent);
-	this->mWorkBenchLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WorkBenchLocation")); this->mWorkBenchLocation->SetupAttachment(this->RootComponent);
-	this->mPowerConsumptionExponent = 1.60000002384186;
-	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
-	this->mMinimumProducingTime = 2;
-	this->mMinimumStoppedTime = 5;
-	this->mNumCyclesForProductivity = 20;
-	this->mPendingPotential = 1;
-	this->mMinPotential = 0.00999999977648258;
-	this->mMaxPotential = 1;
-	this->mMaxPotentialIncreasePerCrystal = 0.5;
-	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
-	this->mFluidStackSizeMultiplier = 1;
-	this->mSignificanceRange = 18000;
-	this->mHologramClass = AFGFactoryHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
+	this->mDefaultGeneratorRecipe = nullptr;
+	this->mDefaultStorageRecipe = nullptr;
+	this->mDefaultHubTerminalRecipe = nullptr;
+	this->mDefaultWorkBenchRecipe = nullptr;
+	this->mStorage = nullptr;
+	this->mHubTerminal = nullptr;
+	this->mWorkBench = nullptr;
+	this->mStorageInventorySize = 0;
+	this->mStorageVisibilityLevel = 0;
+	this->mInputInventory = nullptr;
+	this->mSpawningGroundZOffset = 5.0;
+	this->mGroundSearchZDistance = 250.0;
+	this->mSchematicManager = nullptr;
+	this->mGenerator1Location = CreateDefaultSubobject<USceneComponent>(TEXT("Generator1Location"));
+	this->mGenerator2Location = CreateDefaultSubobject<USceneComponent>(TEXT("Generator2Location"));
+	this->mStorageLocation = CreateDefaultSubobject<USceneComponent>(TEXT("StorageLocation"));
+	this->mHubTerminalLocation = CreateDefaultSubobject<USceneComponent>(TEXT("HubTerminalLocation"));
+	this->mWorkBenchLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WorkBenchLocation"));
+	this->mNeedPlayingBuildEffectNotification = false;
+	this->mActorRepresentationTexture = nullptr;
+	this->mRepresentationText = INVTEXT("");
+	this->mGenerator1Location->SetupAttachment(RootComponent);
+	this->mGenerator2Location->SetupAttachment(RootComponent);
+	this->mStorageLocation->SetupAttachment(RootComponent);
+	this->mHubTerminalLocation->SetupAttachment(RootComponent);
+	this->mWorkBenchLocation->SetupAttachment(RootComponent);
 }
 void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableTradingPost::BeginPlay(){ }
@@ -45,6 +40,25 @@ void AFGBuildableTradingPost::Dismantle_Implementation(){ }
 void AFGBuildableTradingPost::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
 void AFGBuildableTradingPost::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildableTradingPost::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildableTradingPost::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
+bool AFGBuildableTradingPost::AddAsRepresentation(){ return bool(); }
+bool AFGBuildableTradingPost::UpdateRepresentation(){ return bool(); }
+bool AFGBuildableTradingPost::RemoveAsRepresentation(){ return bool(); }
+bool AFGBuildableTradingPost::IsActorStatic(){ return bool(); }
+FVector AFGBuildableTradingPost::GetRealActorLocation(){ return FVector(); }
+FRotator AFGBuildableTradingPost::GetRealActorRotation(){ return FRotator(); }
+UTexture2D* AFGBuildableTradingPost::GetActorRepresentationTexture(){ return nullptr; }
+FText AFGBuildableTradingPost::GetActorRepresentationText(){ return FText(); }
+void AFGBuildableTradingPost::SetActorRepresentationText(const FText& newText){ }
+FLinearColor AFGBuildableTradingPost::GetActorRepresentationColor(){ return FLinearColor(); }
+void AFGBuildableTradingPost::SetActorRepresentationColor(FLinearColor newColor){ }
+ERepresentationType AFGBuildableTradingPost::GetActorRepresentationType(){ return ERepresentationType(); }
+bool AFGBuildableTradingPost::GetActorShouldShowInCompass(){ return bool(); }
+bool AFGBuildableTradingPost::GetActorShouldShowOnMap(){ return bool(); }
+EFogOfWarRevealType AFGBuildableTradingPost::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
+float AFGBuildableTradingPost::GetActorFogOfWarRevealRadius(){ return float(); }
+ECompassViewDistance AFGBuildableTradingPost::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
+void AFGBuildableTradingPost::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 void AFGBuildableTradingPost::OnTradingPostUpgraded_Implementation(int32 level, bool suppressBuildEffects){ }
 void AFGBuildableTradingPost::UpdateGeneratorVisibility(){ }
 void AFGBuildableTradingPost::UpdateStorageVisibility(){ }
@@ -54,7 +68,7 @@ void AFGBuildableTradingPost::ExecutePlayBuildEffects(){ }
 void AFGBuildableTradingPost::PlayBuildEffectsOnAllClients(AActor* instigator){ }
 bool AFGBuildableTradingPost::AreChildBuildingsLoaded(){ return bool(); }
 void AFGBuildableTradingPost::ValidateSubBuildings(){ }
-TArray<AActor*> AFGBuildableTradingPost::GetAllActiveSubBuildings(){ return TArray<AActor*>(); }
+TArray<AActor*> AFGBuildableTradingPost::GetAllActiveSubBuildings() const{ return TArray<AActor*>(); }
 void AFGBuildableTradingPost::OnBuildEffectFinished(){ }
 void AFGBuildableTradingPost::TogglePendingDismantleMaterial(bool enabled){ }
 void AFGBuildableTradingPost::OnRep_HAXX_SubbuildingReplicated(){ }

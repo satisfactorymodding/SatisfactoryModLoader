@@ -14,7 +14,17 @@ void UFGSchematic::AddRecipe(TSubclassOf< UFGSchematic > inClass, TSubclassOf<  
 void UFGSchematic::MigrateDataToNewDependencySystem(){ }
 #endif 
 UFGSchematic::UFGSchematic() : Super() {
-	this->mTimeToComplete = 600;
+	this->mType = ESchematicType::EST_Custom;
+	this->mDisplayName = INVTEXT("");
+	this->mDescription = INVTEXT("");
+	this->mSchematicCategory = nullptr;
+	this->mMenuPriority = 0.0;
+	this->mTechTier = 0;
+	this->mTimeToComplete = 600.0;
+	this->mSmallSchematicIcon = nullptr;
+	this->mDependenciesBlocksSchematicAccess = false;
+	this->mDependsOnSchematic = nullptr;
+	this->mSchematicCategoryDeprecated = ESchematicCategory::ESC_LOGISTICS;
 }
 void UFGSchematic::PostLoad(){ Super::PostLoad(); }
 void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar); }
@@ -49,7 +59,7 @@ TArray< FItemAmount > UFGSchematic::GetCost(TSubclassOf< UFGSchematic > inClass)
 	else
 		return TArray< FItemAmount >();
 }
-TArray< UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass) {
+TArray< class UFGUnlock* > UFGSchematic::GetUnlocks(TSubclassOf< UFGSchematic > inClass) {
 	if (inClass)
 		return inClass.GetDefaultObject()->mUnlocks;
 	else
@@ -78,6 +88,7 @@ FSlateBrush UFGSchematic::GetItemIcon(TSubclassOf< UFGSchematic > inClass) {
 UTexture2D* UFGSchematic::GetSmallIcon(TSubclassOf< UFGSchematic > inClass){ return nullptr; }
 bool UFGSchematic::AreSchematicDependenciesMet(TSubclassOf< UFGSchematic > inClass, UObject* worldContext){ return bool(); }
 void UFGSchematic::GetSchematicDependencies(TSubclassOf< UFGSchematic > inClass, TArray<  UFGAvailabilityDependency* >& out_schematicDependencies){ }
+bool UFGSchematic::CanGiveAccessToSchematic(TSubclassOf< UFGSchematic > inClass, UObject* worldContext){ return bool(); }
 bool UFGSchematic::IsRepeatPurchasesAllowed(TSubclassOf< UFGSchematic > inClass){ return bool(); }
 void UFGSchematic::SortByMenuPriority(TArray< TSubclassOf< UFGSchematic > >& schematics){ }
 TArray< EEvents > UFGSchematic::GetRelevantEvents(TSubclassOf< UFGSchematic > inClass){ return TArray<EEvents>(); }

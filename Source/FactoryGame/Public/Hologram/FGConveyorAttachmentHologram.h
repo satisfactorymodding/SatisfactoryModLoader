@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "FGConveyorAttachmentHologram.generated.h"
@@ -16,14 +17,21 @@ class FACTORYGAME_API AFGConveyorAttachmentHologram : public AFGFactoryHologram
 public:
 	AFGConveyorAttachmentHologram();
 
+	// Begin AActor Interface
+	virtual void BeginPlay() override;
+	// End AActor Interface
+
 	// Begin AFGHologram Interface
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
-	virtual void BeginPlay() override;
+	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual float GetHologramHoverHeight() const override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	// End AFGHologram Interface
 
-	bool IsValidHitResult( const FHitResult& hitResult ) const override;
-
-		// End AFGHologram Interface
+	// Begin AFGBuildableHologram Interface
+	virtual bool ShouldBuildableBeConsideredForGuidelines( class AFGBuildable* buildable ) const override;
+	// End AFGBuildableHologram Interface
 
 protected:
 	// Begin AFGHologram interface
@@ -35,7 +43,6 @@ protected:
 	virtual void CheckValidPlacement() override;
 	// End AFGBuildableHologram Interface
 
-	virtual FVector GetGuideLinesBaseLocation() override;
 	void SnapToConnection( class UFGFactoryConnectionComponent* connectiontoSnapTo, class UFGFactoryConnectionComponent* myConnectionToSnapWith, FVector locationToDetermineSideIfAplicable );
 
 public:

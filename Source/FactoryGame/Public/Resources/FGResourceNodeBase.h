@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FactoryGame.h" // MODDING EDIT: no PCH
+#include "FactoryGame.h"
 #include "Replication/FGStaticReplicatedActor.h"
 #include "FGSaveInterface.h"
 #include "Resources/FGResourceDescriptor.h"

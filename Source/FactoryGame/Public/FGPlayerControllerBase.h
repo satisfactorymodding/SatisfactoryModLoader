@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FactoryGame.h" // MODDING EDIT: no PCH
+#include "FactoryGame.h"
 #include "Online.h"
 #include "FGInputLibrary.h"
 #include "PlayerPresenceState.h"
@@ -125,13 +125,6 @@ public:
 	UFUNCTION(Reliable, Server, WithValidation)
 	void Server_UpdateCappedBandwidth(int32 cap);
 
-	UFUNCTION(exec)
-	void AdminLogin( FString password );
-
-	/** Login a player controller with a password, response comes later */
-	UFUNCTION(Reliable, Server, WithValidation)
-	void Server_AdminLogin( const FString& hashedPassword );
-
 	/** Setup additional things if we have been granted admin access */
 	void OnAdminRightsGranted();
 
@@ -148,6 +141,8 @@ public:
 	/** @return the admin interface if we are logged in as server admin */
 	UFUNCTION(BlueprintPure, Category="FactoryGame|Online|Admin")
 	FORCEINLINE class AFGAdminInterface* GetAdminInterface() const { return mAdminInterface; }
+
+	virtual bool ProcessConsoleExec( const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor ) override;
 protected:
 	/** Used to discard any input when we are dead */
 	UFUNCTION()

@@ -5,7 +5,13 @@
 #if WITH_EDITOR
 void UFGAmbientSettings::CheckForErrors(){ }
 #endif 
-UFGAmbientSettings::UFGAmbientSettings(){ }
+UFGAmbientSettings::UFGAmbientSettings() : Super() {
+	this->mOnEnterOuterVolumeEvent = nullptr;
+	this->mOnExitOuterVolumeEvent = nullptr;
+	this->mOnEnterInnerVolumeEvent = nullptr;
+	this->mOnExitInnerVolumeEvent = nullptr;
+	this->mIgnoreListenerRotation = false;
+}
 UAkAudioEvent* UFGAmbientSettings::GetEnterOuterVolumeEvent_Implementation() const{ return nullptr; }
 UAkAudioEvent* UFGAmbientSettings::GetEnterInnerVolumeEvent_Implementation() const{ return nullptr; }
 void UFGAmbientSettings::OnEnterOuterVolume_Implementation( UAkComponent* ambientComponent) const{ }

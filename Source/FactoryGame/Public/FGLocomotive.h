@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGRailroadVehicle.h"
 #include "FGLocomotiveMovementComponent.h"
 #include "RailroadNavigation.h"
@@ -19,7 +20,6 @@ class FACTORYGAME_API AFGLocomotive : public AFGRailroadVehicle
 public:
 	/** Replication */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void PreReplication( IRepChangedPropertyTracker & ChangedPropertyTracker ) override;
 
 	AFGLocomotive();
 
@@ -89,21 +89,41 @@ public:
 	/** Return the current state of HasPower replicated from Server to client */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Locomotive" )
 	bool HasPower() const { return mHasPower; }
+	
+	UFUNCTION( BlueprintImplementableEvent, Category = "FactoryGame|Railroad|Locomotive" )
+	bool IsPossessed();
 
+	/** Called when the self driver notifies the player about something, e.g. leaving the station. (Called on server only) */
+	UFUNCTION( BlueprintImplementableEvent )
+    void HonkShort();
+
+	/** Called when the self driver honks on a danger ahead, collision or player on track. (Called on server only) */
+	UFUNCTION( BlueprintImplementableEvent )
+    void HonkDanger();
+
+	/**
+	 * Called when a human driver takes control over this locomotive.
+	 * This can be upon entering the locomotive or when disabling the self driver.
+	 */
+	void GiveHumanDriverControl();
+	
 protected:
+	/** Called from tick if train is significant. */
 	UFUNCTION( BlueprintImplementableEvent )
 	void UpdateVFX();
+
+	/** Called when the player presses the horn input. (Called on server and client) */
+	UFUNCTION( BlueprintImplementableEvent )
+    void OnHonkBegin();
+
+	/** Called when the player releases the horn input. (Called on server and client) */
+	UFUNCTION( BlueprintImplementableEvent )
+    void OnHonkEnd();
 	
 private:
 	/** Used by the movement component to control the power usage. */
 	void SetPowerConsumption( float pct );
 	void SetPowerRegeneration( float pct );
-	
-	UFUNCTION()
-	void OnRep_ReplicatedMovementTransform()
-	{
-		RootComponent->SetWorldTransform( mReplicatedMovementTransform );
-	}
 
 public:
 	/** Name of the VehicleMovement. Use this name if you want to use a different class (with ObjectInitializer.SetDefaultSubobjectClass). */
@@ -122,10 +142,6 @@ private:
 	UPROPERTY( Replicated )
 	class UFGPowerInfoComponent* mPowerInfo;
 
-	//@todo Replace when proper physics simulations are done.
-	UPROPERTY( ReplicatedUsing = OnRep_ReplicatedMovementTransform )
-	FTransform mReplicatedMovementTransform;
-
 	/** Has power. Used to keep clients in sync with circuit power state */
 	UPROPERTY( Replicated )
 	uint8 mHasPower : 1;
@@ -133,4 +149,7 @@ private:
 	/** vehicle simulation component */
 	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = Vehicle, meta = ( AllowPrivateAccess = "true" ) )
 	class UFGLocomotiveMovementComponent* mVehicleMovement;
+
+	/** True if we're honking right now. */
+	bool mIsHonking;
 };

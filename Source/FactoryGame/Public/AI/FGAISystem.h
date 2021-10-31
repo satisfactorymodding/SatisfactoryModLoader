@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Tickable.h"
 #include "AISystem.h"
 #include "FGAISystem.generated.h"

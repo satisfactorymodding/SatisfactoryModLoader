@@ -2,10 +2,10 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
-#include "BuildableColorSlotBase.h"
+#include "FGFactoryColoringTypes.h"
 #include "FGSaveInterface.h"
-#include "FGBuildingColorSlotStruct.h"
 #include "FactoryTick.h"
 #include "FGBuildableSubsystem.generated.h"
 
@@ -99,6 +99,12 @@ struct FBuildableGroupTimeData
 	int32 RealSeconds;
 
 	float RealPartialSeconds;
+};
+
+enum class EPropagateColorState : uint8
+{
+	SettingColorOnly,
+	Done
 };
 
 /**
@@ -197,47 +203,17 @@ public:
 	UFUNCTION()
 	void ReplayBuildingEffects();
 
-	/** Check if a material instance manager exists in the Subsystem TMap
-	 *  @return - True if the lookupName is a key in mFactoryMaterialInstanceManagerMap. False otherwise.
-	 */
-	bool HasMaterialInstanceManagerForMaterialInterface( UMaterialInterface* materialInterface, FString& lookupName );
-
-	/**
-	*	Attempts to get the correct colored material for a supplied factory building material.
-	*	If the material does not exist in the material map, a new dynamic instance is created, filled, and returned.
-	*	@note - Params onMeshComp and forBuildable are not needed and are only used for logging purposes
-	*/
-	class UFGFactoryMaterialInstanceManager* GetOrCreateMaterialManagerForMaterialInterface( UMaterialInterface* materialInterface, FString& lookupName, FString& lookupPrefix, bool canBeColored = true, class UMeshComponent* onMeshComp  = nullptr, class AFGBuildable* forBuildable = nullptr );
-
-	/**
-	*	Get the mMaterialInstanceManager TMap of all managers
-	*/
-	const TMap< FString, class UFGFactoryMaterialInstanceManager* >& GetFactoryMaterialInstanceManagerMap() { return mFactoryColoredMaterialMap; }
-
-	/**
-	*	Called on a buildable when it is added to the subsystem to update its materials to utilize pooled DynamicMaterialInstances if they exist for the present factory materials
-	*	If no FactoryMaterialInstanceManager can be matched with the present colorable factory materials on the mesh components on the buildable, a new manager object is created and applied
-	*/
-	void UpdateBuildableMaterialInstances( AFGBuildable* buildable );
-
-	/** Will attempt to remove an entry from the material instance manager map. This is called by buildables when they have a*/
-	void RemoveFactoryMaterialInstanceFromMap( const FString& lookupName );
-
-	/** Getters for Color Slots - Now Linear Colors */
+	/** Getters for Color Slots - Now Data Structures */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	FLinearColor GetColorSlotPrimary_Linear( uint8 index );
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	FLinearColor GetColorSlotSecondary_Linear( uint8 index);
+	const FFactoryCustomizationColorSlot& GetColorSlot_Data( uint8 index ) const;
 
 	/** Settings for Color Slots - Now linear Colors */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	void SetColorSlotPrimary_Linear( uint8 index, FLinearColor color );
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	void SetColorSlotSecondary_Linear( uint8 index, FLinearColor color );
+	void SetColorSlot_Data( uint8 index, FFactoryCustomizationColorSlot color );
 
-	/** Returns the number of colorable slots actually available to the the player ( this can be less than BUILDABLE_COLORS_MAX_SLOTS ) */
+	/** Returns the collection corresponding to the specified type of Customization (Swatch/Pattern/Material) */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Factory|Customization" )
-	uint8 GetNbColorSlotsExposedToPlayers() { return mNbPlayerExposedSlots; }
+	TSubclassOf< class UFGFactoryCustomizationCollection > GetCollectionForCustomizationClass( TSubclassOf< class UFGFactoryCustomizationDescriptor > collectionClassType ) const;
 
 	/** Getter for buildable light color slot for the given index */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Buildable|Light" )
@@ -256,11 +232,16 @@ public:
 	
 	void UpdateBuildableCullDistances(float newFactor);
 
+	/** Gets or adds a conveyor belt track material from a material instance. If the material does not already exist a new one is instantiated from the Interface and returned */
+	UMaterialInstanceDynamic* GetConveyorBelTrackMaterialFromSpeed( float speed, UMaterialInterface* currentMaterial );
+
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 	void DebugEnableInstancing( bool enabled );
 	void DebugGetFactoryActors( TArray< AActor* >& out_actors );
 
+	static FName GetMeshMapName(UStaticMesh* mesh, UMeshComponent* sourceComponent);
+	
 	/** Returns the factory stat ID of the object used for the profiling tool. */
 	FORCEINLINE TStatId GetFactoryStatID( bool forDeferredUse = false ) const
 	{
@@ -294,6 +275,36 @@ public:
 	void AddPendingConstructionHologram( FNetConstructionID netConstructionID, class AFGHologram* hologram );
 	void RemovePendingConstructionHologram( FNetConstructionID netConstructionID );
 
+	/** Preview Customization application on Buildable/Actor */
+	void ApplyCustomizationPreview( class IFGColorInterface* colorInterface, const FFactoryCustomizationData& previewData );
+
+	/** Clear a single customization preview */
+	void ClearCustomizationPreview( class IFGColorInterface* colorInterface );
+
+	/** Clear all previewed customizations in the cached buildable map */
+	void ClearAllCustomizationPreviews();
+
+	/** Remove a detail actor from pending list if it exists. Called when a buildable is interacted with */
+	void TryRemovePendingDetailActor( class AFGReplicationDetailActor* detailActor );
+	
+	/** When a buildable is no longer being interacted with its rep detail actor will be added to this list */
+	void AddPendingRemovalDetailActor( class AFGReplicationDetailActor* detailActor );
+	
+	static uint8 GetCurrentSubStepIteration()
+	{
+		return mCurrentSubStep;
+	}
+
+	static uint8 GetLastSubStepIteration()
+	{
+		return mCurrentSubStepMax;
+	}
+
+	static bool IsLastFactorySubStep()
+	{
+		return mCurrentSubStep == mCurrentSubStepMax;
+	}
+	
 protected:
 	// Find and return a local player
 	class AFGPlayerController* GetLocalPlayerController() const;
@@ -314,13 +325,24 @@ private:
 	void AddToTickGroup( AFGBuildable* buildable );
 	void RemoveFromTickGroup( AFGBuildable* buildable );
 	void SetupColoredMeshInstances( AFGBuildable* buildable );
-	void SetupProductionIndicatorInstancing( class AFGBuildableFactory* factory );
+	void SetupProductionIndicatorInstancing( class AFGBuildable* buildable );
 
 	/* Tick all factory buildings, conveyors and conveyor attachments */
 	void TickFactoryActors( float dt );
 
 	UFUNCTION()
 	void UpdateConveyorRenderType( FString cvar );
+
+	void SetCurrentSubStepValue( uint8 itr )
+	{
+		mCurrentSubStep = itr;
+	}
+	
+	void SetCurrentMaxSubStepValue( uint8 itr )
+	{
+		mCurrentSubStepMax = itr;
+	}
+		
 public:
 	/** Distance used when calculating if a location is near a base */
 	UPROPERTY( EditDefaultsOnly, Category = "Factory" )
@@ -343,9 +365,17 @@ public:
 	 */
 	class UFGColoredInstanceManager* GetColoredInstanceManager( class UFGColoredInstanceMeshProxy* proxy );
 
+	/**
+	 * Used by UFGFactoryLegInstanceMeshProxy to get an instance if it's not already been assigned
+	 */
+	class UFGFactoryLegInstanceManager* GetFactoryLegInstanceManager( class UFGFactoryLegInstanceMeshProxy* proxy );
+
+	/**
+	 * Used by buildables in postload to migrate slot data to Customization Swatch. This should only be utilized by loading logic and is using cached data
+	 */
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > GetMigrationSwatchForSlot( int32 slotID );
+
 private:
-	// Allow the Colored instance manager objects created to directly add entries into the FactoryColoredMaterialMap
-	friend class UFGFactoryMaterialInstanceManager;
 
 	/** last used net construction ID. Used to identify pending constructions over network. Will increase ID every constructed building. */
 	FNetConstructionID mLastServerNetConstructionID;
@@ -355,7 +385,7 @@ private:
 	TArray< class AFGBuildable* > mBuildables;
 
 	/************************************************************************/
-	/* Begin variables for parallelization
+	/* Begin variables for parallelization									*/
 	/************************************************************************/
 	
 	/** This contains all factory tickable buildings except conveyors and splitter/mergers */
@@ -396,12 +426,17 @@ private:
 	bool mConveyorAttachmentGroupsDirty;
 
 	/************************************************************************/
-	/* End variables for parallelization
+	/* End variables for parallelization									  */
 	/************************************************************************/
 
 	/** Hierarchical instances for the factory buildings. */
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category="Colorable Instance Actor")
 	AActor* mBuildableInstancesActor;
+
+	/** Hierarchical instances for the factory Legs. */
+	UPROPERTY( EditAnywhere, Category = "FactoryLeg Instance Actor" )
+	AActor* mFactoryLegInstancesActor;
+
 	UPROPERTY()
 	TMap< class UStaticMesh*, class UProxyHierarchicalInstancedStaticMeshComponent* > mBuildableMeshInstances;
 
@@ -409,31 +444,40 @@ private:
 	UPROPERTY()
 	UFGProductionIndicatorInstanceManager* mProductionIndicatorInstanceManager = nullptr;
 
-	/**/
-	UPROPERTY()
-	TMap< class UStaticMesh*, class UFGColoredInstanceManager* > mColoredInstances;
+	/** Map of colorable static meshes to their corresponding instance manager */
+	UPROPERTY(EditAnywhere, Category="Colored Instance Managers" )
+	TMap< FName, class UFGColoredInstanceManager* > mColoredInstances;
+//	TMap< class UStaticMesh*, class UFGColoredInstanceManager* > mColoredInstances;
+
+	/** Map of factory leg meshes to their corresponding instance manager */
+	UPROPERTY( EditAnywhere, Category = "Factory Leg Instance Managers" )
+	TMap< class UStaticMesh*, class UFGFactoryLegInstanceManager* > mFactoryLegInstances;
 
 	bool mColorSlotsAreDirty = false;
 	
-	// DEPRECATED - Use Linear Color instead
+	// DEPRECATED - Use mColoreSlots_Data
 	UPROPERTY( SaveGame, VisibleDefaultsOnly, Category = "Customization" )
-	FColor mColorSlotsPrimary[ BUILDABLE_COLORS_MAX_SLOTS ];
+	FColor mColorSlotsPrimary[ BUILDABLE_COLORS_MAX_SLOTS_LEGACY ];
 
-	// DEPRECATED - Use Linear Color instead
+	// DEPRECATED - Use mColoreSlots_Data
 	UPROPERTY( SaveGame, VisibleDefaultsOnly, Category = "Customization" )
-	FColor mColorSlotsSecondary[ BUILDABLE_COLORS_MAX_SLOTS ];
+	FColor mColorSlotsSecondary[ BUILDABLE_COLORS_MAX_SLOTS_LEGACY ];
 
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
+	// DEPRECATED - Use mColoreSlots_Data
+	UPROPERTY( SaveGame, VisibleDefaultsOnly, Category = "Customization" )
 	TArray< FLinearColor > mColorSlotsPrimary_Linear;
 
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
+	// DEPRECATED - Use mColoreSlots_Data
+	UPROPERTY( SaveGame, VisibleDefaultsOnly, Category = "Customization" )
 	TArray< FLinearColor > mColorSlotsSecondary_Linear;
 
-	uint8 mColorSlotDirty[ BUILDABLE_COLORS_MAX_SLOTS ];
+	// New color slot implementation
+	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Customization" )
+	TArray< FFactoryCustomizationColorSlot > mColorSlots_Data;
 
-	/** The number of color slots players can adjust/define, this can be less than the total number of color slots actually present */
-	UPROPERTY( EditDefaultsOnly, Category = "Customization" )
-	uint8 mNbPlayerExposedSlots = 16;
+	/** List of actors which are having customizations (color, pattern etc. ) previewed on them so we can clear them later*/
+	UPROPERTY()
+	TArray< AActor* > mPreviewingCustomizationsList;
 
 	/** This contains all buildable light sources. Used to update light sources when light color slots have changed */
 	TArray< class AFGBuildableLightSource* > mBuildableLightSources;
@@ -442,13 +486,23 @@ private:
 	UPROPERTY( Transient )
 	TArray< FLinearColor > mBuildableLightColorSlots;
 
-	// Map of all Factory materials that are referenced by Factory buildings. Maps the materials name (and all dynamic instance mat names) to a manager class holding corresponding colored instances
-	// This is also used for non-colored materials, for example, the conveyor belt materials so that the same instance can be applied to many different belts
-	UPROPERTY()
-	TMap< FString, class UFGFactoryMaterialInstanceManager* > mFactoryColoredMaterialMap;
+	/* Current sub~step iteration*/
+	static uint8 mCurrentSubStep;
+	/* Final sub~step iteration.*/
+	static uint8 mCurrentSubStepMax;
 
-	// Count index for unique naming of new material Insance mangers
-	int32 mMaterialManagerIDCounter;
+	/************************************************************************/
+	/* Color Propagation Params                                             */
+	/************************************************************************/
+	EPropagateColorState mColorPropState = EPropagateColorState::Done;
+	int32 mColorPropagationProgressIndex = 0;
+	int32 mVehiclePropagationProgressIndex = 0;
+	float mColorPropagationTimer = 0;
+	/** Array with all the buildings that should replay their effect */
+	TArray< AFGBuildable* > mColorPropagationArray;
+
+	/** Array of all vehicles to update while updating color slots */
+	TArray< class AFGVehicle* > mVehicleColorPropagationArray;
 
 	/** Maximum number of buildables that we consider their optimization level during the same frame */
 	int32 mMaxConsideredBuildables;
@@ -485,6 +539,10 @@ private:
 	UPROPERTY( EditDefaultsOnly )
 	UMaterial* mDefaultFactoryMaterial;
 
+	/** Used to store different belt materials and their speeds so their materials can be shared */
+	UPROPERTY()
+	TMap< int32, UMaterialInstanceDynamic* > mConveyorTrackSpeedToMaterial;
+
 	bool IsBasedOn( const UMaterialInterface* instance, const UMaterial* base );
 
 	//@todorefactor With meta = ( ShowOnlyInnerProperties ) it does not show and PrimaryActorTick seems to be all custom properties, so I moved to another category but could not expand.
@@ -500,6 +558,25 @@ private:
 
 	/** Holograms simulated on client to indicate any pending constructions from server */
 	TMap<int16, class AFGHologram*> mPendingConstructionHolograms;
+
+	/** Asset containing list of all Swatch assets */
+	UPROPERTY( EditDefaultsOnly, Category = "Customization" )
+	TArray< TSubclassOf< class UFGFactoryCustomizationCollection > > mCustomizationCollectionClasses;
+
+	/** List of all Active Replication Detail Actors to be considered for removal */
+	UPROPERTY()
+	TArray< class AFGReplicationDetailActor* > mRepDetailCleanupArray;
+
+	UPROPERTY()
+	float mTimeUntilRepDetailCheck = 1.0f;
+
+	UPROPERTY()
+	float mSqDistanceForDetailCleanup = 10000000.f;
+
+	/** Helper map for quicker migrating from old slot data to new swatch desc asset in post load by doing a simple look up*/
+	UPROPERTY()
+	TMap < int32, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > > mSlotToSwatchDescMigrationMap;
+
 };
 
 template< typename T >

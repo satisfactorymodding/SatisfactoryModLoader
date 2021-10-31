@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableFactory.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
@@ -11,12 +12,14 @@
 UENUM( BlueprintType )
 enum class ETrainPlatformDockingStatus : uint8
 {
-	ETPDS_None					UMETA( DisplayName = "None" ),
-	ETPDS_WaitingToStart		UMETA( DisplayName = "WaitingToStart" ),
-	ETPDS_Loading				UMETA( DisplayName = "Loading" ),
-	ETPDS_Unloading				UMETA( DisplayName = "Unloading" ), 
-	ETPDS_WaitingForTransfer	UMETA( DisplayName = "WaitingTransfer" ),
-	ETPDS_Complete				UMETA( DisplayName = "Complete" )
+	ETPDS_None						UMETA( DisplayName = "None" ),
+	ETPDS_WaitingToStart			UMETA( DisplayName = "WaitingToStart" ),
+	ETPDS_Loading					UMETA( DisplayName = "Loading" ),
+	ETPDS_Unloading					UMETA( DisplayName = "Unloading" ), 
+	ETPDS_WaitingForTransfer		UMETA( DisplayName = "WaitingTransfer" ),
+	ETPDS_Complete					UMETA( DisplayName = "Complete" ),
+	ETPDS_WaitForTransferCondition	UMETA( DisplayName = "WaitForCondition" ),
+	ETPDS_IdleWaitForTime			UMETA( DisplayName = "Idle" )
 };
 
 /**
@@ -30,6 +33,7 @@ public:
 	AFGBuildableTrainPlatform();
 
 	// Begin Actor interface
+	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	// End Actor interface
 
@@ -48,7 +52,7 @@ public:
 	virtual bool IsUseable_Implementation() const override;
 	//~ End IFGUseableInterface
 
-	//@todotrains Get rid of the dependency on track position in platforms.
+	//@todo-trains Get rid of the dependency on track position in platforms.
 	FRailroadTrackPosition GetTrackPosition() const;
 	int32 GetTrackGraphID() const;
 
@@ -67,10 +71,17 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Platform" )
 	ETrainPlatformDockingStatus GetDockingStatus() const { return mPlatformDockingStatus; }
 
+	/** True if the player has Cancelled a dock from the FGTrain */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Platform" )
+	bool IsDockingCancelled() { return mDockWasCancelled; }
+
 	/** Timer Sequence Function to progress and handle all logic for docking
 	 *	When a platform is docked, a timer handle is created that updates the dock sequence until its completion that calls this function each step
 	 */
 	virtual	void UpdateDockingSequence();
+
+	/** Cancel the current dock (if there is one) */
+	virtual void CancelDockingSequence();
 
 protected:
 	/** his needs to happed from the hologram and from begin play */
@@ -129,6 +140,13 @@ protected:
 	UPROPERTY()
 	FTimerHandle mDockingSequenceTimerHandle;
 
+	// Timer handle to track when updates to the docking sequence are in the Idle state
+	UPROPERTY()
+	FTimerHandle mIdleUpdateTimerHandle;
+
+	UPROPERTY()
+	bool mDockWasCancelled;
+
 private:
-	friend class AFGTrainPlatformHologram; //@todotrains use this instead of setters and getters for everything.
+	friend class AFGTrainPlatformHologram;
 };

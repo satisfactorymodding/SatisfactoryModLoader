@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Replication/FGReplicationDetailActor_BuildableFactory.h"
 #include "FGReplicationDetailActor_DockingStation.generated.h"

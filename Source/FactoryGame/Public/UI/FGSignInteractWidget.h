@@ -2,9 +2,12 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSignInterface.h"
 #include "UI/FGInteractWidget.h"
+#include "FGSignTypes.h"
+#include "Framework/Text/TextLayout.h"
 #include "FGSignInteractWidget.generated.h"
 
 
@@ -28,9 +31,6 @@ public:
 	void NativePostInit();
 
 	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
-	void AddNewSignElement( UFGSignElementData* elementData );
-
-	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
 	void ApplySignData();
 
 	/** Returns a scalar to scale all UI elements by (to set absolute positions correctly) */
@@ -49,7 +49,49 @@ public:
 	void AddNewTextElement();
 	UFUNCTION()
 	void AddNewIconElement();
+	UFUNCTION()
+	void AddNewPanelElement();
 	/** End Add Element Bindings */
+
+
+	// Delete an element
+	UFUNCTION()
+	void DeleteElement( int32 elementID );
+
+	// Get the element string data by given ID
+	FSignStringElement& GetElementDataRefFromID( int32 elementID )
+	{
+		return mSignStringData.GetStringElementRefFromID( elementID );
+	}
+
+	// Gets a copy of an elements string data
+	bool GetElementDataCopyFromID( int32 elementID, FSignStringElement& out_elementData )
+	{
+		return mSignStringData.GetStringElementCopyFromID( elementID, out_elementData );
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	/// Element Property Setters
+
+	UFUNCTION( BlueprintCallable, Category = "Signs|InteractWidget" )
+	void SetElementPosition( int32 id, FVector2D newPosition );
+
+	UFUNCTION( BlueprintCallable, Category = "Signs|InteractWidget" )
+	void SetElementText( int32 id, FString newText );
+
+	UFUNCTION( BlueprintCallable, Category = "Signs|InteractWidget" )
+	void SetElementSize( int32 id, FVector2D newSize );
+
+	UFUNCTION( BlueprintCallable, Category = "Signs|InteractWidget" )
+	void SetElementIconID( int32 id, int32 iconID );
+
+	UFUNCTION( BlueprintCallable, Category = "Signs|InteractWidget" )
+	void SetElementSizeSpecifier( int32 id, ESignSizeDefinition sizeSpecification );
+
+	UFUNCTION( BlueprintCallable, Category = "Signs|InteractWidget" )
+	void SetElementTextJustification( int32 id, ETextJustify::Type newJustification );
+
+
 
 protected:
 	// Begin UFGInteractWidget interface
@@ -65,7 +107,7 @@ protected:
 protected:
 
 	/************************************************************************/
-	/*					Begin Widget Bindings
+	/*					Begin Widget Bindings */
 	/************************************************************************/
 	// Widget reference that holds a list of all active elements and allows for creation / deletion of sign elements
 	UPROPERTY( meta = ( BindWidget ) )
@@ -88,8 +130,11 @@ protected:
 	UPROPERTY( meta=( BindWidget) )
 	class UFGSignCanvasWidget* mSignCanvasWidget;
 	/************************************************************************/
-	/*					End Widget Bindings
+	/*					End Widget Bindings */
 	/************************************************************************/
+
+	UPROPERTY()
+	TMap< int32, class UFGSignElementListItemWidget* > mElementToListItem;
 
 	// Created at runtime, can be null if no element is selected
 	UPROPERTY()
@@ -99,9 +144,12 @@ protected:
 	IFGSignInterface* mSignInterface;
 
 	UPROPERTY( BlueprintReadWrite, Category = "Sign Widget" )
-	FSignData mSignData;
+	FSignStringData mSignStringData;
 
 private:
+	friend class UFGSignElementListWidget;
+	friend class UFGSignCanvasWidget;
+
 	// Matrix of DPI scale to apply to get absolute screen position
 	FMatrix2x2 mDPIScaleMatrix;
 
@@ -110,4 +158,5 @@ private:
 
 	// Scale from World Size of sign to our Canvas UI Element
 	float mCanvasToComponentScale;
+
 };

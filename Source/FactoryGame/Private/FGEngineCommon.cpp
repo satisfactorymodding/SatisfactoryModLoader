@@ -23,4 +23,5 @@ bool FFGEngineCommon::Exec( UWorld* inWorld, const TCHAR* cmd, FOutputDevice& ar
 void FFGEngineCommon::Tick(float dt){ }
 UWorld* FFGEngineCommon::CreateWorld(const FString& worldName){ return nullptr; }
 void FFGEngineCommon::DestroyWorld( UWorld* world){ }
+UFGAtmosphereUpdater* FFGEngineCommon::GetAtmosphereUpdater(){ return nullptr; }
 void FFGEngineCommon::HandleHiddenTextureStatsCommand(const TCHAR* cmd, FOutputDevice& ar){ }

@@ -4,10 +4,21 @@
 
 void AFGPortableMiner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 AFGPortableMiner::AFGPortableMiner() : Super() {
-	this->mExtractCycleTime = 1;
+	this->mExtractCycleTime = 1.0;
+	this->mExtractResourceNode = nullptr;
+	this->mOutputInventory = nullptr;
+	this->mCurrentExtractProgress = 0.0;
+	this->mInteractWidgetClass = nullptr;
 	this->mInventorySize = 1;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
+	this->mIsProducing = false;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
+	this->bReplicates = true;
 }
 void AFGPortableMiner::Tick(float dt){ }
 void AFGPortableMiner::Destroyed(){ }

@@ -2,6 +2,9 @@
 
 #include "FGNetworkLibrary.h"
 
+bool UFGSessionLookup::StartLookup(){ return bool(); }
+void UFGSessionLookup::InitialSearchCompleted(int32 controllerId, bool wasSuccessful, const FOnlineSessionSearchResult& searchResult){ }
+void UFGSessionLookup::SetState(ESessionLookupState State){ }
 bool UFGPresenceLibrary::IsOnline(const FOnlinePresence& presence){ return bool(); }
 FOnlinePresence UFGPresenceLibrary::GetPresenceFromNetId(UObject* worldContext, const FUniqueNetIdRepl& netId){ return FOnlinePresence(); }
 bool UFGPresenceLibrary::NetIdHasValidPresence(UObject* worldContext, const FUniqueNetIdRepl& netId){ return bool(); }
@@ -17,6 +20,7 @@ bool UFGFriendsLibrary::GetFriendName(ULocalPlayer* friendOf,  const FFGOnlineFr
 bool UFGFriendsLibrary::IsWaitingForData(ULocalPlayer* friendOf, const FFGOnlineFriend& onlineFriend){ return bool(); }
 bool UFGFriendsLibrary::IsValid_Friend(const FFGOnlineFriend& a){ return bool(); }
 FFGOnlineSessionSettings UFGSessionLibrary::GetSessionSettings(const FBlueprintSessionResult& session){ return FFGOnlineSessionSettings(); }
+FString UFGSessionLibrary::GetSessionId(const FBlueprintSessionResult& session){ return FString(); }
 TEnumAsByte<ESessionVisibility> UFGSessionLibrary::GetSessionVisibility(const FBlueprintSessionResult& session){ return TEnumAsByte<ESessionVisibility>(); }
 FBlueprintSessionResult UFGSessionLibrary::GetMySession(ULocalPlayer* localPlayer){ return FBlueprintSessionResult(); }
 void UFGSessionLibrary::GetPlayersInMySession(ULocalPlayer* localPlayer, TArray< FUniqueNetIdRepl >& out_playersInSession){ }
@@ -27,7 +31,6 @@ void UFGSessionLibrary::JoinSession(UObject* worldContext, const FBlueprintSessi
 int32 UFGSessionLibrary::GetMaxNumberOfPlayers(const FBlueprintSessionResult& session){ return int32(); }
 bool UFGSessionLibrary::QuerySessionByFriend(UObject* worldContext, const FUniqueNetIdRepl& playerId, const FFGOnlineFriend& targetFriend, FSearchQueryCompleteDelegate onComplete){ return bool(); }
 bool UFGSessionLibrary::QuerySessionByID(UObject* worldContext, const FUniqueNetIdRepl& playerId, FString sessionOnlineID, FSearchQueryCompleteDelegate onComplete){ return bool(); }
-void UFGSessionLibrary::SetSessionID(UObject* worldContext, const FUniqueNetIdRepl& playerId, const FString requestedID, FChangeSessionIDDelegate onComplete){ }
 bool UFGSessionLibrary::CheckIsCompatibleVersion(const FFGOnlineSessionSettings& session){ return bool(); }
 void UFGSessionLibrary::UpdateSessionFromSessionSettings(FOnlineSessionSettings& session, const FFGOnlineSessionSettings& sessionSettings){ }
 void UFGSessionLibrary::SessionSettingsFromSession(const FOnlineSessionSettings& session, FFGOnlineSessionSettings& sessionSettings){ }

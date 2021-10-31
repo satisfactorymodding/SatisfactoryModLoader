@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildable.h"
 #include "FGBuildableLadder.generated.h"
@@ -84,7 +85,7 @@ protected:
 
 	/** Clearance Box */
 	UPROPERTY( VisibleAnywhere )
-	class UBoxComponent* mClearanceBox;
+	class UFGClearanceComponent* mClearanceBox;
 
 	/** Ladder component on the front. */
 	UPROPERTY( VisibleAnywhere )

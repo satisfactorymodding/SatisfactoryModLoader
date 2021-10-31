@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Components/InstancedStaticMeshComponent.h"
 #include "FGConveyorInstanceMeshBucket.generated.h"
@@ -97,4 +98,5 @@ private:
 	bool bIsInitialized;
 
 	friend class AFGConveyorItemSubsystem;
+	friend class FParallelUpdateGPUDatadateTask;
 };

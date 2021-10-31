@@ -4,6 +4,8 @@
 
 void UFGGameplayTask_Attack::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const{ }
 void UFGGameplayTask_Attack::InitSimulatedTask(UGameplayTasksComponent& InGameplayTasksComponent){ }
-UFGGameplayTask_Attack::UFGGameplayTask_Attack(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGGameplayTask_Attack::UFGGameplayTask_Attack(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mAttackClass = nullptr;
+}
 void UFGGameplayTask_Attack::Activate(){ }
 void UFGGameplayTask_Attack::OnDestroy(bool bInOwnerFinished){ }

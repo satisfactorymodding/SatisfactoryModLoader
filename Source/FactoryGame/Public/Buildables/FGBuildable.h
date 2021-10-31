@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "FGUseableInterface.h"
 #include "ItemAmount.h"
@@ -16,18 +17,61 @@
 #include "Replication/FGReplicationDetailActorOwnerInterface.h"
 #include "FGBuildableSubsystem.h"
 #include "FGBuildingTagInterface.h"
+#include "FGAttachmentPoint.h"
+#include "FGDecorationTemplate.h"
+#include "FGRemoteCallObject.h"
+
 #include "FGBuildable.generated.h"
 
 //@todonow These should CAPS_CASE according to the coding standard
 static const FString MainMeshName( TEXT( "MainMesh" ) );
-static const FName ClearanceVolumeName( TEXT( "Clearance" ) ); //@todo There's a duplicate of this in the CPP file.
 static const FName ClearanceDetectorVolumeName( TEXT( "ClearanceDetector" ) ); //@todo There's a duplicate of this in the CPP file.
+
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FBuildableDismantledSignature );
 
 // Replication graph related delegates
 DECLARE_MULTICAST_DELEGATE_ThreeParams( FOnRegisteredPlayerChanged, class AFGBuildable*, class AFGCharacterPlayer* /* registered player */, bool /* bIsUseStateActive */ );
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnReplicationDetailActorStateChange, class IFGReplicationDetailActorOwnerInterface*, bool );
+
+/**
+ * Production status of the factory, i.e. displayed on the indicator.
+ */
+UENUM( BlueprintType )
+enum class EProductionStatus : uint8
+{
+	IS_NONE,
+	IS_PRODUCING,
+	IS_PRODUCING_WITH_CRYSTAL, //We have a crystal in the potential slot and are producing
+	IS_STANDBY,
+	IS_ERROR,
+	IS_MAX
+};
+DECLARE_MULTICAST_DELEGATE_OneParam( FProductionStatusChanged, EProductionStatus );
+
+
+/**
+ *	Rco for all Signifigance based network logic.
+ *	main motivation for this is to reduce the number of objects per unique instance in the world like ladders & trigger boxes.
+ *	This should improve scalability for the game to later phases and reduce memory overhead. */
+UCLASS()
+class FACTORYGAME_API UFGSignificantNetworkRCO : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps(::TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGSignificantNetworkRemoteCallObject = false;
+
+	UFUNCTION( Server, Reliable )
+    void Server_RequestDecoratorSignificantComponents( AFGBuildable* actor, AFGPlayerController* controller );
+
+	UFUNCTION( Server, Reliable )
+    void Server_RemoveDecoratorSignificantComponents( AFGBuildable* actor, AFGPlayerController* controller );
+};
+
 
 
 /**
@@ -37,7 +81,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams( FOnReplicationDetailActorStateChange, clas
  * PrimaryActorTick is disabled when the buildable is to far away to to not waste cycles on animations and other effects.
  * FactoryTick is always enabled (as long as bCanEverTick is true) so that the factory part of buildings always can simulate.
  */
-UCLASS( Abstract, NotPlaceable, Config=Engine, Meta=(AutoJson=true) )
+UCLASS( Abstract, Config=Engine, Meta=(AutoJson=true) )
 class FACTORYGAME_API AFGBuildable : public AActor, public IFGDismantleInterface, public IFGSaveInterface, public IFGColorInterface, public IFGUseableInterface
 {
 	GENERATED_BODY()
@@ -73,13 +117,17 @@ public:
 	// End IFSaveInterface
 
 	//~ Begin IFGColorInterface
-	void SetColorSlot_Implementation( uint8 newColor );
-	uint8 GetColorSlot_Implementation();
-	void SetColorSlot_PreBeginPlay( uint8 newColor );
-	FLinearColor GetPrimaryColor_Implementation();
-	FLinearColor GetSecondaryColor_Implementation();
+	void SetCustomizationData_Implementation( const FFactoryCustomizationData& customizationData );
+	void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData );
+	void ApplyCustomizationData_Implementation( const FFactoryCustomizationData& customizationData );
+	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
+	FFactoryCustomizationData GetCustomizationData_Implementation() { return mCustomizationData; }
+	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
 	bool GetCanBeColored_Implementation();
-	virtual void StartIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter );
+	virtual bool IsColorApplicationDeferred() { return false; }
+	virtual bool CanApplyDeferredColorToBuildable( FVector hitLocation, FVector hitNormal, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController ) { return false; }
+	virtual void ApplyDeferredColorToBuildable( FVector hitLocation, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController ) {};
+	virtual void StartIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter, bool isValid = true );
 	virtual void StopIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter );
 	//~ End IFGColorInterface
 
@@ -124,6 +172,7 @@ public:
 	virtual void Dismantle_Implementation() override;
 	virtual void StartIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
+	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
 	//~ End IFGDismantleInferface
 
 	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter, class UFGCircuitConnectionComponent* overlappingConnection );
@@ -131,6 +180,9 @@ public:
 
 	/** Called in ConfigureActor from the hologram. */
 	void SetBuiltWithRecipe( TSubclassOf< class UFGRecipe > recipe ) { mBuiltWithRecipe = recipe; }
+
+	/** Called in ConfigureActor from the hologram. */
+	void SetOriginalBuildableVariant( const TSubclassOf< AFGBuildable > originalVariant ) { mOriginalBuildableVariant = originalVariant; }
 
 	/** Getters for the built with recipe. */
 	FORCEINLINE TSubclassOf< class UFGRecipe > GetBuiltWithRecipe() const { return mBuiltWithRecipe; }
@@ -141,7 +193,21 @@ public:
 	void TurnOffAndDestroy();
 
 	/* The state the pool handles get registered in, useful for lights and other components that reacts to power change.*/
-	virtual bool GetPoolHandleInitialState() const; 
+	virtual bool GetPoolHandleInitialState() const;
+
+	/* Creates all component from the decorator that should be constructed on significance  */
+	virtual bool CreateDecoratorSignificantComponents( class AFGPlayerController* controller );
+
+	/* Gets called for every component dynamically spawned from the decorator class. */
+	virtual void ConfigureDynamicDecoratorComponent( USceneComponent* newComponent );
+
+	/* Removes current controller from the active list, when the list is empty it will remove the significant components. */
+	void TryRemoveDecoratorSignificantComponents( class AFGPlayerController* controller );
+
+	/* Removes all component when no client is significant anymore. */
+	virtual void RemoveDecoratorSignificantComponents( );
+
+	TArray<USceneComponent*> GetGeneratedSignificantComponents() { return mGeneratedSignificantComponents; }
 	
 	/** Finds, caches and returns the MainMesh of this buildable */
 	UFUNCTION( BlueprintCallable, Category = "Buildable" )
@@ -229,19 +295,37 @@ public:
 	static FOnReplicationDetailActorStateChange OnBuildableReplicationDetailActorStateChange;
 
 	UFUNCTION( BlueprintPure, Category = "Buildable" )
-	UShapeComponent* GetClearanceComponent();
+	class UFGClearanceComponent* GetClearanceComponent();
+
+	UFUNCTION( BlueprintPure, Category = "Buildable" )
+	class UFGComplexClearanceComponent* GetComplexClearanceComponent() const { return mComplexClearanceComponent; }
+
+	/** Spawns the complex clearance component if one can be found on the decorator class. Returns it if successful. */
+	UFGComplexClearanceComponent* SpawnComplexClearanceComponent();
+	void DestroyComplexClearanceComponent();
 
 	/**Function to get info about participation in clearance overlap feedback for the local machines hologram placement*/
 	uint8 GetParticipatedInCleranceEncroachFrameCountDown(){ return mParticipatedInCleranceEncroachFrameCountDown; }
 	void SetParticipatedInCleranceEncroachFrameCountDown( uint8 value ){ mParticipatedInCleranceEncroachFrameCountDown = FMath::Min( value, (uint8 )3 ); }
 
-	/** Used to let foundations allow for clearance separation when stacked on, which most others don't */
-	bool AllowCleranceSeparationEvenIfStackedOn() { return mAllowCleranceSeparationEvenIfStackedOn; }
+	bool ShouldCreateClearanceMeshRepresentation() const { return mCreateClearanceMeshRepresentation; }
 
 	/** Get the number of connections components on this buildable, may not be the same as the number of usable connections. */
 	uint8 GetNumPowerConnections() const;
 	uint8 GetNumFactoryConnections() const;
 	uint8 GetNumFactoryOuputConnections() const;
+
+	UFUNCTION( BlueprintPure, Category = "Buildable" )
+	bool ShouldModifyWorldGrid() const { return mShouldModifyWorldGrid; }
+
+	UFUNCTION( BlueprintPure, Category = "Buildable" )
+	bool ShouldShowAttachmentPointVisuals() const { return mShouldShowAttachmentPointVisuals; }
+
+	/** Fills an array with all attachment points of this buildable. */
+	virtual void GetAttachmentPoints( TArray< const FFGAttachmentPoint* >& out_points ) const;
+
+	/** Creates an array of attachment points from components on this buildable and its deco class. */
+	void CreateAttachmentPointsFromComponents( TArray< FFGAttachmentPoint >& out_points, AActor* owner ) const;
 
 	/** Should this buildable be relevant when considering if a location is near a base/factory area */
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable" )
@@ -260,6 +344,19 @@ public:
 	/* Returns a default object containing cosmetic components used for the pooler. */
 	TSubclassOf< class AFGDecorationTemplate > GetDecorationTemplate() const { return mDecoratorClass; }
 
+	/** Helper to get the cost multiplier for a buildable given its length and how long each cost segment is. */
+	static int32 GetCostMultiplierForLength( float totalLength, float costSegmentLength );
+
+	/** Get if dormancy is expected to toggle when interaction ceases. This is used by the buildable subsystem to toggle later (after interaction) on rep detail actor cleanup */
+	bool GetToggleDormancyOnInteraction() const { return mToggleDormancyOnInteraction; }
+
+	/** Return the specified default swatch for this buildable. If one is not specified return the default swatch*/	
+	UFUNCTION()
+	class TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > GetDefaultSwatchCustomizationOverride( UObject* worldContext );
+
+	/** Is this buildable dismantled? */
+	FORCEINLINE bool GetIsDismantled() const { return mIsDismantled; }
+
 protected:
 	/** Blueprint event for when materials are updated by the buildable subsystem*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
@@ -276,9 +373,6 @@ protected:
 	/** Ugly haxx to remove replication of graph unless any player is looking at it */
 	void RegisterInteractingPlayerWithCircuit( class AFGCharacterPlayer* player );
 	void UnregisterInteractingPlayerWithCircuit( class AFGCharacterPlayer* player );
-
-	/** Get the distance to the closest camera */
-	float GetCameraDistanceSq() const{ return mCameraDistanceSq; }
 
 	/** Called whenever mIsReplicatingDetails has changed, used to enable disable replication of subobjects. */
 	virtual void OnReplicatingDetailsChanged();
@@ -318,9 +412,6 @@ protected:
 	 */
 	virtual bool VerifyDefaults( FString& out_message );
 
-	/** Helper to get the cost multiplier for a buildable given its length and how long each cost segment is. */
-	static int32 GetCostMultiplierForLength( float totalLength, float costSegmentLength );
-
 	/** Get the refundable cost for this building, not including any connected buildings. Not consolidated. */
 	void GetDismantleRefundReturns( TArray< FInventoryStack >& out_returns ) const;
 	/** Get the multiplier for the refundable cost, e.g. for buildings that cost per length unit. */
@@ -347,28 +438,15 @@ protected:
 	UFUNCTION( BlueprintCallable, Category="Buildable")
 	void FlagReevaluateMaterialOnColored() { mReevaluateMaterialsWithSubsystem = true; }
 
-	/** Update the color from the current color slot*/
-	UFUNCTION( BlueprintCallable )
-	void ReapplyColorSlot();
+	/** Update all none Instanced Mesh Colors / params. This sets the primitive data so is responsible for coloring Skel_Meshes etc. */
+	UFUNCTION( BlueprintCallable, Category="Buildable|Customization" )
+	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
 
-	/** Does this buildable have a material instance manager mapped to the given component? 
-	*	The component to material manager map is used to verify we have already updated the factory materials for a given component. 
-	*	@todoFactoryMaterialInstance:	Is this still needed? It was used before to ensure we didn't attempt to instance a component multiple times, but this should be done in AddBuildable in the subsystem now
-	*									Not, as it was before, in the OnRep_ColorSlot(). We should only be applying materials once... right? [Thoughts from Dylan as he writes the new system]
-	*/
-	bool HasMaterialInstanceManagerForMaterialName( const FString& lookupName );
+	UFUNCTION()
+	void ApplyHasPowerCustomData();
 
-	/** Returns the Material Manager for a given component, or null if there is not one */
-	class UFGFactoryMaterialInstanceManager* GetMaterialInstanceManagerForMaterialName( const FString& lookupName );
-
-	/** Adds an entry for a given component mapping to its respective Material Instance Manager. Returns false if it could not add an entry (eg. It already exists or failed to create) */
-	bool AddMaterialInstanceManagerForMaterialName( const FString& lookupName, class UFGFactoryMaterialInstanceManager* materialInstanceManager );
-
-	/** OnDismantle check to see if the buildable subsystem has any BlockedSharing material instance references that were only relevent to this object and remove them from the master material manager map */
-	void CleanUpMaterialInstanceMappingsInSubsystem();
-
-	UFUNCTION( BlueprintPure, Category="Buildable" )
-	bool ShouldModifyWorldGrid() const { return mShouldModifyWorldGrid; }
+	/** Visually (CustomData / PIC ) does this building have "power". For now powered buildings this should always return true to light the emissive channel */
+	FORCEINLINE virtual float GetEmissivePower() { return 1.f; }
 
 	/** Setter for mDidFirstTimeUse so we can ensure that it is flagged for replication property */
 	void SetDidFirstTimeUse( bool didUse );
@@ -392,9 +470,9 @@ private:
 	/** Helper to verify the connection naming. */
 	bool CheckFactoryConnectionComponents( FString& out_message );
 
-	/** Let the client set colors. */
+	/** Let the client know custom color / material information has been applied to the building */
 	UFUNCTION()
-	void OnRep_ColorSlot();
+	void OnRep_CustomizationData();
 
 	/** Let client see the highlight */
 	UFUNCTION()
@@ -426,20 +504,14 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	FVector mHighlightVector;
 
-	// TODO remove
-	/* Abstract locations of the fog planes.*/
-	UPROPERTY(EditDefaultsOnly, Category = "Buildable|FogPlane")
-	TArray<FTransform> mFogPlaneTransforms;
-
-	// TODO remove
-	UPROPERTY(EditDefaultsOnly, Category = "Buildable|FogPlane")
-	UStaticMesh* mFogPlaneMesh;
-
 	/* Pool handles used by the pooling system. */
 	TArray< struct FPoolHandle* > mPoolHandles;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Buildable")
 	TSubclassOf< class AFGDecorationTemplate > mDecoratorClass;
+
+	/** Callback for when the production indicator state changes. Called locally on both server and client. */
+	FProductionStatusChanged mOnProductionStatusChanged;
 	
 protected:
 	//@todorefactor With meta = ( ShowOnlyInnerProperties ) it does not show and PrimaryActorTick seems to be all custom properties, so I moved to another category but could not expand.
@@ -447,33 +519,20 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Factory Tick", meta = (NoAutoJson = true) )
 	FFactoryTickFunction mFactoryTickFunction;
 
-	//@todoGC Good candidate for maybe moving to the buildable subsystem to get it out of all buildings. FName instead of FString?
-	/** Map of colorable mesh materials to their respective colored factory material instance manager */
-	UPROPERTY()
-	TMap< FString, class UFGFactoryMaterialInstanceManager* > mMaterialNameToInstanceManager;
-
-	/** 
-	*	Set to true to keep the materials in this buildable from being added to the material instance manager. Uses include buildings that set other material parameters outside of the color params.
-	*	Ex. Pipeline Pumps use a Vertex animation that varies between instances at runtime so it doesn't make sense to attempt to use a universal material instance
-	*/
-	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
-	bool mBlockSharingMaterialInstanceMapping;
-
-	/** Array of mesh elements to selectively block material instancing on. Used in the event that certain buildable components should not attempt to use a shared material instance. */
-	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Buildable" )
-	TArray< class UMeshComponent* > mExcludeFromMaterialInstancing;
-
-	/** The primary color of this buildable */
-	UPROPERTY( SaveGame, meta = (NoAutoJson = true) )
-	FLinearColor mPrimaryColor;
-
-	/** The primary color of this buildable */
-	UPROPERTY( SaveGame, meta = (NoAutoJson = true) )
-	FLinearColor mSecondaryColor;
-
 	/** The color slot of this buildable */
-	UPROPERTY( EditAnywhere, SaveGame, ReplicatedUsing = OnRep_ColorSlot, meta = (NoAutoJson = true) )
-	uint8 mColorSlot = 0; 
+	UPROPERTY( EditAnywhere, SaveGame, Replicated, meta = (NoAutoJson = true) )
+	uint8 mColorSlot = 0;
+
+	/** Custom Color/Mat data. Stored in a TArray so it can be variable (or 0 size) to reduce save footprint since many buildings will only utilize the slot index */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CustomizationData, meta = ( NoAutoJson = true ) )
+	FFactoryCustomizationData mCustomizationData;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Buildable" )
+	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > mDefaultSwatchCustomizationOverride;
+
+	/** if true, then this buildable will accept swatches and patterns */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	bool mAllowColoring;
 
 	/** HAXX FLAG! Buildings set this to start replicating power graph if they are interacted with */
 	bool mInteractionRegisterPlayerWithCircuit;
@@ -553,21 +612,27 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	bool mShouldShowHighlight;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Stacking" )
-	bool mAllowCleranceSeparationEvenIfStackedOn = false;
+	/** Whether or not we should create the visual mesh representation for attachment points. */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	bool mShouldShowAttachmentPointVisuals;
+
+	/** Whether or not we should create a clearance mesh representation for this buildable. */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	bool mCreateClearanceMeshRepresentation;
 
 	/** Caching the extent for use later */
 	FBox mCachedBounds;
+
+	/** List of attachmentpoints for this buildable. */
+	UPROPERTY()
+	TArray< FFGAttachmentPoint > mAttachmentPoints;
+	
 private:
 	friend class UFGFactoryConnectionComponent;
 	friend class AFGBuildableSubsystem;
 
 	/** Factory Stat id of this object, 0 if nobody asked for it yet */
 	STAT( mutable TStatId mFactoryStatID; )
-
-	/** Squared distance to closest camera */
-	UPROPERTY( meta = (NoAutoJson = true) )
-	float mCameraDistanceSq;
 	
 	/** The cached main mesh of this buildable */
 	TArray< UMeshComponent* > mCachedMainMeshes; //@todoGC Do we still use this? Probably not, check with Ben.
@@ -605,9 +670,6 @@ private:
 	/** if true, then blueprint has implemented Factory_GrabOutput */
 	uint8 mHasFactory_GrabOutput:1;
 
-	uint8 mHasColorableComponents : 1;
-	uint8 mHasColorableComponentsDirty : 1; //make us update the value the first time
-
 	/** ID given from server when constructed. Has not been assigned a value by server if 0. */
 	UPROPERTY(transient, replicated)
 	FNetConstructionID mNetConstructionID;
@@ -617,13 +679,21 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	TSubclassOf< class UFGRecipe > mBuiltWithRecipe;
 
+	/** If we were built as a variant, this is the class of the buildable we are a variant of. */
+	UPROPERTY( SaveGame, Replicated )
+	TSubclassOf< class AFGBuildable > mOriginalBuildableVariant;
+
 	/** Time when this building was built */
 	UPROPERTY( SaveGame, meta = (NoAutoJson = true) )
 	float mBuildTimeStamp;
 
-	/** Caching the shape component once we have gotten it */
+	/** Clearance component of the buildable. */
 	UPROPERTY()
-	UShapeComponent* mCachedShapeComponent;
+	class UFGClearanceComponent* mClearanceComponent;
+	
+	/** Complex clearance component of the buildable. */
+	UPROPERTY()
+	class UFGComplexClearanceComponent* mComplexClearanceComponent;
 
 	/** Has this buildable created its material dynamic material instances for shared coloring? */
 	bool mHasInitializedMaterialManagers;
@@ -636,8 +706,14 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	bool mShouldModifyWorldGrid;
 
-	UPROPERTY(Transient)
+	UPROPERTY( Transient )
 	TArray< UStaticMeshComponent* > mProxyBuildEffectComponents;
+
+	UPROPERTY( Transient, VisibleAnywhere )
+	TArray< class AFGPlayerController* > mActiveSignificantControllers;
+
+	UPROPERTY( Transient, VisibleAnywhere )
+	TArray< USceneComponent* > mGeneratedSignificantComponents;
 };
 
 /** Definition for GetDefaultComponents. */
@@ -645,7 +721,7 @@ template< class T, class AllocatorType >
 void AFGBuildable::GetDefaultComponents( TArray< T*, AllocatorType >& out_components ) const
 {
 	AFGBuildable* defaultBuildable = GetClass()->GetDefaultObject< AFGBuildable >();
-	check( defaultBuildable );
+	fgcheck( defaultBuildable );
 
 	// Get native components.
 	defaultBuildable->GetComponents( out_components );

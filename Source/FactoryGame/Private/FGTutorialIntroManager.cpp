@@ -5,9 +5,44 @@
 AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UWorld* world){ return nullptr; }
 AFGTutorialIntroManager* AFGTutorialIntroManager::Get(UObject* worldContext){ return nullptr; }
 AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->mTradingPostBuilt = false;
+	this->mPendingTutorial = EIntroTutorialSteps::ITS_NONE;
+	this->mHasCompletedIntroTutorial = false;
+	this->mHasCompletedIntroSequence = false;
+	this->mTradingPostDescriptor = nullptr;
+	this->mTradingPost = nullptr;
+	this->mIronOreDescriptor = nullptr;
+	this->mDidPickUpIronOre = false;
+	this->mDropPodItemClass = nullptr;
+	this->mDidDismantleDropPod = false;
+	this->mStunSpearItemClass = nullptr;
+	this->mDidEquipStunSpear = false;
+	this->mStep1UpgradeSchematic = nullptr;
+	this->mDidStep1Upgrade = false;
+	this->mStep1_5UpgradeSchematic = nullptr;
+	this->mDidStep1_5Upgrade = false;
+	this->mStep2UpgradeSchematic = nullptr;
+	this->mDidStep2Upgrade = false;
+	this->mStep3UpgradeSchematic = nullptr;
+	this->mDidStep3Upgrade = false;
+	this->mStep4UpgradeSchematic = nullptr;
+	this->mDidStep4Upgrade = false;
+	this->mStep5UpgradeSchematic = nullptr;
+	this->mDidStep5Upgrade = false;
+	this->mStartingPodClass = nullptr;
+	this->mStartingPod = nullptr;
+	this->mTradingPostLevel = 0;
+	this->mWaitTimeAfterCompletingMinorStep = 0.0;
+	this->mWaitTimeAfterCompletingHubStep = 0.0;
+	this->mHoldTimeToSkipIntro = 0.0;
+	this->mDidOpenCodex = false;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGTutorialIntroManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGTutorialIntroManager::Tick(float DeltaTime){ }

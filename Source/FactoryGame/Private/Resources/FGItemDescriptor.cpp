@@ -29,11 +29,38 @@ bool UFGItemDescriptor::FGenerateIconContext::IsValid() const{ return bool(); }
 UFGItemDescriptor::FGenerateIconContext UFGItemDescriptor::GenerateIconContext = UFGItemDescriptor::FGenerateIconContext();
 #endif 
 UFGItemDescriptor::UFGItemDescriptor() : Super() {
-	this->mUseDisplayNameAndDescription = true;
+	this->mDisplayName = INVTEXT("");
+	this->mDescription = INVTEXT("");
+	this->mAbbreviatedDisplayName = INVTEXT("");
 	this->mStackSize = EStackSize::SS_MEDIUM;
 	this->mCanBeDiscarded = true;
+	this->mRememberPickUp = false;
+	this->mEnergyValue = 0.0;
+	this->mRadioactiveDecay = 0.0;
 	this->mForm = EResourceForm::RF_SOLID;
-	this->mItemIndex = -1;
+	this->mSmallIcon = nullptr;
+	this->mPersistentBigIcon = nullptr;
+	this->mConveyorMesh = nullptr;
+	this->mPreviewView.Distance = 200.0;
+	this->mPreviewView.FocalOffset.X = 0.0;
+	this->mPreviewView.FocalOffset.Y = 0.0;
+	this->mPreviewView.FocalOffset.Z = 0.0;
+	this->mPreviewView.CameraPitch = -35.0;
+	this->mCategory = nullptr;
+	this->mQuickSwitchGroup = nullptr;
+	this->mMenuPriority = 0.0;
+	this->mFluidColor.B = 0;
+	this->mFluidColor.G = 0;
+	this->mFluidColor.R = 0;
+	this->mFluidColor.A = 0;
+	this->mGasColor.B = 0;
+	this->mGasColor.G = 0;
+	this->mGasColor.R = 0;
+	this->mGasColor.A = 0;
+	this->mResourceSinkPoints = 0;
+	this->mItemCategory = nullptr;
+	this->mBuildCategory = nullptr;
+	this->mBuildMenuPriority = 0.0;
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }
@@ -115,12 +142,17 @@ bool UFGItemDescriptor::RememberPickUp(TSubclassOf< UFGItemDescriptor > inClass)
 	else
 		return bool();
 }
-TSubclassOf< UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass) {
+TSubclassOf< class UFGItemCategory > UFGItemDescriptor::GetItemCategory(TSubclassOf< UFGItemDescriptor > inClass) {
 	if (inClass)
 		return inClass.GetDefaultObject()->mItemCategory;
 	else
 		return TSubclassOf< UFGItemCategory >();
 }
+TSubclassOf< class UFGCategory > UFGItemDescriptor::GetCategory(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<class UFGCategory>(); }
+void UFGItemDescriptor::GetSubCategories(TSubclassOf< UFGItemDescriptor > inClass, TArray< TSubclassOf<  UFGCategory > >& out_subCategories){ }
+TArray< TSubclassOf< class UFGCategory > > UFGItemDescriptor::GetSubCategoriesOfClass(TSubclassOf< UFGItemDescriptor > inClass, TSubclassOf<  UFGCategory > outputCategoryClass){ return TArray<TSubclassOf<class UFGCategory> >(); }
+TSubclassOf< class UFGQuickSwitchGroup > UFGItemDescriptor::GetQuickSwitchGroup(TSubclassOf< UFGItemDescriptor > inClass){ return TSubclassOf<class UFGQuickSwitchGroup>(); }
+float UFGItemDescriptor::GetMenuPriority(TSubclassOf< UFGItemDescriptor > inClass){ return float(); }
 FColor UFGItemDescriptor::GetFluidColor(TSubclassOf< UFGItemDescriptor > inClass) {
 	if (inClass)
 		return inClass.GetDefaultObject()->mFluidColor;

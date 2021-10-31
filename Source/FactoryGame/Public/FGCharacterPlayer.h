@@ -1,5 +1,6 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
+#include "FactoryGame.h"
 #include "FGCharacterBase.h"
 #include "AI/FGAggroTargetInterface.h"
 #include "FGInventoryComponent.h"
@@ -8,7 +9,7 @@
 #include "Equipment/FGEquipment.h"
 #include "FGHUD.h"
 #include "FGOutlineComponent.h"
-
+#include "FGActorRepresentationInterface.h"
 #include "FGCharacterPlayer.generated.h"
 
 // Callbacks used by the replication graph to build dependency lists
@@ -16,6 +17,10 @@ DECLARE_MULTICAST_DELEGATE_TwoParams( FOnPersistentEquipmentSpawned, class AFGCh
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnEquipmentEquipped, class AFGCharacterPlayer*, class AFGEquipment* );
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnEquipmentUnequipped, class AFGCharacterPlayer*, class AFGEquipment* );
 DECLARE_MULTICAST_DELEGATE_TwoParams( FOnFoliagePickupSpawned, class AFGCharacterPlayer*, class AFGFoliagePickup* );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnBestUseableActorUpdated, bool, IsValid, AActor*, BestUseableActor );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnReviveStarted, bool, isReviver );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnReviveEnded, bool, isReviveCompleted );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPickupToCollectStateUpdated, bool, isActive );
 
 UENUM( BlueprintType )
 enum class ECameraMode : uint8
@@ -105,7 +110,7 @@ public:
  * Base class for all player characters in the game.
  */
 UCLASS( config = Game )
-class FACTORYGAME_API AFGCharacterPlayer : public AFGCharacterBase, public IFGAggroTargetInterface, public IFGUseableInterface, public IFGRadiationInterface
+class FACTORYGAME_API AFGCharacterPlayer : public AFGCharacterBase, public IFGAggroTargetInterface, public IFGUseableInterface, public IFGRadiationInterface, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 public:
@@ -183,6 +188,27 @@ public:
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	//~End IFGSaveInterface
 
+	// Begin IFGActorRepresentationInterface
+	virtual bool AddAsRepresentation() override;
+	virtual bool UpdateRepresentation() override;
+	virtual bool RemoveAsRepresentation() override;
+	virtual bool IsActorStatic() override;
+	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
+	virtual class UTexture2D* GetActorRepresentationTexture() override;
+	virtual FText GetActorRepresentationText() override;
+	virtual void SetActorRepresentationText( const FText& newText ) override;
+	virtual FLinearColor GetActorRepresentationColor() override;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	virtual float GetActorFogOfWarRevealRadius() override;
+	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	// End IFGActorRepresentationInterface
+
 	// Setup run when this player ahve been possessed.
 	void OnPossessedSetup();
 
@@ -240,6 +266,9 @@ public:
 	/** Can equip the build gun specifically to dismantle */
 	bool CanEquipBuildGunForDismantle() const;
 
+	/** Can equip build gun for paint mode (logic behind a recipe gate) */
+	bool CanEquipBuildGunForPaint() const;
+
 	/** Is the build gun equipped */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	bool IsBuildGunEquipped() const;
@@ -248,6 +277,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void ToggleBuildGun();
 
+	/** Equip the build gun and go into painting state */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void ToggleBuildGunPaint();
+
 	/** Instantly goes to build mode for selected recipe */
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void HotKeyRecipe( TSubclassOf< class UFGRecipe > recipe );
@@ -255,6 +288,10 @@ public:
 	/** Instantly goes to dismantle mode */
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	void HotKeyDismantle();
+
+	/** Instantly goes to build mode for selected recipe */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void HotKeyPaint( TSubclassOf< class UFGCustomizationRecipe > customization );
 
 	/** Returns Mesh1P subobject **/
 	UFUNCTION( BlueprintPure, Category = "Mesh" )
@@ -272,6 +309,13 @@ public:
 	/** Switches between camera modes */
 	UFUNCTION()
 	void ToggleCameraMode();
+
+	/** Switches between "regular" camera and cinematic camera, enabled = true activates cinematic camera and deactivates regular camera and vice versa */
+	UFUNCTION()
+	void Photo_SetAdvancedPhotoMode( bool enabled );
+
+	/** Switches between "regular" camera and cinematic camera */
+	void Photo_ToggleAdvancedPhotoMode();
 
 	/** Start focus aiming */
 	UFUNCTION( BlueprintNativeEvent, Category = "Camera" )
@@ -483,6 +527,7 @@ public:
 
 
 	//Cheats
+	virtual void ClientCheatWalk_Implementation() override;
 	virtual void ClientCheatFly_Implementation() override;
 	virtual void CheatToggleGhostFly();
 	virtual void CheatToggleGhostFly( bool ghostModeActive );
@@ -543,6 +588,11 @@ public:
 
 	/** Spawn particle for now */
 	void PlayZiplineEffects( FVector inLocation );
+
+	/** Returns the Cinematic Camera subobject used in photomode **/
+	UFUNCTION( BlueprintPure, Category = "Camera" )
+	FORCEINLINE class UFGCineCameraComponent* GetCinematicCameraComponent() const { return mCinematicCameraComponent; }
+	
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent( class UInputComponent* InputComponent ) override;
@@ -662,8 +712,16 @@ protected:
 	void OnReviveComplete();
 
 	/** Takes care of client side stuff when revived (eg. Enabling player input) */
-	UFUNCTION( Client, Reliable, WithValidation, Category = "Revive" )
+	UFUNCTION( Client, Reliable, Category = "Revive" )
 	void Client_Revived();
+
+	/** Called on client when we started to revive someone or someone started to revive us */
+	UFUNCTION( Client, Reliable, Category = "Revive" )
+	void Client_ReviveStarted();
+
+	/** Called on client when we stopped to revive someone or someone stopped to revive us */
+	UFUNCTION(Client, Reliable, Category = "Revive" )
+	void Client_ReviveEnded();
 
 	/** returns the progress of reviving a player 0..1 */
 	UFUNCTION( BlueprintPure, Category = "Use" )
@@ -680,6 +738,10 @@ protected:
 	/** Called when we stop receiving radiation. */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Radiation" )
 	void OnReceiveRadiationStop();
+
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	FLinearColor GetDefaultRepresentationColor();
 
 	UFUNCTION()
 	void StartReceivingRadiation();
@@ -715,6 +777,22 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "Movement" )
 	FORCEINLINE float GetArmBoneLocation() const { return mArmBoneLocation; }
 
+	/** Called when we update the best useable actor */
+	UPROPERTY( BlueprintAssignable, Category = "UI"  )
+	FOnBestUseableActorUpdated mOnBestUseableActorUpdated;
+
+	/** Called when we started to revive someone or someone started to revive us */
+	UPROPERTY( BlueprintAssignable, Category = "UI"  )
+	FOnReviveStarted mOnReviveStarted;
+
+	/** Called when we stopped to revive someone or someone stopped to revive us */
+	UPROPERTY( BlueprintAssignable, Category = "UI"  )
+	FOnReviveEnded mOnReviveEnded;
+
+	/** Called when the state of the item we are trying to pickup changes */
+	UPROPERTY( BlueprintAssignable, Category = "UI"  )
+	FOnPickupToCollectStateUpdated mOnPickupToCollectStateUpdated;
+
 	void DebugBuildablesInFrustum();
 public:
 	// Callbacks used by the replication graph to build dependency lists
@@ -734,6 +812,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Use" )
 	FORCEINLINE	class AActor* GetBestUsableActor() { return mBestUsableActor; }
 
+	/** Triggers the OnBestUseableActorUpdated delegate with the cached best useable actor. Used to update UI when best useable actor changes */
+	UFUNCTION( BlueprintCallable, Category = "Use" )
+	void TriggerBestUsableActorDelegate();
+
 	/** Update what crosshair to show */
 	void UpdateHUDCrosshair();
 
@@ -743,6 +825,8 @@ public:
 
 	/** Gets mTryToUnSlide */
 	inline bool IsTryingToUnslide(){ return mTryToUnSlide; }
+
+	bool IsInPumpiMode();
 private:
 	/**
 	 * Spawn a new equipment.
@@ -754,7 +838,7 @@ private:
 	template< typename T >
 	T* SpawnEquipment( TSubclassOf< AFGEquipment > equipmentClass, AActor* owner = nullptr )
 	{
-		check( equipmentClass->IsChildOf( T::StaticClass() ) );
+		fgcheck( equipmentClass->IsChildOf( T::StaticClass() ) );
 		return Cast<T>( SpawnEquipment( equipmentClass, owner ) );
 	}
 
@@ -785,7 +869,7 @@ private:
 	void Server_EquipEquipment( AFGEquipment* newEquipment );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_UnequipEquipment( AFGEquipment* newEquipment );
-	UFUNCTION( Server, Reliable, WithValidation, Category = "Revive" )
+	UFUNCTION( Server, Reliable, Category = "Revive" )
 	void Server_RevivePlayer( AFGCharacterPlayer* playerToRevive );
 	UFUNCTION( Reliable, Server, WithValidation, Category = "Use" )
 	void Server_OnUse();
@@ -887,8 +971,8 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
 	TArray< FItemAmount > mStartingResources;
 
-	/** The starting resources for the player if we are NOT in shipping */
-	UPROPERTY( EditDefaultsOnly, Category = "Inventory" )
+	/** DEPRECATED Use ExtraItemsToStartWith in editor preferences -> Satisfactory Local Settings instead*/
+	UPROPERTY( VisibleDefaultsOnly, Category = "Inventory", meta = ( DeprecatedProperty, DeprecationMessage = "Use ExtraItemsToStartWith in editor preferences -> Satisfactory Local Settings", NoAutoJson = true ) )
 	TArray< FItemAmount > mStartingResourceForTesting;
 
 	/** @todo: This should not be specified for each pawn */
@@ -956,6 +1040,10 @@ private:
 	UPROPERTY( EditAnywhere )
 	class UCameraComponent* mCameraComponent;
 
+	/** The cinematic camera used in photo mode */
+	UPROPERTY( Transient )
+	class UFGCineCameraComponent* mCinematicCameraComponent;
+
 	/** Spring arm for camera */
 	UPROPERTY( EditAnywhere )
 	class USpringArmComponent* mSpringArmComponent;
@@ -1016,10 +1104,10 @@ private:
 	int8 mPickupCounter;
 
 	/** The player that is reviving me */
-	UPROPERTY( Replicated )
+	UPROPERTY()
 	AFGCharacterPlayer* mReviver;
 
-	/** Revive timer handle, duh. */
+	/** Revive timer handle, started locally on revived clients to show progress */
 	FTimerHandle mReviveTimerHandle;
 
 	/** Indicates if the player is sprinting and wants to use the sprint bobbing */
@@ -1164,7 +1252,16 @@ private:
 	/* Particle associated with zipline */
 	UPROPERTY( EditDefaultsOnly, Category = "FactoryGame" )
     class UParticleSystem* mZiplineParticle;
+
+	FText mCachedLookAtDescription;
 public:
 	UPROPERTY( BlueprintReadWrite, Category = "FactoryGame|Movement|Crouch" )
 	bool mNoUpdate;
+
+private:
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	class UTexture2D* mActorRepresentationTexture;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	class UTexture2D* mActorRepresentationTextureDead;
 };

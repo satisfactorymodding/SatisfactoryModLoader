@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "EnvironmentQuery/EnvQueryTest.h"
 #include "FGEnvQueryTest_ItemDescription.generated.h"

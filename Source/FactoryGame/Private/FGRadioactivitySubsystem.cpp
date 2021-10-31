@@ -3,9 +3,13 @@
 #include "FGRadioactivitySubsystem.h"
 
 AFGRadioactivitySubsystem::AFGRadioactivitySubsystem() : Super() {
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGRadioactivitySubsystem::BeginPlay(){ }
 void AFGRadioactivitySubsystem::Tick(float dt){ }
@@ -20,23 +24,11 @@ void AFGRadioactivitySubsystem::SetEmitter(UObject* owner,
 					 TSubclassOf< UFGItemDescriptor > itemClass,
 					 int32 itemAmount,
 					 int32 UID){ }
-void AFGRadioactivitySubsystem::SetEmitter_Threadsafe(UObject* owner,
-								USceneComponent* attachRoot,
-								const FVector& attachLocation,
-								TSubclassOf< UFGItemDescriptor > itemClass,
-								int32 itemAmount,
-								int32 UID){ }
 void AFGRadioactivitySubsystem::SetEmitter(UObject* owner,
 					 USceneComponent* attachRoot,
 					 const FVector& attachLocation,
 					 float decay,
 					 int32 UID){ }
-void AFGRadioactivitySubsystem::RemoveEmitter_Threadsafe(UObject* owner, int32 UID){ }
-void AFGRadioactivitySubsystem::RemoveEmitter(UObject* owner, int32 UID){ }
-void AFGRadioactivitySubsystem::ResetEmitters(UObject* owner){ }
-void AFGRadioactivitySubsystem::RemoveEmitters(UObject* owner){ }
 float AFGRadioactivitySubsystem::calculateIntensity(int32 itemAmount, float itemDecay, float distance, float radiationFalloffByDistance){ return float(); }
-FRadioactiveSource& AFGRadioactivitySubsystem::FindOrAddSource(UObject* owner){ return *(new FRadioactiveSource); }
-FRadioactiveSource* AFGRadioactivitySubsystem::FindSource(UObject* owner){ return nullptr; }
 FRadioactiveEmitter& AFGRadioactivitySubsystem::FindOrAddEmitter(TArray< FRadioactiveEmitter >& emitters, int32 UID){ return *(new FRadioactiveEmitter); }
 int32 AFGRadioactivitySubsystem::FindEmitter(TArray< FRadioactiveEmitter >& emitters, int32 UID){ return int32(); }

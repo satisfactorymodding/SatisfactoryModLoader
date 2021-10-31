@@ -2,12 +2,12 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "ItemAmount.h"
 #include "FGBuildableSubsystem.h"
 #include "FGConstructionMessageInterface.h"
-#include "Hologram/HologramSplinePathMode.h"
-#include "UObject/Script.h"
+#include "FGHologramBuildModeDescriptor.h"
 #include "FGHologram.generated.h"
 
 //For UE4 Profiler ~ Stat Group
@@ -26,6 +26,43 @@ enum class EHologramScrollMode : uint8
 	HSM_MAX							UMETA( Hidden )
 };
 
+/**
+* Enum for caching recently used build modes in different categories on the buildgun.
+*/
+UENUM( BlueprintType )
+enum class EHologramBuildModeCategory : uint8
+{
+	// Save last build mode per actor class
+	HBMC_ActorClass		UMETA( DisplayName = "Actor Class" ),
+	
+	HBMC_Architecture	UMETA( DisplayName = "Architecture" ),
+	HBMC_Pipe			UMETA( DisplayName = "Pipe" )
+};
+
+/**
+ * Enum used to set the material state of the hologram, which changes the color using stencil values.
+ */
+UENUM( BlueprintType )
+enum class EHologramMaterialState : uint8
+{
+	HMS_OK,
+	HMS_WARNING,
+	HMS_ERROR
+};
+
+/**
+ * Enum used to describe how the hologram wants to handle soft clearance overlaps.
+ */
+UENUM()
+enum class EHologramSoftClearanceResponse : uint8
+{
+	HSCR_Default			UMETA( DisplayName = "Default" ),
+	HSCR_Ignore				UMETA( DisplayName = "Ignore" ),
+	HSCR_IgnoreBothSoft		UMETA( DisplayName = "Ignore if both soft" ),
+	HSCR_Block				UMETA( DisplayName = "Block" )
+};
+
+extern TAutoConsoleVariable<int32> CVarHologramDebug;
 /**
  * The base class for all holograms.
  * It defines the interface all "buildable things" must follow.
@@ -99,7 +136,7 @@ public:
 	/**
 	 * Adjust the placement for the ground, this should be the last step in the placement. Usually for things such as updating legs on buildings and such.
 	 */
-	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation );
+	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation );
 
 	/**
 	 * See if we can snap to the hit actor. Used for holograms snapping on top of ex resource nodes, other buildings like stackable poles and similar.
@@ -115,6 +152,16 @@ public:
 	 * @param hitResult - the hit result from the trace preformed in BuildGun
 	 */
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult );
+
+	/**
+	* Gets called before all the placement logic of the hologram has been run.
+	*/
+	virtual void PreHologramPlacement();
+	
+	/**
+	 * Gets called after all the placement logic of the hologram has been run.
+	 */
+	virtual void PostHologramPlacement();
 
 	/**
 	 * Notify that the hologram hit result is NOT valid and that the hologram is sett to hidden in game. Will usually trigger when E.g. Aiming up in the sky. 
@@ -205,18 +252,33 @@ public:
 
 
 	/**
-	* Get the target spline path modes implemented for spline based holograms
-	* @param out_splineModes	 Array with all supported spline pathing modes
+	* Get the build modes implemented for the hologram
+	* @param out_buildmodes	 Array with all supported build modes
+	*
+	* TODO Tobias 2021/07/07: Might be worth wrapping these build mode descriptors to avoid errors where build modes haven't been assigned / a hologram uses the same descriptor for multiple build modes.
 	*/
 	UFUNCTION( BlueprintNativeEvent, Category = "Hologram" )
-	 void GetSupportedSplineModes( TArray< EHologramSplinePathMode >& out_splineModes ) const;
+	void GetSupportedBuildModes( TArray< TSubclassOf<UFGHologramBuildModeDescriptor> >& out_buildmodes ) const;
+
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	TSubclassOf<UFGHologramBuildModeDescriptor> GetCurrentBuildMode();
+
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	EHologramBuildModeCategory GetBuildModeCategory() const { return mBuildModeCategory; }
 
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
-	EHologramSplinePathMode GetSplineMode();
+	void SetBuildMode( TSubclassOf<UFGHologramBuildModeDescriptor> mode );
 
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
-	void SetSplineMode(EHologramSplinePathMode  mode);
+	void CycleBuildMode( int32 deltaIndex );
 
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	bool IsCurrentBuildMode( TSubclassOf<UFGHologramBuildModeDescriptor> buildMode ) const;
+
+	virtual void OnBuildModeChanged();
+
+	UFUNCTION( BlueprintPure, Category = "Hologram" )
+	virtual bool CanBeZooped() const { return false; }
 
 	/** Set the no snap mode. @see mNoSnapMode */
 	void SetNoSnapMode( bool isEnabled ) { mNoSnapMode = isEnabled; }
@@ -229,10 +291,15 @@ public:
 	FORCEINLINE bool GetNoSnapMode() const { return mNoSnapMode; }
 
 	/**
-	 * Set the placement material, this is updated when calling ValidatePlacementAndCost, so call this only if you want to override it.
-	 * @param material - This is represented as a bool valid placement material (true), invalid placement material (false).
+	 * Set the placement material state, this is updated when calling ValidatePlacementAndCost, so call this only if you want to override it.
+	 * @param materialState - This is represented as an enum EHologramMaterialState.
 	 */
-	virtual void SetPlacementMaterial( bool material );
+	virtual void SetPlacementMaterialState( EHologramMaterialState materialState );
+
+	/**
+	 * Returns the hologram material state the hologram should currently have.
+	 */
+	virtual EHologramMaterialState GetHologramMaterialState() const;
 
 	/**
 	 * If the hologram contains changes that can be reset using the right mouse button, e.g. multi step placement and rotation.
@@ -295,6 +362,9 @@ public:
 	/** Can be null if the building has no clearance */
 	inline bool HasClearance() const{ return mClearanceDetector != nullptr; }
 
+	/** Gets all actors we should ignore when doing our clearance check. */
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const;
+
 	/** Disable this hologram. */
 	void SetDisabled( bool disabled  );
 
@@ -323,12 +393,13 @@ public:
 	/** Empty the array of construct disqualifiers */
 	void ResetConstructDisqualifiers();
 
-	/**Returns true if this building want to snap to other buildings clearances with it's own clearance when receiving invalid placements due to overlapping clearances*/
-	bool UsesBuildClearanceOverlapSnapping(){
-		return mUseBuildClearanceOverlapSnapp;
-	}
+	/** Returns true if this building want to snap to other buildings clearances with it's own clearance when receiving invalid placements due to overlapping clearances*/
+	bool UsesBuildClearanceOverlapSnapping() const { return mUseBuildClearanceOverlapSnapp; }
 
-	//Set how the mUseBuildClearanceOverlapSnapp should be applied when enabled
+	/** In case of holograms which hover off the ground, returns the height at which they hover. */
+	virtual float GetHologramHoverHeight() const { return 0.0f; }
+	
+	// Set how the mUseBuildClearanceOverlapSnap should be applied when enabled
 	void SetUseAutomaticBuildClearanceOverlapSnapp( bool newValue )
 	{
 		mUseAutomaticBuildClearanceOverlapSnapp = newValue;
@@ -352,6 +423,12 @@ public:
 	/** Set the build class for this hologram, called before BeginPlay. */
 	void SetBuildClass( TSubclassOf< class AActor > buildClass );
 
+	/**
+	* Get the actor this build gun constructs
+	*/
+	//@todo This has the same name as a deprecated function in Actor, rename.
+	TSubclassOf< AActor > GetActorClass() const;
+
 protected:
 	/** OnHologramTransformUpdated
 	 * Let's holograms react to rotation and location chnages applied after the initial move. Currently used for stuff like snapping and having sub holograms like hub parts update.
@@ -359,14 +436,20 @@ protected:
 	 */
 	virtual void OnHologramTransformUpdated();
 
-	/**
-	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
-	* Called for every boxComponent in the actor.
-	*Setup clearance if possible and needed
-	*Default is to assign the mClearanceDetector by making a copy. This will happen and override the existing detector if called multiple times...*/
-	virtual void SetupClearance( class UBoxComponent* boxComponent );
+	/** Set up the specified clearance component as our clearance box. */
+	virtual void SetupClearance( class UFGClearanceComponent* clearanceComponent );
 
-	void SetupClearanceDetector( class UBoxComponent* boxComponent );
+	/** Sets up our clearance detector to match the specified clearance component. */
+	void SetupClearanceDetector( class UFGClearanceComponent* clearanceComponent );
+
+	/** Checks our clearance if we have any, and adds construct disqualifiers if necessary. */
+	virtual void CheckClearance( const FVector& locationOffset );
+
+	/** Runs for every overlap result from our clearance check. */
+	virtual void HandleClearanceOverlap( const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance );
+
+	/** Gets the component we should use when checking for clearance overlaps. */
+	virtual class UPrimitiveComponent* GetClearanceOverlapCheckComponent() const;
 
 	/** Duplicate component for the hologram */
 	template< typename T >
@@ -391,26 +474,23 @@ protected:
 
 	/** So we can set the material on client. */
 	UFUNCTION()
-	void OnRep_PlacementMaterial();
+	void OnRep_PlacementMaterialState();
 
 	/**
 	 * Set the material on the hologram.
-	 *
 	 * @param material - The new override material.
 	 */
 	virtual void SetMaterial( class UMaterialInterface* material );
 
 	/**
 	* Set the stencil value on the hologram meshes.
-	*
 	*/
-	virtual void SetMaterialState( bool IsValidPlacement );
+	virtual void SetMaterialState( EHologramMaterialState state );
 
 	/**
-	 * Get the actor this build gun constructs
+	 * Gets the stencil value we should apply to the hologram for a certain material state.
 	 */
-	//@todo This has the same name as a deprecated function in Actor, rename.
-	TSubclassOf< AActor > GetActorClass() const;
+	virtual uint8 GetStencilForHologramMaterialState( EHologramMaterialState state ) const;
 
 	/**
 	 * Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
@@ -422,7 +502,7 @@ protected:
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName );
 
 	/** Mark the hologram as changed. */
-	void SetIsChanged();
+	void SetIsChanged( bool isChanged );
 
 	/**
 	 * @return true if this is a local hologram, placed by a locally controlled player; false if a remote hologram.
@@ -431,7 +511,7 @@ protected:
 
 	/** Use this to add a valid hit class for this hologram in blueprints begin play. */
 	UFUNCTION( BlueprintCallable, Category = "Hologram" )
-	void AddValidHitClass( TSubclassOf< AActor > hitClass ) { mValidHitClasses.Add( hitClass ); }
+	void AddValidHitClass( TSubclassOf< AActor > hitClass ) { mValidHitClasses.AddUnique( hitClass ); }
 
 	/** Check if a class is a valid hit. */
 	bool IsValidHitActor( AActor* hitActor ) const;
@@ -467,8 +547,11 @@ protected:
 	 * These classes will be considered a valid hit when checking is valid hit result.
 	 * By default all static geometry is considered valid.
 	 * Buildings, vehicles and pawns are not considered valid by default.
+	 *
+	 * Tobias 2021-10-21: Marking this as transient since this isn't really something we want to save.
+	 * I've had issues with some holograms which don't properly fill this list due to saved data in the asset overriding it.
 	 */
-	UPROPERTY( VisibleDefaultsOnly, Category = "Hologram" )
+	UPROPERTY( VisibleDefaultsOnly, Transient, Category = "Hologram" )
 	TArray< TSubclassOf< class AActor > > mValidHitClasses;
 
 	/** The recipe for this hologram. */
@@ -479,9 +562,25 @@ protected:
 	UPROPERTY()
 	class UAkComponent* mLoopSound;
 
+	/** Component used to check clearance. */
+	UPROPERTY()
+	class UFGClearanceComponent* mClearanceBox;
+
+	/** Mesh component used to display the clearance mesh */
+	UPROPERTY()
+	class UStaticMeshComponent* mClearanceMeshComponent;
+
 	/** Clearance detector box. Used to detect nearby clearances an display them during the build steps */
 	UPROPERTY()
 	class UBoxComponent* mClearanceDetector = nullptr;
+
+	/** Whether or not we should create the visual mesh for our clearance box. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	bool mShouldCreateClearanceMeshVisual;
+
+	/** Whether or not we should ignore soft clearance overlaps if both clearance boxes are soft. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	EHologramSoftClearanceResponse mSoftClearanceOverlapResponse;
 
 	/** No enforced snapping, foundations use this for now. */
 	bool mNoSnapMode;
@@ -498,12 +597,21 @@ protected:
 	/** Current scroll value of the raise/lower. How this is interpreted as a height is up to the hologram placement code. */
 	int32 mScrollRaiseLowerValue;
 
-	/** Current scroll value of the Spline path enum. How this enum is used depends on individual spline based hologram implementation */
-	EHologramSplinePathMode mSplineMode;
+	/** The hologram saves and shares the last used build mode between holograms in the same category. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	EHologramBuildModeCategory mBuildModeCategory;
+	
+	/** The default build mode of the hologram. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf<UFGHologramBuildModeDescriptor> mDefaultBuildMode;
 
-	/** Can we construct the building, updated by SetCanConstruct from the build gun. */
-	UPROPERTY( ReplicatedUsing = OnRep_PlacementMaterial )
-	bool mPlacementMaterial;
+	/** Current build mode used by the hologram. Used differently case by case for each hologram. */
+	UPROPERTY( VisibleAnywhere, Category = "Hologram|BuildMode" )
+	TSubclassOf<UFGHologramBuildModeDescriptor> mCurrentBuildMode;
+
+	/** Current material state of the hologram, which dictates the color using stencil values. */
+	UPROPERTY( ReplicatedUsing = OnRep_PlacementMaterialState )
+	EHologramMaterialState mPlacementMaterialState;
 
 	/** Material on hologram for valid placement. */
 	UPROPERTY()
@@ -515,7 +623,6 @@ protected:
 
 	/** Tags for marking components in the hologram. */
 	static const FName HOLOGRAM_MESH_TAG;
-	static const FName HOLOGRAM_DEPTH_MESH_TAG;
 
 	/**
 	 * Enables composite holograms.
@@ -540,6 +647,7 @@ protected:
 	UPROPERTY( Replicated )
 	TSubclassOf< AActor > mBuildClass;
 
+	/** Whether or not this buildable can snap to other clearance boxes with its own. */
 	UPROPERTY( EditDefaultsOnly )
 	bool mUseBuildClearanceOverlapSnapp = false;
 

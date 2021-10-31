@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FactoryGame.h"
 #include "GraphAStar.h"
 #include "RailroadNavigation.generated.h"
 
@@ -14,22 +15,19 @@ class AFGBuildableRailroadStation;
 UENUM()
 enum class ERailroadPathFindingResult : uint8
 {
-	RNQR_Error = 0			UMETA( DisplayName = "Error" ),
-	RNQR_Unreachable = 1	UMETA( DisplayName = "Unreachable" ),
-	RNQR_Success = 2		UMETA( DisplayName = "Success" )
+	RPFR_Error = 0			UMETA( DisplayName = "Error" ),
+	RPFR_Unreachable = 1	UMETA( DisplayName = "Unreachable" ),
+	RPFR_Success = 2		UMETA( DisplayName = "Success" )
 };
 
 struct FACTORYGAME_API FRailroadPathPoint
 {
 public:
-	FRailroadPathPoint();
-
-public:
 	/** The track connection to pass through or stop at if this is a station, switch, signal etc. */
-	TWeakObjectPtr< UFGRailroadTrackConnectionComponent > TrackConnection;
+	TWeakObjectPtr< UFGRailroadTrackConnectionComponent > TrackConnection = nullptr;
 
 	/** The distance this object is from the end. 0 for the last point. */
-	float Distance;
+	float Distance = 0.f;
 };
 
 /**
@@ -50,17 +48,14 @@ typedef TWeakPtr< struct FRailroadPath > FRailroadPathWeakPtr;
 struct FACTORYGAME_API FRailroadPathFindingResult
 {
 public:
-	FRailroadPathFindingResult();
-
-public:
-	TWeakObjectPtr< AFGLocomotive > Locomotive;
-	TWeakObjectPtr< UFGRailroadTrackConnectionComponent > Goal;
+	TWeakObjectPtr< AFGLocomotive > Locomotive = nullptr;
+	TWeakObjectPtr< UFGRailroadTrackConnectionComponent > Goal = nullptr;
 
 	/** Shared pointer to the path. */
-	FRailroadPathSharedPtr Path;
+	FRailroadPathSharedPtr Path = nullptr;
 
 	/** Is the path valid, partial or invalid. */
-	ERailroadPathFindingResult Result;
+	ERailroadPathFindingResult Result = ERailroadPathFindingResult::RPFR_Error;
 };
 
 /**
@@ -122,6 +117,7 @@ struct FACTORYGAME_API FRailroadGraphAStarHelper
  */
 struct FACTORYGAME_API FRailroadGraphAStarFilter
 {
+public:
 	FRailroadGraphAStarFilter();
 
 	/** Used as GetHeuristicCost's multiplier. */
@@ -142,6 +138,9 @@ struct FACTORYGAME_API FRailroadGraphAStarFilter
 public:
 	/** true if a partial solution is valid; false if we only want a path if the goal is reachable. */
 	bool AcceptsPartialSolution;
+
+	/** true if we want to ignore signals when pathing. */
+	bool IgnoreSignals;
 };
 
 /** Collection of navigation functions */
@@ -151,14 +150,16 @@ public:
 	/**
 	 * Finds a path for the given locomotive to the given stop.
 	 *
-	 * @param locomotive The locomotive to find a path for, note that a locomotive can not reverse.
-	 * @param station The station the train should find a path to.
+	 * @param locomotive	The locomotive to find a path for, note that a locomotive can not reverse.
+	 * @param station		The station the train should find a path to.
+	 * @param filter		Filter to use for the path evaluation, this contains parameters that affect the path chosen.
 	 *
 	 * @return Result of the pathfinding; Status code indicate if a path was found or not or if an error occured, e.g. bad params.
 	 */
 	static FRailroadPathFindingResult FindPathSync(
 		AFGLocomotive* locomotive,
-		AFGBuildableRailroadStation* station );
+		AFGBuildableRailroadStation* station,
+		FRailroadGraphAStarFilter filter = FRailroadGraphAStarFilter() );
 
 private:
 	/**
@@ -166,14 +167,14 @@ private:
 	 *
 	 * @param start				Next connection ahead of us.
 	 * @param end				Connection we want to path find to.
-	 * @param hasStartPassedEnd If the start and end is on the same track but we've passed the stopping point.
+	 * @param filter			Filter to use for the path evaluation, this contains parameters that affect the path chosen.
 	 * @param out_pathPoints	The resulting path, empty on error.
 	 *
 	 * @return Result of the pathfinding. I.e. if a path was found, goal is unreachable or if an error occurred, e.g. bad params.
 	 */
 	static EGraphAStarResult FindPathSyncInternal(
-		UFGRailroadTrackConnectionComponent* start,
-		UFGRailroadTrackConnectionComponent* end,
-		bool hasStartPassedEnd,
+		const FRailroadGraphAStarPathPoint& start,
+		const FRailroadGraphAStarPathPoint& end,
+		FRailroadGraphAStarFilter filter,
 		TArray< FRailroadGraphAStarPathPoint >& out_pathPoints );
 };

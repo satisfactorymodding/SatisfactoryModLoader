@@ -2,10 +2,33 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "AkGameplayTypes.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimInstanceProxy.h"
 #include "FGFAnimInstanceFactory.generated.h"
+
+/// Holds information about a currently playing audio event
+USTRUCT()
+struct FPlayingAudioEventInfo
+{
+	GENERATED_BODY()
+
+	/// The playing ID of the playing audio event
+	AkPlayingID PlayingID = AK_INVALID_PLAYING_ID;
+
+	/// Contextual property. If PlayingID != AK_INVALID_PLAYING_ID then this will be the time at which the sound was started, adjusted to account
+	/// for the case in which the sound was seeked, so it can be used to determine the position of this sound, relative to it's T0
+	/// If PlayingID == AK_INVALID_PLAYING_ID, then this will be the position within the audio event at which the sound has been stopped
+	/// so it can be used to resume from that point
+	float TimingInfo = 0.f;
+
+	// The component that this sound was started on
+	UPROPERTY()
+	UAkComponent* Component = nullptr;
+};
+
 
 USTRUCT( BlueprintType )
 struct FAnimInstanceProxyFactory : public FAnimInstanceProxy
@@ -37,7 +60,8 @@ struct FAnimInstanceProxyFactory : public FAnimInstanceProxy
 		mCycleComplete( false ),
 		mUseRampUp( false ),
 		mIsGenerator( false ),
-		mIsFuelGeneratorOnline( false )
+		mIsFuelGeneratorOnline( false ),
+		mIsShutDown( false )
 	{}
 
 	FAnimInstanceProxyFactory( UAnimInstance* Instance ) : FAnimInstanceProxy( Instance ) 
@@ -148,6 +172,10 @@ public:
 	/** True if generator has power and is producing */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	uint8 mIsFuelGeneratorOnline : 1;
+
+	/** True if factory building is currently shutdown and play rate is zero */
+	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
+	uint8 mIsShutDown : 1;
 };
 
 /**
@@ -168,6 +196,17 @@ public:
 	/** Function for updating a rtpc at intervals */
 	UFUNCTION( BlueprintCallable, Category = "Animation" )
 	virtual void UpdateSoundRTPC( float DeltaSeconds, bool forceUpdate = false );
+	
+	/* enable/disable animation updating and skeleton animation*/
+	UFUNCTION( BlueprintCallable, Category ="Animation" )
+    static void EnableAnimationState( USkeletalMeshComponent* meshComponent, bool newState );
+
+	/// Handles AK_EndOfEvent so registered playing audio events may be unregistered
+	UFUNCTION( )
+	void AudioEventCallback( EAkCallbackType cbType, UAkCallbackInfo *cbInfo );
+
+	/// Registers a playing audio event so it can later be stopped if the animation is paused and resumed if the animation is resumed
+	void RegisterPlayingAudioEvent( class UFGAnimNotify_AutoAkEvent* EventSource, const FPlayingAudioEventInfo& TrackingInfo );
 protected:
 	UPROPERTY( Transient, BlueprintReadOnly, Category = "Factory Anim", meta = ( AllowPrivateAccess = "true" ) )
 	FAnimInstanceProxyFactory mProxy;
@@ -227,4 +266,7 @@ public:
 	/** RTPC value set after scaling */
 	UPROPERTY( BlueprintReadOnly, Category = "Anim" )
 	float mRTPCValue;
+
+	/** Keeps track of audio events posted by anim listeners by this animation instance */
+	TMap< class UFGAnimNotify_AutoAkEvent*, FPlayingAudioEventInfo > mPlayingAudioEvents;
 };

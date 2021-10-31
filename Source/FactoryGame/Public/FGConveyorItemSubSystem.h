@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "Buildables/FGBuildableConveyorBelt.h"
@@ -273,15 +274,14 @@ private:
 	
 	int32 mCurrentUniqueTypes;
 
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( VisibleAnywhere, Transient)
 	TArray< AFGBuildableConveyorBelt* > mWorldBelts;
 
-	UPROPERTY( VisibleAnywhere )
+	UPROPERTY( VisibleAnywhere, Transient)
 	TArray< AFGBuildableConveyorLift* > mLifts;
 
-	// TODO refactor to an array, we can use random access via the descriptors.
 	/* Named map of the instance mesh components. */
-	UPROPERTY( VisibleInstanceOnly )
+	UPROPERTY( VisibleInstanceOnly, Transient)
 	TMap< FName, FConveyorItemArray > mItemType;
 
 	// Map per task per type.
@@ -304,13 +304,15 @@ private:
 	/* Queue of newly added actors & Removed actors.. */
 	TQueue< AFGBuildableConveyorBase*, EQueueMode::Mpsc > NewRegisteredActors;
 	TQueue< AFGBuildableConveyorBase*, EQueueMode::Mpsc > NewRemovedActors;
-	
-	FRenderCommandFence RenderFence;
-	
+		
 	bool mIsDisabled;
 
 	int32 mMaxNumberInstancesEncountered;
 	int32 mMaxNumberInstancesEncounteredPreviousFrame;
+
+	/* Primitive components to either hide or show this frame depending on their transforms.*/
+	TQueue<UPrimitiveComponent*,EQueueMode::Mpsc> ShowList;
+	TQueue<UPrimitiveComponent*,EQueueMode::Mpsc> HideList;
 
 	// Settings
 protected:

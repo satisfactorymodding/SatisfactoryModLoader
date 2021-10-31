@@ -2,16 +2,10 @@
 
 #include "Resources/FGBuildDescriptor.h"
 
-#if WITH_EDITOR
-void UFGBuildDescriptor::PostEditChangeProperty( FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
-#endif 
 UFGBuildDescriptor::UFGBuildDescriptor() : Super() {
-	this->mUseDisplayNameAndDescription = true;
-	this->mStackSize = EStackSize::SS_MEDIUM;
-	this->mCanBeDiscarded = true;
+	this->mForm = EResourceForm::RF_INVALID;
 }
 TSubclassOf< class UFGBuildCategory > UFGBuildDescriptor::GetBuildCategory(TSubclassOf< UFGBuildDescriptor > inClass){ return TSubclassOf<class UFGBuildCategory>(); }
-void UFGBuildDescriptor::GetSubCategories(TSubclassOf< UFGBuildDescriptor > inClass,  TArray< TSubclassOf<  UFGBuildSubCategory > >& out_subCategories){ }
 float UFGBuildDescriptor::GetBuildMenuPriority(TSubclassOf< UFGBuildDescriptor > inClass){ return float(); }
 UClass* UFGBuildDescriptor::GetHologramClass(TSubclassOf< UFGBuildDescriptor > inClass){ return nullptr; }
 TSubclassOf< AActor > UFGBuildDescriptor::GetBuildClass(TSubclassOf< UFGBuildDescriptor > inClass){ return TSubclassOf<AActor>(); }

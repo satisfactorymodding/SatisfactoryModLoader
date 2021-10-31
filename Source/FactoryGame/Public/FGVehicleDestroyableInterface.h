@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGVehicleDestroyableInterface.generated.h"
 
 /**

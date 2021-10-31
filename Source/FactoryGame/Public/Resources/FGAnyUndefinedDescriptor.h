@@ -1,6 +1,7 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
+#include "FactoryGame.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGAnyUndefinedDescriptor.generated.h"
 

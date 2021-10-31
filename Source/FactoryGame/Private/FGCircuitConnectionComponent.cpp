@@ -3,7 +3,10 @@
 #include "FGCircuitConnectionComponent.h"
 
 UFGCircuitConnectionComponent::UFGCircuitConnectionComponent() : Super() {
+	this->mCircuitType = nullptr;
 	this->mMaxNumConnectionLinks = 1;
+	this->mIsHiddenConnection = false;
+	this->mNumWiresConnected = 0;
 	this->mCircuitID = -1;
 	this->bNetAddressable = true;
 	this->SetIsReplicatedByDefault(true);

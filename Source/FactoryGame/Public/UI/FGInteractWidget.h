@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UMG.h"
 #include "Blueprint/UserWidget.h"
 #include "FGInteractWidget.generated.h"
@@ -86,6 +87,8 @@ public:
 	/** Get the rate for the timer that triggers the custom tick */
 	UFUNCTION( BlueprintPure, Category = "Custom Tick" )
 	FORCEINLINE float GetCustomTickRate() const { return mCustomTickRate; }
+	
+	FORCEINLINE bool GetSupportsCaching() const { return mSupportsCaching; }
 
 protected:
 	// Begin UUserWidget interface
@@ -109,6 +112,14 @@ public:
 	/** If we should take the mouse input from the player. The player won't be able to look around. */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
 	bool mUseMouse;
+
+	/** Sets the mouse locking behavior of the viewport when this widget is active */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
+	EMouseLockMode mMouseLockMode;
+
+	/** Whether to hide the cursor during temporary mouse capture caused by a mouse down, only relevant when mCaptureInput is false */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
+	bool mHideCursorDuringCapture;
 
 	/** Decides if we should share input with game or capture it completely */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
@@ -143,6 +154,7 @@ public:
 	UPROPERTY( config, EditDefaultsOnly, Category = "UI" ) 
 	TSubclassOf< UUserWidget > mDefaultFocusWidgetClass;
 
+
 protected:
 	/** Should gamepad act as cursor when using this widget? */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
@@ -166,4 +178,8 @@ protected:
 	/** Does this widget support stacking widgets on top? */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mSupportsStacking;
+
+	/** Does this widget support us caching it to be reused? */
+	UPROPERTY( EditDefaultsOnly, Category = "Custom Tick" )
+	bool mSupportsCaching;
 };

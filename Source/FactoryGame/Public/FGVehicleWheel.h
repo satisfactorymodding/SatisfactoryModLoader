@@ -1,8 +1,12 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
+#include "FactoryGame.h"
 #include "VehicleWheel.h"
 #include "FGVehicleWheel.generated.h"
+
+// TODO: migrate from PhysX to Chaos; in the meantime, stfu
+#pragma warning( disable : 4996 )
 
 #if WITH_PHYSX
 #include "PhysXPublic.h"

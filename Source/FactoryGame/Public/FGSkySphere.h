@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "Curves/CurveLinearColor.h"
 #include "FGSkySphere.generated.h"
@@ -10,47 +11,49 @@ USTRUCT( BlueprintType )
 struct FSkySphereSettings
 {
 	GENERATED_BODY()
+
+	FSkySphereSettings();
 	
 	// Color of the horizon after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	FLinearColor HorizonColor;
+	FLinearColor HorizonColor = {};
 	
 	// Color of the zenith after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	FLinearColor ZenithColor;
+	FLinearColor ZenithColor = {};
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	FLinearColor CloudColor;
+	FLinearColor CloudColor = {};
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	FLinearColor SunLightColor;
+	FLinearColor SunLightColor = {};
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	float SunIntensity;
+	float SunIntensity = {};
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	FLinearColor MoonLightColor;
+	FLinearColor MoonLightColor = {};
 
 	// Color of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	float MoonIntensity;
+	float MoonIntensity = {};
 
 	// opacity of the clouds after blending the skysphere curve with all volumes curves
 	UPROPERTY( BlueprintReadOnly, Category = "SkySphere" )
-	float CloudOpacity;
+	float CloudOpacity = {};
 
-	bool OverrideHorizonColor;
-	bool OverrideZenithColor;
-	bool OverrideCloudColor;
-	bool OverrideCloudOpacity;
-	bool OverrideSunLightColor;
-	bool OverrideSunIntensity;
-	bool OverrideMoonLightColor;
-	bool OverrideMoonIntensity;
+	uint8 OverrideHorizonColor : 1;
+	uint8 OverrideZenithColor : 1;
+	uint8 OverrideCloudColor : 1;
+	uint8 OverrideCloudOpacity : 1;
+	uint8 OverrideSunLightColor : 1;
+	uint8 OverrideSunIntensity : 1;
+	uint8 OverrideMoonLightColor : 1;
+	uint8 OverrideMoonIntensity : 1;
 };
 
 UCLASS(HideCategories=(Input,Rendering))
@@ -99,7 +102,7 @@ protected:
 	/** Setup so that we get calls to UpdatePreview whenever time of day is updated in the editor */
 	void SetupPreviewDelegate();
 #endif
-public: // MODDING EDIT protected -> public
+protected:
 	/** How the sunlight changes during the day */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category="Curves|Sun")
 	FRuntimeCurveLinearColor mSunLightColorCurve;
@@ -169,10 +172,6 @@ public: // MODDING EDIT protected -> public
 	FRuntimeFloatCurve mSunFogMultiplier;
 
 #if WITH_EDITORONLY_DATA
-	/** How the sunlight changes during the day */
-	UPROPERTY( EditInstanceOnly, Category = "Preview", meta = ( UIMin = 0, UIMax = 24, ClampMin = 0, ClampMax = 24 ) )
-	float mPreviewTime;
-
 	// In editor, receive updates for whenever the time of day is updated
 	FDelegateHandle mTimeOfDayUpdated;
 

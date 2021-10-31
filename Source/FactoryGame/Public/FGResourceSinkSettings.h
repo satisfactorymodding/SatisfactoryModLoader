@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Engine/DeveloperSettings.h"
 #include "Engine/DataTable.h"
@@ -124,6 +125,9 @@ public:
 
 	UPROPERTY( EditAnywhere, config, Category = "Cyber coupon", meta = ( ToolTip = "The schematic to unlock when sinking a coupon" ) )
 	TSubclassOf<class UFGSchematic> mCyberCouponSchematic;
+
+	UPROPERTY( EditAnywhere, config, Category = "Custom Rewards", meta = ( ToolTip = "Custom rewards that will be given in the form of a schematic when you sink a specific item." ) )
+	TMap<TSubclassOf<class UFGItemDescriptor>, TSubclassOf<class UFGSchematic>> mCustomRewards;
 
 	UPROPERTY( EditAnywhere, config, Category = "Rewards", meta = ( ToolTip = "Points = mMulitplier * level^mExponent" ) )
 	float mMultiplier;

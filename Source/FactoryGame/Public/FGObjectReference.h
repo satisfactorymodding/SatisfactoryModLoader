@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Templates/TypeHash.h"
 
 struct FObjectRedirect

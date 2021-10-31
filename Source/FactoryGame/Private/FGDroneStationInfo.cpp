@@ -4,8 +4,39 @@
 
 void FFGDroneTripStatistics::Clear(){ }
 AFGDroneStationInfo::AFGDroneStationInfo() : Super() {
+	this->mStation = nullptr;
+	this->mStationLocation.X = 0.0;
+	this->mStationLocation.Y = 0.0;
+	this->mStationLocation.Z = 0.0;
+	this->mStationClass = nullptr;
+	this->mPairedStation = nullptr;
+	this->mBuildingTag = TEXT("");
+	this->mDroneStatus = EDroneStatus::EDS_NO_DRONE;
+	this->mEstimatedRoundTripTime = 0.0;
+	this->mEstimatedTransportRate = 0.0;
+	this->mDroneTripStatistics.LatestRoundTripTime = 0.0;
+	this->mDroneTripStatistics.LatestIncomingItemAmount = 0;
+	this->mDroneTripStatistics.LatestOutgoingItemAmount = 0;
+	this->mDroneTripStatistics.LatestIncomingItemStacks = 0.0;
+	this->mDroneTripStatistics.LatestOutgoingItemStacks = 0.0;
+	this->mDroneTripStatistics.LatestIncomingItemStackRate = 0.0;
+	this->mDroneTripStatistics.LatestOutgoingItemStackRate = 0.0;
+	this->mDroneTripStatistics.AverageRoundTripTime = 0.0;
+	this->mDroneTripStatistics.AverageIncomingItemAmount = 0.0;
+	this->mDroneTripStatistics.AverageOutgoingItemAmount = 0.0;
+	this->mDroneTripStatistics.AverageIncomingItemStacks = 0.0;
+	this->mDroneTripStatistics.AverageOutgoingItemStacks = 0.0;
+	this->mDroneTripStatistics.AverageIncomingItemRate = 0.0;
+	this->mDroneTripStatistics.AverageOutgoingItemRate = 0.0;
+	this->mDroneTripStatistics.AverageIncomingItemStackRate = 0.0;
+	this->mDroneTripStatistics.AverageOutgoingItemStackRate = 0.0;
+	this->mDroneTripStatistics.MedianRoundTripTime = 0.0;
+	this->mDroneTripStatistics.MedianIncomingItemAmount = 0.0;
+	this->mDroneTripStatistics.MedianOutgoingItemAmount = 0.0;
+	this->mDroneTripStatistics.MedianIncomingItemStacks = 0.0;
+	this->mDroneTripStatistics.MedianOutgoingItemStacks = 0.0;
 	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->bReplicates = true;
 }
 void AFGDroneStationInfo::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGDroneStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }

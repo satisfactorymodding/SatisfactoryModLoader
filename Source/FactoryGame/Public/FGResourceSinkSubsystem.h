@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
@@ -122,6 +123,9 @@ private:
 	UFUNCTION()
 	void TriggerCyberCoupon();
 
+	UFUNCTION()
+	void TriggerCustomReward( TSubclassOf< class UFGItemDescriptor> item );
+
 private:
 	/** The cached schematic manager */
 	UPROPERTY( Transient )
@@ -162,11 +166,10 @@ private:
 	/** The timer handle that is used to trigger updates of the global points history of the resource sink subsystem */
 	FTimerHandle mCalculateHistoryTimer;
 
-public: //MODDING EDIT: public
 	/** Cached points per itemdescriptor */
 	UPROPERTY( Transient )
 	TMap< TSubclassOf< class UFGItemDescriptor >, int32 > mResourceSinkPoints;
-private: // MODDING EDIT
+	
 	/** Cached number of points we need to reach to unlock a new coupon */
 	TArray<int64> mRewardLevels;
 	
@@ -188,4 +191,14 @@ private: // MODDING EDIT
 	/** Have we sunken a item of the coupon class, Used to give a schematic */
 	UPROPERTY( SaveGame )
 	bool mIsCouponEverSunk;
+
+	/** Items with custom rewards that we want to check if we sink. Populated in begin play and should only contains unsunk items, and yes it's a horrible variable name */
+	UPROPERTY( Transient )
+	TSet<TSubclassOf<class UFGItemDescriptor> > mNotYetSunkenItemsWithCustomReward;
+
+	/** Lists sunken item that have a special reward that we want to know if they been sunk or not, Used to give rewards */
+	UPROPERTY( SaveGame )
+	TSet<TSubclassOf<class UFGItemDescriptor> > mSunkenItemsWithCustomReward;
+
+		
 };

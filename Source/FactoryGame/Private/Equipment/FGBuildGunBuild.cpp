@@ -3,11 +3,17 @@
 #include "Equipment/FGBuildGunBuild.h"
 
 UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
-	this->mSplineModeSelectHoldDownDurationForUI = 0.180000007152557;
+	this->mBuildModeSelectHoldDownDurationForUI = 0.18;
+	this->mIsWaitingForSelectionUI = false;
 	this->mIsUsingPressAndReleaseAsBuildSteps = true;
+	this->mPendingRecipe = nullptr;
+	this->mActiveRecipe = nullptr;
+	this->mCurrentHologramBuildMode = nullptr;
+	this->mHologram = nullptr;
+	this->mUpgradedActor = nullptr;
+	this->mClearanceDetector = nullptr;
 }
 void UFGBuildGunStateBuild::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-void UFGBuildGunStateBuild::PreNetReceive(){ }
 void UFGBuildGunStateBuild::BeginState_Implementation(){ }
 void UFGBuildGunStateBuild::EndState_Implementation(){ }
 void UFGBuildGunStateBuild::TickState_Implementation(float deltaTime){ }
@@ -23,6 +29,7 @@ void UFGBuildGunStateBuild::ChangeNoSnapMode_Implementation(){ }
 void UFGBuildGunStateBuild::ChangeGuideLinesSnapMode_Implementation(bool enabled){ }
 void UFGBuildGunStateBuild::BuildSampleRelease_Implementation(){ }
 bool UFGBuildGunStateBuild::IsValidBuildingSample( AFGBuildable* buildable) const{ return bool(); }
+bool UFGBuildGunStateBuild::IsValidVehicleSample( AFGVehicle* vehicle) const{ return bool(); }
 void UFGBuildGunStateBuild::OnRecipeSampled_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
 void UFGBuildGunStateBuild::SetActiveRecipe(TSubclassOf<  UFGRecipe > recipe){ }
 TSubclassOf< class UFGItemDescriptor > UFGBuildGunStateBuild::GetDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
@@ -34,13 +41,15 @@ bool UFGBuildGunStateBuild::Server_ConstructHologram_Validate(FNetConstructionID
 void UFGBuildGunStateBuild::InternalConstructHologram(FNetConstructionID clientNetConstructID){ }
 void UFGBuildGunStateBuild::Server_ChangeGuideLinesSnapMode_Implementation(bool enabled){ }
 bool UFGBuildGunStateBuild::Server_ChangeGuideLinesSnapMode_Validate(bool enabled){ return bool(); }
-TArray< EHologramSplinePathMode > UFGBuildGunStateBuild::GetSupportedSplineModes(){ return TArray<EHologramSplinePathMode>(); }
-void UFGBuildGunStateBuild::SetActiveSplineMode(EHologramSplinePathMode mode){ }
+TArray< TSubclassOf<class UFGHologramBuildModeDescriptor> > UFGBuildGunStateBuild::GetSupportedBuildModes(){ return TArray<TSubclassOf<class UFGHologramBuildModeDescriptor>>(); }
+TSubclassOf<class UFGHologramBuildModeDescriptor> UFGBuildGunStateBuild::GetLastBuildModeForCategory(uint8 category, TSubclassOf<  AActor > actorClass){ return TSubclassOf<class UFGHologramBuildModeDescriptor>(); }
+void UFGBuildGunStateBuild::SetCurrentBuildMode(TSubclassOf<class UFGHologramBuildModeDescriptor> mode){ }
+void UFGBuildGunStateBuild::Server_SetCurrentBuildMode_Implementation(TSubclassOf<class UFGHologramBuildModeDescriptor> mode){ }
+bool UFGBuildGunStateBuild::Server_SetCurrentBuildMode_Validate(TSubclassOf<class UFGHologramBuildModeDescriptor> mode){ return bool(); }
 void UFGBuildGunStateBuild::HookUpUserSettings(){ }
 void UFGBuildGunStateBuild::InternalExecuteDuBuildStepInput(bool isInputFromARelease){ }
-void UFGBuildGunStateBuild::OnRep_Hologram(){ }
+void UFGBuildGunStateBuild::OnRep_CurrentHologramBuildMode(){ }
 void UFGBuildGunStateBuild::ResetHologram(){ }
-void UFGBuildGunStateBuild::Client_OnResetHologram_Implementation(){ }
 void UFGBuildGunStateBuild::Client_OnBuildableConstructed_Implementation(TSubclassOf< UFGItemDescriptor > desc){ }
 void UFGBuildGunStateBuild::Client_OnBuildableFailedConstruction_Implementation(FNetConstructionID netConstructionID){ }
 void UFGBuildGunStateBuild::SpawnHologram(){ }
@@ -50,8 +59,10 @@ void UFGBuildGunStateBuild::CleanupHologramClearanceDetection(AFGHologram* holog
 void UFGBuildGunStateBuild::SaveHologramScrollValues(){ }
 void UFGBuildGunStateBuild::ClearHologramScrollValues(){ }
 void UFGBuildGunStateBuild::RestoreHologramScrollValues(AFGHologram* hologram){ }
+void UFGBuildGunStateBuild::Server_SaveHologramScrollValues_Implementation(const TArray< int32 >& scrollValues){ }
+bool UFGBuildGunStateBuild::Server_SaveHologramScrollValues_Validate(const TArray< int32 >& scrollValues){ return bool(); }
 AFGHologram* UFGBuildGunStateBuild::InternalSpawnHologram(){ return nullptr; }
-void UFGBuildGunStateBuild::BeginClearanceOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult){ }
-void UFGBuildGunStateBuild::EndClearanceOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
+void UFGBuildGunStateBuild::BeginClearanceDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult){ }
+void UFGBuildGunStateBuild::EndClearanceDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
 void UFGBuildGunStateBuild::OnUserSettingsUpdated(){ }
 void UFGBuildGunStateBuild::UpdateClearanceData(){ }

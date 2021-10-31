@@ -4,4 +4,5 @@
 
 UFGErrorMessage::UFGErrorMessage() : Super() {
 	this->mErrorMessage = INVTEXT("UNSET ERROR");
+	this->mErrorResponse = EErrorResponse::ER_NonIntrusivePopup;
 }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGAnimNotify_AkEventSetRTPC.h"
 #include "FGAnimNotify_AkEventCurrentPotential.generated.h"
@@ -20,6 +21,5 @@ public:
 
 protected:
 	/** Set the RTPC value on the relevant ak component. Empty implementation in base class */
-	virtual void SetRTPCValueOnAkComponent(  USkeletalMeshComponent* meshComp, class UAkComponent* component ) override;
-
+	virtual void OnBeforePostEvent(  USkeletalMeshComponent* meshComp, class UAkComponent* component ) override;
 };

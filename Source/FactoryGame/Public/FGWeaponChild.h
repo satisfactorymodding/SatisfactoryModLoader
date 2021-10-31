@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGEquipmentChild.h"
 #include "FGWeaponChild.generated.h"
@@ -13,9 +14,39 @@ class FACTORYGAME_API AFGWeaponChild : public AFGEquipmentChild
 	GENERATED_BODY()
 
 public:
-	FORCEINLINE void SetIsLoaded( bool isLoaded ) { mIsLoaded = isLoaded; }
+	void SetIsLoaded( bool isLoaded );
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifySetIsLoaded(bool isLoaded);
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyBeginPrimaryFire();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyEndPrimaryFire();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyFailedToFire();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyPrimaryFireExecuted();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyBeginSecondaryFire();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyEndSecondaryFire();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyReloading();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
+	void Multicast_NotifyReloadComplete();
 
 	// Start AFGWeapon Event notify calls
+	UFUNCTION( BlueprintNativeEvent, Category = "Weapon" )
+	void NotifySetIsLoaded(bool isLoaded);
+
 	UFUNCTION( BlueprintNativeEvent, Category = "Weapon" )
 	void NotifyBeginPrimaryFire();
 	

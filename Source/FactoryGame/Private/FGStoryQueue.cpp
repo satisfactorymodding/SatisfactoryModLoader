@@ -9,7 +9,6 @@ bool UFGStoryQueue::IsMessageTriggeredByTimer(TSubclassOf< UFGStoryQueue > inCla
 float UFGStoryQueue::GetTimeUntilMessageIsTriggered(TSubclassOf< UFGStoryQueue > inClass){ return float(); }
 float UFGStoryQueue::GetMinimumDelayBetweenMessages(TSubclassOf< UFGStoryQueue > inClass){ return float(); }
 float UFGStoryQueue::GetMaximumDelayForCall(TSubclassOf< UFGStoryQueue > inClass){ return float(); }
-TArray< TSubclassOf< class UFGMessageBase > > UFGStoryQueue::GetBarkMessages(TSubclassOf< UFGStoryQueue > inClass){ return TArray<TSubclassOf<class UFGMessageBase> >(); }
-float UFGStoryQueue::GetTimeUntilBarkIsTriggered(TSubclassOf< UFGStoryQueue > inClass){ return float(); }
+TArray< FEventTriggeredMessage > UFGStoryQueue::GetFloatingMessages(TSubclassOf< UFGStoryQueue > inClass){ return TArray<FEventTriggeredMessage>(); }
 bool UFGStoryQueue::AreDependenciesForQueueMet(TSubclassOf< UFGStoryQueue > inClass, UObject* worldContext){ return bool(); }
 void UFGStoryQueue::GetStoryQueueDebugData(TSubclassOf< UFGStoryQueue > inClass, TArray<FString>& out_debugData){ }

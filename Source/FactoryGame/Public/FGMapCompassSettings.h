@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGActorRepresentation.h"
 #include "FGMapCompassSettings.generated.h"
 

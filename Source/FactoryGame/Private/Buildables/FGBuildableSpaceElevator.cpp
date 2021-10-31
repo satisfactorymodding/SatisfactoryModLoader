@@ -3,34 +3,32 @@
 #include "Buildables/FGBuildableSpaceElevator.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "FGPowerInfoComponent.h"
+#include "Components/SceneComponent.h"
 
 AFGBuildableSpaceElevator::AFGBuildableSpaceElevator() : Super() {
-	this->mPowerConsumptionExponent = 1.60000002384186;
-	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
-	this->mMinimumProducingTime = 2;
-	this->mMinimumStoppedTime = 5;
-	this->mNumCyclesForProductivity = 20;
-	this->mPendingPotential = 1;
-	this->mMinPotential = 0.00999999977648258;
-	this->mMaxPotential = 1;
-	this->mMaxPotentialIncreasePerCrystal = 0.5;
-	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
-	this->mFluidStackSizeMultiplier = 1;
-	this->mSignificanceRange = 18000;
-	this->mHologramClass = AFGFactoryHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
+	this->mInputInventory = nullptr;
+	this->mGamePhaseManager = nullptr;
+	this->mActorRepresentationTexture = nullptr;
 }
 void AFGBuildableSpaceElevator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+bool AFGBuildableSpaceElevator::AddAsRepresentation(){ return bool(); }
+bool AFGBuildableSpaceElevator::UpdateRepresentation(){ return bool(); }
+bool AFGBuildableSpaceElevator::RemoveAsRepresentation(){ return bool(); }
+bool AFGBuildableSpaceElevator::IsActorStatic(){ return bool(); }
+FVector AFGBuildableSpaceElevator::GetRealActorLocation(){ return FVector(); }
+FRotator AFGBuildableSpaceElevator::GetRealActorRotation(){ return FRotator(); }
+UTexture2D* AFGBuildableSpaceElevator::GetActorRepresentationTexture(){ return nullptr; }
+FText AFGBuildableSpaceElevator::GetActorRepresentationText(){ return FText(); }
+void AFGBuildableSpaceElevator::SetActorRepresentationText(const FText& newText){ }
+FLinearColor AFGBuildableSpaceElevator::GetActorRepresentationColor(){ return FLinearColor(); }
+void AFGBuildableSpaceElevator::SetActorRepresentationColor(FLinearColor newColor){ }
+ERepresentationType AFGBuildableSpaceElevator::GetActorRepresentationType(){ return ERepresentationType(); }
+bool AFGBuildableSpaceElevator::GetActorShouldShowInCompass(){ return bool(); }
+bool AFGBuildableSpaceElevator::GetActorShouldShowOnMap(){ return bool(); }
+EFogOfWarRevealType AFGBuildableSpaceElevator::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
+float AFGBuildableSpaceElevator::GetActorFogOfWarRevealRadius(){ return float(); }
+ECompassViewDistance AFGBuildableSpaceElevator::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
+void AFGBuildableSpaceElevator::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 void AFGBuildableSpaceElevator::BeginPlay(){ }
 void AFGBuildableSpaceElevator::Dismantle_Implementation(){ }
 void AFGBuildableSpaceElevator::Factory_CollectInput_Implementation(){ }

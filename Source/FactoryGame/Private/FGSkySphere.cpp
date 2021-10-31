@@ -2,6 +2,7 @@
 
 #include "FGSkySphere.h"
 
+FSkySphereSettings::FSkySphereSettings(){ }
 #if WITH_EDITOR
 void AFGSkySphere::PostEditChangeChainProperty( FPropertyChangedChainEvent& propertyChangedEvent){ }
 #endif 
@@ -16,10 +17,53 @@ void AFGSkySphere::SetupPreviewDelegate(){ }
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGSkySphere::AFGSkySphere() : Super() {
-	this->mSkyLightIntensity.EditorCurveData.DefaultValue = 5; this->mSkyLightIntensity.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mSkyLightIntensity.ExternalCurve = 0;
-	this->mOcclusionTintColor.ColorCurves[0].DefaultValue = 0; this->mOcclusionTintColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[1].DefaultValue = 0; this->mOcclusionTintColor.ColorCurves[1].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[1].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[2].DefaultValue = 0; this->mOcclusionTintColor.ColorCurves[2].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[2].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[3].DefaultValue = 1; this->mOcclusionTintColor.ColorCurves[3].PreInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ColorCurves[3].PostInfinityExtrap = RCCE_Constant; this->mOcclusionTintColor.ExternalCurve = 0;
-	this->mStarBrightness.EditorCurveData.DefaultValue = 0.200000002980232; this->mStarBrightness.EditorCurveData.PreInfinityExtrap = RCCE_Constant; this->mStarBrightness.EditorCurveData.PostInfinityExtrap = RCCE_Constant; this->mStarBrightness.ExternalCurve = 0;
-	this->mSkyLightColor.ColorCurves[0].DefaultValue = 1; this->mSkyLightColor.ColorCurves[0].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[0].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[1].DefaultValue = 1; this->mSkyLightColor.ColorCurves[1].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[1].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[2].DefaultValue = 1; this->mSkyLightColor.ColorCurves[2].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[2].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[3].DefaultValue = 1; this->mSkyLightColor.ColorCurves[3].PreInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ColorCurves[3].PostInfinityExtrap = RCCE_Constant; this->mSkyLightColor.ExternalCurve = 0;
+	this->mSunLightColorCurve.ExternalCurve = nullptr;
+	this->mSunIntensity.EditorCurveData.DefaultValue = 1.0;
+	this->mSunIntensity.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunIntensity.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunIntensity.ExternalCurve = nullptr;
+	this->mSunRotationPitch.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mSunRotationPitch.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunRotationPitch.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunRotationPitch.ExternalCurve = nullptr;
+	this->mSunLightShaftOcclusionCurve.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mSunLightShaftOcclusionCurve.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunLightShaftOcclusionCurve.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunLightShaftOcclusionCurve.ExternalCurve = nullptr;
+	this->mMoonLightColorCurve.ExternalCurve = nullptr;
+	this->mMoonIntensity.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mMoonIntensity.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mMoonIntensity.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mMoonIntensity.ExternalCurve = nullptr;
+	this->mMoonRotationPitch.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mMoonRotationPitch.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mMoonRotationPitch.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mMoonRotationPitch.ExternalCurve = nullptr;
+	this->mMoonLightShaftOcclusionCurve.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mMoonLightShaftOcclusionCurve.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mMoonLightShaftOcclusionCurve.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mMoonLightShaftOcclusionCurve.ExternalCurve = nullptr;
+	this->mSkyLightIntensity.EditorCurveData.DefaultValue = 5.0;
+	this->mSkyLightIntensity.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSkyLightIntensity.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSkyLightIntensity.ExternalCurve = nullptr;
+	this->mOcclusionTintColor.ExternalCurve = nullptr;
+	this->mHorizonColorCurve.ExternalCurve = nullptr;
+	this->mZenithColorCurve.ExternalCurve = nullptr;
+	this->mCloudColorCurve.ExternalCurve = nullptr;
+	this->mCloudOpacity.EditorCurveData.DefaultValue = 1.2;
+	this->mCloudOpacity.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mCloudOpacity.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mCloudOpacity.ExternalCurve = nullptr;
+	this->mStarBrightness.EditorCurveData.DefaultValue = 0.2;
+	this->mStarBrightness.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mStarBrightness.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mStarBrightness.ExternalCurve = nullptr;
+	this->mSkyLightColor.ExternalCurve = nullptr;
+	this->mSunFogMultiplier.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mSunFogMultiplier.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunFogMultiplier.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mSunFogMultiplier.ExternalCurve = nullptr;
 }
 void AFGSkySphere::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGSkySphere::PostLoad(){ Super::PostLoad(); }

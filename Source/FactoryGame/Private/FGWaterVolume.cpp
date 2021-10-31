@@ -2,6 +2,7 @@
 
 #include "FGWaterVolume.h"
 #include "AI/FGNavArea_Water.h"
+#include "Components/BrushComponent.h"
 
 #if WITH_EDITOR
 void AFGWaterVolume::PostLoad(){ Super::PostLoad(); }
@@ -11,8 +12,10 @@ void AFGWaterVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGWaterVolume::AFGWaterVolume() : Super() {
 	this->mAreaClass = UFGNavArea_Water::StaticClass();
+	this->mWaterAudio = nullptr;
 	this->mCanPlaceExtractor = true;
-	this->mResourceClass = FSoftClassPath("/Game/FactoryGame/Resource/RawResources/Water/Desc_Water.Desc_Water_C").TryLoadClass<UObject>();
+	this->mPostProcessSettings = nullptr;
+	this->mResourceClass = FSoftClassPath("/Game/FactoryGame/Resource/RawResources/Water/Desc_Water.Desc_Water_C").ResolveClass();
 	this->bWaterVolume = true;
 }
 void AFGWaterVolume::PostInitProperties(){ Super::PostInitProperties(); }

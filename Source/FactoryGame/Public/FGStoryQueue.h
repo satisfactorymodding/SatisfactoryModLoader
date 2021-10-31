@@ -2,10 +2,23 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "UObject/NoExportTypes.h"
 #include "FGStoryQueue.generated.h"
+
+USTRUCT()
+struct FEventTriggeredMessage
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Dependencies" )
+	class UFGAvailabilityDependency* TriggerDependency;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Message" )
+	TSubclassOf< class UFGMessageBase > Message;
+};
 
 /**
  * 
@@ -31,9 +44,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Story" )
 	static float GetMaximumDelayForCall( TSubclassOf< UFGStoryQueue > inClass );
 
-	static TArray< TSubclassOf< class UFGMessageBase > > GetBarkMessages( TSubclassOf< UFGStoryQueue > inClass );
-
-	static float GetTimeUntilBarkIsTriggered( TSubclassOf< UFGStoryQueue > inClass );
+	static TArray< FEventTriggeredMessage > GetFloatingMessages( TSubclassOf< UFGStoryQueue > inClass );
 	
     static bool AreDependenciesForQueueMet( TSubclassOf< UFGStoryQueue > inClass, UObject* worldContext );
 	
@@ -70,16 +81,12 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Delay" )
 	float mMaximumDelayForCall;
 
+	/** Messages that we trigger when the given event is triggered */
+	UPROPERTY( EditDefaultsOnly, Category = "Floating Messages" )
+	TArray< FEventTriggeredMessage > mFloatingMessages;
+
 	/** What dependencies is needed to be fulfilled before we can start this queue */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Dependencies" )
 	TArray< class UFGAvailabilityDependency* > mDependencies;
 
-	/** Messages that we trigger when we haven't "regular" messages left to play in this queue */
-	UPROPERTY( EditDefaultsOnly, Category = "Bark messages" )
-	TArray< TSubclassOf< class UFGMessageBase >  > mBarkMessages;
-
-	/** How long do we wait until we trigger a bark message by a timer */
-	UPROPERTY( EditDefaultsOnly, Category = "Bark messages")
-	float mTimeUntilBarkIsTriggered;
-	
 };

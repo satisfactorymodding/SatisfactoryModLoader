@@ -2,10 +2,14 @@
 
 #include "Hologram/HologramHelpers.h"
 
-UStaticMeshComponent* FHologramHelpers::CreateClearanceComponent( USceneComponent* attachTo,  UBoxComponent* fromBox){ return nullptr; }
-UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation( UFGFactoryConnectionComponent* connectionComponent){ return nullptr; }
+UStaticMeshComponent* FHologramHelpers::CreateClearanceMeshComponent( USceneComponent* attachTo,  UFGClearanceComponent* fromClearanceBox){ return nullptr; }
+void FHologramHelpers::SetClearanceMeshData( UStaticMeshComponent* clearanceMesh,  UFGClearanceComponent* fromClearanceBox){ }
+UStaticMeshComponent* FHologramHelpers::CreateConnectionRepresentation( UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset){ return nullptr; }
+UStaticMeshComponent* FHologramHelpers::CreateAttachmentPointRepresentation(const  FFGAttachmentPoint* attachmentPoint, const  AFGBuildable* buildable){ return nullptr; }
+void FHologramHelpers::ApplyClearanceExtentShrink( UFGClearanceComponent* clearanceComponent){ }
 float FHologramHelpers::CalcPoleHeight(const  FHitResult& aimResult, const  FVector& poleLocation){ return float(); }
 float FHologramHelpers::CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const  FHitResult& aimResult, const  FVector& poleLocation){ return float(); }
+float FHologramHelpers::FindRightAngleBetweenLocations(const FVector& location, const FVector& targetLocation, const FVector& direction){ return float(); }
 void FSplineUtils::FSplineSegmentPointData::InitializePoints(FVector startPos, FVector startForward, FVector startRight, FVector endPos, FVector endForward, FVector endRight, float startRadius, float endRadius){ }
 void FSplineUtils::FSplineSegmentPointData::AssignDebugObject( AActor* debugActor){ }
 void FSplineUtils::FSplineSegmentPointData::CalculateValues(float forceVerticalExceeding){ }
@@ -107,6 +111,7 @@ FVector FHologramPathingGrid::GetWorldSpaceOfGridIndex(const FVector& gridIndex)
 FHologramPathingPoint& FHologramPathingGrid::GetPathPointForWorldLocation(const FVector& worldLocation){ return *(new FHologramPathingPoint); }
 bool FHologramPathingGrid::IsValidGridIndex(const FVector& index){ return bool(); }
 bool FHologramPathingGrid::CanConstructGridFrom(const FVector& locationOne, const FVector& locationTwo, const FVector& forwardOne, const FVector& forwardTwo){ return bool(); }
+FHologramAStarNode::FHologramAStarNode(){ }
 FHologramAStarNode::FHologramAStarNode(int32 unused){ }
 FHologramAStarNode::FHologramAStarNode(FHologramPathingPoint* pathingPoint){ }
 FHologramAStarNode::FHologramAStarNode(const FHologramAStarNode& pathingNode){ }

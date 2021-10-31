@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "ItemAmount.h"
 #include "FGRadioactivitySubsystem.generated.h"
@@ -110,6 +111,46 @@ public:
 	int32 UID;
 };
 
+USTRUCT()
+struct FSetEmitterIDArray
+{
+	GENERATED_BODY()
+
+	FSetEmitterIDArray() :
+        Owner(nullptr),
+        AttachRoot(nullptr)
+	{
+	}
+	
+	FSetEmitterIDArray( UObject* owner,
+	                    USceneComponent* attachRoot,
+	                    TArray<FVector> attachLocations,
+	                    TArray<TSubclassOf< UFGItemDescriptor > > itemClasses,
+	                    int32 itemAmount,
+	                    int32 UID ) :
+    	Owner( owner ),
+    	AttachRoot( attachRoot ),
+    	AttachLocations( attachLocations ),
+    	ItemClasses( itemClasses ),
+    	ItemAmount( itemAmount ),
+    	UID( UID )
+	{
+	}
+
+	UPROPERTY()
+	UObject* Owner;
+
+	UPROPERTY()
+	USceneComponent* AttachRoot;
+
+	TArray<FVector> AttachLocations;
+
+	TArray<TSubclassOf< UFGItemDescriptor > > ItemClasses;
+
+	int32 ItemAmount;
+
+	int32 UID;
+};
 
 /**
  * Actor for handling the radioactive items.
@@ -159,13 +200,26 @@ public:
 					 int32 UID = INDEX_NONE );
 
 	/** Thread safe version of SetEmitter. Queues the add/update of an radioactive emitter */
-	void SetEmitter_Threadsafe( UObject* owner,
+	FORCEINLINE void SetEmitterArray_Threadsafe( UObject* owner,
 								USceneComponent* attachRoot,
-								const FVector& attachLocation,
-								TSubclassOf< UFGItemDescriptor > itemClass,
+								TArray<FVector> attachLocation,
+								TArray<TSubclassOf< UFGItemDescriptor >> itemClasses,
 								int32 itemAmount,
-								int32 UID = INDEX_NONE );
+								int32 UID = INDEX_NONE )
+	{
+		mGroupedEmittersToSet.Enqueue( FSetEmitterIDArray( owner, attachRoot, attachLocation, itemClasses, itemAmount, UID ) );
+	}
 
+	FORCEINLINE void SetEmitter_Threadsafe( UObject* owner,
+                            USceneComponent* attachRoot,
+                            const FVector& attachLocation,
+                            TSubclassOf< UFGItemDescriptor > itemClass,
+                            int32 itemAmount,
+                            int32 UID = INDEX_NONE )
+	{
+		mEmittersToSet.Enqueue( FSetEmitterID( owner, attachRoot, attachLocation, itemClass, itemAmount, UID ) );
+	}
+	
 	/**
 	 * @see overload
 	 *
@@ -178,23 +232,52 @@ public:
 					 int32 UID = INDEX_NONE );
 
 	/** Thread safe version of RemoveEmitter. Queues the removal of an radioactive emitter */
-	void RemoveEmitter_Threadsafe( UObject* owner, int32 UID );
+	FORCEINLINE void RemoveEmitter_Threadsafe( UObject* owner, int32 UID )
+	{
+		mEmittersToRemove.Enqueue( FRemoveEmitterID(owner, UID) );
+	}
 
 	/** Removes a specific emitter. */
-	void RemoveEmitter( UObject* owner, int32 UID );
+	FORCEINLINE void RemoveEmitter( UObject* owner, int32 UID )
+	{
+		if( FRadioactiveSource* source = FindSource( owner ) )
+		{
+			int32 idx = FindEmitter( source->Emitters, UID );
+			if( idx != INDEX_NONE )
+			{
+				source->Emitters.RemoveAtSwap( idx );
+			}
+		}		
+	}
 	
 	/** Remove all the emitters but preserves the memory allocations. */
-	void ResetEmitters( UObject* owner );
+	FORCEINLINE void ResetEmitters( UObject* owner )
+	{
+		if( FRadioactiveSource* source = FindSource( owner ) )
+		{
+			source->Emitters.Reset();
+		}		
+	}
 
 	/** Remove all emitters and free the memory allocations. */
-	void RemoveEmitters( UObject* owner );
+	FORCEINLINE void RemoveEmitters( UObject* owner )
+	{
+		mSources.Remove( owner );	
+	}
 
 	/** Calculates the radiation intensity at a given distance */
 	static float calculateIntensity( int32 itemAmount, float itemDecay, float distance, float radiationFalloffByDistance );
 
 private:
-	FRadioactiveSource& FindOrAddSource( UObject* owner );
-	FRadioactiveSource* FindSource( UObject* owner );
+	FORCEINLINE FRadioactiveSource& FindOrAddSource( UObject* owner )
+	{
+		return mSources.FindOrAdd( owner );
+	}
+	FORCEINLINE FRadioactiveSource* FindSource( UObject* owner )
+	{
+		return mSources.Find( owner );
+	}
+	
 	FRadioactiveEmitter& FindOrAddEmitter( TArray< FRadioactiveEmitter >& emitters, int32 UID );
 	int32 FindEmitter( TArray< FRadioactiveEmitter >& emitters, int32 UID );
 
@@ -221,6 +304,8 @@ private:
 
 	/** Thread safe queue for storing emitters that shall be set */
 	TQueue< FSetEmitterID, EQueueMode::Mpsc > mEmittersToSet;
+
+	TQueue< FSetEmitterIDArray, EQueueMode::Mpsc > mGroupedEmittersToSet;
 
 	/** All actors that can take damage from radiation. */
 	UPROPERTY()

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "FGMusicPlayerInterface.h"
@@ -20,18 +21,23 @@ public:
 
 	// Replication
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	
-	/* Returns inventory index where next tape is
-	 * @param nextIndex - valid numbers are -1, 0 and 1
-	 **/
-	UFUNCTION( BlueprintCallable, Category = "Equipment" )
-	void UpdateTapeIndex( int32 indexToAdd );
 
-	/** Get for mCurrentTapeIndex */
+	/** Get for mCurrentTapeDescriptor */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-    FORCEINLINE int32 GetCurrentTapeIndex( ) { return mCurrentTapeIndex; }
+	FORCEINLINE TSubclassOf< class UFGTapeDescriptor > GetCurrentTapeDescriptor( ) { return mCurrentTapeDescriptor; }
+
+	/** Set for mCurrentTapeDescriptor */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	void SetCurrentTapeDescriptor( TSubclassOf< class UFGTapeDescriptor > newTape ) { mCurrentTapeDescriptor = newTape; }
+
+	/**
+	 * Returns list of tapedescriptors in the users inventory
+	 * */
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	TArray< TSubclassOf< class UFGTapeDescriptor > > GetAvailableTapes();
+
 private:
-	/** Inventory index of current tape */
+	/** current tape to play */
 	UPROPERTY( Replicated )
-	int32 mCurrentTapeIndex;
+	TSubclassOf< class UFGTapeDescriptor > mCurrentTapeDescriptor;
 };

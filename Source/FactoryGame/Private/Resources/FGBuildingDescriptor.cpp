@@ -8,11 +8,14 @@ FVector UFGBuildingDescriptor::GetCenterOfCollision(){ return FVector(); }
 void UFGBuildingDescriptor::SetBuildableClass(TSubclassOf< UFGBuildingDescriptor > inClass, TSubclassOf<  AFGBuildable > buildableClass){ }
 #endif 
 UFGBuildingDescriptor::UFGBuildingDescriptor() : Super() {
+	this->mBuildableClass = nullptr;
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
-	this->mStackSize = EStackSize::SS_MEDIUM;
-	this->mCanBeDiscarded = true;
-	this->mPreviewView.Distance = 1200; this->mPreviewView.FocalOffset.X = 0; this->mPreviewView.FocalOffset.Y = 0; this->mPreviewView.FocalOffset.Z = 0; this->mPreviewView.CameraPitch = -35;
+	this->mPreviewView.Distance = 1200.0;
+	this->mPreviewView.FocalOffset.X = 0.0;
+	this->mPreviewView.FocalOffset.Y = 0.0;
+	this->mPreviewView.FocalOffset.Z = 0.0;
+	this->mPreviewView.CameraPitch = -35.0;
 }
 void UFGBuildingDescriptor::PostLoad(){ Super::PostLoad(); }
 TSubclassOf< class AFGBuildable > UFGBuildingDescriptor::GetBuildableClass(TSubclassOf< UFGBuildingDescriptor > inClass){ return TSubclassOf<class AFGBuildable>(); }

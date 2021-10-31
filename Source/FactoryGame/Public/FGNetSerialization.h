@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Engine/NetSerialization.h"
 #include "FGNetSerialization.generated.h"
 
@@ -126,7 +127,7 @@ struct FCustomFastArraySerializer
 			ArrayReplicationKey++;
 	}
 
-	template< typename Type, typename SerializerType, typename ItemRemover = FStableRemover >
+	template< typename Type, typename SerializerType, typename ItemRemover = struct FStableRemover >
 	static bool FastArrayDeltaSerialize( TArray<Type> &Items, FNetDeltaSerializeInfo& Parms, SerializerType& ArraySerializer );
 
 	/**
@@ -341,12 +342,12 @@ bool FCustomFastArraySerializer::FastArrayDeltaSerialize( TArray<Type> &Items, F
 		//-----------------------------
 		// Saving
 		//-----------------------------	
-		check( Parms.Struct );
+		fgcheck( Parms.Struct );
 		FBitWriter& Writer = *Parms.Writer;
 
 		// Create a new map from the current state of the array		
 		FNetFastTArrayBaseState * NewState = new FNetFastTArrayBaseState();
-		check( Parms.NewState );
+		fgcheck( Parms.NewState );
 		*Parms.NewState = TSharedPtr<INetDeltaBaseState>( NewState );
 		TMap<int32, int32> & NewMap = NewState->IDToCLMap;
 		NewState->ArrayReplicationKey = ArraySerializer.ArrayReplicationKey;
@@ -527,7 +528,7 @@ bool FCustomFastArraySerializer::FastArrayDeltaSerialize( TArray<Type> &Items, F
 		//-----------------------------
 		// Loading
 		//-----------------------------	
-		check( Parms.Reader );
+		fgcheck( Parms.Reader );
 		FBitReader& Reader = *Parms.Reader;
 
 		static const int32 MAX_NUM_CHANGED = 2048;

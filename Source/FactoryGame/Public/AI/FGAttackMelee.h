@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "AI/FGAttack.h"
 #include "FGAttackMelee.generated.h"
 

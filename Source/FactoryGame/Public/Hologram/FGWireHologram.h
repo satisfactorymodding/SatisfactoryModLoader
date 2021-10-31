@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGBuildableHologram.h"
 #include "FGCircuitConnectionComponent.h"
 #include "FGWireHologram.generated.h"
@@ -50,7 +51,8 @@ protected:
 
 	// Begin AFGHologram Interface
 	virtual void CheckValidPlacement() override;
-	virtual void CheckClearance() override;
+	virtual void CheckClearance( const FVector& locationOffset ) override;
+	virtual uint8 GetStencilForHologramMaterialState( EHologramMaterialState state ) const override;
 	// End AFGHologram Interface
 
 private:

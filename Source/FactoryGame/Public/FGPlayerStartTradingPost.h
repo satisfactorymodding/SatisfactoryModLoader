@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/PlayerStart.h"
 #include "FGPlayerStartTradingPost.generated.h"
 

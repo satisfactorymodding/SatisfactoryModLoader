@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGItemPickup.h"
 #include "FGItemPickup_Spawnable.generated.h"
 

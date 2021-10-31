@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGSaveSystem.generated.h"
@@ -35,6 +36,14 @@ enum class ESaveState : uint8
 	SS_Volatile		UMETA( DisplayName="Volatile" ),
 	SS_Supported	UMETA( DisplayName="Supported"),
 	SS_Newer		UMETA( DisplayName="Newer" )
+};
+
+UENUM( BlueprintType )
+enum class ESaveLocationInfo : uint8
+{
+	SLI_Default		UMETA( DisplayName = "Default/User Dir" ),
+	SLI_Common		UMETA( DisplayName = "Common Dir" ),
+	SLI_Server		UMETA( DisplayName = "Server Dir" )
 };
 
 typedef FString SessionNameType;
@@ -108,6 +117,9 @@ struct FACTORYGAME_API FSaveHeader
 
 	/** Name of the save game, not store to disc */
 	FString SaveName;
+
+	/** Descriptor for the save game location on the disc at the time of read (not saved to disc) */
+	ESaveLocationInfo SaveLocationInfo;
 
 	/** The map this save is valid on  */
 	FString MapName;
@@ -262,6 +274,11 @@ public:
 	 * @param out_saveGames a list with the available save games
 	 */
 	void EnumerateSaveGames( FOnEnumerateSaveGamesComplete onCompleteDelegate, void* userData );
+
+	/**
+	 * Synchronous value-returning version of the above
+	 **/ 
+	TArray<FSaveHeader> EnumerateSaveGames();
 
 	/**
 	 * Groups a save list by their corresponding session
