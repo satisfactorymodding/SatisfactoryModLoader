@@ -37,7 +37,7 @@ jobs:
 
       - name: Build SML
         run: |
-          .\\ue4\\lb\\win\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe  -projectfiles -project="%GITHUB_WORKSPACE%\\SML\\FactoryGame.uproject" -game -rocket -progres
+          .\\ue4\\lb\\win\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe  -projectfiles -project="${{ env.GITHUB_WORKSPACE }}\\SML\\FactoryGame.uproject" -game -rocket -progres
           MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Shipping" /p:Platform="Win64" /t:"Games\\FactoryGame"
           MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\\FactoryGame"
-          .\\ue4\\lb\\win\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="%GITHUB_WORKSPACE%\\SML\\FactoryGame.uproject" PackagePlugin -Project="%GITHUB_WORKSPACE%\\SML\\FactoryGame.uproject" -PluginName="SML" -GameDir="%SF_GAME_DIR%"
+          .\\ue4\\lb\\win\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="${{ env.GITHUB_WORKSPACE }}\\SML\\FactoryGame.uproject" PackagePlugin -Project="${{ env.GITHUB_WORKSPACE }}\\SML\\FactoryGame.uproject" -PluginName="SML" -GameDir="%SF_GAME_DIR%"
