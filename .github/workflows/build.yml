@@ -15,7 +15,7 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.3
         with:
-          vs-version: '[15,16)'
+          vs-version: '[15.0,15.10]'
 
       - name: Test VS Communnity
         run: vs_community.exe --help
