@@ -20,7 +20,9 @@ jobs:
 
       - name: Downlad UE4
         working-directory: ue4
-        run: aria2c -x 8 -s 8 "https://SatisfactoryModdingBot:${{ secrets.SF_BOT_TOKEN }}@github.com/SatisfactoryModdingUE/UnrealEngine/releases/latest/download/UnrealEngine-CSS-Editor-Win64.7z.001" "https://SatisfactoryModdingBot:${{ secrets.SF_BOT_TOKEN }}@github.com/SatisfactoryModdingUE/UnrealEngine/releases/latest/download/UnrealEngine-CSS-Editor-Win64.7z.002"
+        run: |
+          echo "${{ secrets.SF_BOT_TOKEN }}" | gh auth login --with-token 
+          gh release download --repo SatisfactoryModdingUE/UnrealEngine -p "*.7z.*"
 
       - name: Extract UE4
         working-directory: ue4
