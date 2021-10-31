@@ -2,7 +2,6 @@ name: CI
 
 on:
   push:
-    branches: [ 4.26.1-CSS ]
   workflow_dispatch:
 
 jobs:
