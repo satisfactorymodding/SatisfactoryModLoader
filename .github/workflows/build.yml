@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [ 4.26.1-CSS ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          clean: false
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.3
+        with:
+          vs-version: '[15,16)'
+
+      - name: Test VS Communnity
+        run: vs_community.exe --help
