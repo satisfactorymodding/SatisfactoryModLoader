@@ -9,9 +9,7 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Cleanup
-        run: |
-          Remove-Item SML -Recurse -Force -Confirm:$false -ErrorAction Ignore
-          Remove-Item ue4 -Recurse -Force -Confirm:$false -ErrorAction Ignore
+        run: Remove-Item * -Recurse -Force -Confirm:$false -ErrorAction Ignore
 
       - uses: actions/checkout@v2
         with:
@@ -34,7 +32,7 @@ jobs:
       - name: Download and Extract Wwise
         run: |
           aria2c -o Wwise.7z "${{ secrets.WWISE_URL }}"
-          7z x Wwise.7z -oSML\\Plugins\\
+          7z x Wwise.7z -oSML\\Plugins\\
           rm Wwise.7Z
         
       - name: Build SML
