@@ -12,6 +12,12 @@ jobs:
         with:
           clean: false
 
+      - name: Download BuildTools
+        run: Invoke-webrequest -uri  https://aka.ms/vs/15/release/vs_buildtools.exe -OutFile vs_buildtools.exe
+
+      - name: Install BuildTools
+        run: .\vs_buildtools.exe --wait --norestart --passive --installPath "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools" --add Microsoft.VisualStudio.Workload.ManagedDesktopBuildTools --add Microsoft.VisualStudio.Workload.MSBuildTools --add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Workload.NativeGame
+
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.0.3
         with:
