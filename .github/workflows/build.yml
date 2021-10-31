@@ -29,7 +29,7 @@ jobs:
 
       - name: Download and Extract Wwise
         run: |
-          aria2c -o Wwise.7z ${{ secrets.WWISE_URL }}
+          aria2c -o Wwise.7z "${{ secrets.WWISE_URL }}"
           7z x Wwise.7z -oSML\\Plugins\\
           rm Wwise.7Z
         
