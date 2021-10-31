@@ -24,7 +24,7 @@ jobs:
           echo "${{ secrets.SF_BOT_TOKEN }}" | gh auth login --with-token 
           gh release download --repo SatisfactoryModdingUE/UnrealEngine -p "*.7z.*"
           7z x UnrealEngine-CSS-Editor-Win64.7z.001
-          rm 7z x UnrealEngine-CSS-Editor-Win64.7z*
+          rm UnrealEngine-CSS-Editor-Win64.7z*
           .\\SetupScripts\\Register.bat
 
       - name: Download and Extract Wwise
