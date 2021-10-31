@@ -26,7 +26,6 @@ jobs:
       - name: Downlad, Extract and Setup UE4
         working-directory: ue4
         run: |
-          echo "${{ secrets.SF_BOT_TOKEN }}" | gh auth login --with-token 
           gh release download --repo SatisfactoryModdingUE/UnrealEngine -p "*.7z.*"
           7z x UnrealEngine-CSS-Editor-Win64.7z.001
           rm UnrealEngine-CSS-Editor-Win64.7z*
