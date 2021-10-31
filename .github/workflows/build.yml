@@ -17,6 +17,7 @@ jobs:
 
       - name: Downlad UE4
         working-directory: ue4
+        shell: cmd
         run: aria2c -x 8 -s 8 "https://SatisfactoryModdingBot:${{ secrets.SF_BOT_TOKEN }}@github.com/SatisfactoryModdingUE/UnrealEngine/releases/latest/download/UnrealEngine-CSS-Editor-Win64.7z.001" "https://SatisfactoryModdingBot:${{ secrets.SF_BOT_TOKEN }}@github.com/SatisfactoryModdingUE/UnrealEngine/releases/latest/download/UnrealEngine-CSS-Editor-Win64.7z.002"
 
       - name: Extract UE4
