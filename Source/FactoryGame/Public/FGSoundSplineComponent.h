@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "AkComponent.h"
 #include "FGSoundSplineComponent.generated.h"
 
@@ -27,7 +28,7 @@ public:
 	FORCEINLINE float GetEmitterInterval( float newEmitterInterval ) const { return mEmitterInterval; }
 
 	// Begin UAkComponent interface
-	virtual void UpdateGameObjectPosition(); // override; // MODDING EDIT: original is not virtual
+	virtual void UpdateGameObjectPosition(); // MODDING EDIT Wwise... override;
 	// End UAkComponent interface
 protected:
 	/** Distance between each emitter on our parent spline, this might be scaled slightly so that we get a point on both start and end */

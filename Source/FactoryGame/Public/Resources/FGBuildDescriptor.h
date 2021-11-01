@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGBuildDescriptor.generated.h"
 
@@ -15,17 +16,9 @@ class FACTORYGAME_API UFGBuildDescriptor : public UFGItemDescriptor
 public:
 	UFGBuildDescriptor();
 
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty( struct FPropertyChangedEvent& propertyChangedEvent ) override;
-#endif
-	
 	/** Get the category for this building descriptor. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Build" )
 	static TSubclassOf< class UFGBuildCategory > GetBuildCategory( TSubclassOf< UFGBuildDescriptor > inClass );
-
-	/** Get the category for this building descriptor. */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Descriptor|Build" )
-	static void GetSubCategories( TSubclassOf< UFGBuildDescriptor > inClass, UPARAM( ref ) TArray< TSubclassOf< class UFGBuildSubCategory > >& out_subCategories );
 
 	/** The order we want stuff in the build menu, lower is earlier */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Build" )
@@ -42,17 +35,4 @@ public:
 protected:
 	virtual TSubclassOf< class AFGHologram > GetHologramClassInternal() const;
 	virtual TSubclassOf< AActor > GetBuildClassInternal() const;
-
-protected:
-	/** The category in the build menu for this building */
-	UPROPERTY( EditDefaultsOnly, Category = "Build" )
-	TSubclassOf< UFGBuildCategory > mBuildCategory;
-
-	/** The sub categories in the build menu for this building */
-	UPROPERTY( EditDefaultsOnly, Category = "Build" )
-	TArray< TSubclassOf< UFGBuildSubCategory > > mSubCategories;
-
-	/** The order in the Build Menu is decided by this value. Lower values means earlier in menu. Negative values are allowed. [-N..0..N]*/
-	UPROPERTY( EditDefaultsOnly, Category = "Build" )
-	float mBuildMenuPriority;
 };

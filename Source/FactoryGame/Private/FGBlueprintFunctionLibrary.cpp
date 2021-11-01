@@ -9,6 +9,8 @@ void UFGBlueprintFunctionLibrary::OccludeOutlineByActor( AActor* actor, bool occ
 void UFGBlueprintFunctionLibrary::HideOutline( UPrimitiveComponent* comp){ }
 void UFGBlueprintFunctionLibrary::UpdateUseState(FUseState& state, TSubclassOf< UFGUseState > newState){ }
 void UFGBlueprintFunctionLibrary::Cheat_GetAllDescriptors(TArray< TSubclassOf<  UFGItemDescriptor > >& out_descriptors){ }
+void UFGBlueprintFunctionLibrary::ApplyCustomizationPrimitiveData( AActor* actor, const FFactoryCustomizationData& customizationData, int32 colorSlotFallback ,  UMeshComponent* onlyApplyToComponent){ }
+void UFGBlueprintFunctionLibrary::ApplyDefaultColorPrimitiveData( AActor* actor){ }
 void UFGBlueprintFunctionLibrary::GetAllDescriptorsSorted(UObject* worldContext,  TArray< TSubclassOf< UFGItemDescriptor > >& out_descriptors){ }
 void UFGBlueprintFunctionLibrary::ChangeLanguage(FString target){ }
 FString UFGBlueprintFunctionLibrary::GetLanguage(){ return FString(); }
@@ -41,27 +43,52 @@ bool UFGBlueprintFunctionLibrary::IsLocallyHumanControlled(APawn* pawn){ return 
 FString UFGBlueprintFunctionLibrary::GetVersionString(){ return FString(); }
 bool UFGBlueprintFunctionLibrary::IsAlphaBuild(){ return bool(); }
 bool UFGBlueprintFunctionLibrary::CanBeOnConveyor(TSubclassOf< UFGItemDescriptor > inClass){ return bool(); }
-void UFGBlueprintFunctionLibrary::GetAllBuildCategories(UObject* worldContext,  TArray< TSubclassOf<  UFGBuildCategory > >& out_buildCategories){ }
-void UFGBlueprintFunctionLibrary::GetAvailableRecipesInCategory(UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory,  TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
-void UFGBlueprintFunctionLibrary::GetAvailableRecipesInSubCategory(UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, TSubclassOf< UFGBuildSubCategory > subCategory,  TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
-void UFGBlueprintFunctionLibrary::GetAvailableSubCategoriesForCategory(UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory,  TArray< TSubclassOf<  UFGBuildSubCategory > >& out_subCategories){ }
-void UFGBlueprintFunctionLibrary::GetSubCategoriesForSchematicCategory(UObject* worldContext, TSubclassOf< UFGSchematicCategory > buildCategory,  TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ }
+void UFGBlueprintFunctionLibrary::GetAvailableRecipesInCategory(UObject* worldContext, TSubclassOf<  UFGCategory > category, TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
+void UFGBlueprintFunctionLibrary::GetAvailableRecipesInSubCategory(UObject* worldContext, TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory, TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
+void UFGBlueprintFunctionLibrary::GetAvailableRecipesWithDefaultMaterialInSubCategory(APlayerController* playerController, TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory,
+																	 TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
+void UFGBlueprintFunctionLibrary::GetAvailableRecipesForMaterialDescriptorInSubCategory(APlayerController* playerController, TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory, 
+																	 TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc,
+																	 TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
+TArray< TSubclassOf< class UFGCategory > > UFGBlueprintFunctionLibrary::GetAvailableSubCategoriesForCategory(UObject* worldContext, TSubclassOf< UFGCategory > category, TSubclassOf<  UFGCategory > outputSubCategoryClass){ return TArray<TSubclassOf<class UFGCategory> >(); }
+void UFGBlueprintFunctionLibrary::GetSubCategoriesForSchematicCategory(UObject* worldContext, TSubclassOf<  UFGSchematicCategory > category,  TArray< TSubclassOf<  UFGSchematicCategory > >& out_subCategories){ }
+TArray< TSubclassOf< UFGCategory > > UFGBlueprintFunctionLibrary::GetAllCategoriesFromRecipes(TArray< TSubclassOf<  UFGRecipe > > recipes, TSubclassOf<  UFGCategory > outputCategoryClass){ return TArray<TSubclassOf<UFGCategory> >(); }
+TSubclassOf< class UFGQuickSwitchGroup > UFGBlueprintFunctionLibrary::GetQuickSwitchGroupFromRecipe(TSubclassOf<  UFGRecipe > recipe){ return TSubclassOf<class UFGQuickSwitchGroup>(); }
+void UFGBlueprintFunctionLibrary::GetMatchingQuickSwitchGroupRecipes(TSubclassOf<  UFGRecipe > recipe, TArray < TSubclassOf<  UFGRecipe > > recipesToMatchAgainst, TArray< TSubclassOf<  UFGRecipe > >& out_recipes){ }
 void UFGBlueprintFunctionLibrary::GetAllWidgetsOfClassInHierarchy(UWidget* hierarchyContext, TSubclassOf< UWidget > widgetClass, TArray< UWidget* >& foundWidgets){ }
 TArray< TSubclassOf< class UFGItemDescriptor > > UFGBlueprintFunctionLibrary::GetAllItemsInCategory(UObject* worldContext, TSubclassOf< UFGItemCategory > itemCategory){ return TArray<TSubclassOf<class UFGItemDescriptor> >(); }
 TArray< TSubclassOf< class UFGItemCategory > > UFGBlueprintFunctionLibrary::GetCategoriesWithAffordableRecipes(AFGCharacterPlayer* playerPawn, TSubclassOf< UObject > forProducer){ return TArray<TSubclassOf<class UFGItemCategory> >(); }
+void UFGBlueprintFunctionLibrary::GetAllAvailableCustomizations(UObject* worldContext, TArray< TSubclassOf<  UFGFactoryCustomizationDescriptor > >& out_customizations, TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationClass){ }
+void UFGBlueprintFunctionLibrary::GetValidMaterialRecipesSubCategory(UObject* worldContext, TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory, TArray< TSubclassOf<  UFGCustomizationRecipe > >& out_matRecipes){ }
+TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > UFGBlueprintFunctionLibrary::GetDefaultMatDescForBuildableCategory(APlayerController* playerController, TSubclassOf<  UFGCategory> category, TSubclassOf<  UFGCategory > subCategory){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
+void UFGBlueprintFunctionLibrary::SetDefaultMatDescForBuildableCategory(APlayerController* playerController, TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
+TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > UFGBlueprintFunctionLibrary::GetGlobalDefaultMatDescForMaterialCategory(APlayerController* playerController, TSubclassOf<  UFGCategory > category){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
+void UFGBlueprintFunctionLibrary::SetGlobalDefaultMaterialDescriptor(APlayerController* playerController, TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc, bool updateHotbarShortcuts){ }
+TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > UFGBlueprintFunctionLibrary::GetMaterialDescriptorForBuildingDescriptor(UObject* worldContext, TSubclassOf<  UFGBuildDescriptor > buildingDesc){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
+TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > UFGBlueprintFunctionLibrary::GetMaterialDescriptorForBuildableClass(UObject* worldContext, TSubclassOf<  AFGBuildable > buildable){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
+void UFGBlueprintFunctionLibrary::UpdateHotbarShortcutsForSpecifiedMaterialDescriptor(APlayerController* playerController, TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
 bool UFGBlueprintFunctionLibrary::IsLocationNearABase(const UObject* worldContext, FVector inLocation, float closeDistance){ return bool(); }
 bool UFGBlueprintFunctionLibrary::IsLocationNearABaseFromResult(const UObject* worldContext, FVector inLocation, float closeDistance, const TArray< FOverlapResult >& Results){ return bool(); }
 void UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMap(APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility){ }
+void UFGBlueprintFunctionLibrary::CreateSessionAndTravelToMapWithStartingLocation(APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility){ }
 void UFGBlueprintFunctionLibrary::TravelToMainMenu(APlayerController* playerController){ }
 void UFGBlueprintFunctionLibrary::SendLocalPlayerToMainMenu(UWorld* world){ }
 FString UFGBlueprintFunctionLibrary::LinearColorToHex(FLinearColor inColor){ return FString(); }
+FLinearColor UFGBlueprintFunctionLibrary::HexToLinearColor(const FString& inHex){ return FLinearColor(); }
 void UFGBlueprintFunctionLibrary::AddPopup(APlayerController* controller, FText Title, FText Body, const FPopupConfirmClicked& ConfirmClickDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass , UObject* popupInstigator){ }
 void UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate(APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, EPopupId PopupID , TSubclassOf< UUserWidget > popupClass , UObject* popupInstigator){ }
+void UFGBlueprintFunctionLibrary::AddPopupWithContent(APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate,  UFGPopupWidgetContent* Content, EPopupId PopupID , UObject* popupInstigator){ }
 void UFGBlueprintFunctionLibrary::ClosePopup(APlayerController* controller){ }
 void UFGBlueprintFunctionLibrary::ClearPopupQueueOfClass(APlayerController* controller, TSubclassOf< UUserWidget > widgetClass){ }
 void UFGBlueprintFunctionLibrary::CopyTextToClipboard(FText textToCopy){ }
 FText UFGBlueprintFunctionLibrary::CopyTextFromClipboard(){ return FText(); }
+void UFGBlueprintFunctionLibrary::RemoveAndReleaseAllChildsFromPanel( AFGHUD* hud, UPanelWidget* panelWidget){ }
+void UFGBlueprintFunctionLibrary::RemoveAndReleaseChildFromPanel( AFGHUD* hud, UPanelWidget* panelWidget, int32 index){ }
 AFGPlayerController* UFGBlueprintFunctionLibrary::GetLocalPlayerController(const UObject* worldContext){ return nullptr; }
+bool UFGBlueprintFunctionLibrary::EqualEqual_FrameTimeFrameTime(FFrameTime frameTimeA, FFrameTime frameTimeB){ return bool(); }
+bool UFGBlueprintFunctionLibrary::NotEqual_FrameTimeFrameTime(FFrameTime frameTimeA, FFrameTime frameTimeB){ return bool(); }
+FFrameTime UFGBlueprintFunctionLibrary::Conv_IntToFrameTime(int32 frameCount){ return FFrameTime(); }
+int32 UFGBlueprintFunctionLibrary::Conv_FrameTimeToInt(FFrameTime frameTime){ return int32(); }
 bool UFGBlueprintFunctionLibrary::EvaluateMathExpression(const FString& expression,  FText& out_Result){ return bool(); }
 FString UFGBlueprintFunctionLibrary::SecondsToTimeString(float inSeconds){ return FString(); }
 FString UFGBlueprintFunctionLibrary::Conv_IntToString(int64 InInt){ return FString(); }
@@ -71,3 +98,20 @@ void UFGBlueprintFunctionLibrary::SetMetadataTag(UObject* object, FName tag, con
 FString UFGBlueprintFunctionLibrary::GetMetadataTag(UObject* object, FName tag){ return FString(); }
 bool UFGBlueprintFunctionLibrary::FileLoadString(FString AbsoluteFilePath, FString& String){ return bool(); }
 FText UFGBlueprintFunctionLibrary::CutTextByPixelOffset(const FText& text, const FSlateFontInfo& inFontInfo, const int32 horizontalOffset, const FString& suffix){ return FText(); }
+TArray< class AActor* > UFGBlueprintFunctionLibrary::GetActorsInRadius(UObject* WorldContextObject, FVector inLocation,  float inRadius, TSubclassOf< AActor > inActorClass){ return TArray<class AActor*>(); }
+bool UFGBlueprintFunctionLibrary::IsWidgetUnderCursor( ULocalPlayer* localPlayer,  UUserWidget* widget){ return bool(); }
+void UFGBlueprintFunctionLibrary::BreakCustomizationColorSlot(const  FFactoryCustomizationColorSlot& customData, FLinearColor& primaryColor, FLinearColor& secondaryColor, float& metallic, float& roughness){ }
+FFactoryCustomizationColorSlot UFGBlueprintFunctionLibrary::MakeCustomizationColorSlot(FLinearColor primaryColor, FLinearColor secondaryColor, float metallic, float roughness){ return FFactoryCustomizationColorSlot(); }
+UTexture2D* UFGBlueprintFunctionLibrary::GetIconForCustomizationDesc(const TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationDesc){ return nullptr; }
+void UFGBlueprintFunctionLibrary::GetDescriptionForCustomizationDesc(const TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationDesc, FText& out_description){ }
+void UFGBlueprintFunctionLibrary::GetValidBuildablsForCustomization(TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationDesc, TArray< TSubclassOf<  AFGBuildable > >& out_buildables){ }
+int32 UFGBlueprintFunctionLibrary::GetIDForCustomizationDesc(const TSubclassOf<  UFGFactoryCustomizationDescriptor > customizationDesc){ return int32(); }
+void UFGBlueprintFunctionLibrary::GetMaterialCustomizationBuildableMap(TSubclassOf<  UFGFactoryCustomizationDescriptor > materialCustomization,
+													  TMap< TSubclassOf<  AFGBuildable >, TSubclassOf<  UFGRecipe > >& out_buildableMap){ }
+void UFGBlueprintFunctionLibrary::GetCustomizationsFromCollectionClass(TSubclassOf<  UFGFactoryCustomizationCollection > collectionClass, TArray< TSubclassOf<  UFGFactoryCustomizationDescriptor > >& out_customizaitons){ }
+void UFGBlueprintFunctionLibrary::GetSlotDataForSwatchDesc(TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch > swatchDesc,  AActor* worldContext, FFactoryCustomizationColorSlot& out_SlotData){ }
+bool UFGBlueprintFunctionLibrary::GetIsCategoryDefaultForMaterialDesc(TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc){ return bool(); }
+void UFGBlueprintFunctionLibrary::SortCustomizationRecipes(TArray< TSubclassOf<  UFGCustomizationRecipe > >& recipes){ }
+float UFGBlueprintFunctionLibrary::GetPrimitiveDataFromIndex(int32 Index, UPrimitiveComponent* Component){ return float(); }
+float UFGBlueprintFunctionLibrary::GetPrimitiveDefaultDataFromIndex(int32 Index, UPrimitiveComponent* Component){ return float(); }
+void UFGBlueprintFunctionLibrary::CSS_SetAnimationAsset(USkeletalMeshComponent* Comp, UAnimationAsset* AnimationAsset){ }

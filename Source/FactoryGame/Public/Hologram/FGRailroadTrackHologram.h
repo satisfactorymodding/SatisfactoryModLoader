@@ -2,10 +2,18 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGSplineHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGRailroadTrackHologram.generated.h"
 
+/** "Nested containers are not supported." */
+USTRUCT()
+struct FConnectionComponentArrayWrapper
+{
+	GENERATED_BODY()
+	TArray< class UFGRailroadTrackConnectionComponent* > Array;
+};
 
 /**
  * Hologram used to place train tracks.
@@ -48,8 +56,11 @@ protected:
 	// Begin AFGBuildableHologram interface
 	virtual void CheckValidPlacement() override;
 	virtual void CheckValidFloor() override;
-	virtual void CheckClearance() override;
 	// End AFGBuildableHologram interface
+
+	// Begin AFGHologram interface
+	virtual void CheckClearance( const FVector& locationOffset ) override;
+	// End AFGHologram interface
 
 	// Begin AFGSplineHologram interface
 	virtual void UpdateSplineComponent() override;
@@ -97,6 +108,9 @@ private:
 	/** The track connection we snap when building the track. */
 	UPROPERTY()
 	class UFGRailroadTrackConnectionComponent* mSnappedConnectionComponents[ 2 ];
+
+	/** The track connections to go along with the snapped connection if that one used to be a switch. */
+	FConnectionComponentArrayWrapper mSnappedAdditionalConnectionComponents[ 2 ];
 
 	/** All the generated spline meshes. */
 	UPROPERTY()

@@ -4,10 +4,17 @@
 #include "Components/SceneComponent.h"
 
 AFGProximitySubsystem::AFGProximitySubsystem() : Super() {
+	this->mOwningController = nullptr;
 	this->mRootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	this->RootComponent = this->mRootComponent;
 	this->mMaxNumDecals = 20;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0.300000011920929;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.3;
+	this->RootComponent = mRootComponent;
 }
 void AFGProximitySubsystem::OnEnteredMapArea_Implementation( AFGPlayerControllerBase* playerController, TSubclassOf<  UFGMapArea > newArea){ }
 void AFGProximitySubsystem::OnPawnChanged_Implementation( APawn* newPawn){ }

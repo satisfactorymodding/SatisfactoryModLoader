@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGActorRepresentationInterface.h"
@@ -78,6 +79,10 @@ public:
 
 	/** Receive fog of war data via player controller  */
 	void SyncFogOfWarChanges( const TArray<uint8>& fogOfWarRawData, int32 finalIndex );
+
+	// Cheats
+	void RevealMap();
+	void HideMap();
 
 private:
 	

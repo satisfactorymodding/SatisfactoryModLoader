@@ -3,42 +3,37 @@
 #include "Buildables/FGBuildableJumppad.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "FGPowerInfoComponent.h"
-#include "Components/HierarchicalInstancedStaticMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/SceneComponent.h"
 
 AFGBuildableJumppad::AFGBuildableJumppad() : Super() {
-	this->mChargeRateMultiplier = 1;
-	this->mLaunchAngle = -1;
-	this->mPlayerChainJumpResetTime = 8;
-	this->mLauncherMeshComponent = CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(TEXT("LauncherMeshComponent")); this->mLauncherMeshComponent->SetupAttachment(this->RootComponent);
-	this->mLauncherBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LauncherBox")); this->mLauncherBox->SetupAttachment(this->mLauncherMeshComponent);
-	this->mTrajectoryMeshScale.X = 1; this->mTrajectoryMeshScale.Y = 1; this->mTrajectoryMeshScale.Z = 1;
-	this->mDestinationMeshHeightOffset = 400;
+	this->mPowerBankCapacity = 0.0;
+	this->mLaunchPowerCost = 0.0;
+	this->mChargeRateMultiplier = 1.0;
+	this->mCurrentPowerLevel = 0.0;
+	this->mLaunchVelocity = 0.0;
+	this->mLaunchAngle = -1.0;
+	this->mPlayerChainJumpResetTime = 8.0;
+	this->mHasPowerForLaunch = false;
+	this->mLauncherBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LauncherBox"));
+	this->mLauncherMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LauncherMeshComponent"));
+	this->mLauncherBox->SetupAttachment(mLauncherMeshComponent);
+	this->mTrajectoryMeshScale.X = 1.0;
+	this->mTrajectoryMeshScale.Y = 1.0;
+	this->mTrajectoryMeshScale.Z = 1.0;
+	this->mTrajectoryMeshRotation.Pitch = 0.0;
+	this->mTrajectoryMeshRotation.Yaw = 0.0;
+	this->mTrajectoryMeshRotation.Roll = 0.0;
+	this->mDestinationMeshHeightOffset = 400.0;
+	this->mDestinationMesh = nullptr;
+	this->mTrajectorySplineMesh = nullptr;
 	this->mNumArrows = 5;
-	this->mTrajectoryGravityMultiplier = 1;
-	this->mPowerConsumptionExponent = 1.60000002384186;
-	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
-	this->mMinimumProducingTime = 2;
-	this->mMinimumStoppedTime = 5;
-	this->mNumCyclesForProductivity = 20;
-	this->mPendingPotential = 1;
-	this->mMinPotential = 0.00999999977648258;
-	this->mMaxPotential = 1;
-	this->mMaxPotentialIncreasePerCrystal = 0.5;
-	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
-	this->mFluidStackSizeMultiplier = 1;
-	this->mSignificanceRange = 18000;
-	this->mHologramClass = AFGFactoryHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
+	this->mTrajectorySplineComponent = nullptr;
+	this->mDestinationMeshComponent = nullptr;
+	this->mSplineComponent = nullptr;
+	this->mTrajectoryGravityMultiplier = 1.0;
+	this->mShowTrajectoryCounter = 0;
+	this->mLauncherMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableJumppad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 FVector AFGBuildableJumppad::GetLaunchDirection(){ return FVector(); }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "ItemAmount.h"
@@ -81,6 +82,7 @@ struct FACTORYGAME_API FPhaseCost
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnGamePhaseUpdated, EGamePhase, gamePhase );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnPayOffOnGamePhase );
 
 UCLASS( Blueprintable, abstract, HideCategories = ( "Actor Tick", Rendering, Replication, Input, Actor ) )
 class FACTORYGAME_API AFGGamePhaseManager : public AFGSubsystem, public IFGSaveInterface
@@ -130,6 +132,10 @@ public:
 	/** gets the game phase number */
 	UFUNCTION( BlueprintPure, Category = "Progression" )
 	EGamePhase GetGamePhaseForTechTier( int32 techTier );
+
+	/** gets the tehc tiers for the given game phase */
+	UFUNCTION( BlueprintPure, Category = "Progression" )
+	void GetTechTiersForGamePhase( EGamePhase gamePhase, TArray<int32>& out_techTiers ) const;
 	
 	/** Returns the cost for the passed game phase */
 	UFUNCTION( BlueprintCallable, Category = "Progression" )
@@ -147,6 +153,10 @@ public:
 	UFUNCTION()
 	void OnRep_GamePhase();
 
+	/** Rep notify for mGamePhase */
+	UFUNCTION()
+	void OnRep_GamePhaseCosts();
+
 	/** Debug */
 	void Debug_DumpStateToLog();
 
@@ -154,6 +164,11 @@ public:
 	void ResetGamePhase();
 
 	int32 GetLastTechTierForGamePhase(EGamePhase phase) const;
+
+	/** Broadcast a notification when we pay something of on a game phase*/
+	UPROPERTY( BlueprintAssignable, Category = "Progression" )
+	FOnPayOffOnGamePhase mOnPayOffOnGamePhase;
+	
 protected:
 	/** Current GamePhase */
 	UPROPERTY( EditDefaultsOnly, SaveGame, ReplicatedUsing = OnRep_GamePhase, Category = "Progression" )
@@ -164,7 +179,7 @@ protected:
 	TArray< FPhaseTierInfo > mGamePhaseTierInfo;
 
 	/** Speciefies what the different tiers cost */
-	UPROPERTY( EditDefaultsOnly, SaveGame, Replicated, Category = "Progression" )
+	UPROPERTY( EditDefaultsOnly, SaveGame, ReplicatedUsing = OnRep_GamePhaseCosts, Category = "Progression" )
 	TArray< FPhaseCost > mGamePhaseCosts;
 public: 
 	/** Called when the game phase is updated */

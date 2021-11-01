@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSettings.h"
 #include "Resources/FGItemDescriptor.h"
 #include "Resources/FGResourceNode.h"

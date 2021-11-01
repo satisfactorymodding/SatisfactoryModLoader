@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGRailroadVehicleMovementComponent.h"
 #include "FGLocomotiveMovementComponent.generated.h"
 
@@ -26,28 +27,17 @@ USTRUCT()
 struct FReplicatedRailroadVehicleState
 {
 	GENERATED_USTRUCT_BODY()
-
-	// input replication: steering
+	
 	UPROPERTY()
 	int32 ReverserInput;
-
-	// input replication: steering
-	UPROPERTY()
-	float SteeringInput;
-
-	// input replication: throttle
 	UPROPERTY()
 	float ThrottleInput;
-
-	// input replication: dynamic brakes
 	UPROPERTY()
 	float DynamicBrakeInput;
-
-	// input replication: air brakes
 	UPROPERTY()
 	float AirBrakeInput;
-
-	//@todotrains Tooot input
+	UPROPERTY()
+	bool HornInput;
 };
 
 USTRUCT()
@@ -87,9 +77,10 @@ struct FACTORYGAME_API FRailroadVehicleInputRate
 UCLASS()
 class FACTORYGAME_API UFGLocomotiveMovementComponent : public UFGRailroadVehicleMovementComponent
 {
-	GENERATED_UCLASS_BODY()
-	
+	GENERATED_BODY()
 public:
+	UFGLocomotiveMovementComponent();
+	
 	// Begin UActorComponent Interface
 	virtual void TickComponent( float dt, enum ELevelTick tickType, FActorComponentTickFunction *thisTickFunction ) override;
 	// End UActorComponent Interface
@@ -119,13 +110,16 @@ public:
 	void SetThrottleInput( float throttle );
 
 	/**
-	 * Set the user input for the vehicle steering
-	 * Negative: Flip turnout ahead to the right.
-	 * Positive: Flip turnout ahead to the left.
+	 * Set the user input for the vehicle steering.
+	 *
+	 * Negative: Flip turnout ahead one step to the left.
+	 * Positive: Flip turnout ahead one step to the right.
 	 * Zero: Do nothing and go with the flow.
+	 *
+	 * This input is consumed so if a non-zero value is set it is back to zero next frame.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Movement" )
-	void SetSteeringInput( float steering );
+	void SetSteeringInput( int32 steering );
 
 	/** Set the user input for air brakes (handbrake). */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Movement" )
@@ -135,6 +129,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Movement" )
 	void SetEmergencyBrake();
 
+	/** Choo choo */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Movement" )
+	void SetHornInput( bool horn );
+
 	/** Returns the value of the reverser control. @see SetReverserInput */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
 	FORCEINLINE int32 GetReverser() const { return mReverserInput; }
@@ -142,6 +140,15 @@ public:
 	/** Get the throttle value in range [0,1]. This is not the same as the raw data passed to SetThrottleInput */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
 	FORCEINLINE float GetThrottle() const { return mThrottleInput; }
+
+	/**
+	 * Get the requested direction from the player to put the switch in, @see SetSteeringInput.
+	 *
+	 * @param clear Clear the input when reading it.
+	 * 
+	 * @return the steering input.
+	 */
+	int32 GetSteering( bool clear );
 	
 	/** Get the amount of pressure applied to the air brakes in range [0,1]. This is the trains version of hand brake. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -154,10 +161,14 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
 	FORCEINLINE float GetDynamicBrake() const { return mDynamicBrakeInput; }
 
+	/** Get the horn input, is the horn sounding or not? */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
+	FORCEINLINE bool GetHornInput() const { return mHornInput; }
+
 	/** Get the power factor this locomotive needs to run. */
 	float GetTractiveEffortPct() const { return FMath::Abs( mTargetTractiveEffort ) / mMaxTractiveEffort; }
 	/** Get the power factor this locomotive can return to the grid. */
-	float GetDynamicBrakingEffortPct() const { return FMath::Abs( mDynamicBrakingForce ) / mMaxDynamicBrakingEffort; }
+	float GetRegenerativePowerFactor() const;
 	/** Set the actual power factor that we got. */
 	void SetTractivePowerFactor( float factor ) { mPowerFactor = factor; }
 	
@@ -174,8 +185,11 @@ protected:
 		return kNToN( MToCm( mTractiveEffortCurve.GetRichCurveConst()->Eval( CmSToKmH( atSpeed ) ) ) );
 	}
 
-	/** Compute steering input */
-	float CalcSteeringInput();
+	/** Get dynamic braking force at the given speed. [N] [kg cm/s^2] */
+	FORCEINLINE float CalcRegenerativePowerFactor( float atSpeed ) const
+	{
+		return mRegenerativePowerCurve.GetRichCurveConst()->Eval( CmSToKmH( atSpeed ) );
+	}
 
 	/** Compute dynamic brake input */
 	float CalcDynamicBrakeInput();
@@ -194,7 +208,7 @@ protected:
 
 	/** Pass current state to server */
 	UFUNCTION( Reliable, Server, WithValidation )
-	void ServerUpdateState( int32 inReverserInput, float inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput );
+	void ServerUpdateState( int32 inReverserInput, int32 inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput, bool inHornInput );
 
 	/** Update the clients state from the replicated state */
 	UFUNCTION()
@@ -218,7 +232,7 @@ protected:
 
 	// What the player has the steering set to. Range -1...1
 	UPROPERTY( Transient )
-	float mRawSteeringInput;
+	int32 mRawSteeringInput;
 
 	// What the player has the accelerator set to. Range -1...1
 	UPROPERTY( Transient )
@@ -231,6 +245,10 @@ protected:
 	// What the air brake input is set to.
 	UPROPERTY( Transient )
 	float mRawAirBrakeInput;
+
+	// What the honk input is set to.
+	UPROPERTY( Transient )
+	bool mRawHornInput;
 
 	// Rate at which input throttle can rise and fall.
 	UPROPERTY( EditAnywhere, Category = "VehicleInput", AdvancedDisplay )
@@ -268,6 +286,10 @@ protected:
 	UPROPERTY( Transient )
 	float mDynamicBrakeInput;
 
+	// Are going choo choo?
+	UPROPERTY( Transient )
+	bool mHornInput;
+
 	/** The maximum tractive force [kN] [kg m/s^2 * 1000] that can be delivered at a given speed [km/h]. */
 	UPROPERTY( EditAnywhere, Category = "VehicleSetup" )
 	FRuntimeFloatCurve mTractiveEffortCurve;
@@ -278,6 +300,10 @@ protected:
 	/** The maximum dynamic braking force [kN] [kg m/s^2 * 1000] that can be delivered at a given speed [km/h]. */
 	UPROPERTY( EditAnywhere, Category = "VehicleSetup" )
 	FRuntimeFloatCurve mDynamicBrakingEffortCurve;
+
+	/** How much of the power is given back [0,1] to the grid at a given speed [km/h] when using the dynamic brakes. */
+	UPROPERTY( EditAnywhere, Category = "VehicleSetup" )
+	FRuntimeFloatCurve mRegenerativePowerCurve;
 
 	/** How much power do we get [0,1] */
 	float mPowerFactor;

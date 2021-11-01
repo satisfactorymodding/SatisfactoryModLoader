@@ -7,3 +7,4 @@ void AFGBuildableLightsControlPanel::SetLightEnabled(bool isEnabled){ }
 void AFGBuildableLightsControlPanel::SetLightControlData(FLightSourceControlData data){ }
 bool AFGBuildableLightsControlPanel::IsLightEnabled() const{ return bool(); }
 FLightSourceControlData AFGBuildableLightsControlPanel::GetLightControlData() const{ return FLightSourceControlData(); }
+void AFGBuildableLightsControlPanel::OnRep_IsEnabled(){ }

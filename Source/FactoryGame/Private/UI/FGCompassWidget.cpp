@@ -2,7 +2,13 @@
 
 #include "UI/FGCompassWidget.h"
 
-UFGCompassWidget::UFGCompassWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGCompassWidget::UFGCompassWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mCompassPanel = nullptr;
+	this->mContentPanel = nullptr;
+	this->mCompassLine = nullptr;
+	this->mThresholdForCenteredObjects = 0.3;
+	this->mThresholdForCenteredResourceObjects = 0.5;
+}
 void UFGCompassWidget::NativeConstruct(){ }
 void UFGCompassWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
 void UFGCompassWidget::Destruct(){ }

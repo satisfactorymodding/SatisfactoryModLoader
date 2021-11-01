@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "FGPipelineAttachmentHologram.generated.h"
@@ -36,13 +37,18 @@ public:
 	virtual bool DoMultiStepPlacement( bool isInputFromARelease ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
+	virtual float GetHologramHoverHeight() const override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	// End AFGHologram Interface
+
+	// Begin AFGBuildableHologram Interface
+	virtual bool ShouldBuildableBeConsideredForGuidelines( class AFGBuildable* buildable ) const override;
+	// End AFGBuildableHologram Interface
 
 protected:
 	// Begin AFGHologram interface
 	virtual void ScrollRotate( int32 delta, int32 step ) override;
 	virtual int32 GetRotationStep() const override;
-	virtual void CheckClearance() override;
 	// End of AFGHologram interface
 
 	// Begin AFGBuildableHologram Interface

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Engine/EngineBaseTypes.h"
 #include "FactoryTick.generated.h"
 

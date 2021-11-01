@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGSaveSystem.h"
 #include "FGAdminInterface.generated.h"
@@ -38,6 +39,10 @@ public:
 	/** Load a game on this or host machine */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Admin" )
 	void LoadGame( bool locally, const FSaveHeader& save );
+
+	/** Tries to find a save file header with the same name as the given saveGameName and lods it. Should only be used for dev work and tools */
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Admin" )
+	void LoadGameByName( const FString& saveGameName );
 
 	/** Returns the list of saves */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|Admin" )

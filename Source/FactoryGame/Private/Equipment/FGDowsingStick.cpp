@@ -4,9 +4,5 @@
 
 AFGDowsingStick::AFGDowsingStick() : Super() {
 	this->mNumVolumesPerTick = 20;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = false; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bOnlyRelevantToOwner = true;
-	this->bNetUseOwnerRelevancy = true;
-	this->SetReplicates(true);
 }
 void AFGDowsingStick::Tick(float DeltaSeconds){ }

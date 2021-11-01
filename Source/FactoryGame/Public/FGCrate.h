@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGInteractActor.h"
 #include "FGSaveInterface.h"
+#include "FGActorRepresentationInterface.h"
 #include "FGCrate.generated.h"
 
 UENUM( BlueprintType )
@@ -18,7 +20,7 @@ enum class EFGCrateIconType : uint8
  * @todo Comment me please!
  */
 UCLASS()
-class FACTORYGAME_API AFGCrate : public AFGInteractActor, public IFGSaveInterface
+class FACTORYGAME_API AFGCrate : public AFGInteractActor, public IFGSaveInterface, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 public:
@@ -42,6 +44,27 @@ public:
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
 
+	// Begin IFGActorRepresentationInterface
+	virtual bool AddAsRepresentation() override;
+	virtual bool UpdateRepresentation() override;
+	virtual bool RemoveAsRepresentation() override;
+	virtual bool IsActorStatic() override;
+	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
+	virtual class UTexture2D* GetActorRepresentationTexture() override;
+	virtual FText GetActorRepresentationText() override;
+	virtual void SetActorRepresentationText( const FText& newText ) override;
+	virtual FLinearColor GetActorRepresentationColor() override;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	virtual float GetActorFogOfWarRevealRadius() override;
+	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	// End IFGActorRepresentationInterface
+
 	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
 	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
 
@@ -61,6 +84,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Compass" )
 	void OnRequestReprecentMarker();
 
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	FLinearColor GetDefaultRepresentationColor();
+
 	void SetIconType( EFGCrateIconType type );
 private:
 	/** The inventory of this crate */
@@ -74,5 +101,12 @@ private:
 protected:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Compass" )
 	EFGCrateIconType mIconType;
+
+private:
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	class UTexture2D* mActorRepresentationTexture;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	FText mMapText;
 
 };

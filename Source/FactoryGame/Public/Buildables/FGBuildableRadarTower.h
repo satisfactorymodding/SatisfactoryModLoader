@@ -2,7 +2,9 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildableFactory.h"
+#include "FGActorRepresentationInterface.h"
 #include "FGBuildableRadarTower.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FRadarTowerRadiusUpdated );
@@ -12,7 +14,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogRadarTower, Log, All );
  * Radar Tower reveals nearby fog of war on the Map. Expanding over time until it reaches its max limit.
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildableRadarTower : public AFGBuildableFactory
+class FACTORYGAME_API AFGBuildableRadarTower : public AFGBuildableFactory, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 
@@ -21,6 +23,27 @@ class FACTORYGAME_API AFGBuildableRadarTower : public AFGBuildableFactory
 public:
 	// Replication
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+
+	// Begin IFGActorRepresentationInterface
+	virtual bool AddAsRepresentation() override;
+	virtual bool UpdateRepresentation() override;
+	virtual bool RemoveAsRepresentation() override;
+	virtual bool IsActorStatic() override;
+	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
+	virtual class UTexture2D* GetActorRepresentationTexture() override;
+	virtual FText GetActorRepresentationText() override;
+	virtual void SetActorRepresentationText( const FText& newText ) override;
+	virtual FLinearColor GetActorRepresentationColor() override;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	virtual float GetActorFogOfWarRevealRadius() override;
+	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	// End IFGActorRepresentationInterface
 	
 	// Begin Actor Interface
 #if WITH_EDITOR
@@ -60,6 +83,22 @@ public:
 	/** Returns a normalized value for how much we will have revealed of the max reveal radius on a certain step */
 	UFUNCTION( BlueprintPure, Category = "Radar Tower" )
 	float GetNormalizedProgressValueForStep( int32 step );
+
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	FLinearColor GetDefaultRepresentationColor();
+
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	void SetRepresentationText( const FText& text );
+
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	FText GetRepresentationText();
+
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	float GetTowerHeight();
 
 private:
 
@@ -106,5 +145,8 @@ private:
 	/** Time left until we expand the reveal area  */
 	UPROPERTY( Replicated, SaveGame )
 	float mTimeToNextExpansion;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	class UTexture2D* mActorRepresentationTexture;
 
 };

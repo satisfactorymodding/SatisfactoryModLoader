@@ -18,10 +18,22 @@ void AFGRiver::BuildRiverFromData(const UObject* WorldContext, TSubclassOf<AFGRi
 #endif 
 AFGRiver::AFGRiver() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("RiverSpline"));
-	this->RootComponent = this->mSplineComponent;
-	this->mSegmentLengthMultiplier = 1;
-	this->mVolumePrecision = 1000;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
+	this->mSplineMesh = nullptr;
+	this->mSegmentLengthMultiplier = 1.0;
+	this->mVolumePrecision = 1000.0;
+	this->mDefaultFlowRate = 0.0;
+	this->mBaseMaterial = nullptr;
+	this->BuoyancyScale.X = 0.0;
+	this->BuoyancyScale.Y = 0.0;
+	this->BuoyancyMaxIntensity = 0.0;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
+	this->RootComponent = mSplineComponent;
 }
 void AFGRiver::BeginPlay(){ }
 void AFGRiver::OnConstruction(const FTransform & Transform){ }

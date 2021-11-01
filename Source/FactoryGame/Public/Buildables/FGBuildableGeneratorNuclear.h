@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableGeneratorFuel.h"
 #include "Replication/FGReplicationDetailActor_GeneratorNuclear.h"
@@ -59,9 +60,6 @@ protected:
 	/** Try to produce nuclear waste and put it in the output inventory */
 	void TryProduceWaste();
 
-public: // MODDING EDIT accessor
-	FORCEINLINE class UFGInventoryComponent* GetWasteInventoryAccessor() const { return GetWasteInventory(); };
-protected:
 	/** Returns the inventory for waste in the nuclear generator */
 	UFUNCTION( BlueprintPure, Category = "Nuclear" )
 	FORCEINLINE class UFGInventoryComponent* GetWasteInventory() const { return mOutputInventoryHandler->GetActiveInventoryComponent(); }
@@ -83,7 +81,6 @@ private:
 	 */
 	bool CanFitWasteOfNextFuelClass() const;
 
-public: //MODDING EDIT public
 	/** Spent fuel rods goes here. */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mOutputInventory;

@@ -4,6 +4,7 @@
 
 void UFGDynamicOptionsRow::NativePreConstruct(){ }
 void UFGDynamicOptionsRow::InitOptionRow(FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass){ }
+void UFGDynamicOptionsRow::AddSubOption(UFGDynamicOptionsRow* dynamicOptionsRow){ }
 bool UFGDynamicOptionsRow::IsPendingApply(){ return bool(); }
 bool UFGDynamicOptionsRow::IsPendingRestart(){ return bool(); }
 void UFGDynamicOptionsRow::OnOptionApplied(){ }

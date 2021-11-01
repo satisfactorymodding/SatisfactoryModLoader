@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
@@ -48,17 +49,17 @@ public:
 		switch (Format)
 		{
 		case EPixelFormat::PF_B8G8R8A8:
-			return sizeof( UINT8 );
+			return sizeof( uint8 );
 
 		case EPixelFormat::PF_A16B16G16R16:
-			return sizeof( UINT16 );
+			return sizeof( uint16 );
 
 		case EPixelFormat::PF_A32B32G32R32F:
 			return sizeof( float );
 
 		default:
 			// UNSUPPORTED
-			check(false);
+			fgcheck(false);
 			return -1;
 		} 
 	}
@@ -89,7 +90,7 @@ public:
 
 			default:
 				// UNSUPPORTED
-				check(false);
+				fgcheck(false);
 				return -1;
 		}
 	}	

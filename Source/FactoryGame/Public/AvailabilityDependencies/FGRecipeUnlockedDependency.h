@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "AvailabilityDependencies/FGAvailabilityDependency.h"
 #include "FGRecipeUnlockedDependency.generated.h"

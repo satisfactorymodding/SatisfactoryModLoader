@@ -28,5 +28,7 @@ void AFGCrashSiteDebris::SpawnSavedSimulation(){ }
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-AFGCrashSiteDebris::AFGCrashSiteDebris(){ }
+AFGCrashSiteDebris::AFGCrashSiteDebris() : Super() {
+
+}
 AFGCrashSiteDebris::~AFGCrashSiteDebris(){ }

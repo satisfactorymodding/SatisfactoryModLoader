@@ -2,16 +2,31 @@
 
 #include "FGDestructiveProjectile.h"
 #include "Components/SphereComponent.h"
+#include "DamageTypes/FGDamageType.h"
 
 AFGDestructiveProjectile::AFGDestructiveProjectile() : Super() {
-	this->mDestructionCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("DestructionSphere")); this->mDestructionCollisionComp->SetupAttachment(this->GetCollisionSphere());
+	this->mDestructionCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("DestructionSphere"));
 	this->mDestroysRelevantActors = true;
 	this->mDestroysFoliage = true;
 	this->mMaxParticleSpawnsPerDetonation = 30;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicatingMovement(true);
-	this->SetReplicates(true);
-	this->InitialLifeSpan = 3;
+	this->mProjectileData.ProjectileClass = nullptr;
+	this->mProjectileData.ProjectileLifeSpan = 10.0;
+	this->mProjectileData.ProjectileStickSpan = 5.0;
+	this->mProjectileData.ExplosionDamage = 100;
+	this->mProjectileData.ExplosionRadius = 300.0;
+	this->mProjectileData.ImpactDamage = 0;
+	this->mProjectileData.ShouldExplodeOnImpact = true;
+	this->mProjectileData.CanTriggerExplodeBySameClass = true;
+	this->mProjectileData.ExplodeAtEndOfLife = false;
+	this->mProjectileData.DamageType = UFGDamageType::StaticClass();
+	this->mProjectileData.DamageTypeExplode = UFGDamageType::StaticClass();
+	this->mProjectileData.DamageFalloffCurve.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mProjectileData.DamageFalloffCurve.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mProjectileData.DamageFalloffCurve.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mProjectileData.DamageFalloffCurve.ExternalCurve = nullptr;
+	this->mProjectileData.EffectiveRange = 0.0;
+	this->mProjectileData.WeaponDamageMultiplier = 1.0;
+	this->mDestructionCollisionComp->SetupAttachment(GetCollisionSphere());
 }
 void AFGDestructiveProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGDestructiveProjectile::BeginPlay(){ }

@@ -15,9 +15,15 @@ void UFGRecipe::SetProduct(TSubclassOf< UFGRecipe > recipe, TArray< FItemAmount 
 }
 #endif 
 UFGRecipe::UFGRecipe() : Super() {
-	this->mManufactoringDuration = 1;
-	this->mManualManufacturingMultiplier = 1;
-	this->mVariablePowerConsumptionFactor = 1;
+	this->mDisplayNameOverride = false;
+	this->mDisplayName = INVTEXT("");
+	this->mOverriddenCategory = nullptr;
+	this->mManufacturingMenuPriority = 0.0;
+	this->mManufactoringDuration = 1.0;
+	this->mManualManufacturingMultiplier = 1.0;
+	this->mMaterialCustomizationRecipe = nullptr;
+	this->mVariablePowerConsumptionConstant = 0.0;
+	this->mVariablePowerConsumptionFactor = 1.0;
 }
 FText UFGRecipe::GetRecipeName(TSubclassOf< UFGRecipe > inClass) {
 	if (inClass)
@@ -74,11 +80,11 @@ bool UFGRecipe::HasAnyProducers(TSubclassOf< UFGRecipe > inClass){ return bool()
 bool UFGRecipe::IsRecipeAffordable( AFGCharacterPlayer* player, TSubclassOf<  UFGRecipe > recipe){ return bool(); }
 void UFGRecipe::SortByName(TArray< TSubclassOf< UFGRecipe > >& recipes){ }
 void UFGRecipe::SortByManufacturingMenuPriority(TArray< TSubclassOf< UFGRecipe > >& recipes){ }
+TSubclassOf< class UFGCustomizationRecipe > UFGRecipe::GetMaterialCustomizationRecipe(TSubclassOf< UFGRecipe > recipe){ return TSubclassOf<class UFGCustomizationRecipe>(); }
 TSubclassOf< class UFGItemDescriptor > UFGRecipe::GetDescriptorForRecipe(TSubclassOf<  UFGRecipe > recipe){ return TSubclassOf<class UFGItemDescriptor>(); }
 TArray< EEvents > UFGRecipe::GetRelevantEvents(TSubclassOf< UFGRecipe > inClass){ return TArray<EEvents>(); }
 FText UFGRecipe::GetDisplayName() const{ return FText(); }
 void UFGRecipe::GetProducedIn(TArray< TSubclassOf< UObject > >& out_producedIn) const {
 	out_producedIn = UFGRecipe::GetProducedIn(this->GetClass());
 }
-EHologramSplinePathMode UFGRecipe::GetLastSplineMode(){ return EHologramSplinePathMode(); }
-void UFGRecipe::SetLastSplineMode(EHologramSplinePathMode mode){ }
+bool UFGRecipe::IsProducedIn(TSubclassOf<  UFGRecipe > inClass, TSubclassOf< UObject > inProducer){ return bool(); }

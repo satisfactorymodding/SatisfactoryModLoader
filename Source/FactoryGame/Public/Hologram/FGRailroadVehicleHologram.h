@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGVehicleHologram.h"
 #include "FGRailroadSubsystem.h"
 #include "FGRailroadVehicleHologram.generated.h"

@@ -2,11 +2,13 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "Equipment/FGEquipment.h"
 #include "FGRecipeProducerInterface.h"
 #include "Equipment/FGEquipmentAttachment.h"
 #include "Inventory.h"
+#include "FGFactoryColoringTypes.h"
 #include "FGBuildGun.generated.h"
 
  /**
@@ -19,12 +21,22 @@ enum class EBuildGunState : uint8
 	BGS_MENU		= 1		UMETA( DisplayName = "Menu" ),
 	BGS_BUILD		= 2		UMETA( DisplayName = "Build" ),
 	BGS_DISMANTLE	= 3		UMETA( DisplayName = "Dismantle" ),
-	BGS_MAX			= 4		UMETA( Hidden )
+	BGS_PAINT		= 4		UMETA( DisplayName = "Paint" ),
+	BGS_MAX			= 5		UMETA( Hidden )
+};
+
+UENUM( BlueprintType )
+enum class EMenuStateSection : uint8
+{
+	MSS_NONE		= 0,
+	MSS_BUILD		= 1,
+	MSS_CUSTOMIZE	= 2
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildGunStateChanged, EBuildGunState, newState );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildGunRecipeChanged, TSubclassOf< class UFGRecipe >, newRecipe );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRecipeSampled, TSubclassOf< class UFGRecipe >, newRecipe );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCustomizationsSampled, TArray< TSubclassOf< class UFGFactoryCustomizationDescriptor > >, newCustomizations );
 
 
 /**
@@ -101,6 +113,9 @@ public:
 	/** If true, then the building is valid to sample in this state */
 	virtual bool IsValidBuildingSample( class AFGBuildable* buildable ) const;
 
+	/** If true, then this vehicle should be able to be sampled */
+	virtual bool IsValidVehicleSample( class AFGVehicle* vehicle ) const;
+
 	/**
 	 * We have sampled a new recipe
 	 */
@@ -110,6 +125,12 @@ public:
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
 	void BuildSampleRelease();
+
+	/**
+	 * We have sampled customizations
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState|Paint" )
+	void OnCustomizationsSampled( TArray< TSubclassOf< class UFGFactoryCustomizationDescriptor > >& newCustomizations );
 
 	/** Redirected from the build gun. */
 	UFUNCTION( BlueprintNativeEvent, Category = "BuildGunState" )
@@ -174,6 +195,10 @@ public:
 protected:
 	/** If true, then we can sample buildings in this state */
 	bool mCanSampleBuildingsInState;
+
+	/** If true, the we can sample customizations in this state */
+	bool mCanSampleCustomizationsInState;
+
 private:
 	/** Time (in seconds) it takes for the action (eg. Build, dismantle) */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGunState" )
@@ -221,7 +246,7 @@ public:
 	 * @param out_recipes Returns all recipes available to this build gun.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun|Recipe" )
-	void GetAvailableRecipes( TArray< TSubclassOf< class UFGRecipe > >& out_recipes ) const;
+	void GetAvailableRecipes( TArray< TSubclassOf< class UFGRecipe > >& out_recipes, TArray < TSubclassOf< UFGCustomizationRecipe > >& out_customizationRecipes ) const;
 
 	/** Convenience function to get the cost for a recipe. */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun|Recipe" )
@@ -269,6 +294,8 @@ public:
 	void OnSnapToGuideLinesReleased();
 	void OnDismantleToggleMultiSelectStatePressed();
 	void OnDismantleToggleMultiSelectStateReleased();
+	void OnDismantleToggleSpecifedSelectStatePressed();
+	void OnDismantleToggleSpecifedSelectStateReleased();
 	void OnBuildSamplePressed();
 	void OnBuildSampleReleased();
 
@@ -299,13 +326,43 @@ public:
 
 	/**
 	 * (Simulated)
+	 * Set the build gun in painting mode with the specific paint params
+	 * @note Must be called on the local player.
+	 * @param customizationRecipe The Descriptor to apply
+	 * @param clearCache If true, remove all existing customizations before adding those passed in via customizationDescriptors
+	 */
+	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
+	void GotoPaintState( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe, bool clearCache = false );
+
+	/**
+	 * (Simulated)
 	 * Set the build gun in dismantling mode.
 	 * @note Must be called on the local player.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
 	void GotoDismantleState();
 
+	/** Updates the gamestate slot data for a given index */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|BuildGunPaint" )
+	void SetCustomizationDataForSlot( uint8 slotIndex, FFactoryCustomizationColorSlot slotData );
+
+	/** Server call for clients to set the slot data */
+	UFUNCTION( Server, Reliable )
+	void Server_SetCustomizationDataForSlot( uint8 slotIndex, FFactoryCustomizationColorSlot slotData );
+
 	void SetAllowRayCleranceHit( bool allow );
+	
+	/** Set the state to enter on the next equip */
+	void SetPendingEntryState( EBuildGunState state );
+
+	/** Set the desired menu section when opening the buildmenu (Build/Customize) */
+	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
+	void SetDesiredMenuStateSection( EMenuStateSection desiredSection ) { mDesiredMenuStateSection = desiredSection; }
+
+	/** Gets the desired menu section to display when openinging the build men (Build/Customize) */
+	UFUNCTION( BlueprintPure, Category = "BuildGun" )
+	EMenuStateSection GetDesiredMenuStateSection() { return mDesiredMenuStateSection; }
+	
 protected:
 	/** Add custom bindings for this equipment */
 	virtual void AddEquipmentActionBindings() override;
@@ -337,6 +394,10 @@ private:
 	/** Lets the server switch to build state. */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_GotoBuildState( TSubclassOf< class UFGRecipe > recipe );
+
+	/** Lets the server switch to paint state. */
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_GotoPaintState( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe );
 
 	/**
 	 * (Simulated)
@@ -370,6 +431,10 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "BuildGun|Recipe" )
 	FOnRecipeSampled mOnRecipeSampled;
 
+	/** Called when the build gun have sampled customizations */
+	UPROPERTY( BlueprintAssignable, Category = "BuildGun|Paint" )
+	FOnCustomizationsSampled mOnCustomizationsSampled;
+
 protected:
 	/** Trace distance for this build gun when building and dismantling. */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGun" )
@@ -387,6 +452,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGun|State" )
 	TSubclassOf< class UFGBuildGunStateDismantle > mDismantleStateClass;
 
+	/** The state to use when painting (applying color, patterns, etc.) */
+	UPROPERTY( EditDefaultsOnly, Category = "BuildGun|State" )
+	TSubclassOf< class UFGBuildGunStatePaint > mPaintStateClass;
+
 	bool mAllowCleranceRayHits = false;
 
 private:
@@ -396,6 +465,9 @@ private:
 
 	/** State to enter on the next equip. */
 	EBuildGunState mPendingEntryState;
+
+	/** Menu section to show when entering the menu */
+	EMenuStateSection mDesiredMenuStateSection;
 
 	/** Result of the latest trace. */
 	UPROPERTY()

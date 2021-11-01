@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "FGAmbientSettings.generated.h"
 

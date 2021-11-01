@@ -2,4 +2,6 @@
 
 #include "UI/FGOnScreenCallWidget.h"
 
+void UFGOnScreenCallWidget::StartCall(TSubclassOf<  UFGAudioMessage > message){ }
 void UFGOnScreenCallWidget::AnswerCall(){ }
+void UFGOnScreenCallWidget::DeclineCall(){ }

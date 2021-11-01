@@ -3,7 +3,11 @@
 #include "AI/FGAttack.h"
 
 UFGAttack::UFGAttack() : Super() {
-	this->mAttackRange = 100;
+	this->mAttackMontage = nullptr;
+	this->mStopsMovement = false;
+	this->mAttackRange = 100.0;
+	this->mAttackActivationDistance = 0.0;
 	this->mDamage = 10;
-	this->mAttackAngle = 60;
+	this->mDamageType = nullptr;
+	this->mAttackAngle = 60.0;
 }

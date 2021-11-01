@@ -3,14 +3,17 @@
 #pragma once
 
 #include <type_traits>
+#include "FactoryGame.h"
 #include "GameFramework/PlayerState.h"
 #include "FGCharacterPlayer.h"
+#include "FGFactoryColoringTypes.h"
 #include "UI/Message/FGMessageBase.h"
 #include "FGActorRepresentation.h"
+#include "FGHotbarShortcut.h"
 #include "FGPlayerState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubclassOf< class UFGItemDescriptor >, itemDesc );
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHotbarUpdatedForMaterialDescriptor, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material >, materialDesc );
 DECLARE_DELEGATE( FOnHotbarReplicated );
 
 /**
@@ -99,6 +102,25 @@ struct FACTORYGAME_API FPresetHotbar
 	/** The hotbar shortcuts for this preset */
 	UPROPERTY( SaveGame, BlueprintReadOnly )
 	FHotbar Hotbar;
+};
+
+USTRUCT()
+struct FACTORYGAME_API FSubCategoryMaterialDefault
+{
+	GENERATED_BODY();
+
+	FSubCategoryMaterialDefault() {}
+	FSubCategoryMaterialDefault( TSubclassOf< class UFGCategory > cat, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > desc ) 
+	{
+		Category = cat;
+		MaterialDesc = desc;
+	}
+
+	UPROPERTY( SaveGame )
+	TSubclassOf< class UFGCategory > Category;
+
+	UPROPERTY( SaveGame )
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > MaterialDesc;
 };
 
 UCLASS()
@@ -211,9 +233,31 @@ public:
 	template< typename T >
 	T* CreateTypedShortcut( TSubclassOf<T> shortcutClass )
 	{
-		check( T::StaticClass()->IsChildOf( UFGHotbarShortcut::StaticClass() ) );
+		fgcheck( T::StaticClass()->IsChildOf( UFGHotbarShortcut::StaticClass() ) );
 		return Cast< T >( CreateShortcut( shortcutClass ) );
 	}
+
+	/** Gets or Creates, replacing what is there, for a given index in a hotbar */
+	template< typename T >
+	T* GetOrCreateShortcutOnHotbar( TSubclassOf<T> shortcutClass, FHotbar& hotbar, int32 index ) 
+	{ 
+		fgcheck( T::StaticClass()->IsChildOf( UFGHotbarShortcut::StaticClass() ) ); 
+		if( hotbar.HotbarShortcuts.IsValidIndex( index ) )
+		{
+			if( hotbar.HotbarShortcuts[ index ]->GetClass()->IsChildOf( shortcutClass ) )
+			{
+				return Cast<T>( hotbar.HotbarShortcuts[ index ] );
+			}
+			else
+			{
+				hotbar.HotbarShortcuts[ index ] = CreateTypedShortcut( shortcutClass );
+				return Cast<T>( hotbar.HotbarShortcuts[ index ] );
+			}
+		}
+
+		return nullptr;
+	}
+	
 
 	/** Get current shortcuts */
 	void GetCurrentShortcuts( TArray< class UFGHotbarShortcut* >& out_shortcuts );
@@ -260,8 +304,11 @@ public:
 	*/
 	bool CopyPresetHotbarToCurrentHotbar( int32 presetHotbarIndex );
 
-	/** Set the specified hotbar shortcut on the index if it's valid */
-	void SetRecipeShortcutOnIndex( TSubclassOf< class UFGRecipe > recipe, int32 onIndex );
+	/** Set the specified hotbar shortcut on the index if it's valid. Optionally pass the hotbar index to set a specific index on a specific hotbar. */
+	void SetRecipeShortcutOnIndex( TSubclassOf< class UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex = -1 );
+
+	/** Set the customization desc shortcut on the index if valid */
+	void SetCustomizationShortcutOnIndex( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe, int32 onIndex );
 
 	/** Get the current value of first time equipped and then sets the value to false. */
 	bool GetAndSetFirstTimeEquipped( class AFGEquipment* equipment );
@@ -387,6 +434,47 @@ public:
 
 	FORCEINLINE TArray< TSubclassOf< class UFGMapArea > >* GetPlayerVisitedAreas() { return &mVisitedAreas; };
 
+	/** Get the Custom Color Data for this player */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Custom Color" )
+	FORCEINLINE FFactoryCustomizationColorSlot GetCustomColorData() { return mCustomColorData; }
+
+	/** 
+	 * Sets the local color customization data. This color data is used when assigning a color with slot index INDEX_CUSTOM_COLOR_DATA (255)
+	 * Will remote call on server if called by non-authority 
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactorGame|Custom Color" )
+	void SetPlayerCustomizationSlotData( FFactoryCustomizationColorSlot customColorData );
+
+	/** Sets the user color data on the server. The server in turn will use this to color a building with the correct data when the player paints with their custom color */
+	UFUNCTION( Server, Reliable, Category = "FactoryGame|Custom Color" )
+	void Server_SetPlayerCustomizationSlotData( FFactoryCustomizationColorSlot customColorData );
+
+	/** Get the Users saved default material desc for a given category (can return null) */
+	UFUNCTION()
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > GetSavedMatDescForBuildableCategory( TSubclassOf< class UFGCategory > category, TSubclassOf< class UFGCategory > subCategory );
+
+	/** Sets a players default material desc for a given category. If called by client will trigger a server call to set it remotely */
+	UFUNCTION()
+	void SetSavedMatDescForBuildableCategory( TSubclassOf< class UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc, bool skipRep = false );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetSavedMatDescForBuildableCategory( TSubclassOf< class UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc );
+
+	/** Get the Users saved (global) default material desc for a given material category (can return null) */
+	UFUNCTION()
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > GetSavedMatDescForMaterialCategory( TSubclassOf< class UFGCategory > category );
+
+	/** Sets a players default material desc. If called by client will trigger a server call to set it remotely */
+	UFUNCTION()
+	void SetSavedMatDescForMaterialCategory( TSubclassOf< class UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc, bool updateHotbarShortcuts = false );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetSavedMatDescForMaterialCategory( TSubclassOf< class UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc );
+
+
+	UFUNCTION()
+	void UpdateHotbarShortcutsForMaterialDesc( TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > newDefaultMaterialDesc );
+
 protected:
 	// Client get notified that the hotbar has changed
 	UFUNCTION()
@@ -406,6 +494,10 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Build", DisplayName = "OnBuildableConstructed" )
 	FOnBuildableConstructedNew BuildableConstructedDelegate;
 
+	/** Broadcast when a player sets a default material customization desc */
+	UPROPERTY( BlueprintAssignable, Category = "Customization", DisplayName = "OnHotbarUpdatedForMaterialDescriptor" )
+	FOnHotbarUpdatedForMaterialDescriptor mOnHotbarUpdatedForMaterialDescriptor;
+
 	/** Broadcast if hotbar has been replicated */
 	FOnHotbarReplicated mOnHotbarReplicated;
 
@@ -421,6 +513,17 @@ protected:
 	/** The index of the current hotbar*/
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentHotbarIndex )
 	int32 mCurrentHotbarIndex;
+
+	/** Array of all set buildable categories and their default material desc */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< FSubCategoryMaterialDefault > mBuildableSubCategoryDefaultMatDesc;
+
+	/** 
+	 * Array of all set material categories and their default material desc. 
+	 * This acts as a global set. When we change this, we also update the mBuildableSubcategoryDefaultMatDesc array  
+	 */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< FSubCategoryMaterialDefault > mMaterialSubCategoryDefaultMatDesc;
 
 	/** Default recipes to have shortcuts to */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
@@ -452,6 +555,10 @@ protected:
 
 	UPROPERTY(SaveGame, Replicated)
 	TArray< TSubclassOf< class UFGMapArea > > mVisitedAreas;
+
+	UPROPERTY( SaveGame, Replicated )
+	FFactoryCustomizationColorSlot mCustomColorData;
+
 private:
 	/** Each local player has their own tutorial subsystem */
 	UPROPERTY( SaveGame )

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Resources/FGResourceNodeFrackingCore.h" // MODDING EDIT
+#include "FactoryGame.h"
 #include "Resources/FGResourceNode.h"
 #include "UObject/WeakObjectPtrTemplates.h"
 #include "FGResourceNodeFrackingSatellite.generated.h"

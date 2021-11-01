@@ -3,3 +3,4 @@
 #include "FGConstructDisqualifier.h"
 
 FText UFGConstructDisqualifier::GetDisqualifyingText(TSubclassOf< UFGConstructDisqualifier > inClass){ return FText(); }
+bool UFGConstructDisqualifier::GetIsSoftDisqualifier(TSubclassOf< UFGConstructDisqualifier > inClass){ return bool(); }

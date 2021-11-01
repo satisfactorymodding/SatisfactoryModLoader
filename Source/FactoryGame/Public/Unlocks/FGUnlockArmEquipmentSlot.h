@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Unlocks/FGUnlock.h"
 #include "FGUnlockArmEquipmentSlot.generated.h"

@@ -2,17 +2,17 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Equipment/FGBuildGun.h"
 #include "ItemAmount.h"
 #include "FGBuildableSubsystem.h"
 #include "FGConstructionMessageInterface.h"
-#include "Hologram/HologramSplinePathMode.h"
 #include "Delegates/DelegateCombinations.h"
 #include "FGBuildGunBuild.generated.h"
 
 
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FSplineModeChangedDelegate, EHologramSplinePathMode, newMode );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FBuildModeChangedDelegate, TSubclassOf<class UFGHologramBuildModeDescriptor>, newMode );
 
 USTRUCT()
 struct FConnectionRepresentation
@@ -39,30 +39,56 @@ struct FConnectionRepresentation
 };
 
 USTRUCT()
-struct FFactoryClearanceData
+struct FAttachmentPointRepresentation
 {
 	GENERATED_BODY()
 
-	FFactoryClearanceData() :
-		Factory( nullptr ),
-		ClearanceComponent( nullptr )
+	FAttachmentPointRepresentation() :
+		mAttachmentPoint( nullptr ),
+		mAttachmentRepresentation( nullptr )
 	{
 	}
 
-	FFactoryClearanceData( class AFGBuildableFactory* inFactory, class UStaticMeshComponent* inClearanceComponent ) :
-		Factory( inFactory ),
-		ClearanceComponent( inClearanceComponent )
+	FAttachmentPointRepresentation( const struct FFGAttachmentPoint* attachmentPoint, class UStaticMeshComponent* attachmentRepresentation ) :
+		mAttachmentPoint( attachmentPoint ),
+		mAttachmentRepresentation( attachmentRepresentation )
+	{
+	}
+
+	const struct FFGAttachmentPoint* mAttachmentPoint;
+
+	UPROPERTY()
+	class UStaticMeshComponent* mAttachmentRepresentation;
+};
+
+USTRUCT()
+struct FBuildableClearanceData
+{
+	GENERATED_BODY()
+
+	FBuildableClearanceData() :
+		Buildable( nullptr ),
+		ClearanceMeshComponent( nullptr )
+	{
+	}
+
+	FBuildableClearanceData( class AFGBuildable* inBuildable ) :
+		Buildable( inBuildable ),
+		ClearanceMeshComponent( nullptr )
 	{
 	}
 
 	UPROPERTY()
-	class AFGBuildableFactory* Factory;
+	class AFGBuildable* Buildable;
 
 	UPROPERTY()
-	class UStaticMeshComponent* ClearanceComponent;
+	class UStaticMeshComponent* ClearanceMeshComponent;
 
 	UPROPERTY()
 	TArray< FConnectionRepresentation > mConnectionComponents;
+
+	UPROPERTY()
+	TArray< FAttachmentPointRepresentation > mAttachmentPointMeshes;
 
 	uint8 ParticipatedInCleranceEncroachFrameCountDownLast = 0;
 };
@@ -81,7 +107,6 @@ public:
 
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual void PreNetReceive() override;
 
 	// Begin UFGBuildGunState
 	virtual void BeginState_Implementation() override;
@@ -99,6 +124,7 @@ public:
 	virtual void ChangeGuideLinesSnapMode_Implementation( bool enabled ) override;
 	virtual void BuildSampleRelease_Implementation() override;
 	virtual bool IsValidBuildingSample( class AFGBuildable* buildable ) const override;
+	virtual bool IsValidVehicleSample( class AFGVehicle* vehicle ) const override;
 	virtual void OnRecipeSampled_Implementation( TSubclassOf<class UFGRecipe> recipe ) override;
 	// End UFGBuildGunState
 
@@ -132,30 +158,41 @@ public:
     void Server_ChangeGuideLinesSnapMode( bool enabled );
 
 	/**Get a list of the currently supported build modes for the current hologram.*/
-	UFUNCTION(BlueprintCallable, Category = "SplineModeSelect")
-	TArray< EHologramSplinePathMode > GetSupportedSplineModes();
+	UFUNCTION(BlueprintCallable, Category = "BuildModeSelect")
+	TArray< TSubclassOf<class UFGHologramBuildModeDescriptor> > GetSupportedBuildModes();
 
-	/** Set the mode on the current hologram */
-	UFUNCTION( BlueprintCallable, Category = "SplineModeSelect" )
-	void SetActiveSplineMode( EHologramSplinePathMode mode );
+	UFUNCTION( BlueprintPure, Category = "BuildModeSelect" )
+	TSubclassOf<class UFGHologramBuildModeDescriptor> GetLastBuildModeForCategory( uint8 category, TSubclassOf< class AActor > actorClass );
+	
+	/** Set the build mode on the current hologram */
+	UFUNCTION( BlueprintCallable, Category = "BuildModeSelect" )
+	void SetCurrentBuildMode( TSubclassOf<class UFGHologramBuildModeDescriptor> mode );
 
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_SetCurrentBuildMode( TSubclassOf<class UFGHologramBuildModeDescriptor> mode );
 
-	UPROPERTY( BlueprintAssignable, Category = "SplineModeSelect", DisplayName = "OnSplineModeChanged" )
-	FSplineModeChangedDelegate OnSplineModeChangedDelegate;
+	UPROPERTY( BlueprintAssignable, Category = "BuildModeSelect", DisplayName = "OnBuildModeChanged" )
+	FBuildModeChangedDelegate OnBuildModeChangedDelegate;
 
 	/** Show the  mode selection UI */
-	UFUNCTION( BlueprintImplementableEvent, Category = "SplineModeSelect" )
-	void ShowSplineModeSelectUI();
+	UFUNCTION( BlueprintImplementableEvent, Category = "BuildModeSelect" )
+	void ShowBuildModeSelectUI();
 
 	/** Close the  mode selection UI */
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "SplineModeSelect" )
-	void CloseSplineModeSelectUI();
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "BuildModeSelect" )
+	void CloseBuildModeSelectUI();
+
+	/** Called whenever a hologram updates its zoop.
+	 * @param zoopSizePercentage - 0-1 value describing how far we have zooped.
+	 * @param zoopLocation - The location we're zooping to.
+	 */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Hologram" )
+	void OnZoopUpdated( float currentZoop, float maxZoop, const FVector& zoopLocation );
 
 
 	void HookUpUserSettings();
 
 protected:
-
 	
 	/** InternalExecuteDuBuildStepInput
 	 * Execute the actual build step logic. Called from primary fire, and sometimes from primary fire release
@@ -163,9 +200,8 @@ protected:
 	 */
 	 void InternalExecuteDuBuildStepInput(bool isInputFromARelease);
 
-	/** Called whenever the hologram is udpated **/
 	UFUNCTION()
-	void OnRep_Hologram();
+	void OnRep_CurrentHologramBuildMode();
 
 	/**
 	 * Resets any changes made to the hologram.
@@ -193,10 +229,6 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "BuildGunState|Build" )
 	void OnResetHologram();
 
-	/** Helper to notify the client. */
-	UFUNCTION( Client, Reliable )
-	void Client_OnResetHologram();
-
 	/** Helper to notify the client that something was built */
 	UFUNCTION( Client, Reliable )
 	void Client_OnBuildableConstructed( TSubclassOf< UFGItemDescriptor > desc );
@@ -222,14 +254,16 @@ private:
 	void ClearHologramScrollValues();
 	void RestoreHologramScrollValues(AFGHologram* hologram);
 
+	UFUNCTION( Server, Reliable, WithValidation )
+	void Server_SaveHologramScrollValues( const TArray< int32 >& scrollValues );
+
 	AFGHologram* InternalSpawnHologram();
 
 	UFUNCTION()
-	void BeginClearanceOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult );
+	void BeginClearanceDetectorOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult );
 
 	UFUNCTION()
-	void EndClearanceOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex );
-
+	void EndClearanceDetectorOverlap( UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex );
 
 	UFUNCTION()
 	void OnUserSettingsUpdated();
@@ -241,11 +275,11 @@ private:
 	float mPrimaryFireHoldTime = -1;
 
 	/** stores a time we have held the mode select button for. Used so we can detect if it's a hold or tap, to show the menu or not*/
-	float mSplineModeSelectHoldTime = -1; //@TODO:[DavalliusA:Thu/28-11-2019] consider using a game time stamp instead so we don't have to rely on tick to update this
+	float mBuildModeSelectHoldTime = -1; //@TODO:[DavalliusA:Thu/28-11-2019] consider using a game time stamp instead so we don't have to rely on tick to update this
 
 	/** Time needed to hold down the key to show the selection UI */
-	UPROPERTY( EditDefaultsOnly, Category = "SplineModeSelect" )
-	float mSplineModeSelectHoldDownDurationForUI = 0.18f;
+	UPROPERTY( EditDefaultsOnly, Category = "BuildModeSelect" )
+	float mBuildModeSelectHoldDownDurationForUI = 0.18f;
 
 
 	/** True if we are waiting for the selection UI */
@@ -280,8 +314,17 @@ private:
 	UPROPERTY()
 	TSubclassOf< class UFGRecipe > mActiveRecipe;
 
-	/** The hologram that the client had before changing it's hologram due to replication, no UPROPERTY as it should only live from PreNetReceive to OnRep_Hologram */
-	class AFGHologram* mInternalClientHologram;
+	/**
+	 * Used to replicate the current build mode of the hologram, since the hologram is only simulated and not replicated on other clients. 
+	 */
+	UPROPERTY( ReplicatedUsing = OnRep_CurrentHologramBuildMode )
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mCurrentHologramBuildMode;
+
+	/** Map used to cache the last used build modes for different categories (keys). */
+	TMap< uint8, TSubclassOf< class UFGHologramBuildModeDescriptor > > mLastUsedCategoryBuildmodes;
+
+	/** Map used to cache the last used build modes for different actor class types. */
+	TMap< TSubclassOf< class AActor >, TSubclassOf< class UFGHologramBuildModeDescriptor > > mLastUsedActorBuildmodes;
 
 	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** The hologram to build. */
@@ -299,7 +342,7 @@ private:
 	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** Contains all the proximate clearances volumes */
 	UPROPERTY()
-	TArray< FFactoryClearanceData > mProximateClearances;
+	TArray< FBuildableClearanceData > mProximateClearances;
 
 	//@TODO:[DavalliusA:Wed/20-11-2019] should these not be marked as transient?
 	/** Component that finds close clearances of nearby buildings and visualize them */

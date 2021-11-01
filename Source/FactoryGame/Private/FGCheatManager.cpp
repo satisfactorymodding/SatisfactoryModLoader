@@ -35,8 +35,10 @@ void UFGCheatManager::GivePrototypeSchematics(){ }
 void UFGCheatManager::GiveStorySchematics(){ }
 void UFGCheatManager::GiveStartingResearch(){ }
 void UFGCheatManager::GiveAllResearchTrees(){ }
-void UFGCheatManager::TriggerNextStoryMessageInQueue(){ }
-void UFGCheatManager::TriggerNextBarkMessageInQueue(){ }
+void UFGCheatManager::TriggerNextPrimaryStoryMessageInQueue(){ }
+void UFGCheatManager::TriggerNextSecondaryStoryMessageInQueue(int32 storyQueueIndex){ }
+void UFGCheatManager::TriggerNextFloatingMessageInPrimaryQueue(){ }
+void UFGCheatManager::TriggerRandomTriggeredBarksMessage(){ }
 void UFGCheatManager::StartNextStoryQueue(){ }
 void UFGCheatManager::ResetAllStoryQueues(){ }
 void UFGCheatManager::ResetCurrentStoryQueue(){ }
@@ -53,6 +55,10 @@ void UFGCheatManager::SetTimeOfDay(int32 hour, int32 minute){ }
 void UFGCheatManager::SetTimeSpeedMultiplierResetTime(int32 resetHour){ }
 int32 UFGCheatManager::SetTimeOfDay_hour_Get(){ return int32(); }
 int32 UFGCheatManager::SetTimeOfDay_minute_Get(){ return int32(); }
+void UFGCheatManager::SetPlanetPosition(float value){ }
+void UFGCheatManager::SetPlanetPositionDeg(int32 value){ }
+void UFGCheatManager::SetPlanetMovementEnabled(bool enabled){ }
+void UFGCheatManager::SetPlanetSpeedMultiplier(float multiplier){ }
 void UFGCheatManager::ShowFactoryOnly(bool environmentHidden){ }
 bool UFGCheatManager::ShowFactoryOnly_Get(){ return bool(); }
 void UFGCheatManager::HideFactoryOnly(bool factoryHidden){ }
@@ -63,6 +69,7 @@ void UFGCheatManager::ToggleAudioDebug(){ }
 void UFGCheatManager::SetSlomo(float slomo){ }
 void UFGCheatManager::OpenModMap(){ }
 void UFGCheatManager::PumpiMode(bool enable){ }
+void UFGCheatManager::HiddenHUDMode(bool enable){ }
 bool UFGCheatManager::PumpiMode_Get(){ return bool(); }
 void UFGCheatManager::SplitAllConveyors(){ }
 void UFGCheatManager::MergeAllConveyors(){ }
@@ -71,6 +78,15 @@ void UFGCheatManager::SetFactoryDetailReplication(bool enable){ }
 bool UFGCheatManager::SetFactoryDetailReplication_Get(){ return bool(); }
 void UFGCheatManager::ResetFuses(){ }
 void UFGCheatManager::ToggleCameraMode(){ }
+void UFGCheatManager::Photo_ToggleAdvancedPhotoMode(){ }
+void UFGCheatManager::Photo_SetManualFocusDistance(float manualFocusDistance){ }
+void UFGCheatManager::Photo_FocusTrackLookedAtObject(){ }
+void UFGCheatManager::Photo_SetAperture(float aperture){ }
+void UFGCheatManager::Photo_ToggleDebug(){ }
+void UFGCheatManager::Photo_ResetToDefault(){ }
+void UFGCheatManager::Photo_AddCurrentPlayerPosAndRot(){ }
+void UFGCheatManager::Photo_PlaySequence(){ }
+void UFGCheatManager::Photo_ToggleSequencer(){ }
 void UFGCheatManager::GiveSchematicsOfTier(int32 tier){ }
 void UFGCheatManager::SetGamePhase(EGamePhase phase){ }
 void UFGCheatManager::SetNextGamePhase(){ }
@@ -87,6 +103,8 @@ bool UFGCheatManager::HideAllBuildings_Get(){ return bool(); }
 void UFGCheatManager::RandomizeBuildingsColorSlot(uint8 slotIndex){ }
 void UFGCheatManager::UpdateSessionToOSS(){ }
 void UFGCheatManager::VisitAllMapAreas(){ }
+void UFGCheatManager::RevealMap(){ }
+void UFGCheatManager::HideMap(){ }
 void UFGCheatManager::SetAITickDistance(float distance){ }
 void UFGCheatManager::DumpPlayerStates(){ }
 void UFGCheatManager::DumpHotbarShortcuts(){ }
@@ -95,6 +113,7 @@ void UFGCheatManager::DumpActorRepresentations(){ }
 void UFGCheatManager::DumpSignificanceManagedObjects(){ }
 void UFGCheatManager::PurgeInactiveClientsFromSave(bool fetchInventories){ }
 void UFGCheatManager::PurgeAllBeaconsFromSave(){ }
+void UFGCheatManager::PurgeDeathMarkersFromSave(){ }
 void UFGCheatManager::ListItemPickups(){ }
 void UFGCheatManager::SetTradingPostLevel(int32 inLevel){ }
 void UFGCheatManager::ListUnlockedRecipesAndSchematics(){ }
@@ -116,6 +135,8 @@ void UFGCheatManager::ResetRecipes(){ }
 void UFGCheatManager::DumpSchematics(){ }
 void UFGCheatManager::PrintStaticMeshesHierarchy(){ }
 void UFGCheatManager::FlipVehicle(){ }
+void UFGCheatManager::ResetVehicleDeadlocks(){ }
+void UFGCheatManager::ResetTheChosenWheeledVehicle(){ }
 void UFGCheatManager::ListDebugStartingPoint(){ }
 void UFGCheatManager::SetDebugStartingPoint(FName startingPoint){ }
 void UFGCheatManager::SetRandomDebugStartingPoint(){ }
@@ -151,6 +172,9 @@ void UFGCheatManager::DumpConnectionString(){ }
 void UFGCheatManager::FillAllFreightCars(float pct){ }
 void UFGCheatManager::EmptyAllFreightCars(){ }
 void UFGCheatManager::DumpCircuitsToLog(){ }
+void UFGCheatManager::RerailAllTrains(){ }
+void UFGCheatManager::MarkTrackGraphsAsChanged(){ }
+void UFGCheatManager::MarkTrackGraphsForRebuild(){ }
 UActorComponent* UFGCheatManager::GetOuterPlayersUseComponent() const{ return nullptr; }
 AActor* UFGCheatManager::GetOuterPlayersUseActor() const{ return nullptr; }
 AActor* UFGCheatManager::GetOuterPlayersAimedAtActor(FVector& out_aimLocation) const{ return nullptr; }

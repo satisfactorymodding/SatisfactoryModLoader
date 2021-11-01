@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGPowerPoleHologram.h"
 #include "FGPowerPoleWallHologram.generated.h"
@@ -16,10 +17,14 @@ class FACTORYGAME_API AFGPowerPoleWallHologram : public AFGPowerPoleHologram
 public:
 	AFGPowerPoleWallHologram();
 
+	// Begin AActor interface
+	virtual void BeginPlay() override;
+	// End AActor interface
+	
 	// Begin AFGHologram interface
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void CheckValidFloor() override;
-	virtual void CheckClearance() override;
+	virtual void CheckClearance( const FVector& locationOffset ) override;
 	// End AFGHologram interface
 
 private:
@@ -34,6 +39,10 @@ private:
 	/** Whether or not it is possible to snap to the side of foundations. */
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
 	bool mCanSnapToFoundationSide;
+
+	/** Whether or not it is possible to snap to beams. */
+	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )
+	bool mCanSnapToBeams;
 
 	/** Snapping offset of this attachment on the walls surface. */
 	UPROPERTY( EditDefaultsOnly, Category = "Wall Attachment" )

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Creature/Enemy/FGEnemy.h"
 #include "FGCrabHatcher.generated.h"

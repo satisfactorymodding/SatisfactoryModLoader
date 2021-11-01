@@ -8,18 +8,96 @@
  * @todo: Migrate UFGPresenceLibrary, UFGFriendsLibrary, UFGSessionLibrary and UFGInviteLibrary into their own .h and .cpp files
  */
 
+#include "FactoryGame.h"
 #include "FGLocalPlayer.h"
 #include "NAT.h"
 #include "FindSessionsCallbackProxy.h"
-#include "OnlineSessionSettings.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGOnlineSessionClient.h"
+#include "Server/FGServerBeaconClient.h"
 #include "FGNetworkLibrary.generated.h"
 
 
+UENUM( BlueprintType )
+enum class ESessionLookupError: uint8
+{
+	NoError,
+	ServerConnectionAlreadyPending,
+	InvalidArguments,
+	BackendError,
+	BeaconInitialization,
+	// Beacon handshake failure. The underlying cause can be further queried
+	BeaconConnection,
+	ServerSessionNotFoundInOSS
+};
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FSearchQueryCompleteDelegate, FBlueprintSessionResult, result);
-DECLARE_DYNAMIC_DELEGATE_TwoParams( FChangeSessionIDDelegate, bool, result, FString, newID );
+UENUM( BlueprintType )
+enum class ESessionLookupState: uint8
+{
+	Initial,
+	InitialSessionIDSearch,
+	Done
+};
+
+DECLARE_DYNAMIC_DELEGATE_OneParam( FSearchQueryCompleteDelegate, FBlueprintSessionResult, result );
+
+UINTERFACE( MinimalAPI, Blueprintable )
+class UFGSessionLookupClient : public UInterface
+{
+	GENERATED_BODY()
+};
+
+/**
+ * 
+ */
+class IFGSessionLookupClient
+{
+	GENERATED_BODY()
+public:
+	UFUNCTION( BlueprintNativeEvent )
+	void OnSessionFound( FBlueprintSessionResult Result );
+
+	UFUNCTION( BlueprintNativeEvent )
+	void OnSessionLookupProgress( ESessionLookupState State );
+
+	UFUNCTION( BlueprintNativeEvent )
+	void OnSessionLookupDone();
+
+	UFUNCTION( BlueprintNativeEvent )
+	void OnSessionNotFound();
+};
+
+/**
+* Encapsulates a lookup for an online session or a dedicated server
+*/
+UCLASS( BlueprintType )
+class UFGSessionLookup : public UObject
+{
+	GENERATED_BODY()
+public:
+	UFUNCTION( BlueprintCallable )
+	bool StartLookup();
+
+	UPROPERTY( EditInstanceOnly, BlueprintReadWrite, meta = ( ExposeOnSpawn="true" ) )
+	TScriptInterface<IFGSessionLookupClient> mClient;
+
+	UPROPERTY( EditInstanceOnly, BlueprintReadWrite, Meta = ( ExposeOnSpawn="true" ) )
+	UObject* mWorldContext;
+
+	UPROPERTY( EditInstanceOnly, BlueprintReadWrite, Meta = ( ExposeOnSpawn="true" ) )
+	UFGLocalPlayer* mLocalPlayer;
+
+	UPROPERTY( EditInstanceOnly, BlueprintReadWrite, Meta = ( ExposeOnSpawn="true" ) )
+	FString mSearchQuery;
+
+private:
+	void InitialSearchCompleted(int32 controllerId, bool wasSuccessful, const FOnlineSessionSearchResult& searchResult);
+
+	void SetState( ESessionLookupState State );
+
+	ESessionLookupState mState = ESessionLookupState::Initial;
+};
+
 
 USTRUCT(BlueprintType)
 struct FOnlinePresence
@@ -161,6 +239,9 @@ public:
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static FFGOnlineSessionSettings GetSessionSettings( const FBlueprintSessionResult& session );
 
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session")
+	static FString GetSessionId( const FBlueprintSessionResult& session );
+
 	/** Get the settings from a session **/
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Online|Session" )
 	static TEnumAsByte<ESessionVisibility> GetSessionVisibility( const FBlueprintSessionResult& session );
@@ -203,9 +284,6 @@ public:
 	//static FString GetSessionID( ULocalPlayer* localPlayer );
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online|Session")
 	static bool QuerySessionByID(UObject* worldContext, const FUniqueNetIdRepl& playerId, FString sessionOnlineID, FSearchQueryCompleteDelegate onComplete);
-
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Online|Session" )
-	static void SetSessionID( UObject* worldContext, const FUniqueNetIdRepl& playerId, const FString requestedID, FChangeSessionIDDelegate onComplete );
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Online" )
 	static bool CheckIsCompatibleVersion( const FFGOnlineSessionSettings& session );

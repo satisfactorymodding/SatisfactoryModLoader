@@ -2,8 +2,9 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Animation/AnimNotifies/AnimNotify.h"
+#include "FGAnimNotify_AutoAkEvent.h"
 #include "FGAnimNotify_AkEventSetRTPC.generated.h"
 
 /**
@@ -11,7 +12,7 @@
  * Meant to work as a base class for different anim notifies with specific use cases for setting RTPC factory values
  */
 UCLASS( abstract )
-class FACTORYGAME_API UFGAnimNotify_AkEventSetRTPC : public UAnimNotify
+class FACTORYGAME_API UFGAnimNotify_AkEventSetRTPC : public UFGAnimNotify_AutoAkEvent
 {
 	GENERATED_BODY()
 public:
@@ -19,13 +20,9 @@ public:
 	
 	//~ Begin UAnimNotify interface
 	virtual FString GetNotifyName_Implementation() const override;
-	virtual void Notify( USkeletalMeshComponent* meshComp, UAnimSequenceBase* animation ) override;
 	//~ End UAnimNotify interface
 
 protected:
-	/** Set the RTPC value on the relevant ak component. Can be overridden in derived classes if we want to use it for other things than current potential */
-	virtual void SetRTPCValueOnAkComponent(  USkeletalMeshComponent* meshComp, class UAkComponent* component );
-
 	protected:
 	/** The RTPC object we want to set. RTPC Value Has priority over RTPC name */
 	UPROPERTY( EditAnywhere, Category="Audio" )
@@ -38,17 +35,4 @@ protected:
 	/** Duration during which the Game Parameter is interpolated towards Value (in ms) */
 	UPROPERTY( EditAnywhere, Category="Audio" )
 	int32 mInterpolationTimeMs;
-	
-	/** The socket or bone name we want to attach the event to */
-	UPROPERTY( EditAnywhere, Category="Audio" )
-	FName mSocketName;
-
-	/** Event to post when this event is triggered */
-	UPROPERTY( EditAnywhere, Category="Audio" )
-	class UAkAudioEvent* mAudioEvent;
-
-	/** If true, then we attach the event to the socket/actor, else it stays in the world where it was posted (true is more expensive) */
-	UPROPERTY( EditAnywhere, Category="Audio" )
-	bool mFollow;
-	
 };

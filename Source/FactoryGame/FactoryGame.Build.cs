@@ -30,7 +30,12 @@ public class FactoryGame : ModuleRules
 			"GameplayTasks",
 			"SlateCore", "Slate", "UMG",
 			"InstancedSplines",
-			"RenderCore"
+			"RenderCore",
+			"CinematicCamera",
+		});
+		
+		PublicDependencyModuleNames.AddRange(new[] {
+			"DummyHeaders",
 		});
         
 		PublicDefinitions.Add( "IS_PUBLIC_BUILD=1" ); 

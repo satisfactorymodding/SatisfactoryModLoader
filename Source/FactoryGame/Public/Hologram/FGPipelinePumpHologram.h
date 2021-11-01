@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGPipelineAttachmentHologram.h"
 #include "FGPipelinePumpHologram.generated.h"

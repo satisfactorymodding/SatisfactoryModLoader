@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "DestructibleActor.h"
 #include "FGSaveInterface.h"
 #include "FGDestructibleActor.generated.h"

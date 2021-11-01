@@ -2,14 +2,15 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildable.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "FGInstancedSplineMeshComponent.h"
+#include "FGRailroadSignalBlock.h"
 #include "FGBuildableRailroadTrack.generated.h"
 
 
-//@todotrains Move this to separate header, so many use the track position but not the track itself.
 /**
  * This is a way to represent a position on the railroad.
  */
@@ -36,13 +37,18 @@ public:
 	/** Get the world location and direction of this track position; zero if invalid. */
 	void GetWorldLocationAndDirection( FVector& out_location, FVector& out_direction ) const;
 
-	/** @return Offset from the beginning/end of the track in the forward direction if valid; otherwise zero. */
+	/** @return Distance from the beginning of the track in the forward direction if valid; otherwise zero. */
 	float GetForwardOffset() const;
+	/** @return Distance to the end of the track in the forward direction if valid; otherwise zero. */
 	float GetReverseOffset() const;
 
 	/** @return The next track connection in the forward direction if valid; otherwise a nullptr. */
 	class UFGRailroadTrackConnectionComponent* GetForwardConnection() const;
 	class UFGRailroadTrackConnectionComponent* GetReverseConnection() const;
+
+	/** @return The next track in the forward direction if valid; otherwise a nullptr. */
+	class AFGBuildableRailroadTrack* GetForwardTrack() const;
+	class AFGBuildableRailroadTrack* GetReverseTrack() const;	
 
 public:
 	/**
@@ -137,7 +143,7 @@ public:
 	 */
 	FORCEINLINE class UFGRailroadTrackConnectionComponent* GetConnection( int32 offset ) const
 	{
-		check( offset == 0 || offset == 1 );
+		fgcheck( offset == 0 || offset == 1 );
 		return mConnections[ offset ];
 	}
 
@@ -154,8 +160,35 @@ public:
 	 */
 	class UFGPowerConnectionComponent* GetThirdRail() const;
 
+	/**
+	 * Called by the train movement code when a vehicle is transitioning between track segments.
+	 * Also called when a vehicle is dismantled.
+	 *
+	 * The number of calls to enter and exit must match up in a way so that every enter have an exit.
+	 */
+	void OnVehicleEntered( class AFGRailroadVehicle* vehicle );
+	void OnVehicleExited( class AFGRailroadVehicle* vehicle );
+
+	/** @return true if this track is occupied by any vehicles. */
+	bool IsOccupied() const { return mVehicles.Num() > 0; }
+	/** @return true if there is a vehicle to close to the given connection. */
+	bool IsConnectionOccupied( const class UFGRailroadTrackConnectionComponent* connection, float distance ) const;
+
+	/** Does this track have a signal block. */
+	bool HasSignalBlock() const { return mSignalBlock.IsValid(); }
+	/** Get the signal block this track belongs to, can be null. */
+	TWeakPtr< FFGRailroadSignalBlock > GetSignalBlock() const { return mSignalBlock; }
+
+	/** Call this to update this tracks overlapping tracks. true if we have any overlapping. */
+	bool UpdateOverlappingTracks();
+	/** @return Get any tracks adjacent or overlapping this one. */
+	TArray< AFGBuildableRailroadTrack* > GetOverlappingTracks();
+	/** Add an overlapping track */
+	void AddOverlappingTrack( AFGBuildableRailroadTrack* track );
+	
 private:
 	void SetTrackGraphID( int32 trackGraphID );
+	void SetSignalBlock( TWeakPtr< FFGRailroadSignalBlock > block );
 
 protected:
 	/** Mesh to use for his track. */
@@ -198,4 +231,15 @@ private:
 
 	/** Length of this track. [cm] */
 	float mLength;
+
+	/** Tracks that are overlapping this one but not connected to us. E.g. turnouts and crossings. */
+	UPROPERTY( VisibleAnywhere, Category = "Track" )
+	TArray< AFGBuildableRailroadTrack* > mOverlappingTracks;
+	
+	/** The vehicles currently occupying this track. */
+	UPROPERTY( VisibleAnywhere, Category = "Track" )
+	TSet< class AFGRailroadVehicle* > mVehicles;
+
+	/** The signal block this track section is part of. */
+	TWeakPtr< FFGRailroadSignalBlock > mSignalBlock;
 };

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "WheeledVehicleMovementComponent.h"
 #include "FGRailroadVehicle.h"
@@ -88,9 +89,21 @@ inline float RadiansToGrade( float rad )
 UCLASS()
 class FACTORYGAME_API UFGRailroadVehicleMovementComponent : public UPawnMovementComponent
 {
-	GENERATED_UCLASS_BODY()
-
+	GENERATED_BODY()
 public:
+	UFGRailroadVehicleMovementComponent();
+
+	// Begin UActorComponent Interface
+	virtual void OnCreatePhysicsState() override;
+	virtual void OnDestroyPhysicsState() override;
+	virtual bool ShouldCreatePhysicsState() const override;
+	virtual bool HasValidPhysicsState() const override;
+	// End UActorComponent Interface
+	
+	// Begin UMovementComponent
+	virtual float GetMaxSpeed() const override;
+	// End UMovementComponent
+	
 	/** Get the owning railroad vehicle. */
 	class AFGRailroadVehicle* GetOwningRailroadVehicle() const;
 
@@ -113,7 +126,7 @@ public:
 	virtual void TickTractionAndFriction( float dt );
 
 	/** Move the physics of the vehicle to the new track position. */
-	void MoveVehicle( float dt, float distance, FRailroadTrackPosition newTrackPosition, bool shouldMoveComponent );
+	void MoveVehicle( float dt, FRailroadTrackPosition newTrackPosition, bool shouldMoveComponent );
 
 	/** Updates the coupler rotation and length, called after move vehicle has been called on the whole train. */
 	void UpdateCouplerRotationAndLength();
@@ -133,13 +146,17 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
 	FORCEINLINE float GetPayloadMass() const { return mPayloadMass; }
 
+	/** Get the maximum payload mass for vehicle. [kg] */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
+    FORCEINLINE float GetMaxPayloadMass() const { return mMaxPayloadMass; }
+
 	/** Set the current payload mass for vehicle. [kg] */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Movement" )
 	void SetPayloadMass( float payload ) { mPayloadMass = payload; }
 
 	/** If this vehicle is moving. Within a small threshold. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
-	FORCEINLINE bool IsMoving() const { return !FMath::IsNearlyZero( mVelocity, mZeroForwardVelocityTolerance ); }
+	FORCEINLINE bool IsMoving() const { return !FMath::IsNearlyZero( mVelocity, ZERO_FORWARD_VELOCITY_TOLERANCE ); }
 
 	/** Speed of this vehicle along the track. In the direction of the train. [cm/s] */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
@@ -214,13 +231,6 @@ public:
 	FORCEINLINE float GetAirResistance() const { return mAirResistance; }
 	FORCEINLINE float GetGradientResistance() const { return mGradientResistance; }
 
-	// Begin UActorComponent Interface
-	virtual void OnCreatePhysicsState() override;
-	virtual void OnDestroyPhysicsState() override;
-	virtual bool ShouldCreatePhysicsState() const override;
-	virtual bool HasValidPhysicsState() const override;
-	// End UActorComponent Interface
-
 	/** Get number of wheel sets */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Movement" )
 	int32 GetNumWheelsets() const { return mWheelsetSetups.Num(); };
@@ -257,7 +267,7 @@ private:
 
 public:
 	/** Threshold for when a train is considered moving */
-	const float mZeroForwardVelocityTolerance = 0.01f;
+	static constexpr float ZERO_FORWARD_VELOCITY_TOLERANCE = 1.f;
 
 protected:
 	/** Wheelsets for this train. Front is 0 and back is 1. */
@@ -296,6 +306,12 @@ protected:
 	 */
 	UPROPERTY( EditAnywhere, Category = "VehicleSetup", meta = ( ClampMin = "0.01", UIMin = "0.01" ) )
 	float mMaxVelocity;
+
+	/**
+	 * How much cargo, fuel or other extra weight do we have when fully loaded.
+	 */
+	UPROPERTY( EditAnywhere, Category = "VehicleSetup", meta = ( ClampMin = "0.0", UIMin = "0.0" ) )
+	float mMaxPayloadMass;
 
 	/**
 	 * How much cargo, fuel or other extra weight do we have.

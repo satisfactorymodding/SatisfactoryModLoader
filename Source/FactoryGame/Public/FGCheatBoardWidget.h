@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGCheatManager.h"
 #include "SlateBasics.h"
 #include "Widgets/Views/STreeView.h"

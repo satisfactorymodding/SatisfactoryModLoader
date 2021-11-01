@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "FGSaveInterface.h"
@@ -37,9 +38,9 @@ struct FACTORYGAME_API FFGWorldGridCell
 	GENERATED_BODY()
 
 	FFGWorldGridCell();
-	FFGWorldGridCell( const FFGWorldGridCellData& Data, const FVector& WorldLocation, int32 CellIndex );
+	FFGWorldGridCell( const FFGWorldGridCellData& Data, const FVector& WorldLocation, int32 CellIndex, float DefaultElevation );
 
-	FORCEINLINE float GetElevation() const;
+	float GetElevation() const;
 
 	/** The data of this cell. */
 	FFGWorldGridCellData mData;
@@ -49,6 +50,9 @@ struct FACTORYGAME_API FFGWorldGridCell
 
 	/** Index of this cell in the world grid array. */
 	int32 mCellIndex;
+
+	/** Default elevation of this grid cell. */
+	float mDefaultElevation;
 
 	/** Function bound to mTraceDelegate */
 	void OnTraceCompleted( const FTraceHandle& Handle, FTraceDatum& Data );
@@ -127,15 +131,15 @@ public:
 	FORCEINLINE FVector GetCellWorldLocationFromGridCoords( const FIntPoint& Coords ) const;
 	FORCEINLINE void GetCellWorldLocationFromGridCoords( const FIntPoint& Coords, FVector& OutVector ) const;
 	
-	FORCEINLINE float GetCellElevationFromWorldLocation( const FVector& WorldLocation ) const;
-	FORCEINLINE float GetCellElevationFromGridCoordinates( const FIntPoint& Coords ) const;
+	float GetCellElevationFromWorldLocation( const FVector& WorldLocation ) const;
+	float GetCellElevationFromGridCoordinates( const FIntPoint& Coords ) const;
 	
 	TArray<const FFGWorldGridCell*> GetCellNeighbours( const FFGWorldGridCell* Cell ) const;
 	TArray<const FFGWorldGridCell*> GetCellNeighboursFromIndex( int32 Index ) const;
 
 	TArray<int32> GetCellNeighbourIndicesFromIndex( int32 Index ) const;
 
-	FORCEINLINE  FVector2D GetCellSize() const;
+	 FVector2D GetCellSize() const;
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;

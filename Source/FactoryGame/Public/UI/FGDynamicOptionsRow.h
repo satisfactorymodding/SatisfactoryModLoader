@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "FGOptionsSettings.h"
@@ -22,6 +23,9 @@ public:
 	
 	UFUNCTION( Blueprintpure, Category = "Option" )
 	FORCEINLINE EOptionCategory GetOptionCategory() const { return EOptionCategory::OC_Gameplay; }
+
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	void AddSubOption( UFGDynamicOptionsRow* dynamicOptionsRow );
 
 protected:
 	UFUNCTION( Blueprintpure, Category = "Option" )
@@ -51,6 +55,18 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Option" )
 	void UpdatePendingIconsVisibilty();
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "Option" )
+	void OnSubOptionsUpdated();
+
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	FORCEINLINE TArray< UFGDynamicOptionsRow* > GetSubOptions() { return mSubOptions; }
+
+	UFUNCTION( BlueprintPure, Category = "Option" )
+	FORCEINLINE bool GetSubOptionsVisibility() { return mSubOptionsVisibility; }
+	
+	UFUNCTION( BlueprintCallable, Category = "Option" )
+	void SetSubOptionsVisibility( bool newVisibilty ) { mSubOptionsVisibility = newVisibilty; }
+	
 private:
 
 	FOptionRowData mOptionRowData;
@@ -62,4 +78,10 @@ private:
 
 	UPROPERTY()
 	UFGOptionsValueController* mValueControllerWidget;
+
+	UPROPERTY()
+	TArray< UFGDynamicOptionsRow* > mSubOptions;
+
+	bool mSubOptionsVisibility;
+	
 };

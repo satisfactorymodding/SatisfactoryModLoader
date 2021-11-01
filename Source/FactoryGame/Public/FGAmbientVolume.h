@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UndefinedBool.h"
 #include "GameFramework/Volume.h"
 #include "FGSignificanceInterface.h"

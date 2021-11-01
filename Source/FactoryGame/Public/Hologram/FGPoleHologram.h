@@ -2,10 +2,18 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "Resources/FGPoleDescriptor.h"
 #include "FGPoleHologram.generated.h"
 
+
+UENUM()
+enum class EPoleHologramBuildStep : uint8
+{
+	PHBS_PlacementAndRotation,
+	PHBS_AdjustHeight
+};
 
 /**
  * Base for holograms that can be raised/lowered, e.g. conveyor poles.
@@ -19,7 +27,7 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	void BeginPlay();
+	virtual void BeginPlay() override;
 	// End AActor interface
 
 	// Begin AFGHologram interface
@@ -27,12 +35,11 @@ public:
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual AActor* Construct( TArray<AActor*>& out_children, FNetConstructionID constructionID ) override;
+	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes ) const override;
+	virtual void OnBuildModeChanged() override;
 
-	virtual void CheckClearance() override;
 	virtual void ResetBuildSteps();
-
-	/** Helper */
-	bool CheckClearanceForBuildingMesh( UStaticMeshComponent* mesh, const FComponentQueryParams& params = FComponentQueryParams::DefaultComponentQueryParams );
 	// End AFGHologram interface
 
 	/** Set the height of the pole, useful for parent holograms. */
@@ -46,12 +53,20 @@ public:
 
 	virtual void OnPendingConstructionHologramCreated_Implementation( class AFGHologram* fromHologram ) override;
 
+	// Returns the desired height (not clamped to the mesh sizes available)
 	FORCEINLINE float GetPoleHeight() const { return mPoleHeight; }
+	
+	// Returns the Height for the currently active mesh
+	float GetActiveMeshHeight() const;
 
 protected:
 	// Begin AFGBuildableHologram interface
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram interface
+
+	// Begin AFGHologram Interface
+	virtual void CheckValidPlacement() override;
+	// End AFGHologram Interface
 
 private:
 	UFUNCTION()
@@ -65,10 +80,10 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_PoleMesh )
 	FPoleHeightMesh mPoleMesh;
 
-private:
-	/** True if we've placed it on the ground and is working with the height */
-	bool mIsAdjustingHeight;
 	bool mCanAdjustHeight;
+
+	EPoleHologramBuildStep mBuildStep;
+private:
 
 	/** Can this pole be stacked. */
 	bool mCanStack = false;
@@ -85,6 +100,19 @@ private:
 	UPROPERTY()
 	class USceneComponent* mPoleHeightComponent;
 
+	/** Instanced Mesh Component. */
+	UPROPERTY()
+	class UInstancedStaticMeshComponent* mInstancedMeshComponent;
+
 	UPROPERTY( CustomSerialization )
 	float mPoleHeight;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Pole" )
+	int32 mMaxZoopAmount;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeZoop;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	FVector mClearanceExtent;
 };

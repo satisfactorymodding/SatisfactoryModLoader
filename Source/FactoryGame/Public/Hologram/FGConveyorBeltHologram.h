@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGSplineHologram.h"
 #include "Components/SplineComponent.h"
 #include "FGFactoryConnectionComponent.h"
@@ -31,11 +32,13 @@ public:
 	virtual void OnInvalidHitResult() override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
-	virtual void AdjustForGround( const FHitResult& hitResult, FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual void AdjustForGround( FVector& out_adjustedLocation, FRotator& out_adjustedRotation ) override;
+	virtual void PreHologramPlacement() override;
+	virtual void PostHologramPlacement() override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void Scroll( int32 delta ) override;
 	virtual void GetSupportedScrollModes( TArray<EHologramScrollMode>* out_modes ) const override;
-	virtual bool CanTakeNextBuildStep() const override;
+	virtual float GetHologramHoverHeight() const override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface
@@ -53,11 +56,14 @@ public:
 protected:
 	// Begin AFGBuildableHologram Interface
 	virtual void CheckValidFloor() override;
-	virtual void CheckClearance() override;
 	virtual void CheckValidPlacement() override;
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
+
+	// Begin AFGHologram interface
+	virtual void CheckClearance( const FVector& locationOffset ) override;
+	// End AFGHologram interface
 
 	/** Creates the clearance detector used with conveyor belts */
 	void SetupConveyorClearanceDetector();

@@ -2,4 +2,10 @@
 
 #include "AI/FGNavArea_HardNature.h"
 
-UFGNavArea_HardNature::UFGNavArea_HardNature(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGNavArea_HardNature::UFGNavArea_HardNature(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->DefaultCost = 1.01;
+	this->DrawColor.B = 166;
+	this->DrawColor.G = 166;
+	this->DrawColor.R = 166;
+	this->DrawColor.A = 255;
+}

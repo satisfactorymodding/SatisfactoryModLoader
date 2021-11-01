@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGUseableInterface.generated.h"
 
 UCLASS( abstract, Blueprintable )

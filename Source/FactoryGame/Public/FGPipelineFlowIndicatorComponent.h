@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Components/StaticMeshComponent.h"
 #include "Resources/FGItemDescriptor.h"

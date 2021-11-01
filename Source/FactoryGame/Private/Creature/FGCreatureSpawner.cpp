@@ -7,19 +7,28 @@
 void AFGCreatureSpawner::PostEditMove(bool bFinished){ }
 #endif 
 AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
+	this->mDebugComponent = nullptr;
+	this->mEditorSprite = nullptr;
 	this->mCapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
-	this->RootComponent = this->mCapsuleComponent;
-	this->mNumberOfCreatures.Min = 1; this->mNumberOfCreatures.Max = 1;
-	this->mSpawnRadius = 200;
-	this->mSpawnHalfHeight = 300;
-	this->mSpawnerDistance = -1;
+	this->mCreatureClass = nullptr;
+	this->mNumberOfCreatures.Min = 1;
+	this->mNumberOfCreatures.Max = 1;
+	this->mSpawnRadius = 200.0;
+	this->mSpawnHalfHeight = 300.0;
+	this->mIsActive = false;
+	this->mCachedIsNearBase = false;
+	this->mSpawnerDistance = -1.0;
+	this->mIsPendingDestroy = false;
+	this->mIsPendingSpawn = false;
 	this->mCurrentCreatureToSpawnIndex = -1;
-	this->mMonsterClosetSpawnDelay = 2;
-	this->mSpawnDistanceOverride = -1;
+	this->mIsMonsterCloset = false;
+	this->mMonsterClosetSpawnDelay = 2.0;
+	this->mSpawnDistanceOverride = -1.0;
 	this->mRandomSeed = -1;
-	this->mRespawnTimeIndays = 3;
+	this->mVisualizeSpawnDistance = false;
 	this->bCollideWhenPlacing = true;
 	this->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+	this->RootComponent = mCapsuleComponent;
 }
 void AFGCreatureSpawner::BeginPlay(){ }
 void AFGCreatureSpawner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

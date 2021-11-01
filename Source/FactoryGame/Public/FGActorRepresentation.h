@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/NoExportTypes.h"
 #include "FGActorRepresentation.generated.h"
 
@@ -245,6 +246,9 @@ private:
 	/** This is the actor location */
 	UPROPERTY( Replicated )
 	FRepresentationVector2D mActorLocation;
+
+	/** This is the actor location for local representations which uses a regular FVector to get the Z value as well. Used for resource nodes. For Local Use Only */
+	FVector mLocalActorLocation;
 
 	/** This is the actor rotation */
 	UPROPERTY( Replicated )

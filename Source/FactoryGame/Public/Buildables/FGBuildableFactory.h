@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildable.h"
 #include "FGRecipeProducerInterface.h"
 #include "FGSignificanceInterface.h"
@@ -10,22 +11,6 @@
 #include "FGBuildableFactory.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnReplicationDetailActorCreated, class AActor*, replicationDetailActorOwner );
-
-/**
- * Production status of the factory, i.e. displayed on the indicator.
- */
-UENUM( BlueprintType )
-enum class EProductionStatus : uint8
-{
-	IS_NONE,
-	IS_PRODUCING,
-	IS_PRODUCING_WITH_CRYSTAL, //We have a crystal in the potential slot and are producing
-	IS_STANDBY,
-	IS_ERROR,
-	IS_MAX
-};
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FProductionStatusChanged, EProductionStatus, status );
 
 /** Delegate for when some binary state has changed */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FBuildingStateChanged, bool, state );
@@ -73,7 +58,6 @@ public:
 	// Begin IFGUseableInterface
 	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
-	virtual bool IsUseable_Implementation() const override;
 	// End IFGUseableInterface
 
 	// Begin IFGDismantleInterface
@@ -109,6 +93,11 @@ public:
 	/** Get the connections to this factory. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Factory" )
 	TArray< UFGFactoryConnectionComponent* > GetConnectionComponents() const;
+
+	/**
+	 * Visual "HasPower" used to update emmisive data float on customprimdata / PIC
+	 */
+	virtual float GetEmissivePower() override;
 
 	/**
 	 * Check if we have power.
@@ -356,6 +345,7 @@ protected:
 	// End AFGBuildable interface
 
 	/** Call this when we finished a production cycle, like produced a recipe or extracted an ore. */
+	UFUNCTION(BlueprintCallable, Category = "FactoryGame|Factory|Productivity")
 	virtual void Factory_ProductionCycleCompleted( float overProductionRate );
 
 	/** Try to collect input from connected buildings. */
@@ -412,6 +402,9 @@ protected:
 	UFUNCTION()
 	virtual void OnRep_CurrentPotential();
 
+	UFUNCTION()
+	virtual void OnRep_IsProductionPaused();
+
 private:
 	/** Calls Start/Stop Producing on client */
 	UFUNCTION()
@@ -446,9 +439,8 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Power" ) //@todo Replicated
 	TSubclassOf< class UFGPowerInfoComponent > mPowerInfoClass;
 
-	/** Callback for when the production indicator state changes. Called locally on both server and client. */
-	UPROPERTY( BlueprintAssignable )
-	FProductionStatusChanged mOnProductionStatusChanged;
+	UPROPERTY( EditDefaultsOnly, Category = "Animation" )
+	bool mDoesHaveShutdownAnimation;
 
 protected:
 	friend class AFGReplicationDetailActor_BuildableFactory;
@@ -533,7 +525,7 @@ protected:
 	int32 mFluidStackSizeMultiplier;
 
 	/** The player is able to toggle if production should be paused or not */
-	UPROPERTY( SaveGame, Replicated, Meta = (NoAutoJson = true) )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsProductionPaused, Meta = (NoAutoJson = true) )
 	bool mIsProductionPaused;
 
 	UPROPERTY( Replicated, Transient, ReplicatedUsing = OnRep_ReplicationDetailActor )

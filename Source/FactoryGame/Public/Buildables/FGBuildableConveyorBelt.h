@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGUseableInterface.h"
 #include "Buildables/FGBuildableConveyorBase.h"
 #include "Components/SplineComponent.h"
@@ -148,8 +149,9 @@ protected:
 	// End AFGBuildableFactory interface
 
 	// Begin AFGBuildableConveyorBase interface
-	virtual void TickItemTransforms( float dt, bool bOnlyTickRadioActive = true ) override;
+	virtual void TickItemTransforms( float dt ) override;
 	virtual void TickRadioactivity() override;
+	virtual void Factory_UpdateRadioactivity( class AFGRadioactivitySubsystem* subsystem ) override;
 	// End AFGBuildableConveyorBase interface
 
 private:

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGMaterialEffect_Build.h"
 #include "FGSettings.h"
@@ -102,6 +103,18 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Material" )
 	class UMaterialInstance* mDefaultPowerConnectionMaterial;
 
+	/** Default Factory Primary - Unchanging color regardless of slot */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryColor" )
+	FLinearColor mDefaultFactoryColor_Primary;
+
+	/** Default Factory Secondary - Unchanging color regardless of slot */
+	UPROPERTY( EditDefaultsOnly, Category = "FactoryColor" )
+	FLinearColor mDefaultFactoryColor_Secondary;
+
+	/** Mesh used to visualize attachment points for connection. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
+	class UStaticMesh* mDefaultAttachmentPointConnectionMesh;
+
 	/** Mesh used to visualize input or output connections location. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram|Connections" )
 	class UStaticMesh* mDefaultConveyorConnectionFrameMesh;
@@ -142,13 +155,13 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
 	class UStaticMesh* mBuildGuideMesh;
 
+	/** Width of buildguide visualization lines. @note Do not set in code! */
+	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
+	float mBuildGuideWidth;
+	
 	/** Material applied to build guides to visualize alignment in build mode. @note Do not set in code! */
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
 	class UMaterialInstance* mBuildGuideMaterial;
-
-	/** Material applied to build guides specifically for conveyor belts to visualize alignment in build mode. @note Do not set in code! */
-	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
-	class UMaterialInstance* mConveyorBuildGuideMaterial;
 
 	/** Crate spawned when we dismantle an actor or when we die. It will be filled with the refund if it doesn't fit in the players inventory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
@@ -206,6 +219,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TSubclassOf<class UFGRecipeShortcut> mRecipeShortcutClass;
 
+	/** The class we want to spawn for customization shortcuts */
+	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
+	TSubclassOf< class UFGFactoryCustomizationShortcut > mCustomizationShortcutClass;
+
 	/** Names if the input actions that defines the shortcuts. This maps directly to their index (so first entry here should mean that it should call ExecuteShortcut 0) */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TArray< FName > mShortcutMap;
@@ -241,4 +258,5 @@ public:
 	*/
 	UPROPERTY( EditDefaultsOnly, Category = "Pipes" )
 	TArray< FViscosityToPuddlePair > mViscosityToPuddlePairs;
+
 };

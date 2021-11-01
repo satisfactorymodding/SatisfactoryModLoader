@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "FactoryGame.h"
+#include "IncludeInBuild.h"
 #include "OptionValueContainer.h"
 #include "FGOptionsSettings.generated.h"
 
@@ -84,20 +86,26 @@ struct FOptionRowData
 
 public:
 	FOptionRowData() :
+		OptionName( FText() ),
+		Tooltip( FText() ),
 		OptionType( EOptionType::OT_Checkbox ),
+		ConsoleVariable( "" ),
 		DefaultCheckBoxValue( false ),
-		MinValue( 0 ),
-		MaxValue( 0 ),
-		MinDisplayValue( 0 ),
-		MaxDisplayValue( 0 ),
+		MinValue( 0.0f ),
+		MaxValue( 0.0f ),
+		MinDisplayValue( 0.0f ),
+		MaxDisplayValue( 0.0f ),
 		MaxFractionalDigits( 0 ),
 		ShowZeroAsOff( false ),
-		DefaultSliderValue( 0 ),
+		DefaultSliderValue( 0.0f ),
+		DefaultSelectionIndex( 0 ),
+		CustomWidgetClass( nullptr ),
 		OptionApplyType( EOptionApplyType::OAT_Normal ),
 		NetmodeAvailability( EOptionNetmodeType::ONT_ServerAndClient ),
 		GamemodeAvailability( EOptionGamemodeType::OGT_Always ),
 		RHIAvailability( EOptionRHIType::ORT_Always ),
-		CustomWidgetClass( nullptr )
+		BuildAvailability( EIncludeInBuilds::IIB_PublicBuilds ),
+		SubOption( false )
 	{
 	}
 
@@ -105,46 +113,49 @@ public:
 	FText OptionName;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	FText Tooltip;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	EOptionType OptionType;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	FString ConsoleVariable;
 	
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Checkbox", EditConditionHides ) )
 	bool DefaultCheckBoxValue;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Slider", EditConditionHides ))
 	float MinValue;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Slider", EditConditionHides ))
 	float MaxValue;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Slider", EditConditionHides ))
 	float MinDisplayValue;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Slider", EditConditionHides ))
 	float MaxDisplayValue;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Slider", EditConditionHides ))
 	int32 MaxFractionalDigits;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Slider", EditConditionHides ))
 	bool ShowZeroAsOff;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_Slider", EditConditionHides ))
 	float DefaultSliderValue;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_IntegerSelection", EditConditionHides ) )
 	TArray<FIntegerSelection> IntegerSelectionValues;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_FloatSelection", EditConditionHides ) )
 	TArray<FFloatSelection> FloatSelectionValues;
 
-	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	UPROPERTY( BlueprintReadWrite, EditAnywhere, meta=( editcondition = "OptionType == EOptionType::OT_IntegerSelection || OptionType == EOptionType::OT_FloatSelection ", EditConditionHides ) )
 	int32 DefaultSelectionIndex;
-	
+
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	FText Tooltip;
+	TSubclassOf< class UFGOptionsValueController > CustomWidgetClass;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	EOptionApplyType OptionApplyType;
@@ -159,7 +170,10 @@ public:
 	EOptionRHIType RHIAvailability;
 
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
-	TSubclassOf< class UFGOptionsValueController > CustomWidgetClass;
+	EIncludeInBuilds BuildAvailability;
+
+	UPROPERTY( BlueprintReadWrite, EditAnywhere )
+	bool SubOption;
 };
 
 USTRUCT( BlueprintType, meta = ( ShowOnlyInnerProperties ) )
@@ -173,7 +187,7 @@ struct FActionMappingDisplayName
 		ActionMappingName( keyBidningName )
 	{}
 
-	UPROPERTY( BlueprintReadOnly, VisibleAnywhere )
+	UPROPERTY( BlueprintReadOnly, EditAnywhere )
 	FName ActionMappingName;
 
 	UPROPERTY( BlueprintReadOnly, EditAnywhere )
@@ -191,7 +205,7 @@ struct FAxisMappingDisplayName
 		AxisMappingName( axisMappingName )
 	{}
 
-	UPROPERTY( BlueprintReadOnly, VisibleAnywhere )
+	UPROPERTY( BlueprintReadOnly, EditAnywhere )
 	FName AxisMappingName;
 
 	UPROPERTY( BlueprintReadOnly, EditAnywhere )
@@ -286,4 +300,6 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = "Widget Classes", meta = ( ToolTip = "" ) )
 	TSubclassOf< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
 
+	UPROPERTY( EditAnywhere, config, Category = "Hologram", meta = ( ToolTip = "" ) )
+	TAssetPtr<UMaterialParameterCollection> mHologramColourParameterCollection;
 };

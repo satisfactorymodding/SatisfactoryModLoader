@@ -2,39 +2,52 @@
 
 #include "Buildables/FGBuildableTrainPlatformCargo.h"
 #include "Hologram/FGFactoryHologram.h"
+#include "FGTrainPlatformConnection.h"
 #include "FGPowerInfoComponent.h"
+#include "Components/SceneComponent.h"
 
 AFGBuildableTrainPlatformCargo::AFGBuildableTrainPlatformCargo() : Super() {
+	this->mFreightCargoType = EFreightCargoType::FCT_NONE;
 	this->mStorageSizeX = 4;
 	this->mStorageSizeY = 4;
-	this->mTimeToCompleteLoad = 20;
-	this->mTimeToSwapLoadVisibility = 10;
-	this->mTimeToCompleteUnload = 20;
-	this->mTimeToSwapUnloadVisibility = 10;
-	this->mPlatformConnections.Add(0); this->mPlatformConnections.Add(0);
-	this->mPowerConsumptionExponent = 1.60000002384186;
-	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
-	this->mMinimumProducingTime = 2;
-	this->mMinimumStoppedTime = 5;
-	this->mNumCyclesForProductivity = 20;
-	this->mPendingPotential = 1;
-	this->mMinPotential = 0.00999999977648258;
-	this->mMaxPotential = 1;
-	this->mMaxPotentialIncreasePerCrystal = 0.5;
-	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
-	this->mFluidStackSizeMultiplier = 1;
-	this->mSignificanceRange = 18000;
-	this->mHologramClass = AFGFactoryHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
+	this->mMagicBoxSkelMeshComponent = nullptr;
+	this->mCargoMeshComponent = nullptr;
+	this->mCanUnloadAny = false;
+	this->mIsFullUnload = false;
+	this->mCanLoadAny = false;
+	this->mIsFullLoad = false;
+	this->mTimeToCompleteLoad = 20.0;
+	this->mTimeToSwapLoadVisibility = 10.0;
+	this->mTimeToCompleteUnload = 20.0;
+	this->mTimeToSwapUnloadVisibility = 10.0;
+	this->mWaitForConditionUpdatePeriod = 2.5;
+	this->mDockingRuleSet.DockingDefinition = ETrainDockingDefinition::TDD_LoadUnloadOnce;
+	this->mDockingRuleSet.DockForDuration = 15.0;
+	this->mDockingRuleSet.IsDurationAndRule = false;
+	this->mHasFullyLoadUnloadRule = false;
+	this->mDockForDuration = 0.0;
+	this->mMustDockForDuration = false;
+	this->mCurrentDockForDuration = 0.0;
+	this->mInventory = nullptr;
+	this->mHasDockedActor = false;
+	this->mIsInLoadMode = true;
+	this->mIsLoadUnloading = false;
+	this->mShouldExecuteLoadOrUnload = false;
+	this->mRanCompleteBeforeNone = false;
+	this->mLastDockedFreight = nullptr;
+	this->mTimeSinceLastLoadTransferUpdate = 0.0;
+	this->mTimeSinceLastUnloadTransferUpdate = 0.0;
+	this->mSmoothedLoadRate = 0.0;
+	this->mSmoothedUnloadRate = 0.0;
+	this->mReplicatedOutflowRate = 0.0;
+	this->mReplicatedInflowRate = 0.0;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGBuildableTrainPlatformCargo::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableTrainPlatformCargo::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
@@ -51,6 +64,7 @@ float AFGBuildableTrainPlatformCargo::GetDockedVehicleOffset() const{ return flo
 void AFGBuildableTrainPlatformCargo::OnReplicationDetailActorRemoved(){ }
 void AFGBuildableTrainPlatformCargo::NotifyTrainDocked( AFGRailroadVehicle* railroadVehicle,  AFGBuildableRailroadStation* initiatedByStation){ }
 void AFGBuildableTrainPlatformCargo::UpdateDockingSequence(){ }
+void AFGBuildableTrainPlatformCargo::CancelDockingSequence(){ }
 void AFGBuildableTrainPlatformCargo::UpdatePowerConnectionFromTrack(){ }
 void AFGBuildableTrainPlatformCargo::Factory_Tick(float dt){ }
 void AFGBuildableTrainPlatformCargo::Factory_CollectInput_Implementation(){ }
@@ -61,14 +75,21 @@ void AFGBuildableTrainPlatformCargo::OnRep_ReplicationDetailActor(){ }
 void AFGBuildableTrainPlatformCargo::OnRep_UpdateDockingStatus(){ }
 bool AFGBuildableTrainPlatformCargo::FilterResourceForms(TSubclassOf< UFGItemDescriptor > itemDesc, int32 idx) const{ return bool(); }
 int32 AFGBuildableTrainPlatformCargo::GetFirstIndexWithItem(UFGInventoryComponent* inventory) const{ return int32(); }
-void AFGBuildableTrainPlatformCargo::TransferInventoryToTrain(){ }
-void AFGBuildableTrainPlatformCargo::TransferInventoryToPlatform(){ }
+void AFGBuildableTrainPlatformCargo::TransferInventory(UFGInventoryComponent* from, UFGInventoryComponent* to){ }
 void AFGBuildableTrainPlatformCargo::LoadUnloadVehicleComplete(){ }
+void AFGBuildableTrainPlatformCargo::EvaluateFreightInventoryStatus(){ }
 void AFGBuildableTrainPlatformCargo::UpdateUnloadSettings(){ }
 void AFGBuildableTrainPlatformCargo::UpdateLoadSettings(){ }
 void AFGBuildableTrainPlatformCargo::SwapCargoContainerVisibility(){ }
 void AFGBuildableTrainPlatformCargo::HidePlatformCargoContainer(){ }
 void AFGBuildableTrainPlatformCargo::ShowPlatformCargoContainer(){ }
 void AFGBuildableTrainPlatformCargo::OnCargoPowerStateChanged(bool hasPower){ }
+void AFGBuildableTrainPlatformCargo::EvaluateRuleSet(){ }
+bool AFGBuildableTrainPlatformCargo::CanCompleteDocking(){ return bool(); }
+bool AFGBuildableTrainPlatformCargo::IsLoadUnloadBlockedByNoneFilter(){ return bool(); }
+void AFGBuildableTrainPlatformCargo::UpdateItemTransferRate(int32 numItemsTransfered){ }
+float AFGBuildableTrainPlatformCargo::GetCurrentItemTransferRate(){ return float(); }
+void AFGBuildableTrainPlatformCargo::OnRep_SmoothedLoadRate(){ }
+void AFGBuildableTrainPlatformCargo::OnRep_SmoothedUnloadRate(){ }
 FName AFGBuildableTrainPlatformCargo::mMagicBoxComponentName = FName();
 FName AFGBuildableTrainPlatformCargo::mCargoMeshComponentName = FName();

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSaveSession.h"
 #include "GameFramework/Actor.h"
 #include "Templates/SharedPointer.h"
@@ -25,7 +26,7 @@ public:
 	{
 		if( ::IsValid( actor ) )
 		{
-			checkf( actor->GetNetMode() != ENetMode::NM_Client, TEXT( "Clients can't create shared inventory pointers") );
+			fgcheckf( actor->GetNetMode() != ENetMode::NM_Client, TEXT( "Clients can't create shared inventory pointers") );
 		}
 
 		return FSharedInventoryStatePtr( actor );
@@ -113,21 +114,21 @@ public:
 		bool isServer = false;
 		if( UPackageMapClient* client = Cast<UPackageMapClient>( map ) )
 		{
-			check( client->GetConnection() );
-			check( client->GetConnection()->GetDriver() );
+			fgcheck( client->GetConnection() );
+			fgcheck( client->GetConnection()->GetDriver() );
 			isServer = client->GetConnection()->GetDriver()->IsServer();
 		}
 					
 		if( ar.IsSaving() )
 		{
-			checkf( isServer, TEXT( "Sending a FSharedInventoryStatePtr from client, probably trying to send server a FInventoryStack, try sending a FItemAmount instead" ) );
+			fgcheckf( isServer, TEXT( "Sending a FSharedInventoryStatePtr from client, probably trying to send server a FInventoryStack, try sending a FItemAmount instead" ) );
 			AActor* toSerialize = isServer ? ActorPtr : nullptr;
 			ar << toSerialize;			
 		}
 		else
 		{
 			// Server should never receive a FSharedInventoryStatePtr
-			checkf(!isServer, TEXT("Received a FSharedInventoryStatePtr, probably trying to send server a FInventoryStack, try sending a FItemAmount instead"));
+			fgcheckf(!isServer, TEXT("Received a FSharedInventoryStatePtr, probably trying to send server a FInventoryStack, try sending a FItemAmount instead"));
 			ar << ActorPtr;
 		}
 
@@ -137,7 +138,7 @@ public:
 
 	FORCEINLINE AActor* operator->() const
 	{
-		check( IsValid() );
+		fgcheck( IsValid() );
 		return Get/*Simulator*/();
 	}
 

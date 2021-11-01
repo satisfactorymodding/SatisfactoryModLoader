@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGDropPodSettings.h"
 #include "FGSaveInterface.h"
 #include "FGUseableInterface.h"

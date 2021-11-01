@@ -3,9 +3,52 @@
 #include "FGGameState.h"
 
 AFGGameState::AFGGameState() : Super() {
-	this->mReplicatedOnlineSessionName = "Auto";
-	this->mPlannedRestartTime = 24;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = true; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 5;
+	this->mTurboModeMultiplier = 0.0;
+	this->mPowerCircuitFuseTriggeredMessage = nullptr;
+	this->mTimeSubsystem = nullptr;
+	this->mStorySubsystem = nullptr;
+	this->mRailroadSubsystem = nullptr;
+	this->mCircuitSubsystem = nullptr;
+	this->mRecipeManager = nullptr;
+	this->mSchematicManager = nullptr;
+	this->mGamePhaseManager = nullptr;
+	this->mResearchManager = nullptr;
+	this->mTutorialIntroManager = nullptr;
+	this->mActorRepresentationManager = nullptr;
+	this->mMapManager = nullptr;
+	this->mRadioactivitySubsystem = nullptr;
+	this->mChatManager = nullptr;
+	this->mCentralStorageSubsystem = nullptr;
+	this->mPipeSubsystem = nullptr;
+	this->mUnlockSubsystem = nullptr;
+	this->mResourceSinkSubsystem = nullptr;
+	this->mItemRegrowSubsystem = nullptr;
+	this->mVehicleSubsystem = nullptr;
+	this->mEventSubsystem = nullptr;
+	this->mWorldGridSubsystem = nullptr;
+	this->mDroneSubsystem = nullptr;
+	this->mStatisticsSubsystem = nullptr;
+	this->mSignSubsystem = nullptr;
+	this->mPlayDurationWhenLoaded = 0;
+	this->mReplicatedSessionName = TEXT("");
+	this->mReplicadedOnlineNumPubliclConnections = 0;
+	this->mUnlockCustomizerSchematic = nullptr;
+	this->mPlannedRestartTime = 24.0;
+	this->mHubPartClass = nullptr;
+	this->mForceAddHubPartOnSpawn = false;
+	this->mCheatNoCost = false;
+	this->mCheatNoPower = false;
+	this->mIsTradingPostBuilt = false;
+	this->mHasInitalTradingPostLandAnimPlayed = false;
+	this->mIsSpaceElevatorBuilt = false;
+	this->mServerLocalDateTimeTicksAtInit = 0LL;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = true;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 5.0;
 }
 void AFGGameState::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
@@ -37,25 +80,22 @@ void AFGGameState::SendMessageToAllPlayers(TSubclassOf<  UFGMessageBase > inMess
 void AFGGameState::SendMessageToPlayer(TSubclassOf<  UFGMessageBase > inMessage,  APlayerController* controller){ }
 int32 AFGGameState::GetTotalPlayDuration() const{ return int32(); }
 void AFGGameState::SetSessionName(const FString& inName){ }
-FString AFGGameState::GenerateOnlineSessionName(){ return FString(); }
-FString AFGGameState::GetOnlineSessionName() const{ return FString(); }
-void AFGGameState::SetOnlineSessionName(const FString& inName){ }
-void AFGGameState::SetupColorSlots_Linear(const TArray<FLinearColor>& mColorSlotsPrimary, const TArray<FLinearColor>& mColorSlotsSecondary){ }
-void AFGGameState::Server_SetBuildingColorInSlotLinear_Implementation(uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear){ }
-bool AFGGameState::Server_SetBuildingColorInSlotLinear_Validate(uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear){ return bool(); }
-uint8 AFGGameState::GetNbColorSlotsExposedToPlayers(){ return uint8(); }
+void AFGGameState::SetupColorSlots_Data(const TArray< FFactoryCustomizationColorSlot >& colorSlotsPrimary_Data){ }
+void AFGGameState::Server_SetBuildingColorDataForSlot_Implementation(uint8 slotIdx, FFactoryCustomizationColorSlot colorData){ }
+void AFGGameState::RemovePlayerColorPresetAtIndex(int32 index){ }
+void AFGGameState::AddPlayerColorPreset(FText presetName, FLinearColor color){ }
 FLinearColor AFGGameState::GetBuildingColorPrimary_Linear(uint8 slot){ return FLinearColor(); }
 FLinearColor AFGGameState::GetBuildingColorSecondary_Linear(uint8 slot){ return FLinearColor(); }
 void AFGGameState::Server_SetBuildableLightColorSlot_Implementation(uint8 slotIdx, FLinearColor color){ }
-void AFGGameState::OnRep_BuildingColorSlotPrimary_Linear(){ }
-void AFGGameState::OnRep_BuildingColorSlotSecondary_Linear(){ }
+FFactoryCustomizationColorSlot AFGGameState::GetBuildingColorDataForSlot(uint8 slot){ return FFactoryCustomizationColorSlot(); }
+void AFGGameState::OnRep_BuildingColorSlot_Data(){ }
 void AFGGameState::OnRep_BuildableLightColorSlots(){ }
 void AFGGameState::ClaimPlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ReleasePlayerColor( AFGPlayerState* playerState){ }
 void AFGGameState::ItemPickedUp(TSubclassOf<  UFGItemDescriptor > itemClass){ }
 void AFGGameState::SetPlannedServerRestartWorldTime(float worldTimeSeconds){ }
 FDateTime AFGGameState::GetServerLocalDateTime() const{ return FDateTime(); }
-void AFGGameState::OnRep_OnlineSessionName(){ }
 void AFGGameState::OnRep_OnlineSessionVisibility(){ }
+bool AFGGameState::IsCustomizerRecipeUnlocked(){ return bool(); }
 void AFGGameState::CheckRestartTime(){ }
 void AFGGameState::OnRep_PlannedRestartTime(){ }

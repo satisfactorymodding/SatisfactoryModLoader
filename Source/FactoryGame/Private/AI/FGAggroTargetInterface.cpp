@@ -2,4 +2,6 @@
 
 #include "AI/FGAggroTargetInterface.h"
 
-UFGAggroTargetInterface::UFGAggroTargetInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGAggroTargetInterface::UFGAggroTargetInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+}

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Unlocks/FGUnlock.h"
 #include "FGSchematic.h"
@@ -23,7 +24,7 @@ public:
 
 	void AddItemsToGive( TArray< FItemAmount > items );
 
-public: // MODDING EDIT: protected -> public
+protected:
 	/** The items you get from this unlock */
 	UPROPERTY( EditDefaultsOnly )
 	TArray< FItemAmount > mItemsToGive;

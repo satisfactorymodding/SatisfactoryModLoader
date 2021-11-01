@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Components/SceneComponent.h"
 #include "FGDotComponent.generated.h"
 

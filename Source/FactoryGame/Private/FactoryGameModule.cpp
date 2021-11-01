@@ -4,3 +4,4 @@
 
 void FFactoryGameModule::StartupModule(){ }
 void FFactoryGameModule::ShutdownModule(){ }
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, FactoryGame, "FactoryGame");

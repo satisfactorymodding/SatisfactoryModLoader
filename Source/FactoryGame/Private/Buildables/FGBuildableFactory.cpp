@@ -2,35 +2,53 @@
 
 #include "Buildables/FGBuildableFactory.h"
 #include "Hologram/FGFactoryHologram.h"
+#include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "FGPowerInfoComponent.h"
+#include "Components/SceneComponent.h"
 
 AFGBuildableFactory::AFGBuildableFactory() : Super() {
-	this->mPowerConsumptionExponent = 1.60000002384186;
+	this->mPowerConsumption = 0.0;
+	this->mPowerConsumptionExponent = 1.6;
 	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
-	this->mMinimumProducingTime = 2;
-	this->mMinimumStoppedTime = 5;
+	this->mDoesHaveShutdownAnimation = false;
+	this->mPowerInfo = nullptr;
+	this->mMinimumProducingTime = 2.0;
+	this->mMinimumStoppedTime = 5.0;
+	this->mTimeSinceStartStopProducing = 0.0;
 	this->mNumCyclesForProductivity = 20;
-	this->mPendingPotential = 1;
-	this->mMinPotential = 0.00999999977648258;
-	this->mMaxPotential = 1;
+	this->mCanChangePotential = false;
+	this->mPendingPotential = 1.0;
+	this->mMinPotential = 0.01;
+	this->mMaxPotential = 1.0;
 	this->mMaxPotentialIncreasePerCrystal = 0.5;
 	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
 	this->mFluidStackSizeMultiplier = 1;
+	this->mIsProductionPaused = false;
+	this->mInventoryPotential = nullptr;
 	this->mInventoryPotentialHandler = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT("InventoryPotentialHandler"));
-	this->mCurrentPotential = 1;
-	this->mSignificanceRange = 18000;
+	this->mCurrentPotential = 1.0;
+	this->mEffectUpdateInterval = 0.0;
+	this->mCurrentProductivity = 0;
+	this->mIsProducing = false;
+	this->mHasPower = false;
+	this->mAddToSignificanceManager = true;
+	this->mSignificanceRange = 18000.0;
 	this->mHologramClass = AFGFactoryHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
+	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
+	this->mFactoryTickFunction.bCanEverTick = true;
+	this->mFactoryTickFunction.bStartWithTickEnabled = true;
+	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
+	this->mFactoryTickFunction.TickInterval = 0.0;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
+	this->NetDormancy = ENetDormancy::DORM_Awake;
 }
 void AFGBuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableFactory::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
@@ -48,13 +66,13 @@ void AFGBuildableFactory::SetupForSignificance(){ }
 void AFGBuildableFactory::Factory_Tick(float dt){ }
 void AFGBuildableFactory::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGBuildableFactory::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
-bool AFGBuildableFactory::IsUseable_Implementation() const{ return bool(); }
 void AFGBuildableFactory::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
 void AFGBuildableFactory::OnBuildableReplicationDetailStateChange(bool newStateIsActive){ }
 void AFGBuildableFactory::OnReplicationDetailActorCreated(){ }
 void AFGBuildableFactory::OnReplicationDetailActorRemoved(){ }
 bool AFGBuildableFactory::ShouldSkipBuildEffect(){ return bool(); }
 TArray< UFGFactoryConnectionComponent* > AFGBuildableFactory::GetConnectionComponents() const{ return TArray<UFGFactoryConnectionComponent*>(); }
+float AFGBuildableFactory::GetEmissivePower(){ return float(); }
 float AFGBuildableFactory::GetIdlePowerConsumption() const{ return float(); }
 float AFGBuildableFactory::GetProducingPowerConsumption() const{ return float(); }
 float AFGBuildableFactory::GetDefaultProducingPowerConsumption() const{ return float(); }
@@ -94,6 +112,7 @@ void AFGBuildableFactory::NativeUpdateEffects(float DeltaSeconds){ }
 void AFGBuildableFactory::OnRep_ReplicationDetailActor(){ }
 AFGReplicationDetailActor* AFGBuildableFactory::GetOrCreateReplicationDetailActor(){ return nullptr; }
 void AFGBuildableFactory::OnRep_CurrentPotential(){ }
+void AFGBuildableFactory::OnRep_IsProductionPaused(){ }
 void AFGBuildableFactory::OnRep_IsProducing(){ }
 void AFGBuildableFactory::OnPotentialInventoryItemRemoved(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }
 void AFGBuildableFactory::SetIsProducing(uint8 isProducing){ }

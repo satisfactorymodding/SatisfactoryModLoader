@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSchematic.h"
 #include "FGTutorialIntroManager.h"
 #include "UI/FGBaseUI.h"
+#include "UI/Message/FGAudioMessage.h"
 #include "FGGameUI.generated.h"
 
 class UFGInteractWidget;
@@ -48,6 +50,14 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE TArray< UFGInteractWidget * > GetInteractWidgetStack() { return mInteractWidgetStack; }
 
+	/** Returns the first widget of the given class in the interact stack */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	UFGInteractWidget* GetInteractWidgetOfClass( TSubclassOf< UFGInteractWidget > interactWidgetClass ) const;
+
+	/** Returns true if we have a widget of the given class in the interact stack */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	bool ContainsInteractWidgetOfClass( TSubclassOf< UFGInteractWidget > interactWidgetClass ) const;
+
 	/** Removes from the stack */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	void RemoveInteractWidget( UFGInteractWidget* widgetToRemove );
@@ -68,49 +78,51 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable , Category = "UI")
 	bool PopWidget(UFGInteractWidget* WidgetToRemove );
 
-	/** Returns widget array with pending messages */
-	UFUNCTION( BlueprintPure, Category = "UI" )
-	FORCEINLINE	TArray< TSubclassOf< class UFGMessageBase > > GetPendingMessages() { return mPendingMessages; }
-
 	/** Adds a new message to the pending message array */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
-	void AddPendingMessage( TSubclassOf< class UFGMessageBase > newMessage ) { mPendingMessages.Add( newMessage ); }
+	void AddPendingMessage( FPendingMessageQueue message );
 
 	/** Handle message. Usually grabbed from the pending message list at appropriate time */
 	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
 	void ReceivedMessage( TSubclassOf< class UFGMessageBase > inMessage );
 
-	/** Handle call message. Usually grabbed from the pending message list at appropriate time */
-	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
-    void ReceivedCall( TSubclassOf< class UFGAudioMessage > inMessage );
-
-	/** Handle audio message. Usually grabbed from the pending message list at appropriate time */
-	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
-    void ReceivedAudioMessage( TSubclassOf< class UFGAudioMessage > inMessage );
-
 	/** Answer a call that is shown on the screen */
-	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
     void AnswerCall( TSubclassOf< class UFGAudioMessage > inMessage );
 
-	/** Handle pending messages and push them at appropriate time */
-	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
-	void HandlePendingMessages();
+	/** Decline a call that is shown on the screen */
+    void DeclineCall( TSubclassOf< class UFGAudioMessage > inMessage );
 
-	/**  Is this a good time to get a message? */
-	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
+	/** Handle pending messages and push them at appropriate time */
+	void HandlePendingMessages( float InDeltaTime );
+
+	void PlayMessageQueue( FPendingMessageQueue newMessageQueue );
+
+	void UpdateActiveMessageQueue();
+
+	UFUNCTION()
+	void PlayNextMessageInActiveMessageQueue();
+
+	/**  Is this a good time to start the given message queue? */
+	bool CanReceiveMessageQueue( FPendingMessageQueue inMessageQueue );
+
+	/**  Is this a good time to play the given message? */
 	bool CanReceiveMessage( TSubclassOf< class UFGMessageBase > inMessage );
 
-	/** Sets the current audio message being played */
+	/** Sets the active audio message being played */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
-	void SetCurrentAudioMessage( class UFGAudioMessage* newMessage ){ mCurrentAudioMessage = newMessage; }
+    void SetActiveAudioMessage( class UFGAudioMessage* newMessage ){ mActiveAudioMessage = newMessage; }
 
-	/** Gets the current audio message being played ( can be null ) */
+	/** Gets the active audio message being played ( can be null ) */
 	UFUNCTION( BlueprintPure, Category = "UI" )
-	FORCEINLINE class UFGAudioMessage* GetCurrentAudioMessage(){ return mCurrentAudioMessage; }
+    FORCEINLINE class UFGAudioMessage* GetActiveAudioMessage(){ return mActiveAudioMessage; }
 
 	/** Called from in-game when the cancel key ( escape ) was pressed when no widget has focus */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	void CancelPressed();
+
+	/** Triggered when we have finished playing the active audio message */
+	UFUNCTION()
+    void AudioMessageFinishedPlayback();
 
 	/** Removes the audio message */
 	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
@@ -120,11 +132,9 @@ public:
 	class AFGCharacterPlayer* GetFGCharacter();
 
 	/** Adds new tutorial info to be displayed */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Tutorial" )
-	void AddIntroTutorialInfo( FTutorialHintData tutorialHintData );
+    void AddIntroTutorialInfo( FTutorialHintData tutorialHintData );
 
 	/** Called when we update our current objective but are waiting to show the next */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Tutorial" )
 	void ClearHintOnTutorialStepCompleted();
 
 	/** Setter for show inventory */
@@ -176,7 +186,7 @@ public:
     void OnHoverPackConnectionStatusUpdated( const bool HasConnection );
 
 	/** Play a audio message in the UI */
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category ="FactoryGame|Message")
+	UFUNCTION( BlueprintCallable, Category ="FactoryGame|Message")
 	void PlayAudioMessage( TSubclassOf<UFGAudioMessage> messageClass );
 
 	/** Finds a widget in the interact widget stack, returns null if not found */
@@ -208,9 +218,25 @@ protected:
 	virtual FReply NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;
 	// End UUserWidget interface
 
+	/** Event triggered when we have updated the current tutorial info */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+    void OnUpdateTutorialInfo();
+
+	/** Event triggered when we want to show tutorial hint */
+	void ShowTutorialHint();
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI", meta = (DisplayName = "ShowTutorialHint") )
+	void ReceiveShowTutorialHint();
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+	UNamedSlot* GetTutorialInfoSlot();
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+	UNamedSlot* GetAudioMessageSlot();
+
 public:
 	/** Array with messages that the player has stocked up */
-	TArray< TSubclassOf< class UFGMessageBase > > mPendingMessages;
+	TArray< FPendingMessageQueue > mPendingMessageQueues;
 
 	/** Delegate for when mouse button is pressed. The event will not be handled 
 	so if you already are listening for mouse input you might get this and your own event */
@@ -223,6 +249,9 @@ protected:
 
 	/** Do we want a player inventory to be created */
 	bool mWindowWantInventoryAddon;
+
+	UPROPERTY( BlueprintReadOnly )
+	FTutorialHintData mActiveTutorialHintData;
 private:
 	/** A stack with widgets that are currently open */
 	UPROPERTY()
@@ -230,7 +259,11 @@ private:
 
 	/** Message that is being played now ( can be null ) */
 	UPROPERTY()
-	class UFGAudioMessage* mCurrentAudioMessage;
+	class UFGAudioMessage* mActiveAudioMessage;
+
+	/** Message queue that the currently active audio message belongs to */
+	UPROPERTY()
+	FPendingMessageQueue mActiveMessageQueue;
 
 	/** How much time must pass between receiving audio messages at least? */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )

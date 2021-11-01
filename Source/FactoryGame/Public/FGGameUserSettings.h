@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/GameUserSettings.h"
 #include "GameFramework/PlayerInput.h"
 #include "FGInputLibrary.h"
@@ -285,6 +286,23 @@ public:
 
 	void GetOptionsDebugData( TArray<FString>& out_debugData );
 
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
+	void SetHologramColour( FVector inColour );
+	
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
+	void SetDismantleHologramColour( FVector inColour );
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
+	void SetInvalidPlacementHologramColour( FVector inColour );
+
+	UFUNCTION( BlueprintCallable,Category = "FactoryGame|Settings")
+	void SetSoftClearanceHologramColour( FVector inColour );
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
+	void ApplyHologramColoursToCollectionParameterInstance( UObject* World );
+
+	UMaterialParameterCollection* GetHologramMaterialCollectionAsset() const;
+	
 private:
 	friend class OptionValueContainer;
 	
@@ -399,8 +417,21 @@ private:
     FString mPrimaryLanguage;
 
 	/** Which version of game user settings dow we have saved. Used to migrate or perform actions when options are updated/refactored */
-	UPROPERTY(config)
+	UPROPERTY( Config )
 	uint32 CurrentFGGameUserSettingsVersion;
+
+	/** Hologram color variables. */
+	UPROPERTY( Config )
+	FVector mBuildHologramColour;
+
+	UPROPERTY( Config )
+	FVector mDismantleHologramColour;
+
+	UPROPERTY( Config )
+	FVector mInvalidPlacementHologramColour;
+
+	UPROPERTY( Config )
+	FVector mSoftClearanceHologramColour;
 
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;

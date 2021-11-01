@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "NAT.h"
 #include "FGOnlineSessionSettings.generated.h"
@@ -44,10 +45,6 @@ struct FFGOnlineSessionSettings
 	/** Name of the session, same as the name exposed in the Save/Load menus */
 	UPROPERTY(BlueprintReadOnly)
 	FString				SaveSessionName;
-
-	/** A unique identifier of a game session */
-	UPROPERTY(BlueprintReadOnly)
-	FString				CSS_SessionId;
 
 	/** Hosts nat type */
 	UPROPERTY(BlueprintReadOnly)

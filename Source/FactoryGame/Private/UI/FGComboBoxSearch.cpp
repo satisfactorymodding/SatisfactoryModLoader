@@ -19,7 +19,7 @@ FString UFGComboBoxSearch::GetSelectedOption() const{ return FString(); }
 int32 UFGComboBoxSearch::GetSelectedIndex() const{ return int32(); }
 int32 UFGComboBoxSearch::GetOptionCount() const{ return int32(); }
 bool UFGComboBoxSearch::IsOpen() const{ return bool(); }
-void UFGComboBoxSearch::ReleaseSlateResources(bool bReleaseChildren){ Super::ReleaseSlateResources(bReleaseChildren); }
+void UFGComboBoxSearch::ReleaseSlateResources(bool bReleaseChildren){ }
 void UFGComboBoxSearch::PostInitProperties(){ Super::PostInitProperties(); }
 void UFGComboBoxSearch::Serialize(FArchive& Ar){ Super::Serialize(Ar); }
 void UFGComboBoxSearch::PostLoad(){ Super::PostLoad(); }
@@ -30,4 +30,27 @@ TSharedRef<SWidget> UFGComboBoxSearch::HandleGenerateWidget(TSharedPtr<FString> 
 void UFGComboBoxSearch::HandleSelectionChanged(TSharedPtr<FString> Item, ESelectInfo::Type SelectionType){ }
 void UFGComboBoxSearch::HandleOpening(){ }
 TSharedRef<SWidget> UFGComboBoxSearch::RebuildWidget(){ return Super::RebuildWidget(); }
-UFGComboBoxSearch::UFGComboBoxSearch(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGComboBoxSearch::UFGComboBoxSearch(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->SelectedOption = TEXT("");
+	this->ContentPadding.Left = 4.0;
+	this->ContentPadding.Top = 2.0;
+	this->ContentPadding.Right = 4.0;
+	this->ContentPadding.Bottom = 2.0;
+	this->MaxListHeight = 450.0;
+	this->HasDownArrow = true;
+	this->EnableGamepadNavigationMode = true;
+	this->Font.FontObject = FSoftObjectPath("/Engine/EngineFonts/Roboto.Roboto").ResolveObject();
+	this->Font.FontMaterial = nullptr;
+	this->Font.OutlineSettings.OutlineSize = 0;
+	this->Font.OutlineSettings.bSeparateFillAlpha = false;
+	this->Font.OutlineSettings.bApplyOutlineToDropShadows = false;
+	this->Font.OutlineSettings.OutlineMaterial = nullptr;
+	this->Font.OutlineSettings.OutlineColor.R = 0.0;
+	this->Font.OutlineSettings.OutlineColor.G = 0.0;
+	this->Font.OutlineSettings.OutlineColor.B = 0.0;
+	this->Font.OutlineSettings.OutlineColor.A = 1.0;
+	this->Font.TypefaceFontName = TEXT("Bold");
+	this->Font.Size = 16;
+	this->Font.LetterSpacing = 0;
+	this->bIsFocusable = true;
+}

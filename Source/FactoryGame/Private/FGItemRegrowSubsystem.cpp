@@ -4,9 +4,13 @@
 
 AFGItemRegrowSubsystem::AFGItemRegrowSubsystem() : Super() {
 	this->mMaxPerTick = 200;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 1;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 1.0;
 }
 void AFGItemRegrowSubsystem::Tick(float DeltaSeconds){ }
 AFGItemRegrowSubsystem* AFGItemRegrowSubsystem::Get(UWorld* world){ return nullptr; }

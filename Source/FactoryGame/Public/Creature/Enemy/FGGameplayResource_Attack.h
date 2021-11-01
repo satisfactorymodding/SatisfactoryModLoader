@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameplayTaskResource.h"
 #include "FGGameplayResource_Attack.generated.h"
 

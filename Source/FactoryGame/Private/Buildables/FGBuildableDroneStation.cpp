@@ -2,15 +2,33 @@
 
 #include "Buildables/FGBuildableDroneStation.h"
 #include "Hologram/FGFactoryHologram.h"
-#include "FGPowerInfoComponent.h"
 #include "Replication/FGReplicationDetailInventoryComponent.h"
+#include "FGPowerInfoComponent.h"
+#include "Components/SceneComponent.h"
 
 AFGBuildableDroneStation::AFGBuildableDroneStation() : Super() {
+	this->mDroneDockingStartLocationLocal.X = 0.0;
+	this->mDroneDockingStartLocationLocal.Y = 0.0;
+	this->mDroneDockingStartLocationLocal.Z = 0.0;
+	this->mDroneDockingLocationLocal.X = 0.0;
+	this->mDroneDockingLocationLocal.Y = 0.0;
+	this->mDroneDockingLocationLocal.Z = 0.0;
+	this->mDroneClass = nullptr;
+	this->mUIBatteryCostItemClass = nullptr;
+	this->mStationHasDronesInQueue = false;
+	this->mRecentlyDockedDrone = nullptr;
+	this->mItemTransferringStage = EItemTransferringStage::ITS_NONE;
+	this->mTransferProgress = 0.0;
 	this->mTransferSpeed = 0.5;
-	this->mStackTransferSize = 1;
-	this->mDroneQueueRadius = 2000;
-	this->mDroneQueueVerticalSeparation = 1000;
+	this->mStackTransferSize = 1.0;
+	this->mDroneQueueRadius = 2000.0;
+	this->mDroneQueueSeparationRadius = 0.0;
+	this->mDroneQueueVerticalSeparation = 1000.0;
+	this->mTripPowerCost = 0.0;
+	this->mTripPowerPerMeterCost = 0.0;
 	this->mTripInformationSampleCount = 3;
+	this->mStationDrone = nullptr;
+	this->mDockedDrone = nullptr;
 	this->mStorageSizeX = 1;
 	this->mStorageSizeY = 1;
 	this->mBatteryStorageSizeX = 1;
@@ -18,39 +36,39 @@ AFGBuildableDroneStation::AFGBuildableDroneStation() : Super() {
 	this->mInputInventoryHandler = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT("InputInventoryHandler"));
 	this->mOutputInventoryHandler = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT("OutputInventoryHandler"));
 	this->mBatteryInventoryHandler = CreateDefaultSubobject<UFGReplicationDetailInventoryComponent>(TEXT("BatteryInventoryHandler"));
-	this->mPowerConsumptionExponent = 1.60000002384186;
-	this->mPowerInfoClass = UFGPowerInfoComponent::StaticClass();
-	this->mMinimumProducingTime = 2;
-	this->mMinimumStoppedTime = 5;
-	this->mNumCyclesForProductivity = 20;
-	this->mPendingPotential = 1;
-	this->mMinPotential = 0.00999999977648258;
-	this->mMaxPotential = 1;
-	this->mMaxPotentialIncreasePerCrystal = 0.5;
-	this->mFluidStackSizeDefault = EStackSize::SS_FLUID;
-	this->mFluidStackSizeMultiplier = 1;
-	this->mSignificanceRange = 18000;
-	this->mHologramClass = AFGFactoryHologram::StaticClass();
-	this->MaxRenderDistance = -1;
-	this->mFactoryTickFunction.TickGroup = TG_PrePhysics; this->mFactoryTickFunction.EndTickGroup = TG_PrePhysics; this->mFactoryTickFunction.bTickEvenWhenPaused = false; this->mFactoryTickFunction.bCanEverTick = true; this->mFactoryTickFunction.bStartWithTickEnabled = true; this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true; this->mFactoryTickFunction.TickInterval = 0;
-	this->mPrimaryColor.R = -1; this->mPrimaryColor.G = -1; this->mPrimaryColor.B = -1; this->mPrimaryColor.A = 1;
-	this->mSecondaryColor.R = -1; this->mSecondaryColor.G = -1; this->mSecondaryColor.B = -1; this->mSecondaryColor.A = 1;
-	this->mDismantleEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Dismantle.BP_MaterialEffect_Dismantle_C");
-	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_Build.BP_MaterialEffect_Build_C");
-	this->mHighlightParticleClassName = FSoftClassPath("/Game/FactoryGame/Buildable/-Shared/Particle/NewBuildingPing.NewBuildingPing_C");
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
-	this->NetCullDistanceSquared = 5624999936;
+	this->mInputInventory = nullptr;
+	this->mOutputInventory = nullptr;
+	this->mBatteryInventory = nullptr;
+	this->mInfo = nullptr;
+	this->mActorRepresentationTexture = nullptr;
+	this->mMapText = INVTEXT("");
 }
+bool AFGBuildableDroneStation::AddAsRepresentation(){ return bool(); }
+bool AFGBuildableDroneStation::UpdateRepresentation(){ return bool(); }
+bool AFGBuildableDroneStation::RemoveAsRepresentation(){ return bool(); }
+bool AFGBuildableDroneStation::IsActorStatic(){ return bool(); }
+FVector AFGBuildableDroneStation::GetRealActorLocation(){ return FVector(); }
+FRotator AFGBuildableDroneStation::GetRealActorRotation(){ return FRotator(); }
+UTexture2D* AFGBuildableDroneStation::GetActorRepresentationTexture(){ return nullptr; }
+FText AFGBuildableDroneStation::GetActorRepresentationText(){ return FText(); }
+void AFGBuildableDroneStation::SetActorRepresentationText(const FText& newText){ }
+FLinearColor AFGBuildableDroneStation::GetActorRepresentationColor(){ return FLinearColor(); }
+void AFGBuildableDroneStation::SetActorRepresentationColor(FLinearColor newColor){ }
+ERepresentationType AFGBuildableDroneStation::GetActorRepresentationType(){ return ERepresentationType(); }
+bool AFGBuildableDroneStation::GetActorShouldShowInCompass(){ return bool(); }
+bool AFGBuildableDroneStation::GetActorShouldShowOnMap(){ return bool(); }
+EFogOfWarRevealType AFGBuildableDroneStation::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
+float AFGBuildableDroneStation::GetActorFogOfWarRevealRadius(){ return float(); }
+ECompassViewDistance AFGBuildableDroneStation::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
+void AFGBuildableDroneStation::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 void AFGBuildableDroneStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableDroneStation::BeginPlay(){ }
 void AFGBuildableDroneStation::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableDroneStation::Factory_Tick(float dt){ }
 void AFGBuildableDroneStation::Factory_TickProducing(float dt){ }
 void AFGBuildableDroneStation::Factory_CollectInput_Implementation(){ }
-void AFGBuildableDroneStation::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
 void AFGBuildableDroneStation::Dismantle_Implementation(){ }
+void AFGBuildableDroneStation::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }
 void AFGBuildableDroneStation::OnReplicationDetailActorRemoved(){ }
 void AFGBuildableDroneStation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableDroneStation::StartIsLookedAtForSnapping( AFGCharacterPlayer* byCharacter, bool IsValidSnap){ }
@@ -71,6 +89,7 @@ bool AFGBuildableDroneStation::FilterBatteryClasses(TSubclassOf< UObject > objec
 bool AFGBuildableDroneStation::IsValidFuel(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }
 void AFGBuildableDroneStation::OnRep_ItemTransferringStage(){ }
 void AFGBuildableDroneStation::OnRep_StationHasDronesInQueue(){ }
+void AFGBuildableDroneStation::OnRep_DroneStationInfo(){ }
 void AFGBuildableDroneStation::SetItemTransferringStage(EItemTransferringStage NewStage){ }
 void AFGBuildableDroneStation::BeginItemTransfer(){ }
 void AFGBuildableDroneStation::EndItemTransfer(){ }

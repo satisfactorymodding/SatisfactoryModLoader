@@ -2,11 +2,15 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGPlayerControllerBase.h"
 #include "FGChatManager.h"
 #include "FGCharacterPlayer.h"
 #include "FGPlayerState.h"
 #include "PlayerPresenceState.h"
+#include "UI/Message/FGAudioMessage.h"
+#include "Server/FGDedicatedServerTypes.h"
+#include "Equipment/FGBuildGun.h"
 #include "FGPlayerController.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FPawnChangedDelegate, APawn*, newPawn );
@@ -16,8 +20,12 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnToggleInventory, bool, isOpen );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnToggleInteractionUI, bool, isOpen, TSubclassOf< class UUserWidget >, interactionClass );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShortcutsLayoutChanged );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnShortcutChanged );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnShortcutSet, int32, index );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPresetHotbarChanged, int32, presetHotbarIndex );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHotbarIndexChanged, int32, newHotbarIndex );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FRefreshHotbarShortcuts );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnFinishRespawn );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRespawnUIVisibilityChanged, bool, respawnUIVisibility );
 
 UCLASS( Config=Game)
 class FACTORYGAME_API AFGPlayerController : public AFGPlayerControllerBase
@@ -147,7 +155,27 @@ public:
 
 	/** Set the specified hotbar shortcut on the index if it's valid */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
-	void SetRecipeShortcutOnIndex( TSubclassOf< class UFGRecipe > recipe, int32 onIndex );
+	void SetRecipeShortcutOnIndex( TSubclassOf< class UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex = -1 );
+
+	/** Set the Customization hotbar shortcut on the index if it's valid */
+	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
+	void SetCustomizationShortcutOnIndex( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe, int32 onIndex );
+
+	/** Remove a saved color preset */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
+	void RemovePlayerColorPresetAtIndex( int32 index );
+
+	UFUNCTION( Reliable, Server )
+	void Server_RemovePlayerColorPresetAtIndex( int32 index );
+
+	/** Set a saved color preset */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
+	void AddPlayerColorPreset( FText presetName, FLinearColor color );
+
+	UFUNCTION( Reliable, Server )
+	void Server_AddPlayerColorPreset( const FText& presetName, FLinearColor color );
+
+
 
 	/** Set the current hotbar index */
 	void SetHotbarIndex( int32 newIndex );
@@ -186,6 +214,14 @@ public:
 	UPROPERTY( BlueprintAssignable )
 	FOnShortcutChanged OnShortcutChanged;
 
+	/** Called when a shortcut is set */
+	UPROPERTY( BlueprintAssignable )
+	FOnShortcutSet OnShortcutSet;
+
+	/** Notify that the hotbars should refresh */
+	UPROPERTY( BlueprintAssignable )
+	FRefreshHotbarShortcuts OnRefreshHotbarShortcuts;
+
 	/** Called when a shortcut has changed, e.g. activated or inactivated */
 	UPROPERTY( BlueprintAssignable )
 	FOnPresetHotbarChanged OnPresetHotbarChanged;
@@ -193,6 +229,10 @@ public:
 	/** Called when we change hotbar index has changed */
 	UPROPERTY( BlueprintAssignable )
 	FOnHotbarIndexChanged OnHotbarIndexChanged;
+
+	/** Called on owning client when respawning starts */
+	UPROPERTY( BlueprintAssignable )
+	FOnFinishRespawn OnFinishRespawn;
 
 	/** Called when the player opens or closes the inventory */
 	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Inventory" )
@@ -209,6 +249,10 @@ public:
 	/** Called when the pawn this controller is controlling changes to other than nullPeter */
 	UPROPERTY( BlueprintAssignable, Category = "Pawn", DisplayName = "OnPawnChanged" )
 	FPawnChangedDelegate PawnChanged;
+
+	/** Called when the visbility of respawn UI should change */
+	UPROPERTY( BlueprintAssignable, Category = "UI"  )
+	FOnRespawnUIVisibilityChanged mOnRespawnUIVisibilityChanged;
 
 	/** Tells the server to start transferring fog of war data to the requesting client  */
 	UFUNCTION( Reliable, Server, WithValidation )
@@ -228,11 +272,15 @@ public:
 
 	/** Gets called on the client */
 	UFUNCTION( Reliable, Client, BlueprintCallable )
-	void Client_AddMessage( TSubclassOf< class UFGMessageBase > newMessage );
+	void Client_AddMessage( FPendingMessageQueue newMessageQueue );
 
 	/** Gets called on the client */
 	UFUNCTION( Reliable, Client )
     void Client_AnswerCall( TSubclassOf< class UFGAudioMessage > messageToAnswer );
+
+	/** Gets called on the client */
+	UFUNCTION( Reliable, Client )
+    void Client_DeclineCall( TSubclassOf< class UFGAudioMessage > messageToDecline );
 
 	/** Gets called on the client */
 	UFUNCTION( BlueprintCallable, Category = "Message" )
@@ -328,10 +376,20 @@ public:
 
 	/** Updates RTPCs for all music player objects that have registered with this controller */
 	void UpdateMusicPlayers( float dt );
-protected:
-	//MODDING EDIT: Allow access from SMLRemoteCallObject
-	friend class USMLRemoteCallObject;
+
+	/** Notified from the build gun that the build state has changed */
+	UFUNCTION()
+	void OnBuildGunStateChanged( EBuildGunState newState );
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
+	class UFGPhotoModeWidget* GetPhotoModeWidget() const;
 	
+	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
+	bool GetIsPhotoMode() { return mPhotoModeEnabled; }
+
+	/** Used to distinguish admin players from simple clients on dedicated servers. Will only hold a useful value on dedicated servers */
+	FServerEntryToken mServerEntryTicket;
+protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
 
@@ -346,12 +404,6 @@ protected:
 	 */
 	UFUNCTION( BlueprintImplementableEvent, Category="Respawn" )
 	void OnStartRespawn( bool isJoining );
-
-	/**
-	* Called on owning client when respawning starts
-	*/
-	UFUNCTION( BlueprintImplementableEvent, Category = "Respawn" )
-	void OnFinishRespawn();
 
 	/**
 	* Called on start of a local client player. Reutrn the component that should handle the wind for the player
@@ -391,7 +443,7 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
 	void EnablePhotoMode( bool isEnabled );
 
-	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "Photo Mode" )
 	void TakePhoto();
 
 	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
@@ -413,11 +465,7 @@ protected:
 	int32 GetPhotoModeFOV() { return mPhotoModeFOV; }
 
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
-	bool GetIsPhotoMode() { return mPhotoModeEnabled; }
-
-	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	bool GetHiResPhotoModeEnabled() { return mHiResPhotoMode; }
-
 
 private:
 	/** Begins the setup of the tutorial subsystem */
@@ -427,7 +475,9 @@ private:
 	void FinishRespawn();
 
 	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_SetRecipeShortcutOnIndex( TSubclassOf<class UFGRecipe> recipe, int32 onIndex );
+	void Server_SetRecipeShortcutOnIndex( TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex = -1 );
+	UFUNCTION( Reliable, Server )
+	void Server_SetCustomizationShortcutOnIndex( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe, int32 onIndex );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_SetHotbarIndex( int32 index );
 	UFUNCTION( Reliable, Server, WithValidation )
@@ -456,6 +506,8 @@ private:
 	void OnRep_IsRespawning();
 
 	void DisablePawnMovement( bool isDisabled );
+
+	void SetRespawnUIVisibility( bool respawnUIVisibility );
 
 	static void testAndProcesAdaMessages( AFGPlayerController* owner, const FString &inMessage, AFGPlayerState* playerState, float serverTimeSeconds, class APlayerState* PlayerState, class AFGGameState* fgGameState );
 
@@ -559,6 +611,9 @@ private:
 
 	/** Time left until next tick */
 	float mMusicPlayerTickInterval;
+
+	/** If we should show the UI for respawning prompt or not */
+	bool mRespawnUIVisibility;
 
 	/** List of music player to keep track of  */
 	UPROPERTY()

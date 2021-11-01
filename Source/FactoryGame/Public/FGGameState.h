@@ -2,14 +2,15 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSaveInterface.h"
 #include "GameFramework/GameState.h"
 #include "FGPlayerState.h"
 #include "FGGamePhaseManager.h"
 #include "FGResearchManager.h"
-#include "FGBuildingColorSlotStruct.h"
-#include "BuildableColorSlotBase.h"
+#include "FGFactoryColoringTypes.h"
 #include "FGUnlockSubsystem.h"
+#include "FGSchematic.h"
 #include "FGGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FVisitedMapAreaDelegate, TSubclassOf< class UFGMapArea >, mapArea );
@@ -17,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRestartTimeNotification, float, 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutoSaveTimeNotification, float, timeLeft );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnAutoSaveFinished );
 
-extern const wchar_t STARTUP_TEMP_ID_PREFIX[];
+extern const TCHAR STARTUP_TEMP_ID_PREFIX[];
 /**
  * 
  */
@@ -120,6 +121,9 @@ public:
 	FORCEINLINE class AFGEventSubsystem* GetEventSubsystem() const { return mEventSubsystem; }
 	FORCEINLINE class AFGWorldGridSubsystem* GetWorldGridSubsystem() const { return mWorldGridSubsystem; }
 	FORCEINLINE class AFGDroneSubsystem* GetDroneSubsystem() const { return mDroneSubsystem; }
+	FORCEINLINE class AFGStatisticsSubsystem* GetStatisticsSubsystem() const { return mStatisticsSubsystem; }
+	FORCEINLINE class AFGSignSubsystem* GetSignSubsystem() const { return mSignSubsystem; }
+	
 
 	/** Helper to access the actor representation manager */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation", meta = ( DeprecatedFunction, DeprecationMessage = "Use global getter instead" ) )
@@ -191,26 +195,37 @@ public:
 
 	void SetSessionName( const FString& inName );
 	
-	FString GenerateOnlineSessionName();
-
-	UFUNCTION(BlueprintPure, Category = "FactoryGame|Session")
-	FString GetOnlineSessionName() const;
-
-	UFUNCTION(BlueprintCallable, Category = "FactoryGame|Session")
-	void SetOnlineSessionName( const FString& inName );
-
 	/*
 	 * Called from buildable subsystem on load to apply saved color slot data
 	 */
-	void SetupColorSlots_Linear( const TArray<FLinearColor>& mColorSlotsPrimary, const TArray<FLinearColor>& mColorSlotsSecondary );
+	void SetupColorSlots_Data( const TArray< FFactoryCustomizationColorSlot >& colorSlotsPrimary_Data );
 
 	/*
 	 * Server - Called to propogate Building Color Changes
 	 */
-	UFUNCTION( Reliable, Server, WithValidation )
-	void Server_SetBuildingColorInSlotLinear( uint8 slotIdx, FLinearColor colorPrimary_Linear, FLinearColor colorSecondary_Linear );
+	UFUNCTION( Reliable, Server )
+	void Server_SetBuildingColorDataForSlot( uint8 slotIdx, FFactoryCustomizationColorSlot colorData );
 
-	uint8 GetNbColorSlotsExposedToPlayers();
+	
+	//////////////////////////////////////////////////////////////////////////
+	/// Global Color Presets (Unrelated to color swatches / building colors
+
+	/** Returns the color presets defined by CSS. These are not modifiable. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
+	TArray< FGlobalColorPreset > GetStaticColorPresets() { return mStaticGlobalColorPresets; }
+
+	/** Returns the colors preset array created by players. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
+	TArray< FGlobalColorPreset > GetPlayerColorPresets() { return mPlayerGlobalColorPresets; }
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
+	void RemovePlayerColorPresetAtIndex( int32 index );
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
+	void AddPlayerColorPreset( FText presetName, FLinearColor color );
+
+	/// End Global Color Presets
+	//////////////////////////////////////////////////////////////////////////
 
 	/** Linear Color Getters */
 	FLinearColor GetBuildingColorPrimary_Linear( uint8 slot );
@@ -220,13 +235,12 @@ public:
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category="FactoryGame|Buildable|Light")
 	void Server_SetBuildableLightColorSlot( uint8 slotIdx, FLinearColor color );
 
+	/** Color Data Getter */
+	FFactoryCustomizationColorSlot GetBuildingColorDataForSlot( uint8 slot );
+
 	/** Called both on client and server. Apply primary color changes to the buildable subsystem*/
 	UFUNCTION()
-	void OnRep_BuildingColorSlotPrimary_Linear();
-
-	/** Called both on client and server. Apply secondary color changes to the buildable subsystem*/
-	UFUNCTION()
-	void OnRep_BuildingColorSlotSecondary_Linear();
+	void OnRep_BuildingColorSlot_Data();
 
 	/** Called both on client and server when the buildable light color slots have been updated. Relays changes to buildable subsystem */
 	UFUNCTION()
@@ -250,13 +264,13 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|DateTime" )
     FDateTime GetServerLocalDateTime() const;
 	
-	/** Called both on client and server for syncing session names for connected players*/
-	UFUNCTION()
-	void OnRep_OnlineSessionName();
-
 	/** Called both on client and server for syncing session visibility for connected players*/
 	UFUNCTION()
 	void OnRep_OnlineSessionVisibility();
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	bool IsCustomizerRecipeUnlocked();
+
 private:
 	/** Check the restart time of server and restart it and notify clients of the countdown */
 	void CheckRestartTime();
@@ -286,7 +300,7 @@ private:
 		spawnParams.Name = spawnName;
 
 		out_spawnedSubsystem = GetWorld()->SpawnActor< C >( spawnClass, spawnParams );
-		check( out_spawnedSubsystem );
+		fgcheck( out_spawnedSubsystem );
 	}
 
 public:
@@ -344,7 +358,7 @@ private:
 	class AFGResourceSinkSubsystem* mResourceSinkSubsystem;
 	UPROPERTY()
 	class AFGItemRegrowSubsystem* mItemRegrowSubsystem;
-	UPROPERTY()
+	UPROPERTY( Replicated )
 	class AFGVehicleSubsystem* mVehicleSubsystem;
 	UPROPERTY( Replicated )
 	class AFGEventSubsystem* mEventSubsystem;
@@ -352,6 +366,12 @@ private:
 	class AFGWorldGridSubsystem* mWorldGridSubsystem;
 	UPROPERTY( Replicated )
 	class AFGDroneSubsystem* mDroneSubsystem;
+	UPROPERTY( SaveGame )
+	class AFGStatisticsSubsystem* mStatisticsSubsystem;
+	UPROPERTY( Replicated )
+	class AFGSignSubsystem* mSignSubsystem;
+
+	
 	
 	/** This array keeps track of what map areas have been visited this game */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_MapAreaVisited )
@@ -368,27 +388,30 @@ private:
 	UPROPERTY( SaveGame, Replicated )
 	FString mReplicatedSessionName;
 	
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OnlineSessionName)
-	FString mReplicatedOnlineSessionName = "Auto"; //A value of auto should be evaluated to a generated name on first use/at session creation
-
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_OnlineSessionVisibility)
 	int8 mReplicadedOnlineNumPubliclConnections = 0; 
 
-	/*
-	 *	Array of primary building color slots as Linear Colors. Note: This used to be handled with FColor which resulted in unneeded conversions back and forth
-	 */
-	UPROPERTY( ReplicatedUsing = OnRep_BuildingColorSlotPrimary_Linear, EditDefaultsOnly, Category = "Customization" )
-	TArray<FLinearColor> mBuildingColorSlotsPrimary_Linear;
-
-	/*
-	 *	Array of secondary building color slots as Linear Colors. Note: This used to be handled with FColor which resulted in unneeded conversions back and forth
-	 */
-	UPROPERTY( ReplicatedUsing = OnRep_BuildingColorSlotSecondary_Linear, EditDefaultsOnly, Category = "Customization" )
-	TArray<FLinearColor> mBuildingColorSlotsSecondary_Linear;
+	UPROPERTY( ReplicatedUsing = OnRep_BuildingColorSlot_Data, EditDefaultsOnly, Category = "Customization" )
+	TArray< FFactoryCustomizationColorSlot > mBuildingColorSlots_Data;
 
 	/** The player adjustable color slots used by the buildable lights. We store it here instead of buildable subsystem since that subsystem isn't replicated */ 
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_BuildableLightColorSlots )
 	TArray< FLinearColor > mBuildableLightColorSlots;
+
+	/** Predefined Colors by CSS. These cannot be modified. Allow players to quickly retrieve popular colors */
+	UPROPERTY( EditDefaultsOnly )
+	TArray< FGlobalColorPreset > mStaticGlobalColorPresets;
+
+	/** Customizable Global Color Presets. Players can add / remove */
+	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated )
+	TArray< FGlobalColorPreset > mPlayerGlobalColorPresets;
+
+	/** 
+	 * The schematic that allows for the opening of the customizer menu.
+	 * This is a special input gate lock so its not done through the input gate locking and will just check against this recipe
+	 */
+	UPROPERTY( EditDefaultsOnly, Category="Customization")
+	TSoftClassPtr< class UFGSchematic > mUnlockCustomizerSchematic;
 
 	/** Track whether or not colors have been initialized by the subsystem. This is here to support an old legacy save issue */
 	bool mHasInitializedColorSlots;

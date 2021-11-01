@@ -2,12 +2,16 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableTrainPlatform.h"
 #include "Replication/FGReplicationDetailInventoryComponent.h"
 #include "Replication/FGReplicationDetailActor_CargoPlatform.h"
 #include "FGFreightWagon.h"
+#include "FGTrainDockingRules.h"
 #include "FGBuildableTrainPlatformCargo.generated.h"
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnItemTransferRateUpdated, int32, itemTransferRate );
 
 /**
  * Train Platform with inputs and outputs that can both load and unload train freight carts. Must be attached to another platform or station
@@ -93,6 +97,7 @@ public:
 	// Begin BuildableTrainPlatform Implementation
 	virtual void NotifyTrainDocked( class AFGRailroadVehicle* railroadVehicle, class AFGBuildableRailroadStation* initiatedByStation ) override;
 	virtual void UpdateDockingSequence() override;
+	virtual void CancelDockingSequence() override;
 	// End BuildableTrainPlatform Implementation
 
 	/** Sets the hidden power connection from the child track assigned to this platform */
@@ -105,6 +110,7 @@ public:
 	/** Get mIsFullUnload */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
 	FORCEINLINE uint8 IsFullUnload() const{ return mIsFullUnload; }
+
 protected:
 	friend class AFGReplicationDetailActor_CargoPlatform;
 
@@ -138,14 +144,14 @@ private:
 	*/
 	int32 GetFirstIndexWithItem( UFGInventoryComponent* inventory ) const;
 
-	// Loads all possible inventory from the platform inventory into the freight inventory
-	void TransferInventoryToTrain();
-
-	// Transfers all possible inventory from the train cart into the platform inventory
-	void TransferInventoryToPlatform();
+	// Transfers the inventory from a source inventory to a target inventory
+	void TransferInventory( UFGInventoryComponent* from, UFGInventoryComponent* to );
 
 	/** Done loading or unloading vehicle */
 	void LoadUnloadVehicleComplete();
+
+	/** Evaluate the status of the freight inventory for use by docking rules */
+	void EvaluateFreightInventoryStatus();
 
 	/** Check if we are able to fit the contents of the frieght cart into the platforms inventory */
 	void UpdateUnloadSettings();
@@ -165,13 +171,41 @@ private:
 	UFUNCTION()
 	void OnCargoPowerStateChanged( bool hasPower );
 
+	/** On each update of the docking sequence update and parse the rules set */
+	void EvaluateRuleSet();
+
+	/** Checks if the docking status can complete based on the rules set */
+	bool CanCompleteDocking();
+
+	/** Is Load or Unload blocked by ItemFilter NONE? Tex. If the train is in load mode and we have a UFGNoneDescriptor in the item filter rules, this returns true. */
+	bool IsLoadUnloadBlockedByNoneFilter();
+
+	/** Update the Incoming/Outgoing Item rates */
+	void UpdateItemTransferRate( int32 numItemsTransfered );
+
+	/** Get the transfer rate for the current load/unload mode */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|CargoPlatform" )
+	float GetCurrentItemTransferRate();
+
+	/** Can this station currently pull/push input (becomes disabled while docking anim is in progress) */
+	FORCEINLINE bool ShouldLockIncomingOutgoing() const;
+
 	class AFGReplicationDetailActor_CargoPlatform* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_CargoPlatform>( mReplicationDetailActor ); };
+
+	UFUNCTION()
+	void OnRep_SmoothedLoadRate();
+	UFUNCTION()
+	void OnRep_SmoothedUnloadRate();
 
 public:
 	/** Name of the magic box skel mesh comp added via BP */
 	static FName mMagicBoxComponentName;
 	/** Name of the cargo static mesh comp added via BP */
 	static FName mCargoMeshComponentName;
+
+	/** Delegate for UI to hookup to when the transfer rate is updated */
+	UPROPERTY( BlueprintAssignable, Category = "FactoryGame|Railroad|CargoPlatform" )
+	FOnItemTransferRateUpdated mOnTransferRateUpdated;
 
 protected:
 	/** The freight cargo type this platform can interface with ( conveyor vs. pipes ) */
@@ -213,6 +247,21 @@ protected:
 	UPROPERTY( Replicated, BlueprintReadOnly, Category = "FactoryGame|Railroad|CargoPlatform" )
 	uint8 mIsFullLoad : 1;
 
+	/** Is the freight inventory full? */
+	uint8 mIsFreightFull : 1;
+
+	/** Is the freight inventory empty? */
+	uint8 mIsFreightEmpty : 1;
+
+	/** Whether load or unload, can a transfer be done that is considered total (either fill the entire wagon or fully empty the wagon) */
+	uint8 mCanDoTotalTransfer : 1;
+
+	/** Ignore the fully load or unload rule when waiting to start. This is set when the timer is approaching its limit and we want to force a sequence to run */
+	uint8 mIgnoreTotalTransferRequirement : 1;
+
+	/** Was the transfer of any items blocked by the None rule. This is tracked so we can complete even though we may not have satisfied the other rules */
+	uint8 mTransferBlockedByNoneFilter : 1;
+
 	/** Time in seconds to complete a unload */
 	UPROPERTY( EditDefaultsOnly, Category = "CargoPlatform" )
 	float mTimeToCompleteLoad;
@@ -229,6 +278,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "CargoPlatform" )
 	float mTimeToSwapUnloadVisibility;
 
+	UPROPERTY( EditDefaultsOnly, Category = "CargoPlatform" )
+	float mWaitForConditionUpdatePeriod;
+
 	/** All factory connections that can pull to our storage */
 	UPROPERTY()
 	TArray<class UFGFactoryConnectionComponent*> mStorageInputConnections;
@@ -240,6 +292,33 @@ protected:
 	/** All pipe connections that can push to pipelines from our storage */
 	UPROPERTY()
 	TArray< class UFGPipeConnectionComponent*> mPipeOutputConnections;
+
+	/** The current docking rules set from a docked train */
+	UPROPERTY()
+	FTrainDockingRuleSet mDockingRuleSet;
+
+	/** The current load filter (only load items of this type) */
+	UPROPERTY()
+	TArray< TSubclassOf< class UFGItemDescriptor > > mLoadItemFilter;
+	
+	/*** The Current Unload filter (only unload items of this type */
+	UPROPERTY()
+	TArray< TSubclassOf< class UFGItemDescriptor > > mUnloadItemFilter;
+
+	/** Timer handle to track docking duration so that we don't need to register a tick function */
+	FTimerHandle mDurationTimerHandle;
+
+	UPROPERTY()
+	bool mHasFullyLoadUnloadRule;
+
+	UPROPERTY()
+	float mDockForDuration;
+
+	UPROPERTY()
+	bool mMustDockForDuration;
+
+	UPROPERTY()
+	float mCurrentDockForDuration;
 
 private:
 	/** Inventory where we transfer items to when unloading from a vehicle. Never reference this pointer directly. Use mCargoInventoryHandler->GetActiveInventory(). */
@@ -262,6 +341,12 @@ private:
 	UPROPERTY( SaveGame )
 	uint8 mShouldExecuteLoadOrUnload : 1;
 
+	UPROPERTY()
+	uint8 mRanCompleteBeforeNone : 1;
+
+	UPROPERTY()
+	class AFGFreightWagon* mLastDockedFreight;
+
 	/** Set during a docking sequence update to toggle the visibility of the platform and freight cargo meshes*/
 	UPROPERTY()
 	FTimerHandle mSwapCargoVisibilityTimerHandle;
@@ -272,7 +357,26 @@ private:
 	/** Set during a power outtage to store how much time remains on the toggle platform and freight cargo meshes */
 	float mCachedSwapCargoVisibilityTimeRemaining;
 
-	//******* Begin Pipe Flow params *******/
+	//////////////////////////////////////////////////////////////////////////
+	/// Begin Load/Unload Transfer rate properties
+
+	UPROPERTY( SaveGame )
+	float mTimeSinceLastLoadTransferUpdate;
+
+	UPROPERTY( SaveGame )
+	float mTimeSinceLastUnloadTransferUpdate;
+
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SmoothedLoadRate )
+	float mSmoothedLoadRate;
+
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_SmoothedUnloadRate )
+	float mSmoothedUnloadRate;
+
+	/// End Load/Unload Transfer rate properties
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	/// Begin pipeflow params
 
 	/** Last content value when updating flow rate */
 	int32 mFluidPushedLastProducingTick;
@@ -300,5 +404,6 @@ private:
 	UPROPERTY( Replicated )
 	float mReplicatedInflowRate;
 
-	/******** End Pipe Flow Output Params ********/
+	/// End pipeflow params
+	//////////////////////////////////////////////////////////////////////////
 };

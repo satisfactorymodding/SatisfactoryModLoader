@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Engine/SceneCapture2D.h"
 #include "Engine/AssetUserData.h"

@@ -11,7 +11,20 @@ FPowerGraphPoint& FPowerCircuitStats::AdvanceToNextGraphPoint(){ return *(new FP
 void UFGPowerCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void UFGPowerCircuit::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 UFGPowerCircuit::UFGPowerCircuit() : Super() {
-	this->mCircuitID = -1;
+	this->mPowerProductionCapacity = 0.0;
+	this->mPowerProduced = 0.0;
+	this->mPowerConsumed = 0.0;
+	this->mMaximumPowerConsumption = 0.0;
+	this->mHasPower = false;
+	this->mHasBatteries = false;
+	this->mBatterySumPowerStore = 0.0;
+	this->mBatterySumPowerStoreCapacity = 0.0;
+	this->mBatterySumPowerInput = 0.0;
+	this->mTimeToBatteriesEmpty = 0.0;
+	this->mTimeToBatteriesFull = 0.0;
+	this->mIsFuseTriggered = false;
+	this->mPowerStoreAtBatteryDepletionStart = 0.0;
+	this->mTimeSinceLastWarning = 0.0;
 }
 void UFGPowerCircuit::ResetFuse(){ }
 void UFGPowerCircuit::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }

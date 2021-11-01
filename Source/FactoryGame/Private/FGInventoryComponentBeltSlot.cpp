@@ -3,8 +3,6 @@
 #include "FGInventoryComponentBeltSlot.h"
 
 UFGInventoryComponentBeltSlot::UFGInventoryComponentBeltSlot() : Super() {
-	this->mDefaultInventorySize = 1;
-	this->mCanBeRearrange = true;
 	this->SetIsReplicatedByDefault(true);
 }
 bool UFGInventoryComponentBeltSlot::ContainsStackItemTypeAndHasEnoughRoom(FInventoryStack itemStack){ return bool(); }

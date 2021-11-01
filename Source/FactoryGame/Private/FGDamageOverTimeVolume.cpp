@@ -8,7 +8,9 @@
 void AFGDamageOverTimeVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGDamageOverTimeVolume::AFGDamageOverTimeVolume() : Super() {
-	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent")); this->mDotComponent->SetupAttachment(this->GetBrushComponent());
+	this->mPostProcessSettings = nullptr;
+	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent"));
+	this->mDotComponent->SetupAttachment(GetBrushComponent());
 }
 bool AFGDamageOverTimeVolume::EncompassesPoint(FVector point, float sphereRadius , float* out_distanceToPoint){ return bool(); }
 FPostProcessVolumeProperties AFGDamageOverTimeVolume::GetProperties() const{ return FPostProcessVolumeProperties(); }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGOnlineSessionSettings.h"
 #include "GameFramework/GameSession.h"
@@ -26,7 +27,6 @@ public:
 	 * so players searching for games can see it.
 	 */
 	void UpdateGameSession();
-	void SessionIdUpdated();
 	
 
 	//~Begin AActor interface
@@ -50,23 +50,16 @@ public:
 	/** Returns true if the player is classified as admin */
 	bool IsPlayerAdmin( const class APlayerController* player ) const;
 
-	void AdminLogin( class APlayerController* player, const FString& hashedPassword );
 	/**
 	 * Get session settings from the specified world
 	 */
 	static FFGOnlineSessionSettings CreateSessionSettingsForPropagation( UWorld* forWorld, FString saveSessionName );
-	static void SetTemporaryCSSSessionID(FString tempID);
-	static void ClearTemporaryCSSSessionID();
-	static FString GetCSSSessionID(UWorld* forWorld, const FString &saveSessionName);
 
 	/** Set the visibility of the current session */
 	void SetSessionVisibility( ESessionVisibility visibility );
 
 	/** Get the visibility of the current session */
 	FORCEINLINE ESessionVisibility GetSessionVisibility() const{ return mSessionVisibility; }
-
-	/** Admin password option that's parsed from commandline */
-	static const TCHAR* AdminPasswordOption;
 
 	int32 GetNumPrivateConnections() const;
 	int32 GetNumPublicConnections() const;
@@ -85,10 +78,6 @@ protected:
 	UFUNCTION()
 	void IntroSequenceUpdated();
 
-	/** Set a random admin password */
-	void SetRandomAdminPassword();
-
-
 	virtual void OnUpdateSessionComplete( FName sessionName, bool wasSuccessful );
 private:
 	/** Visibility of current game session */
@@ -102,9 +91,6 @@ private:
 
 	/** Handle for updating sessions */
 	FDelegateHandle mOnUpdateSessionCompleteDelegate;
-
-	/** Hashed admin password */
-	FString mHashedAdminPassword;
 
 	/** Used to keep track of players when they last tried to login and failed to detect brute force logins */
 	UPROPERTY()

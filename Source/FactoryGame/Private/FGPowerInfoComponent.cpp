@@ -6,6 +6,14 @@ void UFGPowerInfoComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty
 void UFGPowerInfoComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 UFGPowerInfoComponent::UFGPowerInfoComponent() : Super() {
 	this->mCircuitID = -1;
+	this->mTargetConsumption = 0.0;
+	this->mActualConsumption = 0.0;
+	this->mBaseProduction = 0.0;
+	this->mDynamicProductionCapacity = 0.0;
+	this->mDynamicProductionDemandFactor = 0.0;
+	this->mBatteryInfo = nullptr;
+	this->mIsFuseTriggered = false;
+	this->mIsFullBlast = false;
 	this->SetIsReplicatedByDefault(true);
 }
 void UFGPowerInfoComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

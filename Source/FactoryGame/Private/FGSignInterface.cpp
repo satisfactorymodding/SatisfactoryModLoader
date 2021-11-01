@@ -2,22 +2,3 @@
 
 #include "FGSignInterface.h"
 
-bool UFGSignLayer::NeedTransform_Implementation(){ return bool(); }
-bool UFGSignLayer::ShouldSave_Implementation() const{ return bool(); }
-void UFGSignElementData::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void UFGSignElementData::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void UFGSignElementData::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void UFGSignElementData::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void UFGSignElementData::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
-bool UFGSignElementData::NeedTransform_Implementation(){ return bool(); }
-bool UFGSignElementData::ShouldSave_Implementation() const{ return bool(); }
-FSignData::FSignData(const FSignData& data){ }
-void FSignData::Init( IFGSignInterface* signInterface){ }
-bool FSignData::Serialize(FArchive& ar) {
-	if (ar.ArIsSaveGame) {
-		ar << BackgroundColorIndex;
-	}
-
-	return true;
-}
-UFGSignElementData* FSignData::GetElementWithId(int32 id, UFGSignElementData& out_elementData) const{ return nullptr; }

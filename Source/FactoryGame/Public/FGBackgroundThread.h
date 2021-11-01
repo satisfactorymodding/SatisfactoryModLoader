@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "Components/InstancedStaticMeshComponent.h"
@@ -9,6 +10,8 @@
 #include "HAL/Runnable.h"
 #include "Containers/Queue.h"
 #include "Engine/DeveloperSettings.h"
+#include "Engine/SCS_Node.h"
+
 #include "FGBackgroundThread.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogPoolSystem, Error, All);
@@ -219,7 +222,7 @@ struct FACTORYGAME_API FPoolInstanceBase
 	
 	FORCEINLINE USceneComponent* GetActorComponent()
 	{
-		if ( Component.IsValid() )
+		if ( Component.IsValid( false, true ) )
 		{
 			return Component.Get();
 		}
@@ -758,24 +761,6 @@ public:
 public:
 	UPROPERTY( VisibleAnywhere )
 	TArray<UActorComponent*> Components;
-};
-
-UCLASS( Blueprintable )
-class FACTORYGAME_API AFGDecorationTemplate : public AActor
-{
-	GENERATED_BODY()
-
-	AFGDecorationTemplate();
-	
-public:
-
-#if WITH_EDITORONLY_DATA
-	/* Preview actor to make it easier to place component(s) */
-	UPROPERTY(EditAnywhere, meta = ( AllowPrivateAccess = "true") )
-	UChildActorComponent* mChildActorComponent;
-#endif
-	
-	static TArray< class UFGPoolableProxyComponentBase* > GetPoolAbleComponentsFromSubclass( const UClass* InActorClass );
 };
 
 UENUM()

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
 #include "FGAnimNotify_FootDown.generated.h"
 

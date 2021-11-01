@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildableResourceExtractorBase.h"
 #include "Resources/FGResourceNodeFrackingCore.h"
 #include "FGBuildableFrackingActivator.generated.h"

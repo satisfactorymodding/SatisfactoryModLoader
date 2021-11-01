@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGActorRepresentation.h"
 #include "FGActorRepresentationManager.generated.h"

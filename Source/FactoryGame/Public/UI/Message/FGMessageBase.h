@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UMG.h"
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Creature/Enemy/FGGameplayTask_Attack.h"
 #include "FGGameplayTask_AttackMelee.generated.h"

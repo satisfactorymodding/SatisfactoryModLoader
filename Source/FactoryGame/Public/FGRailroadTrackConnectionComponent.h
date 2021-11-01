@@ -2,11 +2,11 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGConnectionComponent.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
 #include "FGRailroadTrackConnectionComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnRailRoadConnectionSwitched, int32, newPosition, int32, numPositions );
 
 /**
  * The actual track connection placed in the editor.
@@ -76,6 +76,9 @@ public:
 	/** @return Owning track for this connection. */
 	FORCEINLINE class AFGBuildableRailroadTrack* GetTrack() const { return mTrackPosition.Track.Get(); }
 
+	/** @return true if this connection is occupied by rolling stock. */
+	bool IsOccupied( float distance ) const { return GetTrack()->IsConnectionOccupied( this, distance ); }
+	
 	/**
 	 * @return what part of a switch this connection is.
 	 */
@@ -100,6 +103,9 @@ public:
 	 */
 	FORCEINLINE int32 GetSwitchPosition() const { return mSwitchPosition; }
 
+	/** @return true if the switch is clear of rolling stock, otherwise false. */
+	bool IsSwitchClear() const;
+	
 	/**
 	 * Set the current switch position, not valid to call on client.
 	 * @param position Will be clamped to the valid range [0,n].
@@ -110,7 +116,8 @@ public:
 
 	/**
 	 * Set the current switch position to match the given connections track.
-	 *
+	 * @param track The track we want to go to, must be connected directly to the switch.
+	 * 
 	 * Note: On client use the switch control instead.
 	 */
 	void SetSwitchPosition( class AFGBuildableRailroadTrack* track );
@@ -121,9 +128,14 @@ public:
 	/** @return The station at the connection, if any. */
 	class AFGBuildableRailroadStation* GetStation() const { return mStation; }
 
-	/** @return The signal at the connection, if any. */
-	class AFGBuildableRailroadSignal* GetSignal() const { return mSignal; }
+	/** @return The facing signal at the connection, if any. */
+	class AFGBuildableRailroadSignal* GetFacingSignal() const { return mFacingSignal; }
+	/** @return The trailing signal at the connection, if any. */
+	class AFGBuildableRailroadSignal* GetTrailingSignal() const { return mTrailingSignal; }
 
+	/** @return The signal block this connection belongs to, if any. */
+	TWeakPtr< FFGRailroadSignalBlock > GetSignalBlock() const;
+	
 	/** Get the connection opposite to this one on the track segment. */
 	UFGRailroadTrackConnectionComponent* GetOpposite() const;
 
@@ -135,12 +147,17 @@ public:
 		class UFGRailroadTrackConnectionComponent* component,
 		const FVector& location,
 		float radius,
-		bool allowPlatformTracks = false );
+		bool allowPlatformTracks,
+		TArray< UFGRailroadTrackConnectionComponent* >* out_additionalSwitchConnections = nullptr );
 
-	/** Functions used by buildings that are built on a track, do not call them unless you know what you're doing. */
+	/**
+	 * Functions used by buildings that are built on a track, do not call them unless you know what you're doing.
+	 * Note that these can be called multiple times with the same input.
+	 */
 	void SetSwitchControl( class AFGBuildableRailroadSwitchControl* control ) { mSwitchControl = control; }
 	void SetStation( class AFGBuildableRailroadStation* station ) { mStation = station; }
-	void SetSignal( class AFGBuildableRailroadSignal* signal ) { mSignal = signal; }
+	void SetFacingSignal( class AFGBuildableRailroadSignal* signal ) { mFacingSignal = signal; }
+	void SetTrailingSignal( class AFGBuildableRailroadSignal* signal ) { mTrailingSignal = signal; }
 	void SetTrackPosition( const FRailroadTrackPosition& position );
 
 	/**
@@ -148,8 +165,8 @@ public:
 	 * Note that this does not change the current switch position if the connections are reordered.
 	 */
 	void SortConnections();
+	
 private:
-	//@todotrains Verify building switches at both sides of a connection, the weird bug some people report.
 	/** Internal helper functions to add/remove connection. */
 	void AddConnectionInternal( UFGRailroadTrackConnectionComponent* toComponent );
 	void RemoveConnectionInternal( UFGRailroadTrackConnectionComponent* toComponent );
@@ -158,11 +175,15 @@ private:
 	void ClampSwitchPosition();
 
 public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnConnectionSwitched, int32, newPosition, int32, numPositions );
+	
 	/** Delegate to fire when changing switch on a track */
 	UPROPERTY()
-	FOnRailRoadConnectionSwitched mRailRoadSwitchDelegate;
+	FOnConnectionSwitched mOnConnectionSwitchedDelegate;
+	
 private:
 	/** Position of this connection component on the track. */
+	UPROPERTY( Replicated )
 	FRailroadTrackPosition mTrackPosition;
 
 	/** The components we're connected to. If >1 this is a switch. */
@@ -181,7 +202,19 @@ private:
 	UPROPERTY()
 	class AFGBuildableRailroadStation* mStation;
 
-	/** The signal associated with this connection, if any. */
+	/**
+	 * The facing signal associated with this connection, if any.
+	 * This is the signal a train cares about when traversing this connection.
+	 */
 	UPROPERTY()
-	class AFGBuildableRailroadSignal* mSignal; //@todotrains
+	class AFGBuildableRailroadSignal* mFacingSignal;
+	
+	/**
+	 * The trailing signals associated with this connection, if any.
+	 * This is here for the subsystem to keep track of.
+	 * This is the facing signal of the connected connections.
+	 * If this is set but the facing signal is null, traversing is disallowed based on the one-way rule of signalling.
+	 */
+	UPROPERTY()
+	class AFGBuildableRailroadSignal* mTrailingSignal;
 };

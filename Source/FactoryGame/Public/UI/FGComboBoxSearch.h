@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "Fonts/SlateFontInfo.h"
@@ -14,7 +15,6 @@
 #include "Components/Widget.h"
 #include "Widgets/Text/STextBlock.h" // MODDING EDIT
 #include "Widgets/Layout/SBox.h" // MODDING EDIT
-
 #include "FGComboBoxSearch.generated.h"
 
 /**

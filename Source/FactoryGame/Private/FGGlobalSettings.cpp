@@ -10,3 +10,5 @@ UFGHardDriveSettings* UFGGlobalSettings::GetHardDriveSettingsCDO(){ return nullp
 UFGEnvironmentSettings* UFGGlobalSettings::GetEnvironmentSettingsCDO(){ return nullptr; }
 UFGSubsystemClasses* UFGGlobalSettings::GetSubsystemClassesCDO(){ return nullptr; }
 UFGSignSettings* UFGGlobalSettings::GetSignSettingsCDO(){ return nullptr; }
+UFGIconLibrary* UFGGlobalSettings::GetIconLibraryCDO(){ return nullptr; }
+UFGServerManagerSettings* UFGGlobalSettings::GetServerManagerSettingsCDO(){ return nullptr; }
