@@ -29,13 +29,11 @@ jobs:
           rm UnrealEngine-CSS-Editor-Win64.7z*
           .\\SetupScripts\\Register.bat
 
-      - name: Setup B2 CLI
-        uses: wilsonzlin/setup-b2@v2
-
       - name: Download and Extract Wwise
         run: |
-          b2 authorize-account "${{ secrets.WWISE_B2_KEY_ID }}" "${{ secrets.WWISE_B2_KEY }}"
-          b2 download-file-by-name "${{ secrets.WWISE_B2_BUCKET }}" "Wwise.7z" "Wwise.7z"
+          Invoke-WebRequest -Uri "https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-windows.exe" -OutFile "b2.exe"
+          .\b2.exe authorize-account "${{ secrets.WWISE_B2_KEY_ID }}" "${{ secrets.WWISE_B2_KEY }}"
+          .\b2.exe download-file-by-name "${{ secrets.WWISE_B2_BUCKET }}" "Wwise.7z" "Wwise.7z"
           7z x Wwise.7z -oSML\\Plugins\\
           rm Wwise.7z
 
