@@ -29,9 +29,17 @@ jobs:
           rm UnrealEngine-CSS-Editor-Win64.7z*
           .\\SetupScripts\\Register.bat
 
-      - name: Download and Extract Wwise
+      - name: Download Wwise
+        uses: sksat/b2-download-action@main
+        with:
+          key_id: ${{ secrets.WWISE_B2_KEY_ID }}
+          key: ${{ secrets.WWISE_B2_KEY }}
+          bucket: ${{ secrets.WWISE_B2_BUCKET }}
+          src: Wwise.7z
+          dest: Wwise.7z
+
+      - name: Extract Wwise
         run: |
-          aria2c -o Wwise.7z "${{ secrets.WWISE_URL }}"
           7z x Wwise.7z -oSML\\Plugins\\
           rm Wwise.7z
 
