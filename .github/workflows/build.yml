@@ -21,7 +21,7 @@ jobs:
       - name: Create UE4 directory
         run: mkdir ue4
 
-      - name: Downlad, Extract and Setup UE4
+      - name: Download, Extract and Setup UE4
         working-directory: ue4
         run: |
           gh release download --repo SatisfactoryModdingUE/UnrealEngine -p "*.7z.*"
