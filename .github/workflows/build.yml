@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Cleanup
+        run: Remove-Item * -Recurse -Force -Confirm:$false -ErrorAction Ignore
+
+      - uses: actions/checkout@v2
+        with:
+          path: SML
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.3
+
+      - name: Create UE4 directory
+        run: mkdir ue4
+
+      - name: Download, Extract and Setup UE4
+        working-directory: ue4
+        run: |
+          gh release download --repo SatisfactoryModdingUE/UnrealEngine -p "*.7z.*"
+          7z x UnrealEngine-CSS-Editor-Win64.7z.001
+          rm UnrealEngine-CSS-Editor-Win64.7z*
+          .\\SetupScripts\\Register.bat
+
+      - name: Download and Extract Wwise
+        run: |
+          Invoke-WebRequest -Uri "https://github.com/Backblaze/B2_Command_Line_Tool/releases/latest/download/b2-windows.exe" -OutFile "b2.exe"
+          .\b2.exe authorize-account "${{ secrets.WWISE_B2_KEY_ID }}" "${{ secrets.WWISE_B2_KEY }}"
+          .\b2.exe download-file-by-name "${{ secrets.WWISE_B2_BUCKET }}" "Wwise.7z" "Wwise.7z"
+          7z x Wwise.7z -oSML\\Plugins\\
+          rm Wwise.7z
+
+      - name: Build SML
+        run: |
+          .\\ue4\\lb\\win\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe  -projectfiles -project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -game -rocket -progres
+          MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Shipping" /p:Platform="Win64" /t:"Games\FactoryGame"
+          MSBuild.exe .\\SML\\FactoryGame.sln /p:Configuration="Development Editor" /p:Platform="Win64" /t:"Games\FactoryGame"
+          .\\ue4\\lb\\win\\Engine\\Build\\BatchFiles\\RunUAT.bat -ScriptsForProject="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" PackagePlugin -Project="$Env:GITHUB_WORKSPACE\\SML\\FactoryGame.uproject" -PluginName="SML" -GameDir="%SF_GAME_DIR%"
+
+      - name: Archive SML artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: sml
+          path: SML\\Saved\\ArchivedPlugins\\WindowsNoEditor\\SML.zip
