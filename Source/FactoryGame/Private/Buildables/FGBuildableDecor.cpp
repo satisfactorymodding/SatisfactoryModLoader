@@ -2,7 +2,6 @@
 
 #include "Buildables/FGBuildableDecor.h"
 #include "Hologram/FGDecorHologram.h"
-#include "Components/SceneComponent.h"
 
 void AFGBuildableDecor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGBuildableDecor::AFGBuildableDecor() : Super() {

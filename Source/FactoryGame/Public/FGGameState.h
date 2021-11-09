@@ -165,6 +165,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
 	FORCEINLINE bool GetCheatNoPower() { return mCheatNoPower; }
 
+	/** Getter for NoFuel */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Cheat" )
+	FORCEINLINE bool GetCheatNoFuel() { return mCheatNoFuel; }
+
 	/** Setter for no power */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
 	void SetCheatNoPower( bool noPower ) { mCheatNoPower = noPower; }
@@ -172,6 +176,10 @@ public:
 	/** Setter for no cost */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
 	void SetCheatNoCost( bool noCost ) { mCheatNoCost = noCost; }
+	
+	/** Setter for no fuel */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Cheat" )
+	void SetCheatNoFuel( bool noFuel ) { mCheatNoFuel = noFuel; }
 
 	UFUNCTION()
 	void NotifyPlayerAdded( class AFGCharacterPlayer* inPlayer );
@@ -449,6 +457,10 @@ private:
 	/** Cheat bool for not requiring power */
 	UPROPERTY( SaveGame, Replicated )
 	bool mCheatNoPower;
+
+	/** Cheat bool for not requiring fuel */
+	UPROPERTY( SaveGame, Replicated )
+	bool mCheatNoFuel;
 	
 	/** There can only be one trading post in the game, so we keep track it here so that we also can replicate it to client */
 	UPROPERTY( SaveGame, Replicated )

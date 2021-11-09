@@ -2,7 +2,6 @@
 
 #include "Buildables/FGBuildableLightSource.h"
 #include "FGPowerInfoComponent.h"
-#include "Components/SceneComponent.h"
 
 AFGBuildableLightSource::AFGBuildableLightSource() : Super() {
 	this->mIsEnabled = true;

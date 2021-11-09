@@ -47,10 +47,6 @@ public:
 
 	virtual void OnPendingConstructionHologramCreated_Implementation( AFGHologram* fromHologram ) override;
 
-	// Begin AFGAttachmentPointHologram interface
-	virtual void AttachToBuildablePoint( class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint ) override;
-	// End AFGAttachmentPointHologram interface
-
 protected:
 	UFUNCTION()
 	void OnRep_CurrentLength();

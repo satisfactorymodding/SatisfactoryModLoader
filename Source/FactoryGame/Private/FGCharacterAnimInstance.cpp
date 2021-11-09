@@ -60,7 +60,7 @@ UFGCharacterAnimInstance::UFGCharacterAnimInstance() : Super() {
 	this->mUsePreLand = false;
 	this->mPreLand = false;
 	this->mPreLandVelocityMultiplier = 5.0;
-	this->mPreLandCollisionChannels.Add(ECC_WorldStatic);
+	this->mPreLandCollisionChannels.Add(ECollisionChannel::ECC_WorldStatic);
 }
 void UFGCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds){ }
 void UFGCharacterAnimInstance::OnPointDamageTaken_Implementation(FVector shootDirection){ }

@@ -115,6 +115,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void GetPresetShortcuts( int32 presetHotbarIndex, TArray< class UFGHotbarShortcut* >& out_shortcuts );
 
+	/** Is a given material customization present as a shortcut on the active hotbar? */
+	UFUNCTION( BlueprintPure, Category = "Shortcut" )
+	bool DoesHotbarContainMaterialCustomization();
+
 	/** Get all preset hotbars */
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void GetAllPresetHotbars( TArray<FPresetHotbar>& out_presetHotbars );

@@ -26,6 +26,7 @@ void UFGServerObject::SetAutoPause(bool AutoPause){ }
 void UFGServerObject::SetAutoSaveOnDisconnect(bool AutoSave){ }
 void UFGServerObject::SetAutoLoadSessionName(const FString& SessionName){ }
 void UFGServerObject::ChangeAdminPassword(){ }
+void UFGServerObject::FetchGameState(){ }
 void UFGServerObject::ChangeClientPassword(){ }
 void UFGServerObject::ChangeServerName(const FString& NewServerName){ }
 void UFGServerObject::SetAuthenticationToken(const FServerAuthenticationToken& Token){ }

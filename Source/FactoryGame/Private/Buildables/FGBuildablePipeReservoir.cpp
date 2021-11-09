@@ -2,8 +2,6 @@
 
 #include "Buildables/FGBuildablePipeReservoir.h"
 #include "Hologram/FGPipeReservoirHologram.h"
-#include "FGPowerInfoComponent.h"
-#include "Components/SceneComponent.h"
 
 void FQuantizedReservoirIndicatorData::SetFlowFillPct(float pct){ }
 float FQuantizedReservoirIndicatorData::GetFlowFillPct() const{ return float(); }

@@ -2,28 +2,5 @@
 
 #include "FactoryGame.h"
 
-DEFINE_LOG_CATEGORY( LogGame );
-DEFINE_LOG_CATEGORY( LogFactory );
-DEFINE_LOG_CATEGORY( LogNetConveyorBelt );
-DEFINE_LOG_CATEGORY( LogNetFoliageRemoval );
-DEFINE_LOG_CATEGORY( LogPower );
-DEFINE_LOG_CATEGORY( LogCircuit );
-DEFINE_LOG_CATEGORY( LogSchematics );
-DEFINE_LOG_CATEGORY( LogRailroad );
-DEFINE_LOG_CATEGORY( LogBuildGun );
-DEFINE_LOG_CATEGORY( LogHologram );
-DEFINE_LOG_CATEGORY( LogSave );
-DEFINE_LOG_CATEGORY( LogWidget );
-DEFINE_LOG_CATEGORY( LogEquipment );
-DEFINE_LOG_CATEGORY( LogBuilding );
-#if IS_PUBLIC_BUILD
-DEFINE_LOG_CATEGORY( LogConveyorNetDelta );
-DEFINE_LOG_CATEGORY( LogConveyorSpacingNetDelta );
-#else
-DEFINE_LOG_CATEGORY( LogConveyorNetDelta );
-DEFINE_LOG_CATEGORY( LogConveyorSpacingNetDelta );
-#endif
-DEFINE_LOG_CATEGORY( LogPipes );
-DEFINE_LOG_CATEGORY( LogSeasonalEvents );
-DEFINE_LOG_CATEGORY( LogSigns );
-DEFINE_LOG_CATEGORY( LogAnimInstanceFactory );
+DEFINE_LOG_CATEGORY(LogGame);
+DEFINE_LOG_CATEGORY(LogSigns);

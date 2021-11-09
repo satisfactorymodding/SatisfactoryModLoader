@@ -38,6 +38,7 @@ AFGGameState::AFGGameState() : Super() {
 	this->mForceAddHubPartOnSpawn = false;
 	this->mCheatNoCost = false;
 	this->mCheatNoPower = false;
+	this->mCheatNoFuel = false;
 	this->mIsTradingPostBuilt = false;
 	this->mHasInitalTradingPostLandAnimPlayed = false;
 	this->mIsSpaceElevatorBuilt = false;

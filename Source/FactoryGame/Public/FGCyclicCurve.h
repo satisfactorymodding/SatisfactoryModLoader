@@ -1,4 +1,4 @@
-﻿// Copyright 2016-2021 Coffee Stain Studios. All Rights Reserved.
+// Copyright 2016-2021 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 

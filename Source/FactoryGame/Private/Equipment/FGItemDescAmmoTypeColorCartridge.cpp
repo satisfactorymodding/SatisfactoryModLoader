@@ -26,25 +26,25 @@ UFGItemDescAmmoTypeColorCartridge::UFGItemDescAmmoTypeColorCartridge() : Super()
 void UFGItemDescAmmoTypeColorCartridge::BeginDestroy(){ Super::BeginDestroy(); }
 void UFGItemDescAmmoTypeColorCartridge::Tick(float DeltaTime){ }
 TStatId UFGItemDescAmmoTypeColorCartridge::GetStatId() const{ return TStatId(); }
-void UFGItemDescAmmoTypeColorCartridge::InitializeAmmoType_Implementation(AFGWeapon* Weapon){ Super::InitializeAmmoType_Implementation(Weapon); }
-void UFGItemDescAmmoTypeColorCartridge::FireAmmunition_Implementation(){ Super::FireAmmunition_Implementation(); }
+void UFGItemDescAmmoTypeColorCartridge::InitializeAmmoType_Implementation(AFGWeapon* Weapon){ }
+void UFGItemDescAmmoTypeColorCartridge::FireAmmunition_Implementation(){ }
 void UFGItemDescAmmoTypeColorCartridge::SetColorSlot(uint8 slotIndex){ }
-uint8 UFGItemDescAmmoTypeColorCartridge::GetMaxNumColorSlots(){ return 0; }
-uint8 UFGItemDescAmmoTypeColorCartridge::GetNumColorSlotsExposedToPlayers() const{ return 0; }
+void UFGItemDescAmmoTypeColorCartridge::Server_SetColorSlot_Implementation(uint8 slotIndex){ }
+bool UFGItemDescAmmoTypeColorCartridge::Server_SetColorSlot_Validate(uint8 slotIndex){ return bool(); }
+uint8 UFGItemDescAmmoTypeColorCartridge::GetMaxNumColorSlots(){ return uint8(); }
+uint8 UFGItemDescAmmoTypeColorCartridge::GetNumColorSlotsExposedToPlayers() const{ return uint8(); }
 FFactoryCustomizationColorSlot UFGItemDescAmmoTypeColorCartridge::GetColorDataForSlot(uint8 slotIndex){ return FFactoryCustomizationColorSlot(); }
 void UFGItemDescAmmoTypeColorCartridge::SetColorDataForSlot(uint8 slotIndex, FFactoryCustomizationColorSlot colorData){ }
+void UFGItemDescAmmoTypeColorCartridge::Server_SetColorDataForSlot_Implementation(uint8 slotIndex, FFactoryCustomizationColorSlot colorData){ }
 void UFGItemDescAmmoTypeColorCartridge::SetPrimaryColorForSlot(uint8 slotIndex, FLinearColor newColor){ }
+void UFGItemDescAmmoTypeColorCartridge::Server_SetPrimaryColorForSlot_Implementation(uint8 slotIndex, FLinearColor newColor){ }
+bool UFGItemDescAmmoTypeColorCartridge::Server_SetPrimaryColorForSlot_Validate(uint8 slotIndex, FLinearColor newColor){ return bool(); }
 void UFGItemDescAmmoTypeColorCartridge::SetSecondaryColorForSlot(uint8 slotIndex, FLinearColor newColor){ }
+void UFGItemDescAmmoTypeColorCartridge::Server_SetSecondaryColorForSlot_Implementation(uint8 slotIndex, FLinearColor newColor){ }
+bool UFGItemDescAmmoTypeColorCartridge::Server_SetSecondaryColorForSlot_Validate(uint8 slotIndex, FLinearColor newColor){ return bool(); }
 FLinearColor UFGItemDescAmmoTypeColorCartridge::GetPrimaryColorForSlot(uint8 index) const{ return FLinearColor(); }
 FLinearColor UFGItemDescAmmoTypeColorCartridge::GetSecondaryColorForSlot(uint8 index) const{ return FLinearColor(); }
 void UFGItemDescAmmoTypeColorCartridge::ApplyCrosshairState() const{ }
 EFGColorGunTargetType UFGItemDescAmmoTypeColorCartridge::FindIfValidColorTarget(){ return EFGColorGunTargetType(); }
-void UFGItemDescAmmoTypeColorCartridge::ProcessInstantHit_Confirmed(const FHitResult& HitResult){ Super::ProcessInstantHit_Confirmed(HitResult); }
+void UFGItemDescAmmoTypeColorCartridge::ProcessInstantHit_Confirmed(const FHitResult& hitResult){ }
 void UFGItemDescAmmoTypeColorCartridge::OnSecondaryFirePressed(){ }
-void UFGItemDescAmmoTypeColorCartridge::Server_SetSecondaryColorForSlot_Implementation(uint8 slotIndex, FLinearColor newColor){ }
-bool UFGItemDescAmmoTypeColorCartridge::Server_SetSecondaryColorForSlot_Validate(uint8 slotIndex, FLinearColor newColor){ return false; }
-void UFGItemDescAmmoTypeColorCartridge::Server_SetPrimaryColorForSlot_Implementation(uint8 slotIndex, FLinearColor newColor){ }
-bool UFGItemDescAmmoTypeColorCartridge::Server_SetPrimaryColorForSlot_Validate(uint8 slotIndex, FLinearColor newColor){ return false; }
-void UFGItemDescAmmoTypeColorCartridge::Server_SetColorDataForSlot_Implementation(uint8 slotIndex, FFactoryCustomizationColorSlot colorData){ }
-void UFGItemDescAmmoTypeColorCartridge::Server_SetColorSlot_Implementation(uint8 slotIndex){ }
-bool UFGItemDescAmmoTypeColorCartridge::Server_SetColorSlot_Validate(uint8 slotIndex){ return false; }

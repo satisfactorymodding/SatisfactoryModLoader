@@ -2,7 +2,6 @@
 
 #include "FGWaterVolume.h"
 #include "AI/FGNavArea_Water.h"
-#include "Components/BrushComponent.h"
 
 #if WITH_EDITOR
 void AFGWaterVolume::PostLoad(){ Super::PostLoad(); }

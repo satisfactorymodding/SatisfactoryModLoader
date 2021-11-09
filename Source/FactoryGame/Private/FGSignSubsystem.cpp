@@ -17,7 +17,7 @@ AFGSignSubsystem::AFGSignSubsystem() : Super() {
 	this->PrimaryActorTick.bCanEverTick = true;
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
-	this->PrimaryActorTick.TickInterval = 1.0;
+	this->PrimaryActorTick.TickInterval = 0.5;
 }
 void AFGSignSubsystem::BeginPlay(){ }
 void AFGSignSubsystem::Tick(float DeltaSeconds){ }

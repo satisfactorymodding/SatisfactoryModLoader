@@ -193,6 +193,11 @@ protected:
 	void HandleClearanceSnapping( FVector& newLocation, FRotator& newRotation, const FHitResult& hitResult );
 
 	/**
+	 * Snaps the hologram to the target clearance box.
+	 */
+	void SnapToClearanceBox( const UFGClearanceComponent* targetSnapClearanceComponent, FVector& newLocation, FRotator& newRotation );
+
+	/**
 	 * Function used to determine if a buildable is identical to ourselves in terms of position, rotation, etc.
 	 * Used to avoid overlapping buildables.
 	 */
@@ -287,10 +292,10 @@ protected:
 	virtual const FFGAttachmentPoint* SelectCandidateForAttachment( const TArray< const FFGAttachmentPoint* >& Candidates, class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FHitResult& HitResult );
 	
 	/**
-	 * Function called in order to attach to another point using one of our own.
+	 * Function called in order to create a transform for attaching an attachment point of our own to another one.
 	 * The attachment points are in local space.
 	 */
-	virtual void AttachToBuildablePoint( class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint );
+	virtual void CreateAttachmentPointTransform( FTransform& out_transformResult, const FHitResult& HitResult, class AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint );
 
 	void DelayApplyPrimitiveData();
 	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
@@ -346,7 +351,7 @@ protected:
 	class AFGBuildable* mSnappedBuilding;
 
 	UPROPERTY( Transient )
-	const class UFGClearanceComponent* mSnappedClearanceBox;
+	class UFGClearanceComponent* mSnappedClearanceBox;
 
 	bool mDidSnapDuetoClearance;
 
@@ -363,10 +368,6 @@ protected:
 
 	/** Our own attachment point we've used for snapping. */
 	const FFGAttachmentPoint* mLocalSnappedAttachmentPoint;
-
-	/** Whether or not the hologram should align its rotation when snapping with attachment points so that the points face eachother. */
-	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
-	bool mAlignRotationWithAttachmentPointDirection;
 
 	/** Whether or not we have to snap to an attachment point. */
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )

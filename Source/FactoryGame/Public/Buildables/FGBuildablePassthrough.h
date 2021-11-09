@@ -37,6 +37,8 @@ public:
 	FRotator GetMidMeshRotation() { return mMidMeshRotation; }
 	FRotator GetEndCapRotation() { return mEndCapRotation; }
 
+	bool GetIsUsingSoftClearance() const { return mUseSoftClearance; }
+
 	// returns the thickness of the buildable this passthrough snapped to
 	FORCEINLINE float GetSnappedBuildingThickness() { return mSnappedBuildingThickness; }
 
@@ -100,10 +102,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	bool mUseSoftClearance;
 
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	class UFGConnectionComponent* mBottomSnappedConnection;
 
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, Replicated )
 	class UFGConnectionComponent* mTopSnappedConnection;
 
 

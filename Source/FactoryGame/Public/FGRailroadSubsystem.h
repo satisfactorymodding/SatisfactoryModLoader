@@ -427,7 +427,8 @@ private:
 		class AFGTrain* forTrain,
 		class AFGRailroadVehicle* forVehicle,
 		FRailroadTrackPosition oldTrackPosition,
-		FRailroadTrackPosition newTrackPosition );
+		FRailroadTrackPosition newTrackPosition,
+		float moveDelta );
 
 	/**
 	 * Helper to do a simple capsule against capsule hit detection for the trains.
@@ -435,6 +436,7 @@ private:
 	 * 
 	 * @param capsuleSize		Size of the sweeping capsule, X is length, Y is radius.
 	 * @param startPos			Start position of the sweeping capsule.
+	 * @param startOrientation	Direction of the vehicle relative to the start positions direction.
 	 * @param endPos			End position of the sweeping capsule.
 	 * @param otherCapsuleSize	Size of the capsule we're sweeping against.
 	 * @param otherPos			Position of the capsule we're sweeping against.
@@ -444,6 +446,7 @@ private:
 	float SweepRailroadPositions(
 		FVector2D capsuleSize,
 		FRailroadTrackPosition startPos,
+		float startOrientation,
 		FRailroadTrackPosition endPos,
 		FVector2D otherCapsuleSize,
 		FRailroadTrackPosition otherPos );

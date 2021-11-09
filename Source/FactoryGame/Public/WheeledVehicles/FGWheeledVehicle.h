@@ -187,6 +187,7 @@ public:
 
 	// Begin IFGActorRepresentationInterface
 	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
 	virtual FLinearColor GetActorRepresentationColor() override;
 	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
 	virtual float GetActorFogOfWarRevealRadius() override;
@@ -281,7 +282,7 @@ public:
 
 	/**Returns the simulation component */
 	UFUNCTION( BlueprintPure, Category = "LinkedList" )
-	class AFGDrivingTargetList* GetTargetList();
+	class AFGDrivingTargetList* GetTargetList( bool createIfNeeded = false );
 
 	/** Fills the linked list with target nodes with data from an array */
 	//UFUNCTION( BlueprintCallable, Category = "Path" )

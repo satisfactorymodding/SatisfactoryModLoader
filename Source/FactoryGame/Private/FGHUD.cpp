@@ -8,9 +8,15 @@ void AFGHUD::PonderOpeningCheatBoard(){ }
 AFGHUD::AFGHUD() : Super() {
 	this->mGameUIClass = nullptr;
 	this->mRespawnUIClass = nullptr;
+	this->mDefaultCrosshair = Cast<UTexture2D>(FSoftObjectPath("/Game/FirstPerson/Textures/FirstPersonCrosshair.FirstPersonCrosshair").ResolveObject());
+	this->mPickupCrosshair = mDefaultCrosshair;
+	this->mVehicleCrosshair = mDefaultCrosshair;
+	this->mWeaponCrosshair = mDefaultCrosshair;
+	this->mWorkbenchCrosshair = mDefaultCrosshair;
 	this->mBuildCrosshair = nullptr;
 	this->mDismantleCrosshair = nullptr;
 	this->mCustomCrosshair = nullptr;
+	this->mGeneralCrosshair = mDefaultCrosshair;
 	this->mRespawnInputComponent = nullptr;
 	this->mPreviewStageClass = nullptr;
 	this->mPreviewActorClass = nullptr;

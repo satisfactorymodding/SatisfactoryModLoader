@@ -53,16 +53,21 @@ public:
 
 	UPROPERTY( BlueprintAssignable, Category = "Server Management" )
 	FOnServerAboutToBeRemoved OnServerAboutToBeRemoved;
+
+	UFUNCTION( BlueprintCallable, BlueprintPure )
+	static int32 GetClientNetCL();
 	
 	void SaveState();
+
+	void ProcessPollResponses( FClientQuerySocket* Socket );
 
 protected:
 	UPROPERTY( BlueprintReadOnly )
 	TArray<class UFGServerObject*> mServers;
 
 private:
-	TUniquePtr< FClientQuerySocket > mServerQuerySocket;
-	TUniquePtr< FRunnableThread > mServerQueryThread;
+	TArray< TUniquePtr< FClientQuerySocket > > mServerQuerySockets;
+	TArray< TUniquePtr< FRunnableThread > > mServerQueryThreads;
 	
 	bool mRunningFromConsole = false;
 

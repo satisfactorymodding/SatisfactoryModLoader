@@ -65,9 +65,11 @@ void AFGRailroadSubsystem::PurgeInvalidStationsFromTimeTables(){ }
 AFGRailroadSubsystem::FRailroadHitResult AFGRailroadSubsystem::SolveVehicleCollisions( AFGTrain* forTrain,
 		 AFGRailroadVehicle* forVehicle,
 		FRailroadTrackPosition oldTrackPosition,
-		FRailroadTrackPosition newTrackPosition){ return FRailroadHitResult(); }
+		FRailroadTrackPosition newTrackPosition,
+		float moveDelta){ return FRailroadHitResult(); }
 float AFGRailroadSubsystem::SweepRailroadPositions(FVector2D capsuleSize,
 		FRailroadTrackPosition startPos,
+		float startOrientation,
 		FRailroadTrackPosition endPos,
 		FVector2D otherCapsuleSize,
 		FRailroadTrackPosition otherPos){ return float(); }

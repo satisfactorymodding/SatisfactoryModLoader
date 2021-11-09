@@ -2,8 +2,8 @@
 
 #include "Buildables/FGBuildableWire.h"
 #include "Hologram/FGWireHologram.h"
-#include "Components/StaticMeshComponent.h"
 #include "Components/SceneComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 AFGBuildableWire::AFGBuildableWire() : Super() {
 	this->mMaxLength = 5000.0;

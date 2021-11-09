@@ -14,7 +14,8 @@ enum class EIconType : uint8
 	ESIT_Part,
 	ESIT_Equipment,
 	ESIT_Monochrome,
-	ESIT_Material
+	ESIT_Material,
+	ESIT_Custom
 };
 
 USTRUCT( Blueprintable )
@@ -22,7 +23,7 @@ struct FACTORYGAME_API FIconData
 {
 	GENERATED_BODY()
 
-	FIconData() : ID( INDEX_NONE ), Hidden( false ), Animated( false ) { Texture = nullptr; }
+	FIconData() : ID( INDEX_NONE ), Hidden( false ), SearchOnly( false ), Animated( false ) { Texture = nullptr; }
 
 	// ID's must be unique! They are assign when generating sign data and will never be modified after being used. Do not manually assign
 	// this.
@@ -47,6 +48,10 @@ struct FACTORYGAME_API FIconData
 	// when browsing
 	UPROPERTY( EditDefaultsOnly, Category = "Icon Data" )
 	bool Hidden;
+
+	// This will only appear if searched for directly
+	UPROPERTY( EditDefaultsOnly, Category = "Icon Data" )
+	bool SearchOnly;
 
 	// Should this Icon Animate?
 	UPROPERTY( EditDefaultsOnly, Category = "Icon Data" )
@@ -133,6 +138,13 @@ public:
 	*/
 	UPROPERTY( EditDefaultsOnly, Category = "Icon Data Settings" )
 	TArray< FIconData> mMonochromeIconData;
+
+	/*	Manually add any icons here. Then rebuild the icon data.
+	 *	Removing elements from here will not remove them from the IconData so modifications to this are non-destructive
+	 *	Do not worry about setting the ID, the id will be manually assigned when compiling the icon data
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Icon Data Settings" )
+	TArray< FIconData > mCustomIconData;
 
 	/*	Manually add any animatable materials here
 	 */
