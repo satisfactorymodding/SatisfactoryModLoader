@@ -2,26 +2,19 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Engine/GameInstance.h"
 #include "NAT.h"
-// MODDING EDIT: Online stuff doesn't work
-//#include "AnalyticsService.h"
+#include "AnalyticsService.h"
 #include "FGAnalyticsMacros.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
-// MODDING EDIT: Online stuff...
-//#include "EOSSDKForwards.h"
-//#include "AnalyticsService.h"
+#include "EOSSDKForwards.h"
+#include "AnalyticsService.h"
+
 #include "FGGameInstance.generated.h"
 
-// MODDING EDIT
-UCLASS()
-class UAnalyticsService : public UObject
-{
-	GENERATED_BODY()
-};
-typedef struct EOS_P2PHandle* EOS_HP2P;
-typedef struct EOS_ProductUserIdDetails* EOS_ProductUserId;
+
 
 UENUM(BlueprintType)
 enum class EJoinSessionState : uint8
@@ -239,10 +232,12 @@ public:
 	/** Get the instance of the debug overlay widget. Will create one if it doesn't exists. Might return null if we don't have a specificed debug overlay widget class */
 	class UFGDebugOverlayWidget* GetDebugOverlayWidget();
 
-public: //MODDING EDIT protected -> public
+	UFUNCTION( BlueprintCallable )
+	class UFGOnlineSessionClient* GetOnlineSession();
+
+protected:
 	// Called when a map has loaded properly in Standalone
 	virtual void LoadComplete( const float loadTime, const FString& mapName ) override;
-protected: // MODDING EDIT
 
 	/** Called after we have destroyed a old session for joining a new session */
 	virtual void OnDestroyOldSessionComplete_JoinSession( FName gameSessionName, bool wasSuccessful );
@@ -267,7 +262,6 @@ protected: // MODDING EDIT
 
 private:
 	void OnPreLoadMap( const FString& levelName );
-	void OnPostLoadMap( UWorld* loadedWorld );
 
 	// Usually called when loading save/exiting to menu
 	void OnWorldDestroy( UWorld* world );
@@ -331,7 +325,7 @@ protected:
 	///** The handle for the Epic Online Services manager. Is initialized in Init(). */
 	//UPROPERTY()
 	//class UEOSManager* mCachedEOSManager;
-	
+
 public:
 	// Mod packages found - valid or invalid
 	UPROPERTY( BlueprintReadOnly, Category = "Modding" )

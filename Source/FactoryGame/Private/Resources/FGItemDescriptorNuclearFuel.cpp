@@ -3,11 +3,8 @@
 #include "Resources/FGItemDescriptorNuclearFuel.h"
 
 UFGItemDescriptorNuclearFuel::UFGItemDescriptorNuclearFuel() : Super() {
+	this->mSpentFuelClass = nullptr;
 	this->mAmountOfWaste = 1;
-	this->mUseDisplayNameAndDescription = true;
-	this->mStackSize = EStackSize::SS_MEDIUM;
-	this->mCanBeDiscarded = true;
-	this->mForm = EResourceForm::RF_SOLID;
 }
 TSubclassOf< UFGItemDescriptor > UFGItemDescriptorNuclearFuel::GetSpentFuelClass(TSubclassOf< UFGItemDescriptorNuclearFuel > inClass){ return TSubclassOf<UFGItemDescriptor>(); }
 int32 UFGItemDescriptorNuclearFuel::GetAmountWasteCreated(TSubclassOf< UFGItemDescriptorNuclearFuel > inClass){ return int32(); }

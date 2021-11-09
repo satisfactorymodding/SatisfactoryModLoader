@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGCharacterBase.h"
 #include "Animation/AnimInstance.h"
 #include "FGCharacterAnimInstance.generated.h"

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "Components/SplineComponent.h"
@@ -178,7 +179,7 @@ void UFGSplineMeshGenerationLibrary::BuildSplineMeshes(
 	TArray< USplineMeshComponent* >& meshPool,
 	MeshConstructor meshConstructor )
 {
-	check( spline );
+	fgcheck( spline );
 
 	const float splineLengthToFill = FMath::Clamp( spline->GetSplineLength(), 0.f, maxSplineLengthToFill );
 	const int32 numMeshes = splineLengthToFill > SMALL_NUMBER ? FMath::Max( 1, FMath::RoundToInt( splineLengthToFill / meshLength ) ) : 0;

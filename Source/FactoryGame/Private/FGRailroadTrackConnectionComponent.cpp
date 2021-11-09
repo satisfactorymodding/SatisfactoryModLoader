@@ -3,7 +3,14 @@
 #include "FGRailroadTrackConnectionComponent.h"
 
 UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Super() {
+	this->mTrackPosition.Track = nullptr;
+	this->mTrackPosition.Offset = 0.0;
+	this->mTrackPosition.Forward = 0.0;
 	this->mSwitchPosition = -1;
+	this->mSwitchControl = nullptr;
+	this->mStation = nullptr;
+	this->mFacingSignal = nullptr;
+	this->mTrailingSignal = nullptr;
 	this->bNetAddressable = true;
 	this->SetIsReplicatedByDefault(true);
 }
@@ -14,14 +21,17 @@ void UFGRailroadTrackConnectionComponent::AddConnection(UFGRailroadTrackConnecti
 void UFGRailroadTrackConnectionComponent::RemoveConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
 bool UFGRailroadTrackConnectionComponent::IsFacingSwitch() const{ return bool(); }
 bool UFGRailroadTrackConnectionComponent::IsTrailingSwitch() const{ return bool(); }
+bool UFGRailroadTrackConnectionComponent::IsSwitchClear() const{ return bool(); }
 void UFGRailroadTrackConnectionComponent::SetSwitchPosition(int32 position){ }
 void UFGRailroadTrackConnectionComponent::SetSwitchPosition( AFGBuildableRailroadTrack* track){ }
+TWeakPtr< FFGRailroadSignalBlock > UFGRailroadTrackConnectionComponent::GetSignalBlock() const{ return TWeakPtr<FFGRailroadSignalBlock>(); }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetOpposite() const{ return nullptr; }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::GetNext() const{ return nullptr; }
 UFGRailroadTrackConnectionComponent* UFGRailroadTrackConnectionComponent::FindOverlappingConnections( UFGRailroadTrackConnectionComponent* component,
 		const FVector& location,
 		float radius,
-		bool allowPlatformTracks){ return nullptr; }
+		bool allowPlatformTracks,
+		TArray< UFGRailroadTrackConnectionComponent* >* out_additionalSwitchConnections){ return nullptr; }
 void UFGRailroadTrackConnectionComponent::SetTrackPosition(const FRailroadTrackPosition& position){ }
 void UFGRailroadTrackConnectionComponent::SortConnections(){ }
 void UFGRailroadTrackConnectionComponent::AddConnectionInternal(UFGRailroadTrackConnectionComponent* toComponent){ }

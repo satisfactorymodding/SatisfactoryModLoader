@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Equipment/FGBuildGun.h"
 #include "FGInventoryComponent.h"
 #include "FGBuildGunDismantle.generated.h"
@@ -49,6 +50,15 @@ public:
 	/** Toggle between whether the multi select should be in effect as actors are being highlighted */
 	UFUNCTION( BlueprintCallable, Category = "BuildGunState|Dismantle" )
 	void SetMultiDismantleState( bool isActive ) { mIsMultiSelectActive = isActive; Internal_OnMultiDismantleStateChanged( isActive ); }
+
+	/** Toggle between whether the multi select should be building specific */
+	UFUNCTION( BlueprintCallable, Category = "BuildGunState|Dismantle" )
+	void SetMultiDismantleToSingleType( bool isSingleType )
+	{
+		mUseSingleTypeMultiDismantle = isSingleType;
+		Internal_OnSingleTypeMultiDismantleChanged( isSingleType );
+	}
+
 
 	/** Gets the selected actor; null if none selected. */
 	UFUNCTION( BlueprintPure, Category = "BuildGunState|Dismantle" )
@@ -111,6 +121,9 @@ public:
 	
 protected:
 	void Internal_OnMultiDismantleStateChanged(bool newValue);
+	void Internal_OnSingleTypeMultiDismantleChanged( bool newValue );
+
+	void UpdateHighlightedActors();
 
 private:
 	/** Client selects actor, then tells the server what to dismantle. This function does that! */
@@ -152,10 +165,20 @@ private:
 	void DestroyStencilProxies(bool destroyComponents = true);
 
 	/** Reset stencil value on every mesh component that has a render state. */
-	void ResetStencilValues( TArray<AActor*> selectedActors );
+	void ResetStencilValues( AActor* actor );
 private:
 	/** State bool for whether multi-select is in effect */
 	bool mIsMultiSelectActive;
+
+	/** State bool for whether multi-select should only select a single buildable type */
+	bool mUseSingleTypeMultiDismantle;
+
+	/** Whether or not we should remove from multi select instead of adding to it. */
+	bool mShouldRemoveFromMultiSelect;
+
+	/** The decided upon type to use for multi dismantle ( Will be the first or most common selected buildable ) */
+	UPROPERTY()
+	TSubclassOf< AActor > mMultiDismantleSpecifiedType;
 
 	/** If true then this state won't broadcast when peek refunds have been updated. Used so that there won't be more than one broadcast per tick. */
 	bool mDisablePeekDismantleRefundsBroadcast;

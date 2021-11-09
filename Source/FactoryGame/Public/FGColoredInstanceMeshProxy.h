@@ -25,11 +25,16 @@ public:
 	virtual void OnUnregister() override;
 	// End AActorComponent interface
 
-	void SetColorSlot( uint8 colorSlotIndex );
+	void SetCustomizationData( const FFactoryCustomizationData& customizationData );
+	void SetHasPowerData( float newHasPower );
+	void SetUserDefinedData( TArray<float> userData );
 
 	FORCEINLINE void SetOptimizationCategory( EDistanceCullCategory NewType ) { mOptimizationCategory = NewType; }
 
 	void SetInstanced( bool setToInstanced );
+
+	UFUNCTION( BlueprintPure, Category = "Colored Mesh Proxy")
+	FORCEINLINE uint8 GetNumCustomDataFloats() const { return mNumCustomDataFloats; }
 
 protected:
 	// Begin AActorComponent interface
@@ -42,14 +47,15 @@ private:
 	void InstantiateInternal();
 
 public:
-	UPROPERTY( EditDefaultsOnly )
-	bool mCanBecolored = true;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
 	bool mBlockInstancing = false;
 
 	/** Only used for holding info about where the instance is located, for quicker changes.*/
-	UFGColoredInstanceManager::InstanceHandle mInstanceHandle;
+	UFGColoredInstanceManager::FInstanceHandle mInstanceHandle;
+
+	/** Used to keep track of our instance ID in the HISM */
+	int32 InstanceID;
 
 	/*Don't need to be a UPROPERTY as it's only meant as a shortcut to an object that is already managed elsewhere and guaranteed to live longer than this component*/
 	UFGColoredInstanceManager* mInstanceManager;
@@ -57,4 +63,9 @@ public:
 	/* Category that will be used based on optimization settings. */
 	UPROPERTY( EditDefaultsOnly )
 	EDistanceCullCategory mOptimizationCategory;
+
+protected:
+	UPROPERTY( EditDefaultsOnly )
+	uint8 mNumCustomDataFloats;
+
 };

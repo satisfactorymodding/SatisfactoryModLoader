@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Modules/ModuleManager.h"
 
 class FFactoryGameModule : public FDefaultGameModuleImpl

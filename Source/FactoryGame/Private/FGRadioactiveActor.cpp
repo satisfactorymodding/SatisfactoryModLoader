@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 
 AFGRadioactiveActor::AFGRadioactiveActor() : Super() {
+	this->mRadioactiveDecay = 0.0;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 void AFGRadioactiveActor::BeginPlay(){ }

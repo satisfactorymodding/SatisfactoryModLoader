@@ -8,9 +8,10 @@ void UFGResearchRecipe::PreSave(const  ITargetPlatform* targetPlatform){ }
 void UFGResearchRecipe::UpdateAssetBundleData(){ }
 #endif 
 UFGResearchRecipe::UFGResearchRecipe() : Super() {
-	this->mManufactoringDuration = 1;
-	this->mManualManufacturingMultiplier = 1;
-	this->mVariablePowerConsumptionFactor = 1;
+	this->mIsRepeatable = false;
+	this->mRewardUsesDropPackage = false;
+	this->mDecorPoints = 0;
+	this->mStructurePoints = 0;
 }
 FResearchRecipeReward UFGResearchRecipe::GetResearcResults(TSubclassOf<UFGResearchRecipe> inClass){ return FResearchRecipeReward(); }
 float UFGResearchRecipe::GetResearchTime(TSubclassOf<UFGResearchRecipe> inClass){ return float(); }

@@ -3,10 +3,20 @@
 #include "FGSplineComponent.h"
 
 UFGSplineComponent::UFGSplineComponent() : Super() {
-	this->mSplineMeshLength = 100;
-	this->mCollisionSpacing = 100;
-	this->mCollisionExtent.X = 1; this->mCollisionExtent.Y = 1; this->mCollisionExtent.Z = 1;
+	this->mSplineMesh = nullptr;
+	this->mSplineMeshLength = 100.0;
+	this->mGenerateCollisions = false;
+	this->mCollisionSpacing = 100.0;
+	this->mCollisionExtent.X = 1.0;
+	this->mCollisionExtent.Y = 1.0;
+	this->mCollisionExtent.Z = 1.0;
+	this->mCollisionOffset.X = 0.0;
+	this->mCollisionOffset.Y = 0.0;
+	this->mCollisionOffset.Z = 0.0;
+	this->mOverrideMaterial = nullptr;
 	this->mUseInstancing = true;
+	this->mSplineMeshInstances = nullptr;
+	this->mCustomDepthSplineMeshInstances = nullptr;
 }
 void UFGSplineComponent::SetOverrideMaterial( UMaterialInterface* material){ }
 void UFGSplineComponent::UpdateSplineMeshes(){ }

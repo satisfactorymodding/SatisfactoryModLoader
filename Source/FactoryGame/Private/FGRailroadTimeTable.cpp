@@ -3,8 +3,9 @@
 #include "FGRailroadTimeTable.h"
 
 AFGRailroadTimeTable::AFGRailroadTimeTable() : Super() {
+	this->mCurrentStop = 0;
 	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->bReplicates = true;
 }
 void AFGRailroadTimeTable::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGRailroadTimeTable::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -21,3 +22,5 @@ bool AFGRailroadTimeTable::SetStops(const TArray< FTimeTableStop >& stops){ retu
 bool AFGRailroadTimeTable::IsValidStop(int32 index) const{ return bool(); }
 FTimeTableStop AFGRailroadTimeTable::GetStop(int32 index) const{ return FTimeTableStop(); }
 void AFGRailroadTimeTable::IncrementCurrentStop(){ }
+void AFGRailroadTimeTable::PurgeInvalidStops(){ }
+void AFGRailroadTimeTable::GetDockingRuleSetForStop(int32 index, FTrainDockingRuleSet& out_ruleSet) const{ }

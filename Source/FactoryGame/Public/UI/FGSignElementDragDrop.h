@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Blueprint/DragDropOperation.h"
 #include "FGSignElementDragDrop.generated.h"

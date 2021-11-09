@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGDriveablePawn.h"
 #include "FGPassengerSeat.generated.h"
 

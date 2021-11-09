@@ -4,10 +4,9 @@
 #include "FGPowerCircuit.h"
 
 UFGPowerConnectionComponent::UFGPowerConnectionComponent() : Super() {
+	this->mPowerInfo = nullptr;
+	this->mHasPower = false;
 	this->mCircuitType = UFGPowerCircuit::StaticClass();
-	this->mMaxNumConnectionLinks = 1;
-	this->bNetAddressable = true;
-	this->SetIsReplicatedByDefault(true);
 }
 void UFGPowerConnectionComponent::SetPowerInfo( UFGPowerInfoComponent* powerInfo){ }
 UFGPowerCircuit* UFGPowerConnectionComponent::GetPowerCircuit() const{ return nullptr; }

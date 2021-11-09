@@ -2,7 +2,19 @@
 
 #include "AI/FGAISystem.h"
 
-UFGAISystem::UFGAISystem(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGAISystem::UFGAISystem(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mDisableAIDistance = 6000.0;
+	this->mNavWalkingDistance = 3000.0;
+	this->mMeshTickEnableDistance = 10000.0;
+	this->mMeshUpdateDistance = 6000.0;
+	this->mActivateSpawnerDistance = 8000.0;
+	this->mDisablePawnMovement = true;
+	this->mMaxCreatureIterationsPerTick = 10;
+	this->mMaxSpawnerIterationsPerTick = 5;
+	this->mMaxSpawnWeight = 15.0;
+	this->mMinSpawnDistance = 5000.0;
+	this->mKeepAliveDistanceToPlayer = 4000.0;
+}
 void UFGAISystem::InitializeActorsForPlay(bool bTimeGotReset){ }
 void UFGAISystem::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void UFGAISystem::Tick(float DeltaTime){ }

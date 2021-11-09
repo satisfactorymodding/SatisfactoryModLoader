@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "FGMessageSender.generated.h"
@@ -29,4 +30,8 @@ public:
 	/** Image of the sender */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
 	class UTexture2D* mTexture;
+
+	/** Color of the sender */
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Sender" )
+	FLinearColor mSenderColor = FLinearColor::White;
 };

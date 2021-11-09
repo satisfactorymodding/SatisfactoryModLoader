@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGFactoryHologram.h"
 #include "FGTrainPlatformHologram.generated.h"
@@ -24,9 +25,10 @@ public:
 	// End Actor Interface
 
 	// Begin AFGHologram interface
-	void ScrollRotate( int32 delta, int32 step ) override;
 	virtual void SpawnChildren( AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator ) override;
 	virtual AActor* Construct( TArray< AActor* >& out_children, FNetConstructionID netConstructionID ) override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void PostHologramPlacement() override;
 	// End AFGHologram interface
 
 protected:
@@ -34,12 +36,14 @@ protected:
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
 	virtual int32 GetRotationStep() const override;
-	virtual void CheckClearance() override;
 	virtual void OnHologramTransformUpdated() override;
 	// End AFGHologram interface
 
+	void SnapToConnection( class UFGTrainPlatformConnection* connection );
+	
 	/** Check for platform connections to snap to */
 	class UFGTrainPlatformConnection* FindOverlappingConnectionComponent( const FVector& location, float actorOverlapRadius, float toleranceRadius, bool ignoreSelf, bool ignoreIsConnected ) const;
 
@@ -70,18 +74,6 @@ private:
 	/** radius to check for potential actors (platforms) containing connection components */
 	float mActorOverlapCheckRadius;
 
-	/** radius to allow component overlap checks to succeed after snapping */
-	float mStrictOverlapDistance;
-
-	/** Distance from hitlocation to break snap, used to eliminate wibbily wobbily where holograms snap, and then alter their snap next frame the new location */
-	float mBreakSnapDistance;
-
 	/** Track whether this platform is flipped, is only assigned to snapped buildings */
 	bool mIsOrientationReversed;
-
-	/** Track whether this object is scrolled (flipped) while snapped */
-	int32 mScrollTrackDirection;
-
-	/** Track changes to the scroll direction */
-	int32 mPreviousScrollTrackDirection;
 };

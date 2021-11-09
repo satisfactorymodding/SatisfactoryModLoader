@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "ItemAmount.h"
 #include "AssetBundleData.h"
@@ -106,7 +107,7 @@ public:
 
 	/** Returns the unlocks granted by this schematic */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
-	static TArray< UFGUnlock* > GetUnlocks( TSubclassOf< UFGSchematic > inClass );
+	static TArray< class UFGUnlock* > GetUnlocks( TSubclassOf< UFGSchematic > inClass );
 
 	/** Returns mTechOnionTier */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -136,9 +137,13 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool AreSchematicDependenciesMet( TSubclassOf< UFGSchematic > inClass, UObject* worldContext );
 
-	/** Returns true if the dependencies for this schematic are met and are available for purchase */
+	/** Appends the dependencies for this schematic to the out_schematicDependencies */
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	static void GetSchematicDependencies( TSubclassOf< UFGSchematic > inClass, TArray< class UFGAvailabilityDependency* >& out_schematicDependencies );
+
+	/** Returns true if we can give access to this schematic. Checks for events and if mDependenciesBlocksSchematicAccess is true we check that all dependencies are met as well. */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static bool CanGiveAccessToSchematic( TSubclassOf< UFGSchematic > inClass, UObject* worldContext );
 
 	/** Returns true if this schematic is allowed to be purchased more than once */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
@@ -165,7 +170,7 @@ public:
 	void MigrateDataToNewDependencySystem();
 #endif
 
-public: // MODDING EDIT: protected -> public
+protected:
 	/** What type of schematic is this. */
 	UPROPERTY( EditDefaultsOnly, Category = "Schematic" )
 	ESchematicType mType;
@@ -221,6 +226,10 @@ public: // MODDING EDIT: protected -> public
 	/** Is this schematic dependant on anything to be available for purchase? */
 	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Dependencies" )
 	TArray< class UFGAvailabilityDependency* > mSchematicDependencies;
+
+	/** Should schematic dependencies block the access to the schematic. This doesn't store the schematic and checks if dependencies are met later. You need to try and give access to it again. */
+	UPROPERTY( EditDefaultsOnly, Category = "Dependencies" )
+	bool mDependenciesBlocksSchematicAccess;
 
 	/** The events this schematic are present in */
 	UPROPERTY( EditDefaultsOnly, Category = "Events" )

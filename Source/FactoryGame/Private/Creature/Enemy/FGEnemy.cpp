@@ -3,7 +3,10 @@
 #include "Creature/Enemy/FGEnemy.h"
 
 void AFGEnemy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
-AFGEnemy::AFGEnemy(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+AFGEnemy::AFGEnemy(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mCurrentAttack = nullptr;
+	this->mCurrentAggroTarget = nullptr;
+}
 FVector AFGEnemy::GetAttackLocation_Implementation(){ return FVector(); }
 void AFGEnemy::PerformCustomRadialAttack_Implementation(){ }
 void AFGEnemy::SetCurrentAggroTarget(AActor* newTarget){ }

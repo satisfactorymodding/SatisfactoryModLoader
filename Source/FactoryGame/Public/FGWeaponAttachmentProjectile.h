@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Equipment/FGWeaponAttachment.h"
 #include "FGWeaponAttachmentProjectile.generated.h"

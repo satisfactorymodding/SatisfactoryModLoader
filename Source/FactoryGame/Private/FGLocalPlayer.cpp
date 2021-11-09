@@ -13,11 +13,9 @@ UFGEM_FailedToLoginToOnlineService::UFGEM_FailedToLoginToOnlineService() : Super
 }
 FFGOnlineFriend::FFGOnlineFriend(){ }
 FFGOnlineFriend::FFGOnlineFriend(TSharedRef<FOnlineFriend> onlineFriend){ }
-void FSessionInformation::Init(const FString& InMapName, const FString& InOptions, const FString& InSessionName, ESessionVisibility InVisibility){ }
-void FSessionInformation::SendAnalytics(UWorld* world){ }
-void FSessionInformation::MarkAsOffline(){ }
-void FSessionInformation::SetState(ECreateSessionState newState, FOnCreateSessionStateChanged& createSessionChanged){ }
-UFGLocalPlayer::UFGLocalPlayer(){ }
+UFGLocalPlayer::UFGLocalPlayer() : Super() {
+
+}
 void UFGLocalPlayer::PlayerAdded( UGameViewportClient* inViewportClient, int32 inControllerID){ }
 void UFGLocalPlayer::PlayerRemoved(){ }
 void UFGLocalPlayer::SubscribeToOptionUpdates(){ }
@@ -26,9 +24,9 @@ TEnumAsByte<ELoginState> UFGLocalPlayer::GetLoginState() const{ return TEnumAsBy
 FString UFGLocalPlayer::GetUsername() const{ return FString(); }
 FString UFGLocalPlayer::GetUsernameEpic() const{ return FString(); }
 FString UFGLocalPlayer::GetUsernameSteam() const{ return FString(); }
+void UFGLocalPlayer::SetupServerAndTravelToMap(const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility){ }
 bool UFGLocalPlayer::GetFriendList(TArray<FFGOnlineFriend>& out_friends){ return bool(); }
 void UFGLocalPlayer::AutoLogin(){ }
-void UFGLocalPlayer::SetupServerAndTravelToMap(const FString& mapName, const FString& options, const FString& sessionName, ESessionVisibility visibility){ }
 void UFGLocalPlayer::CopyPresenceDataToLocalPresenceAndPushToServer(const TSharedRef<FOnlineUserPresence>& presence){ }
 void UFGLocalPlayer::UpdatePresence(){ }
 void UFGLocalPlayer::CheckForStartupArguments(){ }
@@ -69,30 +67,16 @@ void UFGLocalPlayer::OnFriendsChangeSteam(){ }
 void UFGLocalPlayer::OnQueryUserInfoForFriendListComplete(int32 localUSerNum, bool wasSuccessful, const TArray< TSharedRef<const FUniqueNetId> >& userIds, const FString& errorString){ }
 void UFGLocalPlayer::OnPresenceReceived(const  FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence){ }
 void UFGLocalPlayer::OnPresenceReceivedSteam(const  FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence){ }
-void UFGLocalPlayer::EndCurrentSession_SetupServer(FName sessionName){ }
-void UFGLocalPlayer::DestroyCurrentSession_SetupServer(FName sessionName){ }
-void UFGLocalPlayer::OnPreviousSessionCleanedup_SetupServer(FName sessionName, bool wasSuccessful){ }
-void UFGLocalPlayer::OnSessionCreated_SetupServer(FName sessionName, bool wasSuccessful){ }
-void UFGLocalPlayer::OnPresenceUpdated_SetupServer(const  FUniqueNetId& userId, const TSharedRef<FOnlineUserPresence>& presence){ }
-void UFGLocalPlayer::OnLoginFailed_OpenMap(bool confirmClicked){ }
-void UFGLocalPlayer::OnPresenceFailedToUpdate_OpenMap(bool confirmClicked){ }
 void UFGLocalPlayer::UpdateLoginState(){ }
-void UFGLocalPlayer::CreateOfflineSession_SetupServer(bool startOffline){ }
 bool UFGLocalPlayer::CanAutoLoginEpic() const{ return bool(); }
 bool UFGLocalPlayer::CanAutoLoginSteam() const{ return bool(); }
 FString UFGLocalPlayer::GetPresenceString() const{ return FString(); }
 void UFGLocalPlayer::GetPresenceState(FPlayerPresenceState& outState) const{ }
 ELoginState UFGLocalPlayer::FromLoginStatus(ELoginStatus::Type from) const{ return ELoginState(); }
-void UFGLocalPlayer::OpenMap_WaitForPresence(){ }
-void UFGLocalPlayer::OpenMap_WaitForProductUserId(){ }
-void UFGLocalPlayer::OpenMap(){ }
-ECreateSessionState UFGLocalPlayer::GetCurrentCreateSessionState() const{ return ECreateSessionState(); }
 void UFGLocalPlayer::OnLoggedIn(){ }
 void UFGLocalPlayer::SetLoginStateEpic(ELoginState newLoginState){ }
 void UFGLocalPlayer::SetLoginStateSteam(ELoginState newLoginState){ }
 void UFGLocalPlayer::GetFriendsWithNoData(TArray<TSharedRef<const FUniqueNetId>>& out_usersWithNoData){ }
-bool UFGLocalPlayer::PresenceHasSessionId() const{ return bool(); }
 void UFGLocalPlayer::PushErrorAndAutosave(TSubclassOf<class UFGErrorMessage> errorMessage){ }
 void UFGLocalPlayer::SetIsWaitingForEOSConnectLogin(bool waiting){ }
-void UFGLocalPlayer::FailedToSetupServer(){ }
 void UFGLocalPlayer::OnComandlineInviteSearchComplete(FBlueprintSessionResult result){ }

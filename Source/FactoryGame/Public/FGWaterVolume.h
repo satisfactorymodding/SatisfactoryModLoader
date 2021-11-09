@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UndefinedBool.h"
 #include "Interfaces/Interface_PostProcessVolume.h"
 #include "GameFramework/PhysicsVolume.h"

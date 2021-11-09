@@ -14,6 +14,7 @@ void UFGSaveSystem::GetSourceSaveDirectoriesPaths(const UWorld* world, TArray<FS
 UFGSaveSystem* UFGSaveSystem::Get( UWorld* world){ return nullptr; }
 UFGSaveSystem* UFGSaveSystem::Get( UObject* worldContext){ return nullptr; }
 void UFGSaveSystem::EnumerateSaveGames(FOnEnumerateSaveGamesComplete onCompleteDelegate, void* userData){ }
+TArray<FSaveHeader> UFGSaveSystem::EnumerateSaveGames(){ return TArray<FSaveHeader>(); }
 void UFGSaveSystem::GroupSavesPerSession(const TArray< FSaveHeader >& saves, TArray< FSessionSaveStruct >& out_groupedBySession){ }
 void UFGSaveSystem::SortSessions(TArray< FSessionSaveStruct >& sessions, ESaveSortMode sortMode, ESaveSortDirection sortDirection){ }
 void UFGSaveSystem::SortSaves(TArray< FSaveHeader >& saves, ESaveSortMode sortMode, ESaveSortDirection sortDirection){ }

@@ -2,10 +2,15 @@
 
 #include "FGColoredInstanceManager.h"
 
-void UFGColoredInstanceManager::SetupInstanceLists(UStaticMesh* staticMesh, bool makeSingleColor , bool useAsOccluder , EDistanceCullCategory CullCategory){ }
+void UFGColoredInstanceManager::SetupInstanceList(UStaticMeshComponent* sourceStaticMeshComponent, uint8 numCustomDataFloats, bool useAsOccluder , EDistanceCullCategory CullCategory){ }
 void UFGColoredInstanceManager::ClearInstances(){ }
-void UFGColoredInstanceManager::AddInstance(const FTransform& transform, InstanceHandle& handle, uint8 colorIndex){ }
-void UFGColoredInstanceManager::RemoveInstance(InstanceHandle& handle){ }
-void UFGColoredInstanceManager::MoveInstance(const FTransform& transform, InstanceHandle& handle, uint8 newColorIndex){ }
+void UFGColoredInstanceManager::AddInstance(const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex){ }
+void UFGColoredInstanceManager::RemoveInstance(FInstanceHandle& handle){ }
+void UFGColoredInstanceManager::UpdateTransformForInstance(const FTransform& newTransform, int32 handleId){ }
+void UFGColoredInstanceManager::UpdateColorForInstance(uint8 colorIndex, FInstanceHandle& handle){ }
+void UFGColoredInstanceManager::SetColorForInstanceFromDataArray(const TArray<float>& colorDataArray, FInstanceHandle& handle, bool updateColor){ }
+void UFGColoredInstanceManager::SetUserDefinedData(TArray< float > userData, FInstanceHandle& handle){ }
+void UFGColoredInstanceManager::SetHasPowerData(float newHasPower, FInstanceHandle& handle){ }
+void UFGColoredInstanceManager::UpdateColorForInstanceFromDataArray(FInstanceHandle& handle){ }
 void UFGColoredInstanceManager::UpdateMaterialColors(){ }
-UHierarchicalInstancedStaticMeshComponent* UFGColoredInstanceManager::CreateHierarchicalInstancingComponent( UStaticMesh* staticMesh, bool useAsOccluder, FVector2D& minMaxCullDistance){ return nullptr; }
+UHierarchicalInstancedStaticMeshComponent* UFGColoredInstanceManager::CreateHierarchicalInstancingComponent( UStaticMesh* staticMesh,TArray<class UMaterialInterface*> overridenMaterials, uint8 numCustomData, bool useAsOccluder, FVector2D& minMaxCullDistance){ return nullptr; }

@@ -4,6 +4,6 @@
 
 void AFGPassengerSeat::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 AFGPassengerSeat::AFGPassengerSeat() : Super() {
-	this->mShouldAttachDriver = true;
+	this->mOuterVehicle = nullptr;
 }
 void AFGPassengerSeat::Tick(float dt){ }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Serialization/ArchiveUObject.h"
 #include "EngineGlobals.h"
 #include "Engine.h"

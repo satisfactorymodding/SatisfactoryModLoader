@@ -2,7 +2,23 @@
 
 #include "AI/FGEnemyController.h"
 
-AFGEnemyController::AFGEnemyController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+AFGEnemyController::AFGEnemyController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mUpdateAggroInterval = 1.0;
+	this->mTimeToLoseAllAggro = 10.0;
+	this->mAggroTargetsAggroMax = 0.0;
+	this->mAggroBaseWeight = 1.0;
+	this->mAggroAggroWeight = 1.0;
+	this->mAggroDistanceWeight = 1.0;
+	this->mTargetSwitchFactor = 0.3;
+	this->mDefaultIgnoreCooldown = 5.0;
+	this->mStaticIgnoreCooldown = 5.0;
+	this->mAggroDistanceCurve = nullptr;
+	this->mGainAggroThreshold = 0.0;
+	this->mLoseAggroThreshold = -1.0;
+	this->mCurrentAggroTarget = nullptr;
+	this->mPanicIgnoreTime = 3.0;
+	this->mDidCancelAggroTasks = false;
+}
 void AFGEnemyController::OnPossess(APawn* InPawn){ }
 void AFGEnemyController::OnUnPossess(){ }
 void AFGEnemyController::Destroyed(){ }

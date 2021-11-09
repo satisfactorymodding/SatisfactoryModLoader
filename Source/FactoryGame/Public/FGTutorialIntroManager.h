@@ -2,10 +2,12 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGTutorialSubsystem.h"
 #include "Resources/FGResourceDescriptor.h"
+#include "FGRecipe.h"
 #include "FGTutorialIntroManager.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FIntroSequenceStateUpdate );
@@ -61,6 +63,9 @@ struct FTutorialHintData
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
 	TSubclassOf< class UFGMessageBase > Message;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tutorial" )
+	TMap< TSubclassOf< class UFGMessageBase >, float > AdditionalMessages;
 };
 
 UCLASS( abstract )

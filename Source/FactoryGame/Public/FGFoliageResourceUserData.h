@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Engine/AssetUserData.h"
 #include "ItemDrop.h"
 #include "FGFoliageResourceUserData.generated.h"
@@ -45,9 +46,13 @@ public:
 	 * @return false if mesh is nullptr, true identifier is null, also if the mesh doesn't have any UFGFoliageResourceUserData
 	 */
 	static bool MeshHasIdentifier( UStaticMesh* mesh, TSubclassOf< class UFGFoliageIdentifier > identifier );
-	
+
 	UFUNCTION(BlueprintPure, Category = "Foliage")
 	static EProximityEffectTypes GetProximityEffectTypeByMesh(UStaticMesh* mesh);
+	
+	UFUNCTION(BlueprintPure, Category = "Foliage")
+	static TArray<int32> GetProximityEffectIdsByMesh(UStaticMesh* mesh);
+
 	// Accessors
 	FORCEINLINE const TArray< FItemDropWithChance >& GetPickupItems() const{ return mPickupItems; }
 	FORCEINLINE class UAkAudioEvent* GetPickupEvent() const{ return mPickupEvent; }
@@ -57,6 +62,7 @@ public:
 	FORCEINLINE int32 GetFXPriority() const { return mFXPriority;  }
 	FORCEINLINE class UStaticMesh* GetPhysicsMesh() const { return mPhysicsMesh; }
 	FORCEINLINE EProximityEffectTypes GetEffectCategory() const { return EffectCategory; }
+	FORCEINLINE TArray<int32> GetFoliageTypeIDs() const { return FoliageTypeIDs; }
 	// Returns the first defined effect starting from most desirable, mExplosionDestroyedEffect working down to mPickupEffect
 	class UParticleSystem* GetExplosionDestroyedEffect() const;
 
@@ -99,4 +105,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TEnumAsByte<EProximityEffectTypes> EffectCategory;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<int32> FoliageTypeIDs;
 };

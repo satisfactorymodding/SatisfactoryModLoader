@@ -1,6 +1,7 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
+#include "FactoryGame.h"
 #include "CoreTypes.h"
 #include "Misc/Guid.h"
 
@@ -68,6 +69,12 @@ struct FFactoryGameCustomVersion
 
 		// 2020-03-24: Add support for specific resource node types in the FGUnlockableScannableResource
 		RefactorUnlockScannableResources,
+
+		// 2021-05-05: Expand dialogue data for audio messages 
+		RefactorDialogueData,
+
+		// 2021-08-12: Moved variables and functions from BuildDescriptor to ItemDescriptor
+		RefactorDescriptors,
 
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,

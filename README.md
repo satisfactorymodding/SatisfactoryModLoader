@@ -1,4 +1,4 @@
-# SatisfactoryModLoader [![Build Status](https://ci.ficsit.app/job/SML2/job/master/badge/icon)](https://ci.ficsit.app/job/SML2/job/master/)
+# SatisfactoryModLoader [![CI](https://github.com/satisfactorymodding/SatisfactoryModLoader/actions/workflows/build.yml/badge.svg)](https://github.com/satisfactorymodding/SatisfactoryModLoader/actions/workflows/build.yml)
 A tool used to load mods for the game Satisfactory. It's under development until Coffee Stain releases a proper Unreal modding API.
 
 # Discord Server

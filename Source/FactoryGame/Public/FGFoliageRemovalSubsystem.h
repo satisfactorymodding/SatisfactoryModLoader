@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
 #include "FGFoliageResourceUserData.h"
@@ -132,6 +133,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
 	bool GetFoliageWithinRadius( const FVector& location, float radius, bool isLocalSpace, TArray<int32>& out_instanceArray, TArray<FVector>& out_locationArray, TArray<class UHierarchicalInstancedStaticMeshComponent*>& out_componentArray );
 
+	/**
+	* Finds foliage count within a provided radius to a specified location.
+	*/
+	UFUNCTION( BlueprintCallable, Category = "Foliage" )
+	int32 GetFoliageCountWithinRadius( const FVector& location, float radius, bool isLocalSpace );
+	
 	/**
 	 * @param component - UHierarchicalInstanctedStaticMeshComponent to check
 	 * @param foliageIdentifier - find foliage that matches this tag

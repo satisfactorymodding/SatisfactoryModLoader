@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "FactoryGame.h"
+#include "Resources/FGResourceNodeBase.h"
 #include "Equipment/FGEquipment.h"
 #include "FGResourceScanner.generated.h"
 
@@ -14,6 +16,12 @@ struct FACTORYGAME_API FNodeClusterData
 	FNodeClusterData() :
 		MidPoint( FVector::ZeroVector ),
 		ResourceDescriptor( nullptr )
+	{
+	}
+
+	FNodeClusterData( AFGResourceNodeBase* singleNode ) :
+	MidPoint( singleNode->GetActorLocation() ),
+	ResourceDescriptor( singleNode->GetResourceClass() )
 	{
 	}
 
@@ -76,6 +84,7 @@ public:
 	/** Sets the status of mIsPressingScan */
 	UFUNCTION( BlueprintCallable, Category = "Resource Scanner" )
 	void SetPressingScan( bool isPressingScan ) { mIsPressingScan = isPressingScan; }
+	
 protected:
 	/** server notified of when a scanning was made */
 	UFUNCTION( Reliable, Server, WithValidation )
@@ -90,14 +99,15 @@ protected:
 	virtual void OnScanPressed();
 	virtual void OnScanReleased();
 
-public: // MODDING EDIT accessor
-	FORCEINLINE void GenerateNodeClustersAccessor() { GenerateNodeClusters(); }
-protected:
 	/** Constructs the list of nodes cluster used when scanning */
 	void GenerateNodeClusters();
 
 	/** Finds nodes within a radius of the passed node */
 	void GetNodesWithinDistance( class AFGResourceNodeBase* node, float dist, TArray< class AFGResourceNodeBase* >& clusterNodes, TArray< class AFGResourceNodeBase* >& remainingNodes );
+
+	void GetClosetClusters( TArray<FNodeClusterData>& closestClusters );
+
+	void SplitNearbyClusters( TArray< FNodeClusterData >& clusters );
 
 protected:
 	/** This is the resource class to scan for */
@@ -128,11 +138,16 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Resource Scanner" )
 	float mDistBetweenNodesInCluster;
 
+	/** Within what range to a node in a cluster will we start showing them as loner nodes even if they aren't marked as loner nodes  */
+	UPROPERTY( EditDefaultsOnly, Category = "Resource Scanner" )
+	float mUnclusterRange;
+
 	/** A list of all the clusters of nodes non the level */
 	UPROPERTY()
 	TArray< FNodeClusterData > mNodeClusters;
 
 private:
+
 	// Temp fix for avoiding scanning when opening CheatBoard, function is bound to CheatBoard input
 	void OnCheatBoardOpened();
 };

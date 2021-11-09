@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Equipment/FGEquipmentAttachment.h"
 #include "FGDowsingStickAttachment.generated.h"

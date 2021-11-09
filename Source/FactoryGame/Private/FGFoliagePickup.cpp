@@ -3,10 +3,11 @@
 #include "FGFoliagePickup.h"
 
 AFGFoliagePickup::AFGFoliagePickup() : Super() {
+	this->mPickupMesh = nullptr;
 	this->bOnlyRelevantToOwner = true;
 	this->SetHidden(true);
 	this->bNetUseOwnerRelevancy = true;
-	this->SetReplicates(true);
+	this->bReplicates = true;
 }
 void AFGFoliagePickup::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
 void AFGFoliagePickup::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }

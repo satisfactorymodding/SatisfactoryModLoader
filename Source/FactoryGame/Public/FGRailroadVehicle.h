@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGVehicle.h"
 #include "Buildables/FGBuildableRailroadTrack.h"
 #include "FGRailroadVehicle.generated.h"
@@ -18,6 +19,17 @@ enum class ERailroadVehicleCoupler : uint8
 };
 
 /**
+ * Vehicle is derailed and can be re-railed                                                                    
+ */
+UCLASS()
+class FACTORYGAME_API UFGUseState_VehicleDerailed : public UFGUseState
+{
+	GENERATED_BODY()
+public:
+	UFGUseState_VehicleDerailed() { mIsUsableState = true; }
+};
+
+/**
  * Base vehicle for all railroad vehicles. E.g. locomotives, wagons etc.
  */
 UCLASS()
@@ -29,7 +41,6 @@ public:
 
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
-	virtual bool IsNetRelevantFor( const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation ) const override;
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 	virtual void Serialize( FArchive& ar ) override;
@@ -45,8 +56,23 @@ public:
 	virtual	void LostSignificance_Implementation() override;
 	//End IFGSignificanceInterface
 
-	/** Update the animations for this vehicle, this is called after the whole train has been moved. */
-	void UpdateAnimation();
+	//~ Begin IFGUseableInterface
+	virtual void UpdateUseState_Implementation( class AFGCharacterPlayer* byCharacter, const FVector& atLocation, class UPrimitiveComponent* componentHit, FUseState& out_useState ) const override;
+	virtual void OnUse_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+	virtual void OnUseStop_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+	virtual bool IsUseable_Implementation() const override;
+	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state  ) override;
+	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
+	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
+	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
+	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
+	//~ End IFGUseableInterface
+
+	// Begin IFGActorRepresentationInterface
+	virtual bool UpdateRepresentation() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	// End IFGActorRepresentationInterface
 
 	/** Update the power usage and info for this railroad vehicle. */
 	virtual void UpdatePower();
@@ -73,6 +99,9 @@ public:
 	/** Is this vehicle docked to a station. */
 	bool IsDocked() const;
 
+	/** Is this vehicle derailed? */
+	bool IsDerailed() const { return mIsDerailed; }
+
 	/**
 	 * If this vehicles orientation is reversed in the train formation.
 	 * @return true if forward for this vehicle is not the same as the trains forward.
@@ -85,14 +114,14 @@ public:
 	 * @return the vehicle coupled at index.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Vehicle" )
-	FORCEINLINE bool IsCoupledAt( ERailroadVehicleCoupler coupler ) const { return mCoupledVehicles[ ( uint8 )coupler ].IsValid(); }
+	FORCEINLINE bool IsCoupledAt( ERailroadVehicleCoupler coupler ) const { return IsValid( coupler == ERailroadVehicleCoupler::RVC_FRONT ? mCoupledVehicleFront : mCoupledVehicleBack ); }
 
 	/**
 	 * @param at Coupler, valid values are 0 (front) and 1 (back).
 	 * @return the vehicle coupled at index.
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Railroad|Vehicle" )
-	FORCEINLINE AFGRailroadVehicle* GetCoupledVehicleAt( ERailroadVehicleCoupler coupler ) const { return mCoupledVehicles[ ( uint8 )coupler ].Get(); }
+	FORCEINLINE AFGRailroadVehicle* GetCoupledVehicleAt( ERailroadVehicleCoupler coupler ) const { return coupler == ERailroadVehicleCoupler::RVC_FRONT ? mCoupledVehicleFront : mCoupledVehicleBack; }
 	
 	/**
 	 * Get the track position for this vehicle.
@@ -109,16 +138,47 @@ public:
 	/**
 	 * Set the track position for this vehicle, be careful cause the actor and any coupled vehicles will not get moved.
 	 */
-	FORCEINLINE void SetTrackPosition( const FRailroadTrackPosition& position ) { mTrackPosition = position; }
+	void SetTrackPosition( const FRailroadTrackPosition& position );
+
+	/** Called when this vehicle is derailed. */
+	virtual void OnDerail( const FVector& velocity );
+
+	/** Called when this vehicle is derailed. */
+	UFUNCTION( BlueprintImplementableEvent, meta = ( DisplayName = "OnDerail" ) )
+	void ReceiveOnDerail();
+
+	/** Called when this vehicle is re-railed. */
+	virtual void OnRerail();
+
+	/** Called when this vehicle is re-railed. */
+	UFUNCTION( BlueprintImplementableEvent, meta = ( DisplayName = "OnRerail" ) )
+	void ReceiveOnRerail();
 
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 
-private:
-	/** Updates the vehicles settings depending on if it should be simulated or "real" */
-	virtual void OnSimulationChanged();
+protected:
+	/** See below */
+	UFUNCTION( Unreliable, NetMulticast )
+	void OnCollided( AFGRailroadVehicle* withVehicle, float impactVelocity, bool isPrimaryEvent, bool isDerailed );
 
-	bool IsVehicleNetRelevantFor( const class AFGRailroadVehicle* vehicle, const FVector& SrcLocation ) const;
+	/**
+	 * Called on all clients when the trains collide, only called if the vehicle is significant.
+	 * 
+	 * @param withVehicle Vehicle we collided with.
+	 * @param impactVelocity Our vehicles velocity.
+	 * @param isPrimaryEvent Is this the primary collision event, meaning we caused the collision.
+	 * @param isDerailed Is the train derailed from the collision.
+	 */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, meta = ( DisplayName = "OnCollided" ) )
+	void ReceiveOnCollided( AFGRailroadVehicle* withVehicle, float impactVelocity, bool isPrimaryEvent, bool isDerailed );
+	
+private:
+	/** Tick the locally simulated client movement. */
+	void TickClientSimulation( float dt );
+	
+	/** Updates the vehicles settings depending on if it should be simulated or "real" */
+	virtual void OnIsSimulatedChanged();
 
 	/** @param at Coupler to connect to. */
 	void CoupleVehicleAt( AFGRailroadVehicle* vehicle, ERailroadVehicleCoupler coupler );
@@ -126,9 +186,17 @@ private:
 	/** @param at Coupler to connect to. */
 	void DecoupleVehicleAt( ERailroadVehicleCoupler coupler );
 
+	/** On reps */
+	UFUNCTION()
+	void OnRep_IsOrientationReversed();
+	UFUNCTION()
+	void OnRep_Train();
+	UFUNCTION()
+	void OnRep_IsDerailed();
+	
 protected:
 	/** The train this vehicle is part of, updated from the railroad subsystem */
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_Train )
 	class AFGTrain* mTrain;
 
 	/** How long is this vehicle. */
@@ -138,25 +206,43 @@ protected:
 private:
 	/** These need access to the vehicles internals. */
 	friend class AFGRailroadSubsystem;
+	friend class AFGTrain;
 	friend class TTrainIterator;
 
 	/**
+	 * Vehicles coupled to this vehicle.
+	 * 
 	 * A train is a doubly linked list of AFGRailroadVehicles.
 	 * Use TTrainIterator to iterate over a train (in any direction).
 	 *
-	 * Vehicles coupled to this vehicle.
-	 * Use ERailroadVehicleCoupler to access this.
-	 *
 	 * Saved in serialize.
 	 */
-	TWeakObjectPtr< AFGRailroadVehicle > mCoupledVehicles[ 2 ];
+	UPROPERTY( Replicated )
+	AFGRailroadVehicle* mCoupledVehicleFront;
+	UPROPERTY( Replicated )
+	AFGRailroadVehicle* mCoupledVehicleBack;
 
 	/** If this vehicle is reversed in the train formation. */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsOrientationReversed )
 	bool mIsOrientationReversed;
 
 	/** Where along the track is the train. */
 	UPROPERTY( SaveGame )
 	FRailroadTrackPosition mTrackPosition;
 
+	/** If this vehicle is derailed, handles the derailment on client. */
+	UPROPERTY( ReplicatedUsing = OnRep_IsDerailed )
+	bool mIsDerailed;
+
+	// @todo-trains Comment these when we have optimized.
+	UPROPERTY( Replicated )
+	float mLastServerTime;
+	UPROPERTY( Replicated )
+	class AFGBuildableRailroadTrack* mServerTrack;
+	UPROPERTY( Replicated )
+	float mServerOffset;
+	UPROPERTY( Replicated )
+	float mServerForward;
+	UPROPERTY( Replicated )
+	float mServerSpeed;
 };

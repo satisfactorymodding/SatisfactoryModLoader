@@ -2,9 +2,11 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Components/CanvasPanel.h"
 #include "Blueprint/UserWidget.h"
 #include "Styling/SlateBrush.h"
+#include "FGSignTypes.h"
 #include "FGSignCanvasWidget.generated.h"
 
 /**
@@ -16,13 +18,16 @@ class UFGSignCanvasWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	void Init( class UFGSignInteractWidget* interactWidget, TArray<UFGSignElementData*> elementData );
+	void Init( class UFGSignInteractWidget* interactWidget, FSignStringData& stringData );
 
 	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
-	void AddSignCanvasElement( UFGSignElementData* elementData );
+	void AddSignCanvasElement( const FSignStringElement& stringData );
 
 	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
-	void OnElementSelected( class UFGSignElementData* elementData );
+	void RemoveSignCanvasElement( int32 elementID );
+
+	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
+	void OnElementSelected( int32 elementID );
 
 	/** Returns the correct local component location of a canvas element */
 	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
@@ -37,6 +42,9 @@ public:
 	// Called to apply sign data back to the world sign
 	void ApplySignData();
 
+	// Call to Remove all children from the canvas
+	void RemoveAllSignElements();
+
 	// Called by the dragged element, spawns the drag widget
 	void OnElementBeginDrag( class UFGSignElementDragWidget* dragElement );
 
@@ -46,6 +54,8 @@ public:
 	// Called to set the size of the canvas size box to match the world size of the sign
 	void SetCanvasSize( FVector2D size );
 
+	UFGSignInteractWidget* GetInteractWidget() { return mInteractWidget; }
+
 protected:
 	virtual bool NativeOnDrop( const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation ) override;
 	virtual void NativeOnDragEnter( const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation ) override;
@@ -53,7 +63,7 @@ protected:
 
 protected:
 	/************************************************************************/
-	/*						Begin Widget Bindings
+	/*						Begin Widget Bindings */
 	/************************************************************************/ 
 	// Size Box that holds our Canvas, its size is set to absolute and the canvas fills that space
 	UPROPERTY( meta = ( BindWidget ) )
@@ -61,9 +71,9 @@ protected:
 	
 	// The canvas panel where actual sign elements will be added
 	UPROPERTY( meta=( BindWidget ))
-	UCanvasPanel* mCanvasPanel;
+	UCanvasPanel* mRootCanvasPanel;
 	/************************************************************************/
-	/*                     End Widget Bindings
+	/*                     End Widget Bindings */
 	/************************************************************************/
 
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Widget" )
@@ -95,7 +105,7 @@ protected:
 	class UFGSignInteractWidget* mInteractWidget;
 
 private:
-	void InitializeSlot( class UCanvasPanelSlot* slot );
+	void InitializeSlot( class UCanvasPanelSlot* slot, FVector2D pos, FVector2D size );
 
 	class UFGSignElementWidget* GetElementWidgetById( int32 id );
 

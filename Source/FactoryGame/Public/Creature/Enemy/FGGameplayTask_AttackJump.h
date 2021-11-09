@@ -2,9 +2,10 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Creature/Enemy/FGGameplayTask_Attack.h"
-#include "FGGameplayTask_Attackjump.generated.h"
+#include "FGGameplayTask_AttackJump.generated.h"
 
 /**
  * 

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGUseableInterface.h"
 #include "GameFramework/Actor.h"
 #include "FGFoliagePickup.generated.h"

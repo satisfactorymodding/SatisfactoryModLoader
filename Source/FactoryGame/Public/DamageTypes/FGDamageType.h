@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/DamageType.h"
 #include "FGDamageType.generated.h"
 

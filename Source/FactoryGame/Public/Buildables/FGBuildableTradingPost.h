@@ -2,15 +2,17 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildableFactory.h"
 #include "Buildables/FGBuildableGenerator.h"
+#include "FGActorRepresentationInterface.h"
 #include "FGBuildableTradingPost.generated.h"
 
 /**
  * The trading post, it has N inputs and sells inputed items for money.
  */
 UCLASS( Abstract )
-class FACTORYGAME_API AFGBuildableTradingPost : public AFGBuildableFactory
+class FACTORYGAME_API AFGBuildableTradingPost : public AFGBuildableFactory, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 public:
@@ -32,7 +34,29 @@ public:
 	virtual void GetDismantleRefund_Implementation( TArray< FInventoryStack >& out_refund ) const override;
 	virtual void StartIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
+	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
 	//~ End IFGDismantleInferface
+
+	// Begin IFGActorRepresentationInterface
+	virtual bool AddAsRepresentation() override;
+	virtual bool UpdateRepresentation() override;
+	virtual bool RemoveAsRepresentation() override;
+	virtual bool IsActorStatic() override;
+	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
+	virtual class UTexture2D* GetActorRepresentationTexture() override;
+	virtual FText GetActorRepresentationText() override;
+	virtual void SetActorRepresentationText( const FText& newText ) override;
+	virtual FLinearColor GetActorRepresentationColor() override;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	virtual float GetActorFogOfWarRevealRadius() override;
+	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	// End IFGActorRepresentationInterface
 
 	/** Upgrading the trading post to specified level */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "TradingPost" )
@@ -63,7 +87,11 @@ public:
 	/** Called by hologram when finishing constructing child buildings to make sure they're setup */
 	void ValidateSubBuildings();
 
-	TArray<AActor*> GetAllActiveSubBuildings();
+	TArray<AActor*> GetAllActiveSubBuildings() const;
+
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	FLinearColor GetDefaultRepresentationColor();
 
 protected:
 	virtual void OnBuildEffectFinished() override;
@@ -173,4 +201,11 @@ protected:
 	/** Bool to sync playing of build and upgrade effects */
 	UPROPERTY( ReplicatedUsing = OnRep_NeedPlayingBuildEffect )
 	bool mNeedPlayingBuildEffectNotification;
+
+private:
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	class UTexture2D* mActorRepresentationTexture;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	FText mRepresentationText;
 };

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
 #include "FGResearchTreeNode.h"
@@ -69,7 +70,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Research Tree" )
     static TArray< EEvents > GetRelevantEvents( TSubclassOf< UFGResearchTree > inClass );
 
-public: // MODDING EDIT: protected -> public
+protected:
 	/** The name to be displayed to the player before the tree is unlocked */
 	UPROPERTY( EditDefaultsOnly, Category = "Research Tree" )
 	FText mPreUnlockDisplayName;

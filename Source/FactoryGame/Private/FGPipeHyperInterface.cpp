@@ -2,4 +2,6 @@
 
 #include "FGPipeHyperInterface.h"
 
-UFGPipeHyperInterface::UFGPipeHyperInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGPipeHyperInterface::UFGPipeHyperInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+}

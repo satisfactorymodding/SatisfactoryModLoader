@@ -2,20 +2,26 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGUseableInterface.h"
 #include "FGInventoryComponent.h"
 #include "UI/FGPopupWidget.h"
 #include "FGOnlineSessionSettings.h"
 #include "FGRecipe.h"
+#include "FGFactoryColoringTypes.h"
 #include "FGBlueprintFunctionLibrary.generated.h"
 
 UENUM( BlueprintType )
 enum class EOutlineColor : uint8
 {
-	OC_NONE			= 0		UMETA( DisplayName = "None" ),
-	OC_USABLE		= 252	UMETA( DisplayName = "Usable" ),
-	OC_HOLOGRAM		= 253	UMETA( DisplayName = "Hologram" ),
-	OC_RED			= 254	UMETA( DisplayName = "Disabled" )
+	OC_NONE				= 0		UMETA( DisplayName = "None" ),
+	OC_HOLOGRAMLINE		= 248	UMETA( DisplayName = "Hologram Line" ),
+	OC_SOFTCLEARANCE	= 249	UMETA( DisplayName = "Soft Clearance" ),
+	OC_DISMANTLE		= 250	UMETA( DisplayName = "Dismantle" ),
+	OC_USABLE			= 251	UMETA( DisplayName = "Usable" ),
+	OC_HOLOGRAM			= 252	UMETA( DisplayName = "Hologram" ),
+	OC_INVALIDHOLOGRAM  = 253	UMETA( DisplayName = "Invalid Hologram" ),
+	OC_RED				= 254	UMETA( DisplayName = "Disabled" )
 };
 
 UCLASS()
@@ -49,6 +55,14 @@ public:
 	/** Get all the item descriptors in the game */
 	UFUNCTION( BlueprintCallable, Category = "Descriptors" )
 	static void Cheat_GetAllDescriptors( TArray< TSubclassOf< class UFGItemDescriptor > >& out_descriptors );
+
+	/** Static Helper to apply common customization data to mesh primitives ( does not work for Instances ) */
+	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
+	static void ApplyCustomizationPrimitiveData( class AActor* actor, const FFactoryCustomizationData& customizationData, int32 colorSlotFallback = 0, class UMeshComponent* onlyApplyToComponent = nullptr  );
+
+	/** Static Helper to apply default factory color data to actors that use the default factory material */
+	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
+	static void ApplyDefaultColorPrimitiveData( class AActor* actor );
 
 	/**
 	 * Does what Cheat_GetAllDescriptors does, but tries to do in in a more reliable way,
@@ -213,25 +227,42 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Resource" )
 	static bool CanBeOnConveyor( TSubclassOf< UFGItemDescriptor > inClass );
 
-	/** Gives you all categories that can be unlocked in this game */
-	UFUNCTION( BlueprintCallable, Category = "Build Category" )
-	static void GetAllBuildCategories( UObject* worldContext, UPARAM( ref ) TArray< TSubclassOf< class UFGBuildCategory > >& out_buildCategories );
-
 	/** Returns all recipes with product of a certain category */
-	UFUNCTION( BlueprintCallable, Category = "Build Category" )
-	static void GetAvailableRecipesInCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
+	static void GetAvailableRecipesInCategory( UObject* worldContext, TSubclassOf< class UFGCategory > category, TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
 
-	/** Returns all recipes with product of a certain sub category of a certain build category */
-	UFUNCTION( BlueprintCallable, Category = "Build Category" )
-	static void GetAvailableRecipesInSubCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, TSubclassOf< UFGBuildSubCategory > subCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
+	/** Returns all recipes with product of a certain sub category of a certain category */
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	static void GetAvailableRecipesInSubCategory( UObject* worldContext, TSubclassOf< class UFGCategory > category, TSubclassOf< class UFGCategory > subCategory, TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
+
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	static void GetAvailableRecipesWithDefaultMaterialInSubCategory( APlayerController* playerController, TSubclassOf< class UFGCategory > category, TSubclassOf< class UFGCategory > subCategory,
+																	 TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
+	
+	/** Will return all available recipes in a subcategory for a given material descriptor */
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	static void GetAvailableRecipesForMaterialDescriptorInSubCategory( APlayerController* playerController, TSubclassOf< class UFGCategory > category, TSubclassOf< class UFGCategory > subCategory, 
+																	 TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > materialDesc,
+																	 TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
 
 	/** Returns all sub categories with product of a certain category */
-	UFUNCTION( BlueprintCallable, Category = "Build Category" )
-	static void GetAvailableSubCategoriesForCategory( UObject* worldContext, TSubclassOf< UFGBuildCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGBuildSubCategory > >& out_subCategories );
+	UFUNCTION( BlueprintCallable, Category = "Organization", meta = (DeterminesOutputType = "outputSubCategoryClass")  )
+	static TArray< TSubclassOf< class UFGCategory > > GetAvailableSubCategoriesForCategory( UObject* worldContext, TSubclassOf< UFGCategory > category, TSubclassOf< class UFGCategory > outputSubCategoryClass );
 
 	/** Returns all sub categories for a schematic category */
-	UFUNCTION( BlueprintCallable, Category = "Build Category" )
-	static void GetSubCategoriesForSchematicCategory( UObject* worldContext, TSubclassOf< UFGSchematicCategory > buildCategory, UPARAM( ref ) TArray< TSubclassOf< class UFGSchematicCategory > >& out_subCategories );
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	static void GetSubCategoriesForSchematicCategory( UObject* worldContext, TSubclassOf< class UFGSchematicCategory > category, UPARAM( ref ) TArray< TSubclassOf< class UFGSchematicCategory > >& out_subCategories );
+
+	/** Returns all categories from the given recipes*/
+	UFUNCTION( BlueprintCallable, Category = "Recipes", meta = (DeterminesOutputType = "outputCategoryClass") )
+	static TArray< TSubclassOf< UFGCategory > > GetAllCategoriesFromRecipes( TArray< TSubclassOf< class UFGRecipe > > recipes, TSubclassOf< class UFGCategory > outputCategoryClass );
+
+	/** Returns the first found quick switch group for a descriptor in the given recipe  */
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	static TSubclassOf< class UFGQuickSwitchGroup > GetQuickSwitchGroupFromRecipe( TSubclassOf< class UFGRecipe > recipe );
+
+	/** Returns all recipes in the given recipe array that match the quick switch group of the given recipe. Recipes with no quick switch group will match with other recipes that also has no quick switch group. */
+	UFUNCTION( BlueprintCallable, Category = "Organization" )
+	static void GetMatchingQuickSwitchGroupRecipes( TSubclassOf< class UFGRecipe > recipe, TArray < TSubclassOf< class UFGRecipe > > recipesToMatchAgainst, TArray< TSubclassOf< class UFGRecipe > >& out_recipes );
 
 	/** Finds a widget of a certain class in the hierarchy of the passed widget. Does a breadth-first search of the tree.*/
 	UFUNCTION( BlueprintCallable, meta = ( DefaultToSelf = "hierarchyContext", DeterminesOutputType = "widgetClass", DynamicOutputParam = "foundWidgets" ), Category = "Widget" )
@@ -244,6 +275,54 @@ public:
 	/** Returns all categories that have available recipes in them */
 	UFUNCTION( BlueprintCallable, Category = "Item Category" )
 	static TArray< TSubclassOf< class UFGItemCategory > > GetCategoriesWithAffordableRecipes( AFGCharacterPlayer* playerPawn, TSubclassOf< UObject > forProducer );
+	
+	/** Gets all available Customization Descriptors
+	 * @param customizationClass - Filter the returned list to only include the specified class (swatch, pattern, material)
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static void GetAllAvailableCustomizations( UObject* worldContext, TArray< TSubclassOf< class UFGFactoryCustomizationDescriptor > >& out_customizations, TSubclassOf< class UFGFactoryCustomizationDescriptor > customizationClass );
+
+	/**
+	 * Gets all material descriptors that contain a recipe which exists in the given subcategory
+	 * Tex. Pass in "Wall" buildable category, this function will return all material descriptors which map to recipes in this subcategory
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static void GetValidMaterialRecipesSubCategory( UObject* worldContext, TSubclassOf< class UFGCategory > category, TSubclassOf< class UFGCategory > subCategory, TArray< TSubclassOf< class UFGCustomizationRecipe > >& out_matRecipes );
+
+	/** 
+	 * Gets the default material desc for a given buildable sub-category.
+	 * @param Category - The Main category, this is not used for saving/retrival but if not saved default is found this category is needed to queary all available
+	 * @param SubCategory - This is the category that is saved or used to find the saved reference
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > GetDefaultMatDescForBuildableCategory( APlayerController* playerController, TSubclassOf< class UFGCategory> category, TSubclassOf< class UFGCategory > subCategory );
+
+	/** Set the default material desc for a given buildable category */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static void SetDefaultMatDescForBuildableCategory( APlayerController* playerController, TSubclassOf< class UFGCategory > category, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > materialDesc );
+
+	/** Gets the Global Default Material Descriptor set for a given Material Desc subCategory */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > GetGlobalDefaultMatDescForMaterialCategory( APlayerController* playerController, TSubclassOf< class UFGCategory > category );
+
+	/** Sets the Global default material. This should be called from the Customizer Tab on a material desc */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static void SetGlobalDefaultMaterialDescriptor( APlayerController* playerController, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > materialDesc, bool updateHotbarShortcuts = false );
+
+	/** Gets the Material Descriptor that corresponds to a given build descriptor. Calls GetMaterialDescriptorForBuildableClass. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > GetMaterialDescriptorForBuildingDescriptor( UObject* worldContext, TSubclassOf< class UFGBuildDescriptor > buildingDesc );
+
+	/** Gets the Material Descriptor that corresponds to a given buildable.
+	 * @note: For this to work consistently, the assets must be set up correctly meaning only one asset references this buildable. If its referenced in multiple 
+	 * material descriptors the first one found will be returned.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > GetMaterialDescriptorForBuildableClass( UObject* worldContext, TSubclassOf< class AFGBuildable > buildable );
+
+	/** Updates a players hotbars based on a passed in material descriptor */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static void UpdateHotbarShortcutsForSpecifiedMaterialDescriptor( APlayerController* playerController, TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > materialDesc );
 
 	/**
 	 * Checks if a location is close to a base
@@ -263,6 +342,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category="Online" )
 	static void CreateSessionAndTravelToMap( APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility );
 
+	UFUNCTION( BlueprintCallable, Category="Online" )
+	static void CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility );
+
 	/** Travel gracefully to main menu, kicking clients if host, and tearing down the game session */
 	UFUNCTION( BlueprintCallable, Category="Utils", meta=(DefaultToSelf="worldContext") )
 	static void TravelToMainMenu( APlayerController* playerController );
@@ -276,6 +358,12 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Factory" )
 	static FString LinearColorToHex( FLinearColor inColor );
 
+	/**
+	 * Takes a hex string like "FF00AA88" and returns a FLinearColor.
+	 */
+	UFUNCTION( BlueprintCallable, Category = "Factory" )
+	static FLinearColor HexToLinearColor( const FString& inHex );
+
 	/** Adds a popup to the queue */
 	UE_DEPRECATED(4.21, "Please use AddPopupWithCloseDelegate instead")
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "ConfirmClickDelegate", DeprecatedFunction, DeprecationMessage="Please use AddPopupWithCloseDelegate instead" ) )
@@ -284,6 +372,10 @@ public:
 	/** Adds a popup to the queue */
 	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "CloseDelegate" ) )
 	static void AddPopupWithCloseDelegate( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, EPopupId PopupID = PID_OK, TSubclassOf< UUserWidget > popupClass = nullptr, UObject* popupInstigator = nullptr );
+
+	/** Adds a popup to the queue. Allows the caller handle popup content creation. */
+	UFUNCTION( BlueprintCallable, Category = "UI", meta = ( AutoCreateRefTerm = "CloseDelegate" ) )
+	static void AddPopupWithContent( APlayerController* controller, FText Title, FText Body, const FPopupClosed& CloseDelegate, class UFGPopupWidgetContent* Content, EPopupId PopupID = PID_OK, UObject* popupInstigator = nullptr );
 
 	/** Close the popup that is currently showing. If no popup is showing, don't do anything */	
 	UFUNCTION( BlueprintCallable, Category = "UI" )
@@ -301,8 +393,25 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "UI" )
 	static FText CopyTextFromClipboard();
 
+	/** Removes all childs from this panel and releases them from the widget pool in the given FGHUD */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static void RemoveAndReleaseAllChildsFromPanel( class AFGHUD* hud, UPanelWidget* panelWidget);
+
+	/** Removes the child at the given index from this panel and releases them from the widget pool in the given FGHUD */
+	UFUNCTION( BlueprintCallable, Category = "UI" )
+	static void RemoveAndReleaseChildFromPanel( class AFGHUD* hud, UPanelWidget* panelWidget, int32 index );
+
 	// Find and return a local player
 	static class AFGPlayerController* GetLocalPlayerController( const UObject* worldContext );
+ 
+	UFUNCTION( BlueprintPure, Category = "Math|Conversions", meta=(DisplayName = "Equal (FrameTime)", CompactNodeTitle = "==", Keywords = "== equal") )
+	static bool EqualEqual_FrameTimeFrameTime( FFrameTime frameTimeA, FFrameTime frameTimeB ); 
+	UFUNCTION( BlueprintPure, Category = "Math|Conversions", meta=(DisplayName = "Not Equal (FrameTime)", CompactNodeTitle = "!=", Keywords = "!= not equal") )
+	static bool NotEqual_FrameTimeFrameTime( FFrameTime frameTimeA, FFrameTime frameTimeB );
+	UFUNCTION(BlueprintPure, Category="Math|Conversions", meta=(DisplayName = "ToFrameTime (integer)", CompactNodeTitle = "->", Keywords="cast convert", BlueprintAutocast) )
+	static FFrameTime Conv_IntToFrameTime( int32 frameCount );
+	UFUNCTION(BlueprintPure, Category="Math|Conversions", meta=(DisplayName = "ToInt (frametime)", CompactNodeTitle = "->", Keywords="cast convert", BlueprintAutocast) )
+	static int32 Conv_FrameTimeToInt( FFrameTime frameTime );
 
 	/** 
 	*	Evaluates a math expression. Can handle white spaces between characters.
@@ -352,4 +461,81 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Text" )
     static FText CutTextByPixelOffset( const FText& text, const FSlateFontInfo& inFontInfo, const int32 horizontalOffset, const FString& suffix );
 
+	/**
+	 * Returns all actors within desired radius
+	 **/
+	UFUNCTION( BlueprintCallable, Category = "Fun" )
+	static TArray< class AActor* > GetActorsInRadius( UObject* WorldContextObject, FVector inLocation,  float inRadius, TSubclassOf< AActor > inActorClass );
+
+	UFUNCTION( BlueprintPure, Category = "Widgets" )
+	static bool IsWidgetUnderCursor( class ULocalPlayer* localPlayer, class UUserWidget* widget );
+
+	UFUNCTION( BlueprintCallable, Category = "Buildable Color" )
+	static void SetCusomizationColorSlot( FFactoryCustomizationColorSlot& colorData, FLinearColor primaryColor, FLinearColor secondaryColor, float metallic = 1.f, float roughness = 1.f )
+	{
+		colorData.PrimaryColor = primaryColor;
+		colorData.SecondaryColor = secondaryColor;
+		colorData.Metallic = metallic;
+		colorData.Roughness = roughness;
+	}
+
+	/** Extracts data from a CustomUserColor */
+	UFUNCTION( BlueprintPure, Category = "Buildable Color", meta = ( NativeBreakFunc, AdvancedDisplay = "3" ) )
+	static void BreakCustomizationColorSlot( const struct FFactoryCustomizationColorSlot& customData, FLinearColor& primaryColor, FLinearColor& secondaryColor, float& metallic, float& roughness );
+
+	/** Create CustomUserColorData from params */
+	UFUNCTION( BlueprintPure, Category = "Buildable Color", meta = ( NativeMakeFunc, AdvancedDisplay = "2", Normal = "0,0,1", ImpactNormal = "0,0,1" ) )
+	static FFactoryCustomizationColorSlot MakeCustomizationColorSlot( FLinearColor primaryColor, FLinearColor secondaryColor, float metallic, float roughness );
+
+
+	//////////////////////////////////////////////////////////////////////////
+	/// Factory Customization
+
+	/** Gets the icon for a customization class*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )
+	static UTexture2D* GetIconForCustomizationDesc( const TSubclassOf< class UFGFactoryCustomizationDescriptor > customizationDesc );
+
+	/** Gets the description for a customization class */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )
+	static void GetDescriptionForCustomizationDesc( const TSubclassOf< class UFGFactoryCustomizationDescriptor > customizationDesc, FText& out_description );
+
+	/** Get the array of buildables this customization can be applied to */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )
+	static void GetValidBuildablsForCustomization( TSubclassOf< class UFGFactoryCustomizationDescriptor > customizationDesc, TArray< TSubclassOf< class AFGBuildable > >& out_buildables );
+
+	/** Returns the ID value for a customization Class*/
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )
+	static int32 GetIDForCustomizationDesc( const TSubclassOf< class UFGFactoryCustomizationDescriptor > customizationDesc );
+
+	/** Returns the buildable map which indicates which buildable to use for a give material descriptor */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )
+	static void GetMaterialCustomizationBuildableMap( TSubclassOf< class UFGFactoryCustomizationDescriptor > materialCustomization,
+													  TMap< TSubclassOf< class AFGBuildable >, TSubclassOf< class UFGRecipe > >& out_buildableMap ); 
+
+	/** Returns an array of Customizations from a customization collection */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static void GetCustomizationsFromCollectionClass( TSubclassOf< class UFGFactoryCustomizationCollection > collectionClass, TArray< TSubclassOf< class UFGFactoryCustomizationDescriptor > >& out_customizaitons );
+
+	/** Gets the Slot Data (color, metallic, roughness) for a given Swatch Descriptor */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|BuildGunPaint" )
+	static void GetSlotDataForSwatchDesc( TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatchDesc, class AActor* worldContext, FFactoryCustomizationColorSlot& out_SlotData );
+
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Customization" )
+	static bool GetIsCategoryDefaultForMaterialDesc( TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > materialDesc );
+
+	/** Sort an array dependent on the menu priority of the customization descs in the given customization recipes */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
+	static void SortCustomizationRecipes( UPARAM( ref ) TArray< TSubclassOf< class UFGCustomizationRecipe > >& recipes );
+
+	/////////////////////////////////////////////////////////////////
+	// Begin specific functions for cinematic tools.
+	
+	UFUNCTION(BlueprintPure, Category = "Editor")
+	static float GetPrimitiveDataFromIndex(int32 Index, UPrimitiveComponent* Component);
+
+	UFUNCTION(BlueprintPure, Category = "Editor")
+	static float GetPrimitiveDefaultDataFromIndex(int32 Index, UPrimitiveComponent* Component);
+
+	UFUNCTION(BlueprintCallable, Category = "Editor")
+	static void CSS_SetAnimationAsset(USkeletalMeshComponent* Comp, UAnimationAsset* AnimationAsset);
 };

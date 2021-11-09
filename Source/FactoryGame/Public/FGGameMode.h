@@ -1,6 +1,7 @@
 // Copyright 1998-2016 Epic Games, Inc. All Rights Reserved.
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGSaveSystem.h"
 #include "GameFramework/GameMode.h"
 #include "FGSaveInterface.h"
@@ -37,9 +38,12 @@ public:
 	virtual bool AllowCheats( APlayerController* p ) override;
 	virtual AActor* ChoosePlayerStart_Implementation( AController* player ) override;
 	virtual void RestartPlayer( AController* newPlayer ) override;
+	virtual APlayerController* Login(UPlayer* NewPlayer, ENetRole InRemoteRole, const FString& Portal, const FString& Options, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+	virtual bool IsPaused() const override;
 	virtual void PostLogin( APlayerController* newPlayer ) override;
 	virtual void Logout( AController* exiting ) override;
 	virtual bool FindInactivePlayer( APlayerController* PC ) override;
+	virtual void GenericPlayerInitialization(AController* C) override;
 	// End AGameModeBase interface
 
 	/** All actors initialized, notify the save system */
@@ -203,10 +207,6 @@ private:
 
 	/** Handle to server restart timer */
 	FTimerHandle mServerRestartHandle;
-
-	/** Skips the tutorial step if we play in PIE */
-	UPROPERTY( EditDefaultsOnly )
-	bool mSkipTutorialInPIE;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Default" )
 	bool mIsMainMenu;

@@ -5,12 +5,12 @@
 static const FName INCLUDE_IN_BUILD_ASSET_TAG( TEXT( "mIncludeInBuilds" ) );
 static const FName TECH_TIER_ASSET_TAG( TEXT( "mTechTier" ) );
 
-// Where this schematic should be included. Cooker strips away builds that's marked for different build types
+// Used to determine when something should be included. Used for schematics, research and options for example. When used with cooker it strips away builds that's marked for different build types
 UENUM( BlueprintType )
 enum class EIncludeInBuilds : uint8
 {
-	IIB_Never			UMETA( DisplayName = "Never", ToolTip="The schematic will never show up anywhere" ),
-	IIB_Development		UMETA( DisplayName = "Development", ToolTip="The schematic will show up in standalone and PIE" ),
-	IIB_PrivateBuilds	UMETA( DisplayName = "PrivateBuilds", ToolTip="The schematic will show up in builds marked as private (ie, local builds, and not builds sent to staging/main)" ),
-	IIB_PublicBuilds	UMETA( DisplayName = "PublicBuilds", ToolTip="The schematic will always be included" )
+	IIB_Never			UMETA( DisplayName = "Never", ToolTip="Will never show up anywhere" ),
+	IIB_Development		UMETA( DisplayName = "Development", ToolTip="Will show up in standalone and PIE" ),
+	IIB_PrivateBuilds	UMETA( DisplayName = "PrivateBuilds", ToolTip="Will show up in standalone, PIE and builds marked as private (ie, local builds, and not builds sent to staging/main)" ),
+	IIB_PublicBuilds	UMETA( DisplayName = "PublicBuilds", ToolTip="Will always be included" )
 };

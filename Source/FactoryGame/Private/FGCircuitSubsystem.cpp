@@ -2,7 +2,9 @@
 
 #include "FGCircuitSubsystem.h"
 
-UFGCriticalBatteryDepletionMessage::UFGCriticalBatteryDepletionMessage(){ }
+UFGCriticalBatteryDepletionMessage::UFGCriticalBatteryDepletionMessage() : Super() {
+
+}
 void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 bool AFGCircuitSubsystem::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGCircuitSubsystem::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
@@ -18,10 +20,14 @@ bool AFGCircuitSubsystem::NeedTransform_Implementation(){ return bool(); }
 bool AFGCircuitSubsystem::ShouldSave_Implementation() const{ return bool(); }
 AFGCircuitSubsystem::AFGCircuitSubsystem() : Super() {
 	this->mCriticalBatteryDepletionPercent = 0.25;
-	this->mMinimumBatteryWarningInterval = 10;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->mMinimumBatteryWarningInterval = 10.0;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGCircuitSubsystem::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGCircuitSubsystem::BeginPlay(){ }

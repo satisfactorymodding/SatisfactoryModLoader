@@ -3,6 +3,7 @@
 #pragma once
 
 #if WITH_EDITOR
+#include "FactoryGame.h"
 #include "UnrealEdMisc.h"
 #endif
 
@@ -23,6 +24,7 @@ public:
 	FORCEINLINE class AFGBuildableSubsystem* GetBuildableSubsystem() const { return mBuildableSubsystem; }
 	FORCEINLINE class AFGFoliageRemovalSubsystem* GetFoliageRemovalSubsystem() const { return mFoliageRemovalSubsystem; }
 	FORCEINLINE class AFGConveyorItemSubsystem* GetConveyorItemSubsystem() const { return mConveyorItemSubsystem; }
+	FORCEINLINE class AFGPhotoModeManager* GetPhotoModeManager() const { return mPhotoModeManager; }
 
 	// Begin UObject interface
 	virtual void BeginDestroy() override;
@@ -53,10 +55,13 @@ public:
 	// End IFSaveInterface
 
 	/** Get the exponential height fog for this map */
-	FORCEINLINE class AExponentialHeightFog* GetExponentialHeightFog() const{ return mExponentialHeightFog; }
+	class AExponentialHeightFog* GetExponentialHeightFog() const;
+
+	/** Get the sky atmosphere actor, if one is loaded in the map */
+	class ASkyAtmosphere* GetSkyAtmosphere() const; 
 
 	/** Get the sky sphere for this map */
-	FORCEINLINE class AFGSkySphere* GetSkySphere() const { return mSkySphere; }
+	class AFGSkySphere* GetSkySphere() const;
 
 	/** Get the event to post when we start the level */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Level|Audio" )
@@ -74,6 +79,7 @@ public:
 	/** Update the world bounds */
 	UFUNCTION( Category="FactoryGame|Level", meta=(CallInEditor="true") )
 	void UpdateWorldBounds();
+
 protected:
 	/** Called whenever a actor is spawned in editor */
 	void OnActorSpawned( AActor* actor );
@@ -110,7 +116,7 @@ private:
 		spawnParams.Name = spawnName;
 
 		out_spawnedSubsystem = GetWorld()->SpawnActor< C >( spawnClass, spawnParams );
-		check( out_spawnedSubsystem );
+		fgcheck( out_spawnedSubsystem );
 	}
 public:
 	// @todo: Verify that this really is ALL volumes, if we stream one volume in, is it really added to the same array
@@ -134,11 +140,14 @@ public:
 protected:
 	/** Set the height fog that's placed in the world here */
 	UPROPERTY( EditInstanceOnly, Category = "HeightFog" )
-	class AExponentialHeightFog* mExponentialHeightFog;
+	TSoftObjectPtr< class AExponentialHeightFog > mExponentialHeightFog;
+
+	UPROPERTY( EditInstanceOnly, Category = "HeightFog" )
+	TSoftObjectPtr< class ASkyAtmosphere > mSkyAtmosphere = nullptr;
 
 	/** Set the sky sphere that's placed in the world here */
 	UPROPERTY( EditInstanceOnly, Category = "HeightFog" )
-	class AFGSkySphere* mSkySphere;
+	TSoftObjectPtr< class AFGSkySphere > mSkySphere = nullptr;
 
 	/** The minimap capture actor of this level, might be null */
 	UPROPERTY( EditInstanceOnly, Category = "Minimap" )
@@ -152,7 +161,7 @@ protected:
 	UPROPERTY( EditInstanceOnly, Category="Save" )
 	FString mDefaultLoadSave;
 	
-	/** Time of day to start the day (in hours)*/
+	/** Time of day to start the day (in hours) */
 	UPROPERTY( EditInstanceOnly, Category = "Time", meta = ( UIMin = 0, UIMax = 24, ClampMin = 0, ClampMax = 24 ) )
 	float mStartTimeOfDay;
 private:
@@ -167,7 +176,11 @@ private:
 	class AFGFoliageRemovalSubsystem* mFoliageRemovalSubsystem;
 
 	UPROPERTY()
-	class AFGConveyorItemSubsystem* mConveyorItemSubsystem; 
+	class AFGConveyorItemSubsystem* mConveyorItemSubsystem;
+
+	UPROPERTY()
+	class AFGPhotoModeManager* mPhotoModeManager;
+
 
 #if WITH_EDITORONLY_DATA
 	/** Set the hour you want to preview here, 16.25 means 16h 15min */

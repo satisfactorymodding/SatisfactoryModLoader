@@ -2,4 +2,6 @@
 
 #include "FGChainsawableInterface.h"
 
-UFGChainsawableInterface::UFGChainsawableInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGChainsawableInterface::UFGChainsawableInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+}

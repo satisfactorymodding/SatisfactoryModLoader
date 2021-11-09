@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGSplineHologram.h"
 #include "FGFactoryConnectionComponent.h"
@@ -18,17 +19,19 @@ public:
 	// Begin AActor Interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
-	virtual void Destroyed() override;
 	// End AActor Interface
 
 	// Begin AFGHologram Interface
 	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;
 	virtual bool DoMultiStepPlacement(bool isInputFromARelease) override;
 	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	virtual AActor* GetUpgradedActor() const override;
 	virtual int32 GetBaseCostMultiplier() const override;
-	virtual void CheckClearance() override;
+	virtual float GetHologramHoverHeight() const override;
+	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
+	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes ) const override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface
@@ -56,10 +59,13 @@ protected:
 
 	FTransform GetTopTransform() const { return mTopTransform; }
 
+	void UpdateConnectionDirections();
 
 	virtual void CheckValidPlacement() override;
 
 private:
+	void UpdateTopTransform( const FHitResult& hitResult, FRotator rotation );
+
 	UFUNCTION()
 	void OnRep_TopTransform();
 
@@ -68,16 +74,14 @@ private:
 	UFUNCTION()
 	void OnRep_ArrowDirection();
 
+	UFUNCTION()
+	void OnRep_SnappedPassthroughs();
+
 	bool CanConnectToConnection( UFGFactoryConnectionComponent* from, UFGFactoryConnectionComponent* to ) const;
 
 protected:
-	//@todonow Max height etc.
-
-	// Get's the base location for guide lines for the hologram
-	FVector GetGuideLinesBaseLocation() const;
-
-	// Pool for Guide Lines
-	TMap<class UObject*, class AFGBuildGuide*> mGuideLineBuildings;
+	// Forced direction resulting from a snap to a passthrough
+	FVector mForcedNormalDirection;
 
 private:
 	/** The two connection components for this conveyor. */
@@ -100,6 +104,7 @@ private:
 	float mStepHeight;
 	float mMinimumHeight;
 	float mMaximumHeight;
+	float mMinimumHeightWithPassthrough;
 
 	/** Cached variables fetched and calculated from the buildable. */
 	float mMeshHeight;
@@ -108,12 +113,26 @@ private:
 	UPROPERTY()
 	class UStaticMesh* mMidMesh;
 	UPROPERTY()
+	class UStaticMesh* mHalfMidMesh;
+	UPROPERTY()
 	class UStaticMesh* mTopMesh;
 	UPROPERTY()
 	class UStaticMesh* mJointMesh;
+	UPROPERTY( EditDefaultsOnly )
+	class UStaticMesh* mPassthroughBottomMesh;
+
+	UPROPERTY( EditDefaultsOnly )
+	class UStaticMesh* mPassthroughTopMesh;
 
 	/** All the meshes along this lift. */
 	TArray< UStaticMeshComponent* > mMeshes;
+
+	/** The Fog planes for this lift. So that we can hide them when snapping to passthroughs */
+	UStaticMeshComponent* mFogPlaneComp0;
+	UStaticMeshComponent* mFogPlaneComp1;
+
+	UPROPERTY( ReplicatedUsing = OnRep_SnappedPassthroughs )
+	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
 	/** Used to replicate the direction arrow. */
 	UPROPERTY( ReplicatedUsing = OnRep_ArrowDirection )
@@ -122,4 +141,8 @@ private:
 	/** Arrow to indicate the direction of the lift while placing it. */
 	UPROPERTY()
 	class UStaticMeshComponent* mArrowComponent;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram|BuildMode" )
+	TSubclassOf< class UFGHologramBuildModeDescriptor > mBuildModeReverse;
 };
+

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGConnectionComponent.h"
 #include "FGInventoryComponent.h"
 #include "FGFactoryConnectionComponent.generated.h"
@@ -132,9 +133,10 @@ public:
 	/** Return the connector used for this connection. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Factory|FactoryConnection" )
 	FORCEINLINE EFactoryConnectionConnector GetConnector() const { return mConnector; }
-
+	
 	/** Check if the given connection can snap to this. */
 	bool CanSnapTo( UFGFactoryConnectionComponent* otherConnection ) const;
+	
 	/** Check if the given connection can connect to this. */
 	bool CanConnectTo( UFGFactoryConnectionComponent* otherConnection ) const;
 

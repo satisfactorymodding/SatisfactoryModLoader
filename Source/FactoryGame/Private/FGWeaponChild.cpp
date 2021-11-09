@@ -2,6 +2,17 @@
 
 #include "FGWeaponChild.h"
 
+void AFGWeaponChild::SetIsLoaded(bool isLoaded){ }
+void AFGWeaponChild::Multicast_NotifySetIsLoaded_Implementation(bool isLoaded){ }
+void AFGWeaponChild::Multicast_NotifyBeginPrimaryFire_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyEndPrimaryFire_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyFailedToFire_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyPrimaryFireExecuted_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyBeginSecondaryFire_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyEndSecondaryFire_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyReloading_Implementation(){ }
+void AFGWeaponChild::Multicast_NotifyReloadComplete_Implementation(){ }
+void AFGWeaponChild::NotifySetIsLoaded_Implementation(bool isLoaded){ }
 void AFGWeaponChild::NotifyBeginPrimaryFire_Implementation(){ }
 void AFGWeaponChild::NotifyEndPrimaryFire_Implementation(){ }
 void AFGWeaponChild::NotifyFailedToFire_Implementation(){ }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGFluidIntegrantInterface.h"
 #include "Buildables/FGBuildablePipeBase.h"
 #include "FGBuildablePipeline.generated.h"
@@ -85,6 +86,7 @@ public:
 
 	// Begin IFGDismantleInterface
 	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	virtual void Dismantle_Implementation() override;
 	// End IFGDismantleInterface
 
 	/**
@@ -156,6 +158,9 @@ public:
 
 	/** Updates sounds depending on liquid in pipe */
 	void UpdateSounds();
+
+	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
+
 private:
 	/** Attempts to find a suitable location to place the indicator
 	*	@param out_transform Transform of the suitable location to place the indicator
@@ -187,8 +192,8 @@ public:
 	* The reason they are added in BP and not natively is some support for HyperTubes and Pipelines ( Gafgar would have a better idea why so I won't attempt to remember here )
 	* They are used for detecting reversal when merging two pipelines to check if the components were hooked in reverse order (Tex. the pump was flipped )
 	*/
-	static FName mConnectionName0;
-	static FName mConnectionName1;
+	static const FName mConnectionName0;
+	static const FName mConnectionName1;
 	
 protected:
 	UPROPERTY( BlueprintReadOnly, Category = "Audio" )
@@ -199,6 +204,8 @@ protected:
 	class UAkAudioEvent* mSplineAudioEvent;
 
 private:
+	friend class AFGPipelineHologram;
+
 	/** Cached array of pipe connections. */
 	UPROPERTY()
 	TArray< class UFGPipeConnectionComponent* > mPipeConnections;
@@ -256,4 +263,8 @@ private:
 	/** Stop rattle sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	class UAkAudioEvent* mStopRattleSoundEvent;
+
+	/** Saved passthroughs this pipeline is connected to. Used to notify passthrough when dismantled. */	
+	UPROPERTY( SaveGame, Replicated )
+	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 };

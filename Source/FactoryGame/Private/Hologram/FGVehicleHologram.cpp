@@ -2,6 +2,9 @@
 
 #include "Hologram/FGVehicleHologram.h"
 
+AFGVehicleHologram::AFGVehicleHologram() : Super() {
+	this->mSoftClearanceOverlapResponse = EHologramSoftClearanceResponse::HSCR_Block;
+}
 void AFGVehicleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGVehicleHologram::BeginPlay(){ }
 AActor* AFGVehicleHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }

@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "FGInventoryComponent.h" // MODDING EDIT
+#include "FactoryGame.h"
 #include "Components/ActorComponent.h"
 #include "FGReplicationDetailInventoryComponent.generated.h"
 

@@ -2,18 +2,29 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimInstanceProxy.h"
-#include "FGRailRoadVehicleAnim.generated.h"
+#include "FGRailroadVehicleAnim.generated.h"
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FAnimInstanceProxyRailRoadVehicle : public FAnimInstanceProxy
+struct FACTORYGAME_API FAnimInstanceProxyRailroadVehicle : public FAnimInstanceProxy
 {
 	GENERATED_BODY()
 
-	FAnimInstanceProxyRailRoadVehicle() : FAnimInstanceProxy(),
-		mDeltaTime(0),
+	FAnimInstanceProxyRailroadVehicle() : FAnimInstanceProxy(),
+		mSpeed(0),
+		mMaxSpeed(0),
+    	mTractionPct(0),
+    	mAirBrakePct(0),
+    	mDynamicBrakePct(0),
+    	mWheelsetRotation0(EForceInit::ForceInitToZero),
+        mWheelsetRotation1(EForceInit::ForceInitToZero),
+        mCouplerRotation0(EForceInit::ForceInitToZero),
+        mCouplerRotation1(EForceInit::ForceInitToZero),
+        mCouplerExtension0(0),
+        mCouplerExtension1(0),
 		mFrontBogieRotation(EForceInit::ForceInitToZero),
 		mBackBogieRotation(EForceInit::ForceInitToZero),
 		mWheelRotation(EForceInit::ForceInitToZero),
@@ -25,7 +36,6 @@ struct FACTORYGAME_API FAnimInstanceProxyRailRoadVehicle : public FAnimInstanceP
 		mForwardSpeed(0),
 		mTractiveForce(0),
 		mHandBrakeForce(0),
-		mThrottle(0),
 		mBrakeForce(0),
 		mHandBrakeForceSpeed(0),
 		mHandBrakeGlow(0),
@@ -48,21 +58,30 @@ struct FACTORYGAME_API FAnimInstanceProxyRailRoadVehicle : public FAnimInstanceP
 	{
 	}
 
-	FAnimInstanceProxyRailRoadVehicle( UAnimInstance* Instance ) : FAnimInstanceProxy( Instance )
+	FAnimInstanceProxyRailroadVehicle( UAnimInstance* Instance ) : FAnimInstanceProxy( Instance )
 	{
 	}
 
 	// Begin FAnimInstanceProxy
-	virtual void PreUpdate( UAnimInstance* InAnimInstance, float DeltaSeconds ) override;
-	virtual void Update( float DeltaSeconds ) override;
-	virtual void Initialize( UAnimInstance* InAnimInstance ) override;
+	virtual void PreUpdate( UAnimInstance* inAnimInstance, float dt ) override;
+	virtual void Update( float dt ) override;
+	virtual void Initialize( UAnimInstance* inAnimInstance ) override;
 	// End FAnimInstanceProxy
 	
 public:
-	/** saved DT */
-	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
-	float mDeltaTime;
-
+	// Copied data
+	float mSpeed;
+	float mMaxSpeed;
+	float mTractionPct;
+	float mAirBrakePct;
+	float mDynamicBrakePct;
+	FVector mWheelsetRotation0;
+	FVector mWheelsetRotation1;
+	FVector mCouplerRotation0;
+	FVector mCouplerRotation1;
+	float mCouplerExtension0;
+	float mCouplerExtension1;
+	
 	/** Front Bogie Rotation */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	FRotator mFrontBogieRotation;
@@ -106,10 +125,6 @@ public:
 	/** Hand break */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
 	float mHandBrakeForce;
-
-	/** Throttle */
-	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
-	float mThrottle;
 
 	/** brake force */
 	UPROPERTY( Transient, BlueprintReadWrite, EditAnywhere, Category = "Anim" )
@@ -189,14 +204,14 @@ public:
 };
 
 UCLASS()
-class FACTORYGAME_API UFGRailRoadVehicleAnim : public UAnimInstance
+class FACTORYGAME_API UFGRailroadVehicleAnim : public UAnimInstance
 {
 	GENERATED_BODY()
 public:
-	UFGRailRoadVehicleAnim();
+	UFGRailroadVehicleAnim();
 
 	// Begin UAnimInstance
-	virtual void NativeUpdateAnimation( float DeltaSeconds ) override;
+	virtual void NativeUpdateAnimation( float dt ) override;
 	virtual void NativeInitializeAnimation() override;
 	// End UAnimInstance
 
@@ -220,21 +235,30 @@ public:
 protected:
 	// Begin UAnimInstance
 	virtual FAnimInstanceProxy* CreateAnimInstanceProxy() override { return &mProxy; }
-	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* InProxy ) override {}
+	virtual void DestroyAnimInstanceProxy( FAnimInstanceProxy* inProxy ) override {}
 	// End UAnimInstance
 	
 public:
 	/** The UCurveFloat specifying brake force */
 	UPROPERTY( EditDefaultsOnly, Category = "Rail Road Vehicle Anim" )
 	UCurveFloat* mBrakeCurve;
+	
+	/** Cached in init. */
+	UPROPERTY()
+	class AFGRailroadVehicle* mVehicle;
+	
+	/** Cached in init. */
+	UPROPERTY()
+	class AFGLocomotive* mLocomotive;
 
 protected:
 	UPROPERTY( Transient, BlueprintReadOnly, Category = "Rail Road Vehicle Anim", meta = ( AllowPrivateAccess = "true" ) )
-	FAnimInstanceProxyRailRoadVehicle mProxy;
+	FAnimInstanceProxyRailroadVehicle mProxy;
 	
 private:
 	friend struct FAnimInstanceProxyRailRoadVehicle;
 	
+	/** Are the handbrake effects playing? */
 	bool mIsUsingHandBrake;
 
 	/** Trains material */

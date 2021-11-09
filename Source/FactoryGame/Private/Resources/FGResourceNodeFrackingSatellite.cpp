@@ -4,13 +4,10 @@
 #include "Resources/FGResourceNodeFrackingCore.h"
 
 AFGResourceNodeFrackingSatellite::AFGResourceNodeFrackingSatellite() : Super() {
-	this->mPurity = RP_Normal;
-	this->mAmount = RA_Infinite;
-	this->mCanPlaceResourceExtractor = true;
-	this->mExtractMultiplier = 1;
-	this->mAllowDecal = true;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Awake;
+	this->mCore = nullptr;
+	this->mState = EFrackingSatelliteState::FSS_Untouched;
+	this->mDoSpawnParticle = false;
+	this->NetDormancy = ENetDormancy::DORM_Awake;
 }
 void AFGResourceNodeFrackingSatellite::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGResourceNodeFrackingSatellite::OnConstruction(const FTransform& Transform){ }

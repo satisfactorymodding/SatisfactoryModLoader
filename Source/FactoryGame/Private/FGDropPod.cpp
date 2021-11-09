@@ -6,7 +6,17 @@
 AFGDropPod::AFGDropPod() : Super() {
 	this->mAmountOfInventorySlots = 1;
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("PowerInfoComponent"));
-	this->SetReplicates(true);
+	this->mHasPower = false;
+	this->mHasBeenOpened = false;
+	this->mInventory = nullptr;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = false;
+	this->PrimaryActorTick.bStartWithTickEnabled = false;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
+	this->bReplicates = true;
 }
 void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGDropPod::BeginPlay(){ }

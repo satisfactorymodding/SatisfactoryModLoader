@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "Resources/FGItemDescriptor.h"
 #include "Equipment/FGEquipment.h"

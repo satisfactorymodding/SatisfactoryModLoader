@@ -3,9 +3,7 @@
 #include "FGDroneSubsystem.h"
 
 AFGDroneSubsystem::AFGDroneSubsystem() : Super() {
-	this->mDroneStationDefaultNamePrefix = "Drone Port";
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->mDroneStationDefaultNamePrefix = TEXT("Drone Port");
 }
 AFGDroneSubsystem* AFGDroneSubsystem::Get(UWorld* world){ return nullptr; }
 AFGDroneSubsystem* AFGDroneSubsystem::Get(UObject* worldContext){ return nullptr; }

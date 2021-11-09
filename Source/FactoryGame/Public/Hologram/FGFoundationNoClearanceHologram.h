@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Hologram/FGFoundationHologram.h"
 #include "FGFoundationNoClearanceHologram.generated.h"
@@ -14,7 +15,7 @@ class FACTORYGAME_API AFGFoundationNoClearanceHologram : public AFGFoundationHol
 {
 	GENERATED_BODY()
 public:
-	// Begin FGHologram
-	virtual void CheckClearance() override;
-	// End FGHologram
+	// Begin AFGHologram interface
+	virtual void CheckClearance( const FVector& locationOffset ) override;
+	// End AFGHologram interface
 };

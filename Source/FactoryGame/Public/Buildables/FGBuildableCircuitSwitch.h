@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildableCircuitBridge.h"
 #include "FGBuildableCircuitSwitch.generated.h"
 
@@ -85,6 +86,8 @@ private:
 	void OnRep_BuildingTag();
 
 	virtual void OnRep_IsBridgeConnected() override;
+
+	void BroadcastProductionStatus();
 
 private:
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsSwitchOn )

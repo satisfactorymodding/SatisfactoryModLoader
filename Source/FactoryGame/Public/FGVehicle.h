@@ -2,8 +2,10 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGUseableInterface.h"
 #include "FGSignificanceInterface.h"
+#include "FGActorRepresentationInterface.h"
 #include "FGSaveInterface.h"
 #include "AI/FGAggroTargetInterface.h"
 #include "FGDriveablePawn.h"
@@ -107,7 +109,7 @@ struct FACTORYGAME_API FVehicleSeat
  * Base class for all vehicles in the game, cars, train etc.
  */
 UCLASS()
-class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGAggroTargetInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface
+class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGAggroTargetInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 public:
@@ -147,10 +149,16 @@ public:
 	float GetJumpPadForceMultiplier() const { return mJumpPadForceMultiplier; }
 
 	//~ Begin IFGColorInterface
-	FLinearColor GetPrimaryColor_Implementation();
-	FLinearColor GetSecondaryColor_Implementation();
+	void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData );
+	void SetCustomizationData_Implementation( const FFactoryCustomizationData& colorData );
+	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
+	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
+	FFactoryCustomizationData GetCustomizationData_Implementation() { return mCustomizationData; }
 	bool GetCanBeColored_Implementation(){ return true; }
-	void StartIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter );
+	virtual bool IsColorApplicationDeferred() { return false; }
+	virtual bool CanApplyDeferredColorToBuildable( FVector hitLocation, FVector hitNormal, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController ){ return false; }
+	virtual void ApplyDeferredColorToBuildable( FVector hitLocation, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController ){};
+	void StartIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter, bool isValid = true );
 	void StopIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter );
 	//~ End IFGColorInterface
 
@@ -173,8 +181,8 @@ public:
 	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state  ) override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual FText GetLookAtDecription_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) const override;
-	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
-	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override {};
+	virtual void RegisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
+	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
 	//~ End IFGUseableInterface
 
 	//~ Begin IFGDismantleInterface
@@ -186,6 +194,7 @@ public:
 	virtual void Dismantle_Implementation() override;
 	virtual void StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter ) override;
 	virtual void StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter ) override;
+	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
 	//~ End IFGDismantleInferface
 
 	// Begin IFGAggroTargetInterface
@@ -199,29 +208,53 @@ public:
 	virtual FVector GetAttackLocation_Implementation() const override;
 	// End IFGAggroTargetInterface
 
+	// Begin IFGActorRepresentationInterface
+	virtual bool AddAsRepresentation() override;
+	virtual bool UpdateRepresentation() override;
+	virtual bool RemoveAsRepresentation() override;
+	virtual bool IsActorStatic() override;
+	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
+	virtual class UTexture2D* GetActorRepresentationTexture() override;
+	virtual FText GetActorRepresentationText() override;
+	virtual void SetActorRepresentationText( const FText& newText ) override;
+	virtual FLinearColor GetActorRepresentationColor() override;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	virtual float GetActorFogOfWarRevealRadius() override;
+	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	// End IFGActorRepresentationInterface
+
 	/** Getter for simulation distance */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle" )
-	FORCEINLINE float GetSimulationDistance() { return mSimulationDistance; }
+	FORCEINLINE float GetSimulationDistance() const { return mSimulationDistance; }
 
 	/** Getter for significance */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle|Significance" )
-	FORCEINLINE bool GetIsSignificant() { return mIsSignificant; }
+	FORCEINLINE bool GetIsSignificant() const { return mIsSignificant; }
 
 	/** Called in Construct from the hologram. */
 	void SetBuiltWithRecipe( TSubclassOf< class UFGRecipe > recipe ) { mBuiltWithRecipe = recipe; }
 	/** Getter for the built with recipe. */
 	FORCEINLINE TSubclassOf< class UFGRecipe > GetBuiltWithRecipe() const { return mBuiltWithRecipe; }
 
+	/** Can this vehicle be sampled for the build gun */
+	virtual bool CanBeSampled();
+
 	/** Skel mesh for this vehicle **/
 	class USkeletalMeshComponent* GetMesh() const;
 
 	/** Health component for this vehicle */
 	UFUNCTION( BlueprintPure, Category = "Damage" )
-	class UFGHealthComponent* GetHealthComponent();
+	class UFGHealthComponent* GetHealthComponent() const { return mHealthComponent; }
 
 	/** Is this vehicle destructible */
 	UFUNCTION( BlueprintPure, Category = "Damage" )
-	FORCEINLINE bool IsDestructible() { return mIsDestructible; }
+	FORCEINLINE bool IsDestructible() const { return mIsDestructible; }
 	
 	// Begin ADriveablePawn interface
 
@@ -267,25 +300,47 @@ public:
 	FORCEINLINE void SetNetConstructionID( FNetConstructionID netConstructionID ) { mNetConstructionID = netConstructionID; }
 	FNetConstructionID GetNetConstructionID() const { return mNetConstructionID; }
 
+	void SetForceRealMode( bool forceRealMode );
+
+	void SetForceSimulationMode( bool forceSimulationMode );
+
 	/** Is this vehicle forced to be in real mode */
-	FORCEINLINE bool GetForceRealMode() {return mForceRealMode; }
+	FORCEINLINE bool GetForceRealMode() const { return mForceRealMode; }
 
 	/** Is this vehicle forced to be in simulation mode */
-	FORCEINLINE bool GetForceSimulationMode() { return mForceSimulationMode; }
+	FORCEINLINE bool GetForceSimulationMode() const { return mForceSimulationMode; }
 
 	/** Toggles what movement mode we are using */
-	void SetSimulation( bool newIsSimulating );
+	virtual void SetSimulated( bool newIsSimulated );
 
 	/** Is the movement being simulated? */
 	UFUNCTION( BlueprintPure, Category = "Simulation" )
-	FORCEINLINE bool IsSimulated() { return mIsSimulated; }
+	FORCEINLINE bool IsSimulated() const { return mIsSimulated; }
+
+	/** Fetches the color to use for this actors representation */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
+	FLinearColor GetDefaultRepresentationColor();
+
+	/** Call to update colors on mesh primative data */
+	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
+	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
+
+protected:
+	/** Called when customization data is applied. Allows child vehicles to update their simulated vehicles to keep colors synced */
+	virtual void OnCustomizationDataApplied( const FFactoryCustomizationData& customizationData );
+	
 private:
 	/** Rep notifies */
 	UFUNCTION()
 	void OnRep_IsSimulated();
+
 protected:
+	DECLARE_EVENT( AFGWheeledVechicle, FIsSimulatedChanged );
+	FIsSimulatedChanged IsSimulatedChangedEvent;
+
 	/** Updates the vehicles settings depending on if it should be simulated or "real" */
-	virtual void OnSimulationChanged(){}
+	virtual void OnIsSimulatedChanged() {}
+
 	/** Notifies from our health component */
 	UFUNCTION()
 	virtual void OnTakeDamage( AActor* damagedActor, float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
@@ -336,6 +391,7 @@ protected:
 	/** Called to update the camera when this vehicle is possessed by a player. */
 	UFUNCTION( BlueprintImplementableEvent )
 	void UpdateCamera( float DeltaTime );
+
 private:
 	/** Helpers */
 	void SetSelfDriving( bool newSelfDriving );
@@ -343,6 +399,10 @@ private:
 	/** Notifies from out mesh */
 	UFUNCTION()
 	void UpdatePhysicsVolume( APhysicsVolume* physicsVolume );
+	
+	/** Let the client know custom color / material information has been applied to the vehicle */
+	UFUNCTION()
+	void OnRep_CustomColorData();
 
 public:
 	/** Name of the MeshComponent. Use this name if you want to prevent creation of the component (with ObjectInitializer.DoNotCreateDefaultSubobject). */
@@ -383,18 +443,14 @@ protected:
 	UPROPERTY( transient, replicated )
 	FNetConstructionID mNetConstructionID;
 
+	/** Custom Color/Mat data. Stored in a TArray so it can be variable (or 0 size) to reduce save footprint since many buildings will only utilize the slot index */
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CustomColorData )
+	FFactoryCustomizationData mCustomizationData;
+
 private:
 	/** Recipe this vehicle was built with, e.g. used for refunds and stats. */
 	UPROPERTY( SaveGame, Replicated )
 	TSubclassOf< class UFGRecipe > mBuiltWithRecipe;
-
-	/** The primary color of this buildable */
-	UPROPERTY( SaveGame )
-	FLinearColor mPrimaryColor;
-
-	/** The primary color of this buildable */
-	UPROPERTY( SaveGame )
-	FLinearColor mSecondaryColor;
 
 	/** If this vehicle is self driving. */
 	UPROPERTY( Replicated )
@@ -457,10 +513,11 @@ private:
 	/* Forces vehicle to be in real mode */
 	bool mForceRealMode;
 
+protected:
 	/** Is the movement being simulated? */
 	UPROPERTY( ReplicatedUsing = OnRep_IsSimulated, SaveGame )
 	bool mIsSimulated;
-protected:
+
 	/** Indicates if the vehicle should be handled by significance manager */
 	UPROPERTY( EditDefaultsOnly, Category = "Significance" )
 	uint8 mAddToSignificanceManager : 1;
@@ -472,4 +529,10 @@ protected:
 	/** Range after we disable simulation (remove collision) */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mSimulationDistance;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	class UTexture2D* mActorRepresentationTexture;
+
+	UPROPERTY( EditDefaultsOnly, Replicated, Category = "Representation" )
+	FText mMapText;
 };

@@ -1,9 +1,10 @@
 // Copyright Coffee Stain Studios. All Rights Reserved.
 #pragma once
 
+#include "FactoryGame.h"
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "Components/SceneComponent.h" //MODDING EDIT
+#include <type_traits>
 #include "FGProductionIndicatorInstanceManager.generated.h"
 
 
@@ -45,13 +46,11 @@ private:
 	 * All instances managed, one instance list per indicator status.
 	 * Since these need to be attached to an actor to be rendered, our outer is used for this purpose.
 	 */
-	//MODDING EDIT: cast enum classes to underlying types because it is an syntax error on everything except MSVC
 	UPROPERTY()
-	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ (uint8) EProductionStatus::IS_MAX ];
+	UHierarchicalInstancedStaticMeshComponent* mInstanceComponents[ static_cast<std::underlying_type_t<EProductionStatus>>(EProductionStatus::IS_MAX) ];
 
-	//MODDING EDIT: cast enum classes to underlying types because it is an syntax error on everything except MSVC
 	/** Handles from all the managed indicators. */
-	TArray< InstanceHandle* > mHandles[ (uint8) EProductionStatus::IS_MAX ];
+	TArray< InstanceHandle* > mHandles[ static_cast<std::underlying_type_t<EProductionStatus>>(EProductionStatus::IS_MAX) ];
 };
 
 //</CSS>

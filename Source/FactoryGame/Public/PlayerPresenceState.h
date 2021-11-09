@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "UObject/ObjectMacros.h"
 #include "PlayerPresenceState.generated.h"

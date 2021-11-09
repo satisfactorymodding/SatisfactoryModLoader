@@ -2,3 +2,20 @@
 
 #include "Hologram/FGStandaloneSignHologram.h"
 
+AFGStandaloneSignHologram::AFGStandaloneSignHologram() : Super() {
+	this->mDefaultSignSupportRecipe = nullptr;
+	this->mChildSignPoleHologram = nullptr;
+	this->mUseGradualFoundationRotations = true;
+	this->mAttachmentPointSnapDistanceThreshold = 10000.0;
+}
+void AFGStandaloneSignHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGStandaloneSignHologram::BeginPlay(){ }
+bool AFGStandaloneSignHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
+bool AFGStandaloneSignHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
+void AFGStandaloneSignHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }
+AActor* AFGStandaloneSignHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
+bool AFGStandaloneSignHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
+void AFGStandaloneSignHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
+void AFGStandaloneSignHologram::Scroll(int32 delta){ }
+void AFGStandaloneSignHologram::OnInvalidHitResult(){ }
+void AFGStandaloneSignHologram::CheckValidFloor(){ }

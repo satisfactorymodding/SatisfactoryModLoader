@@ -9,4 +9,6 @@ EPrimaryAssetCookRule UFGAssetManager::GetPackageCookRule(FName PackageName) con
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
-UFGAssetManager::UFGAssetManager(){ }
+UFGAssetManager::UFGAssetManager() : Super() {
+
+}

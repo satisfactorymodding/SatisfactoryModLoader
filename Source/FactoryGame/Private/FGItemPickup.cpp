@@ -3,15 +3,18 @@
 #include "FGItemPickup.h"
 
 AFGItemPickup::AFGItemPickup() : Super() {
+	this->mTimeToPickUp = 0.0;
+	this->mCollector = nullptr;
 	this->mDestroyOnPickup = true;
+	this->mSoundComponent = nullptr;
+	this->mAudioEvent = nullptr;
 	this->mRespawnTimeInDays = -1;
 	this->mUpdatedOnDayNr = -1;
 	this->mItemState = EItemState::ES_NORMAL;
 	this->mGrowTimeInDays = 3;
 	this->mSavedNumItems = -1;
 	this->mMaxRespawns = -1;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Initial;
+	this->mNumRespawns = 0;
 }
 void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGItemPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }

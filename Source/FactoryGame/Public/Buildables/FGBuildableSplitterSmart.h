@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Buildables/FGBuildableAttachmentSplitter.h"
 #include "FGBuildableSplitterSmart.generated.h"

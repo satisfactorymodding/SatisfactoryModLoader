@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "FGPoleConnectionsWidget.generated.h"

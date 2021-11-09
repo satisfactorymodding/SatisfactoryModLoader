@@ -6,4 +6,5 @@ void AFGHUDBase::SetBaseUI( UFGBaseUI* newUI){ }
 void AFGHUDBase::ToggleDebugOverlay(){ }
 void AFGHUDBase::ToggleStoryDebugOverlay(){ }
 void AFGHUDBase::ToggleOptionsDebugOverlay(){ }
+void AFGHUDBase::ToggleStatisticsDebugOverlay(){ }
 void AFGHUDBase::QuickSwitchLanguage(){ }

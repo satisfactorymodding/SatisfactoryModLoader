@@ -1,5 +1,6 @@
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 namespace physx

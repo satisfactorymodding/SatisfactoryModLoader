@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "FGCharacterMovementComponent.generated.h"
 

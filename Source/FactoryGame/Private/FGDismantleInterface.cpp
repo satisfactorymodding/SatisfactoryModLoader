@@ -2,5 +2,7 @@
 
 #include "FGDismantleInterface.h"
 
-UFGDismantleInterface::UFGDismantleInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGDismantleInterface::UFGDismantleInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+}
 void FDismantleHelpers::DropRefundOnGround( AActor* dismantledActor, const FVector& aimHitLocation, const TArray< FInventoryStack >& refund){ }

@@ -7,10 +7,13 @@
 AFGRenderTargetStage::AFGRenderTargetStage() : Super() {
 	this->mDynamicRenderTargetSizeX = 512;
 	this->mDynamicRenderTargetSizeY = 512;
-	this->mDynamicPixelFormat = PF_B8G8R8A8;
+	this->mDynamicPixelFormat = EPixelFormat::PF_B8G8R8A8;
+	this->mSceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture"));
+	this->mStage = CreateDefaultSubobject<USceneComponent>(TEXT("Stage"));
+	this->mDynamicRenderTarget = false;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
-	this->mSceneCaptureComponent = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("SceneCapture")); this->mSceneCaptureComponent->SetupAttachment(this->RootComponent);
-	this->mStage = CreateDefaultSubobject<USceneComponent>(TEXT("Stage")); this->mStage->SetupAttachment(this->RootComponent);
+	this->mSceneCaptureComponent->SetupAttachment(RootComponent);
+	this->mStage->SetupAttachment(RootComponent);
 }
 void AFGRenderTargetStage::BeginPlay(){ }
 void AFGRenderTargetStage::BeginCapture(){ }

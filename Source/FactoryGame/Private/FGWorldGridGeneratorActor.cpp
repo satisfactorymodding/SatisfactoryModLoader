@@ -6,4 +6,6 @@
 void AFGWorldGridGeneratorActor::ExportWorldGridData(){ }
 void AFGWorldGridGeneratorActor::GenerateWorldGrid(TArray<FFGWorldGridCellData>& CellData, FVector2D& GridMin, FVector2D& GridMax) const{ }
 #endif 
-AFGWorldGridGeneratorActor::AFGWorldGridGeneratorActor(){ }
+AFGWorldGridGeneratorActor::AFGWorldGridGeneratorActor() : Super() {
+
+}

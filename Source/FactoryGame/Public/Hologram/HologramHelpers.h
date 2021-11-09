@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Hologram/FGHologramGraphAStar.h"
 #include "Components/SplineComponent.h"
 #include "Stats/Stats.h"
@@ -19,10 +20,19 @@ struct FHologramHelpers
 	 * @param attachTo			Root that we want to attach the created component to
 	 * @param fromBox			Box used for setting size of clearance component
 	 */
-	static class UStaticMeshComponent* CreateClearanceComponent( class USceneComponent* attachTo, class UBoxComponent* fromBox );
+	static class UStaticMeshComponent* CreateClearanceMeshComponent( class USceneComponent* attachTo, class UFGClearanceComponent* fromClearanceBox );
 
-	/** Creates the connection mesh for a connection component */
-	static class UStaticMeshComponent* CreateConnectionRepresentation( class UFGFactoryConnectionComponent* connectionComponent );
+	/** Sets extents and relative location on the clearance mesh to match the specified clearance box. */
+	static void SetClearanceMeshData( class UStaticMeshComponent* clearanceMesh, class UFGClearanceComponent* fromClearanceBox );
+
+	/** Creates the representation mesh for a connection component */
+	static class UStaticMeshComponent* CreateConnectionRepresentation( class UFGConnectionComponent* connectionComponent, bool isOutput, float heightOffset );
+
+	/** Creates the representation mesh for an attachment point */
+	static class UStaticMeshComponent* CreateAttachmentPointRepresentation( const struct FFGAttachmentPoint* attachmentPoint, const class AFGBuildable* buildable );
+
+	/** Shrink the clearance component extent a bit to avoid overlapping with floating point inaccuracies. */
+	static void ApplyClearanceExtentShrink( class UFGClearanceComponent* clearanceComponent );
 
 	/**
 	 * Calculate a poles height given a hit result and the poles location.
@@ -33,6 +43,13 @@ struct FHologramHelpers
 	 * Calculate a poles height given a hit result and the poles location while also calculating the poles horizontal offset angle from the rays forward direction
 	 */
 	static float CalcPoleHeightAndHorisontalOffset(float& out_horisontalOffset, const struct FHitResult& aimResult, const struct FVector& poleLocation );
+	
+	/** Duplicate a component for the hologram. */
+	template< class ComponentType >
+	ComponentType* DuplicateComponent( USceneComponent* attachParent, ComponentType* templateComponent, const FName& componentName );
+
+	/** Find how many degrees targetLocation is from location's right-angles (0, 90, 180, 270) given a direction. Will convert vectors to 2D space. */
+	static float FindRightAngleBetweenLocations( const FVector& location, const FVector& targetLocation, const FVector& direction );
 };
 
 struct FSplineUtils
@@ -507,7 +524,7 @@ public:
 */
 struct FHologramAStarNode
 {
-	// FHologramAStarNode( ); // MODDING EDIT: Temporary, should find fix for overload
+	FHologramAStarNode( );
 
 	/** Default Constructor */
 	FHologramAStarNode( int32 unused = INDEX_NONE );
@@ -630,3 +647,14 @@ public:
 	/** true if a partial solution is valid; false if we only want a path if the goal is reachable. */
 	bool AcceptsPartialSolution;
 };
+
+/** TEMPLATED FUNCTIONS */
+
+template< class ComponentType >
+ComponentType* FHologramHelpers::DuplicateComponent( USceneComponent* attachParent, ComponentType* templateComponent, const FName& componentName )
+{
+	ComponentType* newComponent = NewObject< ComponentType >( attachParent, templateComponent->GetClass(), componentName, RF_NoFlags, templateComponent );
+	newComponent->SetMobility( EComponentMobility::Movable );
+
+	return newComponent;
+}

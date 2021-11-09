@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildable.h"
 #include "Buildables/FGBuildablePoleBase.h"
 #include "FGBuildablePole.generated.h"
@@ -58,6 +59,8 @@ public:
 	/** Should the stack height only be calculated using the mStackHeight? */
 	UPROPERTY( EditDefaultsOnly, Category = "Pole" )
 	bool mUseStaticHeight;
+
+
 protected:
 	//virtual void TogglePendingDismantleMaterial( bool enabled ) override;
 	//virtual void OnBuildEffectFinished() override;

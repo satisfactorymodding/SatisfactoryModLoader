@@ -3,10 +3,6 @@
 #include "Resources/FGOverflowDescriptor.h"
 
 UFGOverflowDescriptor::UFGOverflowDescriptor() : Super() {
-	this->mUseDisplayNameAndDescription = true;
 	this->mDisplayName = NSLOCTEXT("OverflowDescriptor", "DisplayName", "Overflow");
 	this->mDescription = NSLOCTEXT("OverflowDescriptor", "Description", "Overflow Output");
-	this->mStackSize = EStackSize::SS_MEDIUM;
-	this->mCanBeDiscarded = true;
-	this->mForm = EResourceForm::RF_SOLID;
 }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "NavAreas/NavArea.h"
 #include "FGNavArea_Factory.generated.h"

@@ -3,4 +3,4 @@
 #include "FGAnimNotify_AkEventCurrentPotential.h"
 
 FString UFGAnimNotify_AkEventCurrentPotential::GetNotifyName_Implementation() const{ return FString(); }
-void UFGAnimNotify_AkEventCurrentPotential::SetRTPCValueOnAkComponent(USkeletalMeshComponent* meshComp,  UAkComponent* component){ }
+void UFGAnimNotify_AkEventCurrentPotential::OnBeforePostEvent(USkeletalMeshComponent* meshComp,  UAkComponent* component){ }

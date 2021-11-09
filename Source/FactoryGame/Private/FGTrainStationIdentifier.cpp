@@ -3,11 +3,15 @@
 #include "FGTrainStationIdentifier.h"
 
 AFGTrainStationIdentifier::AFGTrainStationIdentifier() : Super() {
+	this->mStation = nullptr;
 	this->mTrackGraphID = -1;
+	this->mStationName = INVTEXT("");
 	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->bReplicates = true;
 }
 void AFGTrainStationIdentifier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGTrainStationIdentifier::BeginPlay(){ }
+void AFGTrainStationIdentifier::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGTrainStationIdentifier::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTrainStationIdentifier::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTrainStationIdentifier::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -15,5 +19,23 @@ void AFGTrainStationIdentifier::PostLoadGame_Implementation(int32 saveVersion, i
 void AFGTrainStationIdentifier::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGTrainStationIdentifier::NeedTransform_Implementation(){ return bool(); }
 bool AFGTrainStationIdentifier::ShouldSave_Implementation() const{ return bool(); }
+bool AFGTrainStationIdentifier::AddAsRepresentation(){ return bool(); }
+bool AFGTrainStationIdentifier::UpdateRepresentation(){ return bool(); }
+bool AFGTrainStationIdentifier::RemoveAsRepresentation(){ return bool(); }
+bool AFGTrainStationIdentifier::IsActorStatic(){ return bool(); }
+FVector AFGTrainStationIdentifier::GetRealActorLocation(){ return FVector(); }
+FRotator AFGTrainStationIdentifier::GetRealActorRotation(){ return FRotator(); }
+UTexture2D* AFGTrainStationIdentifier::GetActorRepresentationTexture(){ return nullptr; }
+FText AFGTrainStationIdentifier::GetActorRepresentationText(){ return FText(); }
+void AFGTrainStationIdentifier::SetActorRepresentationText(const FText& newText){ }
+FLinearColor AFGTrainStationIdentifier::GetActorRepresentationColor(){ return FLinearColor(); }
+void AFGTrainStationIdentifier::SetActorRepresentationColor(FLinearColor newColor){ }
+ERepresentationType AFGTrainStationIdentifier::GetActorRepresentationType(){ return ERepresentationType(); }
+bool AFGTrainStationIdentifier::GetActorShouldShowInCompass(){ return bool(); }
+bool AFGTrainStationIdentifier::GetActorShouldShowOnMap(){ return bool(); }
+EFogOfWarRevealType AFGTrainStationIdentifier::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
+float AFGTrainStationIdentifier::GetActorFogOfWarRevealRadius(){ return float(); }
+ECompassViewDistance AFGTrainStationIdentifier::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
+void AFGTrainStationIdentifier::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 void AFGTrainStationIdentifier::SetStationName(const FText& text){ }
 void AFGTrainStationIdentifier::OnRep_StationName(){ }

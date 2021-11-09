@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 
 #include "FGVehicle.h"
@@ -338,7 +339,7 @@ public:
 	// End IFGDismantleInferface
 
 	// Begin AFGVehicle interface
-	virtual void OnSimulationChanged() override;
+	virtual void OnIsSimulatedChanged() override;
 	// End AFGVehicle interface
 
 	//Begin IFGSignificanceInterface
@@ -349,6 +350,10 @@ public:
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFGSaveInterface
+ 
+	// Begin IFGActorRepresentationInterface
+	virtual FText GetActorRepresentationText() override;
+	// End IFGActorRepresentationInterface
 
 	void NotifyPairedStationUpdated( class AFGBuildableDroneStation* NewPairedStation );
 	

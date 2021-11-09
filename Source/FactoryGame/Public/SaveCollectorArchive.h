@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Serialization/Archive.h"
 
 class FSaveCollectorArchive : public FArchive

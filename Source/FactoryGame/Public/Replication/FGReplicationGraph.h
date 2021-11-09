@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "ReplicationGraph.h"
 #include "FGProductionIndicatorComponent.h"
@@ -193,8 +194,8 @@ public:
 	virtual void TearDown() override;
 
 	// Custom CSS Notifies. These will only be called if the cell has bShouldNotifyStaticActorChanges == true. This is an empty function on the base GridCell
-	virtual void OnStaticActorPutIntoCell( const FNewReplicatedActorInfo& ActorInfo ) /*override*/;
-	virtual void OnStaticActorRemovedFromCell( const FNewReplicatedActorInfo& ActorInfo ) /*override*/;
+	virtual void OnStaticActorPutIntoCell( const FNewReplicatedActorInfo& ActorInfo ) override;
+	virtual void OnStaticActorRemovedFromCell( const FNewReplicatedActorInfo& ActorInfo ) override;
 
 	// --------------------------------------------------------
 	struct FSpatializationZone
@@ -215,43 +216,6 @@ public:
 		{
 			return  Hz > 0.f ? ( uint32 )FMath::CeilToInt( TargetFrameRate / Hz ) : 0;
 		}
-	};
-
-	// --------------------------------------------------------
-	struct FConnectionSaturationInfo
-	{
-		FConnectionSaturationInfo( const FConnectionSaturationInfo& otherInfo )
-		{
-			RepGraphConnection = otherInfo.RepGraphConnection;
-			CurrentRatePCT = otherInfo.CurrentRatePCT;
-			MaxClientRate = otherInfo.MaxClientRate;
-		}
-
-		FConnectionSaturationInfo() : RepGraphConnection(nullptr) {}
-
-		// Init based on UNetReplicationGraphConnection
-		FConnectionSaturationInfo( UNetReplicationGraphConnection* connection ) : RepGraphConnection( connection ) 
-		{
-			for( int32 i = 0; i < LoadBalanceFrameCount; ++i )
-			{
-				FramesSelfSaturated[ i ] = false;
-				FramesExternalSaturated[ i ] = false;
-			}
-
-			MaxClientRate = connection->NetConnection->Driver->MaxClientRate;
-			UE_LOG( LogGame, Log, TEXT("Initialized MaxClientRate == %i"), MaxClientRate );
-		}
-
-		UNetReplicationGraphConnection* RepGraphConnection;
-		float MaxRatePCT = 0.35f; // Maximum % of the total budget
-		float MinRatePCT = 0.15f; // Minimum % of the total budget
-		float DefaultRatePCT = 0.3f;
-		float CurrentRatePCT = 0.3f;
-		int32 MaxClientRate = 15000; // Is copied from NetDriver on initialization
-
-		static const int32 LoadBalanceFrameCount = 60;
-		bool FramesSelfSaturated[ LoadBalanceFrameCount ];
-		bool FramesExternalSaturated[ LoadBalanceFrameCount ];
 	};
 
 	// --------------------------------------------------------
@@ -410,7 +374,7 @@ protected:
 
 		bool operator<( const FZBucketReplicationRange& Other ) const
 		{
-			if( Other.Period > 0 && Period > 0 || Other.Period <= 0 && Period <= 0 )
+			if( ( Other.Period > 0 && Period > 0 ) || ( Other.Period <= 0 && Period <= 0 ) )
 			{
 				return Period < Other.Period;
 			}
@@ -519,7 +483,7 @@ protected:
 
 		bool operator<( const FConveyorFrequency_SortedCell& Other ) const 
 		{
-			if( Other.ReplicationPeriod > 0 && ReplicationPeriod > 0 || Other.ReplicationPeriod <= 0 && ReplicationPeriod <= 0)
+			if( ( Other.ReplicationPeriod > 0 && ReplicationPeriod > 0 ) || ( Other.ReplicationPeriod <= 0 && ReplicationPeriod <= 0) )
 			{
 				return FramesTillReplicate < Other.FramesTillReplicate;
 			}
@@ -673,17 +637,17 @@ protected:
 		FFrequencyGrid2D_Cell* GetCellForLocation( const FVector& location );
 
 		// Takes a viewer Array for split screen support (realistically we won't have split screen... right?!)
-		void GatherAndRankCellsForViewer( UFGReplicationGraphNode_ConveyorSpatialFrequency* GraphNode, UReplicationGraph* RepGraph, UNetConnection* NetConnection, FSettings& MySettings, const FNetViewerArray& Viewers, const int32 FrameNum, TArray< FConveyorFrequency_SortedCell*>& out_cells );
+		void GatherAndRankCellsForViewer( UFGReplicationGraphNode_ConveyorSpatialFrequency* GraphNode, UReplicationGraph* RepGraph, UNetReplicationGraphConnection& ConnectionManager, UNetConnection* NetConnection, FSettings& MySettings, const FNetViewerArray& Viewers, const int32 FrameNum, TArray< FConveyorFrequency_SortedCell*>& out_cells );
 
 		void AddActor( AActor* actor, int32 FrameNum )
 		{
-			check( IsInitialized )
+			fgcheck( IsInitialized )
 			// @todo - Check multiple points and add to range of cells to better match conveyors actual long and winding nature?
-			check( actor );
+			fgcheck( actor );
 
 			int32 arrayIndex = GetCellIndexForLocation( actor->GetActorLocation() );
 
-			checkf( arrayIndex >= 0 && arrayIndex < FrequencyCells.Num(), TEXT( "ConveyorFrequencyCell: Calculated Cell Index %i is out of bounds for Cell Count %i" ), arrayIndex, FrequencyCells.Num() );
+			fgcheckf( arrayIndex >= 0 && arrayIndex < FrequencyCells.Num(), TEXT( "ConveyorFrequencyCell: Calculated Cell Index %i is out of bounds for Cell Count %i" ), arrayIndex, FrequencyCells.Num() );
 			
 			bool addedSomething = FrequencyCells[ arrayIndex ]->AddActor( actor );
 			if( addedSomething )
@@ -737,36 +701,12 @@ protected:
 	// Sorted Cell Lists (will be per connection, but for now, rebuild each gather)
 	TMap< UNetConnection*, TArray<FConveyorFrequency_SortedCell*> > mConnectionToSortedCellList;
 
-	// Track Bandwidth Saturation per connection so that we can allocate more budget per connection if other property replication isn't utilizing available budget
-	TArray<FConnectionSaturationInfo> mConnectionSaturationInfo;
-
 	// Working ints for adaptive load balancing. Does not count actors that rep every frame
 	int32 mNumExpectedReplicationsThisFrame = 0;
 	int32 mNumExpectedReplicationsNextFrame = 0;
 
-	int32 CalcFrequencyForCell( FFrequencyGrid2D_Cell* GridCell, UReplicationGraph* RepGraph, UNetConnection* NetConnection, FSettings& MySettings, const FNetViewerArray& Viewers, const uint32 FrameNum, bool IsPlayerInCell );
+	int32 CalcFrequencyForCell( FFrequencyGrid2D_Cell* GridCell, UReplicationGraph* RepGraph, UNetReplicationGraphConnection& ConnectionManager, UNetConnection* NetConnection, FSettings& MySettings, const FNetViewerArray& Viewers, const uint32 FrameNum, bool IsPlayerInCell );
 	
-	void CleanUpConnectionSaturationInfo( UReplicationGraph* RepGraph ) 
-	{
-		mConnectionSaturationInfo.RemoveAll( [&]( FConnectionSaturationInfo& connectionInfo ) {
-			return !RepGraph->Connections.Contains( connectionInfo.RepGraphConnection ) || connectionInfo.RepGraphConnection->IsPendingKill();
-		} );
-	}
-
-	FConnectionSaturationInfo& GetConnectionSaturationInfo( UNetReplicationGraphConnection* repGraphConnection )
-	{
-		int32 infoIndex = mConnectionSaturationInfo.IndexOfByPredicate( [&]( const FConnectionSaturationInfo& connection ) {
-			return connection.RepGraphConnection == repGraphConnection;
-		} );
-
-		if( infoIndex == INDEX_NONE )
-		{
-			infoIndex = mConnectionSaturationInfo.Add( FConnectionSaturationInfo( repGraphConnection ) );
-		}
-
-		return mConnectionSaturationInfo[ infoIndex ];
-	}
-
 	// Has this Node Initialized its frequency grid
 	bool mHasInitializedGrid;
 

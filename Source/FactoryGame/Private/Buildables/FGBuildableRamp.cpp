@@ -2,3 +2,8 @@
 
 #include "Buildables/FGBuildableRamp.h"
 
+AFGBuildableRamp::AFGBuildableRamp() : Super() {
+	this->mIsDoubleRamp = false;
+}
+void AFGBuildableRamp::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+float AFGBuildableRamp::CalculateRampAngle() const{ return float(); }

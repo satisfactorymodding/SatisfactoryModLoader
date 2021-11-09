@@ -2,4 +2,6 @@
 
 #include "FGDockableInterface.h"
 
-UFGDockableInterface::UFGDockableInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {}
+UFGDockableInterface::UFGDockableInterface(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+}

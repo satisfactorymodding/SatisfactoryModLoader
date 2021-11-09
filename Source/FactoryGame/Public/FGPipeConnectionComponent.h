@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGConnectionComponent.h"
 #include "FGInventoryComponent.h"
@@ -43,8 +44,7 @@ public:
 	// Begin ActorComponent interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void OnComponentDestroyed( bool isDestroyingHierarchy ) override;
-	virtual void OnRegister() override;
-	virtual void OnUnregister() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End ActorComponent interface
 
 	/** Set the conveyor clearance for this connection. */
@@ -91,13 +91,19 @@ public:
 	 */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Pipes|Connection" )
 	bool IsConnected() const;
-
+	
 	/** Check if the given connection can snap to this. */
 	bool CanSnapTo( UFGPipeConnectionComponentBase* otherConnection ) const;
+	
 	/** Check if the given connection can connect to this. */
 	bool CanConnectTo( UFGPipeConnectionComponentBase* otherConnection ) const;
 
-	
+	/** Block snapping to this connection. Used for special cases where we don't want to allow direct snapping Tex. When a connection is snapped to a buildable passthrough */
+	void SetDisallowSnappingTo( bool shouldBlock ) { mDisallowSnappingTo = shouldBlock; }
+
+	/** Is this component ineligible for snapping to? */
+	bool IsSnappingToDisallowed() { return mDisallowSnappingTo; }
+
 	/** CheckCompatibility
 	 * Checks the connection types and general compatibility of the connections. If the hologram is given it can report more specific issues as well, but otherwise the return value will tell weather the connections are compatible.
 	 * This is not necessarily for connecting two connections, but rather to make sure that they can belong to the same system.
@@ -142,12 +148,12 @@ protected:
 	float mConnectorClearance;
 
 protected:
-	UPROPERTY( EditDefaultsOnly )
-	FName mPipeType = "Base"; //used to find matching types for snapping and so on
-
 	/** Connection to another component. If this is set we're connected. */
 	UPROPERTY( SaveGame, Replicated )
 	class UFGPipeConnectionComponentBase* mConnectedComponent;
+
+	UPROPERTY()
+	bool mDisallowSnappingTo;
 };
 
 
@@ -226,7 +232,9 @@ public:
 	*	Acts on an Inventory component and fluid integrant. This is independent of the Pipe Network fluid updates
 	*	Calls the internal implementation after determining if it is the component on the destination buildable
 	*/
+	UFUNCTION(BlueprintCallable, Category="Pipe Connection Component")
 	int32 Factory_PushPipeOutput( float dt, const FInventoryStack& stack );
+	UFUNCTION(BlueprintCallable, Category="Pipe Connection Component")
 	bool Factory_PullPipeInput( float dt, FInventoryStack& out_stack, TSubclassOf< UFGItemDescriptor > type, int32 maxQuantity = -1 );
 
 	/** Actual implementation of PushPipeOutput */
@@ -234,7 +242,6 @@ public:
 
 	/** Actual implementation of PullPipeInput */
 	bool Factory_Internal_PullPipeInput( float dt, FInventoryStack& out_stack, TSubclassOf< UFGItemDescriptor > type, int32 maxQuantity = -1 );
-
 
 private:
 	/** Used by the pipe subsystem to update the network this is connected to. */
@@ -247,11 +254,11 @@ private:
 	UFUNCTION()
 	void OnRep_FluidDescriptor();
 
-public: // MODDING EDIT: protected -> public
+protected:
 	/** The inventory of this connection. This can be null in many cases. */
 	// @todoPipes - I don't think this is used anymore. This should be fully deprecated and removed. This is a carry over from conveyor belts. 
 	// The final implementation of pipes works by them being pushed to from buildings (rather than pulling like belts), so they don't need an inventory to access
-	UPROPERTY( BlueprintReadWrite, SaveGame ) // MODDING EDIT: BPRW - VERY Experimental most buildings handle this on their own. Writing to it maybe crashes.
+	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mConnectionInventory;
 
 	/**
@@ -260,14 +267,14 @@ public: // MODDING EDIT: protected -> public
 	 * buildables. This is because fluids should belong to a single stack in an inventory and if none is specified then a pipe should
 	 * not be eligible to receive liquid. There may be a better way to handle this but that is how its operating.
 	 */
-	UPROPERTY( BlueprintReadWrite, SaveGame ) //MODDING EDIT: BPRW - Experimental!!! Writing to it maybe crashes
+	UPROPERTY( SaveGame )
 	int32 mInventoryAccessIndex;
 
 	/**
 	 * The network this connection is connected to. INDEX_NONE if not connected.
 	 * @note - This ID may change at any time when changes occurs in the network. Do not save copies of it!
 	 */
-	UPROPERTY( BlueprintReadOnly, SaveGame, VisibleAnywhere, Replicated, Category = "Connection" ) // MODDING EDIT: BPReadOnly
+	UPROPERTY( SaveGame, VisibleAnywhere, Replicated, Category = "Connection" )
 	int32 mPipeNetworkID;
 
 	/**
@@ -278,10 +285,9 @@ public: // MODDING EDIT: protected -> public
 	//           We cannot do that on the client cause it does not have a graph built.
 	//           And the pipe network id gets wonky on the client as well... and
 	//           we need this to work for the play test so for now lets go with ugly.
-	UPROPERTY( BlueprintReadOnly, VisibleAnywhere, ReplicatedUsing = OnRep_FluidDescriptor ) // MODDING EDIT: BPReadOnly, VisibleAnywhere
+	UPROPERTY( ReplicatedUsing = OnRep_FluidDescriptor )
 	TSubclassOf< class UFGItemDescriptor > mFluidDescriptor;
 
-protected: // MODDING EDIT
 	/**
 	 * The fluid integrant this connection belongs to ( interface on the outer buildable ). Assigned in begin play if one exists.
 	 * Can be null. Tex. For production buildings

@@ -2,7 +2,9 @@
 
 #include "UI/FGBaseUI.h"
 
-UFGBaseUI::UFGBaseUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) { }
+UFGBaseUI::UFGBaseUI(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mActivePopup = nullptr;
+}
 void UFGBaseUI::NativeConstruct(){ }
 void UFGBaseUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
 void UFGBaseUI::AddPopupToQueue(FPopupData inPopupData){ }

@@ -3,10 +3,28 @@
 #include "FGResourceSinkSubsystem.h"
 
 AFGResourceSinkSubsystem::AFGResourceSinkSubsystem() : Super() {
-	this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0); this->mGlobalPointHistory.Add(0);
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 1;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->mTotalResourceSinkPoints = 0LL;
+	this->mCurrentPointLevel = 0;
+	this->mNumResourceSinkCoupons = 0;
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mGlobalPointHistory.Add(0);
+	this->mAnyGenericItemsFailedToSink = false;
+	this->mIsCouponEverSunk = false;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 1.0;
 }
 void AFGResourceSinkSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
 void AFGResourceSinkSubsystem::BeginPlay(){ }
@@ -31,3 +49,4 @@ void AFGResourceSinkSubsystem::CalculateLevel(){ }
 int64 AFGResourceSinkSubsystem::GetRequiredPointsForLevel(int32 level) const{ return int64(); }
 void AFGResourceSinkSubsystem::CalculateAccumulatedPointsPastInterval(){ }
 void AFGResourceSinkSubsystem::TriggerCyberCoupon(){ }
+void AFGResourceSinkSubsystem::TriggerCustomReward(TSubclassOf<  UFGItemDescriptor> item){ }

@@ -8,12 +8,18 @@ void AFGResourceNodeBase::PostEditChangeProperty( FPropertyChangedEvent& propert
 void AFGResourceNodeBase::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
 AFGResourceNodeBase::AFGResourceNodeBase() : Super() {
+	this->mResourceClass = nullptr;
+	this->mDecalComponent = nullptr;
+	this->mBoxComponent = nullptr;
+	this->mIsOccupied = false;
+	this->mIsLonerNode = false;
 	this->mAllowDecal = true;
+	this->mHighlightParticleSystemTemplate = nullptr;
+	this->mHighlightParticleSystemComponent = nullptr;
 	this->mDoSpawnParticle = true;
+	this->mMeshActor = nullptr;
 	this->mAddToSignificanceManager = true;
-	this->mSignificanceRange = 18000;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Initial;
+	this->mSignificanceRange = 18000.0;
 }
 void AFGResourceNodeBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGResourceNodeBase::PostLoad(){ Super::PostLoad(); }

@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGCharacterBase.h"
 #include "FGUseableInterface.h"
 #include "FGCreature.generated.h"

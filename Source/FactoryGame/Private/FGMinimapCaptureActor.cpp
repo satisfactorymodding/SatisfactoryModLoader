@@ -16,6 +16,6 @@ TArray<TArray<FColor>> AFGMinimapCaptureActor::CreateLayeredPixelArray(FFGHeight
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGMinimapCaptureActor::AFGMinimapCaptureActor() : Super() {
-	
+	this->mMapAreaTexture = nullptr;
 }
 void AFGMinimapCaptureActor::BeginPlay(){ }

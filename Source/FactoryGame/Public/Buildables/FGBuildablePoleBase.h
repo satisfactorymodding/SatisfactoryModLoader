@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildable.h"
 #include "FGBuildablePoleBase.generated.h"
 

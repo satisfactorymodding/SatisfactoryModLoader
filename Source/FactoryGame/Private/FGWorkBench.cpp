@@ -3,14 +3,28 @@
 #include "FGWorkBench.h"
 
 UFGWorkBench::UFGWorkBench() : Super() {
-	this->mManufacturingSpeed = 0.800000011920929;
-	this->mFatigueMultiplier = 0.200000002980232;
-	this->mFatigueDecreaseSpeedMultiplier = 3;
-	this->mHoldProduceTime = 0.200000002980232;
+	this->mCurrentRecipe = nullptr;
+	this->mCurrentManufacturingProgress = 0.0;
+	this->mManufacturingSpeed = 0.8;
+	this->mPlayerWorkingAtBench = nullptr;
+	this->mRecipeRate = 0.0;
+	this->mIsProducing = false;
+	this->mInventory = nullptr;
+	this->mFatigueMultiplier = 0.2;
+	this->mFatigueDecreaseSpeedMultiplier = 3.0;
+	this->mHoldProduceTime = 0.2;
+	this->mManufacturingButton = nullptr;
 	this->mFatigueUpdaterInterval = 10;
+	this->mRecipeDuration = 0.0;
 	this->mCooldownDelay = 1.5;
 	this->mIsFatigueEnabled = true;
-	this->PrimaryComponentTick.TickGroup = TG_DuringPhysics; this->PrimaryComponentTick.EndTickGroup = TG_PrePhysics; this->PrimaryComponentTick.bTickEvenWhenPaused = false; this->PrimaryComponentTick.bCanEverTick = true; this->PrimaryComponentTick.bStartWithTickEnabled = true; this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true; this->PrimaryComponentTick.TickInterval = 0;
+	this->PrimaryComponentTick.TickGroup = ETickingGroup::TG_DuringPhysics;
+	this->PrimaryComponentTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryComponentTick.bTickEvenWhenPaused = false;
+	this->PrimaryComponentTick.bCanEverTick = true;
+	this->PrimaryComponentTick.bStartWithTickEnabled = true;
+	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryComponentTick.TickInterval = 0.0;
 	this->SetIsReplicatedByDefault(true);
 	this->bAutoActivate = true;
 }

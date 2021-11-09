@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Buildables/FGBuildable.h"
 #include "Buildables/FGBuildableCircuitSwitch.h"
 #include "FGBuildablePriorityPowerSwitch.generated.h"

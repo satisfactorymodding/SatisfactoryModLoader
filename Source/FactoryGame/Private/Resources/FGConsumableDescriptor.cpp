@@ -3,11 +3,16 @@
 #include "Resources/FGConsumableDescriptor.h"
 
 UFGConsumableDescriptor::UFGConsumableDescriptor() : Super() {
-	this->mCustomHandsMeshScale = 1;
-	this->mUseDisplayNameAndDescription = true;
-	this->mStackSize = EStackSize::SS_MEDIUM;
-	this->mCanBeDiscarded = true;
-	this->mForm = EResourceForm::RF_SOLID;
+	this->mConsumeEvent = nullptr;
+	this->mCustomHandsMeshScale = 1.0;
+	this->mCustomRotation.Pitch = 0.0;
+	this->mCustomRotation.Yaw = 0.0;
+	this->mCustomRotation.Roll = 0.0;
+	this->mCustomLocation.X = 0.0;
+	this->mCustomLocation.Y = 0.0;
+	this->mCustomLocation.Z = 0.0;
+	this->mFPOverrideMesh = nullptr;
+	this->mTPOverrideMesh = nullptr;
 }
 USkeletalMesh* UFGConsumableDescriptor::GetFPOverrideMesh(TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }
 UStaticMesh* UFGConsumableDescriptor::GetTPOverrideMesh(TSubclassOf< UFGConsumableDescriptor > inClass){ return nullptr; }

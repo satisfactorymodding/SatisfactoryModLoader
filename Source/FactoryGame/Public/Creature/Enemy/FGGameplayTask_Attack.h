@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Animation/AnimInstance.h"
 #include "Creature/Enemy/FGGameplayTask_Base.h"
 #include "AI/FGAttack.h"

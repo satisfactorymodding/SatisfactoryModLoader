@@ -7,18 +7,24 @@
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGTimeOfDaySubsystem::AFGTimeOfDaySubsystem() : Super() {
-	this->mSyncronizeTimeOfDayInterval = 5;
-	this->mDayLengthMinutes = 3;
+	this->mSyncronizeTimeOfDayInterval = 5.0;
+	this->mDayLengthMinutes = 3.0;
 	this->mNightLengthMinutes = 1.5;
-	this->mDayStartTime = 6;
-	this->mNightStartTime = 18;
-	this->mSpeedMultiplier = 1;
+	this->mDayStartTime = 6.0;
+	this->mNightStartTime = 18.0;
+	this->mSpeedMultiplier = 1.0;
+	this->mDaySeconds = 0.0;
+	this->mReplicatedDaySeconds = 0.0;
 	this->mNumberOfPassedDays = -1;
-	this->mRTPCInterval = 20;
+	this->mRTPCInterval = 20.0;
 	this->mUpdateTime = true;
-	this->PrimaryActorTick.TickGroup = TG_PrePhysics; this->PrimaryActorTick.EndTickGroup = TG_PrePhysics; this->PrimaryActorTick.bTickEvenWhenPaused = false; this->PrimaryActorTick.bCanEverTick = true; this->PrimaryActorTick.bStartWithTickEnabled = true; this->PrimaryActorTick.bAllowTickOnDedicatedServer = true; this->PrimaryActorTick.TickInterval = 0;
-	this->bAlwaysRelevant = true;
-	this->SetReplicates(true);
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 }
 void AFGTimeOfDaySubsystem::BeginPlay(){ }
 void AFGTimeOfDaySubsystem::Tick(float dt){ }

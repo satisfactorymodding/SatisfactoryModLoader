@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "FGC4Explosive.generated.h"
 

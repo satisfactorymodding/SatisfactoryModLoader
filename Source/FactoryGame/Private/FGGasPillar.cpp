@@ -3,15 +3,17 @@
 #include "FGGasPillar.h"
 #include "FGDotComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/HierarchicalInstancedStaticMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 AFGGasPillar::AFGGasPillar() : Super() {
-	this->mMesh = CreateDefaultSubobject<UHierarchicalInstancedStaticMeshComponent>(TEXT("Mesh"));
-	this->mOverlapCollision = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapBox")); this->mOverlapCollision->SetupAttachment(this->mMesh);
-	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent")); this->mDotComponent->SetupAttachment(this->mOverlapCollision);
-	this->mSignificanceRange = 15000;
-	this->SetReplicates(true);
-	this->NetDormancy = DORM_Initial;
+	this->mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	this->mOverlapCollision = CreateDefaultSubobject<USphereComponent>(TEXT("OverlapBox"));
+	this->mOverlapCollision->SetupAttachment(mMesh);
+	this->mDotComponent = CreateDefaultSubobject<UFGDotComponent>(TEXT("DotComponent"));
+	this->mDotComponent->SetupAttachment(mOverlapCollision);
+	this->mPostProcessSettings = nullptr;
+	this->mSignificanceRange = 15000.0;
+	this->RootComponent = mMesh;
 }
 void AFGGasPillar::BeginPlay(){ }
 void AFGGasPillar::EndPlay(const EEndPlayReason::Type endPlayReason){ }

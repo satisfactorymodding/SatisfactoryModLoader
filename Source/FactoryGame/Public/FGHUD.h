@@ -1,9 +1,11 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
 #pragma once 
-#include "FactoryGame.h" // MODDING EDIT: no PCH
+#include "FactoryGame.h"
 #include "GameFramework/HUD.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGHUDBase.h"
+#include "Blueprint/UserWidgetPool.h"
+
 #include "FGHUD.generated.h"
 
 UENUM( BlueprintType )
@@ -22,6 +24,8 @@ enum class ECrosshairState : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPumpiModeChanged, bool, hideHUD );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPartialPumpiModeChanged, bool, partialHideHUD );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHiddenHUDModeChanged, bool, HideHUD );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnHUDVisibilityChanged, bool, hudVisibility );
 
 UCLASS()
 class FACTORYGAME_API AFGHUD : public AFGHUDBase
@@ -58,7 +62,14 @@ public:
 
 	/** All widgets that inherits from UFGInteractWidget can be opened by calling this */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|UI" )
-	void OpenInteractUI( TSubclassOf< UFGInteractWidget > widgetClass, UObject* interactObject );
+	void OpenInteractUI( TSubclassOf< class UFGInteractWidget > widgetClass, UObject* interactObject );
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
+	class UFGInteractWidget* RequestInteractWidget( TSubclassOf< class UFGInteractWidget > widgetClass, UObject* interactObject );
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI", meta = (DeterminesOutputType = "widgetClass") )
+	UUserWidget* RequestWidget( TSubclassOf< UUserWidget > widgetClass );
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|UI" )
+	void ReleaseWidget( UUserWidget* widgetToRelease );
 
 	/** Pointer to the cheat board widget */
 	TSharedPtr<class SFGCheatBoardWidget> mCheatBoardWidget; 
@@ -69,7 +80,7 @@ public:
 	virtual void ShowDebugInfo( float& YL, float& YPos ) override;
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|UI" )
-	UFGGameUI* GetGameUI() const { return mGameUI; }
+	class UFGGameUI* GetGameUI() const { return mGameUI; }
 
 	/** Set the actor class to preview in a rendertarget */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|ActorPreview" )
@@ -124,13 +135,20 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
 	void SetPartialPumpiMode( bool hideHUD );
 
+	/** Sets if we should Hide all HUD except interact widgets */
+	void SetHiddenHUDMode( bool hideHUD );
+
+	/** Gets if we should Hide all HUD except interact widgets */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
+	bool GetHiddenHUDMode() const { return mHiddenHUDMode; } 
+
 	/** Getter */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE bool GetHUDVisibility() { return mHUDVisibility; }
 
 	/** Setter */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|HUD" )
-	void SetHUDVisibility( bool hudVisibility ) { mHUDVisibility = hudVisibility; }
+	void SetHUDVisibility( bool hudVisibility );
 
 	/** Getter for Crosshair State */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
@@ -192,6 +210,14 @@ public:
 	/** Called when the partial pumpi mode changes. */
 	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
 	FOnPartialPumpiModeChanged mOnPartialPumpiModeChanged;
+	
+	/** Called when the hidden HUD mode changes. */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" );
+	FOnHiddenHUDModeChanged mOnHiddenHUDModeChanged;
+
+	/** Called when HUD visibility changes. */
+	UPROPERTY( BlueprintAssignable, Category = "Game UI" )
+	FOnHUDVisibilityChanged mOnHUDVisibilityChanged;
 
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Game UI" )
@@ -248,6 +274,9 @@ private:
 	/* my commenting sucks */
 	bool mHUDVisibility;
 
+	/* Used to hide all HUD elements except for interact widgets */
+	bool mHiddenHUDMode;
+
 	/** Input component for blocking input during respawn */
 	UPROPERTY()
 	class UInputComponent* mRespawnInputComponent;
@@ -276,4 +305,9 @@ private:
 	/** The latest created pawn HUD widget */
 	UPROPERTY()
 	UUserWidget* mPawnHUD;
+
+	UPROPERTY()
+	TMap< TSubclassOf< UUserWidget >, UUserWidget* > mCachedWidgets;
+
+	FUserWidgetPool mUserWidgetPool;
 };

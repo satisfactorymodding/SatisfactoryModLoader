@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "Components/ActorComponent.h"
 #include "FGSaveInterface.h"
 
@@ -158,24 +159,21 @@ protected:
 	 * @param forceNotifies Forces our notifies to be sent anyway
 	 */
 	void Died( bool forceNotifies = false );
-public: //MODDING EDIT protected->public
+protected:
 	// Interested listeners for the adjust damage delegates
 	UPROPERTY()
 	TArray< FAdjustDamageDelegate > mOnAdjustDamage;
 
 	/** Our maximum health */
-	// MODDING EDIT BlueprintReadOnly
-	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" , BlueprintReadOnly )
+	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" )
 	float mMaxHealth;
 
 	/** Our current health */
-	// MODDING EDIT BlueprintReadOnly
-	UPROPERTY( SaveGame, Replicated, BlueprintReadOnly )
+	UPROPERTY( SaveGame, Replicated)
 	float mCurrentHealth;
 
 	/** Scale of max health to use when respawning */
-	// MODDING EDIT BlueprintReadOnly
-	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" , BlueprintReadOnly )
+	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" )
 	float mRespawnHealthFactor;
 
 	/** If true, then we are dead. This is replicated to clients and they get the death event based on this. */

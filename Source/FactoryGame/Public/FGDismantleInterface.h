@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGInventoryComponent.h"
 #include "FGDismantleInterface.generated.h"
 
@@ -39,6 +40,12 @@ class FACTORYGAME_API IFGDismantleInterface
 	 */
 	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
 	FVector GetRefundSpawnLocationAndArea( const FVector& aimHitLocation, float& out_radius ) const;
+
+	/**
+	 * If we want to dismantle something else along with this, then add it through this
+	 */
+	UFUNCTION( BlueprintNativeEvent, Category = "Dismantle" )
+	void GetChildDismantleActors( TArray< AActor* >& out_ChildDismantleActors ) const;
 
 	/**
 	 * Called prior to dismantle and prior to an upgrade from this actor to another actor.

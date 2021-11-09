@@ -4,13 +4,27 @@
 
 void UFGGameUI::PopAllWidgets_Implementation(){ }
 void UFGGameUI::NativeTick(const FGeometry& MyGeometry, float InDeltaTime){ }
+UFGInteractWidget* UFGGameUI::GetInteractWidgetOfClass(TSubclassOf< UFGInteractWidget > interactWidgetClass) const{ return nullptr; }
+bool UFGGameUI::ContainsInteractWidgetOfClass(TSubclassOf< UFGInteractWidget > interactWidgetClass) const{ return bool(); }
 void UFGGameUI::RemoveInteractWidget(UFGInteractWidget* widgetToRemove){ }
 void UFGGameUI::AddInteractWidget_Implementation(UFGInteractWidget* widgetToAdd){ }
-void UFGGameUI::HandlePendingMessages_Implementation(){ }
-bool UFGGameUI::CanReceiveMessage_Implementation(TSubclassOf<  UFGMessageBase > inMessage){ return bool(); }
+void UFGGameUI::AddPendingMessage(FPendingMessageQueue message){ }
+void UFGGameUI::AnswerCall(TSubclassOf<  UFGAudioMessage > inMessage){ }
+void UFGGameUI::DeclineCall(TSubclassOf<  UFGAudioMessage > inMessage){ }
+void UFGGameUI::HandlePendingMessages(float InDeltaTime){ }
+void UFGGameUI::PlayMessageQueue(FPendingMessageQueue newMessageQueue){ }
+void UFGGameUI::UpdateActiveMessageQueue(){ }
+void UFGGameUI::PlayNextMessageInActiveMessageQueue(){ }
+bool UFGGameUI::CanReceiveMessageQueue(FPendingMessageQueue inMessageQueue){ return bool(); }
+bool UFGGameUI::CanReceiveMessage(TSubclassOf<  UFGMessageBase > inMessage){ return bool(); }
 void UFGGameUI::CancelPressed(){ }
+void UFGGameUI::AudioMessageFinishedPlayback(){ }
 void UFGGameUI::RemoveAudioMessage_Implementation(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
+void UFGGameUI::AddIntroTutorialInfo(FTutorialHintData tutorialHintData){ }
+void UFGGameUI::ClearHintOnTutorialStepCompleted(){ }
+void UFGGameUI::PlayAudioMessage(TSubclassOf<UFGAudioMessage> messageClass){ }
 UFGInteractWidget* UFGGameUI::FindWidgetByClass(TSubclassOf<UFGInteractWidget> widgetClass){ return nullptr; }
 void UFGGameUI::ResumeGame(){ }
 FReply UFGGameUI::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }
+void UFGGameUI::ShowTutorialHint(){ }

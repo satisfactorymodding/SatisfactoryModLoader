@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "FGWorldCreationInterface.h"
 #include "FGEngineCommon.generated.h"
 
@@ -119,6 +120,8 @@ public:
 
 	/** Implements IFGWorldCreationInterface::DestroyWorld */
 	void DestroyWorld( class UWorld* world );
+
+	class UFGAtmosphereUpdater* GetAtmosphereUpdater();
 protected:
 #if WITH_EDITOR
 	// For pigment map, we want stuff to be updated when opening maps
@@ -154,6 +157,7 @@ private:
 	 * @note called on GameThread, called as a result of calling StopCollection
 	 */
 	void DumpChart();
+
 #endif
 	/** Dump more texture stats that doesn't show up in ListTextures */
 	void HandleHiddenTextureStatsCommand( const TCHAR* cmd, FOutputDevice& ar );

@@ -2,14 +2,42 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Framework/Text/TextLayout.h"
 #include "FGSignElementWidget.generated.h"
 
-struct FSignElementWidgetData
+
+// Helper Data struct to consolidate all the info each element needs
+USTRUCT( )
+struct FACTORYGAME_API FInteractElementWidgetData
 {
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	int32 ElementID;
+	UPROPERTY()
 	class UFGSignCanvasWidget* CanvasParent;
-	class UFGSignElementData* ElementData;
+	UPROPERTY()
+	class UCanvasPanelSlot* PanelSlot;
+};
+
+// Helper Data struct to consolidate all the info each element needs
+USTRUCT()
+struct FACTORYGAME_API FBuildableElementWidgetData
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	int32 ElementID;
+	UPROPERTY()
+	class UFGSignBuildingWidget* BuildableCanvas;
+	UPROPERTY()
 	class UCanvasPanelSlot* PanelSlot;
 };
 
@@ -22,14 +50,19 @@ class FACTORYGAME_API UFGSignElementWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
-	virtual void InitSignElement( const FSignElementWidgetData& elementWidgetData );
-	virtual void SetElementData( class UFGSignElementData* data );
+	
+	// Initialize this element to exist in the context of the interact (designer) widget
+	virtual void InitSignElementForInteract( const FInteractElementWidgetData& elementWidgetData );
+
+	// Initialize this element to exist on a buildable widget
+	virtual void InitSignElementForBuildable( FBuildableElementWidgetData& buildableWidgetData );
 
 	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
 	virtual void RefreshElement(bool isInitialization = false  );
 
-	UFUNCTION( BlueprintCallable, Category = "Sign Widget" )
-	class UFGSignElementData* GetElementData() const;
+	UFUNCTION( BlueprintPure, Category = "Sign Widget" )
+	FORCEINLINE int32 GetElementID() const { return mElementID; }
+
 
 	class UCanvasPanelSlot* GetPanelSlot() const;
 	
@@ -51,6 +84,37 @@ public:
 
 	class TSubclassOf<class UFGSignElementSettingsWidget> GetSettingsWidgetClass();
 
+	//////////////////////////////////////////////////////////////////////////
+	/// Blueprint Accessors
+
+	/** Returns the Text string data attr of this element (can be empty) */
+	UFUNCTION( BlueprintPure, Category = "Sign Widget" )
+	FString GetTextStringAttr() const;
+
+	/** Returns the Icon Id attr of this element (can be invalid) */
+	UFUNCTION( BlueprintPure, Category = "Sign Widget" )
+	int32 GetIconIDAttr() const;
+
+	/** Returns the position attr of this element */
+	UFUNCTION( BlueprintPure, Category = "Sign Widget" )
+	FVector2D GetPositionAttr() const;
+
+	/** Returns the Size Specifier attribute of this element. This is a generic "size" value. Can mean different things whether this is an icon or a text type */
+	UFUNCTION( BlueprintPure, Category = "Sign Widget" )
+	int32 GetSizeSpecifierAttr() const;
+
+	/** Returns the Size of the Canvas slot on the canvas for this element */
+	UFUNCTION( BlueprintPure, Category = "Sign Widget" )
+	FVector2D GetSizeAttr() const;
+
+	/** Returns the Size Specifier attribute of this element. This is a generic "size" value. Can mean different things whether this is an icon or a text type */
+	UFUNCTION( BlueprintPure, Category = "Sign Widget" )
+	ETextJustify::Type GetAlignmentAttr() const;
+
+	/// End Blueprint Accessors
+	//////////////////////////////////////////////////////////////////////////
+
+
 protected:
 
 	// Begin Widget Event Implementation
@@ -62,15 +126,20 @@ protected:
 
 protected:
 	/************************************************************************/
-	/*						Begin Widget Bindings
+	/*						Begin Widget Bindings */
 	/************************************************************************/
 	// Border widget to indicate object selection
 	UPROPERTY( meta=(BindWidget ) )
 	class UBorder* mSelectionBorder;
 	/************************************************************************/
-	/*						Begin Widget Bindings
+	/*						Begin Widget Bindings */
 	/************************************************************************/
 	
+	
+	/************************************************************************/
+	/*						Begin Interact Properties */
+	/************************************************************************/
+
 	// Specify the widget to virually represent being dragged
 	UPROPERTY( EditDefaultsOnly, Category = "Sign Widget" )
 	TSubclassOf<UUserWidget> mDragWidgetClass;
@@ -86,9 +155,9 @@ protected:
 	UPROPERTY()
 	class UFGSignCanvasWidget* mCanvasParent;
 
-	// Reference to the element data represented by this widget
 	UPROPERTY()
-	class UFGSignElementData* mElementData;
+	FInteractElementWidgetData mWidgetData;
+
 
 	// Keep a reference to the panel slot this is stored in the FGSignCanvasWidget
 	UPROPERTY()
@@ -96,5 +165,16 @@ protected:
 
 	// Tracks mouse cursor offset on a drag operation
 	FVector2D mDragOffset;
+
+	/************************************************************************/
+	/*						End Interact Properties */
+	/************************************************************************/
+
+	UPROPERTY()
+	int32 mElementID;
+
+	// Reference to the parent Buildable canvas (only if this element exist on a building and not on the sign designer)
+	UPROPERTY()
+	class UFGSignBuildingWidget* mBuildableCanvas;
 
 };

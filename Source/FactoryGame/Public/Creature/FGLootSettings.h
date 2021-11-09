@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/NoExportTypes.h"
 #include "FGLootSettings.generated.h"
 

@@ -15,7 +15,7 @@
 
 DECLARE_STATS_GROUP( TEXT( "AtmosphereUpdater" ), STATGROUP_AtmosphereUpdater, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advanced );
-
+DECLARE_STATS_GROUP( TEXT( "Sound Events auto-resume on animations" ), STATGROUP_SoundEventAutoResume, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "Execute on Interface" ), STATGROUP_ExecuteInterface, STATCAT_Advanced );
 
 
@@ -34,6 +34,8 @@ static const FName SHOWDEBUG_FACTORYCONNECTIONS( TEXT( "FactoryConnections" ) );
 static const FName SHOWDEBUG_CIRCUITS( TEXT( "Circuits" ) );
 static const FName SHOWDEBUG_POWER( TEXT( "Power" ) );
 static const FName SHOWDEBUG_TRAINS( TEXT( "Trains" ) );
+static const FName SHOWDEBUG_TRAIN_SIGNALS( TEXT( "TrainSignals" ) );
+static const FName SHOWDEBUG_TRAIN_SCHEDULER( TEXT( "TrainScheduler" ) );
 static const FName SHOWDEBUG_TRACKS( TEXT( "Tracks" ) );
 static const FName SHOWDEBUG_STATIONS( TEXT( "Stations" ) );
 static const FName SHOWDEBUG_TRAINCOUPLERS( TEXT( "TrainCouplers" ) );
@@ -53,6 +55,7 @@ static const FName SHOWDEBUG_PIPE_FLOW( TEXT( "PipeFlow" ) );
 static const FName SHOWDEBUG_PIPE_MOVE_TO_OVERFILL_RATIO( TEXT( "PipeMoveToOverfillRatio" ) );
 static const FName SHOWDEBUG_CREATURES( TEXT( "Creatures" ) );
 static const FName SHOWDEBUG_POOLER( TEXT( "Pooler" ) );
+static const FName SHOWDEBUG_SELF_DRIVING( TEXT( "SelfDriving" ) );
 
 /** Common show debug colors */
 static const FLinearColor DEBUG_TEXTWHITE( 0.9f, 0.9f, 0.9f );
@@ -72,9 +75,9 @@ const TArray< FColor > DEBUG_COLORS =
 	FColorList::Yellow
 };
 
-/** A semi unique color for an index to color things, see colors above, unsafe checks the index and returns black for INDEX_NONE */
+/** A semi unique color for an index to color things, see colors above, checks the index and returns black for INDEX_NONE */
 FORCEINLINE FColor Debug_GetColorForAnIndex( int32 index ) { return index >= 0 ? DEBUG_COLORS[ index % DEBUG_COLORS.Num() ] : FColor::Black; }
-FORCEINLINE FColor Debug_GetColorForAnIndex_Unsafe( int32 index ) { return DEBUG_COLORS[ index % DEBUG_COLORS.Num() ]; }
+FORCEINLINE FColor Debug_GetColorForAnIndex( int32 index, const TArray< FColor >& colors ) { return index >= 0 ? colors[ index % colors.Num() ] : FColor::Black; }
 
 DECLARE_CYCLE_STAT_EXTERN( TEXT( "NetIncrementalSerialize Array" ), STAT_NetIncrementalArray, STATGROUP_ServerCPU, FACTORYGAME_API );
 DECLARE_CYCLE_STAT_EXTERN( TEXT( "NetIncrementalSerialize Array BuildMap" ), STAT_NetIncrementalArray_BuildMap, STATGROUP_ServerCPU, FACTORYGAME_API );
@@ -93,7 +96,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogHologram, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogSave, Display, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogWidget, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogEquipment, Warning, All );
-DECLARE_LOG_CATEGORY_EXTERN( LogFoundation, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogBuilding, Warning, All );
 #if IS_PUBLIC_BUILD
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorNetDelta, NoLogging, Warning );
 DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, NoLogging, Warning );
@@ -103,6 +106,8 @@ DECLARE_LOG_CATEGORY_EXTERN( LogConveyorSpacingNetDelta, NoLogging, All );
 #endif
 DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogSeasonalEvents, Log, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogSigns, Log, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogAnimInstanceFactory, Log, All );
 
 
 /** Helpers when using interfaces */
@@ -111,7 +116,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogSeasonalEvents, Log, All );
 	TScriptInterface<I##Interface> VarName; \
 	if( Obj ) \
 	{ \
-		check( ( (UObject*)(Obj) )->GetClass()->ImplementsInterface( U##Interface::StaticClass() ) ); \
+		fgcheck( ( (UObject*)(Obj) )->GetClass()->ImplementsInterface( U##Interface::StaticClass() ) ); \
 		VarName.SetObject( ( Obj ) ); \
 		VarName.SetInterface( ( (UObject*)(Obj) )->GetInterfaceAddress( U##Interface::StaticClass() ) ); \
 	}
@@ -120,7 +125,7 @@ DECLARE_LOG_CATEGORY_EXTERN( LogSeasonalEvents, Log, All );
 	VarName.SetObject( ( Obj ) ); \
 	if( Obj != nullptr ) \
 	{ \
-		check( ( (UObject*)( Obj ) )->GetClass()->ImplementsInterface( U##Interface::StaticClass() ) ); \
+		fgcheck( ( (UObject*)( Obj ) )->GetClass()->ImplementsInterface( U##Interface::StaticClass() ) ); \
 		VarName.SetInterface( ( (UObject*)( Obj ) )->GetInterfaceAddress( U##Interface::StaticClass() ) ); \
 	} \
 	else \
@@ -151,18 +156,22 @@ static const FName CollisionProfileConveyorSpline( TEXT( "ConveyorSpline" ) );
 static const FName CollisionProfileRailroadTrack( TEXT( "RailroadTrack" ) );
 static const FName CollisionProfileBuildingMesh( TEXT( "BuildingMesh" ) );
 static const FName CollisionProfileClearanceDetector( TEXT( "ClearanceDetector" ) );
+static const FName CollisionProfileRailroadVehicle( TEXT( "RailroadVehicle" ) );
+static const FName CollisionProfileDerailedRailroadVehicle( TEXT( "DerailedRailroadVehicle" ) );
 
 static const ECollisionChannel TC_BuildGun( ECC_GameTraceChannel5 );
 static const ECollisionChannel TC_WeaponInstantHit( ECC_GameTraceChannel6 );
 static const ECollisionChannel TC_WorldGrid( ECC_GameTraceChannel9 );
-static const ECollisionChannel TC_BuildGuide( ECC_GameTraceChannel10 );
 
 static const ECollisionChannel OC_Projectile( ECC_GameTraceChannel1 );
 static const ECollisionChannel OC_Hologram( ECC_GameTraceChannel2 );
 static const ECollisionChannel OC_Resource( ECC_GameTraceChannel3 );
 static const ECollisionChannel OC_Clearance( ECC_GameTraceChannel4 );
-static const ECollisionChannel OC_HologramClearance( ECC_GameTraceChannel6 );
 static const ECollisionChannel OC_VehicleWheelQuery( ECC_GameTraceChannel7 );
+static const ECollisionChannel OC_HologramClearance( ECC_GameTraceChannel8 );
+static const ECollisionChannel OC_WorldGrid( ECC_GameTraceChannel9 );
+static const ECollisionChannel OC_ClearanceDetector( ECC_GameTraceChannel10 );
+static const ECollisionChannel OC_RailroadVehicle( ECC_GameTraceChannel11 );
 
 /** Input Actions */
 static const FName PrimaryFireAction( TEXT( "PrimaryFire" ) );
@@ -174,12 +183,14 @@ static const FName BuildGunScrollModeAction( TEXT( "BuildGunScrollMode" ) );
 static const FName BuildGunNoSnapModeAction( TEXT( "ToggleMap_BuildGunNoSnapMode" ) );
 static const FName BuildGunSnapToGuideLinesAction( TEXT( "BuildGunSnapToGuideLines_ToggleMultiSelectDismantle" ) );
 static const FName BuildGunDismantleToggleMultiSelectStateAction( TEXT( "BuildGunSnapToGuideLines_ToggleMultiSelectDismantle" ) );
+static const FName BuildGunDismantleToggleSpecifiedSelectStateAction( TEXT( "ToggleSpecifiedMultiSelectDismantle" ) );
 static const FName AttentionPingAction( TEXT( "AttentionPing" ) );
 static const FName BuildingSampleAction( TEXT( "TogglePhotoModeUIVisibility_BuildingSample" ) );
 static const FName CycleToNextHotbarAction( TEXT( "CycleToNextHotbar" ) );
 static const FName CycleToPreviousHotbarAction( TEXT( "CycleToPreviousHotbar" ) );
 static const FName PauseAction( TEXT( "PauseGame" ) );
 static const FName ChatAction( TEXT( "Chat" ) );
+static const FName CycleAmmunitionTypeAction( TEXT( "CycleAmmunitionType" ) );
 
 /** Color Parameters */
 static const FName CanPaintPrimaryOrSecondary( TEXT( "CanBePainted" ) ); //Some - Not all - MaterialInterfaces have this property and it should override the "ability" to modify primary and secondary color
@@ -188,9 +199,6 @@ static const FName SecondaryColor( TEXT( "SecondaryPaintedMetal_Color" ) );
 
 /** Conveyor Parameters */
 static const FName ConveyorSpeed( TEXT( "ConveyorSpeed" ) );
-
-/** Level names @todo - move this to config */
-static const FName FrontEndMap( TEXT( "FrontEndMap" ) );
 
 /*-----------------------------------------------------------------------------
 Example usage:
@@ -221,15 +229,15 @@ FORCEINLINE FString VarToFString( MyClass var ){ return FString::Printf( TEXT( "
 	}
 
 /** Use for easy debugging, note that logs in the temp category should not be submitted, they should be categorized. */
-#define QUICKLOG( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: %s" ), TEXT( x ), __VA_ARGS__ );
+#define QUICKLOG( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: %s" ), TEXT( x ), ## __VA_ARGS__ );
 
 /** QUICKLOG that marks output with authority/remote depending on the actors role. Note that this is not always synonymous with server/client, use the net mode in that case. */
 #define QUICKLOG_AUTHORITY_MARKING( x, ... ) UE_LOG( LogTemp, Log, TEXT( "QUICKLOG: [%s] %s" ), HasAuthority() ? TEXT( "Authority" ) : TEXT( "Remote" ), *FString::Printf( TEXT( x ), __VA_ARGS__ ) );
 
 /** Similar to QUICKLOG but for single variables. */
-#define QUICKSHOW( x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), SHOWVAR( x ) ); 
-#define QUICKSHOWENUM( name, x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW (%s)   %s" ), TEXT( __FUNCTION__ ), SHOWENUM( name, x ) );
-#define QUICKSHOWARRAY( x ) LOGARRAY( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), TEXT( __FUNCTION__ ), x );
+#define QUICKSHOW( x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), ANSI_TO_TCHAR( __FUNCTION__ ), SHOWVAR( x ) ); 
+#define QUICKSHOWENUM( name, x ) UE_LOG( LogTemp, Log, TEXT( "QUICKSHOW (%s)   %s" ), ANSI_TO_TCHAR( __FUNCTION__ ), SHOWENUM( name, x ) );
+#define QUICKSHOWARRAY( x ) LOGARRAY( LogTemp, Log, TEXT( "QUICKSHOW: (%s)   %s" ), ANSI_TO_TCHAR( __FUNCTION__ ), x );
 
 /** QUICKLOG that appends the net mode. Requires GetWorld(). */
 #define QUICKLOG_NETMODE( x, ... ) UE_LOG( LogTemp, Log, TEXT( "(%s) %s" ), NETMODE_STRING, *FString::Printf( TEXT( x ) ), __VA_ARGS__ );
@@ -254,9 +262,9 @@ inline FString NetmodeToString( ENetMode NM )
 }
 
 #define NETMODE_STRING ( NETMODE_STRING_WORLD( GetWorld() ) )
-#define NETMODE_STRING_WORLD( world ) ( (world) ? *NetmodeToString( (world)->GetNetMode() ) : TEXT("Unknown NetMode") )
+#define NETMODE_STRING_WORLD( world ) ( ( world ) ? *NetmodeToString( ( world )->GetNetMode() ) : TEXT( "Unknown NetMode" ) )
 	
-#define NETMODE_STRING_CONTEXT( context ) ( NETMODE_STRING_WORLD( (context)->GetWorld() )
+#define NETMODE_STRING_CONTEXT( context ) ( NETMODE_STRING_WORLD( ( context )->GetWorld() ) )
 #define QUICKNETMODE UE_LOG( LogTemp, Log, TEXT( "%s %s" ), *GetName(), NETMODE_STRING );
 
 #define FUNCTION_STRING ANSI_TO_TCHAR( __FUNCTION__ )
@@ -337,7 +345,7 @@ template<typename T>
 FORCEINLINE T StringToEnumChecked( const TCHAR* enumName, const FString& enumValue )
 {
 	UEnum* enumObject = FindObject< UEnum >( ANY_PACKAGE, enumName, true );
-	check(enumObject);
+	fgcheck(enumObject);
 
 	int32 index = enumObject->GetIndexByName(FName(*enumValue));
 	return T((uint8)index);
@@ -387,11 +395,11 @@ FString RemoveStandalonePrefix( const FString& string );
 #include "Framework/Notifications/NotificationManager.h"
 #define VISUAL_LOG( LOG_CATEGORY, WARNING_LEVEL, MESSAGE, ... ) \
 	{ \
-		UE_LOG( LOG_CATEGORY, WARNING_LEVEL, MESSAGE, __VA_ARGS__ ); \
+		UE_LOG( LOG_CATEGORY, WARNING_LEVEL, MESSAGE, ## __VA_ARGS__ ); \
 		static TWeakPtr<SNotificationItem> existingNotification; \
 		if( !existingNotification.IsValid() ) \
 		{ \
-			FNotificationInfo info( FText::FromString( FString::Printf( MESSAGE, __VA_ARGS__ ) ) ); \
+			FNotificationInfo info( FText::FromString( FString::Printf( MESSAGE, ## __VA_ARGS__ ) ) ); \
 			info.ExpireDuration = 5.0f; \
 			info.bUseSuccessFailIcons = true; \
 			existingNotification = TWeakPtr<SNotificationItem>( FSlateNotificationManager::Get().AddNotification( info ) ); \
@@ -413,8 +421,8 @@ FString RemoveStandalonePrefix( const FString& string );
 #endif
 
 #if DO_CHECK_DEV
-	#define checkDev(expr)								check(expr)
-	#define checkfDev(expr, format,  ...)				checkf(expr, format,  __VA_ARGS__)
+	#define checkDev(expr)								fgcheck(expr)
+	#define checkfDev(expr, format,  ...)				fgcheckf(expr, format,  __VA_ARGS__)
 #else
 	#define checkDev(expr)								{ CA_ASSUME(expr); }
 	#define checkfDev(expr, format,  ...)				{ CA_ASSUME(expr); }

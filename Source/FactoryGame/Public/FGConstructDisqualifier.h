@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "FactoryGame.h"
 #include "UObject/Object.h"
 #include "FGConstructDisqualifier.generated.h"
 
@@ -17,19 +18,28 @@ class FACTORYGAME_API UFGConstructDisqualifier : public UObject
 
 public:
 	UFGConstructDisqualifier() :
-		mDisqfualifyingText( LOCTEXT( "UFGConstructDisqualifier", "This should never be seen!" ) )
+		mDisqfualifyingText( LOCTEXT( "UFGConstructDisqualifier", "This should never be seen!" ) ),
+		mIsSoftDisqualifier( false )
 	{
 	}
 
 	/** Getter for mDisfualifyingText */
 	UFUNCTION( BlueprintPure )
 	static FText GetDisqualifyingText( TSubclassOf< UFGConstructDisqualifier > inClass );
+	
+	/** Getter for mIsSoftDisqualifier */
+	UFUNCTION( BlueprintPure )
+	static bool GetIsSoftDisqualifier( TSubclassOf< UFGConstructDisqualifier > inClass );
 
 protected:
 
 	/** Text displayed to the player when they couldn't build */
 	UPROPERTY( EditDefaultsOnly )
 	FText mDisqfualifyingText;
+
+	/** Whether or not this is a soft disqualifier. If so, the player is still allowed to construct the hologram. */
+	UPROPERTY( EditDefaultsOnly )
+	bool mIsSoftDisqualifier;
 };
 
 UCLASS()
@@ -89,6 +99,18 @@ class FACTORYGAME_API UFGCDEncroachingClearance : public UFGConstructDisqualifie
 };
 
 UCLASS()
+class FACTORYGAME_API UFGCDEncroachingSoftClearance : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+	
+	UFGCDEncroachingSoftClearance()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingSoftClearance", "Overlapping other's clearance, clipping may occur." );
+		mIsSoftDisqualifier = true;
+	}
+};
+
+UCLASS()
 class FACTORYGAME_API UFGCDEncroachingPlayer : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
@@ -96,6 +118,28 @@ class FACTORYGAME_API UFGCDEncroachingPlayer : public UFGConstructDisqualifier
 	UFGCDEncroachingPlayer()
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingPlayer", "A player is in the way!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDEncroachingCreature : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDEncroachingCreature()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingCreature", "A creature is in the way!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDEncroachingVehicle : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDEncroachingVehicle()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDEncroachingVehicle", "A vehicle is in the way!" );
 	}
 };
 
@@ -129,6 +173,17 @@ class FACTORYGAME_API UFGCDMustSnap : public UFGConstructDisqualifier
 	UFGCDMustSnap()
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnap", "Must snap to a foundation or similar!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDMustSnapWall : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDMustSnapWall()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDMustSnapWall", "Must snap to a wall or similar!" );
 	}
 };
 
@@ -194,7 +249,7 @@ class FACTORYGAME_API UFGCDDroneStationHasDrone : public UFGConstructDisqualifie
 
 	UFGCDDroneStationHasDrone()
 	{
-		mDisqfualifyingText = LOCTEXT( "UFGCDDroneStationHasDrone", "Port already has a drone assigned to it!" );
+		mDisqfualifyingText = LOCTEXT( "UFGCDDroneStationHasDrone", "Drone Port already has a drone assigned to it!" );
 	}
 };
 
@@ -287,6 +342,14 @@ class FACTORYGAME_API UFGCDWireTooLong : public UFGConstructDisqualifier
 };
 
 UCLASS()
+class FACTORYGAME_API UFGCDInvalidSignSize : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDInvalidSignSize() { mDisqfualifyingText = LOCTEXT( "UFGCDInvalidSignSize", "This sign type cannot snap to storage containers!" ); }
+};
+
+UCLASS()
 class FACTORYGAME_API UFGCDWireTooManyConnections : public UFGConstructDisqualifier
 {
 	GENERATED_BODY()
@@ -371,6 +434,50 @@ class FACTORYGAME_API UFGCDMustHaveRailRoadTrack : public UFGConstructDisqualifi
 	UFGCDMustHaveRailRoadTrack()
 	{
 		mDisqfualifyingText = LOCTEXT( "UFGCDMustHaveRailRoadTrack", "This must be placed on a railroad track!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDSignalAlreadyPlaced : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDSignalAlreadyPlaced()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDSignalAlreadyPlaced", "There is already a signal placed here!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDSignalCannotBePlaceAtTheEndOfATrack : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDSignalCannotBePlaceAtTheEndOfATrack()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDSignalCannotBePlaceAtTheEndOfATrack", "A signal cannot be placed at the end of a track!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDInvalidDoubleSwitch : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDInvalidDoubleSwitch()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDInvalidDoubleSwitch", "Too close to another switch!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDTooManySwitchPositions : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDTooManySwitchPositions()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDTooManySwitchPositions", "Too many switch positions!" );
 	}
 };
 
@@ -506,5 +613,35 @@ class FACTORYGAME_API UFGCDPipeNoPathFound : public UFGConstructDisqualifier
 	}
 };
 
+UCLASS()
+class FACTORYGAME_API UFGCDIdenticalOverlappingBuildable : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+	
+	UFGCDIdenticalOverlappingBuildable()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGCDIdenticalOverlappingBuildable", "An identical buildable is already built there!" );
+	}
+};
 
-#undef LOCTEXT_NAMESPACE 
+// Note the discrepancy between the code spelling "customiZation" vs "customiSation". I changed it here only as this is a LOC key and figured it would be best to have it as the
+// stupid british way of spelling it for the sake of localization. That's right I said it. Its stupid. Also, UE uses the "Z" form so its consistent.
+// Alex: we have En-US as our default locale, though in reality we seem to be producing a mix of US and UK... Changed this to customization since it's what we use in most other places.
+UCLASS()
+class FACTORYGAME_API UFGCDInvalidCustomizationTarget : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDInvalidCustomizationTarget() { mDisqfualifyingText = LOCTEXT( "UFGCDInvalidCustomizationTarget", "Invalid customization target" ); }
+};
+
+UCLASS()
+class FACTORYGAME_API UFGCDCustomizationAlreadyApplied : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+
+	UFGCDCustomizationAlreadyApplied() { mDisqfualifyingText = LOCTEXT( "UFGCDCustomizationAlreadyApplied", "Customization already applied" ); }
+};
+
+#undef LOCTEXT_NAMESPACE
+
