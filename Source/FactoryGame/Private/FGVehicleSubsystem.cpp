@@ -43,9 +43,11 @@ void AFGVehicleSubsystem::TickVehicleSimulation(float dt){ }
 float AFGVehicleSubsystem::FindClosestPlayerSq( AFGVehicle* actor) const{ return float(); }
 void AFGVehicleSubsystem::AddVehicle( AFGVehicle* vehicle){ }
 void AFGVehicleSubsystem::AddWheeledVehicle( AFGWheeledVehicle* vehicle){ }
+void AFGVehicleSubsystem::AddDockingStation( AFGBuildableDockingStation* station){ }
 void AFGVehicleSubsystem::AddTargetPoint( AFGTargetPoint* target){ }
 void AFGVehicleSubsystem::RemoveVehicle( AFGVehicle* vehicle){ }
 void AFGVehicleSubsystem::RemoveWheeledVehicle( AFGWheeledVehicle* vehicle){ }
+void AFGVehicleSubsystem::RemoveDockingStation( AFGBuildableDockingStation* station){ }
 void AFGVehicleSubsystem::RemoveTargetPoint( AFGTargetPoint* targetToRemove, bool updateList){ }
 void AFGVehicleSubsystem::InvalidateTargetList(const AFGDrivingTargetList* targetList) const{ }
 bool AFGVehicleSubsystem::IsPathNameTaken(const FString& name) const{ return bool(); }

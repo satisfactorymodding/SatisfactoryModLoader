@@ -47,7 +47,7 @@ struct FMatrixHalfFloat
 		m[2][2] = T(Value[2][2]);
 		m[2][3] = T(Value[2][3]);
 	}
-
+	
 	FMatrixHalfFloat()
 	{
 		Set( FTransform::Identity.ToMatrixNoScale().M);
@@ -57,6 +57,22 @@ struct FMatrixHalfFloat
 /**
  * 
  */
+struct FRawTransformData
+{
+	MS_ALIGN( 16 ) float M[4][4] GCC_ALIGN(16);
+	
+	FRawTransformData()
+	{
+		FMemory::Memzero((uint8*)M[0], 16*sizeof(float));
+	}
+	
+	// We bypass scale.
+	void operator=( float Other[4][4] )
+	{
+		FMemory::Memcpy( &M, Other,sizeof(float) * 16 );
+	}
+};
+
 UCLASS(ClassGroup = Rendering, meta = (BlueprintSpawnableComponent), Blueprintable)
 class FACTORYGAME_API UFGConveyorInstanceMeshBucket : public UInstancedStaticMeshComponent
 {
@@ -93,7 +109,10 @@ private:
 	TArray<FMatrixHalfFloat<FFloat16>> mTransientTransformBuffer;
 	
 	/* Transient Transforms set by the conveyor renderer */
-	TArray<FTransform> mTransientTransforms;
+	//TArray<FTransform> mTransientTransforms;
+
+	/* Transient Transforms set by the conveyor renderer */
+	TArray<FRawTransformData> mRawTransientTransforms;
 
 	bool bIsInitialized;
 

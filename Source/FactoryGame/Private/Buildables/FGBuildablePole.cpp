@@ -2,9 +2,9 @@
 
 #include "Buildables/FGBuildablePole.h"
 #include "FGColoredInstanceMeshProxy.h"
-#include "FGFactoryConnectionComponent.h"
-#include "Hologram/FGPoleHologram.h"
 #include "Components/SceneComponent.h"
+#include "Hologram/FGPoleHologram.h"
+#include "FGFactoryConnectionComponent.h"
 
 AFGBuildablePole::AFGBuildablePole() : Super() {
 	this->mHeight = 100.0;

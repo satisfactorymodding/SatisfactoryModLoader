@@ -180,7 +180,6 @@ private:
 	float mDistanceToPausePointSquared = 0.0f;
 	bool mApproachingPausePoint = false;
 	bool mPausePointReached = false;
-	bool mIsAtStation = false;
 
 	Plan mPreviousPlan = Plan::None;
 	Plan mPlan = Plan::None;

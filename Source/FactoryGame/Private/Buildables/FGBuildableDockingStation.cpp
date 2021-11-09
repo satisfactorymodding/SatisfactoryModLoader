@@ -58,7 +58,7 @@ ECompassViewDistance AFGBuildableDockingStation::GetActorCompassViewDistance(){ 
 void AFGBuildableDockingStation::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 float AFGBuildableDockingStation::GetSignificanceRange(){ return float(); }
 bool AFGBuildableDockingStation::Dock( AActor* actor){ return bool(); }
-void AFGBuildableDockingStation::Undock(){ }
+void AFGBuildableDockingStation::Undock(bool notifyDockedActor){ }
 void AFGBuildableDockingStation::SetIsInLoadMode(bool isInLoadMode){ }
 bool AFGBuildableDockingStation::GetIsInLoadMode() const{ return bool(); }
 bool AFGBuildableDockingStation::IsLoadUnloading() const{ return bool(); }

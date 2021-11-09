@@ -105,7 +105,7 @@ public:
 
 	/** Undock the docked actor. */
 	UFUNCTION( BlueprintCallable, Category = "DockingStation" )
-	virtual void Undock();
+	virtual void Undock( bool notifyDockedActor );
 
 	/** Set whether this station should load or unload from vehicles */
 	UFUNCTION( BlueprintCallable, Category = "DockingStation" )

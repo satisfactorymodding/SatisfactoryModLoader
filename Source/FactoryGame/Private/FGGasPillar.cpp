@@ -2,8 +2,8 @@
 
 #include "FGGasPillar.h"
 #include "FGDotComponent.h"
-#include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 
 AFGGasPillar::AFGGasPillar() : Super() {
 	this->mMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
