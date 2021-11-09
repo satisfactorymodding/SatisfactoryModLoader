@@ -27,6 +27,7 @@ public:
 
 	UFUNCTION( exec, CheatBoard, Category = "Resources" )
 	virtual void NoCost( bool enabled );
+
 	UFUNCTION( exec, CheatBoard )
 	virtual bool NoCost_Get();
 
@@ -35,6 +36,12 @@ public:
 
 	UFUNCTION( exec, CheatBoard)
 	virtual bool NoPower_Get();
+
+	UFUNCTION( exec, CheatBoard, Category = "Resources" )
+	virtual void NoFuel( bool enabled );
+
+	UFUNCTION( exec, CheatBoard )
+	virtual bool NoFuel_Get();
 
 	UFUNCTION( exec, CheatBoard, Category = "GUI" )
 	virtual void NoMessages( bool enabled );

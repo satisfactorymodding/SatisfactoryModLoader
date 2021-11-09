@@ -55,7 +55,7 @@ public:
 
 	uint16 GetBeaconPort() const
 	{
-		return mNetStats.ServerBeaconPort;
+		return ServerBeaconPort;
 	}
 
 	const FServerGameState& GetGameState() const
@@ -105,6 +105,9 @@ public:
 	void ChangeAdminPassword();
 
 	UFUNCTION( BlueprintCallable )
+	void FetchGameState();
+	
+	UFUNCTION( BlueprintCallable )
 	void ChangeClientPassword();
 
 	UFUNCTION( BlueprintCallable )
@@ -137,6 +140,9 @@ protected:
 	/// The actual address of this server, after DNS lookup.
 	UPROPERTY( BlueprintReadOnly, SaveGame )
 	FString Address;
+
+	TSharedPtr< class FInternetAddr > NativeAddress;
+	class FClientQuerySocket *mQuerySocket = nullptr;
 	
 	UPROPERTY( BlueprintReadOnly, SaveGame )
 	FServerAuthenticationToken AuthenticationToken;
@@ -167,6 +173,12 @@ protected:
 
 	UPROPERTY( BlueprintReadOnly, Transient )
 	FString mServerConsole;
+
+	UPROPERTY( BlueprintReadOnly, Transient )
+	int32 ServerNetCL = 0;
+
+	/// The beacon port of this server
+	uint32 ServerBeaconPort = 0;
 	
 	UPROPERTY( Transient )
 	class AFGServerBeaconClient* ServerConnection = nullptr;
@@ -182,6 +194,7 @@ protected:
 
 	uint8 mConnectionAttemptFailed : 1;
 	uint8 mWaitingToJoinGame : 1;
+	uint8 mQuerySocketLookupMade : 1;
 	FServerNetStats mNetStats;
 	
 	void SetGameState( const FServerGameState& NewState );

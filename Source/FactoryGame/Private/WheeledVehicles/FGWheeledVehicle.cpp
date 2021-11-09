@@ -2,7 +2,6 @@
 
 #include "WheeledVehicles/FGWheeledVehicle.h"
 #include "Hologram/FGWheeledVehicleHologram.h"
-#include "FGHealthComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 
 void AFGWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
@@ -114,6 +113,7 @@ void AFGWheeledVehicle::OnTransferComplete_Implementation(){ }
 void AFGWheeledVehicle::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGWheeledVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 FVector AFGWheeledVehicle::GetRealActorLocation(){ return FVector(); }
+FRotator AFGWheeledVehicle::GetRealActorRotation(){ return FRotator(); }
 FLinearColor AFGWheeledVehicle::GetActorRepresentationColor(){ return FLinearColor(); }
 EFogOfWarRevealType AFGWheeledVehicle::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
 float AFGWheeledVehicle::GetActorFogOfWarRevealRadius(){ return float(); }
@@ -132,7 +132,7 @@ void AFGWheeledVehicle::HandleDestroyFoliage(){ }
 bool AFGWheeledVehicle::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 bool AFGWheeledVehicle::ConsumesFuel(){ return bool(); }
 float AFGWheeledVehicle::GetFuelBurnRatio(){ return float(); }
-AFGDrivingTargetList* AFGWheeledVehicle::GetTargetList(){ return nullptr; }
+AFGDrivingTargetList* AFGWheeledVehicle::GetTargetList(bool createIfNeeded){ return nullptr; }
 bool AFGWheeledVehicle::GetPathVisibility(){ return bool(); }
 void AFGWheeledVehicle::Multicast_PlayFoliageDestroyedEffect_Implementation( UParticleSystem* destroyEffect,  UAkAudioEvent* destroyAudioEvent, FVector location){ }
 void AFGWheeledVehicle::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }

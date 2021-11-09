@@ -2,8 +2,8 @@
 
 #include "FGProjectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Components/SphereComponent.h"
 #include "DamageTypes/FGDamageType.h"
+#include "Components/SphereComponent.h"
 
 AFGProjectile::AFGProjectile() : Super() {
 	this->mRotatingMovementComp = nullptr;

@@ -213,6 +213,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|HUD" )
 	void ShowAttentionPing( AFGPlayerState* playerState, FVector worldLocation );
 
+	/** Trigger an inventory notification when inventory updates */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|HUD" )
+	void PushInventoryNotification( UFGInventoryComponent* source, UFGInventoryComponent* destination, FItemAmount ItemAmount );
+
 protected:
 	// Begin UUserWidget interface
 	virtual FReply NativeOnPreviewMouseButtonDown( const FGeometry& InGeometry, const FPointerEvent& InMouseEvent ) override;

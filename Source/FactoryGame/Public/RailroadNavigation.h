@@ -3,7 +3,6 @@
 #pragma once
 
 #include "FactoryGame.h"
-#include "FactoryGame.h"
 #include "GraphAStar.h"
 #include "RailroadNavigation.generated.h"
 

@@ -276,10 +276,4 @@ struct FServerNetStats
 
 	/// Average roundtrip over the last @NumPollsForAverage polls
 	int16 AverageRoundTripTime;
-
-	/// The NET CL of this server. It must be equal to ours to be able to connect
-	uint32 ServerNetCL = 0;
-
-	/// The beacon port of this server
-	uint32 ServerBeaconPort = 0;
 };

@@ -6,8 +6,14 @@
 UFGClearanceComponent::UFGClearanceComponent() : Super() {
 	this->mIsSoftClearance = false;
 	this->AreaClass = UNavArea_Obstacle::StaticClass();
+	this->BodyInstance.SetObjectType(ECC_GameTraceChannel4);
+	this->BodyInstance.SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	this->BodyInstance.SetCollisionProfileName(TEXT("Clearance"));
 	this->Mobility = EComponentMobility::Static;
 }
 UFGComplexClearanceComponent::UFGComplexClearanceComponent() : Super() {
+	this->BodyInstance.SetObjectType(ECC_GameTraceChannel4);
+	this->BodyInstance.SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	this->BodyInstance.SetCollisionProfileName(TEXT("Clearance"));
 	this->Mobility = EComponentMobility::Static;
 }

@@ -2,8 +2,6 @@
 
 #include "FGCharacterBase.h"
 #include "FGHealthComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "AIController.h"
 
 void FFootstepEffect::Reset(){ }
 AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {

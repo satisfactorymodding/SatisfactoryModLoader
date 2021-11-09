@@ -85,7 +85,7 @@ public:
 	void StartGame( const FString& SessionName, const FString& StartLocation );
 
 	/// Loads the save game that this header belongs to
-	void LoadGame( const FSaveHeader& header );
+	bool LoadGame( const FSaveHeader& header );
 
 	/// Looks for an existing save game and loads it. Takes into account mAutoLoadSessionName if it's set
 	bool AutoStart();
@@ -125,8 +125,8 @@ private:
 	UPROPERTY( Config )
 	bool mAutoSaveOnDisconnect = true;
 
-	TUniquePtr< FServerQuerySocket > mQuerySocket;
-	TUniquePtr< FRunnableThread > mQueryThread;
+	TArray< TUniquePtr< FServerQuerySocket > > mQuerySockets;
+	TArray< TUniquePtr< FRunnableThread > > mQueryThreads;
 	
 	UPROPERTY()
 	UFGServerSettings *mSettings = nullptr;

@@ -2,7 +2,6 @@
 
 #include "FGPlayerControllerBase.h"
 #include "FGCheatManager.h"
-#include "Components/SceneComponent.h"
 
 AFGPlayerControllerBase::AFGPlayerControllerBase() : Super() {
 	this->mAdminInterface = nullptr;

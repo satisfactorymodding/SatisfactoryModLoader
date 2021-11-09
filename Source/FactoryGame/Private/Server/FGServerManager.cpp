@@ -11,5 +11,7 @@ void UFGServerManager::AddServer(const FString& Address, int32 Port, FOnServerAd
 void UFGServerManager::NativeAddServer(const FString& Address, int32 Port, FOnServerAddedOrFoundDelegateNative OnceAdded){ }
 void UFGServerManager::RemoveServer(UFGServerObject* Server){ }
 const TArray<class UFGServerObject*>& UFGServerManager::GetServers() const{ return *(new TArray<class UFGServerObject*>); }
+int32 UFGServerManager::GetClientNetCL(){ return int32(); }
 void UFGServerManager::SaveState(){ }
+void UFGServerManager::ProcessPollResponses(FClientQuerySocket* Socket){ }
 void UFGServerManager::CustomSerialize(FArchive& Ar, EServerManagerVersion Version){ }

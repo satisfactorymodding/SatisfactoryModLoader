@@ -4,8 +4,8 @@
 
 UWorld* UFGBaseServerInteractionHandler::GetWorld() const{ return nullptr; }
 FText UFGBaseServerInteractionHandler::GetServerMessageDescription(EServerMessage Message){ return FText(); }
-FLargeDataTransfer::FLargeDataTransfer(const TArray<uint8>& Data, FOnLargeTransferCompleted OnTransferCompleted): mNumChunks(0){ }
-FLargeDataTransfer::FLargeDataTransfer(const FGuid& ID, int32 Size): mNumChunks(0){ }
+FLargeDataTransfer::FLargeDataTransfer(const TArray<uint8>& Data, FOnLargeTransferCompleted OnTransferCompleted) : mNumChunks(0) { }
+FLargeDataTransfer::FLargeDataTransfer(const FGuid& ID, int32 Size) : mNumChunks(0) { }
 TArray<uint8> FLargeDataTransfer::GetChunk(int32 Chunk) const{ return TArray<uint8>(); }
 bool FLargeDataTransfer::SetChunk(int32 Chunk, const TArray<uint8>& ChunkData){ return bool(); }
 int32 FLargeDataTransfer::NumChunks() const{ return int32(); }

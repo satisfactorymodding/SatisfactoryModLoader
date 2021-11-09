@@ -2,16 +2,15 @@
 
 #include "Equipment/FGStickyExplosive.h"
 #include "GameFramework/RotatingMovementComponent.h"
-#include "Components/SphereComponent.h"
 #include "DamageTypes/FGDamageType.h"
 
 AFGStickyExplosive::AFGStickyExplosive() : Super() {
 	this->mDetonateIn = 0.0;
 	this->mEnvironmentDestructionSphere = nullptr;
 	this->mRotatingMovementComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComponent"));
-	this->mThrowRotation.Pitch = -359.363;
-	this->mThrowRotation.Yaw = -57.0081;
-	this->mThrowRotation.Roll = -106.93;
+	this->mThrowRotation.Pitch = -170.608;
+	this->mThrowRotation.Yaw = -55.4657;
+	this->mThrowRotation.Roll = -151.585;
 	this->mProjectileData.ProjectileClass = nullptr;
 	this->mProjectileData.ProjectileLifeSpan = 10.0;
 	this->mProjectileData.ProjectileStickSpan = 5.0;

@@ -8,6 +8,7 @@ UFGDecorationDescriptor::UFGDecorationDescriptor() : Super() {
 	this->mGroundMeshScale.Y = 1.0;
 	this->mGroundMeshScale.Z = 1.0;
 	this->mMesh1p = nullptr;
+	this->mMesh3p = nullptr;
 	this->mDecorationActorClass = nullptr;
 }
 UStaticMesh* UFGDecorationDescriptor::GetGroundMesh(TSubclassOf< UFGItemDescriptor > inClass){ return nullptr; }

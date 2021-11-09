@@ -2,8 +2,6 @@
 
 #include "FGAtmosphereVolume.h"
 #include "Atmosphere/UFGBiome.h"
-#include "Components/BrushComponent.h"
-#include "Model.h"
 
 FExponentialFogSettings::FExponentialFogSettings(){ }
 FSkyAtmosphereSettings::FSkyAtmosphereSettings(){ }

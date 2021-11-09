@@ -26,6 +26,7 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->mSpawnDistanceOverride = -1.0;
 	this->mRandomSeed = -1;
 	this->mVisualizeSpawnDistance = false;
+	this->mRespawnTimeIndays = 3;
 	this->bCollideWhenPlacing = true;
 	this->SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	this->RootComponent = mCapsuleComponent;

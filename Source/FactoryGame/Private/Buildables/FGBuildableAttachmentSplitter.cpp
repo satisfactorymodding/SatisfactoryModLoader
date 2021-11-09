@@ -2,7 +2,6 @@
 
 #include "Buildables/FGBuildableAttachmentSplitter.h"
 #include "Hologram/FGAttachmentSplitterHologram.h"
-#include "Components/SceneComponent.h"
 
 AFGBuildableAttachmentSplitter::AFGBuildableAttachmentSplitter() : Super() {
 	this->mCurrentOutputIndex = -1;

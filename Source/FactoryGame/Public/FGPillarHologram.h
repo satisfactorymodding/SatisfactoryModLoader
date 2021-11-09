@@ -42,9 +42,10 @@ public:
 	virtual bool CanBeZooped() const override;
 	// End AFGHologram interface
 
-	// Begin AFGAttachmentPointHologram interface
+	// Begin AFGBuildableHologram interface
 	virtual void FilterAttachmentPoints( TArray< const FFGAttachmentPoint* >& Points, AFGBuildable* pBuildable, const FHitResult& HitResult ) const override;
-	// End AFGAttachmentPointHologram interface
+	virtual void CreateAttachmentPointTransform( FTransform& out_transformResult, const FHitResult& HitResult, AFGBuildable* pBuildable, const FFGAttachmentPoint& BuildablePoint, const FFGAttachmentPoint& LocalPoint ) override;
+	// End AFGBuildableHologram interface
 
 	// Begin FGConstructionMessageInterface
 	virtual void SerializeConstructMessage( FArchive& ar, FNetConstructionID id ) override;

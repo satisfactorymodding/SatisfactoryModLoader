@@ -70,7 +70,7 @@ public:
 	void Init();
 	
 	/* Submit transform directly to RT */
-	void DirectUpdateInstance( const TArray<FTransform> &Transforms);
+	void DirectUpdateInstance( );
 	
 	UFUNCTION(BlueprintCallable)
 	void SetNumInstances(int32 Count) { mNumInstances = Count; }

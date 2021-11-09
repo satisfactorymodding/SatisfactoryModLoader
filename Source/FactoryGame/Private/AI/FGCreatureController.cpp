@@ -2,7 +2,6 @@
 
 #include "AI/FGCreatureController.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "Components/SceneComponent.h"
 
 AFGCreatureController::AFGCreatureController(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->PerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>(TEXT("PerceptionComponent"));

@@ -8,6 +8,7 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->mDestroyOnPickup = true;
 	this->mSoundComponent = nullptr;
 	this->mAudioEvent = nullptr;
+	this->mRespawnTimeInDays = -1;
 	this->mUpdatedOnDayNr = -1;
 	this->mItemState = EItemState::ES_NORMAL;
 	this->mGrowTimeInDays = 3;

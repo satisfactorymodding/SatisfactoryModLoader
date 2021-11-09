@@ -11,6 +11,8 @@ void UFGCheatManager::NoCost(bool enabled){ }
 bool UFGCheatManager::NoCost_Get(){ return bool(); }
 void UFGCheatManager::NoPower(bool enabled){ }
 bool UFGCheatManager::NoPower_Get(){ return bool(); }
+void UFGCheatManager::NoFuel(bool enabled){ }
+bool UFGCheatManager::NoFuel_Get(){ return bool(); }
 void UFGCheatManager::NoMessages(bool enabled){ }
 bool UFGCheatManager::NoMessages_Get(){ return bool(); }
 void UFGCheatManager::TurboBuildMode(bool enabled){ }
