@@ -32,6 +32,7 @@ public:
 	virtual float GetHologramHoverHeight() const override;
 	virtual void GetIgnoredClearanceActors( TArray< AActor* >& ignoredActors ) const override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes ) const override;
+	virtual void PostHologramPlacement() override;
 	// End AFGHologram Interface
 
 	// Begin FGConstructionMessageInterface

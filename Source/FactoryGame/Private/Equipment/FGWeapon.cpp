@@ -62,6 +62,7 @@ bool AFGWeapon::HasAmmunition() const{ return bool(); }
 int32 AFGWeapon::GetSpareAmmunition(TSubclassOf< UFGItemDescAmmoType > AmmunitionType) const{ return int32(); }
 void AFGWeapon::ApplyDispersion(){ }
 void AFGWeapon::FireAmmunition_Implementation(FTransform firingTransform, float currentAmmos, APawn* serverInstigator){ }
+void AFGWeapon::SetAttachmentsLoadState(bool isLoaded){ }
 void AFGWeapon::Multicast_SetAttachmentsLoadState_Implementation(bool isLoaded){ }
 void AFGWeapon::Server_SetAttachementLoadState_Implementation(){ }
 void AFGWeapon::Multicast_InitialAmmoCountRep_Implementation(int ammoCount){ }
@@ -72,7 +73,6 @@ void AFGWeapon::SetWeaponState(EWeaponState newState){ }
 void AFGWeapon::ApplyDispersionReduction(float DeltaSeconds){ }
 void AFGWeapon::RefireCheckTimer(){ }
 void AFGWeapon::ConsumeAmmunition(){ }
-void AFGWeapon::Multicast_SetCurrentAmmunition_Implementation(float newCurrentAmmo){ }
 bool AFGWeapon::CanFire() const{ return bool(); }
 void AFGWeapon::ActualReload(){ }
 void AFGWeapon::PlayReloadEffects_Implementation(){ }

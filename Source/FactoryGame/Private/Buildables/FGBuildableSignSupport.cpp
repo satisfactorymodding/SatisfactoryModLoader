@@ -2,8 +2,8 @@
 
 #include "Buildables/FGBuildableSignSupport.h"
 #include "FGColoredInstanceMeshProxy.h"
-#include "Components/SceneComponent.h"
 #include "Hologram/FGSignPoleHologram.h"
+#include "Components/SceneComponent.h"
 
 AFGBuildableSignSupport::AFGBuildableSignSupport() : Super() {
 	this->mPoleComponentProxy = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("PoleComponentProxy"));

@@ -12,7 +12,8 @@ enum class EBuildableWallType : uint8
 	BWT_Normal			UMETA( DisplayName = "Normal" ),
 	BWT_Glass			UMETA( DisplayName = "Glass" ),
 	BWT_DiagonalUp		UMETA( DisplayName = "Diagonal Up" ),
-	BWT_DiagonalDown	UMETA( DisplayName = "Diagonal Down" )
+	BWT_DiagonalDown	UMETA( DisplayName = "Diagonal Down" ),
+	BWT_Frame			UMETA( DisplayName = "Frame" )
 };
 
 /**

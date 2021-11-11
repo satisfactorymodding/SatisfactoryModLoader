@@ -233,7 +233,7 @@ private:
 	/** Loads fuel into the docked vehicles inventory.
 	 * @return true if we are done refueling (i.e. vehicle fuel inventory is full or we have no fuel to transfer)
 	 */
-	bool Factory_LoadFuel( UFGInventoryComponent* dockedFuelInventory, float percentOfStack );
+	bool Factory_LoadFuel( AFGWheeledVehicle* vehicle, float percentOfStack, bool conserveFuel );
 
 	/** Unloads one slot from the station to the docked inventory. */
 	void Factory_LoadDockedInventory( UFGInventoryComponent* dockedInventory );
@@ -322,6 +322,9 @@ protected:
 	/** The actor docked to this station. */
 	UPROPERTY( SaveGame )
 	class AActor* mDockedActor;
+
+	/** A non-automated vehicle currently receiving fuel from the station. */
+	TWeakObjectPtr< class AFGWheeledVehicle > mRefuelingVehicle;
 
 	/** If an actor is docked to this station. Used to detect actor becomes invalid due to e.g. dismantle. */
 	UPROPERTY( SaveGame, Meta = (NoAutoJson = true) )

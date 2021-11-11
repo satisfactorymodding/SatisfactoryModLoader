@@ -207,7 +207,7 @@ protected:
 	void UpdateState( float dt, const UFGLocomotiveMovementComponent* master );
 
 	/** Pass current state to server */
-	UFUNCTION( Reliable, Server, WithValidation )
+	UFUNCTION( Unreliable,Server, WithValidation )
 	void ServerUpdateState( int32 inReverserInput, int32 inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput, bool inHornInput );
 
 	/** Update the clients state from the replicated state */

@@ -84,7 +84,7 @@ AFGReplicationDetailActor_DockingStation* AFGBuildableDockingStation::GetCastRep
 void AFGBuildableDockingStation::OnRep_FuelInventory(){ }
 bool AFGBuildableDockingStation::IsValidFuel(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }
 bool AFGBuildableDockingStation::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
-bool AFGBuildableDockingStation::Factory_LoadFuel(UFGInventoryComponent* dockedFuelInventory, float percentOfStack){ return bool(); }
+bool AFGBuildableDockingStation::Factory_LoadFuel(AFGWheeledVehicle* vehicle, float percentOfStack, bool conserveFuel){ return bool(); }
 void AFGBuildableDockingStation::Factory_LoadDockedInventory(UFGInventoryComponent* dockedInventory){ }
 void AFGBuildableDockingStation::Factory_UnloadDockedInventory(UFGInventoryComponent* dockedInventory){ }
 void AFGBuildableDockingStation::LoadUnloadVehicleComplete(){ }

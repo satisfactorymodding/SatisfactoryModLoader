@@ -24,7 +24,13 @@ public:
 	/** Calculates the expected angle of the ramp, based on Elevation and Size. */
 	float CalculateRampAngle() const;
 
+public:
+
 	/** Whether or not this is a double ramp. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Ramp" )
 	bool mIsDoubleRamp;
+
+	/** Whether or not this is a roof. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Ramp" )
+	bool mIsRoof;
 };

@@ -6,12 +6,12 @@
 #include "GameFramework/GameUserSettings.h"
 #include "GameFramework/PlayerInput.h"
 #include "FGInputLibrary.h"
+#include "FGOptionInterface.h"
 #include "FGOptionsSettings.h"
 #include "OptionValueContainer.h"
 #include "FGGameUserSettings.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FArachnophobiaModeChangedDelegate, bool, isArachnophobiaMode );
-DECLARE_DYNAMIC_DELEGATE_OneParam( FOptionUpdated, FString, updatedCvar );
 
 /** Our representation of the graphics RHI. Used in options menu to select which RHI they want to use.
  * We call it API because I believe that concept is more known than RHI.
@@ -52,7 +52,7 @@ public:
 };
 
 UCLASS(BlueprintType)
-class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings
+class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings, public IFGOptionInterface
 {
 	GENERATED_BODY()
 public:
@@ -98,6 +98,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = Settings )
 	static UFGGameUserSettings* GetFGGameUserSettings();
 
+	/** Returns the option interface that handles getting and settings options*/
+	UFUNCTION( BlueprintCallable, Category = Settings )
+	static UFGOptionInterface* GetOptionInterface();
+
 	UFUNCTION()
 	void UpdateAudioOption( FString updatedCvar );
 
@@ -138,113 +142,35 @@ public:
 	/** Clears array of custom mappings */
 	void RemoveAllCustomActionMappings();
 
-	/** Get if we require restart of the session for the settings to apply */
-	UFUNCTION( BlueprintPure, Category="FactoryGame|Settings")
-    bool GetRequireSessionRestart() const;
+	// Begin IFGActorRepresentationInterface
+	virtual bool GetBoolOptionValue( const FString& cvar ) const override;
+	virtual bool GetBoolUIDisplayValue( const FString& cvar ) const override;
+	virtual void SetBoolOptionValue( const FString& cvar, bool value ) override;
+	virtual int32 GetIntOptionValue( const FString& cvar ) const override;
+	virtual int32 GetIntUIDisplayValue( const FString& cvar ) const override;
+	virtual void SetIntOptionValue( const FString& cvar, int32 newValue ) override;
+	virtual float GetFloatOptionValue( const FString& cvar ) const override;
+	virtual float GetFloatUIDisplayValue( const FString& cvar ) const override;
+	virtual void SetFloatOptionValue( const FString& cvar, float newValue ) override;
+	virtual bool HasAnyUnsavedOptionValueChanges() const override;
+	virtual bool HasPendingApplyOptionValue( const FString& cvar ) const override;
+	virtual bool HasPendingAnyRestartOptionValue( const FString& cvar ) const override;
+    virtual bool GetRequireSessionRestart() const override;
+    virtual bool GetRequireGameRestart() const override;
+	virtual void SubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
+	virtual void UnsubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
+	virtual void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject ) override;
+	virtual TArray<class UFGDynamicOptionsRow*> GetOptionWidgetsInCategory( UUserWidget* owningWidget, EOptionCategory category ) override;
+	// End IFGActorRepresentationInterface
 
-	/** Get if we require restart of the game for the settings to apply */
-	UFUNCTION( BlueprintPure, Category="FactoryGame|Settings")
-    bool GetRequireGameRestart() const;
-
-	/** Get the applied/active option value for a bool */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool GetBoolOptionValue( FString cvar );
-	
-	/** Set the applied/active option value for a bool */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetBoolOptionValue( FString cvar, bool value );
-
-	/** Get the applied/active option value for a integer */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	int32 GetIntOptionValue( FString cvar );
-
-	/** Set the option value for a integer */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetIntOptionValue( FString cvar, int32 newValue );
-
-	/** Get the option value for a float */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	float GetFloatOptionValue( FString cvar );
-
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	float GetFloatUIDisplayValue( FString cvar );
-
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	int32 GetIntUIDisplayValue( FString cvar );
-
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool GetBoolUIDisplayValue( FString cvar );
-
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool HasAnyUnsavedOptionValueChanges();
-
-	/** Get if we have a pending option value waiting to be applied for this cvar */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool HasPendingApplyOptionValue( FString cvar );
-
-	/** Get if we have a pending option value waiting to be applied for this cvar after we restart game or session */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
-	bool HasPendingAnyRestartOptionValue( FString cvar );
-	
-	/** Set the option value for a float */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SetFloatOptionValue( FString cvar, float newValue );
-
-	/** Update the console variable with a new int value */
-	void SetCvarValue( FString cvar, int32 value );
-	
-	/** Update the console variable with a new float value */
-	void SetCvarValue( FString cvar, float value );
-	
-	/** Setup the default value for an int option, registers a cvar if it doesn't already exists */
-	void InitDefaultIntOptionValue( FString cvar, int32 value, FText tooltip, EOptionApplyType optionApplyType );
-
-	/** Setup the default value for an float option, registers a cvar if it doesn't already exists */
-	void InitDefaultFloatOptionValue( FString cvar, float value, FText tooltip, EOptionApplyType optionApplyType );
-	
 	void SetupDefaultOptionsValues();
-
-	/** Bind up events for changing RTPC audio volume when audio cvar is changed */
-	void SetupAudioOption( struct FOptionRowData data );
-
-	/** Register an int console variable */
-	void RegisterConsoleVariable( FString cvar, int32 value, FString tooltip );
-
-	/** Register a float console variable */
-	void RegisterConsoleVariable( FString cvar, float value, FString tooltip );
-	
-	/** Apply settings that have been changed and are pending */
-	void ApplyPendingChanges();
-
-	/** Check if any cvar should be checked and applied */
-	void CheckForCvarOverrides();
-	
-	/** Check if any cvar should be checked and applied for video settings */
-	void CheckForVideoCvarOverrides();
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	void OnExitToMainMenu();
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	void OnExitToDesktop();
-	
-	static void CVarSinkHandler();
 
-	/** CVar sink. Update the internal values so they are the same as the console variables  */
-	void UpdateCvars();
-
-	/** Subscribe to changes for this option. The given delegate will be called when cvar is updated  */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void SubscribeToDynamicOptionUpdate( FString cvar, const FOptionUpdated& optionUpdatedDelegate );
-
-	/** Unsubscribe to changes for this option  */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void UnsubscribeToDynamicOptionUpdate( FString cvar, const FOptionUpdated& optionUpdatedDelegate );
-	
-	/** Unsubscribe to all changes for options this object have subscribed to  */
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
-	void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject );
-	
 	/** Get language data */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	TMap<FString, FText> GetLanguageData();
@@ -277,15 +203,7 @@ public:
 	EGraphicsAPI GetCurrentConfigGraphicsAPI() const;
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	void SetCurrentConfigGraphicsAPI( EGraphicsAPI newGraphicsAPI );
-
-	/** Migrate old options to new system */
-	void HandleFGGameUserSettingsVersionChanged();
-
-	/** Debug */
-	void DumpDynamicOptionsSettings();
-
-	void GetOptionsDebugData( TArray<FString>& out_debugData );
-
+	
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings")
 	void SetHologramColour( FVector inColour );
 	
@@ -302,12 +220,54 @@ public:
 	void ApplyHologramColoursToCollectionParameterInstance( UObject* World );
 
 	UMaterialParameterCollection* GetHologramMaterialCollectionAsset() const;
+
+	/** Debug */
+	void DumpDynamicOptionsSettings();
+	void GetOptionsDebugData( TArray<FString>& out_debugData );
 	
 private:
 	friend class OptionValueContainer;
 	
+	/** Update the console variable with a new int value */
+	void SetCvarValue( FString cvar, int32 value );
+	
+	/** Update the console variable with a new float value */
+	void SetCvarValue( FString cvar, float value );
+	
+	/** Setup the default value for an int option, registers a cvar if it doesn't already exists */
+	void InitDefaultIntOptionValue( FString cvar, int32 value, FText tooltip, EOptionApplyType optionApplyType );
+
+	/** Setup the default value for an float option, registers a cvar if it doesn't already exists */
+	void InitDefaultFloatOptionValue( FString cvar, float value, FText tooltip, EOptionApplyType optionApplyType );
+	
+	/** Bind up events for changing RTPC audio volume when audio cvar is changed */
+	void SetupAudioOption( struct FOptionRowData data );
+
+	/** Register an int console variable */
+	void RegisterConsoleVariable( FString cvar, int32 value, FString tooltip );
+
+	/** Register a float console variable */
+	void RegisterConsoleVariable( FString cvar, float value, FString tooltip );
+	
+	/** Apply settings that have been changed and are pending */
+	void ApplyPendingChanges();
+
+	/** Check if any cvar should be checked and applied */
+	void CheckForCvarOverrides();
+	
+	/** Check if any cvar should be checked and applied for video settings */
+	void CheckForVideoCvarOverrides();
+	
+	static void CVarSinkHandler();
+
+	/** CVar sink. Update the internal values so they are the same as the console variables  */
+	void UpdateCvars();
+	
+	/** Migrate old options to new system */
+	void HandleFGGameUserSettingsVersionChanged();
+	
 	/** Can we use this cvar? trims and checks for empty string */
-	bool ValidateCVar( FString &cvar );
+	bool ValidateCVar( const FString& cvar );
 
 	void BroadcastDynamicOptionUpdate( FString cvar );
 

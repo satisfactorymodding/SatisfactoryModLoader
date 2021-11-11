@@ -24,6 +24,8 @@ void UFGCheatManager::GiveItemsSingle(TSubclassOf<  UFGItemDescriptor > resource
 void UFGCheatManager::GiveResourceSinkCoupons(int32 NumCoupons){ }
 void UFGCheatManager::DrawSphere(int32 radius){ }
 void UFGCheatManager::PlayerFly(bool flyModeEnabled){ }
+void UFGCheatManager::PlayerAllFly(bool flyModeEnabled){ }
+bool UFGCheatManager::PlayerAllFly_Get(){ return bool(); }
 bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
 void UFGCheatManager::PlayerNoClipModeOnFly(bool ghostMode){ }
 bool UFGCheatManager::PlayerNoClipModeOnFly_Get(){ return bool(); }

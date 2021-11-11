@@ -346,11 +346,7 @@ public:
 
 	void SyncWithSimulation();
 
-	void StartDockingProcess();
-
-	void EndDockingProcess();
-
-	bool ShouldStayAtDock() const;
+	bool ShouldStayAtDock();
 
 	float GetTotalFuelEnergy() const;
 
@@ -921,6 +917,8 @@ public:
 
 	void GiveWayTo( const AFGWheeledVehicle* other );
 
+	bool WasFuelAdded() const { return mWasFuelAdded; }
+
 private:
 	float CalculateAutomatedFuelToConsume( float deltaTime );
 
@@ -1012,15 +1010,11 @@ private:
 	float mThrottleSampleCount = 0.0f;
 	float mThrottleSampleSum = 0.0f;
 
+	/** Was fuel transferred from station to vehicle during the current docking */
+	UPROPERTY( SaveGame )
 	bool mWasFuelAdded = false;
-	float mLastNecessaryRefuelTime = 0.0f;
-	float mTimeEnteringStation = 0.0f;
 
-	/**
-	 * The time a vehicle will wait at a station until concluding that the station will not provide any fuel
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "SelfDriving" )
-	float mTimeToWaitForFuel = 5.0f;
+	float mTimeStationWasEntered = 0.0f;
 
 	/**
 	 * The minimum time from when the vehicle enters a station until it leaves that station

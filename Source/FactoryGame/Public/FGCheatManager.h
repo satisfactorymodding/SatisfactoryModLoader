@@ -75,6 +75,13 @@ public:
 
 	UFUNCTION( exec, CheatBoard, Category = "Player/Camera" )
 	virtual void PlayerFly( bool flyModeEnabled );
+	
+	UFUNCTION( exec, CheatBoard, Category = "Cheat Manager" )
+	virtual void PlayerAllFly( bool flyModeEnabled);
+
+	UFUNCTION( exec, CheatBoard, Category = "Cheat Manager" )
+	virtual bool PlayerAllFly_Get();
+
 	UFUNCTION( exec, CheatBoard, Category = "Player/Camera" )
 	virtual bool PlayerFly_Get();
 

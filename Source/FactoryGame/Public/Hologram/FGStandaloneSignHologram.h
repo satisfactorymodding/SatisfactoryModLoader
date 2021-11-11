@@ -4,7 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
-#include "Hologram/FGBuildableHologram.h"
+#include "FGGenericBuildableHologram.h"
 #include "FGStandaloneSignHologram.generated.h"
 
 
@@ -19,7 +19,7 @@ enum class ESignHologramBuildStep : uint8
  * Hologram for placing signs. Handles snapping to walls as well as spawning a child pole hologram
  */
 UCLASS()
-class FACTORYGAME_API AFGStandaloneSignHologram : public AFGBuildableHologram
+class FACTORYGAME_API AFGStandaloneSignHologram : public AFGGenericBuildableHologram
 {
 	GENERATED_BODY()
 	
@@ -62,6 +62,9 @@ private:
 	/** The child pole hologram active while the sign is placed under certain circumstances */
 	UPROPERTY( Replicated )
 	class AFGSignPoleHologram* mChildSignPoleHologram = nullptr;
+
+	UPROPERTY()
+	class UStaticMeshComponent* mUprightIndicatorMesh;
 
 	/* The world size sign dimensions of the sign being constructed */
 	FVector2D mSignDimensions;

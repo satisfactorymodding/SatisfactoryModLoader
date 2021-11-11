@@ -34,6 +34,7 @@ public:
 protected:
 	// Begin AFGHologram interface
 	virtual USceneComponent* SetupComponent( USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName ) override;
+	virtual void PreConfigureActor( class AFGBuildable* inBuildable ) override;
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	virtual void ConfigureComponents( class AFGBuildable* inBuildable ) const override;
 	virtual bool TrySnapToActor( const FHitResult& hitResult ) override;

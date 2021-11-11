@@ -695,6 +695,9 @@ private:
 	UPROPERTY()
 	class UFGComplexClearanceComponent* mComplexClearanceComponent;
 
+	/** Counter used to keep track of how many requests we have for spawning the complex clearance. We only destroy it if the requests counter hits 0. */
+	int32 mComplexClearanceSpawnRequestCounter;
+
 	/** Has this buildable created its material dynamic material instances for shared coloring? */
 	bool mHasInitializedMaterialManagers;
 

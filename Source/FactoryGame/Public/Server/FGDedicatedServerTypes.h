@@ -261,19 +261,40 @@ enum class EServerComplexState : uint8
 	GameRunning_Connected_NonAuthenticated
 };
 
+enum class EServerManagerVersion : uint8
+{
+	SVM_InitialVersion,
+	// Address is now the address as it was entered by the users. It needs to be DNS resolved before it's usable.
+	SVM_NoDNSCaching,
+	
+	SVM_CurrentVersion = SVM_NoDNSCaching,
+	SVM_EndVersions
+};
+
 struct FServerNetStats
 {
-	static constexpr int32 NumPollsForAverage = 100;
+	static constexpr int32 NumPollsForAverage = 25;
 	
 	/// Used to compute the average round trip times over the last @NumPollsForAverage polls
-	TCircularQueue< int16 > RoundTripTimesQueue = TCircularQueue< int16 >(NumPollsForAverage + 1);
+	TCircularQueue< int16 > RoundTripTimesQueue = TCircularQueue<int16>( NumPollsForAverage + 1 );
 
 	/// The cached sum of all entries in @RoundTripTimesQueue
 	int64 RoundTripTimesSum = 0;
 
-	/// When did this server last show any signs of life 
-	FDateTime TimeOfLastResponse;
-
 	/// Average roundtrip over the last @NumPollsForAverage polls
 	int16 AverageRoundTripTime;
+
+	/// When did this server last show any signs of life 
+	FDateTime TimeWhenLastResponded;
+
+	/// When did we last try to ping this server
+	FDateTime TimeWhenLastPolled;
+
+	/// Time when last interesting is used to determine whether a server should be pinged or not in relation to it's ping rate
+	/// Cannot use TimeWhenLastResponded for this alone as there other other triggers for beginning to poll a server, such as a new listener
+	/// subscribing to it's state.
+	FDateTime TimeWhenLastInteresting;
+
+	/// The rate at which we are currently polling this server
+	float PollingRate = .25f;
 };

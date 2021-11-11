@@ -22,6 +22,8 @@ AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mAuxilaryColor.G = 0.0;
 	this->mAuxilaryColor.B = 0.0;
 	this->mAuxilaryColor.A = 0.0;
+	this->mEmissive = 0.0;
+	this->mGlossiness = 0.0;
 	this->mDataVersion = 0;
 	this->mAllowColoring = false;
 	this->mWidgetComponent->SetupAttachment(RootComponent);

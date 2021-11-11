@@ -14,4 +14,5 @@ const TArray<class UFGServerObject*>& UFGServerManager::GetServers() const{ retu
 int32 UFGServerManager::GetClientNetCL(){ return int32(); }
 void UFGServerManager::SaveState(){ }
 void UFGServerManager::ProcessPollResponses(FClientQuerySocket* Socket){ }
+FClientQuerySocket* UFGServerManager::GetQuerySocket(const FName& Protocol){ return nullptr; }
 void UFGServerManager::CustomSerialize(FArchive& Ar, EServerManagerVersion Version){ }

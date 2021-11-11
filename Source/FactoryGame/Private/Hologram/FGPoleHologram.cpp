@@ -27,6 +27,7 @@ void AFGPoleHologram::SetHologramLocationAndRotation(const FHitResult& hitResult
 AActor* AFGPoleHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
 void AFGPoleHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes) const{ }
 void AFGPoleHologram::OnBuildModeChanged(){ }
+int32 AFGPoleHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGPoleHologram::ResetBuildSteps(){ }
 void AFGPoleHologram::SetPoleHeight(float height){ }
 void AFGPoleHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }

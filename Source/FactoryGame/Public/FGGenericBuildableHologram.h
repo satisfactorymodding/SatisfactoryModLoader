@@ -13,7 +13,7 @@ enum class EBeamSnappingMode : uint8
 {
 	BSM_None				UMETA( DisplayName = "None" ),
 	BSM_Center				UMETA( DisplayName = "Center" ),
-	BSM_NoDiagonalSides		UMETA( DisplayName = "Non-diagonal sides only" ),
+	BSM_KeepUpright			UMETA( DisplayName = "Snapping allowed, but kept upright" ),
 	BSM_AllSides			UMETA( DisplayName = "All sides" )
 };
 
@@ -21,7 +21,7 @@ UENUM()
 enum class EPillarSnappingMode : uint8
 {
 	PSM_None				UMETA( DisplayName = "None" ),
-	PSM_NoDiagonalSides		UMETA( DisplayName = "Non-diagonal sides only" ),
+	PSM_KeepUpright			UMETA( DisplayName = "Snapping allowed, but kept upright" ),
 	PSM_AllSides			UMETA( DisplayName = "All sides" )
 };
 

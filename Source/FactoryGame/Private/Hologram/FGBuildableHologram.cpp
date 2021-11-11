@@ -7,6 +7,7 @@ AFGBuildableHologram::AFGBuildableHologram() : Super() {
 	this->mMaxPlacementFloorAngle = 35.0;
 	this->mLegs = nullptr;
 	this->mUseGradualFoundationRotations = false;
+	this->mGridSnapSize = 100.0;
 	this->mComplexClearanceComponent = nullptr;
 	this->mInstancedGuidelineMeshComponent = nullptr;
 	this->mSnappedBuilding = nullptr;
@@ -70,6 +71,7 @@ void AFGBuildableHologram::CheckValidFloor(){ }
 void AFGBuildableHologram::HandleClearanceSnapping(FVector& newLocation, FRotator& newRotation, const FHitResult& hitResult){ }
 void AFGBuildableHologram::SnapToClearanceBox(const UFGClearanceComponent* targetSnapClearanceComponent, FVector& newLocation, FRotator& newRotation){ }
 bool AFGBuildableHologram::IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset) const{ return bool(); }
+void AFGBuildableHologram::PreConfigureActor( AFGBuildable* inBuildable){ }
 void AFGBuildableHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 void AFGBuildableHologram::ConfigureBuildEffect( AFGBuildable* inBuildable){ }
