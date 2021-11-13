@@ -14,18 +14,10 @@ void AFGWorldSettings::HandleMapChanged( UWorld* newWorld, EMapChangeType mapCha
 AFGWorldSettings::AFGWorldSettings() : Super() {
 	this->mDefaultHeightFogSettings.FogHeight = 5000.0;
 	this->mDefaultHeightFogSettings.FogDensity = 0.02;
-	this->mDefaultHeightFogSettings.FogInscatteringColor.R = 0.0;
-	this->mDefaultHeightFogSettings.FogInscatteringColor.G = 0.0;
-	this->mDefaultHeightFogSettings.FogInscatteringColor.B = 0.0;
-	this->mDefaultHeightFogSettings.FogInscatteringColor.A = 1.0;
 	this->mDefaultHeightFogSettings.FullyDirectionalInscatteringColorDistance = 100000.0;
 	this->mDefaultHeightFogSettings.NonDirectionalInscatteringColorDistance = 1000.0;
 	this->mDefaultHeightFogSettings.DirectionalInscatteringExponent = 4.0;
 	this->mDefaultHeightFogSettings.DirectionalInscatteringStartDistance = 10000.0;
-	this->mDefaultHeightFogSettings.DirectionalInscatteringColor.R = 0.0;
-	this->mDefaultHeightFogSettings.DirectionalInscatteringColor.G = 0.0;
-	this->mDefaultHeightFogSettings.DirectionalInscatteringColor.B = 0.0;
-	this->mDefaultHeightFogSettings.DirectionalInscatteringColor.A = 1.0;
 	this->mDefaultHeightFogSettings.FogHeightFalloff = 0.2;
 	this->mDefaultHeightFogSettings.FogMaxOpacity = 1.0;
 	this->mDefaultHeightFogSettings.StartDistance = 0.0;

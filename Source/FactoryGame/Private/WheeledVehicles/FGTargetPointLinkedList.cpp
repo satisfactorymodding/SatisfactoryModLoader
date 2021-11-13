@@ -11,6 +11,8 @@ AFGDrivingTargetList::AFGDrivingTargetList() : Super() {
 	this->mVehicleType = nullptr;
 	this->mIsPathVisible = true;
 	this->mIsTemporary = false;
+	this->mPathActor = nullptr;
+	this->mPath = nullptr;
 	this->mTargetCount = 0;
 	this->mPathFuelConsumption = 0.0;
 	this->bAlwaysRelevant = true;

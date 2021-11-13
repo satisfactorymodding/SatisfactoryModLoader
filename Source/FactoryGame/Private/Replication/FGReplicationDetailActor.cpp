@@ -4,6 +4,7 @@
 #include "Components/SceneComponent.h"
 
 AFGReplicationDetailActor::AFGReplicationDetailActor() : Super() {
+	this->mOwningBuildable = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

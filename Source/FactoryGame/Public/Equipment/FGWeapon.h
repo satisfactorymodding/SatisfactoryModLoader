@@ -47,6 +47,9 @@ public:
 	void TryEquipChildEquipment();
 	// End AFGEquipment interface
 
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE class AFGWeaponChild* GetChildWeapon() const { return mChildWeapon; };
+
 	/**
 	 * Put the weapon away.
 	 */
@@ -203,6 +206,9 @@ public:
 		return ammoType.GetDefaultObject();
 	}
 
+	UFUNCTION()
+	void SetAttachmentsLoadState( bool isLoaded );
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_SetAttachmentsLoadState( bool isLoaded );
 
@@ -248,9 +254,6 @@ protected:
 
 	/** Consumes our current ammo */
 	void ConsumeAmmunition();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_SetCurrentAmmunition(float newCurrentAmmo);
 
 	/** Return true if we can fire */
 	bool CanFire() const;
@@ -381,7 +384,7 @@ protected:
 	class AFGWeaponChild* mChildWeapon;
 
 	/** Object created from the ammo class, required to call ammo types functionalities */
-	UPROPERTY(Replicated)
+	UPROPERTY()
 	UFGItemDescAmmoType* mCurrentMagazineObject;
 
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "AmmoSwitching" )

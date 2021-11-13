@@ -18,6 +18,9 @@ AFGHUD::AFGHUD() : Super() {
 	this->mCustomCrosshair = nullptr;
 	this->mGeneralCrosshair = mDefaultCrosshair;
 	this->mRespawnInputComponent = nullptr;
+	this->mRespawnUI = nullptr;
+	this->mGameUI = nullptr;
+	this->mPreviewBuildingWorld = nullptr;
 	this->mPreviewStageClass = nullptr;
 	this->mPreviewActorClass = nullptr;
 	this->mPawnHUD = nullptr;

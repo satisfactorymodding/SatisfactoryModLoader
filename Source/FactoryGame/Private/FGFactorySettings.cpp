@@ -14,14 +14,8 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mDefaultOutputConnectionMaterial = nullptr;
 	this->mDefaultNeutralConnectionMaterial = nullptr;
 	this->mDefaultPowerConnectionMaterial = nullptr;
-	this->mDefaultFactoryColor_Primary.R = 0.0;
-	this->mDefaultFactoryColor_Primary.G = 0.0;
-	this->mDefaultFactoryColor_Primary.B = 0.0;
-	this->mDefaultFactoryColor_Primary.A = 0.0;
-	this->mDefaultFactoryColor_Secondary.R = 0.0;
-	this->mDefaultFactoryColor_Secondary.G = 0.0;
-	this->mDefaultFactoryColor_Secondary.B = 0.0;
-	this->mDefaultFactoryColor_Secondary.A = 0.0;
+	this->mDefaultFactoryColor_Primary = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mDefaultFactoryColor_Secondary = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mDefaultAttachmentPointConnectionMesh = nullptr;
 	this->mDefaultConveyorConnectionFrameMesh = nullptr;
 	this->mDefaultConveyorConnectionArrowMesh = nullptr;
@@ -35,6 +29,8 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mBuildGuideMesh = nullptr;
 	this->mBuildGuideWidth = 30.0;
 	this->mBuildGuideMaterial = nullptr;
+	this->mSignUprightIndicatorMesh = nullptr;
+	this->mSignUprightIndicatorMaterial = nullptr;
 	this->mInventoryDropCrate = nullptr;
 	this->mPowerShardClass = nullptr;
 	this->mBuildEffect = nullptr;

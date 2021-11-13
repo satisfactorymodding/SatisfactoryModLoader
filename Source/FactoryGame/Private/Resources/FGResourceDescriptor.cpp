@@ -10,10 +10,7 @@ UFGResourceDescriptor::UFGResourceDescriptor() : Super() {
 	this->mDepositMaterial = nullptr;
 	this->mDecalMaterial = nullptr;
 	this->mDecalSize = 200.0;
-	this->mPingColor.R = 0.0;
-	this->mPingColor.G = 0.0;
-	this->mPingColor.B = 0.0;
-	this->mPingColor.A = 0.0;
+	this->mPingColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mCollectSpeedMultiplier = 1.0;
 	this->mCompassTexture = nullptr;
 	this->mManualMiningParticle = nullptr;

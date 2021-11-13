@@ -204,6 +204,12 @@ protected:
 	virtual bool IsHologramIdenticalToBuildable( class AFGBuildable* buildable, const FVector& hologramLocationOffset ) const;
 
 	/**
+	 * Function to allow any pre-initialization on the actor before the configuration occurs. This is to allow for
+	 * final checks and to set properties as once were configuring its all const from there
+	 */
+	virtual void PreConfigureActor( class AFGBuildable* inBuildable );
+
+	/**
 	* Configure function: Configuring the actor created from the hologram when executed.
 	* Configure functions are called in the following order and can thus override each others steps. Be careful:
 		-   ConfigureActor( buildable );
@@ -310,6 +316,10 @@ protected:
 	//If set to true, the building will be allowed to snap to 45 degree intervals on fonudations instead of only 90 as the default.
 	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
 	bool mUseGradualFoundationRotations = false;
+
+	/** What kind of grid snapping size to use. */
+	UPROPERTY( EditDefaultsOnly, Category = "Hologram" )
+	float mGridSnapSize;
 
 	/** If the frame mesh should be used to highlight connections in hologram. */
 	uint32 mUseConveyorConnectionFrameMesh : 1;

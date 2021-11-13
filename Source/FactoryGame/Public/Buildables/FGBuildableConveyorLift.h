@@ -154,22 +154,29 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 	const float stepDir = FMath::FloatSelect( endTransform.GetTranslation().Z, 1.f, -1.f );
 	const bool isReversed = stepDir < 0.f;
 	int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( height / stepHeight ) + 1 );
-	
-	// Special case here for conveyor lifts snapped at the bottom. Their minimum height is allowed to be so small no mid meshes are required
-	if( height < stepHeight && isReversed == false )
-	{
-		numMeshes = 1;
-	}
 
 	// When snapping to two passthroughs it is sometimes neccesary to use a half segment at the end to ensure the mesh doesn't clip through thin foundations
-	bool useHalfMeshEnd =	( snappedPassthroughs[ 0 ] && isReversed ) ||
+	bool useHalfMeshEnd =	( snappedPassthroughs[ 0 ] && isReversed ) &&
 							( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] && 
 							( ( FMath::FloorToInt( height ) % FMath::FloorToInt( stepHeight ) ) != 0 ) );
 
+	// Special case here for conveyor lifts snapped at the bottom. Their minimum height is allowed to be so small no mid meshes are required
+	if( height <= stepHeight && isReversed )
+	{
+		numMeshes = 1;
+	}
+	
 	// One less mesh is needed when snapping to two passthroughs
 	if( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] )
 	{
 		--numMeshes;
+	}
+
+	// If we end up with 0 meshes, usually if our height is 0, then we'll force it to 1 and use a half mesh end
+	if( numMeshes <= 0 )
+	{
+		numMeshes = 1;
+		useHalfMeshEnd = true;
 	}
 
 	// Create more or remove the excess meshes.
@@ -250,7 +257,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 		}
 		else
 		{
-			if( meshPool.Num() > 1)
+			if( snappedPassthroughs[ 0 ] != nullptr )
 			{
 				// When snapping to a passthrough at the top we replace the top output with a mid mesh segment. Half a mid mesh if that is desirable
 				mesh->SetRelativeRotation( midRotation );

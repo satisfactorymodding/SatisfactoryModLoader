@@ -20,6 +20,14 @@ public:
 	AFGRampHologram();
 
 protected:
+
+	// Begin AActor interface
+	virtual void BeginPlay() override;
+	// End AActor interface
+
+	// Begin AFGHologram interface
+	virtual bool IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset ) const override;
+	// End AFGHologram interface
 	
 	// Begin AFGFactoryBuildingHologram interface
 	virtual void UpdateZoop() override;
@@ -29,4 +37,7 @@ protected:
 	// Begin AFGFoundationHologram interface
 	virtual void SetZoopFromHitresult( const FHitResult& hitResult ) override;
 	// End AFGFoundationHologram interface
+
+protected:
+	bool mIsRoof;
 };

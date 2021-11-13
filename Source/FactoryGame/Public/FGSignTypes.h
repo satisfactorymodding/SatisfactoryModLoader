@@ -545,6 +545,12 @@ struct FACTORYGAME_API FPrefabSignData
 	FLinearColor AuxiliaryColor;
 
 	UPROPERTY( BlueprintReadWrite, Category = "Prefab Sign Data" )
+	float Emissive;
+
+	UPROPERTY( BlueprintReadWrite, Category = "Prefab Sign Data" )
+	float Glossiness;
+
+	UPROPERTY( BlueprintReadWrite, Category = "Prefab Sign Data" )
 	TSubclassOf < UFGSignTypeDescriptor > SignTypeDesc;
 
 	// For clients to know if they should call the server RPC to set the data when they receive new data (if from replication don't trigger the RPC as it came from an RPC)

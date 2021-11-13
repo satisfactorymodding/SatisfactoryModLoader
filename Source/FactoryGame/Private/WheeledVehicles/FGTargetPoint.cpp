@@ -6,6 +6,7 @@
 void AFGTargetPoint::Tick(float DeltaSeconds){ }
 #endif 
 AFGTargetPoint::AFGTargetPoint() : Super() {
+	this->mOwningList = nullptr;
 	this->mNext = nullptr;
 	this->mWaitTime = 3.0;
 	this->mTargetSpeed = -1;

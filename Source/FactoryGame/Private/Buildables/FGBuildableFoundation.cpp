@@ -7,6 +7,7 @@ AFGBuildableFoundation::AFGBuildableFoundation() : Super() {
 	this->mSize = 0.0;
 	this->mHeight = 0.0;
 	this->mElevation = 0.0;
+	this->mIsFrame = false;
 	this->mDisableSnapOn.Front = false;
 	this->mDisableSnapOn.Right = false;
 	this->mDisableSnapOn.Back = false;

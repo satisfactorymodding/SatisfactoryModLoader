@@ -6,6 +6,8 @@ UFGCompassWidget::UFGCompassWidget(const FObjectInitializer& ObjectInitializer) 
 	this->mCompassPanel = nullptr;
 	this->mContentPanel = nullptr;
 	this->mCompassLine = nullptr;
+	this->mActorRepresentationManager = nullptr;
+	this->mCurrentCenteredObject = nullptr;
 	this->mThresholdForCenteredObjects = 0.3;
 	this->mThresholdForCenteredResourceObjects = 0.5;
 }

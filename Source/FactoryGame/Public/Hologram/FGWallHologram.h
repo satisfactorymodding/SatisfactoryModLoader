@@ -73,6 +73,9 @@ private:
 	/** Ratios for the snapping zones, how much of the wall to hit for snap to either direction. */
 	float mSnapSidesHitZoneRatio;
 
+	/** Whether or not we should use 180 degrees for our rotation step. */
+	bool mUse180RotationStep;
+
 	TSubclassOf<class AFGBuildableWall> mOriginalWallBuildClass;
 
 	UPROPERTY()

@@ -56,6 +56,9 @@ protected:
 	UFUNCTION( Server, Reliable )
 	void Server_StartChargedProjectileSecondary();
 
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_PrimaryFireStarted();
+
 	UFUNCTION( BlueprintNativeEvent, Category = "ChargedWeapon" )
 	void OnPrimaryFireStarted();
 
@@ -64,11 +67,14 @@ protected:
 
 	/** Called by an anim notify to actually trigger the spawn of the projectile*/
 	UFUNCTION( BlueprintCallable, Category = "ChargedWeapon" )
-	void ExecutePrimaryFire();
+	void ExecutePrimaryFire( FVector spawnLocation );
 
 	/** Called by client to start throw on server. */
 	UFUNCTION( Server, Reliable )
-	void Server_ExecutePrimaryFire();
+	void Server_ExecutePrimaryFire( FVector spawnLocation );
+
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_ResetPressTimestamp();
 
 	/** Called when the player presses secondary fire */
 	void SecondaryFirePressed();
@@ -127,10 +133,6 @@ protected:
 	FTimerHandle mSecondaryTriggerTimerHandle;
 
 private:
-	UPROPERTY(Replicated)
 	/** The time when we press the fire button */
 	float mPressTimestamp;
-
-	/** The time when we released the fire button */
-	float mPressReleaseTimestamp;
 };

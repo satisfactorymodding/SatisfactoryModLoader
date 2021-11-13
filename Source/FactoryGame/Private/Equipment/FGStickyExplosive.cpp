@@ -8,9 +8,9 @@ AFGStickyExplosive::AFGStickyExplosive() : Super() {
 	this->mDetonateIn = 0.0;
 	this->mEnvironmentDestructionSphere = nullptr;
 	this->mRotatingMovementComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComponent"));
-	this->mThrowRotation.Pitch = -384.892;
-	this->mThrowRotation.Yaw = -40.2504;
-	this->mThrowRotation.Roll = -200.585;
+	this->mThrowRotation.Pitch = -298.072;
+	this->mThrowRotation.Yaw = -44.1702;
+	this->mThrowRotation.Roll = -109.632;
 	this->mProjectileData.ProjectileClass = nullptr;
 	this->mProjectileData.ProjectileLifeSpan = 10.0;
 	this->mProjectileData.ProjectileStickSpan = 5.0;

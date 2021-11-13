@@ -4,6 +4,8 @@
 
 AFGBuildableResourceSink::AFGBuildableResourceSink() : Super() {
 	this->mCouponInventory = nullptr;
+	this->mResourceSinkSubsystem = nullptr;
+	this->mCouponClass = nullptr;
 	this->mProcessingTime = 3.0;
 	this->mProducingTimer = 0.0;
 }

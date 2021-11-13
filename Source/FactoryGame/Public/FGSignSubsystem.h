@@ -60,6 +60,8 @@ public:
 				*	Int32 Background_R
 				*	Int32 Background_G
 				*	Int32 Background_B	
+				*	float Emissive
+				*	float Glossiness
 				*/
 				for( uint32 i = 0; i < numSigns; ++i )
 				{
@@ -116,6 +118,11 @@ public:
 					Ar << color.R;
 					Ar << color.G;
 					Ar << color.B;
+
+					// Emissive
+					Ar << data.Emissive;
+					// Glossiness
+					Ar << data.Glossiness;
 				}
 			}
 			else
@@ -217,7 +224,16 @@ public:
 					Ar << G;
 					Ar << B;
 					data.AuxiliaryColor = FLinearColor( R, G, B, 1.f );
-					
+
+					float val = 0.f;
+					// Emissive
+					Ar << val;
+					data.Emissive = val;
+
+					// Glossiness
+					Ar << val;
+					data.Glossiness = val;
+
 					// Flag this as coming from replication so the client doesn't trigger a SetSignData RPC on the server
 					data.IsFromReplication = true;
 
@@ -323,6 +339,11 @@ public:
 			Ar << color.R;
 			Ar << color.G;
 			Ar << color.B;
+
+			// Emissive
+			Ar << SignData.Emissive;
+			// Glossiness
+			Ar << SignData.Glossiness;
 		}
 		else
 		{
@@ -378,6 +399,16 @@ public:
 			Ar << G;
 			Ar << B;
 			SignData.AuxiliaryColor = FLinearColor( R, G, B, 1.f );
+
+			float val = 0.f;
+			// Emissive
+			Ar << val;
+			SignData.Emissive = val;
+
+			// Glossiness
+			Ar << val;
+			SignData.Glossiness = val;
+			
 		}
 
 		return bOutSuccess;

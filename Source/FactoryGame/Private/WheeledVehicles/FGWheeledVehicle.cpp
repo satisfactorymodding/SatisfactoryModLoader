@@ -43,6 +43,9 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mAuthoritativeLinearVel.X = 0.0;
 	this->mAuthoritativeLinearVel.Y = 0.0;
 	this->mAuthoritativeLinearVel.Z = 0.0;
+	this->mReplicatedState.IsDrifting = false;
+	this->mReplicatedState.AddedAngularVelocityInputPitch = 0.0;
+	this->mReplicatedState.AddedAngularVelocityInputYaw = 0.0;
 	this->mSimulationMovement = nullptr;
 	this->mFuelInventory = nullptr;
 	this->mStorageInventory = nullptr;
@@ -82,7 +85,7 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mCurrentTarget = nullptr;
 	this->mRecordingStatus = ERecordingStatus::RS_NoRecording;
 	this->mSimulatedVehicle = nullptr;
-	this->mTimeToWaitForFuel = 5.0;
+	this->mWasFuelAdded = false;
 	this->mMinimumTimeAtStation = 10.0;
 	this->mIsGhosting = false;
 	this->mHasAutomatedFuelConsumption = false;
@@ -142,9 +145,7 @@ void AFGWheeledVehicle::MeasureVelocities(float deltaTime){ }
 FText AFGWheeledVehicle::GetDefaultMapName(TSubclassOf< AFGWheeledVehicle > vehicleType){ return FText(); }
 AFGDrivingTargetList* AFGWheeledVehicle::GetActiveTargetList() const{ return nullptr; }
 void AFGWheeledVehicle::SyncWithSimulation(){ }
-void AFGWheeledVehicle::StartDockingProcess(){ }
-void AFGWheeledVehicle::EndDockingProcess(){ }
-bool AFGWheeledVehicle::ShouldStayAtDock() const{ return bool(); }
+bool AFGWheeledVehicle::ShouldStayAtDock(){ return bool(); }
 float AFGWheeledVehicle::GetTotalFuelEnergy() const{ return float(); }
 float AFGWheeledVehicle::CalculateFuelNeed() const{ return float(); }
 float AFGWheeledVehicle::GetMaxFuelEnergy() const{ return float(); }

@@ -9,6 +9,7 @@ void UFGBuildingDescriptor::SetBuildableClass(TSubclassOf< UFGBuildingDescriptor
 #endif 
 UFGBuildingDescriptor::UFGBuildingDescriptor() : Super() {
 	this->mBuildableClass = nullptr;
+	this->mUseDisplayNameAndDescription = false;
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
 	this->mPreviewView.Distance = 1200.0;

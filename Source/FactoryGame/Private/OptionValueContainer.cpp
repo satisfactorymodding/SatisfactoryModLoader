@@ -2,6 +2,7 @@
 
 #include "OptionValueContainer.h"
 
+float OptionValueContainer::GetActiveNumericValue(const FString& cvar) const{ return float(); }
 int32 OptionValueContainer::GetActiveIntValue(FString cvar) const{ return int32(); }
 float OptionValueContainer::GetActiveFloatValue(FString cvar) const{ return float(); }
 int32 OptionValueContainer::GetIntDisplayValue(FString cvar) const{ return int32(); }

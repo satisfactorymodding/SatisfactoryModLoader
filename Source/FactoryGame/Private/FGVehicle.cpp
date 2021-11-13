@@ -20,14 +20,6 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mCustomizationData.SwatchDesc = nullptr;
 	this->mCustomizationData.PatternDesc = nullptr;
 	this->mCustomizationData.MaterialDesc = nullptr;
-	this->mCustomizationData.OverrideColorData.PrimaryColor.R = 0.0;
-	this->mCustomizationData.OverrideColorData.PrimaryColor.G = 0.0;
-	this->mCustomizationData.OverrideColorData.PrimaryColor.B = 0.0;
-	this->mCustomizationData.OverrideColorData.PrimaryColor.A = 1.0;
-	this->mCustomizationData.OverrideColorData.SecondaryColor.R = 0.0;
-	this->mCustomizationData.OverrideColorData.SecondaryColor.G = 0.0;
-	this->mCustomizationData.OverrideColorData.SecondaryColor.B = 0.0;
-	this->mCustomizationData.OverrideColorData.SecondaryColor.A = 1.0;
 	this->mCustomizationData.OverrideColorData.Metallic = 0.0;
 	this->mCustomizationData.OverrideColorData.Roughness = 0.0;
 	this->mCustomizationData.PatternRotation = 0;

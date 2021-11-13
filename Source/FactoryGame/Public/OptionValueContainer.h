@@ -35,6 +35,9 @@ class FACTORYGAME_API OptionValueContainer
 {
 
 public:
+	// Generic way to get a float value from an option no matter if it's a float or int option
+	float GetActiveNumericValue( const FString& cvar ) const;
+	
 	int32 GetActiveIntValue( FString cvar ) const;
 	float GetActiveFloatValue( FString cvar ) const;
 

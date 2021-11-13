@@ -8,6 +8,7 @@ AFGBuildableLightSource::AFGBuildableLightSource() : Super() {
 	this->mLightControlData.ColorSlotIndex = 0;
 	this->mLightControlData.Intensity = 1.0;
 	this->mLightControlData.IsTimeOfDayAware = false;
+	this->mCurrentLightColor = FLinearColor(1.0, 1.0, 1.0);
 	this->mPowerConsumption = 1.0;
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("powerInfo"));
 	this->mHasPower = false;

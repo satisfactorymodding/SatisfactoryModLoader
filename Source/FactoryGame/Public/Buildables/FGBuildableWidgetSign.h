@@ -120,6 +120,12 @@ protected:
 	UPROPERTY( SaveGame )
 	FLinearColor mAuxilaryColor;
 
+	UPROPERTY( SaveGame )
+	float mEmissive;
+
+	UPROPERTY( SaveGame )
+	float mGlossiness;
+
 	// When a signs data is changed, the server will increment this. When the onRep fires the client will add this sign to the PendingSigns array in the sign subsystem
 	UPROPERTY( ReplicatedUsing=OnRep_SignDataDirty )
 	uint8 mDataVersion;

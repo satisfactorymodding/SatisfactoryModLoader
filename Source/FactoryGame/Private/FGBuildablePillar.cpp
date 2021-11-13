@@ -6,4 +6,5 @@ AFGBuildablePillar::AFGBuildablePillar() : Super() {
 	this->mSize.X = 0.0;
 	this->mSize.Y = 0.0;
 	this->mSize.Z = 0.0;
+	this->mIsSupport = false;
 }

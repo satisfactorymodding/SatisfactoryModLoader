@@ -18,6 +18,7 @@ AActor* AFGTrainPlatformHologram::Construct(TArray< AActor* >& out_children, FNe
 void AFGTrainPlatformHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
 void AFGTrainPlatformHologram::PostHologramPlacement(){ }
 USceneComponent* AFGTrainPlatformHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
+void AFGTrainPlatformHologram::PreConfigureActor( AFGBuildable* inBuildable){ }
 void AFGTrainPlatformHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGTrainPlatformHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }
 bool AFGTrainPlatformHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }

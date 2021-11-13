@@ -5,6 +5,7 @@
 UFGBuildGunStateDismantle::UFGBuildGunStateDismantle() : Super() {
 	this->mHoverProxyMaterial = nullptr;
 	this->mMultiDismantleSpecifiedType = nullptr;
+	this->mCurrentlySelectedActor = nullptr;
 }
 void UFGBuildGunStateDismantle::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const{ }
 void UFGBuildGunStateDismantle::BeginState_Implementation(){ }

@@ -29,6 +29,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
 	float mElevation;
 
+	/** Whether or not this is a frame piece. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Foundation" )
+	bool mIsFrame;
+
 	/** Disable snapping on specific sides. */
 	UPROPERTY( EditDefaultsOnly, Category = "Foundation" )
 	FFoundationSideSelectionFlags mDisableSnapOn;

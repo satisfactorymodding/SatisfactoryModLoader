@@ -3,20 +3,11 @@
 #include "Equipment/FGItemDescAmmoTypeColorCartridge.h"
 
 UFGItemDescAmmoTypeColorCartridge::UFGItemDescAmmoTypeColorCartridge() : Super() {
-	this->mRedundantTargetCrosshairColor.R = 0.5;
-	this->mRedundantTargetCrosshairColor.G = 0.2;
-	this->mRedundantTargetCrosshairColor.B = 0.2;
-	this->mRedundantTargetCrosshairColor.A = 0.7;
+	this->mRedundantTargetCrosshairColor = FLinearColor(0.5, 0.2, 0.2, 0.7);
 	this->mRedundantTargetCrosshairTexture = nullptr;
-	this->mNoTargetCrosshairColor.R = 0.4;
-	this->mNoTargetCrosshairColor.G = 0.1;
-	this->mNoTargetCrosshairColor.B = 0.1;
-	this->mNoTargetCrosshairColor.A = 0.4;
+	this->mNoTargetCrosshairColor = FLinearColor(0.4, 0.1, 0.1, 0.4);
 	this->mNoTargetCrosshairTexture = nullptr;
-	this->mNonColorableTargetCrosshairColor.R = 0.1;
-	this->mNonColorableTargetCrosshairColor.G = 0.05;
-	this->mNonColorableTargetCrosshairColor.B = 0.05;
-	this->mNonColorableTargetCrosshairColor.A = 0.92;
+	this->mNonColorableTargetCrosshairColor = FLinearColor(0.1, 0.05, 0.05, 0.92);
 	this->mNonColorableTargetCrosshairTexture = nullptr;
 	this->mValidTargetCrosshairTexture = nullptr;
 	this->mColorSlot = 1;
