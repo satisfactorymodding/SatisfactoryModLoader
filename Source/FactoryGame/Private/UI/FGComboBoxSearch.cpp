@@ -45,10 +45,6 @@ UFGComboBoxSearch::UFGComboBoxSearch(const FObjectInitializer& ObjectInitializer
 	this->Font.OutlineSettings.bSeparateFillAlpha = false;
 	this->Font.OutlineSettings.bApplyOutlineToDropShadows = false;
 	this->Font.OutlineSettings.OutlineMaterial = nullptr;
-	this->Font.OutlineSettings.OutlineColor.R = 0.0;
-	this->Font.OutlineSettings.OutlineColor.G = 0.0;
-	this->Font.OutlineSettings.OutlineColor.B = 0.0;
-	this->Font.OutlineSettings.OutlineColor.A = 1.0;
 	this->Font.TypefaceFontName = TEXT("Bold");
 	this->Font.Size = 16;
 	this->Font.LetterSpacing = 0;

@@ -3,6 +3,7 @@
 #include "FGSaveSession.h"
 
 UFGSaveSession::UFGSaveSession() : Super() {
+	this->mAutosaveInterval = 0.0;
 	this->mNumRotatingAutosaves = 3;
 }
 UFGSaveSession::~UFGSaveSession(){ }

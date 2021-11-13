@@ -4,8 +4,5 @@
 
 UFGNavArea_HardNature::UFGNavArea_HardNature(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->DefaultCost = 1.01;
-	this->DrawColor.B = 166;
-	this->DrawColor.G = 166;
-	this->DrawColor.R = 166;
-	this->DrawColor.A = 255;
+	this->DrawColor = FColor(166, 166, 166);
 }

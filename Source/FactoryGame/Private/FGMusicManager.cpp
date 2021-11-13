@@ -12,6 +12,7 @@ void UFGMusicManager::OnPlayerEnteredArea_Implementation(AFGPlayerControllerBase
 UFGMusicManager::UFGMusicManager() : Super() {
 	this->mUpdateInterval = 5.0;
 	this->mFactoryCloseDistance = 10000.0;
+	this->mAkObject = nullptr;
 	this->mHasPlayerAlreadyVisitedArea = false;
 	this->mMusicManagerClassName = FSoftClassPath("/Game/FactoryGame/-Shared/Audio/Blueprints/BP_MusicManager.BP_MusicManager_C");
 }

@@ -29,6 +29,7 @@ bool UFGItemDescriptor::FGenerateIconContext::IsValid() const{ return bool(); }
 UFGItemDescriptor::FGenerateIconContext UFGItemDescriptor::GenerateIconContext = UFGItemDescriptor::FGenerateIconContext();
 #endif 
 UFGItemDescriptor::UFGItemDescriptor() : Super() {
+	this->mUseDisplayNameAndDescription = true;
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
 	this->mAbbreviatedDisplayName = INVTEXT("");
@@ -49,18 +50,13 @@ UFGItemDescriptor::UFGItemDescriptor() : Super() {
 	this->mCategory = nullptr;
 	this->mQuickSwitchGroup = nullptr;
 	this->mMenuPriority = 0.0;
-	this->mFluidColor.B = 0;
-	this->mFluidColor.G = 0;
-	this->mFluidColor.R = 0;
-	this->mFluidColor.A = 0;
-	this->mGasColor.B = 0;
-	this->mGasColor.G = 0;
-	this->mGasColor.R = 0;
-	this->mGasColor.A = 0;
+	this->mFluidColor = FColor(0, 0, 0, 0);
+	this->mGasColor = FColor(0, 0, 0, 0);
 	this->mResourceSinkPoints = 0;
 	this->mItemCategory = nullptr;
 	this->mBuildCategory = nullptr;
 	this->mBuildMenuPriority = 0.0;
+	this->mItemIndex = -1;
 }
 void UFGItemDescriptor::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGItemDescriptor::PostLoad(){ Super::PostLoad(); }

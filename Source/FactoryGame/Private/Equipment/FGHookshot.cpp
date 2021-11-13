@@ -2,8 +2,8 @@
 
 #include "Equipment/FGHookshot.h"
 #include "AkAudio/Classes/AkComponent.h"
-#include "Equipment/FGEquipment.h"
 #include "Components/SceneComponent.h"
+#include "Equipment/FGEquipment.h"
 
 AFGHookshot::AFGHookshot() : Super() {
 	this->mMaxHookDistance = 0.0;

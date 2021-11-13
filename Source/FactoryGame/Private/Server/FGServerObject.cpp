@@ -8,8 +8,17 @@ UFGServerObject::UFGServerObject() : Super() {
 	this->Address = TEXT("");
 	this->AuthenticationToken.PrivilegeLevel = EPrivilegeLevel::NotAuthenticated;
 	this->AuthenticationToken.Fingerprint = TEXT("");
+	this->BasicSettings.AutoPause = false;
+	this->BasicSettings.AutoSaveOnDisconnect = false;
+	this->BasicSettings.AutoLoadSessionName = TEXT("");
 	this->Alias = TEXT("");
 	this->QueryPort = 0;
+	this->ServerState = EServerState::Offline;
+	this->mAverageRoundtripTimeMs = 0;
+	this->mServerConsole = TEXT("");
+	this->ServerNetCL = 0;
+	this->ServerConnection = nullptr;
+	this->mWaitingForConsoleResult = false;
 }
 bool UFGServerObject::Join(){ return bool(); }
 bool UFGServerObject::IsConnected() const{ return bool(); }

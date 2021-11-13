@@ -5,6 +5,7 @@
 AFGBuildableResourceSinkShop::AFGBuildableResourceSinkShop() : Super() {
 	this->mShopInventory = nullptr;
 	this->mShopInventoryDefaultSize = 30;
+	this->mResourceSinkSubsystem = nullptr;
 }
 void AFGBuildableResourceSinkShop::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
 void AFGBuildableResourceSinkShop::BeginPlay(){ }

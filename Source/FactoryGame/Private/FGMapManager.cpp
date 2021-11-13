@@ -7,6 +7,7 @@ AFGMapManager* AFGMapManager::Get(UObject* worldContext){ return nullptr; }
 AFGMapManager::AFGMapManager() : Super() {
 	this->mFogOfWarTexture = nullptr;
 	this->mCachedMinimapCaptureActor = nullptr;
+	this->mActorRepresentationManager = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_DuringPhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

@@ -8,6 +8,7 @@ FVector UFGVehicleDescriptor::GetCenterOfCollision(){ return FVector(); }
 #endif 
 UFGVehicleDescriptor::UFGVehicleDescriptor() : Super() {
 	this->mVehicleClass = nullptr;
+	this->mUseDisplayNameAndDescription = false;
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
 	this->mPreviewView.Distance = 1200.0;

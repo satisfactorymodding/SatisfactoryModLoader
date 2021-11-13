@@ -4,6 +4,7 @@
 
 AFGPlayerController::AFGPlayerController() : Super() {
 	this->mCanAffectAudioVolumes = true;
+	this->mConsoleCommandManager = nullptr;
 	this->mInputComponentChords = nullptr;
 	this->mAttentionPingActorClass = nullptr;
 	this->mMapAreaCheckInterval = 0.25;

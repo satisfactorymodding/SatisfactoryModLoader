@@ -2,8 +2,8 @@
 
 #include "FGSubsystemClasses.h"
 #include "FGAdminInterface.h"
-#include "FGSignSubsystem.h"
 #include "FGFoliageRemovalSubsystem.h"
+#include "FGSignSubsystem.h"
 
 UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mStorySubsystemClass = nullptr;

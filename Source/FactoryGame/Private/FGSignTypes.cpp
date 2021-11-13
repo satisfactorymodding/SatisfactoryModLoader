@@ -14,16 +14,7 @@ FSignStringData FSignStringData::Empty = FSignStringData();
 UFGSignTypeDescriptor::UFGSignTypeDescriptor() : Super() {
 	this->mSignCanvasDimensions.X = 0.0;
 	this->mSignCanvasDimensions.Y = 0.0;
-	this->mDefaultForegroundColor.R = 0.0;
-	this->mDefaultForegroundColor.G = 0.0;
-	this->mDefaultForegroundColor.B = 0.0;
-	this->mDefaultForegroundColor.A = 0.0;
-	this->mDefaultBackgroundColor.R = 0.0;
-	this->mDefaultBackgroundColor.G = 0.0;
-	this->mDefaultBackgroundColor.B = 0.0;
-	this->mDefaultBackgroundColor.A = 0.0;
-	this->mDefaultAuxiliaryColor.R = 0.0;
-	this->mDefaultAuxiliaryColor.G = 0.0;
-	this->mDefaultAuxiliaryColor.B = 0.0;
-	this->mDefaultAuxiliaryColor.A = 0.0;
+	this->mDefaultForegroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mDefaultBackgroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mDefaultAuxiliaryColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 }

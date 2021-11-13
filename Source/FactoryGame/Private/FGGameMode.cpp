@@ -2,9 +2,9 @@
 
 #include "FGGameMode.h"
 #include "FGCharacterPlayer.h"
-#include "FGPlayerState.h"
-#include "FGHUD.h"
 #include "FGGameState.h"
+#include "FGHUD.h"
+#include "FGPlayerState.h"
 
 AFGGameMode::AFGGameMode() : Super() {
 	this->mSaveSession = nullptr;

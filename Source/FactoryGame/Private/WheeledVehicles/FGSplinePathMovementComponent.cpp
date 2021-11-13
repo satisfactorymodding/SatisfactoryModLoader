@@ -7,7 +7,10 @@ void UFGSplinePathMovementComponent::DrawDebugVehicle(int visualDebugLevel, int 
 #endif 
 UFGSplinePathMovementComponent::UFGSplinePathMovementComponent() : Super() {
 	this->mTargetList = nullptr;
+	this->mTarget = nullptr;
+	this->mPreviousTarget = nullptr;
 	this->mEndOfPath = false;
+	this->mTemporaryPath = nullptr;
 	this->mTransitionTarget = nullptr;
 	this->mServerStartTime = 0.0;
 	this->mIsDocked = false;

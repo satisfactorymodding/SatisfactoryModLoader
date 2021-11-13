@@ -3,8 +3,5 @@
 #include "AI/FGNavArea_Water.h"
 
 UFGNavArea_Water::UFGNavArea_Water(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-	this->DrawColor.B = 255;
-	this->DrawColor.G = 30;
-	this->DrawColor.R = 30;
-	this->DrawColor.A = 255;
+	this->DrawColor = FColor(30, 30, 255);
 }
