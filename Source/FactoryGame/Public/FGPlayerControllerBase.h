@@ -143,11 +143,24 @@ public:
 	FORCEINLINE class AFGAdminInterface* GetAdminInterface() const { return mAdminInterface; }
 
 	virtual bool ProcessConsoleExec( const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor ) override;
+
+	/** Returns the most relevant save manager. This will be the local save manager in the main menu, the server save manager when playing on a server and authenticated as admin, or null when playing on a server without admin privilege */
+	UFUNCTION( BlueprintCallable, Category = "Utility")
+	TScriptInterface<class IFGSaveManagerInterface> GetMostRelevantSaveManager();
+
+	UFUNCTION( BlueprintCallable, Category = "Utility")
+	TScriptInterface<class IFGSaveManagerInterface> GetLocalSaveManager();
+
 protected:
 	/** Used to discard any input when we are dead */
 	UFUNCTION()
 	void DiscardInput();
 
+	virtual void SetPlayer(UPlayer* InPlayer);
+	virtual void OnNetCleanup(class UNetConnection* Connection) override;
+
+	UPROPERTY( BlueprintReadOnly )
+	class UFGServerObject* mCurrentServer = nullptr;
 private:
 	/** 
 	 * Enables or disables the input for all ActionBindings except for the ones specified in mAllowedInputWhenDead.
@@ -158,6 +171,8 @@ private:
 	 * @param enable - if true, then we enable our input, false we disable it
 	 */
 	void EnablePlayerInput( bool enable );
+
+	void SetCurrentServer( class UFGServerObject* CurrentServer );
 private:
 	/** Setup the input component that filters out the input that's used when dead */
 	void InitDeathInput();

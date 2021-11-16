@@ -29,8 +29,6 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mBuildGuideMesh = nullptr;
 	this->mBuildGuideWidth = 30.0;
 	this->mBuildGuideMaterial = nullptr;
-	this->mSignUprightIndicatorMesh = nullptr;
-	this->mSignUprightIndicatorMaterial = nullptr;
 	this->mInventoryDropCrate = nullptr;
 	this->mPowerShardClass = nullptr;
 	this->mBuildEffect = nullptr;

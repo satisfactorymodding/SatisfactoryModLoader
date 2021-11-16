@@ -345,7 +345,7 @@ protected:
 
 		// The RepPeriod of this Bucket
 		int32 BucketReplicationPeriod = 0;
-		int32 FramesTillReplicate = 0;
+		int32 FramesTillReplicate = 0; // @todo-repGraph This is no longer how its done since I changed to offloading the replication to the standard rep flow by just adding the actors to the rep list rather than manually replicating them as was done before
 		int32 LastReplicationFrame = 0;
 
 		// ZBucket globals

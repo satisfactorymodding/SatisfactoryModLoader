@@ -5,6 +5,9 @@
 #include "FGPipeConnectionComponentHyper.h"
 
 AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
+	this->mExitOffset.X = 0.0;
+	this->mExitOffset.Y = 0.0;
+	this->mExitOffset.Z = 0.0;
 	this->mConnection0 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection0"));
 	this->mConnection1 = CreateDefaultSubobject<UFGPipeConnectionComponentHyper>(TEXT("PipeHyperConnection1"));
 	this->NetDormancy = ENetDormancy::DORM_Initial;
@@ -14,7 +17,7 @@ AFGBuildablePipeHyper::AFGBuildablePipeHyper() : Super() {
 void AFGBuildablePipeHyper::BeginPlay(){ }
 float AFGBuildablePipeHyper::GetPipeProgressOfConnection_Implementation(const UFGPipeConnectionComponentBase* connectionEnteredThrough){ return float(); }
 void AFGBuildablePipeHyper::OnPipeMove_Implementation(UFGCharacterMovementComponent* charMove, float deltaTime){ }
-UFGPipeConnectionComponentBase* AFGBuildablePipeHyper::GetEndOfPipeInDirectionAndMaxDist(const UFGPipeConnectionComponentBase* enterFromConnection, float maxDist, float& distSoFar) const{ return nullptr; }
+UFGPipeConnectionComponentBase* AFGBuildablePipeHyper::GetEndOfPipeInDirectionAndMaxDist(const UFGPipeConnectionComponentBase* enterFromConnection, float maxDist, float& distSoFar, bool& endIsConnectionOne) const{ return nullptr; }
 bool AFGBuildablePipeHyper::OnPipeEnter_Implementation(UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough , const AActor* fromPipe){ return bool(); }
 const FName AFGBuildablePipeHyper::mConnectionName0 = FName();
 const FName AFGBuildablePipeHyper::mConnectionName1 = FName();

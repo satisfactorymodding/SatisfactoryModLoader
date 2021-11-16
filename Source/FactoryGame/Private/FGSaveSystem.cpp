@@ -2,9 +2,6 @@
 
 #include "FGSaveSystem.h"
 
-FSaveHeader::FSaveHeader(){ }
-bool FSaveHeader::NetSerialize(FArchive& ar,  UPackageMap* map, bool& out_success){ return bool(); }
-const FGuid FSaveHeader::GUID = FGuid();
 void UFGSaveSystem::Init(){ }
 FString UFGSaveSystem::GetSaveDirectoryPath(){ return FString(); }
 bool UFGSaveSystem::GetUserSaveDirectoryPath(const UWorld* world, FString& out_dirPath){ return bool(); }
@@ -13,8 +10,9 @@ FString UFGSaveSystem::GetBackupSaveDirectoryPath(){ return FString(); }
 void UFGSaveSystem::GetSourceSaveDirectoriesPaths(const UWorld* world, TArray<FString>& out_sourceSaves){ }
 UFGSaveSystem* UFGSaveSystem::Get( UWorld* world){ return nullptr; }
 UFGSaveSystem* UFGSaveSystem::Get( UObject* worldContext){ return nullptr; }
-void UFGSaveSystem::EnumerateSaveGames(FOnEnumerateSaveGamesComplete onCompleteDelegate, void* userData){ }
-TArray<FSaveHeader> UFGSaveSystem::EnumerateSaveGames(){ return TArray<FSaveHeader>(); }
+void UFGSaveSystem::NativeEnumerateSaveGames(FOnEnumerateSaveGamesComplete onCompleteDelegate, void* userData){ }
+void UFGSaveSystem::NativeEnumerateSessions(FOnEnumerateSessionsComplete onCompleteDelegate, void* userData){ }
+TArray<FSaveHeader> UFGSaveSystem::NativeEnumerateSaveGames(){ return TArray<FSaveHeader>(); }
 void UFGSaveSystem::GroupSavesPerSession(const TArray< FSaveHeader >& saves, TArray< FSessionSaveStruct >& out_groupedBySession){ }
 void UFGSaveSystem::SortSessions(TArray< FSessionSaveStruct >& sessions, ESaveSortMode sortMode, ESaveSortDirection sortDirection){ }
 void UFGSaveSystem::SortSaves(TArray< FSaveHeader >& saves, ESaveSortMode sortMode, ESaveSortDirection sortDirection){ }
@@ -24,21 +22,30 @@ void UFGSaveSystem::AddSessionNameToUsed(FString sessionName){ }
 bool UFGSaveSystem::IsValidSaveName(FString saveName){ return bool(); }
 bool UFGSaveSystem::SaveGameExistsSync(FString saveName){ return bool(); }
 ESaveExists UFGSaveSystem::GetCachedSaveExists(const TArray<FSaveHeader>& cachedSaves, const FString& saveName, const FString& currentSessionName){ return ESaveExists(); }
+ESaveExists UFGSaveSystem::GetCachedSaveExistsInSessions(const TArray<FSessionSaveStruct>& sessions, const FString& saveName, int32 CurrentSession){ return ESaveExists(); }
 void UFGSaveSystem::DeleteSaveFiles(const TArray<FString>& saveNames, FOnDeleteSaveGameComplete completeDelegate, void* userData){ }
 bool UFGSaveSystem::GetAbsolutePathForSaveGame(const UWorld* world, const FString& saveName, FString& out_absoluteSaveGame){ return bool(); }
 FString UFGSaveSystem::CreateAbsolutePath(const UWorld* world, const FString& saveName, bool saveInCommonDir){ return FString(); }
 FString UFGSaveSystem::SanitizeMapName(const FString& mapName){ return FString(); }
-SessionNameType UFGSaveSystem::GenerateNewSessionName(){ return SessionNameType(); }
+FString UFGSaveSystem::GenerateNewSessionName(){ return FString(); }
 bool UFGSaveSystem::FindNewMapName(const FString& oldMapName, FString& out_newMapName){ return bool(); }
 bool UFGSaveSystem::FindNewClassName(const FString& oldClassName, FString& out_newClassName){ return bool(); }
 bool UFGSaveSystem::FindNewObjectName(const FString& oldObjectName, FString& out_newObjectName){ return bool(); }
 bool UFGSaveSystem::MoveSaveFileFromCommonToEpicLocation(const UWorld* world, const FString& saveName){ return bool(); }
 bool UFGSaveSystem::SaveFileExistsInCommonSaveDirectory(const FString& saveName){ return bool(); }
+void UFGSaveSystem::EnumerateSessions(const FOnSaveManagerEnumerateSessionsComplete& CompleteDelegate){ }
+bool UFGSaveSystem::IsEnumeratingLocalSaves(){ return bool(); }
+bool UFGSaveSystem::IsSaveManagerAvailable(){ return bool(); }
+void UFGSaveSystem::DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
+void UFGSaveSystem::DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
+void UFGSaveSystem::LoadSaveFile(const FSaveHeader& SaveGame,  APlayerController* Player){ }
+void UFGSaveSystem::SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate){ }
 void UFGSaveSystem::BackupSaveCleanup(){ }
 void UFGSaveSystem::MigrateSavesToNewLocation(const FString& oldSaveLocation){ }
 void UFGSaveSystem::FindSaveGames_Internal(const FString& saveDirectory, TArray<FSaveHeader>& out_saveGames){ }
 FString UFGSaveSystem::SaveNameToFileName(const FString& directory, const FString& saveName){ return FString(); }
 UWorld* UFGSaveSystem::GetWorld() const{ return nullptr; }
 void UFGSaveSystem::GatherUsedSaveIds(){ }
+FOnSaveCollectionChanged UFGSaveSystem::OnSaveCollectionChanged = FOnSaveCollectionChanged();
 bool UFGSaveSystem::mIsVerifyingSaveSystem = bool();
 bool UFGSaveSystem::mIsUsingBundledSaves = bool();

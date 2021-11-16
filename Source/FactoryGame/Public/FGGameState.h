@@ -11,6 +11,7 @@
 #include "FGFactoryColoringTypes.h"
 #include "FGUnlockSubsystem.h"
 #include "FGSchematic.h"
+#include "FGSwatchGroup.h"
 #include "FGGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FVisitedMapAreaDelegate, TSubclassOf< class UFGMapArea >, mapArea );
@@ -246,6 +247,10 @@ public:
 	/** Color Data Getter */
 	FFactoryCustomizationColorSlot GetBuildingColorDataForSlot( uint8 slot );
 
+	/** Swatch Group Helper */
+	UFUNCTION( BlueprintPure, Category="SwatchGroup" )
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > GetCurrentSwatchForSwatchGroup( TSubclassOf< UFGSwatchGroup > swatchGroup );
+
 	/** Called both on client and server. Apply primary color changes to the buildable subsystem*/
 	UFUNCTION()
 	void OnRep_BuildingColorSlot_Data();
@@ -278,6 +283,12 @@ public:
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
 	bool IsCustomizerRecipeUnlocked();
+
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Customization" )
+	TArray< FSwatchGroupData > GetSwatchGroupData() const { return mSwatchGroupDatum; }
+	
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	void SetDefaultSwatchForBuildableGroup( TSubclassOf< class UFGSwatchGroup > swatchGroup, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch> swatch );
 
 private:
 	/** Check the restart time of server and restart it and notify clients of the countdown */
@@ -413,6 +424,9 @@ private:
 	/** Customizable Global Color Presets. Players can add / remove */
 	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated )
 	TArray< FGlobalColorPreset > mPlayerGlobalColorPresets;
+
+	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated )
+	TArray< FSwatchGroupData > mSwatchGroupDatum;
 
 	/** 
 	 * The schematic that allows for the opening of the customizer menu.

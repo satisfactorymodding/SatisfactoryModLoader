@@ -6,19 +6,21 @@
 #include "CoreMinimal.h"
 #include "OnlineBeaconClient.h"
 #include "Server/FGDedicatedServerTypes.h"
+#include "FGSaveSystem.h"
 
 #include "FGServerBeaconClient.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN( LogServerConnection, Log, Log );
-DECLARE_LOG_CATEGORY_EXTERN( LogLargeDataTransfer, Verbose, Verbose )
 
 DECLARE_DELEGATE_TwoParams( FOnJoinRequestAccepted, int32 Port, FServerEntryToken Ticket );
-
-DECLARE_DELEGATE_OneParam( FOnLargeTransferCompleted, const class FLargeDataTransfer& Transfer );
 
 DECLARE_DELEGATE_TwoParams( FOnServerConnectionEstablished, class AFGServerBeaconClient& ServerConnection, const FString& ServerName );
 DECLARE_DELEGATE_OneParam( FOnServerConnectionFailure, class AFGServerBeaconClient& ServerConnection );
 DECLARE_DELEGATE_TwoParams( FOnServerCommandExecuted, const FString& Command, const FString& Result );
+DECLARE_DELEGATE_TwoParams( FOnServerOperationCompleted, bool Success, const FText& ErrorMessage );
+DECLARE_DELEGATE_ThreeParams( FOnTransferCompletedInternal, class FLargeDataTransfer& Transfer, bool Success, const FText& ErrorMessage );
+DECLARE_DELEGATE_TwoParams( FOnTransferCompleted, bool Success, const FText& ErrorMessage );
+DECLARE_DELEGATE_TwoParams( FOnTransferProgress, int32 Progress, int32 Total );
 
 UCLASS( Abstract, Blueprintable, BlueprintType )
 class FACTORYGAME_API UFGBaseServerInteractionHandler : public UObject, public IFGDedicatedServerUIProxy
@@ -40,7 +42,7 @@ public:
 class FLargeDataTransfer
 {
 public:
-	FLargeDataTransfer( const TArray<uint8>& Data, FOnLargeTransferCompleted OnTransferCompleted );
+	FLargeDataTransfer( const TArray<uint8>& Data, FOnTransferCompletedInternal OnTransferCompletedInternal, FOnTransferCompleted OnTransferCompleted, FOnTransferProgress OnTransferProgress);
 	FLargeDataTransfer( const FGuid& ID, int32 Size );
 	
 	FLargeDataTransfer( const FLargeDataTransfer&) = delete;
@@ -48,13 +50,18 @@ public:
 	FLargeDataTransfer& operator=(const FLargeDataTransfer&) = delete;
 	FLargeDataTransfer& operator=(FLargeDataTransfer&&) = delete;
 
+	bool operator==(const FLargeDataTransfer& Other ) const;
+
 	TArray<uint8> GetChunk( int32 Chunk ) const;
 	bool SetChunk( int32 Chunk, const TArray<uint8>& ChunkData );
 	int32 NumChunks() const;
 	int32 NumTransferredChunks() const;
 	void ChunkTransferred();
 	const FGuid& GetID() const;
-	const FOnLargeTransferCompleted& OnLargeTransferCompleted() const;
+	const FOnTransferCompleted& OnTransferCompleted() const;
+	const FOnTransferProgress& OnTransferProgress() const;
+	const FOnTransferCompletedInternal& OnTransferCompletedInternal() const;
+	
 	const TArray<uint8>& GetData() const
 	{
 		return mData;
@@ -64,7 +71,9 @@ private:
 	int32 mTransferredChunks = 0;
 	TArray<uint8> mData;
 	FGuid mTransferID;
-	FOnLargeTransferCompleted mOnTransferCompleted;
+	FOnTransferCompleted mOnTransferCompleted;
+	FOnTransferProgress mOnTransferProgress;
+	FOnTransferCompletedInternal mOnTransferCompletedInternal;
 };
 
 /**
@@ -76,7 +85,6 @@ UCLASS( BlueprintType )
 class FACTORYGAME_API AFGServerBeaconClient : public AOnlineBeaconClient
 {
 	GENERATED_BODY()
-
 public:
 	/// Initiates a connection to the dedicated server specified by @ServerAdress. Uses @UIProxy if the server asks for user input.
 	/// UIProxy !!must!! be a living object
@@ -99,10 +107,11 @@ public:
 	UFUNCTION( Server, Reliable )
 	void CancelOperation();
 
-	/// Uploads the array contents passed in to the server, saves them to a savegame with @SaveName as a name and if @LoadImmediately is set it also loads the savegame right away.
-	UFUNCTION( BlueprintCallable )
-	void CopySaveGame_ClientToServer( const TArray<uint8>& RawSaveFile, const FString& SaveName, bool LoadImmediately );
+	/// Uploads a save file to the server
+	void UploadSaveGame( const FSaveHeader& SaveGame, FOnTransferCompleted CompleteDelegate, FOnTransferProgress ProgressDelegate );
 
+	bool HasOngoingTransfers() const; 
+	
 	/// Shuts down the server
 	UFUNCTION( Server, Reliable )
 	void Shutdown_Server();
@@ -117,7 +126,7 @@ public:
 
 	UFUNCTION( Server, Reliable )
 	void AuthenticationRequest( const FServerAuthenticationToken &CurrentAuth, EPrivilegeLevel MinimumPrivilege );
-
+	
 	const FServerAuthenticationToken& GetAuthenticationToken() const
 	{
 		return mAuthenticationToken;
@@ -142,6 +151,14 @@ public:
 	/// Changes the server name
 	UFUNCTION( Server, Reliable )
 	void RenameServer( const FString& ServerName );
+
+	void EnumerateSaveSessions( FOnEnumerateSessionsComplete OnCompletion, void* UserData );
+	void SaveGame( const FString& SaveName, FOnServerOperationCompleted OnCompletion );
+	void DeleteSaveFile(const FSaveHeader& SaveGame, FOnDeleteSaveGameComplete CompleteDelegate, void* UserData );
+	void DeleteSaveSession(const FSessionSaveStruct& Session, FOnDeleteSaveGameComplete CompleteDelegate, void* UserData );
+	
+	UFUNCTION( Server, Reliable )
+	void LoadSaveFile(const FSaveHeader& SaveGame); 	
 
 protected:
 	virtual void OnConnected() override;
@@ -225,8 +242,11 @@ private:
 	void LargeDataTransfer_Cleanup_C2S( const FGuid& TransferID );
 
 	/// Writes the contents of a completed large data transfer to a save file and optionally loads it immediately. 
-	UFUNCTION( Server, Reliable, WithValidation )
-	void LargeDataTransfer_WriteToSaveFile_C2S( const FGuid& TransferID, const FString& SaveName, bool LoadImmediately, bool CleanTransfer = true);
+	UFUNCTION( Server, Reliable )
+	void Request_WriteRawBufferToSaveFile_Server( const FGuid& BufferID, const FString& SaveName, bool CleanTransfer = true );
+
+	UFUNCTION( Client, Reliable )
+	void Response_WriteRawBufferToSaveFile_Server( const FGuid& BufferID, bool Success, const FText& Error );
 
 	/// Cleans up all state associated to a data transfer
 	FLargeDataTransfer* GetTransfer(FGuid ID);
@@ -295,6 +315,34 @@ private:
 
 	UFUNCTION( Server, Reliable )
 	void QueryServerState_Server();
+
+	UFUNCTION( Server, Reliable )
+	void Request_EnumerateSessions( const FGuid& RequestID );
+
+	UFUNCTION( Client, Reliable )
+	void Response_EnumerateSessions( const FGuid& RequestID, bool Success, const TArray<FSessionSaveStruct> &Sessions, int32 CurrentSessionIx );
+
+	UFUNCTION( Server, Reliable )
+	void SaveGameRequest( const FGuid& RequestID, const FString& SaveName );
+
+	UFUNCTION( Client, Reliable )
+	void SaveGameResponse( const FGuid& RequestID, bool Success, const FText& ErrorMessage );
+
+	UFUNCTION( Server, Reliable )
+	void DeleteSaveFileRequest( const FGuid& RequestID, const FSaveHeader& SaveGame );
+
+	UFUNCTION( Client, Reliable )
+	void DeleteSaveFileResponse( const FGuid& RequestID, bool Success );
+
+	UFUNCTION( Server, Reliable )
+	void DeleteSaveSessionRequest( const FGuid& RequestID, const FSessionSaveStruct& Session );
+
+	UFUNCTION( Client, Reliable )
+	void DeleteSaveSessionResponse( const FGuid& RequestID, bool Success );
+
+	friend class AFGServerBeaconHostObject;
+	UFUNCTION( Client, Reliable )
+	void Notify_SavesCollectionChanged();
 	
 	UPROPERTY()
 	TScriptInterface<class IFGDedicatedServerUIProxy> mUIProxy;
@@ -305,6 +353,10 @@ private:
 
 	FOnJoinRequestAccepted mOnJoinRequestAccepted;
 	TMap< FGuid, TPair<FString, FOnServerCommandExecuted > > mCommandExecutedDelegates;
+	TMap< FGuid, FOnEnumerateSaveGamesComplete > mEnumerateSavegamesDelegates;
+	TMap< FGuid, TPair< FOnEnumerateSessionsComplete, void* > > mEnumerateSessionsCompleteDelegates;
+	TMap< FGuid, TPair<FOnDeleteSaveGameComplete, void*> > mDeleteSaveRequestDelegates;
+	TMap< FGuid, FOnServerOperationCompleted > mPendingOperationsDelegates; 
 	
 	/// Authentication token. Contains level of privilege. 
 	FServerAuthenticationToken mAuthenticationToken;

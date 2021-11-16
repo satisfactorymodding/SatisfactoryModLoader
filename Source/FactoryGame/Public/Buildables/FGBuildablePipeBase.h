@@ -32,6 +32,11 @@ public:
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
 	// End Buildable interface
 
+	// Begin IFGDismantleInterface
+	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	virtual void Dismantle_Implementation() override;
+	// End IFGDismantleInterface
+
 	// Begin IFGSignificance Interface
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
@@ -65,6 +70,8 @@ public:
 	/** Get the spline data for this pipe. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Pipe" )
     FORCEINLINE TArray< FSplinePointData > GetSplineData() const { return mSplineData; };
+
+	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
 
 protected:
 	/**
@@ -117,6 +124,10 @@ protected:
 	/** The spline meshes for this train track. */
 	UPROPERTY( VisibleAnywhere, Category = "Spline" )
 	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
+
+	/** Saved passthroughs this pipeline is connected to. Used to notify passthrough when dismantled. */
+	UPROPERTY( SaveGame, Replicated )
+	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
 private:
 	friend class AFGPipelineHologram;

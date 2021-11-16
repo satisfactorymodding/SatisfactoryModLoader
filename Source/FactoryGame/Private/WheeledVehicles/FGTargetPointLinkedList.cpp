@@ -35,7 +35,7 @@ AFGTargetPoint* AFGDrivingTargetList::FindTargetByIndex(int index) const{ return
 AFGTargetPoint* AFGDrivingTargetList::FindPreviousTarget( AFGTargetPoint* currentTarget) const{ return nullptr; }
 AFGTargetPoint* AFGDrivingTargetList::GetNextTarget( AFGTargetPoint* currentTarget) const{ return nullptr; }
 AFGTargetPoint* AFGDrivingTargetList::FindBestTarget(AActor* vehicleActor, float withinLookAngle , float maxDistance) const{ return nullptr; }
-void AFGDrivingTargetList::GetMapPositions(float displaySize, TArray< FVector2D >& positions, FWidgetTransform& displayTransform){ }
+void AFGDrivingTargetList::GetMapData(float displaySize, FDrivingTargetListMapData& data){ }
 bool AFGDrivingTargetList::IsComplete() const{ return bool(); }
 void AFGDrivingTargetList::CleanUpDockingTargets( AFGBuildableDockingStation* onlyAtStation){ }
 bool AFGDrivingTargetList::IsNearingStation( AFGTargetPoint* queryTarget,  AFGBuildableDockingStation* station, int searchRange) const{ return bool(); }

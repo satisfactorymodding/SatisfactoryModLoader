@@ -172,7 +172,7 @@ private:
 	void AddConstructDisqualifier( TSubclassOf< class UFGConstructDisqualifier > disqualifier );
 
 	/** Aligns the pattern rotation with the forward vector of the actor. Useful to make sure patterns on foundations don't rotate depending on foundation rotation. */
-	float AlignPatternRotationWithActor( const AActor* actor, float currentPatternRotation ) const;
+	uint8 AlignPatternRotationWithActor( const AActor* actor, uint8 currentPatternRotation ) const;
 
 protected:
 	/** Material used on stencil proxies */

@@ -35,4 +35,21 @@ protected:
 	 * @return - The constructed vehicle on success; nullptr on failure.
 	 */
 	virtual class AFGVehicle* ConstructVehicle( FNetConstructionID netConstructionID ) const;
+
+	/** Useful for getting the  */
+	template< class TVehicleClass >
+	TVehicleClass* GetDefaultVehicle() const
+	{
+		TVehicleClass* cdo = mBuildClass->GetDefaultObject< TVehicleClass >();
+		fgcheck( cdo );
+		return cdo;
+	}
+	
+protected:
+	UPROPERTY()
+	FFactoryCustomizationData mCustomizationData;
+
+	/** The Color Swatch to use when building this hologram */
+	UPROPERTY()
+	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > mDefaultSwatch;
 };

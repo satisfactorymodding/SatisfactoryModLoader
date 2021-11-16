@@ -14,6 +14,9 @@ AFGBuildablePassthrough::AFGBuildablePassthrough() : Super() {
 	this->mMidMeshRotation.Pitch = 0.0;
 	this->mMidMeshRotation.Yaw = 0.0;
 	this->mMidMeshRotation.Roll = 0.0;
+	this->mEndCapTranslation.X = 0.0;
+	this->mEndCapTranslation.Y = 0.0;
+	this->mEndCapTranslation.Z = 0.0;
 	this->mClearanceHeightMin = 50.0;
 	this->mClearanceThickness = 80.0;
 	this->mUseSoftClearance = true;

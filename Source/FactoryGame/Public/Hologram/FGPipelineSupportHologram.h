@@ -38,6 +38,8 @@ public:
 	virtual AActor* Construct( TArray<AActor*>& out_children, FNetConstructionID constructionID ) override;
 	virtual void GetSupportedBuildModes_Implementation( TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes ) const override;
 	virtual void OnBuildModeChanged() override;
+
+	virtual int32 GetBaseCostMultiplier() const override;
 	// End AFGHologram interface
 
 	// Begin FGConstructionMessageInterface

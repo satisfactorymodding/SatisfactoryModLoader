@@ -3,6 +3,7 @@
 #include "FGVehicle.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "FGHealthComponent.h"
+#include "FGSwatchGroup.h"
 
 FVehicleSeat::FVehicleSeat(){ }
 void AFGVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
@@ -25,6 +26,7 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mCustomizationData.PatternRotation = 0;
 	this->mCustomizationData.ColorSlot = 0;
 	this->mCustomizationData.HasPower = 0;
+	this->mSwatchGroup = UFGSwatchGroup_Vehicle::StaticClass();
 	this->mBuiltWithRecipe = nullptr;
 	this->mIsSelfDriving = false;
 	this->mSelfDrivingController = nullptr;
@@ -130,6 +132,7 @@ void AFGVehicle::SetForceRealMode(bool forceRealMode){ }
 void AFGVehicle::SetForceSimulationMode(bool forceSimulationMode){ }
 void AFGVehicle::SetSimulated(bool newIsSimulated){ }
 void AFGVehicle::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
+TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGVehicle::GetDefaultSwatchCustomizationOverride(UObject* worldContext){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
 void AFGVehicle::OnCustomizationDataApplied(const FFactoryCustomizationData& customizationData){ }
 void AFGVehicle::OnRep_IsSimulated(){ }
 void AFGVehicle::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }

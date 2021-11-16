@@ -23,8 +23,16 @@ UFGServerObject::UFGServerObject() : Super() {
 bool UFGServerObject::Join(){ return bool(); }
 bool UFGServerObject::IsConnected() const{ return bool(); }
 void UFGServerObject::CreateGame(const FString& SessionName, const FString& StartingLocation, bool JoinOnceLoaded){ }
-void UFGServerObject::UploadSave(const  FSaveHeader& SaveHeader, bool LoadImmediately){ }
 void UFGServerObject::ConsoleCommand(const FString& Command){ }
+void UFGServerObject::EnumerateSessions(const FOnSaveManagerEnumerateSessionsComplete& CompleteDelegate){ }
+bool UFGServerObject::IsEnumeratingLocalSaves(){ return bool(); }
+bool UFGServerObject::IsSaveManagerAvailable(){ return bool(); }
+void UFGServerObject::DeleteSaveFile(const FSaveHeader& SaveGame, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
+void UFGServerObject::DeleteSaveSession(const FSessionSaveStruct& Session, FOnSaveMgrInterfaceDeleteSaveGameComplete CompleteDelegate){ }
+void UFGServerObject::LoadSaveFile(const FSaveHeader& SaveGame,   APlayerController* Player){ }
+void UFGServerObject::SaveGame(const FString& SaveName, FOnSaveMgrInterfaceSaveGameComplete CompleteDelegate){ }
+void UFGServerObject::UploadSave(const FSaveHeader& Save, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate){ }
+bool UFGServerObject::IsTransferInProgress(){ return bool(); }
 EBeaconConnectionState UFGServerObject::GetConnectionState(){ return EBeaconConnectionState(); }
 void UFGServerObject::SetServerState(EServerState NewState){ }
 void UFGServerObject::RegisterStateListener(TScriptInterface<  IFGServerStateListener> Listener){ }
@@ -48,6 +56,7 @@ void UFGServerObject::PollState(){ }
 UFGServerManager& UFGServerObject::GetOuterServerManager() const {
   return *Cast<UFGServerManager>(GetOuter());
 }
+void UFGServerObject::ServerSavesUpdated() const{ }
 void UFGServerObject::BeginDestroy(){ Super::BeginDestroy(); }
 void UFGServerObject::SaveState() const{ }
 void UFGServerObject::DropConnection(){ }

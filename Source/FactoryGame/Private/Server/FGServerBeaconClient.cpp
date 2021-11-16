@@ -4,21 +4,25 @@
 
 UWorld* UFGBaseServerInteractionHandler::GetWorld() const{ return nullptr; }
 FText UFGBaseServerInteractionHandler::GetServerMessageDescription(EServerMessage Message){ return FText(); }
-FLargeDataTransfer::FLargeDataTransfer(const TArray<uint8>& Data, FOnLargeTransferCompleted OnTransferCompleted) : mNumChunks(0) { }
+FLargeDataTransfer::FLargeDataTransfer(const TArray<uint8>& Data, FOnTransferCompletedInternal OnTransferCompletedInternal, FOnTransferCompleted OnTransferCompleted, FOnTransferProgress OnTransferProgress) : mNumChunks(0) { }
 FLargeDataTransfer::FLargeDataTransfer(const FGuid& ID, int32 Size) : mNumChunks(0) { }
+bool FLargeDataTransfer::operator==(const FLargeDataTransfer& Other) const{ return bool(); }
 TArray<uint8> FLargeDataTransfer::GetChunk(int32 Chunk) const{ return TArray<uint8>(); }
 bool FLargeDataTransfer::SetChunk(int32 Chunk, const TArray<uint8>& ChunkData){ return bool(); }
 int32 FLargeDataTransfer::NumChunks() const{ return int32(); }
 int32 FLargeDataTransfer::NumTransferredChunks() const{ return int32(); }
 void FLargeDataTransfer::ChunkTransferred(){ }
 const FGuid& FLargeDataTransfer::GetID() const{ return *(new FGuid); }
-const FOnLargeTransferCompleted& FLargeDataTransfer::OnLargeTransferCompleted() const{ return *(new FOnLargeTransferCompleted); }
+const FOnTransferCompleted& FLargeDataTransfer::OnTransferCompleted() const{ return *(new FOnTransferCompleted); }
+const FOnTransferProgress& FLargeDataTransfer::OnTransferProgress() const{ return *(new FOnTransferProgress); }
+const FOnTransferCompletedInternal& FLargeDataTransfer::OnTransferCompletedInternal() const{ return *(new FOnTransferCompletedInternal); }
 void AFGServerBeaconClient::Connect( UFGServerObject* ServerInfoObject, TScriptInterface<IFGDedicatedServerUIProxy> UIProxy){ }
 void AFGServerBeaconClient::JoinGame(FOnJoinRequestAccepted OnJoinRequestAccepted){ }
 void AFGServerBeaconClient::ChangeAdminPassword_Implementation(){ }
 void AFGServerBeaconClient::ChangeClientPassword_Implementation(){ }
 void AFGServerBeaconClient::CancelOperation_Implementation(){ }
-void AFGServerBeaconClient::CopySaveGame_ClientToServer(const TArray<uint8>& RawSaveFile, const FString& SaveName, bool LoadImmediately){ }
+void AFGServerBeaconClient::UploadSaveGame(const FSaveHeader& SaveGame, FOnTransferCompleted CompleteDelegate, FOnTransferProgress ProgressDelegate){ }
+bool AFGServerBeaconClient::HasOngoingTransfers() const{ return bool(); }
 void AFGServerBeaconClient::Shutdown_Server_Implementation(){ }
 void AFGServerBeaconClient::ConsoleCommand(const FString& Command, FOnServerCommandExecuted OnCompletion){ }
 void AFGServerBeaconClient::QueryServerState(){ }
@@ -33,6 +37,11 @@ bool AFGServerBeaconClient::SetAutoSaveOnDisconnect_Validate(bool AutoSaveOnDisc
 void AFGServerBeaconClient::SetAutoLoadSessionName_Implementation(const FString &SessionName){ }
 bool AFGServerBeaconClient::SetAutoLoadSessionName_Validate(const FString &SessionName){ return bool(); }
 void AFGServerBeaconClient::RenameServer_Implementation(const FString& ServerName){ }
+void AFGServerBeaconClient::EnumerateSaveSessions(FOnEnumerateSessionsComplete OnCompletion, void* UserData){ }
+void AFGServerBeaconClient::SaveGame(const FString& SaveName, FOnServerOperationCompleted OnCompletion){ }
+void AFGServerBeaconClient::DeleteSaveFile(const FSaveHeader& SaveGame, FOnDeleteSaveGameComplete CompleteDelegate, void* UserData){ }
+void AFGServerBeaconClient::DeleteSaveSession(const FSessionSaveStruct& Session, FOnDeleteSaveGameComplete CompleteDelegate, void* UserData){ }
+void AFGServerBeaconClient::LoadSaveFile_Implementation(const FSaveHeader& SaveGame){ }
 void AFGServerBeaconClient::OnConnected(){ }
 void AFGServerBeaconClient::OnFailure(){ }
 void AFGServerBeaconClient::OnNetCleanup(UNetConnection* Connection){ }
@@ -48,8 +57,8 @@ bool AFGServerBeaconClient::LargeDataTransfer_Chunk_C2S_Validate(const FGuid& Tr
 void AFGServerBeaconClient::LargeDataTransfer_AcknowledgeChunk_C2S_Implementation(const FGuid& TransferID, int32 ChunkIx){ }
 void AFGServerBeaconClient::LargeDataTransfer_Cleanup_C2S_Implementation(const FGuid& TransferID){ }
 bool AFGServerBeaconClient::LargeDataTransfer_Cleanup_C2S_Validate(const FGuid& TransferID){ return bool(); }
-void AFGServerBeaconClient::LargeDataTransfer_WriteToSaveFile_C2S_Implementation(const FGuid& TransferID, const FString& SaveName, bool LoadImmediately, bool CleanTransfer){ }
-bool AFGServerBeaconClient::LargeDataTransfer_WriteToSaveFile_C2S_Validate(const FGuid& TransferID, const FString& SaveName, bool LoadImmediately, bool CleanTransfer){ return bool(); }
+void AFGServerBeaconClient::Request_WriteRawBufferToSaveFile_Server_Implementation(const FGuid& BufferID, const FString& SaveName, bool CleanTransfer){ }
+void AFGServerBeaconClient::Response_WriteRawBufferToSaveFile_Server_Implementation(const FGuid& BufferID, bool Success, const FText& Error){ }
 FLargeDataTransfer* AFGServerBeaconClient::GetTransfer(FGuid ID){ return nullptr; }
 void AFGServerBeaconClient::DropTransfer(FGuid ID){ }
 bool AFGServerBeaconClient::ParseURL(const FString &URL, FString& Host, int16& Port){ return bool(); }
@@ -72,4 +81,13 @@ void AFGServerBeaconClient::RequestSetClientPassword_Implementation(){ }
 void AFGServerBeaconClient::RequestCreateGame_Implementation(){ }
 void AFGServerBeaconClient::PasswordRejected_Implementation(){ }
 void AFGServerBeaconClient::QueryServerState_Server_Implementation(){ }
+void AFGServerBeaconClient::Request_EnumerateSessions_Implementation(const FGuid& RequestID){ }
+void AFGServerBeaconClient::Response_EnumerateSessions_Implementation(const FGuid& RequestID, bool Success, const TArray<FSessionSaveStruct> &Sessions, int32 CurrentSessionIx){ }
+void AFGServerBeaconClient::SaveGameRequest_Implementation(const FGuid& RequestID, const FString& SaveName){ }
+void AFGServerBeaconClient::SaveGameResponse_Implementation(const FGuid& RequestID, bool Success, const FText& ErrorMessage){ }
+void AFGServerBeaconClient::DeleteSaveFileRequest_Implementation(const FGuid& RequestID, const FSaveHeader& SaveGame){ }
+void AFGServerBeaconClient::DeleteSaveFileResponse_Implementation(const FGuid& RequestID, bool Success){ }
+void AFGServerBeaconClient::DeleteSaveSessionRequest_Implementation(const FGuid& RequestID, const FSessionSaveStruct& Session){ }
+void AFGServerBeaconClient::DeleteSaveSessionResponse_Implementation(const FGuid& RequestID, bool Success){ }
+void AFGServerBeaconClient::Notify_SavesCollectionChanged_Implementation(){ }
 void AFGServerBeaconClient::PasswordPrompt(EPrivilegeLevel MinimumTargetPrivilege){ }

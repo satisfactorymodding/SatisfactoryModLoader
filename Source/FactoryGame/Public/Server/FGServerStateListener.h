@@ -12,7 +12,7 @@
 /**
  * 
  */
-UINTERFACE()
+UINTERFACE( Blueprintable )
 class FACTORYGAME_API UFGServerStateListener : public UInterface
 {
 	GENERATED_BODY()

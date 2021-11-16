@@ -14,6 +14,7 @@ AFGBuildableSignBase::AFGBuildableSignBase() : Super() {
 	this->mPoleOffset.Z = 0.0;
 	this->mPoleScale.X = 1.0;
 	this->mPoleScale.Y = 1.0;
+	this->mSignToSignOffset = 0.0;
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.bTickEvenWhenPaused = false;

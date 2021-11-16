@@ -52,7 +52,7 @@ bool AFGGameMode::FindInactivePlayer(APlayerController* PC){ return bool(); }
 void AFGGameMode::GenericPlayerInitialization(AController* C){ }
 void AFGGameMode::PostActorsInitialized(const UWorld::FActorsInitializedParams& inParams){ }
 uint8 AFGGameMode::GenerateNextAutosaveId(){ return uint8(); }
-void AFGGameMode::SetSaveSessionName(SessionNameType name){ }
+void AFGGameMode::SetSaveSessionName(FString name){ }
 bool AFGGameMode::ShouldSetupSave() const{ return bool(); }
 bool AFGGameMode::GetDefaultPlayerCapsuleSize(UWorld* world, float& out_capsuleRadius, float& out_capsuleHalfHeight){ return bool(); }
 bool AFGGameMode::RegisterRemoteCallObjectClass(TSubclassOf< UFGRemoteCallObject > inClass){ return bool(); }

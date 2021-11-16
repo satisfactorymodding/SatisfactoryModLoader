@@ -67,6 +67,9 @@ public:
 	/** Returns the 2d Scale (x/y) for signs attached to this sign when constructed */
 	FORCEINLINE FVector2D GetPoleScale() { return mPoleScale; }
 
+	/** Get Sign To Sign offset for hologram placement */
+	FORCEINLINE float GetSignToSignOffset() { return mSignToSignOffset; }
+
 protected:
 	friend class AFGStandaloneSignHologram;
 
@@ -88,4 +91,8 @@ protected:
 	// 2D x/y optional scaling to apply to the child sign poles of this sign
 	UPROPERTY( EditDefaultsOnly, Category = "SignBase" )
 	FVector2D mPoleScale;
+
+	// Optional value for aligning holograms on the Y axis for variable sizes
+	UPROPERTY( EditDefaultsOnly, Category = "SignBase" )
+	float mSignToSignOffset;
 };

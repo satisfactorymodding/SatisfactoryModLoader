@@ -3,6 +3,7 @@
 #include "Buildables/FGBuildablePipeline.h"
 #include "Components/SceneComponent.h"
 #include "FGPipeConnectionComponent.h"
+#include "FGSwatchGroup.h"
 
 void FQuantizedPipelineIndicatorData::SetFlowPct(float pct){ }
 float FQuantizedPipelineIndicatorData::GetFlowPct() const{ return float(); }
@@ -33,6 +34,7 @@ AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 	this->mFactoryTickFunction.bStartWithTickEnabled = true;
 	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mFactoryTickFunction.TickInterval = 0.0;
+	this->mSwatchGroup = UFGSwatchGroup_Pipeline::StaticClass();
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);
 }
@@ -42,14 +44,13 @@ void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipeline::Tick(float dt){ }
 void AFGBuildablePipeline::Factory_Tick(float dt){ }
 void AFGBuildablePipeline::Native_OnMaterialInstancesUpdated(){ }
+void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeline::LostSignificance_Implementation(){ }
 TSubclassOf< UFGPipeConnectionComponentBase > AFGBuildablePipeline::GetConnectionType_Implementation(){ return TSubclassOf<UFGPipeConnectionComponentBase>(); }
 FFluidBox* AFGBuildablePipeline::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipeline::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }
 void AFGBuildablePipeline::OnFluidDescriptorSet(){ }
-void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
-void AFGBuildablePipeline::Dismantle_Implementation(){ }
 TArray< AFGBuildablePipeline* > AFGBuildablePipeline::Split(AFGBuildablePipeline* pipeline, float offset, bool connectNewPipelines, AActor* instigator){ return TArray<AFGBuildablePipeline*>(); }
 AFGBuildablePipeline* AFGBuildablePipeline::Merge(TArray< AFGBuildablePipeline* > pipelines, AActor* instigator){ return nullptr; }
 float AFGBuildablePipeline::GetIndicatorContentPct() const{ return float(); }

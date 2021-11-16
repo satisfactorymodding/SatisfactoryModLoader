@@ -56,10 +56,10 @@ public:
 	uint8 GenerateNextAutosaveId();
 
 	/** Get the session id of our current session */
-	FORCEINLINE SessionNameType GetSaveSessionName() const{ return mSaveSessionName; }
+	FORCEINLINE FString GetSaveSessionName() const{ return mSaveSessionName; }
 
 	/** Set the session id of our current session */
-	void SetSaveSessionName( SessionNameType name );
+	void SetSaveSessionName( FString name );
 
 	/** Get the save system */
 	FORCEINLINE class UFGSaveSession* GetSaveSession() const{ return mSaveSession; }
