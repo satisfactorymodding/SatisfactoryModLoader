@@ -9,11 +9,12 @@ AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mSignTypeDescriptor = nullptr;
 	this->mPrefabLayout = nullptr;
 	this->mGainSignificanceDistance = 1000000.0;
+	this->mWidgetMaterial = nullptr;
 	this->mActivePrefabLayout = nullptr;
 	this->mForegroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mBackgroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mAuxilaryColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
-	this->mEmissive = 0.0;
+	this->mEmissive = 1.0;
 	this->mGlossiness = 0.0;
 	this->mDataVersion = 0;
 	this->mAllowColoring = false;

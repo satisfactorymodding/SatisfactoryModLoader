@@ -7,7 +7,31 @@
 #include "UObject/NoExportTypes.h"
 #include "FGSaveInterface.h"
 #include "Slate/WidgetTransform.h"
+#include "Containers/Map.h"
+#include "Math/TransformCalculus2D.h"
 #include "FGTargetPointLinkedList.generated.h"
+
+USTRUCT( BlueprintType )
+struct FDrivingTargetListMapData
+{
+	GENERATED_BODY()
+
+	UPROPERTY( BlueprintReadOnly )
+	TArray< FVector2D > PathPoints;
+
+	UPROPERTY( BlueprintReadOnly )
+	FWidgetTransform DisplayTransform;
+
+	UPROPERTY( BlueprintReadOnly )
+	TArray< FVector2D > StationLocations;
+
+	UPROPERTY( BlueprintReadOnly )
+	UTexture2D* StationIcon;
+
+	UPROPERTY( BlueprintReadOnly )
+	TArray< FWidgetTransform > ArrowTransforms;
+};
+
 
 /**
  * 
@@ -64,10 +88,10 @@ public:
 
 	int GetTargetCount() const { return mTargetCount; }
 
-	UFUNCTION( BlueprintPure, Category = "LinkedList" )
+	UFUNCTION( BlueprintPure, Category = "TargetList" )
 	float GetPathLength() const { return mPathLength; }
 
-	UFUNCTION( BlueprintPure, Category = "LinkedList" )
+	UFUNCTION( BlueprintPure, Category = "TargetList" )
 	float GetPathTime() const { return mPathTime; }
 
 	int FindTargetIndex( class AFGTargetPoint* target ) const;
@@ -90,8 +114,8 @@ public:
 	 * @param positions the output positions to be displayed, in display space
 	 * @param displayTransform the output transform to be applied on the display
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Target Point" )
-	void GetMapPositions( float displaySize, TArray< FVector2D >& positions, FWidgetTransform& displayTransform );
+	UFUNCTION( BlueprintCallable, Category = "TargetList" )
+	void GetMapData( float displaySize, FDrivingTargetListMapData& data );
 
 	bool IsComplete() const;
 
@@ -146,7 +170,7 @@ public:
 	class AFGTargetPoint* mCurrentTarget;
 
 	/** Max length that the linked list can be */
-	UPROPERTY( EditDefaultsOnly, Category = "LinkedList" )
+	UPROPERTY( EditDefaultsOnly, Category = "TargetList" )
 	int32 mMaxLength;
 
 	UPROPERTY()

@@ -30,12 +30,16 @@ public:
 
 	virtual void OnPipeMove_Implementation( UFGCharacterMovementComponent* charMove, float deltaTime ) override;
 
-	UFGPipeConnectionComponentBase* GetEndOfPipeInDirectionAndMaxDist( const UFGPipeConnectionComponentBase* enterFromConnection, float maxDist, float& distSoFar ) const;
+	UFGPipeConnectionComponentBase* GetEndOfPipeInDirectionAndMaxDist( const UFGPipeConnectionComponentBase* enterFromConnection, float maxDist, float& distSoFar, bool& endIsConnectionOne ) const;
 	virtual bool OnPipeEnter_Implementation( UFGCharacterMovementComponent* charMove, const UFGPipeConnectionComponentBase* connectionEnteredThrough = nullptr, const AActor* fromPipe = nullptr ) override;
 	// End FGHyperTube Interface
 private:
 
 	static const FName mConnectionName0;
 	static const FName mConnectionName1;
+
+	UPROPERTY()
+	FVector mExitOffset;
+
 };
 

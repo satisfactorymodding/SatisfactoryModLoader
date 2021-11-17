@@ -63,6 +63,9 @@ private:
 	FRotator mMidMeshRotation;
 
 	UPROPERTY()
+	FVector mEndCapTranslation;
+
+	UPROPERTY()
 	float mClearanceHeightMin;
 
 	UPROPERTY()

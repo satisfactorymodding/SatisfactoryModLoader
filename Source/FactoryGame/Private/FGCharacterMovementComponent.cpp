@@ -97,6 +97,7 @@ AFGParachute* UFGCharacterMovementComponent::GetCachedParachute(){ return nullpt
 AFGJumpingStilts* UFGCharacterMovementComponent::GetCachedJumpingStilts(){ return nullptr; }
 AFGHoverPack* UFGCharacterMovementComponent::GetCachedHoverPack(){ return nullptr; }
 void UFGCharacterMovementComponent::TickSlide(float delta){ }
+void UFGCharacterMovementComponent::ZeroOutFallVelocity(){ }
 void FSavedMove_FGMovement::Clear(){ }
 uint8 FSavedMove_FGMovement::GetCompressedFlags() const{ return uint8(); }
 bool FSavedMove_FGMovement::CanCombineWith(const FSavedMovePtr& newMove, ACharacter* character, float maxDelta) const{ return bool(); }

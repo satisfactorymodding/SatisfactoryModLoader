@@ -36,6 +36,7 @@ public:
 	class UStaticMesh* GetCapMesh() { return mCapMesh; }
 	FRotator GetMidMeshRotation() { return mMidMeshRotation; }
 	FRotator GetEndCapRotation() { return mEndCapRotation; }
+	FVector GetEndCapTranslation() { return mEndCapTranslation; }
 
 	bool GetIsUsingSoftClearance() const { return mUseSoftClearance; }
 
@@ -94,6 +95,9 @@ protected:
 	FRotator mMidMeshRotation;
 
 	UPROPERTY( EditDefaultsOnly )
+	FVector mEndCapTranslation;
+
+	UPROPERTY( EditDefaultsOnly )
 	float mClearanceHeightMin;
 
 	UPROPERTY( EditDefaultsOnly )
@@ -121,6 +125,7 @@ private:
 								float stepSize, 
 								FRotator midRotation , 
 								FRotator endRotation ,
+								FVector endCapTranslation,
 								UStaticMesh* midMesh, 
 								UStaticMesh* capMesh, 
 								TArray< UStaticMeshComponent* >& meshPool, 
@@ -132,7 +137,9 @@ private:
 /**
  * Mesh Constructor. Similar to the ConveyorLift template
  */
-template< typename MeshConstructor >  void AFGBuildablePassthrough::BuildStaticMeshes( USceneComponent* parent, const FVector& stepDir, float thickness, float stepSize, FRotator midRotation, FRotator endRotation, UStaticMesh* capMesh, UStaticMesh* midMesh,
+template< typename MeshConstructor >
+void AFGBuildablePassthrough::BuildStaticMeshes( USceneComponent* parent, const FVector& stepDir, float thickness, float stepSize, FRotator midRotation, FRotator endRotation,
+												 FVector capTranslation, UStaticMesh* capMesh, UStaticMesh* midMesh,
 												  TArray< UStaticMeshComponent* >& meshPool, MeshConstructor meshConstructor )
 {
 	const int32 numMeshes = FMath::Max( 1, FMath::RoundToInt( thickness / stepSize ) + 2 );
@@ -172,12 +179,12 @@ template< typename MeshConstructor >  void AFGBuildablePassthrough::BuildStaticM
 	// Update the last and first piece.
 	if( auto mesh = meshPool.Last() )
 	{
-		mesh->SetRelativeLocationAndRotation( ( ( stepDir * thickness ) / 2.f ) - magicFudgeDir, endRotation);
+		mesh->SetRelativeLocationAndRotation( ( ( ( stepDir * thickness ) / 2.f ) + capTranslation ) - magicFudgeDir, endRotation);
 		mesh->SetStaticMesh( capMesh );
 	}
 	if( auto mesh = meshPool[ 0 ] )
 	{
-		mesh->SetRelativeLocationAndRotation( (-( stepDir * thickness ) / 2.f ) + magicFudgeDir, FRotator( 0.f, 0.f, 180.f) + endRotation );
+		mesh->SetRelativeLocationAndRotation( (-( ( stepDir * thickness ) / 2.f ) - capTranslation ) + magicFudgeDir, FRotator( 0.f, 0.f, 180.f) + endRotation );
 		mesh->SetStaticMesh( capMesh );
 	}
 

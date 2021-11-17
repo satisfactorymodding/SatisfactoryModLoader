@@ -17,8 +17,12 @@ class FACTORYGAME_API AFGServerBeaconHostObject : public AOnlineBeaconHostObject
 
 	AFGServerBeaconHostObject();
 public:
+	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void OnClientConnected( AOnlineBeaconClient* NewClientActor, UNetConnection* ClientConnection ) override;
 	virtual void NotifyClientDisconnected(AOnlineBeaconClient* LeavingClientActor) override;
 	void PushBasicSettings();
+
+private:
+	void SavesCollectionChanged();
 };

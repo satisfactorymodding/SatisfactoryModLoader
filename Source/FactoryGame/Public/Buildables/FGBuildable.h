@@ -530,6 +530,9 @@ protected:
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Buildable" )
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > mDefaultSwatchCustomizationOverride;
 
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Buildable" )
+	TSubclassOf< class UFGSwatchGroup > mSwatchGroup;
+	
 	/** if true, then this buildable will accept swatches and patterns */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	bool mAllowColoring;

@@ -43,4 +43,4 @@ void UFGBuildGunStatePaint::SpawnPreviewActor(AFGBuildable* aimedAtBuildable, TS
 USceneComponent* UFGBuildGunStatePaint::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 void UFGBuildGunStatePaint::ValidateCost(){ }
 void UFGBuildGunStatePaint::AddConstructDisqualifier(TSubclassOf<  UFGConstructDisqualifier > disqualifier){ }
-float UFGBuildGunStatePaint::AlignPatternRotationWithActor(const AActor* actor, float currentPatternRotation) const{ return float(); }
+uint8 UFGBuildGunStatePaint::AlignPatternRotationWithActor(const AActor* actor, uint8 currentPatternRotation) const{ return uint8(); }

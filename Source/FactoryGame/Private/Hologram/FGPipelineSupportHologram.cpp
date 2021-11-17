@@ -30,6 +30,7 @@ void AFGPipelineSupportHologram::SetHologramLocationAndRotation(const FHitResult
 AActor* AFGPipelineSupportHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
 void AFGPipelineSupportHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf< UFGHologramBuildModeDescriptor > >& out_buildmodes) const{ }
 void AFGPipelineSupportHologram::OnBuildModeChanged(){ }
+int32 AFGPipelineSupportHologram::GetBaseCostMultiplier() const{ return int32(); }
 void AFGPipelineSupportHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGPipelineSupportHologram::SetSupportLength(float height){ }
 void AFGPipelineSupportHologram::SnapToConnection(UFGPipeConnectionComponentBase* connection,  AFGPipelineHologram* parentPipeline){ }

@@ -3,6 +3,15 @@
 #include "Hologram/FGVehicleHologram.h"
 
 AFGVehicleHologram::AFGVehicleHologram() : Super() {
+	this->mCustomizationData.SwatchDesc = nullptr;
+	this->mCustomizationData.PatternDesc = nullptr;
+	this->mCustomizationData.MaterialDesc = nullptr;
+	this->mCustomizationData.OverrideColorData.Metallic = 0.0;
+	this->mCustomizationData.OverrideColorData.Roughness = 0.0;
+	this->mCustomizationData.PatternRotation = 0;
+	this->mCustomizationData.ColorSlot = 0;
+	this->mCustomizationData.HasPower = 0;
+	this->mDefaultSwatch = nullptr;
 	this->mSoftClearanceOverlapResponse = EHologramSoftClearanceResponse::HSCR_Block;
 }
 void AFGVehicleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }

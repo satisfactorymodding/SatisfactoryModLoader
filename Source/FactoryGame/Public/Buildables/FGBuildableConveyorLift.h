@@ -167,7 +167,7 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 	}
 	
 	// One less mesh is needed when snapping to two passthroughs
-	if( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] )
+	if( ( snappedPassthroughs[ 0 ] && snappedPassthroughs[ 1 ] ) || snappedPassthroughs[ 1 ] )
 	{
 		--numMeshes;
 	}
@@ -257,17 +257,9 @@ void AFGBuildableConveyorLift::BuildStaticMeshes( USceneComponent* parent, const
 		}
 		else
 		{
-			if( snappedPassthroughs[ 0 ] != nullptr )
-			{
-				// When snapping to a passthrough at the top we replace the top output with a mid mesh segment. Half a mid mesh if that is desirable
-				mesh->SetRelativeRotation( midRotation );
-				mesh->SetStaticMesh( useHalfMeshEnd ? halfMidMesh : midMesh );
-			}
-			else
-			{
-				mesh->SetRelativeLocationAndRotation( endTransform.GetLocation(), endTransform.GetRotation() );
-				mesh->SetStaticMesh( isReversed ? bottomMesh : topMesh );
-			}
+			// When snapping to a passthrough at the top we replace the top output with a mid mesh segment. Half a mid mesh if that is desirable
+			mesh->SetRelativeRotation( midRotation );
+			mesh->SetStaticMesh( useHalfMeshEnd ? halfMidMesh : midMesh );
 		}
 	}
 	if( auto mesh = meshPool[ 0 ] )

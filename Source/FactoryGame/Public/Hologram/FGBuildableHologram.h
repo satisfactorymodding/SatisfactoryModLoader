@@ -286,9 +286,18 @@ protected:
 	template< class TBuildableClass >
 	TBuildableClass* GetDefaultBuildable() const
 	{
-		TBuildableClass* cdo = mBuildClass->GetDefaultObject< TBuildableClass >();
-		fgcheck( cdo );
-		return cdo;
+		if( mBuildClass->IsChildOf( TBuildableClass::StaticClass() ) )
+		{
+			TBuildableClass* cdo = mBuildClass->GetDefaultObject< TBuildableClass >();
+		
+			return cdo;
+		}
+
+		UE_LOG( LogBuilding, Warning, TEXT( "\"%s\": Tried to GetDefaultBuildable of class \"%s\" but was not able to. BuildClass is \"%s\"" ), *GetName(), *TBuildableClass::StaticClass()->GetName(), *mBuildClass->GetName() );
+		
+		ensure( false );
+
+		return nullptr;
 	}
 	
 	/**

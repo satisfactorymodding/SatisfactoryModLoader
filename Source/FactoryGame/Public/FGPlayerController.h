@@ -179,8 +179,13 @@ public:
 	UFUNCTION( Reliable, Server )
 	void Server_AddPlayerColorPreset( const FText& presetName, FLinearColor color );
 
-
-
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|SwatchGroup" )
+	void SetDefaultSwatchForBuildableGroup( TSubclassOf< class UFGSwatchGroup > swatchGroup, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > newSwatch );
+	
+	/** Set the default swatch for */
+	UFUNCTION( Reliable, Server )
+	void Server_SetDefaultSwatchForBuildableGroup( TSubclassOf< class UFGSwatchGroup > swatchGroup, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > newSwatch );
+	
 	/** Set the current hotbar index */
 	void SetHotbarIndex( int32 newIndex );
 

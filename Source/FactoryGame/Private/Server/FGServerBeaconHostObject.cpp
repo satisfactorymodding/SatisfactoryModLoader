@@ -14,7 +14,9 @@ AFGServerBeaconHostObject::AFGServerBeaconHostObject() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 1.0;
 }
+void AFGServerBeaconHostObject::BeginPlay(){ }
 void AFGServerBeaconHostObject::Tick(float DeltaSeconds){ }
 void AFGServerBeaconHostObject::OnClientConnected(AOnlineBeaconClient* NewClientActor, UNetConnection* ClientConnection){ }
 void AFGServerBeaconHostObject::NotifyClientDisconnected(AOnlineBeaconClient* LeavingClientActor){ }
 void AFGServerBeaconHostObject::PushBasicSettings(){ }
+void AFGServerBeaconHostObject::SavesCollectionChanged(){ }

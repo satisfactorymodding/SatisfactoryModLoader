@@ -163,14 +163,6 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "BuildGuides|Alignment" )
 	class UMaterialInstance* mBuildGuideMaterial;
 
-	/** Mesh used for upright indicators for the signs. @note Do not set in code! */
-	UPROPERTY( EditDefaultsOnly, Category = "Signs" )
-	class UStaticMesh* mSignUprightIndicatorMesh;
-
-	/** Material applied to upright indicators of signs. @note Do not set in code! */
-	UPROPERTY( EditDefaultsOnly, Category = "Signs" )
-	class UMaterialInstance* mSignUprightIndicatorMaterial;
-
 	/** Crate spawned when we dismantle an actor or when we die. It will be filled with the refund if it doesn't fit in the players inventory. */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	TSubclassOf< class AFGCrate > mInventoryDropCrate;

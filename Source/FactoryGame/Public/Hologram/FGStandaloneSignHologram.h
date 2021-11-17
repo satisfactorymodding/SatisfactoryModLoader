@@ -63,9 +63,6 @@ private:
 	UPROPERTY( Replicated )
 	class AFGSignPoleHologram* mChildSignPoleHologram = nullptr;
 
-	UPROPERTY()
-	class UStaticMeshComponent* mUprightIndicatorMesh;
-
 	/* The world size sign dimensions of the sign being constructed */
 	FVector2D mSignDimensions;
 
@@ -74,4 +71,7 @@ private:
 
 	/** The scale size for the poles pulled from the buildable class */
 	FVector2D mPoleScale;
+
+	/** Optional value for aligning holograms on the Y axis for variable sizes */
+	float mSignToSignOffset;
 };

@@ -325,6 +325,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
 	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
 
+	UFUNCTION()
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > GetDefaultSwatchCustomizationOverride( UObject* worldContext );
+
 protected:
 	/** Called when customization data is applied. Allows child vehicles to update their simulated vehicles to keep colors synced */
 	virtual void OnCustomizationDataApplied( const FFactoryCustomizationData& customizationData );
@@ -446,6 +449,9 @@ protected:
 	/** Custom Color/Mat data. Stored in a TArray so it can be variable (or 0 size) to reduce save footprint since many buildings will only utilize the slot index */
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CustomColorData )
 	FFactoryCustomizationData mCustomizationData;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, Category = "Buildable" )
+	TSubclassOf< class UFGSwatchGroup > mSwatchGroup;
 
 private:
 	/** Recipe this vehicle was built with, e.g. used for refunds and stats. */

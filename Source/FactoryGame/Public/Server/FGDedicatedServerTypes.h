@@ -203,7 +203,7 @@ struct FServerBasicSettings
 /**
  * Aggregates the three states that can be determine what operations are possible into on state to simplify logic in blueprints
  **/ 
-UENUM()
+UENUM( BlueprintType )
 enum class EServerComplexState : uint8
 {
 	/**

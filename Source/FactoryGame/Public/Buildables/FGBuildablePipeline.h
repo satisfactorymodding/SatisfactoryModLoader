@@ -69,6 +69,10 @@ public:
 	virtual void Native_OnMaterialInstancesUpdated() override;
 	// End AFGBuildable interface
 
+	// Begin IFGDismantleInterface
+	virtual void Upgrade_Implementation( AActor* newActor ) override;
+	// End IFGDismantleInterface
+
 	// Begin Significance
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
@@ -83,11 +87,6 @@ public:
 	virtual TArray< class UFGPipeConnectionComponent* > GetPipeConnections() override;
 	virtual void OnFluidDescriptorSet() override;
 	// End FluidIntegrant Interface
-
-	// Begin IFGDismantleInterface
-	virtual void Upgrade_Implementation( AActor* newActor ) override;
-	virtual void Dismantle_Implementation() override;
-	// End IFGDismantleInterface
 
 	/**
 	 * Split this pipeline in two.
@@ -264,7 +263,4 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	class UAkAudioEvent* mStopRattleSoundEvent;
 
-	/** Saved passthroughs this pipeline is connected to. Used to notify passthrough when dismantled. */	
-	UPROPERTY( SaveGame, Replicated )
-	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 };
