@@ -15,6 +15,16 @@ void SAlpakitModEntryList::Construct(const FArguments& Args) {
                 .Text(LOCTEXT("PackageModAlpakitAll", "Alpakit All!"))
                 .OnClicked(this,& SAlpakitModEntryList::PackageAllMods)
             ]
+                + SHorizontalBox::Slot().AutoWidth()[
+                SNew(SButton)
+                .Text(LOCTEXT("PackageModCheckAll", "Check All"))
+                .OnClicked(this,& SAlpakitModEntryList::CheckAllMods)
+                ]
+                    + SHorizontalBox::Slot().AutoWidth()[
+                SNew(SButton)
+                .Text(LOCTEXT("PackageModUncheckAll", "Check None"))
+                .OnClicked(this,& SAlpakitModEntryList::UncheckAllMods)
+            ]
         ]
         + SVerticalBox::Slot().AutoHeight()[
             SAssignNew(ModList, SListView<TSharedRef<IPlugin>>)
@@ -158,6 +168,43 @@ FReply SAlpakitModEntryList::PackageAllMods() {
         First->PackageMod(NextEntries);
     }
 
+    return FReply::Handled();
+}
+
+FReply SAlpakitModEntryList::CheckAllMods() {
+    for (TSharedRef<IPlugin> Mod : FilteredMods) {
+        TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
+        if (!TableRow.IsValid()) {
+            UE_LOG(LogAlpakit, Display, TEXT("TableRow not found!"));
+            continue;
+        }
+
+        TSharedPtr<SAlpakitModEntry> ModEntry = StaticCastSharedPtr<SAlpakitModEntry>(TableRow->GetContent());
+        if (!ModEntry.IsValid()) {
+            UE_LOG(LogAlpakit, Display, TEXT("TableRow content is not valid!"));
+            continue;
+        }
+        ModEntry->SetSelected(true);
+    }
+    return FReply::Handled();
+}
+
+
+FReply SAlpakitModEntryList::UncheckAllMods() {
+    for (TSharedRef<IPlugin> Mod : FilteredMods) {
+        TSharedPtr<ITableRow> TableRow = ModList->WidgetFromItem(Mod);
+        if (!TableRow.IsValid()) {
+            UE_LOG(LogAlpakit, Display, TEXT("TableRow not found!"));
+            continue;
+        }
+
+        TSharedPtr<SAlpakitModEntry> ModEntry = StaticCastSharedPtr<SAlpakitModEntry>(TableRow->GetContent());
+        if (!ModEntry.IsValid()) {
+            UE_LOG(LogAlpakit, Display, TEXT("TableRow content is not valid!"));
+            continue;
+        }
+        ModEntry->SetSelected(false);
+    }
     return FReply::Handled();
 }
 
