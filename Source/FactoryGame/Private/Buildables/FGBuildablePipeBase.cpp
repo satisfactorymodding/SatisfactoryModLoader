@@ -25,7 +25,11 @@ AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->mSplineComponent->SetupAttachment(RootComponent);
 	this->mInstancedSplineComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildablePipeBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipeBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePipeBase, mSplineData);
+	DOREPLIFETIME(AFGBuildablePipeBase, mSnappedPassthroughs);
+}
 void AFGBuildablePipeBase::BeginPlay(){ }
 void AFGBuildablePipeBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 int32 AFGBuildablePipeBase::GetDismantleRefundReturnsMultiplier() const{ return int32(); }

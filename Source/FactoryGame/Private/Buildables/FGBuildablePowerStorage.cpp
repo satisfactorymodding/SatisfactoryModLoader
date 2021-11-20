@@ -12,7 +12,11 @@ AFGBuildablePowerStorage::AFGBuildablePowerStorage() : Super() {
 	this->mIndicatorLevel = 0;
 }
 void AFGBuildablePowerStorage::BeginPlay(){ }
-void AFGBuildablePowerStorage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildablePowerStorage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePowerStorage, mBatteryStatus);
+	DOREPLIFETIME(AFGBuildablePowerStorage, mIndicatorLevel);
+}
 bool AFGBuildablePowerStorage::Factory_HasPower() const{ return bool(); }
 bool AFGBuildablePowerStorage::CanProduce_Implementation() const{ return bool(); }
 EProductionStatus AFGBuildablePowerStorage::GetProductionIndicatorStatus() const{ return EProductionStatus(); }

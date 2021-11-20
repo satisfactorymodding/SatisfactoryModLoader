@@ -5,7 +5,10 @@
 AFGReplicationDetailActor_BuildableFactory::AFGReplicationDetailActor_BuildableFactory() : Super() {
 	this->mInventoryPotential = nullptr;
 }
-void AFGReplicationDetailActor_BuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_BuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGReplicationDetailActor_BuildableFactory, mInventoryPotential);
+}
 void AFGReplicationDetailActor_BuildableFactory::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_BuildableFactory::FlushReplicationActorStateToOwner(){ }
 bool AFGReplicationDetailActor_BuildableFactory::HasCompletedInitialReplication() const{ return bool(); }

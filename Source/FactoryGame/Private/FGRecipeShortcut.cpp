@@ -2,7 +2,10 @@
 
 #include "FGRecipeShortcut.h"
 
-void UFGRecipeShortcut::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGRecipeShortcut::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGRecipeShortcut, mRecipeToActivate);
+}
 void UFGRecipeShortcut::SetRecipe(TSubclassOf<  UFGRecipe > recipe){ }
 void UFGRecipeShortcut::Execute_Implementation( AFGPlayerController* owner){ }
 bool UFGRecipeShortcut::IsValidShortcut_Implementation( AFGPlayerController* owner) const{ return bool(); }

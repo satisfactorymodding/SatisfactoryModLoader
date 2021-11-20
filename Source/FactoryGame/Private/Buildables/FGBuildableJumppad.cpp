@@ -33,7 +33,11 @@ AFGBuildableJumppad::AFGBuildableJumppad() : Super() {
 	this->mShowTrajectoryCounter = 0;
 	this->mLauncherMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableJumppad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableJumppad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableJumppad, mLaunchAngle);
+	DOREPLIFETIME(AFGBuildableJumppad, mHasPowerForLaunch);
+}
 FVector AFGBuildableJumppad::GetLaunchDirection(){ return FVector(); }
 void AFGBuildableJumppad::SetLaunchAngle(float Angle){ }
 void AFGBuildableJumppad::SetTrajectoryVisibility(bool Visible){ }

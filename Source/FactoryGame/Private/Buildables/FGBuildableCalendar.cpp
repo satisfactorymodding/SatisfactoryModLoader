@@ -11,7 +11,11 @@ AFGBuildableCalendar::AFGBuildableCalendar() : Super() {
 }
 void AFGBuildableCalendar::BeginPlay(){ }
 void AFGBuildableCalendar::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGBuildableCalendar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableCalendar::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableCalendar, mInventory);
+	DOREPLIFETIME(AFGBuildableCalendar, mOpenedSlotsInCalendar);
+}
 void AFGBuildableCalendar::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }
 void AFGBuildableCalendar::OpenSlot(int32 dayNumber){ }
 bool AFGBuildableCalendar::GetContentOnSlot(int32 dayNumber, FInventoryStack& out_slotContent){ return bool(); }

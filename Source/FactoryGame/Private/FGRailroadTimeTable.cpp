@@ -7,7 +7,10 @@ AFGRailroadTimeTable::AFGRailroadTimeTable() : Super() {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
-void AFGRailroadTimeTable::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGRailroadTimeTable::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGRailroadTimeTable, mStops);
+}
 void AFGRailroadTimeTable::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRailroadTimeTable::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRailroadTimeTable::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

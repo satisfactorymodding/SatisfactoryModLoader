@@ -15,7 +15,11 @@ AFGBuildableRadarTower::AFGBuildableRadarTower() : Super() {
 	this->mActorRepresentationTexture = nullptr;
 	this->NetUpdateFrequency = 1.0;
 }
-void AFGBuildableRadarTower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableRadarTower::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableRadarTower, mCurrentExpansionStep);
+	DOREPLIFETIME(AFGBuildableRadarTower, mTimeToNextExpansion);
+}
 bool AFGBuildableRadarTower::AddAsRepresentation(){ return bool(); }
 bool AFGBuildableRadarTower::UpdateRepresentation(){ return bool(); }
 bool AFGBuildableRadarTower::RemoveAsRepresentation(){ return bool(); }

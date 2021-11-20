@@ -7,7 +7,10 @@ AFGBuildableResourceSinkShop::AFGBuildableResourceSinkShop() : Super() {
 	this->mShopInventoryDefaultSize = 30;
 	this->mResourceSinkSubsystem = nullptr;
 }
-void AFGBuildableResourceSinkShop::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableResourceSinkShop::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableResourceSinkShop, mShopInventory);
+}
 void AFGBuildableResourceSinkShop::BeginPlay(){ }
 void AFGBuildableResourceSinkShop::OnReplicationDetailActorCreated(){ }
 void AFGBuildableResourceSinkShop::OnReplicationDetailActorRemoved(){ }

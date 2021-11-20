@@ -41,4 +41,7 @@ void AFGPipelineSupportHologram::Scroll(int32 delta){ }
 void AFGPipelineSupportHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }
 void AFGPipelineSupportHologram::CheckValidPlacement(){ }
 void AFGPipelineSupportHologram::OnRep_SupportMesh(){ }
-void AFGPipelineSupportHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }
+void AFGPipelineSupportHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPipelineSupportHologram, mSupportMesh);
+}

@@ -2,7 +2,10 @@
 
 #include "FGCircuit.h"
 
-void UFGCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGCircuit, mCircuitID);
+}
 bool UFGCircuit::IsSupportedForNetworking() const{ return bool(); }
 bool UFGCircuit::IsNameStableForNetworking() const{ return bool(); }
 void UFGCircuit::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }

@@ -7,7 +7,10 @@ AFGBuildableSplitterSmart::AFGBuildableSplitterSmart() : Super() {
 	this->mLastOutputIndex = 0;
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 }
-void AFGBuildableSplitterSmart::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableSplitterSmart::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableSplitterSmart, mSortRules);
+}
 void AFGBuildableSplitterSmart::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 FSplitterSortRule AFGBuildableSplitterSmart::GetSortRuleAt(int32 index) const{ return FSplitterSortRule(); }
 void AFGBuildableSplitterSmart::AddSortRule(FSplitterSortRule rule){ }

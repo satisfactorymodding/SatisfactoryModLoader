@@ -9,8 +9,12 @@ AFGBuildableBeam::AFGBuildableBeam() : Super() {
 	this->mLength = 0.0;
 }
 void AFGBuildableBeam::BeginPlay(){ }
-void AFGBuildableBeam::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableBeam::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableBeam, mLength);
+}
 void AFGBuildableBeam::GetAttachmentPoints(TArray< const FFGAttachmentPoint* >& out_points) const{ }
 void AFGBuildableBeam::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+int32 AFGBuildableBeam::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableBeam::SetLength(float NewLength){ }
 void AFGBuildableBeam::OnRep_Length(){ }

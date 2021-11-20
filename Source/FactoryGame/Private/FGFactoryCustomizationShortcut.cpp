@@ -2,7 +2,10 @@
 
 #include "FGFactoryCustomizationShortcut.h"
 
-void UFGFactoryCustomizationShortcut::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGFactoryCustomizationShortcut::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGFactoryCustomizationShortcut, mCustomizationRecipeToActivate);
+}
 void UFGFactoryCustomizationShortcut::SetCustomizationRecipe(TSubclassOf<  UFGCustomizationRecipe > customization){ }
 void UFGFactoryCustomizationShortcut::Execute_Implementation( AFGPlayerController* owner){ }
 bool UFGFactoryCustomizationShortcut::IsValidShortcut_Implementation( AFGPlayerController* owner) const{ return bool(); }

@@ -16,7 +16,10 @@ UFGBuildGunStatePaint::UFGBuildGunStatePaint() : Super() {
 	this->mLastAppliedActor = nullptr;
 	this->mPreviewActor = nullptr;
 }
-void UFGBuildGunStatePaint::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGBuildGunStatePaint::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 void UFGBuildGunStatePaint::BeginState_Implementation(){ }
 void UFGBuildGunStatePaint::EndState_Implementation(){ }
 void UFGBuildGunStatePaint::TickState_Implementation(float deltaTime){ }

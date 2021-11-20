@@ -30,6 +30,10 @@ void AFGObjectScanner::Internal_PlayBeep(){ }
 void AFGObjectScanner::GetAllActorsOfClassAsWeakPtr(TSubclassOf<  AActor > actorClass, TArray< TWeakObjectPtr<  AActor > > &out_Actors){ }
 TArray<TTuple<FScannableDetails, int32>> AFGObjectScanner::GetCurrentDetailsWithIndex(){ return TArray<TTuple<FScannableDetails,int32>>(); }
 void AFGObjectScanner::TryToEquipDefaultObject(){ }
-void AFGObjectScannerAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGObjectScannerAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGObjectScannerAttachment, mIsBeeping);
+	DOREPLIFETIME(AFGObjectScannerAttachment, mScannerLightColor);
+}
 void AFGObjectScannerAttachment::OnRep_IsBeeping(){ }
 void AFGObjectScannerAttachment::OnRep_ScannerLightColor(){ }

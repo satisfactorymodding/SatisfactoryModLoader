@@ -8,7 +8,10 @@ AFGCrate::AFGCrate() : Super() {
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 }
-void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGCrate, mInventory);
+}
 void AFGCrate::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGCrate::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCrate::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

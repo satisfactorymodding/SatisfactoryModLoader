@@ -6,7 +6,10 @@ AFGDeathMarker::AFGDeathMarker() : Super() {
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 }
-void AFGDeathMarker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGDeathMarker::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDeathMarker, mMapText);
+}
 bool AFGDeathMarker::AddAsRepresentation(){ return bool(); }
 bool AFGDeathMarker::UpdateRepresentation(){ return bool(); }
 bool AFGDeathMarker::RemoveAsRepresentation(){ return bool(); }

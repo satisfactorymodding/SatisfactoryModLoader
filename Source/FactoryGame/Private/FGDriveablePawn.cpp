@@ -13,7 +13,11 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mDriver = nullptr;
 	this->mIsDriving = false;
 }
-void AFGDriveablePawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGDriveablePawn::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDriveablePawn, mDriver);
+	DOREPLIFETIME(AFGDriveablePawn, mIsDriving);
+}
 void AFGDriveablePawn::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDriveablePawn::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDriveablePawn::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

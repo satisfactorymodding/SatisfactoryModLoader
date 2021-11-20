@@ -5,7 +5,10 @@
 AFGReplicationDetailActor_CargoPlatform::AFGReplicationDetailActor_CargoPlatform() : Super() {
 	this->mCargoInventory = nullptr;
 }
-void AFGReplicationDetailActor_CargoPlatform::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_CargoPlatform::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGReplicationDetailActor_CargoPlatform, mCargoInventory);
+}
 void AFGReplicationDetailActor_CargoPlatform::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_CargoPlatform::RemoveDetailActorFromOwner(){ }
 void AFGReplicationDetailActor_CargoPlatform::FlushReplicationActorStateToOwner(){ }

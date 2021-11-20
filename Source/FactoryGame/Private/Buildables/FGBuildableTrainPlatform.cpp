@@ -28,7 +28,11 @@ AFGBuildableTrainPlatform::AFGBuildableTrainPlatform() : Super() {
 	this->mPlatformConnection1->SetupAttachment(RootComponent);
 }
 void AFGBuildableTrainPlatform::BeginPlay(){ }
-void AFGBuildableTrainPlatform::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableTrainPlatform::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableTrainPlatform, mDockedRailroadVehicle);
+	DOREPLIFETIME(AFGBuildableTrainPlatform, mPlatformDockingStatus);
+}
 void AFGBuildableTrainPlatform::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableTrainPlatform::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGBuildableTrainPlatform::CanDismantle_Implementation() const{ return bool(); }

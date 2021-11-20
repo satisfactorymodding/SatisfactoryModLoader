@@ -2,7 +2,10 @@
 
 #include "Buildables/FGBuildableManufacturer.h"
 
-void AFGBuildableManufacturer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableManufacturer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableManufacturer, mCurrentRecipe);
+}
 void AFGBuildableManufacturer::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 AFGBuildableManufacturer::AFGBuildableManufacturer() : Super() {
 	this->mManufacturingSpeed = 1.0;

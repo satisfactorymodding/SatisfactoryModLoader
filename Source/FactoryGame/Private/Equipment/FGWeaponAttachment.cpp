@@ -2,7 +2,10 @@
 
 #include "Equipment/FGWeaponAttachment.h"
 
-void AFGWeaponAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGWeaponAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 void AFGWeaponAttachment::PlayFireEffect_Implementation(FVector flashLocation){ }
 void AFGWeaponAttachment::Multicast_SetFlashLocation_Implementation(const FVector& newFlashLocation){ }
 void AFGWeaponAttachment::Multicast_PlayBeginFireEffect_Implementation(const FVector& location){ }

@@ -5,5 +5,8 @@
 AFGEquipmentBoomBox::AFGEquipmentBoomBox() : Super() {
 	this->mCurrentTapeDescriptor = nullptr;
 }
-void AFGEquipmentBoomBox::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGEquipmentBoomBox::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGEquipmentBoomBox, mCurrentTapeDescriptor);
+}
 TArray< TSubclassOf< class UFGTapeDescriptor > > AFGEquipmentBoomBox::GetAvailableTapes(){ return TArray<TSubclassOf<class UFGTapeDescriptor> >(); }

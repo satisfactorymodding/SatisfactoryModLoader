@@ -14,7 +14,11 @@ AFGBuildableDoor::AFGBuildableDoor() : Super() {
 }
 void AFGBuildableDoor::BeginPlay(){ }
 void AFGBuildableDoor::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
-void AFGBuildableDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableDoor, mDoorState);
+	DOREPLIFETIME(AFGBuildableDoor, mDoorConfiguration);
+}
 void AFGBuildableDoor::ConfigureDynamicDecoratorComponent(USceneComponent* newComponent){ }
 bool AFGBuildableDoor::IsUseable_Implementation() const{ return bool(); }
 void AFGBuildableDoor::OnUse_Implementation(AFGCharacterPlayer* byCharacter, const FUseState& state){ }

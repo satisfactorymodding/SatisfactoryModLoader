@@ -19,7 +19,12 @@ AFGResourceDeposit::AFGResourceDeposit() : Super() {
 	this->bNetLoadOnClient = false;
 	this->RootComponent = mDepositMeshComponent;
 }
-void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGResourceDeposit::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGResourceDeposit, mResourceDepositTableIndex);
+	DOREPLIFETIME(AFGResourceDeposit, mIsEmptied);
+	DOREPLIFETIME(AFGResourceDeposit, mMineAmount);
+}
 void AFGResourceDeposit::PostLoad(){ Super::PostLoad(); }
 void AFGResourceDeposit::BeginPlay(){ }
 void AFGResourceDeposit::RollResourceType(){ }

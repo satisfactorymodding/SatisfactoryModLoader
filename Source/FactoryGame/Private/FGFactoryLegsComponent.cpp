@@ -17,7 +17,10 @@ UFGFactoryLegsComponent::UFGFactoryLegsComponent() : Super() {
 	this->mMinimumLegLength = 40.0;
 	this->SetIsReplicatedByDefault(true);
 }
-void UFGFactoryLegsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGFactoryLegsComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGFactoryLegsComponent, mCachedFeetOffset);
+}
 void UFGFactoryLegsComponent::BeginPlay(){ }
 void UFGFactoryLegsComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void UFGFactoryLegsComponent::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

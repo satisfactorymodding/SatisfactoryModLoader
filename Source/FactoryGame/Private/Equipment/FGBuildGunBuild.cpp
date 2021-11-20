@@ -13,7 +13,11 @@ UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
 	this->mUpgradedActor = nullptr;
 	this->mClearanceDetector = nullptr;
 }
-void UFGBuildGunStateBuild::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGBuildGunStateBuild::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGBuildGunStateBuild, mIsUsingPressAndReleaseAsBuildSteps);
+	DOREPLIFETIME(UFGBuildGunStateBuild, mCurrentHologramBuildMode);
+}
 void UFGBuildGunStateBuild::BeginState_Implementation(){ }
 void UFGBuildGunStateBuild::EndState_Implementation(){ }
 void UFGBuildGunStateBuild::TickState_Implementation(float deltaTime){ }

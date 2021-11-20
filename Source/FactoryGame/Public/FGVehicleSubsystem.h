@@ -8,7 +8,7 @@
 #include "FGSaveInterface.h"
 #include "FGVehicleSubsystem.generated.h"
 
-#ifdef WITH_EDITOR
+#if WITH_EDITOR
 #define DEBUG_SELF_DRIVING
 #endif
 

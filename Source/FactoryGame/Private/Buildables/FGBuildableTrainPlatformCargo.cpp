@@ -47,7 +47,19 @@ AFGBuildableTrainPlatformCargo::AFGBuildableTrainPlatformCargo() : Super() {
 	this->mPlatformConnections.Add(mPlatformConnection0);
 	this->mPlatformConnections.Add(mPlatformConnection1);
 }
-void AFGBuildableTrainPlatformCargo::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableTrainPlatformCargo::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mCanUnloadAny);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mIsFullUnload);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mCanLoadAny);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mIsFullLoad);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mIsInLoadMode);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mIsLoadUnloading);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mSmoothedLoadRate);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mSmoothedUnloadRate);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mReplicatedOutflowRate);
+	DOREPLIFETIME(AFGBuildableTrainPlatformCargo, mReplicatedInflowRate);
+}
 void AFGBuildableTrainPlatformCargo::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableTrainPlatformCargo::BeginPlay(){ }
 void AFGBuildableTrainPlatformCargo::Destroyed(){ }

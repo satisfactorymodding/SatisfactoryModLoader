@@ -35,7 +35,15 @@ AFGHologram::AFGHologram() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->mLoopSound->SetupAttachment(RootComponent);
 }
-void AFGHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGHologram, mRecipe);
+	DOREPLIFETIME(AFGHologram, mPlacementMaterialState);
+	DOREPLIFETIME(AFGHologram, mBuildClass);
+	DOREPLIFETIME(AFGHologram, mConstructionInstigator);
+	DOREPLIFETIME(AFGHologram, mIsChanged);
+	DOREPLIFETIME(AFGHologram, mInitialScrollModeValue);
+}
 bool AFGHologram::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const{ return bool(); }
 AFGHologram* AFGHologram::SpawnHologramFromRecipe(TSubclassOf<  UFGRecipe > inRecipe, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ return nullptr; }
 AFGHologram* AFGHologram::SpawnChildHologramFromRecipe(AFGHologram* parent, TSubclassOf< UFGRecipe > recipe, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ return nullptr; }

@@ -10,7 +10,10 @@ UFGPipeConnectionComponentBase::UFGPipeConnectionComponentBase() : Super() {
 	this->bNetAddressable = true;
 	this->SetIsReplicatedByDefault(true);
 }
-void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGPipeConnectionComponentBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGPipeConnectionComponentBase, mConnectedComponent);
+}
 void UFGPipeConnectionComponentBase::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGPipeConnectionComponentBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void UFGPipeConnectionComponentBase::SetConnection( UFGPipeConnectionComponentBase* toComponent){ }
@@ -30,7 +33,11 @@ UFGPipeConnectionComponent::UFGPipeConnectionComponent() : Super() {
 	this->mFluidDescriptor = nullptr;
 }
 void UFGPipeConnectionComponent::BeginPlay(){ }
-void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGPipeConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGPipeConnectionComponent, mPipeNetworkID);
+	DOREPLIFETIME(UFGPipeConnectionComponent, mFluidDescriptor);
+}
 bool UFGPipeConnectionComponent::CheckCompatibility(UFGPipeConnectionComponentBase* otherConnection,  AFGHologram* buildStepOwner){ return bool(); }
 void UFGPipeConnectionComponent::ClearConnection(){ }
 UFGPipeConnectionComponent* UFGPipeConnectionComponent::GetPipeConnection() const{ return nullptr; }

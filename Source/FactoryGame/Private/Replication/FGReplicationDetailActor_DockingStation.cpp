@@ -2,7 +2,11 @@
 
 #include "Replication/FGReplicationDetailActor_DockingStation.h"
 
-void AFGReplicationDetailActor_DockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_DockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGReplicationDetailActor_DockingStation, mCargoInventory);
+	DOREPLIFETIME(AFGReplicationDetailActor_DockingStation, mFuelInventory);
+}
 void AFGReplicationDetailActor_DockingStation::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_DockingStation::RemoveDetailActorFromOwner(){ }
 void AFGReplicationDetailActor_DockingStation::FlushReplicationActorStateToOwner(){ }

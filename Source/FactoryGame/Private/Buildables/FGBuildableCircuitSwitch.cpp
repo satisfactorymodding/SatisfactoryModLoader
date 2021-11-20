@@ -8,7 +8,12 @@ AFGBuildableCircuitSwitch::AFGBuildableCircuitSwitch() : Super() {
 	this->mBuildingTag = TEXT("");
 }
 void AFGBuildableCircuitSwitch::BeginPlay(){ }
-void AFGBuildableCircuitSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableCircuitSwitch::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableCircuitSwitch, mIsSwitchOn);
+	DOREPLIFETIME(AFGBuildableCircuitSwitch, mHasBuildingTag);
+	DOREPLIFETIME(AFGBuildableCircuitSwitch, mBuildingTag);
+}
 void AFGBuildableCircuitSwitch::SetHasBuildingTag_Implementation(bool hasBuildingTag){ }
 void AFGBuildableCircuitSwitch::SetBuildingTag_Implementation(const FString& buildingTag){ }
 void AFGBuildableCircuitSwitch::SetSwitchOn(bool isSwitchOn){ }

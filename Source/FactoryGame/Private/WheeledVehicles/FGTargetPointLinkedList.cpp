@@ -18,7 +18,16 @@ AFGDrivingTargetList::AFGDrivingTargetList() : Super() {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
-void AFGDrivingTargetList::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGDrivingTargetList::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDrivingTargetList, mFirst);
+	DOREPLIFETIME(AFGDrivingTargetList, mLast);
+	DOREPLIFETIME(AFGDrivingTargetList, mVehicleType);
+	DOREPLIFETIME(AFGDrivingTargetList, mIsPathVisible);
+	DOREPLIFETIME(AFGDrivingTargetList, mIsTemporary);
+	DOREPLIFETIME(AFGDrivingTargetList, mTargetCount);
+	DOREPLIFETIME(AFGDrivingTargetList, mPathFuelConsumption);
+}
 void AFGDrivingTargetList::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGDrivingTargetList::ShouldSave_Implementation() const{ return bool(); }
 void AFGDrivingTargetList::BeginPlay(){ }

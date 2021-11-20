@@ -4,7 +4,12 @@
 #include "Components/SceneComponent.h"
 
 bool FRemovedInstanceArray::NetDeltaSerialize(FNetDeltaSerializeInfo & DeltaParms){ return bool(); }
-void AFGFoliageRemoval::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGFoliageRemoval::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGFoliageRemoval, mRemovedInstances);
+	DOREPLIFETIME(AFGFoliageRemoval, mLevelName);
+	DOREPLIFETIME(AFGFoliageRemoval, mFoliageTypeName);
+}
 bool AFGFoliageRemoval::IsNetRelevantFor(const AActor* RealViewer, const AActor* ViewTarget, const FVector& SrcLocation) const{ return bool(); }
 AFGFoliageRemoval::AFGFoliageRemoval() : Super() {
 	this->mMeshComponent = nullptr;

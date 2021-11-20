@@ -46,7 +46,14 @@ AFGCharacterBase::AFGCharacterBase(const FObjectInitializer& ObjectInitializer) 
 	this->mNormalDamageMultiplier = 1.0;
 	this->mIsPossessed = false;
 }
-void AFGCharacterBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGCharacterBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGCharacterBase, mHealthComponent);
+	DOREPLIFETIME(AFGCharacterBase, mIsRagdolled);
+	DOREPLIFETIME(AFGCharacterBase, mRagdollMeshLoc);
+	DOREPLIFETIME(AFGCharacterBase, mRagdollMeshVelocity);
+	DOREPLIFETIME(AFGCharacterBase, mIsPossessed);
+}
 void AFGCharacterBase::BeginPlay(){ }
 void AFGCharacterBase::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGCharacterBase::Tick(float deltaTime){ }

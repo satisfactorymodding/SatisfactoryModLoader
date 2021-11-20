@@ -2,7 +2,10 @@
 
 #include "Buildables/FGBuildableGenerator.h"
 
-void AFGBuildableGenerator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableGenerator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableGenerator, mLoadPercentage);
+}
 void AFGBuildableGenerator::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 AFGBuildableGenerator::AFGBuildableGenerator() : Super() {
 	this->mPowerProduction = 0.0;

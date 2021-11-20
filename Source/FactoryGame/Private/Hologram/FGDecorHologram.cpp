@@ -2,7 +2,10 @@
 
 #include "Hologram/FGDecorHologram.h"
 
-void AFGDecorHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGDecorHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDecorHologram, mDecorMesh);
+}
 void AFGDecorHologram::BeginPlay(){ }
 void AFGDecorHologram::CheckValidPlacement(){ }
 void AFGDecorHologram::ConfigureActor( AFGBuildable* inBuildable) const{ }

@@ -18,7 +18,13 @@ AFGDropPod::AFGDropPod() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bReplicates = true;
 }
-void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGDropPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDropPod, mPowerInfo);
+	DOREPLIFETIME(AFGDropPod, mHasPower);
+	DOREPLIFETIME(AFGDropPod, mHasBeenOpened);
+	DOREPLIFETIME(AFGDropPod, mInventory);
+}
 void AFGDropPod::BeginPlay(){ }
 void AFGDropPod::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGDropPod::GainedSignificance_Implementation(){ }

@@ -5,7 +5,10 @@
 AFGBuildableCircuitBridge::AFGBuildableCircuitBridge() : Super() {
 	this->mIsBridgeConnected = false;
 }
-void AFGBuildableCircuitBridge::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableCircuitBridge::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableCircuitBridge, mIsBridgeConnected);
+}
 void AFGBuildableCircuitBridge::BeginPlay(){ }
 void AFGBuildableCircuitBridge::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGBuildableCircuitBridge::IsBridgeConnected() const{ return bool(); }

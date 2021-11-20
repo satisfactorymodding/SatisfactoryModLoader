@@ -16,7 +16,11 @@ AFGBuildablePole::AFGBuildablePole() : Super() {
 	this->mPoleComponentProxy->SetupAttachment(RootComponent);
 	this->mSnapOnly0->SetupAttachment(RootComponent);
 }
-void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePole, mHeight);
+	DOREPLIFETIME(AFGBuildablePole, mPoleMesh);
+}
 void AFGBuildablePole::BeginPlay(){ }
 void AFGBuildablePole::SetPoleHeight(float height){ }
 void AFGBuildablePole::SetupConnectionComponent(){ }

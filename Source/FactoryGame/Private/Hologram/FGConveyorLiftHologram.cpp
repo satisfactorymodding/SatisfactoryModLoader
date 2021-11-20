@@ -20,7 +20,12 @@ AFGConveyorLiftHologram::AFGConveyorLiftHologram() : Super() {
 	this->mBuildModeReverse = nullptr;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGConveyorLiftHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGConveyorLiftHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGConveyorLiftHologram, mTopTransform);
+	DOREPLIFETIME(AFGConveyorLiftHologram, mSnappedPassthroughs);
+	DOREPLIFETIME(AFGConveyorLiftHologram, mArrowDirection);
+}
 void AFGConveyorLiftHologram::BeginPlay(){ }
 bool AFGConveyorLiftHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGConveyorLiftHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

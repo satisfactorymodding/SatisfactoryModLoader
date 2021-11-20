@@ -31,7 +31,18 @@ AFGBuildableDockingStation::AFGBuildableDockingStation() : Super() {
 	this->mItemTransferRate = 0.0;
 	this->mMaximumStackTransferRate = 0.0;
 }
-void AFGBuildableDockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableDockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableDockingStation, mTransferProgress);
+	DOREPLIFETIME(AFGBuildableDockingStation, mIsInLoadMode);
+	DOREPLIFETIME(AFGBuildableDockingStation, mIsLoadUnloading);
+	DOREPLIFETIME(AFGBuildableDockingStation, mMapText);
+	DOREPLIFETIME(AFGBuildableDockingStation, mForceSignificance);
+	DOREPLIFETIME(AFGBuildableDockingStation, mStatus);
+	DOREPLIFETIME(AFGBuildableDockingStation, mVehicleFuelConsumptionRate);
+	DOREPLIFETIME(AFGBuildableDockingStation, mItemTransferRate);
+	DOREPLIFETIME(AFGBuildableDockingStation, mMaximumStackTransferRate);
+}
 void AFGBuildableDockingStation::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableDockingStation::BeginPlay(){ }
 void AFGBuildableDockingStation::Tick(float DeltaSeconds){ }

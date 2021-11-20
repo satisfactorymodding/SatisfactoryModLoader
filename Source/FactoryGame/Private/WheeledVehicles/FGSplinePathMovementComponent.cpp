@@ -16,7 +16,15 @@ UFGSplinePathMovementComponent::UFGSplinePathMovementComponent() : Super() {
 	this->mIsDocked = false;
 	this->mIsBlocked = false;
 }
-void UFGSplinePathMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGSplinePathMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGSplinePathMovementComponent, mTargetList);
+	DOREPLIFETIME(UFGSplinePathMovementComponent, mEndOfPath);
+	DOREPLIFETIME(UFGSplinePathMovementComponent, mTransitionTarget);
+	DOREPLIFETIME(UFGSplinePathMovementComponent, mServerStartTime);
+	DOREPLIFETIME(UFGSplinePathMovementComponent, mIsDocked);
+	DOREPLIFETIME(UFGSplinePathMovementComponent, mIsBlocked);
+}
 void UFGSplinePathMovementComponent::BeginPlay(){ }
 void UFGSplinePathMovementComponent::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void UFGSplinePathMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction){ }

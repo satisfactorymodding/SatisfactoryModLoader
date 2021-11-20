@@ -24,7 +24,11 @@ AFGBuildableWire::AFGBuildableWire() : Super() {
 	this->NetDormancy = ENetDormancy::DORM_DormantAll;
 	this->mWireMesh->SetupAttachment(RootComponent);
 }
-void AFGBuildableWire::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableWire::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableWire, mConnections);
+	DOREPLIFETIME(AFGBuildableWire, mLocations);
+}
 void AFGBuildableWire::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildableWire::BeginPlay(){ }
 void AFGBuildableWire::Destroyed(){ }

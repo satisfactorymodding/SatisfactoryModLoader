@@ -11,7 +11,12 @@ AFGBuildableFrackingActivator::AFGBuildableFrackingActivator() : Super() {
 	this->mDefaultPotentialExtractionPerMinute = 0.0;
 	this->mDefaultExtractor = nullptr;
 }
-void AFGBuildableFrackingActivator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableFrackingActivator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableFrackingActivator, mSatelliteNodeCount);
+	DOREPLIFETIME(AFGBuildableFrackingActivator, mConnectedExtractorCount);
+	DOREPLIFETIME(AFGBuildableFrackingActivator, mDefaultPotentialExtractionPerMinute);
+}
 float AFGBuildableFrackingActivator::GetPotentialExtractionPerMinute() const{ return float(); }
 void AFGBuildableFrackingActivator::OnExtractorSet(){ }
 void AFGBuildableFrackingActivator::BeginPlay(){ }

@@ -44,7 +44,15 @@ AFGTutorialIntroManager::AFGTutorialIntroManager() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGTutorialIntroManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGTutorialIntroManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGTutorialIntroManager, mPendingTutorial);
+	DOREPLIFETIME(AFGTutorialIntroManager, mHasCompletedIntroTutorial);
+	DOREPLIFETIME(AFGTutorialIntroManager, mHasCompletedIntroSequence);
+	DOREPLIFETIME(AFGTutorialIntroManager, mTradingPost);
+	DOREPLIFETIME(AFGTutorialIntroManager, mStartingPod);
+	DOREPLIFETIME(AFGTutorialIntroManager, mTradingPostLevel);
+}
 void AFGTutorialIntroManager::Tick(float DeltaTime){ }
 void AFGTutorialIntroManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGTutorialIntroManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

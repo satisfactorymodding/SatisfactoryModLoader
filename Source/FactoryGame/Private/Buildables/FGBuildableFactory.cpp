@@ -50,7 +50,17 @@ AFGBuildableFactory::AFGBuildableFactory() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 }
-void AFGBuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableFactory::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableFactory, mPowerInfo);
+	DOREPLIFETIME(AFGBuildableFactory, mPendingPotential);
+	DOREPLIFETIME(AFGBuildableFactory, mIsProductionPaused);
+	DOREPLIFETIME(AFGBuildableFactory, mReplicationDetailActor);
+	DOREPLIFETIME(AFGBuildableFactory, mCurrentPotential);
+	DOREPLIFETIME(AFGBuildableFactory, mCurrentProductivity);
+	DOREPLIFETIME(AFGBuildableFactory, mIsProducing);
+	DOREPLIFETIME(AFGBuildableFactory, mHasPower);
+}
 void AFGBuildableFactory::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 bool AFGBuildableFactory::GetNetDormancy(const FVector& ViewPos, const FVector& ViewDir,  AActor* Viewer, AActor* ViewTarget, UActorChannel* InChannel, float Time, bool bLowBandwidth){ return bool(); }
 void AFGBuildableFactory::BeginPlay(){ }

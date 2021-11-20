@@ -26,7 +26,12 @@ AFGWireHologram::AFGWireHologram() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGWireHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGWireHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGWireHologram, mPowerPole);
+	DOREPLIFETIME(AFGWireHologram, mPowerPoleWall);
+	DOREPLIFETIME(AFGWireHologram, mStartLocation);
+}
 void AFGWireHologram::BeginPlay(){ }
 void AFGWireHologram::Tick(float dt){ }
 AActor* AFGWireHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }

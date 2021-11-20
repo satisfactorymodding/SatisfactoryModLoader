@@ -39,7 +39,10 @@ AFGParachute::AFGParachute() : Super() {
 	this->mCachedMovementComponent = nullptr;
 	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
 }
-void AFGParachute::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGParachute::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGParachute, mIsDeployed);
+}
 void AFGParachute::Tick(float DeltaSeconds){ }
 void AFGParachute::Equip( AFGCharacterPlayer* character){ }
 void AFGParachute::UnEquip(){ }
@@ -48,6 +51,9 @@ void AFGParachute::Server_Deploy_Implementation(){ }
 bool AFGParachute::Server_Deploy_Validate(){ return bool(); }
 FVector AFGParachute::ModifyVelocity_Implementation(float deltaTime, const FVector& oldVelocity){ return FVector(); }
 void AFGParachute::AddEquipmentActionBindings(){ }
-void AFGParachuteAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGParachuteAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGParachuteAttachment, mIsDeployed);
+}
 void AFGParachuteAttachment::SetIsDeployed(bool newIsDeployed){ }
 void AFGParachuteAttachment::OnRep_IsDeployed(){ }

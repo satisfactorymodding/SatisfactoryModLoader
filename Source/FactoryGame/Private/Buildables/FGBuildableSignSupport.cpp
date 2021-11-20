@@ -14,7 +14,11 @@ AFGBuildableSignSupport::AFGBuildableSignSupport() : Super() {
 	this->mHologramClass = AFGSignPoleHologram::StaticClass();
 	this->mPoleComponentProxy->SetupAttachment(RootComponent);
 }
-void AFGBuildableSignSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableSignSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableSignSupport, mHeight);
+	DOREPLIFETIME(AFGBuildableSignSupport, mPoleMesh);
+}
 void AFGBuildableSignSupport::BeginPlay(){ }
 void AFGBuildableSignSupport::SetPoleScale(FVector2D poleScale){ }
 const FName AFGBuildableSignSupport::PoleMeshName = FName();

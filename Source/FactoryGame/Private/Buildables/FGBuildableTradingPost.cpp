@@ -31,7 +31,15 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mHubTerminalLocation->SetupAttachment(RootComponent);
 	this->mWorkBenchLocation->SetupAttachment(RootComponent);
 }
-void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableTradingPost, mGenerators);
+	DOREPLIFETIME(AFGBuildableTradingPost, mStorage);
+	DOREPLIFETIME(AFGBuildableTradingPost, mHubTerminal);
+	DOREPLIFETIME(AFGBuildableTradingPost, mWorkBench);
+	DOREPLIFETIME(AFGBuildableTradingPost, mInputInventory);
+	DOREPLIFETIME(AFGBuildableTradingPost, mNeedPlayingBuildEffectNotification);
+}
 void AFGBuildableTradingPost::BeginPlay(){ }
 void AFGBuildableTradingPost::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableTradingPost::Dismantle_Implementation(){ }

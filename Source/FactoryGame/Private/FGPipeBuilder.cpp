@@ -54,7 +54,13 @@ AFGPipeBuilder::AFGPipeBuilder() : Super() {
 void AFGPipeBuilder::BeginPlay(){ }
 void AFGPipeBuilder::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGPipeBuilder::Tick(float dt){ }
-void AFGPipeBuilder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPipeBuilder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPipeBuilder, mSplineHologram);
+	DOREPLIFETIME(AFGPipeBuilder, mSupportHologram);
+	DOREPLIFETIME(AFGPipeBuilder, mInternalSplineSupport);
+	DOREPLIFETIME(AFGPipeBuilder, mTrail);
+}
 void AFGPipeBuilder::Dismantle_Implementation(){ }
 void AFGPipeBuilder::OnPrimaryFirePressed(){ }
 void AFGPipeBuilder::SetupSplineAndSupport(){ }

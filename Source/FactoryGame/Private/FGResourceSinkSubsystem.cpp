@@ -30,7 +30,13 @@ AFGResourceSinkSubsystem::AFGResourceSinkSubsystem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 1.0;
 }
-void AFGResourceSinkSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGResourceSinkSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGResourceSinkSubsystem, mTotalResourceSinkPoints);
+	DOREPLIFETIME(AFGResourceSinkSubsystem, mCurrentPointLevel);
+	DOREPLIFETIME(AFGResourceSinkSubsystem, mNumResourceSinkCoupons);
+	DOREPLIFETIME(AFGResourceSinkSubsystem, mGlobalPointHistory);
+}
 void AFGResourceSinkSubsystem::BeginPlay(){ }
 void AFGResourceSinkSubsystem::Tick(float DeltaSeconds){ }
 void AFGResourceSinkSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

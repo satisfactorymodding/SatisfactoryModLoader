@@ -38,7 +38,10 @@ AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);
 }
-void AFGBuildablePipeline::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipeline::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePipeline, mIndicatorData);
+}
 void AFGBuildablePipeline::BeginPlay(){ }
 void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipeline::Tick(float dt){ }

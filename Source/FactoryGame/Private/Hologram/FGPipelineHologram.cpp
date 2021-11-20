@@ -23,7 +23,10 @@ AFGPipelineHologram::AFGPipelineHologram() : Super() {
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Pipe;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGPipelineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPipelineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPipelineHologram, mChildPoleHologram);
+}
 void AFGPipelineHologram::BeginPlay(){ }
 bool AFGPipelineHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 void AFGPipelineHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

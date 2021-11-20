@@ -87,7 +87,10 @@ AFGBuildGun::AFGBuildGun() : Super() {
 	this->mArmAnimation = EArmEquipment::AE_BuildGun;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
-void AFGBuildGun::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildGun::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildGun, mStates);
+}
 bool AFGBuildGun::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGBuildGun::BeginPlay(){ }
 void AFGBuildGun::Tick(float dt){ }

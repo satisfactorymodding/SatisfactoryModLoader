@@ -53,7 +53,13 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->RootComponent = mCollisionComp;
 }
 void AFGProjectile::Tick(float DeltaSeconds){ }
-void AFGProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGProjectile, mProjectileData);
+	DOREPLIFETIME(AFGProjectile, mHasExploded);
+	DOREPLIFETIME(AFGProjectile, mInitialVelocity);
+	DOREPLIFETIME(AFGProjectile, mTargetLocation);
+}
 void AFGProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 bool AFGProjectile::ShouldSave_Implementation() const{ return bool(); }
 bool AFGProjectile::NeedTransform_Implementation(){ return bool(); }

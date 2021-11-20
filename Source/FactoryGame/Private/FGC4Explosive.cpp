@@ -11,7 +11,10 @@ AFGC4Explosive::AFGC4Explosive() : Super() {
 	this->SetReplicatingMovement(true);
 	this->bReplicates = true;
 }
-void AFGC4Explosive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGC4Explosive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGC4Explosive, mIsDetonated);
+}
 void AFGC4Explosive::Detonate(){ }
 void AFGC4Explosive::PlayExplosionEffects_Implementation(){ }
 void AFGC4Explosive::OnRep_IsDetonated(){ }

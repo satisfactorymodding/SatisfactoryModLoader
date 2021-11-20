@@ -3,7 +3,12 @@
 #include "Equipment/FGWeapon.h"
 #include "Equipment/FGEquipment.h"
 
-void AFGWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGWeapon, mWeaponState);
+	DOREPLIFETIME(AFGWeapon, mDesiredAmmoClass);
+	DOREPLIFETIME(AFGWeapon, mCurrentAmmunitionClass);
+}
 AFGWeapon::AFGWeapon() : Super() {
 	this->mAssociatedHud = nullptr;
 	this->mWeaponState = EWeaponState::EWS_Unequipped;

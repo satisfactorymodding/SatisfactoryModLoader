@@ -4,7 +4,10 @@
 #include "FGConstructDisqualifier.h"
 #include "Hologram/FGResourceExtractorHologram.h"
 
-void AFGBuildableResourceExtractorBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableResourceExtractorBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableResourceExtractorBase, mExtractableResource);
+}
 void AFGBuildableResourceExtractorBase::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 AFGBuildableResourceExtractorBase::AFGBuildableResourceExtractorBase() : Super() {
 	this->mRestrictToNodeType = nullptr;

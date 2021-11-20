@@ -25,7 +25,12 @@ AFGBuildablePassthrough::AFGBuildablePassthrough() : Super() {
 	this->mConnectionComponentClass = nullptr;
 }
 void AFGBuildablePassthrough::BeginPlay(){ }
-void AFGBuildablePassthrough::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildablePassthrough::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePassthrough, mSnappedBuildingThickness);
+	DOREPLIFETIME(AFGBuildablePassthrough, mBottomSnappedConnection);
+	DOREPLIFETIME(AFGBuildablePassthrough, mTopSnappedConnection);
+}
 void AFGBuildablePassthrough::StartIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildablePassthrough::StopIsLookedAtForDismantle_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildablePassthrough::GetChildDismantleActors_Implementation(TArray< AActor* >& out_ChildDismantleActors) const{ }

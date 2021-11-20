@@ -15,7 +15,12 @@ AFGBuildableRailroadSignal::AFGBuildableRailroadSignal() : Super() {
 	this->mSignificanceRange = 75000.0;
 	this->mSignalComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableRailroadSignal::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableRailroadSignal::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableRailroadSignal, mAspect);
+	DOREPLIFETIME(AFGBuildableRailroadSignal, mBlockValidation);
+	DOREPLIFETIME(AFGBuildableRailroadSignal, mVisualState);
+}
 void AFGBuildableRailroadSignal::BeginPlay(){ }
 void AFGBuildableRailroadSignal::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildableRailroadSignal::Destroyed(){ }

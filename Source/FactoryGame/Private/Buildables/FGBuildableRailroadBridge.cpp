@@ -8,5 +8,8 @@ AFGBuildableRailroadBridge::AFGBuildableRailroadBridge() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<UFGSplineComponent>(TEXT("SplineComponent"));
 	this->mSplineComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableRailroadBridge::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableRailroadBridge::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableRailroadBridge, mSplineData);
+}
 void AFGBuildableRailroadBridge::BeginPlay(){ }

@@ -17,7 +17,10 @@ AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
 	this->mSplineComponent->SetupAttachment(RootComponent);
 	this->mInstancedSplineComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableConveyorBelt::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableConveyorBelt::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableConveyorBelt, mSplineData);
+}
 void AFGBuildableConveyorBelt::BeginPlay(){ }
 void AFGBuildableConveyorBelt::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGBuildableConveyorBelt::IsComponentRelevantForNavigation(UActorComponent* component) const{ return bool(); }

@@ -14,7 +14,10 @@ AFGBuildableRailroadStation::AFGBuildableRailroadStation() : Super() {
 	this->mPlatformConnections.Add(mPlatformConnection0);
 	this->mPlatformConnections.Add(mPlatformConnection1);
 }
-void AFGBuildableRailroadStation::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableRailroadStation::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableRailroadStation, mStationIdentifier);
+}
 void AFGBuildableRailroadStation::BeginPlay(){ }
 void AFGBuildableRailroadStation::Destroyed(){ }
 void AFGBuildableRailroadStation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

@@ -2,7 +2,12 @@
 
 #include "Replication/FGReplicationDetailActor_DroneStation.h"
 
-void AFGReplicationDetailActor_DroneStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_DroneStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGReplicationDetailActor_DroneStation, mInputInventory);
+	DOREPLIFETIME(AFGReplicationDetailActor_DroneStation, mOutputInventory);
+	DOREPLIFETIME(AFGReplicationDetailActor_DroneStation, mBatteryInventory);
+}
 void AFGReplicationDetailActor_DroneStation::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_DroneStation::RemoveDetailActorFromOwner(){ }
 void AFGReplicationDetailActor_DroneStation::FlushReplicationActorStateToOwner(){ }

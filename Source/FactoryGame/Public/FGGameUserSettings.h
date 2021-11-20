@@ -19,7 +19,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FArachnophobiaModeChangedDelegate, 
 UENUM( BlueprintType )
 enum class EGraphicsAPI : uint8
 {
-	EGR_DX11		UMETA( DisplayName = "DirectX 11 - Default" ),
+	EGR_DX11		UMETA( DisplayName = "DirectX 11" ),
 	EGR_DX12		UMETA( DisplayName = "DirectX 12" ),
 	EGR_Vulkan		UMETA( DisplayName = "Vulkan"  )
 };

@@ -19,7 +19,10 @@ AFGPipelineAttachmentHologram::AFGPipelineAttachmentHologram() : Super() {
 	this->mSnappedConnectionComponent = nullptr;
 	this->mNeedsValidFloor = false;
 }
-void AFGPipelineAttachmentHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGPipelineAttachmentHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPipelineAttachmentHologram, mSnappedPipeline);
+}
 void AFGPipelineAttachmentHologram::BeginPlay(){ }
 bool AFGPipelineAttachmentHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGPipelineAttachmentHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
