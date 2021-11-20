@@ -6,7 +6,10 @@
 #include "FGSplineComponent.h"
 #include "Hologram/FGRoadHologram.h"
 
-void AFGBuildableRoad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableRoad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableRoad, mSplineData);
+}
 AFGBuildableRoad::AFGBuildableRoad() : Super() {
 	this->mConnection0 = CreateDefaultSubobject<UFGRoadConnectionComponent>(TEXT("Connection0"));
 	this->mConnection1 = CreateDefaultSubobject<UFGRoadConnectionComponent>(TEXT("Connection1"));

@@ -3,7 +3,22 @@
 #include "FGActorRepresentation.h"
 
 bool UFGActorRepresentation::IsSupportedForNetworking() const{ return bool(); }
-void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGActorRepresentation, mRealActor);
+	DOREPLIFETIME(UFGActorRepresentation, mActorLocation);
+	DOREPLIFETIME(UFGActorRepresentation, mActorRotation);
+	DOREPLIFETIME(UFGActorRepresentation, mIsStatic);
+	DOREPLIFETIME(UFGActorRepresentation, mRepresentationTexture);
+	DOREPLIFETIME(UFGActorRepresentation, mRepresentationText);
+	DOREPLIFETIME(UFGActorRepresentation, mRepresentationColor);
+	DOREPLIFETIME(UFGActorRepresentation, mRepresentationType);
+	DOREPLIFETIME(UFGActorRepresentation, mFogOfWarRevealType);
+	DOREPLIFETIME(UFGActorRepresentation, mFogOfWarRevealRadius);
+	DOREPLIFETIME(UFGActorRepresentation, mShouldShowInCompass);
+	DOREPLIFETIME(UFGActorRepresentation, mShouldShowOnMap);
+	DOREPLIFETIME(UFGActorRepresentation, mCompassViewDistance);
+}
 FVector UFGActorRepresentation::GetActorLocation() const{ return FVector(); }
 FRotator UFGActorRepresentation::GetActorRotation() const{ return FRotator(); }
 UTexture2D* UFGActorRepresentation::GetRepresentationTexture() const{ return nullptr; }

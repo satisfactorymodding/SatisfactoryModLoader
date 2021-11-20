@@ -19,7 +19,10 @@ AFGBuildableLadder::AFGBuildableLadder() : Super() {
 	this->mBackLadderComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableLadder::BeginPlay(){ }
-void AFGBuildableLadder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableLadder::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableLadder, mNumSegments);
+}
 int32 AFGBuildableLadder::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableLadder::SetNumSegments(int32 Num, bool ForceUpdate){ }
 void AFGBuildableLadder::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

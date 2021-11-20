@@ -9,7 +9,10 @@ AFGResourceNodeFrackingSatellite::AFGResourceNodeFrackingSatellite() : Super() {
 	this->mDoSpawnParticle = false;
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 }
-void AFGResourceNodeFrackingSatellite::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGResourceNodeFrackingSatellite::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGResourceNodeFrackingSatellite, mState);
+}
 void AFGResourceNodeFrackingSatellite::OnConstruction(const FTransform& Transform){ }
 void AFGResourceNodeFrackingSatellite::BeginPlay(){ }
 void AFGResourceNodeFrackingSatellite::SetIsOccupied(bool occupied){ }

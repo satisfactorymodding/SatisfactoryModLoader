@@ -7,7 +7,10 @@ AFGBuildableSpaceElevator::AFGBuildableSpaceElevator() : Super() {
 	this->mGamePhaseManager = nullptr;
 	this->mActorRepresentationTexture = nullptr;
 }
-void AFGBuildableSpaceElevator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableSpaceElevator::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableSpaceElevator, mInputInventory);
+}
 bool AFGBuildableSpaceElevator::AddAsRepresentation(){ return bool(); }
 bool AFGBuildableSpaceElevator::UpdateRepresentation(){ return bool(); }
 bool AFGBuildableSpaceElevator::RemoveAsRepresentation(){ return bool(); }

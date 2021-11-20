@@ -113,7 +113,15 @@ AFGDroneVehicle::AFGDroneVehicle() : Super() {
 }
 void AFGDroneVehicle::BeginPlay(){ }
 void AFGDroneVehicle::Tick(float DeltaTime){ }
-void AFGDroneVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGDroneVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDroneVehicle, mIsBraking);
+	DOREPLIFETIME(AFGDroneVehicle, mCurrentVelocity);
+	DOREPLIFETIME(AFGDroneVehicle, mDesiredFacingDirection);
+	DOREPLIFETIME(AFGDroneVehicle, mCurrentFlyingMode);
+	DOREPLIFETIME(AFGDroneVehicle, mCurrentDockingState);
+	DOREPLIFETIME(AFGDroneVehicle, mDockedStation);
+}
 bool AFGDroneVehicle::IsUseable_Implementation() const{ return bool(); }
 void AFGDroneVehicle::Dismantle_Implementation(){ }
 void AFGDroneVehicle::OnIsSimulatedChanged(){ }

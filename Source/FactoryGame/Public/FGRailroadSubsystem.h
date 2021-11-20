@@ -395,6 +395,13 @@ public:
 	};
 
 	/***************************************************************************************************
+	 * Block visualization
+	 */
+	void ToggleBlockVisualization( bool enabled );
+	void ToggleBlockVisualizationAlways( bool enabled );
+	FLinearColor GetBlockVisualizationColor( int32 forSignalBlockID );
+
+	/***************************************************************************************************
 	 * Debug functions
 	 */
 	void Debug_MarkAllGraphsAsChanged();
@@ -408,6 +415,7 @@ protected:
 private:
 	void TickTrackGraphs( float dt );
 	void TickPendingCollisions( float dt );
+	void TickBlockVisualization();
 
 	void PurgeInvalidStationsFromTimeTables();
 
@@ -519,6 +527,14 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	TSubclassOf< class AFGTrain > mTrainClass;
 
+	/** How far away are the blocks visible. [cm] */
+	UPROPERTY( EditDefaultsOnly, Category = "Signal Block Visualization" )
+	float mBlockVisualizationDistance;
+	
+	/** Default block visualization colors. */
+	UPROPERTY( EditDefaultsOnly, Category = "Signal Block Visualization" )
+	TArray< FLinearColor > mBlockVisualizationColors;
+
 private:
 	FDelegateHandle OnPhysScenePreTickHandle;
 	FDelegateHandle OnPhysSceneStepHandle;
@@ -530,6 +546,9 @@ private:
 	UPROPERTY()
 	TArray< FString > mStationNames;
 
+	/** All tracks in the world, valid on server and client (only relevant tracks). */
+	TArray< TWeakObjectPtr< AFGBuildableRailroadTrack > > mTracks;
+	
 	/** All the train tracks in the world, separated by connectivity. */
 	UPROPERTY()
 	TMap< int32, FTrackGraph > mTrackGraphs;
@@ -550,4 +569,8 @@ private:
 	/** Handles all the trains and their reservations inside the blocks. Only valid on server. */
 	UPROPERTY()
 	class AFGTrainScheduler* mTrainScheduler;
+	
+	/** True if we are actively showing block visualization. */
+	bool mIsBlockVisualizationEnabled;
+	bool mIsBlockVisualizationAlwaysEnabled;
 };

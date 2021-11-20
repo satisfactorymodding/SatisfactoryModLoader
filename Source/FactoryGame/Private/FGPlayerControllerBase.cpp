@@ -14,7 +14,11 @@ AFGPlayerControllerBase::AFGPlayerControllerBase() : Super() {
 	this->mAllowedInputWhenDead.Add(TEXT("Chat"));
 	this->CheatClass = UFGCheatManager::StaticClass();
 }
-void AFGPlayerControllerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGPlayerControllerBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPlayerControllerBase, mAdminInterface);
+	DOREPLIFETIME(AFGPlayerControllerBase, mReplicatedCheatManager);
+}
 void AFGPlayerControllerBase::BeginPlay(){ }
 bool AFGPlayerControllerBase::ReplicateSubobjects( UActorChannel *Channel,  FOutBunch *Bunch, FReplicationFlags *RepFlags){ return bool(); }
 void AFGPlayerControllerBase::ClientRestart_Implementation(APawn* newPawn){ }

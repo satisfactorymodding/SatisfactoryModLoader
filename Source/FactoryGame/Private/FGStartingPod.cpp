@@ -19,7 +19,11 @@ AFGStartingPod::AFGStartingPod() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("DefaultSceneRoot"));
 	this->mDropPodMesh->SetupAttachment(RootComponent);
 }
-void AFGStartingPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGStartingPod::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGStartingPod, mCachedPlayer);
+	DOREPLIFETIME(AFGStartingPod, mMapText);
+}
 FVector AFGStartingPod::GetRefundSpawnLocationAndArea_Implementation(const FVector& aimHitLocation, float& out_radius) const{ return FVector(); }
 bool AFGStartingPod::CanDismantle_Implementation() const{ return bool(); }
 void AFGStartingPod::GetDismantleRefund_Implementation(TArray< FInventoryStack >& out_refund) const{ }

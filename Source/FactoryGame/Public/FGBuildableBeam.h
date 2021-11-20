@@ -36,6 +36,10 @@ public:
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFGSaveInterface
+	
+	// Begin IFGDismantleInterface
+	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	// End IFGDismantleInterface
 
 	float GetSize() const { return mSize; }
 

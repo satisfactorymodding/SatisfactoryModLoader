@@ -3,7 +3,12 @@
 #include "Equipment/FGEquipmentAttachment.h"
 #include "Equipment/FGEquipment.h"
 
-void AFGEquipmentAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGEquipmentAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGEquipmentAttachment, mEquipmentClass);
+	DOREPLIFETIME(AFGEquipmentAttachment, mUseLocation);
+	DOREPLIFETIME(AFGEquipmentAttachment, mAnimationState);
+}
 AFGEquipmentAttachment::AFGEquipmentAttachment() : Super() {
 	this->mEquipmentClass = nullptr;
 	this->mUseLocation.X = 0.0;

@@ -33,7 +33,11 @@ AFGCreature::AFGCreature(const FObjectInitializer& ObjectInitializer) : Super(Ob
 	this->bUseControllerRotationYaw = false;
 	this->mEyeLocationComponent->SetupAttachment(GetCapsuleComponent());
 }
-void AFGCreature::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGCreature::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGCreature, mIsEnabled);
+	DOREPLIFETIME(AFGCreature, mTargetRotation);
+}
 void AFGCreature::BeginPlay(){ }
 void AFGCreature::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGCreature::Tick(float deltaTime){ }

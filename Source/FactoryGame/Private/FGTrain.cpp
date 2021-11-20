@@ -68,7 +68,19 @@ AFGTrain::AFGTrain() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 }
 void AFGTrain::Initialize( AFGRailroadVehicle* firstVehicle,  AFGRailroadVehicle* lastVehicle){ }
-void AFGTrain::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGTrain::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGTrain, mClientTrainData);
+	DOREPLIFETIME(AFGTrain, mTrainName);
+	DOREPLIFETIME(AFGTrain, mTrackGraphID);
+	DOREPLIFETIME(AFGTrain, mMultipleUnitMaster);
+	DOREPLIFETIME(AFGTrain, TimeTable);
+	DOREPLIFETIME(AFGTrain, mTrainStatus);
+	DOREPLIFETIME(AFGTrain, mIsSelfDrivingEnabled);
+	DOREPLIFETIME(AFGTrain, mSelfDrivingError);
+	DOREPLIFETIME(AFGTrain, mDockingState);
+	DOREPLIFETIME(AFGTrain, mIsDerailed);
+}
 void AFGTrain::Tick(float dt){ }
 void AFGTrain::BeginPlay(){ }
 void AFGTrain::Destroyed(){ }

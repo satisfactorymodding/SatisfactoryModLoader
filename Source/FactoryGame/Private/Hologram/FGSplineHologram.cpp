@@ -30,7 +30,11 @@ AFGSplineHologram::AFGSplineHologram() : Super() {
 	this->mBuildStep = ESplineHologramBuildStep::SHBS_FindStart;
 	this->mSplineComponent->SetupAttachment(RootComponent);
 }
-void AFGSplineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGSplineHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGSplineHologram, mSplineData);
+	DOREPLIFETIME(AFGSplineHologram, mBuildStep);
+}
 void AFGSplineHologram::BeginPlay(){ }
 void AFGSplineHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGSplineHologram::ClientPreConstructMessageSerialization(){ }

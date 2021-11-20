@@ -8,7 +8,19 @@ FPowerCircuitStats::FPowerCircuitStats(){ }
 bool FPowerCircuitStats::NetSerialize(FArchive& ar,  UPackageMap* map, bool& out_success){ return bool(); }
 FPowerGraphPoint& FPowerCircuitStats::MakeAndAddGraphPoint(){ return *(new FPowerGraphPoint); }
 FPowerGraphPoint& FPowerCircuitStats::AdvanceToNextGraphPoint(){ return *(new FPowerGraphPoint); }
-void UFGPowerCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGPowerCircuit::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGPowerCircuit, mMaximumPowerConsumption);
+	DOREPLIFETIME(UFGPowerCircuit, mHasPower);
+	DOREPLIFETIME(UFGPowerCircuit, mHasBatteries);
+	DOREPLIFETIME(UFGPowerCircuit, mBatterySumPowerStore);
+	DOREPLIFETIME(UFGPowerCircuit, mBatterySumPowerStoreCapacity);
+	DOREPLIFETIME(UFGPowerCircuit, mBatterySumPowerInput);
+	DOREPLIFETIME(UFGPowerCircuit, mTimeToBatteriesEmpty);
+	DOREPLIFETIME(UFGPowerCircuit, mTimeToBatteriesFull);
+	DOREPLIFETIME(UFGPowerCircuit, mIsFuseTriggered);
+	DOREPLIFETIME(UFGPowerCircuit, mPowerStats);
+}
 void UFGPowerCircuit::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 UFGPowerCircuit::UFGPowerCircuit() : Super() {
 	this->mPowerProductionCapacity = 0.0;

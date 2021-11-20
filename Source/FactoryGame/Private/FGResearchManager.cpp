@@ -7,7 +7,14 @@ AFGResearchManager::AFGResearchManager() : Super() {
 	this->mIsActivated = false;
 	this->mMAMClass = nullptr;
 }
-void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGResearchManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGResearchManager, mAvailableResearchTrees);
+	DOREPLIFETIME(AFGResearchManager, mUnlockedResearchTrees);
+	DOREPLIFETIME(AFGResearchManager, mCompletedResearch);
+	DOREPLIFETIME(AFGResearchManager, mOngoingResearch);
+	DOREPLIFETIME(AFGResearchManager, mIsActivated);
+}
 void AFGResearchManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 AFGResearchManager* AFGResearchManager::Get( UWorld* world){ return nullptr; }
 AFGResearchManager* AFGResearchManager::Get( UObject* worldContext){ return nullptr; }

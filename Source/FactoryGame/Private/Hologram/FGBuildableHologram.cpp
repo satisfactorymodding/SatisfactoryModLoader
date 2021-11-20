@@ -2,7 +2,10 @@
 
 #include "Hologram/FGBuildableHologram.h"
 
-void AFGBuildableHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 AFGBuildableHologram::AFGBuildableHologram() : Super() {
 	this->mMaxPlacementFloorAngle = 35.0;
 	this->mLegs = nullptr;

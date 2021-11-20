@@ -23,4 +23,7 @@ void AFGPipePartHologram::ConfigureComponents( AFGBuildable* inBuildable) const{
 void AFGPipePartHologram::CheckValidPlacement(){ }
 void AFGPipePartHologram::OnRep_SupportMesh(){ }
 void AFGPipePartHologram::UpdateSupportLengthRelativeLoc(){ }
-void AFGPipePartHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }
+void AFGPipePartHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPipePartHologram, mSupportMesh);
+}

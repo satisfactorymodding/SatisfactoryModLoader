@@ -18,7 +18,11 @@ AFGLadderHologram::AFGLadderHologram() : Super() {
 	this->mBuildStep = ELadderHologramBuildStep::LHBS_SnapToActor;
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGLadderHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGLadderHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGLadderHologram, mTargetSegmentHeight);
+	DOREPLIFETIME(AFGLadderHologram, mBuildStep);
+}
 void AFGLadderHologram::BeginPlay(){ }
 bool AFGLadderHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 void AFGLadderHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

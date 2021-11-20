@@ -3,7 +3,11 @@
 #include "FGPipeNetwork.h"
 
 PipeJunction::PipeJunction( UFGPipeConnectionComponent* previous,  UFGPipeConnectionComponent* current){ }
-void AFGPipeNetwork::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPipeNetwork::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPipeNetwork, mPipeNetworkID);
+	DOREPLIFETIME(AFGPipeNetwork, mFluidDescriptor);
+}
 void AFGPipeNetwork::BeginPlay(){ }
 void AFGPipeNetwork::EndPlay(EEndPlayReason::Type endPlayReason){ }
 void AFGPipeNetwork::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

@@ -38,7 +38,18 @@ AFGDroneStationInfo::AFGDroneStationInfo() : Super() {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
-void AFGDroneStationInfo::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGDroneStationInfo::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDroneStationInfo, mStationLocation);
+	DOREPLIFETIME(AFGDroneStationInfo, mStationClass);
+	DOREPLIFETIME(AFGDroneStationInfo, mPairedStation);
+	DOREPLIFETIME(AFGDroneStationInfo, mConnectedStations);
+	DOREPLIFETIME(AFGDroneStationInfo, mBuildingTag);
+	DOREPLIFETIME(AFGDroneStationInfo, mDroneStatus);
+	DOREPLIFETIME(AFGDroneStationInfo, mEstimatedRoundTripTime);
+	DOREPLIFETIME(AFGDroneStationInfo, mEstimatedTransportRate);
+	DOREPLIFETIME(AFGDroneStationInfo, mDroneTripStatistics);
+}
 void AFGDroneStationInfo::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGDroneStationInfo::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDroneStationInfo::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

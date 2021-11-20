@@ -14,7 +14,10 @@ AFGBuildablePipeReservoir::AFGBuildablePipeReservoir() : Super() {
 	this->mStorageCapacity = 500.0;
 	this->mHologramClass = AFGPipeReservoirHologram::StaticClass();
 }
-void AFGBuildablePipeReservoir::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipeReservoir::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePipeReservoir, mIndicatorData);
+}
 void AFGBuildablePipeReservoir::BeginPlay(){ }
 void AFGBuildablePipeReservoir::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGBuildablePipeReservoir::Tick(float dt){ }

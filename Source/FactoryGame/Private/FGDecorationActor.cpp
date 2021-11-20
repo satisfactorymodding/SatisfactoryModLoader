@@ -5,7 +5,10 @@
 AFGDecorationActor::AFGDecorationActor() : Super() {
 	this->mDecorationDescriptor = nullptr;
 }
-void AFGDecorationActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGDecorationActor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDecorationActor, mDecorationDescriptor);
+}
 void AFGDecorationActor::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDecorationActor::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGDecorationActor::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

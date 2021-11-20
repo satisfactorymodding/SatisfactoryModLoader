@@ -5,7 +5,10 @@
 UFGCriticalBatteryDepletionMessage::UFGCriticalBatteryDepletionMessage() : Super() {
 
 }
-void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGCircuitSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGCircuitSubsystem, mReplicatedCircuits);
+}
 bool AFGCircuitSubsystem::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGCircuitSubsystem::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGCircuitSubsystem::CallPreReplication(UNetDriver* NetDriver){ }

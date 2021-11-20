@@ -2,7 +2,12 @@
 
 #include "Creature/Enemy/FGCrabHatcher.h"
 
-void AFGCrabHatcher::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGCrabHatcher::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGCrabHatcher, mThreatNearby);
+	DOREPLIFETIME(AFGCrabHatcher, mDidSpawnCrabs);
+	DOREPLIFETIME(AFGCrabHatcher, mThreatTimer);
+}
 void AFGCrabHatcher::BeginPlay(){ }
 void AFGCrabHatcher::Tick(float deltaTime){ }
 void AFGCrabHatcher::OnRep_DidSpawnCrabs(){ }

@@ -2,11 +2,17 @@
 
 #include "FGSignSubsystem.h"
 
-void UFGSignDataRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGSignDataRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGSignDataRemoteCallObject, mForceNetField_UFGSignDataRemoteCallObject);
+}
 void UFGSignDataRemoteCallObject::Server_RequestSignData_Implementation(FSignRPC_Data signRPCData){ }
 void UFGSignDataRemoteCallObject::Client_RequestSignDataResponse_Implementation(FSignRPC_Data signRPCData){ }
 void UFGSignDataRemoteCallObject::Server_SetSignData_Implementation(FClientSetSignData clientData){ }
-void AFGSignSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGSignSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 AFGSignSubsystem* AFGSignSubsystem::Get(UWorld* world){ return nullptr; }
 AFGSignSubsystem* AFGSignSubsystem::GetSignSubsystem(UObject* worldContext){ return nullptr; }
 AFGSignSubsystem::AFGSignSubsystem() : Super() {

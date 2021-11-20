@@ -20,7 +20,15 @@ AFGBuildableGeneratorFuel::AFGBuildableGeneratorFuel() : Super() {
 	this->mCurrentFuelClass = nullptr;
 	this->mCanChangePotential = true;
 }
-void AFGBuildableGeneratorFuel::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableGeneratorFuel::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableGeneratorFuel, mAvailableFuelClasses);
+	DOREPLIFETIME(AFGBuildableGeneratorFuel, mCurrentFuelAmount);
+	DOREPLIFETIME(AFGBuildableGeneratorFuel, mCurrentSupplementalAmount);
+	DOREPLIFETIME(AFGBuildableGeneratorFuel, mHasFuelCached);
+	DOREPLIFETIME(AFGBuildableGeneratorFuel, mHasSupplementalCached);
+	DOREPLIFETIME(AFGBuildableGeneratorFuel, mCurrentFuelClass);
+}
 void AFGBuildableGeneratorFuel::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableGeneratorFuel::BeginPlay(){ }
 void AFGBuildableGeneratorFuel::PostLoad(){ Super::PostLoad(); }

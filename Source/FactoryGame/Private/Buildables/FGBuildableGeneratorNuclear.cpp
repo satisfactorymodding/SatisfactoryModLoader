@@ -9,7 +9,10 @@ AFGBuildableGeneratorNuclear::AFGBuildableGeneratorNuclear() : Super() {
 	this->mWasteLeftFromCurrentFuel = 0;
 	this->mCurrentGeneratorNuclearWarning = EGeneratorNuclearWarning::GNW_None;
 }
-void AFGBuildableGeneratorNuclear::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableGeneratorNuclear::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableGeneratorNuclear, mCurrentGeneratorNuclearWarning);
+}
 void AFGBuildableGeneratorNuclear::BeginPlay(){ }
 void AFGBuildableGeneratorNuclear::Factory_Tick(float dt){ }
 void AFGBuildableGeneratorNuclear::LoadFuel(){ }

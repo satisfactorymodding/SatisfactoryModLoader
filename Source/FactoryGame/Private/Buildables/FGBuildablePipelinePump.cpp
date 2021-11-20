@@ -20,7 +20,12 @@ AFGBuildablePipelinePump::AFGBuildablePipelinePump() : Super() {
 	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mFactoryTickFunction.TickInterval = 0.0;
 }
-void AFGBuildablePipelinePump::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipelinePump::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePipelinePump, mDefaultFlowLimit);
+	DOREPLIFETIME(AFGBuildablePipelinePump, mUserFlowLimit);
+	DOREPLIFETIME(AFGBuildablePipelinePump, mIndicatorData);
+}
 void AFGBuildablePipelinePump::BeginPlay(){ }
 void AFGBuildablePipelinePump::Tick(float dt){ }
 void AFGBuildablePipelinePump::Factory_Tick(float dt){ }

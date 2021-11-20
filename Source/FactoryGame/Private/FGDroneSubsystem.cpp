@@ -7,7 +7,10 @@ AFGDroneSubsystem::AFGDroneSubsystem() : Super() {
 }
 AFGDroneSubsystem* AFGDroneSubsystem::Get(UWorld* world){ return nullptr; }
 AFGDroneSubsystem* AFGDroneSubsystem::Get(UObject* worldContext){ return nullptr; }
-void AFGDroneSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGDroneSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGDroneSubsystem, mStations);
+}
 void AFGDroneSubsystem::AddStation( AFGBuildableDroneStation* station){ }
 void AFGDroneSubsystem::RemoveStation( AFGBuildableDroneStation* station){ }
 void AFGDroneSubsystem::SearchStations(AFGDroneStationInfo* originStation, AFGDroneStationInfo* hostStation, FString filter, bool connectionsOnly, bool excludeOrigin, bool pairedFirst, bool includeEmptyStation, TArray< FDroneStationData >& result){ }

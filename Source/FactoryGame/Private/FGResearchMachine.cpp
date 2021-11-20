@@ -18,7 +18,12 @@ UFGResearchMachine::UFGResearchMachine() : Super() {
 	this->SetIsReplicatedByDefault(true);
 	this->bAutoActivate = true;
 }
-void UFGResearchMachine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGResearchMachine::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGResearchMachine, mCurrentResearchRecipe);
+	DOREPLIFETIME(UFGResearchMachine, mPlayerUsingMachine);
+	DOREPLIFETIME(UFGResearchMachine, mResearchingMesh);
+}
 void UFGResearchMachine::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction){ }
 void UFGResearchMachine::SetResearchRecipe(TSubclassOf<class UFGResearchRecipe> researchRecipe){ }
 UStaticMeshComponent* UFGResearchMachine::GetResearchMeshComponent(){ return nullptr; }

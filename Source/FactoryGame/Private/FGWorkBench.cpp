@@ -28,7 +28,10 @@ UFGWorkBench::UFGWorkBench() : Super() {
 	this->SetIsReplicatedByDefault(true);
 	this->bAutoActivate = true;
 }
-void UFGWorkBench::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGWorkBench::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGWorkBench, mPlayerWorkingAtBench);
+}
 void UFGWorkBench::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){ }
 void UFGWorkBench::TickProducing(float dt){ }
 void UFGWorkBench::SetRecipe(TSubclassOf<  UFGRecipe > recipe){ }

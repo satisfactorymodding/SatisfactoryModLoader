@@ -8,7 +8,10 @@ AFGFloodlightHologram::AFGFloodlightHologram() : Super() {
 	this->mLightFixtureComponent = nullptr;
 	this->mUseGradualFoundationRotations = true;
 }
-void AFGFloodlightHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGFloodlightHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGFloodlightHologram, mFixtureAngle);
+}
 void AFGFloodlightHologram::BeginPlay(){ }
 bool AFGFloodlightHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGFloodlightHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

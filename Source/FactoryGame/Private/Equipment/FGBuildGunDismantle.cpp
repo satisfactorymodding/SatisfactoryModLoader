@@ -7,7 +7,10 @@ UFGBuildGunStateDismantle::UFGBuildGunStateDismantle() : Super() {
 	this->mMultiDismantleSpecifiedType = nullptr;
 	this->mCurrentlySelectedActor = nullptr;
 }
-void UFGBuildGunStateDismantle::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const{ }
+void UFGBuildGunStateDismantle::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGBuildGunStateDismantle, mPeekDismantleRefund);
+}
 void UFGBuildGunStateDismantle::BeginState_Implementation(){ }
 void UFGBuildGunStateDismantle::EndState_Implementation(){ }
 void UFGBuildGunStateDismantle::TickState_Implementation(float deltaTime){ }

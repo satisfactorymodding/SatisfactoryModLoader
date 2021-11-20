@@ -7,7 +7,11 @@ AFGGamePhaseManager* AFGGamePhaseManager::Get(UObject* worldContext){ return nul
 AFGGamePhaseManager::AFGGamePhaseManager() : Super() {
 	this->mGamePhase = EGamePhase::EGP_EarlyGame;
 }
-void AFGGamePhaseManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGGamePhaseManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGGamePhaseManager, mGamePhase);
+	DOREPLIFETIME(AFGGamePhaseManager, mGamePhaseCosts);
+}
 void AFGGamePhaseManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGamePhaseManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGamePhaseManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

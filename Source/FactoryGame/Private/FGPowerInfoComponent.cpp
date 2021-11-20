@@ -2,7 +2,17 @@
 
 #include "FGPowerInfoComponent.h"
 
-void UFGPowerInfoComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGPowerInfoComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGPowerInfoComponent, mCircuitID);
+	DOREPLIFETIME(UFGPowerInfoComponent, mTargetConsumption);
+	DOREPLIFETIME(UFGPowerInfoComponent, mActualConsumption);
+	DOREPLIFETIME(UFGPowerInfoComponent, mBaseProduction);
+	DOREPLIFETIME(UFGPowerInfoComponent, mDynamicProductionCapacity);
+	DOREPLIFETIME(UFGPowerInfoComponent, mDynamicProductionDemandFactor);
+	DOREPLIFETIME(UFGPowerInfoComponent, mIsFuseTriggered);
+	DOREPLIFETIME(UFGPowerInfoComponent, mIsFullBlast);
+}
 void UFGPowerInfoComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 UFGPowerInfoComponent::UFGPowerInfoComponent() : Super() {
 	this->mCircuitID = -1;

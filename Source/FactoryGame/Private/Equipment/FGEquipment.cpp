@@ -36,7 +36,10 @@ AFGEquipment::AFGEquipment() : Super() {
 	this->bNetUseOwnerRelevancy = true;
 	this->bReplicates = true;
 }
-void AFGEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGEquipment, mChildEquipment);
+}
 void AFGEquipment::PreReplication(IRepChangedPropertyTracker & ChangedPropertyTracker){ }
 void AFGEquipment::BeginPlay(){ }
 void AFGEquipment::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

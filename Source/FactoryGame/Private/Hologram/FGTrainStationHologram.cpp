@@ -2,7 +2,10 @@
 
 #include "Hologram/FGTrainStationHologram.h"
 
-void AFGTrainStationHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGTrainStationHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 void AFGTrainStationHologram::CheckValidPlacement(){ }
 void AFGTrainStationHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 AActor* AFGTrainStationHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }

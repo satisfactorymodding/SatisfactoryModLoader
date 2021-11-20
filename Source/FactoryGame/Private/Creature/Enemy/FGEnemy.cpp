@@ -2,7 +2,11 @@
 
 #include "Creature/Enemy/FGEnemy.h"
 
-void AFGEnemy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGEnemy::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGEnemy, mCurrentAttack);
+	DOREPLIFETIME(AFGEnemy, mCurrentAggroTarget);
+}
 AFGEnemy::AFGEnemy(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mCurrentAttack = nullptr;
 	this->mCurrentAggroTarget = nullptr;

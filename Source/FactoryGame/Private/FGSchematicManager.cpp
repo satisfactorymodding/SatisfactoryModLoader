@@ -21,7 +21,14 @@ AFGSchematicManager::AFGSchematicManager() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.1;
 }
-void AFGSchematicManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGSchematicManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGSchematicManager, mAvailableSchematics);
+	DOREPLIFETIME(AFGSchematicManager, mPurchasedSchematics);
+	DOREPLIFETIME(AFGSchematicManager, mPaidOffSchematic);
+	DOREPLIFETIME(AFGSchematicManager, mActiveSchematic);
+	DOREPLIFETIME(AFGSchematicManager, mShipLandTimeStamp);
+}
 void AFGSchematicManager::PreInitializeComponents(){ Super::PreInitializeComponents(); }
 void AFGSchematicManager::BeginPlay(){ }
 void AFGSchematicManager::Tick(float dt){ }

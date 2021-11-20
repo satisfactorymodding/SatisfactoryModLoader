@@ -52,7 +52,45 @@ AFGGameState::AFGGameState() : Super() {
 	this->PrimaryActorTick.TickInterval = 5.0;
 }
 void AFGGameState::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGGameState, mTimeSubsystem);
+	DOREPLIFETIME(AFGGameState, mStorySubsystem);
+	DOREPLIFETIME(AFGGameState, mRailroadSubsystem);
+	DOREPLIFETIME(AFGGameState, mCircuitSubsystem);
+	DOREPLIFETIME(AFGGameState, mRecipeManager);
+	DOREPLIFETIME(AFGGameState, mSchematicManager);
+	DOREPLIFETIME(AFGGameState, mGamePhaseManager);
+	DOREPLIFETIME(AFGGameState, mResearchManager);
+	DOREPLIFETIME(AFGGameState, mTutorialIntroManager);
+	DOREPLIFETIME(AFGGameState, mActorRepresentationManager);
+	DOREPLIFETIME(AFGGameState, mMapManager);
+	DOREPLIFETIME(AFGGameState, mChatManager);
+	DOREPLIFETIME(AFGGameState, mPipeSubsystem);
+	DOREPLIFETIME(AFGGameState, mUnlockSubsystem);
+	DOREPLIFETIME(AFGGameState, mResourceSinkSubsystem);
+	DOREPLIFETIME(AFGGameState, mVehicleSubsystem);
+	DOREPLIFETIME(AFGGameState, mEventSubsystem);
+	DOREPLIFETIME(AFGGameState, mDroneSubsystem);
+	DOREPLIFETIME(AFGGameState, mSignSubsystem);
+	DOREPLIFETIME(AFGGameState, mVisitedMapAreas);
+	DOREPLIFETIME(AFGGameState, mPickedUpItems);
+	DOREPLIFETIME(AFGGameState, mPlayDurationWhenLoaded);
+	DOREPLIFETIME(AFGGameState, mReplicatedSessionName);
+	DOREPLIFETIME(AFGGameState, mReplicadedOnlineNumPubliclConnections);
+	DOREPLIFETIME(AFGGameState, mBuildingColorSlots_Data);
+	DOREPLIFETIME(AFGGameState, mBuildableLightColorSlots);
+	DOREPLIFETIME(AFGGameState, mPlayerGlobalColorPresets);
+	DOREPLIFETIME(AFGGameState, mSwatchGroupDatum);
+	DOREPLIFETIME(AFGGameState, mPlannedRestartTime);
+	DOREPLIFETIME(AFGGameState, mCheatNoCost);
+	DOREPLIFETIME(AFGGameState, mCheatNoPower);
+	DOREPLIFETIME(AFGGameState, mCheatNoFuel);
+	DOREPLIFETIME(AFGGameState, mIsTradingPostBuilt);
+	DOREPLIFETIME(AFGGameState, mHasInitalTradingPostLandAnimPlayed);
+	DOREPLIFETIME(AFGGameState, mIsSpaceElevatorBuilt);
+	DOREPLIFETIME(AFGGameState, mServerLocalDateTimeTicksAtInit);
+}
 void AFGGameState::Tick(float delta){ }
 void AFGGameState::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGGameState::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

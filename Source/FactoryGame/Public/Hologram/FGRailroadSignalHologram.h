@@ -19,6 +19,7 @@ public:
 
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	// End AActor Interface
 
 	// Begin AFGHologram Interface

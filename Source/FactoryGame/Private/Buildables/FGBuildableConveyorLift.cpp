@@ -17,7 +17,12 @@ AFGBuildableConveyorLift::AFGBuildableConveyorLift() : Super() {
 	this->mVisibilityComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisibilityMesh"));
 	this->mVisibilityComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableConveyorLift::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableConveyorLift::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableConveyorLift, mTopTransform);
+	DOREPLIFETIME(AFGBuildableConveyorLift, mIsReversed);
+	DOREPLIFETIME(AFGBuildableConveyorLift, mSnappedPassthroughs);
+}
 void AFGBuildableConveyorLift::BeginPlay(){ }
 int32 AFGBuildableConveyorLift::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildableConveyorLift::Upgrade_Implementation(AActor* newActor){ }

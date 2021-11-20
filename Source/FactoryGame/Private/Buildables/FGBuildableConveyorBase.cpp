@@ -4,7 +4,10 @@
 #include "Components/SceneComponent.h"
 #include "FGFactoryConnectionComponent.h"
 
-void UFGConveyorRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGConveyorRemoteCallObject::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGConveyorRemoteCallObject, mForceNetField_UFGConveyorRemoteCallObject);
+}
 void UFGConveyorRemoteCallObject::Server_OnUse_Implementation( AFGBuildableConveyorBelt* target,  AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset){ }
 bool UFGConveyorRemoteCallObject::Server_OnUse_Validate( AFGBuildableConveyorBelt* target,  AFGCharacterPlayer* byCharacter, uint32 itemRepID, float itemOffset){ return bool(); }
 void UFGConveyorRemoteCallObject::Server_ReportInvalidStateAndRequestConveyorRepReset_Implementation( AFGBuildableConveyorBase* target){ }
@@ -35,7 +38,10 @@ AFGBuildableConveyorBase::AFGBuildableConveyorBase() : Super() {
 	this->mConnection0->SetupAttachment(RootComponent);
 	this->mConnection1->SetupAttachment(RootComponent);
 }
-void AFGBuildableConveyorBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableConveyorBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableConveyorBase, mItems);
+}
 void AFGBuildableConveyorBase::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void AFGBuildableConveyorBase::BeginPlay(){ }
 void AFGBuildableConveyorBase::EndPlay(const EEndPlayReason::Type endPlayReason){ }

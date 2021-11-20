@@ -64,4 +64,7 @@ void UFGLocomotiveMovementComponent::ServerUpdateState_Implementation(int32 inRe
 bool UFGLocomotiveMovementComponent::ServerUpdateState_Validate(int32 inReverserInput, int32 inSteeringInput, float inThrottleInput, float inDynamicBrakeInput, float inAirBrakeInput, bool inHornInput){ return bool(); }
 void UFGLocomotiveMovementComponent::UseReplicatedState(){ }
 void UFGLocomotiveMovementComponent::UseMultipleUnitMasterState(const UFGLocomotiveMovementComponent* master){ }
-void UFGLocomotiveMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }
+void UFGLocomotiveMovementComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGLocomotiveMovementComponent, mReplicatedState);
+}

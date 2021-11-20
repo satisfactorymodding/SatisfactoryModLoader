@@ -31,7 +31,11 @@ AFGConveyorBeltHologram::AFGConveyorBeltHologram() : Super() {
 	this->mNeedsValidFloor = false;
 	this->mUseBuildClearanceOverlapSnapp = false;
 }
-void AFGConveyorBeltHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGConveyorBeltHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGConveyorBeltHologram, mChildPoleHologram);
+	DOREPLIFETIME(AFGConveyorBeltHologram, mConnectionArrowComponentDirection);
+}
 void AFGConveyorBeltHologram::BeginPlay(){ }
 bool AFGConveyorBeltHologram::TryUpgrade(const FHitResult& hitResult){ return bool(); }
 void AFGConveyorBeltHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

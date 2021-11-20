@@ -17,7 +17,10 @@ void AFGChainsaw::Tick(float dt){ }
 bool AFGChainsaw::ShouldSaveState() const{ return bool(); }
 void AFGChainsaw::DisableEquipment(){ }
 void AFGChainsaw::UnEquip(){ }
-void AFGChainsaw::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGChainsaw::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGChainsaw, mEnergyStored);
+}
 bool AFGChainsaw::DoesPlayerHaveChainsawEquipped( AFGCharacterPlayer* player){ return bool(); }
 bool AFGChainsaw::ConsumeFuel(float dt){ return bool(); }
 void AFGChainsaw::StartSawing(){ }

@@ -14,7 +14,13 @@ AFGBuildableLightSource::AFGBuildableLightSource() : Super() {
 	this->mHasPower = false;
 	this->mIsDay = false;
 }
-void AFGBuildableLightSource::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableLightSource::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableLightSource, mIsEnabled);
+	DOREPLIFETIME(AFGBuildableLightSource, mLightControlData);
+	DOREPLIFETIME(AFGBuildableLightSource, mHasPower);
+	DOREPLIFETIME(AFGBuildableLightSource, mIsDay);
+}
 void AFGBuildableLightSource::BeginPlay(){ }
 void AFGBuildableLightSource::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGBuildableLightSource::GetPoolHandleInitialState() const{ return bool(); }

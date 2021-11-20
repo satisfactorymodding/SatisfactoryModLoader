@@ -12,7 +12,11 @@ AFGBuildableRailroadSwitchControl::AFGBuildableRailroadSwitchControl() : Super()
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGBuildableRailroadSwitchControl::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableRailroadSwitchControl::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableRailroadSwitchControl, mControlledConnection);
+	DOREPLIFETIME(AFGBuildableRailroadSwitchControl, mSwitchData);
+}
 void AFGBuildableRailroadSwitchControl::BeginPlay(){ }
 void AFGBuildableRailroadSwitchControl::Destroyed(){ }
 bool AFGBuildableRailroadSwitchControl::CanDismantle_Implementation() const{ return bool(); }

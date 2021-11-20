@@ -23,7 +23,12 @@ AFGPlayerController::AFGPlayerController() : Super() {
 	this->mMusicPlayerTickIntervalStart = 1.5;
 }
 bool AFGPlayerController::ProcessConsoleExec(const TCHAR* cmd, FOutputDevice& ar, UObject* executor){ return bool(); }
-void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPlayerController, mRemoteCallObjects);
+	DOREPLIFETIME(AFGPlayerController, mIsRespawning);
+	DOREPLIFETIME(AFGPlayerController, mInTutorialMode);
+}
 bool AFGPlayerController::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGPlayerController::BeginPlay(){ }

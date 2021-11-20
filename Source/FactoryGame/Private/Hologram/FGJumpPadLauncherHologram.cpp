@@ -27,7 +27,10 @@ AFGJumpPadLauncherHologram::AFGJumpPadLauncherHologram() : Super() {
 	this->mInstancedSplineMeshComponent->SetupAttachment(RootComponent);
 	this->mDestinationMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGJumpPadLauncherHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGJumpPadLauncherHologram::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGJumpPadLauncherHologram, mLaunchAngle);
+}
 void AFGJumpPadLauncherHologram::BeginPlay(){ }
 bool AFGJumpPadLauncherHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGJumpPadLauncherHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

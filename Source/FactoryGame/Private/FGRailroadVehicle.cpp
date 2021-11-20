@@ -21,7 +21,19 @@ AFGRailroadVehicle::AFGRailroadVehicle() : Super() {
 	this->mHologramClass = AFGRailroadVehicleHologram::StaticClass();
 	this->SetReplicatingMovement(false);
 }
-void AFGRailroadVehicle::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGRailroadVehicle::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGRailroadVehicle, mTrain);
+	DOREPLIFETIME(AFGRailroadVehicle, mCoupledVehicleFront);
+	DOREPLIFETIME(AFGRailroadVehicle, mCoupledVehicleBack);
+	DOREPLIFETIME(AFGRailroadVehicle, mIsOrientationReversed);
+	DOREPLIFETIME(AFGRailroadVehicle, mIsDerailed);
+	DOREPLIFETIME(AFGRailroadVehicle, mLastServerTime);
+	DOREPLIFETIME(AFGRailroadVehicle, mServerTrack);
+	DOREPLIFETIME(AFGRailroadVehicle, mServerOffset);
+	DOREPLIFETIME(AFGRailroadVehicle, mServerForward);
+	DOREPLIFETIME(AFGRailroadVehicle, mServerSpeed);
+}
 void AFGRailroadVehicle::BeginPlay(){ }
 void AFGRailroadVehicle::Destroyed(){ }
 void AFGRailroadVehicle::Serialize(FArchive& ar){ Super::Serialize(ar); }

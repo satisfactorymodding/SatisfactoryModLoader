@@ -6,7 +6,17 @@
 #include "FGSwatchGroup.h"
 
 FVehicleSeat::FVehicleSeat(){ }
-void AFGVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGVehicle, mHealthComponent);
+	DOREPLIFETIME(AFGVehicle, mNetConstructionID);
+	DOREPLIFETIME(AFGVehicle, mCustomizationData);
+	DOREPLIFETIME(AFGVehicle, mBuiltWithRecipe);
+	DOREPLIFETIME(AFGVehicle, mIsSelfDriving);
+	DOREPLIFETIME(AFGVehicle, mIsSubmergedInWater);
+	DOREPLIFETIME(AFGVehicle, mIsSimulated);
+	DOREPLIFETIME(AFGVehicle, mMapText);
+}
 bool AFGVehicle::IsRelevancyOwnerFor(const AActor* Actor, const AActor* Owner, const AActor* ConnectionActor) const{ return bool(); }
 AFGVehicle::AFGVehicle() : Super() {
 	this->mDisplayName = INVTEXT("");

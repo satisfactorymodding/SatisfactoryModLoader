@@ -36,4 +36,10 @@ void UFGHealthComponent::SetReplicateDamageEvents(bool setReplicates){ }
 void UFGHealthComponent::SetReplicateDeathEvents(bool setReplicates){ }
 float UFGHealthComponent::AdjustDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
 void UFGHealthComponent::Died(bool forceNotifies){ }
-void UFGHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }
+void UFGHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGHealthComponent, mMaxHealth);
+	DOREPLIFETIME(UFGHealthComponent, mCurrentHealth);
+	DOREPLIFETIME(UFGHealthComponent, mRespawnHealthFactor);
+	DOREPLIFETIME(UFGHealthComponent, mIsDead);
+}

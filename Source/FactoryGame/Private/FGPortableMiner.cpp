@@ -2,7 +2,13 @@
 
 #include "FGPortableMiner.h"
 
-void AFGPortableMiner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGPortableMiner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPortableMiner, mExtractResourceNode);
+	DOREPLIFETIME(AFGPortableMiner, mOutputInventory);
+	DOREPLIFETIME(AFGPortableMiner, mCurrentExtractProgress);
+	DOREPLIFETIME(AFGPortableMiner, mIsProducing);
+}
 AFGPortableMiner::AFGPortableMiner() : Super() {
 	this->mExtractCycleTime = 1.0;
 	this->mExtractResourceNode = nullptr;

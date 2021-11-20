@@ -16,7 +16,12 @@ AFGItemPickup::AFGItemPickup() : Super() {
 	this->mMaxRespawns = -1;
 	this->mNumRespawns = 0;
 }
-void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGItemPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGItemPickup, mCollector);
+	DOREPLIFETIME(AFGItemPickup, mPickupItems);
+	DOREPLIFETIME(AFGItemPickup, mItemState);
+}
 void AFGItemPickup::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGItemPickup::BeginPlay(){ }
 void AFGItemPickup::EndPlay(const EEndPlayReason::Type EndPlayReason){ }

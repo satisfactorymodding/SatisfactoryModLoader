@@ -3,7 +3,10 @@
 #include "Buildables/FGBuildableDecor.h"
 #include "Hologram/FGDecorHologram.h"
 
-void AFGBuildableDecor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableDecor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableDecor, mDecorMesh);
+}
 AFGBuildableDecor::AFGBuildableDecor() : Super() {
 	this->mDecorMesh = nullptr;
 	this->mHologramClass = AFGDecorHologram::StaticClass();

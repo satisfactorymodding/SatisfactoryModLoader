@@ -19,7 +19,12 @@ AFGBuildablePipelineSupport::AFGBuildablePipelineSupport() : Super() {
 	this->mCreateClearanceMeshRepresentation = false;
 	this->mSupportComponentDefaultMesh->SetupAttachment(RootComponent);
 }
-void AFGBuildablePipelineSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipelineSupport::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePipelineSupport, mLength);
+	DOREPLIFETIME(AFGBuildablePipelineSupport, mVerticalAngle);
+	DOREPLIFETIME(AFGBuildablePipelineSupport, mSupportMesh);
+}
 void AFGBuildablePipelineSupport::BeginPlay(){ }
 void AFGBuildablePipelineSupport::SetSupportLength(float length){ }
 void AFGBuildablePipelineSupport::SetVerticalAngle(float angle){ }

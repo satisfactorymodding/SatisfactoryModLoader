@@ -14,7 +14,11 @@ AFGPillarHologram::AFGPillarHologram() : Super() {
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGPillarHologram::BeginPlay(){ }
-void AFGPillarHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPillarHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPillarHologram, mCurrentZoop);
+	DOREPLIFETIME(AFGPillarHologram, mBuildStep);
+}
 bool AFGPillarHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGPillarHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 void AFGPillarHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

@@ -60,4 +60,15 @@ void AFGTimeOfDaySubsystem::OnRep_ReplicatedDaySeconds(){ }
 void AFGTimeOfDaySubsystem::UpdateServerDaySeconds(){ }
 float AFGTimeOfDaySubsystem::GetAdjustedDaySeconds() const{ return float(); }
 float AFGTimeOfDaySubsystem::GetGameDeltaTime(float dt) const{ return float(); }
-void AFGTimeOfDaySubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }
+void AFGTimeOfDaySubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mDayLengthMinutes);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mNightLengthMinutes);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mDayStartTime);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mNightStartTime);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mSpeedMultiplier);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mReplicatedDaySeconds);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mNumberOfPassedDays);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mRTPCInterval);
+	DOREPLIFETIME(AFGTimeOfDaySubsystem, mUpdateTime);
+}

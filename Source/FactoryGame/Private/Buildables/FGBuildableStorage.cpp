@@ -2,7 +2,10 @@
 
 #include "Buildables/FGBuildableStorage.h"
 
-void AFGBuildableStorage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableStorage::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 AFGBuildableStorage::AFGBuildableStorage() : Super() {
 	this->mStackingHeight = 0.0;
 	this->mInventorySizeX = 4;

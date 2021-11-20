@@ -2,7 +2,12 @@
 
 #include "Buildables/FGBuildableResourceExtractor.h"
 
-void AFGBuildableResourceExtractor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildableResourceExtractor::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableResourceExtractor, mExtractStartupTimer);
+	DOREPLIFETIME(AFGBuildableResourceExtractor, mCurrentExtractProgress);
+	DOREPLIFETIME(AFGBuildableResourceExtractor, mReplicatedFlowRate);
+}
 void AFGBuildableResourceExtractor::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 AFGBuildableResourceExtractor::AFGBuildableResourceExtractor() : Super() {
 	this->mExtractStartupTime = -10.0;

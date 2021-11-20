@@ -14,7 +14,10 @@ AFGActorRepresentationManager::AFGActorRepresentationManager() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->NetUpdateFrequency = 2.0;
 }
-void AFGActorRepresentationManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGActorRepresentationManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGActorRepresentationManager, mReplicatedRepresentations);
+}
 void AFGActorRepresentationManager::PreReplication(IRepChangedPropertyTracker& changedPropertyTracker){ }
 bool AFGActorRepresentationManager::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 bool AFGActorRepresentationManager::CreateAndAddNewRepresentation(AActor* realActor, bool isLocal){ return bool(); }

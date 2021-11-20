@@ -58,7 +58,15 @@ EFogOfWarRevealType AFGBuildableDroneStation::GetActorFogOfWarRevealType(){ retu
 float AFGBuildableDroneStation::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGBuildableDroneStation::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGBuildableDroneStation::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
-void AFGBuildableDroneStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableDroneStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableDroneStation, mStationHasDronesInQueue);
+	DOREPLIFETIME(AFGBuildableDroneStation, mItemTransferringStage);
+	DOREPLIFETIME(AFGBuildableDroneStation, mStationDrone);
+	DOREPLIFETIME(AFGBuildableDroneStation, mDockedDrone);
+	DOREPLIFETIME(AFGBuildableDroneStation, mInfo);
+	DOREPLIFETIME(AFGBuildableDroneStation, mMapText);
+}
 void AFGBuildableDroneStation::BeginPlay(){ }
 void AFGBuildableDroneStation::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableDroneStation::Factory_Tick(float dt){ }

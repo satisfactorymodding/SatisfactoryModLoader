@@ -8,9 +8,9 @@ AFGStickyExplosive::AFGStickyExplosive() : Super() {
 	this->mDetonateIn = 0.0;
 	this->mEnvironmentDestructionSphere = nullptr;
 	this->mRotatingMovementComp = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovementComponent"));
-	this->mThrowRotation.Pitch = -307.604;
-	this->mThrowRotation.Yaw = 55.1874;
-	this->mThrowRotation.Roll = -218.653;
+	this->mThrowRotation.Pitch = -418.467;
+	this->mThrowRotation.Yaw = -34.9216;
+	this->mThrowRotation.Roll = -206.359;
 	this->mProjectileData.ProjectileClass = nullptr;
 	this->mProjectileData.ProjectileLifeSpan = 10.0;
 	this->mProjectileData.ProjectileStickSpan = 5.0;
@@ -29,7 +29,10 @@ AFGStickyExplosive::AFGStickyExplosive() : Super() {
 	this->mProjectileData.EffectiveRange = 0.0;
 	this->mProjectileData.WeaponDamageMultiplier = 1.0;
 }
-void AFGStickyExplosive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGStickyExplosive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGStickyExplosive, mDetonateIn);
+}
 void AFGStickyExplosive::OnImpact(const FHitResult& hitResult){ }
 float AFGStickyExplosive::TakeDamage(float DamageAmount, const  FDamageEvent& DamageEvent,
 							 AController* EventInstigator,

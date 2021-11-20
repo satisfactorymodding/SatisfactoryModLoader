@@ -2,7 +2,13 @@
 
 #include "Hologram/FGTradingPostHologram.h"
 
-void AFGTradingPostHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGTradingPostHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGTradingPostHologram, mGeneratorHolograms);
+	DOREPLIFETIME(AFGTradingPostHologram, mStorageHologram);
+	DOREPLIFETIME(AFGTradingPostHologram, mHubTerminalHologram);
+	DOREPLIFETIME(AFGTradingPostHologram, mWorkBenchHologram);
+}
 void AFGTradingPostHologram::CheckValidPlacement(){ }
 void AFGTradingPostHologram::SpawnChildren(AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ }
 AActor* AFGTradingPostHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }

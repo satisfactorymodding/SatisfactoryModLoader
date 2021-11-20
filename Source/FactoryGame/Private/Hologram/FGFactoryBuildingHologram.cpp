@@ -15,7 +15,11 @@ AFGFactoryBuildingHologram::AFGFactoryBuildingHologram() : Super() {
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Architecture;
 }
 void AFGFactoryBuildingHologram::BeginPlay(){ }
-void AFGFactoryBuildingHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGFactoryBuildingHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGFactoryBuildingHologram, mDesiredZoop);
+	DOREPLIFETIME(AFGFactoryBuildingHologram, mBuildStep);
+}
 bool AFGFactoryBuildingHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 AActor* AFGFactoryBuildingHologram::Construct(TArray<AActor*>& out_children, FNetConstructionID constructionID){ return nullptr; }
 int32 AFGFactoryBuildingHologram::GetBaseCostMultiplier() const{ return int32(); }

@@ -32,4 +32,7 @@ void AFGResourceNode::ExtractResourceAndGiveToPlayer(AFGCharacterPlayer* toPlaye
 int32 AFGResourceNode::GetNumResourcesPerExtract() const{ return int32(); }
 void AFGResourceNode::InitRadioactivity(){ }
 void AFGResourceNode::UpdateRadioactivity(){ }
-void AFGResourceNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const { Super::GetLifetimeReplicatedProps(OutLifetimeProps); }
+void AFGResourceNode::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGResourceNode, mResourcesLeft);
+}

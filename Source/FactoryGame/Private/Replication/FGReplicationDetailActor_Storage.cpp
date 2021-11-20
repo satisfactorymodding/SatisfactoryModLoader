@@ -5,7 +5,10 @@
 AFGReplicationDetailActor_Storage::AFGReplicationDetailActor_Storage() : Super() {
 	this->mStorageInventory = nullptr;
 }
-void AFGReplicationDetailActor_Storage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_Storage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGReplicationDetailActor_Storage, mStorageInventory);
+}
 void AFGReplicationDetailActor_Storage::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_Storage::RemoveDetailActorFromOwner(){ }
 void AFGReplicationDetailActor_Storage::FlushReplicationActorStateToOwner(){ }

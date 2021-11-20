@@ -2,7 +2,10 @@
 
 #include "Creature/Enemy/FGGameplayTask_AttackMelee.h"
 
-void UFGGameplayTask_AttackMelee::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const{ }
+void UFGGameplayTask_AttackMelee::GetLifetimeReplicatedProps(TArray<  FLifetimeProperty > & OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGGameplayTask_AttackMelee, mAttackTarget);
+}
 UFGGameplayTask_AttackMelee* UFGGameplayTask_AttackMelee::Attack(AFGEnemy* enemy, TScriptInterface<  IFGAggroTargetInterface > attackTarget, TSubclassOf<  UFGAttack > attackClass){ return nullptr; }
 void UFGGameplayTask_AttackMelee::Activate(){ }
 void UFGGameplayTask_AttackMelee::OnMontageEnded( UAnimMontage* montage, bool interrupted){ }

@@ -15,7 +15,10 @@ UFGFactoryConnectionComponent::UFGFactoryConnectionComponent() : Super() {
 	this->bNetAddressable = true;
 	this->SetIsReplicatedByDefault(true);
 }
-void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void UFGFactoryConnectionComponent::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGFactoryConnectionComponent, mHasConnectedComponent);
+}
 void UFGFactoryConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGFactoryConnectionComponent::OnRegister(){ Super::OnRegister(); }
 void UFGFactoryConnectionComponent::OnUnregister(){ Super::OnUnregister(); }

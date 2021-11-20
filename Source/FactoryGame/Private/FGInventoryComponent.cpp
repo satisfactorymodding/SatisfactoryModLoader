@@ -17,7 +17,13 @@ const FInventoryItem FInventoryItem::NullInventoryItem = FInventoryItem();
 FInventoryStack::FInventoryStack(){ }
 FInventoryStack::FInventoryStack(const FInventoryItem& item){ }
 FInventoryStack::FInventoryStack(int32 numItems, TSubclassOf<  UFGItemDescriptor > itemClass){ }
-void UFGInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGInventoryComponent, mInventoryStacks);
+	DOREPLIFETIME(UFGInventoryComponent, mArbitrarySlotSizes);
+	DOREPLIFETIME(UFGInventoryComponent, mAllowedItemDescriptors);
+	DOREPLIFETIME(UFGInventoryComponent, mCanBeRearrange);
+}
 void UFGInventoryComponent::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
 void UFGInventoryComponent::PreNetReceive(){ }
 UFGInventoryComponent::UFGInventoryComponent() : Super() {

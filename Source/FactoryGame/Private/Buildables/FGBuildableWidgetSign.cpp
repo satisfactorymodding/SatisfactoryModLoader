@@ -20,7 +20,10 @@ AFGBuildableWidgetSign::AFGBuildableWidgetSign() : Super() {
 	this->mAllowColoring = false;
 	this->mWidgetComponent->SetupAttachment(RootComponent);
 }
-void AFGBuildableWidgetSign::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableWidgetSign::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableWidgetSign, mDataVersion);
+}
 void AFGBuildableWidgetSign::BeginPlay(){ }
 void AFGBuildableWidgetSign::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableWidgetSign::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

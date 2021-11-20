@@ -16,7 +16,10 @@ AFGMapManager::AFGMapManager() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.1;
 }
-void AFGMapManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGMapManager::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 void AFGMapManager::BeginPlay(){ }
 void AFGMapManager::Tick(float dt){ }
 void AFGMapManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

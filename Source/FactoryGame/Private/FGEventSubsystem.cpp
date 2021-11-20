@@ -5,7 +5,10 @@
 AFGEventSubsystem::AFGEventSubsystem() : Super() {
 	this->bIsReplicated = false;
 }
-void AFGEventSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGEventSubsystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGEventSubsystem, mCurrentEvents);
+}
 AFGEventSubsystem* AFGEventSubsystem::Get(UWorld* world){ return nullptr; }
 AFGEventSubsystem* AFGEventSubsystem::GetEventSubsystem(UObject* worldContext){ return nullptr; }
 TArray< EEvents > AFGEventSubsystem::GetCurrentEvents(){ return TArray<EEvents>(); }

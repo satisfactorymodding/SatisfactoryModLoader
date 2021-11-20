@@ -31,7 +31,28 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->NetUpdateFrequency = 10.0;
 }
 void AFGPlayerState::Serialize(FArchive& ar){ Super::Serialize(ar); }
-void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPlayerState, mHotbars);
+	DOREPLIFETIME(AFGPlayerState, mPresetHotbars);
+	DOREPLIFETIME(AFGPlayerState, mCurrentHotbarIndex);
+	DOREPLIFETIME(AFGPlayerState, mBuildableSubCategoryDefaultMatDesc);
+	DOREPLIFETIME(AFGPlayerState, mMaterialSubCategoryDefaultMatDesc);
+	DOREPLIFETIME(AFGPlayerState, mNewRecipes);
+	DOREPLIFETIME(AFGPlayerState, mSlotNum);
+	DOREPLIFETIME(AFGPlayerState, mSlotData);
+	DOREPLIFETIME(AFGPlayerState, mIsServerAdmin);
+	DOREPLIFETIME(AFGPlayerState, mVisitedAreas);
+	DOREPLIFETIME(AFGPlayerState, mCustomColorData);
+	DOREPLIFETIME(AFGPlayerState, mRememberedFirstTimeEquipmentClasses);
+	DOREPLIFETIME(AFGPlayerState, mNumArmSlots);
+	DOREPLIFETIME(AFGPlayerState, mOnlyShowAffordableRecipes);
+	DOREPLIFETIME(AFGPlayerState, mCollapsedItemCategories);
+	DOREPLIFETIME(AFGPlayerState, mFilteredOutMapTypes);
+	DOREPLIFETIME(AFGPlayerState, mFilteredOutCompassTypes);
+	DOREPLIFETIME(AFGPlayerState, mNumObservedInventorySlots);
+	DOREPLIFETIME(AFGPlayerState, mFavoriteShopSchematics);
+}
 bool AFGPlayerState::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGPlayerState::BeginPlay(){ }
 void AFGPlayerState::CopyProperties(APlayerState* playerState){ }

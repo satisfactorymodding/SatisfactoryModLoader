@@ -17,7 +17,10 @@ AFGRailroadTrackHologram::AFGRailroadTrackHologram() : Super() {
 	this->mSwitchControls[0] = nullptr;
 	this->mSwitchControls[1] = nullptr;
 }
-void AFGRailroadTrackHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGRailroadTrackHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGRailroadTrackHologram, mSwitchControls);
+}
 void AFGRailroadTrackHologram::BeginPlay(){ }
 USceneComponent* AFGRailroadTrackHologram::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 void AFGRailroadTrackHologram::SetHologramLocationAndRotation(const FHitResult& hitResult){ }

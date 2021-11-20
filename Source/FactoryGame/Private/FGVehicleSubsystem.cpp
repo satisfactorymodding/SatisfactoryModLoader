@@ -16,7 +16,13 @@ AFGSavedWheeledVehiclePath::AFGSavedWheeledVehiclePath() : Super() {
 	this->bReplicates = true;
 }
 void AFGSavedWheeledVehiclePath::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGSavedWheeledVehiclePath::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGSavedWheeledVehiclePath::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGSavedWheeledVehiclePath, mPathName);
+	DOREPLIFETIME(AFGSavedWheeledVehiclePath, mTargetList);
+	DOREPLIFETIME(AFGSavedWheeledVehiclePath, mUserCount);
+	DOREPLIFETIME(AFGSavedWheeledVehiclePath, mIsInUse);
+}
 #ifdef DEBUG_SELF_DRIVING
 int AFGVehicleSubsystem::GetDebugLevel(){ return int(); }
 void AFGVehicleSubsystem::SetDebugLevel(int level){ }
@@ -35,7 +41,10 @@ AFGVehicleSubsystem::AFGVehicleSubsystem() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGVehicleSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGVehicleSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGVehicleSubsystem, mSavedPaths);
+}
 void AFGVehicleSubsystem::Tick(float dt){ }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UWorld* world){ return nullptr; }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UObject* worldContext){ return nullptr; }

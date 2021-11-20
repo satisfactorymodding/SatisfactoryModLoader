@@ -4,7 +4,29 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Hologram/FGWheeledVehicleHologram.h"
 
-void AFGWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGWheeledVehicle, mCurrentFuelAmount);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsLoadingVehicle);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsUnloadingVehicle);
+	DOREPLIFETIME(AFGWheeledVehicle, mAuthoritativeLocation);
+	DOREPLIFETIME(AFGWheeledVehicle, mAuthoritativeRotation);
+	DOREPLIFETIME(AFGWheeledVehicle, mAuthoritativeLinearVel);
+	DOREPLIFETIME(AFGWheeledVehicle, mReplicatedState);
+	DOREPLIFETIME(AFGWheeledVehicle, mSimulationMovement);
+	DOREPLIFETIME(AFGWheeledVehicle, mFuelInventory);
+	DOREPLIFETIME(AFGWheeledVehicle, mStorageInventory);
+	DOREPLIFETIME(AFGWheeledVehicle, mTargetList);
+	DOREPLIFETIME(AFGWheeledVehicle, mSpeedLimit);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsFollowingPath);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsAutopilotEnabled);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsPossessed);
+	DOREPLIFETIME(AFGWheeledVehicle, mCurrentStation);
+	DOREPLIFETIME(AFGWheeledVehicle, mManualDockingState);
+	DOREPLIFETIME(AFGWheeledVehicle, mCurrentTarget);
+	DOREPLIFETIME(AFGWheeledVehicle, mRecordingStatus);
+	DOREPLIFETIME(AFGWheeledVehicle, mIsGhosting);
+}
 AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mWorkBench = nullptr;
 	this->mFuelConsumption = 1.0;

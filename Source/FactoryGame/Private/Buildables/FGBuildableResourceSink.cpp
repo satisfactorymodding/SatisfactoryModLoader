@@ -9,7 +9,10 @@ AFGBuildableResourceSink::AFGBuildableResourceSink() : Super() {
 	this->mProcessingTime = 3.0;
 	this->mProducingTimer = 0.0;
 }
-void AFGBuildableResourceSink::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableResourceSink::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableResourceSink, mCouponInventory);
+}
 void AFGBuildableResourceSink::BeginPlay(){ }
 void AFGBuildableResourceSink::Tick(float dt){ }
 void AFGBuildableResourceSink::Destroyed(){ }

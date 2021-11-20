@@ -5,7 +5,11 @@
 #include "FGPowerConnectionComponent.h"
 #include "FGPowerInfoComponent.h"
 
-void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGLocomotive, mPowerInfo);
+	DOREPLIFETIME(AFGLocomotive, mHasPower);
+}
 AFGLocomotive::AFGLocomotive() : Super() {
 	this->mPowerConsumption.Min = 0.0;
 	this->mPowerConsumption.Max = 15.0;

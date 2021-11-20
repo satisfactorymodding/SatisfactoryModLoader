@@ -10,7 +10,10 @@ AFGChargedWeapon::AFGChargedWeapon() : Super() {
 	this->mDelayBetweenSecondaryTriggers = 0.25;
 	this->mAutoReloadDelay = 1.0;
 }
-void AFGChargedWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGChargedWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+}
 void AFGChargedWeapon::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGChargedWeapon::ShouldSaveState() const{ return bool(); }
 void AFGChargedWeapon::BeginPrimaryFire(){ }

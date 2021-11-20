@@ -18,7 +18,10 @@ AFGPoleHologram::AFGPoleHologram() : Super() {
 	this->mUseGradualFoundationRotations = true;
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
-void AFGPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGPoleHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGPoleHologram, mPoleMesh);
+}
 void AFGPoleHologram::BeginPlay(){ }
 bool AFGPoleHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }
 bool AFGPoleHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }

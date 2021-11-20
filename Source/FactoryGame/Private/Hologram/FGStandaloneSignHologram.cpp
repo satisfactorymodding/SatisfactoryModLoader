@@ -8,7 +8,10 @@ AFGStandaloneSignHologram::AFGStandaloneSignHologram() : Super() {
 	this->mUseGradualFoundationRotations = true;
 	this->mAttachmentPointSnapDistanceThreshold = 10000.0;
 }
-void AFGStandaloneSignHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGStandaloneSignHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGStandaloneSignHologram, mChildSignPoleHologram);
+}
 void AFGStandaloneSignHologram::BeginPlay(){ }
 bool AFGStandaloneSignHologram::IsValidHitResult(const FHitResult& hitResult) const{ return bool(); }
 bool AFGStandaloneSignHologram::DoMultiStepPlacement(bool isInputFromARelease){ return bool(); }

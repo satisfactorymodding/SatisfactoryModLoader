@@ -18,7 +18,11 @@ AFGBuildablePipePart::AFGBuildablePipePart() : Super() {
 	this->mHologramClass = AFGBuildablePipePart::StaticClass();
 	this->mSupportComponentDefaultMesh->SetupAttachment(RootComponent);
 }
-void AFGBuildablePipePart::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePipePart::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePipePart, mLength);
+	DOREPLIFETIME(AFGBuildablePipePart, mSupportMesh);
+}
 void AFGBuildablePipePart::BeginPlay(){ }
 void AFGBuildablePipePart::SetSupportLength(float length){ }
 void AFGBuildablePipePart::SetupConnectionComponent(){ }

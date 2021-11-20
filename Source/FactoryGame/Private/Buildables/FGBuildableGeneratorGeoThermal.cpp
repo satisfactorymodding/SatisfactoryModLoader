@@ -3,7 +3,14 @@
 #include "Buildables/FGBuildableGeneratorGeoThermal.h"
 #include "Resources/FGExtractableResourceInterface.h"
 
-void AFGBuildableGeneratorGeoThermal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGBuildableGeneratorGeoThermal::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableGeneratorGeoThermal, mExtractableResource);
+	DOREPLIFETIME(AFGBuildableGeneratorGeoThermal, mPowerOutputCurve);
+	DOREPLIFETIME(AFGBuildableGeneratorGeoThermal, mMinPowerProduction);
+	DOREPLIFETIME(AFGBuildableGeneratorGeoThermal, mMaxPowerProduction);
+	DOREPLIFETIME(AFGBuildableGeneratorGeoThermal, mVariablePowerProductionCycleOffset);
+}
 void AFGBuildableGeneratorGeoThermal::BeginPlay(){ }
 void AFGBuildableGeneratorGeoThermal::Destroyed(){ }
 void AFGBuildableGeneratorGeoThermal::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

@@ -16,7 +16,11 @@ AFGFreightWagon::AFGFreightWagon() : Super() {
 	this->mFluidStackSizeMultiplier = 0;
 	this->mCargoMeshComponent = nullptr;
 }
-void AFGFreightWagon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGFreightWagon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGFreightWagon, mStorageInventory);
+	DOREPLIFETIME(AFGFreightWagon, mCargoMeshComponentDerailedTransform);
+}
 void AFGFreightWagon::BeginPlay(){ }
 void AFGFreightWagon::Tick(float dt){ }
 UPawnMovementComponent* AFGFreightWagon::GetMovementComponent() const{ return nullptr; }

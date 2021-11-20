@@ -158,6 +158,9 @@ public:
 	bool ContainsLoop = false;
 	bool ContainsMixedEntrySignals = false;
 
+	/** Unique id for this block. Unique per track graph and not globally. */
+	int32 ID = INDEX_NONE;
+
 private:
 	/** Vehicles currently occupying this block. */
 	TArray< TWeakObjectPtr< AFGRailroadVehicle > > mOccupiedBy;

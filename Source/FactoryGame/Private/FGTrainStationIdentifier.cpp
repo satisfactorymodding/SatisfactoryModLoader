@@ -9,7 +9,12 @@ AFGTrainStationIdentifier::AFGTrainStationIdentifier() : Super() {
 	this->bAlwaysRelevant = true;
 	this->bReplicates = true;
 }
-void AFGTrainStationIdentifier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGTrainStationIdentifier::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGTrainStationIdentifier, mStation);
+	DOREPLIFETIME(AFGTrainStationIdentifier, mTrackGraphID);
+	DOREPLIFETIME(AFGTrainStationIdentifier, mStationName);
+}
 void AFGTrainStationIdentifier::BeginPlay(){ }
 void AFGTrainStationIdentifier::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGTrainStationIdentifier::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }

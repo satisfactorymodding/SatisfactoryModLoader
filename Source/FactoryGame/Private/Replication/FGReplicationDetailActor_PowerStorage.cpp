@@ -2,6 +2,10 @@
 
 #include "Replication/FGReplicationDetailActor_PowerStorage.h"
 
-void AFGReplicationDetailActor_PowerStorage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGReplicationDetailActor_PowerStorage::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGReplicationDetailActor_PowerStorage, mPowerStore);
+	DOREPLIFETIME(AFGReplicationDetailActor_PowerStorage, mPowerInput);
+}
 void AFGReplicationDetailActor_PowerStorage::InitReplicationDetailActor( AFGBuildable* owningActor){ }
 void AFGReplicationDetailActor_PowerStorage::UpdateInternalReplicatedValues(){ }

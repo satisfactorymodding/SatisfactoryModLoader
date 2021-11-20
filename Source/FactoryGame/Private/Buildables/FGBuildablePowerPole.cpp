@@ -15,7 +15,10 @@ AFGBuildablePowerPole::AFGBuildablePowerPole() : Super() {
 	this->mMeshComponentProxy->SetupAttachment(RootComponent);
 }
 void AFGBuildablePowerPole::BeginPlay(){ }
-void AFGBuildablePowerPole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const{ }
+void AFGBuildablePowerPole::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePowerPole, mHasPower);
+}
 void AFGBuildablePowerPole::StartIsLookedAtForConnection( AFGCharacterPlayer* byCharacter,  UFGCircuitConnectionComponent* overlappingConnection){ }
 void AFGBuildablePowerPole::StopIsLookedAtForConnection( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildablePowerPole::ShowConnectionFeedback( UFGCircuitConnectionComponent* overlappingConnection){ }

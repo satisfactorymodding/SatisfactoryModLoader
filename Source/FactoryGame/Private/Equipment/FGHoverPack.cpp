@@ -40,7 +40,14 @@ AFGHoverPack::AFGHoverPack() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 	this->mPowerConnection->SetupAttachment(RootComponent);
 }
-void AFGHoverPack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGHoverPack::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGHoverPack, mCurrentPowerLevel);
+	DOREPLIFETIME(AFGHoverPack, mCurrentHoverMode);
+	DOREPLIFETIME(AFGHoverPack, mHasConnection);
+	DOREPLIFETIME(AFGHoverPack, mCurrentConnectionLocation);
+	DOREPLIFETIME(AFGHoverPack, mCurrentRailroadTrack);
+}
 void AFGHoverPack::BeginPlay(){ }
 void AFGHoverPack::Tick(float deltaTime){ }
 void AFGHoverPack::PreReplication(IRepChangedPropertyTracker& ChangedPropertyTracker){ }
@@ -86,7 +93,13 @@ AFGHoverPackAttachment::AFGHoverPackAttachment() : Super() {
 	this->mCurrentConnectionLocation.Z = 0.0;
 	this->mCurrentRailroadTrack = nullptr;
 }
-void AFGHoverPackAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void AFGHoverPackAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGHoverPackAttachment, mCurrentHoverMode);
+	DOREPLIFETIME(AFGHoverPackAttachment, mHasConnection);
+	DOREPLIFETIME(AFGHoverPackAttachment, mCurrentConnectionLocation);
+	DOREPLIFETIME(AFGHoverPackAttachment, mCurrentRailroadTrack);
+}
 void AFGHoverPackAttachment::SetCurrentHoverMode(EHoverPackMode NewMode){ }
 void AFGHoverPackAttachment::SetConnectionStatus(bool HasConnection){ }
 void AFGHoverPackAttachment::SetCurrentRailroadTrack( AFGBuildableRailroadTrack* RailroadTrack){ }

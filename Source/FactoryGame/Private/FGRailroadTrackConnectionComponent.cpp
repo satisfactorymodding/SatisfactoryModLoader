@@ -14,7 +14,12 @@ UFGRailroadTrackConnectionComponent::UFGRailroadTrackConnectionComponent() : Sup
 	this->bNetAddressable = true;
 	this->SetIsReplicatedByDefault(true);
 }
-void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const{ }
+void UFGRailroadTrackConnectionComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGRailroadTrackConnectionComponent, mTrackPosition);
+	DOREPLIFETIME(UFGRailroadTrackConnectionComponent, mConnectedComponents);
+	DOREPLIFETIME(UFGRailroadTrackConnectionComponent, mSwitchPosition);
+}
 void UFGRailroadTrackConnectionComponent::OnComponentDestroyed(bool isDestroyingHierarchy){ }
 void UFGRailroadTrackConnectionComponent::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void UFGRailroadTrackConnectionComponent::AddConnection(UFGRailroadTrackConnectionComponent* toComponent){ }
