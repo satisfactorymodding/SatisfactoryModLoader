@@ -12,6 +12,18 @@
 #include "FGTargetPointLinkedList.generated.h"
 
 USTRUCT( BlueprintType )
+struct FDrivingTargetListMapStationData
+{
+	GENERATED_BODY()
+
+	UPROPERTY( BlueprintReadOnly )
+	class UFGActorRepresentation* Station = nullptr;
+
+	UPROPERTY( BlueprintReadOnly )
+	FVector2D DisplayPosition;
+};
+
+USTRUCT( BlueprintType )
 struct FDrivingTargetListMapData
 {
 	GENERATED_BODY()
@@ -20,10 +32,10 @@ struct FDrivingTargetListMapData
 	TArray< FVector2D > PathPoints;
 
 	UPROPERTY( BlueprintReadOnly )
-	FWidgetTransform DisplayTransform;
+	FWidgetTransform MapTransform;
 
 	UPROPERTY( BlueprintReadOnly )
-	TArray< class UFGActorRepresentation* > Stations;
+	TArray< FDrivingTargetListMapStationData > Stations;
 
 	UPROPERTY( BlueprintReadOnly )
 	TArray< FWidgetTransform > ArrowTransforms;
@@ -112,11 +124,12 @@ public:
 	 * @param displayTransform the output transform to be applied on the display
 	 */
 	UFUNCTION( BlueprintCallable, Category = "TargetList" )
-	void GetMapData( float displaySize, FDrivingTargetListMapData& data );
+	void GetMapData( float displaySize, int numberOfPoints, FDrivingTargetListMapData& data );
 
 	bool IsComplete() const;
 
-	void CleanUpDockingTargets( class AFGBuildableDockingStation* onlyAtStation = nullptr );
+	/** @returns true if targets were modified during cleanup */
+	bool CleanUpDockingTargets( class AFGBuildableDockingStation* onlyAtStation = nullptr );
 
 	bool IsNearingStation( class AFGTargetPoint* queryTarget, class AFGBuildableDockingStation* station, int searchRange ) const;
 
