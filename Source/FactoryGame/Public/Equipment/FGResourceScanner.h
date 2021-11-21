@@ -138,7 +138,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Resource Scanner" )
 	float mDistBetweenNodesInCluster;
 
-	/** Within what range to a node in a cluster will we start showing them as loner nodes even if they aren't marked as loner nodes  */
+	/** Within what range to a node in a cluster will we start showing them as separate entities on map/compass */
 	UPROPERTY( EditDefaultsOnly, Category = "Resource Scanner" )
 	float mUnclusterRange;
 

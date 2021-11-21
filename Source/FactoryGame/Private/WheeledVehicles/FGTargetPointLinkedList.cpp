@@ -44,9 +44,9 @@ AFGTargetPoint* AFGDrivingTargetList::FindTargetByIndex(int index) const{ return
 AFGTargetPoint* AFGDrivingTargetList::FindPreviousTarget( AFGTargetPoint* currentTarget) const{ return nullptr; }
 AFGTargetPoint* AFGDrivingTargetList::GetNextTarget( AFGTargetPoint* currentTarget) const{ return nullptr; }
 AFGTargetPoint* AFGDrivingTargetList::FindBestTarget(AActor* vehicleActor, float withinLookAngle , float maxDistance) const{ return nullptr; }
-void AFGDrivingTargetList::GetMapData(float displaySize, FDrivingTargetListMapData& data){ }
+void AFGDrivingTargetList::GetMapData(float displaySize, int numberOfPoints, FDrivingTargetListMapData& data){ }
 bool AFGDrivingTargetList::IsComplete() const{ return bool(); }
-void AFGDrivingTargetList::CleanUpDockingTargets( AFGBuildableDockingStation* onlyAtStation){ }
+bool AFGDrivingTargetList::CleanUpDockingTargets( AFGBuildableDockingStation* onlyAtStation){ return bool(); }
 bool AFGDrivingTargetList::IsNearingStation( AFGTargetPoint* queryTarget,  AFGBuildableDockingStation* station, int searchRange) const{ return bool(); }
 void AFGDrivingTargetList::SetIsTemporary(bool isTemporary){ }
 bool AFGDrivingTargetList::HasData() const{ return bool(); }

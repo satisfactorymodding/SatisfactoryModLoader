@@ -154,6 +154,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, meta = ( DisplayName = "OnRerail" ) )
 	void ReceiveOnRerail();
 
+	/** Show/hide the derail hologram. */
+	void ShowDerailHologram();
+	void HideDerailHologram();
+
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 
@@ -172,6 +176,10 @@ protected:
 	 */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, meta = ( DisplayName = "OnCollided" ) )
 	void ReceiveOnCollided( AFGRailroadVehicle* withVehicle, float impactVelocity, bool isPrimaryEvent, bool isDerailed );
+
+	/** Override to spawn the derail hologram for this vehicle. */
+	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic )
+	UMeshComponent* SpawnDerailHologram( FTransform transform );
 	
 private:
 	/** Tick the locally simulated client movement. */
@@ -233,6 +241,9 @@ private:
 	/** If this vehicle is derailed, handles the derailment on client. */
 	UPROPERTY( ReplicatedUsing = OnRep_IsDerailed )
 	bool mIsDerailed;
+
+	/** The derail interaction mesh shown for derailed vehicles. */
+	TWeakObjectPtr< UMeshComponent > mDerailHologramComponent;
 
 	// @todo-trains Comment these when we have optimized.
 	UPROPERTY( Replicated )

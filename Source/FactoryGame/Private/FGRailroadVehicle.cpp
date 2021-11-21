@@ -59,6 +59,8 @@ bool AFGRailroadVehicle::IsDocked() const{ return bool(); }
 void AFGRailroadVehicle::SetTrackPosition(const FRailroadTrackPosition& position){ }
 void AFGRailroadVehicle::OnDerail(const FVector& velocity){ }
 void AFGRailroadVehicle::OnRerail(){ }
+void AFGRailroadVehicle::ShowDerailHologram(){ }
+void AFGRailroadVehicle::HideDerailHologram(){ }
 void AFGRailroadVehicle::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGRailroadVehicle::OnCollided_Implementation(AFGRailroadVehicle* withVehicle, float impactVelocity, bool isPrimaryEvent, bool isDerailed){ }
 void AFGRailroadVehicle::TickClientSimulation(float dt){ }

@@ -100,10 +100,6 @@ public:
 	/** What kind of form is the resource in */
 	EResourceForm GetResourceForm() const;
 
-	/** If true, this node will NEVER join another cluster of nodes, regardless of proximity. */
-	UFUNCTION( BlueprintPure, Category="Resources" )
-	bool GetIsLonerNode() const { return mIsLonerNode; }
-
 	/** Let the client know when we changed. mIsOccupied */
 	UFUNCTION()
 	void OnRep_IsOccupied();
@@ -171,11 +167,7 @@ protected:
 	/** Radar tower modifies this to show this resource node in the map */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< UObject* > mRevealedOnMapBy;
-
-	/** If true, this node will NEVER join another cluster of nodes, regardless of proximity. */
-	UPROPERTY( EditAnywhere, Category = "Resources" )
-	bool mIsLonerNode;
-
+	
 	/** What type of a resource node this is. */
 	EResourceNodeType mResourceNodeType;
 

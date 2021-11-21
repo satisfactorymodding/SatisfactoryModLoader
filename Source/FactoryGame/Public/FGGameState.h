@@ -424,9 +424,14 @@ private:
 	/** Customizable Global Color Presets. Players can add / remove */
 	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated )
 	TArray< FGlobalColorPreset > mPlayerGlobalColorPresets;
-
+	
+	/** Data to map a SwatchGroup to the Color Swatch it should use when building buildables of that type */
 	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated )
 	TArray< FSwatchGroupData > mSwatchGroupDatum;
+
+	/** Data to use if mSwatchGroupDatum is found to be corrupted on PostLoadGame. This is mainly for use to fix an Experimental crash happening before BU5 release. */
+	UPROPERTY( EditDefaultsOnly )
+	TArray< FSwatchGroupData > mSwatchGroupFallbackDatum;
 
 	/** 
 	 * The schematic that allows for the opening of the customizer menu.

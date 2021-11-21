@@ -3,6 +3,7 @@
 #include "FGBuildablePipelineSupport.h"
 #include "Components/SceneComponent.h"
 #include "FGColoredInstanceMeshProxy.h"
+#include "FGSwatchGroup.h"
 
 #if WITH_EDITOR
 void AFGBuildablePipelineSupport::OnConstruction(const FTransform& transform){ }
@@ -16,6 +17,7 @@ AFGBuildablePipelineSupport::AFGBuildablePipelineSupport() : Super() {
 	this->mSupportMesh = nullptr;
 	this->mUseStaticHeight = false;
 	this->mHologramClass = AFGBuildablePipelineSupport::StaticClass();
+	this->mSwatchGroup = UFGSwatchGroup_Pipeline::StaticClass();
 	this->mCreateClearanceMeshRepresentation = false;
 	this->mSupportComponentDefaultMesh->SetupAttachment(RootComponent);
 }

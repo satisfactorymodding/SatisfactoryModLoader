@@ -40,10 +40,10 @@ struct FACTORYGAME_API FSwatchGroupData
 	GENERATED_BODY()
 	
 public:
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="SwatchGroup" )
+	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category="SwatchGroup" )
 	TSubclassOf< UFGSwatchGroup > SwatchGroup;
 	
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category="SwatchGroup" )
+	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category="SwatchGroup" )
 	TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch> Swatch;
 	
 };

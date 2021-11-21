@@ -12,7 +12,6 @@ AFGResourceNodeBase::AFGResourceNodeBase() : Super() {
 	this->mDecalComponent = nullptr;
 	this->mBoxComponent = nullptr;
 	this->mIsOccupied = false;
-	this->mIsLonerNode = false;
 	this->mAllowDecal = true;
 	this->mHighlightParticleSystemTemplate = nullptr;
 	this->mHighlightParticleSystemComponent = nullptr;

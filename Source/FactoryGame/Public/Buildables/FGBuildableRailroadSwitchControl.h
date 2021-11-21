@@ -37,6 +37,10 @@ public:
 	virtual void Destroyed() override;
 	// End AActor interface
 
+	// Begin FGBuildable
+	virtual void OnBuildEffectFinished() override;
+	// End FGBuildable
+
 	// Begin IFGDismantleInterface
 	virtual bool CanDismantle_Implementation() const override;
 	// End IFGDismantleInterface
@@ -70,10 +74,6 @@ public:
 	UFUNCTION()
 	void OnSwitchPositionChanged( int32 newPosition, int32 numPositions );
 
-	/** Let blueprint get a chance to update the visuals after the switch  */
-	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "FactoryGame|Railroad|Switch" )
-	void UpdateSwitchPositionVisuals();
-
 	/**
 	 * Sets the controlled connection when this switch is constructed.
 	 * Note that the track the controlled connection belongs to and its connected components track must have had its begin play called.
@@ -83,14 +83,28 @@ public:
 
 protected:
 	UFUNCTION()
-	void OnRep_SwitchData();
+	void OnRep_VisualState();
 
+private:
+	/** Updates the material parameters of this switch. */
+	void UpdateVisuals();
+	void ApplyVisualState( int16 state );
+
+protected:
+	/** Mesh for this switch, must be using the signal factory material for it to work. */
+	UPROPERTY( VisibleAnywhere )
+	class UFGColoredInstanceMeshProxy* mSwitchComponent;
+	
 private:
 	/** Connection we control, might become null if the track is removed but not the control (mods and save game editing). */
 	UPROPERTY( SaveGame, Replicated )
 	class UFGRailroadTrackConnectionComponent* mControlledConnection;
 
 	/** Current switch position read from the controlled connection. */
-	UPROPERTY( ReplicatedUsing = OnRep_SwitchData, Meta = (NoAutoJson = true) )
+	UPROPERTY( Replicated, Meta = (NoAutoJson = true) )
 	FSwitchData mSwitchData;
+
+	/** Stored custom data for the switch material. */
+	UPROPERTY( ReplicatedUsing = OnRep_VisualState )
+	int16 mVisualState;
 };
