@@ -15,6 +15,7 @@ AFGServerBeaconHostObject::AFGServerBeaconHostObject() : Super() {
 	this->PrimaryActorTick.TickInterval = 1.0;
 }
 void AFGServerBeaconHostObject::BeginPlay(){ }
+void AFGServerBeaconHostObject::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGServerBeaconHostObject::Tick(float DeltaSeconds){ }
 void AFGServerBeaconHostObject::OnClientConnected(AOnlineBeaconClient* NewClientActor, UNetConnection* ClientConnection){ }
 void AFGServerBeaconHostObject::NotifyClientDisconnected(AOnlineBeaconClient* LeavingClientActor){ }

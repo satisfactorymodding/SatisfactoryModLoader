@@ -360,7 +360,7 @@ private:
 	UPROPERTY( Replicated )
 	bool mForceSignificance = false;
 
-	UPROPERTY( ReplicatedUsing = OnRep_Status )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Status )
 	EDockingStationStatus mStatus = EDockingStationStatus::DSS_Operational;
 
 	UPROPERTY( ReplicatedUsing = OnRep_VehicleFuelConsumptionRate )
