@@ -10,12 +10,12 @@ AFGBuildableConveyorBelt::AFGBuildableConveyorBelt() : Super() {
 	this->mMesh = nullptr;
 	this->mMeshLength = 0.0;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-	this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent"));
+	/* Skipping UFGInstancedSplineMeshComponent this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent"));*/
 	this->mSoundSplineComponent = nullptr;
 	this->mSplineAudioEvent = nullptr;
 	this->mHologramClass = AFGConveyorBeltHologram::StaticClass();
 	this->mSplineComponent->SetupAttachment(RootComponent);
-	this->mInstancedSplineComponent->SetupAttachment(RootComponent);
+	/* Skipping UFGInstancedSplineMeshComponent this->mInstancedSplineComponent->SetupAttachment(RootComponent);*/
 }
 void AFGBuildableConveyorBelt::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

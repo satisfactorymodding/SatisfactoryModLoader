@@ -189,8 +189,8 @@ private:
 	class USplineComponent* mSplineComponent;
 
 	/** The spline meshes for this train track. */
-	UPROPERTY( VisibleAnywhere, Category = "Spline" )
-	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent;
+	/* Skipping UFGInstancedSplineMeshComponent UPROPERTY( VisibleAnywhere, Category = "Spline" )
+	class UFGInstancedSplineMeshComponent* mInstancedSplineComponent; */
 
 	/** Wwise multiple position playback for the conveyor spline. */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Audio" )
