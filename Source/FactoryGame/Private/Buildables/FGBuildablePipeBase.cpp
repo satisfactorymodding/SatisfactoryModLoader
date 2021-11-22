@@ -3,7 +3,6 @@
 #include "Buildables/FGBuildablePipeBase.h"
 #include "Components/SceneComponent.h"
 #include "Components/SplineComponent.h"
-#include "FGInstancedSplineMeshComponent.h"
 #include "Hologram/FGPipelineHologram.h"
 
 AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
@@ -12,7 +11,6 @@ AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->mConnection0 = nullptr;
 	this->mConnection1 = nullptr;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-	this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent"));
 	this->mHologramClass = AFGPipelineHologram::StaticClass();
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -23,7 +21,6 @@ AFGBuildablePipeBase::AFGBuildablePipeBase() : Super() {
 	this->PrimaryActorTick.TickInterval = 0.0;
 	this->NetDormancy = ENetDormancy::DORM_Awake;
 	this->mSplineComponent->SetupAttachment(RootComponent);
-	this->mInstancedSplineComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildablePipeBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

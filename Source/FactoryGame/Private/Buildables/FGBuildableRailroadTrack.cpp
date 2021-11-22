@@ -3,7 +3,6 @@
 #include "Buildables/FGBuildableRailroadTrack.h"
 #include "Components/SceneComponent.h"
 #include "Components/SplineComponent.h"
-#include "FGInstancedSplineMeshComponent.h"
 #include "FGRailroadTrackConnectionComponent.h"
 #include "Hologram/FGRailroadTrackHologram.h"
 
@@ -31,7 +30,6 @@ AFGBuildableRailroadTrack::AFGBuildableRailroadTrack() : Super() {
 	this->mMesh = nullptr;
 	this->mMeshLength = 0.0;
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
-	this->mInstancedSplineComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineComponent"));
 	this->mConnections.Add(CreateDefaultSubobject<UFGRailroadTrackConnectionComponent>(TEXT("TrackConnection0")));
 	this->mConnections.Add(CreateDefaultSubobject<UFGRailroadTrackConnectionComponent>(TEXT("TrackConnection1")));
 	this->mIsOwnedByPlatform = false;
@@ -39,7 +37,6 @@ AFGBuildableRailroadTrack::AFGBuildableRailroadTrack() : Super() {
 	this->mBlockVisualizationMesh = nullptr;
 	this->mHologramClass = AFGRailroadTrackHologram::StaticClass();
 	this->mSplineComponent->SetupAttachment(RootComponent);
-	this->mInstancedSplineComponent->SetupAttachment(RootComponent);
 	this->mConnections[0]->SetupAttachment(RootComponent);
 	this->mConnections[1]->SetupAttachment(RootComponent);
 }

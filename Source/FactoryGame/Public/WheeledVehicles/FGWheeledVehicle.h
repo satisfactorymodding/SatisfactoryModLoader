@@ -356,6 +356,8 @@ public:
 
 	bool ShouldStayAtDock();
 
+	bool HasFullTank() const;
+
 	float GetTotalFuelEnergy() const;
 
 	float CalculateFuelNeed() const;

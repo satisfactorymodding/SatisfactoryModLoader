@@ -169,6 +169,7 @@ FText AFGWheeledVehicle::GetDefaultMapName(TSubclassOf< AFGWheeledVehicle > vehi
 AFGDrivingTargetList* AFGWheeledVehicle::GetActiveTargetList() const{ return nullptr; }
 void AFGWheeledVehicle::SyncWithSimulation(){ }
 bool AFGWheeledVehicle::ShouldStayAtDock(){ return bool(); }
+bool AFGWheeledVehicle::HasFullTank() const{ return bool(); }
 float AFGWheeledVehicle::GetTotalFuelEnergy() const{ return float(); }
 float AFGWheeledVehicle::CalculateFuelNeed() const{ return float(); }
 float AFGWheeledVehicle::GetMaxFuelEnergy() const{ return float(); }
