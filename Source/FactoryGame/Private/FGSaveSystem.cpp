@@ -3,6 +3,7 @@
 #include "FGSaveSystem.h"
 
 void UFGSaveSystem::Init(){ }
+void UFGSaveSystem::BeginDestroy(){ Super::BeginDestroy(); }
 FString UFGSaveSystem::GetSaveDirectoryPath(){ return FString(); }
 bool UFGSaveSystem::GetUserSaveDirectoryPath(const UWorld* world, FString& out_dirPath){ return bool(); }
 FString UFGSaveSystem::GetCommonSaveDirectoryPath(){ return FString(); }

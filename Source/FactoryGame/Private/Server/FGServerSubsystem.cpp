@@ -28,6 +28,7 @@ bool UFGServerSubsystem::ShouldAutoPause() const{ return bool(); }
 FServerGameState UFGServerSubsystem::GetServerGameState() const{ return FServerGameState(); }
 void UFGServerSubsystem::SetAutoPause(bool AutoPause){ }
 void UFGServerSubsystem::SetAutoSaveOnDisconnect(bool AutoSaveOnDisconnect){ }
+bool UFGServerSubsystem::Tick(float DeltaTime){ return bool(); }
 void UFGServerSubsystem::OnPreLoadMap(const FString &MapName){ }
 void UFGServerSubsystem::OnPostLoadMap(UWorld* World){ }
 void UFGServerSubsystem::PlayerLeaving(AGameModeBase* , AController*) const{ }

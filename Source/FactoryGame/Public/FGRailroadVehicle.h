@@ -201,6 +201,10 @@ private:
 	void OnRep_Train();
 	UFUNCTION()
 	void OnRep_IsDerailed();
+
+	/** Helpers for the derail physics. */
+	void EnableDerailPhysics( const FVector& velocity );
+	void DisableDerailPhysics();
 	
 protected:
 	/** The train this vehicle is part of, updated from the railroad subsystem */

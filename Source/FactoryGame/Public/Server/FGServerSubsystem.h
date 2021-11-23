@@ -44,7 +44,7 @@ class FACTORYGAME_API UFGServerSettings : public USaveGame
  * Server-side class that serves as the entry point for all dedicated server related operations. Also manages all server specific settings.
  */
 UCLASS( config=ServerSettings, configdonotcheckdefaults )
-class FACTORYGAME_API UFGServerSubsystem : public UGameInstanceSubsystem
+class FACTORYGAME_API UFGServerSubsystem : public UGameInstanceSubsystem, public FTickerObjectBase
 {
 	GENERATED_BODY()
 public:
@@ -108,6 +108,8 @@ public:
 
 	void SetAutoPause( bool AutoPause );
 	void SetAutoSaveOnDisconnect( bool AutoSaveOnDisconnect );
+
+	bool Tick(float DeltaTime) override;
 private:
 	void OnPreLoadMap( const FString &MapName );
 	void OnPostLoadMap( UWorld* World );
@@ -138,5 +140,6 @@ private:
 
 	int32 mBeaconPort = 0;
 	EServerState mState = EServerState::Offline;
+	float mAverageTickRate = 0.f;
 };
 

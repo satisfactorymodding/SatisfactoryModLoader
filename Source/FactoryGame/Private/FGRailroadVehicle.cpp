@@ -70,3 +70,5 @@ void AFGRailroadVehicle::DecoupleVehicleAt(ERailroadVehicleCoupler coupler){ }
 void AFGRailroadVehicle::OnRep_IsOrientationReversed(){ }
 void AFGRailroadVehicle::OnRep_Train(){ }
 void AFGRailroadVehicle::OnRep_IsDerailed(){ }
+void AFGRailroadVehicle::EnableDerailPhysics(const FVector& velocity){ }
+void AFGRailroadVehicle::DisableDerailPhysics(){ }
