@@ -38,4 +38,6 @@ private:
 	bool bShowEngine = false;
 
 	FReply PackageAllMods();
+	FReply CheckAllMods();
+	FReply UncheckAllMods();
 };
