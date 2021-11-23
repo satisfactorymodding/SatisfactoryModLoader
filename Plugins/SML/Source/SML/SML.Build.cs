@@ -67,6 +67,14 @@ public class SML : ModuleRules
         //Collect build metadata from the environment and pass it to C++
         var currentBranch = Environment.GetEnvironmentVariable("BRANCH_NAME");
         var buildId = Environment.GetEnvironmentVariable("BUILD_NUMBER");
+        
+        var githubActionsWorkflow = Environment.GetEnvironmentVariable("GITHUB_WORKFLOW"); 
+        if(githubActionsWorkflow != null && githubActionsWorkflow.Length > 0)
+        {
+            currentBranch = Environment.GetEnvironmentVariable("GITHUB_REF_NAME");
+            buildId = Environment.GetEnvironmentVariable("GITHUB_RUN_NUMBER");
+        }
+        
         if (currentBranch == null) {
             RetrieveHeadBranchAndCommitFromGit(Target.ProjectFile.Directory, out currentBranch, out buildId);
             if (buildId != null && buildId.Length > 8) {
