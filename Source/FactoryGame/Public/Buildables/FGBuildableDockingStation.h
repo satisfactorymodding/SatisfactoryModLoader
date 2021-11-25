@@ -266,6 +266,13 @@ public:
 	/** Where the vehicle should place itself, the extended position of the crane */
 	UPROPERTY( EditDefaultsOnly, Category = "DockingStation" )
 	FVector2D mDockPosition;
+	
+	/**
+	 * The minimum time from when the vehicle enters a station until it leaves that station
+	 * Should match the docking animation time
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "DockingStation" )
+	float mMinimumDockingTime = 10.0f;
 
 	/** The zone in which a vehicle is considered docked */
 	UPROPERTY( BlueprintReadWrite, Category = "DockingStation" )

@@ -56,6 +56,7 @@ public:
 	bool IsOnTemporaryPath() const { return mIsOnTemporaryPath; }
 
 	float GetTimeSpentOnPath() const { return mTimeSpentOnPath; }
+	float GetTimeSpentOnRegularPath() const;
 
 	void ResetTarget();
 
@@ -144,6 +145,7 @@ private:
 	float mTargetTime = 0.0f;
 	float mTimeSpentOnTarget = 0.0f;
 	float mTimeSpentOnPath = 0.0f;
+	float mLastTimeSpentOnRegularPath = 0.0f;
 	float mPathProgress = 0.0f;
 	float mTargetProgress = 0.0f;
 	float mTempDistance = 0.0f;

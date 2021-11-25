@@ -38,6 +38,7 @@ void UFGSplinePathMovementComponent::SetIsBlocked( AFGWheeledVehicle* blockingVe
 void UFGSplinePathMovementComponent::ResetIsBlocked(){ }
 void UFGSplinePathMovementComponent::DrawTargetDebug(bool drawSearchPoints) const{ }
 void UFGSplinePathMovementComponent::SetIsDeadlocked(bool isDeadlocked, bool notify){ }
+float UFGSplinePathMovementComponent::GetTimeSpentOnRegularPath() const{ return float(); }
 void UFGSplinePathMovementComponent::ResetTarget(){ }
 bool UFGSplinePathMovementComponent::TryClaim( AFGTargetPoint* target, bool essentialsOnly){ return bool(); }
 void UFGSplinePathMovementComponent::GetShortestRotation(FRotator& rotation){ }

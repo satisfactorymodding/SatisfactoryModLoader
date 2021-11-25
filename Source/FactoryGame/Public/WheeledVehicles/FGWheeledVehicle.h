@@ -1054,12 +1054,6 @@ private:
 
 	float mTimeStationWasEntered = 0.0f;
 
-	/**
-	 * The minimum time from when the vehicle enters a station until it leaves that station
-	 */
-	UPROPERTY( EditDefaultsOnly, Category = "SelfDriving" )
-	float mMinimumTimeAtStation = 10.0f;
-
 	bool mIsLookedAt = false;
 
 	UPROPERTY( ReplicatedUsing = OnRep_IsGhosting )

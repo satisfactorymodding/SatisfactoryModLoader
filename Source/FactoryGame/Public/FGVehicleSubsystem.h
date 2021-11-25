@@ -116,6 +116,8 @@ public:
 
 	void TickVehicleSimulation( float dt );
 
+	float GetEffectiveSimulationDistance( class AFGVehicle* vehicle );
+
 	/** Find the closest player sq for a creature */
 	float FindClosestPlayerSq( class AFGVehicle* actor ) const;
 
@@ -250,6 +252,8 @@ private:
 
 	int mLostVehicleCandidateIndex = 0;
 
+#ifdef DEBUG_SELF_DRIVING
 	float mDebugSimulationDistance = 0.0f;
 	bool mIncreaseDebugSimulationDistance = false;
+#endif
 };

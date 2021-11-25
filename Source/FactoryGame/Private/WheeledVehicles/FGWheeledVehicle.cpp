@@ -109,7 +109,6 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mRecordingStatus = ERecordingStatus::RS_NoRecording;
 	this->mSimulatedVehicle = nullptr;
 	this->mWasFuelAdded = false;
-	this->mMinimumTimeAtStation = 10.0;
 	this->mIsGhosting = false;
 	this->mHasAutomatedFuelConsumption = false;
 	this->mActualAutomatedFuelConsumptionSinceStart = 0.0;
