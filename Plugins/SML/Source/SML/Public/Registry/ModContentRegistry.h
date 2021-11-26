@@ -364,6 +364,9 @@ private:
     
     /** Associate items referenced in recipe with given mod reference if they are not associated already */
     void MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
+    
+    /** Associate the customization recipe referenced in recipe with given mod reference if it is not associated already */
+    void MarkCustomizationRecipeFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
 
     TSharedPtr<FItemRegistrationInfo> RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor);
 

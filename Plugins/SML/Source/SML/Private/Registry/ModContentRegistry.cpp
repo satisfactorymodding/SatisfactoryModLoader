@@ -10,6 +10,7 @@
 #include "FGSchematicManager.h"
 #include "FGTutorialIntroManager.h"
 #include "Unlocks/FGUnlockRecipe.h"
+#include "FGCustomizationRecipe.h"
 #include "IPlatformFilePak.h"
 #include "Patching/NativeHookManager.h"
 #include "Reflection/ReflectionHelper.h"
@@ -268,24 +269,32 @@ void AModContentRegistry::OnSchematicPurchased(TSubclassOf<UFGSchematic> Schemat
 }
 
 void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference) {
-    TArray<FItemAmount> AllReferencedItems;
-    AllReferencedItems.Append(UFGRecipe::GetIngredients(Recipe));
-    AllReferencedItems.Append(UFGRecipe::GetProducts(Recipe));
+	TArray<FItemAmount> AllReferencedItems;
+	AllReferencedItems.Append(UFGRecipe::GetIngredients(Recipe));
+	AllReferencedItems.Append(UFGRecipe::GetProducts(Recipe));
 
-    for (const FItemAmount& ItemAmount : AllReferencedItems) {
-        const TSubclassOf<UFGItemDescriptor>& ItemDescriptor = ItemAmount.ItemClass;
+	for (const FItemAmount& ItemAmount : AllReferencedItems) {
+		const TSubclassOf<UFGItemDescriptor>& ItemDescriptor = ItemAmount.ItemClass;
 
-    	CHECK_PROVIDED_OBJECT_VALID(ItemDescriptor, TEXT("Recipe '%s' registered by %s contains invalid NULL ItemDescriptor in it's Ingredients or Results"),
-                *Recipe->GetPathName(), *ModReference.ToString());
+		CHECK_PROVIDED_OBJECT_VALID(ItemDescriptor, TEXT("Recipe '%s' registered by %s contains invalid NULL ItemDescriptor in it's Ingredients or Results"),
+				*Recipe->GetPathName(), *ModReference.ToString());
     	
-        TSharedPtr<FItemRegistrationInfo> ItemRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
-        if (!ItemRegistrationInfo.IsValid()) {        	
-            const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
-            ItemRegistrationInfo = RegisterItemDescriptor(OwnerModReference, ModReference, ItemDescriptor);
-        }
-        //Associate item registration info with this recipe
-        ItemRegistrationInfo->ReferencedBy.AddUnique(Recipe);
-    }
+		TSharedPtr<FItemRegistrationInfo> ItemRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
+		if (!ItemRegistrationInfo.IsValid()) {        	
+			const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
+			ItemRegistrationInfo = RegisterItemDescriptor(OwnerModReference, ModReference, ItemDescriptor);
+		}
+		//Associate item registration info with this recipe
+		ItemRegistrationInfo->ReferencedBy.AddUnique(Recipe);
+	}
+}
+
+void AModContentRegistry::MarkCustomizationRecipeFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference) {
+	TSubclassOf<UFGCustomizationRecipe> CustomizationRecipe = UFGRecipe::GetMaterialCustomizationRecipe(Recipe);
+
+	if (IsValid(CustomizationRecipe)) {
+		RegisterRecipe(ModReference, CustomizationRecipe);
+	}
 }
 
 TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor) {
@@ -434,10 +443,13 @@ void AModContentRegistry::RegisterRecipe(const FName ModReference, const TSubcla
             MakeRegistrationInfo<FRecipeRegistrationInfo>(Recipe, OwnerModReference, ModReference));
 
         //Process registration callback
-        OnRecipeRegistered.Broadcast(Recipe, *RegistrationInfo);
+    	OnRecipeRegistered.Broadcast(Recipe, *RegistrationInfo);
 
-        //Associate referenced item descriptors with this recipe registrar
-        MarkItemDescriptorsFromRecipe(Recipe, ModReference);
+    	//Associate referenced item descriptors with this recipe registrar
+    	MarkItemDescriptorsFromRecipe(Recipe, ModReference);
+
+    	//Associate referenced customization recipe with this recipe registrar
+    	MarkCustomizationRecipeFromRecipe(Recipe, ModReference);
     }
 }
 
