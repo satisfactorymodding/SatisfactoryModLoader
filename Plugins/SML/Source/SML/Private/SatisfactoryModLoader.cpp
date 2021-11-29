@@ -18,8 +18,8 @@
 #define SML_BUILD_METADATA "unknown"
 #endif
 
-extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.2.0+") TEXT(SML_BUILD_METADATA);
-extern "C" DLLEXPORT const long targetGameVersion = 173618;
+extern "C" DLLEXPORT const TCHAR* modLoaderVersionString = TEXT("3.2.1+") TEXT(SML_BUILD_METADATA);
+extern "C" DLLEXPORT const long targetGameVersion = 173879;
 
 DEFINE_LOG_CATEGORY(LogSatisfactoryModLoader);
 
