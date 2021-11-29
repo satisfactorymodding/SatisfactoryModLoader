@@ -12,6 +12,9 @@
 class UUserWidget;
 class URootConfigValueHolder;
 
+//Delegate for when a Mod Configuration is saved
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConfigSaved, FConfigId, ConfigId);
+
 DECLARE_LOG_CATEGORY_EXTERN(LogConfigManager, Log, All)
 
 /** Describes active configuration data */
@@ -73,6 +76,10 @@ public:
     UFUNCTION(BlueprintPure)
     UConfigPropertySection* GetConfigurationRootSection(const FConfigId& ConfigId) const;
 
+    /** Event for when a Mod Config is saved */
+	UPROPERTY(BlueprintAssignable, Category = "Config Manager")
+    FOnConfigSaved OnConfigSaved;
+    
     void Initialize(FSubsystemCollectionBase& Collection) override;
     
     /** Returns configuration folder path used by config manager */

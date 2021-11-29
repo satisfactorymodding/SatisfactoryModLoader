@@ -57,6 +57,7 @@ void UConfigManager::SaveConfigurationInternal(const FConfigId& ConfigId) {
         return;
     }
     UE_LOG(LogConfigManager, Display, TEXT("Saved configuration to %s"), *ConfigurationFilePath);
+    OnConfigSaved.Broadcast(ConfigId);
 }
 
 void UConfigManager::LoadConfigurationInternal(const FConfigId& ConfigId, URootConfigValueHolder* RootConfigValueHolder, bool bSaveOnSchemaChange) {
