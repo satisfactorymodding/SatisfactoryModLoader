@@ -304,6 +304,9 @@ public:
 	{
 		return mCurrentSubStep == mCurrentSubStepMax;
 	}
+
+	// Called from BuildGunPaint for previewing skin logic
+	TArray< TSubclassOf< class AFGBuildable >> GetPreviewSkinsOnBuildableList() { return mPreviewSkinsOnBuildablesList; }
 	
 protected:
 	// Find and return a local player
@@ -375,6 +378,10 @@ public:
 	 */
 	TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > GetMigrationSwatchForSlot( int32 slotID );
 
+	/** This is externalized from the build gun state to allow for easier mod support */
+	UPROPERTY()
+	TArray< TSubclassOf< class AFGBuildable > > mPreviewSkinsOnBuildablesList;
+	
 private:
 
 	/** last used net construction ID. Used to identify pending constructions over network. Will increase ID every constructed building. */

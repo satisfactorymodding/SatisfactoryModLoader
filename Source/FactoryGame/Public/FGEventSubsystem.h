@@ -109,13 +109,18 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Events" )
 	TArray< EEvents > GetCurrentEvents();
-
-	void StoreCalendarDataForEvent( EEvents event, FCalendarData calendarData );
-	bool GetStoredCalendarDataForEvent( EEvents event, FCalendarData& out_calendarData );
+	
+	void StoreCalendarData( TSubclassOf<class UFGCalendarRewards> calendarRewardClass, const FCalendarData& calendarData );
+	bool GetStoredCalendarData( TSubclassOf<class UFGCalendarRewards> calendarRewardClass, FCalendarData& out_calendarData ) const;
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Events|Calendar" )
+	bool CanOpenCalendarSlot( EEvents event, int32 dayNumber );
 
 	static bool GetOverridenEventDateTime( EEvents event, FDateTime& out_OverriddenDateTime );
 
 	bool ShouldRunEvent( const FSimpleDate& Begin, const FSimpleDate& End, const FDateTime& now );
+
+	TSubclassOf<class AActor> GetCalendarClassForCurrentEvent();
+	TSubclassOf<class AFGBuildable> GetHubMiniGameClassForCurrentEvent();
 	
 public:
 	UPROPERTY( Replicated )
@@ -126,11 +131,19 @@ private:
 	UPROPERTY( EditDefaultsOnly )
 	TMap< EEvents, FFGEventData > mEvents;
 
+	UPROPERTY( EditDefaultsOnly, meta=(AllowedClasses=FGBuildableCalendar) )
+	TMap< EEvents, TSubclassOf<class AActor> > mBuildableCalendarClass;
+
+	UPROPERTY( EditDefaultsOnly )
+	TMap< EEvents, TSubclassOf<class AFGBuildable> > mHubMiniGameClass;
+	
 	UPROPERTY()
 	bool bIsReplicated;
 
 	UPROPERTY( SaveGame )
-	TMap< EEvents, FCalendarData > mStoredCalendarData;
+	TMap< EEvents, FCalendarData > mStoredCalendarData; // 2020 Stored just in case we need it -K2
+	UPROPERTY( SaveGame )
+	TMap< TSubclassOf<class UFGCalendarRewards>, FCalendarData > mCalendarData; // 2021 and forward. Should handle as many calendars as we can think of. 
 };
 
 UCLASS( config = EditorPerProjectUserSettings, meta = ( DisplayName = "Satisfactory Local Event settings" ) )

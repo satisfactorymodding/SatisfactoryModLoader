@@ -17,11 +17,11 @@ struct FACTORYGAME_API FTimeTableStop
 	GENERATED_BODY()
 public:
 	/** Where to stop. */
-	UPROPERTY( SaveGame, BlueprintReadWrite )
+	UPROPERTY( SaveGame, BlueprintReadWrite, VisibleAnywhere )
 	class AFGTrainStationIdentifier* Station = nullptr;
 
 	/** Station Rules */
-	UPROPERTY( SaveGame, BlueprintReadWrite )
+	UPROPERTY( SaveGame, BlueprintReadWrite, VisibleAnywhere )
 	FTrainDockingRuleSet DockingRuleSet;
 };
 
@@ -111,10 +111,10 @@ private:
 	const int32 MAX_STOPS = 100;
 
 	/** Array of destinations this train will visit. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Time Table" )
 	TArray< FTimeTableStop > mStops;
 
 	/** Current stop the train is at or heading to. */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, VisibleAnywhere, Category = "Time Table" )
 	int32 mCurrentStop;
 };

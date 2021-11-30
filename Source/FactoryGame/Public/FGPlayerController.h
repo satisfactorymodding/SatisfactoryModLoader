@@ -165,6 +165,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
 	void SetCustomizationShortcutOnIndex( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe, int32 onIndex );
 
+	/** Set the emote hotbar shortcut on the index if it's valid */
+	UFUNCTION( BlueprintCallable, Category = "Shortcut" )
+	void SetEmoteShortcutOnIndex( TSubclassOf< class UFGEmote > emote, int32 onIndex );
+
 	/** Remove a saved color preset */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|GlobalColorPresets" )
 	void RemovePlayerColorPresetAtIndex( int32 index );
@@ -487,6 +491,8 @@ private:
 	void Server_SetRecipeShortcutOnIndex( TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex = -1 );
 	UFUNCTION( Reliable, Server )
 	void Server_SetCustomizationShortcutOnIndex( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe, int32 onIndex );
+	UFUNCTION( Reliable, Server )
+	void Server_SetEmoteShortcutOnIndex( TSubclassOf< class UFGEmote > emote, int32 onIndex );
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_SetHotbarIndex( int32 index );
 	UFUNCTION( Reliable, Server, WithValidation )

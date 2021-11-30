@@ -9,6 +9,24 @@
 #include "FGEventSubsystem.h"
 #include "FGBuildableCalendar.generated.h"
 
+USTRUCT()
+struct FSlotIndextoRandomRewardMapping
+{
+	GENERATED_BODY()
+
+	FSlotIndextoRandomRewardMapping(){};
+	FSlotIndextoRandomRewardMapping( int32 slotIndex, int32 randomRewardIndex ) :
+		SlotIndex( slotIndex ),
+		RandomRewardIndex( randomRewardIndex )
+	{}
+	
+	UPROPERTY()
+	int32 SlotIndex;
+	UPROPERTY()
+	int32 RandomRewardIndex;
+	
+};
+
 /**
  * 
  */
@@ -46,6 +64,9 @@ public:
 	/** Return the content of a slot on the calendar for the given day. Returns false if slot is not opened or it doesn't exists. dayNumber = 1 opens return the content of the first slot on the calendar, */
 	UFUNCTION( BlueprintCallable, Category = "Calendar" )
     bool GetContentOnSlot( int32 dayNumber, FInventoryStack& out_slotContent);
+
+	UFUNCTION( BlueprintCallable, Category = "Calendar" )
+	UFGUnlock* GetUnlockOnSlot( int32 dayNumber );
 	
 	/** Returns true if the slot of the given day is opened, Returns false if slot is not opened or it doesn't exists. dayNumber = 1 will check if slot on the calendar is opened */
 	UFUNCTION( BlueprintCallable, Category = "Calendar" )
@@ -76,6 +97,11 @@ protected:
 	/** This maps an inventory index to a random reward index in the calendar reward class */
 	UPROPERTY()
 	TMap< int32, int32 > mInventoryIndexToRandomRewardIndexMapping;
+
+	/** Mirrors mInventoryIndexToRandomRewardIndexMapping for clients. Since TMaps can't be replciated. Can be used on server as well.
+	 * Should be merged to only use this new one or something else entirely but didn't want to tackle that a day before release. */
+	UPROPERTY( Replicated )
+	TArray< FSlotIndextoRandomRewardMapping > mReplicatedIndexMapping;
 	
 	/** The day numbers ( not indexes ) of the opened slots in the calendar */
 	UPROPERTY( Replicated )

@@ -28,4 +28,8 @@ public:
 	/** Widget used to show the user when enabling the debug overlay */
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TSubclassOf< class UFGDebugOverlayWidget > mDebugOverlayWidgetClass;
+
+	/** Emote wheel widget to select a widget */
+	UPROPERTY( EditAnywhere, config, Category = UI )
+	TSubclassOf< class UFGInteractWidget > mEmoteMenuWidget;
 };

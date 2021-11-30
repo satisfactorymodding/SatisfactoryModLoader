@@ -59,6 +59,7 @@ void UFGGameUserSettings::QuickSwitchLanguage(){ }
 void UFGGameUserSettings::ResetLanguageToPrimary(){ }
 EGraphicsAPI UFGGameUserSettings::GetCurrentActiveGraphicsAPI() const{ return EGraphicsAPI(); }
 EGraphicsAPI UFGGameUserSettings::GetCurrentConfigGraphicsAPI() const{ return EGraphicsAPI(); }
+bool UFGGameUserSettings::GetForcedGraphicsAPI(EGraphicsAPI& out_forcedGraphicsAPI) const{ return bool(); }
 void UFGGameUserSettings::SetCurrentConfigGraphicsAPI(EGraphicsAPI newGraphicsAPI){ }
 void UFGGameUserSettings::SetHologramColour(FVector inColour){ }
 void UFGGameUserSettings::SetDismantleHologramColour(FVector inColour){ }

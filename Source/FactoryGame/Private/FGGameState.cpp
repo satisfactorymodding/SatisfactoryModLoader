@@ -90,6 +90,7 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mHasInitalTradingPostLandAnimPlayed);
 	DOREPLIFETIME(AFGGameState, mIsSpaceElevatorBuilt);
 	DOREPLIFETIME(AFGGameState, mServerLocalDateTimeTicksAtInit);
+	DOREPLIFETIME(AFGGameState, mTetrominoLeaderBoard);
 }
 void AFGGameState::Tick(float delta){ }
 void AFGGameState::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
@@ -138,5 +139,7 @@ FDateTime AFGGameState::GetServerLocalDateTime() const{ return FDateTime(); }
 void AFGGameState::OnRep_OnlineSessionVisibility(){ }
 bool AFGGameState::IsCustomizerRecipeUnlocked(){ return bool(); }
 void AFGGameState::SetDefaultSwatchForBuildableGroup(TSubclassOf<  UFGSwatchGroup > swatchGroup, TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch> swatch){ }
+void AFGGameState::AddTetrominoResult(const FMiniGameResult& newResult){ }
+void AFGGameState::OnRep_TetrominoLeaderBoard(){ }
 void AFGGameState::CheckRestartTime(){ }
 void AFGGameState::OnRep_PlannedRestartTime(){ }

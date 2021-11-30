@@ -24,16 +24,26 @@ public:
 #endif
 	// End UObject Interface
 	
-    static TArray< FItemAmount > GetSlotRewards( TSubclassOf< UFGCalendarRewards > inClass );
+		
+	static TArray< class UFGUnlock* > GetSlotUnlocks( TSubclassOf< UFGCalendarRewards > inClass );
+	static TArray< class UFGUnlock* > GetRandomUnlocks( TSubclassOf< UFGCalendarRewards > inClass );
 
-	static TArray< FItemAmount > GetRandomRewards( TSubclassOf< UFGCalendarRewards > inClass );
+	static class UFGUnlock* GetSlotUnlock( TSubclassOf< UFGCalendarRewards > inClass, int32 index );
+	static class UFGUnlock* GetRandomUnlock( TSubclassOf< UFGCalendarRewards > inClass, int32 index );
 
 protected:
-	/** The rewards for the slots in the calendar. If a slot is left empty it will grab a random reward from the Random Rewards.  */
-	UPROPERTY( EditDefaultsOnly, Category = "Calendar" )
-	TArray< FItemAmount > mSlotRewards;
+
+	/** The rewards for the slots in the calendar. If a slot is left empty it will grab a random reward from the Random Unlocks.  */
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Calendar" )
+	TArray< class UFGUnlock* > mSlotUnlocks;
 
 	/** The random rewards for a calendar. Used when no reward is available for a slot in the Slot Rewards*/
-	UPROPERTY( EditDefaultsOnly, Category = "Calendar" )
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Calendar" )
+	TArray< class UFGUnlock* > mRandomUnlocks;
+	
+	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated" )
+	TArray< FItemAmount > mSlotRewards;
+	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated" )
 	TArray< FItemAmount > mRandomRewards;
+
 };

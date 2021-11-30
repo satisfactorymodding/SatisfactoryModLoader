@@ -167,6 +167,9 @@ private:
 	/** Explicitly show the cargo container for the platform (called from a next tick timer to allow the anim blueprint to catch up) */
 	void ShowPlatformCargoContainer();
 
+	/** Forces an update of the animation instance. Neccesary to get the anim instance to correctly transition states before going offline */
+	void ForceUpdateAnimInstance();
+
 	// Called when power state changes. Used to track and set docking progress so that it can recover when power is restored
 	UFUNCTION()
 	void OnCargoPowerStateChanged( bool hasPower );

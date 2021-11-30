@@ -89,6 +89,7 @@ bool AFGPlayerState::RemovePresetHotbar(int32 presetHotbarIndex){ return bool();
 bool AFGPlayerState::CopyPresetHotbarToCurrentHotbar(int32 presetHotbarIndex){ return bool(); }
 void AFGPlayerState::SetRecipeShortcutOnIndex(TSubclassOf<  UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex){ }
 void AFGPlayerState::SetCustomizationShortcutOnIndex(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
+void AFGPlayerState::SetEmoteShortcutOnIndex(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
 bool AFGPlayerState::GetAndSetFirstTimeEquipped( AFGEquipment* equipment){ return bool(); }
 AFGPlayerController* AFGPlayerState::GetOwningController() const{ return nullptr; }
 void AFGPlayerState::AddNewRecipe(TSubclassOf< UFGRecipe > recipe){ }

@@ -111,6 +111,10 @@ private:
 	UFUNCTION()
 	void OnRep_NeedPlayingBuildEffect();
 
+	/** Try to add event sub buildings like calendar and mini game */
+	UFUNCTION()
+	void TryAddEventSubBuildings();
+
 public:
 	/** Class of generators to create with the trading post */
 	UPROPERTY( EditDefaultsOnly, Category = "Trading Post" )
@@ -144,6 +148,14 @@ public:
 	/** References to the created work bench */
 	UPROPERTY( ReplicatedUsing=OnRep_HAXX_SubbuildingReplicated, SaveGame )
 	class AFGBuildable* mWorkBench;
+
+	/** References to the created calendar */
+	UPROPERTY( Replicated )
+	class AFGBuildableCalendar* mCalendar;
+
+	/** References to the created mini game */
+	UPROPERTY( Replicated )
+	class AFGBuildable* mMiniGame;
 
 	/** Arrays containing ints for what level  we should activate/show the generator */
 	UPROPERTY( EditDefaultsOnly, Category = "Trading Post", Meta = (NoAutoJson = true) )
@@ -197,6 +209,14 @@ protected:
 	/** Component used to determine work bench terminal location */
 	UPROPERTY( EditAnywhere )
 	USceneComponent* mWorkBenchLocation;
+
+	/** Component used to determine calendar location */
+	UPROPERTY( EditAnywhere )
+	USceneComponent* mCalendarLocation;
+
+	/** Component used to determine mini game location */
+	UPROPERTY( EditAnywhere )
+	USceneComponent* mMiniGameLocation;
 
 	/** Bool to sync playing of build and upgrade effects */
 	UPROPERTY( ReplicatedUsing = OnRep_NeedPlayingBuildEffect )

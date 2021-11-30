@@ -10,6 +10,7 @@ UFGBuildGunStatePaint::UFGBuildGunStatePaint() : Super() {
 	this->mActiveColorSwatch = nullptr;
 	this->mActivePatternDesc = nullptr;
 	this->mActiveMaterialDesc = nullptr;
+	this->mActiveSkinDesc = nullptr;
 	this->mPatternRotation = 0;
 	this->mSingleApplicationActor = nullptr;
 	this->mCurrentCustomizationTarget = nullptr;
@@ -36,13 +37,15 @@ void UFGBuildGunStatePaint::SetActiveCustomization(TSubclassOf< UFGFactoryCustom
 void UFGBuildGunStatePaint::SetActiveSwatchDesc(TSubclassOf< UFGFactoryCustomizationDescriptor_Swatch > swatchDesc){ }
 void UFGBuildGunStatePaint::SetActivePatternDesc(TSubclassOf< UFGFactoryCustomizationDescriptor_Pattern > patternDesc){ }
 void UFGBuildGunStatePaint::SetActiveMaterialDesc(TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
+void UFGBuildGunStatePaint::SetActiveSkinDesc(TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > skinDesc){ }
 void UFGBuildGunStatePaint::RemoveCustomization(TSubclassOf< UFGFactoryCustomizationDescriptor > customization){ }
 void UFGBuildGunStatePaint::ClearAllCustomizations(){ }
 void UFGBuildGunStatePaint::SetActiveRecipe(TSubclassOf< UFGCustomizationRecipe > customizationRecipe){ }
 bool UFGBuildGunStatePaint::IsCustomizationActive(TSubclassOf< UFGFactoryCustomizationDescriptor > customization){ return bool(); }
 bool UFGBuildGunStatePaint::IsRecipeActive(TSubclassOf<  UFGCustomizationRecipe > inClass){ return bool(); }
 TArray< FItemAmount > UFGBuildGunStatePaint::GetCustomizationCost() const{ return TArray<FItemAmount>(); }
-void UFGBuildGunStatePaint::SpawnPreviewActor(AFGBuildable* aimedAtBuildable, TSubclassOf< UFGFactoryCustomizationDescriptor_Material >& targetMaterialDesc){ }
+void UFGBuildGunStatePaint::SpawnPreviewActor(AFGBuildable* aimedAtBuildable, TSubclassOf< UFGRecipe > recipe, TSubclassOf< UFGFactoryCustomizationDescriptor_Material >& targetMaterialDesc){ }
+void UFGBuildGunStatePaint::SpawnPreviewForMaterial(AFGBuildable* aimedAtBuildable, TSubclassOf< UFGFactoryCustomizationDescriptor_Material >& targetMaterialDesc){ }
 USceneComponent* UFGBuildGunStatePaint::SetupComponent(USceneComponent* attachParent, UActorComponent* componentTemplate, const FName& componentName){ return nullptr; }
 void UFGBuildGunStatePaint::ValidateCost(){ }
 void UFGBuildGunStatePaint::AddConstructDisqualifier(TSubclassOf<  UFGConstructDisqualifier > disqualifier){ }

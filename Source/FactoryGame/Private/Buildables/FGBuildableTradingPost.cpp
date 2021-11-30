@@ -11,6 +11,8 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mStorage = nullptr;
 	this->mHubTerminal = nullptr;
 	this->mWorkBench = nullptr;
+	this->mCalendar = nullptr;
+	this->mMiniGame = nullptr;
 	this->mStorageInventorySize = 0;
 	this->mStorageVisibilityLevel = 0;
 	this->mInputInventory = nullptr;
@@ -22,6 +24,8 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mStorageLocation = CreateDefaultSubobject<USceneComponent>(TEXT("StorageLocation"));
 	this->mHubTerminalLocation = CreateDefaultSubobject<USceneComponent>(TEXT("HubTerminalLocation"));
 	this->mWorkBenchLocation = CreateDefaultSubobject<USceneComponent>(TEXT("WorkBenchLocation"));
+	this->mCalendarLocation = CreateDefaultSubobject<USceneComponent>(TEXT("CalendarLocation"));
+	this->mMiniGameLocation = CreateDefaultSubobject<USceneComponent>(TEXT("MiniGameLocation"));
 	this->mNeedPlayingBuildEffectNotification = false;
 	this->mActorRepresentationTexture = nullptr;
 	this->mRepresentationText = INVTEXT("");
@@ -30,6 +34,8 @@ AFGBuildableTradingPost::AFGBuildableTradingPost() : Super() {
 	this->mStorageLocation->SetupAttachment(RootComponent);
 	this->mHubTerminalLocation->SetupAttachment(RootComponent);
 	this->mWorkBenchLocation->SetupAttachment(RootComponent);
+	this->mCalendarLocation->SetupAttachment(RootComponent);
+	this->mMiniGameLocation->SetupAttachment(RootComponent);
 }
 void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -37,6 +43,8 @@ void AFGBuildableTradingPost::GetLifetimeReplicatedProps(TArray<FLifetimePropert
 	DOREPLIFETIME(AFGBuildableTradingPost, mStorage);
 	DOREPLIFETIME(AFGBuildableTradingPost, mHubTerminal);
 	DOREPLIFETIME(AFGBuildableTradingPost, mWorkBench);
+	DOREPLIFETIME(AFGBuildableTradingPost, mCalendar);
+	DOREPLIFETIME(AFGBuildableTradingPost, mMiniGame);
 	DOREPLIFETIME(AFGBuildableTradingPost, mInputInventory);
 	DOREPLIFETIME(AFGBuildableTradingPost, mNeedPlayingBuildEffectNotification);
 }
@@ -81,3 +89,4 @@ void AFGBuildableTradingPost::OnRep_HAXX_SubbuildingReplicated(){ }
 void AFGBuildableTradingPost::AdjustPlayerSpawnsToGround(){ }
 AFGSchematicManager* AFGBuildableTradingPost::GetSchematicManager(){ return nullptr; }
 void AFGBuildableTradingPost::OnRep_NeedPlayingBuildEffect(){ }
+void AFGBuildableTradingPost::TryAddEventSubBuildings(){ }

@@ -383,6 +383,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Crouch" )
 	void CrouchReleased();
 
+	void EmoteWheelPressed();
+	void EmoteWheelReleased();
+
 	/** Updates the camera with crouch settings */
 	void TickCameraOffset( float dt );
 
@@ -597,6 +600,24 @@ public:
 	/** Returns the Cinematic Camera subobject used in photomode **/
 	UFUNCTION( BlueprintPure, Category = "Camera" )
 	FORCEINLINE class UFGCineCameraComponent* GetCinematicCameraComponent() const { return mCinematicCameraComponent; }
+
+	UFUNCTION( BlueprintCallable, Category = "Emote" )
+	void PlayEmote( TSubclassOf<class UFGEmote> emote );
+	UFUNCTION( Server, Reliable, Category = "Emote" )
+	void Server_PlayEmote( TSubclassOf<class UFGEmote> emote, int32 randomInteger );
+	UFUNCTION( NetMulticast, Reliable, Category = "Emote" )
+	void Multicast_PlayEmote( TSubclassOf<class UFGEmote> emote, int32 randomInteger );
+	UFUNCTION( BlueprintCallable, Category = "Emote" )
+	void PlayEmoteSFX( class UAkAudioEvent* event );
+	UFUNCTION( BlueprintPure, Category = "Emote" )
+	class USkeletalMeshComponent* GetEmoteSkelMeshComp() const { return mEmoteSkelMeshComp; }
+	UFUNCTION( BlueprintCallable, Category = "Emote" )
+	void ClearEmoteSkelMeshComp( float delay );
+	UFUNCTION( BlueprintPure, Category = "Emote" )
+	class UFGInteractWidget* GetEmoteMenu() const { return mEmoteMenuWidget; } 
+	// Finds all light sources in the desired radius around the player and toggles them after the desired delay.
+	UFUNCTION( Server, Reliable, BlueprintCallable, Category="Lights")
+	void Server_ToggleLightsInRadius( float inRadius, float inDelay );
 	
 protected:
 	// APawn interface
@@ -1260,6 +1281,21 @@ private:
     class UParticleSystem* mZiplineParticle;
 
 	FText mCachedLookAtDescription;
+
+	UPROPERTY()
+	class UFGEmote* mCurrentEmote;
+
+	UPROPERTY()
+	class UAkComponent* mCurrentEmoteSFX;
+
+	UPROPERTY()
+	UFGInteractWidget* mEmoteMenuWidget;
+
+	UPROPERTY( VisibleDefaultsOnly, Category = Mesh )
+	class USkeletalMeshComponent* mEmoteSkelMeshComp;
+
+	FTimerHandle mEmoteSkelMeshTimer;
+	
 public:
 	UPROPERTY( BlueprintReadWrite, Category = "FactoryGame|Movement|Crouch" )
 	bool mNoUpdate;

@@ -705,7 +705,7 @@ public:
 
 public: //@todo-trains private
 	/** The name of this train. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Train" )
 	FText mTrainName;
 
 	/** The track this train is on. */
@@ -723,19 +723,19 @@ public: //@todo-trains private
 	class AFGLocomotive* mMultipleUnitMaster;
 
 	/** This trains time table. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, Replicated, VisibleAnywhere, Category = "Train" )
 	class AFGRailroadTimeTable* TimeTable;
 
 	/** This is the trains current status. */
-	UPROPERTY( ReplicatedUsing = OnRep_TrainStatus )
+	UPROPERTY( ReplicatedUsing = OnRep_TrainStatus, VisibleAnywhere, Category = "Train" )
 	ETrainStatus mTrainStatus;
 
 	/** Is this train self driving */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsSelfDrivingEnabled )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsSelfDrivingEnabled, VisibleAnywhere, Category = "Train" )
 	bool mIsSelfDrivingEnabled;
 	
 	/** Error reported by the self driver. */
-	UPROPERTY( ReplicatedUsing = OnRep_SelfDrivingError )
+	UPROPERTY( ReplicatedUsing = OnRep_SelfDrivingError, VisibleAnywhere, Category = "Train" )
 	ESelfDrivingLocomotiveError mSelfDrivingError;
 
 	/** How long do the train need to wait at a signal before "Long Wait At Signal" is raised. [seconds] */
@@ -743,15 +743,15 @@ public: //@todo-trains private
 	float mLongWaitAtSignalThreshold;
 
 	/** The status for an ongoing dock, this is not saved, it's updated from the station we're docked to on load. */
-	UPROPERTY( ReplicatedUsing = OnRep_DockingState )
+	UPROPERTY( ReplicatedUsing = OnRep_DockingState, VisibleAnywhere, Category = "Train" )
 	ETrainDockingState mDockingState;
 
 	/** The station this train is docked at. This is now cached when docked as we needed a means to Cancel a dock sequence from the UI Train menu */
-	UPROPERTY()
+	UPROPERTY( VisibleAnywhere, Category = "Train" )
 	class AFGBuildableRailroadStation* mDockedAtStation;
 
 	/** True if this train is derailed and needs player attention. */
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsDerailed )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_IsDerailed, VisibleAnywhere, Category = "Train" )
 	bool mIsDerailed;
 
 	//@todo-trains Apply from pending collisions in subsystem on load.

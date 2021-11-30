@@ -31,11 +31,14 @@ AFGVehicle::AFGVehicle() : Super() {
 	this->mCustomizationData.SwatchDesc = nullptr;
 	this->mCustomizationData.PatternDesc = nullptr;
 	this->mCustomizationData.MaterialDesc = nullptr;
+	this->mCustomizationData.SkinDesc = nullptr;
 	this->mCustomizationData.OverrideColorData.Metallic = 0.0;
 	this->mCustomizationData.OverrideColorData.Roughness = 0.0;
 	this->mCustomizationData.PatternRotation = 0;
 	this->mCustomizationData.ColorSlot = 0;
+	this->mCustomizationData.NeedsSkinUpdate = false;
 	this->mCustomizationData.HasPower = 0;
+	this->mFactorySkinClass = nullptr;
 	this->mSwatchGroup = UFGSwatchGroup_Vehicle::StaticClass();
 	this->mBuiltWithRecipe = nullptr;
 	this->mIsSelfDriving = false;
@@ -75,6 +78,8 @@ float AFGVehicle::GetSignificanceRange(){ return float(); }
 void AFGVehicle::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 void AFGVehicle::SetCustomizationData_Implementation(const FFactoryCustomizationData& colorData){ }
 void AFGVehicle::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
+TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGVehicle::GetActiveSkin_Native(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
+TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGVehicle::GetActiveSkin_Implementation(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
 void AFGVehicle::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
 void AFGVehicle::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
 bool AFGVehicle::CanDock_Implementation(EDockStationType atStation) const{ return bool(); }
@@ -142,7 +147,9 @@ void AFGVehicle::SetForceRealMode(bool forceRealMode){ }
 void AFGVehicle::SetForceSimulationMode(bool forceSimulationMode){ }
 void AFGVehicle::SetSimulated(bool newIsSimulated){ }
 void AFGVehicle::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
+void AFGVehicle::ApplySkinData(TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > newSkinDesc){ }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGVehicle::GetDefaultSwatchCustomizationOverride(UObject* worldContext){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
+void AFGVehicle::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
 void AFGVehicle::OnCustomizationDataApplied(const FFactoryCustomizationData& customizationData){ }
 void AFGVehicle::OnRep_IsSimulated(){ }
 void AFGVehicle::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }

@@ -123,6 +123,10 @@ public:
 	void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData );
 	FFactoryCustomizationData GetCustomizationData_Implementation() { return mCustomizationData; }
 	FFactoryCustomizationData& GetCustomizationData_Native() { return mCustomizationData; }
+	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Implementation() { return mFactorySkinClass; }
+	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() { return mFactorySkinClass; }
+	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Native();
+	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Implementation();
 	bool GetCanBeColored_Implementation();
 	virtual bool IsColorApplicationDeferred() { return false; }
 	virtual bool CanApplyDeferredColorToBuildable( FVector hitLocation, FVector hitNormal, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > swatch, APlayerController* playerController ) { return false; }
@@ -362,6 +366,9 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
 	void OnMaterialInstancesUpdated();
 
+	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Customization" )
+	void OnSkinCustomizationApplied( TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > skin );
+
 	/** Plays construction sound, override this event to play a custom sound. */
 	UFUNCTION( BlueprintNativeEvent, BlueprintCosmetic, Category = "Buildable|Build Effect" )
 	void PlayConstructSound();
@@ -438,6 +445,10 @@ protected:
 	UFUNCTION( BlueprintCallable, Category="Buildable")
 	void FlagReevaluateMaterialOnColored() { mReevaluateMaterialsWithSubsystem = true; }
 
+	/** Update all the instance groups for proxy meshes. This will be called when updating a buildables Skin */
+	UFUNCTION( BlueprintCallable, Category = "Buildable|Customization" )
+	void ApplySkinData( TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > newSkinDesc );
+
 	/** Update all none Instanced Mesh Colors / params. This sets the primitive data so is responsible for coloring Skel_Meshes etc. */
 	UFUNCTION( BlueprintCallable, Category="Buildable|Customization" )
 	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
@@ -457,6 +468,10 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "Buildable" )
 	void DestroyBuildEffectProxyComponents();
 	
+	/** Let the client know custom color / material information has been applied to the building */
+	UFUNCTION()
+	void OnRep_CustomizationData();
+
 private:
 	/** Create a stat for the buildable */
 	void CreateFactoryStatID() const;
@@ -470,9 +485,6 @@ private:
 	/** Helper to verify the connection naming. */
 	bool CheckFactoryConnectionComponents( FString& out_message );
 
-	/** Let the client know custom color / material information has been applied to the building */
-	UFUNCTION()
-	void OnRep_CustomizationData();
 
 	/** Let client see the highlight */
 	UFUNCTION()
@@ -536,6 +548,9 @@ protected:
 	/** if true, then this buildable will accept swatches and patterns */
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	bool mAllowColoring;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
+	TSubclassOf< class UFGFactorySkinActorData > mFactorySkinClass;
 
 	/** HAXX FLAG! Buildings set this to start replicating power graph if they are interacted with */
 	bool mInteractionRegisterPlayerWithCircuit;

@@ -28,6 +28,12 @@ class FACTORYGAME_API IFGColorInterface
 	/** Get Customization data for implementing actor */
 	virtual FFactoryCustomizationData& GetCustomizationData_Native() = 0;
 
+	/** Quick getter for returning the current active skin */
+	virtual TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin_Native() = 0;
+
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Factory Customization" )
+	TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > GetActiveSkin();
+
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Factory Customization" )
 	FFactoryCustomizationData GetCustomizationData();
 
@@ -36,6 +42,12 @@ class FACTORYGAME_API IFGColorInterface
 
 	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Factory Customization" )
 	void ApplyCustomizationData( const FFactoryCustomizationData& customizationData );
+
+	/** Gets the buildable/vehicle skin data */
+	virtual TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass_Native() = 0;
+
+	UFUNCTION( BlueprintNativeEvent, BlueprintCallable, Category = "Factory Customization" )
+	TSubclassOf< UFGFactorySkinActorData > GetFactorySkinClass();
 
 	/** Returns wherther the building can be colored right now or not */
 	UFUNCTION( BlueprintNativeEvent, Category = "Factory Customization")

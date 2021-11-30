@@ -3,6 +3,7 @@
 #include "FGFactorySettings.h"
 #include "Equipment/FGBuildGun.h"
 #include "Equipment/FGResourceScanner.h"
+#include "FGEmoteShortcut.h"
 #include "FGFactoryCustomizationShortcut.h"
 #include "FGRecipeShortcut.h"
 
@@ -42,6 +43,7 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mMaxFeetLength = 1000.0;
 	this->mRecipeShortcutClass = UFGRecipeShortcut::StaticClass();
 	this->mCustomizationShortcutClass = UFGFactoryCustomizationShortcut::StaticClass();
+	this->mEmoteShortcutClass = UFGEmoteShortcut::StaticClass();
 	this->mNumHotbars = 2;
 	this->mNumPresetHotbars = 2;
 	this->mNumSlotsPerHotbar = 10;

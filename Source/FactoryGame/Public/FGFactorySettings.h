@@ -223,6 +223,10 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TSubclassOf< class UFGFactoryCustomizationShortcut > mCustomizationShortcutClass;
 
+	/** The class we want to spawn for emote shortcuts */
+	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
+	TSubclassOf< class UFGEmoteShortcut > mEmoteShortcutClass;
+
 	/** Names if the input actions that defines the shortcuts. This maps directly to their index (so first entry here should mean that it should call ExecuteShortcut 0) */
 	UPROPERTY( EditDefaultsOnly, Category = "Shortcuts" )
 	TArray< FName > mShortcutMap;

@@ -201,6 +201,8 @@ public:
 	EGraphicsAPI GetCurrentActiveGraphicsAPI() const;
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
 	EGraphicsAPI GetCurrentConfigGraphicsAPI() const;
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Settings" )
+	bool GetForcedGraphicsAPI( EGraphicsAPI& out_forcedGraphicsAPI ) const;
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Settings" )
 	void SetCurrentConfigGraphicsAPI( EGraphicsAPI newGraphicsAPI );
 	
@@ -392,6 +394,8 @@ private:
 
 	UPROPERTY( Config )
 	FVector mSoftClearanceHologramColour;
+
+	TOptional<EGraphicsAPI> mDesiredGraphicsAPI;
 
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;

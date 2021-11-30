@@ -5,5 +5,7 @@
 #if WITH_EDITOR
 EDataValidationResult UFGCalendarRewards::IsDataValid(TArray<FText>& ValidationErrors){ return EDataValidationResult::Valid; }
 #endif 
-TArray< FItemAmount > UFGCalendarRewards::GetSlotRewards(TSubclassOf< UFGCalendarRewards > inClass){ return TArray<FItemAmount>(); }
-TArray< FItemAmount > UFGCalendarRewards::GetRandomRewards(TSubclassOf< UFGCalendarRewards > inClass){ return TArray<FItemAmount>(); }
+TArray< class UFGUnlock* > UFGCalendarRewards::GetSlotUnlocks(TSubclassOf< UFGCalendarRewards > inClass){ return TArray<class UFGUnlock*>(); }
+TArray< class UFGUnlock* > UFGCalendarRewards::GetRandomUnlocks(TSubclassOf< UFGCalendarRewards > inClass){ return TArray<class UFGUnlock*>(); }
+UFGUnlock* UFGCalendarRewards::GetSlotUnlock(TSubclassOf< UFGCalendarRewards > inClass, int32 index){ return nullptr; }
+UFGUnlock* UFGCalendarRewards::GetRandomUnlock(TSubclassOf< UFGCalendarRewards > inClass, int32 index){ return nullptr; }

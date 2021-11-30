@@ -51,6 +51,7 @@ public:
 	void UnlockBuildOverclock();
 	void UnlockInventorySlots( int32 numSlotsToUnlock );
 	void UnlockArmEquipmentSlots( int32 numSlotsToUnlock );
+	void UnlockEmote( TSubclassOf< class UFGEmote > newEmote );
 
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	TArray<TSubclassOf<class UFGResourceDescriptor>> GetScannableResources() const;
@@ -76,6 +77,9 @@ public:
 
 	int32 GetNumTotalInventorySlots() const { return mNumTotalInventorySlots; }
 	int32 GetNumTotalArmEquipmentSlots() const { return mNumTotalArmEquipmentSlots; }
+
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	void GetUnlockedEmotes( TArray< TSubclassOf<class UFGEmote> >& out_unlockedEmotes ) const;
 
 private:
 	void SetNumOfAdditionalInventorySlots( int32 newNumSlots );
@@ -148,5 +152,10 @@ private:
 	/** The highest total number of arm equipment slots that any player have ever had, saved for save compatibility and rebalancing */
 	UPROPERTY( Savegame, Replicated )
 	int32 mNumTotalArmEquipmentSlots;
+
+	/** The emotes that we have unlocked */
+	UPROPERTY( Savegame, Replicated )
+	TArray< TSubclassOf<class UFGEmote> > mUnlockedEmotes;
+	
 
 };

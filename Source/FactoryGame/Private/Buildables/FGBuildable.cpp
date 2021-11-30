@@ -49,14 +49,17 @@ AFGBuildable::AFGBuildable() : Super() {
 	this->mCustomizationData.SwatchDesc = nullptr;
 	this->mCustomizationData.PatternDesc = nullptr;
 	this->mCustomizationData.MaterialDesc = nullptr;
+	this->mCustomizationData.SkinDesc = nullptr;
 	this->mCustomizationData.OverrideColorData.Metallic = 0.0;
 	this->mCustomizationData.OverrideColorData.Roughness = 0.0;
 	this->mCustomizationData.PatternRotation = 0;
 	this->mCustomizationData.ColorSlot = 0;
+	this->mCustomizationData.NeedsSkinUpdate = false;
 	this->mCustomizationData.HasPower = 0;
 	this->mDefaultSwatchCustomizationOverride = nullptr;
 	this->mSwatchGroup = UFGSwatchGroup_Standard::StaticClass();
 	this->mAllowColoring = true;
+	this->mFactorySkinClass = nullptr;
 	this->mBuildEffectTemplate = nullptr;
 	this->mDismantleEffectTemplate = nullptr;
 	this->mActiveBuildEffect = nullptr;
@@ -110,6 +113,8 @@ void AFGBuildable::SetCustomizationData_Implementation(const FFactoryCustomizati
 void AFGBuildable::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
 void AFGBuildable::ApplyCustomizationData_Implementation(const FFactoryCustomizationData& customizationData){ }
 void AFGBuildable::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
+TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGBuildable::GetActiveSkin_Native(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
+TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGBuildable::GetActiveSkin_Implementation(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
 bool AFGBuildable::GetCanBeColored_Implementation(){ return bool(); }
 void AFGBuildable::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
 void AFGBuildable::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
@@ -170,6 +175,7 @@ bool AFGBuildable::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildable::Native_OnMaterialInstancesUpdated(){ }
 int32 AFGBuildable::GetCostMultiplierForLength(float totalLength, float costSegmentLength){ return int32(); }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGBuildable::GetDefaultSwatchCustomizationOverride(UObject* worldContext){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
+void AFGBuildable::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
 void AFGBuildable::PlayConstructSound_Implementation(){ }
 void AFGBuildable::PlayDismantleSound_Implementation(){ }
 void AFGBuildable::RegisterInteractingPlayerWithCircuit( AFGCharacterPlayer* player){ }
@@ -184,15 +190,16 @@ void AFGBuildable::GetDismantleRefundReturns(TArray< FInventoryStack >& out_retu
 int32 AFGBuildable::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
 void AFGBuildable::GetDismantleInventoryReturns(TArray< FInventoryStack >& out_returns) const{ }
 void AFGBuildable::TogglePendingDismantleMaterial(bool enabled){ }
+void AFGBuildable::ApplySkinData(TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > newSkinDesc){ }
 void AFGBuildable::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
 void AFGBuildable::ApplyHasPowerCustomData(){ }
 void AFGBuildable::SetDidFirstTimeUse(bool didUse){ }
 TArray< UStaticMeshComponent* > AFGBuildable::CreateBuildEffectProxyComponents(){ return TArray<UStaticMeshComponent*>(); }
 void AFGBuildable::DestroyBuildEffectProxyComponents(){ }
+void AFGBuildable::OnRep_CustomizationData(){ }
 void AFGBuildable::CreateFactoryStatID() const{ }
 void AFGBuildable::SetReplicateDetails(bool replicateDetails){ }
 bool AFGBuildable::CheckFactoryConnectionComponents(FString& out_message){ return bool(); }
-void AFGBuildable::OnRep_CustomizationData(){ }
 void AFGBuildable::OnRep_DidFirstTimeUse(){ }
 FOnReplicationDetailActorStateChange AFGBuildable::OnBuildableReplicationDetailActorStateChange = FOnReplicationDetailActorStateChange();
 FOnRegisteredPlayerChanged AFGBuildable::OnRegisterPlayerChange = FOnRegisteredPlayerChanged();

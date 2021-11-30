@@ -18,6 +18,23 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FVisitedMapAreaDelegate, TSubclassO
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRestartTimeNotification, float, timeLeft );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutoSaveTimeNotification, float, timeLeft );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnAutoSaveFinished );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnTetrominoLeaderBoardUpdated );
+
+// Minigame struct for minigames like tetromino packaging game 
+USTRUCT( BlueprintType )
+struct FMiniGameResult
+{
+	GENERATED_BODY()
+	
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	FString LevelName;
+	
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	FString PlayerName;
+	
+	UPROPERTY( SaveGame, BlueprintReadWrite )
+	int32 Points;
+};
 
 extern const TCHAR STARTUP_TEMP_ID_PREFIX[];
 /**
@@ -290,6 +307,16 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
 	void SetDefaultSwatchForBuildableGroup( TSubclassOf< class UFGSwatchGroup > swatchGroup, TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch> swatch );
 
+	UFUNCTION( BlueprintCallable, Category = "Tetromino" )
+	FORCEINLINE TArray< FMiniGameResult > GetTetrominoLeaderBoard() const {return mTetrominoLeaderBoard; }
+
+	/** Add a tetromino result. If it's a new highscore on the given level it will be added to the leaderboard. */
+	UFUNCTION( BlueprintCallable, Category = "Tetromino" )
+	void AddTetrominoResult( const FMiniGameResult& newResult );
+
+	UFUNCTION()
+	void OnRep_TetrominoLeaderBoard();
+
 private:
 	/** Check the restart time of server and restart it and notify clients of the countdown */
 	void CheckRestartTime();
@@ -338,6 +365,10 @@ public:
 	/** Broadcast a notification when we are finished auto saving */
 	UPROPERTY( BlueprintAssignable, Category = "Notification" )
 	FOnAutoSaveFinished mOnAutoSaveFinished;
+
+	/** Broadcast a notification when the tetromino leader board is updated */
+	UPROPERTY( BlueprintAssignable, Category = "Tetromino" )
+	FOnTetrominoLeaderBoardUpdated mOnTetrominoLeaderBoardUpdated;
 
 private:
 	/** Spawned subsystems */
@@ -496,5 +527,12 @@ private:
 	/** The local date and time on the server represented in ticks at the time of the init of this game state. */
 	UPROPERTY( Replicated )
 	int64 mServerLocalDateTimeTicksAtInit;
+
+	// @todok2 Might want to move this to a separate system like statistics subsystem or something.
+	/** The leaderboard for tetromino mini game */
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_TetrominoLeaderBoard )
+	TArray< FMiniGameResult > mTetrominoLeaderBoard;
+	
+	
 
 };

@@ -72,12 +72,17 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mSlideToCrouchSpeed = 1.0;
 	this->mIncomingAttackers = 0;
 	this->mZiplineParticle = nullptr;
+	this->mCurrentEmote = nullptr;
+	this->mCurrentEmoteSFX = nullptr;
+	this->mEmoteMenuWidget = nullptr;
+	this->mEmoteSkelMeshComp = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("EmoteSkelMeshComp"));
 	this->mNoUpdate = false;
 	this->mActorRepresentationTexture = nullptr;
 	this->mActorRepresentationTextureDead = nullptr;
 	this->bNetUseOwnerRelevancy = true;
 	this->mMesh3P->SetupAttachment(GetCapsuleComponent());
 	this->mSpringArmComponent->SetupAttachment(GetCapsuleComponent());
+	this->mEmoteSkelMeshComp->SetupAttachment(GetCapsuleComponent());
 }
 void AFGCharacterPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -199,6 +204,8 @@ void AFGCharacterPlayer::SprintPressed(){ }
 void AFGCharacterPlayer::SprintReleased(){ }
 void AFGCharacterPlayer::CrouchPressed(){ }
 void AFGCharacterPlayer::CrouchReleased(){ }
+void AFGCharacterPlayer::EmoteWheelPressed(){ }
+void AFGCharacterPlayer::EmoteWheelReleased(){ }
 void AFGCharacterPlayer::TickCameraOffset(float dt){ }
 void AFGCharacterPlayer::CycleHandEquipmentPressedUp(){ }
 void AFGCharacterPlayer::CycleHandEquipmentPressedDown(){ }
@@ -248,6 +255,12 @@ void AFGCharacterPlayer::Multicast_ZiplineEnd_Implementation(FVector exitForce){
 bool AFGCharacterPlayer::Multicast_ZiplineEnd_Validate(FVector exitForce){ return bool(); }
 void AFGCharacterPlayer::PlayZiplineEffects(FVector inLocation){ }
 void AFGCharacterPlayer::NetMulticast_CheatFly_Implementation(){ }
+void AFGCharacterPlayer::PlayEmote(TSubclassOf<class UFGEmote> emote){ }
+void AFGCharacterPlayer::Server_PlayEmote_Implementation(TSubclassOf<class UFGEmote> emote, int32 randomInteger){ }
+void AFGCharacterPlayer::Multicast_PlayEmote_Implementation(TSubclassOf<class UFGEmote> emote, int32 randomInteger){ }
+void AFGCharacterPlayer::PlayEmoteSFX( UAkAudioEvent* event){ }
+void AFGCharacterPlayer::ClearEmoteSkelMeshComp(float delay){ }
+void AFGCharacterPlayer::Server_ToggleLightsInRadius_Implementation(float inRadius, float inDelay){ }
 void AFGCharacterPlayer::SetupPlayerInputComponent( UInputComponent* InputComponent){ }
 void AFGCharacterPlayer::OnInventorySlotsUnlocked(int32 newUnlockedSlots){ }
 void AFGCharacterPlayer::OnArmsSlotsUnlocked(int32 newUnlockedSlots){ }

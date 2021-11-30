@@ -12,6 +12,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FIntroSequenceStateUpdate );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FCurrentIntroStepUpdate );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnTutorialCompleted );
 
 //Steps in the intro tutorial
 UENUM( BlueprintType )
@@ -220,6 +221,10 @@ public:
 	/** Called when mCurrentLocalTutorial updates */
 	UPROPERTY(BlueprintAssignable,Category="Tutorial")
 	FCurrentIntroStepUpdate mOnCurrentIntroStepUpdated;
+	
+	/** Called when the tutorial is completed. Only triggered on server for now. */
+	UPROPERTY(BlueprintAssignable,Category="Tutorial")
+	FOnTutorialCompleted mOnTutorialCompleted;
 
 protected:
 	/** Has a trading post been built */

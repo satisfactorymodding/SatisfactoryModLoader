@@ -11,6 +11,7 @@ static const uint8 BUILDABLE_COLORS_MAX_SLOTS_LEGACY = 18;
 static const int32 BUILDABLE_CUSTOM_DATA_NUM = 20;
 static const uint8 INDEX_CUSTOM_COLOR_SLOT = 255; // The index used to specify a "slot" is a custom user color and thus not really a slot at all
 static const uint8 INDEX_PATTERN_REMOVAL = 0; // The index for the custom removal pattern that should refund the cost of a pattern on application (if one exists)
+static const int32 INDEX_SKIN_REMOVAL = -1;
 
 // Save/Loadable Color Structure so players can reuse colors across a variety of places (Lights, Factory Colors, Signs_
 USTRUCT( BlueprintType )
@@ -137,6 +138,100 @@ protected:
 	UPROPERTY( EditDefaultsOnly )
 	bool IsCategoryDefault;
 };
+
+
+//////////////////////////////////////////////////////////////////////////
+/// Begin Skin Types
+
+/**
+ * This is the Skin Descriptor Asset. This is the global skin that is mostly just a name/identifier/icon
+ * Because different buildings/vehicles will have different material/component layouts
+ * none of the actual skin data is stored here
+ */
+UCLASS( Blueprintable, Abstract )
+class FACTORYGAME_API UFGFactoryCustomizationDescriptor_Skin : public UFGFactoryCustomizationDescriptor
+{
+	GENERATED_BODY()
+
+	UFGFactoryCustomizationDescriptor_Skin() {}
+};
+
+
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FIndexToMaterialData
+{
+	GENERATED_BODY()
+	
+	FIndexToMaterialData() : Index( 0 ), Material( nullptr ) {}
+	FIndexToMaterialData( int32 index, UMaterialInterface* material ) : Index( index ), Material( material ) {}
+	
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	int32 Index;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UMaterialInterface* Material;	
+};
+
+/**
+ * An individual components information for a skin descriptor
+ */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFactorySkinComponentData
+{
+	GENERATED_BODY()
+
+	FFactorySkinComponentData() {}
+
+public:
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	FName ComponentName;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	TArray< FIndexToMaterialData > IndexToMaterialData;
+};
+
+/**
+ * This acts as a struct contain so that we can have "nested" containers
+ */
+USTRUCT( BlueprintType )
+struct FACTORYGAME_API FFactorySkinComponentGroup
+{
+	GENERATED_BODY()
+
+	FFactorySkinComponentGroup() {}
+
+public:
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	TArray< FFactorySkinComponentData > mComponentData;
+};
+
+/**
+ * Each Buildable / Vehicle will have a data asset of this type to define which Skin Descriptors are valid on this buildable
+ * If a key is present for a particular skin, it is valid and we use the component group to determine which materials to update
+ * and on which components.
+ */
+UCLASS( Blueprintable, Abstract )
+class FACTORYGAME_API UFGFactorySkinActorData : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UFGFactorySkinActorData() {}
+
+	UFUNCTION( BlueprintCallable, Category = "FactorySkin" )
+	static void GetSkinComponentDataForSkinActorData( TSubclassOf< UFGFactorySkinActorData > skinClass, TMap< TSubclassOf< UFGFactoryCustomizationDescriptor_Skin >, FFactorySkinComponentGroup >& out_componentGroupData );
+
+public:
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	TMap< TSubclassOf< UFGFactoryCustomizationDescriptor_Skin >, FFactorySkinComponentGroup > mSkinToComponentGroupData;
+};
+
+
+/// End Skin Types
+//////////////////////////////////////////////////////////////////////////
+
+
+
 
 
 UCLASS( Blueprintable, BlueprintType )
@@ -318,6 +413,9 @@ struct FACTORYGAME_API FFactoryCustomizationData
 
 	UPROPERTY( SaveGame, EditAnywhere, Category = "Customization" )
 	TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > MaterialDesc;
+
+	UPROPERTY( SaveGame, EditAnywhere, Category = "Customization" )
+	TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > SkinDesc;
 	
 	UPROPERTY( SaveGame )
 	FFactoryCustomizationColorSlot OverrideColorData;
@@ -342,6 +440,12 @@ struct FACTORYGAME_API FFactoryCustomizationData
 	 */
 	UPROPERTY( NotReplicated )
 	uint8 ColorSlot;
+
+	/*
+	 * Tracking variable used to know if skin data needs to be updated
+	 */
+	UPROPERTY( BlueprintReadWrite, NotReplicated )
+	bool NeedsSkinUpdate;
 
 	/**
 	 * Must be manually assigned by buildable/vehicle if desired, otherwise 0 will be used. This is included for ease of access from instanced meshes so we don't have to pass extra data

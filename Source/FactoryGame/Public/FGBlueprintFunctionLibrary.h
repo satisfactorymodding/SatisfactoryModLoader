@@ -64,6 +64,10 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
 	static void ApplyDefaultColorPrimitiveData( class AActor* actor );
 
+	/** Fills a given array with all mesh components residing on a class. Including any blueprint added components */
+	UFUNCTION( BlueprintCallable, Category = "Factory|Customization" )
+	static void GetAllMeshComponentsInClass( const TSubclassOf< AActor > inClass, TArray< UMeshComponent* >& out_components );
+
 	/**
 	 * Does what Cheat_GetAllDescriptors does, but tries to do in in a more reliable way,
 	 * and not only hoping for the descriptor to be loaded in memory. This is probably slow!
@@ -526,6 +530,9 @@ public:
 	/** Sort an array dependent on the menu priority of the customization descs in the given customization recipes */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Recipe" )
 	static void SortCustomizationRecipes( UPARAM( ref ) TArray< TSubclassOf< class UFGCustomizationRecipe > >& recipes );
+
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Customization" )
+	static void ApplySkinDataToMeshArray( TArray< UMeshComponent* >& compArr, FFactorySkinComponentGroup& groupData );
 
 	/////////////////////////////////////////////////////////////////
 	// Begin specific functions for cinematic tools.

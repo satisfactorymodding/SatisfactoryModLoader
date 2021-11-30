@@ -11,6 +11,7 @@ void UFGBlueprintFunctionLibrary::UpdateUseState(FUseState& state, TSubclassOf< 
 void UFGBlueprintFunctionLibrary::Cheat_GetAllDescriptors(TArray< TSubclassOf<  UFGItemDescriptor > >& out_descriptors){ }
 void UFGBlueprintFunctionLibrary::ApplyCustomizationPrimitiveData( AActor* actor, const FFactoryCustomizationData& customizationData, int32 colorSlotFallback ,  UMeshComponent* onlyApplyToComponent){ }
 void UFGBlueprintFunctionLibrary::ApplyDefaultColorPrimitiveData( AActor* actor){ }
+void UFGBlueprintFunctionLibrary::GetAllMeshComponentsInClass(const TSubclassOf< AActor > inClass, TArray< UMeshComponent* >& out_components){ }
 void UFGBlueprintFunctionLibrary::GetAllDescriptorsSorted(UObject* worldContext,  TArray< TSubclassOf< UFGItemDescriptor > >& out_descriptors){ }
 void UFGBlueprintFunctionLibrary::ChangeLanguage(FString target){ }
 FString UFGBlueprintFunctionLibrary::GetLanguage(){ return FString(); }
@@ -112,6 +113,7 @@ void UFGBlueprintFunctionLibrary::GetCustomizationsFromCollectionClass(TSubclass
 void UFGBlueprintFunctionLibrary::GetSlotDataForSwatchDesc(TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch > swatchDesc,  AActor* worldContext, FFactoryCustomizationColorSlot& out_SlotData){ }
 bool UFGBlueprintFunctionLibrary::GetIsCategoryDefaultForMaterialDesc(TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > materialDesc){ return bool(); }
 void UFGBlueprintFunctionLibrary::SortCustomizationRecipes(TArray< TSubclassOf<  UFGCustomizationRecipe > >& recipes){ }
+void UFGBlueprintFunctionLibrary::ApplySkinDataToMeshArray(TArray< UMeshComponent* >& compArr, FFactorySkinComponentGroup& groupData){ }
 float UFGBlueprintFunctionLibrary::GetPrimitiveDataFromIndex(int32 Index, UPrimitiveComponent* Component){ return float(); }
 float UFGBlueprintFunctionLibrary::GetPrimitiveDefaultDataFromIndex(int32 Index, UPrimitiveComponent* Component){ return float(); }
 void UFGBlueprintFunctionLibrary::CSS_SetAnimationAsset(USkeletalMeshComponent* Comp, UAnimationAsset* AnimationAsset){ }

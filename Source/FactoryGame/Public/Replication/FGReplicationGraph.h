@@ -232,10 +232,10 @@ public:
 		TArrayView<FSpatializationZone> ZoneSettings;
 		int64 MaxBitsPerFrame;
 		int32 MaxNearestActors; // Only replicate the X nearest actors to a connection in this node. -1 = no limit.
-		int32 FrequencyGridSubdivisions = 41;
+		int32 FrequencyGridSubdivisions = 31;
 		float CullDistance = 35000.f; // Potentially not great, this will be used to calc cull distance on Cells. As all actors in a cell will be culled together not per actor
 		float SkipLowPriorityAtHz = 2.f; // At 2hz or lower we will skip low priority conveyors. They will be disregarded and not replicate at all
-		int32 MaxAllowedRepPeriod = 120; // Anything over this amount of frames will be Zeroed and not replicate
+		int32 MaxAllowedRepPeriod = 120; // Anything over this amount of frames will be clamped to this value
 	};
 
 	static FSettings mDefaultSettings;	// Default settings used by all instance

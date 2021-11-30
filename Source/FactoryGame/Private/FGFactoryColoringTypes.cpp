@@ -7,6 +7,7 @@ UFGFactoryCustomizationDescriptor::UFGFactoryCustomizationDescriptor() : Super()
 	this->mIcon = nullptr;
 }
 bool UFGFactoryCustomizationDescriptor_Material::BuildableRecipeIsMappedTo(TSubclassOf<  UFGRecipe > recipe){ return bool(); }
+void UFGFactorySkinActorData::GetSkinComponentDataForSkinActorData(TSubclassOf< UFGFactorySkinActorData > skinClass, TMap< TSubclassOf< UFGFactoryCustomizationDescriptor_Skin >, FFactorySkinComponentGroup >& out_componentGroupData){ }
 #if WITH_EDITOR
 EDataValidationResult UFGFactoryCustomizationCollection::IsDataValid(TArray< FText >& ValidationErrors){ return EDataValidationResult::Valid; }
 #endif 

@@ -65,6 +65,7 @@ bool AFGPlayerController::RemovePresetHotbar(int32 presetHotbarIndex){ return bo
 void AFGPlayerController::CopyPresetHotbarToCurrentHotbar(int32 presetHotbarIndex){ }
 void AFGPlayerController::SetRecipeShortcutOnIndex(TSubclassOf<  UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex){ }
 void AFGPlayerController::SetCustomizationShortcutOnIndex(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
+void AFGPlayerController::SetEmoteShortcutOnIndex(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
 void AFGPlayerController::RemovePlayerColorPresetAtIndex(int32 index){ }
 void AFGPlayerController::Server_RemovePlayerColorPresetAtIndex_Implementation(int32 index){ }
 void AFGPlayerController::AddPlayerColorPreset(FText presetName, FLinearColor color){ }
@@ -128,6 +129,7 @@ void AFGPlayerController::FinishRespawn(){ }
 void AFGPlayerController::Server_SetRecipeShortcutOnIndex_Implementation(TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex){ }
 bool AFGPlayerController::Server_SetRecipeShortcutOnIndex_Validate(TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex){ return bool(); }
 void AFGPlayerController::Server_SetCustomizationShortcutOnIndex_Implementation(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
+void AFGPlayerController::Server_SetEmoteShortcutOnIndex_Implementation(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
 void AFGPlayerController::Server_SetHotbarIndex_Implementation(int32 index){ }
 bool AFGPlayerController::Server_SetHotbarIndex_Validate(int32 index){ return bool(); }
 void AFGPlayerController::Server_CreatePresetHotbarFromCurrentHotbar_Implementation(const FText& presetName, int32 iconIndex){ }
