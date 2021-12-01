@@ -52,6 +52,9 @@ void UFGBuildGunStateBuild::Server_SetCurrentBuildMode_Implementation(TSubclassO
 bool UFGBuildGunStateBuild::Server_SetCurrentBuildMode_Validate(TSubclassOf<class UFGHologramBuildModeDescriptor> mode){ return bool(); }
 void UFGBuildGunStateBuild::OnZoopUpdated_Implementation(float currentZoop, float maxZoop, const FVector& zoopLocation){ }
 void UFGBuildGunStateBuild::HookUpUserSettings(){ }
+void UFGBuildGunStateBuild::SaveHologramScrollValues(){ }
+void UFGBuildGunStateBuild::ClearHologramScrollValues(){ }
+void UFGBuildGunStateBuild::RestoreHologramScrollValues(AFGHologram* hologram){ }
 void UFGBuildGunStateBuild::InternalExecuteDuBuildStepInput(bool isInputFromARelease){ }
 void UFGBuildGunStateBuild::OnRep_CurrentHologramBuildMode(){ }
 void UFGBuildGunStateBuild::ResetHologram(){ }
@@ -61,11 +64,6 @@ void UFGBuildGunStateBuild::SpawnHologram(){ }
 void UFGBuildGunStateBuild::RemoveHologram(){ }
 void UFGBuildGunStateBuild::SetupHologramClearanceDetection(){ }
 void UFGBuildGunStateBuild::CleanupHologramClearanceDetection(AFGHologram* hologram){ }
-void UFGBuildGunStateBuild::SaveHologramScrollValues(){ }
-void UFGBuildGunStateBuild::ClearHologramScrollValues(){ }
-void UFGBuildGunStateBuild::RestoreHologramScrollValues(AFGHologram* hologram){ }
-void UFGBuildGunStateBuild::Server_SaveHologramScrollValues_Implementation(const TArray< int32 >& scrollValues){ }
-bool UFGBuildGunStateBuild::Server_SaveHologramScrollValues_Validate(const TArray< int32 >& scrollValues){ return bool(); }
 AFGHologram* UFGBuildGunStateBuild::InternalSpawnHologram(){ return nullptr; }
 void UFGBuildGunStateBuild::BeginClearanceDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult){ }
 void UFGBuildGunStateBuild::EndClearanceDetectorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex){ }
