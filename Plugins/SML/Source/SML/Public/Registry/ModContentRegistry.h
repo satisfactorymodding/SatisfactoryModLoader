@@ -396,9 +396,9 @@ private:
 
     TSharedPtr<FItemRegistrationInfo> RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor);
 
-    void FindMissingSchematics(class AFGSchematicManager* SchematicManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredObjects) const;
-    void FindMissingResearchTrees(class AFGResearchManager* ResearchManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredObjects) const;
-    void FindMissingRecipes(class AFGRecipeManager* RecipeManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredObjects) const;
+    void FindMissingSchematics(class AFGSchematicManager* SchematicManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const;
+    void FindMissingResearchTrees(class AFGResearchManager* ResearchManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const;
+    void FindMissingRecipes(class AFGRecipeManager* RecipeManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const;
     static void WarnAboutMissingObjects(const TArray<FMissingObjectStruct>& MissingObjects);
     static void WarnAboutUnregisteredVanillaObjects(const TArray<FMissingObjectStruct>& UnregisteredVanillaObjects);
 
