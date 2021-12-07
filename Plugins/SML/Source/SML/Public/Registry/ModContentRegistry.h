@@ -386,8 +386,6 @@ private:
     /** Associate the customization recipe referenced in recipe with given mod reference if it is not associated already */
     void MarkCustomizationRecipeFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
 
-    void MarkSkinFromSchematic(const TSubclassOf<UFGSchematic>& Schematic, const FName ModReference);
-
     TSharedPtr<FItemRegistrationInfo> RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor);
 
     void FindMissingSchematics(class AFGSchematicManager* SchematicManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const;
