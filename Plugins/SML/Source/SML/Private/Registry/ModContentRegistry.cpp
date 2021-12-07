@@ -324,7 +324,7 @@ void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicMa
     }
     //Do same thing for incomplete schematic progress
     SchematicManager->mPaidOffSchematic.RemoveAll([&](const FSchematicCost& SchematicCost) {
-        return !IsSchematicRegistered(SchematicCost.Schematic) && !SchematicCost.Schematic->GetPathName().StartsWith("/Game/FactoryGame");
+        return !IsSchematicRegistered(SchematicCost.Schematic) && !IsSchematicVanilla(SchematicCost.Schematic);
     });
 }
 
