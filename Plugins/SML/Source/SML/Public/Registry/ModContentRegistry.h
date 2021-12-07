@@ -268,6 +268,24 @@ public:
         return ResearchTree != NULL && ResearchTreeRegistryState.ContainsObject(ResearchTree);
     }
 
+    /** Returns true when given recipe is vanilla */
+    UFUNCTION(BlueprintPure)
+        FORCEINLINE bool IsRecipeVanilla(TSubclassOf<UFGRecipe> Recipe) const {
+        return Recipe != NULL && Recipe->GetPathName().StartsWith("/Game/FactoryGame");
+    }
+
+    /** Returns true when given schematic is vanilla */
+    UFUNCTION(BlueprintPure)
+        FORCEINLINE bool IsSchematicVanilla(TSubclassOf<UFGSchematic> Schematic) const {
+        return Schematic != NULL && Schematic->GetPathName().StartsWith("/Game/FactoryGame");
+    }
+
+    /** Returns true when given research tree is vanilla */
+    UFUNCTION(BlueprintPure)
+        FORCEINLINE bool IsResearchTreeVanilla(TSubclassOf<UFGResearchTree> ResearchTree) const {
+        return ResearchTree != NULL && ResearchTree->GetPathName().StartsWith("/Game/FactoryGame");
+    }
+
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
 
@@ -368,13 +386,21 @@ private:
     /** Associate the customization recipe referenced in recipe with given mod reference if it is not associated already */
     void MarkCustomizationRecipeFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
 
+    void MarkCustomizationRecipeFromDescriptor(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
+
+    void MarkSkinFromSchematic(const TSubclassOf<UFGSchematic>& Schematic, const FName ModReference);
+
+    void MarkFactoryGameSchematic(const TSubclassOf<UFGSchematic>& Schematic, const FName ModReference);
+    void MarkFactoryGameRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
+
+
     TSharedPtr<FItemRegistrationInfo> RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor);
 
     void FindMissingSchematics(class AFGSchematicManager* SchematicManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredObjects) const;
     void FindMissingResearchTrees(class AFGResearchManager* ResearchManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredObjects) const;
     void FindMissingRecipes(class AFGRecipeManager* RecipeManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredObjects) const;
     static void WarnAboutMissingObjects(const TArray<FMissingObjectStruct>& MissingObjects);
-    static void WarnAboutUnregisteredObjects(const TArray<FMissingObjectStruct>& UnregisteredObjects);
+    static void WarnAboutUnregisteredVanillaObjects(const TArray<FMissingObjectStruct>& UnregisteredVanillaObjects);
 
     template<typename T>
     FORCEINLINE static T MakeRegistrationInfo(UClass* Class, const FName OwnedByModReference, const FName RegisteredByModReference) {

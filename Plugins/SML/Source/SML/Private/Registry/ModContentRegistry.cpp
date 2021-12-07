@@ -225,22 +225,22 @@ void AModContentRegistry::CheckSavedDataForMissingObjects() {
     AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
 
     TArray<FMissingObjectStruct> MissingObjects;
-    TArray<FMissingObjectStruct> UnregisteredObjects;
+    TArray<FMissingObjectStruct> UnregisteredVanillaObjects;
     if (ResearchManager != NULL) {
-        FindMissingResearchTrees(ResearchManager, MissingObjects, UnregisteredObjects);
+        FindMissingResearchTrees(ResearchManager, MissingObjects, UnregisteredVanillaObjects);
     }
     if (SchematicManager != NULL) {
-        FindMissingSchematics(SchematicManager, MissingObjects, UnregisteredObjects);
+        FindMissingSchematics(SchematicManager, MissingObjects, UnregisteredVanillaObjects);
     }
     if (RecipeManager != NULL) {
-        FindMissingRecipes(RecipeManager, MissingObjects, UnregisteredObjects);
+        FindMissingRecipes(RecipeManager, MissingObjects, UnregisteredVanillaObjects);
     }
 
     if (MissingObjects.Num() > 0) {
         WarnAboutMissingObjects(MissingObjects);
     }
-    if (UnregisteredObjects.Num() > 0) {
-        WarnAboutUnregisteredObjects(UnregisteredObjects);
+    if (UnregisteredVanillaObjects.Num() > 0) {
+        WarnAboutUnregisteredVanillaObjects(UnregisteredVanillaObjects);
     }
 }
 
@@ -308,17 +308,17 @@ TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(co
 
 void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicManager,
                                                 TArray<FMissingObjectStruct>& MissingObjects,
-                                                TArray<FMissingObjectStruct>& UnregisteredObjects) const {
+                                                TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
     //Clear references to unlocked schematics if they are not registered
     TArray<TSubclassOf<UFGSchematic>> PurchasedSchematics = SchematicManager->mPurchasedSchematics;
     for (const TSubclassOf<UFGSchematic> Schematic : PurchasedSchematics) {
         if (!IsSchematicRegistered(Schematic)) {
-            if (!Schematic->GetPathName().StartsWith("/Game/FactoryGame")) {
+            if (!IsSchematicVanilla(Schematic)) {
                 MissingObjects.Add(FMissingObjectStruct{ TEXT("schematic"), Schematic->GetPathName() });
                 SchematicManager->mPurchasedSchematics.Remove(Schematic);
             }
             else {
-                UnregisteredObjects.Add(FMissingObjectStruct{ TEXT("schematic"), Schematic->GetPathName() });
+                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("schematic"), Schematic->GetPathName() });
             }
         }
     }
@@ -330,59 +330,47 @@ void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicMa
 
 void AModContentRegistry::FindMissingResearchTrees(AFGResearchManager* ResearchManager,
                                                    TArray<FMissingObjectStruct>& MissingObjects,
-                                                   TArray<FMissingObjectStruct>& UnregisteredObjects) const {
+                                                   TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
     //Clear unlocked research trees
     TArray<TSubclassOf<UFGResearchTree>> UnlockedResearchTrees = ResearchManager->mUnlockedResearchTrees;
     for (const TSubclassOf<UFGResearchTree>& ResearchTree : UnlockedResearchTrees) {
         if (!IsResearchTreeRegistered(ResearchTree)) {
-            if (!ResearchTree->GetPathName().StartsWith("/Game/FactoryGame")) {
+            if (!IsResearchTreeVanilla(ResearchTree)) {
                 ResearchManager->mUnlockedResearchTrees.Remove(ResearchTree);
                 MissingObjects.Add(FMissingObjectStruct{ TEXT("research_tree"), ResearchTree->GetPathName() });
             }
             else {
-                UnregisteredObjects.Add(FMissingObjectStruct{ TEXT("research_tree"), ResearchTree->GetPathName() });
+                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("research_tree"), ResearchTree->GetPathName() });
             }
         }
     }
 
     //Clear completed, but unclaimed researches
     ResearchManager->mCompletedResearch.RemoveAll([&](const FResearchData& ResearchData) {
-        if (ResearchData.Schematic->GetPathName().StartsWith("/Game/FactoryGame") ||
-            ResearchData.InitiatingResearchTree->GetPathName().StartsWith("/Game/FactoryGame")) {
-            return false;
-        }
-        else {
-            return (!IsResearchTreeRegistered(ResearchData.InitiatingResearchTree) ||
-                !IsSchematicRegistered(ResearchData.Schematic));
-        }
+        return !((ResearchData.InitiatingResearchTree == NULL || IsResearchTreeRegistered(ResearchData.InitiatingResearchTree)) ||
+            IsSchematicRegistered(ResearchData.Schematic));
     });
 
     //Clear ongoing research data
     ResearchManager->mOngoingResearch.RemoveAll([&](const FResearchTime& ResearchTime){
-        if (ResearchTime.ResearchData.Schematic->GetPathName().StartsWith("/Game/FactoryGame") ||
-            ResearchTime.ResearchData.InitiatingResearchTree->GetPathName().StartsWith("/Game/FactoryGame")) {
-            return false;
-        }
-        else {
-            return (!IsResearchTreeRegistered(ResearchTime.ResearchData.InitiatingResearchTree) ||
-                !IsSchematicRegistered(ResearchTime.ResearchData.Schematic));
-        }
+        return !((ResearchTime.ResearchData.InitiatingResearchTree == NULL || IsResearchTreeRegistered(ResearchTime.ResearchData.InitiatingResearchTree)) ||
+            IsSchematicRegistered(ResearchTime.ResearchData.Schematic));
     });
 }
 
 void AModContentRegistry::FindMissingRecipes(AFGRecipeManager* RecipeManager,
                                                    TArray<FMissingObjectStruct>& MissingObjects,
-                                                   TArray<FMissingObjectStruct>& UnregisteredObjects) const {
+                                                   TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
     //Clear unlocked recipes
     TArray<TSubclassOf<UFGRecipe>> UnlockedRecipes = RecipeManager->mAvailableRecipes;
     for (const TSubclassOf<UFGRecipe>& Recipe : UnlockedRecipes) {
         if (!IsRecipeRegistered(Recipe)) {
-            if (!Recipe->GetPathName().StartsWith("/Game/FactoryGame")) {
+            if (!IsRecipeVanilla(Recipe)) {
                 RecipeManager->mAvailableRecipes.Remove(Recipe);
                 MissingObjects.Add(FMissingObjectStruct{ TEXT("recipe"), Recipe->GetPathName() });
             }
             else {
-                UnregisteredObjects.Add(FMissingObjectStruct{ TEXT("recipe"), Recipe->GetPathName() });
+                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("recipe"), Recipe->GetPathName() });
             }
         }
     }
@@ -398,10 +386,10 @@ void AModContentRegistry::WarnAboutMissingObjects(const TArray<FMissingObjectStr
     UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
 }
 
-void AModContentRegistry::WarnAboutUnregisteredObjects(const TArray<FMissingObjectStruct>& UnregisteredObjects) {
+void AModContentRegistry::WarnAboutUnregisteredVanillaObjects(const TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) {
     UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
     UE_LOG(LogContentRegistry, Error, TEXT("Found unregistered FactoryGame objects referenced in savegame:"));
-    for (const FMissingObjectStruct& ObjectStruct : UnregisteredObjects) {
+    for (const FMissingObjectStruct& ObjectStruct : UnregisteredVanillaObjects) {
         UE_LOG(LogContentRegistry, Error, TEXT("%s: %s"), *ObjectStruct.ObjectType, *ObjectStruct.ObjectPath);
     }
     UE_LOG(LogContentRegistry, Error, TEXT("They will NOT be cleared out"));
