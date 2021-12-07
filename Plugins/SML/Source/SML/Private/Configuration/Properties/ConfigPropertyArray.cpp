@@ -94,6 +94,11 @@ void UConfigPropertyArray::FillConfigStruct_Implementation(const FReflectedObjec
     }
 }
 
+void UConfigPropertyArray::HandleMarkDirty_Implementation()
+{
+    MarkDirty();
+}
+
 FConfigVariableDescriptor UConfigPropertyArray::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {
     return UConfigVariableLibrary::MakeConfigVariableArray(DefaultValue->CreatePropertyDescriptor(Context, OuterPath));

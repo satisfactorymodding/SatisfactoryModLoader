@@ -8,7 +8,7 @@ class SML_API URootConfigValueHolder : public UObject, public IConfigValueDirtyH
     GENERATED_BODY()
 
     //Begin IConfigValueDirtyHandlerInterface
-    virtual void MarkDirty_Implementation() override;
+    virtual void HandleMarkDirty_Implementation() override;
     //End IConfigValueDirtyHandlerInterface
 
     FORCEINLINE UConfigPropertySection* GetWrappedValue() const { return RootWrappedValue; }

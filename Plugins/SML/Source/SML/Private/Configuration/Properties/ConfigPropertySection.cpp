@@ -93,6 +93,11 @@ void UConfigPropertySection::FillConfigStruct_Implementation(const FReflectedObj
     ReflectedObject.SetStructProperty(*VariableName, ChildObject);
 }
 
+void UConfigPropertySection::HandleMarkDirty_Implementation()
+{
+    MarkDirty();
+}
+
 FConfigVariableDescriptor UConfigPropertySection::CreatePropertyDescriptor_Implementation(
     UConfigGenerationContext* Context, const FString& OuterPath) const {
     UConfigGeneratedStruct* GeneratedStruct = Context->CreateNewConfigStruct(OuterPath);

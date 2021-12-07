@@ -8,6 +8,8 @@
 class URawFormatValue;
 class UUserWidget;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPropertyValueChanged);
+
 /**
  * Describes single value inside the configuration
  * Value doesn't actually hold any mutable data, instead, it manages
@@ -49,6 +51,9 @@ public:
 	/** Marks this property directly, forcing file system synchronization to happen afterwards */
 	UFUNCTION(BlueprintCallable)
     virtual void MarkDirty();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPropertyValueChanged OnPropertyValueChanged;
 	
     /** Creates widget instance for editing this configuration property's value. Can return NULL if property doesn't support direct UI editing */
     UFUNCTION(BlueprintPure, BlueprintNativeEvent, meta = (DefaultToSelf = "ParentWidget"))

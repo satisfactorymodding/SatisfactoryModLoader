@@ -1,6 +1,6 @@
 #include "Configuration/RootConfigValueHolder.h"
 
-void URootConfigValueHolder::MarkDirty_Implementation() {
+void URootConfigValueHolder::HandleMarkDirty_Implementation() {
     if (ConfigManager != NULL) {
         ConfigManager->MarkConfigurationDirty(ConfigId);
     }

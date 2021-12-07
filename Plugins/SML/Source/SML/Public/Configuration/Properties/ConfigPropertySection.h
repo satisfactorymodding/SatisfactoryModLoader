@@ -1,10 +1,11 @@
 ﻿#pragma once
 #include "Configuration/ConfigProperty.h"
+#include "Configuration/ConfigValueDirtyHandlerInterface.h"
 #include "ConfigPropertySection.generated.h"
 
 /** Describes a single configuration section with nested properties */
 UCLASS()
-class SML_API UConfigPropertySection : public UConfigProperty {
+class SML_API UConfigPropertySection : public UConfigProperty, public IConfigValueDirtyHandlerInterface {
     GENERATED_BODY()
 public:
     /**
@@ -30,4 +31,8 @@ public:
 	FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
 	void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
 	//End UConfigProperty
+
+	//Begin IConfigValueDirtyHandlerInterface
+	virtual void HandleMarkDirty_Implementation() override;
+	//End IConfigValueDirtyHandlerInterface
 };

@@ -1,10 +1,11 @@
 ﻿#pragma once
 #include "Configuration/ConfigProperty.h"
+#include "Configuration/ConfigValueDirtyHandlerInterface.h"
 #include "ConfigPropertyArray.generated.h"
 
 /** Describes array configuration property with single nested element type */
 UCLASS()
-class SML_API UConfigPropertyArray : public UConfigProperty {
+class SML_API UConfigPropertyArray : public UConfigProperty, public IConfigValueDirtyHandlerInterface {
     GENERATED_BODY()
 public:
     /** Defines "template" default value used for allocating other values in the array */
@@ -41,4 +42,8 @@ public:
     virtual FConfigVariableDescriptor CreatePropertyDescriptor_Implementation(UConfigGenerationContext* Context, const FString& OuterPath) const override;
     virtual void FillConfigStruct_Implementation(const FReflectedObject& ReflectedObject, const FString& VariableName) const override;
     //End UConfigProperty
+
+    //Begin IConfigValueDirtyHandlerInterface
+    virtual void HandleMarkDirty_Implementation() override;
+    //End IConfigValueDirtyHandlerInterface
 };

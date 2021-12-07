@@ -18,5 +18,5 @@ class SML_API IConfigValueDirtyHandlerInterface {
 	GENERATED_BODY()
 	public:
 	UFUNCTION(BlueprintNativeEvent)
-    void MarkDirty();
+    void HandleMarkDirty();
 };
