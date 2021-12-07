@@ -74,10 +74,10 @@ template<typename T>
 struct SML_API TInternalRegistryState {
 private:
     using KeyType = decltype(((T*)0)->RegisteredObject);
-    
+
     TArray<TSharedPtr<T>> RegistrationList;
     TMap<KeyType, TSharedPtr<T>> RegistrationMap;
-    
+
     //Used for fast AddReferencedObjects implementation
     //It cannot be UPROPERTY() because UHT won't understand UPROPERTY() declaration inside template struct
     TArray<UObject*> ReferencedObjects;
@@ -88,7 +88,7 @@ public:
     FORCEINLINE bool ContainsObject(const KeyType& KeyType) const {
         return RegistrationMap.Contains(KeyType);
     }
-    
+
     FORCEINLINE TSharedPtr<T> RegisterObject(const T& ObjectInfo) {
         check(!ContainsObject(ObjectInfo.RegisteredObject));
         TSharedPtr<T> RegistrationEntry = MakeShareable(new T{ObjectInfo});
@@ -132,7 +132,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnRecipeRegistered, TSubclassOf<UF
  * All modded content of supported types should be registered there
  * to be correctly saved, loaded and identified by the game
  * and other information mods
- * 
+ *
  * If you don't need any dynamic behaviors, use properties in InitGameWorld instead
  * of calling methods on this object directly
  *
@@ -144,7 +144,7 @@ class SML_API AModContentRegistry : public AModSubsystem {
     GENERATED_BODY()
 public:
     AModContentRegistry();
-    
+
     /** Retrieves global mod content registry instance */
 	UFUNCTION(BlueprintPure, DisplayName = "GetModContentRegistry", meta = (DefaultToSelf = "WorldContext"))
     static AModContentRegistry* Get(UObject* WorldContext);
@@ -153,7 +153,7 @@ public:
      * Registers schematic to be usable by the game
      *    All recipes referenced by schematic are registered automatically
      *    All items referenced by registered recipes are associated with passed mod reference too
-     * 
+     *
      * @param ModReference identifier of the mod who is performing this registration
      * @param Schematic class of schematic to be registered
      */
@@ -182,7 +182,7 @@ public:
      */
     UFUNCTION(BlueprintCallable, CustomThunk)
     void RegisterRecipe(const FName ModReference, TSubclassOf<UFGRecipe> Recipe);
-    
+
     /** Register resource sink item points for each item row in the passed table object */
     UFUNCTION(BlueprintCallable, CustomThunk)
     void RegisterResourceSinkItemPointTable(const FName ModReference, UDataTable* PointTable);
@@ -208,7 +208,7 @@ public:
         }
         return RegistrationInfos;
     }
-    
+
     /** Retrieves registration entry for recipe */
     UFUNCTION(BlueprintPure)
     FORCEINLINE FRecipeRegistrationInfo GetRecipeInfo(TSubclassOf<UFGRecipe> Recipe) const {
@@ -225,7 +225,7 @@ public:
         }
         return RegistrationInfos;
     }
-    
+
     /** Retrieves registration entry for research tree */
     UFUNCTION(BlueprintPure)
     FORCEINLINE FResearchTreeRegistrationInfo GetResearchTreeRegistrationInfo(TSubclassOf<UFGResearchTree> ResearchTree) const {
@@ -242,7 +242,7 @@ public:
         }
         return RegistrationInfos;
     }
-    
+
     /** Retrieves registration entry for schematic */
     UFUNCTION(BlueprintPure)
     FORCEINLINE FSchematicRegistrationInfo GetSchematicRegistrationInfo(TSubclassOf<UFGSchematic> Schematic) const {
@@ -253,9 +253,9 @@ public:
     /** Returns true when given recipe is registered */
     UFUNCTION(BlueprintPure)
     FORCEINLINE bool IsRecipeRegistered(TSubclassOf<UFGRecipe> Recipe) const {
-        return Recipe != NULL && RecipeRegistryState.ContainsObject(Recipe);    
+        return Recipe != NULL && RecipeRegistryState.ContainsObject(Recipe);
     }
-    
+
     /** Returns true when given schematic is registered */
     UFUNCTION(BlueprintPure)
     FORCEINLINE bool IsSchematicRegistered(TSubclassOf<UFGSchematic> Schematic) const {
@@ -268,14 +268,32 @@ public:
         return ResearchTree != NULL && ResearchTreeRegistryState.ContainsObject(ResearchTree);
     }
 
+    /** Returns true when given recipe is vanilla */
+    UFUNCTION(BlueprintPure)
+        FORCEINLINE bool IsRecipeVanilla(TSubclassOf<UFGRecipe> Recipe) const {
+        return Recipe != NULL && Recipe->GetPathName().StartsWith("/Game/FactoryGame");
+    }
+
+    /** Returns true when given schematic is vanilla */
+    UFUNCTION(BlueprintPure)
+        FORCEINLINE bool IsSchematicVanilla(TSubclassOf<UFGSchematic> Schematic) const {
+        return Schematic != NULL && Schematic->GetPathName().StartsWith("/Game/FactoryGame");
+    }
+
+    /** Returns true when given research tree is vanilla */
+    UFUNCTION(BlueprintPure)
+        FORCEINLINE bool IsResearchTreeVanilla(TSubclassOf<UFGResearchTree> ResearchTree) const {
+        return ResearchTree != NULL && ResearchTree->GetPathName().StartsWith("/Game/FactoryGame");
+    }
+
     virtual void BeginPlay() override;
     virtual void Tick(float DeltaSeconds) override;
 
     //Add objects from registry states to reference collector
     static void AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector);
-	
+
 	//Callbacks to be fired when new entries are registered
-	
+
 	/** Called when recipe is registered into content registry */
 	UPROPERTY(BlueprintAssignable)
 	FOnRecipeRegistered OnRecipeRegistered;
@@ -348,7 +366,7 @@ private:
 
 	/** Flushed pending resource sink registrations into the resource sink subsystem, if it is available */
 	void FlushPendingResourceSinkRegistrations();
-   
+
     /** Freezes registry in place and clears out all unreferenced objects */
     void FreezeRegistryState();
     /** Ensures that registry is not frozen and we can perform registration */
@@ -361,19 +379,20 @@ private:
     /** Called when schematic is purchased in schematic manager */
     UFUNCTION()
     void OnSchematicPurchased(TSubclassOf<UFGSchematic> Schematic);
-    
+
     /** Associate items referenced in recipe with given mod reference if they are not associated already */
     void MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
-    
+
     /** Associate the customization recipe referenced in recipe with given mod reference if it is not associated already */
     void MarkCustomizationRecipeFromRecipe(const TSubclassOf<UFGRecipe>& Recipe, const FName ModReference);
 
     TSharedPtr<FItemRegistrationInfo> RegisterItemDescriptor(const FName OwnerModReference, const FName RegistrarModReference, const TSubclassOf<UFGItemDescriptor>& ItemDescriptor);
 
-    void FindMissingSchematics(class AFGSchematicManager* SchematicManager, TArray<FMissingObjectStruct>& MissingObjects) const;
-    void FindMissingResearchTrees(class AFGResearchManager* ResearchManager, TArray<FMissingObjectStruct>& MissingObjects) const;
-    void FindMissingRecipes(class AFGRecipeManager* RecipeManager, TArray<FMissingObjectStruct>& MissingObjects) const;
+    void FindMissingSchematics(class AFGSchematicManager* SchematicManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const;
+    void FindMissingResearchTrees(class AFGResearchManager* ResearchManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const;
+    void FindMissingRecipes(class AFGRecipeManager* RecipeManager, TArray<FMissingObjectStruct>& MissingObjects, TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const;
     static void WarnAboutMissingObjects(const TArray<FMissingObjectStruct>& MissingObjects);
+    static void WarnAboutUnregisteredVanillaObjects(const TArray<FMissingObjectStruct>& UnregisteredVanillaObjects);
 
     template<typename T>
     FORCEINLINE static T MakeRegistrationInfo(UClass* Class, const FName OwnedByModReference, const FName RegisteredByModReference) {

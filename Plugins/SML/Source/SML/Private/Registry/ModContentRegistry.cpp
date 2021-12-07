@@ -45,21 +45,21 @@ void ExtractRecipesFromSchematic(TSubclassOf<UFGSchematic> Schematic, TArray<TSu
 }
 
 void ExtractSchematicsFromResearchTree(TSubclassOf<UFGResearchTree> ResearchTree, TArray<TSubclassOf<UFGSchematic>>& OutSchematics) {
-    
+
     static FStructProperty* NodeDataStructProperty = NULL;
     static FClassProperty* SchematicStructProperty = NULL;
     static UClass* ResearchTreeNodeClass = NULL;
-    
+
     //Lazily initialize research tree node reflection properties for faster access
     if (ResearchTreeNodeClass == NULL) {
         ResearchTreeNodeClass = LoadClass<UFGResearchTreeNode>(NULL, TEXT("/Game/FactoryGame/Schematics/Research/BPD_ResearchTreeNode.BPD_ResearchTreeNode_C"));
         check(ResearchTreeNodeClass);
         //Make sure class is not garbage collected
         ResearchTreeNodeClass->AddToRoot();
-        
+
         NodeDataStructProperty = FReflectionHelper::FindPropertyChecked<FStructProperty>(ResearchTreeNodeClass, TEXT("mNodeDataStruct"));
         SchematicStructProperty = FReflectionHelper::FindPropertyByShortNameChecked<FClassProperty>(NodeDataStructProperty->Struct, TEXT("Schematic"));
-        
+
         check(SchematicStructProperty->MetaClass->IsChildOf(UFGSchematic::StaticClass()));
     }
 
@@ -87,7 +87,7 @@ template<typename T>
 TArray<TSubclassOf<T>> DiscoverVanillaContentOfType() {
     UClass* PrimaryAssetClass = T::StaticClass();
     UAssetManager& AssetManager = UAssetManager::Get();
-    
+
     const FPrimaryAssetType AssetType = PrimaryAssetClass->GetFName();
     TArray<FAssetData> FoundVanillaAssets;
     AssetManager.GetPrimaryAssetDataList(AssetType, FoundVanillaAssets);
@@ -120,12 +120,12 @@ void AModContentRegistry::DisableVanillaContentRegistration() {
 
 FName AModContentRegistry::FindContentOwnerFast(UClass* ContentClass) {
 	checkf(ContentClass, TEXT("NULL ContentClass passed to FindContentOwnerFast"));
-	
+
     //Shortcut used for quickly registering vanilla content
     if (GIsRegisteringVanillaContent) {
         return FACTORYGAME_MOD_NAME;
     }
-    
+
     //Use GetName on package instead of GetPathName() because it's faster and avoids string concat
     const FString ContentOwnerName = UBlueprintAssetHelperLibrary::FindPluginNameByObjectPath(ContentClass->GetOuterUPackage()->GetName());
     if (ContentOwnerName.IsEmpty()) {
@@ -190,11 +190,11 @@ void AModContentRegistry::Init() {
 
     //Start registering vanilla content now
     GIsRegisteringVanillaContent = true;
-    
+
     for (const TSubclassOf<UFGSchematic>& Schematic : AllSchematics) {
         RegisterSchematic(FactoryGame, Schematic);
     }
-    
+
     for (const TSubclassOf<UFGResearchTree>& ResearchTree : AllResearchTrees) {
         RegisterResearchTree(FactoryGame, ResearchTree);
     }
@@ -219,24 +219,28 @@ void AModContentRegistry::EnsureRegistryUnfrozen() const {
 
 void AModContentRegistry::CheckSavedDataForMissingObjects() {
 	checkf(bIsRegistryFrozen, TEXT("CheckSavedDataForMissingObjects called before registry is frozen"));
-	
+
     AFGRecipeManager* RecipeManager = AFGRecipeManager::Get(this);
     AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
     AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
 
     TArray<FMissingObjectStruct> MissingObjects;
+    TArray<FMissingObjectStruct> UnregisteredVanillaObjects;
     if (ResearchManager != NULL) {
-        FindMissingResearchTrees(ResearchManager, MissingObjects);
+        FindMissingResearchTrees(ResearchManager, MissingObjects, UnregisteredVanillaObjects);
     }
     if (SchematicManager != NULL) {
-        FindMissingSchematics(SchematicManager, MissingObjects);
+        FindMissingSchematics(SchematicManager, MissingObjects, UnregisteredVanillaObjects);
     }
     if (RecipeManager != NULL) {
-        FindMissingRecipes(RecipeManager, MissingObjects);
+        FindMissingRecipes(RecipeManager, MissingObjects, UnregisteredVanillaObjects);
     }
 
     if (MissingObjects.Num() > 0) {
         WarnAboutMissingObjects(MissingObjects);
+    }
+    if (UnregisteredVanillaObjects.Num() > 0) {
+        WarnAboutUnregisteredVanillaObjects(UnregisteredVanillaObjects);
     }
 }
 
@@ -244,7 +248,7 @@ void AModContentRegistry::UnlockTutorialSchematics() {
 	UFGGameInstance* GameInstance = Cast<UFGGameInstance>(GetGameInstance());
 	AFGTutorialIntroManager* TutorialIntroManager = AFGTutorialIntroManager::Get(this);
 	AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
-	
+
 	if (SchematicManager && (GameInstance && GameInstance->GetSkipOnboarding() || TutorialIntroManager && TutorialIntroManager->GetIsTutorialCompleted())) {
 		for (const TSharedPtr<FSchematicRegistrationInfo>& RegistrationInfo : SchematicRegistryState.GetAllObjects()) {
 			const TSubclassOf<UFGSchematic> Schematic = RegistrationInfo->RegisteredObject;
@@ -278,9 +282,9 @@ void AModContentRegistry::MarkItemDescriptorsFromRecipe(const TSubclassOf<UFGRec
 
 		CHECK_PROVIDED_OBJECT_VALID(ItemDescriptor, TEXT("Recipe '%s' registered by %s contains invalid NULL ItemDescriptor in it's Ingredients or Results"),
 				*Recipe->GetPathName(), *ModReference.ToString());
-    	
+
 		TSharedPtr<FItemRegistrationInfo> ItemRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
-		if (!ItemRegistrationInfo.IsValid()) {        	
+		if (!ItemRegistrationInfo.IsValid()) {
 			const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
 			ItemRegistrationInfo = RegisterItemDescriptor(OwnerModReference, ModReference, ItemDescriptor);
 		}
@@ -303,53 +307,71 @@ TSharedPtr<FItemRegistrationInfo> AModContentRegistry::RegisterItemDescriptor(co
 }
 
 void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicManager,
-                                                TArray<FMissingObjectStruct>& MissingObjects) const {
+                                                TArray<FMissingObjectStruct>& MissingObjects,
+                                                TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
     //Clear references to unlocked schematics if they are not registered
     TArray<TSubclassOf<UFGSchematic>> PurchasedSchematics = SchematicManager->mPurchasedSchematics;
     for (const TSubclassOf<UFGSchematic> Schematic : PurchasedSchematics) {
         if (!IsSchematicRegistered(Schematic)) {
-            MissingObjects.Add(FMissingObjectStruct{TEXT("schematic"), Schematic->GetPathName()});
-            SchematicManager->mPurchasedSchematics.Remove(Schematic);
+            if (!IsSchematicVanilla(Schematic)) {
+                MissingObjects.Add(FMissingObjectStruct{ TEXT("schematic"), Schematic->GetPathName() });
+                SchematicManager->mPurchasedSchematics.Remove(Schematic);
+            }
+            else {
+                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("schematic"), Schematic->GetPathName() });
+            }
         }
     }
     //Do same thing for incomplete schematic progress
     SchematicManager->mPaidOffSchematic.RemoveAll([&](const FSchematicCost& SchematicCost) {
-        return !IsSchematicRegistered(SchematicCost.Schematic);
+        return !IsSchematicRegistered(SchematicCost.Schematic) && !IsSchematicVanilla(SchematicCost.Schematic);
     });
 }
 
 void AModContentRegistry::FindMissingResearchTrees(AFGResearchManager* ResearchManager,
-                                                   TArray<FMissingObjectStruct>& MissingObjects) const {
+                                                   TArray<FMissingObjectStruct>& MissingObjects,
+                                                   TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
     //Clear unlocked research trees
     TArray<TSubclassOf<UFGResearchTree>> UnlockedResearchTrees = ResearchManager->mUnlockedResearchTrees;
     for (const TSubclassOf<UFGResearchTree>& ResearchTree : UnlockedResearchTrees) {
         if (!IsResearchTreeRegistered(ResearchTree)) {
-            ResearchManager->mUnlockedResearchTrees.Remove(ResearchTree);
-            MissingObjects.Add(FMissingObjectStruct{TEXT("research_tree"), ResearchTree->GetPathName()});
+            if (!IsResearchTreeVanilla(ResearchTree)) {
+                ResearchManager->mUnlockedResearchTrees.Remove(ResearchTree);
+                MissingObjects.Add(FMissingObjectStruct{ TEXT("research_tree"), ResearchTree->GetPathName() });
+            }
+            else {
+                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("research_tree"), ResearchTree->GetPathName() });
+            }
         }
     }
-    
+
     //Clear completed, but unclaimed researches
     ResearchManager->mCompletedResearch.RemoveAll([&](const FResearchData& ResearchData) {
-        return !IsResearchTreeRegistered(ResearchData.InitiatingResearchTree) ||
-            !IsSchematicRegistered(ResearchData.Schematic);
+        return !((ResearchData.InitiatingResearchTree == NULL || IsResearchTreeRegistered(ResearchData.InitiatingResearchTree)) ||
+            IsSchematicRegistered(ResearchData.Schematic));
     });
-    
+
     //Clear ongoing research data
     ResearchManager->mOngoingResearch.RemoveAll([&](const FResearchTime& ResearchTime){
-        return !IsResearchTreeRegistered(ResearchTime.ResearchData.InitiatingResearchTree) ||
-          !IsSchematicRegistered(ResearchTime.ResearchData.Schematic);
+        return !((ResearchTime.ResearchData.InitiatingResearchTree == NULL || IsResearchTreeRegistered(ResearchTime.ResearchData.InitiatingResearchTree)) ||
+            IsSchematicRegistered(ResearchTime.ResearchData.Schematic));
     });
 }
 
 void AModContentRegistry::FindMissingRecipes(AFGRecipeManager* RecipeManager,
-                                             TArray<FMissingObjectStruct>& MissingObjects) const {
+                                                   TArray<FMissingObjectStruct>& MissingObjects,
+                                                   TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) const {
     //Clear unlocked recipes
     TArray<TSubclassOf<UFGRecipe>> UnlockedRecipes = RecipeManager->mAvailableRecipes;
     for (const TSubclassOf<UFGRecipe>& Recipe : UnlockedRecipes) {
         if (!IsRecipeRegistered(Recipe)) {
-            RecipeManager->mAvailableRecipes.Remove(Recipe);
-            MissingObjects.Add(FMissingObjectStruct{TEXT("recipe"), Recipe->GetPathName()});
+            if (!IsRecipeVanilla(Recipe)) {
+                RecipeManager->mAvailableRecipes.Remove(Recipe);
+                MissingObjects.Add(FMissingObjectStruct{ TEXT("recipe"), Recipe->GetPathName() });
+            }
+            else {
+                UnregisteredVanillaObjects.Add(FMissingObjectStruct{ TEXT("recipe"), Recipe->GetPathName() });
+            }
         }
     }
 }
@@ -364,6 +386,16 @@ void AModContentRegistry::WarnAboutMissingObjects(const TArray<FMissingObjectStr
     UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
 }
 
+void AModContentRegistry::WarnAboutUnregisteredVanillaObjects(const TArray<FMissingObjectStruct>& UnregisteredVanillaObjects) {
+    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
+    UE_LOG(LogContentRegistry, Error, TEXT("Found unregistered FactoryGame objects referenced in savegame:"));
+    for (const FMissingObjectStruct& ObjectStruct : UnregisteredVanillaObjects) {
+        UE_LOG(LogContentRegistry, Error, TEXT("%s: %s"), *ObjectStruct.ObjectType, *ObjectStruct.ObjectPath);
+    }
+    UE_LOG(LogContentRegistry, Error, TEXT("They will NOT be cleared out"));
+    UE_LOG(LogContentRegistry, Error, TEXT("---------------------------------------------"));
+}
+
 void AModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollector& Collector) {
     AModContentRegistry* ModContentRegistry = Cast<AModContentRegistry>(InThis);
     //Register all non-UPROPERTY referenced objects from registry states (registry states cannot be UPROPERTY() because they are templates!)
@@ -375,7 +407,7 @@ void AModContentRegistry::AddReferencedObjects(UObject* InThis, FReferenceCollec
 
 void AModContentRegistry::RegisterSchematic(const FName ModReference, const TSubclassOf<UFGSchematic> Schematic) {
 	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("Attempt to register NULL Schematic. Mod Reference: %s"), *ModReference.ToString());
-	
+
     if (!SchematicRegistryState.ContainsObject(Schematic)) {
         EnsureRegistryUnfrozen();
 
@@ -391,7 +423,7 @@ void AModContentRegistry::RegisterSchematic(const FName ModReference, const TSub
     	for (const TSubclassOf<UFGRecipe>& Recipe : OutReferencedRecipes) {
     		CHECK_PROVIDED_OBJECT_VALID(Recipe, TEXT("Schematic '%s' registered by %s references invalid NULL Recipe in it's Unlocks Array"),
     			*Schematic->GetPathName(), *ModReference.ToString());
-        	
+
             RegisterRecipe(ModReference, Recipe);
             const TSharedPtr<FRecipeRegistrationInfo> RecipeRegistrationInfo = RecipeRegistryState.FindObject(Recipe);
             RecipeRegistrationInfo->ReferencedBy.Add(Schematic);
@@ -412,20 +444,20 @@ void AModContentRegistry::RegisterResearchTree(const FName ModReference, const T
         const FName OwnerModReference = FindContentOwnerFast(ResearchTree);
         const TSharedPtr<FResearchTreeRegistrationInfo> RegistrationInfo = ResearchTreeRegistryState.RegisterObject(
             MakeRegistrationInfo<FResearchTreeRegistrationInfo>(ResearchTree, OwnerModReference, ModReference));
-        
+
         //Register referenced schematics automatically and associate research tree with them
         TArray<TSubclassOf<UFGSchematic>> OutReferencedSchematics;
         ExtractSchematicsFromResearchTree(ResearchTree, OutReferencedSchematics);
-    	
+
         for (const TSubclassOf<UFGSchematic>& Schematic : OutReferencedSchematics) {
         	CHECK_PROVIDED_OBJECT_VALID(Schematic, TEXT("ResearchTree '%s' registered by %s references invalid NULL Schematic in one of it's Nodes"),
         		*ResearchTree->GetPathName(), *ModReference.ToString());
-        	
+
             RegisterSchematic(ModReference, Schematic);
             const TSharedPtr<FSchematicRegistrationInfo> SchematicRegistrationInfo = SchematicRegistryState.FindObject(Schematic);
             SchematicRegistrationInfo->ReferencedBy.Add(ResearchTree);
         }
-        
+
         //Process registration callback
         OnResearchTreeRegistered.Broadcast(ResearchTree, *RegistrationInfo);
     }
@@ -436,7 +468,6 @@ void AModContentRegistry::RegisterRecipe(const FName ModReference, const TSubcla
 
     if (!RecipeRegistryState.ContainsObject(Recipe)) {
         EnsureRegistryUnfrozen();
-        
         //Create registration entry and register
         const FName OwnerModReference = FindContentOwnerFast(Recipe);
         const TSharedPtr<FRecipeRegistrationInfo> RegistrationInfo = RecipeRegistryState.RegisterObject(
@@ -455,11 +486,11 @@ void AModContentRegistry::RegisterRecipe(const FName ModReference, const TSubcla
 
 void AModContentRegistry::RegisterResourceSinkItemPointTable(FName ModReference, UDataTable* PointTable) {
 	CHECK_PROVIDED_OBJECT_VALID(PointTable, TEXT("Attempt to register NULL ResourceSinkPointTable. Mod Reference: %s"), *ModReference.ToString());
-	
+
 	checkf(PointTable->RowStruct != nullptr && PointTable->RowStruct->IsChildOf(FResourceSinkPointsData::StaticStruct()),
             TEXT("Invalid AWESOME Sink item points table in mod %s (%s): Row Type should be Resource Sink Points Data"),
             *ModReference.ToString(), *PointTable->GetPathName());
-	
+
 	this->PendingItemSinkPointsRegistrations.Add(PointTable, ModReference);
 	FlushPendingResourceSinkRegistrations();
 }
@@ -468,7 +499,7 @@ TArray<FItemRegistrationInfo> AModContentRegistry::GetLoadedItemDescriptors() {
     //Since we don't have consistent registry, we have to iterate all loaded classes and generate information from them
     //We also keep all referenced classes loaded, so they will be included there too
     TArray<FItemRegistrationInfo> OutRegistrationInfo;
-    
+
     UClass* ItemDescriptorClass = UFGItemDescriptor::StaticClass();
     ForEachObjectOfClass(UClass::StaticClass(), [&](UObject* LoadedClassObject) {
         UClass* Class = Cast<UClass>(LoadedClassObject);
@@ -484,7 +515,7 @@ TArray<FItemRegistrationInfo> AModContentRegistry::GetObtainableItemDescriptors(
     //All obtainable item descriptors are guaranteed to be present in ItemDescriptorRegistrationList,
     //So we can just iterate it and filter item descriptors without associated recipes out
     TArray<FItemRegistrationInfo> OutRegistrationInfo;
-    
+
     for (const TSharedPtr<FItemRegistrationInfo>& RegistrationInfo : ItemRegistryState.GetAllObjects()) {
         if (RegistrationInfo->ReferencedBy.Num() > 0) {
             OutRegistrationInfo.Add(*RegistrationInfo);
@@ -498,13 +529,13 @@ FItemRegistrationInfo AModContentRegistry::GetItemDescriptorInfo(const TSubclass
 	if (!IsValid(ItemDescriptor)) {
 		return FItemRegistrationInfo{};
 	}
-	
+
     //Use cached registration information if it's available
     const TSharedPtr<FItemRegistrationInfo> CachedRegistrationInfo = ItemRegistryState.FindObject(ItemDescriptor);
     if (CachedRegistrationInfo.IsValid()) {
         return *CachedRegistrationInfo;
     }
-	
+
     //Item descriptor was not referenced in any registered recipe, fallback to registrar name = owner name logic
     const FName OwnerModReference = FindContentOwnerFast(ItemDescriptor);
     return *RegisterItemDescriptor(OwnerModReference, OwnerModReference, ItemDescriptor);
@@ -517,7 +548,7 @@ AModContentRegistry::AModContentRegistry() {
     bSubscribedToSchematicManager = false;
     PrimaryActorTick.bCanEverTick = true;
 	ActiveScriptFramePtr = NULL;
-	
+
 	//Mod Content Registry is always Local and Spawned on both Client and Server separately
 	this->ReplicationPolicy = ESubsystemReplicationPolicy::SpawnLocal;
 }
@@ -526,13 +557,13 @@ AModContentRegistry* AModContentRegistry::Get(UObject* WorldContext) {
 	UWorld* WorldObject = GEngine->GetWorldFromContextObjectChecked(WorldContext);
     USubsystemActorManager* SubsystemActorManager = WorldObject->GetSubsystem<USubsystemActorManager>();
 	check(SubsystemActorManager);
-	
+
 	return SubsystemActorManager->GetSubsystemActor<AModContentRegistry>();
 }
 
 void AModContentRegistry::BeginPlay() {
 	Super::BeginPlay();
-	
+
     //We should be frozen at this point already on host clients (freezing there happens before BeginPlay is dispatched to world actors)
 	//For remote clients we are not frozen yet most likely, but checking save data for remote clients is pointless anyway
     if (HasAuthority()) {
@@ -555,10 +586,10 @@ void AModContentRegistry::Tick(float DeltaSeconds) {
     //Make sure vanilla states are up to date with registry
     AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
     AFGResearchManager* ResearchManager = AFGResearchManager::Get(this);
-    
+
     if (SchematicManager != NULL) {
         const int64 SchematicRegistryCounter = SchematicRegistryState.GetRegistrationCounter();
-        
+
         if (SchematicRegistryCounter > SchematicManagerInternalState) {
             FlushStateToSchematicManager(SchematicManager);
             SchematicManagerInternalState = SchematicRegistryCounter;
@@ -569,10 +600,10 @@ void AModContentRegistry::Tick(float DeltaSeconds) {
             bSubscribedToSchematicManager = true;
         }
     }
-    
+
     if (ResearchManager != NULL) {
         const int64 ResearchTreeRegistryCounter = ResearchTreeRegistryState.GetRegistrationCounter();
-        
+
         if (ResearchTreeRegistryCounter > ResearchManagerInternalState) {
             FlushStateToResearchManager(ResearchManager);
             ResearchManagerInternalState = ResearchTreeRegistryCounter;
@@ -590,7 +621,7 @@ void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
 	if (ResourceSinkSubsystem != NULL) {
 		for (const TPair<UDataTable*, FName>& Pair : PendingItemSinkPointsRegistrations) {
 			UE_LOG(LogContentRegistry, Log, TEXT("Registering Resource Sink Points Table '%s' from Mod %s"), *Pair.Key->GetPathName(), *Pair.Value.ToString());;
-			
+
 			TArray<FResourceSinkPointsData*> OutModPointsData;
 			Pair.Key->GetAllRows(TEXT("ResourceSinkPointsData"), OutModPointsData);
 			for (FResourceSinkPointsData* ModItemRow : OutModPointsData) {
@@ -598,7 +629,7 @@ void AModContentRegistry::FlushPendingResourceSinkRegistrations() {
 				ResourceSinkSubsystem->mResourceSinkPoints.Add(ModItemRow->ItemClass, Points);
 			}
 		}
-		
+
 		PendingItemSinkPointsRegistrations.Empty();
 	}
 }
