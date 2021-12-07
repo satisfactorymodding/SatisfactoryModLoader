@@ -307,7 +307,7 @@ void AModContentRegistry::FindMissingSchematics(AFGSchematicManager* SchematicMa
     //Clear references to unlocked schematics if they are not registered
     TArray<TSubclassOf<UFGSchematic>> PurchasedSchematics = SchematicManager->mPurchasedSchematics;
     for (const TSubclassOf<UFGSchematic> Schematic : PurchasedSchematics) {
-        if (!IsSchematicRegistered(Schematic)) {
+        if (!IsSchematicRegistered(Schematic) && !Schematic->GetPathName().StartsWith("/Game/FactoryGame")) {
             MissingObjects.Add(FMissingObjectStruct{TEXT("schematic"), Schematic->GetPathName()});
             SchematicManager->mPurchasedSchematics.Remove(Schematic);
         }
@@ -347,7 +347,7 @@ void AModContentRegistry::FindMissingRecipes(AFGRecipeManager* RecipeManager,
     //Clear unlocked recipes
     TArray<TSubclassOf<UFGRecipe>> UnlockedRecipes = RecipeManager->mAvailableRecipes;
     for (const TSubclassOf<UFGRecipe>& Recipe : UnlockedRecipes) {
-        if (!IsRecipeRegistered(Recipe)) {
+        if (!IsRecipeRegistered(Recipe) && !Recipe->GetPathName().StartsWith("/Game/FactoryGame")) {
             RecipeManager->mAvailableRecipes.Remove(Recipe);
             MissingObjects.Add(FMissingObjectStruct{TEXT("recipe"), Recipe->GetPathName()});
         }
