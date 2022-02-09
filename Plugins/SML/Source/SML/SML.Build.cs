@@ -55,14 +55,29 @@ public class SML : ModuleRules
         var platformName = Target.Platform.ToString();
         var libraryFolder = Path.Combine(thirdPartyFolder, platformName);
         
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "funchook.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "detex.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libfbxsdk-md.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libxml2-md.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "zlib-md.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "AssemblyAnalyzer.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zydis.lib"));
-        PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zycore.lib"));
+        if (UnrealTargetPlatform.Win32 == Target.Platform || UnrealTargetPlatform.Win64 == Target.Platform)
+        {
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "funchook.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "detex.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libfbxsdk-md.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libxml2-md.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "zlib-md.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "AssemblyAnalyzer.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zydis.lib"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zycore.lib"));
+        } else if (UnrealTargetPlatform.Linux == Target.Platform) {
+            // git@github.com:kubo/funchook.git
+            // cmake <toolchain> -DFUNCHOOK_DISASM=zydis
+            // funchook will download and build Zydis as a dependency. Copy those static libs in along
+            // with funchook.
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libfunchook.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libZydis.a"));
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libZycore.a"));
+
+            // https://github.com/satisfactorymodding/AssemblyAnalyzer
+            // Used for SetDebugLoggingHook and DiscoverFunction
+            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libAssemblyAnalyzer.a"));
+        }
         
         //Collect build metadata from the environment and pass it to C++
         var currentBranch = Environment.GetEnvironmentVariable("BRANCH_NAME");

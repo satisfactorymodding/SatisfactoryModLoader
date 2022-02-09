@@ -9,7 +9,7 @@ FReflectedObjectState_Array::FReflectedObjectState_Array(const TSharedPtr<FRefle
 }
 
 int32 FReflectedObjectState_Array::GetArrayNum() const {
-    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    FArrayProperty* ArrayProperty = CastField<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
     if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
         void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
         const FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
@@ -19,7 +19,7 @@ int32 FReflectedObjectState_Array::GetArrayNum() const {
 }
 
 int32 FReflectedObjectState_Array::AddNewArrayElement() const {
-    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    FArrayProperty* ArrayProperty = CastField<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
     if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
         void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
         FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
@@ -29,7 +29,7 @@ int32 FReflectedObjectState_Array::AddNewArrayElement() const {
 }
 
 void FReflectedObjectState_Array::RemoveArrayElements(int32 Index, int32 Count) const {
-    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    FArrayProperty* ArrayProperty = CastField<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
     if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
         void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
         FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
@@ -40,7 +40,7 @@ void FReflectedObjectState_Array::RemoveArrayElements(int32 Index, int32 Count) 
 }
 
 TArray<FReflectedPropertyInfo> FReflectedObjectState_Array::GetAllProperties() const {
-    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    FArrayProperty* ArrayProperty = CastField<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
     TArray<FReflectedPropertyInfo> ResultProperties;
     
     if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
@@ -59,7 +59,7 @@ TArray<FReflectedPropertyInfo> FReflectedObjectState_Array::GetAllProperties() c
 }
 
 FProperty* FReflectedObjectState_Array::FindPropertyByName(const FName PropertyName) const {
-    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    FArrayProperty* ArrayProperty = CastField<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
     if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
         void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
         const FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
@@ -73,7 +73,7 @@ FProperty* FReflectedObjectState_Array::FindPropertyByName(const FName PropertyN
 }
 
 void* FReflectedObjectState_Array::GetPropertyValue(const FName PropertyName) {
-    FArrayProperty* ArrayProperty = Cast<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
+    FArrayProperty* ArrayProperty = CastField<FArrayProperty>(OwnerObjectState->FindPropertyByName(ArrayPropertyName));
     if (ArrayProperty && ArrayProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
         void* PropertyValue = OwnerObjectState->GetPropertyValue(ArrayPropertyName);
         FScriptArrayHelper ArrayHelper{ArrayProperty, PropertyValue};
@@ -289,7 +289,7 @@ EReflectedPropertyType DeterminePropertyType(FProperty* Property) {
     if (Property->IsA<FArrayProperty>()) {
         return EReflectedPropertyType::ERPT_Array;
     }
-    if (FByteProperty* ByteProperty = Cast<FByteProperty>(Property)) {
+    if (FByteProperty* ByteProperty = CastField<FByteProperty>(Property)) {
         if (ByteProperty->IsEnum())
             return EReflectedPropertyType::ERPT_Enum;
         return EReflectedPropertyType::ERPT_Byte;
@@ -397,12 +397,12 @@ FReflectedEnumValue FReflectedObject::GetEnumProperty(FName PropertyName) const 
     FProperty* Property = FindPropertyByName<FProperty>(PropertyName, false);
     if (Property != NULL) {
         void* PropertyValue = State->GetPropertyValue(PropertyName);
-        if (FEnumProperty* EnumProperty = Cast<FEnumProperty>(Property)) {
+        if (FEnumProperty* EnumProperty = CastField<FEnumProperty>(Property)) {
             const int64 RawPropertyValue = EnumProperty->GetUnderlyingProperty()->GetSignedIntPropertyValue(PropertyValue);
             return FReflectedEnumValue{EnumProperty->GetEnum(), RawPropertyValue};
         }
 
-        if (FByteProperty* ByteProperty = Cast<FByteProperty>(Property)) {
+        if (FByteProperty* ByteProperty = CastField<FByteProperty>(Property)) {
             if (ByteProperty->IsEnum()) {
                 const int64 RawPropertyValue = ByteProperty->GetPropertyValue(PropertyValue);
                 return FReflectedEnumValue{ByteProperty->Enum, RawPropertyValue};
@@ -416,13 +416,13 @@ void FReflectedObject::SetEnumProperty(FName PropertyName, const FReflectedEnumV
     FProperty* Property = FindPropertyByName<FProperty>(PropertyName, true);
     if (Property != NULL) {
         void* PropertyValue = State->GetPropertyValue(PropertyName);
-        if (FEnumProperty* EnumProperty = Cast<FEnumProperty>(Property)) {
+        if (FEnumProperty* EnumProperty = CastField<FEnumProperty>(Property)) {
             if (EnumProperty->GetEnum() == Enum.GetEnumerationType()) {
                 EnumProperty->GetUnderlyingProperty()->SetIntPropertyValue(PropertyValue, Enum.GetCurrentValue());
             }
         }
 
-        if (FByteProperty* ByteProperty = Cast<FByteProperty>(Property)) {
+        if (FByteProperty* ByteProperty = CastField<FByteProperty>(Property)) {
             if (ByteProperty->IsEnum() && ByteProperty->Enum == Enum.GetEnumerationType()) {
                 ByteProperty->SetPropertyValue_InContainer(PropertyValue, (uint8) Enum.GetCurrentValue());
             }

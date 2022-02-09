@@ -66,4 +66,8 @@ public:
 	/** Fills variable of provided object with the value carried by this property */
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
     void FillConfigStruct(const FReflectedObject& ReflectedObject, const FString& VariableName) const;
+
+private:
+    /** The Serialize() definition above shadows the native UObject::Serialize. Declare that we want to keep the UBOject implementation. */
+    using UObject::Serialize;
 };

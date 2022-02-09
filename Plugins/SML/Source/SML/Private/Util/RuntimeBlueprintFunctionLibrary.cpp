@@ -173,18 +173,18 @@ bool  URuntimeBlueprintFunctionLibrary::Conv_ConfigPropertyToBool(UConfigPropert
 	}
 	else if (Cast<UConfigPropertyFloat>(Property)) {
 		UConfigPropertyFloat * Obj = Cast<UConfigPropertyFloat>(Property);
-		int32 Property = int32(Obj->Value);
-		if (Property == 1 || Property == 0)
-			return bool(Property);
+		int32 PropInt = int32(Obj->Value);
+		if (PropInt == 1 || PropInt == 0)
+			return bool(PropInt);
 		else
 			return false;
 	}
 	else if (Cast<UConfigPropertyString>(Property)) {
 		UConfigPropertyString * Obj = Cast<UConfigPropertyString>(Property);
 		if (Obj->Value.IsNumeric()) {
-			int32 Property = int32(FCString::Atof(*Obj->Value));
-			if (Property == 1 || Property == 0)
-				return bool(Property);
+			int32 PropInt = int32(FCString::Atof(*Obj->Value));
+			if (PropInt == 1 || PropInt == 0)
+				return bool(PropInt);
 			else
 				return false;
 		}

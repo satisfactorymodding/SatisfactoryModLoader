@@ -175,7 +175,7 @@ private:
     template<typename T>
     FORCEINLINE T* FindPropertyByName(FName PropertyName, const bool bCheckWriteable) const {
         FProperty* Property = State.IsValid() ? State->FindPropertyByName(PropertyName) : NULL;
-        if (T* CastedProperty = Cast<T>(Property)) {
+        if (T* CastedProperty = CastField<T>(Property)) {
             if (CastedProperty->HasAnyPropertyFlags(CPF_BlueprintVisible)) {
                 if (bCheckWriteable) {
                     if (!CastedProperty->HasAnyPropertyFlags(CPF_BlueprintReadOnly)) {
