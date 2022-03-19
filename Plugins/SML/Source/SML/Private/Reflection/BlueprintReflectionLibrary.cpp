@@ -80,7 +80,7 @@ FString UBlueprintReflectionLibrary::GetStringProperty(const FReflectedObject& R
     return ReflectedObject.GetStrProperty(PropertyName);
 }
 
-void UBlueprintReflectionLibrary::SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FString& Value) {
+void UBlueprintReflectionLibrary::SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FString& Value) {
     ReflectedObject.SetStrProperty(PropertyName, Value);
 }
 
@@ -96,7 +96,7 @@ FName UBlueprintReflectionLibrary::GetNameProperty(const FReflectedObject& Refle
     return ReflectedObject.GetNameProperty(PropertyName);
 }
 
-void UBlueprintReflectionLibrary::SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FName& Name) {
+void UBlueprintReflectionLibrary::SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FName& Name) {
     ReflectedObject.SetNameProperty(PropertyName, Name);
 }
 
@@ -104,7 +104,7 @@ FText UBlueprintReflectionLibrary::GetTextProperty(const FReflectedObject& Refle
     return ReflectedObject.GetTextProperty(PropertyName);
 }
 
-void UBlueprintReflectionLibrary::SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FText& Text) {
+void UBlueprintReflectionLibrary::SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FText& Text) {
     ReflectedObject.SetTextProperty(PropertyName, Text);
 }
 
@@ -120,7 +120,7 @@ FReflectedObject UBlueprintReflectionLibrary::GetStructProperty(const FReflected
     return ReflectedObject.GetStructProperty(PropertyName);
 }
 
-void UBlueprintReflectionLibrary::SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedObject& Struct) {
+void UBlueprintReflectionLibrary::SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FReflectedObject& Struct) {
     ReflectedObject.SetStructProperty(PropertyName, Struct);
 }
 
@@ -128,7 +128,7 @@ FReflectedEnumValue UBlueprintReflectionLibrary::GetEnumProperty(const FReflecte
     return ReflectedObject.GetEnumProperty(PropertyName);
 }
 
-void UBlueprintReflectionLibrary::SetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedEnumValue& Enum) {
+void UBlueprintReflectionLibrary::SetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FReflectedEnumValue& Enum) {
     ReflectedObject.SetEnumProperty(PropertyName, Enum);
 }
 

@@ -91,7 +91,7 @@ public:
 
     /** Updates a value of string variable on passed object */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FString& Value);
+    static void SetStringProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FString& Value);
 
     /** Retrieves boolean property value from reflected object */
     UFUNCTION(BlueprintPure, Category = "Reflection")
@@ -107,13 +107,13 @@ public:
 
     /** Updates a value of name property on reflected object */
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FName& Name);
+    static void SetNameProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FName& Name);
 
     UFUNCTION(BlueprintPure, Category = "Reflection")
     static FText GetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FText& Text);
+    static void SetTextProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FText& Text);
 
     UFUNCTION(BlueprintPure, Category = "Reflection")
     static UObject* GetObjectProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
@@ -125,13 +125,13 @@ public:
     static FReflectedObject GetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedObject& Struct);
+    static void SetStructProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FReflectedObject& Struct);
 
     UFUNCTION(BlueprintPure, Category = "Reflection")
     static FReflectedEnumValue GetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
 
     UFUNCTION(BlueprintCallable, Category = "Reflection")
-    static void SetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName, FReflectedEnumValue& Enum);
+    static void SetEnumProperty(const FReflectedObject& ReflectedObject, FName PropertyName, const FReflectedEnumValue& Enum);
 
     UFUNCTION(BlueprintPure)
     static FReflectedObject GetArrayProperty(const FReflectedObject& ReflectedObject, FName PropertyName);
