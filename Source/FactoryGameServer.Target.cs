@@ -3,9 +3,9 @@
 using System;
 using UnrealBuildTool;
 
-public class UE4ServerTarget : TargetRules
+public class FactoryGameServerTarget : TargetRules
 {
-	public UE4ServerTarget(TargetInfo Target) : base(Target)
+	public FactoryGameServerTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Server;
 		LinkType = TargetLinkType.Modular;
@@ -13,14 +13,9 @@ public class UE4ServerTarget : TargetRules
 		CppStandard = CppStandardVersion.Cpp17;
 		ExtraModuleNames.AddRange(new[] {"FactoryGame"});
 		DefaultBuildSettings = BuildSettingsVersion.V2;
-		DisableOptimizeCodeForModules = new[]
-		{
-			"SML"
-		};
 		
 		// bOverrideAppNameForSharedBuild = true;
 
-		// Set these in UE4's Engine/Source/UE4Server.Target.cs to match
 		bUseChecksInShipping = true;
 		bUseLoggingInShipping = true;
 	}
