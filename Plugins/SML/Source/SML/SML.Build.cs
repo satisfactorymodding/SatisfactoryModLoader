@@ -58,10 +58,6 @@ public class SML : ModuleRules
         if (UnrealTargetPlatform.Win32 == Target.Platform || UnrealTargetPlatform.Win64 == Target.Platform)
         {
             PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "funchook.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "detex.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libfbxsdk-md.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "libxml2-md.lib"));
-            PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "zlib-md.lib"));
             PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "AssemblyAnalyzer.lib"));
             PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zydis.lib"));
             PublicAdditionalLibraries.Add(Path.Combine(libraryFolder, "Zycore.lib"));
