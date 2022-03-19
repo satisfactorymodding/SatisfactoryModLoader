@@ -9,10 +9,10 @@
 
 //Overwrites delegates bound to title & description widgets to use FTooltipHookHelper, add custom item widget
 void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, APlayerController* OwningPlayer, const FInventoryStack& InventoryStack) {
-    //Gather UProperty exposed by tooltip widget
+    //Gather FProperty exposed by tooltip widget
     UClass* TooltipWidgetClass = TooltipWidget->GetClass();
-    UObjectProperty* TitleWidgetProperty = Cast<UObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mTitle")));
-    UObjectProperty* DescriptionWidgetProperty = Cast<UObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mDescription")));
+    FObjectProperty* TitleWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mTitle")));
+    FObjectProperty* DescriptionWidgetProperty = CastField<FObjectProperty>(TooltipWidgetClass->FindPropertyByName(TEXT("mDescription")));
     check(TitleWidgetProperty && DescriptionWidgetProperty);
     
     //Retrieve references to some stuff
@@ -41,8 +41,8 @@ void UItemTooltipSubsystem::ApplyItemOverridesToTooltip(UWidget* TooltipWidget, 
 
 FInventoryStack GetStackFromSlot(UObject* SlotWidget) {
     //Retrieve fields relevant to owner inventory
-    UObjectProperty* InventoryProperty = Cast<UObjectProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mCachedInventoryComponent")));
-    UIntProperty* SlotIndexProperty = Cast<UIntProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mSlotIdx")));
+    FObjectProperty* InventoryProperty = CastField<FObjectProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mCachedInventoryComponent")));
+    FIntProperty* SlotIndexProperty = CastField<FIntProperty>(SlotWidget->GetClass()->FindPropertyByName(TEXT("mSlotIdx")));
     check(InventoryProperty && SlotIndexProperty);
     
     FInventoryStack ResultStack{};
@@ -63,7 +63,7 @@ void UItemTooltipSubsystem::InitializePatches() {
 
     UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
     HookManager->HookBlueprintFunction(Function, [](FBlueprintHookHelper& HookHelper) {
-        UUserWidget* TooltipWidget = Cast<UUserWidget>(*HookHelper.GetOutVariablePtr<UObjectProperty>());
+        UUserWidget* TooltipWidget = Cast<UUserWidget>(*HookHelper.GetOutVariablePtr<FObjectProperty>());
         UUserWidget* SlotWidget = Cast<UUserWidget>(HookHelper.GetContext());
         
         if (TooltipWidget != nullptr) {

@@ -6,7 +6,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimInstanceProxy.h"
-#include "FGRailroadVehicleAnim.generated.h"
+#include "FGRailRoadVehicleAnim.generated.h"
 
 USTRUCT( BlueprintType )
 struct FACTORYGAME_API FAnimInstanceProxyRailroadVehicle : public FAnimInstanceProxy

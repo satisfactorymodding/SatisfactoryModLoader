@@ -249,7 +249,7 @@ void AModContentRegistry::UnlockTutorialSchematics() {
 	AFGTutorialIntroManager* TutorialIntroManager = AFGTutorialIntroManager::Get(this);
 	AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
 
-	if (SchematicManager && (GameInstance && GameInstance->GetSkipOnboarding() || TutorialIntroManager && TutorialIntroManager->GetIsTutorialCompleted())) {
+	if (SchematicManager && ((GameInstance && GameInstance->GetSkipOnboarding()) || (TutorialIntroManager && TutorialIntroManager->GetIsTutorialCompleted()))) {
 		for (const TSharedPtr<FSchematicRegistrationInfo>& RegistrationInfo : SchematicRegistryState.GetAllObjects()) {
 			const TSubclassOf<UFGSchematic> Schematic = RegistrationInfo->RegisteredObject;
 
