@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Threading;
 using AutomationTool;
 using Tools.DotNETCommon;
 using UnrealBuildTool;
@@ -19,34 +20,22 @@ namespace Alpakit.Automation
 	public class PackagePlugin : BuildCommand
 	{
 
-		private static string GetGameLaunchURL(BuildCommand cmd)
+		private static string GetGameLaunchURL(string launchType)
 		{
-			var launchType = cmd.ParseParamValue("LaunchType", "");
-
-			if (cmd.ParseParam("Steam") || launchType.Equals("Steam", StringComparison.InvariantCultureIgnoreCase))
+			switch (launchType)
 			{
-				return "steam://rungameid/526870";
-			}
-
-			if (cmd.ParseParam("EpicEA") || launchType.Equals("EpicEA", StringComparison.InvariantCultureIgnoreCase))
-			{
-				return "com.epicgames.launcher://apps/CrabEA?action=launch&silent=true";
-			}
-
-			if (cmd.ParseParam("EpicExp") || launchType.Equals("EpicExp", StringComparison.InvariantCultureIgnoreCase))
-			{
-				return "com.epicgames.launcher://apps/CrabTest?action=launch&silent=true";
-			}
-
-			throw new AutomationException("Game launching requires -LaunchType= or -Steam/EpicEA/EpicExp arguments");
-		}
-
-		private static void LaunchGame(BuildCommand cmd)
-		{
-			if (cmd.ParseParam("LaunchGame"))
-			{
-				var gameLaunchUrl = GetGameLaunchURL(cmd);
-				System.Diagnostics.Process.Start(gameLaunchUrl);
+				case "Steam":
+					return "steam://rungameid/526870";
+				case "SteamDS":
+					return "steam://rungameid/1690800";
+				case "EpicEA":
+					return "com.epicgames.launcher://apps/CrabEA?action=launch&silent=true";
+				case "EpicExp":
+					return "com.epicgames.launcher://apps/CrabTest?action=launch&silent=true";
+				case "EpicDS":
+					return "com.epicgames.launcher://apps/CrabDedicatedServer?action=launch&silent=true";
+				default:
+					throw new AutomationException("Invalid Launch Type {0}", launchType);
 			}
 		}
 
@@ -54,8 +43,7 @@ namespace Alpakit.Automation
 			string stagingDir)
 		{
 			var modsDir = Path.Combine(gameDir, projectFile.GetFileNameWithoutAnyExtensions(), "Mods");
-			var projectPluginsFolder =
-				new DirectoryReference(Path.Combine(projectFile.Directory.ToString(), "Plugins"));
+			var projectPluginsFolder = new DirectoryReference(Path.Combine(projectFile.Directory.ToString(), "Plugins"));
 			var pluginRelativePath = pluginFile.Directory.MakeRelativeTo(projectPluginsFolder);
 
 			var resultPluginDirectory = Path.Combine(modsDir, pluginRelativePath);
@@ -75,19 +63,71 @@ namespace Alpakit.Automation
 			LogInformation(projectFileName);
 
 			var pluginName = cmd.ParseRequiredStringParam("PluginName");
+			
+			var targets = cmd.ParseParamValues("PluginTarget");
+			Console.WriteLine(targets);
+
+			var ClientTargetPlatforms = new List<TargetPlatformDescriptor>();
+			var ServerTargetPlatforms = new List<TargetPlatformDescriptor>();
+
+			foreach (var target in targets)
+			{
+				// Platform_Type
+				var split = target.Split('_');
+				var platformName = split[0];
+				var targetType = split.Length > 1 ? split[1] : null;
+
+				UnrealTargetPlatform platform;
+				if (!UnrealTargetPlatform.TryParse(platformName, out platform))
+				{
+					throw new AutomationException("Invalid platform name {0}", platformName);
+				}
+				TargetPlatformDescriptor platformDescriptor = new TargetPlatformDescriptor(platform);
+
+
+				if (targetType == "Client" || string.IsNullOrWhiteSpace(targetType))
+				{
+					ClientTargetPlatforms.Add(platformDescriptor);
+				}
+				else if (targetType == "Server")
+				{
+					ServerTargetPlatforms.Add(platformDescriptor);
+				}
+				else
+				{
+					throw new AutomationException("Invalid target type {0}", targetType);
+				}
+			}
+
 			var projectFile = new FileReference(projectFileName);
+
+			bool Client = false;
+			bool DedicatedServer = false;
+
+			if (ClientTargetPlatforms.Count > 0)
+					Client = true;
+
+			if (ServerTargetPlatforms.Count > 0)
+					DedicatedServer = true;
 
 			var projectParameters = new ProjectParams(
 				projectFile,
 				cmd,
-				ClientTargetPlatforms: new List<TargetPlatformDescriptor>
-				{
-					new TargetPlatformDescriptor(UnrealTargetPlatform.Win64)
-				},
+				
+				ClientTargetPlatforms: ClientTargetPlatforms,
 				ClientConfigsToBuild: new List<UnrealTargetConfiguration>
 				{
 					UnrealTargetConfiguration.Shipping
 				},
+				NoClient: !Client,
+				
+				ServerTargetPlatforms: ServerTargetPlatforms,
+				ServerConfigsToBuild: new List<UnrealTargetConfiguration>
+				{
+					UnrealTargetConfiguration.Shipping
+				},
+				DedicatedServer: DedicatedServer,
+
 				Build: false,
 				Cook: true,
 				Stage: true,
@@ -97,7 +137,8 @@ namespace Alpakit.Automation
 				DLCIncludeEngineContent: true,
 				DLCName: pluginName,
 				AdditionalCookerOptions: "-CookOnlyPluginAndEngineContent",
-				RunAssetNativization: false);
+				RunAssetNativization: false
+			);
 
 			projectParameters.ValidateAndLog();
 			return projectParameters;
@@ -249,31 +290,35 @@ namespace Alpakit.Automation
 		}
 
 		private static void DeployPluginProject(ProjectParams projectParams,
-			IEnumerable<DeploymentContext> deploymentContexts, FactoryGameParams factoryGameParams)
+			IEnumerable<DeploymentContext> deploymentContexts, Dictionary<string, FactoryGameParams> factoryGameTargetParams)
 		{
 			foreach (var deploymentContext in deploymentContexts)
 			{
-				if (factoryGameParams.CopyToGameDirectory &&
-				    deploymentContext.FinalCookPlatform == "WindowsNoEditor")
+				FactoryGameParams factoryGameParams;
+				if (factoryGameTargetParams.TryGetValue(deploymentContext.FinalCookPlatform, out factoryGameParams))
 				{
-					var stageRootDirectory = deploymentContext.StageDirectory;
-					var relativePluginPath = GetPluginPathRelativeToStageRoot(projectParams, deploymentContext);
-					var stagePluginDirectory = Path.Combine(stageRootDirectory.ToString(), relativePluginPath);
-
-					if (factoryGameParams.GameDirectory == null)
+					if (factoryGameParams.CopyToGameDirectory)
 					{
-						throw new AutomationException(
-							"-CopyToGameDirectory was specified, but no game directory path has been provided");
-					}
-					
-					CopyPluginToTheGameDir(factoryGameParams.GameDirectory, projectParams.RawProjectPath,
-						projectParams.DLCFile, stagePluginDirectory);
-				}
-			}
+						var stageRootDirectory = deploymentContext.StageDirectory;
+						var relativePluginPath = GetPluginPathRelativeToStageRoot(projectParams, deploymentContext);
+						var stagePluginDirectory = Path.Combine(stageRootDirectory.ToString(), relativePluginPath);
 
-			if (factoryGameParams.StartGame)
-			{
-				System.Diagnostics.Process.Start(factoryGameParams.LaunchGameURL);
+						if (factoryGameParams.GameDirectory == null)
+						{
+							throw new AutomationException(
+									"-{0}_CopyToGameDirectory was specified, but no game directory path has been provided", deploymentContext.FinalCookPlatform);
+						}
+
+						CopyPluginToTheGameDir(factoryGameParams.GameDirectory, projectParams.RawProjectPath,
+								projectParams.DLCFile, stagePluginDirectory);
+					}
+
+					if (factoryGameParams.StartGame)
+					{
+						System.Diagnostics.Process.Start(factoryGameParams.LaunchGameURL);
+						Thread.Sleep(5000);
+					}
+				}
 			}
 		}
 
@@ -290,47 +335,57 @@ namespace Alpakit.Automation
 
 		public override void ExecuteBuild()
         {
-            string gameDir = ParseOptionalStringParam("GameDir");
-            if (gameDir != null)
-			{
-				var bootstrapExePath = Path.Combine(gameDir, "FactoryGame.exe");
-				if (!FileExists(bootstrapExePath))
-				{
-					throw new AutomationException("Provided -GameDir is invalid: '{0}'", gameDir);
-				}
-			}
-
-			var factoryGameParams = new FactoryGameParams
-			{
-				GameDirectory = gameDir,
-				StartGame = ParseParam("LaunchGame"),
-				CopyToGameDirectory = ParseParam("CopyToGameDir")
-			};
-			if (factoryGameParams.StartGame)
-			{
-				factoryGameParams.LaunchGameURL = GetGameLaunchURL(this);
-			}
-
 			var projectParams = GetParams(this);
 
 			Project.Cook(projectParams);
 			var deploymentContexts = CreateDeploymentContexts(projectParams);
 			RemapCookedPluginsContentPaths(projectParams, deploymentContexts);
 
+            var factoryGameTargetParams = new Dictionary<string, FactoryGameParams>();
+
+            foreach (var deploymentContext in deploymentContexts)
+            {
+                var factoryGameParams = new FactoryGameParams
+                {
+                    StartGame = ParseParam(string.Format("{0}_LaunchGame", deploymentContext.FinalCookPlatform)),
+                    CopyToGameDirectory = ParseParam(string.Format("{0}_CopyToGameDir", deploymentContext.FinalCookPlatform))
+                };
+                if (factoryGameParams.CopyToGameDirectory)
+                {
+                    string gameDir = ParseOptionalStringParam(string.Format("{0}_GameDir", deploymentContext.FinalCookPlatform));
+                    if (gameDir == null)
+                    {
+                        throw new AutomationException("-{0}_CopyToGameDirectory was specified, but no game directory path has been provided", deploymentContext.FinalCookPlatform);
+                    }
+                    var bootstrapClientExePath = Path.Combine(gameDir, "FactoryGame.exe");
+                    var bootstrapServerExePath = Path.Combine(gameDir, "FactoryServer.exe");
+                    var bootstrapServerLinuxPath = Path.Combine(gameDir, "FactoryServer.sh");
+                    if (!FileExists(bootstrapClientExePath) && !FileExists(bootstrapServerExePath) && !FileExists(bootstrapServerLinuxPath))
+                    {
+                        throw new AutomationException("Provided -{0}_GameDir is invalid: '{1}'", deploymentContext.FinalCookPlatform, gameDir);
+                    }
+                    factoryGameParams.GameDirectory = gameDir;
+                }
+                if (factoryGameParams.StartGame)
+                {
+                    factoryGameParams.LaunchGameURL = GetGameLaunchURL(ParseRequiredStringParam(string.Format("{0}_LaunchType", deploymentContext.FinalCookPlatform)));
+                }
+
+                factoryGameTargetParams.Add(deploymentContext.FinalCookPlatform, factoryGameParams);
+            }
+
 			try
 			{
 				CopyBuildToStagingDirectory(projectParams, deploymentContexts);
 				PackagePluginProject(deploymentContexts, "SML");
 				ArchivePluginProject(projectParams, deploymentContexts);
-				DeployPluginProject(projectParams, deploymentContexts, factoryGameParams);
+				DeployPluginProject(projectParams, deploymentContexts, factoryGameTargetParams);
 			}
 			finally
 			{
-				//Clean staging directories because they confuse cooking commandlet and UBT
-				CleanStagingDirectories(deploymentContexts);
-			}
-
-			LaunchGame(this);
+                //Clean staging directories because they confuse cooking commandlet and UBT
+                CleanStagingDirectories(deploymentContexts);
+            }
 		}
 	}
 }

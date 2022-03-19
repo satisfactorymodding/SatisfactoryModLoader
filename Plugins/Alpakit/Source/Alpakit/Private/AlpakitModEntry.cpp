@@ -49,11 +49,15 @@ void SAlpakitModEntry::Construct(const FArguments& Args, TSharedRef<IPlugin> InM
 FString GetArgumentForLaunchType(EAlpakitStartGameType LaunchMode) {
     switch (LaunchMode) {
     case EAlpakitStartGameType::STEAM:
-        return TEXT("-Steam");
+        return TEXT("Steam");
+    case EAlpakitStartGameType::STEAM_SERVER:
+        return TEXT("SteamDS");
     case EAlpakitStartGameType::EPIC_EARLY_ACCESS:
-        return TEXT("-EpicEA");
+        return TEXT("EpicEA");
     case EAlpakitStartGameType::EPIC_EXPERIMENTAL:
-        return TEXT("-EpicExp");
+        return TEXT("EpicExp");
+    case EAlpakitStartGameType::EPIC_SERVER:
+        return TEXT("EpicDS");
     default:
         return TEXT("");
     }
@@ -71,30 +75,55 @@ FText GetCurrentPlatformName() {
 #endif
 }
 
+FString MakeUATArguments(FAlpakitTargetSettings TargetSettings, FString TargetName, bool LaunchGame = false)
+{
+    FString UATArguments;
+    
+    if(TargetSettings.bCopyModsToGame) {
+        UATArguments.Append(FString::Printf(TEXT("-%s_CopyToGameDir "), *TargetName));
+        UATArguments.Append(FString::Printf(TEXT("-%s_GameDir=%s "), *TargetName, *TargetSettings.SatisfactoryGamePath.Path));
+    }
+
+    if(TargetSettings.LaunchGameAfterPacking != EAlpakitStartGameType::NONE && LaunchGame) {
+        UATArguments.Append(FString::Printf(TEXT("-%s_LaunchGame "), *TargetName));
+        UATArguments.Append(FString::Printf(TEXT("-%s_LaunchType=%s "), *TargetName, *GetArgumentForLaunchType(TargetSettings.LaunchGameAfterPacking)));
+    }
+
+    return UATArguments;
+}
+
 void SAlpakitModEntry::PackageMod(const TArray<TSharedPtr<SAlpakitModEntry>>& NextEntries) const {
     UAlpakitSettings* Settings = UAlpakitSettings::Get();
     const FString PluginName = Mod->GetName();
-    const FString GamePath = Settings->SatisfactoryGamePath.Path;
 
     const FString ProjectPath = FPaths::IsProjectFilePathSet()
         ? FPaths::ConvertRelativePathToFull(FPaths::GetProjectFilePath())
         : FPaths::RootDir() / FApp::GetProjectName() / FApp::GetProjectName() + TEXT(".uproject");
 
     FString AdditionalUATArguments;
-    if (Settings->bCopyModsToGame) {
-        AdditionalUATArguments.Append(TEXT("-CopyToGameDir "));
-    }
-    if (Settings->LaunchGameAfterPacking != EAlpakitStartGameType::NONE && NextEntries.Num() == 0) {
-        AdditionalUATArguments.Append(TEXT("-LaunchGame "));
-        AdditionalUATArguments.Append(GetArgumentForLaunchType(Settings->LaunchGameAfterPacking)).Append(TEXT(" "));
+
+    if(Settings->WindowsNoEditorTargetSettings.bEnabled)
+    {
+        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64\" "));
+        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsNoEditorTargetSettings, TEXT("WindowsNoEditor"), NextEntries.Num() == 0));
     }
 
-    const FString LaunchGameArgument = GetArgumentForLaunchType(Settings->LaunchGameAfterPacking);
+    if(Settings->WindowsServerTargetSettings.bEnabled)
+    {
+        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Win64_Server\" "));
+        AdditionalUATArguments.Append(MakeUATArguments(Settings->WindowsServerTargetSettings, TEXT("WindowsServer"), NextEntries.Num() == 0));
+    }
+
+    if(Settings->LinuxServerTargetSettings.bEnabled)
+    {
+        AdditionalUATArguments.Append(TEXT("-PluginTarget=\"Linux_Server\" "));
+        AdditionalUATArguments.Append(MakeUATArguments(Settings->LinuxServerTargetSettings, TEXT("LinuxServer"), NextEntries.Num() == 0));
+    }
 
     UE_LOG(LogAlpakit, Display, TEXT("Packaging plugin \"%s\". %d remaining"), *PluginName, NextEntries.Num());
 
-    const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" -GameDir=\"%s\" %s"),
-                                                *ProjectPath, *ProjectPath, *PluginName, *Settings->SatisfactoryGamePath.Path, *AdditionalUATArguments);
+    const FString CommandLine = FString::Printf(TEXT("-ScriptsForProject=\"%s\" PackagePlugin -Project=\"%s\" -PluginName=\"%s\" %s"),
+                                                *ProjectPath, *ProjectPath, *PluginName, *AdditionalUATArguments);
 
     const FText PlatformName = GetCurrentPlatformName();
     IUATHelperModule::Get().CreateUatTask(
