@@ -39,5 +39,11 @@
 			"Name": "SML",
 			"Enabled": true
 		}
-	]
+	],
+	"PreBuildSteps":
+	{
+		"Win64": [
+			"powershell ($assemblyPath = \\\"$(ProjectDir)\\\\Build\\\\Prebuild_Script\\\\Scripts\\\\Prebuild_Script.dll\\\");  (Add-Type -Path $assemblyPath); [PreBuild]::Main(\\\"$(ProjectDir)\\\")"
+		]
+	}
 }
