@@ -3,7 +3,7 @@
 #include <functional>
 #include <type_traits>
 
-DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
+SML_API DECLARE_LOG_CATEGORY_EXTERN(LogNativeHookManager, Log, Log);
 
 //NOTE: This struct does not actually fully represent member function pointer even on MSVC,
 //because it does not contain additional information for handling unknown inheritance
