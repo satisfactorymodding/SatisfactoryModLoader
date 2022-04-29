@@ -26,7 +26,6 @@ void UFGGameInstance::SetHasSeenAlphaInfoScreen(bool hasSeen){ }
 bool UFGGameInstance::FindModPackages(){ return bool(); }
 void UFGGameInstance::GetFGUGC(UClass* WeaponClass, UClass* EnemyClass, UClass* BossClass, UClass *PlayerPawnClass){ }
 void UFGGameInstance::Shutdown(){ }
-void UFGGameInstance::SetSkipOnboarding(bool doSkip){ }
 void UFGGameInstance::QueryNATType(){ }
 bool UFGGameInstance::GetLatestNetworkError(FFGGameNetworkErrorMsg& msg){ return bool(); }
 bool UFGGameInstance::PopLatestNetworkError(){ return bool(); }

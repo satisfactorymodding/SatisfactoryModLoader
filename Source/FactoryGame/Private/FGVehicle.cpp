@@ -82,14 +82,6 @@ TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGVehicle::GetActiveSkin_
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGVehicle::GetActiveSkin_Implementation(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
 void AFGVehicle::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
 void AFGVehicle::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
-bool AFGVehicle::CanDock_Implementation(EDockStationType atStation) const{ return bool(); }
-UFGInventoryComponent* AFGVehicle::GetDockInventory_Implementation() const{ return nullptr; }
-UFGInventoryComponent* AFGVehicle::GetDockFuelInventory_Implementation() const{ return nullptr; }
-void AFGVehicle::WasDocked_Implementation( AFGBuildableDockingStation* atStation){ }
-void AFGVehicle::WasUndocked_Implementation(){ }
-void AFGVehicle::OnBeginLoadVehicle_Implementation(){ }
-void AFGVehicle::OnBeginUnloadVehicle_Implementation(){ }
-void AFGVehicle::OnTransferComplete_Implementation(){ }
 void AFGVehicle::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
 void AFGVehicle::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGVehicle::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
@@ -116,24 +108,6 @@ bool AFGVehicle::ShouldAutoregisterAsTargetable_Implementation() const{ return b
 UPrimitiveComponent* AFGVehicle::GetTargetComponent_Implementation(){ return nullptr; }
 bool AFGVehicle::IsAlive_Implementation() const{ return bool(); }
 FVector AFGVehicle::GetAttackLocation_Implementation() const{ return FVector(); }
-bool AFGVehicle::AddAsRepresentation(){ return bool(); }
-bool AFGVehicle::UpdateRepresentation(){ return bool(); }
-bool AFGVehicle::RemoveAsRepresentation(){ return bool(); }
-bool AFGVehicle::IsActorStatic(){ return bool(); }
-FVector AFGVehicle::GetRealActorLocation(){ return FVector(); }
-FRotator AFGVehicle::GetRealActorRotation(){ return FRotator(); }
-UTexture2D* AFGVehicle::GetActorRepresentationTexture(){ return nullptr; }
-FText AFGVehicle::GetActorRepresentationText(){ return FText(); }
-void AFGVehicle::SetActorRepresentationText(const FText& newText){ }
-FLinearColor AFGVehicle::GetActorRepresentationColor(){ return FLinearColor(); }
-void AFGVehicle::SetActorRepresentationColor(FLinearColor newColor){ }
-ERepresentationType AFGVehicle::GetActorRepresentationType(){ return ERepresentationType(); }
-bool AFGVehicle::GetActorShouldShowInCompass(){ return bool(); }
-bool AFGVehicle::GetActorShouldShowOnMap(){ return bool(); }
-EFogOfWarRevealType AFGVehicle::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
-float AFGVehicle::GetActorFogOfWarRevealRadius(){ return float(); }
-ECompassViewDistance AFGVehicle::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
-void AFGVehicle::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 bool AFGVehicle::CanBeSampled(){ return bool(); }
 USkeletalMeshComponent* AFGVehicle::GetMesh() const{ return nullptr; }
 bool AFGVehicle::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
@@ -150,6 +124,7 @@ void AFGVehicle::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customi
 void AFGVehicle::ApplySkinData(TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > newSkinDesc){ }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Swatch > AFGVehicle::GetDefaultSwatchCustomizationOverride(UObject* worldContext){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Swatch>(); }
 void AFGVehicle::OnSkinCustomizationApplied_Implementation(TSubclassOf<  UFGFactoryCustomizationDescriptor_Skin > skin){ }
+FVector AFGVehicle::GetRealActorLocation() const{ return FVector(); }
 void AFGVehicle::OnCustomizationDataApplied(const FFactoryCustomizationData& customizationData){ }
 void AFGVehicle::OnRep_IsSimulated(){ }
 void AFGVehicle::OnTakeDamage(AActor* damagedActor, float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ }

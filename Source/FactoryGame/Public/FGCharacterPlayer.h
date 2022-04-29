@@ -531,12 +531,20 @@ public:
 
 	//Cheats
 	virtual void ClientCheatWalk_Implementation() override;
+	UFUNCTION( Server, Reliable )
+	virtual void Server_CheatWalk();
 	virtual void ClientCheatFly_Implementation() override;
+	UFUNCTION( Server, Reliable )
+	virtual void Server_CheatFly();
 	virtual void CheatToggleGhostFly();
-	virtual void CheatToggleGhostFly( bool ghostModeActive );
+	virtual void CheatSetGhostFly( bool ghostModeActive );
+	UFUNCTION( Server, Reliable )
+	virtual void Server_CheatSetGhostFly( bool ghostModeActive );
 	virtual bool CheatToggleGhostFlyIsActive();
 	virtual bool CheatToggleFlyModeIsActive();
 	virtual void CheatToggleFlyMode();
+	UFUNCTION( Server, Reliable )
+	virtual void Server_CheatTeleport( FTransform newTransform );
 	virtual void CheatTeleport();
 	//End cheats
 

@@ -18,6 +18,7 @@ void UFGGameUserSettings::ResetVideoModeToLatestStable(){ }
 void UFGGameUserSettings::ConfirmStableVideoMode(){ }
 void UFGGameUserSettings::SanitizeResolution(){ }
 void UFGGameUserSettings::ToggleFullscreenMode(){ }
+void UFGGameUserSettings::HandleCmdLineVideoQuality(){ }
 UFGGameUserSettings* UFGGameUserSettings::GetFGGameUserSettings(){ return nullptr; }
 UFGOptionInterface* UFGGameUserSettings::GetOptionInterface(){ return nullptr; }
 void UFGGameUserSettings::UpdateAudioOption(FString updatedCvar){ }

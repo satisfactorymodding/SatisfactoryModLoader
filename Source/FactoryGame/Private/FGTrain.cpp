@@ -79,6 +79,7 @@ void AFGTrain::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifeti
 	DOREPLIFETIME(AFGTrain, mIsSelfDrivingEnabled);
 	DOREPLIFETIME(AFGTrain, mSelfDrivingError);
 	DOREPLIFETIME(AFGTrain, mDockingState);
+	DOREPLIFETIME(AFGTrain, mDockedAtStation);
 	DOREPLIFETIME(AFGTrain, mIsDerailed);
 }
 void AFGTrain::Tick(float dt){ }

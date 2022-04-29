@@ -213,6 +213,10 @@ protected:
 	UFUNCTION()
 	void OnRep_TradingPostLevel();
 
+private:
+	/** Returns true if we should skip the onboarding/tutorial */
+	bool ShouldSkipOnboarding() const;
+
 public:
 	/** Called when mHasCompletedIntroSequence updates */
 	UPROPERTY(BlueprintAssignable,Category="Tutorial")
@@ -230,9 +234,6 @@ protected:
 	/** Has a trading post been built */
 	UPROPERTY( SaveGame )
 	bool mTradingPostBuilt;
-
-	/** Returns true if we should skip the tutorial */
-	bool ShouldSkipTutorial() const;
 
 	/** Set when the player force skips the intro sequence (landing of the pod up until full player control is regained) */
 	bool mIsSkippingIntro;

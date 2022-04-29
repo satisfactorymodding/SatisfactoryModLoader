@@ -236,6 +236,7 @@ private:
 	bool mIsOwnedByPlatform;
 
 	/** The graph this track belongs to. */
+	UPROPERTY( VisibleAnywhere, Category = "Track" )
 	int32 mTrackGraphID;
 
 	/** Length of this track. [cm] */
@@ -253,7 +254,7 @@ private:
 	TWeakPtr< FFGRailroadSignalBlock > mSignalBlock;
 
 	/** A unique id for this signal block, used for block coloring. */
-	UPROPERTY( ReplicatedUsing = OnRep_SignalBlockID )
+	UPROPERTY( ReplicatedUsing = OnRep_SignalBlockID, VisibleAnywhere, Category = "Track" )
 	int32 mSignalBlockID;
 
 	/** The instance spline mesh component dynamic spawned when needed to preview feedback. */

@@ -8,6 +8,8 @@ AFGBuildableDockingStation::AFGBuildableDockingStation() : Super() {
 	this->mDockPosition.Y = 0.0;
 	this->mMinimumDockingTime = 10.0;
 	this->mDockArea = nullptr;
+	this->mActorRepresentationTexture = nullptr;
+	this->mMapText = INVTEXT("DockingStation");
 	this->mStorageSizeX = 4;
 	this->mStorageSizeY = 4;
 	this->mFuelInventorySizeX = 1;
@@ -22,24 +24,22 @@ AFGBuildableDockingStation::AFGBuildableDockingStation() : Super() {
 	this->mIsInLoadMode = true;
 	this->mStackTransferSize = 0.25;
 	this->mIsLoadUnloading = false;
+	this->mInfo = nullptr;
 	this->mInventory = nullptr;
 	this->mFuelInventory = nullptr;
-	this->mActorRepresentationTexture = nullptr;
-	this->mMapText = INVTEXT("DockingStation");
 	this->mForceSignificance = false;
-	this->mStatus = EDockingStationStatus::DSS_Operational;
 	this->mVehicleFuelConsumptionRate = 0.0;
 	this->mItemTransferRate = 0.0;
 	this->mMaximumStackTransferRate = 0.0;
 }
 void AFGBuildableDockingStation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildableDockingStation, mMapText);
 	DOREPLIFETIME(AFGBuildableDockingStation, mTransferProgress);
 	DOREPLIFETIME(AFGBuildableDockingStation, mIsInLoadMode);
 	DOREPLIFETIME(AFGBuildableDockingStation, mIsLoadUnloading);
-	DOREPLIFETIME(AFGBuildableDockingStation, mMapText);
+	DOREPLIFETIME(AFGBuildableDockingStation, mInfo);
 	DOREPLIFETIME(AFGBuildableDockingStation, mForceSignificance);
-	DOREPLIFETIME(AFGBuildableDockingStation, mStatus);
 	DOREPLIFETIME(AFGBuildableDockingStation, mVehicleFuelConsumptionRate);
 	DOREPLIFETIME(AFGBuildableDockingStation, mItemTransferRate);
 	DOREPLIFETIME(AFGBuildableDockingStation, mMaximumStackTransferRate);
@@ -49,32 +49,14 @@ void AFGBuildableDockingStation::BeginPlay(){ }
 void AFGBuildableDockingStation::Tick(float DeltaSeconds){ }
 void AFGBuildableDockingStation::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBuildableDockingStation::Destroyed(){ }
+void AFGBuildableDockingStation::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableDockingStation::OnReplicationDetailActorRemoved(){ }
-bool AFGBuildableDockingStation::AddAsRepresentation(){ return bool(); }
-bool AFGBuildableDockingStation::UpdateRepresentation(){ return bool(); }
-bool AFGBuildableDockingStation::RemoveAsRepresentation(){ return bool(); }
-bool AFGBuildableDockingStation::IsActorStatic(){ return bool(); }
-FVector AFGBuildableDockingStation::GetRealActorLocation(){ return FVector(); }
-FRotator AFGBuildableDockingStation::GetRealActorRotation(){ return FRotator(); }
-UTexture2D* AFGBuildableDockingStation::GetActorRepresentationTexture(){ return nullptr; }
-FText AFGBuildableDockingStation::GetActorRepresentationText(){ return FText(); }
-void AFGBuildableDockingStation::SetActorRepresentationText(const FText& newText){ }
-FLinearColor AFGBuildableDockingStation::GetActorRepresentationColor(){ return FLinearColor(); }
-void AFGBuildableDockingStation::SetActorRepresentationColor(FLinearColor newColor){ }
-ERepresentationType AFGBuildableDockingStation::GetActorRepresentationType(){ return ERepresentationType(); }
-bool AFGBuildableDockingStation::GetActorShouldShowInCompass(){ return bool(); }
-bool AFGBuildableDockingStation::GetActorShouldShowOnMap(){ return bool(); }
-EFogOfWarRevealType AFGBuildableDockingStation::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
-float AFGBuildableDockingStation::GetActorFogOfWarRevealRadius(){ return float(); }
-ECompassViewDistance AFGBuildableDockingStation::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
-void AFGBuildableDockingStation::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 float AFGBuildableDockingStation::GetSignificanceRange(){ return float(); }
-bool AFGBuildableDockingStation::Dock( AActor* actor){ return bool(); }
+bool AFGBuildableDockingStation::DockActor( AActor* actor){ return bool(); }
 void AFGBuildableDockingStation::Undock(bool notifyDockedActor){ }
 void AFGBuildableDockingStation::SetIsInLoadMode(bool isInLoadMode){ }
 bool AFGBuildableDockingStation::GetIsInLoadMode() const{ return bool(); }
 bool AFGBuildableDockingStation::IsLoadUnloading() const{ return bool(); }
-void AFGBuildableDockingStation::SetStatus(EDockingStationStatus status){ }
 void AFGBuildableDockingStation::SetVehicleFuelConsumptionRate(float vehicleFuelConsumptionRate){ }
 void AFGBuildableDockingStation::SetItemTransferRate(float itemTransferRate){ }
 void AFGBuildableDockingStation::SetMaximumStackTransferRate(float maximumItemTransferRate){ }
@@ -87,6 +69,9 @@ void AFGBuildableDockingStation::RemoveDockingVehicle( AFGWheeledVehicle* vehicl
 void AFGBuildableDockingStation::UpdateVehicleFuelConsumptionRate(){ }
 void AFGBuildableDockingStation::UpdateMaximumStackTransferRate(bool dispatchToMainThread){ }
 void AFGBuildableDockingStation::UpdateItemTransferRate(bool dispatchToMainThread){ }
+bool AFGBuildableDockingStation::CanBeRefuelingVehicle(AFGWheeledVehicle* vehicle) const{ return bool(); }
+void AFGBuildableDockingStation::SetRefuelingVehicle(AFGWheeledVehicle* vehicle){ }
+bool AFGBuildableDockingStation::HasSufficientFuelType() const{ return bool(); }
 void AFGBuildableDockingStation::Factory_Tick(float dt){ }
 void AFGBuildableDockingStation::Factory_TickProducing(float dt){ }
 void AFGBuildableDockingStation::Factory_CollectInput_Implementation(){ }
@@ -96,13 +81,13 @@ AFGReplicationDetailActor_DockingStation* AFGBuildableDockingStation::GetCastRep
 void AFGBuildableDockingStation::OnRep_FuelInventory(){ }
 bool AFGBuildableDockingStation::IsValidFuel(TSubclassOf<  UFGItemDescriptor > resource) const{ return bool(); }
 bool AFGBuildableDockingStation::FilterFuelClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
+void AFGBuildableDockingStation::EnsureInfoCreated(){ }
 bool AFGBuildableDockingStation::Factory_LoadFuel(AFGWheeledVehicle* vehicle, float percentOfStack, bool conserveFuel){ return bool(); }
 void AFGBuildableDockingStation::Factory_LoadDockedInventory(UFGInventoryComponent* dockedInventory){ }
 void AFGBuildableDockingStation::Factory_UnloadDockedInventory(UFGInventoryComponent* dockedInventory){ }
 void AFGBuildableDockingStation::LoadUnloadVehicleComplete(){ }
 void AFGBuildableDockingStation::OnDockingAreaBeginOverlap(UPrimitiveComponent* thisComponent, AActor* otherActor, UPrimitiveComponent* otherComponent, int32 otherBodyIndex, bool isFromSweep, const FHitResult& sweepResult){ }
 void AFGBuildableDockingStation::OnDockingAreaEndOverlap(UPrimitiveComponent* thisComponent, AActor* otherActor, UPrimitiveComponent* otherComponent, int32 otherBodyIndex){ }
-void AFGBuildableDockingStation::OnRep_Status(){ }
 void AFGBuildableDockingStation::OnRep_VehicleFuelConsumptionRate(){ }
 void AFGBuildableDockingStation::OnRep_ItemTransferRate(){ }
 void AFGBuildableDockingStation::OnRep_MaximumStackTransferRate(){ }

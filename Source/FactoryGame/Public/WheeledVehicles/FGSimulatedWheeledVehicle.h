@@ -17,12 +17,9 @@ class FACTORYGAME_API AFGSimulatedWheeledVehicle : public ASkeletalMeshActor
 public:
 	AFGSimulatedWheeledVehicle();
 
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+
 	void Init( class AFGWheeledVehicle* vehicle );
-
-	void UpdateCustomizationData( class AFGWheeledVehicle* vehicle );
-	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
-
-	void ShowGhostingEffect( bool enabled );
 
 private:
 	//~ Begin AActor Interface
@@ -31,8 +28,4 @@ private:
 	//~ End AActor Interface
 
 public:
-	FVector mBoundingBoxExtent;
-	FVector mBoundingBoxOffset;
-
-	class UStaticMeshComponent* mStaticMeshComponent = nullptr;
 };

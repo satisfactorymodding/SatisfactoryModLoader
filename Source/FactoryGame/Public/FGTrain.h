@@ -747,7 +747,7 @@ public: //@todo-trains private
 	ETrainDockingState mDockingState;
 
 	/** The station this train is docked at. This is now cached when docked as we needed a means to Cancel a dock sequence from the UI Train menu */
-	UPROPERTY( VisibleAnywhere, Category = "Train" )
+	UPROPERTY( Replicated, VisibleAnywhere, Category = "Train" )
 	class AFGBuildableRailroadStation* mDockedAtStation;
 
 	/** True if this train is derailed and needs player attention. */

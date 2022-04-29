@@ -18,6 +18,7 @@ UFGLocalPlayer::UFGLocalPlayer() : Super() {
 }
 void UFGLocalPlayer::PlayerAdded( UGameViewportClient* inViewportClient, int32 inControllerID){ }
 void UFGLocalPlayer::PlayerRemoved(){ }
+bool UFGLocalPlayer::Exec(UWorld* InWorld, const TCHAR* Cmd, FOutputDevice& Ar){ return bool(); }
 void UFGLocalPlayer::SubscribeToOptionUpdates(){ }
 void UFGLocalPlayer::OnMaintainYAxisFOVUpdated(FString updatedCvar){ }
 TEnumAsByte<ELoginState> UFGLocalPlayer::GetLoginState() const{ return TEnumAsByte<ELoginState>(); }
@@ -36,6 +37,7 @@ void UFGLocalPlayer::OnInviteReceived(const FPendingInvite& invite){ }
 void UFGLocalPlayer::RefreshRecentRegisteredSocialAccountID(){ }
 bool UFGLocalPlayer::HasReceivedProductUserId() const{ return bool(); }
 TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerId() const{ return TSharedPtr<const FUniqueNetId>(); }
+TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerIdEpic() const{ return TSharedPtr<const FUniqueNetId>(); }
 TSharedPtr<const FUniqueNetId> UFGLocalPlayer::GetPlayerIdSteam() const{ return TSharedPtr<const FUniqueNetId>(); }
 void UFGLocalPlayer::ConnectAccount(const FName currentPlatform){ }
 void UFGLocalPlayer::LogOutEpicAndCreateNewAccountConnection(const FName currentPlatform){ }
@@ -43,6 +45,11 @@ void UFGLocalPlayer::CreateNewAccountConnection(const FName currentPlatform){ }
 void UFGLocalPlayer::BroadcastAccountConnectionStepResult(const FName currentPlatform, EEosAccountConnectionResult result){ }
 void UFGLocalPlayer::LoginAndConnectAccount(const FName currentPlatform){ }
 void UFGLocalPlayer::ContinueWithoutConnectingAccount(const FName currentPlatform){ }
+void UFGLocalPlayer::ResetAccountLinkingAfterConnect(FName currentPlatform, EEosAccountConnectionResult result){ }
+void UFGLocalPlayer::ResetAccountLinkingAfterEpicLogout(FName currentPlatform, EEosAccountConnectionResult result){ }
+void UFGLocalPlayer::TryResetAccountLinking(){ }
+void UFGLocalPlayer::UnlinkAccount(){ }
+void UFGLocalPlayer::LinkAccount(){ }
 void UFGLocalPlayer::SwitchController( APlayerController* PC){ }
 void UFGLocalPlayer::LoginAndConnectOtherEpicAccount(){ }
 void UFGLocalPlayer::ContinueWithAndHookUpSteamToEOSAfterEpicLogout(){ }

@@ -88,4 +88,4 @@ void AFGTutorialIntroManager::OnPlayerAddedItemToArmSlot(TSubclassOf<  UFGItemDe
 void AFGTutorialIntroManager::SetTradingpostBuilt(bool hasbuilt){ }
 void AFGTutorialIntroManager::OnIntroDone(){ }
 void AFGTutorialIntroManager::OnRep_TradingPostLevel(){ }
-bool AFGTutorialIntroManager::ShouldSkipTutorial() const{ return bool(); }
+bool AFGTutorialIntroManager::ShouldSkipOnboarding() const{ return bool(); }

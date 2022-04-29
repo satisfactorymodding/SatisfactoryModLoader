@@ -126,9 +126,9 @@ public:
 	void IsDockingTargetChanged();
 
 	UFUNCTION( BlueprintCallable, Category = "Target Point" )
-	void SetHostStation( class AFGBuildableDockingStation* hostStation );
+	void SetHostStation( class AFGDockingStationInfo* hostStation );
 
-	class AFGBuildableDockingStation* GetHostStation() const { return mHostStation.IsValid() ? mHostStation.Get() : nullptr; }
+	class AFGDockingStationInfo* GetHostStation() const { return mHostStation.IsValid() ? mHostStation.Get() : nullptr; }
 
 	/** Invoked when this node has had its host station changed */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Target Point" )
@@ -154,17 +154,17 @@ public:
 	void SetOwningList( class AFGDrivingTargetList* owningList );
 	class AFGDrivingTargetList* GetOwningList() const { return mOwningList; }
 
-	bool TryClaim( class AFGWheeledVehicle* vehicle, TSet< TWeakObjectPtr< class AFGWheeledVehicle > >& blockingVehicles, bool essentialsOnly = false );
-	void ForceClaim( class AFGWheeledVehicle* vehicle, bool essentialsOnly = false );
-	void Claim( class AFGWheeledVehicle* vehicle, bool recursive, bool essentialsOnly = false );
-	void Unclaim( class AFGWheeledVehicle* vehicle );
+	bool TryClaim( class AFGWheeledVehicleInfo* vehicle, TSet< TWeakObjectPtr< class AFGWheeledVehicleInfo > >& blockingVehicles, bool essentialsOnly = false );
+	void ForceClaim( class AFGWheeledVehicleInfo* vehicle, bool essentialsOnly = false );
+	void Claim( class AFGWheeledVehicleInfo* vehicle, bool recursive, bool essentialsOnly = false );
+	void Unclaim( class AFGWheeledVehicleInfo* vehicle );
 	void ForceUnclaim();
-	void Unclaim( class AFGWheeledVehicle* vehicle, bool recursive );
+	void Unclaim( class AFGWheeledVehicleInfo* vehicle, bool recursive );
 
-	bool IsLocked( const class AFGWheeledVehicle* vehicle, TSet< TWeakObjectPtr< class AFGWheeledVehicle > >& blockingVehicles ) const;
-	bool IsLockedByDocking( const class AFGWheeledVehicle* vehicle ) const;
+	bool IsLocked( const class AFGWheeledVehicleInfo* vehicle, TSet< TWeakObjectPtr< class AFGWheeledVehicleInfo > >& blockingVehicles ) const;
+	bool IsLockedByDocking( const class AFGWheeledVehicleInfo* vehicle ) const;
 
-	const class AFGWheeledVehicle* GetClaimingVehicle() const { return mClaimingVehicle.IsValid() ? mClaimingVehicle.Get() : nullptr; }
+	const class AFGWheeledVehicleInfo* GetClaimingVehicle() const { return mClaimingVehicle.IsValid() ? mClaimingVehicle.Get() : nullptr; }
 
 	UFUNCTION( BlueprintPure, Category = "Target Point" )
 	bool IsClaimed() const { return mClaimingVehicle != nullptr; }
@@ -173,12 +173,12 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Target Point" )
 	void IsClaimedChanged();
 
-	void DrawTargetDebug( class AFGWheeledVehicle* claimant, bool drawSearchPoints, bool drawSmall );
+	void DrawTargetDebug( class AFGWheeledVehicleInfo* claimant, bool drawSearchPoints, bool drawSmall );
 
 	UFUNCTION( BlueprintPure, Category = "Target Point" )
 	int GetDebugLevel() const;
 
-	void FindBlockingVehicles( class AFGWheeledVehicle* blockedVehicle, TSet< const class AFGWheeledVehicle* >& blockingVehicles ) const;
+	void FindBlockingVehicles( class AFGWheeledVehicleInfo* blockedVehicle, TSet< const class AFGWheeledVehicleInfo* >& blockingVehicles ) const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -244,9 +244,9 @@ private:
 	bool mIsDockingTarget = false;
 
 	UPROPERTY( ReplicatedUsing = OnRep_HostStation )
-	TWeakObjectPtr< class AFGBuildableDockingStation > mHostStation = nullptr;
+	TWeakObjectPtr< class AFGDockingStationInfo > mHostStation = nullptr;
 
-	TWeakObjectPtr< class AFGWheeledVehicle > mClaimingVehicle = nullptr;
+	TWeakObjectPtr< class AFGWheeledVehicleInfo > mClaimingVehicle = nullptr;
 
 	bool mIsLookedAt = false;
 

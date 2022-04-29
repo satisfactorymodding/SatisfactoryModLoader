@@ -193,22 +193,16 @@ public:
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFSaveInterface
 
-	// Begin IFGActorRepresentationInterface
-	virtual FVector GetRealActorLocation() override;
-	virtual FRotator GetRealActorRotation() override;
-	virtual FLinearColor GetActorRepresentationColor() override;
-	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	virtual float GetActorFogOfWarRevealRadius() override;
-	// End IFGActorRepresentationInterface
-
 	//~ Begin IFGUseableInterface
 	virtual void StartIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	virtual void StopIsLookedAt_Implementation( class AFGCharacterPlayer* byCharacter, const FUseState& state ) override;
 	//~ End IFGUseableInterface
 
-	/** Returns the static mesh that are attached to the skeletal mesh of some vehicles, nullptr if there is no such static mesh */
+	virtual FVector GetRealActorLocation() const override;
+
+	/** Returns the static mesh that is attached to the skeletal mesh of some vehicles, nullptr if there is no such static mesh */
 	UFUNCTION( BlueprintNativeEvent, Category = "Vehicle" )
-	UStaticMesh* FindAttachedStaticMesh();
+	UStaticMeshComponent* FindAttachedStaticMesh();
 
 	/** Returns VehicleMovement subobject **/
 	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
@@ -277,10 +271,6 @@ public:
 	UFUNCTION()
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
 
-	/**Returns the simulation component */
-	//UFUNCTION( BlueprintPure, Category = "Simulation" )
-	//FORCEINLINE UFloatingPawnMovement* GetSimulationComponent() { return mSimulationMovementComponent; }
-
 	/** Indicates if the vehicle is gasing or wants to move in simulated state */
 	UFUNCTION( BlueprintPure, Category = "Movement" ) 
 	bool ConsumesFuel();
@@ -288,21 +278,16 @@ public:
 	/** returns the ratio ( 0 to 1.0 ) for how much fuel we want to burn. Ussually a reflection of throttle value except during simulation */
 	float GetFuelBurnRatio();
 
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	class AFGWheeledVehicleInfo* GetInfo() const { return mInfo; }
+
 	/**Returns the simulation component */
 	UFUNCTION( BlueprintPure, Category = "LinkedList" )
 	class AFGDrivingTargetList* GetTargetList( bool createIfNeeded = false );
 
-	/** Fills the linked list with target nodes with data from an array */
-	//UFUNCTION( BlueprintCallable, Category = "Path" )
-	//void SetPathFromArray( TArray< class AFGTargetPoint* > targetPoints );
-
 	/**Getter for path visibility */
 	UFUNCTION( BlueprintPure, Category = "Path" )
 	bool GetPathVisibility();
-
-	/**Getter for path visibility */
-	//UFUNCTION( BlueprintCallable, Category = "Path" )
-	//void SetPathVisibility( bool inVisible ) { mIsPathVisible = inVisible; }
 
 	/** Multicast from server when foliage was destroyed */
 	UFUNCTION( NetMulticast, Unreliable, Category = "Character" )
@@ -348,13 +333,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Vehicle" )
 	static FText GetDefaultMapName( TSubclassOf< AFGWheeledVehicle > vehicleType );
 
-	class AFGDrivingTargetList* GetActiveTargetList() const;
-
-	class UFGSplinePathMovementComponent* GetSimulationMovement() const { return mSimulationMovement; }
-
 	void SyncWithSimulation();
-
-	bool ShouldStayAtDock();
 
 	bool HasFullTank() const;
 
@@ -362,9 +341,13 @@ public:
 
 	float CalculateFuelNeed() const;
 
+	float GetMaxFuelEnergy( TSubclassOf< class UFGItemDescriptor > fuelClass ) const;
+
 	float GetMaxFuelEnergy() const;
 
 	bool HasFuelForRoundtrip() const;
+
+	bool IsSufficientFuelType( TSubclassOf< class UFGItemDescriptor > fuelType ) const;
 
 	UFUNCTION( BlueprintPure, Category = "Docking" )
 	ETransferAnimationState GetTransferAnimationState( float animationLength, float& animationTime );
@@ -428,6 +411,8 @@ protected:
 	virtual void OnCustomizationDataApplied( const FFactoryCustomizationData& customizationData ) override;
 
 private:
+	void EnsureInfoCreated();
+
 	/** Tick helpers */
 	void UpdateAirStatus();
 	void UpdateTireEffects();
@@ -464,6 +449,148 @@ private:
 	void OnRep_TransferStatusChanged();
 
 public:
+	// Self-driving
+
+	void StopVehicle();
+
+	float AdjustThrottle( float throttle ) const;
+
+	void StartRecording();
+
+	void StopRecording( bool isValid );
+
+	void TickRecording( float deltaTime );
+
+	void PlaceTargetPoint();
+
+	void ClearTargetList();
+
+	void CacheSpeedInKMH();
+
+	bool ShouldStopVehicle() const;
+
+	int GetSpeedLimit() const { return mSpeedLimit; }
+
+	void StopAllMovement();
+
+	float GetLocalTime() const;
+	
+	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
+	void MoveForward( float axisValue );
+	
+	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
+	void MoveRight( float axisValue );
+
+	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
+	void TurnOverVehicle();
+
+	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
+	bool IsRecording() const { return mRecordingStatus == ERecordingStatus::RS_RecordingStarted || mRecordingStatus == ERecordingStatus::RS_CompletionPossible; }
+
+	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
+	bool IsFollowingPath() const;
+
+	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
+	void SetIsPossessed( bool isPossessed );
+
+	UFUNCTION( BlueprintPure, Category = "Vehicle" )
+	int GetSpeedInKMH() const { return mSpeedInKMH; }
+
+	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
+	void SetSpeedLimit( int speedLimit ) { mSpeedLimit = speedLimit; }
+	
+	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
+	bool IsMenuOpen() const { return mIsMenuOpen; }
+	
+	UFUNCTION( BlueprintCallable, Category = "Vehicle|SelfDriving" )
+	void SetIsMenuOpen( bool isMenuOpen ) { mIsMenuOpen = isMenuOpen; }
+
+	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
+	bool IsAutopilotEnabled() const { return mIsAutopilotEnabled; }
+
+	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
+	bool CanLoadPath() const;
+	
+	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
+	bool CanSavePath() const;
+
+	/** Get the current target */
+	/*UFUNCTION( BlueprintPure, Category = "LinkedList" )
+	FORCEINLINE class AFGTargetPoint* GetCurrentTarget() { return mCurrentTarget; }*/
+
+	/** Set the current target */
+	/*UFUNCTION( BlueprintCallable, Category = "LinkedList" )
+	void SetCurrentTarget( class AFGTargetPoint* newTarget );
+	void UpdateCurrentTarget();*/
+
+	/** Sets target in the linked list to the next available. Will loop */
+	UFUNCTION( BlueprintCallable, Category = "LinkedList" )
+	void PickNextTarget();
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_Leave();
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_ToggleAutoPilot();
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_TogglePathVisibility();
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_ToggleRecording();
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_ClearRecordedPath();
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_SavePath( const FString& saveName );
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_UnsavePath( AFGSavedWheeledVehiclePath* path );
+
+	UFUNCTION( BlueprintCallable, Server, Reliable )
+	void Server_LoadPath( class AFGDrivingTargetList* targetList );
+	
+	UFUNCTION( BlueprintCallable, BlueprintPure = False )
+	void FindSavedPaths( const FString& textFilter, bool filterOnVehicleType, TArray< AFGSavedWheeledVehiclePath* >& result ) const;
+	
+	UFUNCTION()
+	void OnRep_RecordingStatus();
+
+	UFUNCTION()
+	void OnRep_ManualDockingState();
+
+	UFUNCTION()
+	void OnRep_Info();
+
+	/** Updates the vehicles settings depending on if it should be simulated or "real" */
+	virtual void OnIsSimulatedChanged();
+
+	FVector GetVelocityVector() const;
+
+	void OnSimulationTargetReached( AFGTargetPoint* newTarget );
+
+	void PickFirstTargetAfterStation();
+
+	AFGTargetPoint* SpawnNewTargetPoint( const FVector& location, const FRotator& rotation, AFGDrivingTargetList* targetList, int targetSpeed, AFGTargetPoint* afterTarget = nullptr );
+
+	class UFGVehicleCollisionBoxComponent* FindCollisionBox() const;
+
+	void StartGhosting();
+
+	void TryLeaveSimulatedMode();
+	bool IsAboveSolidGround( const FTransform& transform ) const;
+	bool IsOverlappingOther( const FTransform& transform ) const;
+
+	bool WasFuelAdded() const { return mWasFuelAdded; }
+
+	float GetTargetWaitTime() const { return mTargetWaitTime; }
+	bool IsWaitingAtTarget() const { return mTargetWaitTime > 0.0f; }
+
+private:
+	float CalculateAutomatedFuelToConsume( float deltaTime );
+
+public:
 	/** Name of the VehicleMovement. Use this name if you want to use a different class (with ObjectInitializer.SetDefaultSubobjectClass). */
 	static FName VehicleMovementComponentName;
 
@@ -485,7 +612,6 @@ protected:
 	friend class AFGWheeledVehicleAIController;
 	friend class UFGSplinePathMovementComponent;
 	friend class UFGWheeledVehicleDetectionComponent;
-	friend class AFGSimulatedWheeledVehicle;
 	friend class AFGVehicleSubsystem;
 	friend class AFGDrivingTargetList;
 
@@ -507,10 +633,6 @@ protected:
 	/** Are we currently in the process of unloading inventory */
 	UPROPERTY( BlueprintReadOnly, SaveGame, ReplicatedUsing = OnRep_TransferStatusChanged, Meta = ( NoAutoJson = true ) )
 	bool mIsUnloadingVehicle;
-
-	/** Type of the currently burned piece of fuel. */
-	UPROPERTY( SaveGame )
-	TSubclassOf< class UFGItemDescriptor > mCurrentFuelClass;
 
 	/** Is vehicle in air */
 	UPROPERTY()
@@ -602,26 +724,15 @@ protected:
 	/** Collision box for detecting overlaps with foliage only. Shape modified in BP */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	UBoxComponent* mFoliageCollideBox;
-
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
-	FVector mAuthoritativeLocation;
-
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
-	FQuat mAuthoritativeRotation;
-
-	UPROPERTY(Replicated, BlueprintReadOnly, Category="Vehicle|Movement Replication")
-	FVector mAuthoritativeLinearVel;
 	
 	FDateTime mLastAccurateLocation;	
 	
 private:
+	bool mIsServer = false;
+
 	/** replicated state of vehicle. */
 	UPROPERTY( Transient, Replicated )
 	FReplicatedAddedVelocitiesState mReplicatedState;
-	
-	/** Used for simulated movement along path described by mTargetList */
-	UPROPERTY( ReplicatedUsing = OnRep_SimulationMovement )
-	class UFGSplinePathMovementComponent* mSimulationMovement;
 
 	/** Used for simulated movement along path described by mTemporaryTargetList */
 	//UPROPERTY( ReplicatedUsing = OnRep_TemporarySimulationMovement )
@@ -653,14 +764,6 @@ private:
 	/** Base name of socket use for tire particles */
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	FString mTireEffectSocketName;
-
-	/** Linked list with target nodes that make up our path to travel */
-	UPROPERTY( SaveGame, Replicated )
-	class AFGDrivingTargetList* mTargetList;
-
-	/** Temporary path to travel, for dynamically constructed paths, for example while docking */
-	//UPROPERTY()
-	//class AFGDrivingTargetList* mTemporaryTargetList;
 
 	/** Deprecated. Kept for compatibility with legacy saves */
 	UPROPERTY( SaveGame )
@@ -802,158 +905,8 @@ private:
 	float mLastTransferAnimationStartTime = -BIG_NUMBER;
 
 public:
-	// Self-driving
+	// self-driving
 
-	void StopVehicle();
-	float AdjustThrottle( float throttle ) const;
-	void StartRecording();
-	void StopRecording( bool isValid );
-	void TickRecording( float deltaTime );
-	void PlaceTargetPoint();
-	void ClearTargetList();
-	void CacheSpeedInKMH();
-	bool ShouldStopVehicle() const;
-	void SetIsFollowingPath( bool isFollowingPath );
-	bool IsAtStation() const { return mCurrentStation != nullptr; }
-	int GetSpeedLimit() const { return mSpeedLimit; }
-	void StopAllMovement();
-	float GetLocalTime() const;
-	
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void MoveForward( float axisValue );
-	
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void MoveRight( float axisValue );
-
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void TurnOverVehicle();
-
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	bool IsRecording() const { return mRecordingStatus == ERecordingStatus::RS_RecordingStarted || mRecordingStatus == ERecordingStatus::RS_CompletionPossible; }
-
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	bool IsFollowingPath() const { return mIsFollowingPath; }
-
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void SetIsPossessed( bool isPossessed );
-
-	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	bool IsPossessed() const { return mIsPossessed; }
-
-	UFUNCTION( BlueprintPure, Category = "Vehicle" )
-	int GetSpeedInKMH() const { return mSpeedInKMH; }
-
-	UFUNCTION( BlueprintCallable, Category = "Vehicle" )
-	void SetSpeedLimit( int speedLimit ) { mSpeedLimit = speedLimit; }
-	
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	bool IsMenuOpen() const { return mIsMenuOpen; }
-	
-	UFUNCTION( BlueprintCallable, Category = "Vehicle|SelfDriving" )
-	void SetIsMenuOpen( bool isMenuOpen ) { mIsMenuOpen = isMenuOpen; }
-
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	bool IsAutopilotEnabled() const { return mIsAutopilotEnabled; }
-
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	bool CanLoadPath() const;
-	
-	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
-	bool CanSavePath() const;
-
-	/** Get the current target */
-	UFUNCTION( BlueprintPure, Category = "LinkedList" )
-	FORCEINLINE class AFGTargetPoint* GetCurrentTarget() { return mCurrentTarget; }
-
-	/** Set the current target */
-	UFUNCTION( BlueprintCallable, Category = "LinkedList" )
-	void SetCurrentTarget( class AFGTargetPoint* newTarget );
-	void UpdateCurrentTarget();
-
-	/** Sets target in the linked list to the next available. Will loop */
-	UFUNCTION( BlueprintCallable, Category = "LinkedList" )
-	void PickNextTarget();
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_Leave();
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_ToggleAutoPilot();
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_TogglePathVisibility();
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_ToggleRecording();
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_ClearRecordedPath();
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_SavePath( const FString& saveName );
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_UnsavePath( AFGSavedWheeledVehiclePath* path );
-
-	UFUNCTION( BlueprintCallable, Server, Reliable )
-	void Server_LoadPath( class AFGDrivingTargetList* targetList );
-	
-	UFUNCTION( BlueprintCallable, BlueprintPure = False )
-	void FindSavedPaths( const FString& textFilter, bool filterOnVehicleType, TArray< AFGSavedWheeledVehiclePath* >& result ) const;
-
-	UFUNCTION()
-	void OnRep_IsFollowingPath();
-
-	UFUNCTION()
-	void OnRep_SimulationMovement();
-	
-	UFUNCTION()
-	void OnRep_RecordingStatus();
-	
-	UFUNCTION()
-	void OnRep_IsGhosting();
-
-	UFUNCTION()
-	void OnRep_ManualDockingState();
-
-	UFUNCTION( BlueprintImplementableEvent, Category = "Vehicle|SelfDriving" )
-	void IsFollowingPathChanged( bool isFollowingPath );
-
-	/** Updates the vehicles settings depending on if it should be simulated or "real" */
-	virtual void OnIsSimulatedChanged();
-
-	//void CreateTemporaryPath( AFGDrivingTargetList* temporaryTargetList, AFGTargetPoint* nextRegularTarget );
-
-	void TryActivatePathSimulation();
-
-	void AttachSimulatedVehicle();
-
-	FVector GetVelocityVector() const;
-
-	void OnSimulationTargetReached( AFGTargetPoint* newTarget );
-
-	void PickFirstTargetAfterStation();
-
-	AFGTargetPoint* SpawnNewTargetPoint( const FVector& location, const FRotator& rotation, AFGDrivingTargetList* targetList, int targetSpeed, AFGTargetPoint* afterTarget = nullptr );
-
-	void OnTargetWasForceClaimed( class AFGTargetPoint* target, class AFGWheeledVehicle* claimant );
-
-	class UFGVehicleCollisionBoxComponent* FindCollisionBox() const;
-
-	void StartGhosting();
-
-	void TryLeaveSimulatedMode();
-	bool IsAboveSolidGround( const FTransform& transform ) const;
-	bool IsLeaveSimulationFriendly( const FTransform& transform ) const;
-
-	void GiveWayTo( const AFGWheeledVehicle* other );
-
-	bool WasFuelAdded() const { return mWasFuelAdded; }
-
-private:
-	float CalculateAutomatedFuelToConsume( float deltaTime );
-
-public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnStopRecording, bool, success );
 	UPROPERTY( BlueprintAssignable, Category = "Vehicle" )
 	FOnStopRecording OnStopRecordingDelegate;
@@ -973,8 +926,26 @@ public:
 
 	float mSquaredDistanceToClosestPlayer = 0.0f;
 
+	int mPostSimulationImpulseCount = 0;
+
+	float mTimeStationWasEntered = 0.0f;
+
+	/** Was fuel transferred from station to vehicle during the current docking */
+	UPROPERTY( SaveGame )
+	bool mWasFuelAdded = false;
+
+	bool mIsLookedAt = false;
+
 private:
 	// Self-driving
+
+	UPROPERTY( ReplicatedUsing = OnRep_Info, SaveGame )
+	class AFGWheeledVehicleInfo* mInfo;
+	
+	/** Linked list with target nodes that make up our path to travel */
+	UPROPERTY( SaveGame, Replicated )
+	class AFGDrivingTargetList* mTargetList;
+
 	int mSpeedInKMH = 0;
 	bool mIsMenuOpen = false;
 	float mRecordCounter = 0.0f;
@@ -984,44 +955,23 @@ private:
 	float mAverageSpeed = 0.0f;
 	float mYawVelocity = 0.0f;
 	float mAverageYawVelocity = 0.0f;
-	//float mVelocity = 0.0f;
 	float mSpeed = 0.0f;
-	//FVector mVelocityVector = { 0.0f, 0.0f, 0.0f };
 	float mAcceleration = 0.0f;
 	bool mIsReversing = false;
-
-	int mPostSimulationImpulseCount = 0;
-	//int mPostSimulationImpulseCount = 0;
-	//FVector mLastSimulationVelocity = { 0.0f, 0.0f, 0.0f };
-	//float mLastSimulationVelocitySquared = 0.0f;
 
 	UPROPERTY( Replicated, SaveGame )
 	int mSpeedLimit = -1;
 
-	//UPROPERTY( SaveGame )
 	float mDesiredSteering = 0.0f;
 
-	//UPROPERTY( SaveGame )
 	float mDesiredThrottle = 0.0f;
 
-	//UPROPERTY( SaveGame )
 	float mDesiredBrake = 0.0f;
 
-	//UPROPERTY( SaveGame )
 	bool mDesiredHandbrake = false;
-
-	UPROPERTY( ReplicatedUsing = OnRep_IsFollowingPath )
-	bool mIsFollowingPath = false;
 
 	UPROPERTY( Replicated, SaveGame )
 	bool mIsAutopilotEnabled = false;
-
-	UPROPERTY( Replicated )
-	bool mIsPossessed = false;
-
-	/** The station to which this vehicle is currently docked */
-	UPROPERTY( Replicated )
-	class AFGBuildableDockingStation* mCurrentStation = nullptr;
 
 	/** The station at which this vehicle is currently being refueled */
 	class AFGBuildableDockingStation* mRefuelingStation = nullptr;
@@ -1029,8 +979,8 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_ManualDockingState )
 	EManualDockingState mManualDockingState = EManualDockingState::MDS_NoDocking;
 
-	/** Current node */
-	UPROPERTY( SaveGame, Replicated )
+	/** Deprecated. Use mInfo->mTarget. */
+	UPROPERTY( SaveGame )
 	class AFGTargetPoint* mCurrentTarget;
 
 	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_RecordingStatus )
@@ -1038,26 +988,8 @@ private:
 
 	class AFGTargetPoint* mStoredTarget = nullptr;
 
-	UPROPERTY()
-	class AFGSimulatedWheeledVehicle* mSimulatedVehicle;
-
-	FVector mBoundingBoxExtent = FVector::ZeroVector;
-	FVector mBoundingBoxOffset = FVector::ZeroVector;
-	float mWheelRadius = 0.0f;
-
 	float mThrottleSampleCount = 0.0f;
 	float mThrottleSampleSum = 0.0f;
-
-	/** Was fuel transferred from station to vehicle during the current docking */
-	UPROPERTY( SaveGame )
-	bool mWasFuelAdded = false;
-
-	float mTimeStationWasEntered = 0.0f;
-
-	bool mIsLookedAt = false;
-
-	UPROPERTY( ReplicatedUsing = OnRep_IsGhosting )
-	bool mIsGhosting = false;
 
 	bool mWantsToStopGhosting = false;
 
@@ -1075,12 +1007,11 @@ private:
 	UPROPERTY( SaveGame )
 	float mAutomatedFuelConsumptionTimeSkipped = 0.0f;
 
-	// If > 0, the number of blocks until this vehicle reaches itself in a deadlock. If 0 there is no deadlock.
-	int mDeadlockedAtDepth = 0;
+	UPROPERTY( SaveGame )
+	float mTargetWaitTime = 0.0f;
 
-	bool mCanTransitionToRealMode = true;
-
-	const AFGWheeledVehicle* mVehicleGivenWayTo = nullptr;
+	bool mIsAboveSolidGround = false;
+	bool mIsOverlappingOther = false;
 
 	float mNextTimeToCheckForLost = 0.0f;
 };

@@ -202,14 +202,6 @@ public:
 	// Called when exiting to desktop/shutting down
 	virtual void Shutdown() override;
 
-	/** Setter for  mSkipOnboarding*/
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Onboarding" ) 
-	void SetSkipOnboarding( bool doSkip );
-
-	/** Getter for  mSkipOnboarding*/
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Onboarding" )
-	FORCEINLINE bool GetSkipOnboarding() { return mSkipOnboarding; }
-
 	//[Gafgar:Tue/07-04-2020] moved to be done automatically now
 	///** Query our current NAT-type */
 	void QueryNATType();
@@ -308,10 +300,7 @@ protected:
 
 	/** Join session complete handle */
 	FDelegateHandle mOnJoinSessionCompleteHandle;
-
-	/** Has the player chosen to skip the onboarding? */
-	bool mSkipOnboarding;
-
+	
 	/** Called when nat-type is updated */
 	UPROPERTY(BlueprintAssignable)
 	FOnNatTypeUpdated mOnNatTypeUpdated;

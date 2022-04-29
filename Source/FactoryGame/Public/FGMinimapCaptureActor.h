@@ -114,10 +114,6 @@ public:
 	UPROPERTY( EditInstanceOnly, Category = "Minimap Height" )
 	int32 mLayersForTerrain;
 
-	/** Show depth on the water map */
-	UPROPERTY( EditInstanceOnly, Category = "Minimap Height" )
-	bool mShowDepthOnWaterMap;
-
 	/** The max water depth considered, everything deeper than this will be clamped to this value */
 	UPROPERTY( EditInstanceOnly, Category = "Minimap Height" )
 	float mWaterMaxDepth = 1000.0f;
@@ -128,6 +124,11 @@ public:
 
 	UPROPERTY( EditInstanceOnly, Category = "Minimap Height" )
 	int32 mHeightDataResolution;
+
+	/** What collision channel should we trace against when generating the map */
+	UPROPERTY( EditInstanceOnly, Category = "Minimap Height" )
+	TEnumAsByte< ECollisionChannel > mCollisionChannel;
+	
 
 
 #endif

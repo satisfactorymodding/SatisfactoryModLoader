@@ -142,6 +142,9 @@ public:
 	UFUNCTION(BlueprintPure, Category="FactoryGame|Online|Admin")
 	FORCEINLINE class AFGAdminInterface* GetAdminInterface() const { return mAdminInterface; }
 
+	// This is valid on both server and client if cheats are allowed
+	FORCEINLINE class UFGCheatManager* GetCheatManager() const { return mReplicatedCheatManager; }
+
 	virtual bool ProcessConsoleExec( const TCHAR* Cmd, FOutputDevice& Ar, UObject* Executor ) override;
 
 	/** Returns the most relevant save manager. This will be the local save manager in the main menu, the server save manager when playing on a server and authenticated as admin, or null when playing on a server without admin privilege */

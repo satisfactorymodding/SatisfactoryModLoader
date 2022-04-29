@@ -233,12 +233,16 @@ FVector AFGCharacterPlayer::GetInventoryDropLocation_Implementation(const  UFGIn
 void AFGCharacterPlayer::AddRadiationImmunity(float toAdd){ }
 void AFGCharacterPlayer::SetRadiationImmunity(float newImmunity){ }
 void AFGCharacterPlayer::ClientCheatWalk_Implementation(){ }
+void AFGCharacterPlayer::Server_CheatWalk_Implementation(){ }
 void AFGCharacterPlayer::ClientCheatFly_Implementation(){ }
+void AFGCharacterPlayer::Server_CheatFly_Implementation(){ }
 void AFGCharacterPlayer::CheatToggleGhostFly(){ }
-void AFGCharacterPlayer::CheatToggleGhostFly(bool ghostModeActive){ }
+void AFGCharacterPlayer::CheatSetGhostFly(bool ghostModeActive){ }
+void AFGCharacterPlayer::Server_CheatSetGhostFly_Implementation(bool ghostModeActive){ }
 bool AFGCharacterPlayer::CheatToggleGhostFlyIsActive(){ return bool(); }
 bool AFGCharacterPlayer::CheatToggleFlyModeIsActive(){ return bool(); }
 void AFGCharacterPlayer::CheatToggleFlyMode(){ }
+void AFGCharacterPlayer::Server_CheatTeleport_Implementation(FTransform newTransform){ }
 void AFGCharacterPlayer::CheatTeleport(){ }
 void AFGCharacterPlayer::OnSlideStart(){ }
 void AFGCharacterPlayer::OnSlideEnd(){ }

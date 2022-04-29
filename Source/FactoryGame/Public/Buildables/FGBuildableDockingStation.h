@@ -5,15 +5,7 @@
 #include "FactoryGame.h"
 #include "Buildables/FGBuildableFactory.h"
 #include "Replication/FGReplicationDetailActor_DockingStation.h"
-#include "FGActorRepresentationInterface.h"
 #include "FGBuildableDockingStation.generated.h"
-
-UENUM( BlueprintType )
-enum class EDockingStationStatus : uint8
-{
-	DSS_Operational,
-	DSS_FuelTypeWarning,
-};
 
 USTRUCT( BlueprintType )
 struct FDockingVehicleStatistics
@@ -42,7 +34,7 @@ struct FDockingVehicleStatistics
  * Base class for docking stations in the game, this is a load/unload station depending on the conveyor connections given.
  */
 UCLASS(Abstract)
-class FACTORYGAME_API AFGBuildableDockingStation : public AFGBuildableFactory, public IFGActorRepresentationInterface
+class FACTORYGAME_API AFGBuildableDockingStation : public AFGBuildableFactory
 {
 	GENERATED_BODY()
 public:
@@ -57,35 +49,21 @@ public:
 	virtual void Destroyed() override;
 	// End AActor interface
 
+	// Begin IFGSaveInterface
+	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
+	// End IFSaveInterface
+
 	// Begin IFGReplicationDetailActorOwnerInterface
 	virtual UClass* GetReplicationDetailActorClass() const override { return AFGReplicationDetailActor_DockingStation::StaticClass(); };
 	virtual void OnReplicationDetailActorRemoved() override;
 	// End IFGReplicationDetailActorOwnerInterface
 
-	// Begin IFGActorRepresentationInterface
-	virtual bool AddAsRepresentation() override;
-	virtual bool UpdateRepresentation() override;
-	virtual bool RemoveAsRepresentation() override;
-	virtual bool IsActorStatic() override;
-	virtual FVector GetRealActorLocation() override;
-	virtual FRotator GetRealActorRotation() override;
-	virtual class UTexture2D* GetActorRepresentationTexture() override;
-	virtual FText GetActorRepresentationText() override;
-	virtual void SetActorRepresentationText( const FText& newText ) override;
-	virtual FLinearColor GetActorRepresentationColor() override;
-	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	virtual ERepresentationType GetActorRepresentationType() override;
-	virtual bool GetActorShouldShowInCompass() override;
-	virtual bool GetActorShouldShowOnMap() override;
-	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	virtual float GetActorFogOfWarRevealRadius() override;
-	virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
-	// End IFGActorRepresentationInterface
-
 	//Begin IFGSignificanceInterface
 	virtual float GetSignificanceRange() override;
 	//End IFGSignificanceInterface
+
+	UFUNCTION( BlueprintPure, Category = "DockingStation" )
+	class AFGDockingStationInfo* GetInfo() const { return mInfo; }
 
 	/** @return a valid pointer to the fuel inventory */
 	UFUNCTION( BlueprintPure, Category = "Inventory" )
@@ -101,7 +79,7 @@ public:
 
 	/** Dock an actor to this docking station. */
 	UFUNCTION( BlueprintCallable, Category = "DockingStation" )
-	virtual bool Dock( class AActor* actor );
+	virtual bool DockActor( class AActor* actor );
 
 	/** Undock the docked actor. */
 	UFUNCTION( BlueprintCallable, Category = "DockingStation" )
@@ -118,17 +96,6 @@ public:
 	/** Get whether this station is currently loading or unloading from vehicles */
 	UFUNCTION( BlueprintPure, Category = "DockingStation" )
 	virtual bool IsLoadUnloading() const;
-
-	void SetStatus( EDockingStationStatus status );
-
-	/** The current status of this station  */
-	UFUNCTION( BlueprintPure, Category = "DockingStation" )
-	EDockingStationStatus GetStatus() const { return mStatus; }
-
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE( FStatusChanged );
-	/** Broadcast when the operation status has changed */
-	UPROPERTY( BlueprintAssignable, Category = "DockingStation", DisplayName = "OnStatusChanged" )
-	FStatusChanged StatusChangedDelegate;
 
 	void SetVehicleFuelConsumptionRate( float vehicleFuelConsumptionRate );
 
@@ -163,6 +130,10 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "DockingStation", DisplayName = "OnMaximumStackTransferRateChanged" )
 	FMaximumStackTransferRateChanged MaximumStackTransferRateChangedDelegate;
 
+	/** Returns the zone in which a vehicle is considered docked */
+	UFUNCTION( BlueprintImplementableEvent, Category = "DockingStation" )
+	UBoxComponent* FindDockArea();
+
 	/** Notify for when unload and/or load transfers are completed */
 	UFUNCTION( BlueprintImplementableEvent, Category = "DockingStation" )
 	void OnTransferComplete();
@@ -192,6 +163,11 @@ public:
 
 	UFUNCTION( BlueprintPure, Category = "DockingStation" )
 	int GetDockingVehicleCount() const { return mDockingVehicles.Num(); }
+
+	bool CanBeRefuelingVehicle( AFGWheeledVehicle* vehicle ) const;
+	void SetRefuelingVehicle( AFGWheeledVehicle* vehicle );
+
+	bool HasSufficientFuelType() const;
 
 protected:
 	// Begin Factory_ interface
@@ -230,6 +206,8 @@ protected:
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
 private:
 
+	void EnsureInfoCreated();
+
 	/** Loads fuel into the docked vehicles inventory.
 	 * @return true if we are done refueling (i.e. vehicle fuel inventory is full or we have no fuel to transfer)
 	 */
@@ -249,9 +227,6 @@ private:
 
 	UFUNCTION()
 	void OnDockingAreaEndOverlap( UPrimitiveComponent* thisComponent, AActor* otherActor, UPrimitiveComponent* otherComponent, int32 otherBodyIndex );
-
-	UFUNCTION()
-	void OnRep_Status();
 
 	UFUNCTION()
 	void OnRep_VehicleFuelConsumptionRate();
@@ -275,10 +250,16 @@ public:
 	float mMinimumDockingTime = 10.0f;
 
 	/** The zone in which a vehicle is considered docked */
-	UPROPERTY( BlueprintReadWrite, Category = "DockingStation" )
+	UPROPERTY( Transient )
 	UBoxComponent* mDockArea;
 
 	float mMaxTargetPointZ = -BIG_NUMBER;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
+	class UTexture2D* mActorRepresentationTexture;
+
+	UPROPERTY( SaveGame, Replicated )
+	FText mMapText;
 	
 protected:
 	friend class AFGReplicationDetailActor_DockingStation;
@@ -330,6 +311,10 @@ protected:
 	UPROPERTY( SaveGame )
 	class AActor* mDockedActor;
 
+	/** The actor docked to this station. */
+	/*UPROPERTY( SaveGame )
+	class AActor* mDockedVehicle;*/
+
 	/** A non-automated vehicle currently receiving fuel from the station. */
 	TWeakObjectPtr< class AFGWheeledVehicle > mRefuelingVehicle;
 
@@ -350,6 +335,9 @@ protected:
 	bool mIsLoadUnloading;
 
 private:
+	UPROPERTY( Replicated, SaveGame )
+	class AFGDockingStationInfo* mInfo;
+
 	/** Inventory where we transfer items to when unloading from a vehicle  */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mInventory;
@@ -358,17 +346,8 @@ private:
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mFuelInventory;
 
-	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
-	class UTexture2D* mActorRepresentationTexture;
-
-	UPROPERTY( SaveGame, Replicated )
-	FText mMapText;
-
 	UPROPERTY( Replicated )
 	bool mForceSignificance = false;
-
-	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_Status )
-	EDockingStationStatus mStatus = EDockingStationStatus::DSS_Operational;
 
 	UPROPERTY( ReplicatedUsing = OnRep_VehicleFuelConsumptionRate )
 	float mVehicleFuelConsumptionRate = 0.0;

@@ -3,11 +3,13 @@
 #include "WheeledVehicles/FGSimulatedWheeledVehicle.h"
 
 AFGSimulatedWheeledVehicle::AFGSimulatedWheeledVehicle() : Super() {
+	this->bAlwaysRelevant = true;
+	this->bReplicates = true;
+}
+void AFGSimulatedWheeledVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 }
 void AFGSimulatedWheeledVehicle::Init( AFGWheeledVehicle* vehicle){ }
-void AFGSimulatedWheeledVehicle::UpdateCustomizationData( AFGWheeledVehicle* vehicle){ }
-void AFGSimulatedWheeledVehicle::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
-void AFGSimulatedWheeledVehicle::ShowGhostingEffect(bool enabled){ }
 void AFGSimulatedWheeledVehicle::BeginPlay(){ }
 void AFGSimulatedWheeledVehicle::EndPlay(const EEndPlayReason::Type EndPlayReason){ }

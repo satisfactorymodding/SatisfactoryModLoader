@@ -1,7 +1,7 @@
 #include "Registry/ModContentRegistry.h"
 
 
-#include "FGGameInstance.h"
+#include "FGGameMode.h"
 #include "FGGameState.h"
 #include "FGRecipeManager.h"
 #include "FGResearchManager.h"
@@ -245,11 +245,12 @@ void AModContentRegistry::CheckSavedDataForMissingObjects() {
 }
 
 void AModContentRegistry::UnlockTutorialSchematics() {
-	UFGGameInstance* GameInstance = Cast<UFGGameInstance>(GetGameInstance());
+	AFGGameMode* GameMode = Cast<AFGGameMode>(GetWorld()->GetAuthGameMode());
+
 	AFGTutorialIntroManager* TutorialIntroManager = AFGTutorialIntroManager::Get(this);
 	AFGSchematicManager* SchematicManager = AFGSchematicManager::Get(this);
 
-	if (SchematicManager && (GameInstance && GameInstance->GetSkipOnboarding() || TutorialIntroManager && TutorialIntroManager->GetIsTutorialCompleted())) {
+	if (SchematicManager && (GameMode && GameMode->ShouldSkipOnboarding() || TutorialIntroManager && TutorialIntroManager->GetIsTutorialCompleted())) {
 		for (const TSharedPtr<FSchematicRegistrationInfo>& RegistrationInfo : SchematicRegistryState.GetAllObjects()) {
 			const TSubclassOf<UFGSchematic> Schematic = RegistrationInfo->RegisteredObject;
 

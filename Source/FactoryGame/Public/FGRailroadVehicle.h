@@ -68,12 +68,6 @@ public:
 	virtual void UnregisterInteractingPlayer_Implementation( class AFGCharacterPlayer* player ) override;
 	//~ End IFGUseableInterface
 
-	// Begin IFGActorRepresentationInterface
-	virtual bool UpdateRepresentation() override;
-	virtual bool GetActorShouldShowInCompass() override;
-	virtual bool GetActorShouldShowOnMap() override;
-	// End IFGActorRepresentationInterface
-
 	/** Update the power usage and info for this railroad vehicle. */
 	virtual void UpdatePower();
 
@@ -177,9 +171,14 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, meta = ( DisplayName = "OnCollided" ) )
 	void ReceiveOnCollided( AFGRailroadVehicle* withVehicle, float impactVelocity, bool isPrimaryEvent, bool isDerailed );
 
-	/** Override to spawn the derail hologram for this vehicle. */
+	/** Get the mesh to spawn for the derail hologram actor. */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic )
-	UMeshComponent* SpawnDerailHologram( FTransform transform );
+	UStaticMesh* GetDerailHologramMesh();
+
+	/** Helpers for the derail physics. */
+	void EnableDerailPhysics( const FVector& velocity );
+	void FreezeDerailPhysics();
+	void DisableDerailPhysics();
 	
 private:
 	/** Tick the locally simulated client movement. */
@@ -201,12 +200,11 @@ private:
 	void OnRep_Train();
 	UFUNCTION()
 	void OnRep_IsDerailed();
-
-	/** Helpers for the derail physics. */
-	void EnableDerailPhysics( const FVector& velocity );
-	void DisableDerailPhysics();
 	
 protected:
+	// About 1/5 of the distance to the world bounds and about the same as distance to the KillZ in the sky from sea level.
+	static constexpr float MAX_DERAIL_DISTANCE = 200000.f;
+	
 	/** The train this vehicle is part of, updated from the railroad subsystem */
 	UPROPERTY( ReplicatedUsing = OnRep_Train, VisibleAnywhere, Category = "Vehicle" )
 	class AFGTrain* mTrain;
@@ -243,11 +241,13 @@ private:
 	FRailroadTrackPosition mTrackPosition;
 
 	/** If this vehicle is derailed, handles the derailment on client. */
-	UPROPERTY( ReplicatedUsing = OnRep_IsDerailed )
+	UPROPERTY( ReplicatedUsing = OnRep_IsDerailed, VisibleAnywhere )
 	bool mIsDerailed;
+	UPROPERTY( VisibleAnywhere )
+	bool mIsMaxDerailDistanceReached;
 
-	/** The derail interaction mesh shown for derailed vehicles. */
-	TWeakObjectPtr< UMeshComponent > mDerailHologramComponent;
+	/** If we have derailed and are far enough from the location of the derailing, this is the hologram shown in place of the train. */
+	TWeakObjectPtr< class AFGRailroadVehicleRerailHologram > mDerailHologram;
 
 	// @todo-trains Comment these when we have optimized.
 	UPROPERTY( Replicated )

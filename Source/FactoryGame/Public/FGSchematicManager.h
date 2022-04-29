@@ -179,6 +179,8 @@ public:
 	void Debug_DumpStateToLog() const;
 	TArray< TSubclassOf< class UFGRecipe > > Debug_GetAllRecipes() const;
 
+	void Cheat_GiveAllSchematics();
+
 	/** Checks if it's valid to give access to the given schematic */
 	bool CanGiveAccessToSchematic( TSubclassOf< UFGSchematic > schematic ) const;
 

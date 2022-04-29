@@ -58,6 +58,7 @@ bool AFGGameMode::GetDefaultPlayerCapsuleSize(UWorld* world, float& out_capsuleR
 bool AFGGameMode::RegisterRemoteCallObjectClass(TSubclassOf< UFGRemoteCallObject > inClass){ return bool(); }
 void AFGGameMode::RegisterCallObjectOnAllCurrentPlayers(TSubclassOf<UFGRemoteCallObject> inClass){ }
 void AFGGameMode::RebootSession(){ }
+bool AFGGameMode::ShouldSkipOnboarding() const{ return bool(); }
 void AFGGameMode::SetServerRestartWorldTime(float worldTime){ }
 void AFGGameMode::TriggerWorldSave(FString saveGameName){ }
 void AFGGameMode::TriggerBundledWorldSave(FString saveGameName){ }

@@ -70,7 +70,7 @@ protected:
 /**
  * 
  */
-UCLASS()
+UCLASS( Blueprintable, hidecategories = ( Actor, Input, Replication, Rendering, "Actor Tick" ) )
 class FACTORYGAME_API AFGVehicleSubsystem : public AFGSubsystem, public IFGSaveInterface
 {
 	GENERATED_BODY()
@@ -101,8 +101,8 @@ public:
 	void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 
 	// Begin AActor interface
+	virtual void BeginPlay() override;
 	virtual void Tick( float dt ) override;
-
 	// End AActor interface
 
 	/** Get the vehicle subsystem, this should always return something unless you call it really early. */
@@ -126,7 +126,7 @@ public:
 	 */
 	void AddVehicle( class AFGVehicle* vehicle );
 
-	void AddWheeledVehicle( class AFGWheeledVehicle* vehicle );
+	void AddWheeledVehicle( class AFGWheeledVehicleInfo* vehicle );
 
 	void AddDockingStation( class AFGBuildableDockingStation* station );
 
@@ -137,7 +137,7 @@ public:
 	 */
 	void RemoveVehicle( class AFGVehicle* vehicle );
 
-	void RemoveWheeledVehicle( class AFGWheeledVehicle* vehicle );
+	void RemoveWheeledVehicle( class AFGWheeledVehicleInfo* vehicle );
 
 	void RemoveDockingStation( class AFGBuildableDockingStation* station );
 	
@@ -150,19 +150,19 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Vehicle|SelfDriving" )
 	bool IsPathNameTaken( const FString& name ) const;
 
-	void SaveWheeledVehiclePath( const FString& saveName, class AFGWheeledVehicle* vehicle );
+	void SaveWheeledVehiclePath( const FString& saveName, class AFGWheeledVehicleInfo* vehicle );
 
 	void UnsaveWheeledVehiclePath( AFGSavedWheeledVehiclePath* path );
 
-	void FindSavedWheeledVehiclePaths( const FString& textFilter, TSubclassOf< class AFGWheeledVehicle > typeFilter, const AFGWheeledVehicle* vehicle, TArray< AFGSavedWheeledVehiclePath* >& result );
+	void FindSavedWheeledVehiclePaths( const FString& textFilter, TSubclassOf< class AFGWheeledVehicle > typeFilter, const AFGWheeledVehicleInfo* vehicle, TArray< AFGSavedWheeledVehiclePath* >& result );
 
 	/** Get a reference to the vehicle array */
 	const TArray< class AFGVehicle* >& GetVehicles() { return mVehicles; }
 
-	bool IsWheeledVehiclePathInUse( class AFGDrivingTargetList* targetList, const AFGWheeledVehicle* byVehicle = nullptr ) const;
+	bool IsWheeledVehiclePathInUse( class AFGDrivingTargetList* targetList, const AFGWheeledVehicleInfo* byVehicle = nullptr ) const;
 	void CalculateWheeledVehiclePathStatus( class AFGDrivingTargetList* targetList, bool& isSaved, int& userCount ) const;
 	int CalculateWheeledVehicleUserCount( class AFGDrivingTargetList* targetList ) const;
-	void FindVehiclesUsingPath( const class AFGDrivingTargetList* targetList, TArray< AFGWheeledVehicle* >& result ) const;
+	void FindVehiclesUsingPath( const class AFGDrivingTargetList* targetList, TArray< AFGWheeledVehicleInfo* >& result ) const;
 
 	void AddTargetList( class AFGDrivingTargetList* targetList );
 	void RemoveTargetList( class AFGDrivingTargetList* targetList );
@@ -174,36 +174,46 @@ public:
 	void UpdateTargetList( AFGDrivingTargetList* targetList );
 	void UpdateTargetPoints();
 
-	//void OnArrivedAtTarget( class AFGTargetPoint* target, class AFGWheeledVehicle* vehicle, const FVector& location );
+	void FindTouchedTargets( class AFGWheeledVehicleInfo* vehicle, class AFGTargetPoint* target, const class USplineComponent* path, float segmentLength, float progresStart, float collisionAvoidanceDistance, TSet< TWeakObjectPtr< class AFGTargetPoint > >& claimTargets, TSet< TWeakObjectPtr< class AFGTargetPoint > >& essentialClaimTargets, TArray< FVector >& searchPoints, FVector& segmentCenter );
 
-	void FindTouchedTargets( const class USplineComponent* path, float segmentLength, float progresStart, float collisionAvoidanceDistance, TSet< TWeakObjectPtr< class AFGTargetPoint > >& claimTargets, TSet< TWeakObjectPtr< class AFGTargetPoint > >& essentialClaimTargets, TArray< FVector >& searchPoints, FVector& segmentCenter, class AFGWheeledVehicle* claimingVehicle );
+	bool IsTheChosenWheeledVehicle( const class AFGWheeledVehicleInfo* vehicle ) const { return mTheChosenWheeledVehicle == vehicle; }
+	bool TryToBeTheChosenWheeledVehicle( class AFGWheeledVehicleInfo* vehicle );
+	bool TryToResolveEasyDeadlock( class AFGWheeledVehicleInfo* vehicle );
+	void ResetBeingTheChosenWheeledVehicle( const class AFGWheeledVehicleInfo* oldChosenVehicle, bool moveToHardDeadlocks );
+	class AFGWheeledVehicleInfo* GetTheChosenWheeledVehicle() { return mTheChosenWheeledVehicle; }
 
-	bool IsTheChosenWheeledVehicle( const class AFGWheeledVehicle* vehicle ) const { return mTheChosenWheeledVehicle == vehicle; }
-	bool TryToBeTheChosenWheeledVehicle( class AFGWheeledVehicle* vehicle, const TArray< FVector >& searchPoints, FVector& segmentCenter, TSet< TWeakObjectPtr< class AFGWheeledVehicle > >& blockingVehicles );
-	void ResetTheChosenWheeledVehicle( const class AFGWheeledVehicle* oldChosenVehicle );
-	class AFGWheeledVehicle* GetTheChosenWheeledVehicle() { return mTheChosenWheeledVehicle; }
-
-	void OnResetIsDeadlocked( const class AFGWheeledVehicle* vehicle );
+	void RemoveDeadlock( int deadlockId );
 
 	void ResetAllDeadlocks();
 
+	void JoinDeadlock( int deadlockId, class AFGWheeledVehicleInfo* vehicle );
+
+	bool HasSavedPaths() const { return mSavedPaths.Num() > 0; }
+
+	/** Called whenever the number of hard deadlocks goes from zero to some */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Vehicle" )
+	void OnThereBeDeadlocks();
+
 private:
-	void AssignVehicleTargets();
+	using WheeledVehicleDeadlock = TSet< TWeakObjectPtr< AFGWheeledVehicleInfo > >;
+	void AddHardDeadlock( int deadlockId, const WheeledVehicleDeadlock& deadlock );
+
+	void SanitizeDeadlocks();
 	void DetectDeadlocks();
 
+	void AssignVehicleTargets();
+
 	void RescueLostVehicles();
-	void TryRescueVehicle( class AFGWheeledVehicle* vehicle );
+	void TryRescueVehicle( class AFGWheeledVehicleInfo* vehicleInfo );
 
 	/**
-	 * if the vehicle is indirectly blocking itself, returns the number of indirections involved in that blocking
+	 * returns true if blockedVehicle is blocked by sourceVehicle, false otherwise.
 	 */
-	int IsVehicleBlockingItself( const class AFGWheeledVehicle* sourceVehicle, const class AFGWheeledVehicle* blockedVehicle, TSet< const class AFGWheeledVehicle* >& visitedVehicles );
+	bool IsVehicleBlockedBySource( const class AFGWheeledVehicleInfo* sourceVehicle, const class AFGWheeledVehicleInfo* blockedVehicle, TSet< const class AFGWheeledVehicleInfo* >& visitedVehicles, TSet< class AFGWheeledVehicleInfo* >& deadlockedVehicles );
 
 public:
 	int mWheeledVehicleCount = 0;
 	int mLoadedTargetPointCount = 0;
-
-	bool mGiveClaimPriorityToTheChosenOne = false;
 
 private:
 	/** How many vehicles can we iterate over per tick */
@@ -218,8 +228,8 @@ private:
 	TArray< class AFGVehicle* > mVehicles;
 
 	/** All the wheeled vehicles in the world. */
-	UPROPERTY()
-	TArray< class AFGWheeledVehicle* > mWheeledVehicles;
+	UPROPERTY( Replicated )
+	TArray< class AFGWheeledVehicleInfo* > mWheeledVehicles;
 
 	/** All the docking stations in the world. */
 	UPROPERTY()
@@ -242,15 +252,20 @@ private:
 	 * 
 	 * TODO: if we partition all the paths into non-overlapping path groups, we may have one chosen vehicle per path group
 	 */
-	class AFGWheeledVehicle* mTheChosenWheeledVehicle;
+	class AFGWheeledVehicleInfo* mTheChosenWheeledVehicle;
 
-	TSet< class AFGWheeledVehicle* > mDeadlockedEasyCandidates;
-	TSet< class AFGWheeledVehicle* > mDeadlockedHardOnes;
+	using DeadlockMap = TMap< int, WheeledVehicleDeadlock >;
+	DeadlockMap mDeadlocks;
+	DeadlockMap mHardDeadlocks;
+
+	int mDeadlockIdCounter = 0;
 	int mResolvedEasyDeadlockCount = 0;
 
 	bool mMayDoDeadlockDetection = false;
 
 	int mLostVehicleCandidateIndex = 0;
+
+	float mEarliestDeadlockWarningTime = -BIG_NUMBER;
 
 #ifdef DEBUG_SELF_DRIVING
 	float mDebugSimulationDistance = 0.0f;

@@ -40,23 +40,23 @@ bool AFGTargetPoint::IsTargetSpeedStill() const{ return bool(); }
 void AFGTargetPoint::SetTargetSpeed(int32 newSpeed){ }
 void AFGTargetPoint::SetIsLoopTarget(bool isLoopTarget){ }
 void AFGTargetPoint::SetIsDockingTarget(bool isDockingTarget){ }
-void AFGTargetPoint::SetHostStation( AFGBuildableDockingStation* hostStation){ }
+void AFGTargetPoint::SetHostStation( AFGDockingStationInfo* hostStation){ }
 bool AFGTargetPoint::IsTemporary() const{ return bool(); }
 void AFGTargetPoint::NotifyIsTemporaryChanged(){ }
 void AFGTargetPoint::SetNext(AFGTargetPoint* next){ }
 FVector AFGTargetPoint::GetDebugPointLocation(float zOffset) const{ return FVector(); }
 void AFGTargetPoint::SetOwningList( AFGDrivingTargetList* owningList){ }
-bool AFGTargetPoint::TryClaim( AFGWheeledVehicle* vehicle, TSet< TWeakObjectPtr<  AFGWheeledVehicle > >& blockingVehicles, bool essentialsOnly){ return bool(); }
-void AFGTargetPoint::ForceClaim( AFGWheeledVehicle* vehicle, bool essentialsOnly){ }
-void AFGTargetPoint::Claim( AFGWheeledVehicle* vehicle, bool recursive, bool essentialsOnly){ }
-void AFGTargetPoint::Unclaim( AFGWheeledVehicle* vehicle){ }
+bool AFGTargetPoint::TryClaim( AFGWheeledVehicleInfo* vehicle, TSet< TWeakObjectPtr<  AFGWheeledVehicleInfo > >& blockingVehicles, bool essentialsOnly){ return bool(); }
+void AFGTargetPoint::ForceClaim( AFGWheeledVehicleInfo* vehicle, bool essentialsOnly){ }
+void AFGTargetPoint::Claim( AFGWheeledVehicleInfo* vehicle, bool recursive, bool essentialsOnly){ }
+void AFGTargetPoint::Unclaim( AFGWheeledVehicleInfo* vehicle){ }
 void AFGTargetPoint::ForceUnclaim(){ }
-void AFGTargetPoint::Unclaim( AFGWheeledVehicle* vehicle, bool recursive){ }
-bool AFGTargetPoint::IsLocked(const  AFGWheeledVehicle* vehicle, TSet< TWeakObjectPtr<  AFGWheeledVehicle > >& blockingVehicles) const{ return bool(); }
-bool AFGTargetPoint::IsLockedByDocking(const  AFGWheeledVehicle* vehicle) const{ return bool(); }
-void AFGTargetPoint::DrawTargetDebug( AFGWheeledVehicle* claimant, bool drawSearchPoints, bool drawSmall){ }
+void AFGTargetPoint::Unclaim( AFGWheeledVehicleInfo* vehicle, bool recursive){ }
+bool AFGTargetPoint::IsLocked(const  AFGWheeledVehicleInfo* vehicle, TSet< TWeakObjectPtr<  AFGWheeledVehicleInfo > >& blockingVehicles) const{ return bool(); }
+bool AFGTargetPoint::IsLockedByDocking(const  AFGWheeledVehicleInfo* vehicle) const{ return bool(); }
+void AFGTargetPoint::DrawTargetDebug( AFGWheeledVehicleInfo* claimant, bool drawSearchPoints, bool drawSmall){ }
 int AFGTargetPoint::GetDebugLevel() const{ return int(); }
-void AFGTargetPoint::FindBlockingVehicles( AFGWheeledVehicle* blockedVehicle, TSet< const  AFGWheeledVehicle* >& blockingVehicles) const{ }
+void AFGTargetPoint::FindBlockingVehicles( AFGWheeledVehicleInfo* blockedVehicle, TSet< const  AFGWheeledVehicleInfo* >& blockingVehicles) const{ }
 void AFGTargetPoint::BeginPlay(){ }
 void AFGTargetPoint::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGTargetPoint::OnRep_IsLoopTarget(){ }
