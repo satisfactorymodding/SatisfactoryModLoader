@@ -109,7 +109,7 @@ struct FACTORYGAME_API FVehicleSeat
  * Base class for all vehicles in the game, cars, train etc.
  */
 UCLASS()
-class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGAggroTargetInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface, public IFGActorRepresentationInterface
+class FACTORYGAME_API AFGVehicle : public AFGDriveablePawn, public IFGUseableInterface, public IFGDismantleInterface, public IFGAggroTargetInterface, public IFGDockableInterface, public IFGColorInterface, public IFGSignificanceInterface
 {
 	GENERATED_BODY()
 public:
@@ -167,14 +167,14 @@ public:
 	//~ End IFGColorInterface
 
 	//~ Begin IFGDockableInterface
-	virtual bool CanDock_Implementation( EDockStationType atStation ) const override;
-	virtual class UFGInventoryComponent* GetDockInventory_Implementation() const override;
-	virtual class UFGInventoryComponent* GetDockFuelInventory_Implementation() const override;
-	virtual void WasDocked_Implementation( class AFGBuildableDockingStation* atStation ) override;
-	virtual void WasUndocked_Implementation() override;
-	virtual void OnBeginLoadVehicle_Implementation() override;
-	virtual void OnBeginUnloadVehicle_Implementation() override;
-	virtual void OnTransferComplete_Implementation() override;
+	virtual bool CanDock_Implementation( EDockStationType atStation ) const override { return false; }
+	virtual class UFGInventoryComponent* GetDockInventory_Implementation() const override { return nullptr; }
+	virtual class UFGInventoryComponent* GetDockFuelInventory_Implementation() const override { return nullptr; }
+	virtual void WasDocked_Implementation( class AFGBuildableDockingStation* atStation ) override {}
+	virtual void WasUndocked_Implementation() override {}
+	virtual void OnBeginLoadVehicle_Implementation() override {}
+	virtual void OnBeginUnloadVehicle_Implementation() override {}
+	virtual void OnTransferComplete_Implementation() override {}
 	//~ End IFGDockableInterface
 
 	//~ Begin IFGUseableInterface
@@ -211,27 +211,6 @@ public:
 	virtual bool IsAlive_Implementation() const override;
 	virtual FVector GetAttackLocation_Implementation() const override;
 	// End IFGAggroTargetInterface
-
-	// Begin IFGActorRepresentationInterface
-	virtual bool AddAsRepresentation() override;
-	virtual bool UpdateRepresentation() override;
-	virtual bool RemoveAsRepresentation() override;
-	virtual bool IsActorStatic() override;
-	virtual FVector GetRealActorLocation() override;
-	virtual FRotator GetRealActorRotation() override;
-	virtual class UTexture2D* GetActorRepresentationTexture() override;
-	virtual FText GetActorRepresentationText() override;
-	virtual void SetActorRepresentationText( const FText& newText ) override;
-	virtual FLinearColor GetActorRepresentationColor() override;
-	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	virtual ERepresentationType GetActorRepresentationType() override;
-	virtual bool GetActorShouldShowInCompass() override;
-	virtual bool GetActorShouldShowOnMap() override;
-	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	virtual float GetActorFogOfWarRevealRadius() override;
-	virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
-	// End IFGActorRepresentationInterface
 
 	/** Getter for simulation distance */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Vehicle" )
@@ -338,6 +317,8 @@ public:
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable|Customization" )
 	void OnSkinCustomizationApplied( TSubclassOf< class UFGFactoryCustomizationDescriptor_Skin > skin );
+
+	virtual FVector GetRealActorLocation() const;
 
 protected:
 	/** Called when customization data is applied. Allows child vehicles to update their simulated vehicles to keep colors synced */
@@ -550,6 +531,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Vehicle" )
 	float mSimulationDistance;
 
+public:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTexture;
 

@@ -128,7 +128,24 @@ void AFGDroneVehicle::OnIsSimulatedChanged(){ }
 void AFGDroneVehicle::GainedSignificance_Implementation(){ }
 void AFGDroneVehicle::LostSignificance_Implementation(){ }
 void AFGDroneVehicle::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+bool AFGDroneVehicle::AddAsRepresentation(){ return bool(); }
+bool AFGDroneVehicle::UpdateRepresentation(){ return bool(); }
+bool AFGDroneVehicle::RemoveAsRepresentation(){ return bool(); }
+bool AFGDroneVehicle::IsActorStatic(){ return bool(); }
+FVector AFGDroneVehicle::GetRealActorLocation(){ return FVector(); }
+FRotator AFGDroneVehicle::GetRealActorRotation(){ return FRotator(); }
+UTexture2D* AFGDroneVehicle::GetActorRepresentationTexture(){ return nullptr; }
 FText AFGDroneVehicle::GetActorRepresentationText(){ return FText(); }
+void AFGDroneVehicle::SetActorRepresentationText(const FText& newText){ }
+FLinearColor AFGDroneVehicle::GetActorRepresentationColor(){ return FLinearColor(); }
+void AFGDroneVehicle::SetActorRepresentationColor(FLinearColor newColor){ }
+ERepresentationType AFGDroneVehicle::GetActorRepresentationType(){ return ERepresentationType(); }
+bool AFGDroneVehicle::GetActorShouldShowInCompass(){ return bool(); }
+bool AFGDroneVehicle::GetActorShouldShowOnMap(){ return bool(); }
+EFogOfWarRevealType AFGDroneVehicle::GetActorFogOfWarRevealType(){ return EFogOfWarRevealType(); }
+float AFGDroneVehicle::GetActorFogOfWarRevealRadius(){ return float(); }
+ECompassViewDistance AFGDroneVehicle::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
+void AFGDroneVehicle::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 void AFGDroneVehicle::NotifyPairedStationUpdated( AFGBuildableDroneStation* NewPairedStation){ }
 void AFGDroneVehicle::OnUndocked(){ }
 void AFGDroneVehicle::OnDockedStationDestroyed(){ }

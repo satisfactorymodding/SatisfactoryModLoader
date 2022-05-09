@@ -94,6 +94,9 @@ public:
 	/** Switch between fullscreen and windowed mode */
 	void ToggleFullscreenMode();
 
+	/** Checks if we want to apply some scalability settings based on cmd line arguments. No applied in shipping. Used for profiling. */
+	void HandleCmdLineVideoQuality();
+
 	/** Returns the game local machine settings (resolution, windowing mode, scalability settings, etc...) */
 	UFUNCTION( BlueprintCallable, Category = Settings )
 	static UFGGameUserSettings* GetFGGameUserSettings();

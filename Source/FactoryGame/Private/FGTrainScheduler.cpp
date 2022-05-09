@@ -4,13 +4,9 @@
 
 FTrainSchedulerInfo::FTrainSchedulerInfo( AFGTrain* train){ }
 FTrainSchedulerInfo::~FTrainSchedulerInfo(){ }
-void FTrainSchedulerInfo::ClearBlockReservations(){ }
-FTrackReservationRequest::FTrackReservationRequest(TWeakPtr< FTrainSchedulerInfo > requesterInfo,
-		ETrackReservationRequestType type,
-		int32 pathSegment,
-		TWeakPtr< FFGRailroadSignalBlock > block,
-		 AFGBuildableRailroadSignal* signal){ }
-bool FTrackReservationRequest::IsValid() const{ return bool(); }
+void FTrainSchedulerInfo::AddReservation(TWeakPtr< FFGRailroadBlockReservation >& handle){ }
+void FTrainSchedulerInfo::CancelReservations(){ }
+bool FTrainSchedulerInfo::HaveReservation(TWeakPtr< FFGRailroadSignalBlock > block){ return bool(); }
 AFGTrainScheduler::AFGTrainScheduler() : Super() {
 
 }
@@ -18,8 +14,3 @@ void AFGTrainScheduler::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo&
 void AFGTrainScheduler::AddTrain( AFGTrain* train){ }
 void AFGTrainScheduler::RemoveTrain( AFGTrain* train){ }
 void AFGTrainScheduler::TickScheduler(){ }
-void AFGTrainScheduler::RequestReservation(const FTrackReservationRequest& request){ }
-void AFGTrainScheduler::CancelAllReservationRequests( AFGTrain* train){ }
-void AFGTrainScheduler::TickReservationRequests(){ }
-void AFGTrainScheduler::HandleReservationRequest(FTrackReservationRequest& request){ }
-void AFGTrainScheduler::TickBlockReservations(TSharedPtr< FTrainSchedulerInfo > info){ }

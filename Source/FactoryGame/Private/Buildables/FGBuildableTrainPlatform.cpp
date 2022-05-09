@@ -32,6 +32,7 @@ void AFGBuildableTrainPlatform::GetLifetimeReplicatedProps(TArray<FLifetimePrope
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableTrainPlatform, mDockedRailroadVehicle);
 	DOREPLIFETIME(AFGBuildableTrainPlatform, mPlatformDockingStatus);
+	DOREPLIFETIME(AFGBuildableTrainPlatform, mDockWasCancelled);
 }
 void AFGBuildableTrainPlatform::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGBuildableTrainPlatform::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

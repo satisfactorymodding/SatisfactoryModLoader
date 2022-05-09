@@ -100,12 +100,18 @@ public:
 	UFUNCTION()
 	void RebootSession();
 
+	/** Check if we should skip onboarding/tutorial. Safe to call after AGameModeBase::InitGame */
+	bool ShouldSkipOnboarding() const;
+
 public:
 	/** Name of the start location option that is parsed */
 	static const TCHAR* StartLocationOption;
 
 	/** Name of the load game option that is parsed */
 	static const TCHAR* LoadGameOption;
+
+	/** Name for the skip onboarding/tutorial/intro option */
+	static const TCHAR* SkipOnboarding;
 protected:
 	/** Set the desired world time we want to restart the server */
 	void SetServerRestartWorldTime( float worldTime );

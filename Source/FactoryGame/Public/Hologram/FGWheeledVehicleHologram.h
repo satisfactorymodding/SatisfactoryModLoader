@@ -15,15 +15,9 @@ class FACTORYGAME_API AFGWheeledVehicleHologram : public AFGVehicleHologram
 	GENERATED_BODY()
 	
 public:
-	// Begin AFGHologram interface
-	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
-	// End of AFGHologram interface
 
 protected:
 	// Begin AFGHologram interface
-	virtual void CheckValidPlacement() override;
+	virtual void HandleClearanceOverlap( const FOverlapResult& overlap, const FVector& locationOffset, bool HologramHasSoftClearance ) override;
 	// End of AFGHologram interface
-
-	/** @copydoc AFGVehicleHologram::ConstructVehicle */
-	virtual class AFGVehicle* ConstructVehicle( FNetConstructionID netConstructionID ) const override;
 };

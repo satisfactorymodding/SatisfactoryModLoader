@@ -9,31 +9,6 @@
 #include "FGTrainScheduler.generated.h"
 
 
-struct FACTORYGAME_API FTrainAtcBlockReservation
-{
-public:
-	/** True if the reservation has been successfully made, false if not. */
-	bool IsReserved = false;
-	
-	/**
-	* Reference to the block reserved.
-	* This may become null if the block becomes invalid.
-	*/
-	TWeakPtr< FFGRailroadSignalBlock > Block = nullptr;
-	
-	/**
-	* Reference to the reservation made.
-	* This may become null if the block clears the reservation, train exits block, or if the block becomes invalid.
-	*/
-	TWeakPtr< FFGRailroadBlockReservation > Handle = nullptr;
-
-	/** At which signal is this reservation starting, this is only used for partial reservations. */
-	TWeakObjectPtr< AFGBuildableRailroadSignal > EntrySignal = nullptr;
-	/** At which path segment is this reservation starting, this is only used for partial reservations. */
-	int32 EntryPathSegment = INDEX_NONE;
-};
-
-
 /**
  * All information that is needed for the train scheduler to keep track of this train.
  */
@@ -42,12 +17,14 @@ struct FACTORYGAME_API FTrainSchedulerInfo
 public:
 	FTrainSchedulerInfo( class AFGTrain* train );
 	~FTrainSchedulerInfo();
-	
-	/**
-	 * Clear all the reservations we hold.
-	 */
-	void ClearBlockReservations();
 
+	/** Add a reservation to the list. */
+	void AddReservation( TWeakPtr< FFGRailroadBlockReservation >& handle );
+	/** Cancel all the reservations we hold. */
+	void CancelReservations();
+	/** @return true if we have a reservation for the given block already. */
+	bool HaveReservation( TWeakPtr< FFGRailroadSignalBlock > block );
+	
 public:
 	/**
 	 * The train being tracked.
@@ -58,7 +35,7 @@ public:
 	 * Path that was used to make reservations, keep track of it in case it changes.
 	 * If the previous path is cleared, then we need to clean any reservation pertaining to that path.
 	 */
-	FRailroadPathWeakPtr Path = nullptr;
+	FRailroadPathSharedPtr Path = nullptr;
 	
 	/**
 	 * All our active block reservations.
@@ -71,59 +48,17 @@ public:
 	 *
 	 * The number of reservations in this list may vary depending on the length of the path signal chain reserved.
 	 */
-	TArray< FTrainAtcBlockReservation > BlockReservations;
-};
+	TArray< TWeakPtr< FFGRailroadBlockReservation > > BlockReservations;
 
-
-/**
- * When making a reservation request this is the type of request, their priority is their order in the list, higher number is higher priority.
- */
-enum class ETrackReservationRequestType
-{
-	TRRT_Invalid,
-	TRRT_EntryPathSignal,
-	TRRT_PlayerEntryPathSignal, //@todo-trains Add support
-	TRRT_InsidePathBlock
-};
-
-
-/**
- * A block reservation request made by a train.
- */
-struct FACTORYGAME_API FTrackReservationRequest
-{
-public:
-	FTrackReservationRequest(
-		TWeakPtr< FTrainSchedulerInfo > requesterInfo,
-		ETrackReservationRequestType type,
-		int32 pathSegment,
-		TWeakPtr< FFGRailroadSignalBlock > block,
-		class AFGBuildableRailroadSignal* signal );
-
-	/** Checks if this request is valid. */
-	bool IsValid() const;
-
-public:
-	/** Who made this request, might become null from the time of the request to the handling of the request. */
-	TWeakPtr< FTrainSchedulerInfo > RequesterInfo = nullptr;
-	
-	/** Type of request, must be any other value that invalid. */
-	ETrackReservationRequestType Type = ETrackReservationRequestType::TRRT_Invalid;
-	
-	/** Set to true by the system when this request have been handled. */
-	bool Handled = false;
-	
-	/** Signal we're making this request in front of, can be null if reservation is made inside a block. */
-	TWeakObjectPtr< class AFGBuildableRailroadSignal > Signal = nullptr;
-	
 	/**
-	 * Segment which marks the start of the reservation, i.e. segment of the signal or segment we're at inside the block.
-	 * Can be invalid if we are reserving the whole block.
+	 * The priority for this train when requests are handled.
+	 *
+	 * Higher number have higher priority.
 	 */
-	int32 PathSegment = INDEX_NONE;
-	
-	/** Block we are making the reservation request to. Cannot be null. */
-	TWeakPtr< FFGRailroadSignalBlock > Block = nullptr;
+	int32 Priority = -1;
+
+	/** The overlaps that this this train have along its path. */
+	ERailroadPathOverlap PathOverlaps = ERailroadPathOverlap::RPO_None;
 };
 
 
@@ -151,34 +86,9 @@ public:
 	void TickScheduler();
 	
 private:
-	/**
-	 * Request access to the blocks along the path, signals will turn green when the reservation is successfully handled.
-	 */
-	void RequestReservation( const FTrackReservationRequest& request );
+	//@todo-trains Split the master tick into manageable functions.
 	
-	/**
-	 * Cancels all reservation requests that the given train have at the moment.
-	 */
-	void CancelAllReservationRequests( class AFGTrain* train );
-
-	/**
-	 * Tick all the reservation requests in the system.
-	 */
-	void TickReservationRequests();
-	
-	/**
-	 * Called when the scheduler wants a train to handle it's reservation request.
-	 */
-	void HandleReservationRequest( FTrackReservationRequest& request );
-
-	/**
-	 * Update the block reservations for the given info.
-	 */
-	void TickBlockReservations( TSharedPtr< FTrainSchedulerInfo > info );
 private:
 	/** List of information for the tracked trains. */
 	TArray< TSharedPtr< FTrainSchedulerInfo > > mSchedulerInfos;
-	
-	/** Reservation requests are put in this queue according to their priority and at the end of the frame the scheduler handles them in order. */
-	TArray< FTrackReservationRequest > mReservationRequests;
 };

@@ -8,6 +8,7 @@ AFGBeamHologram::AFGBeamHologram() : Super() {
 	this->mBeamMesh = nullptr;
 	this->mCurrentLength = 0.0;
 	this->mBuildStep = EBeamHologramBuildStep::BHBS_Placement;
+	this->mNeedsValidFloor = false;
 }
 void AFGBeamHologram::BeginPlay(){ }
 void AFGBeamHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {

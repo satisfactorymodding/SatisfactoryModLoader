@@ -313,7 +313,7 @@ private:
 /** Drone Vehicle */
 
 UCLASS()
-class FACTORYGAME_API AFGDroneVehicle : public AFGVehicle
+class FACTORYGAME_API AFGDroneVehicle : public AFGVehicle, public IFGActorRepresentationInterface
 {
 	GENERATED_BODY()
 
@@ -350,9 +350,26 @@ public:
 	// Begin IFGSaveInterface
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFGSaveInterface
- 
+
 	// Begin IFGActorRepresentationInterface
+	virtual bool AddAsRepresentation() override;
+	virtual bool UpdateRepresentation() override;
+	virtual bool RemoveAsRepresentation() override;
+	virtual bool IsActorStatic() override;
+	virtual FVector GetRealActorLocation() override;
+	virtual FRotator GetRealActorRotation() override;
+	virtual class UTexture2D* GetActorRepresentationTexture() override;
 	virtual FText GetActorRepresentationText() override;
+	virtual void SetActorRepresentationText( const FText& newText ) override;
+	virtual FLinearColor GetActorRepresentationColor() override;
+	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	virtual ERepresentationType GetActorRepresentationType() override;
+	virtual bool GetActorShouldShowInCompass() override;
+	virtual bool GetActorShouldShowOnMap() override;
+	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	virtual float GetActorFogOfWarRevealRadius() override;
+	virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	// End IFGActorRepresentationInterface
 
 	void NotifyPairedStationUpdated( class AFGBuildableDroneStation* NewPairedStation );

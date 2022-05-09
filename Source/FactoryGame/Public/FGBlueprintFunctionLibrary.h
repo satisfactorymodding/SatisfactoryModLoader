@@ -346,8 +346,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category="Online" )
 	static void CreateSessionAndTravelToMap( APlayerController* player, const FString& mapName, const FString& options, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility );
 
+	/** Helper function that takes care of creating a session and travel to the map. If skipOnboarding is true we skip intro/onboarding/tutorial and go directly to tier 1 */
 	UFUNCTION( BlueprintCallable, Category="Online" )
-	static void CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility );
+	static void CreateSessionAndTravelToMapWithStartingLocation( APlayerController* player, const FString& mapName, const FString& startingLocation, const FString& sessionName, TEnumAsByte<ESessionVisibility> sessionVisibility, bool skipOnboarding );
 
 	/** Travel gracefully to main menu, kicking clients if host, and tearing down the game session */
 	UFUNCTION( BlueprintCallable, Category="Utils", meta=(DefaultToSelf="worldContext") )

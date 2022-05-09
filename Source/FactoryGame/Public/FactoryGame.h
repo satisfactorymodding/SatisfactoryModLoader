@@ -158,6 +158,7 @@ static const FName CollisionProfileBuildingMesh( TEXT( "BuildingMesh" ) );
 static const FName CollisionProfileClearanceDetector( TEXT( "ClearanceDetector" ) );
 static const FName CollisionProfileRailroadVehicle( TEXT( "RailroadVehicle" ) );
 static const FName CollisionProfileDerailedRailroadVehicle( TEXT( "DerailedRailroadVehicle" ) );
+static const FName CollisionProfileDerailedRailroadVehicleHologram( TEXT( "DerailedRailroadVehicleHologram" ) );
 
 static const ECollisionChannel TC_BuildGun( ECC_GameTraceChannel5 );
 static const ECollisionChannel TC_WeaponInstantHit( ECC_GameTraceChannel6 );
@@ -172,6 +173,7 @@ static const ECollisionChannel OC_HologramClearance( ECC_GameTraceChannel8 );
 static const ECollisionChannel OC_WorldGrid( ECC_GameTraceChannel9 );
 static const ECollisionChannel OC_ClearanceDetector( ECC_GameTraceChannel10 );
 static const ECollisionChannel OC_RailroadVehicle( ECC_GameTraceChannel11 );
+static const ECollisionChannel OC_MapGeneration( ECC_GameTraceChannel12 );
 
 /** Input Actions */
 static const FName PrimaryFireAction( TEXT( "PrimaryFire" ) );

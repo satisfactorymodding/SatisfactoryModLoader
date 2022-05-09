@@ -5,7 +5,8 @@
 AFGBuildableSplitterSmart::AFGBuildableSplitterSmart() : Super() {
 	this->mMaxNumSortRules = 64;
 	this->mLastOutputIndex = 0;
-	this->NetDormancy = ENetDormancy::DORM_Awake;
+	this->mToggleDormancyOnInteraction = true;
+	this->NetDormancy = ENetDormancy::DORM_Initial;
 }
 void AFGBuildableSplitterSmart::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

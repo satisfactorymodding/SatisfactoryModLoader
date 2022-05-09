@@ -25,6 +25,10 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TSubclassOf<UUserWidget> mConnectAccountsWidget;
 
+	/** Widget to show the user when unlinking account */
+	UPROPERTY( EditAnywhere, config, Category = UI )
+	TSubclassOf<UUserWidget> mResetAccountLinkingWidget;
+
 	/** Widget used to show the user when enabling the debug overlay */
 	UPROPERTY( EditAnywhere, config, Category = UI )
 	TSubclassOf< class UFGDebugOverlayWidget > mDebugOverlayWidgetClass;

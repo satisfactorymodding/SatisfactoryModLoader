@@ -7,6 +7,8 @@
 #include "FGGamePhaseManager.h"
 #include "FGDedicatedServerTypes.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN( LogServer, Log, Log );
+
 UENUM()
 enum class EServerState : uint8
 {

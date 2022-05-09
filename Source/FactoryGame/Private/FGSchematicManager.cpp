@@ -66,6 +66,7 @@ void AFGSchematicManager::ResetSchematicsOfType(ESchematicType type){ }
 TSubclassOf< class UFGRecipe > AFGSchematicManager::FixupSave_FindBuiltByRecipe(AActor* forActor){ return TSubclassOf<class UFGRecipe>(); }
 void AFGSchematicManager::Debug_DumpStateToLog() const{ }
 TArray< TSubclassOf< class UFGRecipe > > AFGSchematicManager::Debug_GetAllRecipes() const{ return TArray<TSubclassOf<class UFGRecipe> >(); }
+void AFGSchematicManager::Cheat_GiveAllSchematics(){ }
 bool AFGSchematicManager::CanGiveAccessToSchematic(TSubclassOf< UFGSchematic > schematic) const{ return bool(); }
 void AFGSchematicManager::PopulateSchematicsLists(){ }
 void AFGSchematicManager::PopulateAvailableSchematicsList(){ }

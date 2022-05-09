@@ -144,7 +144,7 @@ protected:
 	UPROPERTY()
 	FTimerHandle mIdleUpdateTimerHandle;
 
-	UPROPERTY()
+	UPROPERTY( Replicated )
 	bool mDockWasCancelled;
 
 private:

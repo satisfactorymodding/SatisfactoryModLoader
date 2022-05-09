@@ -2,16 +2,24 @@
 
 #include "FGRailroadSignalBlock.h"
 
+void FFGRailroadBlockReservation::Update(){ }
+void FFGRailroadBlockReservation::Approve(){ }
+void FFGRailroadBlockReservation::Cancel(){ }
+void FFGRailroadBlockReservation::NotifyEntered(){ }
+void FFGRailroadBlockReservation::NotifyExitCondition(bool isClear){ }
+bool FFGRailroadBlockReservation::HasExitedReservation( AFGTrain* train){ return bool(); }
 void FFGRailroadSignalBlock::BlockEntered( AFGRailroadVehicle* byVehicle){ }
 void FFGRailroadSignalBlock::BlockExited( AFGRailroadVehicle* byVehicle){ }
 ERailroadBlockOccupancy FFGRailroadSignalBlock::GetOccupancyFor( AFGBuildableRailroadSignal* signal) const{ return ERailroadBlockOccupancy(); }
 bool FFGRailroadSignalBlock::IsOccupied() const{ return bool(); }
-TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::MakeReservation( AFGTrain* train, FRailroadPathSharedPtr path, int32 progress, AFGBuildableRailroadSignal* entry){ return TWeakPtr<FFGRailroadBlockReservation>(); }
-TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::MakeReservation( AFGTrain* train, AFGBuildableRailroadSignal* entry){ return TWeakPtr<FFGRailroadBlockReservation>(); }
-void FFGRailroadSignalBlock::ClearReservation( AFGTrain* train){ }
-TArray< class AFGBuildableRailroadTrack* > FFGRailroadSignalBlock::GetReservedTracks() const{ return TArray<class AFGBuildableRailroadTrack*>(); }
+bool FFGRailroadSignalBlock::IsOccupiedBy( AFGTrain* train) const{ return bool(); }
+TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreateReservation( AFGTrain* train, AFGBuildableRailroadSignal* entrySignal, int32 entryPathSegment, FRailroadPathSharedPtr trainPath){ return TWeakPtr<FFGRailroadBlockReservation>(); }
+TWeakPtr< FFGRailroadBlockReservation > FFGRailroadSignalBlock::CreateReservation( AFGTrain* train, AFGBuildableRailroadSignal* entrySignal, int32 entryPathSegment){ return TWeakPtr<FFGRailroadBlockReservation>(); }
 void FFGRailroadSignalBlock::SetIsPathBlock(bool isPathBlock){ }
 ERailroadBlockValidation FFGRailroadSignalBlock::GetBlockValidation() const{ return ERailroadBlockValidation(); }
-void FFGRailroadSignalBlock::ClearInvalidReservations(){ }
 void FFGRailroadSignalBlock::UpdateOccupancy(){ }
 void FFGRailroadSignalBlock::OnReservationsUpdated(){ }
+void FFGRailroadSignalBlock::UpdateReservation(FFGRailroadBlockReservation* reservation){ }
+void FFGRailroadSignalBlock::ApproveReservation(FFGRailroadBlockReservation* reservation){ }
+void FFGRailroadSignalBlock::CancelReservation(FFGRailroadBlockReservation* reservation){ }
+void FFGRailroadSignalBlock::NotifyEnteredReservation(FFGRailroadBlockReservation* reservation){ }
