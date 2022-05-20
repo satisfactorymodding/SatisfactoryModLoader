@@ -33,9 +33,9 @@ class SML_API FSaveMetadataPatch {
 
     static void RegisterPatch();
     static void PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject);
-    static TArray<FModMismatch> FindModMistmatches(FSaveHeader Header);
-    static FString BuildMismatchedModString(TArray<FModMismatch>&);
-    static void LogMismatchedMods(TArray<FModMismatch>&);
+    static TArray<FModMismatch> FindModMismatches(FSaveHeader Header);
+    static FString BuildModMismatchesString(TArray<FModMismatch>&);
+    static void LogModMismatches(TArray<FModMismatch>&);
 
     static bool IsCallback;
 };

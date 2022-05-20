@@ -57,14 +57,13 @@ void FSaveMetadataPatch::RegisterPatch() {
 		
 		self = UFGSaveSystem::Get(Player);
 
-		TArray<FModMismatch> MissingMods = FindModMistmatches(SaveGame);
+		TArray<FModMismatch> ModMismatches = FindModMismatches(SaveGame);
 
 		USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(self, SaveGame, Player);
-		bool bIsMissingMods = MissingMods.Num() > 0;
-		if (bIsMissingMods)
+		if (ModMismatches.Num() > 0)
 		{
-			PopupWarning(MissingMods, CallbackObject);
-			LogMismatchedMods(MissingMods);
+			PopupWarning(ModMismatches, CallbackObject);
+			LogModMismatches(ModMismatches);
 			scope.Cancel();
 		}
 	});
@@ -75,14 +74,14 @@ void FSaveMetadataPatch::PopupWarning(TArray<FModMismatch> ModMismatches, USaveM
 	FPopupClosed PopupClosedDelegate;
 	
 	PopupClosedDelegate.BindDynamic(CallbackObject, &USaveMetadataCallback::Callback);
-	FString Body = BuildMismatchedModString(ModMismatches);
+	FString Body = BuildModMismatchesString(ModMismatches);
 		
 	UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate(CallbackObject->Player,
 		FText::FromString(TEXT("Mod mismatch")), FText::FromString(Body),
 		PopupClosedDelegate, PID_OK_CANCEL);
 }
 
-TArray<FModMismatch> FSaveMetadataPatch::FindModMistmatches(FSaveHeader Header)
+TArray<FModMismatch> FSaveMetadataPatch::FindModMismatches(FSaveHeader Header)
 {
 	TArray<FModMismatch> ModMismatches;
 	UModLoadingLibrary* ModLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
@@ -125,13 +124,13 @@ TArray<FModMismatch> FSaveMetadataPatch::FindModMistmatches(FSaveHeader Header)
 		if (!bIsModLoaded || LoadedMod.Version.Compare(ModVersion) < 0)
 		{
 			FModMetadata OldVersionInfo = FModMetadata(ModReference, ModName, ModVersion);
-			ModMismatches.Push(FModMismatch(OldVersionInfo, LoadedMod, bIsModLoaded));
+			ModMismatches.Push(FModMismatch(OldVersionInfo, LoadedMod, !bIsModLoaded));
 		}
 	}
 	return ModMismatches;
 }
 
-inline FString FSaveMetadataPatch::BuildMismatchedModString(TArray<FModMismatch>& ModMismatches)
+inline FString FSaveMetadataPatch::BuildModMismatchesString(TArray<FModMismatch>& ModMismatches)
 {
 	FString ExplanationMessage =
 		"Missing mod content will disappear from your world.\n"
@@ -142,7 +141,6 @@ inline FString FSaveMetadataPatch::BuildMismatchedModString(TArray<FModMismatch>
 	{
 		FModMismatch ModMismatch = ModMismatches[0];
 		FString Header = ModMismatch.Was.Name + " was previously used in this save and ";
-		ModMismatch.ToString()
 		if (ModMismatch.IsMissing)
 		{
 			Header += "is missing";
@@ -175,12 +173,12 @@ inline FString FSaveMetadataPatch::BuildMismatchedModString(TArray<FModMismatch>
 	return Out;
 }
 
-void FSaveMetadataPatch::LogMismatchedMods(TArray<FModMismatch>& MissingMods)
+void FSaveMetadataPatch::LogModMismatches(TArray<FModMismatch>& ModMismatches)
 {
-	UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("%d missing mods found:"), MissingMods.Num())
-	for (int i = 0; i < MissingMods.Num(); ++i)
+	UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("%d missing mods found:"), ModMismatches.Num())
+	for (int i = 0; i < ModMismatches.Num(); ++i)
 	{
-		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("%ls"), *MissingMods[i].ToString())
+		UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("%ls"), *ModMismatches[i].ToString())
 	}
 }
 
