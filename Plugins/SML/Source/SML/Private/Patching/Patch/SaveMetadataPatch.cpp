@@ -61,7 +61,6 @@ void FSaveMetadataPatch::RegisterPatch() {
 
 		USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(self, SaveGame, Player);
 		bool Missing = PopupWarningIfMissingMods(MissingMods, CallbackObject);
-		LogMissingMods(MissingMods);
 		if (Missing)
 		{
 			scope.Cancel();
