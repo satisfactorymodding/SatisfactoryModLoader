@@ -190,11 +190,13 @@ void USaveMetadataCallback::Callback(bool Continue)
 		System->LoadSaveFile(this->SaveGame, Player);
 		FSaveMetadataPatch::IsCallback = false;
 	}
+	this->RemoveFromRoot();
 }
 
 USaveMetadataCallback* USaveMetadataCallback::New(UFGSaveSystem* System, FSaveHeader SaveGame, APlayerController* Player)
 {
 	USaveMetadataCallback* CallbackObject = NewObject<USaveMetadataCallback>();
+	CallbackObject->AddToRoot();
 	CallbackObject->System = System;
 	CallbackObject->SaveGame = SaveGame;
 	CallbackObject->Player = Player;
