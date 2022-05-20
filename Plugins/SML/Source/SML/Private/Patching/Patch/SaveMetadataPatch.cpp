@@ -35,17 +35,17 @@ FModMetadata FModMetadata::FromModInfo(FModInfo ModInfo)
 	return FModMetadata(ModInfo.Name, ModInfo.FriendlyName, ModInfo.Version);
 }
 
-FString FMissingMod::ToString()
+FString FModMismatch::ToString()
 {
-	if (this->Is == nullptr)
+	if (this->IsMissing)
 	{
 		return FString::Printf(TEXT("%ls is missing"), *this->Was.Name);
 	}
 	return FString::Printf(TEXT("%ls (%ls -> %ls)"),
-		*this->Is->FriendlyName,* this->Was.Version.ToString(), *this->Is->Version.ToString());
+		*this->Is.FriendlyName,* this->Was.Version.ToString(), *this->Is.Version.ToString());
 }
 
-FMissingMod::FMissingMod(FModMetadata Was, FModInfo* Is) : Was(Was), Is(Is) {}
+FModMismatch::FModMismatch(FModMetadata Was, FModInfo Is, bool IsMissing) : Was(Was), Is(Is), IsMissing(IsMissing) {}
 
 void FSaveMetadataPatch::RegisterPatch() {
 	UFGSaveSystem* Context = GetMutableDefault<UFGSaveSystem>();
@@ -57,51 +57,34 @@ void FSaveMetadataPatch::RegisterPatch() {
 		
 		self = UFGSaveSystem::Get(Player);
 
-		TArray<FMissingMod> MissingMods = FindMissingMods(SaveGame);
+		TArray<FModMismatch> MissingMods = FindModMistmatches(SaveGame);
 
 		USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(self, SaveGame, Player);
-		bool Missing = PopupWarningIfMissingMods(MissingMods, CallbackObject);
-		if (Missing)
+		bool bIsMissingMods = MissingMods.Num() > 0;
+		if (bIsMissingMods)
 		{
+			PopupWarning(MissingMods, CallbackObject);
+			LogMismatchedMods(MissingMods);
 			scope.Cancel();
 		}
 	});
 }
 
-bool FSaveMetadataPatch::PopupWarningIfMissingMods(TArray<FMissingMod> MissingMods, USaveMetadataCallback* CallbackObject)
+void FSaveMetadataPatch::PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject)
 {
-	if (MissingMods.Num() < 1)
-	{
-		return false;
-	}
 	FPopupClosed PopupClosedDelegate;
 	
-	PopupClosedDelegate.BindUFunction(CallbackObject, TEXT("Callback"));
-	FString Body = BuildMissingModString(MissingMods);
+	PopupClosedDelegate.BindDynamic(CallbackObject, &USaveMetadataCallback::Callback);
+	FString Body = BuildMismatchedModString(ModMismatches);
 		
 	UFGBlueprintFunctionLibrary::AddPopupWithCloseDelegate(CallbackObject->Player,
 		FText::FromString(TEXT("Mod mismatch")), FText::FromString(Body),
 		PopupClosedDelegate, PID_OK_CANCEL);
-	return true;
 }
 
-bool FindModInArray(TArray<FModInfo>& Mods, FString ModReference, FModInfo* Out)
+TArray<FModMismatch> FSaveMetadataPatch::FindModMistmatches(FSaveHeader Header)
 {
-	for (int i = 0; i < Mods.Num(); ++i)
-	{
-		FModInfo Mod = Mods[i];
-		if (Mod.Name == ModReference)
-		{
-			*Out = Mod;
-			return true;
-		}
-	}
-	return false;
-}
-
-TArray<FMissingMod> FSaveMetadataPatch::FindMissingMods(FSaveHeader Header)
-{
-	TArray<FMissingMod> MissingMods;
+	TArray<FModMismatch> ModMismatches;
 	UModLoadingLibrary* ModLibrary = GEngine->GetEngineSubsystem<UModLoadingLibrary>();
 	TArray<FModInfo> LoadedMods = ModLibrary->GetLoadedMods();
 
@@ -109,7 +92,7 @@ TArray<FMissingMod> FSaveMetadataPatch::FindMissingMods(FSaveHeader Header)
 	TSharedPtr<FJsonObject> Metadata = nullptr;
 	FJsonSerializer::Deserialize(Reader, Metadata);
 	if (!(Metadata.IsValid() && Metadata->HasField("Mods"))) {
-		return MissingMods;
+		return ModMismatches;
 	}
 	
 	TArray<TSharedPtr<FJsonValue>> MetadataMods = Metadata->GetArrayField("Mods");
@@ -125,7 +108,7 @@ TArray<FMissingMod> FSaveMetadataPatch::FindMissingMods(FSaveHeader Header)
 		if (!(bValidReference && bValidVersion && bValidName))
 		{
 			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Invalid mod metadata format. Could not verify if there are missing mods."))
-			return MissingMods;
+			return ModMismatches;
 		}
 		FVersion ModVersion;
 		FString VersionConversionError;
@@ -133,51 +116,44 @@ TArray<FMissingMod> FSaveMetadataPatch::FindMissingMods(FSaveHeader Header)
 		if (VersionConversionError != "")
 		{
 			UE_LOG(LogSatisfactoryModLoader, Error, TEXT("Invalid mod metadata version format. Could not verify if there are missing mods."))
-			return MissingMods;
+			return ModMismatches;
 		}
 		
-		FModInfo* Mod = new FModInfo;
-		bool FoundMod = FindModInArray(LoadedMods, ModReference, Mod);
-		if (!FoundMod)
-		{
-			Mod = nullptr;
-		}
+		FModInfo LoadedMod;
+		bool bIsModLoaded = ModLibrary->GetLoadedModInfo(ModReference,LoadedMod);
 		
-		if (!Mod || Mod->Version.Compare(ModVersion) < 0)
+		if (!bIsModLoaded || LoadedMod.Version.Compare(ModVersion) < 0)
 		{
-			FModMetadata VersionInfo = FModMetadata(ModReference, ModName, ModVersion);
-			MissingMods.Push(FMissingMod(VersionInfo, Mod));
+			FModMetadata OldVersionInfo = FModMetadata(ModReference, ModName, ModVersion);
+			ModMismatches.Push(FModMismatch(OldVersionInfo, LoadedMod, bIsModLoaded));
 		}
 	}
-	return MissingMods;
+	return ModMismatches;
 }
 
-inline FString FSaveMetadataPatch::BuildMissingModString(TArray<FMissingMod>& MissingMods)
+inline FString FSaveMetadataPatch::BuildMismatchedModString(TArray<FModMismatch>& ModMismatches)
 {
-	if (MissingMods.Num() < 1)
-	{
-		return "";
-	}
 	FString ExplanationMessage =
 		"Missing mod content will disappear from your world.\n"
 		"This includes things like machines & items but not more generic effects like moving a foundation.\n\n"
 		"Press Confirm to load the save anyway or Cancel if you want to cancel";
 	
-	if (MissingMods.Num() == 1)
+	if (ModMismatches.Num() == 1)
 	{
-		FMissingMod MissingMod = MissingMods[0];
-		FString Header = MissingMod.Was.Name + " was previously used in this save and ";
-		if (MissingMod.Is == nullptr)
+		FModMismatch ModMismatch = ModMismatches[0];
+		FString Header = ModMismatch.Was.Name + " was previously used in this save and ";
+		ModMismatch.ToString()
+		if (ModMismatch.IsMissing)
 		{
 			Header += "is missing";
 		} else
 		{
 			Header += FString::Printf(TEXT("has a lower version than the previous one (%ls -> %ls)"),
-				*MissingMod.Was.Version.ToString(), *MissingMod.Is->Version.ToString());
+				*ModMismatch.Was.Version.ToString(), *ModMismatch.Is.Version.ToString());
 		}
 		return FString::Printf(TEXT("%ls\n\n%ls"), *Header, *ExplanationMessage);
 	}
-	int NumMods = MissingMods.Num();
+	int NumMods = ModMismatches.Num();
 	int NumOverflowMods = 0;
 	if (NumMods > 20)
 	{
@@ -188,7 +164,7 @@ inline FString FSaveMetadataPatch::BuildMissingModString(TArray<FMissingMod>& Mi
 	FString Out = "Some mods previously used in this save are missing or have lower versions:\n";
 	for (int i = 0; i < NumMods; ++i)
 	{
-		Out += MissingMods[i].ToString() + "\n";
+		Out += ModMismatches[i].ToString() + "\n";
 	}
 	if (NumOverflowMods)
 	{
@@ -199,7 +175,7 @@ inline FString FSaveMetadataPatch::BuildMissingModString(TArray<FMissingMod>& Mi
 	return Out;
 }
 
-void FSaveMetadataPatch::LogMissingMods(TArray<FMissingMod>& MissingMods)
+void FSaveMetadataPatch::LogMismatchedMods(TArray<FModMismatch>& MissingMods)
 {
 	UE_LOG(LogSatisfactoryModLoader, Warning, TEXT("%d missing mods found:"), MissingMods.Num())
 	for (int i = 0; i < MissingMods.Num(); ++i)
@@ -220,9 +196,9 @@ void USaveMetadataCallback::Callback(bool Continue)
 
 USaveMetadataCallback* USaveMetadataCallback::New(UFGSaveSystem* System, FSaveHeader SaveGame, APlayerController* Player)
 {
-	USaveMetadataCallback* obj = NewObject<USaveMetadataCallback>();
-	obj->System = System;
-	obj->SaveGame = SaveGame;
-	obj->Player = Player;
-	return obj;
+	USaveMetadataCallback* CallbackObject = NewObject<USaveMetadataCallback>();
+	CallbackObject->System = System;
+	CallbackObject->SaveGame = SaveGame;
+	CallbackObject->Player = Player;
+	return CallbackObject;
 }

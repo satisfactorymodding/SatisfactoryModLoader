@@ -17,11 +17,12 @@ struct FModMetadata
     static FModMetadata FromModInfo(FModInfo ModInfo);
 };
 
-struct FMissingMod
+struct FModMismatch
 {
-    FMissingMod(FModMetadata Was, FModInfo* Is);
+    FModMismatch(FModMetadata Was, FModInfo Is, bool IsMissing);
     FModMetadata Was;
-    FModInfo* Is;
+    FModInfo Is;
+    bool IsMissing;
     
     FString ToString();
 };
@@ -31,10 +32,10 @@ class SML_API FSaveMetadataPatch {
     friend class USaveMetadataCallback;
 
     static void RegisterPatch();
-    static bool PopupWarningIfMissingMods(TArray<FMissingMod> MissingMods, USaveMetadataCallback* CallbackObject);
-    static TArray<FMissingMod> FindMissingMods(FSaveHeader Header);
-    static FString BuildMissingModString(TArray<FMissingMod>&);
-    static void LogMissingMods(TArray<FMissingMod>&);
+    static void PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject);
+    static TArray<FModMismatch> FindModMistmatches(FSaveHeader Header);
+    static FString BuildMismatchedModString(TArray<FModMismatch>&);
+    static void LogMismatchedMods(TArray<FModMismatch>&);
 
     static bool IsCallback;
 };

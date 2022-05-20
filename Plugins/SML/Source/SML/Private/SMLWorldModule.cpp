@@ -14,7 +14,7 @@ USMLWorldModule::USMLWorldModule()
 
 void USMLWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase)
 {
-	UGameWorldModule::DispatchLifecycleEvent(Phase);
+	Super::DispatchLifecycleEvent(Phase);
 	if (Phase == ELifecyclePhase::POST_INITIALIZATION)
 	{
 		WriteModMetadataToSave();
