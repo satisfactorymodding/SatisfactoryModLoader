@@ -1,5 +1,6 @@
 ﻿#include "SMLWorldModule.h"
 
+#include "FGGameState.h"
 #include "FGSaveSession.h"
 #include "SatisfactoryModLoader.h"
 #include "ModLoading/ModLoadingLibrary.h"
@@ -17,7 +18,8 @@ void USMLWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase)
 	Super::DispatchLifecycleEvent(Phase);
 	if (Phase == ELifecyclePhase::POST_INITIALIZATION)
 	{
-		if (GetWorld()->GetGameState()->HasAuthority())
+		AGameStateBase* State = GetWorld()->GetGameState();
+		if (State && State->HasAuthority())
 		{
 			WriteModMetadataToSave();
 		}
