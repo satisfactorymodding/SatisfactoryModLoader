@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "CoreMinimal.h"
+#include "FGPlayerController.h"
 #include "FGSaveSystem.h"
 #include "ModLoading/ModLoadingLibrary.h"
 #include "UI/FGPopupWidget.h"
@@ -31,6 +32,7 @@ class SML_API FSaveMetadataPatch {
     friend class FSatisfactoryModLoader;
     friend class USaveMetadataCallback;
 
+    static bool Patch(FSaveHeader Header, APlayerController* PlayerController);
     static void RegisterPatch();
     static void PopupWarning(TArray<FModMismatch> ModMismatches, USaveMetadataCallback* CallbackObject);
     static TArray<FModMismatch> FindModMismatches(FSaveHeader Header);

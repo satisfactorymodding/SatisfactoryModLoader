@@ -47,23 +47,47 @@ FString FModMismatch::ToString()
 
 FModMismatch::FModMismatch(FModMetadata Was, FModInfo Is, bool IsMissing) : Was(Was), Is(Is), IsMissing(IsMissing) {}
 
+bool FSaveMetadataPatch::Patch(FSaveHeader Header, APlayerController* PlayerController)
+{
+	if (IsCallback) {
+		return false;
+	}
+		
+	UFGSaveSystem* System = UFGSaveSystem::Get(PlayerController);
+
+	TArray<FModMismatch> ModMismatches = FindModMismatches(Header);
+
+	USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(System, Header, PlayerController);
+	if (ModMismatches.Num() > 0)
+	{
+#if !UE_SERVER
+		PopupWarning(ModMismatches, CallbackObject);
+#endif
+		LogModMismatches(ModMismatches);
+		return true;
+	}
+	return false;
+}
+
 void FSaveMetadataPatch::RegisterPatch() {
 	UFGSaveSystem* Context = GetMutableDefault<UFGSaveSystem>();
 	SUBSCRIBE_METHOD_VIRTUAL(UFGSaveSystem::LoadSaveFile, Context, [](auto& scope, UFGSaveSystem* self, const FSaveHeader& SaveGame, APlayerController* Player)
 	{
-		if (IsCallback) {
+		bool bAbort = Patch(SaveGame, Player);
+		if (bAbort)
+		{
+			scope.Cancel();
+		}
+	});
+	SUBSCRIBE_METHOD(AFGAdminInterface::LoadGame, [](auto& scope, AFGAdminInterface* self, bool locally, const FSaveHeader& save)
+	{
+		if (locally) {
 			return;
 		}
-		
-		self = UFGSaveSystem::Get(Player);
-
-		TArray<FModMismatch> ModMismatches = FindModMismatches(SaveGame);
-
-		USaveMetadataCallback* CallbackObject = USaveMetadataCallback::New(self, SaveGame, Player);
-		if (ModMismatches.Num() > 0)
+		APlayerController* Player = self->GetWorld()->GetFirstPlayerController();
+		bool bAbort = Patch(save, Player);
+		if (bAbort)
 		{
-			PopupWarning(ModMismatches, CallbackObject);
-			LogModMismatches(ModMismatches);
 			scope.Cancel();
 		}
 	});

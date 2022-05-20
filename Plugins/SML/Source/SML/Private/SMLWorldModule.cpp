@@ -17,7 +17,10 @@ void USMLWorldModule::DispatchLifecycleEvent(ELifecyclePhase Phase)
 	Super::DispatchLifecycleEvent(Phase);
 	if (Phase == ELifecyclePhase::POST_INITIALIZATION)
 	{
-		WriteModMetadataToSave();
+		if (GetWorld()->GetGameState()->HasAuthority())
+		{
+			WriteModMetadataToSave();
+		}
 	}
 }
 
