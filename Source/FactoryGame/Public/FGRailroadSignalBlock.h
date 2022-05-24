@@ -29,11 +29,12 @@ enum class ERailroadBlockOccupancy : uint8
 };
 
 
-/** Status this block can have at a given entry signal. */
+/** How have this block been reserved. */
 enum class ERailroadBlockReservationType : uint8
 {
 	RBRT_Exclusive,
-	RBRT_Path
+	RBRT_Path,
+	RBRT_PartialPath
 };
 
 /**

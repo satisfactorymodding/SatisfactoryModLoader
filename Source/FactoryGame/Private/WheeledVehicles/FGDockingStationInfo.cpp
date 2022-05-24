@@ -5,6 +5,9 @@
 AFGDockingStationInfo::AFGDockingStationInfo() : Super() {
 	this->mStatus = EDockingStationStatus::DSS_Operational;
 	this->mStation = nullptr;
+	this->mLocation.X = 0.0;
+	this->mLocation.Y = 0.0;
+	this->mLocation.Z = 0.0;
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 	this->mDefaultRepresentationColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
@@ -14,6 +17,7 @@ AFGDockingStationInfo::AFGDockingStationInfo() : Super() {
 void AFGDockingStationInfo::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGDockingStationInfo, mStatus);
+	DOREPLIFETIME(AFGDockingStationInfo, mLocation);
 	DOREPLIFETIME(AFGDockingStationInfo, mActorRepresentationTexture);
 	DOREPLIFETIME(AFGDockingStationInfo, mMapText);
 	DOREPLIFETIME(AFGDockingStationInfo, mDefaultRepresentationColor);

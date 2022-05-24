@@ -249,6 +249,7 @@ public:
 	float NextRestrictiveSignalDistance = 0.f;
 	float NextRestrictiveSignalGrade = 0.f; // [%]
 	ERailroadSignalAspect NextRestrictiveSignalAspect = ERailroadSignalAspect::RSA_None;
+	float NextRestrictiveSignalStopOffset = 0.f;
 	
 	/**
 	 * Next upcoming signal, this is the closest signal up ahead.
@@ -343,7 +344,7 @@ public:
 	UPROPERTY( SaveGame )
 	float Velocity = 0.f;
 	
-	/** If >= 0 we want to be caught at that distance from the next connection. (Server Only) */
+	/** If >= 0 we want to be caught at that distance from the next connection. [cm] (Server Only) */
 	float CatchAtConnectionDistance = -1.f;
 };
 
