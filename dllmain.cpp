@@ -20,7 +20,7 @@ void ModLoaderEntry() {
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 
-	std::cout << "[SML] Attached SatisfactoryModLoader to Satisfactory" << std::endl;
+	std::cout << "[Daedalus] Attached SatisfactoryModLoader to Satisfactory" << std::endl;
 
 	readConfig(); // read the config file
 
@@ -40,12 +40,12 @@ void ModLoaderEntry() {
 	std::string path = appPath.substr(0, pos) + "\\mods";
 	std::string pathExact = path + "\\";
 
-	std::cout << "[SML] Looking for mods in: " << path << std::endl;
+	std::cout << "[Daedalus] Looking for mods in: " << path << std::endl;
 
 	// iterate through the directory to find mods
-	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
+	for (const auto & entry : std::filesystem::directory_iterator(path)) {
 		if (entry.path().extension().string() == ".dll") { // check if the file has a .dll extension
-			std::cout << "[SML] Attempting to load mod: " << entry.path() << std::endl;
+			std::cout << "[Daedalus] Attempting to load mod: " << entry.path() << std::endl;
 			std::string file = pathExact + entry.path().filename().string();
 			std::wstring stemp = std::wstring(file.begin(), file.end());
 			LPCWSTR sw = stemp.c_str();
@@ -72,7 +72,7 @@ void ModLoaderEntry() {
 			bool isDuplicate = false;
 			for (Mod existingMod : ModList) {
 				if (existingMod.name == std::get<1>(modName)) {
-					std::cout << "[SML] Skipping duplicate mod " << existingMod.name << std::endl;
+					std::cout << "[Daedalus] Skipping duplicate mod " << existingMod.name << std::endl;
 					FreeLibrary(dll);
 					isDuplicate = true;
 					break;
@@ -101,10 +101,10 @@ void ModLoaderEntry() {
 			std::cout << " [Authors] " << mod.authors << std::endl;
 		}
 	}
-	std::cout << "[SML] Loaded " << ModList.size() << " mods!" << std::endl;
+	std::cout << "[Daedalus] Loaded " << ModList.size() << " mods!" << std::endl;
 	// run test event
 	run_event(Event::Test);
-	std::cout << "[SML] SatisfactoryModLoader Initialization complete. Launching Satisfactory..." << std::endl;
+	std::cout << "[Daedalus] SatisfactoryModLoader Initialization complete. Launching Satisfactory..." << std::endl;
 }
 
 template <typename O>

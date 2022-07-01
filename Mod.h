@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 // Some utilities with mods, including a mod struct definition and a mod list
