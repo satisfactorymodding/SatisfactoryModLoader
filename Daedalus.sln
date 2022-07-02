@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xinput1_3", "xinput1_3\xinput1_3.vcxproj", "{3941E9F8-2E29-4D69-8717-F74562ED5301}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Daedalus", "Daedalus.vcxproj", "{40237398-4B3F-4F7A-9A60-78683EA1693A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Daedalus", "Daedalus\Daedalus.vcxproj", "{40237398-4B3F-4F7A-9A60-78683EA1693A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

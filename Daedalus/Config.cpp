@@ -22,9 +22,6 @@ void readConfig() {
 						LOADCONSOLE = false;
 						std::cout << "[Daedalus] You are free to close this window now." << std::endl;
 					}
-					else {
-						LOADCONSOLE = true;
-					}
 				}
 			}
 		}

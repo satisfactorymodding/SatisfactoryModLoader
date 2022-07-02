@@ -158,7 +158,7 @@
     </MASM>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Daedalus.vcxproj">
+    <ProjectReference Include="..\Daedalus\Daedalus.vcxproj">
       <Project>{40237398-4b3f-4f7a-9a60-78683ea1693a}</Project>
     </ProjectReference>
   </ItemGroup>
