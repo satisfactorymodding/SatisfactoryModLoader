@@ -5,7 +5,7 @@
 #include <event/game/EtcEvents.h>
 #include <event/game/GlobalEvents.h>
 #include <event/game/UiEvents.h>
-#include "EventLoader.h";
+#include "EventLoader.h"
 #include "FunctionHolder.h"
 
 EventLoader::EventLoader(std::vector<Mod> mods) {

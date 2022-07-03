@@ -1,7 +1,7 @@
 #include <stdafx.h>
 #include <string>
 #include <util/Utility.h>
-#include "Reflection.h";
+#include "Reflection.h"
 
 PVOID get_function(std::string module, const char* procName) {
 	return DetourFindFunction((LPCSTR)&(module), procName);

@@ -57,7 +57,7 @@ void player_sent_message(void* player, FString* message) { //TODO: Fix this to n
 	char* chars = new char[message->length];
 
 	for (size_t i = 0; i < message->length; i++) {
-		chars[i] = message->data[i];
+		chars[i] = (char)message->data[i];
 	}
 
 	std::string str(chars);
