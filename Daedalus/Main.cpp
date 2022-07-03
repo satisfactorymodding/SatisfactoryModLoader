@@ -24,7 +24,7 @@ void mod_loader_entry() {
 	freopen_s(&fp, "CONOUT$", "w", stdout);
 	freopen_s(&fp, "CONOUT$", "w", stderr);
 
-	log(LogType::Normal, "Attached SatisfactoryModLoader to Satisfactory");
+	log(LogType::Normal, "Attached Daedalus to Icarus");
 
 	// load up all of the configuration information
 	readConfig();
@@ -61,7 +61,7 @@ void mod_loader_entry() {
 	EventLoader eventLoader(modHandler.mods);
 	eventLoader.hook_events();
 
-	log(LogType::Normal, "SatisfactoryModLoader Initialization complete. Launching Satisfactory...");
+	log(LogType::Normal, "Daudalus Initialization complete. Launching Icarus...");
 }
 
 //cleans up when the program is killed

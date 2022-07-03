@@ -4,8 +4,8 @@
 #include <fstream>
 #include <utility>
 
-static constexpr const char* _header = "[SML] ";
-static std::ofstream _logFile("SatisfactoryModLoader.log");
+static constexpr const char* _header = "[Daedalus] ";
+static std::ofstream _logFile("daedalus.log");
 
 enum LogType {
 	Normal,

@@ -82,7 +82,7 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>$(MSBuildProjectDirectory)\detours;$(SolutionDir)Daedalus;$(IncludePath)</IncludePath>
     <LibraryPath>$(MSBuildProjectDirectory)\detours;$(LibraryPath)</LibraryPath>
-    <TargetName>v0.1 beta</TargetName>
+    <TargetName>xinput1_3</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
