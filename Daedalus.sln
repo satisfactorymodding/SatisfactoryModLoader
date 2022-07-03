@@ -1,15 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.329
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SatisfactoryModLoader", "SatisfactoryModLoader.vcxproj", "{40237398-4B3F-4F7A-9A60-78683EA1693A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Daedalus", "SatisfactoryModLoader.vcxproj", "{40237398-4B3F-4F7A-9A60-78683EA1693A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "xinput1_3", "xinput1_3\xinput1_3.vcxproj", "{3941E9F8-2E29-4D69-8717-F74562ED5301}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BaseMod", "BaseMod\BaseMod.vcxproj", "{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "InventoryTweaks", "InventoryTweaks\InventoryTweaks.vcxproj", "{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,16 +49,6 @@ Global
 		{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}.Release|x64.ActiveCfg = Release|x64
 		{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}.Release|x64.Build.0 = Release|x64
 		{30D3A01A-A556-45CF-BB2B-0EFFF6A188DA}.Release|x86.ActiveCfg = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Debug|Any CPU.ActiveCfg = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Debug|Any CPU.Build.0 = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Debug|x64.ActiveCfg = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Debug|x64.Build.0 = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Debug|x86.ActiveCfg = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Debug|x86.Build.0 = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Release|Any CPU.ActiveCfg = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Release|x64.ActiveCfg = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Release|x64.Build.0 = Release|x64
-		{D21790FB-2CAC-4B41-A59C-EE618A65E5CC}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

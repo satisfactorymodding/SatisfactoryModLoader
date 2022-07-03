@@ -34,7 +34,7 @@ void ModHandler::setup_mods() {
 void ModHandler::get_files(std::string path) {
 	std::string pathExact = path + "\\";
 
-	for (const auto & entry : std::experimental::filesystem::directory_iterator(path)) {
+	for (const auto & entry : std::filesystem::directory_iterator(path)) {
 
 		log(LogType::Normal, entry.path().string());
 
