@@ -8,7 +8,7 @@
 
 #define GLOBAL extern "C" __declspec(dllexport)
 
-static const char* gameModule = "FactoryGame-Win64-Shipping.exe";
+static const char* gameModule = "Icarus-Win64-Shipping.exe";
 static long long modLoaderModule = 0x180000000;
 
 PVOID get_function(std::string module, const char* procName);

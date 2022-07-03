@@ -1,7 +1,6 @@
 #include <stdafx.h>
 #include <string>
 #include <event/Event.h>
-#include <event/game/PlayerEvents.h>
 #include "BaseMod.h"
 #include "ModInfo.h"
 

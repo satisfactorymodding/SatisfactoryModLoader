@@ -25,7 +25,6 @@
     <ClInclude Include="Daedalus\event\FunctionHolder.h" />
     <ClInclude Include="Daedalus\event\game\EtcEvents.h" />
     <ClInclude Include="Daedalus\event\game\GlobalEvents.h" />
-    <ClInclude Include="Daedalus\event\game\PlayerEvents.h" />
     <ClInclude Include="Daedalus\event\game\UiEvents.h" />
     <ClInclude Include="Daedalus\Main.h" />
     <ClInclude Include="Daedalus\mod\Mod.h" />
