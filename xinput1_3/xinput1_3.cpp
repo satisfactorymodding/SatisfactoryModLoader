@@ -1,21 +1,33 @@
 #include <windows.h>
 #include <stdio.h>
-#include "..\Daedalus\DLLMain.h"
+#include "../SatisfactoryModLoader/Main.h"
+
 HINSTANCE mHinst = 0, mHinstDLL = 0;
 extern "C" UINT_PTR mProcs[12] = {0};
 
-void LoadOriginalDll();
+void load_original_dll();
+
+static bool hooked = false;
 
 LPCSTR mImportNames[] = {"DllMain", "XInputEnable", "XInputGetBatteryInformation", "XInputGetCapabilities", "XInputGetDSoundAudioDeviceGuids", "XInputGetKeystroke", "XInputGetState", "XInputSetState", (LPCSTR)100, (LPCSTR)101, (LPCSTR)102, (LPCSTR)103};
 BOOL WINAPI DllMain( HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved ) {
 	mHinst = hinstDLL;
-	if ( fdwReason == DLL_PROCESS_ATTACH ) {
-		LoadOriginalDll();
-		for ( int i = 0; i < 12; i++ )
-			mProcs[ i ] = (UINT_PTR)GetProcAddress( mHinstDLL, mImportNames[ i ] );
-		ModLoaderEntry();
-	} else if ( fdwReason == DLL_PROCESS_DETACH ) {
-		FreeLibrary( mHinstDLL );
+	if (fdwReason == DLL_PROCESS_ATTACH) {
+		load_original_dll();
+		for (int i = 0; i < 12; i++)
+			mProcs[i] = (UINT_PTR)GetProcAddress(mHinstDLL, mImportNames[i]);
+	}
+	else if (fdwReason == DLL_PROCESS_DETACH) {
+		cleanup();
+		FreeLibrary(mHinstDLL);
+	} 
+	
+	if (hooked) {
+		return ( TRUE );
+	}
+	if ( fdwReason == DLL_THREAD_ATTACH) {
+		hooked = true;
+		mod_loader_entry();
 	}
 	return ( TRUE );
 }
@@ -36,7 +48,7 @@ extern "C" void ExportByOrdinal103();
 
 // Loads the original DLL from the default system directory
 //	Function originally written by Michael Koch
-void LoadOriginalDll()
+void load_original_dll()
 {
 	char buffer[MAX_PATH];
 

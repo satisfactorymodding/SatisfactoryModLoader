@@ -1,8 +1,14 @@
 #pragma once
-#define EXTERN_DLL_EXPORT extern "C" __declspec(dllexport)
+#include <map>
+#include <string>
+#include <iostream>
+#include <event/Event.h>
+#include <event/FunctionHolder.h>
+#include <util/Reflection.h>
+#include <util/Utility.h>
 
-enum Event {
-	None, Test
-};
+#define GLOBAL extern "C" __declspec(dllexport)
 
-typedef void(*FUNC)();
+GLOBAL void recieve_hooked_functions(std::map<EventType, PVOID> functions) {
+	hookedFunctions = functions;
+}

@@ -26,3 +26,9 @@ x86
 *.vbproj.user
 ipch
 *sdf
+
+# Custom Mods
+InventoryTweaks/
+auto_copy_files.py
+SMLLoader/
+packages/

@@ -1,18 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|Win32">
-      <Configuration>Debug</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Debug|x64">
-      <Configuration>Debug</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
@@ -23,33 +11,32 @@
     <ProjectGuid>{40237398-4B3F-4F7A-9A60-78683EA1693A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SatisfactoryModLoader</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>Daedalus</ProjectName>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v143</PlatformToolset>
+    <PlatformToolset>v141</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -82,6 +69,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <IncludePath>$(MSBuildProjectDirectory)\xinput1_3\detours;$(IncludePath)</IncludePath>
+    <LibraryPath>$(MSBuildProjectDirectory)\xinput1_3\detours;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -131,7 +120,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -140,7 +129,7 @@
       <PreprocessorDefinitions>NDEBUG;SATISFACTORYMODLOADER_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <WholeProgramOptimization>false</WholeProgramOptimization>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalIncludeDirectories);$(MSBuildProjectDirectory)\SatisfactoryModLoader;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,25 +138,42 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AssemblyDebug>true</AssemblyDebug>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\xinput1_3\detours;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="DllMain.h" />
-    <ClInclude Include="Mod.h" />
-    <ClInclude Include="stdafx.h" />
-    <ClInclude Include="targetver.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\Connection.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\Dispatcher.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\Event.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\EventLoader.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\FunctionHolder.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\EtcEvents.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\GlobalEvents.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\PlayerEvents.h" />
+    <ClInclude Include="SatisfactoryModLoader\event\game\UiEvents.h" />
+    <ClInclude Include="SatisfactoryModLoader\Main.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\Mod.h" />
+    <ClInclude Include="SatisfactoryModLoader\mod\ModHandler.h" />
+    <ClInclude Include="SatisfactoryModLoader\stdafx.h" />
+    <ClInclude Include="SatisfactoryModLoader\targetver.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Config.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\FKey.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\FString.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\json.hpp" />
+    <ClInclude Include="SatisfactoryModLoader\util\Reflection.h" />
+    <ClInclude Include="SatisfactoryModLoader\util\Utility.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="Mod.cpp" />
-    <ClCompile Include="Loader.cpp" />
-    <ClCompile Include="dllmain.cpp" />
-    <ClCompile Include="stdafx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
-    </ClCompile>
+    <ClCompile Include="SatisfactoryModLoader\event\Connection.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\event\Dispatcher.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\event\EventLoader.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\Main.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\mod\ModHandler.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\stdafx.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Config.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Reflection.cpp" />
+    <ClCompile Include="SatisfactoryModLoader\util\Utility.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
