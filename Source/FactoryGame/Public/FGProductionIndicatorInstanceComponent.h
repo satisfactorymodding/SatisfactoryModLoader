@@ -4,28 +4,32 @@
 
 #include "FactoryGame.h"
 #include "Buildables/FGBuildableFactory.h"
-#include "Components/SceneComponent.h"
+#include "FGColoredInstanceMeshProxy.h"
 #include "FGProductionIndicatorInstanceManager.h"
 #include "FGProductionIndicatorInstanceComponent.generated.h"
 
+USTRUCT()
+struct FFGIndicatorReaction
+{
+	GENERATED_BODY()
+	
+	UPROPERTY(EditDefaultsOnly)
+	int32 FlashingPattern;
+
+	UPROPERTY(EditDefaultsOnly)
+	FLinearColor mColor;
+};
 
 /**
  * Instanced production indicator, used on factories instead of the old non instanced variant.
  */
 UCLASS( Blueprintable, ClassGroup = ( FactoryGame ), meta = ( BlueprintSpawnableComponent ) )
-class FACTORYGAME_API UFGProductionIndicatorInstanceComponent : public UStaticMeshComponent
+class FACTORYGAME_API UFGProductionIndicatorInstanceComponent : public UFGColoredInstanceMeshProxy
 {
 	GENERATED_BODY()
 public:
 	UFGProductionIndicatorInstanceComponent();
-
-	//Begin AActor
-	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
-	//End AActor
-
-	void SetInstanceManager( UFGProductionIndicatorInstanceManager* manager );
-	void SetInstanced( bool isInstanced );
-
+	
 	/** Called when the buildings indicator status changes. */
 	UFUNCTION()
 	void OnProductionStatusChanged( EProductionStatus newStatus );
@@ -33,21 +37,26 @@ public:
 	/** This sets the cached status to IS_NONE so that an update is forced next frame */
 	void ResetIndicatorStatus();
 
+	void SetVisuals( EProductionStatus newStatus );
+
 protected:
-	// Begin SceneComponent interface
-	virtual void OnHiddenInGameChanged() override;
-	// End SceneComponent interface
+	UPROPERTY(EditDefaultsOnly)
+	FFGIndicatorReaction mStateNoneData;
+
+	UPROPERTY(EditDefaultsOnly)
+	FFGIndicatorReaction mStateActiveData;
+	
+	UPROPERTY(EditDefaultsOnly)
+	FFGIndicatorReaction mStateActiveWithCrystalData;
+
+	UPROPERTY(EditDefaultsOnly)
+	FFGIndicatorReaction mStateErrorData;
+
+	UPROPERTY(EditDefaultsOnly)
+	FFGIndicatorReaction mStateStandbyData;
 
 private:
-	/** The outer factory we should display the state for. */
-	class AFGBuildableFactory* mOuterFactory;
-
 	/** Save the state of the factory so that we don't change material excessively. */
 	EProductionStatus mCachedIndicatorStatus;
-	
-	/** Only used for holding info about where the instance is located, for quicker changes.*/
-	UFGProductionIndicatorInstanceManager::InstanceHandle mInstanceHandle;
 
-	/* Don't need to be a UPROPERTY as it's only meant as a shortcut to an object that is already managed elsewhere and guaranteed to live longer than this component. */
-	UFGProductionIndicatorInstanceManager* mInstanceManager;
 };

@@ -14,13 +14,14 @@ AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 	this->mFlowLimit = 10.0;
 	this->mFlowIndicatorClass = nullptr;
 	this->mFlowIndicatorMinimumPipeLength = 0.0;
+	this->mFlowIndicator = nullptr;
 	this->mSoundSplineComponent = nullptr;
 	this->mSplineAudioEvent = nullptr;
 	this->mMaxIndicatorTurnAngle = 3.0;
 	this->mCachedFluidDescriptor = nullptr;
 	this->mCurrentFluid = TEXT("");
-	this->mQuantiziedContent = 0.0;
-	this->mQuantiziedFlow = 0.0;
+	this->mLastContentForSound = 0.0;
+	this->mLastFlowForSound = 0.0;
 	this->mRattleLimit = 0.5;
 	this->mIsRattling = false;
 	this->mStartRattleSoundEvent = nullptr;
@@ -40,17 +41,21 @@ AFGBuildablePipeline::AFGBuildablePipeline() : Super() {
 }
 void AFGBuildablePipeline::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGBuildablePipeline, mFlowIndicator);
 	DOREPLIFETIME(AFGBuildablePipeline, mIndicatorData);
 }
 void AFGBuildablePipeline::BeginPlay(){ }
 void AFGBuildablePipeline::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void AFGBuildablePipeline::Tick(float dt){ }
 void AFGBuildablePipeline::Factory_Tick(float dt){ }
-void AFGBuildablePipeline::Native_OnMaterialInstancesUpdated(){ }
 void AFGBuildablePipeline::Upgrade_Implementation(AActor* newActor){ }
 void AFGBuildablePipeline::GainedSignificance_Implementation(){ }
 void AFGBuildablePipeline::LostSignificance_Implementation(){ }
 TSubclassOf< UFGPipeConnectionComponentBase > AFGBuildablePipeline::GetConnectionType_Implementation(){ return TSubclassOf<UFGPipeConnectionComponentBase>(); }
+void AFGBuildablePipeline::SetCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
+void AFGBuildablePipeline::ApplyCustomizationData_Native(const FFactoryCustomizationData& customizationData){ }
+void AFGBuildablePipeline::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
+void AFGBuildablePipeline::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
+void AFGBuildablePipeline::GetChildDismantleActors_Implementation(TArray< AActor* >& out_childDismantleActors) const{ }
 FFluidBox* AFGBuildablePipeline::GetFluidBox(){ return nullptr; }
 TArray< class UFGPipeConnectionComponent* > AFGBuildablePipeline::GetPipeConnections(){ return TArray<class UFGPipeConnectionComponent*>(); }
 void AFGBuildablePipeline::OnFluidDescriptorSet(){ }
@@ -61,8 +66,9 @@ float AFGBuildablePipeline::GetIndicatorFlowPct() const{ return float(); }
 float AFGBuildablePipeline::GetIndicatorContent() const{ return float(); }
 float AFGBuildablePipeline::GetIndicatorFlow() const{ return float(); }
 TSubclassOf< UFGItemDescriptor > AFGBuildablePipeline::GetFluidDescriptor() const{ return TSubclassOf<UFGItemDescriptor>(); }
-UFGPipelineFlowIndicatorComponent* AFGBuildablePipeline::GetFlowIndicatorComponent() const{ return nullptr; }
-void AFGBuildablePipeline::FlushPipeNetwork(){ }
+AFGBuildablePipelineFlowIndicator* AFGBuildablePipeline::GetFlowIndicator() const{ return nullptr; }
+void AFGBuildablePipeline::SmoothValues(float& flowPct,  float& contentPct, float dt) const{ }
+void AFGBuildablePipeline::GetRawValues(float& flowPct,  float& contentPct) const{ }
 void AFGBuildablePipeline::UpdateSounds(){ }
 bool AFGBuildablePipeline::FindBestInidicatorPlacement(FTransform& out_transform){ return bool(); }
 const FName AFGBuildablePipeline::mConnectionName0 = FName();

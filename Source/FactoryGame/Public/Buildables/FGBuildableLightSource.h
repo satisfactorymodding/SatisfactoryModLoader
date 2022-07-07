@@ -28,6 +28,37 @@ struct FACTORYGAME_API FLightSourceControlData
 	bool IsTimeOfDayAware = false;
 };
 
+UCLASS()
+class UFGLightSourceClipboardSettings : public UFGFactoryClipboardSettings
+{
+	GENERATED_BODY()
+public:
+	
+	UPROPERTY( BlueprintReadWrite )
+	FLightSourceControlData mLightSourceControlData;
+	
+};
+
+UCLASS()
+class FACTORYGAME_API UFGLightSourceClipboardRCO : public UFGRemoteCallObject
+{
+	GENERATED_BODY()
+public:
+	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+
+	UFUNCTION( Server, Reliable )
+	void Server_PasteSettingsBuildableLight( class AFGBuildableLightSource* buildableLight, FLightSourceControlData lightSourceControlData );
+
+	UFUNCTION( Server, Reliable )
+	void Server_PasteSettingsControlPanel( class AFGBuildableLightsControlPanel* controlPanel, FLightSourceControlData lightSourceControlData );
+
+private:
+	UPROPERTY( Replicated, Meta = ( NoAutoJson ) )
+	bool mForceNetField_UFGLightSourceClipboardRCO = false;
+
+};
+
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FBuildableLightSourceStateChanged, bool, isEnabled );
 
 /**
@@ -50,6 +81,15 @@ public:
 	virtual bool GetPoolHandleInitialState() const override;
 	// End AFGBuildable interface
 
+	//~ Begin IFGFactoryClipboardInterface
+	bool CanUseFactoryClipboard_Implementation() override { return true; }
+	UFGFactoryClipboardSettings* CopySettings_Implementation() override;
+	bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings ) override;
+	TSubclassOf<UObject> GetClipboardMappingClass_Implementation() override;
+	//~ End IFGFactoryClipboardInterface
+
+	virtual void OnBuildEffectFinished() override;
+	
 	/** Turn this light on or off */
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "FactoryGame|Buildable|Light" )
     void SetLightEnabled( bool isEnabled );

@@ -15,7 +15,8 @@ enum class ERailroadBlockValidation : uint8
 	RBV_Valid 						UMETA( DisplayName = "Valid" ),
 	RBV_NoExitSignals				UMETA( DisplayName = "No Exit Signal" ),
 	RBV_ContainsLoop				UMETA( DisplayName = "Contains Loop" ),
-	RBV_ContainsMixedEntrySignals	UMETA( DisplayName = "Contains Mixed Entry Signals" )
+	RBV_ContainsMixedEntrySignals	UMETA( DisplayName = "Contains Mixed Entry Signals" ),
+	RBV_ContainsStation				UMETA( DisplayName = "Contain Station" ),
 };
 
 
@@ -134,10 +135,14 @@ public:
 	/**
 	 * The entry point into the block.
 	 * This is used to keep this signal green (valid entry).
+	 * This is reset when the train enters the reserved block.
 	 */
 	TWeakObjectPtr< class AFGBuildableRailroadSignal > EntrySignal;
 
-	/** First path segment in this reservation. */
+	/**
+	 * First path segment in this reservation.
+	 * This is reset when the train enters the reserved block.
+	 */
 	int32 EntryPathSegment = INDEX_NONE;
 	
 	/**
@@ -257,6 +262,7 @@ public:
 	bool HasExitSignal = false;
 	bool ContainsLoop = false;
 	bool ContainsMixedEntrySignals = false;
+	bool ContainsStation = false;
 
 	/** Unique id for this block. Unique per track graph and not globally. */
 	int32 ID = INDEX_NONE;

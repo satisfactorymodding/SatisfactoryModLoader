@@ -11,7 +11,16 @@
 #include "Buildables/FGBuildableSignBase.h"
 #include "FGBuildableWidgetSign.generated.h"
 
-
+UCLASS()
+class UFGSignClipboardSettings : public UFGFactoryClipboardSettings
+{
+	GENERATED_BODY()
+public:
+	
+	UPROPERTY( BlueprintReadWrite )
+	FPrefabSignData mPrefabSignData;
+	
+};
 
 /**
  * Class for the creating of placeable signs. Implements the sign interface for adding and removing element via a widget class
@@ -51,9 +60,17 @@ public:
 	// Begin Significance Interface Implementation
 	virtual void GainedSignificance_Implementation() override;
 	virtual void LostSignificance_Implementation() override;
+	virtual float GetSignificanceRange() override { return mGainSignificanceDistance; }
 	// End  Significance Interface Implementation
 
+	//~ Begin IFGFactoryClipboardInterface
+	bool CanUseFactoryClipboard_Implementation() override { return true; }
+	UFGFactoryClipboardSettings* CopySettings_Implementation() override;
+	bool PasteSettings_Implementation( UFGFactoryClipboardSettings* settings ) override;
+	//~ End IFGFactoryClipboardInterface
 
+	virtual void OnBuildEffectFinished() override;
+	
 	// When a text element is updated, this call will update that element and set the save data
 	UFUNCTION( BlueprintCallable, Category = "WidgetSign" )
 	void SetPrefabSignData( UPARAM( ref ) FPrefabSignData& signData );

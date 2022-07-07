@@ -13,14 +13,21 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->mOwnedPawn = nullptr;
 	this->mHasReceivedInitialItems = false;
 	this->mIsServerAdmin = false;
+	this->mCustomColorData.PrimaryColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
+	this->mCustomColorData.SecondaryColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
 	this->mCustomColorData.Metallic = 0.0;
 	this->mCustomColorData.Roughness = 0.0;
+	this->mShoppingListSettings.PublicTodoListVisibilty = false;
+	this->mShoppingListSettings.PrivateTodoListVisibilty = false;
+	this->mShoppingListSettings.RecipeListVisibilty = false;
+	this->mShoppingListSettings.Size = 0.0;
 	this->mTutorialSubsystem = nullptr;
 	this->mTutorialSubsystemClass = nullptr;
 	this->mNumArmSlots = 1;
 	this->mOnlyShowAffordableRecipes = false;
 	this->mLastSelectedResourceSinkShopCategory = nullptr;
 	this->mNumObservedInventorySlots = 0;
+	this->mPrivateTodoList = TEXT("");
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -44,14 +51,18 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mIsServerAdmin);
 	DOREPLIFETIME(AFGPlayerState, mVisitedAreas);
 	DOREPLIFETIME(AFGPlayerState, mCustomColorData);
+	DOREPLIFETIME(AFGPlayerState, mShoppingListSettings);
 	DOREPLIFETIME(AFGPlayerState, mRememberedFirstTimeEquipmentClasses);
 	DOREPLIFETIME(AFGPlayerState, mNumArmSlots);
 	DOREPLIFETIME(AFGPlayerState, mOnlyShowAffordableRecipes);
 	DOREPLIFETIME(AFGPlayerState, mCollapsedItemCategories);
 	DOREPLIFETIME(AFGPlayerState, mFilteredOutMapTypes);
 	DOREPLIFETIME(AFGPlayerState, mFilteredOutCompassTypes);
+	DOREPLIFETIME(AFGPlayerState, mCollapsedMapCategories);
 	DOREPLIFETIME(AFGPlayerState, mNumObservedInventorySlots);
 	DOREPLIFETIME(AFGPlayerState, mFavoriteShopSchematics);
+	DOREPLIFETIME(AFGPlayerState, mPrivateTodoList);
+	DOREPLIFETIME(AFGPlayerState, mOpenedWidgetsPersistent);
 }
 bool AFGPlayerState::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGPlayerState::BeginPlay(){ }
@@ -92,6 +103,7 @@ void AFGPlayerState::SetCustomizationShortcutOnIndex(TSubclassOf<  UFGCustomizat
 void AFGPlayerState::SetEmoteShortcutOnIndex(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
 bool AFGPlayerState::GetAndSetFirstTimeEquipped( AFGEquipment* equipment){ return bool(); }
 AFGPlayerController* AFGPlayerState::GetOwningController() const{ return nullptr; }
+UFGGameUI* AFGPlayerState::GetGameUI() const{ return nullptr; }
 void AFGPlayerState::AddNewRecipe(TSubclassOf< UFGRecipe > recipe){ }
 void AFGPlayerState::GetNewRecipes(TArray<TSubclassOf<class UFGRecipe>>& out_newRecipes) const{ }
 void AFGPlayerState::RemoveRecipe(TSubclassOf< UFGRecipe > recipe){ }
@@ -110,6 +122,8 @@ bool AFGPlayerState::Server_SetMapFilter_Validate(ERepresentationType representa
 void AFGPlayerState::SetCompassFilter(ERepresentationType representationType, bool visible){ }
 void AFGPlayerState::Server_SetCompassFilter_Implementation(ERepresentationType representationType, bool visible){ }
 bool AFGPlayerState::Server_SetCompassFilter_Validate(ERepresentationType representationType, bool visible){ return bool(); }
+void AFGPlayerState::SetMapCategoryCollapsed(ERepresentationType mapCategory, bool collapsed){ }
+void AFGPlayerState::Server_SetMapCategoryCollapsed_Implementation(ERepresentationType mapCategory, bool collapsed){ }
 void AFGPlayerState::UpdateOwningPawnActorRepresentation() const{ }
 void AFGPlayerState::DumpHotbars(){ }
 void AFGPlayerState::UpdateNumObservedInventorySlots(){ }
@@ -118,6 +132,8 @@ TArray<TSubclassOf<class UFGSchematic>> AFGPlayerState::GetShopFavorites() const
 void AFGPlayerState::SaveAsShopFavorite(TSubclassOf<class UFGSchematic> schematic){ }
 void AFGPlayerState::RemoveAsShopFavorite(TSubclassOf<class UFGSchematic> schematic){ }
 void AFGPlayerState::RemoveAllShopFavorites(){ }
+TMap< TSubclassOf< class UFGSchematic >, int32 > AFGPlayerState::GetShoppingCart() const{ return TMap<TSubclassOf<class UFGSchematic>,int32>(); }
+void AFGPlayerState::SetShoppingCart(TMap< TSubclassOf<  UFGSchematic >, int32 > shoppingCart){ }
 void AFGPlayerState::SetPlayerCustomizationSlotData(FFactoryCustomizationColorSlot customColorData){ }
 void AFGPlayerState::Server_SetPlayerCustomizationSlotData_Implementation(FFactoryCustomizationColorSlot customColorData){ }
 TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > AFGPlayerState::GetSavedMatDescForBuildableCategory(TSubclassOf<  UFGCategory > category, TSubclassOf<  UFGCategory > subCategory){ return TSubclassOf<class UFGFactoryCustomizationDescriptor_Material>(); }
@@ -127,7 +143,24 @@ TSubclassOf< class UFGFactoryCustomizationDescriptor_Material > AFGPlayerState::
 void AFGPlayerState::SetSavedMatDescForMaterialCategory(TSubclassOf<  UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc, bool updateHotbarShortcuts){ }
 void AFGPlayerState::Server_SetSavedMatDescForMaterialCategory_Implementation(TSubclassOf<  UFGCategory > category, TSubclassOf< UFGFactoryCustomizationDescriptor_Material > materialDesc){ }
 void AFGPlayerState::UpdateHotbarShortcutsForMaterialDesc(TSubclassOf<  UFGFactoryCustomizationDescriptor_Material > newDefaultMaterialDesc){ }
+void AFGPlayerState::SetPublicTodoList(const FString& newTodoList){ }
+void AFGPlayerState::Server_SetPublicTodoList_Implementation(const FString& newTodoList){ }
+void AFGPlayerState::Client_UpdatePublicTodoList_Implementation(const FString& updatedTodoList){ }
+void AFGPlayerState::SetPrivateTodoList(const FString& newTodoList){ }
+void AFGPlayerState::Server_SetPrivateTodoList_Implementation(const FString& newTodoList){ }
+FString AFGPlayerState::GetPublicTodoList() const{ return FString(); }
+void AFGPlayerState::SetShoppingListSettings(const FShoppingListSettings& newShoppingListSettings){ }
+void AFGPlayerState::Server_SetShoppingListSettings_Implementation(const FShoppingListSettings& newShoppingListSettings){ }
+void AFGPlayerState::CopyFactoryClipboard(UObject* object){ }
+void AFGPlayerState::PasteFactoryClipboard(UObject* object){ }
+bool AFGPlayerState::GetWidgetHasBeenOpened(TSubclassOf<  UUserWidget > widget, bool& openedThisSession){ return bool(); }
+void AFGPlayerState::SetWidgetHasBeenOpened(TSubclassOf<  UUserWidget > widget, bool save){ }
+void AFGPlayerState::Server_SetWidgetHasBeenOpened_Implementation(TSubclassOf<  UUserWidget > widget){ }
+bool AFGPlayerState::IsInPlayerArray(){ return bool(); }
+void AFGPlayerState::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
+void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboard){ }
 void AFGPlayerState::OnRep_HotbarShortcuts(){ }
 void AFGPlayerState::OnRep_CurrentHotbarIndex(){ }
+void AFGPlayerState::OnRep_SlotData(){ }
 void AFGPlayerState::Server_UpdateNumObservedInventorySlots_Implementation(){ }
 bool AFGPlayerState::Server_UpdateNumObservedInventorySlots_Validate(){ return bool(); }

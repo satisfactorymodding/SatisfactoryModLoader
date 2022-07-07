@@ -24,11 +24,22 @@ void AFGRadioactivitySubsystem::SetEmitter(UObject* owner,
 					 TSubclassOf< UFGItemDescriptor > itemClass,
 					 int32 itemAmount,
 					 int32 UID){ }
-void AFGRadioactivitySubsystem::SetEmitter(UObject* owner,
+void AFGRadioactivitySubsystem::SetEmitter_Blueprint(UObject* sourceObject,
+					 USceneComponent* attachRoot,
+					 FVector attachLocation,
+					 float decay){ }
+void AFGRadioactivitySubsystem::SetEmitterByID_Blueprint(UObject* sourceObject,
+					 USceneComponent* attachRoot,
+					 FVector attachLocation,
+					 float decay,
+					 int32 UID){ }
+void AFGRadioactivitySubsystem::RemoveEmitter_Blueprint(UObject* sourceObject){ }
+void AFGRadioactivitySubsystem::SetEmitter(UObject* sourceObject,
 					 USceneComponent* attachRoot,
 					 const FVector& attachLocation,
 					 float decay,
 					 int32 UID){ }
+void AFGRadioactivitySubsystem::RemoveEmitter(UObject* owner, int32 UID){ }
 float AFGRadioactivitySubsystem::calculateIntensity(int32 itemAmount, float itemDecay, float distance, float radiationFalloffByDistance){ return float(); }
 FRadioactiveEmitter& AFGRadioactivitySubsystem::FindOrAddEmitter(TArray< FRadioactiveEmitter >& emitters, int32 UID){ return *(new FRadioactiveEmitter); }
 int32 AFGRadioactivitySubsystem::FindEmitter(TArray< FRadioactiveEmitter >& emitters, int32 UID){ return int32(); }

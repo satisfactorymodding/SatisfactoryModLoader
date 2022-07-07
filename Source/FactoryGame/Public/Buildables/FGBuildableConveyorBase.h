@@ -509,6 +509,10 @@ public:
 	virtual void PostLoadGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	// End IFGSaveInterface
 
+	// Begin AFGBuildable interface
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
+	// End AFGBuildable interface
+	
 	// Begin AFGBuildableFactory interface
 	virtual void Factory_Tick( float deltaTime ) override;
 	virtual uint8 MaxNumGrab( float dt ) const override;

@@ -8,16 +8,19 @@ void AFGWorldSettings::PostEditChangeProperty( FPropertyChangedEvent& propertyCh
 #endif 
 #if WITH_EDITOR
 void AFGWorldSettings::HandleMapChanged( UWorld* newWorld, EMapChangeType mapChangeType){ }
+void AFGWorldSettings::OnActorSpawned(AActor* actor){ }
 #endif 
 #if WITH_EDITORONLY_DATA
 #endif 
 AFGWorldSettings::AFGWorldSettings() : Super() {
 	this->mDefaultHeightFogSettings.FogHeight = 5000.0;
 	this->mDefaultHeightFogSettings.FogDensity = 0.02;
+	this->mDefaultHeightFogSettings.FogInscatteringColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
 	this->mDefaultHeightFogSettings.FullyDirectionalInscatteringColorDistance = 100000.0;
 	this->mDefaultHeightFogSettings.NonDirectionalInscatteringColorDistance = 1000.0;
 	this->mDefaultHeightFogSettings.DirectionalInscatteringExponent = 4.0;
 	this->mDefaultHeightFogSettings.DirectionalInscatteringStartDistance = 10000.0;
+	this->mDefaultHeightFogSettings.DirectionalInscatteringColor = FLinearColor(0.0, 0.0, 0.0, 1.0);
 	this->mDefaultHeightFogSettings.FogHeightFalloff = 0.2;
 	this->mDefaultHeightFogSettings.FogMaxOpacity = 1.0;
 	this->mDefaultHeightFogSettings.StartDistance = 0.0;
@@ -39,6 +42,8 @@ AFGWorldSettings::AFGWorldSettings() : Super() {
 	this->mPhotoModeManager = nullptr;
 }
 void AFGWorldSettings::BeginDestroy(){ Super::BeginDestroy(); }
+void AFGWorldSettings::AddReferencedObjects(UObject* inThis, FReferenceCollector& collector){ }
+void AFGWorldSettings::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGWorldSettings::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGWorldSettings::PostLoad(){ Super::PostLoad(); }
 void AFGWorldSettings::PreInitializeComponents(){ Super::PreInitializeComponents(); }
@@ -54,4 +59,5 @@ AExponentialHeightFog* AFGWorldSettings::GetExponentialHeightFog() const{ return
 ASkyAtmosphere* AFGWorldSettings::GetSkyAtmosphere() const{ return nullptr; }
 AFGSkySphere* AFGWorldSettings::GetSkySphere() const{ return nullptr; }
 void AFGWorldSettings::UpdateWorldBounds(){ }
-void AFGWorldSettings::OnActorSpawned(AActor* actor){ }
+void AFGWorldSettings::OnSaveActorDestroyed(AActor* actor){ }
+void AFGWorldSettings::PrepareSaveActors(){ }

@@ -16,4 +16,6 @@ class FACTORYGAME_API AFGBuildablePipelineJunction : public AFGBuildablePipeline
 {
 	GENERATED_BODY()
 public:
+
+	AFGBuildablePipelineJunction();
 };

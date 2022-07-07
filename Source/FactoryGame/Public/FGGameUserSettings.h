@@ -57,16 +57,25 @@ class FACTORYGAME_API UFGGameUserSettings : public UGameUserSettings, public IFG
 	GENERATED_BODY()
 public:
 
+	/** Returns the game local machine settings (resolution, windowing mode, scalability settings, etc...) */
+	UFUNCTION( BlueprintCallable, Category = Settings )
+	static UFGGameUserSettings* GetFGGameUserSettings();
+
 	//~Begin GameUserSettings interface
+	virtual void LoadSettings( bool bForceReload = false ) override;
 	virtual void ApplyNonResolutionSettings() override;
 	virtual void ApplyResolutionSettings( bool bCheckForCommandLineOverrides ) override;
 	virtual void ApplySettings( bool bCheckForCommandLineOverrides ) override;
 	virtual void SaveSettings() override;
-	virtual void LoadSettings( bool bForceReload = false ) override;
 	virtual float GetEffectiveFrameRateLimit() override;
 	virtual void ConfirmVideoMode() override;
+	virtual void RunHardwareBenchmark(int32 WorkScale = 10, float CPUMultiplier = 1.0f, float GPUMultiplier = 1.0f) override;
 	//~End GameUserSettings interfaces
 	
+	UFUNCTION(BlueprintCallable)
+	FString RunAndApplyHardwareBenchmark( int32 WorkScale = 10, float CPUMultiplier = 1.0f, float GPUMultiplier = 1.0f );
+	void TryAutoDetectSettings();
+
 	/** Reset the option with the given cvar */
 	void ResetOption( FString cvar );
 
@@ -94,12 +103,12 @@ public:
 	/** Switch between fullscreen and windowed mode */
 	void ToggleFullscreenMode();
 
+	UFUNCTION( BlueprintCallable, Category = Settings )
+	void OnVideoQualityUpdated();
+	void UpdateVideoQualityCvars( const FString& cvar );
 	/** Checks if we want to apply some scalability settings based on cmd line arguments. No applied in shipping. Used for profiling. */
 	void HandleCmdLineVideoQuality();
-
-	/** Returns the game local machine settings (resolution, windowing mode, scalability settings, etc...) */
-	UFUNCTION( BlueprintCallable, Category = Settings )
-	static UFGGameUserSettings* GetFGGameUserSettings();
+	void SetGroupQualityLevel( const TCHAR* InGroupName, int32 InQualityLevel, int32 InNumLevels );
 
 	/** Returns the option interface that handles getting and settings options*/
 	UFUNCTION( BlueprintCallable, Category = Settings )
@@ -124,6 +133,10 @@ public:
 	UFUNCTION()
 	void OnPoolLightQualityUpdated( FString updatedCvar );
 
+	/** Triggered when cloud quality scalabilty cvar have changed */
+	UFUNCTION()
+	void OnCloudQualityUpdated( FString updatedCVar );
+	
 	/** Triggered when network quality option have changed */
 	UFUNCTION()
 	void OnNetworkQualityUpdated( FString updatedCvar );
@@ -145,7 +158,7 @@ public:
 	/** Clears array of custom mappings */
 	void RemoveAllCustomActionMappings();
 
-	// Begin IFGActorRepresentationInterface
+	// Begin IFGOptionInterface
 	virtual bool GetBoolOptionValue( const FString& cvar ) const override;
 	virtual bool GetBoolUIDisplayValue( const FString& cvar ) const override;
 	virtual void SetBoolOptionValue( const FString& cvar, bool value ) override;
@@ -164,7 +177,7 @@ public:
 	virtual void UnsubscribeToDynamicOptionUpdate( const FString& cvar, const FOptionUpdated& optionUpdatedDelegate ) override;
 	virtual void UnsubscribeToAllDynamicOptionUpdate( UObject* boundObject ) override;
 	virtual TArray<class UFGDynamicOptionsRow*> GetOptionWidgetsInCategory( UUserWidget* owningWidget, EOptionCategory category ) override;
-	// End IFGActorRepresentationInterface
+	// End IFGOptionInterface
 
 	void SetupDefaultOptionsValues();
 
@@ -276,72 +289,18 @@ private:
 
 	void BroadcastDynamicOptionUpdate( FString cvar );
 
+	void CacheVideoQualitySettings();
+
 public:
 	/** Called when arachnophobia mode is changed */
 	UPROPERTY( BlueprintAssignable, Category = "Arachnophobia", DisplayName = "OnArachnophobiaModeChanged" )
 	FArachnophobiaModeChangedDelegate OnArachnophobiaModeChangedDelegate;
 
 protected:
-	/** Audio volumes for the options */
-	UPROPERTY(Config)
-	TArray<FAudioVolumeMap> mAudioVolumes;
-
-	/** Sets Field of View */
-	UPROPERTY( Config )
-	int32 mFOV;
-
-	/** Motion blur quality. 0 = off */
-	UPROPERTY( Config )
-	int32 mMotionBlurQuality;
-
-	/** Is HZBO enabled */
-	UPROPERTY( Config )
-	bool mHZBOEnabled;
-
+	
 	/** List of remapped key Mappings */
 	UPROPERTY( config, EditAnywhere, Category = "Bindings" )
 	TArray< FFGKeyMapping > mCustomKeyMappings;
-
-	/** The current network quality setting */
-	UPROPERTY( Config )
-	int32 mNetworkQuality;
-	
-	/** Used to detect if network quality is dirty */
-	int32 mLastValidatedNetworkQuality;
-
-	/**Scale of headbobbing */
-	UPROPERTY( Config )
-	float mHeadBobScale;
-
-	/** When true, arachnid-like creatures are replaced with cats. */
-	UPROPERTY(Config)
-	uint8 mIsArachnophobiaMode:1;
-
-	/** Sets the Look-axis to inverted */
-	UPROPERTY( Config ) 
-	uint8 mInvertY:1;
-
-	/** True means old-school hold down key to sprint, false = toggle sprint by pressing */
-	UPROPERTY( Config )
-	uint8 mHoldToSprint:1;
-
-	UPROPERTY( Config ) // @todok2 SEEMS TO HAVE BEEN REMOVED. Should it be added back?
-	uint8 mAutoSortInventory:1;
-
-	/** Whether the user has opted out of analytics or not */
-	UPROPERTY( Config )
-	uint8 mAnalyticsDisabled:1;
-
-	/** If true, then we require a restart to properly apply the settings */
-	uint8 mRestartRequired:1;
-
-	/** How often in seconds to autosave */
-	UPROPERTY( Config )
-	int32 mAutosaveInterval;
-
-	/** Whether or not we should show the take break notification */
-	UPROPERTY( Config )
-	bool mShowBreakNotification;
 
 	/** Delegate used for broadcasting updates to subscribed options */
 	UPROPERTY()
@@ -357,6 +316,13 @@ private:
 	TArray<FString> mAudioOptions;
 
 	OptionValueContainer mOptionValueContainer;
+
+	/* The cached value for last hardware benchmark. Not saved */
+	Scalability::FQualityLevels mHardwareBenchmarkResults;
+
+	/* If we have auto detected settings or not */
+	UPROPERTY( Config )
+	bool mAutoDetectSettingsHandled;
 
 	/** The last stable window mode that the user have confirmed working by accepting the window mode change. Differs from base classes last confirmed window mode which changes when we apply settings. We want to keep it a little longer if we need to auto revert if we reach a weird state */
 	int32 mLastStableWindowMode;
@@ -399,6 +365,11 @@ private:
 	FVector mSoftClearanceHologramColour;
 
 	TOptional<EGraphicsAPI> mDesiredGraphicsAPI;
+
+	TArray<FString> mCachedVideoQualityCvars;
+
+	/* Block updates of Video Quality CVars when Video Quality it self is updated */ 
+	bool mUpdateVideoQualityCvarsGate = false;
 
 	/** const variables */
 	static const TMap<FString, int32> NETWORK_QUALITY_CONFIG_MAPPINGS;

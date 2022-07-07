@@ -46,6 +46,7 @@ void AFGSchematicManager::GetAllPurchasedSchematics(TArray< TSubclassOf< UFGSche
 void AFGSchematicManager::GetAllSchematics(TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematicsOfType(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 void AFGSchematicManager::GetAllSchematicsOfTypeFilteredOnDependency(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
+void AFGSchematicManager::GetAllVisibleSchematicsOfType(ESchematicType type, TArray< TSubclassOf< UFGSchematic > >& out_schematics) const{ }
 bool AFGSchematicManager::IsSchematicPurchased(TSubclassOf< UFGSchematic > schematicClass) const{ return bool(); }
 void AFGSchematicManager::GiveAccessToSchematic(TSubclassOf< UFGSchematic > schematicClass, bool accessedViaCheats){ }
 void AFGSchematicManager::AddAvailableSchematic(TSubclassOf< UFGSchematic > schematicClassToAdd){ }
@@ -68,6 +69,7 @@ void AFGSchematicManager::Debug_DumpStateToLog() const{ }
 TArray< TSubclassOf< class UFGRecipe > > AFGSchematicManager::Debug_GetAllRecipes() const{ return TArray<TSubclassOf<class UFGRecipe> >(); }
 void AFGSchematicManager::Cheat_GiveAllSchematics(){ }
 bool AFGSchematicManager::CanGiveAccessToSchematic(TSubclassOf< UFGSchematic > schematic) const{ return bool(); }
+void AFGSchematicManager::GetVisibleSchematicCategoryData(ESchematicType schematicType, TArray< FSchematicCategoryData >& out_schematicCategoryData){ }
 void AFGSchematicManager::PopulateSchematicsLists(){ }
 void AFGSchematicManager::PopulateAvailableSchematicsList(){ }
 void AFGSchematicManager::OnRep_ActiveSchematic(){ }

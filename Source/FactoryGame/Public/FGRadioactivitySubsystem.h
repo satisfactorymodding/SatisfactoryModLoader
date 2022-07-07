@@ -219,13 +219,29 @@ public:
 	{
 		mEmittersToSet.Enqueue( FSetEmitterID( owner, attachRoot, attachLocation, itemClass, itemAmount, UID ) );
 	}
+
+	UFUNCTION( BlueprintCallable, Category = "Radioactivity", meta = (DisplayName = "Set Emitter" ) )
+	void SetEmitter_Blueprint( UObject* sourceObject,
+					 USceneComponent* attachRoot,
+					 FVector attachLocation,
+					 float decay );
+
+	UFUNCTION( BlueprintCallable, Category = "Radioactivity", meta = (DisplayName = "Set Emitter By ID" ) )
+	void SetEmitterByID_Blueprint( UObject* sourceObject,
+					 USceneComponent* attachRoot,
+					 FVector attachLocation,
+					 float decay,
+					 int32 UID );
+
+	UFUNCTION( BlueprintCallable, Category = "Radioactivity", meta = (DisplayName = "Remove Emitter" ) )
+	void RemoveEmitter_Blueprint( UObject* sourceObject );
 	
 	/**
 	 * @see overload
 	 *
 	 * @param decay     Decays per second for this source.
-	 */
-	void SetEmitter( UObject* owner,
+	 */	
+	void SetEmitter( UObject* sourceObject,
 					 USceneComponent* attachRoot,
 					 const FVector& attachLocation,
 					 float decay,
@@ -238,17 +254,7 @@ public:
 	}
 
 	/** Removes a specific emitter. */
-	FORCEINLINE void RemoveEmitter( UObject* owner, int32 UID )
-	{
-		if( FRadioactiveSource* source = FindSource( owner ) )
-		{
-			int32 idx = FindEmitter( source->Emitters, UID );
-			if( idx != INDEX_NONE )
-			{
-				source->Emitters.RemoveAtSwap( idx );
-			}
-		}		
-	}
+	void RemoveEmitter( UObject* owner, int32 UID );
 	
 	/** Remove all the emitters but preserves the memory allocations. */
 	FORCEINLINE void ResetEmitters( UObject* owner )

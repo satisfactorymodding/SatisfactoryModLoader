@@ -5,6 +5,7 @@
 AFGBuildableRamp::AFGBuildableRamp() : Super() {
 	this->mIsDoubleRamp = false;
 	this->mIsRoof = false;
+	this->mOcclusionShape = EFGRainOcclusionShape::ROCS_Ramp;
 }
 void AFGBuildableRamp::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 float AFGBuildableRamp::CalculateRampAngle() const{ return float(); }

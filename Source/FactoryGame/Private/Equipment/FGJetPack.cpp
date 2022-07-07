@@ -4,8 +4,10 @@
 #include "Equipment/FGEquipment.h"
 
 AFGJetPack::AFGJetPack() : Super() {
-	this->mJumpTimeStamp = 0.0;
+	this->mJumpTimeStamp = -1.0;
 	this->mIsThrusting = false;
+	this->mActiveNoise = nullptr;
+	this->mActiveNoiseFrequency = 0.2;
 	this->mEquipmentSlot = EEquipmentSlot::ES_BACK;
 	this->mBackAnimation = EBackEquipment::BE_Jetpack;
 }
@@ -20,6 +22,7 @@ void AFGJetPack::JetPackStopThrust(){ }
 float AFGJetPack::GetCurrentFuel_Implementation() const{ return float(); }
 float AFGJetPack::GetMaxFuel_Implementation(){ return float(); }
 void AFGJetPack::AddEquipmentActionBindings(){ }
+void AFGJetPack::MakeActiveNoise(){ }
 void AFGJetPackAttachment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGJetPackAttachment, mIsThrusting);

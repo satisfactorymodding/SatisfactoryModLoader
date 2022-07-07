@@ -29,7 +29,7 @@ public:
 
 	UFUNCTION()
 	void OnRep_OwningPlayerState();
-
+	
 	/** Called when we have the player state replicated so now we can spawn the effects */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Attention Ping" )
 	void SpawnAttentionPingEffects();
@@ -39,5 +39,14 @@ protected:
 	/** The player state of the pawn that spawned this actor */
 	UPROPERTY( ReplicatedUsing = OnRep_OwningPlayerState )
 	class AFGPlayerState* mOwningPlayerState;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Attention Ping" )
+	UTexture2D* mCompassTexture;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Attention Ping" )
+	float mLifeSpan = 10.f;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Attention Ping" )
+	float mActorRepresentationLifeSpan = 5.f;
 	
 };

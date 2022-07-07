@@ -11,11 +11,13 @@ AFGResourceScanner::AFGResourceScanner() : Super() {
 	this->mIsWaitingForSelectionUI = false;
 	this->mDistBetweenNodesInCluster = 1000.0;
 	this->mUnclusterRange = 30000.0;
+	this->mRepresentationLifeSpan = 25.0;
 	this->mArmAnimation = EArmEquipment::AE_ResourceScanner;
 }
 void AFGResourceScanner::BeginPlay(){ }
 void AFGResourceScanner::Tick(float dt){ }
 bool AFGResourceScanner::ShouldSaveState() const{ return bool(); }
+void AFGResourceScanner::CreateResourceNodeRepresentations(const FNodeClusterData& cluster){ }
 TArray< TSubclassOf< UFGResourceDescriptor > > AFGResourceScanner::GetScannableResources() const{ return TArray<TSubclassOf<UFGResourceDescriptor> >(); }
 void AFGResourceScanner::SetResourceDescriptorToScanFor(TSubclassOf< UFGResourceDescriptor > inClass){ }
 void AFGResourceScanner::UnEquip(){ }

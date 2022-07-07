@@ -34,7 +34,7 @@ class FACTORYGAME_API UFGUseState_NonConveyorResource : public UFGUseState
 };
 
 UCLASS( Abstract )
-class FACTORYGAME_API AFGResourceNodeBase : public AFGStaticReplicatedActor, public IFGExtractableResourceInterface, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface
+class FACTORYGAME_API AFGResourceNodeBase : public AFGStaticReplicatedActor, public IFGExtractableResourceInterface, public IFGUseableInterface, public IFGSaveInterface, public IFGSignificanceInterface /*, public IFGActorRepresentationInterface*/
 {
 	GENERATED_BODY()
 	
@@ -89,6 +89,27 @@ public:
 	virtual bool CanPlaceResourceExtractor() const override { return false; }
 	// End IFGExtractableResourceInterface
 
+	// Begin IFGActorRepresentationInterface
+	// virtual bool AddAsRepresentation() override;
+	// virtual bool UpdateRepresentation() override;
+	// virtual bool RemoveAsRepresentation() override;
+	// virtual bool IsActorStatic() override {return true;}
+	// virtual FVector GetRealActorLocation() override { return GetActorLocation(); }
+	// virtual FRotator GetRealActorRotation() override { return FRotator::ZeroRotator; }
+	// virtual class UTexture2D* GetActorRepresentationTexture() override;
+	// virtual FText GetActorRepresentationText() override;
+	// virtual void SetActorRepresentationText( const FText& newText ) override;
+	// virtual FLinearColor GetActorRepresentationColor() override;
+	// virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
+	// virtual ERepresentationType GetActorRepresentationType() override;
+	// virtual bool GetActorShouldShowInCompass() override;
+	// virtual bool GetActorShouldShowOnMap() override;
+	// virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
+	// virtual float GetActorFogOfWarRevealRadius() override;
+	// virtual ECompassViewDistance GetActorCompassViewDistance() override;
+	// virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
+	// End IFGActorRepresentationInterface
+
 	/** Get what type of a resource node is this */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
 	EResourceNodeType GetResourceNodeType() const { return mResourceNodeType; }
@@ -103,6 +124,10 @@ public:
 	/** Let the client know when we changed. mIsOccupied */
 	UFUNCTION()
 	void OnRep_IsOccupied();
+
+	/** Used to update representation state depending on if node is revealed by radar tower and scanner */
+	UFUNCTION()
+	void OnRep_MapReveals();
 
 	/** Let's blueprint know that we have changed occupied states */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Resources" )
@@ -125,12 +150,14 @@ public:
 	/** Used by the descriptor, so that all meshes in the world can get their mesh updated */
 	void UpdateMeshFromDescriptor( bool needRegister = true );
 
-	/** Used by the radar tower to show this actor on the map */
-	void AddRevealedOnMapBy( UObject* newObject );
+	void ScanResourceNode_Replicated();
+	void ScanResourceNode_Local( float lifeSpan );
 
-	/** Used by the radar tower to hide this actor on the map */
-	void RemoveRevealedOnMapBy( UObject* oldObject );
-
+	UFUNCTION()
+	void RemoveResourceNodeScan_Replicated();
+	UFUNCTION()
+	void RemoveResourceNodeScan_Local();
+	
 protected:
 	/** @returns the actor that contains the mesh for this node */
 	UFUNCTION( BlueprintPure, Category = "Resources" )
@@ -146,6 +173,9 @@ protected:
 	void ConditionallySetupComponents( bool needRegister );
 
 	void UpdateHighlightParticleSystem();
+
+private:
+	void UpdateNodeRepresentation();
 
 protected:
 	/** Type of resource */
@@ -164,9 +194,19 @@ protected:
 	UPROPERTY( ReplicatedUsing = OnRep_IsOccupied, BlueprintReadOnly, Category = "Resources" )
 	bool mIsOccupied;
 
-	/** Radar tower modifies this to show this resource node in the map */
-	UPROPERTY( SaveGame, Replicated )
+	/** Objects that scanned this resource node. Used to keep track of when to add/remove node from map */
+	UPROPERTY( Transient )
 	TArray< UObject* > mRevealedOnMapBy;
+
+	/** Number of times this node is revealed on server by radar towers. Used to keep track of when to add/remove node from map */
+	UPROPERTY( Transient, ReplicatedUsing = OnRep_MapReveals )
+	uint8 mReplicatedMapReveals;
+
+	/** Number of times this node is revealed locally by resource scanner. Used to keep track of when to add/remove node from map */
+	int32 mLocalMapReveals;
+
+	UPROPERTY( Transient )
+	class UFGResourceNodeRepresentation* mResourceNodeRepresentation;
 	
 	/** What type of a resource node this is. */
 	EResourceNodeType mResourceNodeType;

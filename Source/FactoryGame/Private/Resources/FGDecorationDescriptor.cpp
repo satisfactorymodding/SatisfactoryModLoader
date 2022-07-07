@@ -4,9 +4,7 @@
 
 UFGDecorationDescriptor::UFGDecorationDescriptor() : Super() {
 	this->mGroundMesh = nullptr;
-	this->mGroundMeshScale.X = 1.0;
-	this->mGroundMeshScale.Y = 1.0;
-	this->mGroundMeshScale.Z = 1.0;
+	this->mGroundMeshScale = FVector::OneVector;
 	this->mMesh1p = nullptr;
 	this->mMesh3p = nullptr;
 	this->mDecorationActorClass = nullptr;

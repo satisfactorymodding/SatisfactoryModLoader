@@ -5,7 +5,7 @@
 #if STATS
 #endif 
 AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
-	this->mDistanceConsideredClose = 30000.0;
+	this->mDistanceConsideredClose = 20000.0;
 	this->mNumFactoriesNeededForCloseCheck = 5;
 	this->mBuildableInstancesActor = nullptr;
 	this->mFactoryLegInstancesActor = nullptr;
@@ -92,6 +92,7 @@ void AFGBuildableSubsystem::RearrangeConveyorBuckets(int32 emptiedBucketID){ }
 void AFGBuildableSubsystem::RemoveAndSplitConveyorBucket(AFGBuildableConveyorBase* conveyorToRemove){ }
 bool AFGBuildableSubsystem::IsServerSubSystem() const{ return bool(); }
 void AFGBuildableSubsystem::GetTypedBuildable(TSubclassOf<  AFGBuildable > inClass, TArray<  AFGBuildable* >& out_buildables) const{ }
+void AFGBuildableSubsystem::GetOcclusionAffectingBuildebles(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range, bool bParallel) const{ }
 void AFGBuildableSubsystem::ReplayBuildingEffects(){ }
 const FFactoryCustomizationColorSlot& AFGBuildableSubsystem::GetColorSlot_Data(uint8 index) const{ return *(new FFactoryCustomizationColorSlot); }
 void AFGBuildableSubsystem::SetColorSlot_Data(uint8 index, FFactoryCustomizationColorSlot color){ }

@@ -13,5 +13,3 @@ AFGSplinePath::AFGSplinePath() : Super() {
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
 }
-void AFGSplinePath::BeginPlay(){ }
-void AFGSplinePath::Tick(float DeltaSeconds){ }

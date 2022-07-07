@@ -12,6 +12,7 @@
 #include "FGUnlockSubsystem.h"
 #include "FGSchematic.h"
 #include "FGSwatchGroup.h"
+#include "LatentActions.h"
 #include "FGGameState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FVisitedMapAreaDelegate, TSubclassOf< class UFGMapArea >, mapArea );
@@ -19,6 +20,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnRestartTimeNotification, float, 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnAutoSaveTimeNotification, float, timeLeft );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnAutoSaveFinished );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnTetrominoLeaderBoardUpdated );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPlayerStateSlotDataUpdated, class AFGPlayerState*, playerState );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnClientSubsystemsIsValid );
 
 // Minigame struct for minigames like tetromino packaging game 
 USTRUCT( BlueprintType )
@@ -54,7 +57,7 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void Tick( float delta ) override;
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void BeginPlay() override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -71,13 +74,21 @@ public:
 	virtual void HandleMatchIsWaitingToStart() override;
 	virtual void HandleMatchHasStarted() override;
 	virtual void AddPlayerState( class APlayerState* playerState ) override;
+	virtual void RemovePlayerState( class APlayerState* playerState ) override;
 	// End AGameState interface
 
+	UFUNCTION()
+	void OnPlayerStateSlotDataUpdated( class AFGPlayerState* playerState );
+	
 	/** Init function, for setting up all our subsystems and save system */
 	virtual void Init();
 
 	/** Check if subsystems are created or replicated */
+	UFUNCTION( BlueprintPure, Category = "Subsystems" )
 	bool AreClientSubsystemsValid();
+
+	UFUNCTION()
+	void CheckClientSubsystemsValid();
 
 	/** Finds a free slot for a new player state */
 	int32 FindFreeSlot( class AFGPlayerState* playerState );
@@ -141,7 +152,9 @@ public:
 	FORCEINLINE class AFGDroneSubsystem* GetDroneSubsystem() const { return mDroneSubsystem; }
 	FORCEINLINE class AFGStatisticsSubsystem* GetStatisticsSubsystem() const { return mStatisticsSubsystem; }
 	FORCEINLINE class AFGSignSubsystem* GetSignSubsystem() const { return mSignSubsystem; }
-	
+	FORCEINLINE class AFGCreatureSubsystem* GetCreatureSubsystem() const { return mCreatureSubsystem; }
+	FORCEINLINE class AFGScannableSubsystem* GetScannableSubsystem() const { return mScannableSubsystem; }
+
 
 	/** Helper to access the actor representation manager */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Representation", meta = ( DeprecatedFunction, DeprecationMessage = "Use global getter instead" ) )
@@ -316,6 +329,13 @@ public:
 
 	UFUNCTION()
 	void OnRep_TetrominoLeaderBoard();
+	
+	FORCEINLINE FString GetPublicTodoList() const { return mPublicTodoList; }
+
+	// No server RPC call per se but used with server rpc from player state to update server value and spread to clients so figuerd the naming was good to separate from the other SetPublicTodoList. 
+	void Server_SetPublicTodoList( const FString& newTodoList );
+	
+	void SetPublicTodoList( const FString& newTodoList ) { mPublicTodoList = newTodoList; }
 
 private:
 	/** Check the restart time of server and restart it and notify clients of the countdown */
@@ -370,6 +390,14 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Tetromino" )
 	FOnTetrominoLeaderBoardUpdated mOnTetrominoLeaderBoardUpdated;
 
+	/** Broadcast a notification when a player state have updated the slot data (color) */
+	UPROPERTY( BlueprintAssignable, Category = "SlotData")
+	FOnPlayerStateSlotDataUpdated mOnPlayerStateSlotDataUpdated;
+
+	/** Broadcast a notification when all subssytems are valid on client */
+	UPROPERTY()
+	FOnClientSubsystemsIsValid mOnClientSubsystemsValid;
+
 private:
 	/** Spawned subsystems */
 	UPROPERTY( SaveGame, Replicated )
@@ -420,6 +448,10 @@ private:
 	class AFGStatisticsSubsystem* mStatisticsSubsystem;
 	UPROPERTY( Replicated )
 	class AFGSignSubsystem* mSignSubsystem;
+	UPROPERTY()
+	class AFGCreatureSubsystem* mCreatureSubsystem;
+	UPROPERTY( Replicated )
+	class AFGScannableSubsystem* mScannableSubsystem;
 
 	
 	
@@ -532,7 +564,9 @@ private:
 	/** The leaderboard for tetromino mini game */
 	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_TetrominoLeaderBoard )
 	TArray< FMiniGameResult > mTetrominoLeaderBoard;
-	
-	
 
+	/** The public todo list. Only replicated on initial send. Then RPCed through FGPlayerState. */
+	UPROPERTY( SaveGame, Replicated )
+	FString mPublicTodoList;
+	
 };

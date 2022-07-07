@@ -8,6 +8,7 @@ AFGConveyorLiftHologram::AFGConveyorLiftHologram() : Super() {
 	this->mSnappedConnectionComponents[0] = nullptr;
 	this->mSnappedConnectionComponents[1] = nullptr;
 	this->mUpgradedConveyorLift = nullptr;
+	this->mTopTransform = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mBottomMesh = nullptr;
 	this->mMidMesh = nullptr;
 	this->mHalfMidMesh = nullptr;

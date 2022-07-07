@@ -2,6 +2,9 @@
 
 #include "FGPlayerController.h"
 
+#if WITH_CHEATS
+void AFGPlayerController::ToggleCheatBoard(){ }
+#endif 
 AFGPlayerController::AFGPlayerController() : Super() {
 	this->mCanAffectAudioVolumes = true;
 	this->mConsoleCommandManager = nullptr;
@@ -83,6 +86,16 @@ int32 AFGPlayerController::GetShortcutIndexFromKey(const FKeyEvent& key){ return
 void AFGPlayerController::Server_RequestFogOfWarData_Implementation(){ }
 bool AFGPlayerController::Server_RequestFogOfWarData_Validate(){ return bool(); }
 void AFGPlayerController::Client_TransferFogOfWarData_Implementation(const TArray<uint8>& fogOfWarRawData, int32 finalIndex){ }
+void AFGPlayerController::Server_RequestMapMarkerData_Implementation(){ }
+void AFGPlayerController::Client_TransferMapMarkerData_Implementation(const TArray<FMapMarker>& mapMarkers){ }
+void AFGPlayerController::Server_AddMapMarker_Implementation(FMapMarker mapMarker){ }
+void AFGPlayerController::Client_OnMapMarkerAdded_Implementation(FMapMarker mapMarker){ }
+void AFGPlayerController::Server_RemoveMapMarker_Implementation(int32 index){ }
+void AFGPlayerController::Client_OnMapMarkerRemoved_Implementation(int32 index){ }
+void AFGPlayerController::Server_SetHighlightRepresentation_Implementation( AFGPlayerState* fgPlayerState,  UFGActorRepresentation* actorRepresentation){ }
+void AFGPlayerController::Server_SetHighlighMarker_Implementation( AFGPlayerState* fgPlayerState, int32 markerID){ }
+void AFGPlayerController::Client_OnRepresentationHighlighted_Implementation( AFGPlayerState* fgPlayerState,  UFGActorRepresentation* actorRepresentation){ }
+void AFGPlayerController::Client_OnMarkerHighlighted_Implementation( AFGPlayerState* fgPlayerState, int32 markerID){ }
 float AFGPlayerController::GetObjectScreenRadius(AActor* actor, float boundingRadius){ return float(); }
 float AFGPlayerController::GetScreenBasedObjectRadius(AActor* actor, float screenRadius){ return float(); }
 void AFGPlayerController::Client_AddMessage_Implementation(FPendingMessageQueue newMessageQueue){ }
@@ -103,16 +116,23 @@ bool AFGPlayerController::GetPresenceState(FPlayerPresenceState& outState) const
 TSubclassOf< UFGMapArea > AFGPlayerController::GetCurrentMapArea() const{ return TSubclassOf<UFGMapArea>(); }
 void AFGPlayerController::OnAreaEnteredServer_Implementation(TSubclassOf< UFGMapArea > newArea){ }
 void AFGPlayerController::OnSecondaryFire(){ }
-void AFGPlayerController::AddMusicPlayer(UObject* musicPlayer){ }
-void AFGPlayerController::RemoveMusicPlayer(UObject* musicPlayer){ }
-void AFGPlayerController::UpdateMusicPlayers(float dt){ }
 void AFGPlayerController::OnBuildGunStateChanged(EBuildGunState newState){ }
+void AFGPlayerController::OnPauseGamePressed(){ }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
 void AFGPlayerController::SetupInputComponent(){ }
 void AFGPlayerController::BuildInputStack(TArray< UInputComponent* >& inputStack){ }
+void AFGPlayerController::TraceLocationForPing(FHitResult& hitResult){ }
 void AFGPlayerController::OnAttentionPingPressed(){ }
+void AFGPlayerController::SpawnAttentionPingFrom2DLoc(FVector2D normalizedLocation){ }
+bool AFGPlayerController::AddMapMarkerFrom2DLoc(const FMapMarker& mapMarker, FVector2D normalizedLocation, FMapMarker& out_NewMapMarker){ return bool(); }
+void AFGPlayerController::OnMapMarkerModePressed(){ }
+void AFGPlayerController::EnterMapMarkerMode(){ }
+void AFGPlayerController::OnMapMarkerModeReleased(){ }
+void AFGPlayerController::ExitMapMarkerMode(){ }
+void AFGPlayerController::OnAddMapMarkerPressed(){ }
+void AFGPlayerController::UpdateHoveredMapMarker(){ }
 void AFGPlayerController::OnDismantlePortableMiner_Implementation( AFGPortableMiner* PortableMiner){ }
 void AFGPlayerController::OnDismantleGolfCart_Implementation( AFGWheeledVehicle* inGolfCart){ }
 void AFGPlayerController::CheckPawnMapArea(){ }
@@ -124,6 +144,7 @@ void AFGPlayerController::TogglePhotoMode(){ }
 void AFGPlayerController::ToggleHiResPhotoMode(){ }
 void AFGPlayerController::IncrementPhotoModeFOV(){ }
 void AFGPlayerController::DecrementPhotoModeFOV(){ }
+UFGGameUI* AFGPlayerController::GetGameUI() const{ return nullptr; }
 void AFGPlayerController::SetupTutorial(){ }
 void AFGPlayerController::FinishRespawn(){ }
 void AFGPlayerController::Server_SetRecipeShortcutOnIndex_Implementation(TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex){ }

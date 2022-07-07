@@ -4,6 +4,8 @@
 
 UFGColoredInstanceMeshProxy::UFGColoredInstanceMeshProxy() : Super() {
 	this->mBlockInstancing = false;
+	this->mBlockColoring = false;
+	this->mHasScalabilityMaterial = false;
 	this->mOptimizationCategory = EDistanceCullCategory::FGDDC_NEVERCULL;
 	this->mNumCustomDataFloats = 20;
 	this->PrimaryComponentTick.TickGroup = ETickingGroup::TG_DuringPhysics;

@@ -237,6 +237,8 @@ public:
 	virtual void UnEquip();
 	// End AFGEquipment interface
 
+	void TraceForBuilding( APawn* owningPawn, FHitResult& hitresult );
+	
 	/** @return The FHitResult of this build gun. */
 	FORCEINLINE FHitResult& GetHitResult(){ return mHitResult; }
 
@@ -362,6 +364,10 @@ public:
 	/** Gets the desired menu section to display when openinging the build men (Build/Customize) */
 	UFUNCTION( BlueprintPure, Category = "BuildGun" )
 	EMenuStateSection GetDesiredMenuStateSection() { return mDesiredMenuStateSection; }
+
+	/** Updates cached hit result and simulate building sample pressed */
+	UFUNCTION()
+	void TryBuildSample();
 	
 protected:
 	/** Add custom bindings for this equipment */

@@ -29,6 +29,8 @@ AFGGameState::AFGGameState() : Super() {
 	this->mDroneSubsystem = nullptr;
 	this->mStatisticsSubsystem = nullptr;
 	this->mSignSubsystem = nullptr;
+	this->mCreatureSubsystem = nullptr;
+	this->mScannableSubsystem = nullptr;
 	this->mPlayDurationWhenLoaded = 0;
 	this->mReplicatedSessionName = TEXT("");
 	this->mReplicadedOnlineNumPubliclConnections = 0;
@@ -43,6 +45,7 @@ AFGGameState::AFGGameState() : Super() {
 	this->mHasInitalTradingPostLandAnimPlayed = false;
 	this->mIsSpaceElevatorBuilt = false;
 	this->mServerLocalDateTimeTicksAtInit = 0LL;
+	this->mPublicTodoList = TEXT("");
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = true;
@@ -73,6 +76,7 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mEventSubsystem);
 	DOREPLIFETIME(AFGGameState, mDroneSubsystem);
 	DOREPLIFETIME(AFGGameState, mSignSubsystem);
+	DOREPLIFETIME(AFGGameState, mScannableSubsystem);
 	DOREPLIFETIME(AFGGameState, mVisitedMapAreas);
 	DOREPLIFETIME(AFGGameState, mPickedUpItems);
 	DOREPLIFETIME(AFGGameState, mPlayDurationWhenLoaded);
@@ -91,9 +95,10 @@ void AFGGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLife
 	DOREPLIFETIME(AFGGameState, mIsSpaceElevatorBuilt);
 	DOREPLIFETIME(AFGGameState, mServerLocalDateTimeTicksAtInit);
 	DOREPLIFETIME(AFGGameState, mTetrominoLeaderBoard);
+	DOREPLIFETIME(AFGGameState, mPublicTodoList);
 }
 void AFGGameState::Tick(float delta){ }
-void AFGGameState::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
+void AFGGameState::BeginPlay(){ }
 void AFGGameState::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGGameState::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -104,8 +109,11 @@ bool AFGGameState::ShouldSave_Implementation() const{ return bool(); }
 void AFGGameState::HandleMatchIsWaitingToStart(){ }
 void AFGGameState::HandleMatchHasStarted(){ }
 void AFGGameState::AddPlayerState( APlayerState* playerState){ }
+void AFGGameState::RemovePlayerState( APlayerState* playerState){ }
+void AFGGameState::OnPlayerStateSlotDataUpdated( AFGPlayerState* playerState){ }
 void AFGGameState::Init(){ }
 bool AFGGameState::AreClientSubsystemsValid(){ return bool(); }
+void AFGGameState::CheckClientSubsystemsValid(){ }
 int32 AFGGameState::FindFreeSlot( AFGPlayerState* playerState){ return int32(); }
 bool AFGGameState::IsTradingPostBuilt() const{ return bool(); }
 bool AFGGameState::HasInitalTradingPostLandAnimPlayed() const{ return bool(); }
@@ -141,5 +149,6 @@ bool AFGGameState::IsCustomizerRecipeUnlocked(){ return bool(); }
 void AFGGameState::SetDefaultSwatchForBuildableGroup(TSubclassOf<  UFGSwatchGroup > swatchGroup, TSubclassOf<  UFGFactoryCustomizationDescriptor_Swatch> swatch){ }
 void AFGGameState::AddTetrominoResult(const FMiniGameResult& newResult){ }
 void AFGGameState::OnRep_TetrominoLeaderBoard(){ }
+void AFGGameState::Server_SetPublicTodoList(const FString& newTodoList){ }
 void AFGGameState::CheckRestartTime(){ }
 void AFGGameState::OnRep_PlannedRestartTime(){ }

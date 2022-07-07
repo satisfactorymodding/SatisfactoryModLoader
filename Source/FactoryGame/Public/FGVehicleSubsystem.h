@@ -8,7 +8,7 @@
 #include "FGSaveInterface.h"
 #include "FGVehicleSubsystem.generated.h"
 
-#if WITH_EDITOR
+#if UE_BUILD_SHIPPING == 0
 #define DEBUG_SELF_DRIVING
 #endif
 
@@ -195,6 +195,11 @@ public:
 	void OnThereBeDeadlocks();
 
 private:
+	void OnLevelAddedToWorld( ULevel* level, UWorld* world );
+	void OnLevelRemovedFromWorld( ULevel* level, UWorld* world );
+
+	void AddLevel( ULevel* level );
+
 	using WheeledVehicleDeadlock = TSet< TWeakObjectPtr< AFGWheeledVehicleInfo > >;
 	void AddHardDeadlock( int deadlockId, const WheeledVehicleDeadlock& deadlock );
 
@@ -266,6 +271,9 @@ private:
 	int mLostVehicleCandidateIndex = 0;
 
 	float mEarliestDeadlockWarningTime = -BIG_NUMBER;
+
+	TSet< ULevel* > mLoadedTiles;
+	TSet< ULevel* > mLoadedCaves;
 
 #ifdef DEBUG_SELF_DRIVING
 	float mDebugSimulationDistance = 0.0f;

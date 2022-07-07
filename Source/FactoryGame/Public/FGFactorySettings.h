@@ -202,6 +202,17 @@ public:
 	/** The default resource miner class to spawn */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	TSubclassOf< class AFGResourceMiner > mResourceMinerClass;
+	
+	/** The class to be used as a static boombox actor (not as equipment) */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	TSubclassOf< class AFGBoomBox > mBoomBoxClass;
+
+	/** The class to be used as a boom box player */
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	TSubclassOf< class AFGBoomBoxPlayer > mBoomBoxPlayerClass;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
+	TSubclassOf< class UFGItemDescriptor > mBoomBoxEquipmentDesc;
 
 	/** The mesh to be used as legs on factories */
 	UPROPERTY( EditDefaultsOnly, Category = "Legs" )

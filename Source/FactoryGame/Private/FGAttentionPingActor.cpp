@@ -4,6 +4,9 @@
 
 AFGAttentionPingActor::AFGAttentionPingActor() : Super() {
 	this->mOwningPlayerState = nullptr;
+	this->mCompassTexture = nullptr;
+	this->mLifeSpan = 10.0;
+	this->mActorRepresentationLifeSpan = 5.0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;

@@ -9,11 +9,8 @@ AFGPipelineAttachmentHologram::AFGPipelineAttachmentHologram() : Super() {
 	this->mRotationAxis = EAxis::Z;
 	this->mIncrementSnappedConnectionOnScroll = true;
 	this->mUseProducerDirectionalArrow = true;
-	this->mProducerArrowRelativeLocation.X = 0.0;
-	this->mProducerArrowRelativeLocation.Y = 0.0;
-	this->mProducerArrowRelativeLocation.Z = 200.0;
-	this->mWallSnapOffset.X = 0.0;
-	this->mWallSnapOffset.Y = 75.0;
+	this->mProducerArrowRelativeLocation = FVector((0, 0, 200));
+	this->mWallSnapOffset = FVector2D((0, 75));
 	this->mHasPipeRotationBuildStep = true;
 	this->mSnappedPipeline = nullptr;
 	this->mSnappedConnectionComponent = nullptr;

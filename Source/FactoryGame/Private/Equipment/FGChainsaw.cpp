@@ -9,6 +9,7 @@ AFGChainsaw::AFGChainsaw() : Super() {
 	this->mSawDownTreeTime = 2.0;
 	this->mCollateralPickupRadius = 200.0;
 	this->mExcludeChainsawableFoliage = false;
+	this->mChainsawNoise = nullptr;
 	this->mEnergyStored = 0.0;
 	this->mArmAnimation = EArmEquipment::AE_ChainSaw;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
@@ -28,10 +29,10 @@ bool AFGChainsaw::CanStartSawing_Implementation(){ return bool(); }
 void AFGChainsaw::Server_StartSawing_Implementation(){ }
 bool AFGChainsaw::Server_StartSawing_Validate(){ return bool(); }
 void AFGChainsaw::StopSawing(){ }
-void AFGChainsaw::Server_RemoveChainsawedObject_Implementation( USceneComponent* sawingComponent, FTransform foliageToRemoveTransform, FVector effectLocation){ }
-bool AFGChainsaw::Server_RemoveChainsawedObject_Validate( USceneComponent* sawingComponent, FTransform foliageToRemoveTransform, FVector effectLocation){ return bool(); }
-void AFGChainsaw::RemoveChainsawedObject( USceneComponent* sawingComponent, FTransform foliageToRemoveTransform, FVector effectLocation){ }
-void AFGChainsaw::RemoveCollateralFoliage( AFGFoliageRemovalSubsystem* removalSubsystem, const FTransform& chainsawedObjectTransform){ }
+void AFGChainsaw::Server_RemoveChainsawedObject_Implementation( USceneComponent* sawingComponent, int foliageIndex, const FVector& effectLocation){ }
+bool AFGChainsaw::Server_RemoveChainsawedObject_Validate( USceneComponent* sawingComponent, int foliageIndex, const FVector& effectLocation){ return bool(); }
+void AFGChainsaw::RemoveChainsawedObject( USceneComponent* sawingComponent, int foliageIndex, const FVector& effectLocation){ }
+void AFGChainsaw::RemoveCollateralFoliage( AFGFoliageRemovalSubsystem* removalSubsystem, const FVector& location){ }
 void AFGChainsaw::BroadcastPickup_Implementation(const TArray<FPickedUpInstance>& pickups,  AFGFoliagePickup* instigatorPlayer){ }
 void AFGChainsaw::Server_StopSawing_Implementation(){ }
 bool AFGChainsaw::Server_StopSawing_Validate(){ return bool(); }
@@ -46,3 +47,9 @@ void AFGChainsaw::PlayEffect(FVector atLocation, USceneComponent* sawingComponen
 void AFGChainsaw::AddEquipmentActionBindings(){ }
 UStaticMesh* AFGChainsaw::GetStaticMesh(USceneComponent* sawingComponent){ return nullptr; }
 bool AFGChainsaw::IsChainsawableActor(AActor* actor) const{ return bool(); }
+void AFGChainsawAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AFGChainsawAttachment, mHasAnyFuel);
+}
+void AFGChainsawAttachment::SetHasAnyFuel(bool newHasAnyFuel){ }
+void AFGChainsawAttachment::OnRep_HasAnyFuel(){ }

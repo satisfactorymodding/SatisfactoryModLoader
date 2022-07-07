@@ -54,6 +54,12 @@ struct FACTORYGAME_API FSaveErrors
 	 */
 	static void DumpSaveErrors();
 
+	/**
+	 * Set the current level that is beeing deserialized, used to give better error info
+	 * when dumping errors
+	 */
+	static void SetCurrentLoadLevel( class ULevel* level );
+
 	/** returns true if there are any errors on disc */
 	static bool IsAnyErrorsOnDisc();
 
@@ -75,4 +81,7 @@ private:
 private:
 	/** All errors */
 	static FErrors Errors;
+
+	/** Level currently beeing loaded */
+	static FString CurrentLevel;
 };

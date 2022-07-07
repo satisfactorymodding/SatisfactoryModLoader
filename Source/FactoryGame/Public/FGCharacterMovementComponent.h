@@ -181,6 +181,7 @@ public:
 	virtual float GetMaxJumpZVelocity() const override;
 	virtual bool CanCrouchInCurrentState() const override;
 	virtual void SmoothClientPosition( float DeltaSeconds ) override;
+	virtual float ImmersionDepth() const override;
 	// End UCharacterMovementComponent
 
 	UFUNCTION( Reliable, Server, WithValidation )

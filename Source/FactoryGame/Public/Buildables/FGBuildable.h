@@ -18,7 +18,9 @@
 #include "FGBuildableSubsystem.h"
 #include "FGBuildingTagInterface.h"
 #include "FGAttachmentPoint.h"
+#include "FGFactoryClipboard.h"
 #include "FGDecorationTemplate.h"
+#include "FGRainOcclusionActor.h"
 #include "FGRemoteCallObject.h"
 
 #include "FGBuildable.generated.h"
@@ -82,12 +84,12 @@ public:
  * FactoryTick is always enabled (as long as bCanEverTick is true) so that the factory part of buildings always can simulate.
  */
 UCLASS( Abstract, Config=Engine, Meta=(AutoJson=true) )
-class FACTORYGAME_API AFGBuildable : public AActor, public IFGDismantleInterface, public IFGSaveInterface, public IFGColorInterface, public IFGUseableInterface
+class FACTORYGAME_API AFGBuildable : public AActor, public IFGDismantleInterface, public IFGSaveInterface, public IFGColorInterface, public IFGUseableInterface, public IFGFactoryClipboardInterface
 {
 	GENERATED_BODY()
 public:	
 	/** Decide on what properties to replicate */
-	void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;
 
 	AFGBuildable();
@@ -177,7 +179,7 @@ public:
 	virtual void StartIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void StopIsLookedAtForDismantle_Implementation( class AFGCharacterPlayer* byCharacter ) override;
 	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_ChildDismantleActors ) const override;
-	//~ End IFGDismantleInferface
+	//~ End IFGDismantleInterface
 
 	virtual void StartIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter, class UFGCircuitConnectionComponent* overlappingConnection );
 	virtual void StopIsLookedAtForConnection( class AFGCharacterPlayer* byCharacter );
@@ -223,6 +225,9 @@ public:
 	/** Sets the timestamp for when this building was built */
 	FORCEINLINE void SetBuildTime( float inTime ) { mBuildTimeStamp = inTime; }
 
+	UFUNCTION()
+	void ApplyHasPowerCustomData();
+	
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;
 
@@ -282,7 +287,7 @@ public:
 	void RemoveHighlightEffect();
 
 	/** Returns the cached bounds */
-	FORCEINLINE FBox GetCachedBounds() { return mCachedBounds; }
+	FORCEINLINE FBox GetCachedBounds() const { return mCachedBounds; }
 
 	/** Returns list of players currently interacting with building. */
 	FORCEINLINE TArray< class AFGCharacterPlayer* > GetInteractingPlayers() const { return mInteractingPlayers; }
@@ -335,7 +340,6 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category = "Buildable" )
 	bool ShouldBeConsideredForBase();
 
-	virtual bool ShouldBeConsideredForBase_Implementation();
 #if WITH_EDITOR
 	/** Sets the display name for this buildable. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Buildable" )
@@ -361,6 +365,14 @@ public:
 	/** Is this buildable dismantled? */
 	FORCEINLINE bool GetIsDismantled() const { return mIsDismantled; }
 
+	FORCEINLINE bool DoesAffectOcclusionSystem() const 										{ return mAffectsOcclusion; }
+	FORCEINLINE EFGRainOcclusionShape GetOcclusionShape() const 							{ return mOcclusionShape; }
+	FORCEINLINE UStaticMesh* GetCustomOcclusionShape() const 								{ return mCustomOcclusionShape; }
+	FORCEINLINE TArray<FBox> GetOcclusionBoxes() const  									{ return mOcclusionBoxInfo; }
+	FORCEINLINE float GetOcclusionShapeCustomScaleOffset() const 							{ return mScaleCustomOffset; }
+	FORCEINLINE EFGRainOcclusionShapeScaling GetOcclusionShapeCustomScalingMode() const		{ return mCustomScaleType; }
+	FORCEINLINE virtual FSimpleBuildingInfo GetRainOcclusionShape()							{ return FSimpleBuildingInfo(this); }
+	
 protected:
 	/** Blueprint event for when materials are updated by the buildable subsystem*/
 	UFUNCTION( BlueprintImplementableEvent, Category = "Buildable|Build Effect" )
@@ -452,10 +464,7 @@ protected:
 	/** Update all none Instanced Mesh Colors / params. This sets the primitive data so is responsible for coloring Skel_Meshes etc. */
 	UFUNCTION( BlueprintCallable, Category="Buildable|Customization" )
 	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
-
-	UFUNCTION()
-	void ApplyHasPowerCustomData();
-
+	
 	/** Visually (CustomData / PIC ) does this building have "power". For now powered buildings this should always return true to light the emissive channel */
 	FORCEINLINE virtual float GetEmissivePower() { return 1.f; }
 
@@ -504,9 +513,6 @@ public:
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Buildable", meta= ( MultiLine = true ) )
 	FText mDescription;
 
-	/** Delegate will trigger whenever the actor's use state has changed (Start, End) */
-	static FOnRegisteredPlayerChanged OnRegisterPlayerChange;
-
 	/** Max draw distance, inactive when < 0 */
 	UPROPERTY(EditDefaultsOnly,Category = "Rendering")
 	float MaxRenderDistance;
@@ -524,7 +530,10 @@ public:
 
 	/** Callback for when the production indicator state changes. Called locally on both server and client. */
 	FProductionStatusChanged mOnProductionStatusChanged;
-	
+
+	/** Delegate will trigger whenever the actor's use state has changed (Start, End) */
+	static FOnRegisteredPlayerChanged OnRegisterPlayerChange;
+
 protected:
 	//@todorefactor With meta = ( ShowOnlyInnerProperties ) it does not show and PrimaryActorTick seems to be all custom properties, so I moved to another category but could not expand.
 	/** Controls if we should receive Factory_Tick and how frequent. */
@@ -638,6 +647,34 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Buildable" )
 	bool mCreateClearanceMeshRepresentation;
 
+	/** Should affect the occlusion system .*/
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem" )
+	bool mAffectsOcclusion;
+	
+	/** Shape used for the occlusion system, used for weather and maybe grass in the future.*/
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta= ( EditCondition="mAffectsOcclusion", EditConditionHides) )
+	EFGRainOcclusionShape mOcclusionShape;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta = ( EditCondition="mOcclusionShape == EFGRainOcclusionShape::ROCS_CustomMesh && mAffectsOcclusion", EditConditionHides ) )
+	UStaticMesh* mCustomOcclusionShape;
+
+	/* Scale offset */
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta= ( EditCondition="mAffectsOcclusion", EditConditionHides) )
+	float mScaleCustomOffset = 1.f;
+
+	UPROPERTY( EditDefaultsOnly, Category = "Buildable|OcclusionSystem",meta= ( EditCondition="mAffectsOcclusion", EditConditionHides) )
+	EFGRainOcclusionShapeScaling mCustomScaleType = EFGRainOcclusionShapeScaling::ROCSS_Center;
+
+	/* Visible anywhere for editing reasons. */
+	UPROPERTY( EditAnywhere, Category = "Buildable|OcclusionSystem",meta = ( EditCondition="mOcclusionShape == EFGRainOcclusionShape::ROCS_Box_Special && mAffectsOcclusion", EditConditionHides ) )
+	TArray<FBox> mOcclusionBoxInfo;
+
+	/* Dev QOL. */
+#if WITH_EDITOR
+	UFUNCTION(CallInEditor, Category="Buildable|OcclusionSystem")
+	void DebugDrawOcclusionBoxes();
+#endif
+	
 	/** Caching the extent for use later */
 	FBox mCachedBounds;
 

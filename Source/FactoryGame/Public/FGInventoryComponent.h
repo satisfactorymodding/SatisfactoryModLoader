@@ -114,6 +114,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnItemAdded, TSubclassOf< UFGItem
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnItemRemoved, TSubclassOf< UFGItemDescriptor >, itemClass, int32, numRemoved );
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotUpdated, int32, index );
+
 /**
  * @brief Handles the different parts of the inventory for a actor
  * Composed of several UFGInventoryComponents that does all the dirty work, this
@@ -146,7 +148,6 @@ public:
 	// End IFSaveInterface
 
 	// Begin UActorComponent interface
-	virtual void OnRegister() override;
 	virtual void BeginPlay() override;
 	// End UActorComponent interface
 
@@ -396,10 +397,14 @@ public:
 	/** Called when this inventory has something added to it, @note: Client doesn't garantuee order of Added/Remove delegate */
 	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnItemAdded" )
 	FOnItemAdded OnItemAddedDelegate;
-
+	
 	/** Called when something has been removed from the inventory, @note: Client doesn't garantuee order of Added/Remove delegate */
 	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnItemRemoved" )
 	FOnItemRemoved OnItemRemovedDelegate;
+
+	/** Called when inventory slot for a specific index have been updated. Something was added/removed what items are allowed on slot. on @note: Client doesn't guarantee order of index updates */
+	UPROPERTY( BlueprintAssignable, Category = "Inventory", DisplayName = "OnSlotUpdated" )
+	FOnSlotUpdated OnSlotUpdatedDelegate;
 
 	/** Adds or replaces a arbitrary size for a slot. */
 	UFUNCTION( BlueprintCallable, Category = "Slot Size" )
@@ -453,10 +458,23 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Inventory ")
 	FORCEINLINE bool IsLocked() const { return mIsLocked; }
 
+	/** This should only be TRUE in special circumstance and should be set to false once those special circumstances are completed */
+	FORCEINLINE void SetSurpressOnItemAddedDelegate( bool surpress ) { mSurpressOnItemAddedDelegateCalls = surpress; }
+
+	/** This should only be TRUE in special circumstance and should be set to false once those special circumstances are completed */
+	FORCEINLINE void SetSurpressOnItemRemovedDelegate( bool surpress ) { mSurpressOnItemRemovedDelegateCalls = surpress; }
+
+	FORCEINLINE bool GetSurpressOnItmeAddedDelegate() const { return mSurpressOnItemAddedDelegateCalls; }
+	FORCEINLINE bool GetSurpressOnItemRemovedDelegate() const { return mSurpressOnItemRemovedDelegateCalls; }
+	
 protected:
 	/** Used to call OnItemAdded/OnItemRemoved on clients */
 	UFUNCTION()
 	void OnRep_InventoryStacks();
+
+	/** Used to broadcast slot updated events on clients */
+	UFUNCTION()
+	void OnRep_AllowedItemDescriptors( TArray< TSubclassOf < UFGItemDescriptor > > previousAllowedItems );
 
 	/**
 	 * Called when something gets added.
@@ -502,6 +520,12 @@ protected:
 	UPROPERTY( SaveGame )
 	int32 mAdjustedSizeDiff;
 
+	/** For special situations where many stacks may be added in a single frame and we don't to trigger OnItemAdded delegates every time */
+	bool mSurpressOnItemAddedDelegateCalls;
+
+	/** For special situations where many stacks may be removed in a single frame and we don't to trigger OnItemRemoved delegates every time */
+	bool mSurpressOnItemRemovedDelegateCalls;
+	
 	/** Locks the inventory. Indicating that no items are allowed and you should not be able to drag stuff from it either */
 	bool mIsLocked;
 
@@ -524,7 +548,7 @@ private:
 	TArray< int32 > mArbitrarySlotSizes;
 
 	/** This are the allowed inventory items, this we we can "filter" in BluePrint as well. */
-	UPROPERTY( SaveGame, Replicated )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_AllowedItemDescriptors )
 	TArray< TSubclassOf < UFGItemDescriptor > > mAllowedItemDescriptors;
 
 	/** Can stuff in this inventory be rearranged, that is moved from one slot to the other? */

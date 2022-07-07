@@ -7,18 +7,10 @@
 const FItemSettings& UFGResourceSettings::GetResourceSettings(TSubclassOf<  UFGItemDescriptor > resourceClass){ return *(new FItemSettings); }
 #endif 
 UFGResourceSettings::UFGResourceSettings() : Super() {
-	this->mResourceAmount.Emplace();
-	this->mResourceAmount[0].Min = 500;
-	this->mResourceAmount[0].Max = 1000;
-	this->mResourceAmount.Emplace();
-	this->mResourceAmount[1].Min = 1500;
-	this->mResourceAmount[1].Max = 3000;
-	this->mResourceAmount.Emplace();
-	this->mResourceAmount[2].Min = 4000;
-	this->mResourceAmount[2].Max = 6000;
-	this->mResourceAmount.Emplace();
-	this->mResourceAmount[3].Min = INT_MAX;
-	this->mResourceAmount[3].Max = INT_MIN;
+	this->mResourceAmount.Add(FInt32Interval(500, 1000));
+	this->mResourceAmount.Add(FInt32Interval(1500, 3000));
+	this->mResourceAmount.Add(FInt32Interval(4000, 6000));
+	this->mResourceAmount.Add(FInt32Interval(TNumericLimits<int32>::Max(), TNumericLimits<int32>::Min()));
 	this->mPurityMultiplier.Add(0.3);
 	this->mPurityMultiplier.Add(0.75);
 	this->mPurityMultiplier.Add(1.0);

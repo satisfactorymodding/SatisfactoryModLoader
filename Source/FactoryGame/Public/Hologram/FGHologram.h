@@ -526,6 +526,9 @@ protected:
 	float ApplyScrollRotationTo( float base, bool onlyUseBaseForAlignment = false ) const;
 
 private:
+	/** Spawns a hologram from recipe */
+	static AFGHologram* SpawnHologramFromRecipe( TSubclassOf< class UFGRecipe > inRecipe, AFGHologram* parent, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator );
+
 	/**
 	* Setup function. Called when setting up the hologram and when copying the actors content to the hologram in the start.
 	* This initiate all the component copying and other setup calls. Called in early begin play.
@@ -636,6 +639,13 @@ protected:
 	 */
 	UPROPERTY()
 	TArray< class AFGHologram* > mChildren;
+
+	/**
+	 * Used with composite holograms. Sometimes it's useful to know if a hologram has a parent
+	 * to for example prevent it from spawning child holograms.
+	 */ 
+	UPROPERTY()
+	AFGHologram* mParent = nullptr;
 	
 	/** Should we use the simplified material for valid placement? */
 	bool mUseSimplifiedHologramMaterial;

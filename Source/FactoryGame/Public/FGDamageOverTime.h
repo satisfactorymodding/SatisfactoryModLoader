@@ -6,6 +6,8 @@
 #include "UObject/Object.h"
 #include "FGDamageOverTime.generated.h"
 
+class UFGDamageType;
+
 /**
  * Shareable info about damage over time 
  */
@@ -24,18 +26,11 @@ public:
 	static float GetDamageInterval( TSubclassOf< UFGDamageOverTime > dotClass );
 
 	/**
-	 * Returns how much damage the dot does every interval
-	 * @return The damage to take; no damage if dotClass is nullptr.
+	 * Returns the damage types of the dot-class
+	 * @return empty array if dotClass is nullptr
 	*/
-	UFUNCTION( BlueprintPure, Category = "Dot" )
-	static float GetDamageAmount( TSubclassOf< UFGDamageOverTime > dotClass );
-
-	/**
-	 * Returns the damage type of the dot-class
-	 * @return nullptr if dotClass is nullptr
-	*/
-	UFUNCTION( BlueprintPure, Category = "Dot" )
-	static TSubclassOf< class UFGDamageType > GetDamageClass( TSubclassOf< UFGDamageOverTime > dotClass );
+	UFUNCTION( BlueprintPure, Category= "Dot" )
+	static TArray< UFGDamageType* > GetDamageTypes( TSubclassOf< UFGDamageOverTime > dotClass );
 
 	/**
 	 * Returns true if this dot-class should be applied to the actor
@@ -45,9 +40,8 @@ public:
 	static bool ShouldBeAppliedToActor( TSubclassOf< UFGDamageOverTime > dotClass, class AActor* actor );
 
 	/** Accessors */
-	FORCEINLINE float GetDamageInterval() const{ return mDamageInterval; }
-	FORCEINLINE float GetDamageAmount() const{ return mDamageAmount; }
-	FORCEINLINE TSubclassOf< class UFGDamageType > GetDamageClass() const{ return mDamageClass; }
+	FORCEINLINE float GetDamageInterval() const { return mDamageInterval; }
+	FORCEINLINE TArray< UFGDamageType* > GetDamageTypes() const { return mDamageTypes; }
 
 	/**
 	* Return true if we want this damage over time to be applied to the specified actor
@@ -61,13 +55,8 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	float mDamageInterval;
 
-	/** How much damage should the actor take each time it receives damage */
-	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
-	float mDamageAmount;
-
-	/** What type of damage should we give the character */
-	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
-	TSubclassOf< class UFGDamageType > mDamageClass;
+	UPROPERTY(EditDefaultsOnly, Instanced, Category= "Damage", meta = ( AllowAbstract=true ) )
+	TArray< UFGDamageType* > mDamageTypes;
 
 	/** Only deal damage to subclasses of these actor classes */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )

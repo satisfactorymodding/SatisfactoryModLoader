@@ -24,4 +24,5 @@ AFGBuildableFoundation::AFGBuildableFoundation() : Super() {
 	this->mHologramClass = AFGFoundationHologram::StaticClass();
 	this->mColorSlot = 16;
 	this->mSwatchGroup = UFGSwatchGroup_FicsitFoundation::StaticClass();
+	this->mAffectsOcclusion = true;
 }

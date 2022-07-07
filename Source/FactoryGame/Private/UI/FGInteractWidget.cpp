@@ -7,8 +7,9 @@ UFGInteractWidget::UFGInteractWidget(const FObjectInitializer& ObjectInitializer
 	this->mUseMouse = false;
 	this->mMouseLockMode = EMouseLockMode::DoNotLock;
 	this->mHideCursorDuringCapture = true;
-	this->mCaptureInput = false;
+	this->mListenForShortcutPressed = false;
 	this->mRestoreFocusWhenLost = true;
+	this->mCaptureInput = false;
 	this->mDesiredHorizontalAlignment = EHorizontalAlignment::HAlign_Fill;
 	this->mDesiredVerticalAlignment = EVerticalAlignment::VAlign_Fill;
 	this->mDesiredAlignmentSize.Value = 1.0;
@@ -24,14 +25,19 @@ UFGInteractWidget::UFGInteractWidget(const FObjectInitializer& ObjectInitializer
 }
 void UFGInteractWidget::Init_Implementation(){ }
 void UFGInteractWidget::SetInputMode_Implementation(){ }
+void UFGInteractWidget::HandleEquipment(){ }
+void UFGInteractWidget::PassThroughKeybindings(){ }
 void UFGInteractWidget::UpdateIgnoreMoveInput_Implementation(){ }
 void UFGInteractWidget::UpdateIgnoreLookInput_Implementation(){ }
 void UFGInteractWidget::OnEscapePressed_Implementation(){ }
 void UFGInteractWidget::OnConsume(){ }
 void UFGInteractWidget::SetDefaultFocusWidget(UWidget* focusWidget){ }
 void UFGInteractWidget::SetupDefaultFocus_Implementation(){ }
+void UFGInteractWidget::CopyFactoryClipboard(){ }
+void UFGInteractWidget::PasteFactoryClipboard(){ }
 void UFGInteractWidget::NativeConstruct(){ }
 void UFGInteractWidget::NativeDestruct(){ }
 void UFGInteractWidget::NativeOnRemovedFromFocusPath(const FFocusEvent& InFocusEvent){ }
 bool UFGInteractWidget::NativeCanCallInit(){ return bool(); }
 void UFGInteractWidget::NativeTestAndQueueInit(){ }
+void UFGInteractWidget::ClearRestoreFocusGate(){ }

@@ -1,6 +1,7 @@
 //Copyright 2016 Coffee Stain Studios.All Rights Reserved.
 #pragma once 
 #include "FactoryGame.h"
+#include "Equipment/FGEquipment.h"
 #include "GameFramework/HUD.h"
 #include "Resources/FGItemDescriptor.h"
 #include "FGHUDBase.h"
@@ -19,7 +20,7 @@ enum class ECrosshairState : uint8
 		ECS_Workbench		UMETA( DisplayName = "Workbench" ),
 		ECS_Dismantle		UMETA( DisplayName = "Dismantle" ),
 		ECS_Build			UMETA( DisplayName = "Build" ),
-		ECS_Custom		UMETA( DisplayName = "Cutom" )
+		ECS_Custom			UMETA( DisplayName = "Cutom" )
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnPumpiModeChanged, bool, hideHUD );
@@ -31,13 +32,6 @@ UCLASS()
 class FACTORYGAME_API AFGHUD : public AFGHUDBase
 {
 	GENERATED_BODY()
-public:
-	/** Z-order values for sub widgets. */
-	enum EWidgetOrder
-	{
-		EWO_GameUI = 0,
-		EWO_Respawn = 1
-	};
 public:
 	AFGHUD();
 
@@ -190,17 +184,17 @@ public:
 	/** Returns the latest created pawn HUD widget. Can return nullptr */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|HUD" )
 	FORCEINLINE UUserWidget* GetPawnHUD() { return mPawnHUD; }
+
+#if WITH_CHEATS
+	void ToggleCheatBoard();
+#endif
+	
 private:
 	/** Setup our preview for a building/vehicle from our current set preview class */
 	void SetupActorPreview();
 
 	/** Filter out what components we want to gather to preview a building */
 	class USceneComponent* CreatePreviewComponent( class USceneComponent* attachParent, class UActorComponent* componentTemplate, const FName& componentName );
-
-#if WITH_CHEATS
-	/** Function that adds the cheat widget if it should */
-	void PonderOpeningCheatBoard();
-#endif
 
 public:
 	/** Called when the pumpi mode changes. */

@@ -10,6 +10,7 @@
 #include "PlayerPresenceState.h"
 #include "UI/Message/FGAudioMessage.h"
 #include "Server/FGDedicatedServerTypes.h"
+#include "FGMapMarker.h"
 #include "Equipment/FGBuildGun.h"
 #include "FGPlayerController.generated.h"
 
@@ -267,6 +268,8 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "UI"  )
 	FOnRespawnUIVisibilityChanged mOnRespawnUIVisibilityChanged;
 
+	// Begin AFGMapManager RPCs
+	// @todok2 should me move these to a RCO of its own in map manager instead?
 	/** Tells the server to start transferring fog of war data to the requesting client  */
 	UFUNCTION( Reliable, Server, WithValidation )
 	void Server_RequestFogOfWarData();
@@ -275,6 +278,35 @@ public:
 	UFUNCTION( Reliable, Client )
 	void Client_TransferFogOfWarData( const TArray<uint8>& fogOfWarRawData, int32 finalIndex );
 
+	UFUNCTION( Reliable, Server )
+	void Server_RequestMapMarkerData();
+	/** Transfer map marker data to the client */
+	UFUNCTION( Reliable, Client )
+	void Client_TransferMapMarkerData( const TArray<FMapMarker>& mapMarkers );
+	
+	UFUNCTION( Reliable, Server )
+	void Server_AddMapMarker( FMapMarker mapMarker );
+
+	UFUNCTION( Reliable, Client )
+	void Client_OnMapMarkerAdded( FMapMarker mapMarker );
+
+	UFUNCTION( Reliable, Server )
+	void Server_RemoveMapMarker( int32 index );
+
+	UFUNCTION( Reliable, Client )
+	void Client_OnMapMarkerRemoved( int32 index );
+	
+	UFUNCTION( Reliable, Server )
+	void Server_SetHighlightRepresentation( class AFGPlayerState* fgPlayerState, class UFGActorRepresentation* actorRepresentation );
+	UFUNCTION( Reliable, Server )
+	void Server_SetHighlighMarker( class AFGPlayerState* fgPlayerState, int32 markerID );
+
+	UFUNCTION( Reliable, Client )
+	void Client_OnRepresentationHighlighted( class AFGPlayerState* fgPlayerState, class UFGActorRepresentation* actorRepresentation );
+	UFUNCTION( Reliable, Client )
+	void Client_OnMarkerHighlighted( class AFGPlayerState* fgPlayerState, int32 markerID );
+	// End AFGMapManager RPCs
+	
 	/** Gets the size on the viewport of the given actor */
 	UFUNCTION( BlueprintPure, Category = "HUD" )
 	float GetObjectScreenRadius( AActor* actor, float boundingRadius );
@@ -379,17 +411,6 @@ public:
 	UFUNCTION()
     virtual void OnSecondaryFire();
 
-	/** Adds a new music player for this controller to manage sound levels on */
-	UFUNCTION( BlueprintCallable, Category = "Music Player" )
-	void AddMusicPlayer( UObject* musicPlayer);
-
-	/** Adds a new music player for this controller to manage sound levels on */
-	UFUNCTION( BlueprintCallable, Category = "Music Player" )
-    void RemoveMusicPlayer( UObject* musicPlayer);
-
-	/** Updates RTPCs for all music player objects that have registered with this controller */
-	void UpdateMusicPlayers( float dt );
-
 	/** Notified from the build gun that the build state has changed */
 	UFUNCTION()
 	void OnBuildGunStateChanged( EBuildGunState newState );
@@ -402,6 +423,13 @@ public:
 
 	/** Used to distinguish admin players from simple clients on dedicated servers. Will only hold a useful value on dedicated servers */
 	FServerEntryToken mServerEntryTicket;
+	
+	// Exposes mInputComponentChords so we can bind action chords from outside the player controller. We should look into another system for this though. Maybe the enhanced input plugin from epic.
+	class UInputComponent* GetInputComponentChords() const { return mInputComponentChords; }
+
+	/** Handle pause game input and routes it to game UI */
+	void OnPauseGamePressed();
+	
 protected:
 	/** Pontentially spawns deathcreate when disconnecting if we are dead */
 	void PonderRemoveDeadPawn();
@@ -429,8 +457,30 @@ protected:
 	virtual void BuildInputStack( TArray< UInputComponent* >& inputStack ) override;
 	// End APlayerController interface
 
+	/** Trace and find a location to spawn a ping */
+	void TraceLocationForPing( FHitResult& hitResult );
+
 	/** Sends a ping to the other players at the look at location */
 	void OnAttentionPingPressed();
+	
+	/** Sends a ping to the other players from a given normalized 2D location. Maps the normalized value to the map bounds and linetraces down to the first thing it hits at that location */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
+	void SpawnAttentionPingFrom2DLoc( FVector2D normalizedLocation );
+	
+	/** Add a map marker from a given normalzied 2D location. Maps the normalized value to the map bounds and linetraces down to the first thing it hits at that location
+	  * Return true if we could add a map marker. False if we have reached marker limit */
+	UFUNCTION( BlueprintCallable, Category = "Map" )
+	UPARAM( DisplayName = "Success" ) bool AddMapMarkerFrom2DLoc( const FMapMarker& mapMarker, FVector2D normalizedLocation, FMapMarker& out_NewMapMarker );
+	
+	void OnMapMarkerModePressed();
+	void EnterMapMarkerMode();
+	void OnMapMarkerModeReleased();
+	UFUNCTION( BlueprintCallable, Category = "Map" )
+	void ExitMapMarkerMode();
+	void OnAddMapMarkerPressed();
+	void UpdateHoveredMapMarker();
+	
+	/** Brings up a widget to add a map marker at the look at location */
 
 	/** Temp Nativized event to reduce refernces in RCO.*/
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Portable Miner")
@@ -462,6 +512,9 @@ protected:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
 	void TogglePhotoModeInstructionsWidget();
 
+	UFUNCTION( BlueprintImplementableEvent, Category = "Photo Mode" )
+	void TogglePhotoModeInstructionsWidgetVisibility();
+
 	UFUNCTION( BlueprintCallable, Category = "Photo Mode" )
 	void TogglePhotoMode();
 	
@@ -480,6 +533,12 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "Photo Mode" )
 	bool GetHiResPhotoModeEnabled() { return mHiResPhotoMode; }
 
+	class UFGGameUI* GetGameUI() const;
+
+#if WITH_CHEATS
+	void ToggleCheatBoard();
+#endif
+	
 private:
 	/** Begins the setup of the tutorial subsystem */
 	void SetupTutorial();
@@ -633,4 +692,7 @@ private:
 	/** List of music player to keep track of  */
 	UPROPERTY()
 	TArray< UObject* > mMusicPlayerList;
+
+	bool mMapMarkerModeActive;
+	bool mMapMarkerModeButtonPressed;
 };

@@ -61,12 +61,10 @@ public:
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
-	virtual void Tick( float dt ) override;
 	// End Actor Interface 
 
 	// Begin AFGBuildable interface
 	virtual void Factory_Tick( float dt ) override;
-	virtual void Native_OnMaterialInstancesUpdated() override;
 	// End AFGBuildable interface
 
 	// Begin IFGDismantleInterface
@@ -82,6 +80,17 @@ public:
 	virtual TSubclassOf< UFGPipeConnectionComponentBase > GetConnectionType_Implementation() override;
 	// End AFGBuildablePipeBase Interface
 
+	// Begin IFGColorInterface
+	virtual void SetCustomizationData_Native( const FFactoryCustomizationData& customizationData ) override;
+	virtual void ApplyCustomizationData_Native( const FFactoryCustomizationData& customizationData ) override;
+	virtual void StartIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter, bool isValid = true ) override;
+	virtual void StopIsAimedAtForColor_Implementation( class AFGCharacterPlayer* byCharacter ) override;
+	// End IFGColorInterface
+
+	//~ Begin IFGDismantleInterface
+	virtual void GetChildDismantleActors_Implementation( TArray< AActor* >& out_childDismantleActors ) const override;
+	//~ End IFGDismantleInterface
+	
 	// Begin FluidIntegrant Interface
 	virtual FFluidBox* GetFluidBox() override;
 	virtual TArray< class UFGPipeConnectionComponent* > GetPipeConnections() override;
@@ -143,23 +152,30 @@ public:
 	TSubclassOf< UFGItemDescriptor > GetFluidDescriptor() const;
 
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Pipes|Pipeline" )
-	class UFGPipelineFlowIndicatorComponent* GetFlowIndicatorComponent() const;
+	class UFGPipelineFlowIndicatorComponent* GetFlowIndicatorComponent() const { return nullptr; }
 
-	/** 
-	* @todo-Pipes DEPRICATED - Invoke server call on Remote Call Object instead. 
-	* Call this to flush the network.
-	*/
-	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Pipes|Pipeline", meta=( DeprecatedFunction, DeprecationMessage = "Invoke server call on Remote Call Object instead." ) )
-	void FlushPipeNetwork();
+	/** @return The flow indicator for this pipe, if any. */
+	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Pipes|Pipeline" )
+	class AFGBuildablePipelineFlowIndicator* GetFlowIndicator() const;
 
 	/** Adds an actor to ignore when determining indicator placement in begin play. This needs to be called BEFORE begin play to have any effect */
 	void AddIgnoredActorForIndicator( AActor* ignoredActor ) { mIgnoreActorsForIndicator.Add( TWeakObjectPtr< const AActor>( ignoredActor ) ); }
 
-	/** Updates sounds depending on liquid in pipe */
-	void UpdateSounds();
-
 	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
 
+	/** Smooth the values of the percentages for use in the indicator or UI. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Pipes|Pipeline" )
+	void SmoothValues( UPARAM( ref ) float& flowPct, UPARAM( ref ) float& contentPct, float dt ) const;
+
+	/** Get the values of the percentages for use in the indicator or UI. */
+	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|Pipes|Pipeline" )
+	void GetRawValues( UPARAM( ref ) float& flowPct, UPARAM( ref ) float& contentPct ) const;
+	
+protected:
+	/** Updates sounds depending on liquid in pipe */
+	UFUNCTION()
+	void UpdateSounds();
+	
 private:
 	/** Attempts to find a suitable location to place the indicator
 	*	@param out_transform Transform of the suitable location to place the indicator
@@ -177,14 +193,15 @@ public:
 
 	/** Type of indicator to spawn on this pipe. */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
-	TSubclassOf< class UFGPipelineFlowIndicatorComponent > mFlowIndicatorClass;
+	TSubclassOf< class AFGBuildablePipelineFlowIndicator > mFlowIndicatorClass;
 
 	/** Smaller pipes than this will not get a flow indicator. [cm] */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	float mFlowIndicatorMinimumPipeLength;
 
 	/** The indicator spawned for this pipe, this is optional and can be null. */
-	TWeakObjectPtr< UFGPipelineFlowIndicatorComponent > mFlowIndicator;
+	UPROPERTY( SaveGame, Replicated )
+	AFGBuildablePipelineFlowIndicator* mFlowIndicator;
 
 	/** 
 	* FNames for pipeline connection components. These must match the component names of the components that are added via blueprint 
@@ -208,7 +225,7 @@ private:
 	/** Cached array of pipe connections. */
 	UPROPERTY()
 	TArray< class UFGPipeConnectionComponent* > mPipeConnections;
-
+	
 	/** Simulation data. */
 	UPROPERTY( SaveGame )
 	FFluidBox mFluidBox;
@@ -227,40 +244,43 @@ private:
 	UPROPERTY()
 	TSubclassOf< UFGItemDescriptor > mCachedFluidDescriptor; 
 
-	// Array of objects to ignore when performing the collision check in the indicator placement. This is needed during merge / split creation of new pipelines
+	/** Array of objects to ignore when performing the collision check in the indicator placement. This is needed during merge / split creation of new pipelines. */
 	UPROPERTY()
 	TArray< TWeakObjectPtr< const AActor > > mIgnoreActorsForIndicator;
 
-	/** struct with both wwise safe names and their item names */
+	/** Struct with both wwise safe names and their item names */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	TArray< FStringPair > mFluidNames;
-
-	/** current fluid that is in the pipe */
+	
+	/** Current fluid that is in the pipe */
 	UPROPERTY()
 	FString mCurrentFluid;
-
-	/** how filled is the pipe */
+	
+	/** Last value used for how filled the pipe is. */
 	UPROPERTY()
-	float mQuantiziedContent;
-
-	/** flow rate in the pipe */
+	float mLastContentForSound;
+	
+	/** Last value used for how much flow there was in the pipe. */
 	UPROPERTY()
-	float mQuantiziedFlow;
-
-	/** at what flow should we play rattle */
+	float mLastFlowForSound;
+	
+	/** At what flow should we play rattle */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	float mRattleLimit;
-
-	/** are we playing rattling sound? */
+	
+	/** Are we playing rattling sound? */
 	UPROPERTY()
 	bool mIsRattling;
-
+	
 	/** Start rattle sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	class UAkAudioEvent* mStartRattleSoundEvent;
-
+	
 	/** Stop rattle sound */
 	UPROPERTY( EditDefaultsOnly, Category = "Pipeline" )
 	class UAkAudioEvent* mStopRattleSoundEvent;
-
+	
+	/** Timer to handle the update when this pipe is significant. */
+	UPROPERTY()
+	FTimerHandle mUpdateSoundsHandle;
 };

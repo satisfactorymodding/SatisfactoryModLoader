@@ -1,27 +1,14 @@
-// Copyright Coffee Stain Studios. All Rights Reserved.
+// Copyright 2016-2021 Coffee Stain Studios. All Rights Reserved.
 
 #pragma once
 
 #include "FactoryGame.h"
+#include "CoreMinimal.h"
+
 #include "GameFramework/DamageType.h"
 #include "FGDamageType.generated.h"
 
-UENUM(BlueprintType)
-enum EOverrideSetting
-{
-	OS_Additive	UMETA( DisplayName = "Additive" ),
-	OS_Override	UMETA( DisplayName = "Override" )
-};
-
-UENUM(BlueprintType)
-enum EPlayOnDamageEvent
-{
-	PODE_OnTakeAnyDamage UMETA(DisplayName="OnTakeAnyDamage"),
-	PODE_OnTakePointDamage UMETA( DisplayName = "OnTakePointDamage" ),
-	PODE_OnTakeRadialDamage UMETA( DisplayName = "OnTakeRadialDamage" )
-};
-
-UCLASS()
+UCLASS(EditInlineNew, DefaultToInstanced)
 class FACTORYGAME_API UFGDamageType : public UDamageType
 {
 	GENERATED_BODY()
@@ -29,37 +16,65 @@ public:
 	/** ctor */
 	UFGDamageType( const FObjectInitializer& ObjectInitializer );
 
+	UFUNCTION( BlueprintCallable )
+	virtual void ProcessDamage( const FHitResult& hitResult, class AController* instigator, AActor* damageCauser, float damageAmount, TArray<AActor*> ignoredActors );
+
+	UFUNCTION()
+	void SpawnEffects(const FHitResult& hitResult, AActor* outer);
+
 	/** When pawn take damage from a source, they play this take damage event */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType|Audio" )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "SFX" )
 	class UAkAudioEvent* mImpactAudioEvent;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType|Audio" )
-	TEnumAsByte<EPlayOnDamageEvent> mPlayImpactAudioOn;
-
-	/** Specify if the audio from this damage type should overrride the damage sound in hit pawn, or add to it */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType|Audio" )
-	TEnumAsByte<EOverrideSetting> mImpactAudioSetting;
-
 	/** When pawn take damage from a source, they play this take damage event */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType|Vfx" )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "VFX" )
 	class UParticleSystem* mImpactParticle;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType|Vfx" )
-	TEnumAsByte<EPlayOnDamageEvent> mPlayImpactParticleOn;
-
-	/** Specify if the audio from this damage type should overrride the damage effect in hit pawn, or add to it */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType|Vfx" )
-	TEnumAsByte<EOverrideSetting> mImpactParticleSetting;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "VFX" )
+	bool mAttachParticleToTarget;
 
 	/** Should this damage type hurt destrucrible actors? */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
 	bool mShouldDamageDestructible;
 
-	/** How much extra impulse should be added in Z direction for this damage type */
+	/** Amount of base damage dealt by this damage type */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
-	float mDamageImpulseZ;
+	float mDamageAmount;
 
-	/** Should this damage type shock and scare the enemy, like the stun spear? */
+	/** Always causes stun if this is set, overriding stun damage calculations  */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
-	bool mShouldShockEnemy;
+	bool mAlwaysCauseStun;
+};
+
+UENUM()
+enum EDamageModifierType
+{
+	DMT_Multiplicative UMETA( DisplayName="Multiplicative" ),
+	DMT_Additive UMETA( DisplayName="Additive" )
+};
+
+USTRUCT(BlueprintType)
+struct FDamageModifier
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	TSubclassOf<UFGDamageType> DamageType;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	TEnumAsByte<EDamageModifierType> DamageModifierType;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	float DamageModifier;
+
+	UPROPERTY(BlueprintReadWrite, Category= "Modifiers")
+	UObject* AppliedBy;
+
+	FDamageModifier()
+	{
+		DamageType = nullptr;
+		DamageModifierType = DMT_Multiplicative;
+		DamageModifier = 1.0f;
+		AppliedBy = nullptr;
+	}
 };

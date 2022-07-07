@@ -2,3 +2,10 @@
 
 #include "FGMapCompassSettings.h"
 
+UStaticMesh* UFGMapCompassSettings::GetMapMarkerMesh() const{ return nullptr; }
+UMaterialInterface* UFGMapCompassSettings::GetMapMarkerDefaultMaterial() const{ return nullptr; }
+UStaticMesh* UFGMapCompassSettings::GetHighlightedMarkerMesh() const{ return nullptr; }
+UMaterialInterface* UFGMapCompassSettings::GetHighlightedMarkerMaterial() const{ return nullptr; }
+UNiagaraSystem* UFGMapCompassSettings::GetHighlightedMarkerNiagaraSystem() const{ return nullptr; }
+UFGWorldScannableData* UFGMapCompassSettings::GetWorldScannableData() const{ return nullptr; }
+UFGWorldHeightData* UFGMapCompassSettings::GetWorldHeightData() const{ return nullptr; }

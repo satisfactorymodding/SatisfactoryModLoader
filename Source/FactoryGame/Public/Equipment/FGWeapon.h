@@ -5,21 +5,15 @@
 #include "FactoryGame.h"
 #include "GameFramework/Actor.h"
 #include "Equipment/FGEquipment.h"
-#include "Equipment/FGItemDescAmmoType.h"
+#include "Equipment/FGAmmoType.h"
+
+#include "Equipment/FGWeaponState.h"
+
 #include "FGWeapon.generated.h"
 
-UENUM(BlueprintType)
-enum class EWeaponState : uint8
-{
-	EWS_Unequipped,
-	EWS_Standby,
-	EWS_Empty,
-	EWS_NeedReload,
-	EWS_Reloading,
-	EWS_Firing,
-};
-
 class AFGHUD;
+
+extern TAutoConsoleVariable< int32 > CVarWeaponDebug;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FAmmoSwitchingDelegate );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FWeaponStateChangedDelegate, EWeaponState, oldState, EWeaponState, newState );
@@ -34,6 +28,7 @@ class FACTORYGAME_API AFGWeapon : public AFGEquipment
 public:
 	/** Replication. */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
+	virtual bool ReplicateSubobjects( class UActorChannel* channel, class FOutBunch* bunch, FReplicationFlags* repFlags ) override;
 
 	AFGWeapon();
 
@@ -41,14 +36,7 @@ public:
 
 	// Begin AFGEquipment interface
 	virtual bool ShouldSaveState() const override;
-	bool InitializeMagazineObjects();
-
-	UFUNCTION()
-	void TryEquipChildEquipment();
-	// End AFGEquipment interface
-
-	UFUNCTION(BlueprintCallable)
-	FORCEINLINE class AFGWeaponChild* GetChildWeapon() const { return mChildWeapon; };
+	bool InitializeMagazineObject();
 
 	/**
 	 * Put the weapon away.
@@ -74,7 +62,8 @@ public:
 	void Server_StartPrimaryFire();
 
 	/** Called on both client and server when firing. */
-	virtual void BeginPrimaryFire();
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_BeginPrimaryFire();
 
 	/** Called on the owner, client or server but not both. */
 	virtual void OnPrimaryFireReleased();
@@ -88,7 +77,6 @@ public:
 
 	/** Called on both client and server when firing. */
 	virtual void EndPrimaryFire();
-	void GetFiringTransform( FTransform& firingTransform );
 
 	/** Called when reload button is pressed */
 	void OnReloadPressed();
@@ -107,7 +95,11 @@ public:
 
 	/** Implementable event to do things when the current ammo type has changed */
 	UFUNCTION( BlueprintImplementableEvent, Category="Weapon" )
-	void OnCurrentAmmoTypeChanged( UFGItemDescAmmoType* AmmoType );
+	void OnCurrentAmmoTypeChanged( UFGAmmoType* AmmoType );
+
+	/** Will return the location of the specified socket on the weapon mesh. Will use weapon mesh if locally controlled, otherwise it will grab the socket on the attachment mesh. */
+	UFUNCTION( BlueprintPure, BlueprintNativeEvent, Category = "Weapon" )
+	FVector GetWeaponMeshSocketLocation( FName socketName ) const;
 
 	/** When the CycleAmmunition action is triggered */
 	void OnCycleAmmunitionTypePressed();
@@ -122,10 +114,10 @@ public:
 	void CycleDesiredAmmunitionType();
 
 	UFUNCTION(BlueprintCallable, Server, Reliable, Category="Weapon")
-	void Server_SetDesiredAmmoClass( TSubclassOf< UFGItemDescAmmoType > newDesiredAmmoClass );
+	void Server_SetDesiredAmmoClass( TSubclassOf< UFGAmmoType > newDesiredAmmoClass );
 
 	UFUNCTION( BlueprintCallable, Category="Weapon" )
-	void SetDesiredAmmoClass( TSubclassOf< UFGItemDescAmmoType > newDesiredAmmoClass );
+	void SetDesiredAmmoClass( TSubclassOf< UFGAmmoType > newDesiredAmmoClass );
 
 	/** Returns true if we have ammunition loaded */
 	UFUNCTION( BlueprintPure, Category = "Weapon" )
@@ -133,13 +125,12 @@ public:
 
 	/** How much ammunition do our owner have in their inventory */
 	UFUNCTION( BlueprintPure, Category = "Weapon" )
-	int32 GetSpareAmmunition( TSubclassOf< UFGItemDescAmmoType > AmmunitionType ) const;
+	int32 GetSpareAmmunition( TSubclassOf< UFGAmmoType > AmmunitionType ) const;
 
 	void ApplyDispersion();
-
-	/** Checks what type of fire modes and call corresponding fire function */
-	UFUNCTION( NetMulticast, Reliable )
-	void FireAmmunition( FTransform firingTransform, float currentAmmos, APawn* serverInstigator );
+	
+	/** Called on server, will call FireAmmunition on the ammo. */
+	void FireAmmunition();
 
 	/** Returns whether we are reloading or not */
 	UFUNCTION( BlueprintPure, Category = "Weapon" )
@@ -168,26 +159,9 @@ public:
 	UFUNCTION( BlueprintPure, Category="Weapon" )
 	FORCEINLINE float GetWeaponCurrentDispersion() const { return mCurrentDispersion; }
 
-	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE float GetWeaponBaseMinDispersion() const { return mBaseRestingDispersion; }
-
-	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE float GetWeaponBaseMaxDispersion() const { return mBaseFiringDispersion; }
-
-	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE float GetWeaponBaseAimTime() const { return mBaseAimTime; }
-
-	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE float GetWeaponDispersionPerShotChange() const { return mDispersionChangePerShot; }
-
-	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE float GetWeaponMinDispersion() const { return mRestingDispersion; }
-
-	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE float GetWeaponMaxDispersion() const { return mFiringDispersion; }
-
-	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE float GetWeaponAimTime() const { return mAimTime; }
+	/** Gets a 0-1 value representing the current dispersion between resting and firing level. */
+	UFUNCTION( BlueprintPure, Category = "Weapon" )
+	float GetNormalizedDispersionValue() const;
 
 	/** Returns mMagSize */
 	UFUNCTION( BlueprintPure, Category = "Weapon" )
@@ -198,28 +172,13 @@ public:
 
 	/** Returns an object with all the of the current ammo type's values */
 	UFUNCTION( BlueprintPure, Category= "Weapon" )
-	FORCEINLINE UFGItemDescAmmoType* GetAmmoTypeDescriptor() const { return mCurrentMagazineObject; }
+	FORCEINLINE UFGAmmoType* GetAmmoTypeDescriptor() const { return mCurrentMagazineObject; }
 
 	UFUNCTION( BlueprintPure, Category="Weapon" )
-	static FORCEINLINE UFGItemDescAmmoType* GetDefaultObjectForAmmoType( TSubclassOf< UFGItemDescAmmoType > ammoType )
+	static FORCEINLINE UFGAmmoType* GetDefaultObjectForAmmoType( TSubclassOf< UFGAmmoType > ammoType )
 	{
 		return ammoType.GetDefaultObject();
 	}
-
-	UFUNCTION()
-	void SetAttachmentsLoadState( bool isLoaded );
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_SetAttachmentsLoadState( bool isLoaded );
-
-	UFUNCTION(Server, Reliable)
-	void Server_SetAttachementLoadState();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_InitialAmmoCountRep(int ammoCount);
-
-	UFUNCTION(Server, Reliable)
-	void Server_InitialAmmoCountRep();
 
 	/** Called when you tried to fire and CanFire returned false. You will have to check the reason yourself and play effects accordingly */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Projectile" )
@@ -229,9 +188,13 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Weapon" )
 	void PlayFireReleasedEffects();
 
+	/** Called by the server in order to play fire effects on the clients. */
+	UFUNCTION( NetMulticast, Reliable )
+	void Multicast_PlayFireEffect( UFGAmmoType* AmmoTypeObject );
+
 	/** Handles playing of effects both on server and on client. */
 	UFUNCTION( BlueprintNativeEvent, Category = "Weapon" )
-	void PlayFireEffect( UFGItemDescAmmoType* AmmoTypeObject );
+	void PlayFireEffect( UFGAmmoType* AmmoTypeObject );
 
 	/** Is sprinting allowed when firing this weapon */
 	FORCEINLINE virtual bool ShouldBlockSprintWhenFiring() { return mBlockSprintWhenFiring; }
@@ -240,6 +203,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Hud" )
 	FORCEINLINE AFGHUD* GetAssociatedHud() const { return mAssociatedHud; }
 
+public:
+	UPROPERTY( BlueprintAssignable )
+	FWeaponStateChangedDelegate mOnWeaponStateChanged;
+
 protected:
 	// Begin AFGEquipment interface
 	virtual void AddEquipmentActionBindings() override;
@@ -247,7 +214,9 @@ protected:
 
 	void SetWeaponState(EWeaponState newState);
 
-	virtual void ApplyDispersionReduction( float DeltaSeconds );
+	virtual void UpdateDispersion( float DeltaSeconds );
+
+	void SetMagazineMeshMaterials(USkeletalMeshComponent* skelMeshComp, UFGAmmoType* ammoTypeObject);
 
 	/** Try to refire */
 	void RefireCheckTimer();
@@ -263,7 +232,7 @@ protected:
 	void ActualReload();
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Weapon" )
-	void PlayReloadEffects();
+	void PlayReloadEffects( bool hadAmmoLeft );
 
 	/** Client tells server to reload */
 	UFUNCTION( Server, Reliable )
@@ -273,6 +242,12 @@ protected:
 	UFUNCTION()
 	void TryAutoReload();
 
+	UFUNCTION(BlueprintPure, Category="Weapon")
+	bool GetFireRate( float& fireRate );
+
+	UFUNCTION()
+	void TriggerRefireTimer();
+
 	/** Ability for different classes to get ammo from different places */
 	virtual class UFGInventoryComponent* GetOwnersInventoryComponent() const;
 
@@ -280,6 +255,17 @@ protected:
 	 * Used to react and do what needs to be done post-firing. */
 	UFUNCTION()
 	virtual void OnAmmoFired( AActor* SpawnedActor );
+	
+	UFUNCTION()
+	void OnRep_CurrentMagazineObject( class UFGAmmoType* oldMagazineObject );
+
+	UFUNCTION()
+	void OnRep_WeaponState( EWeaponState oldState );
+
+	UFUNCTION()
+	void OnRep_CurrentAmmoCount();
+
+	virtual void OnRep_Instigator() override;
 
 	UPROPERTY()
 	AFGHUD* mAssociatedHud = nullptr;
@@ -294,11 +280,8 @@ protected:
 	FTimerHandle mReloadHandle;
 
 	/** State the weapon is in. Never set this manually. Always use SetWeaponState */
-	UPROPERTY(SaveGame, Replicated)
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_WeaponState )
 	EWeaponState mWeaponState;
-
-	UPROPERTY(SaveGame)
-	TArray<EWeaponState> mOldState;
 
 	/** Does this weapon automatically reload when the magazine is empty and there are ammo available? */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
@@ -313,82 +296,69 @@ protected:
 	FTimerHandle mAutoReloadTimerHandle;
 
 	/** How much ammo is loaded into the weapon */
-	UPROPERTY( SaveGame )
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_CurrentAmmoCount )
 	int32 mCurrentAmmoCount;
 
 	/** Ammo classes this weapons allows to switch between */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	TArray< TSubclassOf< class UFGItemDescAmmoType > > mAllowedAmmoClasses;
+	TArray< TSubclassOf< class UFGAmmoType > > mAllowedAmmoClasses;
 
 	/** The ammo class that we want to use upon next reload */
 	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated )
-	TSubclassOf< class UFGItemDescAmmoType > mDesiredAmmoClass;
+	TSubclassOf< class UFGAmmoType > mDesiredAmmoClass;
 
 	/** The item we shoot */
 	UPROPERTY( BlueprintReadOnly, SaveGame, Replicated )
-	TSubclassOf< class UFGItemDescAmmoType > mCurrentAmmunitionClass;
+	TSubclassOf< class UFGAmmoType > mCurrentAmmunitionClass;
 
-	/** Multiplier applied to ammo damages */
+	/** Attaches the mesh to a bone of the mesh character 1P/3P instead of the weapon. */
+	UPROPERTY( EditDefaultsOnly )
+	bool mAttachMagazineToPlayer = false;
+
 	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	FName mMuzzleSocketName;
+	
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	FName mCurrentMagazineBoneName;
+
+	/** Reference to the weapon's mesh. Set it in construction script of BP. */
+	UPROPERTY( BlueprintReadWrite)
+	USkeletalMeshComponent* mWeaponMesh;
+	
+	UPROPERTY( BlueprintReadOnly )
+	USkeletalMeshComponent* mCurrentMagazineMesh;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	FName mEjectMagazineBoneName;
+
+	UPROPERTY( BlueprintReadOnly )
+	USkeletalMeshComponent* mEjectMagazineMesh;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Stats" )
+	float mDispersionOnNoMagazine = 5.0f;
+	
+	/** Multiplier applied to ammo damages */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Stats" )
 	float mWeaponDamageMultiplier = 1.0f;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Stats" )
 	bool mFiringBlocksDispersionReduction = false;
 
-	/** Minimum Dispersion in meters per 10m*/
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	float mBaseRestingDispersion = 2.0f;
-
-	/** Maximum Dispersion in degrees*/
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	float mBaseFiringDispersion = 10.0f;
-
-	/** Time to go from maximum to minimum aim time in seconds */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	float mBaseAimTime = 1.0f;
-
-	/** Minimum Dispersion in degrees*/
-	UPROPERTY( BlueprintReadOnly )
-	float mRestingDispersion = 0.2f;
-
-	/** Maximum Dispersion in degrees*/
-	UPROPERTY( BlueprintReadOnly )
-	float mFiringDispersion = 3.0f;
-
-	/** Dispersion change per shot in degrees*/
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	float mDispersionChangePerShot = 0.5f;
-
-	/** Time to go from maximum to minimum aim time in seconds */
-	UPROPERTY( BlueprintReadOnly )
-	float mAimTime = 1.0f;
-
 	/** Current dispersion in degrees */
-	UPROPERTY( BlueprintReadOnly )
+	UPROPERTY( BlueprintReadOnly, Category = "Stats" )
 	float mCurrentDispersion;
 
 	/** In seconds, how long time does it take to reload the weapon */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Stats" )
 	float mReloadTime;
-
-	/** How many seconds between between shots */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	float mFireRate;
 
 	/** Sound played when reloading */
 	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Sound" )
 	UAkAudioEvent* mReloadSound;
 
-	/** A cast reference to the spawned child equipment, if it exists*/
-	UPROPERTY()
-	class AFGWeaponChild* mChildWeapon;
-
 	/** Object created from the ammo class, required to call ammo types functionalities */
-	UPROPERTY()
-	UFGItemDescAmmoType* mCurrentMagazineObject;
-
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "AmmoSwitching" )
-	TEnumAsByte< EInputEvent > mAmmoCycleMode = IE_Released;
+	UPROPERTY( ReplicatedUsing = OnRep_CurrentMagazineObject )
+	UFGAmmoType* mCurrentMagazineObject;
 
 	UPROPERTY( BlueprintReadWrite, Category = "AmmoSwitching" )
 	bool mAmmoSwitchUsedRadialMenu = false;
@@ -398,9 +368,6 @@ protected:
 
 	UPROPERTY( BlueprintAssignable )
 	FAmmoSwitchingDelegate mOnAmmoCyclingReleased;
-
-	UPROPERTY(BlueprintAssignable)
-	FWeaponStateChangedDelegate mOnWeaponStateChanged;
 
 private:
 	/** Indicates if this weapon will block character from sprinting when fired */

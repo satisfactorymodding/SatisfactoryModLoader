@@ -7,12 +7,8 @@ UFGSplineComponent::UFGSplineComponent() : Super() {
 	this->mSplineMeshLength = 100.0;
 	this->mGenerateCollisions = false;
 	this->mCollisionSpacing = 100.0;
-	this->mCollisionExtent.X = 1.0;
-	this->mCollisionExtent.Y = 1.0;
-	this->mCollisionExtent.Z = 1.0;
-	this->mCollisionOffset.X = 0.0;
-	this->mCollisionOffset.Y = 0.0;
-	this->mCollisionOffset.Z = 0.0;
+	this->mCollisionExtent = FVector::OneVector;
+	this->mCollisionOffset = FVector::ZeroVector;
 	this->mOverrideMaterial = nullptr;
 	this->mUseInstancing = true;
 	this->mSplineMeshInstances = nullptr;

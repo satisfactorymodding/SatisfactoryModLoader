@@ -31,6 +31,7 @@ void OptionValueContainer::ResetOptionValue(FString cvar){ }
 void OptionValueContainer::ResetPendingChanges(){ }
 void OptionValueContainer::ResetValuesToDefault(){ }
 void OptionValueContainer::RemoveValues(EOptionValueState valueType){ }
+bool OptionValueContainer::IsOptionRegistered(FString cvar){ return bool(); }
 void OptionValueContainer::GetOptionsDebugData(TArray<FString>& out_debugData){ }
 void OptionValueContainer::RemoveValue(EOptionValueState valueType, FString cvar){ }
 bool OptionValueContainer::ContainsValue(EOptionValueState valueType, FString cvar) const{ return bool(); }

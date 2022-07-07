@@ -47,6 +47,12 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Compass" )
 	void OnObjectCentered( bool centered );
 
+	UFUNCTION( BlueprintPure, Category = "Compass" )
+	virtual UPARAM(DisplayName = "HighlightColor") FLinearColor IsHighlighted( UPARAM(DisplayName = "IsHighlighted") bool& out_IsHighlighted, UPARAM(DisplayName = "HighlightedByLocalPlayer") bool& out_HighlightedByLocalPlayer ) const;
+	
+	UFUNCTION( BlueprintImplementableEvent, Category = "Compass" )
+	void OnHighlightedUpdated( bool highlighted, bool IsHighlightedByLocalPlayer, FLinearColor color );
+
 	FORCEINLINE FVector2D GetLastUpdatedPosition() const { return mlastUpdatedPosition; }
 
 	UFUNCTION( BlueprintPure, Category = "Compass" )
@@ -106,6 +112,9 @@ protected:
 
 	UFUNCTION( BlueprintCallable, Category = "Compass" )
 	float GetAngleFromDirection( FVector direction );
+
+	UFUNCTION()
+	void OnMarkerHighlightUpdated( class UFGActorRepresentation* actorRepresentation, bool highlighted, class AFGPlayerState* playerState  );
 
 protected:
 	UPROPERTY( BlueprintReadWrite, Meta = ( ExposeOnSpawn ), Category = "Compass" )

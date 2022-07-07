@@ -3,8 +3,6 @@
 #include "Resources/FGBuildingDescriptor.h"
 
 #if WITH_EDITOR
-void UFGBuildingDescriptor::SetupStage(){ }
-FVector UFGBuildingDescriptor::GetCenterOfCollision(){ return FVector(); }
 void UFGBuildingDescriptor::SetBuildableClass(TSubclassOf< UFGBuildingDescriptor > inClass, TSubclassOf<  AFGBuildable > buildableClass){ }
 #endif 
 UFGBuildingDescriptor::UFGBuildingDescriptor() : Super() {
@@ -12,11 +10,6 @@ UFGBuildingDescriptor::UFGBuildingDescriptor() : Super() {
 	this->mUseDisplayNameAndDescription = false;
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
-	this->mPreviewView.Distance = 1200.0;
-	this->mPreviewView.FocalOffset.X = 0.0;
-	this->mPreviewView.FocalOffset.Y = 0.0;
-	this->mPreviewView.FocalOffset.Z = 0.0;
-	this->mPreviewView.CameraPitch = -35.0;
 }
 void UFGBuildingDescriptor::PostLoad(){ Super::PostLoad(); }
 TSubclassOf< class AFGBuildable > UFGBuildingDescriptor::GetBuildableClass(TSubclassOf< UFGBuildingDescriptor > inClass){ return TSubclassOf<class AFGBuildable>(); }

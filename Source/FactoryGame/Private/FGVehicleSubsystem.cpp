@@ -85,6 +85,9 @@ void AFGVehicleSubsystem::ResetBeingTheChosenWheeledVehicle(const  AFGWheeledVeh
 void AFGVehicleSubsystem::RemoveDeadlock(int deadlockId){ }
 void AFGVehicleSubsystem::ResetAllDeadlocks(){ }
 void AFGVehicleSubsystem::JoinDeadlock(int deadlockId,  AFGWheeledVehicleInfo* vehicle){ }
+void AFGVehicleSubsystem::OnLevelAddedToWorld(ULevel* level, UWorld* world){ }
+void AFGVehicleSubsystem::OnLevelRemovedFromWorld(ULevel* level, UWorld* world){ }
+void AFGVehicleSubsystem::AddLevel(ULevel* level){ }
 void AFGVehicleSubsystem::AddHardDeadlock(int deadlockId, const WheeledVehicleDeadlock& deadlock){ }
 void AFGVehicleSubsystem::SanitizeDeadlocks(){ }
 void AFGVehicleSubsystem::DetectDeadlocks(){ }

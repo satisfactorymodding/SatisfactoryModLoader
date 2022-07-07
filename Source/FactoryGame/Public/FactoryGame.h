@@ -10,6 +10,7 @@
 #include "Net/RepLayout.h"
 #include "Net/DataReplication.h"
 #include "Engine/ActorChannel.h"
+#include "FGObjectReference.h"
 
 #include "UnitHelpers.h"
 
@@ -18,6 +19,11 @@ DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advan
 DECLARE_STATS_GROUP( TEXT( "Sound Events auto-resume on animations" ), STATGROUP_SoundEventAutoResume, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "Execute on Interface" ), STATGROUP_ExecuteInterface, STATCAT_Advanced );
 
+static TAutoConsoleVariable<int32> CVarStressTestRadioActivity(
+	TEXT("CSS.Debug.MarkAllItemsAsRadioActive"),
+	0,
+	TEXT("CSS: Debug command to stress test radioacivity"),
+	ECVF_Cheat);
 
 // Useful for removing stuff that shouldn't be in public versions
 #ifndef IS_PUBLIC_BUILD
@@ -53,9 +59,10 @@ static const FName SHOWDEBUG_PIPE_PRESSURE_GROUPS( TEXT( "PipePressureGroups" ) 
 static const FName SHOWDEBUG_PIPE_DELTA_PRESSURE( TEXT( "PipeDeltaPressure" ) );
 static const FName SHOWDEBUG_PIPE_FLOW( TEXT( "PipeFlow" ) );
 static const FName SHOWDEBUG_PIPE_MOVE_TO_OVERFILL_RATIO( TEXT( "PipeMoveToOverfillRatio" ) );
-static const FName SHOWDEBUG_CREATURES( TEXT( "Creatures" ) );
 static const FName SHOWDEBUG_POOLER( TEXT( "Pooler" ) );
 static const FName SHOWDEBUG_SELF_DRIVING( TEXT( "SelfDriving" ) );
+static const FName SHOWDEBUG_FOG_OF_WAR( TEXT( "FogOfWar" ) );
+static const FName SHOWDEBUG_MAP_MARKERS( TEXT( "MapMarkers" ) );
 
 /** Common show debug colors */
 static const FLinearColor DEBUG_TEXTWHITE( 0.9f, 0.9f, 0.9f );
@@ -282,6 +289,7 @@ if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) )
 if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendValueAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__ )
 
 FORCEINLINE FString VarToFString( FVector2D var ) { return FString::Printf( TEXT( "(X=%f,Y=%f)" ), var.X, var.Y ); }
+FORCEINLINE FString VarToFString( uint64 var ) { return FString::Printf( TEXT( "%llu" ), var ); }
 FORCEINLINE FString VarToFString( FVector var ){ return FString::Printf( TEXT( "(X=%f,Y=%f,Z=%f)" ), var.X, var.Y, var.Z ); }
 FORCEINLINE FString VarToFString( FBox var ) { return FString::Printf( TEXT( "(Min=%s,Max=%s)" ), *VarToFString( var.Min ), *VarToFString( var.Min ) ); }
 FORCEINLINE FString VarToFString( FString var ){ return FString::Printf( TEXT( "\"%s\"" ), *var ); }
@@ -303,6 +311,9 @@ FORCEINLINE FString VarToFString( FUniqueNetIdRepl var ){ return FString::Printf
 FORCEINLINE FString VarToFString( FOverlapResult var ){ return FString::Printf( TEXT("%s"), var.Actor.IsValid() ? *var.Actor.Get()->GetName() : *VarToFString(var.Component.Get()) ); }
 FORCEINLINE FString VarToFString( void* var ){ return FString::Printf( TEXT( "0x%016I64X" ), ( SIZE_T )var ); }
 FORCEINLINE FString VarToFString( FPrimaryAssetId var ){ return var.ToString(); }
+FORCEINLINE FString VarToFString( FObjectReferenceDisc var ){ return FString::Printf( TEXT( "%s" ), *var.ToString() ); }
+template<typename T>
+FORCEINLINE FString VarToFString( TWeakObjectPtr<T> var ){ return FString::Printf( TEXT( "%s" ), var.IsValid() ? *VarToFString( var.Get() ) : TEXT("Invalid") ); }
 
 template< typename T >
 FORCEINLINE FString VarToFString( TArray< T > var )
@@ -347,7 +358,7 @@ template<typename T>
 FORCEINLINE T StringToEnumChecked( const TCHAR* enumName, const FString& enumValue )
 {
 	UEnum* enumObject = FindObject< UEnum >( ANY_PACKAGE, enumName, true );
-	fgcheck(enumObject);
+	check(enumObject);
 
 	int32 index = enumObject->GetIndexByName(FName(*enumValue));
 	return T((uint8)index);

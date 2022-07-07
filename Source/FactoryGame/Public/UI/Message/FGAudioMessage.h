@@ -217,7 +217,7 @@ public:
 	void FinishPlayback();
 
 	/** Gets current dialogue */
-	UFUNCTION( BlueprintPure, Category = "Audio Message", meta = ( DeprecatedFunction, DeprecationMessage = "GetCurrentDialogue is deprecated, use GetCurrentSubtitle instead" ) )
+	UFUNCTION( BlueprintPure, Category = "Audio Message" )
 	FAudioSubtitlePair GetCurrentDialogue();
 
 	/** Gets current subtitle */
@@ -254,8 +254,7 @@ public:
 	class UAkComponent* mAkAudioComponent;
 
 	/** The AK audio to play when "showing" this message */
-	UE_DEPRECATED(4.26, "Please use mDialogueData instead. It should have all the data from this property migrated")
-	UPROPERTY( VisibleDefaultsOnly, Category = "Audio Message - DEPRECATED" )
+	UPROPERTY( VisibleDefaultsOnly, BlueprintReadOnly, Category = "Audio Message - DEPRECATED" )
 	TArray< FAudioSubtitlePair > mAudioEvents;
 
 	/** The Dialogue, Audio and subtitles, to play/show when "showing" this message */

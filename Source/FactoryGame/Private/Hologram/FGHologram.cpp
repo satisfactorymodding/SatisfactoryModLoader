@@ -18,18 +18,15 @@ AFGHologram::AFGHologram() : Super() {
 	this->mPlacementMaterialState = EHologramMaterialState::HMS_OK;
 	this->mValidPlacementMaterial = nullptr;
 	this->mInvalidPlacementMaterial = nullptr;
+	this->mParent = nullptr;
 	this->mBuildClass = nullptr;
 	this->mUseBuildClearanceOverlapSnapp = false;
 	this->mConstructionInstigator = nullptr;
 	this->mIsDisabled = false;
 	this->mIsChanged = false;
 	this->mInitialScrollModeValue = 0;
-	this->mConstructionPosition.X = 0.0;
-	this->mConstructionPosition.Y = 0.0;
-	this->mConstructionPosition.Z = 0.0;
-	this->mConstructionRotation.Pitch = 0.0;
-	this->mConstructionRotation.Yaw = 0.0;
-	this->mConstructionRotation.Roll = 0.0;
+	this->mConstructionPosition = FVector::ZeroVector;
+	this->mConstructionRotation = FRotator::ZeroRotator;
 	this->SetHidden(true);
 	this->bReplicates = true;
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
@@ -125,6 +122,7 @@ bool AFGHologram::IsLocalHologram() const{ return bool(); }
 bool AFGHologram::IsValidHitActor(AActor* hitActor) const{ return bool(); }
 int32 AFGHologram::GetRotationStep() const{ return int32(); }
 float AFGHologram::ApplyScrollRotationTo(float base, bool onlyUseBaseForAlignment) const{ return float(); }
+AFGHologram* AFGHologram::SpawnHologramFromRecipe(TSubclassOf<  UFGRecipe > inRecipe, AFGHologram* parent, AActor* hologramOwner, FVector spawnLocation, APawn* hologramInstigator){ return nullptr; }
 void AFGHologram::SetupComponents(){ }
 void AFGHologram::Client_PlaySnapSound_Implementation(){ }
 void AFGHologram::OnRep_InitialScrollModeValue(){ }

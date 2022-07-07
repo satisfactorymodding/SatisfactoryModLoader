@@ -2,10 +2,9 @@
 
 #pragma once
 
-#include "FactoryGame.h"
 #include "Templates/TypeHash.h"
 
-struct FObjectRedirect
+struct FACTORYGAME_API FObjectRedirect
 {
 	/**
 	 * Creates a redirector
@@ -20,7 +19,7 @@ struct FObjectRedirect
 };
 
 /** Level agnostic object reference */
-struct FObjectReferenceDisc
+struct FACTORYGAME_API FObjectReferenceDisc
 {
 	// Name of the level we reside in, if empty, PathName is a absolute path
 	FString LevelName;
@@ -64,6 +63,15 @@ struct FObjectReferenceDisc
 	{
 		return Cast<T>( Resolve( world ) );
 	}
+
+	/**
+	* Will attempt to resolve an object that could not be found using a new path. 
+	* Eg. When an object is moved from a persistent level to a streaming level.
+	*
+	* @param world - the world this object lives in
+	* @param level - the "new" level to test as the path
+	*/
+	AActor* TryResolveActorWithNewLevel( UWorld* world, ULevel* newLevel );
 
 	/** Set the reference to a object */
 	void Set( UObject* obj );
@@ -114,16 +122,17 @@ struct FObjectReferenceDisc
 	/** For comparisons of references */
 	FORCEINLINE bool operator ==( const FObjectReferenceDisc& other ) const { return LevelName == other.LevelName && PathName == other.PathName; }
 
-	/**
-	 * Add a redirector from a object name to a new object name
-	 */
-	static void AddRedirector( const FString& source, const FString& destination );
-
 public:
 	static bool IsModdingModuleLoaded;
 
 private:
+	friend class FArchiveObjectTOCProxy;
 	friend UObject* InternalResolve( const FObjectReferenceDisc& reference, UWorld* world, UObject* searchOuter, UObject* outer );
+
+	/**
+	 * Add a redirector from a object name to a new object name
+	 */
+	static void AddRedirector( const FString& source, const FString& destination );
 
 	/**
 	 * Redirects done during this latest session

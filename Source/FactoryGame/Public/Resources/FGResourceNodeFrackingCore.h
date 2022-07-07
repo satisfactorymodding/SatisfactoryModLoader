@@ -39,7 +39,15 @@ public:
 	TWeakObjectPtr< class AFGBuildableFrackingActivator > GetActivator() { return mActivator; }
 
 	/** @returns the satellites connected to this core node */
-	TArray< TWeakObjectPtr< class AFGResourceNodeFrackingSatellite > >& GetSatellites() { return mSatellites; }
+	TArray< TWeakObjectPtr< class AFGResourceNodeFrackingSatellite > >& Native_GetSatellites() { return mSatellites; }
+	
+	UFUNCTION( BlueprintCallable, BlueprintPure=false, Category="Resources" )
+	void GetSatellites( TArray< class AFGResourceNodeFrackingSatellite* >& out_Satellites ) const;
+
+	UFUNCTION( BlueprintPure, Category="Resources" )
+	UPARAM( DisplayName="numOccupiedSatellites" )int32 GetNumOccupiedSatellites( int32& numSatellites ) const;
+
+	bool IsAllSatellitesOccupied() const;
 
 private:
 	TArray< TWeakObjectPtr< class AFGResourceNodeFrackingSatellite > > mSatellites;

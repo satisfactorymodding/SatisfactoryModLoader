@@ -29,6 +29,7 @@ public:
 public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
+	virtual void BeginPlay() override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface

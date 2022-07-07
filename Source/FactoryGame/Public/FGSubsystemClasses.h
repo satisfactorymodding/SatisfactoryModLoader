@@ -101,4 +101,10 @@ public:
 	/** Handles actions relevant for photo mode, Camera adjustments, Simple sequences etc. */ 
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGSubsystem > mPhotoModeManagerClass;
+	/** Handles everything related to creatures. */ 
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGCreatureSubsystem > mCreatureSubsystemClass;
+	/** Helps scanning of objects */
+	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGScannableSubsystem > mScannableSubsystemClass;
 };

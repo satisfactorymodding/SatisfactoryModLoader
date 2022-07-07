@@ -5,6 +5,10 @@
 #include "FactoryGame.h"
 #include "Serialization/Archive.h"
 
+/**
+* Archive that gathers Actors/UObjects that implement the IFGSaveInterface. When GenerateSaveObjects is called Serialize will be called on passed in UObjects
+* If the objects discovered implement the save interface it will be added to the ObjectsToSave list which will later be sorted to write out in order of dependency.
+*/
 class FSaveCollectorArchive : public FArchive
 {
 	/** Handles serialization of UObject references */

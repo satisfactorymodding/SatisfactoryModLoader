@@ -2,44 +2,46 @@
 
 #include "FGProjectile.h"
 #include "Components/SphereComponent.h"
-#include "DamageTypes/FGDamageType.h"
-#include "GameFramework/ProjectileMovementComponent.h"
+#include "FGProjectileMovementComponent.h"
 
 AFGProjectile::AFGProjectile() : Super() {
+	this->mCanTriggerExplodeBySameClass = false;
+	this->mProjectileLifespan = 10.0;
+	this->mProjectileStickspan = 5.0;
+	this->mCanBeHitByHomingAmmo = false;
 	this->mRotatingMovementComp = nullptr;
-	this->mThrowRotation.Pitch = 0.0;
-	this->mThrowRotation.Yaw = 0.0;
-	this->mThrowRotation.Roll = 0.0;
-	this->mProjectileData.ProjectileClass = nullptr;
-	this->mProjectileData.ProjectileLifeSpan = 10.0;
-	this->mProjectileData.ProjectileStickSpan = 5.0;
-	this->mProjectileData.ExplosionDamage = 100;
-	this->mProjectileData.ExplosionRadius = 300.0;
-	this->mProjectileData.ImpactDamage = 0;
-	this->mProjectileData.ShouldExplodeOnImpact = true;
-	this->mProjectileData.CanTriggerExplodeBySameClass = true;
-	this->mProjectileData.ExplodeAtEndOfLife = false;
-	this->mProjectileData.DamageType = UFGDamageType::StaticClass();
-	this->mProjectileData.DamageTypeExplode = UFGDamageType::StaticClass();
-	this->mProjectileData.DamageFalloffCurve.EditorCurveData.DefaultValue = 3.40282e+38;
-	this->mProjectileData.DamageFalloffCurve.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
-	this->mProjectileData.DamageFalloffCurve.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
-	this->mProjectileData.DamageFalloffCurve.ExternalCurve = nullptr;
-	this->mProjectileData.EffectiveRange = 0.0;
-	this->mProjectileData.WeaponDamageMultiplier = 1.0;
+	this->mClusterProjectileClass = nullptr;
+	this->mNumClusterProjectiles = FInt32Interval(0, 0);
+	this->mClusterProjectileSpreadIntervalAngle = FFloatInterval(0.0, 360.0);
+	this->mClusterProjectileSidewaysLaunchSpeed = FFloatInterval(500.0, 1000.0);
+	this->mClusterProjectileVerticalLaunchSpeed = FFloatInterval(500.0, 1000.0);
+	this->mThrowRotation = FRotator::ZeroRotator;
+	this->mTargetActor = nullptr;
+	this->mTargetLocation = FVector::ZeroVector;
+	this->mIsHomingProjectile = false;
+	this->mSourceAmmoDescriptor = nullptr;
+	this->mGravityScaleOverLifespan.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mGravityScaleOverLifespan.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mGravityScaleOverLifespan.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mGravityScaleOverLifespan.ExternalCurve = nullptr;
+	this->mMaxHomingAccelerationMagnitude = 0.0;
+	this->mHomingStrengthOverLifespan.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mHomingStrengthOverLifespan.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mHomingStrengthOverLifespan.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mHomingStrengthOverLifespan.ExternalCurve = nullptr;
+	this->mHomingStrengthOverDistanceToTarget.EditorCurveData.DefaultValue = 3.40282e+38;
+	this->mHomingStrengthOverDistanceToTarget.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mHomingStrengthOverDistanceToTarget.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
+	this->mHomingStrengthOverDistanceToTarget.ExternalCurve = nullptr;
+	this->mProjectileStartingHealth = 1.0;
+	this->mProjectileCurrentHealth = 0.0;
+	this->mImpactNoise = nullptr;
+	this->mExplodeNoise = nullptr;
 	this->mHasExploded = false;
-	this->mInitialVelocity.X = 0.0;
-	this->mInitialVelocity.Y = 0.0;
-	this->mInitialVelocity.Z = 0.0;
+	this->mInitialVelocity = FVector::ZeroVector;
 	this->mTraveledDistance = 0.0;
 	this->mCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComp"));
-	this->mProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileComp"));
-	this->mTargetLocation.X = 0.0;
-	this->mTargetLocation.Y = 0.0;
-	this->mTargetLocation.Z = 0.0;
-	this->mCanTriggerExplodeBySameClass = false;
-	this->mExplodeAtEndOfLife = false;
-	this->mCachedPC = nullptr;
+	this->mProjectileMovement = CreateDefaultSubobject<UFGProjectileMovementComponent>(TEXT("ProjectileComp"));
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -47,18 +49,19 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
-	this->SetReplicatingMovement(true);
 	this->bReplicates = true;
-	this->InitialLifeSpan = 3.0;
 	this->RootComponent = mCollisionComp;
 }
 void AFGProjectile::Tick(float DeltaSeconds){ }
 void AFGProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-	DOREPLIFETIME(AFGProjectile, mProjectileData);
+	DOREPLIFETIME(AFGProjectile, mTargetActor);
+	DOREPLIFETIME(AFGProjectile, mTargetLocation);
+	DOREPLIFETIME(AFGProjectile, mIsHomingProjectile);
+	DOREPLIFETIME(AFGProjectile, mSourceAmmoDescriptor);
+	DOREPLIFETIME(AFGProjectile, mMaxHomingAccelerationMagnitude);
 	DOREPLIFETIME(AFGProjectile, mHasExploded);
 	DOREPLIFETIME(AFGProjectile, mInitialVelocity);
-	DOREPLIFETIME(AFGProjectile, mTargetLocation);
 }
 void AFGProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 bool AFGProjectile::ShouldSave_Implementation() const{ return bool(); }
@@ -66,17 +69,29 @@ bool AFGProjectile::NeedTransform_Implementation(){ return bool(); }
 float AFGProjectile::TakeDamage(float DamageAmount, const  FDamageEvent& DamageEvent,  AController* EventInstigator,
 							AActor* DamageCauser){ return float(); }
 void AFGProjectile::LifeSpanExpired(){ }
-void AFGProjectile::OnImpact(const FHitResult& hitResult){ }
-void AFGProjectile::OnBounce(const FHitResult& hitResult, const FVector& hitVelocity){ }
-void AFGProjectile::SetProjectileData(FProjectileData projectileData){ }
-void AFGProjectile::SetInitialVelocity(FVector inVelocity){ }
+void AFGProjectile::OnImpact_Native(const FHitResult& hitResult){ }
+void AFGProjectile::Multicast_OnImpact_Implementation(const FHitResult& hitResult, bool wasAttached){ }
+void AFGProjectile::OnBounce_Native(const FHitResult& hitResult, const FVector& hitVelocity){ }
+void AFGProjectile::SetTargetLocation(const FVector& targetLocation){ }
+void AFGProjectile::SetTargetActor(AActor* actor){ }
+void AFGProjectile::SetIsHomingProjectile(bool isHoming){ }
+void AFGProjectile::SetInitialVelocity(const FVector& inVelocity){ }
 void AFGProjectile::TriggerSecondary(){ }
 void AFGProjectile::TriggerSecondaryWithDelay(float delayTime){ }
 void AFGProjectile::SetAndEnableRotation(float scale){ }
-void AFGProjectile::DealExplosionDamage(const FHitResult& impact){ }
-void AFGProjectile::DealImpactDamage(const FHitResult& impact){ }
+void AFGProjectile::Multicast_SpawnImpactDamageEffects_Implementation(FHitResult const& hitResult){ }
+void AFGProjectile::Multicast_SpawnEndOfLifeDamageEffects_Implementation(FHitResult const& hitResult){ }
+void AFGProjectile::SetInitialHealth(float newHealth){ }
+void AFGProjectile::SetMaximumHomingAccelerationMagnitude(float newHomingAccelerationMagnitude){ }
+void AFGProjectile::OnSpawnedAsClusterProjectile_Implementation(){ }
+void AFGProjectile::DealEndOfLifeDamages(const FHitResult& impact){ }
+void AFGProjectile::DealImpactDamages(const FHitResult& impact){ }
 void AFGProjectile::DisableAndSetLifeSpan(){ }
 void AFGProjectile::OnRep_Exploded(){ }
-void AFGProjectile::OnNotifiedExploded(){ }
+void AFGProjectile::OnExplode_Implementation(){ }
 bool AFGProjectile::AttachProjectileToImpactActor(const FHitResult& impact){ return bool(); }
 void AFGProjectile::OnRep_InitialVelocity(){ }
+void AFGProjectile::OnRep_TargetActor(){ }
+void AFGProjectile::OnRep_TargetLocation(){ }
+void AFGProjectile::OnRep_IsHomingProjectile(){ }
+void AFGProjectile::OnRep_MaxHomingAccelerationMagnitude(){ }

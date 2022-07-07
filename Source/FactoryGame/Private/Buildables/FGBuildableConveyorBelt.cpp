@@ -33,6 +33,7 @@ void AFGBuildableConveyorBelt::LostSignificance_Implementation(){ }
 void AFGBuildableConveyorBelt::SetupForSignificance(){ }
 void AFGBuildableConveyorBelt::UpdateMeshLodLevels(int32 newLodLevel){ }
 int32 AFGBuildableConveyorBelt::GetDismantleRefundReturnsMultiplier() const{ return int32(); }
+void AFGBuildableConveyorBelt::OnBuildEffectFinished(){ }
 float AFGBuildableConveyorBelt::FindOffsetClosestToLocation(const FVector& location) const{ return float(); }
 void AFGBuildableConveyorBelt::GetLocationAndDirectionAtOffset(float offset, FVector& out_location, FVector& out_direction) const{ }
 FVector AFGBuildableConveyorBelt::GetVelocityForBase( AActor* basedActor,  UPrimitiveComponent* baseComponent) const{ return FVector(); }

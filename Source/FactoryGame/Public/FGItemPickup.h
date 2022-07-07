@@ -152,6 +152,10 @@ public:
 	/** Should this item be destroyed on pickup b*/
 	UFUNCTION( BlueprintPure, Category = "Pickup" )
 	FORCEINLINE bool GetDestroyOnPickup() const{ return mDestroyOnPickup; }
+
+	/** Get the number of items the pickup have */
+	UFUNCTION( BlueprintPure, Category = "Pickup" )
+	FORCEINLINE int32 GetNumItems() const{ return mPickupItems.NumItems; }
 protected:
 	/**
 	* SERVER and Client picking up: Called right after this item is added to the players inventory, for GameplayEffects.
@@ -164,13 +168,11 @@ protected:
 	UFUNCTION( BlueprintCallable, BlueprintAuthorityOnly, Category = "Pickup" )
 	void SetNumItems( int32 numItems );
 
-	/** Get the number of items the pickup have */
-	UFUNCTION( BlueprintPure, Category = "Pickup" )
-	FORCEINLINE int32 GetNumItems() const{ return mPickupItems.NumItems; }
-
 	/** Called when the collection timer expires */
 	void OnCollectTimerComplete();
 
+	UFUNCTION(BlueprintPure)
+	bool IsEquipment() const;
 private:
 	/** Add the item to the player inventory */
 	void AddToPlayerInventory( class AFGCharacterPlayer* character );

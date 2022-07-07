@@ -365,6 +365,8 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Docking" )
 	void DockToRefuelingStation();
 
+	void FindSurroundingLevels();
+
 protected:
 	// Begin AFGVehicle interface
 	virtual void Died( AActor* thisActor ) override;
@@ -580,7 +582,7 @@ public:
 
 	void TryLeaveSimulatedMode();
 	bool IsAboveSolidGround( const FTransform& transform ) const;
-	bool IsOverlappingOther( const FTransform& transform ) const;
+	AActor* IsOverlappingOther( const FTransform& transform ) const;
 
 	bool WasFuelAdded() const { return mWasFuelAdded; }
 
@@ -1011,7 +1013,10 @@ private:
 	float mTargetWaitTime = 0.0f;
 
 	bool mIsAboveSolidGround = false;
-	bool mIsOverlappingOther = false;
+
+	TWeakObjectPtr< AActor > mOverlappingActor;
 
 	float mNextTimeToCheckForLost = 0.0f;
+
+	TArray< ULevel* > mSurroundingLevels;
 };

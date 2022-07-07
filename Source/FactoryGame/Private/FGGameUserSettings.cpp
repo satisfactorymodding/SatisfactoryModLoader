@@ -2,13 +2,17 @@
 
 #include "FGGameUserSettings.h"
 
+UFGGameUserSettings* UFGGameUserSettings::GetFGGameUserSettings(){ return nullptr; }
+void UFGGameUserSettings::LoadSettings(bool bForceReload){ }
 void UFGGameUserSettings::ApplyNonResolutionSettings(){ }
 void UFGGameUserSettings::ApplyResolutionSettings(bool bCheckForCommandLineOverrides){ }
 void UFGGameUserSettings::ApplySettings(bool bCheckForCommandLineOverrides){ }
 void UFGGameUserSettings::SaveSettings(){ }
-void UFGGameUserSettings::LoadSettings(bool bForceReload){ }
 float UFGGameUserSettings::GetEffectiveFrameRateLimit(){ return float(); }
 void UFGGameUserSettings::ConfirmVideoMode(){ }
+void UFGGameUserSettings::RunHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ }
+FString UFGGameUserSettings::RunAndApplyHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ return FString(); }
+void UFGGameUserSettings::TryAutoDetectSettings(){ }
 void UFGGameUserSettings::ResetOption(FString cvar){ }
 void UFGGameUserSettings::ResetOptionCategory(EOptionCategory optionCategory){ }
 void UFGGameUserSettings::RevertUnsavedChanges(){ }
@@ -18,14 +22,17 @@ void UFGGameUserSettings::ResetVideoModeToLatestStable(){ }
 void UFGGameUserSettings::ConfirmStableVideoMode(){ }
 void UFGGameUserSettings::SanitizeResolution(){ }
 void UFGGameUserSettings::ToggleFullscreenMode(){ }
+void UFGGameUserSettings::OnVideoQualityUpdated(){ }
+void UFGGameUserSettings::UpdateVideoQualityCvars(const FString& cvar){ }
 void UFGGameUserSettings::HandleCmdLineVideoQuality(){ }
-UFGGameUserSettings* UFGGameUserSettings::GetFGGameUserSettings(){ return nullptr; }
+void UFGGameUserSettings::SetGroupQualityLevel(const TCHAR* InGroupName, int32 InQualityLevel, int32 InNumLevels){ }
 UFGOptionInterface* UFGGameUserSettings::GetOptionInterface(){ return nullptr; }
 void UFGGameUserSettings::UpdateAudioOption(FString updatedCvar){ }
 void UFGGameUserSettings::OnArachnophobiaModeUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnFoliageQualityUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnMotionBlurEnabledUpdated(FString updatedCvar){ }
 void UFGGameUserSettings::OnPoolLightQualityUpdated(FString updatedCvar){ }
+void UFGGameUserSettings::OnCloudQualityUpdated(FString updatedCVar){ }
 void UFGGameUserSettings::OnNetworkQualityUpdated(FString updatedCvar){ }
 int32 UFGGameUserSettings::GetDefaultPostProcessQualitySetting(FString settingName){ return int32(); }
 void UFGGameUserSettings::RefreshNetworkQualityValues(){ }
@@ -85,4 +92,5 @@ void UFGGameUserSettings::UpdateCvars(){ }
 void UFGGameUserSettings::HandleFGGameUserSettingsVersionChanged(){ }
 bool UFGGameUserSettings::ValidateCVar(const FString& cvar){ return bool(); }
 void UFGGameUserSettings::BroadcastDynamicOptionUpdate(FString cvar){ }
+void UFGGameUserSettings::CacheVideoQualitySettings(){ }
 FAutoConsoleVariableSink UFGGameUserSettings::mCVarSink = FConsoleCommandDelegate::CreateStatic(&UFGGameUserSettings::CVarSinkHandler);

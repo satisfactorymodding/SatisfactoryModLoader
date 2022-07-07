@@ -5,26 +5,27 @@
 
 #if WITH_EDITOR
 void AFGCreatureSpawner::PostEditMove(bool bFinished){ }
+void AFGCreatureSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
+#endif 
+#if !UE_BUILD_SHIPPING
+void AFGCreatureSpawner::DrawDebugInformation(float duration){ }
 #endif 
 AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->mDebugComponent = nullptr;
 	this->mEditorSprite = nullptr;
 	this->mCapsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CollisionCapsule"));
 	this->mCreatureClass = nullptr;
-	this->mNumberOfCreatures.Min = 1;
-	this->mNumberOfCreatures.Max = 1;
+	this->mNumberOfCreatures = FInt32Interval(1, 1);
+	this->mCanSpawnDuringDay = true;
+	this->mCanSpawnDuringNight = true;
 	this->mSpawnRadius = 200.0;
 	this->mSpawnHalfHeight = 300.0;
 	this->mIsActive = false;
 	this->mCachedIsNearBase = false;
-	this->mSpawnerDistance = -1.0;
-	this->mIsPendingDestroy = false;
-	this->mIsPendingSpawn = false;
-	this->mCurrentCreatureToSpawnIndex = -1;
 	this->mIsMonsterCloset = false;
 	this->mMonsterClosetSpawnDelay = 2.0;
 	this->mSpawnDistanceOverride = -1.0;
-	this->mRandomSeed = -1;
+	this->mDespawnDistanceOverride = -1.0;
 	this->mVisualizeSpawnDistance = false;
 	this->mRespawnTimeIndays = 3;
 	this->bCollideWhenPlacing = true;
@@ -32,6 +33,7 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->RootComponent = mCapsuleComponent;
 }
 void AFGCreatureSpawner::BeginPlay(){ }
+void AFGCreatureSpawner::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGCreatureSpawner::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGCreatureSpawner::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
@@ -40,26 +42,25 @@ void AFGCreatureSpawner::GatherDependencies_Implementation(TArray< UObject* >& o
 bool AFGCreatureSpawner::NeedTransform_Implementation(){ return bool(); }
 bool AFGCreatureSpawner::ShouldSave_Implementation() const{ return bool(); }
 void AFGCreatureSpawner::GetSpawnLocations(TArray<FVector>& out_spawnLocations) const{ }
-void AFGCreatureSpawner::SetSpawnerActive(bool active){ }
+TSubclassOf< class AFGCreature > AFGCreatureSpawner::GetCreatureToSpawn_Implementation() const{ return TSubclassOf<class AFGCreature>(); }
+bool AFGCreatureSpawner::CanSpawnCreature(const FSpawnData& spawnData) const{ return bool(); }
+int32 AFGCreatureSpawner::GetNumUnspawnedCreatures() const{ return int32(); }
+bool AFGCreatureSpawner::IsReadyToSpawn(){ return bool(); }
 void AFGCreatureSpawner::SpawnCreatures(){ }
 void AFGCreatureSpawner::SpawnSingleCreature(){ }
 void AFGCreatureSpawner::DestroyCreatures(){ }
-bool AFGCreatureSpawner::ShouldResetKillStatus(FSpawnData spawnData, int32 newDayNr){ return bool(); }
+bool AFGCreatureSpawner::ShouldResetKillStatus(const FSpawnData& spawnData, int32 newDayNr){ return bool(); }
 void AFGCreatureSpawner::UpdateKillStatus(int32 newDayNr){ }
-bool AFGCreatureSpawner::IsTimeForCreature(){ return bool(); }
-void AFGCreatureSpawner::QuerySpawnConditions(){ }
-void AFGCreatureSpawner::TrySpawnCreatures(){ }
+bool AFGCreatureSpawner::IsTimeForCreature() const{ return bool(); }
 void AFGCreatureSpawner::CreatureDied(AActor* thisActor){ }
 bool AFGCreatureSpawner::CalculateSpawningLocations(){ return bool(); }
-void AFGCreatureSpawner::AddCreature( AFGCreature* newCreature){ }
-float AFGCreatureSpawner::GetSpawnerWeight(){ return float(); }
-void AFGCreatureSpawner::SetupSpawnDistance(){ }
+float AFGCreatureSpawner::GetSpawnDistance() const{ return float(); }
+void AFGCreatureSpawner::UpdateScannableState(){ }
 void AFGCreatureSpawner::TryRecoupleCreatureAndSpawner(){ }
+void AFGCreatureSpawner::OnSpawningFinished(){ }
 bool AFGCreatureSpawner::TryFindNonOverlappingLocation(const TArray<FVector2D>& usedSpawnLocations, float spawnRadius, int32 maxRetries, FVector2D& out_location){ return bool(); }
 bool AFGCreatureSpawner::IsLocationNonOverlapping(const FVector2D& location, const TArray< FVector2D >& usedLocations) const{ return bool(); }
-void AFGCreatureSpawner::CleanupCreatureList(){ }
-void AFGCreatureSpawner::SetupSpawnWeight(){ }
-void AFGCreatureSpawner::TryDestroyCreatures(){ }
+void AFGCreatureSpawner::RegisterAsNavigationInvoker(bool shouldRegister){ }
 void AFGCreatureSpawner::ReceiveOnTraceCompleted(const TArray< FOverlapResult > & Results){ }
-FTraceHandle AFGCreatureSpawner::RequestTrace(){ return FTraceHandle(); }
+void AFGCreatureSpawner::TraceForNearbyBase(){ }
 void AFGCreatureSpawner::OnTraceCompleted(const FTraceHandle& Handle, FOverlapDatum& Data){ }

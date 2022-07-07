@@ -50,6 +50,10 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	FORCEINLINE TArray< UFGInteractWidget * > GetInteractWidgetStack() { return mInteractWidgetStack; }
 
+	/** Returns widget stack */
+	UFUNCTION( BlueprintPure, Category = "UI" )
+	FORCEINLINE bool HasActiveInteractWidget() { return mInteractWidgetStack.Num() > 0; }
+
 	/** Returns the first widget of the given class in the interact stack */
 	UFUNCTION( BlueprintPure, Category = "UI" )
 	UFGInteractWidget* GetInteractWidgetOfClass( TSubclassOf< UFGInteractWidget > interactWidgetClass ) const;
@@ -116,9 +120,16 @@ public:
 	UFUNCTION( BlueprintPure, Category = "UI" )
     FORCEINLINE class UFGAudioMessage* GetActiveAudioMessage(){ return mActiveAudioMessage; }
 
-	/** Called from in-game when the cancel key ( escape ) was pressed when no widget has focus */
+	/** Called from in-game when the pause game key ( escape ) was pressed */
 	UFUNCTION( BlueprintCallable, Category = "UI" )
-	void CancelPressed();
+	void Native_HandlePauseGamePressed();
+	/** Allow BP implementation to handle escape pressed. Returning true will mean BP handled the call and we shouldn't process further */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+	bool HandlePauseGamePressed();
+
+	/** Brings up the in game pause menu */
+	UFUNCTION( BlueprintImplementableEvent, Category = "UI" )
+	void OnPauseGame();
 
 	/** Triggered when we have finished playing the active audio message */
 	UFUNCTION()
@@ -216,6 +227,19 @@ public:
 	/** Trigger an inventory notification when inventory updates */
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable, Category = "FactoryGame|HUD" )
 	void PushInventoryNotification( UFGInventoryComponent* source, UFGInventoryComponent* destination, FItemAmount ItemAmount );
+
+	void Native_OnFactoryClipboardCopied( UObject* object, class UFGFactoryClipboardSettings* factoryClipboardSettings );
+	// Called when we copied a factory clipboard setting.
+	UFUNCTION( BlueprintImplementableEvent, Category = "Factory Clipboard" )
+	void OnFactoryClipboardCopied( UObject* interactObject, class UFGFactoryClipboardSettings* factoryClipboardSettings );
+
+	void Native_OnFactoryClipboardPasted( UObject* object, class UFGFactoryClipboardSettings* factoryClipboardSettings );
+	// Called when we pasted a factory clipboard setting. Only called if actually could paste settings to interact object.
+	UFUNCTION( BlueprintImplementableEvent, Category = "Factory Clipboard" )
+	void OnFactoryClipboardPasted( UObject* interactObject, class UFGFactoryClipboardSettings* factoryClipboardSettings );
+
+	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "UI" )
+	void ShowTextNotification( const FText& Text );
 
 protected:
 	// Begin UUserWidget interface

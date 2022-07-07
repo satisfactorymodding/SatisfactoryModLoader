@@ -3,4 +3,3 @@
 #include "FGAnimNotify_Attack.h"
 
 FString UFGAnimNotify_Attack::GetNotifyName_Implementation() const{ return FString(); }
-void UFGAnimNotify_Attack::Notify(USkeletalMeshComponent* meshComp, UAnimSequenceBase* animation){ }

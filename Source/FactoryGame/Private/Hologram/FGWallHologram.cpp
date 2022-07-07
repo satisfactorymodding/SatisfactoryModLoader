@@ -5,9 +5,7 @@
 AFGWallHologram::AFGWallHologram() : Super() {
 	this->mUpgradeTarget = nullptr;
 	this->mOnlyAllowLineZoop = false;
-	this->mClearanceShrink.X = 0.0;
-	this->mClearanceShrink.Y = 0.0;
-	this->mClearanceShrink.Z = 0.0;
+	this->mClearanceShrink = FVector::ZeroVector;
 	this->mPlacementRequirements = EFactoryBuildingPlacementRequirements::FBPR_MustSnap;
 }
 void AFGWallHologram::BeginPlay(){ }

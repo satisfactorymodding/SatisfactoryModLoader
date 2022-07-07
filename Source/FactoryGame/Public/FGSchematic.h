@@ -37,6 +37,15 @@ enum class ESchematicType :uint8
 	EST_Prototype			UMETA( DisplayName = "Prototype" )
 };
 
+UENUM( BlueprintType )
+enum class ESchematicState :uint8
+{
+	ESS_Locked			UMETA( DisplayName = "Locked" ),
+	ESS_Purchased		UMETA( DisplayName = "Purchased" ),
+	ESS_Available		UMETA( DisplayName = "Available" ),
+	ESS_Hidden			UMETA( DisplayName = "Hidden" )
+};
+
 //@todo-cleanup Is this used? I cannot find any references to it
 /** Holds info about a schematic cost. */
 USTRUCT( BlueprintType )
@@ -141,6 +150,14 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Schematic" )
 	static void GetSchematicDependencies( TSubclassOf< UFGSchematic > inClass, TArray< class UFGAvailabilityDependency* >& out_schematicDependencies );
 
+	/** Returns if schematic should be hidden utnil dependencies are met. Used to filter out the visibilty of schematics when browsing them ingame */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static bool GetHiddenUntilDependenciesMet( TSubclassOf< UFGSchematic > inClass );
+	
+	/** Get the schematic state. Used to filter visibility when browsing schematics in game */
+	UFUNCTION( BlueprintPure, Category = "Schematic" )
+	static ESchematicState GetSchematicState( TSubclassOf< UFGSchematic > inClass, UObject* worldContext );
+
 	/** Returns true if we can give access to this schematic. Checks for events and if mDependenciesBlocksSchematicAccess is true we check that all dependencies are met as well. */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool CanGiveAccessToSchematic( TSubclassOf< UFGSchematic > inClass, UObject* worldContext );
@@ -160,7 +177,7 @@ public:
 	// Return true if we should include this schematic in the current build
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static bool IsIncludedInBuild( TSubclassOf< UFGSchematic > inClass );
-
+	
 #if WITH_EDITOR
 	/** Add a recipe to this schematic. Only for editor use */
 	UFUNCTION( BlueprintCallable, Category = "Editor|Schematic" )
@@ -230,6 +247,10 @@ protected:
 	/** Should schematic dependencies block the access to the schematic. This doesn't store the schematic and checks if dependencies are met later. You need to try and give access to it again. */
 	UPROPERTY( EditDefaultsOnly, Category = "Dependencies" )
 	bool mDependenciesBlocksSchematicAccess;
+
+	/** Should schematic be hidden utnil dependencies are met. Used to filter out the visibilty of schematics when browsing them ingame */
+	UPROPERTY( EditDefaultsOnly, Category = "Dependencies" )
+	bool mHiddenUntilDependenciesMet;
 
 	/** The events this schematic are present in */
 	UPROPERTY( EditDefaultsOnly, Category = "Events" )

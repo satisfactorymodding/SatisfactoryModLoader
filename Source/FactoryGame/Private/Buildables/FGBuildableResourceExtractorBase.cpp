@@ -4,6 +4,8 @@
 #include "FGConstructDisqualifier.h"
 #include "Hologram/FGResourceExtractorHologram.h"
 
+int AFGBuildableResourceExtractorBase::GetDebugLevel(){ return int(); }
+void AFGBuildableResourceExtractorBase::SetDebugLevel(int level){ }
 void AFGBuildableResourceExtractorBase::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableResourceExtractorBase, mExtractableResource);

@@ -23,6 +23,7 @@ void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGUnlockSubsystem, mNumTotalInventorySlots);
 	DOREPLIFETIME(AFGUnlockSubsystem, mNumTotalArmEquipmentSlots);
 	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedEmotes);
+	DOREPLIFETIME(AFGUnlockSubsystem, mUnlockedTapes);
 }
 void AFGUnlockSubsystem::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UWorld* world){ return nullptr; }
@@ -36,12 +37,14 @@ void AFGUnlockSubsystem::UnlockBuildOverclock(){ }
 void AFGUnlockSubsystem::UnlockInventorySlots(int32 numSlotsToUnlock){ }
 void AFGUnlockSubsystem::UnlockArmEquipmentSlots(int32 numSlotsToUnlock){ }
 void AFGUnlockSubsystem::UnlockEmote(TSubclassOf<  UFGEmote > newEmote){ }
+void AFGUnlockSubsystem::UnlockTape(TSubclassOf< UFGTapeData > newTape){ }
 TArray<TSubclassOf<class UFGResourceDescriptor>> AFGUnlockSubsystem::GetScannableResources() const{ return TArray<TSubclassOf<class UFGResourceDescriptor>>(); }
 bool AFGUnlockSubsystem::IsNodeScannable(FScannableResourcePair scannableResourcePair){ return bool(); }
 void AFGUnlockSubsystem::OnSchematicPurchased(TSubclassOf<  UFGSchematic > newSchematic){ }
 void AFGUnlockSubsystem::SetTotalNumInventorySlots(int32 totalNumSlots){ }
 void AFGUnlockSubsystem::SetTotalNumArmEquipmentSlots(int32 totalNumSlots){ }
 void AFGUnlockSubsystem::GetUnlockedEmotes(TArray< TSubclassOf<class UFGEmote> >& out_unlockedEmotes) const{ }
+void AFGUnlockSubsystem::GetUnlockedTapes(TArray< TSubclassOf<  UFGTapeData > >& out_unlockedTapes) const{ }
 void AFGUnlockSubsystem::SetNumOfAdditionalInventorySlots(int32 newNumSlots){ }
 void AFGUnlockSubsystem::SetNumAdditionalArmEquipmentSlots(int32 newNumSlots){ }
 void AFGUnlockSubsystem::SendMessageToAllPlayers(TSubclassOf<  UFGMessageBase > inMessage){ }

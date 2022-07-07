@@ -3,8 +3,8 @@
 #include "FGCrate.h"
 
 AFGCrate::AFGCrate() : Super() {
-	this->mInventory = nullptr;
 	this->mIconType = EFGCrateIconType::CIT_DeathIcon;
+	this->mInventory = nullptr;
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 }
@@ -13,13 +13,9 @@ void AFGCrate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetime
 	DOREPLIFETIME(AFGCrate, mInventory);
 }
 void AFGCrate::PostActorCreated(){ Super::PostActorCreated(); }
-void AFGCrate::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrate::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrate::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+void AFGCrate::BeginPlay(){ }
+void AFGCrate::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGCrate::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
-void AFGCrate::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
-bool AFGCrate::NeedTransform_Implementation(){ return bool(); }
-bool AFGCrate::ShouldSave_Implementation() const{ return bool(); }
 bool AFGCrate::AddAsRepresentation(){ return bool(); }
 bool AFGCrate::UpdateRepresentation(){ return bool(); }
 bool AFGCrate::RemoveAsRepresentation(){ return bool(); }
@@ -38,8 +34,10 @@ EFogOfWarRevealType AFGCrate::GetActorFogOfWarRevealType(){ return EFogOfWarReve
 float AFGCrate::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGCrate::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGCrate::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+bool AFGCrate::IsUseable_Implementation() const{ return bool(); }
 void AFGCrate::RegisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 void AFGCrate::UnregisterInteractingPlayer_Implementation( AFGCharacterPlayer* player){ }
 bool AFGCrate::FilterInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 void AFGCrate::SetupInventoryFilter(){ }
 void AFGCrate::SetIconType(EFGCrateIconType type){ }
+void AFGCrate::OnInventoryItemRemoved(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }

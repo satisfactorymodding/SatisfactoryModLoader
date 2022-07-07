@@ -15,7 +15,8 @@ enum class EIconType : uint8
 	ESIT_Equipment,
 	ESIT_Monochrome,
 	ESIT_Material,
-	ESIT_Custom
+	ESIT_Custom,
+	ESIT_MapStamp
 };
 
 USTRUCT( Blueprintable )
@@ -80,6 +81,9 @@ public:
 	/** Attempts to retrieve the index of an icon with the corresponding texture */
 	UFUNCTION( BlueprintCallable, Category = "Icon Data Settings" )
 	int32 GetIconIDForTexture( class UObject* texture );
+
+	/** Get the texture from the IconData with the given ID. Will sync load if needed */
+	UObject* GetTextureFromIconID( int32 iconID );
 
 	// Get the texture from a IconData element. Will sync load if needed
 	UFUNCTION( BlueprintCallable, Category = "IconLibrary|Icon Settings" )
@@ -151,4 +155,9 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Icon Data Settings" )
 	TArray< FIconData > mMaterialIconData;
 
+	/*	
+	 *	Manually Added Map Stamps
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Icon Data Settings" )
+	TArray< FIconData > mMapStampIconData;
 };

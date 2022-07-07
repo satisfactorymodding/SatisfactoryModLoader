@@ -35,6 +35,7 @@ public:
 	void HideConnectionFeedback();
 
 	virtual void Dismantle_Implementation() override;
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
 
 	virtual void OnBuildEffectFinished() override;
 

@@ -8,7 +8,77 @@
 #include "FGFoliageResourceUserData.h"
 #include "FGFoliageRemovalSubsystem.generated.h"
 
-#define DEBUG_FOLIAGE_REMOVAL_SUBSYSTEM ( ( UE_BUILD_SHIPPING == 0 ) && 1 )
+#define DEBUG_FOLIAGE_REMOVAL_SUBSYSTEM ( UE_BUILD_SHIPPING == 0 )
+
+
+struct FoliageInstanceData
+{
+	FoliageInstanceData( int index, int id, FTransform transform, class UHierarchicalInstancedStaticMeshComponent* component );
+
+	/**
+	* Index into the FoliageTypeData::foliageInstances array, for replication
+	*/
+	int index = 0;
+
+	/**
+	* ID into the HISM internal data structure
+	*/
+	int id = 0;
+
+	/**
+	* World placement
+	*/
+	FTransform transform;
+
+	/**
+	* The component to which the id applies
+	*/
+	TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > component;
+
+	/**
+	 * True if this instance is removed
+	 */
+	bool isRemoved = false;
+};
+
+using FoliageLocationToDataMultiMap = TMultiMap< FVector, FoliageInstanceData* >;
+
+struct FoliageTypeData
+{
+	/**
+	* Foliage instance data, sorted on location
+	*/
+	TArray< FoliageInstanceData > foliageInstances;
+
+	/**
+	* Map for quick lookup by location
+	*/
+	FoliageLocationToDataMultiMap foliageLocationToDataMultiMap;
+
+	/**
+	* The components referenced by instances in this data
+	*/
+	TSet< TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > > components;
+
+	class AFGFoliageRemoval* foliageRemoval = nullptr;
+};
+
+using FoliageTypeToDataMap = TMap< FName, FoliageTypeData >;
+
+struct LevelFoliageData
+{
+	/**
+	* Foliage-entry data mapped by foliage-type name
+	*/
+	FoliageTypeToDataMap foliageTypeToDataMap;
+
+	bool isCacheBuilt = false;
+
+	bool isLevelLoaded = false;
+};
+
+using LevelFoliageDataMap = TMap< FName, LevelFoliageData >;
+
 
 UCLASS()
 class FACTORYGAME_API AFGFoliageRemovalSubsystem : public AFGSubsystem
@@ -33,11 +103,10 @@ public:
 	static AFGFoliageRemovalSubsystem* GetFoliageRemovalSubsystem( UObject* worldContext );
 	
 	/** Get the foliage removal actor that is associated with the component */
-	UFUNCTION(BlueprintPure, Category = "Foliage" )
-	class AFGFoliageRemoval* GetFoliageRemovalActor( class UHierarchicalInstancedStaticMeshComponent* fromComponent ) const;
+	class AFGFoliageRemoval* FindFoliageRemovalActorByComponent( class UHierarchicalInstancedStaticMeshComponent* component ) const;
 
 	/** Alternative way of getting a foliage removal actor */
-	class AFGFoliageRemoval* GetFoliageRemovalActor( const FName& levelName, const FName& foliageTypeName ) const;
+	class AFGFoliageRemoval* FindFoliageRemovalActor( const FName& levelName, const FName& foliageTypeName );
 
 	/**
 	 * Tries to emulate looking at a location from a location, and get the closest actor you are looking at
@@ -52,7 +121,6 @@ public:
 	 * @param out_instanceLocation - the location of the instance, only valid if we return true
 	 * @return true if we looked at any foliage
 	 **/
-	UFUNCTION(BlueprintCallable,Category="Foliage")
 	bool GetLookAtFoliage( const FVector& viewLocation, const FVector& endViewLocation, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation );
 
 	/**
@@ -68,8 +136,7 @@ public:
 	* @param out_instanceLocation - the location of the instance, only valid if we return true
 	* @return true if there was any foliage close by
 	**/
-	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	bool GetClosestFoliage( const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, class UHierarchicalInstancedStaticMeshComponent*& out_component, bool isLocalSpace, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte<EProximityEffectTypes> &out_Type );
+	bool GetClosestFoliage( const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte<EProximityEffectTypes> &out_Type );
 
 	/**
 	* Finds the closest foliage instance to a location
@@ -87,37 +154,12 @@ public:
 	* @return true if there was any foliage close by
 	**/
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	bool GetFoliageAroundLocationOfGivenTypes( const FVector& location, float maxDistance, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier, TArray<TEnumAsByte<EProximityEffectTypes>> desiredTypes, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte<EProximityEffectTypes> &out_Type);
+	bool GetFoliageAroundLocationOfGivenTypes( const FVector& location, float maxDistance, TSubclassOf< class UFGFoliageIdentifier > foliageIdentifier, TArray< TEnumAsByte< EProximityEffectTypes > > desiredTypes, class UHierarchicalInstancedStaticMeshComponent*& out_component, int32& out_instanceId, FVector& out_instanceLocation, TEnumAsByte< EProximityEffectTypes > &out_Type);
 
 	/**
-	 * Finds the closest foliage instance to a location in a specified component
-	 *
- 	 * @network: Server and Client
-	 *
-	 * @param location - the location you want to look around
-	 * @param maxDistance - max distance from the location that the foliage needs to exist (note, looks at the root location of the foliage, not the bounds)
-	 * @param component - the component we want to search for foliage
-	 * @param isLocalSpace - set this to true if location is in localspace
-	 * @param out_instanceId - id of the foliage we want to remove, only valid if we return true
-	 * @param out_instanceLocation - the location of the instance, only valid if we return true
-	 * @return true if there was any foliage close by
-	**/
-	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	bool GetClosestFoliageForComponent( const FVector& location, float maxDistance, const class UHierarchicalInstancedStaticMeshComponent* component, bool isLocalSpace, int32& out_instanceId, FVector& out_instanceLocation );
-
-	/**
-	 * Takes several locations into considerations and find the closest foliage closest to those locations. Use this when you want to get several
-	 * foliage locations instead of using GetClosestFoliage several times. As this takes into consideration the locations passed in. So once instance has
-	 * been added once to the array, it won't be added again
-	 *
-	 * @param locations - the locations that we want to find foliage close to
-	 * @param maxDistance - maximum distance to any foliage
-	 * @param component - component to search in
-	 * @param isLocalSpace - set this to true if the locations is in local-space
-	 * @param out_instanceArray - id's in component for all the foliage instances
+	 * @return true if at least one instance was found
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	void GetClosestFoliageArrayForComponent( const TArray<FVector>& locations, float maxDistance, const class UHierarchicalInstancedStaticMeshComponent* component, bool isLocalSpace, TArray<int32>& out_instanceArray );
+	int32 FindInstanceByTransform( const FTransform& foliageTransform, const class UHierarchicalInstancedStaticMeshComponent* component, const FName& levelName, const FName& foliageTypeName );
 
 	/**
 	 * Takes the foliage component and checks if it is indeed in a cave level or not.
@@ -131,20 +173,21 @@ public:
 	 * 
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	bool GetFoliageWithinRadius( const FVector& location, float radius, bool isLocalSpace, TArray<int32>& out_instanceArray, TArray<FVector>& out_locationArray, TArray<class UHierarchicalInstancedStaticMeshComponent*>& out_componentArray );
+	bool GetFoliageWithinRadius( const FVector& location, float radius, TArray<int32>& out_instanceArray, TArray<FVector>& out_locationArray, TArray<class UHierarchicalInstancedStaticMeshComponent*>& out_componentArray, bool includeLocations );
+
+	bool GetFoliageWithinRadius( const FVector& location, float radius, TMap< class UHierarchicalInstancedStaticMeshComponent*, TArray< int32 > >& result );
 
 	/**
 	* Finds foliage count within a provided radius to a specified location.
 	*/
 	UFUNCTION( BlueprintCallable, Category = "Foliage" )
-	int32 GetFoliageCountWithinRadius( const FVector& location, float radius, bool isLocalSpace );
+	int32 GetFoliageCountWithinRadius( const FVector& location, float radius );
 	
 	/**
 	 * @param component - UHierarchicalInstanctedStaticMeshComponent to check
 	 * @param foliageIdentifier - find foliage that matches this tag
 	 * @returns true if the UHierarchicalInstanctedStaticMeshComponent has the given foliageIdentifier.
 	 */
-	UFUNCTION( BlueprintCallable, Category = "Foliage" ) 
 	bool HasIdentifier( const class UHierarchicalInstancedStaticMeshComponent* component, TSubclassOf<class UFGFoliageIdentifier> foliageIdentifier );
 
 	/**
@@ -164,7 +207,7 @@ public:
 	/**
 	 * @return true if the foliage type is removable
 	 */
-	bool IsRemovable( class UFoliageType* foliageType ) const;
+	bool IsRemovable( const class UFoliageType* foliageType ) const;
 
 	// Begin FactoryStatHelpers functions
 	int32 Stat_NumRemovedInstances() const;
@@ -177,6 +220,23 @@ protected:
 	 * @param level - valid level
 	 */
 	void LevelFound( ULevel* level );
+
+	void BuildFoliageRemovalCache( ULevel* level, struct LevelFoliageData& levelFoliageData );
+
+	/**
+	 * Searches for all HierarchicalInstancedStaticMeshComponents in the level, and adds them to the potential list
+	 * of components to be able to remove
+	 *
+	 * @param level - must be valid, the level we want to gather components from
+	 */
+	void SetupFoliageRemovalsForLevel( ULevel* level, struct LevelFoliageData& levelFoliageData, bool firstLoad );
+
+	/**
+	 * Take existing foliage and remove it from this level (usally when streamed in, or loaded)
+	 *
+	 * @param inLevel - must be 
+	 */
+	void ApplyInitialRemovals_Server( const FName& levelName, bool firstLoad );
 
 	/**
 	 * Mark the level as it has no foliage actor
@@ -202,7 +262,7 @@ protected:
 	 * @param meshComponent - the component that the actor is responsible for removing foliage for
 	 * @return return a new foliage removal actor if one was created (client will always return nullptr)
 	 **/
-	class AFGFoliageRemoval* SpawnFoliageRemovalActor( const FBox& levelBounds, const FName& levelName, class UFoliageType* foilageType, class UHierarchicalInstancedStaticMeshComponent* meshComponent );
+	class AFGFoliageRemoval* SpawnFoliageRemovalActor( const FBox& levelBounds, const FName& levelName, class UFoliageType* foilageType, class UHierarchicalInstancedStaticMeshComponent* meshComponent, bool firstLoad );
 
 	/** Called whenever a level is added to the world, used to gather more potential components to get foliage from */
 	UFUNCTION()
@@ -211,21 +271,6 @@ protected:
 	/** Called whenever a level is removed from the world, used to remove components that is no longer relevant for to be able to pickup */
 	UFUNCTION()
 	void OnLevelRemovedFromWorld( ULevel* inLevel, UWorld* inWorld );
-
-	/**
-	 * Take existing foliage and remove it from this level (usally when streamed in, or loaded)
-	 *
-	 * @param inLevel - must be 
-	 */
-	void RemoveFoliageFromLevel( ULevel* inLevel );
-
-	/**
-	 * Searches for all HierarchicalInstancedStaticMeshComponents in the level, and adds them to the potential list
-	 * of components to be able to remove
-	 *
-	 * @param level - must be valid, the level we want to gather components from
-	 */
-	void SetupFoliageRemovalsForLevel( ULevel* level );
 
 	/**
 	* Remove all HierarchicalInstancedStaticMeshComponents that was in the level
@@ -259,9 +304,6 @@ protected:
 	 */
 	FBox GetLevelBounds( ULevel* level ) const;
 protected:
-	/** SERVER ONLY: The maps that doesn't have any removable foliage on it  (@todonow: Remove?)*/
-	TArray< FName > mMapsWithNoRemovableFoliage;
-
 	/** Data that is waiting for it's foliage removal actor to be replicated */
 	struct FPendingLevelData
 	{
@@ -290,12 +332,17 @@ protected:
 	/** Store level data for non relevant foliage removal actors until they become relevant  */
 	TArray< FPendingLevelData > mDataForNonRelevantFoliageRemovals;
 
-	/** Keep track of what foliage removal actors is in each level (FName is the name of the level) */
-	TMultiMap< FName, class AFGFoliageRemoval* > mFoliageRemovalsInLevels; // @todogc: Verify that this is safe have without UPROPERTY
-
 	/** Keep track of what maps has spawned their foliage removals */
-	TArray< FName > mMapsWithSpawnedFoliageRemovals;
+	TSet< FName > mMapsWithSpawnedFoliageRemovals;
+
+	/** SERVER ONLY: The maps that doesn't have any removable foliage on it  (@todonow: Remove?)*/
+	TSet< FName > mMapsWithNoRemovableFoliage;
 
 	/** All foliage mesh components that have potential for contain instances to remove */
-	TArray<class UHierarchicalInstancedStaticMeshComponent*> mFoilageMeshComponents; // @todogc: Verify that this is safe have without UPROPERTY
+	TArray< class UHierarchicalInstancedStaticMeshComponent* > mFoilageMeshComponents;
+
+	TSet< ULevel* > mLoadedLevels;
+
+public:
+	LevelFoliageDataMap mLevelFoliageDataMap;
 };

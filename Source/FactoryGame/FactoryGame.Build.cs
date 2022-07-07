@@ -32,6 +32,8 @@ public class FactoryGame : ModuleRules
 			"InstancedSplines",
 			"RenderCore",
 			"CinematicCamera",
+			"Foliage",
+            "Niagara",
 		});
 		
 		PublicDependencyModuleNames.AddRange(new[] {

@@ -52,6 +52,8 @@ public:
 
 	UFUNCTION( BlueprintPure )
 	FText GetCurrentSelectionText();
+	
+	bool CanSelectIndex( int32 newIndex );
 
 	UFUNCTION( BlueprintCallable )
 	bool ChangeSelection( FText currentKey, bool incrementSelection );

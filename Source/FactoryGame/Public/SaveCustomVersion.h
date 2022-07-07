@@ -6,7 +6,7 @@
  * Custom serialization version for save games.
  * If a custom version is no longer supported and has been cleaned up, add the prefix DROPPED_.
  */
-struct FSaveCustomVersion
+struct FACTORYGAME_API FSaveCustomVersion
 {
 	enum Type
 	{
@@ -98,15 +98,18 @@ struct FSaveCustomVersion
 		// 2021-09-21 Migrate FGTrain from native only to a blueprint class BP_Train.
 		TrainBlueprintClassAdded,
 
+		// 2021-12-03: Added sublevel streaming support
+		AddedSublevelStreaming,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1
 	};
 
 	// The GUID for this custom version number
-	const static FGuid GUID;
+	inline static const FGuid GUID = FGuid( 0x21043E2F, 0x13E61FD6, 0x513B9D51, 0x3636A230 );
 
-	const static Type MinSupportedVersion;
+	inline static const Type MinSupportedVersion = DROPPED_CircuitObjects;
 
 private:
 	FSaveCustomVersion() {}

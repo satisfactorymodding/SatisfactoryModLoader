@@ -6,10 +6,12 @@
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "FGSaveInterface.h"
+#include "Resources/FGTapeData.h"
 #include "Unlocks/FGUnlockScannableResource.h"
 #include "FGUnlockSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FUnlockMoreInventorySlots, int32, newUnlockedSlots );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewTapeUnlocked, TSubclassOf< UFGTapeData >, newTape );
 
 /**
  * Subsystem responsible for handling unlocks that you get when purchasing/research a schematic
@@ -52,9 +54,12 @@ public:
 	void UnlockInventorySlots( int32 numSlotsToUnlock );
 	void UnlockArmEquipmentSlots( int32 numSlotsToUnlock );
 	void UnlockEmote( TSubclassOf< class UFGEmote > newEmote );
+	void UnlockTape( TSubclassOf< UFGTapeData > newTape );
 
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	TArray<TSubclassOf<class UFGResourceDescriptor>> GetScannableResources() const;
+	
+	FORCEINLINE TArray<FScannableResourcePair> GetScannableResourcePairs() const { return mScannableResourcesPairs; };
 
 	/** Can we scan for this resource class and node type? */
 	bool IsNodeScannable( FScannableResourcePair scannableResourcePair );
@@ -81,6 +86,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Unlocks" )
 	void GetUnlockedEmotes( TArray< TSubclassOf<class UFGEmote> >& out_unlockedEmotes ) const;
 
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	void GetUnlockedTapes( TArray< TSubclassOf< class UFGTapeData > >& out_unlockedTapes ) const;
+
 private:
 	void SetNumOfAdditionalInventorySlots( int32 newNumSlots );
 	void SetNumAdditionalArmEquipmentSlots( int32 newNumSlots );
@@ -95,6 +103,8 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Inventory" )
 	FUnlockMoreInventorySlots mOnUnlockedMoreArmsSlots;
 
+	UPROPERTY( BlueprintAssignable, Category = "Inventory" )
+	FOnNewTapeUnlocked mOnNewTapeUnlocked;
 protected:
 
 	/** Message sent when the map is unlocked */
@@ -156,6 +166,7 @@ private:
 	/** The emotes that we have unlocked */
 	UPROPERTY( Savegame, Replicated )
 	TArray< TSubclassOf<class UFGEmote> > mUnlockedEmotes;
-	
 
+	UPROPERTY( SaveGame, Replicated )
+	TArray< TSubclassOf< class UFGTapeData > > mUnlockedTapes;
 };

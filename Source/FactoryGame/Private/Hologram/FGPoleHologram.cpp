@@ -12,9 +12,7 @@ AFGPoleHologram::AFGPoleHologram() : Super() {
 	this->mPoleHeight = 0.0;
 	this->mMaxZoopAmount = 9;
 	this->mBuildModeZoop = nullptr;
-	this->mClearanceExtent.X = 0.0;
-	this->mClearanceExtent.Y = 0.0;
-	this->mClearanceExtent.Z = 0.0;
+	this->mClearanceExtent = FVector::ZeroVector;
 	this->mUseGradualFoundationRotations = true;
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }

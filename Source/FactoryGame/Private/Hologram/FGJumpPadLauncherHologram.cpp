@@ -12,15 +12,11 @@ AFGJumpPadLauncherHologram::AFGJumpPadLauncherHologram() : Super() {
 	this->mLauncherMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LauncherMeshComponent"));
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("SplineComponent"));
 	this->mInstancedSplineMeshComponent = CreateDefaultSubobject<UFGInstancedSplineMeshComponent>(TEXT("InstancedSplineMeshComponent"));
-	this->mTrajectoryMeshScale.X = 0.0;
-	this->mTrajectoryMeshScale.Y = 0.0;
-	this->mTrajectoryMeshScale.Z = 0.0;
+	this->mTrajectoryMeshScale = FVector::ZeroVector;
 	this->mDestinationMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DestinationMeshComponent"));
 	this->mDestinationMeshHeightOffset = 400.0;
 	this->mTrajectoryMeshSeparationDistance = 200.0;
-	this->mDestinationMeshRotation.Pitch = 0.0;
-	this->mDestinationMeshRotation.Yaw = 0.0;
-	this->mDestinationMeshRotation.Roll = 0.0;
+	this->mDestinationMeshRotation = FRotator::ZeroRotator;
 	this->mNumArrows = 5;
 	this->mLauncherMeshComponent->SetupAttachment(RootComponent);
 	this->mSplineComponent->SetupAttachment(RootComponent);

@@ -43,11 +43,13 @@ bool AFGDropPod::IsUseable_Implementation() const{ return bool(); }
 void AFGDropPod::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGDropPod::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGDropPod::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
+bool AFGDropPod::HasBeenLooted() const{ return bool(); }
 void AFGDropPod::Open(){ }
 void AFGDropPod::OnOpened_Implementation(){ }
 void AFGDropPod::RollLoot_Implementation(){ }
 void AFGDropPod::OnRepair_Implementation( AFGCharacterPlayer* InteractingCharacter){ }
 FDropPackage AFGDropPod::RollDropPackage(TArray<TSubclassOf<class UFGItemDescriptor>> includedItems){ return FDropPackage(); }
 void AFGDropPod::GenerateDropPodInventory(TArray<TSubclassOf<class UFGItemDescriptor>> includedItems, int32 numItemsCreated){ }
+void AFGDropPod::OnInventoryItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numRemoved){ }
 void AFGDropPod::OnHasPowerChanged( UFGPowerInfoComponent* info){ }
 void AFGDropPod::OnRep_HasBeenOpened(){ }

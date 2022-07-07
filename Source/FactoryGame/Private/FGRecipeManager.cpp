@@ -9,6 +9,7 @@ void AFGRecipeManager::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(AFGRecipeManager, mAvailableRecipes);
 	DOREPLIFETIME(AFGRecipeManager, mAvailableCustomizationRecipes);
 }
+void AFGRecipeManager::BeginPlay(){ }
 void AFGRecipeManager::PreSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRecipeManager::PostSaveGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 void AFGRecipeManager::PreLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

@@ -19,6 +19,9 @@ void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UFGActorRepresentation, mShouldShowOnMap);
 	DOREPLIFETIME(UFGActorRepresentation, mCompassViewDistance);
 }
+void UFGActorRepresentation::SetupActorRepresentation(AActor* realActor, bool isLocal, float lifeSpan){ }
+void UFGActorRepresentation::TrySetupDestroyTimer(float lifeSpan){ }
+void UFGActorRepresentation::RemoveActorRepresentation(){ }
 FVector UFGActorRepresentation::GetActorLocation() const{ return FVector(); }
 FRotator UFGActorRepresentation::GetActorRotation() const{ return FRotator(); }
 UTexture2D* UFGActorRepresentation::GetRepresentationTexture() const{ return nullptr; }
@@ -31,7 +34,14 @@ EFogOfWarRevealType UFGActorRepresentation::GetFogOfWarRevealType() const{ retur
 float UFGActorRepresentation::GetFogOfWarRevealRadius() const{ return float(); }
 void UFGActorRepresentation::SetIsOnClient(bool onClient){ }
 ECompassViewDistance UFGActorRepresentation::GetCompassViewDistance() const{ return ECompassViewDistance(); }
+bool UFGActorRepresentation::GetScaleWithMap() const{ return bool(); }
+float UFGActorRepresentation::GetScaleOnMap() const{ return float(); }
 void UFGActorRepresentation::SetLocalCompassViewDistance(ECompassViewDistance compassViewDistance){ }
+bool UFGActorRepresentation::CanBeHighlighted() const{ return bool(); }
+void UFGActorRepresentation::SetHighlighted(bool highlighted){ }
+bool UFGActorRepresentation::IsHighlighted() const{ return bool(); }
+bool UFGActorRepresentation::IsHighlighted(FLinearColor& out_highlightColor, bool& out_HighlightByLocalPlayer) const{ return bool(); }
+UFGHighlightedMarker* UFGActorRepresentation::CreateHighlightedMarker(UObject* owner){ return nullptr; }
 AFGActorRepresentationManager* UFGActorRepresentation::GetActorRepresentationManager(){ return nullptr; }
 void UFGActorRepresentation::UpdateLocation(){ }
 void UFGActorRepresentation::UpdateRotation(){ }

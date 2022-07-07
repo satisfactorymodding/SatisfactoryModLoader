@@ -5,6 +5,8 @@
 #include "FactoryGame.h"
 #include "FGActorRepresentationInterface.h"
 #include "Animation/SkeletalMeshActor.h"
+#include "FGSaveInterface.h" // MODDING EDIT
+#include "WheeledVehicles/FGWheeledVehicle.h" // MODDING EDIT
 #include "FGWheeledVehicleInfo.generated.h"
 
 UENUM( BlueprintType )

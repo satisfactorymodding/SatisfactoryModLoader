@@ -14,9 +14,7 @@ UFGSplinePathMovementComponent::UFGSplinePathMovementComponent() : Super() {
 	this->mPauseTarget = nullptr;
 	this->mTarget = nullptr;
 	this->mPreviousTarget = nullptr;
-	this->mSimulatedLocationOffset.X = 0.0;
-	this->mSimulatedLocationOffset.Y = 0.0;
-	this->mSimulatedLocationOffset.Z = 0.0;
+	this->mSimulatedLocationOffset = FVector::ZeroVector;
 	this->mEndOfPath = false;
 	this->mTemporaryPath = nullptr;
 	this->mServerStartTime = 0.0;

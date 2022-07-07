@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS( Blueprintable, config = Engine, defaultconfig )
+UCLASS( Blueprintable, config = Game, defaultconfig )
 class FACTORYGAME_API UFGGlobalSettings : public UObject
 {
 	GENERATED_BODY()

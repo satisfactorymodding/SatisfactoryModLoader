@@ -5,9 +5,7 @@
 AFGDockingStationInfo::AFGDockingStationInfo() : Super() {
 	this->mStatus = EDockingStationStatus::DSS_Operational;
 	this->mStation = nullptr;
-	this->mLocation.X = 0.0;
-	this->mLocation.Y = 0.0;
-	this->mLocation.Z = 0.0;
+	this->mLocation = FVector::ZeroVector;
 	this->mActorRepresentationTexture = nullptr;
 	this->mMapText = INVTEXT("");
 	this->mDefaultRepresentationColor = FLinearColor(0.0, 0.0, 0.0, 0.0);

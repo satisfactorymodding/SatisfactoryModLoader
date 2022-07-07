@@ -6,6 +6,7 @@
 #include "Equipment/FGEquipment.h"
 #include "FGSchematic.h"
 #include "Equipment/FGEquipmentAttachment.h"
+#include "FGScannableDetails.h"
 #include "FGObjectScanner.generated.h"
 
 UENUM()
@@ -13,60 +14,6 @@ enum class ECycleDirection : uint8
 {
 	CD_Forward,
 	CD_Backward
-};
-
-USTRUCT( BlueprintType )
-struct FACTORYGAME_API FScannableDetails
-{
-	GENERATED_BODY()
-
-	/** Type of object to scan for */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	TSubclassOf< AActor > ScannableClass;
-
-	/** Name of object to scan for */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	FText DisplayText;
-
-	/** Scanner light color */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
-	FColor ScannerLightColor;
-
-	/** Return true if this object has a required schematic */
-	FORCEINLINE bool HasRequiredSchematic() const;
-
-	/** Get the required schematic to be able to scan stuff, null signifies that the schematic isn't loaded OR there is none */
-	FORCEINLINE TSubclassOf< class UFGSchematic > GetRequiredSchematic() const;
-
-	/**
-	* Should we get all actors at load and cache them? or do we need to update these every frame.
-	* Better to cache it, but some things can't be cached (eg. Enemies)
-	*/
-	UPROPERTY( EditDefaultsOnly )
-	bool PreCacheAllOfType;
-
-	/**
-	* If true, NewDetectionRange will be used.
-	*/
-	UPROPERTY( EditDefaultsOnly )
-	bool ShouldOverrideDetectionRange;
-
-	/** Override the base detection range of the scanner */
-	UPROPERTY( EditDefaultsOnly, meta = ( EditCondition = "ShouldOverrideDetectionRange" ) )
-	float NewDetectionRange;
-
-	FScannableDetails() :
-		ScannerLightColor( FColor::White ),
-		PreCacheAllOfType( true ),
-		ShouldOverrideDetectionRange( false ),
-		NewDetectionRange( 1000.0f )
-	{
-
-	}
-private:
-	/** Required schematic to search for this object. None means no requirement. */
-	UPROPERTY( EditDefaultsOnly )
-	TSoftClassPtr< class UFGSchematic > RequiredSchematic;
 };
 
 /**
@@ -125,23 +72,21 @@ public:
 
 	/** Returns whether or not object scanner has a valid currently selected object */
 	UFUNCTION( BlueprintCallable, Category = "Scanner" )
- 	FORCEINLINE bool HasValidCurrentDetails() const { return mObjectDetails.IsValidIndex( mCurrentObjectSelection ); }
+ 	FORCEINLINE bool HasValidCurrentDetails() const { return mCurrentScannableDescriptor != nullptr && mCurrentScannableDetails != nullptr; }
 
-	/** Does what it says on the tin: get's the current details */
+	/** Returns the aticve scannable desriptor. Can be nullptr */
 	UFUNCTION( BlueprintPure, Category = "Scanner" )
-	FScannableDetails GetCurrentDetails();
+	FORCEINLINE TSubclassOf<UFGItemDescriptor> GetCurrentScannableDescriptor() const { return mCurrentScannableDescriptor; }
 
-	/** Returns array with all object details that we can search for */
-	UFUNCTION( BlueprintPure, Category = "Scanner" ) 
-	TArray < FScannableDetails > GetAvailableObjectDetails();
+	/** Returns array with all descriptors that we can search for */
+	UFUNCTION( BlueprintCallable, Category = "Scanner" ) 
+	void GetAvailableScannableDescriptors( TArray < TSubclassOf<UFGItemDescriptor> >& out_availableDescriptors );
 
-	/** Sets to a desired scannable entry */
-	UFUNCTION( BlueprintCallable, Category = "Scanner" )
-	void SetScannableEntry( TSubclassOf< AActor > scannableClass );
+	/** Sets which descriptor that we want to search for */
+	UFUNCTION( BlueprintCallable, Category = "Scanner" ) 
+	void SetScannableDescriptor( TSubclassOf<UFGItemDescriptor> newScannableDescriptor );
+
 private:
-
-	/** Precaches all CACHEABLE objects (as defined by FScannableDetails). */
-	void PrecacheObjects();
 
 	bool Internal_CycleObjects( ECycleDirection direction );
 
@@ -156,12 +101,6 @@ private:
 
 	/** Calls PlayBeep() and sets up timer for the next beep */
 	void Internal_PlayBeep();
-
-	/** Gets all actors of a class and adds them to an array of weak ptrs */
-	void GetAllActorsOfClassAsWeakPtr( TSubclassOf< class AActor > actorClass, TArray< TWeakObjectPtr< class AActor > > &out_Actors );
-
-	/** Returns array with all object details that we can search for including their index in the list of all object details */
-	TArray<TTuple<FScannableDetails, int32>> GetCurrentDetailsWithIndex();
 
 	/** If no object has been selected, this will try and equip the first available object in the object scanner */
 	void TryToEquipDefaultObject();
@@ -184,11 +123,18 @@ protected:
 	float mUpdateClosestObjectTime;
 
 	/**
-	* Details regarding what we should scan.
+	* Details regarding what we should scan. DEPRECATED @todok2 remove when we now new system works and we don't need it anymore 
 	* @note order is important here. the order this is in is the order that the scanner's toggle will be in.
 	*/
-	UPROPERTY( EditDefaultsOnly, Category = "Scanner" )
+	UPROPERTY( VisibleDefaultsOnly, Category = "Scanner" )
 	TArray < FScannableDetails > mObjectDetails;
+
+	/**
+	 * The descriptors we would like to scan for
+	 * @note order is important here. the order this is in is the order that the scanner's toggle will be in.
+	 */
+	UPROPERTY( EditDefaultsOnly, Category = "Scanner" )
+	TArray< TSubclassOf< class UFGItemDescriptor > > mScannableDescriptors;
 
 	UPROPERTY( BlueprintReadOnly, Category = "Scanner" )
 	/** The current closest Object */
@@ -222,8 +168,12 @@ private:
 	/** if true, the device is beeping. */
 	bool mIsBeeping;
 
-	/** index for mObjectDetails, this determines what we are scanning for */
-	int32 mCurrentObjectSelection;
+	/** The currently descriptor we would like to scan for */
+	UPROPERTY( Transient )
+	TSubclassOf<class UFGItemDescriptor> mCurrentScannableDescriptor;
+	/** Cached details for how we scan for different types of objects */
+	UPROPERTY( Transient )
+	UFGScannableDetails* mCurrentScannableDetails;
 
 	/** if we had a closest object last frame */
 	bool mHadClosestObject;
@@ -271,13 +221,3 @@ private:
 	UPROPERTY( ReplicatedUsing = OnRep_ScannerLightColor )
 	FColor mScannerLightColor;
 };
-
-FORCEINLINE TSubclassOf< class UFGSchematic > FScannableDetails::GetRequiredSchematic() const
-{
-	return RequiredSchematic.Get();
-}
-
-FORCEINLINE bool FScannableDetails::HasRequiredSchematic() const
-{
-	return RequiredSchematic.GetUniqueID().IsValid();
-}

@@ -96,7 +96,6 @@ public:
 	bool Debug_EnableVerboseLogging = false;
 	int32 Debug_PressureGroup = INDEX_NONE;
 	float Debug_DP = 0.f;
-	float Debug_SmoothedFlow = 0.f;
 	float Debug_FlowLimit = 0.f;
 	float Debug_MoveLimit = 0.f;
 

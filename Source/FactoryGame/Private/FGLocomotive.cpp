@@ -11,8 +11,7 @@ void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutL
 	DOREPLIFETIME(AFGLocomotive, mHasPower);
 }
 AFGLocomotive::AFGLocomotive() : Super() {
-	this->mPowerConsumption.Min = 0.0;
-	this->mPowerConsumption.Max = 15.0;
+	this->mPowerConsumption = FFloatInterval(0.0, 15.0);
 	this->mSlidingShoe = CreateDefaultSubobject<UFGPowerConnectionComponent>(TEXT("SlidingShoe"));
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("powerInfo"));
 	this->mHasPower = false;

@@ -7,9 +7,7 @@ AFGDriveablePawn::AFGDriveablePawn() : Super() {
 	this->mIsDriverVisible = false;
 	this->mDriverSeatSocket = TEXT("None");
 	this->mDriverSeatAnimation = nullptr;
-	this->mDriverExitOffset.X = 0.0;
-	this->mDriverExitOffset.Y = 0.0;
-	this->mDriverExitOffset.Z = 0.0;
+	this->mDriverExitOffset = FVector::ZeroVector;
 	this->mDriver = nullptr;
 	this->mIsDriving = false;
 }

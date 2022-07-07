@@ -3,6 +3,7 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "DamageTypes/FGDamageType.h"
 #include "Components/ActorComponent.h"
 #include "FGSaveInterface.h"
 
@@ -62,6 +63,18 @@ public:
 	UFUNCTION()
 	virtual void TakeRadialDamage( AActor* damagedActor, float damage, const class UDamageType* damageType, FVector hitLocation, FHitResult hitInfo, class AController* instigatedBy, AActor* damageCauser );
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category= "Health")
+	FORCEINLINE TArray<FDamageModifier> GetDamageModifiers() const { return mDamageTypeModifiers; }
+
+	UFUNCTION(BlueprintCallable, Category= "Health")
+	void AddDamageModifier(const FDamageModifier damageMod);
+
+	UFUNCTION(BlueprintCallable, Category= "Health")
+	void RemoveDamageModifiersOfType(TSubclassOf<UFGDamageType> dmgType, bool includeSubClasses = true);
+
+	UFUNCTION(BlueprintCallable, Category= "Health")
+	void RemoveDamageModifiersAppliedFromObject(UObject* applyingObject);
+
 	/** Sets a new max health */
 	void SetMaxHealth( float NewMaxHealth );
 
@@ -105,7 +118,7 @@ public:
 	FHealDelegate HealDelegate;
 
 	UFUNCTION( BlueprintCallable, Category = "Health" )
-	void Heal( float healAmount );
+	void Heal( float healAmount, bool notifyClient = true );
 
 	UFUNCTION( BlueprintCallable, Category = "Health" )
 	void ResetHealth();
@@ -163,6 +176,9 @@ protected:
 	// Interested listeners for the adjust damage delegates
 	UPROPERTY()
 	TArray< FAdjustDamageDelegate > mOnAdjustDamage;
+
+	UPROPERTY( EditDefaultsOnly, Category= "Health" )
+	TArray< FDamageModifier > mDamageTypeModifiers;
 
 	/** Our maximum health */
 	UPROPERTY( SaveGame, Replicated, EditDefaultsOnly, Category = "Health" )

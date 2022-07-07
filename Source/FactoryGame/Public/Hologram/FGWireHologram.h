@@ -40,6 +40,8 @@ public:
 	virtual void ConfigureActor( class AFGBuildable* inBuildable ) const override;
 	// End AFGBuildableHologram Interface
 
+	void SetConnection( int32 ix, UFGCircuitConnectionComponent* connection );
+
 	UFUNCTION(BlueprintPure, Category = "Power Pole")
 	class AFGPowerPoleHologram* GetActiveAutomaticPoleHologram() const { return mActivePoleHologram; }
 

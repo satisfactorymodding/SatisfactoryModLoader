@@ -5,6 +5,8 @@
 #include "GameFramework/Character.h"
 #include "FGSaveInterface.h"
 #include "AkAudioDevice.h"
+#include "DamageTypes/FGDamageType.h"
+
 #include "FGCharacterBase.generated.h"
 
 USTRUCT( BlueprintType )
@@ -52,6 +54,35 @@ struct FACTORYGAME_API FFootstepEffectWater
 	FFootstepEffect Effect;
 };
 
+USTRUCT( BlueprintType )
+struct FBoneDamageModifier
+{
+	GENERATED_BODY()
+
+	/** Name of the bone to apply the modifier to. Be mindful of the spelling as it won't apply if the name is wrong */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	FName BoneName;
+
+	/** Decided whether the modifier is additive or multiplicative */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	TEnumAsByte<EDamageModifierType> DamageModifierType = DMT_Multiplicative;
+
+	/** less than 1 = reduction, more than 1 = weakspot */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	float DamageModifier = 1.0f;
+
+	/** Should the modifier applie to all bones child to this one(i.e: hand, forearm and upperarm if the bone is the shoulder) */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	bool IncludeChildBones = false;
+
+	/** If the list is not empty, the incoming damage type is contained in that list, the modifier won't be applied. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	TArray<TSubclassOf<UFGDamageType>> DamageTypesBlackList;
+
+	/** If the list is not empty, the incoming damage type will only be applied if the damage type is in that list. */
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category="Modifier")
+	TArray<TSubclassOf<UFGDamageType>> DamageTypesWhiteList;
+};
 
 UCLASS()
 class FACTORYGAME_API AFGCharacterBase : public ACharacter, public IFGSaveInterface
@@ -114,6 +145,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Damage", meta = ( DisplayName = "OnWeakspotHit" ) )
 	void NotifyOnWeakspotHit();
 
+	/** We have taken a weakspot hit */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Damage", meta = ( DisplayName = "OnWeakspotHit" ) )
+	void NotifyOnArmorHit();
+
 	/** Notify from our health component*/
 	UFUNCTION()
 	virtual void OnTakePointDamage( AActor* damagedActor, float damage, class AController* instigatedBy, FVector hitLocation, class UPrimitiveComponent* hitComponent, FName boneName, FVector shotFromDirection, const class UDamageType* damageType, AActor* damageCauser );
@@ -133,11 +168,11 @@ public:
 	FORCEINLINE bool GetIsRagdoll() { return mIsRagdolled; }
 
 	/** Calculate damage we take from a fall */
-	UFUNCTION( BlueprintNativeEvent, Category = "Fall Damage" )
+	UFUNCTION( BlueprintNativeEvent, Category = "Damage" )
 	int32 CalculateFallDamage( float zSpeed ) const;
 
 	/** Assign override to fall damage */
-	UFUNCTION( BlueprintCallable, Category = "Fall Damage" )
+	UFUNCTION( BlueprintCallable, Category = "Damage" )
 	void SetFallDamageOverride( UCurveFloat* fallDamageCurveOverride );
 
 	/** Play effects for when landing */
@@ -148,7 +183,7 @@ public:
 	FORCEINLINE class UFGHealthComponent* GetHealthComponent() const{ return mHealthComponent; }
 
 	/** Get mFallDamageDamageType */
-	UFUNCTION( BlueprintPure, Category = "Fall Damage" )
+	UFUNCTION( BlueprintPure, Category = "Damage" )
 	FORCEINLINE TSubclassOf< class UFGDamageType > GetFallDamageDamageType() const{ return mFallDamageDamageType; }
 
 	/** Sound played when pawn takes damage */
@@ -231,6 +266,7 @@ public:
 	/**Is this player possessed yet */
 	UFUNCTION( BlueprintPure, Category = "Character" )
 	FORCEINLINE bool IsPossessed() const{ return mIsPossessed; }
+	
 protected:
 	/**
 	 * Get the audio event for the foot down
@@ -354,12 +390,28 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
 	float mFootstepDecalLifetime;
 
+	/** The type of noise to make when walking. */
+	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
+	TSubclassOf< class UFGNoise > mFootstepWalkingNoiseClass;
+
+	/** The type of noise to make when sprinting. */
+	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
+	TSubclassOf< class UFGNoise > mFootstepSprintingNoiseClass;
+
+	/** The type of noise to make when landing. */
+	UPROPERTY( EditDefaultsOnly, Category = "Footstep" )
+	TSubclassOf< class UFGNoise > mFootstepLandingNoiseClass;
+
 	/** Keeps track of our current health */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, SaveGame, Replicated )
 	class UFGHealthComponent* mHealthComponent;
 
+	/** Keeps track of active DOT effects applied to us. */
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly )
+	class UFGDotReceiverComponent* mDOTReceiverComponent;
+
 	/** How much damage to take falling with a given velocity */
-	UPROPERTY( EditDefaultsOnly, Category = "FallDamage" )
+	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	UCurveFloat* mFallDamageCurve;
 
 	/** Overrides the default fall damage curve, utilized by Equipment */
@@ -367,7 +419,7 @@ protected:
 	UCurveFloat* mFallDamageCurveOverride;
 
 	/** @todo: This should not be specified for each pawn */
-	UPROPERTY( EditDefaultsOnly, Category = "Fall Damage" )
+	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
 	TSubclassOf< class UFGDamageType > mFallDamageDamageType;
 
 	/** Handle, for removing the character from the game after it has died */
@@ -380,10 +432,6 @@ protected:
 	/** How often will we check if the pawn is in sight of any player */
 	UPROPERTY( EditDefaultsOnly, Category = "Ragdoll" )
 	float mDeathRemoveCheckTime;
-
-	/** Multiplier for targeting desirability */
-	UPROPERTY( EditDefaultsOnly, Category = "Aggro" )
-	float mEnemyTargetDesirability;
 
 	/** World time when we died */
 	float mDeathTimestamp;
@@ -471,13 +519,9 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" ) 
 	TArray< TSubclassOf< class UDamageType > > mIgnoredDamageTypes;
 
-	/** How much more damage should be dealt when taking a weakspot hit */
-	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
-	float mWeakspotMultiplier;
-
 	/** Bone names that result in a weakspot hit */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )
-	TArray< FName > mWeakspotBoneNames;
+	TArray< FBoneDamageModifier > mBoneDamageModifiers;
 
 	/** Multiplier for this creature and normal damage taken */
 	UPROPERTY( EditDefaultsOnly, Category = "Damage" )

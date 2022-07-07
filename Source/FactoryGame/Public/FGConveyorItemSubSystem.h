@@ -7,6 +7,7 @@
 
 #include "Buildables/FGBuildableConveyorBelt.h"
 #include "Buildables/FGBuildableConveyorLift.h"
+#include "FGConveyorInstanceSplineMesh.h"
 #include "FGSubsystem.h"
 #include "FGConveyorItemSubSystem.generated.h"
 
@@ -15,6 +16,8 @@ class AFGBuildableConveyorBase;
 /**
  * 
  */
+
+#define WITH_PIE_SUPPORT 0 //WITH_EDITOR
 
 DECLARE_STATS_GROUP( TEXT("Conveyor Renderer"), STATGROUP_ConveyorRenderer, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT("Conveyor Renderer - Thread"), STATGROUP_ConveyorRenderer_Thread, STATCAT_Advanced );
@@ -110,7 +113,7 @@ struct FConveyorInstanceLodData
 
 	FORCEINLINE void Push( int32 LodLevel, FTransform& t )
 	{
-		LodData[ LodLevel ].Push(t);
+		LodData[ LodLevel ].Add(t);
 	}
 	
 	FORCEINLINE void Empty()
@@ -213,39 +216,36 @@ public:
 	
 	static AFGConveyorItemSubsystem* Get( UWorld* world );
 
-	static void RegisterBelt( AFGBuildableConveyorBase* newBelt );
-	static void UnRegisterBelt( AFGBuildableConveyorBase* removedBelt );
+#if WITH_PIE_SUPPORT
+	static TMap<UWorld*,AFGConveyorItemSubsystem*> mGlobalSystemPtrPIEMap;
+#else
+	static AFGConveyorItemSubsystem* mGlobalSystemPtr;
+#endif
 
-	static void SetIsConveyorRendererActive( bool newState )
+	FORCEINLINE void ReportVisibleBelt( const UFGConveyorInstanceSplineMesh* Component )
 	{
-		mIsConveyorRendererActive = newState;
+		mVisibleConveyors.Enqueue( Component );
+		Component->SetRelevant( true );
 	}
 
-	static bool IsConveyorRendererActive()
+	FORCEINLINE void ReportVisibleLift( const UFGConveyorLiftVisibilityMesh* Component )
 	{
-		return AFGConveyorItemSubsystem::mIsConveyorRendererActive;
+		mVisibleLifts.Enqueue( Component );
+		Component->SetRelevant( true );
 	}
 	
 private:
 	// Begin AActor interface
 	virtual void Tick(float DeltaSeconds) override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
 
-	bool HandleDisabledState();
-	
-	/** Resolve the NewRegisteredActors and the NewRemovedActors queue at the beginning of the cycle */
-	void ResolvedRegistered();
-	
-	/** Resolved all gathered removed belts & lifts*/
-	void ResolveRemoved();
-	
 	/** Resolved a new conveyor item type to be added to the instance queue and texture */
 	void ResolveNewTypes();
-	
-	void ComputeViewCullAndDistance( const FVector PlayerLocation, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Conveyors, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts );
 
 	void GatherTransformData( const TArray<bool> DistancesToUpdate, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Belt, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts);
+	void GatherTransformData_ISPC( const TArray<bool> DistancesToUpdate, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Belt, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts);
 
 	void UpdateGPUData(const TArray<bool> DistancesToUpdate);
 
@@ -255,11 +255,6 @@ private:
 	void Cleanup( TArray< bool > LodsToUpdate );
 
 	TArray< bool > UpdateTimers( float DeltaTime );
-
-	FORCEINLINE void UpdateMaxInstancesEncountered( int32 Value )
-	{
-		mMaxNumberInstancesEncountered = FMath::Max( mMaxNumberInstancesEncountered, Value);
-	}
 
 	FORCEINLINE int32 GetMaxEncounteredNumberInstances() const
 	{
@@ -274,18 +269,13 @@ private:
 	
 	int32 mCurrentUniqueTypes;
 
-	UPROPERTY( VisibleAnywhere, Transient)
-	TArray< AFGBuildableConveyorBelt* > mWorldBelts;
-
-	UPROPERTY( VisibleAnywhere, Transient)
-	TArray< AFGBuildableConveyorLift* > mLifts;
-
 	/* Named map of the instance mesh components. */
 	UPROPERTY( VisibleInstanceOnly, Transient)
 	TMap< FName, FConveyorItemArray > mItemType;
 
 	// Map per task per type.
 	TArray< TMap< FName, FConveyorInstanceLodData > > mTransformGatherTaskData;
+	TArray<FName> mCachedKeys;
 	
 	/* Frame result of the current conveyor states, no need to make this a UPROPERTY() since it re-computed every frame.*/
 	TArray< FConveyorActorContainer< AFGBuildableConveyorBelt* > > mBeltTaskResults;
@@ -300,10 +290,6 @@ private:
 	
 	/* Thread safe t-pair queue with the new descriptors to register. */
 	TQueue< TPair< FName, TSubclassOf< UFGItemDescriptor > >, EQueueMode::Mpsc > mNewTypes;
-
-	/* Queue of newly added actors & Removed actors.. */
-	TQueue< AFGBuildableConveyorBase*, EQueueMode::Mpsc > NewRegisteredActors;
-	TQueue< AFGBuildableConveyorBase*, EQueueMode::Mpsc > NewRemovedActors;
 		
 	bool mIsDisabled;
 
@@ -311,8 +297,18 @@ private:
 	int32 mMaxNumberInstancesEncounteredPreviousFrame;
 
 	/* Primitive components to either hide or show this frame depending on their transforms.*/
-	TQueue<UPrimitiveComponent*,EQueueMode::Mpsc> ShowList;
-	TQueue<UPrimitiveComponent*,EQueueMode::Mpsc> HideList;
+	TQueue< UPrimitiveComponent*,EQueueMode::Mpsc > ShowList;
+	TQueue< UPrimitiveComponent*,EQueueMode::Mpsc > HideList;
+	TQueue< UFGConveyorInstanceMeshBucket*, EQueueMode::Mpsc > UpdateList;
+
+	TQueue< const class UFGConveyorInstanceSplineMesh*, EQueueMode::Mpsc > mVisibleConveyors;
+	TQueue< const class UFGConveyorLiftVisibilityMesh*, EQueueMode::Mpsc > mVisibleLifts;
+	
+	UPROPERTY()
+	TArray< const class UFGConveyorInstanceSplineMesh* > mActiveConveyorBelts;
+	
+	UPROPERTY()
+	TArray< const class UFGConveyorLiftVisibilityMesh* > mActiveConveyorLifts;
 
 	// Settings
 protected:

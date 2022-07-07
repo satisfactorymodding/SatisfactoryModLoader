@@ -20,9 +20,6 @@ public:
 	void Multicast_NotifySetIsLoaded(bool isLoaded);
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
-	void Multicast_NotifyBeginPrimaryFire();
-
-	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
 	void Multicast_NotifyEndPrimaryFire();
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
@@ -38,7 +35,7 @@ public:
 	void Multicast_NotifyEndSecondaryFire();
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
-	void Multicast_NotifyReloading();
+	void Multicast_NotifyReloading( bool hadAmmoLeft );
 
 	UFUNCTION(NetMulticast, Reliable, BlueprintCallable, Category= "Weapon")
 	void Multicast_NotifyReloadComplete();
@@ -69,7 +66,7 @@ public:
 	void NotifyEndSecondaryFire();
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Weapon")
-	void NotifyReloading();
+	void NotifyReloading( bool hadAmmoLeft );
 
 	UFUNCTION( BlueprintNativeEvent, Category = "Weapon" )
 	void NotifyReloadComplete();

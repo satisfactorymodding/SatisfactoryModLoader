@@ -21,6 +21,7 @@ class FACTORYGAME_API AFGDestructibleActor : public ADestructibleActor, public I
 public:
 	// Begin Actor Interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason );
 	// End Actor Interface
 
 	virtual float TakeDamage( float damage, struct FDamageEvent const& damageEvent, AController* eventInstigator, AActor* damageCauser ) override;

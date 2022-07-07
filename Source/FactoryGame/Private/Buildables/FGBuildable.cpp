@@ -18,6 +18,9 @@ void AFGBuildable::CheckForErrors(){ Super::CheckForErrors(); }
 #if WITH_EDITOR
 void AFGBuildable::SetBuildableDisplayName(TSubclassOf< AFGBuildable > inClass, FText displayName){ }
 #endif 
+#if WITH_EDITOR
+void AFGBuildable::DebugDrawOcclusionBoxes(){ }
+#endif 
 void AFGBuildable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildable, mColorSlot);
@@ -34,9 +37,7 @@ AFGBuildable::AFGBuildable() : Super() {
 	this->mDisplayName = INVTEXT("");
 	this->mDescription = INVTEXT("");
 	this->MaxRenderDistance = -1.0;
-	this->mHighlightVector.X = 0.0;
-	this->mHighlightVector.Y = 0.0;
-	this->mHighlightVector.Z = 0.0;
+	this->mHighlightVector = FVector::ZeroVector;
 	this->mDecoratorClass = nullptr;
 	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -46,16 +47,6 @@ AFGBuildable::AFGBuildable() : Super() {
 	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
 	this->mFactoryTickFunction.TickInterval = 0.0;
 	this->mColorSlot = 0;
-	this->mCustomizationData.SwatchDesc = nullptr;
-	this->mCustomizationData.PatternDesc = nullptr;
-	this->mCustomizationData.MaterialDesc = nullptr;
-	this->mCustomizationData.SkinDesc = nullptr;
-	this->mCustomizationData.OverrideColorData.Metallic = 0.0;
-	this->mCustomizationData.OverrideColorData.Roughness = 0.0;
-	this->mCustomizationData.PatternRotation = 0;
-	this->mCustomizationData.ColorSlot = 0;
-	this->mCustomizationData.NeedsSkinUpdate = false;
-	this->mCustomizationData.HasPower = 0;
 	this->mDefaultSwatchCustomizationOverride = nullptr;
 	this->mSwatchGroup = UFGSwatchGroup_Standard::StaticClass();
 	this->mAllowColoring = true;
@@ -77,6 +68,11 @@ AFGBuildable::AFGBuildable() : Super() {
 	this->mShouldShowHighlight = false;
 	this->mShouldShowAttachmentPointVisuals = false;
 	this->mCreateClearanceMeshRepresentation = true;
+	this->mAffectsOcclusion = false;
+	this->mOcclusionShape = EFGRainOcclusionShape::ROCS_Box;
+	this->mCustomOcclusionShape = nullptr;
+	this->mScaleCustomOffset = 1.0;
+	this->mCustomScaleType = EFGRainOcclusionShapeScaling::ROCSS_Center;
 	this->mInteractWidgetClass = nullptr;
 	this->mIsUseable = false;
 	this->mBuiltWithRecipe = nullptr;
@@ -149,6 +145,7 @@ void AFGBuildable::ConfigureDynamicDecoratorComponent(USceneComponent* newCompon
 void AFGBuildable::TryRemoveDecoratorSignificantComponents( AFGPlayerController* controller){ }
 void AFGBuildable::RemoveDecoratorSignificantComponents(){ }
 const TArray< class UMeshComponent* >& AFGBuildable::GetMainMeshes(){ return *(new TArray< class UMeshComponent* >); }
+void AFGBuildable::ApplyHasPowerCustomData(){ }
 void AFGBuildable::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildable::Stat_Cost(TArray< FItemAmount >& out_amount) const{ }
 void AFGBuildable::Stat_StockInventory(TArray< FItemAmount >& out_amount) const{ }
@@ -192,7 +189,6 @@ void AFGBuildable::GetDismantleInventoryReturns(TArray< FInventoryStack >& out_r
 void AFGBuildable::TogglePendingDismantleMaterial(bool enabled){ }
 void AFGBuildable::ApplySkinData(TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > newSkinDesc){ }
 void AFGBuildable::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
-void AFGBuildable::ApplyHasPowerCustomData(){ }
 void AFGBuildable::SetDidFirstTimeUse(bool didUse){ }
 TArray< UStaticMeshComponent* > AFGBuildable::CreateBuildEffectProxyComponents(){ return TArray<UStaticMeshComponent*>(); }
 void AFGBuildable::DestroyBuildEffectProxyComponents(){ }

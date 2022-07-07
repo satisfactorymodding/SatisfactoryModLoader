@@ -20,6 +20,7 @@ struct FACTORYGAME_API FNodeClusterData
 	}
 
 	FNodeClusterData( AFGResourceNodeBase* singleNode ) :
+	Nodes( { singleNode} ),
 	MidPoint( singleNode->GetActorLocation() ),
 	ResourceDescriptor( singleNode->GetResourceClass() )
 	{
@@ -57,6 +58,10 @@ public:
 	/** The function that play effects, sound and particle, in the world at the found node */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Resource Scanner" )
 	void PlayClusterEffects( const TArray< FNodeClusterData >& clusters );
+
+	/** Create resource node representations for the given cluster */
+	UFUNCTION( BlueprintCallable, Category = "Resource Scanner" )
+	void CreateResourceNodeRepresentations( const FNodeClusterData& cluster );
 
 	/** Show the resource descriptor selection UI */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Resource Scanner" )
@@ -141,6 +146,9 @@ protected:
 	/** Within what range to a node in a cluster will we start showing them as separate entities on map/compass */
 	UPROPERTY( EditDefaultsOnly, Category = "Resource Scanner" )
 	float mUnclusterRange;
+	
+	UPROPERTY( EditDefaultsOnly, Category = "Resource Scanner" )
+	float mRepresentationLifeSpan;
 
 	/** A list of all the clusters of nodes non the level */
 	UPROPERTY()

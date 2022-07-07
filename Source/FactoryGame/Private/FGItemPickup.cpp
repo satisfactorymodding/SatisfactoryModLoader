@@ -51,6 +51,7 @@ void AFGItemPickup::PlantPickup(){ }
 void AFGItemPickup::Grow(){ }
 void AFGItemPickup::SetNumItems(int32 numItems){ }
 void AFGItemPickup::OnCollectTimerComplete(){ }
+bool AFGItemPickup::IsEquipment() const{ return bool(); }
 void AFGItemPickup::AddToPlayerInventory( AFGCharacterPlayer* character){ }
 void AFGItemPickup::OnRep_PickedUp(){ }
 void AFGItemPickup::OnRep_StateUpdated(){ }

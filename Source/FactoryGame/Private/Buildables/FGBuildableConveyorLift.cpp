@@ -2,7 +2,7 @@
 
 #include "Buildables/FGBuildableConveyorLift.h"
 #include "Components/SceneComponent.h"
-#include "Components/StaticMeshComponent.h"
+#include "FGConveyorInstanceSplineMesh.h"
 
 AFGBuildableConveyorLift::AFGBuildableConveyorLift() : Super() {
 	this->mMeshHeight = 200.0;
@@ -13,8 +13,9 @@ AFGBuildableConveyorLift::AFGBuildableConveyorLift() : Super() {
 	this->mBellowMesh = nullptr;
 	this->mJointMesh = nullptr;
 	this->mShelfMesh = nullptr;
+	this->mTopTransform = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mIsReversed = false;
-	this->mVisibilityComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisibilityMesh"));
+	this->mVisibilityComponent = CreateDefaultSubobject<UFGConveyorLiftVisibilityMesh>(TEXT("VisibilityMesh"));
 	this->mVisibilityComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableConveyorLift::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {

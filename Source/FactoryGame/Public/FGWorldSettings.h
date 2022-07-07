@@ -18,6 +18,7 @@ class FACTORYGAME_API AFGWorldSettings : public AWorldSettings, public IFGSaveIn
 {
 	GENERATED_BODY() 
 public:
+	/** Ctor */
 	AFGWorldSettings();
 
 	/** Getters for the subsystems */
@@ -28,13 +29,21 @@ public:
 
 	// Begin UObject interface
 	virtual void BeginDestroy() override;
+	// Magic GC function, if it exists, it will be called by the GC
+	static void AddReferencedObjects( UObject* inThis, FReferenceCollector& collector );
+	virtual void Serialize( FArchive& ar ) override;
 	// End UObject interface
 
 	// Begin AActor interface
 #if WITH_EDITOR
 	virtual void CheckForErrors() override;
 	virtual void PostEditChangeProperty( struct FPropertyChangedEvent& propertyChangedEvent ) override;
+
+	/** Flags the saveActors as dirty so they will be rebuilt when serialized */
+	UFUNCTION( BlueprintCallable, Category = "Minimap Height", meta = ( CallInEditor = "true" ) )
+	void MarkSaveActorArrayDirty() { mSaveActorsDirty = true; };
 #endif
+	
 	virtual void PostActorCreated() override;
 	virtual void PostLoad() override;
 	virtual void PreInitializeComponents() override;
@@ -76,16 +85,26 @@ public:
 	/** Get the default start time of the current time of day in hours */
 	FORCEINLINE class AFGMinimapCaptureActor* GetMinimapCaptureActor() const{ return mMinimapCaptureActor; }
 
+	/** Get actors marked as save in the current level */
+	FORCEINLINE const TArray< class AActor* >& GetSaveActors() const { return mSaveActors; }
+
 	/** Update the world bounds */
 	UFUNCTION( Category="FactoryGame|Level", meta=(CallInEditor="true") )
 	void UpdateWorldBounds();
 
 protected:
-	/** Called whenever a actor is spawned in editor */
-	void OnActorSpawned( AActor* actor );
+	/** Called whenever a save actor receives destroyed both inside editor and during gameplay */
+	UFUNCTION( meta=(CallInEditor="true") )
+	void OnSaveActorDestroyed( AActor* actor );
+
+	/** Called after level is loaded, prepare all actors in the level */
+	void PrepareSaveActors();
 
 #if WITH_EDITOR
 	void HandleMapChanged( class UWorld* newWorld, EMapChangeType mapChangeType );
+	
+	/** Called whenever a actor is spawned in editor */
+	void OnActorSpawned( AActor* actor );
 #endif
 private:
 	/** Helper to spawn subsystems. */
@@ -137,7 +156,14 @@ public:
 	/** The default settings of the exponential height fog to apply */
 	UPROPERTY( EditInstanceOnly, Category = "HeightFog" )
 	FExponentialFogSettings mDefaultHeightFogSettings;
+
 protected:
+	/** All save actors for the current sublevel. Stored during save */
+	TArray<AActor*> mSaveActors;
+
+	/** Used to flag Save Actors as dirty. This will cause the save actors array to be rebuilt when saving. This is to ensure that all save actors are up to date */
+	bool mSaveActorsDirty;
+
 	/** Set the height fog that's placed in the world here */
 	UPROPERTY( EditInstanceOnly, Category = "HeightFog" )
 	TSoftObjectPtr< class AExponentialHeightFog > mExponentialHeightFog;
@@ -164,14 +190,13 @@ protected:
 	/** Time of day to start the day (in hours) */
 	UPROPERTY( EditInstanceOnly, Category = "Time", meta = ( UIMin = 0, UIMax = 24, ClampMin = 0, ClampMax = 24 ) )
 	float mStartTimeOfDay;
-private:
 
+private:
 	UPROPERTY( SaveGame )
 	class AFGBuildableSubsystem* mBuildableSubsystem;
 
 	UPROPERTY()
 	class AFGAudioVolumeSubsystem* mAudioVolumeSubsystem;
-
 	UPROPERTY()
 	class AFGFoliageRemovalSubsystem* mFoliageRemovalSubsystem;
 

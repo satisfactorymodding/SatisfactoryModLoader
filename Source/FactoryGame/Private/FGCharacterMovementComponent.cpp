@@ -20,18 +20,12 @@ UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mSlideCurve = nullptr;
 	this->mSlopeCurve = nullptr;
 	this->mMaxSlideAngle = 1.65;
-	this->mBaseVelocity.X = 0.0;
-	this->mBaseVelocity.Y = 0.0;
-	this->mBaseVelocity.Z = 0.0;
+	this->mBaseVelocity = FVector::ZeroVector;
 	this->mBoostJumpZMultiplier = 1.5;
 	this->mBoostJumpVelocityMultiplier = 1.3;
 	this->mBoostJumpTimeWindow = 0.15;
-	this->mZiplineData.Direction.X = 0.0;
-	this->mZiplineData.Direction.Y = 0.0;
-	this->mZiplineData.Direction.Z = 0.0;
-	this->mZiplineData.LastVelocityApplied.X = 0.0;
-	this->mZiplineData.LastVelocityApplied.Y = 0.0;
-	this->mZiplineData.LastVelocityApplied.Z = 0.0;
+	this->mZiplineData.Direction = FVector::ZeroVector;
+	this->mZiplineData.LastVelocityApplied = FVector::ZeroVector;
 	this->mZiplineData.SpeedMultiplier = 0.0;
 	this->mZiplineData.AttachActor = nullptr;
 	this->mZiplineSpeed = 1200.0;
@@ -50,6 +44,7 @@ void UFGCharacterMovementComponent::SetDefaultMovementMode(){ }
 float UFGCharacterMovementComponent::GetMaxJumpZVelocity() const{ return float(); }
 bool UFGCharacterMovementComponent::CanCrouchInCurrentState() const{ return bool(); }
 void UFGCharacterMovementComponent::SmoothClientPosition(float DeltaSeconds){ }
+float UFGCharacterMovementComponent::ImmersionDepth() const{ return float(); }
 void UFGCharacterMovementComponent::ServerSetHookLocation_Implementation(const FVector& hookLocation){ }
 bool UFGCharacterMovementComponent::ServerSetHookLocation_Validate(const FVector& hookLocation){ return bool(); }
 void UFGCharacterMovementComponent::SetHookLocation(const FVector& hookLocation){ }

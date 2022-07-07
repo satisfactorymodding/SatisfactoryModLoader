@@ -7,88 +7,12 @@
 #include "GameFramework/Actor.h"
 #include "FGProjectile.generated.h"
 
-/** Projectile data used to initialize new projectiles */
-USTRUCT()
-struct FProjectileData
-{
-	GENERATED_USTRUCT_BODY()
-
-	/** projectile class */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	TSubclassOf< class AFGProjectile > ProjectileClass;
-
-	/** life time */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	float ProjectileLifeSpan;
-
-	/** How long the projectile will live after it has gotten stuck to something */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	float ProjectileStickSpan;
-
-	/** damage at impact point */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	int32 ExplosionDamage;
-
-	/** radius of damage */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	float ExplosionRadius;
-
-	/** Damage dealt to actor that get hit or impacted by this projectile */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	int32 ImpactDamage;
-
-	/** If we impact something, should this projectile explode so that it deals radius damage? */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	bool ShouldExplodeOnImpact;
-
-	/** Indicates if we should explode if we are taking damage from same actor class as ourselves */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	bool CanTriggerExplodeBySameClass;
-
-	/** Should the projectile explode when it dies of lifespan? */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	bool ExplodeAtEndOfLife;
-
-	/** type of damage used for impact damage*/
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	TSubclassOf< UFGDamageType > DamageType;
-
-	/** type of damage used for detonation */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Projectile" )
-	TSubclassOf< UFGDamageType > DamageTypeExplode;
-
-	UPROPERTY( SaveGame )
-	FRuntimeFloatCurve DamageFalloffCurve;
-
-	UPROPERTY( SaveGame )
-	float EffectiveRange;
-
-	UPROPERTY( SaveGame )
-	float WeaponDamageMultiplier;
-
-	/** defaults */
-	FProjectileData()
-	{
-		ProjectileClass = nullptr;
-		ProjectileLifeSpan = 10.0f;
-		ProjectileStickSpan = 5.0f;
-		ExplosionDamage = 100;
-		ExplosionRadius = 300.0f;
-		ImpactDamage = 0.0f;
-		ShouldExplodeOnImpact = true;
-		CanTriggerExplodeBySameClass = true;
-		ExplodeAtEndOfLife = false;
-		DamageType = UFGDamageType::StaticClass();
-		DamageTypeExplode = UFGDamageType::StaticClass();
-		EffectiveRange = 0;
-		WeaponDamageMultiplier = 1.0f;
-	}
-};
-
 UCLASS( config=Game )
 class FACTORYGAME_API AFGProjectile : public AActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
+
+	
 public:
 	AFGProjectile();
 
@@ -115,31 +39,69 @@ public:
 
 	/** handle hit */
 	UFUNCTION()
-	virtual void OnImpact( const FHitResult& hitResult );
+	virtual void OnImpact_Native( const FHitResult& hitResult );
+
+	/** Called to handle impact on all clients when an impact happens on the server. */
+	UFUNCTION( NetMulticast, Reliable )
+	virtual void Multicast_OnImpact( const FHitResult& hitResult, bool wasAttached );
+
+	UFUNCTION( BlueprintImplementableEvent, Category = "Projectile" )
+	void OnImpact( const FHitResult& hitResult );
 
 	/** handle bounce */
 	UFUNCTION()
-	virtual void OnBounce( const FHitResult& hitResult, const FVector& hitVelocity );
+	virtual void OnBounce_Native( const FHitResult& hitResult, const FVector& hitVelocity );
+	
+	UFUNCTION( BlueprintImplementableEvent, Category = "Projectile" )
+	void OnBounce( const FHitResult& hitResult, const FVector& hitVelocity );
 
 	/** Returns CollisionComp subobject **/
 	FORCEINLINE class USphereComponent* GetCollisionComp() const { return mCollisionComp; }
 	/** Returns ProjectileMovement subobject **/
-	FORCEINLINE class UProjectileMovementComponent* GetProjectileMovement() const { return mProjectileMovement; }
+	FORCEINLINE class UFGProjectileMovementComponent* GetProjectileMovement() const { return mProjectileMovement; }
 
 	/** Returns the location we are aiming for ( if any ) */
 	UFUNCTION( BlueprintPure, Category = "Projectile" )
-	FORCEINLINE FVector GetProjectileTargetLocation() { return mTargetLocation; }
+	const FVector& GetProjectileTargetLocation() const { return mTargetLocation; }
 
-	/** Returns the location we are aiming for ( if any ) */
+	/** Whether or not this projectile can be hit by homing ammo. */
+	UFUNCTION( BlueprintPure, Category = "Projectile" )
+	FORCEINLINE bool CanBeHitByHomingAmmo() const { return mCanBeHitByHomingAmmo; }
+
+	/** Gets the initial throw rotation velocity. */
+	UFUNCTION( BlueprintPure, Category = "Projectile" )
+	const FRotator& GetThrowRotation() const { return mThrowRotation; }
+
 	UFUNCTION( BlueprintCallable, Category = "Projectile" )
-	void SetTargetLocation( FVector targetLocation ) { mTargetLocation = targetLocation; }
+	void SetSourceAmmoDescriptor( class UFGAmmoTypeProjectile* ammoDescriptor ) { mSourceAmmoDescriptor = ammoDescriptor; }
+	
+	UFUNCTION( BlueprintCallable, Category = "Projectile" )
+	void SetImpactDamageTypes( TArray<UFGDamageType*> impactDamageTypes ) { mDamageTypesOnImpact = impactDamageTypes; }
+
+    UFUNCTION( BlueprintCallable, Category = "Projectile" )    
+    void SetEndOfLifeDamageTypes( TArray<UFGDamageType*> endOfLifeDamageTypes) { mDamageTypesAtEndOfLife = endOfLifeDamageTypes; }
+
+	UFUNCTION( BlueprintCallable, Category = "Projectile" )
+	void SetCurveGravityScaleOverLifespan(const FRuntimeFloatCurve& newCurve) { mGravityScaleOverLifespan = newCurve; }
+
+	UFUNCTION( BlueprintCallable, Category = "Projectile" )
+	void SetCurveHomingStrengthOverLifespan(const FRuntimeFloatCurve& newCurve) { mHomingStrengthOverLifespan = newCurve; }
+
+	UFUNCTION( BlueprintCallable, Category = "Projectile" )
+	void SetCurveHomingStrengthOverDistanceToTarget(const FRuntimeFloatCurve& newCurve) { mHomingStrengthOverDistanceToTarget = newCurve; }
+	
+	UFUNCTION( BlueprintCallable, Category = "Projectile" )
+	void SetTargetLocation( const FVector& targetLocation );
+
+	UFUNCTION( BlueprintCallable, Category = "Projectile" )
+	void SetTargetActor( AActor* actor );
+	
+	UFUNCTION( BlueprintCallable, Category = "Projectile" )
+	void SetIsHomingProjectile( bool isHoming );
 
 	/** Function to set up explosion effects in Blueprint */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Projectile" )
 	void PlayExplosionEffects();
-
-	/** Function to set the internal data of the projectile before finishing spawning it */
-	void SetProjectileData( FProjectileData projectileData );
 
 	/** Called when we attach this actor to something like the world, a factory, a character */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Projectile" )
@@ -151,7 +113,7 @@ public:
 
 	/** Sets the initial velocity so that it can be replicated to clients */
 	UFUNCTION( BlueprintCallable, Category = "Projectile" )
-	void SetInitialVelocity( FVector inVelocity );
+	void SetInitialVelocity( const FVector& inVelocity );
 
 	/** To trigger the secondary action of the projectile (i.e explosion on Sticky Projectiles) */
 	UFUNCTION( BlueprintCallable, Category="Projectile" )
@@ -165,44 +127,149 @@ public:
 	UFUNCTION( BlueprintCallable, Category="Projectile" )
 	void SetAndEnableRotation( float scale );
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SpawnImpactDamageEffects( FHitResult const& hitResult );
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_SpawnEndOfLifeDamageEffects( FHitResult const& hitResult );
+
+	UFUNCTION(BlueprintCallable, Category = "Projectile" )
+	void SetInitialHealth(float newHealth);
+
+	UFUNCTION(BlueprintCallable, Category = "Projectile" )
+	void SetMaximumHomingAccelerationMagnitude(float newHomingAccelerationMagnitude);
+
+	UFUNCTION(BlueprintNativeEvent, Category="Projectile")
+	void OnSpawnedAsClusterProjectile();
+
 protected:
 	/** trigger explosion */
-	virtual void DealExplosionDamage( const FHitResult& impact );
+	virtual void DealEndOfLifeDamages( const FHitResult& impact );
 
 	/** Deal damage from the impact */
-	virtual void DealImpactDamage( const FHitResult& impact );
+	virtual void DealImpactDamages( const FHitResult& impact );
 
 	/** shutdown projectile and prepare for destruction */
 	void DisableAndSetLifeSpan();
 
-	/** [client] explosion happened */
+	/** Called when lifespan of the projectile expires. */
 	UFUNCTION()
 	void OnRep_Exploded();
 
-	/** Virtual function for any additional client side effect handling in child classes*/
-	virtual void OnNotifiedExploded();
+	/** Called on both server and client when the lifespan of the projectile expires. */
+	UFUNCTION( BlueprintNativeEvent, Category = "Projectile" )
+	void OnExplode();
 
 	/** attach this projectile to an enemy or alike */
 	bool AttachProjectileToImpactActor( const FHitResult& impact );
 
 	UFUNCTION()
 	void OnRep_InitialVelocity();
+
+	UFUNCTION()
+	void OnRep_TargetActor();
+
+	UFUNCTION()
+	void OnRep_TargetLocation();
+
+	UFUNCTION()
+	void OnRep_IsHomingProjectile();
+
+	UFUNCTION()
+	void OnRep_MaxHomingAccelerationMagnitude();
+	
 public:
-	/** This projectile is just used for cosmetics and shouldn't deal damage. Like on remote clients */
-	bool mIsCosmeticProjectile;
+	/** Indicates if we should explode if we are taking damage from same actor class as ourselves */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
+	bool mCanTriggerExplodeBySameClass;
+
+	/** Time the projectile can live before actually being destroyed if not hitting anything */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
+	float mProjectileLifespan;
+
+	/** Time the projectile sticks to target before going poof. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
+	float mProjectileStickspan;
+	
 protected:
+	/** Whether or not this projectile can be hit by homing ammo. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
+	bool mCanBeHitByHomingAmmo;
+	
 	/** Rotating component for projectiles that need rotation when thrown */
 	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
 	class URotatingMovementComponent* mRotatingMovementComp;
 
+	/** What class to use for spawning cluster projectiles. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Cluster" )
+	TSubclassOf< AFGProjectile > mClusterProjectileClass;
+
+	/** How many cluster projectiles to spawn. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Cluster" )
+	FInt32Interval mNumClusterProjectiles;
+
+	/** Cluster projectiles are spread out in a clockwise pattern, using this value as the step between each one. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Cluster" )
+	FFloatInterval mClusterProjectileSpreadIntervalAngle;
+
+	/** How fast the cluster projectiles should go sideways when launched. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Cluster" )
+	FFloatInterval mClusterProjectileSidewaysLaunchSpeed;
+	
+	/** How fast the cluster projectiles should go vertically when launched. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Cluster" )
+	FFloatInterval mClusterProjectileVerticalLaunchSpeed;
+
 	/** Initial rotation to apply to the projectile at launch */
 	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
 	FRotator mThrowRotation;
+	
+	/** The target of the projectile. */
+	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_TargetActor, Category = "Projectile" )
+	AActor* mTargetActor;
+	
+	/** Location we are aiming at ( if any ) */
+	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_TargetLocation, Category = "Projectile" )
+	FVector mTargetLocation;
 
-	/** projectile data */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Replicated, Category = "Projectile" )
-	FProjectileData mProjectileData;
+	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_IsHomingProjectile, Category = "Projectile" )
+	bool mIsHomingProjectile;
 
+	UPROPERTY( BlueprintReadOnly, Replicated, Category = "Projectile" )
+	class UFGAmmoTypeProjectile* mSourceAmmoDescriptor;
+
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Damage" )
+	TArray< UFGDamageType* > mDamageTypesOnImpact;
+
+	UPROPERTY( EditDefaultsOnly, Instanced, Category = "Damage" )
+	TArray< UFGDamageType* > mDamageTypesAtEndOfLife;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	FRuntimeFloatCurve mGravityScaleOverLifespan;
+
+	UPROPERTY( EditDefaultsOnly, ReplicatedUsing = OnRep_MaxHomingAccelerationMagnitude, BlueprintReadOnly, Category = "Projectile" )
+	float mMaxHomingAccelerationMagnitude;
+	
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	FRuntimeFloatCurve mHomingStrengthOverLifespan;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	FRuntimeFloatCurve mHomingStrengthOverDistanceToTarget;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	float mProjectileStartingHealth;
+
+	UPROPERTY( SaveGame, BlueprintReadWrite, Category = "Projectile" )
+	float mProjectileCurrentHealth;
+	
+	/** The noise to make on impact. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Noise" )
+	TSubclassOf< class UFGNoise > mImpactNoise;
+	
+	/** The noise to make when the projectile explodes. */
+	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Noise" )
+	TSubclassOf< class UFGNoise > mExplodeNoise;
+	
 	/** did it explode? */
 	UPROPERTY( Transient, ReplicatedUsing = OnRep_Exploded )
 	bool mHasExploded;
@@ -217,30 +284,17 @@ protected:
 
 	UPROPERTY( SaveGame )
 	FTimerHandle mSecondaryTriggerDelayTimer;
+
+	
 private:
+	
 	/** Sphere collision component */
 	UPROPERTY( VisibleDefaultsOnly, Category = "Projectile" )
 	class USphereComponent* mCollisionComp;
 
 	/** Projectile movement component */
 	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true") )
-	class UProjectileMovementComponent* mProjectileMovement;
-
-	/** Location we are aiming at ( if any ) */
-	UPROPERTY( Replicated )
-	FVector mTargetLocation;
-
-	/** Indicates if we should explode if we are taking damage from same actor class as ourselves */
-	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
-	bool mCanTriggerExplodeBySameClass;
-
-	/** Should the projectile explode when it dies of lifespan? */
-	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
-	bool mExplodeAtEndOfLife;
-
-	/** Caching the PC so that we can do damage even without a valid weapon */
-	UPROPERTY()
-	class AFGPlayerController* mCachedPC;
+	class UFGProjectileMovementComponent* mProjectileMovement;
 
 	/** Was projectile fired by a weapon */
 	bool mWasFiredByWeapon;

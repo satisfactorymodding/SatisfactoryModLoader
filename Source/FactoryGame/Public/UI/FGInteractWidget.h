@@ -7,11 +7,26 @@
 #include "Blueprint/UserWidget.h"
 #include "FGInteractWidget.generated.h"
 
+// Simple object wrapper for a hit result so we can put it as the interact object for an interact widget
+UCLASS( Blueprintable )
+class FACTORYGAME_API UFGHitResultWrapper : public UObject
+{
+	GENERATED_BODY()
+public:
+
+	UFUNCTION( BlueprintPure, Category = "Hit Result" )
+	FVector_NetQuantize GetMapMarkerLocation() const
+	{
+		return mHitResult.Location;
+	};
+	
+	FHitResult mHitResult;
+};
 
 /**
  * Base class for stackable widgets in the game such as building interaction windows.
  */
-UCLASS( config = Engine )
+UCLASS( config = Game )
 class FACTORYGAME_API UFGInteractWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -23,6 +38,10 @@ public:
 
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI" )
 	void SetInputMode();
+
+	void HandleEquipment();
+	
+	void PassThroughKeybindings();
 
 	UFUNCTION( BlueprintCallable, BlueprintNativeEvent, Category = "UI" )
 	void UpdateIgnoreMoveInput();
@@ -90,8 +109,29 @@ public:
 	
 	FORCEINLINE bool GetSupportsCaching() const { return mSupportsCaching; }
 
+	// Let's this interact widget hijack shortcut pressed. Return true if the shortcut should be consumed. Otherwise it will pass it on.
 	UFUNCTION( BlueprintImplementableEvent, Category = "Shortcut" )
-	void OnShortcutPressed( int32 index );
+	bool OnShortcutPressed( int32 index );
+
+	// Let's this interact widget hijack ping pressed. Return true if the ping should be consumed. Otherwise it will pass it on.
+	UFUNCTION( BlueprintImplementableEvent, Category = "Ping" )
+	bool OnAttentionPingPressed();
+
+	/** Copies the interact object settings to the factory clipboard */
+	UFUNCTION( BlueprintCallable, Category = "Factory Clipboard" )
+	void CopyFactoryClipboard();
+
+	// Called when we copied a factory clipboard setting.
+	UFUNCTION( BlueprintImplementableEvent, Category = "Factory Clipboard" )
+	void OnFactoryClipboardCopied( UObject* interactObject, class UFGFactoryClipboardSettings* factoryClipboardSettings );
+
+	/** Pastes the currently stored factory clipboard settings to the interact object */
+	UFUNCTION( BlueprintCallable, Category = "Factory Clipboard" )
+	void PasteFactoryClipboard();
+
+	// Called when we pasted a factory clipboard setting. Only called if actually could paste settings to interact object.
+	UFUNCTION( BlueprintImplementableEvent, Category = "Factory Clipboard" )
+	void OnFactoryClipboardPasted( UObject* interactObject, class UFGFactoryClipboardSettings* factoryClipboardSettings );
 
 protected:
 	// Begin UUserWidget interface
@@ -107,35 +147,47 @@ private:
 	/** Internal function that checks for requirements being met before calling init */
 	void NativeTestAndQueueInit();
 
+	/** Clears the focus restore gate that blocks widget from claiming focus more than once a frame */
+	UFUNCTION()
+	void ClearRestoreFocusGate();
+
 public:
-	/** If we should take the keyboard input from the player. The player won't be able to move around. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
+	/** If we should block the keyboard input from the player. If true the player won't be able to move around. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input", meta=(DisplayName = "Block Movement") )
 	bool mUseKeyboard;
 
-	/** If we should take the mouse input from the player. The player won't be able to look around. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
+	/** If we should block the mouse input from the player. If true the player won't be able to look around. */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input", meta=(DisplayName = "Block Mouse Look") )
 	bool mUseMouse;
 
 	/** Sets the mouse locking behavior of the viewport when this widget is active */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input", meta=(EditCondition="mUseKeyboard||mUseMouse") )
 	EMouseLockMode mMouseLockMode;
 
-	/** Whether to hide the cursor during temporary mouse capture caused by a mouse down, only relevant when mCaptureInput is false */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
+	/** Whether to hide the cursor during temporary mouse capture caused by a mouse down */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input", meta=(EditCondition="mUseKeyboard||mUseMouse") )
 	bool mHideCursorDuringCapture;
 
-	/** Decides if we should share input with game or capture it completely */
+	//@todo Some widgets do not want to eat any input so this list is filled manually with all actions in the game...
+	// There need to be a clear hierarchy of how input is handled and what to pass and not pass and if the default is pass all or pass none.
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input", meta=(EditCondition="mUseKeyboard||mUseMouse") )
+	TArray< FName > mInputToPassThrough;
+
+	/** This will add all shortcuts 1,2,3...0 to mInputToPassThrough when we setup passthrough keybindings. Used with OnShortcutPressed
+	 * Just an easy way instead of adding 10 entries to mInputToPassThrough
+	 */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
-	bool mCaptureInput;
+	bool mListenForShortcutPressed;
 
 	/** Decides if the widget should restore focus when it looses it. (e.g. when the user clicks outside of the widget) */
 	UPROPERTY( EditDefaultsOnly, Category = "Input" )
 	bool mRestoreFocusWhenLost = true;
-
-	//@todo Some widgets do not want to eat any input so this list is filled manually with all actions in the game...
-	// There need to be a clear hierarchy of how input is handled and what to pass and not pass and if the default is pass all or pass none.
-	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Input" )
-	TArray< FName > mInputToPassThrough;
+	
+	// Begin Deprecated Input
+	/** Decides if we should share input with game or capture it completely */
+	UPROPERTY( VisibleDefaultsOnly, Category = "Input Deprecated" )
+	bool mCaptureInput;
+	// End Deprecated Input
 
 	/** Our desired horizontal alignment */
 	UPROPERTY( EditDefaultsOnly, Category = "UI" )
@@ -185,4 +237,9 @@ protected:
 	/** Does this widget support us caching it to be reused? */
 	UPROPERTY( EditDefaultsOnly, Category = "Custom Tick" )
 	bool mSupportsCaching;
+
+private:
+	/** Bool to make sure we only try to restore focus once per frame.
+		Ugly solution but the whole greedy focus system is ugly and should be looked at instead */
+	bool mRestoreFocusGate;
 };

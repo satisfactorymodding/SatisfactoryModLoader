@@ -2,37 +2,15 @@
 
 #include "FGDestructiveProjectile.h"
 #include "Components/SphereComponent.h"
-#include "DamageTypes/FGDamageType.h"
 
 AFGDestructiveProjectile::AFGDestructiveProjectile() : Super() {
 	this->mDestructionCollisionComp = CreateDefaultSubobject<USphereComponent>(TEXT("DestructionSphere"));
 	this->mDestroysRelevantActors = true;
 	this->mDestroysFoliage = true;
 	this->mMaxParticleSpawnsPerDetonation = 30;
-	this->mProjectileData.ProjectileClass = nullptr;
-	this->mProjectileData.ProjectileLifeSpan = 10.0;
-	this->mProjectileData.ProjectileStickSpan = 5.0;
-	this->mProjectileData.ExplosionDamage = 100;
-	this->mProjectileData.ExplosionRadius = 300.0;
-	this->mProjectileData.ImpactDamage = 0;
-	this->mProjectileData.ShouldExplodeOnImpact = true;
-	this->mProjectileData.CanTriggerExplodeBySameClass = true;
-	this->mProjectileData.ExplodeAtEndOfLife = false;
-	this->mProjectileData.DamageType = UFGDamageType::StaticClass();
-	this->mProjectileData.DamageTypeExplode = UFGDamageType::StaticClass();
-	this->mProjectileData.DamageFalloffCurve.EditorCurveData.DefaultValue = 3.40282e+38;
-	this->mProjectileData.DamageFalloffCurve.EditorCurveData.PreInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
-	this->mProjectileData.DamageFalloffCurve.EditorCurveData.PostInfinityExtrap = ERichCurveExtrapolation::RCCE_Constant;
-	this->mProjectileData.DamageFalloffCurve.ExternalCurve = nullptr;
-	this->mProjectileData.EffectiveRange = 0.0;
-	this->mProjectileData.WeaponDamageMultiplier = 1.0;
 	this->mDestructionCollisionComp->SetupAttachment(GetCollisionSphere());
 }
-void AFGDestructiveProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(); }
-void AFGDestructiveProjectile::BeginPlay(){ }
-void AFGDestructiveProjectile::OnImpact(const FHitResult& hitResult){ }
 void AFGDestructiveProjectile::PopulateDestructionContainers(){ }
-void AFGDestructiveProjectile::DealExplosionDamage(const FHitResult& impact){ }
+void AFGDestructiveProjectile::OnExplode_Implementation(){ }
 void AFGDestructiveProjectile::HandleFoliageDestruction(){ }
 void AFGDestructiveProjectile::HandleActorDestruction(){ }
-void AFGDestructiveProjectile::OnNotifiedExploded(){ }

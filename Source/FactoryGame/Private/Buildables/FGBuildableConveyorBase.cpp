@@ -48,6 +48,7 @@ void AFGBuildableConveyorBase::EndPlay(const EEndPlayReason::Type endPlayReason)
 void AFGBuildableConveyorBase::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void AFGBuildableConveyorBase::Tick(float dt){ }
 void AFGBuildableConveyorBase::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
+bool AFGBuildableConveyorBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }
 void AFGBuildableConveyorBase::Factory_Tick(float deltaTime){ }
 uint8 AFGBuildableConveyorBase::MaxNumGrab(float dt) const{ return uint8(); }
 uint8 AFGBuildableConveyorBase::EstimatedMaxNumGrab_Threadsafe(float estimatedDeltaTime) const{ return uint8(); }

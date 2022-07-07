@@ -24,16 +24,18 @@ enum class ERepresentationType : uint8
 	RT_Vehicle					UMETA( DisplayName = "Vehicle" ),
 	RT_VehicleDockingStation	UMETA( DisplayName = "VehicleDockingStation" ),
 	RT_DronePort				UMETA( DisplayName = "DronePort" ),
-	RT_Drone					UMETA( DisplayName = "Drone" )
+	RT_Drone					UMETA( DisplayName = "Drone" ),
+	RT_MapMarker				UMETA( DisplayName = "MapMarker" ),
+	RT_Stamp					UMETA( DisplayName = "Stamp" )
 };
 
 UENUM( BlueprintType )
 enum class EFogOfWarRevealType : uint8
 {
-	FOWRT_None			UMETA( DisplayName = "None" ),
-	FOWRT_Static		UMETA( DisplayName = "Static" ),
-	FOWRT_Intermittent	UMETA( DisplayName = "Intermittent" ),
-	FOWRT_Dynamic		UMETA( DisplayName = "Dynamic" )
+	FOWRT_None					UMETA( DisplayName = "None" ),
+	FOWRT_Static				UMETA( DisplayName = "Static" ),
+	FOWRT_StaticNoGradient		UMETA( DisplayName = "Static No Gradient" ),
+	FOWRT_Dynamic				UMETA( DisplayName = "Dynamic" )
 };
 
 UENUM( BlueprintType )
@@ -127,13 +129,15 @@ public:
 	/** Decide on what properties to replicate */
 	void GetLifetimeReplicatedProps( TArray<FLifetimeProperty>& OutLifetimeProps ) const override;
 
+	virtual void SetupActorRepresentation( AActor* realActor, bool isLocal, float lifeSpan = 0.0f );
+
+	virtual void TrySetupDestroyTimer( float lifeSpan );
+	
+	virtual void RemoveActorRepresentation();
+
 	/** Get the Real actor we represent, might not be relevant on client */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
 	FORCEINLINE AActor* GetRealActor() const { return mRealActor; }
-
-	/** If this actor representation is temporary or not */
-	UFUNCTION( BlueprintPure, Category = "Representation" )
-	FORCEINLINE bool GetIsTemporary() const { return mIsTemporary; }
 	
 	/** Is this the represented actor static or not */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
@@ -141,7 +145,7 @@ public:
 
 	/** Get the location of the represented actor */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	FVector GetActorLocation() const;
+	virtual FVector GetActorLocation() const;
 
 	/** Get the rotation of the represented actor */
 	UFUNCTION( BlueprintPure, Category = "Representation" )
@@ -164,7 +168,7 @@ public:
 
 	/** If this should be shown in the compass or not*/
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	bool GetShouldShowInCompass() const;
+	virtual bool GetShouldShowInCompass() const;
 
 	/** If this should be shown on the map or not*/
 	UFUNCTION( BlueprintPure, Category = "Representation" )
@@ -179,11 +183,26 @@ public:
 	void SetIsOnClient( bool onClient );
 
 	UFUNCTION( BlueprintPure, Category = "Representation" )
-	ECompassViewDistance GetCompassViewDistance() const;
+	virtual ECompassViewDistance GetCompassViewDistance() const;
+
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual bool GetScaleWithMap() const;
+
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	virtual float GetScaleOnMap() const;
 
 	/** Sets the client representations compass view distance directly. It doesn't change the connected actors status so this is only for local updates to avoid waiting for replicated value */
 	void SetLocalCompassViewDistance( ECompassViewDistance compassViewDistance );
 	
+	virtual bool CanBeHighlighted() const;
+	
+	virtual void SetHighlighted( bool highlighted );
+
+	virtual bool IsHighlighted() const;
+	virtual bool IsHighlighted( FLinearColor& out_highlightColor, bool& out_HighlightByLocalPlayer ) const;
+
+	virtual class UFGHighlightedMarker* CreateHighlightedMarker( UObject* owner );
+
 protected:
 
 	/** Returns a cast of outer */
@@ -228,11 +247,10 @@ protected:
 
 	UFUNCTION()
 	void OnRep_ActorRepresentationUpdated();
-
-private:
+	
 	friend AFGActorRepresentationManager;
 
-	/** This actor representation is just local and should not be shown to other players */
+	/** This actor representation is locally created */
 	bool mIsLocal;
 
 	/** This actor representation resides on a client, used to determine if we want the replicated property or get it from the actor itself. 
@@ -279,13 +297,7 @@ private:
 
 	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
 	float mFogOfWarRevealRadius;
-
-	/** If this representation should be removed when lifetime < 0.0f */
-	bool mIsTemporary;
-
-	/** How long this representation has to live */
-	float mLifeTime;
-
+	
 	/** If this should be shown in the compass or not*/
 	UPROPERTY( ReplicatedUsing = OnRep_ShouldShowInCompass )
 	bool mShouldShowInCompass;

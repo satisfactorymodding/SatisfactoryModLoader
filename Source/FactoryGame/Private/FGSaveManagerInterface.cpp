@@ -4,7 +4,6 @@
 
 FSaveHeader::FSaveHeader(){ }
 bool FSaveHeader::NetSerialize(FArchive& ar,  UPackageMap* map, bool& out_success){ return bool(); }
-const FGuid FSaveHeader::GUID = FGuid();
 void IFGSaveManagerInterface::UploadSave(const FSaveHeader& Save, FOnSaveManagerTransferCompleted CompleteDelegate, FOnSaveManagerTransferProgress ProgressDelegate){ }
 bool IFGSaveManagerInterface::IsTransferInProgress(){ return bool(); }
 void IFGSaveManagerInterface::BindOnSavesChanged(const FOnSaveManagerRefreshSaves& OnRefreshSaves){ }

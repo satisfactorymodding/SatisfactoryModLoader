@@ -2,7 +2,9 @@
 
 #include "FGSubsystemClasses.h"
 #include "FGAdminInterface.h"
+#include "FGCreatureSubsystem.h"
 #include "FGFoliageRemovalSubsystem.h"
+#include "FGScannableSubsystem.h"
 #include "FGSignSubsystem.h"
 
 UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
@@ -33,5 +35,7 @@ UFGSubsystemClasses::UFGSubsystemClasses() : Super() {
 	this->mStatisticsSubsystemClass = nullptr;
 	this->mSignSubsystemClass = AFGSignSubsystem::StaticClass();
 	this->mPhotoModeManagerClass = nullptr;
+	this->mCreatureSubsystemClass = AFGCreatureSubsystem::StaticClass();
+	this->mScannableSubsystemClass = AFGScannableSubsystem::StaticClass();
 }
 UFGSubsystemClasses* UFGSubsystemClasses::Get(){ return nullptr; }

@@ -19,11 +19,18 @@ public:
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
 
 	/** Attaches this attachment to a character */
 	void Attach( class AFGCharacterPlayer* character );
 
+	/* Updates primitive values on all UPrimitive components.*/
+	void UpdatePrimitiveColors();
+
+	UFUNCTION()
+    void OnColorUpdate(int32 index);
+	
 	/** Event called when this equipment has been attached */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment|Attachment" )
 	void OnAttach();

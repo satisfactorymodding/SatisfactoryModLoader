@@ -16,12 +16,8 @@ AFGBuildableJumppad::AFGBuildableJumppad() : Super() {
 	this->mLauncherBox = CreateDefaultSubobject<UBoxComponent>(TEXT("LauncherBox"));
 	this->mLauncherMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LauncherMeshComponent"));
 	this->mLauncherBox->SetupAttachment(mLauncherMeshComponent);
-	this->mTrajectoryMeshScale.X = 1.0;
-	this->mTrajectoryMeshScale.Y = 1.0;
-	this->mTrajectoryMeshScale.Z = 1.0;
-	this->mTrajectoryMeshRotation.Pitch = 0.0;
-	this->mTrajectoryMeshRotation.Yaw = 0.0;
-	this->mTrajectoryMeshRotation.Roll = 0.0;
+	this->mTrajectoryMeshScale = FVector::OneVector;
+	this->mTrajectoryMeshRotation = FRotator::ZeroRotator;
 	this->mDestinationMeshHeightOffset = 400.0;
 	this->mDestinationMesh = nullptr;
 	this->mTrajectorySplineMesh = nullptr;

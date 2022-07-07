@@ -222,6 +222,10 @@ public:
 	/** Unlock a research tree */
 	void UnlockResearchTree( TSubclassOf<class UFGResearchTree> researchTree );
 
+	/** Returns if all nodes in the given research tree are researched */
+	UFUNCTION( BlueprintPure, Category = "Research" )
+	static bool IsTreeFullyResearched( UObject* worldContextObject, TSubclassOf<class UFGResearchTree> reserachTree, TSubclassOf< class UFGSchematic > schematicToIgnore );
+
 	/** Checks if the system has activated yet */
 	UFUNCTION( BlueprintPure, Category = "Research" )
 	FORCEINLINE bool IsActivated() const { return mIsActivated; }

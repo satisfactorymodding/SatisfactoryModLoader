@@ -46,31 +46,18 @@ class FACTORYGAME_API AFGDestructiveProjectile : public AFGProjectile
 public:
 	AFGDestructiveProjectile();
 
-	// Actor initialization
-	virtual void PostInitializeComponents() override;
-	virtual void BeginPlay() override;
-	// End Actor Initialization
-
-	/** handle hit override, calls super */
-	virtual void OnImpact( const FHitResult& hitResult ) override;
-
 	FORCEINLINE class USphereComponent* GetDesctructionCollisionComponent() const { return mDestructionCollisionComp; }
 
 	virtual void PopulateDestructionContainers();
 
 protected:
-	/** trigger explosion */
-	virtual void DealExplosionDamage( const FHitResult& impact ) override;
+	virtual void OnExplode_Implementation() override;
 
 	/** Handle the destruction and removal of foliage */
 	virtual void HandleFoliageDestruction( );
 
 	/** Handle the destruction of actors that meet the criteria */
 	virtual void HandleActorDestruction( );
-
-	/** [client] explosion has happened, called by OnRep_Exploded will spawn client side particle effects */
-	/*	This removes the need for the server to broadcast all transforms and particle systems on detonation */
-	virtual void OnNotifiedExploded() override;
 
 protected:
 	/** Collision Component used to determine which objects should be considered for destruction */

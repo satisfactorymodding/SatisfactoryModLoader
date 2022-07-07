@@ -3,23 +3,15 @@
 #include "Hologram/FGPassthroughHologram.h"
 
 AFGPassthroughHologram::AFGPassthroughHologram() : Super() {
-	this->mAlignDirection.X = 0.0;
-	this->mAlignDirection.Y = 0.0;
-	this->mAlignDirection.Z = 0.0;
+	this->mAlignDirection = FVector::ZeroVector;
 	this->mSnappedFoundation = nullptr;
 	this->mSnappedBuildingThickness = 0.0;
 	this->mMidMeshLength = 0.0;
 	this->mCapMesh = nullptr;
 	this->mMidMesh = nullptr;
-	this->mEndCapRotation.Pitch = 0.0;
-	this->mEndCapRotation.Yaw = 0.0;
-	this->mEndCapRotation.Roll = 0.0;
-	this->mMidMeshRotation.Pitch = 0.0;
-	this->mMidMeshRotation.Yaw = 0.0;
-	this->mMidMeshRotation.Roll = 0.0;
-	this->mEndCapTranslation.X = 0.0;
-	this->mEndCapTranslation.Y = 0.0;
-	this->mEndCapTranslation.Z = 0.0;
+	this->mEndCapRotation = FRotator::ZeroRotator;
+	this->mMidMeshRotation = FRotator::ZeroRotator;
+	this->mEndCapTranslation = FVector::ZeroVector;
 	this->mClearanceHeightMin = 0.0;
 	this->mClearanceThickness = 0.0;
 	this->mConnectionClass = nullptr;

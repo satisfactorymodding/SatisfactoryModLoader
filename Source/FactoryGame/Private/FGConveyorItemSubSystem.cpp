@@ -6,6 +6,8 @@
 void FInstanceLODs::UpdateVisibility(int32 NumInstances){ }
 void FInstanceLODs::AddBucketComponents(int32 Num, AActor* Outer){ }
 void FInstanceLODs::AddInstance_Internal(AActor* Outer){ }
+#if WITH_PIE_SUPPORT
+#endif 
 AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->mInitialPreAllocatedNumberOfItemTypes = 0;
 	this->mInitialPreAllocatedNumberOfItemsInstances = 512;
@@ -31,16 +33,12 @@ AFGConveyorItemSubsystem::AFGConveyorItemSubsystem() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 }
 AFGConveyorItemSubsystem* AFGConveyorItemSubsystem::Get(UWorld* world){ return nullptr; }
-void AFGConveyorItemSubsystem::RegisterBelt(AFGBuildableConveyorBase* newBelt){ }
-void AFGConveyorItemSubsystem::UnRegisterBelt(AFGBuildableConveyorBase* removedBelt){ }
 void AFGConveyorItemSubsystem::Tick(float DeltaSeconds){ }
 void AFGConveyorItemSubsystem::BeginPlay(){ }
-bool AFGConveyorItemSubsystem::HandleDisabledState(){ return bool(); }
-void AFGConveyorItemSubsystem::ResolvedRegistered(){ }
-void AFGConveyorItemSubsystem::ResolveRemoved(){ }
+void AFGConveyorItemSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGConveyorItemSubsystem::ResolveNewTypes(){ }
-void AFGConveyorItemSubsystem::ComputeViewCullAndDistance(const FVector PlayerLocation, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Conveyors, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts){ }
 void AFGConveyorItemSubsystem::GatherTransformData(const TArray<bool> DistancesToUpdate, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Belt, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts){ }
+void AFGConveyorItemSubsystem::GatherTransformData_ISPC(const TArray<bool> DistancesToUpdate, FConveyorActorContainer< AFGBuildableConveyorBelt* >* Belt, FConveyorActorContainer< AFGBuildableConveyorLift* >* Lifts){ }
 void AFGConveyorItemSubsystem::UpdateGPUData(const TArray<bool> DistancesToUpdate){ }
 void AFGConveyorItemSubsystem::UpdateBuckets(){ }
 void AFGConveyorItemSubsystem::Cleanup(TArray< bool > LodsToUpdate){ }

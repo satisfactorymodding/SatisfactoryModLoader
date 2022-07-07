@@ -13,6 +13,9 @@ class UFGProductionIndicatorInstanceManager;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedGlobal, AFGBuildable*, buildable );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnBuildableLightColorSlotsUpdated );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnColorChanged, int32, Index );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOccluderBuildingConstructed, AFGBuildable*, buildable );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnOccluderBuildingRemoved, AFGBuildable*, buildable );
 
 /** Used to track constructed (spawned) buildables matched with their holograms between client and server */
 USTRUCT()
@@ -199,6 +202,9 @@ public:
 	template< typename T >
 	void GetTypedBuildable( TArray< T* >& out_buildables ) const;
 
+	void GetOcclusionAffectingBuildebles(TArray<AFGBuildable*>& Out, const FVector& RequestLocation, float Range, bool bParallel = true) const;
+
+
 	/** Starts replaying of build effects in the build order of the buildings. */
 	UFUNCTION()
 	void ReplayBuildingEffects();
@@ -363,6 +369,16 @@ public:
 	UPROPERTY( BlueprintAssignable, Category = "Light Color" )
 	FOnBuildableLightColorSlotsUpdated mOnBuildableLightColorSlotsUpdated;
 
+	UPROPERTY( BlueprintAssignable, Category = "Occlusion" )
+	FOnOccluderBuildingConstructed mOnOccluderBuildingAdded;
+
+	UPROPERTY( BlueprintAssignable, Category = "Occlusion" )
+	FOnOccluderBuildingRemoved mOnOccluderBuildingRemoved;
+
+	/** Broadcast when when a color index has been changes, ##DO NOT BIND BUILDINGS OR VEHICLES TO THIS they are managed already## */
+	UPROPERTY( BlueprintAssignable, Category = "Factory Color" )
+	FOnColorChanged mOnColorIndexChanged;
+	
 	/**
 	 * Used by UFGColoredInstanceMeshProxy to get an instance if it's not already been assigned
 	 */
@@ -488,6 +504,8 @@ private:
 
 	/** This contains all buildable light sources. Used to update light sources when light color slots have changed */
 	TArray< class AFGBuildableLightSource* > mBuildableLightSources;
+
+	TArray< class AFGBuildable* > mOcclusionEffectors;
 
 	/** The player adjustable color slots used by the buildable lights. Saved and replicated in game state. */ 
 	UPROPERTY( Transient )

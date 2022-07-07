@@ -32,9 +32,7 @@ AFGWheeledVehicle::AFGWheeledVehicle() : Super() {
 	this->mDistBetweenDecals = 50.0;
 	this->mDecalLifespan = 5.0;
 	this->mDefaultTireTrackDecal = nullptr;
-	this->mDecalSize.X = 35.0;
-	this->mDecalSize.Y = 50.0;
-	this->mDecalSize.Z = 1.0;
+	this->mDecalSize = FVector((35, 50, 1));
 	this->mFoliageDestroyRadius = 200.0;
 	this->mAddedGroundAngularVelocityStrengthYaw = 2.0;
 	this->mAddedGroundAngularVelocityStrengthPitch = 0.2;
@@ -150,6 +148,7 @@ ETransferAnimationState AFGWheeledVehicle::GetTransferAnimationState(float anima
 void AFGWheeledVehicle::CalculateManualDockingState(){ }
 void AFGWheeledVehicle::SetRefuelingStation( AFGBuildableDockingStation* station){ }
 void AFGWheeledVehicle::DockToRefuelingStation(){ }
+void AFGWheeledVehicle::FindSurroundingLevels(){ }
 void AFGWheeledVehicle::Died(AActor* thisActor){ }
 void AFGWheeledVehicle::SetSimulated(bool newIsSimulated){ }
 void AFGWheeledVehicle::CreateInventoryItemDrops_Implementation(){ }
@@ -218,6 +217,6 @@ UFGVehicleCollisionBoxComponent* AFGWheeledVehicle::FindCollisionBox() const{ re
 void AFGWheeledVehicle::StartGhosting(){ }
 void AFGWheeledVehicle::TryLeaveSimulatedMode(){ }
 bool AFGWheeledVehicle::IsAboveSolidGround(const FTransform& transform) const{ return bool(); }
-bool AFGWheeledVehicle::IsOverlappingOther(const FTransform& transform) const{ return bool(); }
+AActor* AFGWheeledVehicle::IsOverlappingOther(const FTransform& transform) const{ return nullptr; }
 float AFGWheeledVehicle::CalculateAutomatedFuelToConsume(float deltaTime){ return float(); }
 FName AFGWheeledVehicle::VehicleMovementComponentName = FName();

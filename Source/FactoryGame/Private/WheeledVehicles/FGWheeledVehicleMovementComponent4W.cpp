@@ -11,30 +11,22 @@ UFGWheeledVehicleMovementComponent4W::UFGWheeledVehicleMovementComponent4W(const
 	this->WheelSetups.Emplace();
 	this->WheelSetups[0].WheelClass = UVehicleWheel::StaticClass();
 	this->WheelSetups[0].BoneName = TEXT("None");
-	this->WheelSetups[0].AdditionalOffset.X = 0.0;
-	this->WheelSetups[0].AdditionalOffset.Y = 0.0;
-	this->WheelSetups[0].AdditionalOffset.Z = 0.0;
+	this->WheelSetups[0].AdditionalOffset = FVector::ZeroVector;
 	this->WheelSetups[0].bDisableSteering = false;
 	this->WheelSetups.Emplace();
 	this->WheelSetups[1].WheelClass = UVehicleWheel::StaticClass();
 	this->WheelSetups[1].BoneName = TEXT("None");
-	this->WheelSetups[1].AdditionalOffset.X = 0.0;
-	this->WheelSetups[1].AdditionalOffset.Y = 0.0;
-	this->WheelSetups[1].AdditionalOffset.Z = 0.0;
+	this->WheelSetups[1].AdditionalOffset = FVector::ZeroVector;
 	this->WheelSetups[1].bDisableSteering = false;
 	this->WheelSetups.Emplace();
 	this->WheelSetups[2].WheelClass = UVehicleWheel::StaticClass();
 	this->WheelSetups[2].BoneName = TEXT("None");
-	this->WheelSetups[2].AdditionalOffset.X = 0.0;
-	this->WheelSetups[2].AdditionalOffset.Y = 0.0;
-	this->WheelSetups[2].AdditionalOffset.Z = 0.0;
+	this->WheelSetups[2].AdditionalOffset = FVector::ZeroVector;
 	this->WheelSetups[2].bDisableSteering = false;
 	this->WheelSetups.Emplace();
 	this->WheelSetups[3].WheelClass = UVehicleWheel::StaticClass();
 	this->WheelSetups[3].BoneName = TEXT("None");
-	this->WheelSetups[3].AdditionalOffset.X = 0.0;
-	this->WheelSetups[3].AdditionalOffset.Y = 0.0;
-	this->WheelSetups[3].AdditionalOffset.Z = 0.0;
+	this->WheelSetups[3].AdditionalOffset = FVector::ZeroVector;
 	this->WheelSetups[3].bDisableSteering = false;
 }
 bool UFGWheeledVehicleMovementComponent4W::GetHandbreakInput() const{ return bool(); }

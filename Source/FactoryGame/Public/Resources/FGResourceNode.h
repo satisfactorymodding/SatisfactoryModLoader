@@ -22,7 +22,7 @@ enum EResourceAmount
 };
 
 /** How how fast it is to mine the resource */
-UENUM()
+UENUM( BlueprintType )
 enum EResourcePurity
 {
 	RP_Inpure UMETA( DisplayName = "Impure" ),

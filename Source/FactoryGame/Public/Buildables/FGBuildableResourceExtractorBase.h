@@ -8,6 +8,10 @@
 #include "Resources/FGExtractableResourceInterface.h"
 #include "FGBuildableResourceExtractorBase.generated.h"
 
+#if UE_BUILD_SHIPPING == 0
+#define DEBUG_RESOURCE_EXTRACTORS
+#endif
+
 /**
  * The base class for all resource extractors, i.e. miners and pumps.
  */
@@ -17,6 +21,9 @@ class FACTORYGAME_API AFGBuildableResourceExtractorBase : public AFGBuildableFac
 	GENERATED_BODY()
 
 public:
+	static int GetDebugLevel();
+	static void SetDebugLevel( int level );
+
 	/** Decide on what properties to replicate */
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void PreReplication( IRepChangedPropertyTracker& ChangedPropertyTracker ) override;

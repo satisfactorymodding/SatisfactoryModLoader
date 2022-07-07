@@ -20,6 +20,10 @@ AFGResourceSinkSubsystem::AFGResourceSinkSubsystem() : Super() {
 	this->mGlobalPointHistory.Add(0);
 	this->mGlobalPointHistory.Add(0);
 	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_NuclearWaste.Desc_NuclearWaste_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/Non-FissibleUranium/Desc_NonFissibleUranium.Desc_NonFissibleUranium_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/NuclearWaste/Desc_PlutoniumWaste.Desc_PlutoniumWaste_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/PlutoniumPellet/Desc_PlutoniumPellet.Desc_PlutoniumPellet_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
+	this->mFailedItemSinkMessages.Add(FSoftClassPath("/Game/FactoryGame/Resource/Parts/PlutoniumCell/Desc_PlutoniumCell.Desc_PlutoniumCell_C").ResolveClass(), FSoftClassPath("/Game/FactoryGame/Interface/UI/Message/GameplayBeat/ResourceSink/Message_ADA_AWESOME_Nuclear.Message_ADA_AWESOME_Nuclear_C").ResolveClass());
 	this->mAnyGenericItemsFailedToSink = false;
 	this->mIsCouponEverSunk = false;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;

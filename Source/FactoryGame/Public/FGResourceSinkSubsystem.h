@@ -91,6 +91,7 @@ public:
 	bool PurchaseResourceSinkSchematics( class UFGInventoryComponent* playerInventory, TArray< TSubclassOf< class UFGSchematic > > schematics );
 
 	/** Add resource sink coupons to the resource sink subsystem */
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|ResourceSink" )
 	void AddResourceSinkCoupons( int32 numCoupons );
 
 	/** Remove resource sink coupons from the resource sink subsystem

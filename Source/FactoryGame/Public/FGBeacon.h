@@ -9,62 +9,24 @@
 #include "FGActorRepresentationInterface.h"
 #include "FGBeacon.generated.h"
 
+// Deprecated class. We only keep it to migrate beacons to map markers
 UCLASS()
-class FACTORYGAME_API AFGBeacon : public AFGStaticReplicatedActor, public IFGActorRepresentationInterface
+class FACTORYGAME_API AFGBeacon : public AFGStaticReplicatedActor
 {
 	GENERATED_BODY()
 public:
-	AFGBeacon();
-
-	// Begin IFGActorRepresentationInterface
-	virtual bool AddAsRepresentation() override;
-	virtual bool UpdateRepresentation() override;
-	virtual bool RemoveAsRepresentation() override;
-	virtual bool IsActorStatic() override;
-	virtual FVector GetRealActorLocation() override;
-	virtual FRotator GetRealActorRotation() override;
-	virtual class UTexture2D* GetActorRepresentationTexture() override;
-	virtual FText GetActorRepresentationText() override;
-	virtual void SetActorRepresentationText( const FText& newText ) override;
-	virtual FLinearColor GetActorRepresentationColor() override;
-	virtual void SetActorRepresentationColor( FLinearColor newColor ) override;
-	virtual ERepresentationType GetActorRepresentationType() override;
-	virtual bool GetActorShouldShowInCompass() override;
-	virtual bool GetActorShouldShowOnMap() override;
-	virtual EFogOfWarRevealType GetActorFogOfWarRevealType() override;
-	virtual float GetActorFogOfWarRevealRadius() override;
-	virtual ECompassViewDistance GetActorCompassViewDistance() override;
-	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
-	// End IFGActorRepresentationInterface
-
 	// Begin AActor Interface
 	virtual void BeginPlay() override;
 	// End AActor Interface
-
-	/** Pickup the beacon by the provided player */
-	UFUNCTION( BlueprintCallable, BlueprintImplementableEvent, Category = "Beacon" )
-	void PickUpBeacon( class AFGCharacterPlayer* player );
-
-	/** Sets the text to use for this actors representation */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
-	void SetRepresentationColor( const FLinearColor& color );
-
+	
 	/** Fetches the color to use for this actors representation */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FLinearColor GetRepresentationColor();
-
-	/** Sets the text to use for this actors representation */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
-	void SetRepresentationText( const FText& text );
-
+	
 	/** Fetches the text to use for this actors representation */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FText GetRepresentationText();
-
-	/** Sets the compass view distance to use for this actors representation */
-	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
-	void SetCompassViewDistance( ECompassViewDistance compassViewDistance );
-
+	
 	/** Fetches the compass view distance to use for this actors representation */
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	ECompassViewDistance GetCompassViewDistance();

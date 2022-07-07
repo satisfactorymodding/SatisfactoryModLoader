@@ -12,8 +12,7 @@ FSignStringElement& FSignStringData::GetStringElementRefFromID(int32 id){ return
 bool FSignStringData::GetStringElementCopyFromID(int32 id, FSignStringElement& out_stringElement) const{ return bool(); }
 FSignStringData FSignStringData::Empty = FSignStringData();
 UFGSignTypeDescriptor::UFGSignTypeDescriptor() : Super() {
-	this->mSignCanvasDimensions.X = 0.0;
-	this->mSignCanvasDimensions.Y = 0.0;
+	this->mSignCanvasDimensions = FVector2D::ZeroVector;
 	this->mDefaultForegroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mDefaultBackgroundColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mDefaultAuxiliaryColor = FLinearColor(0.0, 0.0, 0.0, 0.0);

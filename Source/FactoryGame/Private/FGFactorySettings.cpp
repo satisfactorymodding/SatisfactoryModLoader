@@ -3,9 +3,11 @@
 #include "FGFactorySettings.h"
 #include "Equipment/FGBuildGun.h"
 #include "Equipment/FGResourceScanner.h"
+#include "FGBoomBoxPlayer.h"
 #include "FGEmoteShortcut.h"
 #include "FGFactoryCustomizationShortcut.h"
 #include "FGRecipeShortcut.h"
+#include "Resources/FGItemDescriptor.h"
 
 UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mDefaultValidPlacementMaterial = nullptr;
@@ -38,6 +40,9 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mBuildGunClass = AFGBuildGun::StaticClass();
 	this->mResourceScannerClass = AFGResourceScanner::StaticClass();
 	this->mResourceMinerClass = nullptr;
+	this->mBoomBoxClass = nullptr;
+	this->mBoomBoxPlayerClass = AFGBoomBoxPlayer::StaticClass();
+	this->mBoomBoxEquipmentDesc = UFGItemDescriptor::StaticClass();
 	this->mLegMesh = nullptr;
 	this->mFootMesh = nullptr;
 	this->mMaxFeetLength = 1000.0;

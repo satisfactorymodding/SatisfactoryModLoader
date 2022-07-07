@@ -323,6 +323,12 @@ protected:
 	UPROPERTY()
 	float mCurrentDockForDuration;
 
+	UPROPERTY()
+	bool mHasAnyRelevantStacksToMove;
+
+	UPROPERTY()
+	bool mAllowDepartureNoValidItemsToTransfer;
+
 private:
 	/** Inventory where we transfer items to when unloading from a vehicle. Never reference this pointer directly. Use mCargoInventoryHandler->GetActiveInventory(). */
 	UPROPERTY( SaveGame )

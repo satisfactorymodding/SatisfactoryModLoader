@@ -3,8 +3,8 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "FGScannableDetails.h"
 #include "UObject/Object.h"
-#include "Styling/SlateBrush.h"
 #include "FGItemDescriptor.generated.h"
 
 /**
@@ -22,8 +22,8 @@ enum class EResourceForm : uint8
 };
 
 /**
-* Stack Size for items
-*/
+ * Stack Size for items
+ */
 UENUM( BlueprintType )
 enum class EStackSize : uint8
 {
@@ -61,6 +61,48 @@ struct FItemView
 	float CameraPitch;
 };
 
+UENUM( BlueprintType )
+enum class ECompatibleItemType : uint8
+{
+	CIT_OTHER		UMETA( DisplayName = "Other" ),
+	CIT_AMMO		UMETA( DisplayName = "Ammo" ),
+	CIT_FUEL		UMETA( DisplayName = "Fuel" ),
+	CIT_WEAPON		UMETA( DisplayName = "Weapon" ),
+	CIT_FILTER		UMETA( DisplayName = "Filter" )
+};
+
+USTRUCT( BlueprintType )
+struct FCompatibleItemDescriptors
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	ECompatibleItemType CompatibleItemType;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	TArray< TSubclassOf< class UFGItemDescriptor > > CompatibleItemDescriptors;
+	
+};
+
+UENUM( BlueprintType )
+enum class EDescriptorStatBarType : uint8
+{
+	DSBT_Damage				UMETA( DisplayName = "Damage" ),
+	DSBT_EnergyEfficiency	UMETA( DisplayName = "Energy Efficiency" ),
+};
+
+USTRUCT( BlueprintType )
+struct FDescriptorStatBar
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	EDescriptorStatBarType DescriptorStatBarType;
+
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite )
+	int32 Value;
+};
+
 /**
  * Base for all descriptors in the game like resource, equipment etc.
  */
@@ -93,6 +135,12 @@ public:
 	static float GetRadioactiveDecay( TSubclassOf< UFGItemDescriptor > inClass );
 	FORCEINLINE static float GetRadioactiveDecay_inline( TSubclassOf< UFGItemDescriptor > inClass )
 	{
+#if !UE_BUILD_SHIPPING
+		if( CVarStressTestRadioActivity.GetValueOnAnyThread() > 0 )
+		{
+			return 50.f;
+		}
+#endif
 		if( inClass )
 		{
 			return inClass->GetDefaultObject< UFGItemDescriptor >()->mRadioactiveDecay;
@@ -112,32 +160,32 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static FText GetAbbreviatedDisplayName( TSubclassOf< UFGItemDescriptor > inClass );
 
-	/** Get the view to use when previewing this item */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
-	static void GetPreviewView( TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_previewView );
-
-	/** Get the view to use when previewing this item */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item", meta = ( DevelopmentOnly ) )
-	static void GetIconView( TSubclassOf< UFGItemDescriptor > inClass, FItemView& out_itemView );
-
-	//@todo This has been deprecated for a while, cleanup crew? G2 2019-06-12
-	/** The icon to be used in UI. */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item", meta=( DeprecatedFunction, DeprecationMessage = "Don't use the brush anymore, please use GetSmallIcon or GetBigIcon" ) )
-	static FSlateBrush GetItemIcon( TSubclassOf< UFGItemDescriptor > inClass );
-
 	/** The small icon of the item */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static UTexture2D* GetSmallIcon( TSubclassOf< UFGItemDescriptor > inClass );
 
+	virtual UTexture2D* Internal_GetSmallIcon() const;
+
 	/** The big icon of the item */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static UTexture2D* GetBigIcon( TSubclassOf< UFGItemDescriptor > inClass );
+
+	virtual UTexture2D* Internal_GetBigIcon() const;
+
+	/** Returns the crosshair material used with this item */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static UMaterialInterface* GetCrosshairMaterial( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/** Returns the stat bars for this item descriptor */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
+	static void GetDescriptorStatBars( TSubclassOf< UFGItemDescriptor > inClass, TArray<FDescriptorStatBar>& out_DescriptorStatBars );
 
 	/** The static mesh we want for representing the resource when they are in the production line.
 	 * @return The items mesh; a default mesh if the item has no mesh specified, nullptr if inClass is nullptr. */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static class UStaticMesh* GetItemMesh( TSubclassOf< UFGItemDescriptor > inClass );
 
+	// TODO we might want to inline this.
 	/** Returns the number of items of a certain type we can stack in one inventory slot */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Item" )
 	static int32 GetStackSize( TSubclassOf< UFGItemDescriptor > inClass );
@@ -198,47 +246,31 @@ public:
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|Gas" )
     static FLinearColor GetGasColorLinear( TSubclassOf< UFGItemDescriptor > inClass );
 
-	/** Getters and setters for icon capture properties, for editor tools use only but not wrapped with WiTH_EDITOR since it's needed in a tool with a scene which is technically a game.
-	*	The content of the functions are instead wrapped
-	*/
-	UFUNCTION( BlueprintPure, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static FTransform GetIconCameraTransform( TSubclassOf< UFGItemDescriptor > inClass );
-	UFUNCTION( BlueprintCallable, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static void SetIconCameraTransform( TSubclassOf< UFGItemDescriptor > inClass, FTransform cameraTransform );
-	UFUNCTION( BlueprintPure, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static float GetIconFOV( TSubclassOf< UFGItemDescriptor > inClass );
-	UFUNCTION( BlueprintCallable, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static void SetIconFOV( TSubclassOf< UFGItemDescriptor > inClass, float iconFOV );
-	UFUNCTION( BlueprintPure, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static FRotator GetIconObjectOrientation( TSubclassOf< UFGItemDescriptor > inClass );
-	UFUNCTION( BlueprintCallable, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static void SetIconObjectOrientation( TSubclassOf< UFGItemDescriptor > inClass, FRotator objectOrientation );
-	UFUNCTION( BlueprintPure, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static float GetIconCameraDistance( TSubclassOf< UFGItemDescriptor > inClass );
-	UFUNCTION( BlueprintCallable, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static void SetIconCameraDistance( TSubclassOf< UFGItemDescriptor > inClass, float cameraDistance );
-	UFUNCTION( BlueprintPure, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static FRotator GetIconSkyOrientation( TSubclassOf< UFGItemDescriptor > inClass );
-	UFUNCTION( BlueprintCallable, Category = "FactoryEditor|Descriptor|Icon", meta = ( DevelopmentOnly ) )
-	static void SetIconSkyOrientation( TSubclassOf< UFGItemDescriptor > inClass, FRotator skyOrientation );
+	/** Returns the compatible item descriptors for this item */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|CompatibleType" )
+	static TArray< FCompatibleItemDescriptors > GetCompatibleItemDescriptors( TSubclassOf< UFGItemDescriptor > inClass );
 
-	/*	Set array index used by the conveyor item renderer subsystem.
-	 * 	Should only be called in runtime and by the conveyor renderer, will write to the mutable default object.  */
+	/** Returns the class we want to scan for when looking for this descriptor */
+	static TSubclassOf< AActor > GetClassToScanFor( TSubclassOf< UFGItemDescriptor > inClass );
+	/** Returns a custom class we want to use when we scan for mClassToScanFor */
+	static TSubclassOf< class UFGScannableDetails > GetCustomScannableDetails( TSubclassOf< UFGItemDescriptor > inClass );
+	/** Returns the scannable type which decides how we present this descriptor after it been scanned */
+	static EScannableActorType GetScannableActorType( TSubclassOf< UFGItemDescriptor > inClass );
+	/** Required schematic to search for this descriptor. None means no requirement. */
+	static TSubclassOf<UFGSchematic> GetRequiredSchematicToScan( TSubclassOf< UFGItemDescriptor > inClass );
+	/** Return the display text for this descriptor when displayed in object scanner */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|CompatibleType" )
+	static FText GetScannerDisplayText( TSubclassOf< UFGItemDescriptor > inClass );
+	/** Return the scanner light color for this descriptor when displayed in object scanner */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|Descriptor|CompatibleType" )
+	static FColor GetScannerLightColor( TSubclassOf< UFGItemDescriptor > inClass );
+
+	/**
+	 * Set array index used by the conveyor item renderer subsystem.
+	 * Should only be called in runtime and by the conveyor renderer, will write to the mutable default object.
+	 */
 	FORCEINLINE static void SetItemEncountered( TSubclassOf<UFGItemDescriptor> Class, int32 Index );
-
 	FORCEINLINE static int32 IsItemEncountered( TSubclassOf<UFGItemDescriptor> Class );
-	
-#if WITH_EDITOR
-	/** Delete all icons in the game that's referenced by a FGItemDescriptor */
-	static void DeleteAllIcons();
-
-	/** Go through all FGItemDescriptor and generate a Icon for them */
-	static void GenerateAllIcons();
-
-	/** Calculate the bounds of this item */
-	virtual FVector GetCenterOfCollision();
-
-#endif
 
 protected:
 	/** Internal function to get the display name. */
@@ -246,41 +278,6 @@ protected:
 
 	/** Internal function to get the display description. */
 	virtual FText GetItemDescriptionInternal() const;
-
-#if WITH_EDITOR
-	/** Setup for generating icons */
-	static void BeginGenerateIcons();
-
-	/** Cleanup after generating icon */
-	static void EndGenerateIcons();
-
-	/** Clear the stage */
-	void ClearStage();
-
-	/** Let all the classes setup the stage the way it prefer, subclasses probably don't want to call Super */
-	virtual void SetupStage();
-
-	/** Generate a icon for this item */
-	virtual void GenerateIcon( bool reopenAssetEditor, TArray<UPackage*>& out_modifiedAddedPackages );
-
-	/** Get the item name from this class (Desc_IronScrew_C, becomes IronScrew) */
-	void GetItemName( FString& out_itemName ) const;
-
-	/** Get the folder path to the current class (/Game/FactoryGame/Resources/Parts/IronScrew) */
-	void GetCurrentFolderPath( FString& out_folderPath ) const;
-
-	/** Let this class generate a package and asset name for the icon */
-	void GenerateIconName( FString& out_package, FString& out_assetName ) const;
-
-	/** Let this class generate a package and asset name for the material instance */
-	void GenerateMaterialInstanceName( FString& out_package, FString& out_assetName ) const;
-
-	// Decide what components we want in our icon preview
-	class USceneComponent* CreatePreviewComponent( class USceneComponent* attachParent, class UActorComponent* componentTemplate, const FName& componentName );
-
-	// Abuse of the duplicate component system to calculate the bounds of a item... Ssssshhhh... Just walk away
-	class USceneComponent* CalculateComponentBounds( class USceneComponent* attachParent, class UActorComponent* componentTemplate, const FName& componentName );
-#endif
 
 public:
 	/**
@@ -332,11 +329,6 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	EResourceForm mForm;
 
-	//@todo @save Maybe clean this up at a later point? /G2 2018-10-25
-	/** Old brush used for UI, can't be DEPRECATED_ as it won't work in shipping builds during conversion then */
-	UPROPERTY( Meta = (NoAutoJSON = true) )
-	FSlateBrush mInventoryIcon;
-
 	/** Small icon of the item, always in memory */
 	UPROPERTY( EditDefaultsOnly, Category="UI", meta = ( AddAutoJSON = true ) )
 	UTexture2D* mSmallIcon;
@@ -345,13 +337,17 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "UI", DisplayName="Big Icon", meta = ( AddAutoJSON = true ) )
 	UTexture2D* mPersistentBigIcon;
 
+	/** The crosshair material used with this item */
+	UPROPERTY( EditDefaultsOnly, Category = "UI" )
+	TAssetPtr<UMaterialInterface> mCrosshairMaterial;
+
+	/** This is just enums mapped to arbitrary values meant to represent this item descriptors capabilities when we show it in the UI. This has no effect on game logic */
+	UPROPERTY( EditDefaultsOnly, Category="UI" )
+	TArray< FDescriptorStatBar > mDescriptorStatBars;
+
 	/** The static mesh we want for representing the resource when they are in the production line. */
 	UPROPERTY( EditDefaultsOnly, Category = "Item" )
 	class UStaticMesh* mConveyorMesh;
-
-	/** The view in the build menu for this item */
-	UPROPERTY( EditDefaultsOnly, Category = "Preview", meta = ( ShowOnlyInnerProperties, NoAutoJSON = true) )
-	FItemView mPreviewView;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
 	TSubclassOf< class UFGCategory > mCategory;
@@ -368,58 +364,6 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Organization" )
 	float mMenuPriority;
 
-#if WITH_EDITORONLY_DATA
-	/** Internal variable used when calculating the bounds of a descriptor */
-	FBox mComponentBounds;
-
-	// Used persist a world/stage between several GenerateIconCalls
-	struct FGenerateIconContext
-	{
-		/** Setup a zeroed context */
-		FGenerateIconContext();
-
-		/** Verify that the icon context is in a valid state*/
-		bool IsValid() const;
-
-		TWeakObjectPtr<class UWorld> World;
-		TWeakObjectPtr<class AFGRenderTargetStage> Stage;
-		TWeakObjectPtr<class UMaterialInstanceConstantFactoryNew> Factory;
-		TArray<FString> Prefixes;
-	};
-
-	/** Context used when generating icon data */
-	static FGenerateIconContext GenerateIconContext;
-
-	/** The jaw of the object when rendering the icon */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon", Meta=(NoAutoJSON =true) )
-	float mIconYaw;
-
-	/** The distance to the object when rendering the icon */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon", meta=( ShowOnlyInnerProperties, NoAutoJSON = true) )
-	FItemView mIconView;
-
-	/** The transform used for icon capture */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon - EDITOR ONLY", Meta = ( NoAutoJSON = true ) )
-	FTransform mIconCameraTransform;
-
-	/** The FOV used for icon capture */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon - EDITOR ONLY", Meta = ( NoAutoJSON = true ) )
-	float mIconFOV;
-
-	/** The object orientation used for icon capture */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon - EDITOR ONLY", Meta = ( NoAutoJSON = true ) )
-	FRotator mIconObjectOrientation;
-
-	/** The spring arm distance used for icon capture */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon - EDITOR ONLY", Meta = ( NoAutoJSON = true ) )
-	float mIconCameraDistance;
-
-	/** The sky orientation used for icon capture */
-	UPROPERTY( EditDefaultsOnly, Category = "Icon - EDITOR ONLY", Meta = ( NoAutoJSON = true ) )
-	FRotator mIconSkyOrientation;
-
-#endif
-
 	// NOTE: Ideally we want a fluid descriptor but some fluids are already a raw resource so we cannot do multiple inheritance, so either we need refactor how descriptors work or we put them here for now.
 	/**
 	 * Color for this fluid, RGB is the color and A is the transparency of the fluid.
@@ -435,28 +379,43 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Item", Meta = (DisplayName="Color 2 (Gas Color)") )
 	FColor mGasColor;
 
+	/** The compatible item descriptors for this item. For example which ammo descriptors a weapon can use */
+	UPROPERTY( EditDefaultsOnly, Category="Item" )
+	TArray< FCompatibleItemDescriptors > mCompatibleItemDescriptors;
 
+	/** The class we want to scan for when looking for this descriptor */
+	UPROPERTY( EditDefaultsOnly, Category = "Scanning" )
+	TSoftClassPtr< class AActor > mClassToScanFor;
+	/** The custom class we want to use when we scan for mClassToScanFor. If null we use the base scanning which just searched for actors of the class */
+	UPROPERTY( EditDefaultsOnly, Category = "Scanning" )
+	TSubclassOf< class UFGScannableDetails > mCustomScannableDetails;
+	/** The scannable type which decides how we present this descriptor after it been scanned */
+	UPROPERTY( EditDefaultsOnly, Category = "Scanning" )
+	EScannableActorType mScannableType;
+	/** Required schematic to search for this descriptor. None means no requirement. */
+	UPROPERTY( EditDefaultsOnly, Category = "Scanning" )
+	TSubclassOf<class UFGSchematic> mRequiredSchematicToScan;
+	/** If this is true we use the mScannerDisplayText as display text instead of the item descriptor name */ 
+	UPROPERTY( EditDefaultsOnly, Category = "Scanning", meta = (InlineEditConditionToggle) )
+	bool mShouldOverrideScannerDisplayText;
+	/** Name of object to scan for if we want to override display text */
+	UPROPERTY( EditDefaultsOnly, Category = "Scanning", meta = (EditCondition="mShouldOverrideScannerDisplayText") )
+	FText mScannerDisplayText;
+	/** Scanner light color that shows up in the hand scanner. This is an FColor since it was and FColor in the old struct used for scanning. */
+	UPROPERTY( EditDefaultsOnly, Category = "Scanning" )
+	FColor mScannerLightColor;
+	
 	/** This is just a hook for the resource sink points so we can add them to the 
 	* JSON wiki file even though they are in a separate datatable.  
 	*/
 	UPROPERTY()
 	int32 mResourceSinkPoints;
 
+	/*Stack size will be cached on post load, this way we dont need to cast every time to get the value.*/
+	UPROPERTY( Transient )
+	int32 mCachedStackSize;
+	
 private:
-	// BEGIN DEPRECATED
-	/** DEPRECATED @todok2 we should remove this when we are sure everything works but leaving it for now */
-	UPROPERTY( VisibleDefaultsOnly, Category = "DEPRECATED" )
-	TSubclassOf< class UFGItemCategory > mItemCategory;
-	
-	/** DEPRECATED @todok2 we should remove this when we are sure everything works but leaving it for now */
-	UPROPERTY( VisibleDefaultsOnly, Category = "DEPRECATED" )
-	TSubclassOf< class UFGCategory > mBuildCategory;
-	
-	/** DEPRECATED @todok2 we should remove this when we are sure everything works but leaving it for now */
-	UPROPERTY( VisibleDefaultsOnly, Category = "DEPRECATED" )
-	float mBuildMenuPriority;
-	// END DEPRECATED
-
 	/* Index used by the conveyor item subsystem.
 	 * Written onto the mutable default object. */
 	UPROPERTY( Transient )

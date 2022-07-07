@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "Unlocks/FGUnlock.h"
+#include "FGRecipe.h"
 #include "FGUnlockRecipe.generated.h"
 
 /**
@@ -23,17 +24,17 @@ public:
 
 #if WITH_EDITORONLY_DATA
 	// For migration
-	void Init( TArray< TSubclassOf< class UFGRecipe > > recipes ) { mRecipes = recipes; }
+	void Init( TArray< TSubclassOf< UFGRecipe > > recipes ) { mRecipes = recipes; }
 	// For adding a recipe to this schematic with editor tools
-	void AddRecipe( TSubclassOf< class UFGRecipe > recipe ) { mRecipes.AddUnique( recipe ); }
+	void AddRecipe( TSubclassOf< UFGRecipe > recipe ) { mRecipes.AddUnique( recipe ); }
 #endif
 
 	UFUNCTION( BlueprintPure, Category=Unlocks )
-	FORCEINLINE TArray< TSubclassOf< class UFGRecipe > > GetRecipesToUnlock() const { return mRecipes; }
+	FORCEINLINE TArray< TSubclassOf< UFGRecipe > > GetRecipesToUnlock() const { return mRecipes; }
 
 protected:
 	/** The recipes you get from this unlock */
 	UPROPERTY( EditDefaultsOnly )
-	TArray< TSubclassOf< class UFGRecipe > > mRecipes;
+	TArray< TSubclassOf< UFGRecipe > > mRecipes;
 
 };

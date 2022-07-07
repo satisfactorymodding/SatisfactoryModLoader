@@ -15,6 +15,7 @@ AFGFreightWagon::AFGFreightWagon() : Super() {
 	this->mFluidStackSizeDefault = EStackSize::SS_ONE;
 	this->mFluidStackSizeMultiplier = 0;
 	this->mCargoMeshComponent = nullptr;
+	this->mCargoMeshComponentDerailedTransform = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 }
 void AFGFreightWagon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -38,6 +39,7 @@ void AFGFreightWagon::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& d
 void AFGFreightWagon::OnItemAddedToFreight(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numAdded){ }
 void AFGFreightWagon::OnItemRemovedFromFreight(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }
 void AFGFreightWagon::InitializeInventoryComponent(){ }
+void AFGFreightWagon::OnRep_StorageInventory(){ }
 UStaticMesh* AFGFreightWagon::GetCargoStaticMesh(){ return nullptr; }
 float AFGFreightWagon::GetInventoryFilledPercentage() const{ return float(); }
 FName AFGFreightWagon::VehicleMovementComponentName = FName();

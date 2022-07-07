@@ -39,7 +39,6 @@ void UFGInventoryComponent::PostLoadGame_Implementation(int32 saveVersion, int32
 void UFGInventoryComponent::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool UFGInventoryComponent::NeedTransform_Implementation(){ return bool(); }
 bool UFGInventoryComponent::ShouldSave_Implementation() const{ return bool(); }
-void UFGInventoryComponent::OnRegister(){ Super::OnRegister(); }
 void UFGInventoryComponent::BeginPlay(){ }
 void UFGInventoryComponent::SetDefaultSize(int32 defaultSize){ }
 void UFGInventoryComponent::Resize(int32 newSize){ }
@@ -76,6 +75,7 @@ void UFGInventoryComponent::SplitStackAtIdx(int32 idx, int32 numItemsToMove){ }
 void UFGInventoryComponent::SetCanBeRearranged(bool canBeRearranged){ }
 void UFGInventoryComponent::CopyFromOtherComponent(UFGInventoryComponent* otherComponent){ }
 void UFGInventoryComponent::OnRep_InventoryStacks(){ }
+void UFGInventoryComponent::OnRep_AllowedItemDescriptors(TArray< TSubclassOf < UFGItemDescriptor > > previousAllowedItems){ }
 void UFGInventoryComponent::OnItemsAdded(int32 idx, int32 num){ }
 void UFGInventoryComponent::OnItemsRemoved(int32 idx, int32 num, FInventoryItem item){ }
 FInventoryStack& UFGInventoryComponent::GetStackFromIndex(int32 idx){ return *(new FInventoryStack); }

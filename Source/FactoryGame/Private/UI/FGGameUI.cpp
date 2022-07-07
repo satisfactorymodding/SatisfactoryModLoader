@@ -17,7 +17,7 @@ void UFGGameUI::UpdateActiveMessageQueue(){ }
 void UFGGameUI::PlayNextMessageInActiveMessageQueue(){ }
 bool UFGGameUI::CanReceiveMessageQueue(FPendingMessageQueue inMessageQueue){ return bool(); }
 bool UFGGameUI::CanReceiveMessage(TSubclassOf<  UFGMessageBase > inMessage){ return bool(); }
-void UFGGameUI::CancelPressed(){ }
+void UFGGameUI::Native_HandlePauseGamePressed(){ }
 void UFGGameUI::AudioMessageFinishedPlayback(){ }
 void UFGGameUI::RemoveAudioMessage_Implementation(){ }
 AFGCharacterPlayer* UFGGameUI::GetFGCharacter(){ return nullptr; }
@@ -26,5 +26,7 @@ void UFGGameUI::ClearHintOnTutorialStepCompleted(){ }
 void UFGGameUI::PlayAudioMessage(TSubclassOf<UFGAudioMessage> messageClass){ }
 UFGInteractWidget* UFGGameUI::FindWidgetByClass(TSubclassOf<UFGInteractWidget> widgetClass){ return nullptr; }
 void UFGGameUI::ResumeGame(){ }
+void UFGGameUI::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
+void UFGGameUI::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
 FReply UFGGameUI::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }
 void UFGGameUI::ShowTutorialHint(){ }

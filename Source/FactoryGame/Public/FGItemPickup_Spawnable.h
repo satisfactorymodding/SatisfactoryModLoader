@@ -16,6 +16,7 @@ public:
 	//~ Begin AActor interface
 	virtual void PostLoad() override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	//~ End AActor interface
 
 	//~ Begin IFGSaveInterface
@@ -32,6 +33,9 @@ public:
 	 * @copydoc AFGItemPickup_Spawnable::CreateItemDrop
 	 */
 	static class AFGItemPickup_Spawnable* CreateItemDrop( class UWorld* world, const FInventoryStack& item, FVector spawnLocation, FRotator spawnRotation, TSubclassOf<class AFGItemPickup_Spawnable> itemDropClass = nullptr );
+
+	UFUNCTION()
+	void OnColorUpdated( int32 index );
 
 	/**
 	*will drop item at location if there are no stack fonud on location that have enough space available

@@ -10,5 +10,6 @@ AFGBuildableWall::AFGBuildableWall() : Super() {
 	this->mAngularDepth = 0.0;
 	this->mWallType = EBuildableWallType::BWT_Normal;
 	this->mHologramClass = AFGWallHologram::StaticClass();
+	this->mAffectsOcclusion = true;
 }
 void AFGBuildableWall::CalculateLocalSnapOffset(FVector& out_upVector, float& out_length) const{ }

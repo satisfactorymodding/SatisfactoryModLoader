@@ -15,17 +15,19 @@ void AFGRiver::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEven
 void AFGRiver::UpdateFlowIntensity(){ }
 void AFGRiver::PopulateMaterialSettings(){ }
 void AFGRiver::BuildRiverFromData(const UObject* WorldContext, TSubclassOf<AFGRiver> BaseClass, TArray<FVector> WorldLocations, TArray<FVector> PointScales, TArray<FRotator> PointRotations, TArray<FVector> ArriaveTangets, TArray<FVector> LeaveTangents){ }
+void AFGRiver::UpdateRiverFromData(AFGRiver* River, USplineComponent* SourceSpline){ }
 #endif 
 AFGRiver::AFGRiver() : Super() {
 	this->mSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("RiverSpline"));
 	this->mSplineMesh = nullptr;
 	this->mSegmentLengthMultiplier = 1.0;
 	this->mVolumePrecision = 1000.0;
+	this->mVolumeHeightOffset = 0.0;
 	this->mDefaultFlowRate = 0.0;
 	this->mBaseMaterial = nullptr;
-	this->BuoyancyScale.X = 0.0;
-	this->BuoyancyScale.Y = 0.0;
+	this->BuoyancyScale = FVector2D::ZeroVector;
 	this->BuoyancyMaxIntensity = 0.0;
+	this->mDataCollection = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -41,7 +43,6 @@ void AFGRiver::ConstructMesh(){ }
 void AFGRiver::ConstructVolumes(){ }
 void AFGRiver::SetupMaterialValues(UMaterialInstanceDynamic* Material){ }
 void AFGRiver::ApplyVertexColors(TArray<USplineMeshComponent*>& MeshComponents){ }
-float AFGRiver::GetRiverLocationHeightOffset(FVector WorldLocation, float IntensityOnSpline) const{ return float(); }
 void AFGRiver::HandlePush(float DeltaTime, ACharacter* Actor){ }
 void AFGRiver::Tick(float DeltaTime){ }
 void AFGRiver::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult){ }

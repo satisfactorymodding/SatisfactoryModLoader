@@ -77,6 +77,8 @@ public:
 	void ResetValuesToDefault();
 
 	void RemoveValues( EOptionValueState valueType );
+
+	bool IsOptionRegistered( FString cvar );
 	
 	void GetOptionsDebugData( TArray<FString>& out_debugData );
 

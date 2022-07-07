@@ -6,6 +6,7 @@
 #include "FGFactoryColoringTypes.h"
 #include "FGOptimizationSettings.h"
 #include "FGFactoryColoringTypes.h"
+#include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "FGColoredInstanceManager.generated.h"
 
 
@@ -72,7 +73,7 @@ public:
 
 	// Functions to manage the instances handled by this class, setup must be called prior to using these.
 	void ClearInstances();
-	void AddInstance( const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex );
+	void AddInstance( const FTransform& transform, FInstanceHandle& handle, uint8 colorIndex, int32 numCustomDataFloats = 0 );
 	void RemoveInstance( FInstanceHandle& handle );
 
 	FORCEINLINE EDistanceCullCategory GetCullCategory() { return mCullCategory; }
@@ -96,6 +97,8 @@ public:
 
 	/** Reapply all material custom data to each mesh instance */
 	void UpdateMaterialColors();
+
+	void UpdateScalabilityMaterials(bool bEnableLightweightMaterials);
 
 private:
 

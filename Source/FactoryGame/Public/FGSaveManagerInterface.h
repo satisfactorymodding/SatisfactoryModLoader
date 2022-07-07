@@ -6,20 +6,6 @@
 #include "FGOnlineSessionSettings.h"
 #include "FGSaveManagerInterface.generated.h"
 
-namespace SaveSystemConstants
-{
-	// Several locations require the . in the extension
-	static FString SaveExtension( TEXT( ".sav" ) );
-
-	static FString BackupSuffix( TEXT("_BAK" ) );
-
-	// Custom name for the custom version when setting versions of archives
-	static const TCHAR CustomVersionFriendlyName[] = TEXT( "SaveVersion" );
-
-	// Custom name for the save header
-	static const TCHAR HeaderCustomVersionFriendlyName[] = TEXT( "SaveHeaderVersion" );
-}
-
 UENUM( BlueprintType )
 enum class ESaveExists : uint8
 {
@@ -155,7 +141,7 @@ struct FACTORYGAME_API FSaveHeader
 	bool NetSerialize( FArchive& ar, class UPackageMap* map, bool& out_success );
 
 	// The GUID for this custom version number
-	const static FGuid GUID;
+	inline static const FGuid GUID = FGuid( 0xC8C4A4F3, 0x3E26BC10, 0x53F8040C, 0x724A7A38 );
 };
 
 /** Enable custom net delta serialization for the above struct. */
@@ -222,6 +208,26 @@ struct FACTORYGAME_API FSessionSaveStruct
 	/** The saves that are in this session */
 	UPROPERTY( BlueprintReadOnly )
 	TArray< FSaveHeader > SaveHeaders;
+};
+
+/** Wraps a FSessionSaveStruct in an UObject. Used for list views since they require an object per item */
+UCLASS(BlueprintType)
+class UFGSessionSaveStructWrapper : public UObject
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY( BlueprintReadOnly )
+	FSessionSaveStruct SessionSaveStruct;
+};
+
+/** Wraps a FSaveHeader in an UObject. Used for list views since they require an object per item */
+UCLASS(BlueprintType)
+class UFGSaveHeaderWrapper : public UObject
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY( BlueprintReadOnly )
+	FSaveHeader SaveHeader;
 };
 
 DECLARE_DYNAMIC_DELEGATE_ThreeParams( FOnSaveManagerEnumerateSessionsComplete, bool, Success, const TArray<FSessionSaveStruct>&, Sessions, int32, CurrentSession );

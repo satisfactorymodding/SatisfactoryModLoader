@@ -15,7 +15,9 @@ EEquipmentSlot UFGInventoryComponentEquipment::GetEquipmentSlotEnum() const{ ret
 void UFGInventoryComponentEquipment::SetEquipmentSlotEnum(EEquipmentSlot inSlot){ }
 void UFGInventoryComponentEquipment::SetOverrideEquipment(AFGEquipment* equipment){ }
 void UFGInventoryComponentEquipment::CycleEquipment(int32 dir){ }
+void UFGInventoryComponentEquipment::SetActiveIndex(int32 index){ }
 bool UFGInventoryComponentEquipment::ContainsItemTypeAndHasEnoughSpaceForItem(FInventoryItem item){ return bool(); }
+FDelegateHandle UFGInventoryComponentEquipment::BindOnActiveEquipmentChanged(const FOnActiveEquipmentChanged::FDelegate &Delegate){ return FDelegateHandle(); }
 void UFGInventoryComponentEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(UFGInventoryComponentEquipment, mEquipmentInSlot);
@@ -28,3 +30,5 @@ void UFGInventoryComponentEquipment::ActivateEquipment(){ }
 void UFGInventoryComponentEquipment::RemoveEquipment(FInventoryItem item){ }
 bool UFGInventoryComponentEquipment::FilterEquipmentClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 AFGCharacterPlayer* UFGInventoryComponentEquipment::GetOwningCharacter(){ return nullptr; }
+void UFGInventoryComponentEquipment::OnRep_ActiveEquipmentIndex(){ }
+void UFGInventoryComponentEquipment::OnRep_ActiveEquipment(){ }

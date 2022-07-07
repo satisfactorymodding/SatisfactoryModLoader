@@ -93,15 +93,9 @@ AFGDroneVehicle::AFGDroneVehicle() : Super() {
 	this->mCurrentTripInformation.IncomingItemStacks = 0.0;
 	this->mCurrentTripInformation.OutgoingItemStacks = 0.0;
 	this->mIsBraking = false;
-	this->mCurrentVelocity.X = 0.0;
-	this->mCurrentVelocity.Y = 0.0;
-	this->mCurrentVelocity.Z = 0.0;
-	this->mCurrentDestination.X = 0.0;
-	this->mCurrentDestination.Y = 0.0;
-	this->mCurrentDestination.Z = 0.0;
-	this->mDesiredFacingDirection.X = 0.0;
-	this->mDesiredFacingDirection.Y = 0.0;
-	this->mDesiredFacingDirection.Z = 0.0;
+	this->mCurrentVelocity = FVector::ZeroVector;
+	this->mCurrentDestination = FVector::ZeroVector;
+	this->mDesiredFacingDirection = FVector::ZeroVector;
 	this->mCurrentFlyingMode = EDroneFlyingMode::DFM_None;
 	this->mCurrentDockingState.State = EDroneDockingState::DS_UNDOCKED;
 	this->mCurrentDockingState.StateStartTime = 0.0;
@@ -122,6 +116,7 @@ void AFGDroneVehicle::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutL
 	DOREPLIFETIME(AFGDroneVehicle, mCurrentDockingState);
 	DOREPLIFETIME(AFGDroneVehicle, mDockedStation);
 }
+void AFGDroneVehicle::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGDroneVehicle::IsUseable_Implementation() const{ return bool(); }
 void AFGDroneVehicle::Dismantle_Implementation(){ }
 void AFGDroneVehicle::OnIsSimulatedChanged(){ }

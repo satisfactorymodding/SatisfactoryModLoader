@@ -12,11 +12,11 @@ AFGChargedWeapon::AFGChargedWeapon() : Super() {
 }
 void AFGChargedWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
+	DOREPLIFETIME(AFGChargedWeapon, mIsPendingExecuteFire);
 }
 void AFGChargedWeapon::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }
 bool AFGChargedWeapon::ShouldSaveState() const{ return bool(); }
-void AFGChargedWeapon::BeginPrimaryFire(){ }
+void AFGChargedWeapon::Multicast_BeginPrimaryFire_Implementation(){ }
 void AFGChargedWeapon::EndPrimaryFire(){ }
 void AFGChargedWeapon::Equip( AFGCharacterPlayer* character){ }
 void AFGChargedWeapon::UnEquip(){ }
@@ -32,11 +32,13 @@ void AFGChargedWeapon::OnPrimaryFireEnded_Implementation(){ }
 void AFGChargedWeapon::ExecutePrimaryFire(FVector spawnLocation){ }
 void AFGChargedWeapon::Server_ExecutePrimaryFire_Implementation(FVector spawnLocation){ }
 void AFGChargedWeapon::Multicast_ResetPressTimestamp_Implementation(){ }
+void AFGChargedWeapon::Server_SecondaryFirePressed_Implementation(){ }
+void AFGChargedWeapon::Multicast_SecondaryFirePressed_Implementation(){ }
 void AFGChargedWeapon::SecondaryFirePressed(){ }
 void AFGChargedWeapon::OnSecondaryFirePressed_Implementation(){ }
 void AFGChargedWeapon::ExecuteSecondaryFire(){ }
 void AFGChargedWeapon::Server_ExecuteSecondaryFire_Implementation(){ }
 void AFGChargedWeapon::OnViewportFocusChanged(bool isOpen, TSubclassOf<  UUserWidget > interactionClass){ }
 void AFGChargedWeapon::AddEquipmentActionBindings(){ }
-void AFGChargedWeapon::ApplyDispersionReduction(float DeltaSeconds){ }
+void AFGChargedWeapon::UpdateDispersion(float DeltaSeconds){ }
 void AFGChargedWeapon::OnAmmoFired(AActor* SpawnedActor){ }

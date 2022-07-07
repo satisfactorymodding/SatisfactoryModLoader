@@ -20,10 +20,13 @@ AFGBuildableTrainPlatformCargo::AFGBuildableTrainPlatformCargo() : Super() {
 	this->mDockingRuleSet.DockingDefinition = ETrainDockingDefinition::TDD_LoadUnloadOnce;
 	this->mDockingRuleSet.DockForDuration = 15.0;
 	this->mDockingRuleSet.IsDurationAndRule = false;
+	this->mDockingRuleSet.IgnoreFullLoadUnloadIfTransferBlockedByFilters = false;
 	this->mHasFullyLoadUnloadRule = false;
 	this->mDockForDuration = 0.0;
 	this->mMustDockForDuration = false;
 	this->mCurrentDockForDuration = 0.0;
+	this->mHasAnyRelevantStacksToMove = false;
+	this->mAllowDepartureNoValidItemsToTransfer = false;
 	this->mInventory = nullptr;
 	this->mHasDockedActor = false;
 	this->mIsInLoadMode = true;

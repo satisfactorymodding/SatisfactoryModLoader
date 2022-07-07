@@ -67,6 +67,11 @@ protected:
 	/** @copydoc AFGEquipment::AddEquipmentActionBindings */
 	virtual void AddEquipmentActionBindings() override;
 
+private:
+	/** Used to report a noise event for when the jetpack is active. */
+	UFUNCTION()
+	void MakeActiveNoise();
+
 public:
 	
 	/** The duration we've held down thrust this flight, only resets when Landed*/
@@ -77,6 +82,16 @@ protected:
 	/** If we are actually thrusting or not */
 	UPROPERTY( VisibleInstanceOnly, BlueprintReadOnly )
 	bool mIsThrusting;
+	
+	/** The noise to make when the jetpack is active. */
+    UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
+    TSubclassOf< class UFGNoise > mActiveNoise;
+
+    /** How often to make the noise (in seconds) while the jetpack is active. */
+    UPROPERTY( EditDefaultsOnly, Category = "JetPack" )
+    float mActiveNoiseFrequency;
+
+    FTimerHandle mActiveNoiseTimerHandle;
 
 private:
 

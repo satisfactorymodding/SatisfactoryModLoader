@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "GameFramework/CheatManager.h"
 #include "FGGamePhaseManager.h"
+#include "FGCreatureSubsystem.h"
 #include "Interfaces/OnlineSharedCloudInterface.h"
 #include "FGCheatManager.generated.h"
 
@@ -25,6 +26,8 @@ public:
 	// For networking support
 	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags);
 
+	virtual void InitDefaultCheats();
+	
 	bool IsClient() const;
 
 	UFUNCTION( Server, Reliable )
@@ -196,17 +199,27 @@ public:
 	void DestroyPawn();
 
 	UFUNCTION( exec )
-	void RemoveAllFoliage( int32 maxNumInstances = 999999 );
+	void RemoveFoliageOneByOne( int32 maxNumInstances = 0 );
 
 	UFUNCTION( Server, Reliable )
-	virtual void Server_PardonAllPlayers();
-	UFUNCTION( exec, CheatBoard, category = "Player" )
-	virtual void PardonAllPlayers();
+	void Server_RemoveFoliageOneByOne( int32 maxNumInstances );
+
+	UFUNCTION( exec )
+	void RemoveFoliageInBulk( int32 maxNumInstances = 0 );
 
 	UFUNCTION( Server, Reliable )
-	virtual void Server_ClearPardon();
-	UFUNCTION( exec, CheatBoard, category = "Player" )
-	virtual void ClearPardon();
+	void Server_RemoveFoliageInBulk( int32 maxNumInstances );
+
+	UFUNCTION( exec )
+	void RemoveFoliageByTarget( float radius = 5000.0f );
+
+	UFUNCTION( Server, Reliable )
+	void Server_RemoveFoliageByTarget( float radius );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetCreatureHostility( ECreatureHostility hostility );
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void SetCreatureHostility( ECreatureHostility hostility );
 
 	UFUNCTION( Server, Reliable )
 	void Server_SetTimeOfDay( int32 hour, int32 minute = 0 );
@@ -370,7 +383,13 @@ public:
 	/** Forces active spawners to spawn creatures even if the creature isn't set to spawn yet ( because of day/night restrictions etc ) */
 	UFUNCTION( exec, CheatBoard, category = "World/Time" )
 	void ForceSpawnCreatures();
-	
+
+	UFUNCTION( exec, CheatBoard, category = "Weather" )
+	void ForceSetWeatherType( TSubclassOf<class AFGWeatherReaction> Reaction );
+
+	UFUNCTION( exec, CheatBoard, category = "Weather" )
+	void LockWeather(bool bState);
+
 	UFUNCTION( exec, CheatBoard ,category = "Log" )
 	void DumpNonDormantActors();
 
@@ -421,8 +440,8 @@ public:
 	UFUNCTION( exec, CheatBoard )
 	void HideMap();
 
-	UFUNCTION( exec, CheatBoard, category = "World/Time" )
-	void SetAITickDistance( float distance );
+	UFUNCTION( exec, CheatBoard )
+	void RemoveMapMarker( int32 index );
 
 	UFUNCTION( exec, CheatBoard, category = "Log" )
 	void DumpPlayerStates();
@@ -665,6 +684,13 @@ public:
 	UFUNCTION( exec )
 	void MarkTrackGraphsForRebuild();
 
+	UFUNCTION( exec )
+	void RunHardwareBenchmark(int32 WorkScale = 10, float CPUMultiplier = 1.0f, float GPUMultiplier = 1.0f);
+
+	/** Used to toggle cheat menu from console. Migrated here from the old FGHUD solution and kept the naming */
+	UFUNCTION( exec )
+	void Cheats();
+
 private:
 	class UActorComponent* GetOuterPlayersUseComponent() const;
 	class AActor* GetOuterPlayersUseActor() const;
@@ -677,4 +703,7 @@ public:
 	TArray< UClass* > mPopularUClassChoices;
 
 	FTimerHandle mDebugFocusTimerHandle;
+
+	/** Used to check if we have applied the default cheats this game session. */ 
+	bool mDefaultCheatsApplied = false;
 };

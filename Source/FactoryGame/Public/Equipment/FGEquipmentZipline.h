@@ -60,6 +60,11 @@ public:
 
 	/** Called during tick, tries to grab onto a wire if mWantToGrab is set  */
 	void TryToGrab();
+
+private:
+	/** Used to make noise for when the zipline is active. */
+	UFUNCTION()
+	void MakeActiveNoise();
 	
 private:
 	/** Set if we dropped from a zipline so that we don't call UnCrouch when button is released */
@@ -92,6 +97,16 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
 	bool mVisualizeTraceDistance;
 
+	/** The noise to make when the zipline is active. */
+    UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
+    TSubclassOf< class UFGNoise > mActiveNoise;
+
+    /** How often to make the noise (in seconds) while the zipline is active. */
+    UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
+    float mActiveNoiseFrequency;
+
+    FTimerHandle mActiveNoiseTimerHandle;
+	
 	/** Duration we need to wait before allowing the player to reattach zipline */
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
 	float mZiplineReattachCooldown;

@@ -7,9 +7,7 @@ AFGLadderHologram::AFGLadderHologram() : Super() {
 	this->mLadderBottomSnapThreshold = 0.4;
 	this->mWidth = 0.0;
 	this->mMeshHeight = 0.0;
-	this->mPlacementPosition.X = 0.0;
-	this->mPlacementPosition.Y = 0.0;
-	this->mPlacementPosition.Z = 0.0;
+	this->mPlacementPosition = FVector::ZeroVector;
 	this->mMaxSegmentCount = 0;
 	this->mTargetSegmentHeight = 0;
 	this->mCanDragDown = true;

@@ -3,22 +3,33 @@
 #include "FGFoliagePickup.h"
 
 AFGFoliagePickup::AFGFoliagePickup() : Super() {
+	this->mPickupRepeatInterval = 0.5;
 	this->mPickupMesh = nullptr;
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 0.0;
 	this->bOnlyRelevantToOwner = true;
 	this->SetHidden(true);
 	this->bNetUseOwnerRelevancy = true;
 	this->bReplicates = true;
 }
+void AFGFoliagePickup::BeginPlay(){ }
+void AFGFoliagePickup::Tick(float DeltaSeconds){ }
 void AFGFoliagePickup::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
-void AFGFoliagePickup::OnUse_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
-void AFGFoliagePickup::OnUseStop_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 bool AFGFoliagePickup::IsUseable_Implementation() const{ return bool(); }
 void AFGFoliagePickup::StartIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 FText AFGFoliagePickup::GetLookAtDecription_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state) const{ return FText(); }
 void AFGFoliagePickup::StopIsLookedAt_Implementation( AFGCharacterPlayer* byCharacter, const FUseState& state){ }
 void AFGFoliagePickup::BroadcastPickup_Implementation( UStaticMesh* fromStaticMesh, FVector atLocation){ }
-void AFGFoliagePickup::SetPickupData( UHierarchicalInstancedStaticMeshComponent* component, int32 instanceIndex, AFGCharacterPlayer* byCharacter){ }
-void AFGFoliagePickup::Server_PickupWithTransform_Implementation( AFGCharacterPlayer* byCharacter, AFGFoliageRemoval* foliageRemoval, FTransform withTransform){ }
-bool AFGFoliagePickup::Server_PickupWithTransform_Validate( AFGCharacterPlayer* byCharacter, AFGFoliageRemoval* foliageRemoval, FTransform withTransform){ return bool(); }
+void AFGFoliagePickup::SetPickupData( UHierarchicalInstancedStaticMeshComponent* component, int32 instanceId, AFGCharacterPlayer* byCharacter){ }
+void AFGFoliagePickup::DoPickup(){ }
+void AFGFoliagePickup::OnUseKeyPressed(){ }
+void AFGFoliagePickup::OnUseKeyReleased(){ }
+void AFGFoliagePickup::Server_PickUpFoliage_Implementation( AFGCharacterPlayer* byCharacter, AFGFoliageRemoval* foliageRemoval, int index){ }
+bool AFGFoliagePickup::Server_PickUpFoliage_Validate( AFGCharacterPlayer* byCharacter, AFGFoliageRemoval* foliageRemoval, int index){ return bool(); }
 bool AFGFoliagePickup::AddToPlayerInventory( AFGCharacterPlayer* character,  UHierarchicalInstancedStaticMeshComponent* meshComponent){ return bool(); }
 bool AFGFoliagePickup::HasPlayerSpaceFor( AFGCharacterPlayer* character,  UHierarchicalInstancedStaticMeshComponent* meshComponent){ return bool(); }

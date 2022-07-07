@@ -2,6 +2,11 @@
 
 #include "Buildables/FGBuildableManufacturer.h"
 
+void UFGManufacturerClipboardRCO::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGManufacturerClipboardRCO, mForceNetField_UFGManufacturerClipboardRCO);
+}
+void UFGManufacturerClipboardRCO::Server_PasteSettings_Implementation( AFGBuildableManufacturer* manufacturer, AFGCharacterPlayer* player, TSubclassOf<  UFGRecipe > recipe, float overclock){ }
 void AFGBuildableManufacturer::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBuildableManufacturer, mCurrentRecipe);
@@ -24,6 +29,9 @@ float AFGBuildableManufacturer::GetDefaultProductionCycleTime() const{ return fl
 float AFGBuildableManufacturer::GetProductionCycleTimeForRecipe(TSubclassOf< UFGRecipe > recipe) const{ return float(); }
 float AFGBuildableManufacturer::CalcProductionCycleTimeForPotential(float potential) const{ return float(); }
 void AFGBuildableManufacturer::OnReplicationDetailActorRemoved(){ }
+UFGFactoryClipboardSettings* AFGBuildableManufacturer::CopySettings_Implementation(){ return nullptr; }
+bool AFGBuildableManufacturer::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+float AFGBuildableManufacturer::TryFillPotentialInventory(AFGCharacterPlayer* player, float targetPotential, bool simulate){ return float(); }
 bool AFGBuildableManufacturer::MoveOrDropInputInventory(AFGCharacterPlayer* pawn){ return bool(); }
 bool AFGBuildableManufacturer::MoveOrDropOutputInventory(AFGCharacterPlayer* pawn){ return bool(); }
 float AFGBuildableManufacturer::GetProductionProgress() const{ return float(); }

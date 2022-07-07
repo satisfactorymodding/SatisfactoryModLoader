@@ -3,12 +3,18 @@
 #include "Buildables/FGBuildableLightSource.h"
 #include "FGPowerInfoComponent.h"
 
+void UFGLightSourceClipboardRCO::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UFGLightSourceClipboardRCO, mForceNetField_UFGLightSourceClipboardRCO);
+}
+void UFGLightSourceClipboardRCO::Server_PasteSettingsBuildableLight_Implementation( AFGBuildableLightSource* buildableLight, FLightSourceControlData lightSourceControlData){ }
+void UFGLightSourceClipboardRCO::Server_PasteSettingsControlPanel_Implementation( AFGBuildableLightsControlPanel* controlPanel, FLightSourceControlData lightSourceControlData){ }
 AFGBuildableLightSource::AFGBuildableLightSource() : Super() {
 	this->mIsEnabled = true;
 	this->mLightControlData.ColorSlotIndex = 0;
 	this->mLightControlData.Intensity = 1.0;
 	this->mLightControlData.IsTimeOfDayAware = false;
-	this->mCurrentLightColor = FLinearColor(1.0, 1.0, 1.0);
+	this->mCurrentLightColor = FLinearColor(1.0, 1.0, 1.0, 1.0);
 	this->mPowerConsumption = 1.0;
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("powerInfo"));
 	this->mHasPower = false;
@@ -24,6 +30,10 @@ void AFGBuildableLightSource::GetLifetimeReplicatedProps(TArray< FLifetimeProper
 void AFGBuildableLightSource::BeginPlay(){ }
 void AFGBuildableLightSource::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 bool AFGBuildableLightSource::GetPoolHandleInitialState() const{ return bool(); }
+UFGFactoryClipboardSettings* AFGBuildableLightSource::CopySettings_Implementation(){ return nullptr; }
+bool AFGBuildableLightSource::PasteSettings_Implementation(UFGFactoryClipboardSettings* settings){ return bool(); }
+TSubclassOf<UObject> AFGBuildableLightSource::GetClipboardMappingClass_Implementation(){ return TSubclassOf<UObject>(); }
+void AFGBuildableLightSource::OnBuildEffectFinished(){ }
 void AFGBuildableLightSource::SetLightEnabled(bool isEnabled){ }
 void AFGBuildableLightSource::SetLightControlData(FLightSourceControlData data){ }
 bool AFGBuildableLightSource::IsLightEnabled() const{ return bool(); }

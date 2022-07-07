@@ -3,18 +3,20 @@
 #include "FGProductionIndicatorInstanceComponent.h"
 
 UFGProductionIndicatorInstanceComponent::UFGProductionIndicatorInstanceComponent() : Super() {
+	this->mStateNoneData.FlashingPattern = 0;
+	this->mStateNoneData.mColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mStateActiveData.FlashingPattern = 0;
+	this->mStateActiveData.mColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mStateActiveWithCrystalData.FlashingPattern = 0;
+	this->mStateActiveWithCrystalData.mColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mStateErrorData.FlashingPattern = 0;
+	this->mStateErrorData.mColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mStateStandbyData.FlashingPattern = 0;
+	this->mStateStandbyData.mColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mBlockColoring = true;
+	this->mNumCustomDataFloats = 4;
 	this->bAffectDistanceFieldLighting = false;
-	this->PrimaryComponentTick.TickGroup = ETickingGroup::TG_DuringPhysics;
-	this->PrimaryComponentTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryComponentTick.bTickEvenWhenPaused = false;
-	this->PrimaryComponentTick.bCanEverTick = false;
-	this->PrimaryComponentTick.bStartWithTickEnabled = false;
-	this->PrimaryComponentTick.bAllowTickOnDedicatedServer = false;
-	this->PrimaryComponentTick.TickInterval = 0.0;
 }
-void UFGProductionIndicatorInstanceComponent::EndPlay(const EEndPlayReason::Type endPlayReason){ }
-void UFGProductionIndicatorInstanceComponent::SetInstanceManager(UFGProductionIndicatorInstanceManager* manager){ }
-void UFGProductionIndicatorInstanceComponent::SetInstanced(bool isInstanced){ }
 void UFGProductionIndicatorInstanceComponent::OnProductionStatusChanged(EProductionStatus newStatus){ }
 void UFGProductionIndicatorInstanceComponent::ResetIndicatorStatus(){ }
-void UFGProductionIndicatorInstanceComponent::OnHiddenInGameChanged(){ }
+void UFGProductionIndicatorInstanceComponent::SetVisuals(EProductionStatus newStatus){ }

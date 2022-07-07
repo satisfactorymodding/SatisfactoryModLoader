@@ -2,3 +2,4 @@
 
 #include "Buildables/FGBuildablePoleBase.h"
 
+bool AFGBuildablePoleBase::ShouldBeConsideredForBase_Implementation(){ return bool(); }

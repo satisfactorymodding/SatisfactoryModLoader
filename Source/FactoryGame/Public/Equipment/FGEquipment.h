@@ -7,6 +7,7 @@
 #include "ItemAmount.h"
 #include "FGSaveInterface.h"
 #include "CharacterAnimationTypes.h"
+#include "FGHealthComponent.h"
 #include "Replication/FGReplicationDependencyActorInterface.h"
 #include "FGEquipment.generated.h"
 
@@ -16,7 +17,10 @@ enum class EEquipmentSlot :uint8
 {
 	ES_NONE			UMETA( DisplayName = "Please specify a slot." ),
 	ES_ARMS			UMETA( DisplayName = "Arms" ),
-	ES_BACK			UMETA( DisplayName = "Body" ),
+	ES_BACK			UMETA( DisplayName = "Back" ),
+	ES_LEGS			UMETA( DisplayName = "Legs" ),
+	ES_HEAD			UMETA( DisplayName = "Head" ),
+	ES_BODY			UMETA( DisplayName = "Body" ),
 	ES_MAX			UMETA( Hidden )
 };
 
@@ -34,7 +38,9 @@ public:
 	// Begin AActor interface
 	virtual void GetLifetimeReplicatedProps( TArray< FLifetimeProperty >& OutLifetimeProps ) const override;
 	virtual void PreReplication( IRepChangedPropertyTracker & ChangedPropertyTracker ) override;
+	virtual void OnRep_AttachmentReplication() override;
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	// End AActor interface
 
 	// Begin IFGSaveInterface
@@ -60,6 +66,9 @@ public:
 	/** Called on the owner, client or server but not both. */
 	void OnDefaultPrimaryFirePressed();
 
+	/* Updates primitive values on all UPrimitive components.*/
+	void UpdatePrimitiveColors();
+	
 	/** Only server implementation of primary fire */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_DefaultPrimaryFire();
@@ -97,6 +106,8 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	class AFGCharacterPlayer* GetInstigatorCharacter() const;
 
+	UFUNCTION()
+	void OnColorUpdate(int32 index);
 	/** 
 	 * @return Is the instigator locally controlled; false if no instigator.
 	 */
@@ -201,6 +212,10 @@ public:
 	/** @return idle pose animation for 3p, can be NULL */
 	UFUNCTION( BlueprintPure, Category = "Animation" )
     class UAimOffsetBlendSpace* GetAttachmentIdleAO() const { return mAttachmentIdleAO; }
+
+	/** Called when the equipment was removed from it's equipment slot */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	void WasRemovedFromSlot();
 	
 protected:
 	/** Was the equipment equipped. */
@@ -318,13 +333,16 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment", AdvancedDisplay )
 	bool mHasPersistentOwner;
 
+	UPROPERTY( EditDefaultsOnly, Category = "Equipment", AdvancedDisplay )
+	bool mOnlyVisibleToOwner;
+
 private:
 	/** This is the attachment of this equipment */
-	UPROPERTY()
+	UPROPERTY( Replicated )
 	class AFGEquipmentAttachment* mAttachment;
 
 	/** This is a potential secondary attachment */
-	UPROPERTY()
+	UPROPERTY( Replicated )
 	class AFGEquipmentAttachment* mSecondaryAttachment;
 
 	/** True if we have a blueprint version of some functions */
@@ -356,4 +374,9 @@ private:
 	/** Aim offset to override with */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment|Animation" )
 	class UAimOffsetBlendSpace* mAttachmentIdleAO;
+
+	/** List of damages modifiers that this equipment applies upon equip (and removes once unequipped).
+	 *Used to modify the amount of damages inbound from specific types of damages. */
+	UPROPERTY(EditDefaultsOnly, Category= "Equipment" )
+	TArray<FDamageModifier> mReceivedDamageModifiers;
 };

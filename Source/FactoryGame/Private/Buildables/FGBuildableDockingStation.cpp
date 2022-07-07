@@ -4,8 +4,7 @@
 #include "Replication/FGReplicationDetailInventoryComponent.h"
 
 AFGBuildableDockingStation::AFGBuildableDockingStation() : Super() {
-	this->mDockPosition.X = 0.0;
-	this->mDockPosition.Y = 0.0;
+	this->mDockPosition = FVector2D::ZeroVector;
 	this->mMinimumDockingTime = 10.0;
 	this->mDockArea = nullptr;
 	this->mActorRepresentationTexture = nullptr;

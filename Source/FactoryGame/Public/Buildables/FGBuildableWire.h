@@ -27,6 +27,7 @@ public:
 
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	virtual bool ShouldBeConsideredForBase_Implementation() override;
 	// End Buildable interface
 
 	/** @return The distance between the points the wire connects. */

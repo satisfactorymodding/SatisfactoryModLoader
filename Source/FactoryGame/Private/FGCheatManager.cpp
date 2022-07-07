@@ -7,6 +7,7 @@ bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
 int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGCheatManager::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
 bool UFGCheatManager::ReplicateSubobjects( UActorChannel *Channel,  FOutBunch *Bunch, FReplicationFlags *RepFlags){ return bool(); }
+void UFGCheatManager::InitDefaultCheats(){ }
 bool UFGCheatManager::IsClient() const{ return bool(); }
 void UFGCheatManager::Server_NoCost_Implementation(bool enabled){ }
 void UFGCheatManager::NoCost(bool enabled){ }
@@ -69,11 +70,14 @@ bool UFGCheatManager::EnableBuildableTick_Get(){ return bool(); }
 void UFGCheatManager::EnablePlayerFOV(bool enable){ }
 bool UFGCheatManager::EnablePlayerFOV_Get(){ return bool(); }
 void UFGCheatManager::DestroyPawn(){ }
-void UFGCheatManager::RemoveAllFoliage(int32 maxNumInstances){ }
-void UFGCheatManager::Server_PardonAllPlayers_Implementation(){ }
-void UFGCheatManager::PardonAllPlayers(){ }
-void UFGCheatManager::Server_ClearPardon_Implementation(){ }
-void UFGCheatManager::ClearPardon(){ }
+void UFGCheatManager::RemoveFoliageOneByOne(int32 maxNumInstances){ }
+void UFGCheatManager::Server_RemoveFoliageOneByOne_Implementation(int32 maxNumInstances){ }
+void UFGCheatManager::RemoveFoliageInBulk(int32 maxNumInstances){ }
+void UFGCheatManager::Server_RemoveFoliageInBulk_Implementation(int32 maxNumInstances){ }
+void UFGCheatManager::RemoveFoliageByTarget(float radius){ }
+void UFGCheatManager::Server_RemoveFoliageByTarget_Implementation(float radius){ }
+void UFGCheatManager::Server_SetCreatureHostility_Implementation(ECreatureHostility hostility){ }
+void UFGCheatManager::SetCreatureHostility(ECreatureHostility hostility){ }
 void UFGCheatManager::Server_SetTimeOfDay_Implementation(int32 hour, int32 minute){ }
 void UFGCheatManager::SetTimeOfDay(int32 hour, int32 minute){ }
 void UFGCheatManager::Server_SetTimeSpeedMultiplierResetTime_Implementation(int32 resetHour){ }
@@ -133,6 +137,8 @@ void UFGCheatManager::DumpGamePhases(){ }
 void UFGCheatManager::TestSharedInventoryPtr(){ }
 void UFGCheatManager::Server_ForceSpawnCreatures_Implementation(){ }
 void UFGCheatManager::ForceSpawnCreatures(){ }
+void UFGCheatManager::ForceSetWeatherType(TSubclassOf<class AFGWeatherReaction> Reaction){ }
+void UFGCheatManager::LockWeather(bool bState){ }
 void UFGCheatManager::DumpNonDormantActors(){ }
 void UFGCheatManager::ToggleAudioLandingDebug(){ }
 void UFGCheatManager::DumpAttachedToSkelMesh(bool detailed){ }
@@ -150,7 +156,7 @@ void UFGCheatManager::RevealMap(){ }
 void UFGCheatManager::NetMulticast_HideMap_Implementation(){ }
 void UFGCheatManager::Server_HideMap_Implementation(){ }
 void UFGCheatManager::HideMap(){ }
-void UFGCheatManager::SetAITickDistance(float distance){ }
+void UFGCheatManager::RemoveMapMarker(int32 index){ }
 void UFGCheatManager::DumpPlayerStates(){ }
 void UFGCheatManager::DumpHotbarShortcuts(){ }
 void UFGCheatManager::EnableInstancingOnFactory(bool enabled){ }
@@ -238,6 +244,8 @@ void UFGCheatManager::Server_MarkTrackGraphsAsChanged_Implementation(){ }
 void UFGCheatManager::MarkTrackGraphsAsChanged(){ }
 void UFGCheatManager::Server_MarkTrackGraphsForRebuild_Implementation(){ }
 void UFGCheatManager::MarkTrackGraphsForRebuild(){ }
+void UFGCheatManager::RunHardwareBenchmark(int32 WorkScale , float CPUMultiplier , float GPUMultiplier){ }
+void UFGCheatManager::Cheats(){ }
 UActorComponent* UFGCheatManager::GetOuterPlayersUseComponent() const{ return nullptr; }
 AActor* UFGCheatManager::GetOuterPlayersUseActor() const{ return nullptr; }
 AActor* UFGCheatManager::GetOuterPlayersAimedAtActor(FVector& out_aimLocation) const{ return nullptr; }

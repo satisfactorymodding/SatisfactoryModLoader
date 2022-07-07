@@ -4,12 +4,8 @@
 #include "Replication/FGReplicationDetailInventoryComponent.h"
 
 AFGBuildableDroneStation::AFGBuildableDroneStation() : Super() {
-	this->mDroneDockingStartLocationLocal.X = 0.0;
-	this->mDroneDockingStartLocationLocal.Y = 0.0;
-	this->mDroneDockingStartLocationLocal.Z = 0.0;
-	this->mDroneDockingLocationLocal.X = 0.0;
-	this->mDroneDockingLocationLocal.Y = 0.0;
-	this->mDroneDockingLocationLocal.Z = 0.0;
+	this->mDroneDockingStartLocationLocal = FVector::ZeroVector;
+	this->mDroneDockingLocationLocal = FVector::ZeroVector;
 	this->mDroneClass = nullptr;
 	this->mUIBatteryCostItemClass = nullptr;
 	this->mStationHasDronesInQueue = false;

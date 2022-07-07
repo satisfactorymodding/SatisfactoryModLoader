@@ -11,6 +11,7 @@
 template<typename T>
 struct FMatrixHalfFloat
 {
+public:
 	T m[3][4];
 	FMatrixHalfFloat(float Value[4][4])
 	{
@@ -85,9 +86,6 @@ class FACTORYGAME_API UFGConveyorInstanceMeshBucket : public UInstancedStaticMes
 public:
 	void Init();
 	
-	/* Submit transform directly to RT */
-	void DirectUpdateInstance( );
-	
 	UFUNCTION(BlueprintCallable)
 	void SetNumInstances(int32 Count) { mNumInstances = Count; }
 
@@ -101,7 +99,7 @@ public:
 	UPROPERTY( EditDefaultsOnly )
 	int32 mNumInstances;
 
-private:
+//private:
 	/* Transient location buffer to avoid memory allocation. */
 	TArray<FVector4> mTransientPositionBuffer;
 

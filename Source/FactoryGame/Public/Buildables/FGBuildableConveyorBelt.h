@@ -87,6 +87,7 @@ public:
 
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	virtual void OnBuildEffectFinished() override;
 	// End Buildable interface
 
 	// Begin AFGBuildableConveyorBase interface

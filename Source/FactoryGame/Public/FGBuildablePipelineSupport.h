@@ -25,7 +25,7 @@ public:
 	// End AActor interface
 
 
-	virtual float GetStackHeight() override
+	virtual float GetStackHeight() const override
 	{
 		float baseOffset = mUseStaticHeight ? 0 : mLength;
 		return baseOffset + mStackHeight;

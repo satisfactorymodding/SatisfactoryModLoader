@@ -10,8 +10,6 @@ AFGHoverPack::AFGHoverPack() : Super() {
 	this->mHoverSpeed = 800.0;
 	this->mHoverAccelerationSpeed = 2000.0;
 	this->mHoverSprintMultiplier = 2.0;
-	this->mRailRoadSurfSpeed = 2500.0;
-	this->mRailroadSurfSensitivity = 0.1;
 	this->mHoverFriction = 0.99;
 	this->mJumpKeyHoldActivationTime = 0.3;
 	this->mFallSpeedLimitWhenPowered = 300.0;
@@ -29,9 +27,9 @@ AFGHoverPack::AFGHoverPack() : Super() {
 	this->mShouldAutomaticallyHoverWhenConnected = false;
 	this->mCrouchHoverCancelTime = 0.3;
 	this->mCharacterUseDistanceWhenActive = 0.0;
-	this->mCurrentConnectionLocation.X = 0.0;
-	this->mCurrentConnectionLocation.Y = 0.0;
-	this->mCurrentConnectionLocation.Z = 0.0;
+	this->mActiveNoise = nullptr;
+	this->mActiveNoiseFrequency = 0.2;
+	this->mCurrentConnectionLocation = FVector::ZeroVector;
 	this->mCurrentRailroadTrack = nullptr;
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("Power Info"));
 	this->mPowerConnection = CreateDefaultSubobject<UFGPowerConnectionComponent>(TEXT("Power Connection"));
@@ -82,15 +80,14 @@ void AFGHoverPack::PlayerStopHover_Server_Implementation(){ }
 bool AFGHoverPack::PlayerStopHover_Server_Validate(){ return bool(); }
 void AFGHoverPack::PlayerStopHover(){ }
 bool AFGHoverPack::PlayerIsInHoverMovementMode() const{ return bool(); }
+void AFGHoverPack::MakeActiveNoise(){ }
 void AFGHoverPack::OnRep_HasConnection(){ }
 void AFGHoverPack::OnRep_CurrentHoverMode(){ }
 void AFGHoverPack::OnRep_CurrentConnectionLocation(){ }
 AFGHoverPackAttachment::AFGHoverPackAttachment() : Super() {
 	this->mCurrentHoverMode = EHoverPackMode::HPM_Inactive;
 	this->mHasConnection = false;
-	this->mCurrentConnectionLocation.X = 0.0;
-	this->mCurrentConnectionLocation.Y = 0.0;
-	this->mCurrentConnectionLocation.Z = 0.0;
+	this->mCurrentConnectionLocation = FVector::ZeroVector;
 	this->mCurrentRailroadTrack = nullptr;
 }
 void AFGHoverPackAttachment::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

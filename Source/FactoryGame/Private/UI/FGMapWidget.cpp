@@ -9,5 +9,6 @@ void UFGMapWidget::SetupRepresentationManager(){ }
 void UFGMapWidget::BindActorRepresentationManager( AFGActorRepresentationManager* representationManager){ }
 void UFGMapWidget::RemoveBindings(){ }
 void UFGMapWidget::OnActorRepresentationAdded( UFGActorRepresentation* actorRepresentation){ }
+void UFGMapWidget::AddMapObject( UFGActorRepresentation* actorRepresentation, bool addedAfterMapOpened){ }
 void UFGMapWidget::OnActorRepresentationUpdated( UFGActorRepresentation* actorRepresentation){ }
 void UFGMapWidget::OnActorRepresentationRemoved( UFGActorRepresentation* actorRepresentation){ }
