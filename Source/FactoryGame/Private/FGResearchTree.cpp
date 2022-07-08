@@ -11,7 +11,7 @@ void UFGResearchTree::UpdateAssetBundleData(){ }
 #endif 
 void UFGResearchTree::PostLoad(){ Super::PostLoad(); }
 FPrimaryAssetId UFGResearchTree::GetPrimaryAssetId() const {
-	return FPrimaryAssetId(StaticClass()->GetFName(), FPackageName::GetShortFName(GetOutermost()->GetFName()));
+  return FPrimaryAssetId(StaticClass()->GetFName(), GetFName());
 }
 FText UFGResearchTree::GetPreUnlockDisplayName(TSubclassOf< UFGResearchTree > inClass) {
 	return inClass.GetDefaultObject()->mPreUnlockDisplayName;

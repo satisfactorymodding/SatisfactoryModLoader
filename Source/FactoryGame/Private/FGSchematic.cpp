@@ -30,7 +30,7 @@ UFGSchematic::UFGSchematic() : Super() {
 void UFGSchematic::PostLoad(){ Super::PostLoad(); }
 void UFGSchematic::Serialize(FArchive& ar){ Super::Serialize(ar); }
 FPrimaryAssetId UFGSchematic::GetPrimaryAssetId() const {
-	return FPrimaryAssetId(StaticClass()->GetFName(), FPackageName::GetShortFName(GetOutermost()->GetFName()));
+  return FPrimaryAssetId(StaticClass()->GetFName(), GetFName());
 }
 ESchematicType UFGSchematic::GetType(TSubclassOf< UFGSchematic > inClass) {
 	if (inClass)
