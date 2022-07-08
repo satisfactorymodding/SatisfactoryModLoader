@@ -23,4 +23,6 @@ const TArray<TSubclassOf<class UFGSchematic>> UFGResearchRecipe::GetRewardedSche
 FText UFGResearchRecipe::GetDisplayName() const{ return FText(); }
 void UFGResearchRecipe::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGResearchRecipe::PostLoad(){ Super::PostLoad(); }
-FPrimaryAssetId UFGResearchRecipe::GetPrimaryAssetId() const{ return FPrimaryAssetId(); }
+FPrimaryAssetId UFGResearchRecipe::GetPrimaryAssetId() const {
+	return FPrimaryAssetId(StaticClass()->GetFName(), FPackageName::GetShortFName(GetOutermost()->GetFName()));
+}
