@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32616.157
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DaedalusLoader", "DaedalusLoader.vcxproj", "{DE3BC2AD-2683-4D76-AD72-95D98164E9C7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleMod", "..\ExampleMod\ExampleMod.vcxproj", "{A1BBEE5E-6F8A-46A1-A489-75AA621E1B5A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "LoaderAutoInjector", "..\LoaderAutoInjector\LoaderAutoInjector.vcxproj", "{ACD937DA-925A-4640-9AD0-39A381D323EA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE3BC2AD-2683-4D76-AD72-95D98164E9C7}.Release|x64.ActiveCfg = Release|x64
+		{DE3BC2AD-2683-4D76-AD72-95D98164E9C7}.Release|x64.Build.0 = Release|x64
+		{5BF2489F-778A-4781-8666-853F6685931E}.Release|x64.ActiveCfg = Release|x64
+		{5BF2489F-778A-4781-8666-853F6685931E}.Release|x64.Build.0 = Release|x64
+		{A1BBEE5E-6F8A-46A1-A489-75AA621E1B5A}.Release|x64.ActiveCfg = Release|x64
+		{A1BBEE5E-6F8A-46A1-A489-75AA621E1B5A}.Release|x64.Build.0 = Release|x64
+		{ACD937DA-925A-4640-9AD0-39A381D323EA}.Release|x64.ActiveCfg = Release|x64
+		{ACD937DA-925A-4640-9AD0-39A381D323EA}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9BBAE879-6117-442A-9B9C-A8346519C4A3}
+	EndGlobalSection
+EndGlobal
