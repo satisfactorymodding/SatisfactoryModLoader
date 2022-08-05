@@ -76,9 +76,12 @@ Plugins/Developer/RiderLink/*
 Mods/*
 Configs/*
 
+# Packaged plugins
 *.pak
 
+# Ignore all non-Starter Project plugins
 Plugins/*
+Plugins/*/Metadata/Crypto.json
 !Plugins/SML/
 !Plugins/SMLEditor/
 !Plugins/ExampleMod/
