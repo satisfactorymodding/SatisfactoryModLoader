@@ -82,6 +82,7 @@ Configs/*
 # Ignore all non-Starter Project plugins
 Plugins/*
 Plugins/*/Metadata/Crypto.json
+!Plugins/Alpakit/
 !Plugins/SML/
 !Plugins/SMLEditor/
 !Plugins/ExampleMod/
