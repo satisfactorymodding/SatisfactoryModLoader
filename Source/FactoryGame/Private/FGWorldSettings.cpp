@@ -28,6 +28,7 @@ AFGWorldSettings::AFGWorldSettings() : Super() {
 	this->mDefaultHeightFogSettings.SecondFogDensity = 0.0;
 	this->mDefaultHeightFogSettings.SecondFogHeightFalloff = 0.2;
 	this->mDefaultHeightFogSettings.SecondFogHeightOffset = 0.0;
+	this->mSaveActorsDirty = false;
 	this->mExponentialHeightFog = nullptr;
 	this->mSkyAtmosphere = nullptr;
 	this->mSkySphere = nullptr;

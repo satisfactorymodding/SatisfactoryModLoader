@@ -40,7 +40,6 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mBuildGunClass = AFGBuildGun::StaticClass();
 	this->mResourceScannerClass = AFGResourceScanner::StaticClass();
 	this->mResourceMinerClass = nullptr;
-	this->mBoomBoxClass = nullptr;
 	this->mBoomBoxPlayerClass = AFGBoomBoxPlayer::StaticClass();
 	this->mBoomBoxEquipmentDesc = UFGItemDescriptor::StaticClass();
 	this->mLegMesh = nullptr;

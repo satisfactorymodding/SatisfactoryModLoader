@@ -97,6 +97,18 @@ public:
 	UFUNCTION( BlueprintNativeEvent, Category= "Ammo Descriptor" )
 	void OnEndFire();
 
+	UFUNCTION( BlueprintCallable, Category="Ammunition" )
+	void SetAmmoColor(FLinearColor color){ mAmmoColor = color; }
+
+	UFUNCTION( BlueprintCallable, Category="Ammunition" )
+	FLinearColor GetAmmoColor() const { return mAmmoColor; }
+
+	UFUNCTION( BlueprintCallable, Category="Ammunition" )
+	void SetAmmoScale(float uniformScale){mAmmoScale = uniformScale;}
+
+	UFUNCTION( BlueprintCallable, Category="Ammunition" )
+	float GetAmmoScale() const {return mAmmoScale;}
+	
 	/** Ticking function for the magazine object. */
 	UFUNCTION( BlueprintNativeEvent, Category= "Ammo Descriptor" )
 	void AmmoTick( float DeltaSeconds );
@@ -303,6 +315,14 @@ private:
 
 	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|FX" )
 	TArray<UAkAudioEvent*> mFiringSounds;
+
+	/** To set the color of a spawned ammo type. */
+	UPROPERTY( EditDefaultsOnly, Category = "Ammunition|FX" )
+	FLinearColor mAmmoColor = FLinearColor::White;
+
+	/** To scale an ammo, mostly intended for projectile-based ammo types, but can be used by hit-scan for VFX. */
+	UPROPERTY( EditDefaultsOnly, Category = "Ammunition" )
+	float mAmmoScale = 1.0f;
 
 	UPROPERTY( EditDefaultsOnly, Category = "Tick" )
 	FAmmoTickFunction mAmmoTickFunction;

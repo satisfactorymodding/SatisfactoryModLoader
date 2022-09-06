@@ -12,7 +12,7 @@
 
 /** Used to accumulate a float value for a creature when it receives damage. */
 UCLASS( Blueprintable, BlueprintType, DefaultToInstanced, EditInlineNew )
-class UFGDamageTypeAccumulator : public UObject
+class FACTORYGAME_API UFGDamageTypeAccumulator : public UObject
 {
 	GENERATED_BODY()
 public:

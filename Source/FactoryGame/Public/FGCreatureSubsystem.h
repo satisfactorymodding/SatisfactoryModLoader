@@ -5,17 +5,19 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
+#include "NavMesh/RecastNavMesh.h"
 #include "FGCreatureSubsystem.generated.h"
 
 /** Used as a wrapper for spawners with additional information. */
-USTRUCT()
+USTRUCT( BlueprintType )
 struct FACTORYGAME_API FSpawnerInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY()
+	UPROPERTY( BlueprintReadOnly )
 	class AFGCreatureSpawner* Spawner;
-	
+
+	UPROPERTY( BlueprintReadOnly )
 	float PlayerDistanceSq;
 };
 
@@ -30,6 +32,28 @@ enum ECreatureHostility
 
 	// Creatures will ignore players but can still attack eachother.
 	CH_IgnorePlayers	UMETA( displayName = "Ignore Players" ),
+};
+
+USTRUCT(BlueprintType)
+struct FAgentGenerationProperties
+{
+	GENERATED_BODY()
+
+	/** Name of the Nav Agent those settings will apply for. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName agentName = "None";
+
+	/** Should the Tile Size be automatically computed at cell size x autoTileSize? (Epic recommends between 32 and 128, 128 being the fastest to generate the mesh in my testing) */
+	UPROPERTY(EditAnywhere)
+	bool autoTileSize = true;
+
+	/** How many cell sizes do we set the tile size to? Recommended between 32 and 128. */
+	UPROPERTY(EditAnywhere)
+	float autoTileSizeMultiplier = 128;
+
+	/** Good luck. This is all the nifty nifty parameters you'll have to touch to optimize or make it worse. :> */
+	UPROPERTY(EditAnywhere)
+	FRecastNavMeshGenerationProperties navGenerationProperties;
 };
 
 /**
@@ -57,6 +81,9 @@ public:
 	void RegisterCreature( class AFGCreature* creature );
 	void UnregisterCreature( class AFGCreature* creature );
 
+	void RegisterFlyingBabyCrab( class AFGFlyingBabyCrab* babyCrab );
+	void UnregisterFlyingBabyCrab( class AFGFlyingBabyCrab* babyCrab );
+
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	ECreatureHostility GetCreatureHostility() const { return mCreatureHostilityMode; }
 
@@ -69,6 +96,9 @@ public:
 	/** Whether or not the specified creature is protected and can not be targeted by other creatures. */
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	bool IsProtectedCreature( TSubclassOf< class AFGCreature > creatureClass ) const;
+
+	void SetCreatureStressEnabled( bool enabled );
+	bool IsCreatureStressEnabled() const { return mEnableCreatureStress; }
 
 	/** Get the creature subsystem in the current world, can be nullptr, e.g. on game ending (destroy) or game startup. */
 	static AFGCreatureSubsystem* Get( UWorld* world );
@@ -93,6 +123,10 @@ private:
 	void PopulateNoiseClassArray();
 
 protected:
+	/** Generation properties that will be enforced to the navigation meshes. */
+	UPROPERTY( EditDefaultsOnly, Category = "Creatures" )
+	TArray<FAgentGenerationProperties> mNavAgentGenerationProperties;
+	
 	/** Max creatures allowed to spawn at once. */
 	UPROPERTY( EditDefaultsOnly, Category = "Creatures" )
 	int32 mMaxNumCreatures;
@@ -100,25 +134,32 @@ protected:
 	/** Whether or not creatures are able to attack other creatures at all. Uses creature family system to determine hostility. */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	bool mCreaturesCanAttackEachother;
+
+	/** Used to enable / disable creature stress gain. */
+	bool mEnableCreatureStress;
 	
 	/** Protected creatures can never be targeted by other creatures. */
 	UPROPERTY( EditDefaultsOnly, Category = "AI" )
 	TArray< TSubclassOf< class AFGCreature > > mProtectedCreatures;
 	
 	/** All the spawners and information about them. */
-	UPROPERTY( Transient )
+	UPROPERTY( Transient, BlueprintReadOnly )
 	TArray< FSpawnerInfo > mAllSpawners;
 
 	/** All the creatures which currently exist. */
-	UPROPERTY( Transient )
+	UPROPERTY( Transient, BlueprintReadOnly )
 	TArray< class AFGCreature* > mAllCreatures;
+	
+	/** All the flying baby crabs which currently exist. */
+	UPROPERTY( Transient, BlueprintReadOnly )
+	TArray< class AFGFlyingBabyCrab* > mAllFlyingBabyCrabs;
 
 	/** All the persistent creatures which currently exist. */
-	UPROPERTY( Transient )
+	UPROPERTY( Transient, BlueprintReadOnly )
 	TArray< class AFGCreature* > mAllPersistentCreatures;
 
 	/** How all creatures behave in terms of being hostile. */
-	UPROPERTY( EditAnywhere, Category = "AI" )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI" )
 	TEnumAsByte< ECreatureHostility > mCreatureHostilityMode;
 
 	/** Every type of FGNoise that exists. */

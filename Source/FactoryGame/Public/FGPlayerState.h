@@ -21,10 +21,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnSlotDataUpdated, class AFGPlayer
 
 
 /**
- * Collected data for a slot that is specified
+ * The color data for a player
  */
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FSlotData
+struct FACTORYGAME_API FPlayerColorData
 {
 	GENERATED_BODY();
 
@@ -36,7 +36,7 @@ struct FACTORYGAME_API FSlotData
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category="Color")
 	FLinearColor NametagColor;
 
-	FORCEINLINE bool operator==( const FSlotData& other ) const{
+	FORCEINLINE bool operator==( const FPlayerColorData& other ) const{
 		return other.PingColor == PingColor && other.NametagColor == NametagColor;
 	}
 };
@@ -196,10 +196,10 @@ public:
 	FORCEINLINE void SetSlotNum( int32 slotNr ){ mSlotNum = slotNr; }
 	
 	/** Set the color data for this player */
-	void SetSlotData( FSlotData slotData );
+	void SetPlayerColorData( FPlayerColorData slotData );
 
 	/** get the color data for this player */
-	FORCEINLINE FSlotData GetSlotData() const { return mSlotData; }
+	FORCEINLINE FPlayerColorData GetSlotData() const { return mPlayerColorData; }
 
 	/** Get the unique ID of the user from the online subsystem */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Networking" )
@@ -431,10 +431,10 @@ public:
 	void Server_SetMapCategoryCollapsed( ERepresentationType mapCategory, bool collapsed );
 
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Color" )
-	FORCEINLINE FLinearColor GetPingColor() const { return mSlotData.PingColor; }
+	FORCEINLINE FLinearColor GetPingColor() const { return mPlayerColorData.PingColor; }
 	
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|Color" )
-	FORCEINLINE FLinearColor GetNametagColor() const { return mSlotData.NametagColor; }
+	FORCEINLINE FLinearColor GetNametagColor() const { return mPlayerColorData.NametagColor; }
 
 	void UpdateOwningPawnActorRepresentation() const;
 
@@ -590,12 +590,14 @@ protected:
 	void OnRep_CurrentHotbarIndex();
 	
 	UFUNCTION()
-	void OnRep_SlotData();
+	void OnRep_PlayerColorData();
 
 private:
 	/** Server function for updating number observed inventory slots */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_UpdateNumObservedInventorySlots();
+
+	void Native_OnPlayerColorDataUpdated();
 
 public:
 	/** Broadcast when a buildable or decor has been constructed. */
@@ -615,8 +617,8 @@ public:
 	UPROPERTY( BlueprintAssignable, BlueprintCallable, Category = "Shopping List")
 	FOnShoppingListUpdated mOnShoppingListUpdated;
 
-	UPROPERTY( BlueprintAssignable, Category = "SlotData")
-	FOnSlotDataUpdated mOnSlotDataUpdated;
+	UPROPERTY( BlueprintAssignable, Category = "ColorData")
+	FOnSlotDataUpdated mOnColorDataUpdated;
 
 protected:
 	/** All hotbar actions assigned */
@@ -655,8 +657,8 @@ protected:
 	int32 mSlotNum;
 
 	/** This players color container */
-	UPROPERTY( ReplicatedUsing=OnRep_SlotData )
-	FSlotData mSlotData;
+	UPROPERTY( ReplicatedUsing=OnRep_PlayerColorData )
+	FPlayerColorData mPlayerColorData;
 
 	/** Pawn we should take control of when rejoining game/loading game */
 	UPROPERTY( SaveGame )

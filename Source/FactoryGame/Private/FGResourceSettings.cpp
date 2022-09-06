@@ -6,6 +6,8 @@
 #if WITH_EDITORONLY_DATA && WITH_EDITOR
 const FItemSettings& UFGResourceSettings::GetResourceSettings(TSubclassOf<  UFGItemDescriptor > resourceClass){ return *(new FItemSettings); }
 #endif 
+#if WITH_EDITORONLY_DATA
+#endif 
 UFGResourceSettings::UFGResourceSettings() : Super() {
 	this->mResourceAmount.Add(FInt32Interval(500, 1000));
 	this->mResourceAmount.Add(FInt32Interval(1500, 3000));

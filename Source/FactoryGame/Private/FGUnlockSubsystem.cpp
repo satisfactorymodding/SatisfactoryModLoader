@@ -17,6 +17,7 @@ AFGUnlockSubsystem::AFGUnlockSubsystem() : Super() {
 void AFGUnlockSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGUnlockSubsystem, mScannableResourcesPairs);
+	DOREPLIFETIME(AFGUnlockSubsystem, mScannableObjectData);
 	DOREPLIFETIME(AFGUnlockSubsystem, mIsMapUnlocked);
 	DOREPLIFETIME(AFGUnlockSubsystem, mIsBuildingEfficiencyUnlocked);
 	DOREPLIFETIME(AFGUnlockSubsystem, mIsBuildingOverclockUnlocked);
@@ -31,6 +32,7 @@ AFGUnlockSubsystem* AFGUnlockSubsystem::Get(UObject* worldContext){ return nullp
 void AFGUnlockSubsystem::Init(){ }
 void AFGUnlockSubsystem::UnlockRecipe(TSubclassOf<  UFGRecipe > recipe){ }
 void AFGUnlockSubsystem::UnlockScannableResource(FScannableResourcePair newResource){ }
+void AFGUnlockSubsystem::UnlockScannableObject(FScannableObjectData newScannableObject){ }
 void AFGUnlockSubsystem::UnlockMap(){ }
 void AFGUnlockSubsystem::UnlockBuildEfficiency(){ }
 void AFGUnlockSubsystem::UnlockBuildOverclock(){ }
@@ -39,6 +41,7 @@ void AFGUnlockSubsystem::UnlockArmEquipmentSlots(int32 numSlotsToUnlock){ }
 void AFGUnlockSubsystem::UnlockEmote(TSubclassOf<  UFGEmote > newEmote){ }
 void AFGUnlockSubsystem::UnlockTape(TSubclassOf< UFGTapeData > newTape){ }
 TArray<TSubclassOf<class UFGResourceDescriptor>> AFGUnlockSubsystem::GetScannableResources() const{ return TArray<TSubclassOf<class UFGResourceDescriptor>>(); }
+TArray<TSubclassOf<class UFGItemDescriptor>> AFGUnlockSubsystem::GetScannableObjects(const UObject* scannerObject) const{ return TArray<TSubclassOf<class UFGItemDescriptor>>(); }
 bool AFGUnlockSubsystem::IsNodeScannable(FScannableResourcePair scannableResourcePair){ return bool(); }
 void AFGUnlockSubsystem::OnSchematicPurchased(TSubclassOf<  UFGSchematic > newSchematic){ }
 void AFGUnlockSubsystem::SetTotalNumInventorySlots(int32 totalNumSlots){ }

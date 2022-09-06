@@ -2,12 +2,16 @@
 
 #include "Creature/FGAction.h"
 
+TAutoConsoleVariable<int32> CVarActionDebug(TEXT("CVarActionDebug"), 0, TEXT(""));
 UFGAction::UFGAction(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mActionDescription = TEXT("");
 	this->mActionDuration = FFloatInterval(10.0, 10.0);
 	this->mActionDurationFinishResult = true;
+	this->mActionStartDelay = FFloatInterval(0.0, 0.0);
 	this->mActionCooldown = 5.0;
+	this->mActionCooldownMax = 0.0;
 	this->mActionRecoveryTime = 1.0;
+	this->mActionRecoveryTimeMax = 0.0;
 	this->mActionLastExecuteTime = -1.0;
 	this->mActionLastFinishTime = -1.0;
 	this->mIsActionTickable = true;
@@ -33,6 +37,7 @@ void UFGAction::PerformAction_Implementation(){ }
 void UFGAction::CancelAction_Implementation(){ }
 void UFGAction::ActionTick_Implementation(float DeltaTime){ }
 void UFGAction::FinishAction(bool ActionSuccess){ }
+void UFGAction::SetActionLastFinishTime(float finishTime){ }
 bool UFGAction::IsInCooldown() const{ return bool(); }
 bool UFGAction::HasAuthority() const{ return bool(); }
 void UFGAction::Tick(float DeltaTime){ }
@@ -52,4 +57,3 @@ void UFGAction::OnPreActionFinished(bool success){ }
 void UFGAction::InternalActionCleanup(bool actionSuccess){ }
 void UFGAction::ClearTimers(){ }
 void UFGAction::Multicast_RepActionState_Implementation(EFGActionState newState){ }
-void UFGAction::OnOuterControllerChanged(APawn* pawn, AController* controller){ }

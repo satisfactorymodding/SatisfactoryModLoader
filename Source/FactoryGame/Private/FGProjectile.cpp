@@ -8,6 +8,8 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->mCanTriggerExplodeBySameClass = false;
 	this->mProjectileLifespan = 10.0;
 	this->mProjectileStickspan = 5.0;
+	this->mProjectileColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mProjectileScale = 0.0;
 	this->mCanBeHitByHomingAmmo = false;
 	this->mRotatingMovementComp = nullptr;
 	this->mClusterProjectileClass = nullptr;
@@ -15,6 +17,7 @@ AFGProjectile::AFGProjectile() : Super() {
 	this->mClusterProjectileSpreadIntervalAngle = FFloatInterval(0.0, 360.0);
 	this->mClusterProjectileSidewaysLaunchSpeed = FFloatInterval(500.0, 1000.0);
 	this->mClusterProjectileVerticalLaunchSpeed = FFloatInterval(500.0, 1000.0);
+	this->mClusterUpVector = FVector((0, 0, 1));
 	this->mThrowRotation = FRotator::ZeroRotator;
 	this->mTargetActor = nullptr;
 	this->mTargetLocation = FVector::ZeroVector;

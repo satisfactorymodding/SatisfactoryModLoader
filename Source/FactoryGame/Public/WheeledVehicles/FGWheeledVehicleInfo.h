@@ -153,6 +153,11 @@ public:
 #endif
 
 private:
+	virtual void OnRep_ReplicatedMesh() override;
+
+	UFUNCTION()
+	void OnRep_StaticMeshComponent();
+
 	UFUNCTION()
 	void OnRep_Status();
 
@@ -163,6 +168,8 @@ private:
 	void OnRep_IsGhosting();
 
 	void OnSimulationTargetReached( AFGTargetPoint* newTarget );
+
+	void UpdateComponentVisibility();
 
 private:
 	friend class AFGWheeledVehicle;
@@ -236,6 +243,6 @@ private:
 	UPROPERTY( Replicated )
 	float mWheelRadius = 0.0f;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_StaticMeshComponent )
 	class UStaticMeshComponent* mStaticMeshComponent = nullptr;
 };

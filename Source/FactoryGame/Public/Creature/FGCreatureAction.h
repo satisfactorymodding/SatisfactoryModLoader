@@ -36,15 +36,15 @@ struct FACTORYGAME_API FCreatureActionTargetParams
 	GENERATED_BODY()
 	
 	/** How the target of the action should be selected. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	ECreatureActionTargetSelectionType TargetType;
 
 	/** What kind of visibility requirement we have in order for a target to be considered. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	ETargetVisibilityRequirement VisibilityRequirement;
 
 	/** The minimum amount of aggro a target needs to have in order to be considered. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	float MinimumAggro;
 };
 
@@ -85,6 +85,9 @@ protected:
 	virtual void OnCreatureStunUpdate( bool isStunned );
 
 	UFUNCTION()
+	virtual void OnMovementModeChanged( class ACharacter* character, EMovementMode previousMode, uint8 prevCustomMode );
+
+	UFUNCTION()
 	virtual void OnCreatureStateChanged( class AFGCreatureController* creatureController, ECreatureState previousState, ECreatureState newState );
 
 	// Begin UFGAction Interface
@@ -116,20 +119,24 @@ protected:
 	TWeakObjectPtr<AActor> mCurrentTarget;
 	
 	/** Target requirements of the action. */
-    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="General Settings")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="General Settings")
 	FCreatureActionTargetParams mTargetRequirements;
 
 	/** Whether or not this action, as a pre / post action, should inherit the target from the parent action. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="General Settings")
 	bool mShouldInheritTarget;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="General Settings")
 	bool mCancelsOnStateChange;
 	
 	UPROPERTY(BlueprintReadOnly)
 	bool mReceivedStateChange;
 	
 	/** Whether or not the creature must be on the ground in order to use the action. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="General Settings")
 	bool mMustBeGrounded;
+
+	/** Whether or not to cancel the action when we enter water. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="General Settings")
+	bool mCancelIfSubmerged;
 };

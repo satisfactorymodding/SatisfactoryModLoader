@@ -12,6 +12,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FUnlockMoreInventorySlots, int32, newUnlockedSlots );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewTapeUnlocked, TSubclassOf< UFGTapeData >, newTape );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewScannableObjectUnlocked, TSubclassOf< class UFGItemDescriptor >, newItemDescriptor );
 
 /**
  * Subsystem responsible for handling unlocks that you get when purchasing/research a schematic
@@ -48,6 +49,7 @@ public:
 	void Init();
 	void UnlockRecipe( TSubclassOf< class UFGRecipe > recipe );
 	void UnlockScannableResource( FScannableResourcePair newResource );
+	void UnlockScannableObject( FScannableObjectData newScannableObject );
 	void UnlockMap();
 	void UnlockBuildEfficiency();
 	void UnlockBuildOverclock();
@@ -60,6 +62,10 @@ public:
 	TArray<TSubclassOf<class UFGResourceDescriptor>> GetScannableResources() const;
 	
 	FORCEINLINE TArray<FScannableResourcePair> GetScannableResourcePairs() const { return mScannableResourcesPairs; };
+
+	/** Returns all scannable objects/items the given scanner object are allowed to scan for */
+	UFUNCTION( BlueprintPure, Category = "Unlocks" )
+	TArray<TSubclassOf<class UFGItemDescriptor>> GetScannableObjects( const UObject* scannerObject ) const;
 
 	/** Can we scan for this resource class and node type? */
 	bool IsNodeScannable( FScannableResourcePair scannableResourcePair );
@@ -96,15 +102,18 @@ private:
 
 public:
 	/** SERVER ONLY: Called when we unlocked more inventory slots */
-	UPROPERTY( BlueprintAssignable, Category = "Inventory" )
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
 	FUnlockMoreInventorySlots mOnUnlockedMoreInventorySlots;
 
 	/** SERVER ONLY: Called when we unlocked more arms slots */
-	UPROPERTY( BlueprintAssignable, Category = "Inventory" )
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
 	FUnlockMoreInventorySlots mOnUnlockedMoreArmsSlots;
 
-	UPROPERTY( BlueprintAssignable, Category = "Inventory" )
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
 	FOnNewTapeUnlocked mOnNewTapeUnlocked;
+
+	UPROPERTY( BlueprintAssignable, Category = "Unlocks" )
+	FOnNewScannableObjectUnlocked mOnNewScannableObjectUnlocked;
 protected:
 
 	/** Message sent when the map is unlocked */
@@ -133,9 +142,13 @@ private:
 	UPROPERTY( Savegame )
 	TArray< TSubclassOf< class UFGResourceDescriptor > > mScannableResources;
 
-	/** These are the resources the players can use their scanner to find */
+	/** These are the resources the players can use their resource scanner to find */
 	UPROPERTY( Savegame, Replicated )
 	TArray< FScannableResourcePair > mScannableResourcesPairs;
+
+	/** These are the items the players can use their hand scanner or radar tower to find */
+	UPROPERTY( Savegame, Replicated )
+	TArray< FScannableObjectData > mScannableObjectData;
 
 	/** Did the player unlock the minimap? */
 	UPROPERTY( Savegame, Replicated )

@@ -99,7 +99,10 @@ void AFGWheeledVehicleInfo::SetSimulationVisible(bool isVisible){ }
 void AFGWheeledVehicleInfo::UpdateCustomizationData( AFGWheeledVehicle* vehicle){ }
 void AFGWheeledVehicleInfo::ApplyMeshPrimitiveData(const FFactoryCustomizationData& customizationData){ }
 void AFGWheeledVehicleInfo::ShowGhostingEffect(bool enabled){ }
+void AFGWheeledVehicleInfo::OnRep_ReplicatedMesh(){ }
+void AFGWheeledVehicleInfo::OnRep_StaticMeshComponent(){ }
 void AFGWheeledVehicleInfo::OnRep_Status(){ }
 void AFGWheeledVehicleInfo::OnRep_IsFollowingPath(){ }
 void AFGWheeledVehicleInfo::OnRep_IsGhosting(){ }
 void AFGWheeledVehicleInfo::OnSimulationTargetReached(AFGTargetPoint* newTarget){ }
+void AFGWheeledVehicleInfo::UpdateComponentVisibility(){ }

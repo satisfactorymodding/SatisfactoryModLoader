@@ -38,10 +38,6 @@ public:
 #if WITH_EDITOR
 	virtual void CheckForErrors() override;
 	virtual void PostEditChangeProperty( struct FPropertyChangedEvent& propertyChangedEvent ) override;
-
-	/** Flags the saveActors as dirty so they will be rebuilt when serialized */
-	UFUNCTION( BlueprintCallable, Category = "Minimap Height", meta = ( CallInEditor = "true" ) )
-	void MarkSaveActorArrayDirty() { mSaveActorsDirty = true; };
 #endif
 	
 	virtual void PostActorCreated() override;
@@ -162,6 +158,7 @@ protected:
 	TArray<AActor*> mSaveActors;
 
 	/** Used to flag Save Actors as dirty. This will cause the save actors array to be rebuilt when saving. This is to ensure that all save actors are up to date */
+	UPROPERTY( transient )
 	bool mSaveActorsDirty;
 
 	/** Set the height fog that's placed in the world here */

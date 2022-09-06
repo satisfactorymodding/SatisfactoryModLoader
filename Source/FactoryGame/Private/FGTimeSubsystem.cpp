@@ -17,6 +17,8 @@ AFGTimeOfDaySubsystem::AFGTimeOfDaySubsystem() : Super() {
 	this->mReplicatedDaySeconds = 0.0;
 	this->mNumberOfPassedDays = -1;
 	this->mRTPCInterval = 20.0;
+	this->mTimeOfDayMaterialParameterCollection = nullptr;
+	this->mCachedTimeOfDayMaterialParameterCollection = nullptr;
 	this->mUpdateTime = true;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;

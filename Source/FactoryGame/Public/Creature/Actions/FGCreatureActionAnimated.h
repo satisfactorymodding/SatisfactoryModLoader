@@ -27,10 +27,10 @@ public:
 	
 protected:
 	/** Animation to play when starting the action. */
-	UPROPERTY( EditDefaultsOnly, Category = "Animation" )
+	UPROPERTY( EditAnywhere, Category = "Animation" )
 	class UAnimMontage* mActionMontage;
 
 	/** Whether or not to start the animation of the action immediately. */
-	UPROPERTY( EditDefaultsOnly, Category = "Animation" )
+	UPROPERTY( EditAnywhere, Category = "Animation" )
 	bool mAutoStartAnimation;
 };

@@ -3,6 +3,7 @@
 #include "Equipment/FGWeapon.h"
 #include "Equipment/FGEquipment.h"
 
+TAutoConsoleVariable<int32> CVarWeaponDebug(TEXT("CVarWeaponDebug"), 0, TEXT(""));
 void AFGWeapon::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGWeapon, mWeaponState);

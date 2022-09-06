@@ -3,8 +3,8 @@
 #include "Creature/FGCreatureSpawner.h"
 #include "Components/CapsuleComponent.h"
 
+TAutoConsoleVariable<int32> CVarCreatureSpawnerDebug(TEXT("CVarCreatureSpawnerDebug"), 0, TEXT(""));
 #if WITH_EDITOR
-void AFGCreatureSpawner::PostEditMove(bool bFinished){ }
 void AFGCreatureSpawner::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 #if !UE_BUILD_SHIPPING
@@ -41,7 +41,6 @@ void AFGCreatureSpawner::PostLoadGame_Implementation(int32 saveVersion, int32 ga
 void AFGCreatureSpawner::GatherDependencies_Implementation(TArray< UObject* >& out_dependentObjects){ }
 bool AFGCreatureSpawner::NeedTransform_Implementation(){ return bool(); }
 bool AFGCreatureSpawner::ShouldSave_Implementation() const{ return bool(); }
-void AFGCreatureSpawner::GetSpawnLocations(TArray<FVector>& out_spawnLocations) const{ }
 TSubclassOf< class AFGCreature > AFGCreatureSpawner::GetCreatureToSpawn_Implementation() const{ return TSubclassOf<class AFGCreature>(); }
 bool AFGCreatureSpawner::CanSpawnCreature(const FSpawnData& spawnData) const{ return bool(); }
 int32 AFGCreatureSpawner::GetNumUnspawnedCreatures() const{ return int32(); }
@@ -53,13 +52,11 @@ bool AFGCreatureSpawner::ShouldResetKillStatus(const FSpawnData& spawnData, int3
 void AFGCreatureSpawner::UpdateKillStatus(int32 newDayNr){ }
 bool AFGCreatureSpawner::IsTimeForCreature() const{ return bool(); }
 void AFGCreatureSpawner::CreatureDied(AActor* thisActor){ }
-bool AFGCreatureSpawner::CalculateSpawningLocations(){ return bool(); }
+void AFGCreatureSpawner::PopulateSpawnData(){ }
 float AFGCreatureSpawner::GetSpawnDistance() const{ return float(); }
 void AFGCreatureSpawner::UpdateScannableState(){ }
 void AFGCreatureSpawner::TryRecoupleCreatureAndSpawner(){ }
 void AFGCreatureSpawner::OnSpawningFinished(){ }
-bool AFGCreatureSpawner::TryFindNonOverlappingLocation(const TArray<FVector2D>& usedSpawnLocations, float spawnRadius, int32 maxRetries, FVector2D& out_location){ return bool(); }
-bool AFGCreatureSpawner::IsLocationNonOverlapping(const FVector2D& location, const TArray< FVector2D >& usedLocations) const{ return bool(); }
 void AFGCreatureSpawner::RegisterAsNavigationInvoker(bool shouldRegister){ }
 void AFGCreatureSpawner::ReceiveOnTraceCompleted(const TArray< FOverlapResult > & Results){ }
 void AFGCreatureSpawner::TraceForNearbyBase(){ }

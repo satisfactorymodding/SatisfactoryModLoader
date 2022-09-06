@@ -128,3 +128,4 @@ float UFGBlueprintFunctionLibrary::GetPrimitiveDefaultDataFromIndex(int32 Index,
 void UFGBlueprintFunctionLibrary::CSS_SetAnimationAsset(USkeletalMeshComponent* Comp, UAnimationAsset* AnimationAsset){ }
 int64 UFGBlueprintFunctionLibrary::GetFrameNumber(){ return int64(); }
 float UFGBlueprintFunctionLibrary::FindClosestPlayerSq(AActor* source){ return float(); }
+void UFGBlueprintFunctionLibrary::SetWaterCollisionSettings(UStaticMeshComponent* Target){ }

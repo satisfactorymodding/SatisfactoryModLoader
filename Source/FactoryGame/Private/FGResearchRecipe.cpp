@@ -7,6 +7,8 @@ FString FResearchRecipeReward::ToString() const{ return FString(); }
 void UFGResearchRecipe::PreSave(const  ITargetPlatform* targetPlatform){ }
 void UFGResearchRecipe::UpdateAssetBundleData(){ }
 #endif 
+#if WITH_EDITORONLY_DATA
+#endif 
 UFGResearchRecipe::UFGResearchRecipe() : Super() {
 	this->mIsRepeatable = false;
 	this->mRewardUsesDropPackage = false;
@@ -24,5 +26,5 @@ FText UFGResearchRecipe::GetDisplayName() const{ return FText(); }
 void UFGResearchRecipe::Serialize(FArchive& ar){ Super::Serialize(ar); }
 void UFGResearchRecipe::PostLoad(){ Super::PostLoad(); }
 FPrimaryAssetId UFGResearchRecipe::GetPrimaryAssetId() const {
-  return FPrimaryAssetId(StaticClass()->GetFName(), GetFName());
+  return FPrimaryAssetId(StaticClass()->GetFName(), FPackageName::GetShortFName(GetOutermost()->GetFName()));
 }

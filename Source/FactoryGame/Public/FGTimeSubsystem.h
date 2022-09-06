@@ -207,6 +207,12 @@ protected:
 
 	/** Accumulated time */
 	float mRTPCAccumulator;
+	
+	UPROPERTY( EditDefaultsOnly )
+	UMaterialParameterCollection* mTimeOfDayMaterialParameterCollection;
+
+	UPROPERTY(Transient)
+	UMaterialParameterCollectionInstance* mCachedTimeOfDayMaterialParameterCollection;
 
 #if WITH_EDITORONLY_DATA
 	// Notify so that other can hook up themself on it to be notified in the editor if the time of day is updated

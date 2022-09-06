@@ -593,5 +593,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Utilities")
 	static float FindClosestPlayerSq(AActor* source);
-	
+
+	UFUNCTION(BlueprintCallable, Category = "Water")
+	static void SetWaterCollisionSettings(UStaticMeshComponent* Target);
 };

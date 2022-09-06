@@ -10,7 +10,9 @@
 
 #define DEBUG_FOLIAGE_REMOVAL_SUBSYSTEM ( UE_BUILD_SHIPPING == 0 )
 
-
+/**
+ * Represents a foliage instance in the removal cache
+ */
 struct FoliageInstanceData
 {
 	FoliageInstanceData( int index, int id, FTransform transform, class UHierarchicalInstancedStaticMeshComponent* component );
@@ -41,8 +43,15 @@ struct FoliageInstanceData
 	bool isRemoved = false;
 };
 
+/**
+ * Map for lookup of instance from exact location.
+ */
 using FoliageLocationToDataMultiMap = TMultiMap< FVector, FoliageInstanceData* >;
 
+/**
+ * Represents all foliage of a certain kind on a level (tile or cave) in the foliage-removal cache.
+ * Should be one per foliage component, but sadly isn't.
+ */
 struct FoliageTypeData
 {
 	/**
@@ -51,29 +60,44 @@ struct FoliageTypeData
 	TArray< FoliageInstanceData > foliageInstances;
 
 	/**
-	* Map for quick lookup by location
+	* Map for lookup of instance from exact location.
 	*/
 	FoliageLocationToDataMultiMap foliageLocationToDataMultiMap;
 
 	/**
-	* The components referenced by instances in this data
+	* All the components that are referenced by instances in this data. Ideally one, but 
 	*/
 	TSet< TWeakObjectPtr< class UHierarchicalInstancedStaticMeshComponent > > components;
 
+	/**
+	 * The foliage removal actor that corresponds to this type/level
+	 */
 	class AFGFoliageRemoval* foliageRemoval = nullptr;
 };
 
+/**
+ * Map for lookup of foliage-type data by asset name
+ */
 using FoliageTypeToDataMap = TMap< FName, FoliageTypeData >;
 
+/**
+ * Represents a level in the foliage-removal cache
+ */
 struct LevelFoliageData
 {
 	/**
-	* Foliage-entry data mapped by foliage-type name
-	*/
+	 * Map for lookup of foliage-type data by asset name
+	 */
 	FoliageTypeToDataMap foliageTypeToDataMap;
 
+	/**
+	 * Is the cache build for this particular level
+	 */
 	bool isCacheBuilt = false;
 
+	/**
+	 * Is the cache build for this particular level
+	 */
 	bool isLevelLoaded = false;
 };
 

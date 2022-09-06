@@ -3,8 +3,24 @@
 #include "FGCliffActor.h"
 #include "Components/StaticMeshComponent.h"
 
+AFGCliffActorManager::AFGCliffActorManager() : Super() {
+	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->PrimaryActorTick.bTickEvenWhenPaused = false;
+	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bStartWithTickEnabled = true;
+	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
+	this->PrimaryActorTick.TickInterval = 1.0;
+}
+void AFGCliffActorManager::EnqueueTask(UWorld* World, FAsyncTask<class FFGAsyncCliffGrassBuilderTask>* inAsyncTask, AFGCliffActor* inActor){ }
+void AFGCliffActorManager::Tick(float DeltaSeconds){ }
+void AFGCliffActorManager::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 #if WITH_EDITOR
 void AFGCliffActor::ConvertStaticMeshActorToOnTopMesh(AActor* SelectedActor, FString& ResultMsg){ }
+void AFGCliffActor::DebugSpawn(){ }
+void AFGCliffActor::ClearDebugSpawn(){ }
+void AFGCliffActor::ForceUpdateMeshCPUAccess(){ }
+void AFGCliffActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
 #endif 
 AFGCliffActor::AFGCliffActor() : Super() {
 	this->mMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CliffMesh"));
@@ -18,7 +34,7 @@ void AFGCliffActor::OnConstruction(const FTransform& Transform){ }
 void AFGCliffActor::GainedSignificance_Implementation(){ }
 void AFGCliffActor::LostSignificance_Implementation(){ }
 float AFGCliffActor::GetSignificanceRange(){ return float(); }
-void AFGCliffActor::CheckOnAsyncTasks(){ }
+FFGCliffGrassWorker::FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType,float inMultiplier, UHierarchicalInstancedStaticMeshComponent* inHISMComponent){ }
 void FFGCliffGrassWorker::DoWork(){ }
 void FFGAsyncCliffGrassBuilderTask::DoWork(){ }
 FFGAsyncCliffGrassBuilderTask::~FFGAsyncCliffGrassBuilderTask(){ }

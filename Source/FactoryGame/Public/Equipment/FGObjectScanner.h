@@ -133,7 +133,8 @@ protected:
 	 * The descriptors we would like to scan for
 	 * @note order is important here. the order this is in is the order that the scanner's toggle will be in.
 	 */
-	UPROPERTY( EditDefaultsOnly, Category = "Scanner" )
+	UE_DEPRECATED( 4.26, "Handled by the unlock subssytem from now on" ) // @todok2 Remove when we know the new system works
+	UPROPERTY( VisibleDefaultsOnly, Category = "Deprecated" )
 	TArray< TSubclassOf< class UFGItemDescriptor > > mScannableDescriptors;
 
 	UPROPERTY( BlueprintReadOnly, Category = "Scanner" )

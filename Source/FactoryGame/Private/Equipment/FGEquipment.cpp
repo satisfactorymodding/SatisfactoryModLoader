@@ -75,6 +75,7 @@ float AFGEquipment::AdjustDamage_Implementation(float damageAmount, const  UDama
 EEquipmentSlot AFGEquipment::GetEquipmentSlot(TSubclassOf< AFGEquipment > inClass){ return EEquipmentSlot(); }
 void AFGEquipment::SpawnChildEquipment(){ }
 void AFGEquipment::WasRemovedFromSlot_Implementation(){ }
+void AFGEquipment::WasSlottedIn_Implementation( AFGCharacterPlayer* holder){ }
 void AFGEquipment::WasEquipped_Implementation(){ }
 void AFGEquipment::WasUnEquipped_Implementation(){ }
 void AFGEquipment::AddEquipmentHUD(){ }

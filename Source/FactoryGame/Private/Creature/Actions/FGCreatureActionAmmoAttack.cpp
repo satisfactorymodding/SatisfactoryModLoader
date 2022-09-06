@@ -10,6 +10,8 @@ UFGCreatureActionAmmoAttack::UFGCreatureActionAmmoAttack(const FObjectInitialize
 	this->mProjectileFiringSocketName = TEXT("None");
 	this->mLocalFiringOffsetLocation = FVector::ZeroVector;
 	this->mLaunchAngleOffset = FRotator::ZeroRotator;
+	this->mProjectileColor = FLinearColor(1.0, 1.0, 1.0, 1.0);
+	this->mProjectileScale = 1.0;
 	this->mMagazineObject = nullptr;
 	this->mTargetRequirements.TargetType = ECreatureActionTargetSelectionType::RandomWeighted;
 	this->mTargetRequirements.VisibilityRequirement = ETargetVisibilityRequirement::TVR_Visible;

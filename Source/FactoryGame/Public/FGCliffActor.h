@@ -11,6 +11,34 @@
 #include "Components/HierarchicalInstancedStaticMeshComponent.h"
 #include "FGCliffActor.generated.h"
 
+
+struct FGCliffActorTask
+{
+	FAsyncTask<class FFGAsyncCliffGrassBuilderTask>* mTask;
+	TWeakObjectPtr<class AFGCliffActor> mCliffActor;
+};
+
+
+UCLASS()
+class FACTORYGAME_API AFGCliffActorManager : public AActor
+{
+	GENERATED_BODY()
+
+	AFGCliffActorManager();
+	
+public:	
+	static void EnqueueTask( UWorld* World, FAsyncTask<class FFGAsyncCliffGrassBuilderTask>* inAsyncTask, AFGCliffActor* inActor );
+
+protected:
+	virtual void Tick(float DeltaSeconds) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+private:
+	TArray<FGCliffActorTask> mTasks;
+
+	static AFGCliffActorManager* mStaticManager;
+};
+
 UCLASS()
 class FACTORYGAME_API AFGCliffActor : public AActor, public IFGSignificanceInterface
 {
@@ -31,26 +59,27 @@ protected:
 	virtual float GetSignificanceRange() override;
 
 	/* Started on significance gain running on a timer.*/
-	UFUNCTION()
-	void CheckOnAsyncTasks();
+	//UFUNCTION()
+	//void CheckOnAsyncTasks();
 	
 public:
 	FORCEINLINE UStaticMesh* GetStaticMesh() const { return mStaticMesh; }
 	FORCEINLINE UStaticMeshComponent* GetMeshComponent() const { return mMeshComponent; }
+	FORCEINLINE bool IsSignificant() const { return mIsSignificant; }
 	
 private:
 	UPROPERTY()
 	UStaticMeshComponent* mMeshComponent;
 	
-	TArray<FAsyncTask<class FFGAsyncCliffGrassBuilderTask>*> mAsyncTasks;
+	//TArray<FAsyncTask<class FFGAsyncCliffGrassBuilderTask>*> mAsyncTasks;
 
 	bool mIsSignificant;
 
-	FTimerHandle mAsyncCheckHandle;
+	//FTimerHandle mAsyncCheckHandle;
 
 protected:
 	/* Components generated on gain significance. */
-	UPROPERTY( Transient )
+	UPROPERTY( Transient, VisibleAnywhere )
 	TArray< class UHierarchicalInstancedStaticMeshComponent* > mGeneratedMeshComponent;
 
 public:
@@ -60,6 +89,9 @@ public:
 	UPROPERTY( EditInstanceOnly, Category = "Setting" )
 	TArray< UFoliageType* > mFoliageTypes;
 
+	UPROPERTY( EditInstanceOnly, Category = "Setting" )
+	TMap< UFoliageType*, float > mFoliageTypesDensityMultiplier;
+	
 	/* Range multiplier for significance */
 	UPROPERTY( EditInstanceOnly, Category = "Setting" )
 	float mSignificanceRangeMultiplier;
@@ -67,6 +99,18 @@ public:
 #if WITH_EDITOR
 	UFUNCTION( BlueprintCallable )
 	static void ConvertStaticMeshActorToOnTopMesh( AActor* SelectedActor, FString& ResultMsg );
+
+	UFUNCTION( CallInEditor, Category = "Debug")
+	void DebugSpawn();
+
+	UFUNCTION( CallInEditor, Category = "Debug")
+	void ClearDebugSpawn();
+
+	UFUNCTION( CallInEditor, Category = "Debug")
+	void ForceUpdateMeshCPUAccess();
+	
+
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif	
 };
 
@@ -77,19 +121,15 @@ struct FFGCliffGrassWorker
 		
 	}
 	
-	FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType, UHierarchicalInstancedStaticMeshComponent* inHISMComponent ) :
-	mCliffActor(inCliffActor),
-	mFoliageType(inType),
-	mInstanceComponent( inHISMComponent ),
-	InstanceBuffer(GVertexElementTypeSupport.IsSupported(VET_Half2))
-	{
-	}
-	
+	FFGCliffGrassWorker(AFGCliffActor* inCliffActor, UFoliageType* inType,float inMultiplier, UHierarchicalInstancedStaticMeshComponent* inHISMComponent );
+
 	/* Input */
 	TWeakObjectPtr<AFGCliffActor> mCliffActor;
 	UFoliageType* mFoliageType;
 	TWeakObjectPtr<class UHierarchicalInstancedStaticMeshComponent> mInstanceComponent;
-
+	TArray<uint32> mCachedIndices;
+	TArray<FVector> mCachedVerts;
+	float mFoliageTypesDensityMultiplier;
 	/* Output */
 	FStaticMeshInstanceData InstanceBuffer;
 	TArray<struct FClusterNode> ClusterTree;
@@ -98,11 +138,14 @@ struct FFGCliffGrassWorker
 	void DoWork();
 };
 
+
+
 class FFGAsyncCliffGrassBuilderTask : public FNonAbandonableTask
 {
 public:
 	FFGAsyncCliffGrassBuilderTask( FFGCliffGrassWorker* InWorker )
 	{
+		UE_LOG(LogTemp,Warning,TEXT("[%p] Constructing "), this);
 		Builder = InWorker;
 	}
 	

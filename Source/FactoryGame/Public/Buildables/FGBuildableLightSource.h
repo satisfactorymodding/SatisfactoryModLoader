@@ -29,7 +29,7 @@ struct FACTORYGAME_API FLightSourceControlData
 };
 
 UCLASS()
-class UFGLightSourceClipboardSettings : public UFGFactoryClipboardSettings
+class FACTORYGAME_API UFGLightSourceClipboardSettings : public UFGFactoryClipboardSettings
 {
 	GENERATED_BODY()
 public:

@@ -27,6 +27,8 @@ struct FSongData
 	FName SongName;
 };
 
+DECLARE_DYNAMIC_DELEGATE_OneParam( FOnTapeTextureLoaded, UTexture2D*, Texture );
+
 /**
  * Base class for mix tapes, define what songs exist in this tape
  */
@@ -49,12 +51,27 @@ public:
 	FText mDescription;
 	
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Tape" )
-	UTexture2D* mSmallIcon;
+	TSoftObjectPtr< UTexture2D > mSmallIcon;
 
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Tape" )
-	UTexture2D* mBigIcon;
+	TSoftObjectPtr< UTexture2D > mBigIcon;
+
+	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Tape" )
+	TSoftObjectPtr< UTexture2D > mTapeTexture;
 	
 	/** Songs that exist on this tape */
 	UPROPERTY( BlueprintReadOnly, EditDefaultsOnly, Category = "Tape" )
 	TArray< FSongData > mPlaylist;
+
+	UFUNCTION( BlueprintCallable, Category = "Tape" )
+	static void LoadSmallIcon( TSubclassOf< UFGTapeData > tapeClass, FOnTapeTextureLoaded OnTextureLoaded );
+
+	UFUNCTION( BlueprintCallable, Category = "Tape" )
+	static void LoadBigIcon( TSubclassOf< UFGTapeData > tapeClass, FOnTapeTextureLoaded OnTextureLoaded );
+
+	UFUNCTION( BlueprintCallable, Category = "Tape" )
+	static void LoadTapeTexture( TSubclassOf< UFGTapeData > tapeClass, FOnTapeTextureLoaded OnTextureLoaded );
+
+private:
+	static void LoadTapeTexture2DAsync( TSoftObjectPtr< UTexture2D >, FOnTapeTextureLoaded OnTextureLoaded );
 };

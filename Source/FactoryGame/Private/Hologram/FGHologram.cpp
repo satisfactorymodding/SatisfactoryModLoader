@@ -4,6 +4,7 @@
 #include "AkAudio/Classes/AkComponent.h"
 #include "Components/SceneComponent.h"
 
+TAutoConsoleVariable<int32> CVarHologramDebug(TEXT("CVarHologramDebug"), 0, TEXT(""));
 AFGHologram::AFGHologram() : Super() {
 	this->mRecipe = nullptr;
 	this->mLoopSound = CreateDefaultSubobject<UAkComponent>(TEXT("LoopSound"));

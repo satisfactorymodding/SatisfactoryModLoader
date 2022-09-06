@@ -12,7 +12,7 @@
  * 
  */
 UCLASS()
-class AFGPassthroughHologram : public AFGFactoryHologram
+class FACTORYGAME_API AFGPassthroughHologram : public AFGFactoryHologram
 {
 	GENERATED_BODY()
 

@@ -31,7 +31,7 @@ struct FPlayingAudioEventInfo
 
 
 USTRUCT( BlueprintType )
-struct FAnimInstanceProxyFactory : public FAnimInstanceProxy
+struct FACTORYGAME_API FAnimInstanceProxyFactory : public FAnimInstanceProxy
 {
 	GENERATED_BODY()
 

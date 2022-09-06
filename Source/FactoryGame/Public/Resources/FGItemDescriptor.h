@@ -103,6 +103,21 @@ struct FDescriptorStatBar
 	int32 Value;
 };
 
+/** Simple struct when you need an array of item descriptors in a struct. For example when you want to have TMap< xyz, TArray< TSubclassOf< class UFGItemDescriptor> > > */
+USTRUCT()
+struct FItemDescriptors
+{
+	GENERATED_BODY()
+
+	FItemDescriptors(){}
+	FItemDescriptors( TArray< TSubclassOf< class UFGItemDescriptor> > itemDescriptors ) :
+		ItemDescriptors( itemDescriptors )
+	{}
+	
+	UPROPERTY( EditDefaultsOnly )
+	TArray< TSubclassOf< class UFGItemDescriptor> > ItemDescriptors;
+};
+
 /**
  * Base for all descriptors in the game like resource, equipment etc.
  */

@@ -101,6 +101,9 @@ struct FACTORYGAME_API FSaveCustomVersion
 		// 2021-12-03: Added sublevel streaming support
 		AddedSublevelStreaming,
 
+		// 2022-07-28: Added Coloring support to concrete pillars, in post load we check if the swatch if the default one, if so we swap it with concrete.
+		AddedColoringSupportToConcretePillars,
+
 		// -----<new versions can be added above this line>-------------------------------------------------
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1

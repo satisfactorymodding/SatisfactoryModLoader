@@ -375,6 +375,11 @@ struct FConveyorBeltItems
 		return Items[ index ];
 	}
 
+	FORCEINLINE FConveyorBeltItem& GetItemUnsafe( int16 index )
+	{
+		return Items.GetData()[index];
+	}
+	
 	FORCEINLINE const FConveyorBeltItem& operator[]( int16 index ) const
 	{
 		return Items[ index ];

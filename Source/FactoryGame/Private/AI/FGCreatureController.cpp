@@ -41,7 +41,7 @@ AActor* AFGCreatureController::GetRandomWeightedTarget(ETargetVisibilityRequirem
 AActor* AFGCreatureController::GetRandomTarget(ETargetVisibilityRequirement visibilityRequirement, float minimumAggro) const{ return nullptr; }
 AActor* AFGCreatureController::GetNearestAlertTarget() const{ return nullptr; }
 bool AFGCreatureController::GetNearestAlertLocation(FVector& out_location) const{ return bool(); }
-UNavigationPath* AFGCreatureController::GetCachedPathToTarget(AActor* target, float cacheLifetime){ return nullptr; }
+UNavigationPath* AFGCreatureController::GetCachedPathToTarget(AActor* target, float cacheLifetime , TSubclassOf< UNavigationQueryFilter > queryFilter){ return nullptr; }
 float AFGCreatureController::GetAggroForTarget(const AActor* target) const{ return float(); }
 float AFGCreatureController::GetVisibilityLevelForTarget(const AActor* target) const{ return float(); }
 bool AFGCreatureController::IsTargetFullyVisible(const AActor* target) const{ return bool(); }

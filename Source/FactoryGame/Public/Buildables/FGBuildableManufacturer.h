@@ -12,7 +12,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnNewRecipeDelegate, TSubclassOf< class UFGRecipe >, newRecipe );
 
 UCLASS()
-class UFGManufacturerClipboardSettings : public UFGFactoryClipboardSettings
+class FACTORYGAME_API UFGManufacturerClipboardSettings : public UFGFactoryClipboardSettings
 {
 	GENERATED_BODY()
 public:

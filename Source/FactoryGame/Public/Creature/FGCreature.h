@@ -151,11 +151,11 @@ struct FCreatureAction
 	GENERATED_BODY()
 
 	/** States for which the action will be enabled for: Default = none */
-	UPROPERTY( EditDefaultsOnly, meta=(Bitmask,BitmaskEnum="ECreatureState") )
+	UPROPERTY( EditAnywhere, meta=(Bitmask,BitmaskEnum="ECreatureState") )
 	uint8 RequiredStates;
 
 	/** Whether or not the action should start on cooldown when it enters a state where it can be used. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="General Settings")
 	bool StartsWithCooldown;
 
 	/** Action Name. Only used for display purpose in arrays. */
@@ -163,7 +163,7 @@ struct FCreatureAction
 	FString ActionName;
 	
 	/** Action to use */
-	UPROPERTY( EditDefaultsOnly, Instanced )
+	UPROPERTY( EditAnywhere, Instanced )
 	UFGAction* Action;
 
 	FCreatureAction()
@@ -181,7 +181,7 @@ struct FCreatureActionInterrupt
 	GENERATED_BODY()
 
 	/** States for which the interrupt can take place for: Default = none */
-	UPROPERTY( EditDefaultsOnly, meta=(Bitmask,BitmaskEnum="ECreatureState") )
+	UPROPERTY( EditAnywhere, meta=(Bitmask,BitmaskEnum="ECreatureState") )
 	uint8 StateInterrupt;
 
 	/** Action Name. Only used for display purpose in arrays. */
@@ -189,11 +189,11 @@ struct FCreatureActionInterrupt
 	FString ActionName;
 
 	/** Checks to pass to trigger interrupt */
-	UPROPERTY( EditDefaultsOnly, Instanced )
+	UPROPERTY( EditAnywhere, Instanced )
 	TArray<UFGCreatureInterruptTest*> Interrupts;
 
 	/** Action to play on Interrupt */
-	UPROPERTY( EditDefaultsOnly, Instanced )
+	UPROPERTY( EditAnywhere, Instanced )
 	UFGAction* Action;
 
 	FCreatureActionInterrupt()
@@ -241,6 +241,7 @@ public:
 	virtual void PostLoad() override;
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
+	virtual bool IsSelectedInEditor() const override;
 #endif
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
@@ -249,6 +250,7 @@ public:
 	// End AActor Interface
 
 	void RenameActionArrayEntries();
+	void UpdateCreatureNavAgentProps();
 
 	bool IsReadyToDespawn() const;
 	
@@ -269,8 +271,11 @@ public:
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	class AFGCreatureController* GetCreatureController() const { return mCreatureController; }
 
-	bool GetAdjustedNavAgentProps( FNavAgentProperties& out_navAgentProps ) const;
+	bool GetAdjustedNavAgentProps( FNavAgentProperties& out_navAgentProps, UWorld* worldContext = nullptr ) const;
 
+	UFUNCTION(BlueprintPure, Category = "AI" )
+	FName GetNavAgentName() const { return mNavAgentName; }
+	
 	/** Gets the spline we are set to follow */
 	UFUNCTION( BlueprintPure, Category = "Creature" )
 	FORCEINLINE class AFGSplinePath* GetSplinePath() { return mSpline; }
@@ -365,6 +370,9 @@ public:
 	FORCEINLINE const FFGCreaturePerceptionSettings& GetPerceptionSettings() const { return mPerceptionSettings; }
 
 	FORCEINLINE const FFloatInterval& GetRoamingDistance() const { return mRoamingDistance; }
+
+	UFUNCTION( BlueprintPure, Category = "AI" )
+	float GetRandomRoamingWaitTime() const;
 
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	FORCEINLINE float GetSpawnDistance() const { return mSpawnDistance; }
@@ -502,56 +510,63 @@ public:
 	FOnCreaturePersistenceChanged mOnCreaturePersistenceChanged;
 
 protected:
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI" )
+	FName mNavAgentName = "Default";
+
 	/** Takes the calculated nav bounds of the creature and multiplies it by this number to determine its agent size. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mNavBoundsScale = 1.0f;
 	
 	/** If checked, the system will use the character capsule radius to compute what the nav agent size is instead of the actor's bounds */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	bool mUseCapsuleRadiusInsteadOfBoundsForNavRadius = false;
 	
 	/** How big navmesh do we want to generate */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mNavigationGenerationRadius;
 
 	/** Navigation outside this radius will be removed */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mNavigationRemovalRadius;
 
 	/** The min and max distance to move when the creature is roaming around. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	FFloatInterval mRoamingDistance;
 
+	/** How long the creature should wait before moving again when roaming to random locations. */
+	UPROPERTY( EditAnywhere, Category = "AI" )
+	FFloatInterval mRoamingWaitTime;
+
 	/** What behavior to use for this creature. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	UBehaviorTree* mBehaviorTree;
 
 	/** Noises that we want to investigate. Usually creatures just investigate whatever they can be hostile against, but exceptions can be made with this. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	TArray< FNoiseToInvestigate > mNoiseTypesToInvestigate;
 
 	/** Custom trees to override default behavior for certain states. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI" )
 	TArray< FCreatureBehaviorOverride > mOverrideBehaviorTrees;
 
 	/** Perception settings for this creature. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI" )
 	FFGCreaturePerceptionSettings mPerceptionSettings;
 
 	/** Once the creature's stress level exceeds this threshold, it will flee. Negative threshold will cause it to never flee. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mFleeStressThreshold;
 
 	/** How much stress the creature loses per second. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI", meta = ( UIMin = "0.0", ClampMin = "0.0" ) )
+	UPROPERTY( EditAnywhere, Category = "AI", meta = ( UIMin = "0.0", ClampMin = "0.0" ) )
 	float mStressReductionRate;
 	
 	/** When taking damage from an unreachable target, we will add stress based on the damage multiplied by this value. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mUnreachableTargetDamageStressMultiplier;
 	
 	/** Which behavior states are disabled for this creature. */
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "AI", meta=(Bitmask,BitmaskEnum="ECreatureState") )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI", meta=(Bitmask,BitmaskEnum="ECreatureState") )
 	uint8 mDisabledBehaviorStates;
 
 	/** The current behavior state of the creature. Replicated to clients. */
@@ -566,47 +581,47 @@ protected:
 	TArray<FCreatureActionInterrupt> mCreatureActionInterrupts;
 
 	/** Used to accumulate stress for the creature based on perception. */
-	UPROPERTY( EditDefaultsOnly, Instanced, Category = "AI" )
+	UPROPERTY( EditAnywhere, Instanced, Category = "AI" )
 	TArray< class UFGStimulusAccumulator* > mStimuliStressAccumulators;
 
 	/** Maximum amount of aggro a target can have. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mMaximumAggroLevel;
 
 	/** How much aggro a target needs to have in order for the creature to transition to fighting state. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mAggroFightThreshold;
 
 	/** Used to accumulate stress for the creature based on damage taken. */
-	UPROPERTY( EditDefaultsOnly, Instanced, Category = "AI" )
+	UPROPERTY( EditAnywhere, Instanced, Category = "AI" )
 	TArray< class UFGDamageTypeAccumulator* > mDamageTypeStressAccumulators;
 
 	/** Curve used to increase aggro per second for a visible target based on distance towards it. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	UCurveFloat* mAggroGainRateCurve;
 	
 	/** Curve used to describe the rate of how fast a creature sees something based on distance. The thing is considered visible once its visibility value reaches 1.0. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	UCurveFloat* mVisibilityGainRateCurve;
 
 	/** How much aggro per second the creature builds up for a target when they're visible. Gets multiplied with AggroGainRateCurve. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	float mAggroGainRate;
 
 	/** Amount of aggro to reduce per second when a target is not visible. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI", meta = ( UIMin = "0.0", ClampMin = "0.0" ) )
+	UPROPERTY( EditAnywhere, Category = "AI", meta = ( UIMin = "0.0", ClampMin = "0.0" ) )
 	float mAggroReductionRate;
 	
 	/** What family / species this creature belongs to. */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	TSubclassOf< class UFGCreatureFamily > mCreatureFamily;
 	
 	/** Materials that may be used on arachnids */
-	UPROPERTY( EditDefaultsOnly, Category = "Arachnophobia" )
+	UPROPERTY( EditAnywhere, Category = "Arachnophobia" )
 	TArray< UMaterialInstance* > mArachnophobiaModeMaterials;
 
 	/** Is creature considered an arachnid */
-	UPROPERTY( EditDefaultsOnly, Category = "Arachnophobia" )
+	UPROPERTY( EditAnywhere, Category = "Arachnophobia" )
 	bool mIsArachnid;
 
 	/** True if optimized by the AI system */
@@ -614,14 +629,14 @@ protected:
 	TEnumAsByte< EEnabled > mIsEnabled;
 
 	/** Class of item to drop when dead */
-	UPROPERTY( EditDefaultsOnly, Category = "AI" )
+	UPROPERTY( EditAnywhere, Category = "AI" )
 	TSubclassOf< class AFGItemPickup > mItemToDrop;
 
 	/** Array with information about different speeds that this creature can use */
-	UPROPERTY( EditDefaultsOnly, Category = "Movement" )
+	UPROPERTY( EditAnywhere, Category = "Movement" )
 	TArray< FMoveSpeedPair > mMoveSpeedData;
 
-	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Creature" )
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Creature" )
 	TArray< TSubclassOf<UFGItemDescriptor> > mCreatureFood;
 	
 private:
@@ -630,11 +645,11 @@ private:
 	class AFGCreatureController* mCreatureController;
 	
 	/** Should this creature be able to persist in the world */
-	UPROPERTY( SaveGame, EditDefaultsOnly, Category = "Creature" )
+	UPROPERTY( SaveGame, EditAnywhere, Category = "Creature" )
 	bool mIsPersistent;
 	
 	/** Whether or not this is a passive creature. Which means it can't aggro on anything. */
-	UPROPERTY( EditDefaultsOnly, Category = "Creature" )
+	UPROPERTY( EditAnywhere, Category = "Creature" )
 	bool mIsPassiveCreature;
 
 	/** Timer handle used for killing orphan creatures ( orphan = missing a reference to a spawner ) */
@@ -642,7 +657,7 @@ private:
 	FTimerHandle mKillOrphanHandle;
 
 	/** Creature health regen when in roaming or default state */
-	UPROPERTY( EditDefaultsOnly, Category="Damage")
+	UPROPERTY( EditAnywhere, Category="Damage")
 	float mPassiveHealthRegen;
 
 	/** Component used to determine eye location for a creature */
@@ -662,15 +677,15 @@ private:
 	class UParticleSystemComponent* mArachnophobia_Particle;
 
 	/** How much of day time percentage ( 0.0 - 1.0 ) should count towards night time  */
-	UPROPERTY( EditDefaultsOnly, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
 	float mDayTimePctCountAsNight;
 
 	/** The distance this creature wants to spawn at. */
-	UPROPERTY( EditDefaultsOnly, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
 	float mSpawnDistance;
 
 	/** The distance this creature wants to despawn at. */
-	UPROPERTY( EditDefaultsOnly, Category = "Spawning" )
+	UPROPERTY( EditAnywhere, Category = "Spawning" )
 	float mDespawnDistance;
 
 	/** Reference to the spawner that handles this creature */
@@ -678,27 +693,27 @@ private:
 	class AFGCreatureSpawner* mOwningSpawner;
 	
 	/** Whether or not this creature can be stunned at all. */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun" )
+	UPROPERTY( EditAnywhere, Category = "Stun" )
 	bool mCanBeStunned;
 	
 	/** Whether or not this creature can be stunned by damage buildup. */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun" )
+	UPROPERTY( EditAnywhere, Category = "Stun" )
 	bool mCanBeStunnedByDamage;
 
 	/** How much damage needs to be dealt in order to stun the creature. */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun" )
+	UPROPERTY( EditAnywhere, Category = "Stun" )
 	float mStunDamageThreshold;
 	
 	/** How long the creature should be stunned for after receiving enough damage buildup. */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun" )
+	UPROPERTY( EditAnywhere, Category = "Stun" )
 	float mStunDamageDuration;
 
 	/** How much time must pass before the creature can be stunned again. */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun" )
+	UPROPERTY( EditAnywhere, Category = "Stun" )
 	float mStunDamageCooldownDuration;
 
 	/** How much to reduce the stun damage buildup per second. */
-	UPROPERTY( EditDefaultsOnly, Category = "Stun" )
+	UPROPERTY( EditAnywhere, Category = "Stun" )
 	float mStunDamageReductionRate;
 
 	/** Whether or not the creature is currently stunned. */
@@ -707,4 +722,8 @@ private:
 
 	/** Timer responsible for ending the stun. */
 	FTimerHandle mStunTimerHandle;
+
+#ifdef WITH_EDITOR
+	mutable bool mPreviousSelected;
+#endif	
 };

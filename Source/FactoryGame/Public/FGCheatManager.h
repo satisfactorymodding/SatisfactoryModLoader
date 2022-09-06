@@ -21,10 +21,14 @@ public:
 	virtual bool IsSupportedForNetworking() const override;
 	virtual int32 GetFunctionCallspace( UFunction* Function, FFrame* Stack ) override;
 	virtual bool CallRemoteFunction( UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack ) override;
+	virtual void PreSave( const ITargetPlatform* TargetPlatform ) override;
 	// End UObject interface
 
 	// For networking support
 	virtual bool ReplicateSubobjects(class UActorChannel *Channel, class FOutBunch *Bunch, FReplicationFlags *RepFlags);
+
+	// Traverse all UFGCheatManager cheat functions and store a mapping so we know what category they belong to since that data isn't available in packaged builds
+	void CacheFunctionCategoryMapping();
 
 	virtual void InitDefaultCheats();
 	
@@ -144,7 +148,7 @@ public:
 
 	UFUNCTION( Server, Reliable )
 	virtual void Server_GiveStorySchematics();
-	UFUNCTION( exec, CheatBoard )
+	UFUNCTION( exec, CheatBoard, category = "Research" )
 	virtual void GiveStorySchematics();
 
 	UFUNCTION( Server, Reliable )
@@ -220,6 +224,9 @@ public:
 	void Server_SetCreatureHostility( ECreatureHostility hostility );
 	UFUNCTION( exec, CheatBoard, category = "Creature" )
 	void SetCreatureHostility( ECreatureHostility hostility );
+
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void SetCreatureStressEnabled( bool enable );
 
 	UFUNCTION( Server, Reliable )
 	void Server_SetTimeOfDay( int32 hour, int32 minute = 0 );
@@ -308,7 +315,7 @@ public:
 
 	UFUNCTION( Server, Reliable )
 	void Server_SetTimeSpeedMultiplier( float speed );
-	UFUNCTION( exec, CheatBoard ) 
+	UFUNCTION( exec, CheatBoard, category = "World/Time" ) 
 	void SetTimeSpeedMultiplier( float speed );
 
 	UFUNCTION( exec )
@@ -430,17 +437,17 @@ public:
 	void NetMulticast_RevealMap();
 	UFUNCTION( Server, Reliable )
 	void Server_RevealMap();
-	UFUNCTION( exec, CheatBoard )
+	UFUNCTION( exec, CheatBoard, category = "Map" )
 	void RevealMap();
 
 	UFUNCTION( NetMulticast, Reliable )
 	void NetMulticast_HideMap();
 	UFUNCTION( Server, Reliable )
 	void Server_HideMap();
-	UFUNCTION( exec, CheatBoard )
+	UFUNCTION( exec, CheatBoard, category = "Map" )
 	void HideMap();
 
-	UFUNCTION( exec, CheatBoard )
+	UFUNCTION( exec, CheatBoard, category = "Map"  )
 	void RemoveMapMarker( int32 index );
 
 	UFUNCTION( exec, CheatBoard, category = "Log" )
@@ -691,6 +698,8 @@ public:
 	UFUNCTION( exec )
 	void Cheats();
 
+	FORCEINLINE TMap<FString, FString> GetFunctionCategories() { return mFunctionCategories; }
+
 private:
 	class UActorComponent* GetOuterPlayersUseComponent() const;
 	class AActor* GetOuterPlayersUseActor() const;
@@ -703,6 +712,12 @@ public:
 	TArray< UClass* > mPopularUClassChoices;
 
 	FTimerHandle mDebugFocusTimerHandle;
+
+	/** Populated when we save the cheat manager BP. Used to gather metadata from cheat functions. We need to store them since meta data isn't avaible in packaged builds
+	 *	Key is a function name and value is a category 
+	 */
+	UPROPERTY( VisibleDefaultsOnly, Category=FunctionCategories )
+	TMap<FString, FString> mFunctionCategories;
 
 	/** Used to check if we have applied the default cheats this game session. */ 
 	bool mDefaultCheatsApplied = false;

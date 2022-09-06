@@ -348,13 +348,14 @@ protected:
 
 	/** Setup we we should start checking of we should be destroyed */
 	void SetupDestroyTimer();
+	
+	UFUNCTION()
+	virtual void OnRep_IsPossessed();
+	
 private:
 	UFUNCTION()
 	void OnRep_IsRagdolled();
-
-	UFUNCTION()
-	void OnRep_IsPossessed();
-
+	
 	FVector FindSafePlaceToGetUp();
 
 protected:

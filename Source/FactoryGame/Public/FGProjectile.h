@@ -190,6 +190,12 @@ public:
 	/** Time the projectile sticks to target before going poof. */
 	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
 	float mProjectileStickspan;
+
+	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	FLinearColor mProjectileColor;
+
+	UPROPERTY( SaveGame, EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile" )
+	float mProjectileScale;
 	
 protected:
 	/** Whether or not this projectile can be hit by homing ammo. */
@@ -220,6 +226,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Projectile|Cluster" )
 	FFloatInterval mClusterProjectileVerticalLaunchSpeed;
 
+	/** Custom up vector for the clustering to happen around. Default is FVector::UpVector */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile|Cluster" )
+	FVector mClusterUpVector;
+
 	/** Initial rotation to apply to the projectile at launch */
 	UPROPERTY( EditDefaultsOnly, Category = "Projectile" )
 	FRotator mThrowRotation;
@@ -232,7 +242,7 @@ protected:
 	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_TargetLocation, Category = "Projectile" )
 	FVector mTargetLocation;
 
-	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_IsHomingProjectile, Category = "Projectile" )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, ReplicatedUsing = OnRep_IsHomingProjectile, Category = "Projectile" )
 	bool mIsHomingProjectile;
 
 	UPROPERTY( BlueprintReadOnly, Replicated, Category = "Projectile" )

@@ -4,6 +4,7 @@
 
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
+#include "Templates/SubclassOf.h"
 #include "UObject/NoExportTypes.h"
 #include "FGScannableDetails.generated.h"
 
@@ -23,6 +24,24 @@ enum class EScannableActorType : uint8
 	RTWOT_WeakSignal	UMETA( DisplayName = "Weak Signal" ),
 	RTWOT_Fauna			UMETA( DisplayName = "Fauna" ),
 	RTWOT_Flora			UMETA( DisplayName = "Flora" ), 
+};
+
+USTRUCT( BlueprintType )
+struct FScannableObjectData
+{
+	GENERATED_BODY()
+
+	/** The item descriptor we will allow to scan for */
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Scannable Object" )
+	TSubclassOf< class UFGItemDescriptor > ItemDescriptor;
+
+	// Objects of this class or derived from this class will be allowed to scan for the ItemDescriptor. For example object scannner and radar tower
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Scannable Object" )
+	TArray<TSubclassOf< class UObject >> ActorsAllowedToScan;
+
+	bool operator ==(const FScannableObjectData& other) const;
+
+	bool operator !=(const FScannableObjectData& other) const;
 };
 
 USTRUCT()

@@ -6,6 +6,7 @@
 #include "GameFramework/Info.h"
 #include "FGActorRepresentationInterface.h"
 #include "FGSaveInterface.h"
+#include "FGBuildingTagInterface.h"
 #include "FGDockingStationInfo.generated.h"
 
 UENUM( BlueprintType )
@@ -19,7 +20,7 @@ enum class EDockingStationStatus : uint8
  * Containing wheeled-vehicle data that needs to be on client always
  */
 UCLASS()
-class FACTORYGAME_API AFGDockingStationInfo : public AInfo, public IFGSaveInterface, public IFGActorRepresentationInterface
+class FACTORYGAME_API AFGDockingStationInfo : public AInfo, public IFGSaveInterface, public IFGActorRepresentationInterface, public IFGBuildingTagInterface
 {
 	GENERATED_BODY()
 public:
@@ -58,6 +59,13 @@ public:
 	virtual void SetActorCompassViewDistance( ECompassViewDistance compassViewDistance ) override;
 	// End IFGActorRepresentationInterface
 	
+	//~ Begin IFGBuildingTagInterface
+	virtual bool HasBuildingTag_Implementation() const override { return true; }
+	virtual void SetHasBuildingTag_Implementation( bool hasBuildingTag ) override {}
+	virtual FString GetBuildingTag_Implementation() const override { return mBuildingTag; }
+	virtual void SetBuildingTag_Implementation( const FString& buildingTag ) override;
+	//~ End FGBuildingTagInterface
+	
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
@@ -82,6 +90,9 @@ private:
 	UFUNCTION()
 	void OnRep_Status();
 
+	UFUNCTION()
+	void OnRep_BuildingTag();
+
 private:
 	bool mIsServer = false;
 
@@ -98,8 +109,8 @@ private:
 	class UTexture2D* mActorRepresentationTexture;
 
 	UPROPERTY( Replicated )
-	FText mMapText;
-
-	UPROPERTY( Replicated )
 	FLinearColor mDefaultRepresentationColor;
+
+	UPROPERTY( SaveGame, ReplicatedUsing = OnRep_BuildingTag )
+	FString mBuildingTag;
 };

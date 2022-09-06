@@ -111,9 +111,9 @@ public:		// PUBLIC FUNC
 	UFUNCTION(BlueprintPure, Category="Action")
 	FORCEINLINE float GetActionCooldown() const { return mActionCooldown; }
 
-	/** Override cooldown time of the action */
-	UFUNCTION(BlueprintCallable, Category="Action")
-	void SetActionCooldown(float newCooldown) { mActionCooldown = newCooldown; }
+	/** Returns maximum cooldown between action execution/finish */
+	UFUNCTION(BlueprintPure, Category="Action")
+	FORCEINLINE float GetActionCooldownMax() const { return mActionCooldownMax; }
 
 	/** Returns when the action last executed in unpaused game seconds. */
 	UFUNCTION(BlueprintPure, Category="Action")
@@ -129,7 +129,7 @@ public:		// PUBLIC FUNC
 
 	/** Manually sets the time the action last finished. Can be used to bypass internal logic or creating custom logic. */
 	UFUNCTION(BlueprintCallable, Category="Action")
-	void SetActionLastFinishTime(float finishTime) { mActionLastFinishTime = finishTime; }
+	void SetActionLastFinishTime(float finishTime);
 
 	/** Is it in cooldown? True/False */
 	UFUNCTION(BlueprintPure, Category="Action")
@@ -140,7 +140,7 @@ public:		// PUBLIC FUNC
 
 	/** How long is left on cooldown? */
 	UFUNCTION(BlueprintPure, Category="Action")
-	FORCEINLINE float GetRemainingCooldown() const { return GetWorld() ? FMath::Clamp( mActionLastFinishTime + mActionCooldown - GetWorld()->GetTimeSeconds(), 0.f, mActionCooldown ) : -1.f ; }
+	FORCEINLINE float GetRemainingCooldown() const { return GetWorld() ? FMath::Clamp( mActionLastFinishTime + mCurrentActionCooldown - GetWorld()->GetTimeSeconds(), 0.f, mCurrentActionCooldown ) : -1.f ; }
 
 	/** Returns the pawn the action is being performed on. Can be used for playing montage etc. */
 	UFUNCTION(BlueprintPure, Category="Action")
@@ -202,33 +202,45 @@ protected:	// PROTECTED FUNC
 
 protected:	// PROTECTED MEMBERS
 	/** Each scorer gives a weight and they are summed up when called "ScoreAction" */
-	UPROPERTY(EditDefaultsOnly, Instanced, Category="Scoring, Interrupt & Filtering")
+	UPROPERTY(EditAnywhere, Instanced, Category="Scoring, Interrupt & Filtering")
 	TArray<UFGActionScorer*> mActionScorers;
 
 	/** Tests that perform at the beginning of every tick whilst an action runs.
 	 * If any of them succeeds, the action gets cancelled.
 	 * No tests = no interruption */
-	UPROPERTY(EditDefaultsOnly, Instanced, Category="Scoring, Interrupt & Filtering")
+	UPROPERTY(EditAnywhere, Instanced, Category="Scoring, Interrupt & Filtering")
 	TArray<UFGActionTest*> mActionInterrupts;
 
-	UPROPERTY(EditDefaultsOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, Category="General Settings")
 	FString mActionDescription = "";
 	
 	/** Action will automatically finish after this amount of time. */
-	UPROPERTY(EditDefaultsOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, Category="General Settings", meta=(ClampMin=0))
 	FFloatInterval mActionDuration;
 
 	/** Whether or not the action should successfully finish once its duration is over. */
-	UPROPERTY(EditDefaultsOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, Category="General Settings")
 	bool mActionDurationFinishResult;
 
+	/** The start of the action will be delayed by a random time in this range. */
+	UPROPERTY(EditAnywhere, Category="General Settings", meta=(ClampMin=0))
+	FFloatInterval mActionStartDelay;
+	
 	/** Minimum time between Actions executions in seconds. Cooldown begins after recovery is done. */
-	UPROPERTY(EditDefaultsOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, Category="General Settings")
 	float mActionCooldown = 5.f;
 
+	/** Maximum time between Actions executions in seconds. Cooldown begins after recovery is done. */
+	UPROPERTY(EditAnywhere, Category="General Settings")
+	float mActionCooldownMax = 0.f;
+
 	/** Time it takes to recover after the action has finished. */
-	UPROPERTY(EditDefaultsOnly, Category="General Settings")
+	UPROPERTY(EditAnywhere, Category="General Settings")
 	float mActionRecoveryTime = 1.f;
+
+	/** Maximum time it takes to recover after the action has finished*/
+	UPROPERTY(EditAnywhere, Category="General Settings")
+	float mActionRecoveryTimeMax = 0.f;
 
 	/** Last unpaused game time it got executed at */
 	UPROPERTY(BlueprintGetter=GetActionLastExecuteTime, BlueprintSetter=SetActionLastExecuteTime, Category="Action")
@@ -239,25 +251,25 @@ protected:	// PROTECTED MEMBERS
 	float mActionLastFinishTime = -1.f;
 
 	/** Can this action be ticked and run until FinishAction gets called? */
-	UPROPERTY(EditDefaultsOnly, Category="Tick")
+	UPROPERTY(EditAnywhere, Category="Tick")
 	bool mIsActionTickable = true;
 
 	/** Can this action tick when the game is paused? */
-	UPROPERTY(EditDefaultsOnly, Category="Tick")
+	UPROPERTY(EditAnywhere, Category="Tick")
 	bool mIsActionTickableWhenPaused = false;
 
 	/** Can this Action tick standalone in editor? Could be useful for standalone testing. */
-	UPROPERTY(EditDefaultsOnly, Category="Tick")
+	UPROPERTY(EditAnywhere, Category="Tick")
 	bool mIsActionTickableInEditor = false;
 
 	/** Action to run in the same way as post action, but *before* the actual action runs (i.e: Relocate to range) */
-	UPROPERTY(EditDefaultsOnly, Instanced, Category="Linked Actions")
+	UPROPERTY(EditAnywhere, Instanced, Category="Linked Actions")
 	UFGAction* mPreAction = nullptr;
 
 	/** Ability to chain actions. Post action will execute when the current action successfully finishes.
 	  * Post Action Setup checks happens at the same as the current action.
 	  * Scoring and CanPerform are ignored for post actions, they simply execute if they can perform and their parent (this) executes.*/
-	UPROPERTY(EditDefaultsOnly, Instanced, Category="Linked Actions")
+	UPROPERTY(EditAnywhere, Instanced, Category="Linked Actions")
 	UFGAction* mPostAction = nullptr;
 
 	/** The pawn performing the action */
@@ -274,9 +286,6 @@ private:	// PRIVATE FUNC
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_RepActionState(EFGActionState newState);
 
-	UFUNCTION()
-	void OnOuterControllerChanged(APawn* pawn, AController* controller);
-
 private:	// PRIVATE MEMBERS
 	/** State of the action, used to control action flow */
 	UPROPERTY()
@@ -290,10 +299,17 @@ private:	// PRIVATE MEMBERS
 	UPROPERTY()
 	FTimerHandle mActionRecoveryTimerHandle;
 
+	/** Timer to handle actions starting with a delay */
+	UPROPERTY()
+	FTimerHandle mActionStartDelayHandle;
+
 	/** If we are a pre or post action this is our parent action. */
 	UPROPERTY()
 	UFGAction* mParentAction;
 
 	/** The duration of the current execution of this action, as specified by mActionDuration. */
 	float mCurrentActionDuration;
+
+	/** The current cooldown duration, random value between mActionCooldown and mActionCooldownMax. */
+	float mCurrentActionCooldown;
 };

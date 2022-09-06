@@ -6,7 +6,9 @@ void UFGCheatManager::InitCheatManager(){ }
 bool UFGCheatManager::IsSupportedForNetworking() const{ return bool(); }
 int32 UFGCheatManager::GetFunctionCallspace(UFunction* Function, FFrame* Stack){ return int32(); }
 bool UFGCheatManager::CallRemoteFunction(UFunction* Function, void* Parameters, FOutParmRec* OutParms, FFrame* Stack){ return bool(); }
+void UFGCheatManager::PreSave(const ITargetPlatform* TargetPlatform){ }
 bool UFGCheatManager::ReplicateSubobjects( UActorChannel *Channel,  FOutBunch *Bunch, FReplicationFlags *RepFlags){ return bool(); }
+void UFGCheatManager::CacheFunctionCategoryMapping(){ }
 void UFGCheatManager::InitDefaultCheats(){ }
 bool UFGCheatManager::IsClient() const{ return bool(); }
 void UFGCheatManager::Server_NoCost_Implementation(bool enabled){ }
@@ -78,6 +80,7 @@ void UFGCheatManager::RemoveFoliageByTarget(float radius){ }
 void UFGCheatManager::Server_RemoveFoliageByTarget_Implementation(float radius){ }
 void UFGCheatManager::Server_SetCreatureHostility_Implementation(ECreatureHostility hostility){ }
 void UFGCheatManager::SetCreatureHostility(ECreatureHostility hostility){ }
+void UFGCheatManager::SetCreatureStressEnabled(bool enable){ }
 void UFGCheatManager::Server_SetTimeOfDay_Implementation(int32 hour, int32 minute){ }
 void UFGCheatManager::SetTimeOfDay(int32 hour, int32 minute){ }
 void UFGCheatManager::Server_SetTimeSpeedMultiplierResetTime_Implementation(int32 resetHour){ }

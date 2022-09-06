@@ -19,11 +19,7 @@ DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advan
 DECLARE_STATS_GROUP( TEXT( "Sound Events auto-resume on animations" ), STATGROUP_SoundEventAutoResume, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "Execute on Interface" ), STATGROUP_ExecuteInterface, STATCAT_Advanced );
 
-static TAutoConsoleVariable<int32> CVarStressTestRadioActivity(
-	TEXT("CSS.Debug.MarkAllItemsAsRadioActive"),
-	0,
-	TEXT("CSS: Debug command to stress test radioacivity"),
-	ECVF_Cheat);
+extern TAutoConsoleVariable<int32> CVarStressTestRadioActivity; 
 
 // Useful for removing stuff that shouldn't be in public versions
 #ifndef IS_PUBLIC_BUILD

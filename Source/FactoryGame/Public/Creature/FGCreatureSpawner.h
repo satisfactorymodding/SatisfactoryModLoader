@@ -17,7 +17,6 @@ struct FACTORYGAME_API FSpawnData
 	GENERATED_BODY();
 
 	FSpawnData() :
-		SpawnLocation( FVector( 0, 0, 0 ) ),
 		Creature( nullptr ),
 		WasKilled( false ),
 		NumTimesKilled( 0 ),
@@ -25,10 +24,6 @@ struct FACTORYGAME_API FSpawnData
 		WaitingForSpawnLocation( false ),
 		SpawnLocationWaitTimeStamp( -1.0f )
 	{}
-
-	/** Location where we want to spawn */
-	UPROPERTY( SaveGame )
-	FVector SpawnLocation;
 
 	/** Reference to creature */
 	UPROPERTY( SaveGame )
@@ -65,7 +60,6 @@ public:
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	#if WITH_EDITOR
 	/** Moved in the editor, on done, calculate spawn locations */
-	virtual void PostEditMove( bool bFinished ) override;
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 	#endif
 	// END AActor interface
@@ -79,9 +73,6 @@ public:
 	virtual bool NeedTransform_Implementation() override; 
 	virtual bool ShouldSave_Implementation() const override;
 	// End IFSaveInterface
-
-	/** Get all spawn locations that's been calculated */
-	void GetSpawnLocations( TArray<FVector>& out_spawnLocations ) const;
 
 	/** Get the creature that we will spawn */
 	UFUNCTION( BlueprintNativeEvent, Category = "Spawner ")
@@ -140,12 +131,8 @@ public:
 	UFUNCTION()
 	virtual void CreatureDied( AActor* thisActor );
 
-	/**
-	* Calculates the locations of the spawn locations of the enemies
-	* @returns false if we didn't manage to fit all the enemies is the radius
-	**/
-	UFUNCTION( BlueprintCallable, Category = "Spawning", meta = ( CallInEditor = "true" ) )
-	bool CalculateSpawningLocations();
+	/** Populates the spawndata array. */
+	void PopulateSpawnData();
 
 	/** The distance at which this spawner will activate */
 	UFUNCTION( BlueprintPure, Category = "Spawning" )
@@ -171,12 +158,6 @@ public:
 	
 protected:
 	virtual void OnSpawningFinished();
-	
-	/** Randoms a location within range of this actor, and randoms new locations trying to find a unused location numRetries times */
-	bool TryFindNonOverlappingLocation( const TArray<FVector2D>& usedSpawnLocations, float spawnRadius, int32 maxRetries, FVector2D& out_location );
-
-	/** Check through usedLocations so that location isn't overlapping another location (using mCreatureClass radius) */
-	bool IsLocationNonOverlapping( const FVector2D& location, const TArray< FVector2D >& usedLocations ) const;
 
 	/** Used to register the spawner as a navigation invoker to generate navmesh around it for the creature. */
 	void RegisterAsNavigationInvoker( bool shouldRegister );

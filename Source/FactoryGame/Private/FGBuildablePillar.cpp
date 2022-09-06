@@ -5,4 +5,6 @@
 AFGBuildablePillar::AFGBuildablePillar() : Super() {
 	this->mSize = FVector::ZeroVector;
 	this->mIsSupport = false;
+	this->mLegacySwatch = nullptr;
 }
+void AFGBuildablePillar::PostLoadGame_Implementation(int32 saveVersion, int32 gameVersion){ }

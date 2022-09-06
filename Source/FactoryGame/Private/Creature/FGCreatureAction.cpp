@@ -14,6 +14,7 @@ UFGCreatureAction::UFGCreatureAction(const FObjectInitializer& ObjectInitializer
 	this->mCancelsOnStateChange = true;
 	this->mReceivedStateChange = false;
 	this->mMustBeGrounded = true;
+	this->mCancelIfSubmerged = true;
 }
 bool UFGCreatureAction::ExecuteAction(){ return bool(); }
 bool UFGCreatureAction::InitializeAction(AController* controller, APawn* pawn){ return bool(); }
@@ -25,6 +26,7 @@ bool UFGCreatureAction::IsTickable() const{ return bool(); }
 bool UFGCreatureAction::ExecuteMainAction(){ return bool(); }
 bool UFGCreatureAction::IsValidTarget_Implementation(AActor* Target) const{ return bool(); }
 void UFGCreatureAction::OnCreatureStunUpdate(bool isStunned){ }
+void UFGCreatureAction::OnMovementModeChanged( ACharacter* character, EMovementMode previousMode, uint8 prevCustomMode){ }
 void UFGCreatureAction::OnCreatureStateChanged( AFGCreatureController* creatureController, ECreatureState previousState, ECreatureState newState){ }
 void UFGCreatureAction::InternalActionCleanup(bool actionSuccess){ }
 void UFGCreatureAction::SetupTarget(){ }

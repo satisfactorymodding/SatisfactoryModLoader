@@ -18,8 +18,12 @@ void AFGBuildable::CheckForErrors(){ Super::CheckForErrors(); }
 #if WITH_EDITOR
 void AFGBuildable::SetBuildableDisplayName(TSubclassOf< AFGBuildable > inClass, FText displayName){ }
 #endif 
+#if WITH_EDITORONLY_DATA
+#endif 
 #if WITH_EDITOR
 void AFGBuildable::DebugDrawOcclusionBoxes(){ }
+void AFGBuildable::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent){ Super::PostEditChangeProperty(PropertyChangedEvent); }
+void AFGBuildable::PostEditChangeChainProperty(FPropertyChangedChainEvent& PropertyChangedEvent){ }
 #endif 
 void AFGBuildable::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -50,6 +54,7 @@ AFGBuildable::AFGBuildable() : Super() {
 	this->mDefaultSwatchCustomizationOverride = nullptr;
 	this->mSwatchGroup = UFGSwatchGroup_Standard::StaticClass();
 	this->mAllowColoring = true;
+	this->mAllowPatterning = true;
 	this->mFactorySkinClass = nullptr;
 	this->mBuildEffectTemplate = nullptr;
 	this->mDismantleEffectTemplate = nullptr;
@@ -95,6 +100,7 @@ AFGBuildable::AFGBuildable() : Super() {
 	this->RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 }
 void AFGBuildable::Serialize(FArchive& ar){ Super::Serialize(ar); }
+void AFGBuildable::PostLoad(){ Super::PostLoad(); }
 void AFGBuildable::OnConstruction(const FTransform& transform){ }
 void AFGBuildable::BeginPlay(){ }
 void AFGBuildable::EndPlay(const EEndPlayReason::Type endPlayReason){ }
@@ -112,6 +118,7 @@ void AFGBuildable::ApplyCustomizationData_Native(const FFactoryCustomizationData
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGBuildable::GetActiveSkin_Native(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
 TSubclassOf< UFGFactoryCustomizationDescriptor_Skin > AFGBuildable::GetActiveSkin_Implementation(){ return TSubclassOf<UFGFactoryCustomizationDescriptor_Skin>(); }
 bool AFGBuildable::GetCanBeColored_Implementation(){ return bool(); }
+bool AFGBuildable::GetCanBePatterned_Implementation(){ return bool(); }
 void AFGBuildable::StartIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter, bool isValid){ }
 void AFGBuildable::StopIsAimedAtForColor_Implementation( AFGCharacterPlayer* byCharacter){ }
 void AFGBuildable::UpdateUseState_Implementation( AFGCharacterPlayer* byCharacter, const FVector& atLocation,  UPrimitiveComponent* componentHit, FUseState& out_useState) const{ }
@@ -193,6 +200,7 @@ void AFGBuildable::SetDidFirstTimeUse(bool didUse){ }
 TArray< UStaticMeshComponent* > AFGBuildable::CreateBuildEffectProxyComponents(){ return TArray<UStaticMeshComponent*>(); }
 void AFGBuildable::DestroyBuildEffectProxyComponents(){ }
 void AFGBuildable::OnRep_CustomizationData(){ }
+void AFGBuildable::ForceUpdateCustomizerMaterialToRecipeMapping(bool bTryToSave){ }
 void AFGBuildable::CreateFactoryStatID() const{ }
 void AFGBuildable::SetReplicateDetails(bool replicateDetails){ }
 bool AFGBuildable::CheckFactoryConnectionComponents(FString& out_message){ return bool(); }

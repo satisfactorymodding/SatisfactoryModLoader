@@ -2,3 +2,4 @@
 
 #include "FGScannableSettings.h"
 
+TArray<TSubclassOf<class UFGItemDescriptor>> UFGScannableSettings::GetStartingScannableObjects(const UObject* scannerObject) const{ return TArray<TSubclassOf<class UFGItemDescriptor>>(); }

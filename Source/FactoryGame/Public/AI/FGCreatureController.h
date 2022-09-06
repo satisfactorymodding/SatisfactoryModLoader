@@ -11,6 +11,8 @@
 #include "AI/FGStimulusAccumulator.h"
 #include "AI/FGDamageTypeAccumulator.h"
 
+#include "AI/Navigation/NavQueryFilter.h"
+
 #include "FGCreatureController.generated.h"
 
 namespace FGBBKeys
@@ -90,10 +92,11 @@ struct FFGCreaturePathToTarget
 
 	FFGCreaturePathToTarget() {}
 
-	FFGCreaturePathToTarget( AActor* target, float timeStamp, UNavigationPath* path )
+	FFGCreaturePathToTarget( AActor* target, float timeStamp, UNavigationPath* path, TSubclassOf< UNavigationQueryFilter > queryFilter )
 		: Target( target )
 		, TimeCached( timeStamp )
 		, PathObject( path )
+		, QueryFilter( queryFilter )
 	{}
 
 	UPROPERTY( BlueprintReadOnly )
@@ -104,6 +107,9 @@ struct FFGCreaturePathToTarget
 
 	UPROPERTY( BlueprintReadOnly )
 	UNavigationPath* PathObject = nullptr;
+
+	UPROPERTY( BlueprintReadOnly )
+	TSubclassOf< UNavigationQueryFilter > QueryFilter = nullptr;
 };
 
 USTRUCT( BlueprintType )
@@ -245,7 +251,7 @@ public:
 	bool GetNearestAlertLocation( FVector& out_location ) const;
 
 	UFUNCTION( BlueprintCallable, Category = "AI" )
-	UNavigationPath* GetCachedPathToTarget(AActor* target, float cacheLifetime = 0.2f);
+	UNavigationPath* GetCachedPathToTarget( AActor* target, float cacheLifetime = 0.2f, TSubclassOf< UNavigationQueryFilter > queryFilter = nullptr );
 
 	/** Gets the aggro of the specified target actor. */
 	UFUNCTION( BlueprintPure, Category = "AI" )

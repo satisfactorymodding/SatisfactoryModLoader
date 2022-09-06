@@ -118,8 +118,19 @@ public:
 	 */
 	void RemoveComponent( class UFGCircuitConnectionComponent* component );
 
+	/**
+	 * Schedule a rebuild of the circuit-groups structure
+	 */
 	void SetCircuitBridgesModified();
+
+	/**
+	 * Add a bridge that will act as a delimiter of circuits (and optionally a delimiter of circuit groups)
+	 */
 	void AddCircuitBridge( TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge );
+
+	/**
+	 * Remove a circuit bridge
+	 */
 	void RemoveCircuitBridge( TWeakObjectPtr< AFGBuildableCircuitBridge > circuitBridge );
 
 	class UFGCircuitGroup* GetCircuitGroup( int32 circuitGroupId ) { return mCircuitGroups[ circuitGroupId ]; }
@@ -157,6 +168,9 @@ private:
 	int32 SplitCircuit( const UFGCircuit* circuit );
 	void RemoveCircuit( int32 circuitID );
 
+	/**
+	 * Rebuild the circuit-group structure
+	 */
 	void RebuildCircuitGroups();
 
 	/**
@@ -195,9 +209,16 @@ private:
 	/** Counter for generating new circuit ids. */
 	int32 IDCounter;
 
+	/**
+	 * List of all the circuit bridges. They work as delimiters of circuits.
+	 * If they are on, they are not delimiters of circuit groups. If they are off, they are delimiter of circuit groups.
+	 */
 	TSet< TWeakObjectPtr< AFGBuildableCircuitBridge > > mCircuitBridges;
 	bool mIsCircuitGroupsDirty;
 
+	/**
+	 * A list of circuits groups. Circuit groups logically work as one circuit.
+	 */
 	UPROPERTY()
 	TArray< class UFGCircuitGroup* > mCircuitGroups;
 };

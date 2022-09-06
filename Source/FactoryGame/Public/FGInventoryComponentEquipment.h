@@ -47,8 +47,10 @@ public:
 	/** Loop de loop */
 	void CycleEquipment( int32 dir );
 
-	/** Sets @index to be active if it is a valid index */
-	void SetActiveIndex( int32 index );
+	/** Sets @index to be active if it is a valid index. If @itemAtCurrentIndex is set, it is assumed to be the item currently active in this
+	 * equipment slot. This is useful when this function is called in response to the active item already having been removed from slot. 
+	 */
+	void SetActiveIndex( int32 index, TOptional< FInventoryItem > itemAtCurrentIndex = {} );
 
 	/** Checks whether this contains any items of item type and whether they have room for inventory item */
 	bool ContainsItemTypeAndHasEnoughSpaceForItem( FInventoryItem item );

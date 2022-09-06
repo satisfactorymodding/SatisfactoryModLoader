@@ -18,5 +18,6 @@ void UFGCreatureActionAnimatedBase::NetMulticast_CancelActionAnimation_Implement
 void UFGCreatureActionAnimatedBase::StartActionAnimation_Internal( UAnimMontage* montage, bool stopOtherMontages){ }
 void UFGCreatureActionAnimatedBase::StopActionAnimation_Internal( UAnimMontage* montage){ }
 void UFGCreatureActionAnimatedBase::OnAnimNotify_Internal(const  UFGAnimNotify* Notify, AActor* Owner){ }
+void UFGCreatureActionAnimatedBase::BindAnimNotifyDelegate(const UAnimMontage* montage, bool shouldBind){ }
 void UFGCreatureActionAnimatedBase::OnMontageEnded( UAnimMontage* Montage, bool Interrupted){ }
 void UFGCreatureActionAnimatedBase::OnMontageBlendingOutStarted( UAnimMontage* Montage, bool Interrupted){ }

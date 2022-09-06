@@ -34,6 +34,8 @@ UFGAmmoType::UFGAmmoType() : Super() {
 	this->mAmmoDamageFalloff.ExternalCurve = nullptr;
 	this->mMuzzleFlashVFX = nullptr;
 	this->mMuzzleFlashScale = FVector::OneVector;
+	this->mAmmoColor = FLinearColor(1.0, 1.0, 1.0, 1.0);
+	this->mAmmoScale = 1.0;
 	this->mAmmoTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->mAmmoTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->mAmmoTickFunction.bTickEvenWhenPaused = false;

@@ -64,6 +64,9 @@ private:
 	
 	UFUNCTION()
 	void OnAnimNotify_Internal( const class UFGAnimNotify* Notify, AActor* Owner );
+
+	// Used to bind / unbind from anim notify delegate
+	void BindAnimNotifyDelegate( const UAnimMontage* montage, bool shouldBind );
 	
 	/** Called when action animation ended */
 	UFUNCTION()
@@ -81,7 +84,7 @@ protected:
 	FOnMontageBlendingOutStarted mOnMontageBlendingOutStarted;
 
 	/** What anim notify classes we want to listen to. */
-	UPROPERTY( EditDefaultsOnly, Category = "Animation" )
+	UPROPERTY( EditAnywhere, Category = "Animation" )
 	TArray< TSubclassOf< class UFGAnimNotify > > mAnimNotifyTriggers;
 
 private:

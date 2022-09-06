@@ -3,6 +3,7 @@
 #include "FGCharacterPlayer.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/WidgetComponent.h"
 #include "FGOutlineComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "FGCharacterMovementComponent.h"
@@ -12,6 +13,7 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mBaseLookUpRate = 45.0;
 	this->mMesh1PAnimClass = nullptr;
 	this->mMesh3P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh3P"));
+	this->mPlayerNameWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("PlayerNameWidget"));
 	this->mFoliagePickupProxyClass = nullptr;
 	this->mFoliagePickupProxy = nullptr;
 	this->mBuildGun = nullptr;
@@ -80,8 +82,10 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mActorRepresentationTexture = nullptr;
 	this->mActorRepresentationTextureDead = nullptr;
 	this->mHolsteredEquipmentIndex = -1;
+	this->mCachedPlayerName = TEXT("");
 	this->bNetUseOwnerRelevancy = true;
 	this->mMesh3P->SetupAttachment(GetCapsuleComponent());
+	this->mPlayerNameWidgetComponent->SetupAttachment(GetCapsuleComponent());
 	this->mSpringArmComponent->SetupAttachment(GetCapsuleComponent());
 	this->mEmoteSkelMeshComp->SetupAttachment(GetCapsuleComponent());
 }
@@ -113,6 +117,7 @@ void AFGCharacterPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGCharacterPlayer, mReplicatedIsSliding);
 	DOREPLIFETIME(AFGCharacterPlayer, mIncomingAttackers);
 	DOREPLIFETIME(AFGCharacterPlayer, mHolsteredEquipmentIndex);
+	DOREPLIFETIME(AFGCharacterPlayer, mCachedPlayerName);
 }
 void AFGCharacterPlayer::PostActorCreated(){ Super::PostActorCreated(); }
 void AFGCharacterPlayer::PostInitializeComponents(){ Super::PostInitializeComponents(); }
@@ -229,7 +234,7 @@ void AFGCharacterPlayer::TrySpawnInitialGear(){ }
 void AFGCharacterPlayer::SpawnInitialGear_Implementation(){ }
 void AFGCharacterPlayer::OnPickUpItem(){ }
 void AFGCharacterPlayer::PickUpItem( AFGItemPickup* itemPickup){ }
-void AFGCharacterPlayer::PickUpBoomBox( AFGBoomBox* boomBox){ }
+void AFGCharacterPlayer::PickUpBoomBox( AFGBoomBoxPlayer* boomBox){ }
 void AFGCharacterPlayer::SetPickupToCollect( AFGItemPickup* itemPickup){ }
 void AFGCharacterPlayer::Server_ToggleSwitchControl_Implementation( AFGBuildableRailroadSwitchControl* switchControl){ }
 bool AFGCharacterPlayer::Server_ToggleSwitchControl_Validate( AFGBuildableRailroadSwitchControl* switchControl){ return bool(); }
@@ -322,6 +327,8 @@ void AFGCharacterPlayer::TriggerBestUsableActorDelegate(){ }
 void AFGCharacterPlayer::UpdateHUDCrosshair(){ }
 bool AFGCharacterPlayer::IsSliding() const{ return bool(); }
 bool AFGCharacterPlayer::IsInPumpiMode(){ return bool(); }
+void AFGCharacterPlayer::UpdatePlayerNameWidget(){ }
+void AFGCharacterPlayer::Native_OnPlayerColorDataUpdated(){ }
 AFGEquipment* AFGCharacterPlayer::SpawnEquipment(TSubclassOf< AFGEquipment > equipmentClass, AActor* owner){ return nullptr; }
 AFGEquipmentAttachment* AFGCharacterPlayer::SpawnAttachmentForEquipment(AFGEquipment* equipment){ return nullptr; }
 AFGEquipmentAttachment* AFGCharacterPlayer::SpawnSecondaryAttachmentForEquipment(AFGEquipment* equipment){ return nullptr; }
@@ -343,7 +350,7 @@ void AFGCharacterPlayer::Server_OnUseReleased_Implementation(){ }
 bool AFGCharacterPlayer::Server_OnUseReleased_Validate(){ return bool(); }
 void AFGCharacterPlayer::Server_PickUpItem_Implementation( AFGItemPickup* itemPickup){ }
 bool AFGCharacterPlayer::Server_PickUpItem_Validate( AFGItemPickup* itemPickup){ return bool(); }
-void AFGCharacterPlayer::Server_PickUpBoomBox_Implementation( AFGBoomBox* boomBox){ }
+void AFGCharacterPlayer::Server_PickUpBoomBoxPlayer_Implementation( AFGBoomBoxPlayer* boomBox){ }
 void AFGCharacterPlayer::Client_OnPerceivingCreatureStateChange_Implementation(AFGCreature* creature, ECreatureState newState){ }
 void AFGCharacterPlayer::OnPerceivingCreatureStateChange_Internal(AFGCreature* creature, ECreatureState newState) const{ }
 void AFGCharacterPlayer::OnSlideStatusUpdated(){ }
@@ -363,6 +370,8 @@ void AFGCharacterPlayer::OnRep_BodyEquipmentSlot(){ }
 void AFGCharacterPlayer::OnRep_CreaturePerceptionInfo(const TArray< FFGCreaturePlayerPerceptionInfo >& OldValues){ }
 void AFGCharacterPlayer::MigrateNumSavedSlots(){ }
 void AFGCharacterPlayer::CheckItemPickedUp(){ }
+void AFGCharacterPlayer::OnRep_IsPossessed(){ }
+void AFGCharacterPlayer::OnRep_PlayerState(){ }
 bool AFGCharacterPlayer::HasHolsteredEquipment(){ return bool(); }
 int32 AFGCharacterPlayer::GetHolsteredEquipmentIndex() const{ return int32(); }
 bool AFGCharacterPlayer::FilterInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }

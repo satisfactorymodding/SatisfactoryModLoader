@@ -2,6 +2,8 @@
 
 #include "FGScannableDetails.h"
 
+bool FScannableObjectData::operator ==(const FScannableObjectData& other) const{ return bool(); }
+bool FScannableObjectData::operator !=(const FScannableObjectData& other) const{ return bool(); }
 bool FScannableDetails::HasRequiredSchematic() const{ return bool(); }
 TSubclassOf< class UFGSchematic > FScannableDetails::GetRequiredSchematic() const{ return TSubclassOf<class UFGSchematic>(); }
 void UFGScannableDetails::ScanForObjects(const FVector2D scanLocation, const float scanRadius, TArray<FScannedActor>& out_ScannedObjects){ }

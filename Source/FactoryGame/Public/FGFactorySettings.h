@@ -203,10 +203,6 @@ public:
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	TSubclassOf< class AFGResourceMiner > mResourceMinerClass;
 	
-	/** The class to be used as a static boombox actor (not as equipment) */
-	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
-	TSubclassOf< class AFGBoomBox > mBoomBoxClass;
-
 	/** The class to be used as a boom box player */
 	UPROPERTY( EditDefaultsOnly, Category = "Equipment" )
 	TSubclassOf< class AFGBoomBoxPlayer > mBoomBoxPlayerClass;

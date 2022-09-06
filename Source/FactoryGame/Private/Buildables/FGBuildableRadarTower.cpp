@@ -39,10 +39,12 @@ void AFGBuildableRadarTower::Factory_TickProducing(float dt){ }
 void AFGBuildableRadarTower::ScanForResources(){ }
 void AFGBuildableRadarTower::AddResourceNodes(const TArray<  AFGResourceNodeBase* >& resourceNodes){ }
 void AFGBuildableRadarTower::ClearScannedResources(){ }
-void AFGBuildableRadarTower::InitScanForObjects(){ }
+void AFGBuildableRadarTower::ScanForObjects(){ }
 void AFGBuildableRadarTower::TryRemovePickup(AActor* removedActor){ }
 void AFGBuildableRadarTower::TryAddCreatureSpawner( AFGCreatureSpawner* creatureSpawner){ }
 void AFGBuildableRadarTower::TryRemoveCreatureSpawner( AFGCreatureSpawner* creatureSpawner){ }
 void AFGBuildableRadarTower::TryRemoveDropPod( AFGDropPod* dropPod){ }
+void AFGBuildableRadarTower::OnNewScannableObjectUnlocked(TSubclassOf<  UFGItemDescriptor > itemDescriptor){ }
+TArray<TSubclassOf<UFGItemDescriptor>> AFGBuildableRadarTower::GetAvailableScannableDescriptors() const{ return TArray<TSubclassOf<UFGItemDescriptor>>(); }
 bool AFGBuildableRadarTower::IsInRadarTowerRange(const FVector& location) const{ return bool(); }
 void AFGBuildableRadarTower::UpdateRepresentationValues(){ }

@@ -2,6 +2,7 @@
 
 #include "FGNoise.h"
 
+TAutoConsoleVariable<int32> CVarFGNoiseDebug(TEXT("CVarFGNoiseDebug"), 0, TEXT(""));
 UFGNoise::UFGNoise() : Super() {
 	this->mMaxRange = 0.0;
 	this->mLoudness = 1.0;

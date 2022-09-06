@@ -15,7 +15,6 @@ EEquipmentSlot UFGInventoryComponentEquipment::GetEquipmentSlotEnum() const{ ret
 void UFGInventoryComponentEquipment::SetEquipmentSlotEnum(EEquipmentSlot inSlot){ }
 void UFGInventoryComponentEquipment::SetOverrideEquipment(AFGEquipment* equipment){ }
 void UFGInventoryComponentEquipment::CycleEquipment(int32 dir){ }
-void UFGInventoryComponentEquipment::SetActiveIndex(int32 index){ }
 bool UFGInventoryComponentEquipment::ContainsItemTypeAndHasEnoughSpaceForItem(FInventoryItem item){ return bool(); }
 FDelegateHandle UFGInventoryComponentEquipment::BindOnActiveEquipmentChanged(const FOnActiveEquipmentChanged::FDelegate &Delegate){ return FDelegateHandle(); }
 void UFGInventoryComponentEquipment::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {

@@ -507,10 +507,10 @@ private:
 	bool mHasInitializedColorSlots;
 
 	/** The different colors to represent players over the network. We keep this if we need to loop back over the colors again*/
-	TArray< FSlotData > mPlayerColors;
+	TArray< FPlayerColorData > mPlayerColors;
 
 	/** The remaining colors to represent players over the network */
-	TArray< FSlotData > mAvailablePlayerColors;
+	TArray< FPlayerColorData > mAvailablePlayerColors;
 
 	/** Next time the server is planned to restart */
 	UPROPERTY( VisibleInstanceOnly, Replicated, ReplicatedUsing = OnRep_PlannedRestartTime, Category="Server" )

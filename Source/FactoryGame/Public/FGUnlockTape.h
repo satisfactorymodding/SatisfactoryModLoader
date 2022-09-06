@@ -20,6 +20,6 @@ public:
 	virtual void Apply(AFGUnlockSubsystem* unlockSubssytem) override;
 	// End FGUnlock interface
 	
-	UPROPERTY( EditDefaultsOnly, Category = "Tape")
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Tape")
 	TArray< TSubclassOf< class UFGTapeData > > mTapeUnlocks;
 };

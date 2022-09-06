@@ -10,8 +10,7 @@
 #include "FGFoliageRemoval.generated.h"
 
 
-/** Data about removed instances */
-/** We can't send the id of the instance to clients, as that requires us to maintain a commandbuffer with all done commands to be able to get the same id's a server/client */
+/** Legacy removals. Kept for save compatibility. */
 USTRUCT()
 struct FRemovedInstance
 {
@@ -22,7 +21,7 @@ struct FRemovedInstance
 	FTransform Transform;
 };
 
-/** Wrapper around the Items struct to enable custom delta serialization (we send a part of the data to the client every frame instead of sending it all in one frame) */
+/** Legacy removals. Kept for save compatibility. */
 USTRUCT()
 struct FRemovedInstanceArray
 {
@@ -32,8 +31,13 @@ struct FRemovedInstanceArray
 	TArray< FRemovedInstance >	Items;
 };
 
-// 8 bit index replication
+/**
+* New foliage removal system.
+*/
 
+/**
+* 8 bit index replication. Used for removals into foliage types/level with < 256 instances.
+*/
 USTRUCT()
 struct FByteRemovalIndex : public FFastArraySerializerItem
 {
@@ -45,10 +49,16 @@ struct FByteRemovalIndex : public FFastArraySerializerItem
 
 	static constexpr int MaxCount = 1 << BitCount;
 
+	/**
+	 * Index into the foliage removal cache in the subsystem
+	 */
 	UPROPERTY()
 	uint8 Index = 0;
 };
 
+/**
+* 8 bit index replication array.
+*/
 USTRUCT()
 struct FByteRemovalIndices : public FFastArraySerializer
 {
@@ -81,8 +91,9 @@ struct TStructOpsTypeTraits< FByteRemovalIndices > : public TStructOpsTypeTraits
 	};
 };
 
-// 16 bit index replication
-
+/**
+* 16 bit index replication. Used for removals into foliage types/level with < 65536 instances.
+*/
 USTRUCT()
 struct FShortRemovalIndex : public FFastArraySerializerItem
 {
@@ -94,10 +105,16 @@ struct FShortRemovalIndex : public FFastArraySerializerItem
 
 	static constexpr int MaxCount = 1 << BitCount;
 
+	/**
+	 * Index into the foliage removal cache in the subsystem
+	 */
 	UPROPERTY()
 	uint16 Index = 0;
 };
 
+/**
+ * 16 bit index replication array.
+ */
 USTRUCT()
 struct FShortRemovalIndices : public FFastArraySerializer
 {
@@ -130,8 +147,9 @@ struct TStructOpsTypeTraits< FShortRemovalIndices > : public TStructOpsTypeTrait
 	};
 };
 
-// 32 bit index replication :'(
-
+/**
+* 32 bit index replication. Used for removals into foliage types/level with >= 65536 instances.
+*/
 USTRUCT()
 struct FLongRemovalIndex : public FFastArraySerializerItem
 {
@@ -143,10 +161,16 @@ struct FLongRemovalIndex : public FFastArraySerializerItem
 
 	static constexpr int64 MaxCount = 1ll << BitCount;
 
+	/**
+	 * Index into the foliage removal cache in the subsystem
+	 */
 	UPROPERTY()
 	uint32 Index = 0;
 };
 
+/**
+* 32 bit index replication array.
+*/
 USTRUCT()
 struct FLongRemovalIndices : public FFastArraySerializer
 {
@@ -179,6 +203,9 @@ struct TStructOpsTypeTraits< FLongRemovalIndices > : public TStructOpsTypeTraits
 	};
 };
 
+/**
+ * Contains all removals into one foliage type/level component. The 
+ */
 UCLASS(notplaceable)
 class FACTORYGAME_API AFGFoliageRemoval : public AFGStaticReplicatedActor, public IFGSaveInterface
 {
@@ -301,18 +328,34 @@ protected:
 	/** CLIENT: The instances that should be removed this frame on client (populated every frame with the id's of the instances that has been replicated)*/
 	TArray<FRemovedInstance> mClientInstancesToRemove;
 
+	/**
+	 * Contains the saved locations of all removals of a foliage type/level
+	 */
 	UPROPERTY( SaveGame )
 	TSet< FVector > mRemovalLocations;
 
+	/**
+	 * Contains the replicated indices of removals into foliage type/level with < 256 instances.
+	 */
 	UPROPERTY( Replicated )
 	FByteRemovalIndices mByteRemovalIndices;
 
+	/**
+	 * Contains the replicated indices of removals into foliage type/level with < 65536 instances.
+	 */
 	UPROPERTY( Replicated )
 	FShortRemovalIndices mShortRemovalIndices;
 
+	/**
+	 * Contains the replicated indices of removals into foliage type/level with >= 65536 instances.
+	 */
 	UPROPERTY( Replicated )
 	FLongRemovalIndices mLongRemovalIndices;
 
+	/**
+	 * Contains the number replicated indices of removals into the foliage type/level.
+	 * The number is needed to decide when the first batch of removals (usually the saved ones) have been replicated, so that it can be removed cheaper.
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_RemovalCount )
 	int mRemovalCount = 0;
 
@@ -331,12 +374,13 @@ protected:
 	FBox mLevelBounds;
 
 	// Set to true when loaded so that we know that we need to go through and verify data in mRemovedInstances
-	uint8 mIsLoaded:1;
+	bool mIsLoaded = false;
 
 	// Flag to indicate whether this removal actor is allowed to run apply. Needs to be setup by FoliageSubSystem first. 
-	uint8 mMarkedByFoliageSubSystem:1;
+	bool mMarkedByFoliageSubSystem = false;
 
-	int mFoundInstanceCount = 0;
-
+	/**
+	 * The client will use different methods of removal for the first batch (usually the saved ones), and all subsequent removals
+	 */
 	bool mHasAppliedInitialRemovals_Client = false;
 };

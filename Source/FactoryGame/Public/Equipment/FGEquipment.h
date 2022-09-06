@@ -216,6 +216,10 @@ public:
 	/** Called when the equipment was removed from it's equipment slot */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
 	void WasRemovedFromSlot();
+
+	/** Called when the equipment was moved to it's equipment slot (this can happen without necessarily switching to that slot thus equipping the equipment) */
+	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
+	void WasSlottedIn( class AFGCharacterPlayer* holder );
 	
 protected:
 	/** Was the equipment equipped. */

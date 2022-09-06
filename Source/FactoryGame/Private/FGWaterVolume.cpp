@@ -9,8 +9,11 @@ void AFGWaterVolume::PreSave(const  ITargetPlatform* targetPlatform){ }
 void AFGWaterVolume::PostEditChangeProperty(FPropertyChangedEvent& propertyChangedEvent){ Super::PostEditChangeProperty(propertyChangedEvent); }
 void AFGWaterVolume::CheckForErrors(){ Super::CheckForErrors(); }
 #endif 
+#if WITH_EDITORONLY_DATA
+#endif 
 AFGWaterVolume::AFGWaterVolume() : Super() {
 	this->mAreaClass = UFGNavArea_Water::StaticClass();
+	this->mAffectNavigation = true;
 	this->mWaterAudio = nullptr;
 	this->mCanPlaceExtractor = true;
 	this->mPostProcessSettings = nullptr;
@@ -35,6 +38,7 @@ void AFGWaterVolume::PostRegisterAllComponents(){ }
 void AFGWaterVolume::GetNavigationData(FNavigationRelevantData& Data) const{ }
 FBox AFGWaterVolume::GetNavigationBounds() const{ return FBox(); }
 void AFGWaterVolume::RebuildNavigationData(){ }
+bool AFGWaterVolume::IsNavigationRelevant() const{ return bool(); }
 void AFGWaterVolume::SetIsOccupied(bool occupied){ }
 bool AFGWaterVolume::IsOccupied() const{ return bool(); }
 bool AFGWaterVolume::CanBecomeOccupied() const{ return bool(); }

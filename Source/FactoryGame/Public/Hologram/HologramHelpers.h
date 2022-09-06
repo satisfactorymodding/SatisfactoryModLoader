@@ -12,7 +12,7 @@ DECLARE_STATS_GROUP( TEXT( "Hologram Helpers" ), STATGROUP_HologramHelpers, STAT
 /**
  * Shared magic between holograms
  */
-struct FHologramHelpers
+struct FACTORYGAME_API FHologramHelpers
 {
 	/**
 	 * Creates a clearance component
@@ -52,7 +52,7 @@ struct FHologramHelpers
 	static float FindRightAngleBetweenLocations( const FVector& location, const FVector& targetLocation, const FVector& direction );
 };
 
-struct FSplineUtils
+struct FACTORYGAME_API FSplineUtils
 {
 
 
@@ -66,7 +66,7 @@ struct FSplineUtils
 	* This is only kinda useful for one build at the moment and my plans for it kinda fell through when I started treating the pipes as more 
 	* special case to get unique visuals. Investigate if this can be useful or if I should just move this to its only call place ( HorzToVert ) for pipe holograms
 	*/
-	struct FSplineSegmentPointData
+	struct FACTORYGAME_API FSplineSegmentPointData
 	{
 		// Default Construct, initialize all values to Zero
 		FSplineSegmentPointData()
@@ -338,7 +338,7 @@ private:
 /**
  * Small util for building splines.
  */
-struct FSplineBuilder
+struct FACTORYGAME_API FSplineBuilder
 {
 	FSplineBuilder( TArray< FSplinePointData >& out_points ) : SplineData( out_points ) {}
 
@@ -381,7 +381,7 @@ public:
 * Struct for holding Grid Cell data. Each points location and all of its connections
 * Each AStar node will have one of these to define it
 */
-struct FHologramPathingPoint
+struct FACTORYGAME_API FHologramPathingPoint
 {
 	FHologramPathingPoint();
 	FHologramPathingPoint( FVector worldLocation, FVector gridIndex, struct FHologramPathingGrid* grid );
@@ -412,7 +412,7 @@ struct FHologramPathingPoint
 
 
 // @todo - There are unused / unnecessary variables in here that come from changing the way the pathing system works so it could use a clean up pass
-struct FHologramPathingGrid
+struct FACTORYGAME_API FHologramPathingGrid
 {
 	/** Default Constructor */
 	FHologramPathingGrid();
@@ -522,12 +522,12 @@ public:
 /**
 * Nodes comprising the 3D grid used for the A* pathfinding
 */
-struct FHologramAStarNode
+struct FACTORYGAME_API FHologramAStarNode
 {
 	FHologramAStarNode( );
 
 	/** Default Constructor */
-	FHologramAStarNode( int32 unused = INDEX_NONE );
+	FHologramAStarNode( int32 unused );
 
 	/** Constructor with grid point
 	*	@param pathingPoint - The pathing point this astar node represents
@@ -586,7 +586,7 @@ public:
 * Implemented as specified in Epic's GraphAStar.h
 * Hence the spelling of "Neighbour". What did an English guy write all your code epic?
 */
-struct FHolgramAStarHelper
+struct FACTORYGAME_API FHolgramAStarHelper
 {
 	typedef FHologramAStarNode FNodeRef;
 
@@ -616,7 +616,7 @@ struct FHolgramAStarHelper
 * @todo - Heuristic and core graph code need another implementation and fairly large clean up pass. But now that I know its MOSTLY working 
 *		It should definitely be done since this seems to be a good way to go for some situations.
 */
-struct FHologramAStarFilter
+struct FACTORYGAME_API FHologramAStarFilter
 {
 	FHologramAStarFilter();
 
