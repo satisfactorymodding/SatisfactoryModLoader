@@ -342,7 +342,7 @@ void URuntimeBlueprintFunctionLibrary::SetComboBoxFont(UComboBoxString* Box, FSl
 	Box->Font = Font;
 }
 
-void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName)
+void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName, bool HookOffsetStart)
 {
 		if(!Class)
 			return;
@@ -362,8 +362,9 @@ void URuntimeBlueprintFunctionLibrary::BindOnBPFunction(const TSubclassOf<UObjec
 
 			return;
 		}
+		EPredefinedHookOffset Offset = HookOffsetStart ? EPredefinedHookOffset::Start : EPredefinedHookOffset::Return;
 		UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
 		HookManager->HookBlueprintFunction(Function, [Binding](FBlueprintHookHelper& HookHelper) {
             Binding.ExecuteIfBound(HookHelper.GetContext());
-        }, EPredefinedHookOffset::Return);
+        }, Offset);
 }
