@@ -38,6 +38,10 @@
 		{
 			"Name": "SML",
 			"Enabled": true
+		},
+		{
+			"Name": "SMLEditor",
+			"Enabled": true
 		}
 	]
 }
