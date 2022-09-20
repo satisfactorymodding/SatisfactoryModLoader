@@ -245,6 +245,9 @@ void UModLoadingLibrary::PopulatePluginModInfo(IPlugin& Plugin, FModInfo& OutMod
     OutModInfo.Description = PluginDescriptor.Description;
     OutModInfo.CreatedBy = PluginDescriptor.CreatedBy;
 
+    OutModInfo.DocsURL = PluginDescriptor.DocsURL;
+    OutModInfo.SupportURL = PluginDescriptor.SupportURL;
+
     OutModInfo.bAcceptsAnyRemoteVersion = PluginDescriptorMetadata.bAcceptsAnyRemoteVersion;
     OutModInfo.RemoteVersionRange = PluginDescriptorMetadata.RemoteVersionRange;
 }
