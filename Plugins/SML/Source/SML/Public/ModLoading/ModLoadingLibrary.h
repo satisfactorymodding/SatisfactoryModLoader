@@ -47,6 +47,14 @@ struct SML_API FModInfo {
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FString CreatedBy;
 
+    /** Documentation site URL, ex. https://docs.ficsit.app */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    FString DocsURL;
+
+    /** Support site URL, ex. https://docs.ficsit.app */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    FString SupportURL;
+
     /** Whenever this mod accepts any remote version, basically behaving as a client-/server-side only mod */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     bool bAcceptsAnyRemoteVersion;
