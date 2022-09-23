@@ -5,7 +5,6 @@
 #include "FactoryGame.h"
 #include "FGRailroadVehicle.h"
 #include "FGLocomotiveMovementComponent.h"
-#include "RailroadNavigation.h"
 #include "FGTrain.h"
 #include "FGLocomotive.generated.h"
 
@@ -77,7 +76,7 @@ public:
 
 	/** Get the power info about this train. If it runs on electricity. */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|Railroad|Locomotive" )
-	UFGPowerInfoComponent* GetPowerInfo() const { return mPowerInfo; }
+	class UFGPowerInfoComponent* GetPowerInfo() const { return mPowerInfo; }
 
 	/** Debug */
 	virtual void DisplayDebug( class UCanvas* canvas, const class FDebugDisplayInfo& debugDisplay, float& YL, float& YPos ) override;

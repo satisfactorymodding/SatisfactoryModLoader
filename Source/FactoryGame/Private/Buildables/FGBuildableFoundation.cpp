@@ -5,7 +5,8 @@
 #include "Hologram/FGFoundationHologram.h"
 
 AFGBuildableFoundation::AFGBuildableFoundation() : Super() {
-	this->mSize = 0.0;
+	this->mWidth = 800.0;
+	this->mDepth = 800.0;
 	this->mHeight = 0.0;
 	this->mElevation = 0.0;
 	this->mIsFrame = false;

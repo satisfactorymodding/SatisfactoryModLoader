@@ -24,6 +24,8 @@ public:
 	/** initial setup */
 	virtual void PostInitializeComponents() override;
 
+	virtual void PostNetReceiveLocationAndRotation() override;
+
 	//** Save Game Interface. Default is to not save, but the save interface is implemented here to allow for enabling in children (eg. FGNobeliskExplosive) */
 	virtual bool ShouldSave_Implementation() const override;
 	virtual bool NeedTransform_Implementation() override;

@@ -4,3 +4,4 @@
 
 void UFGPlayerNameTagWidget::UpdatePlayerData(FString playerName, FLinearColor playerColor, bool isPlayerOnline){ }
 void UFGPlayerNameTagWidget::NativeConstruct(){ }
+void UFGPlayerNameTagWidget::OnHiddenHUDModeChanged(bool hideHUD){ }

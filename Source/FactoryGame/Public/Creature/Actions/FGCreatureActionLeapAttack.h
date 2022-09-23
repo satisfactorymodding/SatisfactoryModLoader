@@ -79,6 +79,9 @@ private:
 	UFUNCTION( NetMulticast, Reliable )
 	void NetMulticast_OnLeapStarted();
 
+	UFUNCTION( NetMulticast, Reliable )
+	void NetMulticast_OnCreatureLanded( const FHitResult& hitResult );
+
 protected:
 	/** The montage to play when starting the leap. */
 	UPROPERTY( EditDefaultsOnly, Category = "LeapAttack|Animation" )

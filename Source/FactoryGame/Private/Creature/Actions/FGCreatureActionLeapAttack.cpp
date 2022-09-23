@@ -39,3 +39,4 @@ void UFGCreatureActionLeapAttack::ClearHitCharacter( AFGCharacterBase* character
 void UFGCreatureActionLeapAttack::OnHitCharacterCleared_Implementation( AFGCharacterBase* character){ }
 void UFGCreatureActionLeapAttack::ProcessHit_Internal( AFGCharacterBase* character, const FHitResult& hitResult){ }
 void UFGCreatureActionLeapAttack::NetMulticast_OnLeapStarted_Implementation(){ }
+void UFGCreatureActionLeapAttack::NetMulticast_OnCreatureLanded_Implementation(const FHitResult& hitResult){ }

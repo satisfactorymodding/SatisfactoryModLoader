@@ -171,3 +171,4 @@ void AFGTrain::OnRep_IsSelfDrivingEnabled(){ }
 void AFGTrain::OnRep_SelfDrivingError(){ }
 void AFGTrain::OnRep_IsDerailed(){ }
 void AFGTrain::OnRep_TrainStatus(){ }
+void AFGTrain::OnRep_MultipleUnitMaster(){ }

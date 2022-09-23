@@ -25,6 +25,7 @@ void UFGBoomBoxRemoteCallObject::Server_StopNow_Implementation(AFGBoomBoxPlayer*
 void UFGBoomBoxRemoteCallObject::Server_NextNow_Implementation(AFGBoomBoxPlayer* player){ }
 void UFGBoomBoxRemoteCallObject::Server_PrevNow_Implementation(AFGBoomBoxPlayer* player){ }
 void UFGBoomBoxRemoteCallObject::Server_FireTurboBassNow_Implementation(AFGBoomBoxPlayer* player){ }
+void UFGBoomBoxRemoteCallObject::Server_SetRepeatMode_Implementation(AFGBoomBoxPlayer* player, EBoomBoxRepeatMode repeatMode){ }
 void UFGBoomBoxRemoteCallObject::Server_SyncPlayerStateRequest_Implementation( AFGBoomBoxPlayer* player, float clientTimestamp){ }
 void UFGBoomBoxRemoteCallObject::Client_SyncPlayerState_Implementation( AFGBoomBoxPlayer* player, FBoomBoxPlayerState state, float timestamp){ }
 AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
@@ -45,7 +46,9 @@ AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
 	this->mBaseTransformEquipped = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mBaseTransformFreeActor = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 	this->mImpulseRadius = 3000.0;
-	this->mImpulseStrength = 250.0;
+	this->mImpulseStrength = 500.0;
+	this->mVerticalImpulseStrength = 250.0;
+	this->mTurboBassBaseDamage = 1.0;
 	this->mImpulseDamageType = nullptr;
 	this->mTurboBassNoise = nullptr;
 	this->mBoostJumpMultiplier = 5.0;
@@ -55,9 +58,10 @@ AFGBoomBoxPlayer::AFGBoomBoxPlayer() : Super() {
 	this->mState.mCurrentSongIx = -1;
 	this->mState.mSongOffsetMS = 0;
 	this->mState.mVolume = 1.0;
-	this->mState.mPlaybackState = EBoomboxPlaybackState::EStopped;
-	this->mState.mPlaybackSuspended = false;
+	this->mState.mPlaybackState = 0;
 	this->mMode = EBoomBoxMode::Undefined;
+	this->mRepeatMode = EBoomBoxRepeatMode::RepeatTape;
+	this->mOwningCharacter = nullptr;
 	this->mEquipmentActor = nullptr;
 	this->mNextTape = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
@@ -81,6 +85,8 @@ void AFGBoomBoxPlayer::BeginStopSequence(AFGCharacterPlayer* instigatorCharacter
 void AFGBoomBoxPlayer::BeginTurboBassSequence(AFGCharacterPlayer* instigatorCharacter){ }
 void AFGBoomBoxPlayer::SetVolumeNormalized(float volume, AFGCharacterPlayer* instigatorCharacter){ }
 void AFGBoomBoxPlayer::PutDown(const FTransform& transform){ }
+void AFGBoomBoxPlayer::SetRepeatMode(EBoomBoxRepeatMode repeatMode, AFGCharacterPlayer* instigatorCharacter){ }
+EBoomBoxRepeatMode AFGBoomBoxPlayer::GetRepeatMode() const{ return EBoomBoxRepeatMode(); }
 bool AFGBoomBoxPlayer::GetCharacterLookAtTransform(FTransform& out_Transform) const{ return bool(); }
 bool AFGBoomBoxPlayer::GetCharacterNearbyTransform(FTransform& out_Transform) const{ return bool(); }
 void AFGBoomBoxPlayer::RegisterStateListener(TScriptInterface<class IFGBoomboxListenerInterface> stateListener){ }
@@ -94,15 +100,20 @@ void AFGBoomBoxPlayer::Tick(float DeltaTime){ }
 void AFGBoomBoxPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGBoomBoxPlayer, mMode);
+	DOREPLIFETIME(AFGBoomBoxPlayer, mRepeatMode);
+	DOREPLIFETIME(AFGBoomBoxPlayer, mOwningCharacter);
 }
 void AFGBoomBoxPlayer::OnModeChanged_Implementation(){ }
+void AFGBoomBoxPlayer::OnRep_RepeatMode(){ }
 void AFGBoomBoxPlayer::Multicast_SetAudioVolume_Implementation(float normalizedVolume){ }
-void AFGBoomBoxPlayer::SuspendPlayback(){ }
-void AFGBoomBoxPlayer::ResumePlayback(){ }
+void AFGBoomBoxPlayer::SetPlaybackAllowedByEquipStatus(bool allowed){ }
 void AFGBoomBoxPlayer::Multicast_PutDown_Implementation(const FTransform& transform){ }
 void AFGBoomBoxPlayer::Multicast_ApplyState_Implementation(const FBoomBoxPlayerState& boomBoxState){ }
 void AFGBoomBoxPlayer::Multicast_FireTurboBassNow_Implementation( AFGCharacterPlayer* character){ }
-bool AFGBoomBoxPlayer::IsPlaying() const{ return bool(); }
+bool AFGBoomBoxPlayer::IsPlaybackEnabled() const{ return bool(); }
+bool AFGBoomBoxPlayer::IsPlaybackAllowedByEquippedStatus() const{ return bool(); }
+bool AFGBoomBoxPlayer::IsPlaybackAllowedByPossessedStatus() const{ return bool(); }
+bool AFGBoomBoxPlayer::IsPlaybackEffectivelyAllowed() const{ return bool(); }
 bool AFGBoomBoxPlayer::IsEffectivelyPlaying() const{ return bool(); }
 FSongData AFGBoomBoxPlayer::GetCurrentSong(){ return FSongData(); }
 bool AFGBoomBoxPlayer::CanFireTurboBass() const{ return bool(); }
@@ -119,14 +130,17 @@ void AFGBoomBoxPlayer::NextNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::PrevNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::FireTurboBassNow(AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::TogglePlaybackNow(AFGCharacterPlayer* character){ }
+void AFGBoomBoxPlayer::SetPlaybackStateFlag(EBoomBoxPlaybackStateBitfield flag, bool set){ }
 void AFGBoomBoxPlayer::ApplyTurboBassGameplayEffects( AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::SetAudioVolumeLocally(float normalizedVolume, bool notifyListeners){ }
 UMaterialInterface* AFGBoomBoxPlayer::GetDefaultTapeMaterial(){ return nullptr; }
 void AFGBoomBoxPlayer::BeginPlay(){ }
+void AFGBoomBoxPlayer::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGBoomBoxPlayer::OnPawnPossessed( APawn* pawn,  AController* controller){ }
 void AFGBoomBoxPlayer::OnceClientSubsystemsAreReady(){ }
 void AFGBoomBoxPlayer::SongFinished(EAkCallbackType cbType, UAkCallbackInfo* cbInfo){ }
 void AFGBoomBoxPlayer::TapeTextureLoadedAsync(UTexture2D *texture){ }
+void AFGBoomBoxPlayer::SetOwningCharacter( AFGCharacterPlayer* character){ }
 void AFGBoomBoxPlayer::Multicast_BeginPlaySequence_Implementation(AFGCharacterPlayer* instigatorPlayer){ }
 void AFGBoomBoxPlayer::Multicast_BeginStopSequence_Implementation(AFGCharacterPlayer* instigatorPlayer){ }
 void AFGBoomBoxPlayer::Multicast_BeginLoadTapeSequence_Implementation(TSubclassOf< UFGTapeData > newTape, AFGCharacterPlayer* instigatorPlayer){ }
@@ -142,4 +156,5 @@ void AFGBoomBoxPlayer::SanitizeListeners(){ }
 void AFGBoomBoxPlayer::StopPlayingNoNotify(){ }
 void AFGBoomBoxPlayer::StartPlayingNoNotify(int32 song, int32 offsetMs){ }
 void AFGBoomBoxPlayer::FullyNotifyListeners(){ }
-void AFGBoomBoxPlayer::UpdatePostPlayerControllerChange(){ }
+void AFGBoomBoxPlayer::UpdatePlaybackAllowedByPossessedStatus(){ }
+void AFGBoomBoxPlayer::SetPlaybackAllowedByPossessedStatus(bool allowed){ }

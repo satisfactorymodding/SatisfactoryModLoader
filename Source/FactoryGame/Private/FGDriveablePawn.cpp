@@ -25,6 +25,8 @@ bool AFGDriveablePawn::NeedTransform_Implementation(){ return bool(); }
 bool AFGDriveablePawn::ShouldSave_Implementation() const{ return bool(); }
 void AFGDriveablePawn::PossessedBy(AController* newController){ }
 void AFGDriveablePawn::UnPossessed(){ }
+void AFGDriveablePawn::OnRep_PlayerState(){ }
+void AFGDriveablePawn::UpdatePlayerStatus(){ }
 bool AFGDriveablePawn::CanDriverEnter( AFGCharacterPlayer* character){ return bool(); }
 bool AFGDriveablePawn::DriverEnter( AFGCharacterPlayer* driver){ return bool(); }
 bool AFGDriveablePawn::DriverLeave(bool keepDriving){ return bool(); }
@@ -34,3 +36,4 @@ void AFGDriveablePawn::OnDrivingStatusChanged(){ }
 void AFGDriveablePawn::PlaceExitingDriver(){ }
 void AFGDriveablePawn::SetDriving(bool isDriving){ }
 void AFGDriveablePawn::OnRep_IsDriving(){ }
+void AFGDriveablePawn::OnRep_Driver(){ }

@@ -106,6 +106,7 @@ public:
 
 	// Begin Buildable interface
 	virtual int32 GetDismantleRefundReturnsMultiplier() const override;
+	virtual bool ShouldBeConsideredForBase_Implementation() override { return false; }
 	// End Buildable interface
 
 	/** Get the spline for this track. */

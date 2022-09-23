@@ -84,6 +84,9 @@ public:
 	void RegisterFlyingBabyCrab( class AFGFlyingBabyCrab* babyCrab );
 	void UnregisterFlyingBabyCrab( class AFGFlyingBabyCrab* babyCrab );
 
+	/** Used to force spawners which have players near them to spawn. */
+	void ForceTriggerSpawnersInRange();
+
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	ECreatureHostility GetCreatureHostility() const { return mCreatureHostilityMode; }
 
@@ -98,6 +101,9 @@ public:
 	bool IsProtectedCreature( TSubclassOf< class AFGCreature > creatureClass ) const;
 
 	void SetCreatureStressEnabled( bool enabled );
+
+	/** Whether or not creature stress gain is enabled. */
+	UFUNCTION( BlueprintPure, Category = "AI" )
 	bool IsCreatureStressEnabled() const { return mEnableCreatureStress; }
 
 	/** Get the creature subsystem in the current world, can be nullptr, e.g. on game ending (destroy) or game startup. */

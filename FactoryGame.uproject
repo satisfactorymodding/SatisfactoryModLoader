@@ -8,6 +8,12 @@
 			"Name": "FactoryGame",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
+		},
+		{
+
+			"Name": "DummyHeaders",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
 		}
 	],
 	"Plugins": [

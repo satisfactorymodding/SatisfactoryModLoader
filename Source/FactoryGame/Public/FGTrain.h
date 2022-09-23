@@ -655,6 +655,8 @@ private:
 	void OnRep_IsDerailed();
 	UFUNCTION()
 	void OnRep_TrainStatus();
+	UFUNCTION()
+	void OnRep_MultipleUnitMaster();
 	
 #if WITH_CHEATS
 	void Cheat_Teleport( class AFGBuildableRailroadStation* station );
@@ -720,7 +722,7 @@ public: //@todo-trains private
 	class AFGRailroadVehicle* LastVehicle;
 
 	/** This is the master locomotives that sends its input (throttle/brake/etc) to all other locomotives in the train. */
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_MultipleUnitMaster )
 	class AFGLocomotive* mMultipleUnitMaster;
 
 	/** This trains time table. */

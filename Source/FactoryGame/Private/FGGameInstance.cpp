@@ -5,17 +5,17 @@
 void FOnJoinSessionData::SetState(EJoinSessionState newState, FOnJoinSessionStateChanged& onStateChangedDelegate){ }
 UFGGameInstance::UFGGameInstance() : Super() {
 	this->mSaveSystem = nullptr;
-	this->mAnalyticsService = nullptr;
+	this->mTelemetryInstance = nullptr;
 	this->mJoinSessionData.LocalPlayer = nullptr;
 	this->mMusicManager = nullptr;
 	this->mDebugOverlayWidget = nullptr;
 }
 UFGGameInstance::~UFGGameInstance(){ }
 void UFGGameInstance::Init(){ }
+void UFGGameInstance::StartGameInstance(){ }
 bool UFGGameInstance::JoinSession(ULocalPlayer* localPlayer, const FOnlineSessionSearchResult& searchResult){ return bool(); }
 TSubclassOf<UOnlineSession> UFGGameInstance::GetOnlineSessionClass(){ return TSubclassOf<UOnlineSession>(); }
-UAnalyticsService* UFGGameInstance::GetGameAnalyticsService(UObject* worldContext){ return nullptr; }
-UAnalyticsService* UFGGameInstance::GetAnalyticsServiceFromWorld(UWorld* worldContext){ return nullptr; }
+UDSTelemetry* UFGGameInstance::GetTelemetryInstanceFromWorld(UWorld* world){ return nullptr; }
 void UFGGameInstance::PushError(TSubclassOf<class UFGErrorMessage> errorMessage){ }
 void UFGGameInstance::PushError(UObject* worldContext, TSubclassOf<class UFGErrorMessage> errorMessage){ }
 UFGErrorMessage* UFGGameInstance::GetNextError(){ return nullptr; }
@@ -41,7 +41,12 @@ void UFGGameInstance::OnNATUpdated(ECachedNATType Data){ }
 void UFGGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type joinResult){ }
 void UFGGameInstance::SendRecievedNetworkErrorOnDelegate(UWorld* world, UNetDriver* driver, ENetworkFailure::Type errorType, const FString& errorMsg){ }
 void UFGGameInstance::OnPreLoadMap(const FString& levelName){ }
-void UFGGameInstance::OnWorldDestroy(UWorld* world){ }
 void UFGGameInstance::InitGameAnalytics(){ }
+void UFGGameInstance::ShutdownGameAnalytics(){ }
+bool UFGGameInstance::InitTelemetry(const FString& gameID, const FString& buildID, const FString& onlinePlatformIdentifier, const FString& onlinePlatformUserID){ return bool(); }
+void UFGGameInstance::ShutdownTelemetry(){ }
+void UFGGameInstance::SubmitGameStartTelemetry(){ }
+void UFGGameInstance::SubmitNetModeTelemetry(UWorld* world){ }
+void UFGGameInstance::InitEpicOnlineServicesMetrics(){ }
+void UFGGameInstance::ShutdownEpicOnlineServicesMetrics(){ }
 void UFGGameInstance::JoinSession_Internal(){ }
-void UFGGameInstance::OnSendGameplayDataUpdated(FString cvar){ }

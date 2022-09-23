@@ -295,6 +295,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Factory Game|SaveSession" )
 	FORCEINLINE FString GetModMetadata() { return mModMetadata; }
 
+	/** Returns the unique identifier for this save. */
+	FORCEINLINE FString GetSaveIdentifier() { return mSaveHeader.SaveIdentifier; }
+
 	/** Logs all Unresolved object references stored in the Destroyed Actors array */
 	void DumpUnresolvedDestroyedActors();
 

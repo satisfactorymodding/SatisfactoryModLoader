@@ -295,6 +295,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "AI" )
 	bool TryUnstuckCreature();
 
+	void OnCreatureStuckInGeometry();
+
+	/** Whether or not the creature is currently stuck and can't move. */
+	UFUNCTION( BlueprintPure, Category = "AI" )
+	bool IsStuck() const { return mIsStuck; }
+
 	/** Whether or not the creature is currently fleeing. */
 	UFUNCTION( BlueprintPure, Category = "AI" )
 	bool IsFleeing() const { return mIsFleeing; }
@@ -516,4 +522,7 @@ private:
 
 	/** Timer responsible for preventing the creature from being stunned by damage while the cooldown is active. */
 	FTimerHandle mStunDamageCooldownTimerHandle;
+
+	/** Will be true if the creature fails to unstuck and cant move. */
+	bool mIsStuck;
 };

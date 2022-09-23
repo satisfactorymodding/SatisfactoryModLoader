@@ -21,6 +21,7 @@ public:
 	// Begin UCharacterMovementComponent Interface
 	virtual void OnCharacterStuckInGeometry( const FHitResult* Hit ) override;
 	virtual void OnMovementModeChanged( EMovementMode PreviousMovementMode, uint8 PreviousCustomMode ) override;
+	virtual bool ResolvePenetrationImpl( const FVector& Adjustment, const FHitResult& Hit, const FQuat& NewRotation ) override;
 	// End UCharacterMovementComponent Interface
 
 protected:

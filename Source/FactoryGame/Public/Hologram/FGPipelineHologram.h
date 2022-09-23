@@ -232,6 +232,9 @@ private:
 	UPROPERTY()
 	TArray< class AFGBuildablePassthrough* > mSnappedPassthroughs;
 
+	UPROPERTY()
+	FVector mPassthroughOverrideStartLocation;
+
 	/** Cached from the default buildable. */
 	UPROPERTY()
 	class UStaticMesh* mMesh;

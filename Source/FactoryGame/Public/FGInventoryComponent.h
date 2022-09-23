@@ -342,7 +342,7 @@ public:
 	/**
 	 * Get the number of items we have of the specified class.
 	 *
-	 * @param itemClass - The items class.
+	 * @param itemClass - The items class. If null then all items are counted.
 	 *
 	 * @return Total amount of the item we have in the inventory.
 	 */

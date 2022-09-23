@@ -7,7 +7,8 @@
 #include "Curves/CurveFloat.h"
 #include "Curves/CurveLinearColor.h"
 #include "FGSkySphere.h"
-#include "Components/ExponentialHeightFogComponent.h"
+#include "GameFramework/Volume.h"
+//#include "Components/ExponentialHeightFogComponent.h"
 
 #include "FGAtmosphereVolume.generated.h"
 

@@ -5,15 +5,10 @@
 #include "FactoryGame.h"
 #include "Engine/GameInstance.h"
 #include "NAT.h"
-#include "AnalyticsService.h"
-#include "FGAnalyticsMacros.h"
 #include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 #include "EOSSDKForwards.h"
-#include "AnalyticsService.h"
-
 #include "FGGameInstance.generated.h"
-
 
 
 UENUM(BlueprintType)
@@ -139,6 +134,7 @@ public:
 
 	// Begin UGameInstance interface
 	virtual void Init() override;
+	virtual void StartGameInstance() override;
 	virtual bool JoinSession( ULocalPlayer* localPlayer, const FOnlineSessionSearchResult& searchResult ) override;
 	// End UGameInstance interface
 
@@ -150,17 +146,10 @@ public:
 
 	/** @return OnlineSession class to use for this game instance  */
 	virtual TSubclassOf<UOnlineSession> GetOnlineSessionClass() override;
-
-	/** Service provider for analytics */
-	FORCEINLINE UAnalyticsService* GetAnalyticsService() const { return mAnalyticsService; }
-
-	/** Returns the relative analytics services from the world context holder */
-	UFUNCTION( BlueprintPure, Category = "FactoryGame|GameAnalytics", DisplayName = "GetGameAnalyticsService", Meta = ( DefaultToSelf = "WorldContext" ) )
-	static UAnalyticsService* GetGameAnalyticsService( UObject* worldContext );
-
-	/** Returns the relative analytics services from the world context holder */
-	static UAnalyticsService* GetAnalyticsServiceFromWorld( UWorld* worldContext );
-
+	
+	/** Returns the telemetry instance, if analytics are disabled it returns nullptr. */
+	static class UDSTelemetry* GetTelemetryInstanceFromWorld( UWorld* world );
+	
 	// @todo: Move error functions to a "message bus" class	
 	/** Pushes a error to the game, that handles it appropriately */
 	void PushError( TSubclassOf<class UFGErrorMessage> errorMessage );
@@ -255,17 +244,22 @@ protected:
 private:
 	void OnPreLoadMap( const FString& levelName );
 
-	// Usually called when loading save/exiting to menu
-	void OnWorldDestroy( UWorld* world );
-
 	/** Initializes the Game Analytics Service. Requires that the Epic Online Services handle has been created beforehand. */
 	void InitGameAnalytics();
+	void ShutdownGameAnalytics();
 
-	void JoinSession_Internal();
-	
-	/** Called when the option for sending gameplay data is changed*/
+	/** Telemetry */
+	bool InitTelemetry( const FString& gameID, const FString& buildID, const FString& onlinePlatformIdentifier, const FString& onlinePlatformUserID );
+	void ShutdownTelemetry();
+	void SubmitGameStartTelemetry();
 	UFUNCTION()
-	void OnSendGameplayDataUpdated( FString cvar );
+	void SubmitNetModeTelemetry( UWorld* world );
+
+	/** EOS metrics */
+	void InitEpicOnlineServicesMetrics();
+	void ShutdownEpicOnlineServicesMetrics();
+	
+	void JoinSession_Internal();
 
 protected:
 	/** The global save system */
@@ -281,10 +275,13 @@ protected:
 
 	UPROPERTY( BlueprintAssignable )
 	FOnNetworkErrorRecieved mOnNetworkErrorRecieved;
-
-	/** The global Analytics Service */
-	UPROPERTY()
-	UAnalyticsService* mAnalyticsService;
+	
+	/** Main telemetry instance, nullptr if telemetry is turned off by the player, class not defined if telemetry is disabled for a build. */
+	UPROPERTY( Transient )
+	class UDSTelemetry* mTelemetryInstance;
+	
+	/** The Epic Online Services Metrics handle used to send start/stop session events. */
+	class UEOSMetrics* mEOSMetricsHandle;
 
 	/** List of errors that we should pop */
 	UPROPERTY()
@@ -311,10 +308,6 @@ protected:
 	/** Our last seen NAT-type */
 	ECachedNATType mCachedNATType;
 
-	///** The handle for the Epic Online Services manager. Is initialized in Init(). */
-	//UPROPERTY()
-	//class UEOSManager* mCachedEOSManager;
-
 public:
 	// Mod packages found - valid or invalid
 	UPROPERTY( BlueprintReadOnly, Category = "Modding" )
@@ -330,5 +323,4 @@ public:
 private:
 	UPROPERTY()
 	class UFGDebugOverlayWidget* mDebugOverlayWidget;
-	
 };

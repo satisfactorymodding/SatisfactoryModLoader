@@ -203,6 +203,10 @@ public:
 
 	virtual class UFGHighlightedMarker* CreateHighlightedMarker( UObject* owner );
 
+	UFUNCTION( BlueprintPure, Category = "Representation" )
+	bool IsHidden() const { return mIsHidden; }
+	void SetHidden( bool isHidden );
+
 protected:
 
 	/** Returns a cast of outer */
@@ -305,6 +309,10 @@ protected:
 	/** If this should be shown on the map or not*/
 	UPROPERTY( ReplicatedUsing = OnRep_ShouldShowOnMap )
 	bool mShouldShowOnMap;
+
+	/** If this should be hidden in the map and compass. Still showned in object list in map. Used for pawns that are in a vehicle/train */
+	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )
+	bool mIsHidden;
 
 	/** How far away this representation should be shown in the compass */
 	UPROPERTY( ReplicatedUsing = OnRep_ActorRepresentationUpdated )

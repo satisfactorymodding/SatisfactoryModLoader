@@ -70,6 +70,9 @@ struct FACTORYGAME_API FSaveHeader
 		// @2021-04-15 UE4.26 Engine Upgrade. FEditorObjectVersion Changes occurred
 		UE426EngineUpdate,
 
+		// @2022-03-22 Added GUID to identify saves, it is for analytics purposes.
+		AddedSaveIdentifier,
+
 		// -----<new versions can be added above this line>-----
 		VersionPlusOne,
 		LatestVersion = VersionPlusOne - 1 // Last version to use
@@ -77,7 +80,19 @@ struct FACTORYGAME_API FSaveHeader
 
 	FSaveHeader();
 
-	FSaveHeader( int32 saveVersion, int32 buildVersion, FString mapName, FString mapOptions, FString sessionName, int32 playDurationSeconds, FDateTime saveDateTime, ESessionVisibility sessionVisibility, int32 editorObjectVersion, FString metaData, bool isModdedSave ) :
+	FSaveHeader(
+		int32 saveVersion,
+		int32 buildVersion,
+		FString mapName,
+		FString mapOptions,
+		FString sessionName,
+		int32 playDurationSeconds,
+		FDateTime saveDateTime,
+		ESessionVisibility sessionVisibility,
+		int32 editorObjectVersion,
+		FString metaData,
+		bool isModdedSave,
+		FString saveIdentifier ) :
 		SaveVersion( saveVersion ),
 		BuildVersion( buildVersion ),
 		MapName( mapName ),
@@ -88,7 +103,8 @@ struct FACTORYGAME_API FSaveHeader
 		SessionVisibility( sessionVisibility ),
 		EditorObjectVersion( editorObjectVersion ),
 		ModMetadata( metaData ),
-		IsModdedSave( isModdedSave )
+		IsModdedSave( isModdedSave ),
+		SaveIdentifier( saveIdentifier )
 	{
 	}
 
@@ -130,6 +146,9 @@ struct FACTORYGAME_API FSaveHeader
 
 	/** Was this save ever saved with mods enabled? */
 	bool IsModdedSave;
+
+	/** A save identifier for analytics. */
+	FString SaveIdentifier;
 
 	// @todosave: Add LastPlayDate as uint64 (Timestamp)
 	// @todosave: Add if it's a autosave

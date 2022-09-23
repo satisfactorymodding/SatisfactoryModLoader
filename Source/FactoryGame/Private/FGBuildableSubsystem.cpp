@@ -5,7 +5,7 @@
 #if STATS
 #endif 
 AFGBuildableSubsystem::AFGBuildableSubsystem() : Super() {
-	this->mDistanceConsideredClose = 20000.0;
+	this->mDistanceConsideredClose = 15000.0;
 	this->mNumFactoriesNeededForCloseCheck = 5;
 	this->mBuildableInstancesActor = nullptr;
 	this->mFactoryLegInstancesActor = nullptr;

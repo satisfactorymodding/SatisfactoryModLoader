@@ -292,6 +292,8 @@ private:
 
 	bool AreResearchTreeUnlockDependeciesMet( TSubclassOf <UFGResearchTree> inClass );
 
+	void SubmitResearchCompletedTelemetry( const TArray< TSubclassOf< class UFGSchematic > >& allSchematics, TSubclassOf< UFGSchematic > chosenSchematic ) const;
+	
 	UPROPERTY( SaveGame, Replicated )
 	bool mIsActivated;
 

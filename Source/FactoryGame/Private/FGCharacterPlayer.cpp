@@ -81,6 +81,7 @@ AFGCharacterPlayer::AFGCharacterPlayer(const FObjectInitializer& ObjectInitializ
 	this->mNoUpdate = false;
 	this->mActorRepresentationTexture = nullptr;
 	this->mActorRepresentationTextureDead = nullptr;
+	this->mCachedActorRepresentation = nullptr;
 	this->mHolsteredEquipmentIndex = -1;
 	this->mCachedPlayerName = TEXT("");
 	this->bNetUseOwnerRelevancy = true;
@@ -96,7 +97,7 @@ void AFGCharacterPlayer::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >&
 	DOREPLIFETIME(AFGCharacterPlayer, mResourceScanner);
 	DOREPLIFETIME(AFGCharacterPlayer, mResourceMiner);
 	DOREPLIFETIME(AFGCharacterPlayer, mWaitingClientAttachDrivable);
-	DOREPLIFETIME(AFGCharacterPlayer, mCreaturePerceptionInfo);
+	DOREPLIFETIME(AFGCharacterPlayer, mActorPerceptionInfo);
 	DOREPLIFETIME(AFGCharacterPlayer, mActiveEquipments);
 	DOREPLIFETIME(AFGCharacterPlayer, mAllAttachments);
 	DOREPLIFETIME(AFGCharacterPlayer, mActiveAttachments);
@@ -169,10 +170,10 @@ float AFGCharacterPlayer::GetActorFogOfWarRevealRadius(){ return float(); }
 ECompassViewDistance AFGCharacterPlayer::GetActorCompassViewDistance(){ return ECompassViewDistance(); }
 void AFGCharacterPlayer::SetActorCompassViewDistance(ECompassViewDistance compassViewDistance){ }
 void AFGCharacterPlayer::OnPossessedSetup(){ }
-void AFGCharacterPlayer::RegisterPerceivingCreature( AFGCreature* creature){ }
-bool AFGCharacterPlayer::UpdateCreaturePerceptionInfo(FFGCreaturePlayerPerceptionInfo& info){ return bool(); }
+void AFGCharacterPlayer::RegisterPerceivingActor( AActor* actor){ }
+void AFGCharacterPlayer::UnregisterPerceivingActor( AActor* actor){ }
 void AFGCharacterPlayer::OnPerceivingCreatureStateChange( AFGCreatureController* creatureController, ECreatureState previousState, ECreatureState newState){ }
-const FFGCreaturePlayerPerceptionInfo* AFGCharacterPlayer::GetPerceptionInfoForCreature(AFGCreature* creature) const{ return nullptr; }
+const FFGActorPlayerPerceptionInfo* AFGCharacterPlayer::GetPerceptionInfoForActor( AActor* actor) const{ return nullptr; }
 void AFGCharacterPlayer::EquipEquipment(AFGEquipment* equipment){ }
 void AFGCharacterPlayer::UnequipEquipment(AFGEquipment* equipment){ }
 void AFGCharacterPlayer::ToggleEquipment(){ }
@@ -328,10 +329,12 @@ void AFGCharacterPlayer::UpdateHUDCrosshair(){ }
 bool AFGCharacterPlayer::IsSliding() const{ return bool(); }
 bool AFGCharacterPlayer::IsInPumpiMode(){ return bool(); }
 void AFGCharacterPlayer::UpdatePlayerNameWidget(){ }
-void AFGCharacterPlayer::Native_OnPlayerColorDataUpdated(){ }
+void AFGCharacterPlayer::UpdatePlayerStatus(){ }
 AFGEquipment* AFGCharacterPlayer::SpawnEquipment(TSubclassOf< AFGEquipment > equipmentClass, AActor* owner){ return nullptr; }
 AFGEquipmentAttachment* AFGCharacterPlayer::SpawnAttachmentForEquipment(AFGEquipment* equipment){ return nullptr; }
 AFGEquipmentAttachment* AFGCharacterPlayer::SpawnSecondaryAttachmentForEquipment(AFGEquipment* equipment){ return nullptr; }
+bool AFGCharacterPlayer::UpdateActorPerceptionInfo(FFGActorPlayerPerceptionInfo& info){ return bool(); }
+void AFGCharacterPlayer::RemoveActorPerceptionInfo(const FFGActorPlayerPerceptionInfo& info){ }
 void AFGCharacterPlayer::UpdateHeadBob(){ }
 void AFGCharacterPlayer::NotifyGameStatePlayerAdded(){ }
 void AFGCharacterPlayer::UpdateGameUIRadiationStatus(){ }
@@ -367,11 +370,13 @@ void AFGCharacterPlayer::OnRep_BackEquipmentSlot(){ }
 void AFGCharacterPlayer::OnRep_LegsEquipmentSlot(){ }
 void AFGCharacterPlayer::OnRep_HeadEquipmentSlot(){ }
 void AFGCharacterPlayer::OnRep_BodyEquipmentSlot(){ }
-void AFGCharacterPlayer::OnRep_CreaturePerceptionInfo(const TArray< FFGCreaturePlayerPerceptionInfo >& OldValues){ }
+void AFGCharacterPlayer::OnRep_ActorPerceptionInfo(const TArray< FFGActorPlayerPerceptionInfo >& OldValues){ }
 void AFGCharacterPlayer::MigrateNumSavedSlots(){ }
 void AFGCharacterPlayer::CheckItemPickedUp(){ }
 void AFGCharacterPlayer::OnRep_IsPossessed(){ }
 void AFGCharacterPlayer::OnRep_PlayerState(){ }
+void AFGCharacterPlayer::SetOnlineState(bool isOnline){ }
+AFGPlayerState* AFGCharacterPlayer::GetControllingPlayerState(){ return nullptr; }
 bool AFGCharacterPlayer::HasHolsteredEquipment(){ return bool(); }
 int32 AFGCharacterPlayer::GetHolsteredEquipmentIndex() const{ return int32(); }
 bool AFGCharacterPlayer::FilterInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }

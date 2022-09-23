@@ -20,6 +20,11 @@ public:
 	virtual void Serialize( FArchive& ar ) override;
 	// End UObject Interface
 
+	// Begin AActor
+	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
+	// End AActor
+
 	// Begin IFGSaveInterface
 	virtual void PreSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;
 	virtual void PostSaveGame_Implementation( int32 saveVersion, int32 gameVersion ) override;

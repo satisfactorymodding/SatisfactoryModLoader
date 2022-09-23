@@ -5,6 +5,7 @@
 #include "FactoryGame.h"
 #include "CoreMinimal.h"
 #include "FGSaveInterface.h"
+#include "Replication/FGStaticReplicatedActor.h"
 #include "GameFramework/Actor.h"
 #include "FGCrabHatcher.generated.h"
 
@@ -12,7 +13,7 @@
  * TODO: Nativize Char_CrabHatcher
  */
 UCLASS()
-class FACTORYGAME_API AFGCrabHatcher : public AActor, public IFGSaveInterface
+class FACTORYGAME_API AFGCrabHatcher : public AFGStaticReplicatedActor, public IFGSaveInterface
 {
 	GENERATED_BODY()
 public:

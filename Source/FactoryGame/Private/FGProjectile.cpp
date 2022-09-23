@@ -67,6 +67,7 @@ void AFGProjectile::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutL
 	DOREPLIFETIME(AFGProjectile, mInitialVelocity);
 }
 void AFGProjectile::PostInitializeComponents(){ Super::PostInitializeComponents(); }
+void AFGProjectile::PostNetReceiveLocationAndRotation(){ }
 bool AFGProjectile::ShouldSave_Implementation() const{ return bool(); }
 bool AFGProjectile::NeedTransform_Implementation(){ return bool(); }
 float AFGProjectile::TakeDamage(float DamageAmount, const  FDamageEvent& DamageEvent,  AController* EventInstigator,

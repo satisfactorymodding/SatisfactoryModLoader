@@ -40,6 +40,7 @@ bool UFGCheatManager::PlayerAllFly_Get(){ return bool(); }
 bool UFGCheatManager::PlayerFly_Get(){ return bool(); }
 void UFGCheatManager::PlayerNoClipModeOnFly(bool ghostMode){ }
 bool UFGCheatManager::PlayerNoClipModeOnFly_Get(){ return bool(); }
+void UFGCheatManager::UpdatePlayerNametags(){ }
 void UFGCheatManager::ClearGiveItemPopularList(){ }
 void UFGCheatManager::Server_GiveAllSchematics_Implementation(){ }
 void UFGCheatManager::GiveAllSchematics(){ }
@@ -176,7 +177,6 @@ void UFGCheatManager::Server_SetTradingPostLevel_Implementation(int32 inLevel){ 
 void UFGCheatManager::SetTradingPostLevel(int32 inLevel){ }
 void UFGCheatManager::ListUnlockedRecipesAndSchematics(){ }
 void UFGCheatManager::GetVehicleInfo(){ }
-void UFGCheatManager::RunDebugMetric(){ }
 void UFGCheatManager::MCP_Login(FString username, FString password){ }
 void UFGCheatManager::MCP_Logout(){ }
 void UFGCheatManager::MCP_GetOnlineStatus(int32 localPlayerNum){ }

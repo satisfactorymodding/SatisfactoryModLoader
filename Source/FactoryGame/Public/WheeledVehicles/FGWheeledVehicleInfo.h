@@ -159,6 +159,9 @@ private:
 	void OnRep_StaticMeshComponent();
 
 	UFUNCTION()
+	void OnRep_ReplicatedVehicle();
+	
+	UFUNCTION()
 	void OnRep_Status();
 
 	UFUNCTION()
@@ -179,7 +182,7 @@ private:
 
 	bool mIsServer = false;
 
-	UPROPERTY( Replicated )
+	UPROPERTY( ReplicatedUsing = OnRep_ReplicatedVehicle )
 	class AFGWheeledVehicle* mReplicatedVehicle;
 
 	UPROPERTY( ReplicatedUsing = OnRep_Status )

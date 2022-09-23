@@ -369,6 +369,8 @@ private:
 		fgcheck( out_spawnedSubsystem );
 	}
 
+	void SubmitNumPlayersTelemetry( bool isBeginPlay = false );
+
 public:
 	//@todo When was this used last time? Cleanup?
 	UPROPERTY( EditDefaultsOnly, Category = "Cheat" )
@@ -448,7 +450,7 @@ private:
 	class AFGStatisticsSubsystem* mStatisticsSubsystem;
 	UPROPERTY( Replicated )
 	class AFGSignSubsystem* mSignSubsystem;
-	UPROPERTY()
+	UPROPERTY( Replicated )
 	class AFGCreatureSubsystem* mCreatureSubsystem;
 	UPROPERTY( Replicated )
 	class AFGScannableSubsystem* mScannableSubsystem;

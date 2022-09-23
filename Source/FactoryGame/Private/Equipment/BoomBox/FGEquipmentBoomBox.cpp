@@ -20,3 +20,4 @@ void AFGEquipmentBoomBox::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 bool AFGEquipmentBoomBox::ShouldSaveState() const{ return bool(); }
 void AFGEquipmentBoomBox::OnRep_BoomBoxPlayer( AFGBoomBoxPlayer* oldPlayer){ }
 void AFGEquipmentBoomBox::ReleaseBoomBoxPlayer(){ }
+void AFGEquipmentBoomBox::TransferMontagesToNewBoomBoxPlayer(AFGBoomBoxPlayer* oldPlayer, AFGBoomBoxPlayer* newPlayer){ }

@@ -76,4 +76,8 @@ public:
 	/** Toggle visualization of railroad blocks on/off. */
 	UFUNCTION( exec )
 	void ToggleRailroadBlockVisualization( bool enabled );
+
+	/** Tries to dismantle vehicles that are under the player (50m down or lower in a 100m radius) and places the recovered resources in front of the player. */
+	UFUNCTION( exec )
+	void DismantleVehiclesUnderWorld();
 };

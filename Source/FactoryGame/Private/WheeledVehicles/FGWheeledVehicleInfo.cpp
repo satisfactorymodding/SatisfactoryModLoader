@@ -101,6 +101,7 @@ void AFGWheeledVehicleInfo::ApplyMeshPrimitiveData(const FFactoryCustomizationDa
 void AFGWheeledVehicleInfo::ShowGhostingEffect(bool enabled){ }
 void AFGWheeledVehicleInfo::OnRep_ReplicatedMesh(){ }
 void AFGWheeledVehicleInfo::OnRep_StaticMeshComponent(){ }
+void AFGWheeledVehicleInfo::OnRep_ReplicatedVehicle(){ }
 void AFGWheeledVehicleInfo::OnRep_Status(){ }
 void AFGWheeledVehicleInfo::OnRep_IsFollowingPath(){ }
 void AFGWheeledVehicleInfo::OnRep_IsGhosting(){ }

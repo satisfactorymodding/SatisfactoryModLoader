@@ -4,11 +4,11 @@
 #define __FACTORYGAME_H__
 
 #include "EngineMinimal.h"
-#include "EngineUtils.h"
+//#include "EngineUtils.h"
 
 #include "Net/UnrealNetwork.h"
 #include "Net/RepLayout.h"
-#include "Net/DataReplication.h"
+//#include "Net/DataReplication.h"
 #include "Engine/ActorChannel.h"
 #include "FGObjectReference.h"
 
@@ -273,16 +273,6 @@ inline FString NetmodeToString( ENetMode NM )
 #define QUICKNETMODE UE_LOG( LogTemp, Log, TEXT( "%s %s" ), *GetName(), NETMODE_STRING );
 
 #define FUNCTION_STRING ANSI_TO_TCHAR( __FUNCTION__ )
-
-/** Analytics Helper Macros */
-#define SEND_TOTAL_TRACK_COUNTER_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__, __STAT_ID__ , __COUNT__)	\
-if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendTotalTrackedCounterAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __COUNT__ )
-
-#define SEND_COUNTER_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__ , __COUNT__)	\
-if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendCounterAnalytic( __SERVICE__, __STAT_KEY__, __COUNT__ )
-
-#define SEND_VALUE_ANALYTIC(__WORLD__, __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__) \
-if( auto* analytics = UFGGameInstance::GetAnalyticsServiceFromWorld(__WORLD__) ) analytics->SendValueAnalytic( __SERVICE__, __STAT_KEY__, __STAT_ID__, __VALUE__ )
 
 FORCEINLINE FString VarToFString( FVector2D var ) { return FString::Printf( TEXT( "(X=%f,Y=%f)" ), var.X, var.Y ); }
 FORCEINLINE FString VarToFString( uint64 var ) { return FString::Printf( TEXT( "%llu" ), var ); }

@@ -149,6 +149,7 @@ void AFGWheeledVehicle::CalculateManualDockingState(){ }
 void AFGWheeledVehicle::SetRefuelingStation( AFGBuildableDockingStation* station){ }
 void AFGWheeledVehicle::DockToRefuelingStation(){ }
 void AFGWheeledVehicle::FindSurroundingLevels(){ }
+void AFGWheeledVehicle::UpdatePlayerStatus(){ }
 void AFGWheeledVehicle::Died(AActor* thisActor){ }
 void AFGWheeledVehicle::SetSimulated(bool newIsSimulated){ }
 void AFGWheeledVehicle::CreateInventoryItemDrops_Implementation(){ }

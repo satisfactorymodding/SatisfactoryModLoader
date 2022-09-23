@@ -8,6 +8,8 @@
 #include "GameFramework/DamageType.h"
 #include "FGDamageType.generated.h"
 
+extern TAutoConsoleVariable< int32 > CVarDamageTypeRangeDebug;
+
 UCLASS(EditInlineNew, DefaultToInstanced)
 class FACTORYGAME_API UFGDamageType : public UDamageType
 {

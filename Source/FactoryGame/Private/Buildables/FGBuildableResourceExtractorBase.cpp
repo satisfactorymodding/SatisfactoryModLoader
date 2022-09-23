@@ -16,6 +16,7 @@ AFGBuildableResourceExtractorBase::AFGBuildableResourceExtractorBase() : Super()
 	this->mOnlyAllowCertainResources = false;
 	this->mMustPlaceOnResourceDisqualifier = UFGCDNeedsResourceNode::StaticClass();
 	this->mExtractorTypeName = TEXT("None");
+	this->mTryFindMissingResource = false;
 	this->mExtractResourceNode = nullptr;
 	this->mExtractableResource = nullptr;
 	this->mCanChangePotential = true;
@@ -30,4 +31,5 @@ void AFGBuildableResourceExtractorBase::SetResourceNode( AFGResourceNode* resour
 UParticleSystem* AFGBuildableResourceExtractorBase::GetMiningParticle(){ return nullptr; }
 bool AFGBuildableResourceExtractorBase::CanOccupyResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
 bool AFGBuildableResourceExtractorBase::IsAllowedOnResource(const TScriptInterface<  IFGExtractableResourceInterface >& resource) const{ return bool(); }
+AActor* AFGBuildableResourceExtractorBase::TryFindMissingResource(){ return nullptr; }
 void AFGBuildableResourceExtractorBase::OnExtractableResourceSet(){ }

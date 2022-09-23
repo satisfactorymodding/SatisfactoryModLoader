@@ -188,7 +188,7 @@ public:
 
 	/** Should we play stinger animation */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
-	FORCEINLINE bool ShouldShowStinger() { return mFirstTimeEquipped; }
+	bool ShouldShowStinger() const;
 
 	/** Sets if this is the first time this was equipped */
 	void SetFirstTimeEquipped( bool firstTime ) { mFirstTimeEquipped = firstTime; }

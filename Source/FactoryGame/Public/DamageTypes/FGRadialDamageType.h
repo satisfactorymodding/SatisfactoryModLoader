@@ -27,4 +27,12 @@ public:
 	/** Should this damage remove foliage when applied? */
 	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "DamageType" )
 	bool mShouldRemoveFoliage = false;
+
+	/** Falloff for the damage impulse. Based on the Damage Radius */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "RigidBody" )
+	float mDamageImpulseFalloff = 1.0f;
+
+	/** Falloff for the destructible impulse. Based on the Damage Radius */
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "Destruction" )
+	float mDestructibleImpulseFalloff = 1.0f;
 };

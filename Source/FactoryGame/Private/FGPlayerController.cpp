@@ -35,6 +35,7 @@ void AFGPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 bool AFGPlayerController::ReplicateSubobjects( UActorChannel* channel,  FOutBunch* bunch, FReplicationFlags* repFlags){ return bool(); }
 void AFGPlayerController::PostInitializeComponents(){ Super::PostInitializeComponents(); }
 void AFGPlayerController::BeginPlay(){ }
+void AFGPlayerController::EndPlay(const EEndPlayReason::Type endPlayReason){ }
 void AFGPlayerController::Destroyed(){ }
 void AFGPlayerController::OnRep_PlayerState(){ }
 void AFGPlayerController::SetPawn(APawn* inPawn){ }
@@ -118,6 +119,7 @@ void AFGPlayerController::OnAreaEnteredServer_Implementation(TSubclassOf< UFGMap
 void AFGPlayerController::OnSecondaryFire(){ }
 void AFGPlayerController::OnBuildGunStateChanged(EBuildGunState newState){ }
 void AFGPlayerController::OnPauseGamePressed(){ }
+UFGGameUI* AFGPlayerController::GetGameUI() const{ return nullptr; }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
 AFGCharacterBase* AFGPlayerController::GetControlledCharacter() const{ return nullptr; }
 bool AFGPlayerController::ControlledCharacterIsAliveAndWell() const{ return bool(); }
@@ -144,7 +146,6 @@ void AFGPlayerController::TogglePhotoMode(){ }
 void AFGPlayerController::ToggleHiResPhotoMode(){ }
 void AFGPlayerController::IncrementPhotoModeFOV(){ }
 void AFGPlayerController::DecrementPhotoModeFOV(){ }
-UFGGameUI* AFGPlayerController::GetGameUI() const{ return nullptr; }
 void AFGPlayerController::SetupTutorial(){ }
 void AFGPlayerController::FinishRespawn(){ }
 void AFGPlayerController::Server_SetRecipeShortcutOnIndex_Implementation(TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex){ }

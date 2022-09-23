@@ -74,6 +74,7 @@ bool AFGEquipment::Server_UpdateAttachmentUseState_Validate(int newUseState){ re
 float AFGEquipment::AdjustDamage_Implementation(float damageAmount, const  UDamageType* damageType,  AController* instigatedBy, AActor* damageCauser){ return float(); }
 EEquipmentSlot AFGEquipment::GetEquipmentSlot(TSubclassOf< AFGEquipment > inClass){ return EEquipmentSlot(); }
 void AFGEquipment::SpawnChildEquipment(){ }
+bool AFGEquipment::ShouldShowStinger() const{ return bool(); }
 void AFGEquipment::WasRemovedFromSlot_Implementation(){ }
 void AFGEquipment::WasSlottedIn_Implementation( AFGCharacterPlayer* holder){ }
 void AFGEquipment::WasEquipped_Implementation(){ }

@@ -118,7 +118,7 @@ public:
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static TArray< class UFGUnlock* > GetUnlocks( TSubclassOf< UFGSchematic > inClass );
 
-	/** Returns mTechOnionTier */
+	/** Returns which tier this belongs to. */
 	UFUNCTION( BlueprintPure, Category = "Schematic" )
 	static int32 GetTechTier( TSubclassOf< UFGSchematic > inClass );
 

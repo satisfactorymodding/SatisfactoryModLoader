@@ -17,6 +17,7 @@ void UFGActorRepresentation::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 	DOREPLIFETIME(UFGActorRepresentation, mFogOfWarRevealRadius);
 	DOREPLIFETIME(UFGActorRepresentation, mShouldShowInCompass);
 	DOREPLIFETIME(UFGActorRepresentation, mShouldShowOnMap);
+	DOREPLIFETIME(UFGActorRepresentation, mIsHidden);
 	DOREPLIFETIME(UFGActorRepresentation, mCompassViewDistance);
 }
 void UFGActorRepresentation::SetupActorRepresentation(AActor* realActor, bool isLocal, float lifeSpan){ }
@@ -42,6 +43,7 @@ void UFGActorRepresentation::SetHighlighted(bool highlighted){ }
 bool UFGActorRepresentation::IsHighlighted() const{ return bool(); }
 bool UFGActorRepresentation::IsHighlighted(FLinearColor& out_highlightColor, bool& out_HighlightByLocalPlayer) const{ return bool(); }
 UFGHighlightedMarker* UFGActorRepresentation::CreateHighlightedMarker(UObject* owner){ return nullptr; }
+void UFGActorRepresentation::SetHidden(bool isHidden){ }
 AFGActorRepresentationManager* UFGActorRepresentation::GetActorRepresentationManager(){ return nullptr; }
 void UFGActorRepresentation::UpdateLocation(){ }
 void UFGActorRepresentation::UpdateRotation(){ }

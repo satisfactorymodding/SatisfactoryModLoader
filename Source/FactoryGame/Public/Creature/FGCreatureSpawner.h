@@ -198,7 +198,7 @@ protected:
 	float mSpawnHalfHeight;
 
 	/** Whether or not we are actively spawning. */
-	UPROPERTY( SaveGame )
+	UPROPERTY()
 	bool mIsActive;
 
 	/** Structure for keeping all data saved about enemies spawned */

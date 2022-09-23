@@ -25,6 +25,7 @@ void AFGCreatureSubsystem::RegisterCreature( AFGCreature* creature){ }
 void AFGCreatureSubsystem::UnregisterCreature( AFGCreature* creature){ }
 void AFGCreatureSubsystem::RegisterFlyingBabyCrab( AFGFlyingBabyCrab* babyCrab){ }
 void AFGCreatureSubsystem::UnregisterFlyingBabyCrab( AFGFlyingBabyCrab* babyCrab){ }
+void AFGCreatureSubsystem::ForceTriggerSpawnersInRange(){ }
 void AFGCreatureSubsystem::SetCreatureHostility(ECreatureHostility hostility){ }
 bool AFGCreatureSubsystem::IsProtectedCreature(TSubclassOf<  AFGCreature > creatureClass) const{ return bool(); }
 void AFGCreatureSubsystem::SetCreatureStressEnabled(bool enabled){ }

@@ -51,3 +51,4 @@ void AFGResearchManager::OnResearchTimerComplete(TSubclassOf<class UFGSchematic>
 bool AFGResearchManager::PayForResearch(UFGInventoryComponent* playerInventory, TSubclassOf<class UFGSchematic> schematic) const{ return bool(); }
 void AFGResearchManager::ClaimPendingRewards(AFGCharacterPlayer* instigatorPlayer, TSubclassOf<UFGSchematic> schematic, int32 selectedRewardIndex){ }
 bool AFGResearchManager::AreResearchTreeUnlockDependeciesMet(TSubclassOf <UFGResearchTree> inClass){ return bool(); }
+void AFGResearchManager::SubmitResearchCompletedTelemetry(const TArray< TSubclassOf<  UFGSchematic > >& allSchematics, TSubclassOf< UFGSchematic > chosenSchematic) const{ }

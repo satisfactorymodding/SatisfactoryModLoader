@@ -5,7 +5,6 @@
 AFGFoundationHologram::AFGFoundationHologram() : Super() {
 	this->mFineTuneRotationStep = 5;
 	this->mSnapVerticalHitZoneRatio = 0.25;
-	this->mSideSnapDistanceFromEdgeThreshold = 200.0;
 	this->mOnlyAllowLineZoop = false;
 	this->mAllowCornerRotationMode = false;
 	this->mBuildModeVerticalZoop = nullptr;

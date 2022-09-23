@@ -10,6 +10,17 @@
 
 DECLARE_LOG_CATEGORY_EXTERN( LogResourceSink, Log, All );
 
+/** For now this just mirrors EResourceSinkTrack with an extra none. I know there have been talks about adding coupons besides from the tracks
+  *	so will this as a separate enum for coupon source
+  */	
+UENUM( BlueprintType )
+enum class ECouponSource : uint8
+{
+	CS_None					UMETA( DisplayName = "None" ), 
+	CS_DefaultTrack			UMETA( DisplayName = "Default Track" ), 
+	CS_ExplorationTrack		UMETA( DisplayName = "Exploration Track" )
+};
+
 /**
  * Subsystem to handle the resource sink and the rewards from sinked items
  */
@@ -82,7 +93,7 @@ public:
 	
 	/** Does the given player inventory contain enough coupons to purchase the given schematics */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ResourceSink" )
-	bool CanAffordResourceSinkSchematics( UFGInventoryComponent* playerInventory, TArray< TSubclassOf< class UFGSchematic > > schematics ) const;
+	bool CanAffordResourceSinkSchematics( class UFGInventoryComponent* playerInventory, TArray< TSubclassOf< class UFGSchematic > > schematics ) const;
 
 	/** Purchase the the given schematics. The cost of the schematics in coupons will be removed from the given player inventory
 	* Returns true if we could afford all schematics and none of them are already purchased
@@ -90,9 +101,12 @@ public:
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "FactoryGame|ResourceSink", meta = ( DeprecatedFunction, DeprecationMessage = "Use PurchaseResourceSinkSchematics() from resource sink shop instead" ) )
 	bool PurchaseResourceSinkSchematics( class UFGInventoryComponent* playerInventory, TArray< TSubclassOf< class UFGSchematic > > schematics );
 
-	/** Add resource sink coupons to the resource sink subsystem */
+	/** Add resource sink coupons to the resource sink subsystem
+	 * @param sendTelemetryData: Should be true for first time a coupone is created. Then we should send telemtry data.
+	 * This should not be true when we return already createad coupons
+	 */
 	UFUNCTION( BlueprintCallable, Category="FactoryGame|ResourceSink" )
-	void AddResourceSinkCoupons( int32 numCoupons );
+	void AddResourceSinkCoupons( int32 numCoupons, bool sendTelemetryData, ECouponSource couponSource = ECouponSource::CS_None );
 
 	/** Remove resource sink coupons from the resource sink subsystem
 	* Returns how many coupons that were removed
@@ -126,6 +140,8 @@ private:
 
 	UFUNCTION()
 	void TriggerCustomReward( TSubclassOf< class UFGItemDescriptor> item );
+
+	int32 GetNumTotalCouponsFromSource( ECouponSource couponSource ) const;
 
 private:
 	/** The cached schematic manager */

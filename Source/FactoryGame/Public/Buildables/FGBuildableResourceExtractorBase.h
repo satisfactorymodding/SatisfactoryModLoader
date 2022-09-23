@@ -68,11 +68,11 @@ public:
 
 	/** Can this extractor occupy a resource node, given that it is not already occupied? */
 	bool IsAllowedOnResource( const TScriptInterface< class IFGExtractableResourceInterface >& resource ) const;
-
+	
 protected:
 	AActor* GetExtractableResourceActor() const { return mExtractableResource; }
 
-	virtual AActor* TryFindMissingResource() { return nullptr; }
+	virtual AActor* TryFindMissingResource();
 	virtual void OnExtractableResourceSet();
 
 	UFUNCTION()
@@ -106,6 +106,10 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Extraction" )
 	FName mExtractorTypeName = "";
 
+	/** Whether to search for missing resources (usually in the event of rename). At the time of writing is only active on Waterpumps and Fraking buildings */
+	UPROPERTY()
+	bool mTryFindMissingResource;
+	
 private:
 	/** DEPRECATED - Only used for old save support. Use mExtractableResource instead.
 	*   The resource node we want to extract from.

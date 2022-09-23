@@ -19,6 +19,7 @@ AFGPipelineHologram::AFGPipelineHologram() : Super() {
 	this->mBuildModeAuto2D = nullptr;
 	this->mBuildModeNoodle = nullptr;
 	this->mBuildModeHorzToVert = nullptr;
+	this->mPassthroughOverrideStartLocation = FVector::ZeroVector;
 	this->mMesh = nullptr;
 	this->mBuildModeCategory = EHologramBuildModeCategory::HBMC_Pipe;
 	this->mUseBuildClearanceOverlapSnapp = false;

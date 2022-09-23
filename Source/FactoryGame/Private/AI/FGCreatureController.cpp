@@ -54,6 +54,7 @@ void AFGCreatureController::SetStressLevelToMax(bool bImmediateStateUpdate){ }
 void AFGCreatureController::ModifyStressLevel(float stressModification, bool bImmediateStateUpdate){ }
 bool AFGCreatureController::GetStimulusLocationToInvestigate(FVector& outLocation) const{ return bool(); }
 bool AFGCreatureController::TryUnstuckCreature(){ return bool(); }
+void AFGCreatureController::OnCreatureStuckInGeometry(){ }
 void AFGCreatureController::OnInterruptActionFinished_Implementation(bool success){ }
 void AFGCreatureController::OnHostilityModeUpdated(ECreatureHostility hostility){ }
 void AFGCreatureController::SetCurrentAction( UFGCreatureAction* action){ }

@@ -11,3 +11,4 @@ void UFGResourceSinkSettings::SetPointCalculationExpression(FString pointCalcula
 void UFGResourceSinkSettings::SetNumRepeatsPerLevel(int32 numRepeats){ }
 void UFGResourceSinkSettings::SetNumLevels(int32 numLevels){ }
 #endif 
+TSubclassOf< class UFGItemDescriptor > UFGResourceSinkSettings::GetCouponClass(){ return TSubclassOf<class UFGItemDescriptor>(); }

@@ -47,6 +47,7 @@ public:
 
 	//~ Begin AFGBuildable interface
 	virtual bool CanBeSampled_Implementation() const{ return false; }
+	virtual bool ShouldBeConsideredForBase_Implementation() override { return false; }
 	//~ End AFGBuildable interface
 
 	// Begin IFGUseableInterface

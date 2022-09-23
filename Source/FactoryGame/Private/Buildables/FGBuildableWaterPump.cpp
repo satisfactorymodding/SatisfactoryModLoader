@@ -5,5 +5,6 @@
 AFGBuildableWaterPump::AFGBuildableWaterPump() : Super() {
 	this->mMinimumDepthForPlacement = 0.0;
 	this->mDepthTraceOriginOffset = FVector::ZeroVector;
+	this->mTryFindMissingResource = true;
 }
 AActor* AFGBuildableWaterPump::TryFindMissingResource(){ return nullptr; }

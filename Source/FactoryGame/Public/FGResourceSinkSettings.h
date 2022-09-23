@@ -60,6 +60,8 @@ class FACTORYGAME_API UFGResourceSinkSettings : public UDeveloperSettings
 public:
 	static const UFGResourceSinkSettings* Get() { return GetDefault<UFGResourceSinkSettings>(); };
 
+	static TSubclassOf< class UFGItemDescriptor > GetCouponClass();
+
 #if WITH_EDITOR
 
 	virtual void PostInitProperties() override;

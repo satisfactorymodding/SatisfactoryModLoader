@@ -367,6 +367,8 @@ public:
 
 	void FindSurroundingLevels();
 
+	virtual void UpdatePlayerStatus() override;
+
 protected:
 	// Begin AFGVehicle interface
 	virtual void Died( AActor* thisActor ) override;

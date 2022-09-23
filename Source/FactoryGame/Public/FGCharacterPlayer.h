@@ -120,19 +120,19 @@ public:
 };
 
 USTRUCT( BlueprintType )
-struct FACTORYGAME_API FFGCreaturePlayerPerceptionInfo
+struct FACTORYGAME_API FFGActorPlayerPerceptionInfo
 {
 	GENERATED_BODY()
 
-	FFGCreaturePlayerPerceptionInfo()
-		: Creature( nullptr )
+	FFGActorPlayerPerceptionInfo()
+		: Actor( nullptr )
 		, AggroLevel( 0.0f )
 		, HasCalledInfoAddedEvent( false )
 	{}
 
-	/** The creature which is perceiving us. */
+	/** The actor which is perceiving us. */
 	UPROPERTY( BlueprintReadOnly )
-	class AFGCreature* Creature;
+	class AActor* Actor;
 	
 	/** Value representing the current aggro level of the creature. */
 	UPROPERTY( BlueprintReadOnly )
@@ -145,9 +145,9 @@ private:
 	bool HasCalledInfoAddedEvent;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreaturePerceptionInfoAdded, const FFGCreaturePlayerPerceptionInfo&, perceptionInfo );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreaturePerceptionInfoRemoved, const FFGCreaturePlayerPerceptionInfo&, perceptionInfo );
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCreaturePerceptionStateChanged, const FFGCreaturePlayerPerceptionInfo&, perceptionInfo, ECreatureState, newState );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActorPerceptionInfoAdded, const FFGActorPlayerPerceptionInfo&, perceptionInfo );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActorPerceptionInfoRemoved, const FFGActorPlayerPerceptionInfo&, perceptionInfo );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCreaturePerceptionStateChanged, const FFGActorPlayerPerceptionInfo&, perceptionInfo, ECreatureState, newState );
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnActiveEquipmentChangedInSlot, EEquipmentSlot, Slot );
 /**
  * Base class for all player characters in the game.
@@ -249,11 +249,13 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCosmetic, Category = "Character" )
 	void TickVisuals( float dt );
 
-	/** Used by a creature to tell the player that they are being seen. */
-	void RegisterPerceivingCreature( class AFGCreature* creature );
+	/** Used by an actor to tell the player that they are being seen by it. */
+	UFUNCTION( BlueprintCallable, Category = "AI" )
+	void RegisterPerceivingActor( class AActor* actor );
 
-	/** Wrapper for updating creature perception info. Should return false if info should be removed. */
-	bool UpdateCreaturePerceptionInfo( FFGCreaturePlayerPerceptionInfo& info );
+	/** Used by an actor to tell the player that they are no longer being by it. */
+	UFUNCTION( BlueprintCallable, Category = "AI" )
+	void UnregisterPerceivingActor( class AActor* actor );
 
 	/** Called on server whenever a creature which is perceiving us gets a state update. */
 	UFUNCTION()
@@ -261,10 +263,10 @@ public:
 
 	/** Gets the list of perception info for creatures that perceive us. */
 	UFUNCTION( BlueprintPure, Category = "UI" )
-	const TArray< FFGCreaturePlayerPerceptionInfo >& GetCreaturePerceptionInfoArray() const { return mCreaturePerceptionInfo; }
+	const TArray< FFGActorPlayerPerceptionInfo >& GetActorPerceptionInfoArray() const { return mActorPerceptionInfo; }
 	
 	/** Used to get the perception info for a creature. */
-	const FFGCreaturePlayerPerceptionInfo* GetPerceptionInfoForCreature( AFGCreature* creature ) const;
+	const FFGActorPlayerPerceptionInfo* GetPerceptionInfoForActor( class AActor* actor ) const;
 	
 	/** Must be called on the owning client for the client to be able to switch the weapon */
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
@@ -884,6 +886,14 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "Movement" )
 	FORCEINLINE float GetArmBoneLocation() const { return mArmBoneLocation; }
 
+	/** Called when some state changed so we can update name tag location */
+	UFUNCTION( BlueprintImplementableEvent, Category = "Online" )
+	void UpdatePlayerNameTagLocation();
+
+	/** True if player is online. By online we mean this player or the driven vehicle has a player state and someone is controlling it */
+	UFUNCTION( BlueprintPure, Category = "Radiation" )
+	FORCEINLINE bool IsPlayerOnline() const { return mIsPlayerOnline.IsSet() ? mIsPlayerOnline.GetValue() : false; }
+
 	/** Called when we update the best useable actor */
 	UPROPERTY( BlueprintAssignable, Category = "UI"  )
 	FOnBestUseableActorUpdated mOnBestUseableActorUpdated;
@@ -918,13 +928,13 @@ public:
 	/** Event when the foliage pickup proxy has spawned */
 	static FOnFoliagePickupSpawned OnFoliagePickupSpawned;
 
-	/** Called whenever a creature perception info is added. */
+	/** Called whenever an actor perception info is added. */
 	UPROPERTY( BlueprintAssignable, Category = "UI" )
-	FOnCreaturePerceptionInfoAdded mOnCreaturePerceptionInfoAdded;
+	FOnActorPerceptionInfoAdded mOnActorPerceptionInfoAdded;
 
-	/** Called whenever a creature perception info is removed. */
+	/** Called whenever an actor perception info is removed. */
 	UPROPERTY( BlueprintAssignable, Category = "UI" )
-	FOnCreaturePerceptionInfoRemoved mOnCreaturePerceptionInfoRemoved;
+	FOnActorPerceptionInfoRemoved mOnActorPerceptionInfoRemoved;
 
 	/** Called whenever a creature which is perceiving us has a state change. */
 	UPROPERTY( BlueprintAssignable, Category = "UI" )
@@ -957,7 +967,9 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Player Name" )
 	void UpdatePlayerNameWidget();
 
-	void Native_OnPlayerColorDataUpdated();
+	/** Update the status of the player s we can update appearances and UI */
+	void UpdatePlayerStatus();
+	
 private:
 	/**
 	 * Spawn a new equipment.
@@ -977,6 +989,12 @@ private:
 	AFGEquipmentAttachment* SpawnAttachmentForEquipment( AFGEquipment* equipment );
 	/* Spawns the secondary attachment for this equipment */
 	AFGEquipmentAttachment* SpawnSecondaryAttachmentForEquipment( AFGEquipment* equipment );
+
+	/** Wrapper for updating actor perception info. Should return false if info should be removed. */
+	bool UpdateActorPerceptionInfo( FFGActorPlayerPerceptionInfo& info );
+	
+	/** Used to properly remove perception info for an actor */
+	void RemoveActorPerceptionInfo( const FFGActorPlayerPerceptionInfo& info );
 
 	/** Custom ticks */
 	void UpdateHeadBob();
@@ -1051,7 +1069,7 @@ private:
 	void OnRep_BodyEquipmentSlot();
 	
 	UFUNCTION()
-	void OnRep_CreaturePerceptionInfo( const TArray< FFGCreaturePlayerPerceptionInfo >& OldValues );
+	void OnRep_ActorPerceptionInfo( const TArray< FFGActorPlayerPerceptionInfo >& OldValues );
 	
 	/** Migrate number of inventory and arm equipment slots saved before BU3 to unlock subsystem */
 	void MigrateNumSavedSlots();
@@ -1061,6 +1079,11 @@ private:
 	
 	virtual void OnRep_IsPossessed() override;
 	virtual void OnRep_PlayerState() override;
+	
+	void SetOnlineState( bool isOnline );
+
+	/** Gets the players state for this player. Either from this character or the driven vehicle */
+	class AFGPlayerState* GetControllingPlayerState();
 
 public:
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
@@ -1081,7 +1104,7 @@ protected:
 	class USkeletalMeshComponent* mMesh3P;
 
 	/** The widget component used to show the players name */
-	UPROPERTY( VisibleAnywhere, Category = "Player Name" )
+	UPROPERTY( VisibleAnywhere, BlueprintReadOnly, Category = "Player Name" )
 	class UWidgetComponent* mPlayerNameWidgetComponent;
 
 	/** As we have no foliage actor to actually put pickup code in, we use this actor as a proxy */
@@ -1165,8 +1188,8 @@ protected:
 	TArray<class UAkAudioEvent*> m1PFootstepEvent;
 
 	/** Info about creatures which currently perceive us. */
-	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_CreaturePerceptionInfo, Category = "UI" )
-	TArray< FFGCreaturePlayerPerceptionInfo > mCreaturePerceptionInfo;
+	UPROPERTY( BlueprintReadOnly, ReplicatedUsing = OnRep_ActorPerceptionInfo, Category = "UI" )
+	TArray< FFGActorPlayerPerceptionInfo > mActorPerceptionInfo;
 	
 	/** latest safe ground location check timer */
 	float mLastSafeGroundCheckTimer;
@@ -1482,6 +1505,10 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Representation" )
 	class UTexture2D* mActorRepresentationTextureDead;
 
+	/** This palyers actor representation */
+	UPROPERTY( Transient )
+	class UFGActorRepresentation* mCachedActorRepresentation;
+
 	/** The indexed of the holstered hand equipment, if we have any. Replicated for UI use */
 	UPROPERTY( SaveGame, Replicated )
 	int32 mHolsteredEquipmentIndex = INDEX_NONE;
@@ -1491,5 +1518,9 @@ private:
 	/** The player name of the last logged in player that possessed this pawn */
 	UPROPERTY( SaveGame, Replicated )
 	FString mCachedPlayerName;
+
+	/** True if player is online. Update on both server and client By online we mean this player or the driven vehicle has a player state and someone is controlling it.
+	 *	It doesn't care about platform logins */
+	TOptional<bool> mIsPlayerOnline;
 	
 };

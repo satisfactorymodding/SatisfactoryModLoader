@@ -161,6 +161,9 @@ public:
 	/** Return true if we could add a map marker. False if we have reached marker limit */
 	UFUNCTION( BlueprintCallable, Category=Map )
 	UPARAM( DisplayName = "Success" ) bool AddNewMapMarker( const FMapMarker& mapMarker, FMapMarker& out_NewMapMarker  );
+
+	/** Adds a new marker to the system. This function is NEVER meant to trigger remote calls that adds markers.
+	 *	Just a local add and whatever local changes we want to trigger after that */ 
 	void AddIndexedMapMarker( const FMapMarker& mapMarker );
 
 	void SyncMapMarkerAdded( const FMapMarker& mapMarker );

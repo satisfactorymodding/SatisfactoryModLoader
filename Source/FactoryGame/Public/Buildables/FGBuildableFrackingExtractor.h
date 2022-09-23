@@ -16,6 +16,8 @@ class FACTORYGAME_API AFGBuildableFrackingExtractor : public AFGBuildableResourc
 	GENERATED_BODY()
 
 public:
+	AFGBuildableFrackingExtractor();
+	
 	// Begin AActor interface
 	virtual void BeginPlay() override;
 	// End AActor interface
