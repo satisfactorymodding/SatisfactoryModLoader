@@ -233,6 +233,21 @@ public:
 	void SetCreatureStressEnabled( bool enable );
 
 	UFUNCTION( Server, Reliable )
+	void Server_SpawnCreature( TSubclassOf< class AFGCreature > creatureClass, int32 numToSpawn );
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void SpawnCreature( TSubclassOf< class AFGCreature > creatureClass, int32 numToSpawn = 1 );
+
+	UFUNCTION( Server, Reliable )
+	void Server_KillAllCreaturesInRadius( float radius );
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void KillAllCreaturesInRadius( float radius );
+
+	UFUNCTION( Server, Reliable )
+	void Server_KillAllCreatures();
+	UFUNCTION( exec, CheatBoard, category = "Creature" )
+	void KillAllCreatures();
+
+	UFUNCTION( Server, Reliable )
 	void Server_SetTimeOfDay( int32 hour, int32 minute = 0 );
 	UFUNCTION( exec, CheatBoard, category = "World/Time" )
 	void SetTimeOfDay( int32 hour, int32 minute = 0 );

@@ -84,9 +84,6 @@ public:
 	/** Radius that we will spawn creatures within */
 	FORCEINLINE float GetSpawnRadius() const { return mSpawnRadius; }
 
-	/** Height that we will search for ground within */
-	FORCEINLINE float GetSpawnHalfHeight() const { return mSpawnHalfHeight; }
-
 	/** Gets all splines assigned to this spawner */
 	UFUNCTION( BlueprintPure, Category = "Spawning" )
 	FORCEINLINE TArray< class AFGSplinePath* > GetSplines() { return mSplines; }
@@ -193,10 +190,6 @@ protected:
 	UPROPERTY( EditAnywhere, Category = "Spawning" )
 	float mSpawnRadius;
 
-	/** How much up/down our spawner tries to search for a placeable location */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
-	float mSpawnHalfHeight;
-
 	/** Whether or not we are actively spawning. */
 	UPROPERTY()
 	bool mIsActive;
@@ -212,18 +205,6 @@ protected:
 	/** cached value to see if spawner is near a base */
 	UPROPERTY( SaveGame )
 	bool mCachedIsNearBase;
-
-	/** Is this spawner a monster closet? (spawning one creature at a time ) */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
-	bool mIsMonsterCloset;
-
-	/** Delay in seconds when next creature spawns after current creature died */
-	UPROPERTY( EditAnywhere, Category = "Spawning" )
-	float mMonsterClosetSpawnDelay;
-
-	/** Timer handle for monster closet spawning */
-	UPROPERTY()
-	FTimerHandle mMonsterClosetTimerHandle;
 
 	/** Used to override the spawn distance of the creature. */
 	UPROPERTY( EditAnywhere, Category = "Spawning" )

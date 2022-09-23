@@ -19,11 +19,8 @@ AFGCreatureSpawner::AFGCreatureSpawner() : Super() {
 	this->mCanSpawnDuringDay = true;
 	this->mCanSpawnDuringNight = true;
 	this->mSpawnRadius = 200.0;
-	this->mSpawnHalfHeight = 300.0;
 	this->mIsActive = false;
 	this->mCachedIsNearBase = false;
-	this->mIsMonsterCloset = false;
-	this->mMonsterClosetSpawnDelay = 2.0;
 	this->mSpawnDistanceOverride = -1.0;
 	this->mDespawnDistanceOverride = -1.0;
 	this->mVisualizeSpawnDistance = false;

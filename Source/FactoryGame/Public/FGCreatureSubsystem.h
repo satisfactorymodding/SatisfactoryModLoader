@@ -74,7 +74,10 @@ public:
 #if WITH_EDITOR
 	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
 #endif
-	
+
+	const TArray< class AFGCreature* >& GetAllCreatures() const { return mAllCreatures; }
+	const TArray< FSpawnerInfo >& GetAllSpawners() const { return mAllSpawners; }
+
 	void RegisterSpawner( class AFGCreatureSpawner* spawner );
 	void UnregisterSpawner( class AFGCreatureSpawner* spawner );
 

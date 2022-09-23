@@ -224,7 +224,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnCreatureStunnedChanged, bool, is
 /**
  * Base class for passive creatures in the game, see AFGEnemy for aggressive creatures.
  */
-UCLASS()
+UCLASS( Abstract )
 class FACTORYGAME_API AFGCreature : public AFGCharacterBase
 {
 	GENERATED_BODY()
