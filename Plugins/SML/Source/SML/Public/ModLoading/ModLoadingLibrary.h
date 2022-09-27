@@ -62,6 +62,10 @@ struct SML_API FModInfo {
     /** Range of the remote versions accepted by this mod. Defaults to >=CurrentVersion, unless explicitly defined */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
     FVersionRange RemoteVersionRange;
+
+    /** If set, URL of the crash reporting endpoint at witch the mod developer wants to receive crash reports. Otherwise Empty. */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    FString CrashReportingEndpoint;
 };
 
 
@@ -79,6 +83,9 @@ struct SML_API FSMLPluginDescriptorMetadata {
 
     /** Version constraints for dependencies as specified in plugin refs */
     TMap<FString, FVersionRange> DependenciesVersions;
+
+    /** Crash-Report-Server Endpoint to where crash reports should get sent to if accepted by the user */
+    TOptional<FString> CrashReporterEndpoint;
 
     /** Setups defaults for metadata from normal plugin descriptor */
     void SetupDefaults(const struct FPluginDescriptor& PluginDescriptor);

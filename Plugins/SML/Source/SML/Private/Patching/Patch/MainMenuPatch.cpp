@@ -6,6 +6,7 @@
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "CrashReporting/SMLCrashReportEndpointPrompt.h"
 #include "Engine/Engine.h"
 #include "ModLoading/ModLoadingLibrary.h"
 
@@ -83,6 +84,7 @@ void FMainMenuPatch::RegisterPatch() {
 	UBlueprintHookManager* HookManager = GEngine->GetEngineSubsystem<UBlueprintHookManager>();
 	HookManager->HookBlueprintFunction(ConstructFunction, [](FBlueprintHookHelper& HookHelper) {
         FMainMenuPatch::ApplyMainMenuPatch(CastChecked<UUserWidget>(HookHelper.GetContext()));
+		USMLCrashReportEndpointPrompt::ApplyMainMenuPatch(CastChecked<UUserWidget>(HookHelper.GetContext()));
     }, EPredefinedHookOffset::Return);
 }
 

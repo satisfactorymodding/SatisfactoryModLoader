@@ -23,7 +23,10 @@ public:
 	static TMap<FName, FString> GetExtraAttributes();
 	
 	/** Returns active SML configuration. If not loaded, it will return empty struct */
-	FORCEINLINE static FSMLConfiguration GetSMLConfiguration() { return SMLConfigurationPrivate; }
+	FORCEINLINE static FSMLConfiguration& GetSMLConfiguration() { return SMLConfigurationPrivate; }
+	
+	/** Saves SML configuration to file. */
+	static void SaveSMLConfiguration();
 private:
 	friend class FSMLModule;
 	

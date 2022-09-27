@@ -56,13 +56,19 @@ void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TShared
         }
     }
 
+    //Try getting Crash-Reporter-Server Endpoint
+    FString CrashReporterEndpointString;
+    if (Source->TryGetStringField(TEXT("CrashReporterEndpoint"), CrashReporterEndpointString)) {
+        this->CrashReporterEndpoint = CrashReporterEndpointString;
+    }
+
     //Loop plugins specified in the plugin manifest and detect version predicate inside of them
     const TArray<TSharedPtr<FJsonValue>>* PluginsArray;
     if (Source->TryGetArrayField(TEXT("Plugins"), PluginsArray)) {
         for (const TSharedPtr<FJsonValue>& Item : *PluginsArray) {
             const TSharedPtr<FJsonObject>* ObjectPtr;
 
-            if (Item.IsValid() && Item->TryGetObject(ObjectPtr))  {
+            if (Item.IsValid() && Item->TryGetObject(ObjectPtr)) {
                 const FString DependencyName = (*ObjectPtr)->GetStringField(TEXT("Name"));
                 FString DependencyVersionRangeString;
                 if ((*ObjectPtr)->TryGetStringField(TEXT("SemVersion"), DependencyVersionRangeString)) {
@@ -77,7 +83,6 @@ void FSMLPluginDescriptorMetadata::Load(const FString& PluginName, const TShared
                     }
                 }
             }
-            
         }
     }
 }
@@ -250,6 +255,8 @@ void UModLoadingLibrary::PopulatePluginModInfo(IPlugin& Plugin, FModInfo& OutMod
 
     OutModInfo.bAcceptsAnyRemoteVersion = PluginDescriptorMetadata.bAcceptsAnyRemoteVersion;
     OutModInfo.RemoteVersionRange = PluginDescriptorMetadata.RemoteVersionRange;
+
+    OutModInfo.CrashReportingEndpoint = PluginDescriptorMetadata.CrashReporterEndpoint.Get("");
 }
 
 void UModLoadingLibrary::OnNewPluginCreated(IPlugin& Plugin) {

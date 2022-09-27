@@ -1,0 +1,16 @@
+﻿[package]
+name = "ModdingCrashReporter"
+version = "0.1.0"
+edition = "2022"
+
+[dependencies]
+log = "0.4"
+hyper = { version = "0.14", features = ["full"] }
+hyper-tls = "0.5.0"
+tokio = { version = "1", features = ["full"] }
+futures = "0.3"
+simple_logger = "2.3.0"
+json = "0.12.4"
+url = "2.3.1"
+simple-error = "0.2.3"
+rand = "0.8.5"
