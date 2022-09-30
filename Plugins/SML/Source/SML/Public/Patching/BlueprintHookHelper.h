@@ -44,7 +44,6 @@ public:
 	typename T::TCppType* GetLocalVarPtr(const TCHAR* ParameterName, int32 ArrayIndex = 0) const {
 		T* Property = Cast<T>(FramePointer.Node->FindPropertyByName(ParameterName));
 		check(Property);
-		UProperty* Prop;
 		checkf(!Property->HasAnyPropertyFlags(CPF_OutParm), TEXT("Attempt to use GetLocalVarPtr on [out] variable"));
 		return Property->GetPropertyValuePtr_InContainer(FramePointer.Locals, ArrayIndex);
 	}
