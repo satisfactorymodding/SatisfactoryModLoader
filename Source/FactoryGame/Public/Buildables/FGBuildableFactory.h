@@ -415,6 +415,10 @@ private:
 
 	class AFGReplicationDetailActor_BuildableFactory* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_BuildableFactory>( mReplicationDetailActor ); } // @todo: make this a static function instead
 
+	/** Filters what item can be used in the potential inventory slots. We use it to check if overclock have been unlocked */
+	UFUNCTION()
+	bool FilterPotentialInventoryClasses( TSubclassOf< UObject > object, int32 idx ) const;
+
 	//////////////////////////////////////////////////////////////////////////
 	/// Push Model Replication Setters
 	void SetIsProducing( uint8 isProducing );

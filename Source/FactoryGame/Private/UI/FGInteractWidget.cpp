@@ -23,6 +23,7 @@ UFGInteractWidget::UFGInteractWidget(const FObjectInitializer& ObjectInitializer
 	this->mSupportsStacking = false;
 	this->mSupportsCaching = false;
 }
+void UFGInteractWidget::Native_Init(){ }
 void UFGInteractWidget::Init_Implementation(){ }
 void UFGInteractWidget::SetInputMode_Implementation(){ }
 void UFGInteractWidget::HandleEquipment(){ }

@@ -74,7 +74,7 @@ void AFGSchematicManager::GetVisibleSchematicCategoryData(ESchematicType schemat
 void AFGSchematicManager::PopulateSchematicsLists(){ }
 void AFGSchematicManager::PopulateAvailableSchematicsList(){ }
 void AFGSchematicManager::OnRep_ActiveSchematic(){ }
-void AFGSchematicManager::OnRep_PurchasedSchematic(){ }
+void AFGSchematicManager::OnRep_PurchasedSchematic(TArray< TSubclassOf< UFGSchematic > > lastPurchasedSchematics){ }
 void AFGSchematicManager::OnRep_PaidOffOnSchematic(){ }
 int32 AFGSchematicManager::FindHighestAvailableTechTier(){ return int32(); }
 FSchematicCost* AFGSchematicManager::FindSchematicPayOff(TSubclassOf<  UFGSchematic > schematic){ return nullptr; }

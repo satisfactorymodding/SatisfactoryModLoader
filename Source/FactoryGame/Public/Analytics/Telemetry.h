@@ -43,6 +43,7 @@
 #define END_JSON_OBJECT_TELEMETRY()
 #endif
 
+// Send telemetry from a non cooked version of the game, this does not work in the editor's PIE mode you need to launch standalone.
 const bool TELEMETRY_DEBUG_ENABLED = false;
 
 const FString TELEMETRY_INVALID_STRING = TEXT( "NULL" );

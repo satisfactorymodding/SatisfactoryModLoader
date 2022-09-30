@@ -33,6 +33,9 @@ class FACTORYGAME_API UFGInteractWidget : public UUserWidget
 public:
 	UFGInteractWidget( const FObjectInitializer& ObjectInitializer );
 
+	UFUNCTION()
+	void Native_Init();
+	
 	UFUNCTION( BlueprintNativeEvent, Category = "UI" )
 	void Init();
 

@@ -244,7 +244,7 @@ private:
 	UFUNCTION()
 	void OnRep_ActiveSchematic();
 	UFUNCTION()
-	void OnRep_PurchasedSchematic();
+	void OnRep_PurchasedSchematic( TArray< TSubclassOf< UFGSchematic > > lastPurchasedSchematics );
 	UFUNCTION()
 	void OnRep_PaidOffOnSchematic();
 

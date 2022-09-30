@@ -294,10 +294,6 @@ public:
 	UFUNCTION( BlueprintPure, Category= "Damage" )
 	FORCEINLINE float GetPassiveHealthRegenAmount() const { return mPassiveHealthRegen; }
 
-	/** Sets if we should persist or not */
-	UFUNCTION( BlueprintCallable, Category = "Creature" )
-	void SetPersistent( bool persist ) { mIsPersistent = persist; }
-
 	/** Whether or not this is a passive creature. Which means it can't aggro on anything. */
 	UFUNCTION( BlueprintPure, Category = "Creature" )
 	FORCEINLINE bool IsPassiveCreature() const { return mIsPassiveCreature; }

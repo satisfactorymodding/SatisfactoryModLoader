@@ -79,6 +79,12 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "Sort" )
 	void SetSortRuleAt( int32 index, FSplitterSortRule rule );
 
+	UFUNCTION( BlueprintCallable, Category = "Sort" )
+	TArray< FSplitterSortRule > GetSortRules() const { return mSortRules; }
+
+	UFUNCTION( BlueprintCallable, Category = "Sort" )
+	void SetSortRules( TArray< FSplitterSortRule > newSortRules );
+
 protected:
 	// Begin Factory_ interface
 	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
@@ -114,5 +120,7 @@ private:
 
 	UPROPERTY( SaveGame )
 	int32 mLastOutputIndex;
+	
+	bool mOnSortRulesChangedBlocker = false;
 
 };

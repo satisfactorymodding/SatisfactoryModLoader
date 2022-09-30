@@ -125,6 +125,7 @@ void AFGBuildableFactory::OnRep_CurrentPotential(){ }
 void AFGBuildableFactory::OnRep_IsProductionPaused(){ }
 void AFGBuildableFactory::OnRep_IsProducing(){ }
 void AFGBuildableFactory::OnPotentialInventoryItemRemoved(TSubclassOf<  UFGItemDescriptor > itemClass, int32 numRemoved){ }
+bool AFGBuildableFactory::FilterPotentialInventoryClasses(TSubclassOf< UObject > object, int32 idx) const{ return bool(); }
 void AFGBuildableFactory::SetIsProducing(uint8 isProducing){ }
 void AFGBuildableFactory::SetHasPower(uint8 hasPower){ }
 void AFGBuildableFactory::SetCurrentProductivity(uint8 productivity){ }

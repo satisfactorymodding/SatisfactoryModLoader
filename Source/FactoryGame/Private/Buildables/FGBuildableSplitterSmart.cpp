@@ -17,6 +17,7 @@ FSplitterSortRule AFGBuildableSplitterSmart::GetSortRuleAt(int32 index) const{ r
 void AFGBuildableSplitterSmart::AddSortRule(FSplitterSortRule rule){ }
 void AFGBuildableSplitterSmart::RemoveSortRuleAt(int32 index){ }
 void AFGBuildableSplitterSmart::SetSortRuleAt(int32 index, FSplitterSortRule rule){ }
+void AFGBuildableSplitterSmart::SetSortRules(TArray< FSplitterSortRule > newSortRules){ }
 bool AFGBuildableSplitterSmart::Factory_GrabOutput_Implementation( UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type){ return bool(); }
 void AFGBuildableSplitterSmart::FillDistributionTable(float deltaTime){ }
 void AFGBuildableSplitterSmart::OnRep_SortRules(){ }

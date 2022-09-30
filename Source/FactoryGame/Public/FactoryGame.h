@@ -166,6 +166,7 @@ static const FName CollisionProfileDerailedRailroadVehicleHologram( TEXT( "Derai
 static const ECollisionChannel TC_BuildGun( ECC_GameTraceChannel5 );
 static const ECollisionChannel TC_WeaponInstantHit( ECC_GameTraceChannel6 );
 static const ECollisionChannel TC_WorldGrid( ECC_GameTraceChannel9 );
+static const ECollisionChannel TC_Interact( ECC_GameTraceChannel13 );
 
 static const ECollisionChannel OC_Projectile( ECC_GameTraceChannel1 );
 static const ECollisionChannel OC_Hologram( ECC_GameTraceChannel2 );
