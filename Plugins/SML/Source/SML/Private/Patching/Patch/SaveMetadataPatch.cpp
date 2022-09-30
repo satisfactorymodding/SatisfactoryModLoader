@@ -71,7 +71,8 @@ bool FSaveMetadataPatch::Patch(FSaveHeader Header, APlayerController* PlayerCont
 
 void FSaveMetadataPatch::RegisterPatch() {
 	UFGSaveSystem* Context = GetMutableDefault<UFGSaveSystem>();
-	SUBSCRIBE_METHOD_VIRTUAL(UFGSaveSystem::LoadSaveFile, Context, [](auto& scope, UFGSaveSystem* self, const FSaveHeader& SaveGame, APlayerController* Player)
+    void* ContextInterface = static_cast<IFGSaveManagerInterface*>(Context);
+	SUBSCRIBE_METHOD_VIRTUAL(UFGSaveSystem::LoadSaveFile, ContextInterface, [](auto& scope, UFGSaveSystem* self, const FSaveHeader& SaveGame, APlayerController* Player)
 	{
 		bool bAbort = Patch(SaveGame, Player);
 		if (bAbort)
