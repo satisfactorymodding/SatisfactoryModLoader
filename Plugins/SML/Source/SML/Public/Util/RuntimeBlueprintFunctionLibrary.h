@@ -143,7 +143,7 @@ public:
 
 		/** Allows Binding on BP Function. Function must be implemented in Blueprint */
 		UFUNCTION(BlueprintCallable)
-		static void BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName);
+		static void BindOnBPFunction(const TSubclassOf<UObject> Class, FObjFunctionBind Binding, const FString FunctionName, bool HookOffsetStart);
 	
 
 };
