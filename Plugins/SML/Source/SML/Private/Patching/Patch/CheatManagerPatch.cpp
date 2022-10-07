@@ -6,9 +6,9 @@
 
 void FCheatManagerPatch::HandlePlayerFly(UCheatManager* CheatManager, bool bFlyModeEnabled) {
 	APlayerController* PlayerController = CheatManager->GetOuterAPlayerController();
-	if (PlayerController->IsA<AFGPlayerController>()) {
+	if (PlayerController && PlayerController->IsA<AFGPlayerController>()) {
 		ACharacter* Character = PlayerController->GetCharacter();
-		if (Character->IsA<AFGCharacterPlayer>()) {
+		if (Character && Character->IsA<AFGCharacterPlayer>()) {
 
 			UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement();
 			Character->SetActorEnableCollision(true);
@@ -23,9 +23,9 @@ void FCheatManagerPatch::HandlePlayerFly(UCheatManager* CheatManager, bool bFlyM
 
 void FCheatManagerPatch::HandleNoClipModeOnFly(UCheatManager* CheatManager, bool bGhostMode) {
 	APlayerController* PlayerController = CheatManager->GetOuterAPlayerController();
-	if (PlayerController->IsA<AFGPlayerController>()) {
+	if (PlayerController && PlayerController->IsA<AFGPlayerController>()) {
 		ACharacter* Character = PlayerController->GetCharacter();
-		if (Character->IsA<AFGCharacterPlayer>()) {
+		if (Character && Character->IsA<AFGCharacterPlayer>()) {
 
 			UCharacterMovementComponent* CharacterMovement = Character->GetCharacterMovement();
 			if (CharacterMovement->IsA<UFGCharacterMovementComponent>()) {
