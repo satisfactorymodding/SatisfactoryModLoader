@@ -1,7 +1,7 @@
 ﻿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CoreTypes.h"
-#include "../../../../../SML/Source/SML/Public/SatisfactoryModLoader.h"
+#include "SatisfactoryModLoader.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
