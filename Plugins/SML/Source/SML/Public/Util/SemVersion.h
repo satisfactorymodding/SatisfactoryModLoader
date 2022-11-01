@@ -33,9 +33,9 @@ public:
 	/** Patch number */
 	UPROPERTY(BlueprintReadWrite)
 	int64 Patch;
-	/** Version type (alpha/beta/release) */
+	/** Pre-release version */
 	UPROPERTY(BlueprintReadWrite)
-	FString Type;
+	FString PreRelease;
 	/** Additional version build info */
 	UPROPERTY(BlueprintReadWrite)
 	FString BuildInfo;

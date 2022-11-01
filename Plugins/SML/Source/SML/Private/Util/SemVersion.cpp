@@ -59,7 +59,7 @@ bool FVersion::ParseVersion(const FString& String, FString& OutErrorMessage) {
 		this->Major = ResultVersion.Major;
 		this->Minor = ResultVersion.Minor;
 		this->Patch = ResultVersion.Patch;
-		this->Type = ResultVersion.Type;
+		this->PreRelease = ResultVersion.PreRelease;
 		this->BuildInfo = ResultVersion.BuildInfo;
 		return true;
 	}
@@ -533,7 +533,7 @@ FString ParseVersionTemplate(const FString& string, FVersion& version, EVersionC
 			return TEXT("Wildcard cannot be followed by version number");
         }
 	}
-	version.Type = Match[5].str().c_str();
+	version.PreRelease = Match[5].str().c_str();
 	version.BuildInfo = Match[6].str().c_str();
 	return TEXT("");
 }
@@ -555,8 +555,8 @@ FString FVersion::ToString() const {
 	if (Patch != SEMVER_VERSION_NUMBER_UNSPECIFIED) {
 		Result.Append(FromIntWithWildcard(Patch));
 	}
-	if (!Type.IsEmpty())
-		Result.Append(TEXT("-")).Append(Type);
+	if (!PreRelease.IsEmpty())
+		Result.Append(TEXT("-")).Append(PreRelease);
 	if (!BuildInfo.IsEmpty())
 		Result.Append(TEXT("+")).Append(BuildInfo);
 	return Result;
@@ -566,6 +566,59 @@ FString FVersionComparator::ToString() const {
 	return ComparisonString(this->Op) + MyVersion.ToString();
 }
 
+int ComparePreReleaseField(const FString& A, const FString& B)
+{
+	bool bPRNumeric = A.IsNumeric();
+	bool bOtherPRNumeric = B.IsNumeric();
+	if (bPRNumeric && !bOtherPRNumeric)
+		return -1;
+	if (!bPRNumeric && bOtherPRNumeric)
+		return 1;
+	if (bPRNumeric && bOtherPRNumeric)
+		return FCString::Atoi(*A) > FCString::Atoi(*B) ? 1 : -1;
+	
+	return A.Compare(B);
+}
+
+int ComparePreRelease(const FVersion& A, const FVersion& B)
+{
+	if(A.PreRelease == B.PreRelease)
+	{
+		return 0;
+	}
+
+	if(A.PreRelease == "")
+	{
+		return 1;
+	}
+
+	if(B.PreRelease == "")
+	{
+		return -1;
+	}
+	
+	TArray<FString> AFields;
+	TArray<FString> BFields;
+	A.PreRelease.ParseIntoArray(AFields, TEXT("."));
+	B.PreRelease.ParseIntoArray(BFields, TEXT("."));
+
+	int SmallerNum = AFields.Num();
+	if (BFields.Num() < SmallerNum)
+	{
+		SmallerNum = BFields.Num();
+	}
+
+	for (int i = 0; i < SmallerNum; ++i)
+	{
+		int Compared = ComparePreReleaseField(AFields[i], BFields[i]);
+		if (Compared != 0)
+		{
+			return Compared;
+		}
+	}
+	return AFields.Num() - BFields.Num();
+}
+
 int FVersion::Compare(const FVersion& other) const {
 	if (Major != other.Major)
 		return Major > other.Major ? 1 : -1;
@@ -573,5 +626,6 @@ int FVersion::Compare(const FVersion& other) const {
 		return Minor > other.Minor ? 1 : -1;
 	if (Patch != other.Patch)
 		return Patch > other.Patch ? 1 : -1;
-	return Type.Compare(other.Type);
+	
+	return ComparePreRelease(*this, other);
 }
