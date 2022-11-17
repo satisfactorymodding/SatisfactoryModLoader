@@ -168,7 +168,9 @@ void AModContentRegistry::FlushStateToResearchManager(AFGResearchManager* Resear
 
     for (const TSharedPtr<FResearchTreeRegistrationInfo>& RegistrationInfo : RegisteredResearchTrees) {
         TSubclassOf<UFGResearchTree> ResearchTree = RegistrationInfo->RegisteredObject;
-        ResearchManager->mAvailableResearchTrees.Add(ResearchTree);
+        if (ResearchManager->CanAddToAvailableResearchTrees(ResearchTree)) {
+        	ResearchManager->mAvailableResearchTrees.Add(ResearchTree);
+        }
     }
     //Update unlocked research trees
     ResearchManager->UpdateUnlockedResearchTrees();
