@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "FGOptionsSettings.h"
+#include "Settings/FGUserSetting.h"
 #include "FGDynamicOptionsRow.generated.h"
 
 /**
@@ -19,7 +20,8 @@ class FACTORYGAME_API UFGDynamicOptionsRow : public UUserWidget
 public:
 	virtual void NativePreConstruct() override;
 
-	void InitOptionRow( FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass );
+	void InitOptionRow( FOptionRowData optionRowData, TSubclassOf<class UFGOptionsValueController> widgetOptionClass, TScriptInterface< class IFGOptionInterface > optionInterface );
+	void InitOptionRow( class UFGUserSetting* userSetting, TScriptInterface< class IFGOptionInterface > optionInterface );
 	
 	UFUNCTION( Blueprintpure, Category = "Option" )
 	FORCEINLINE EOptionCategory GetOptionCategory() const { return EOptionCategory::OC_Gameplay; }
@@ -29,7 +31,7 @@ public:
 
 protected:
 	UFUNCTION( Blueprintpure, Category = "Option" )
-	FORCEINLINE FOptionRowData GetOptionRowData() const { return mOptionRowData; }
+	FORCEINLINE FOptionRowData GetOptionRowData() const { return mUserSetting ? mUserSetting->ToOptionRowData() : mOptionRowData; }
 
 	UFUNCTION( Blueprintpure, Category = "Option" )
 	FORCEINLINE UFGOptionsValueController* GetValueControllerWidget() const { return mValueControllerWidget; }
@@ -71,15 +73,21 @@ private:
 
 	FOptionRowData mOptionRowData;
 
+	UPROPERTY( Transient )
+	UFGUserSetting* mUserSetting;
+
 	EOptionType mOptionType;
+
+	UPROPERTY( Transient )
+	TScriptInterface< class IFGOptionInterface > mOptionInterface;
 	
-	UPROPERTY()
+	UPROPERTY( Transient )
 	TSubclassOf<class UFGOptionsValueController> mWidgetOptionClass;
 
-	UPROPERTY()
+	UPROPERTY( Transient )
 	UFGOptionsValueController* mValueControllerWidget;
 
-	UPROPERTY()
+	UPROPERTY( Transient )
 	TArray< UFGDynamicOptionsRow* > mSubOptions;
 
 	bool mSubOptionsVisibility;

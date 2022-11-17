@@ -21,6 +21,8 @@ bool FObjectReferenceDisc::Valid() const{ return bool(); }
 FString FObjectReferenceDisc::ToString() const{ return FString(); }
 void FObjectReferenceDisc::ClearRedirects(){ }
 bool FObjectReferenceDisc::FindRedirect(const FString& oldName, FString& out_newRedirectedName){ return bool(); }
+bool FObjectReferenceDisc::BlueprintAttemptAutomaticRedirect(){ return bool(); }
 void FObjectReferenceDisc::AddRedirector(const FString& source, const FString& destination){ }
 ULevel* FObjectReferenceDisc::InternalFindLevel(UWorld* world, const FString& levelName) const{ return nullptr; }
 bool FObjectReferenceDisc::IsModdingModuleLoaded = bool();
+bool FObjectReferenceDisc::ForceUseRedirects = bool();

@@ -5,4 +5,6 @@
 FText UFGCategory::GetCategoryName(TSubclassOf< UFGCategory > inClass){ return FText(); }
 float UFGCategory::GetMenuPriority(TSubclassOf< UFGCategory > inClass){ return float(); }
 void UFGCategory::SortByMenuPriority(TArray< TSubclassOf< UFGCategory > >& itemCategories){ }
+void UFGCategory::SortInstancesByMenuPriority(TArray< UFGCategory* >& itemCategories){ }
 FSlateBrush UFGCategory::GetCategoryIcon(TSubclassOf< UFGCategory > inClass){ return FSlateBrush(); }
+UTexture2D* UFGCategory::GetCategoryIconFromInstance(){ return nullptr; }

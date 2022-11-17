@@ -80,6 +80,22 @@ public:
 
 	void GetStatisticsDebugData( TArray<FString>& out_debugData );
 
+	/* Called from FGbackground thread after processing the current frame. */
+	void UpdateProducedItems( const TMap< TSubclassOf< UFGItemDescriptor >, uint64 >& ProducedItems );
+
+	/* Last world time the produced items got updated. */
+	float LastTimeUpdated = 0;
+
+	/* Update frequency for items per X update.*/
+	float mUpdateRateFrequency = 60.f;
+
+	/* Cached version of mItemsProduced to compute the delta later on.*/
+	TMap< TSubclassOf< UFGItemDescriptor >, uint64 > mLastUpdateValues;
+
+	/* Map with items per min, int64 instead of unsigned 64 because of blueprint compatibility
+	 * the likelihood of constructing more then a int64_max per min is hiiiiiiiiiiiiiiiiiiiiiiiiiiiiighly unlikely */	
+	TMap< TSubclassOf< UFGItemDescriptor >, int64 > mItemsProducedPerFrequencyMap;
+	
 	FOnAnyStatisticsUpdated mOnAnyStatisticsUpdated;	
 
 private:
@@ -98,4 +114,7 @@ private:
 	/** How many actors of each class we have built/dismantled */
 	UPROPERTY( SaveGame )
 	TMap< TSubclassOf< class AActor >, FActorBuiltData > mActorsBuiltCount;
+
+	UPROPERTY( SaveGame )
+	TMap< TSubclassOf< UFGItemDescriptor >, uint64 > mItemsProduced;
 };

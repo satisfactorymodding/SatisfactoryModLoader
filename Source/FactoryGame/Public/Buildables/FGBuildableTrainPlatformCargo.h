@@ -123,13 +123,12 @@ protected:
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
+	virtual void OnRep_ReplicationDetailActor() override;
 	// End AFGBuildableFactory interface
 
-	// Handle Inventory component replication via DetailActor
-	virtual void OnRep_ReplicationDetailActor() override;
-
-	// Handle Custom docking update behaviour for clients
+	// Begin FGBuildableTrainPlatform interface
 	virtual void OnRep_UpdateDockingStatus() override;
+	// End FGBuildableTrainPlatform interface
 
 private:
 

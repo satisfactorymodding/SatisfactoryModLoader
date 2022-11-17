@@ -91,11 +91,30 @@ private:
 
 private:
 	bool mUsingCutstomPoleRotation = false;
-
-	/**Used to redirect input and construct poles when needed*/
+	
+	/** Child pole hologram used for normal placement */
 	UPROPERTY( Replicated )
 	class AFGConveyorPoleHologram* mChildPoleHologram = nullptr;
 
+	/** Child pole hologram used for wall placement */
+	UPROPERTY( Replicated )
+	class AFGWallAttachmentHologram* mChildWallPoleHologram = nullptr;
+
+	/** Child pole hologram used for ceiling placement */
+	UPROPERTY( Replicated )
+	class AFGWallAttachmentHologram* mChildCeilingPoleHologram = nullptr;
+
+	/** Snap connection of our child wall pole hologram. */
+	UPROPERTY()
+	class UFGFactoryConnectionComponent* mChildWallPoleSnapConnection;
+
+	/** Snap connection of our child ceiling pole hologram. */
+	UPROPERTY()
+	class UFGFactoryConnectionComponent* mChildCeilingPoleSnapConnection;
+
+	/** Whether or not to flip the direction our belt snaps to our child wall pole hologram. */
+	bool mFlipWallPoleSnapDirection;
+	
 	/** The two connection components for this conveyor. */
 	UPROPERTY()
 	class UFGFactoryConnectionComponent* mConnectionComponents[ 2 ];
@@ -112,6 +131,14 @@ private:
 	/** Class of conveyor pole to place at the end. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
 	TSubclassOf< class UFGRecipe > mDefaultConveyorPoleRecipe;
+
+	/** Class of conveyor pole to place at the end. */
+	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
+	TSubclassOf< class UFGRecipe > mDefaultConveyorWallPoleRecipe;
+
+	/** Class of conveyor pole to place at the end. */
+	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )
+	TSubclassOf< class UFGRecipe > mDefaultConveyorCeilingPoleRecipe;
 
 	/** What radius will the bends have. */
 	UPROPERTY( EditDefaultsOnly, Category = "Conveyor Belt" )

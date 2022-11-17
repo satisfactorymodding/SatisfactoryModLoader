@@ -43,7 +43,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay( const EEndPlayReason::Type endPlayReason ) override;
 	// End AActor interface
-private:
+	private:
 	// Recalled if the storage subsystem isn't created
 	UFUNCTION()
 	void AddToCentralStorageSubsystem();

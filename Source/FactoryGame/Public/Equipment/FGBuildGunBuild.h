@@ -8,6 +8,7 @@
 #include "FGBuildableSubsystem.h"
 #include "FGConstructionMessageInterface.h"
 #include "Delegates/DelegateCombinations.h"
+#include "FGFactoryBlueprintTypes.h"
 #include "FGBuildGunBuild.generated.h"
 
 
@@ -69,14 +70,12 @@ struct FBuildableClearanceData
 	GENERATED_BODY()
 
 	FBuildableClearanceData() :
-		Buildable( nullptr ),
-		ClearanceMeshComponent( nullptr )
+		Buildable( nullptr )
 	{
 	}
 
 	FBuildableClearanceData( class AFGBuildable* inBuildable ) :
-		Buildable( inBuildable ),
-		ClearanceMeshComponent( nullptr )
+		Buildable( inBuildable )
 	{
 	}
 
@@ -84,15 +83,13 @@ struct FBuildableClearanceData
 	class AFGBuildable* Buildable;
 
 	UPROPERTY()
-	class UStaticMeshComponent* ClearanceMeshComponent;
+	TArray< class UStaticMeshComponent* > ClearanceMeshComponents;
 
 	UPROPERTY()
 	TArray< FConnectionRepresentation > mConnectionComponents;
 
 	UPROPERTY()
 	TArray< FAttachmentPointRepresentation > mAttachmentPointMeshes;
-
-	uint8 ParticipatedInCleranceEncroachFrameCountDownLast = 0;
 };
 
 /**
@@ -135,6 +132,13 @@ public:
 	 * must be called from the local player (client).
 	 */
 	void SetActiveRecipe( TSubclassOf< class UFGRecipe > recipe );
+	TSubclassOf< class UFGRecipe > GetActiveRecipe() const { return mActiveRecipe; }
+
+	/**
+	 * Set active blueprint descriptor. This will be used when a blueprint hologram recipe is set
+	 */
+	void SetActiveBlueprintDescriptor( UFGBlueprintDescriptor* blueprintDesc );
+	UFGBlueprintDescriptor* GetActiveBlueprintDescriptor( ) { return mActiveBlueprintDescriptor; }
 
 	/** Get the current descriptor, null if no descriptor is set. */
 	UFUNCTION( BlueprintPure, Category = "BuildGunState|Build" )
@@ -359,4 +363,7 @@ private:
 
 	/** All building locations spawned during this frame. Will be cleared at the start of every new frame to avoid spawning multiple buildings at the same location. */
 	TArray<FVector> mConstructionLocationDuringFrame;
+
+	UPROPERTY()
+	UFGBlueprintDescriptor* mActiveBlueprintDescriptor;
 };

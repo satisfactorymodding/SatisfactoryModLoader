@@ -70,6 +70,7 @@ void AFGPlayerController::CopyPresetHotbarToCurrentHotbar(int32 presetHotbarInde
 void AFGPlayerController::SetRecipeShortcutOnIndex(TSubclassOf<  UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex){ }
 void AFGPlayerController::SetCustomizationShortcutOnIndex(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
 void AFGPlayerController::SetEmoteShortcutOnIndex(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
+void AFGPlayerController::SetBlueprintShortcutOnIndex(const FString& blueprintName, int32 onIndex){ }
 void AFGPlayerController::RemovePlayerColorPresetAtIndex(int32 index){ }
 void AFGPlayerController::Server_RemovePlayerColorPresetAtIndex_Implementation(int32 index){ }
 void AFGPlayerController::AddPlayerColorPreset(FText presetName, FLinearColor color){ }
@@ -118,6 +119,7 @@ TSubclassOf< UFGMapArea > AFGPlayerController::GetCurrentMapArea() const{ return
 void AFGPlayerController::OnAreaEnteredServer_Implementation(TSubclassOf< UFGMapArea > newArea){ }
 void AFGPlayerController::OnSecondaryFire(){ }
 void AFGPlayerController::OnBuildGunStateChanged(EBuildGunState newState){ }
+void AFGPlayerController::OnBuildGunRecipeChanged(TSubclassOf<class UFGRecipe> recipe){ }
 void AFGPlayerController::OnPauseGamePressed(){ }
 UFGGameUI* AFGPlayerController::GetGameUI() const{ return nullptr; }
 void AFGPlayerController::PonderRemoveDeadPawn(){ }
@@ -152,6 +154,7 @@ void AFGPlayerController::Server_SetRecipeShortcutOnIndex_Implementation(TSubcla
 bool AFGPlayerController::Server_SetRecipeShortcutOnIndex_Validate(TSubclassOf<class UFGRecipe> recipe, int32 onIndex, int32 onHotbarIndex){ return bool(); }
 void AFGPlayerController::Server_SetCustomizationShortcutOnIndex_Implementation(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
 void AFGPlayerController::Server_SetEmoteShortcutOnIndex_Implementation(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
+void AFGPlayerController::Server_SetBlueprintShortcutOnIndex_Implementation(const FString& blueprintName, int32 onIndex){ }
 void AFGPlayerController::Server_SetHotbarIndex_Implementation(int32 index){ }
 bool AFGPlayerController::Server_SetHotbarIndex_Validate(int32 index){ return bool(); }
 void AFGPlayerController::Server_CreatePresetHotbarFromCurrentHotbar_Implementation(const FText& presetName, int32 iconIndex){ }

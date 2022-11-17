@@ -9,6 +9,7 @@ AFGBeamHologram::AFGBeamHologram() : Super() {
 	this->mCurrentLength = 0.0;
 	this->mBuildStep = EBeamHologramBuildStep::BHBS_Placement;
 	this->mNeedsValidFloor = false;
+	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 }
 void AFGBeamHologram::BeginPlay(){ }
 void AFGBeamHologram::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
@@ -25,6 +26,7 @@ void AFGBeamHologram::GetSupportedBuildModes_Implementation(TArray< TSubclassOf<
 void AFGBeamHologram::ConfigureActor(AFGBuildable* inBuildable) const{ }
 int32 AFGBeamHologram::GetBaseCostMultiplier() const{ return int32(); }
 bool AFGBeamHologram::CanBeZooped() const{ return bool(); }
+bool AFGBeamHologram::CanIntersectWithDesigner(AFGBuildableBlueprintDesigner* designer){ return bool(); }
 void AFGBeamHologram::SerializeConstructMessage(FArchive& ar, FNetConstructionID id){ }
 void AFGBeamHologram::OnPendingConstructionHologramCreated_Implementation(AFGHologram* fromHologram){ }
 void AFGBeamHologram::OnRep_CurrentLength(){ }

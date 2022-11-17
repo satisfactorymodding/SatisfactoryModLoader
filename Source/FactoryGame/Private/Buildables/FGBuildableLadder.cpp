@@ -10,7 +10,6 @@ AFGBuildableLadder::AFGBuildableLadder() : Super() {
 	this->mMeshHeight = 0.0;
 	this->mLadderSegmentMesh = nullptr;
 	this->mMaxSegmentCount = 1;
-	this->mNumSegments = 0;
 	this->mClearanceBox = nullptr;
 	this->mFrontLadderComponent = CreateDefaultSubobject<UFGLadderComponent>(TEXT("Front Ladder Component"));
 	this->mBackLadderComponent = CreateDefaultSubobject<UFGLadderComponent>(TEXT("Back Ladder Component"));

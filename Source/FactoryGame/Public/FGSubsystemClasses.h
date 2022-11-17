@@ -51,9 +51,6 @@ public:
 	/** Subsystem that handles the chat messages. */
 	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGChatManager > mChatManagerClass;
-	/** Subsystem that handles the central storage. */
-	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
-	TSubclassOf< class AFGCentralStorageSubsystem > mCentralStorageSubsystemClass;
 	/** Subsystem that handles the map */
 	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGMapManager > mMapManagerClass;
@@ -107,4 +104,7 @@ public:
 	/** Helps scanning of objects */
 	UPROPERTY( config, EditDefaultsOnly, Category = "Subsystem" )
 	TSubclassOf< class AFGScannableSubsystem > mScannableSubsystemClass;
+	/** Responsible for Blueprint related functionality (in game blueprints, ie. templated buildings )*/
+	UPROPERTY( EditDefaultsOnly, Category = "Subsystem" )
+	TSubclassOf< class AFGBlueprintSubsystem > mBlueprintSubsystem;
 };

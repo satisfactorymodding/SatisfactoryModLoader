@@ -34,7 +34,6 @@ AFGBuildableRailroadTrack::AFGBuildableRailroadTrack() : Super() {
 	this->mConnections.Add(CreateDefaultSubobject<UFGRailroadTrackConnectionComponent>(TEXT("TrackConnection1")));
 	this->mIsOwnedByPlatform = false;
 	this->mTrackGraphID = -1;
-	this->mSignalBlockID = 0;
 	this->mBlockVisualizationMesh = nullptr;
 	this->mHologramClass = AFGRailroadTrackHologram::StaticClass();
 	this->mSplineComponent->SetupAttachment(RootComponent);

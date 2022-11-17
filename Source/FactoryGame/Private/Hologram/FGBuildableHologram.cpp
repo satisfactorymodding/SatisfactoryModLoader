@@ -34,7 +34,7 @@ void AFGBuildableHologram::ScrollRotate(int32 delta, int32 step){ }
 void AFGBuildableHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
 AActor* AFGBuildableHologram::Construct(TArray< AActor* >& out_children, FNetConstructionID netConstructionID){ return nullptr; }
 void AFGBuildableHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
-bool AFGBuildableHologram::ShouldBuildableBeConsideredForGuidelines( AFGBuildable* buildable) const{ return bool(); }
+bool AFGBuildableHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 bool AFGBuildableHologram::AreConnectionsAlignedForGuidelines( UFGConnectionComponent* connection,  UFGConnectionComponent* otherConnection, const FVector& connectionOffset, float allowedAngleDeviation) const{ return bool(); }
 bool AFGBuildableHologram::IsClearPathForGuidelines(const FVector& start, const FVector& end, TSet<  AActor* > excludedActors) const{ return bool(); }
 void AFGBuildableHologram::SweepForNearbyGuidelines(const FVector& hologramLocation, TArray< FFGHologramGuidelineData >& out_guidelineData, float allowedAngleDeviation) const{ }

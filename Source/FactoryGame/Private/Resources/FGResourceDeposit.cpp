@@ -6,12 +6,8 @@
 AFGResourceDeposit::AFGResourceDeposit() : Super() {
 	this->mResourceDepositPackage.DropChance = 0.0;
 	this->mResourceDepositPackage.ResourceClass = nullptr;
-	this->mResourceDepositPackage.MinAmount = 0;
-	this->mResourceDepositPackage.MaxAmount = 0;
-	this->mResourceDepositPackage.MiningAmount = 0;
 	this->mResourceDepositTableIndex = -1;
 	this->mIsEmptied = false;
-	this->mMineAmount = 0;
 	this->mHasInitializedVisuals = false;
 	this->mDepositMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DepositMesh"));
 	this->mOverrideResourceClass = nullptr;

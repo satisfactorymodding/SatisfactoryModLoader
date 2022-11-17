@@ -18,6 +18,7 @@ AFGBuildableManufacturer::AFGBuildableManufacturer() : Super() {
 	this->mInputInventory = nullptr;
 	this->mOutputInventory = nullptr;
 	this->mCurrentRecipe = nullptr;
+	this->mCachedRecipe = nullptr;
 	this->mCanChangePotential = true;
 	this->NetDormancy = ENetDormancy::DORM_Initial;
 }
@@ -42,9 +43,13 @@ void AFGBuildableManufacturer::Factory_CollectInput_Implementation(){ }
 void AFGBuildableManufacturer::Factory_PullPipeInput_Implementation(float dt){ }
 void AFGBuildableManufacturer::Factory_PushPipeOutput_Implementation(float dt){ }
 void AFGBuildableManufacturer::Factory_TickProducing(float dt){ }
+void AFGBuildableManufacturer::OnRep_ReplicationDetailActor(){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_InputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_InputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_OutputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
+void AFGBuildableManufacturer::InvalidateCacheCanProduce_OutputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded){ }
 void AFGBuildableManufacturer::CreateInventories(){ }
 void AFGBuildableManufacturer::OnRep_CurrentRecipe(){ }
-void AFGBuildableManufacturer::OnRep_ReplicationDetailActor(){ }
 void AFGBuildableManufacturer::GetInputInventoryItems(TArray< FInventoryStack >& out_items) const{ }
 void AFGBuildableManufacturer::ClearInputInventoryItems(){ }
 void AFGBuildableManufacturer::GetOutputInventoryItems(TArray< FInventoryStack >& out_items){ }

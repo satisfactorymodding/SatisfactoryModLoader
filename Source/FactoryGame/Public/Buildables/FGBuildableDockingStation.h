@@ -178,9 +178,8 @@ protected:
 
 	// Begin AFGBuildableFactory interface
 	virtual bool CanProduce_Implementation() const override;
-	// End AFGBuildableFactory interface
-
 	virtual void OnRep_ReplicationDetailActor() override;
+	// End AFGBuildableFactory interface
 
 	class AFGReplicationDetailActor_DockingStation* GetCastRepDetailsActor() const;
 
@@ -204,8 +203,8 @@ protected:
 	 */
 	UFUNCTION()
 	bool FilterFuelClasses( TSubclassOf< UObject > object, int32 idx ) const;
+	
 private:
-
 	void EnsureInfoCreated();
 
 	/** Loads fuel into the docked vehicles inventory.

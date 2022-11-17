@@ -9,14 +9,16 @@
 #include "Buildables/FGBuildable.h"
 #include "Components/SplineComponent.h"
 #include "FGSignificanceInterface.h"
+#include "FGSplineBuildableInterface.h"
 #include "FGBuildablePipeBase.generated.h"
 
 
+class UFGPipeConnectionComponentBase;
 /**
  * Pipeline for transferring liquid and gases to factory buildings.
  */
 UCLASS()
-class FACTORYGAME_API AFGBuildablePipeBase : public AFGBuildable, public IFGSignificanceInterface
+class FACTORYGAME_API AFGBuildablePipeBase : public AFGBuildable, public IFGSignificanceInterface, public IFGSplineBuildableInterface
 {
 	GENERATED_BODY()
 public:
@@ -67,12 +69,17 @@ public:
 	/* Helpers for finding locations on the pathing spline */
 	virtual float FindOffsetClosestToLocation( const FVector& location ) const;
 	virtual void GetLocationAndDirectionAtOffset( float offset, FVector& out_location, FVector& out_direction ) const;
-	
-	/** Get the spline data for this pipe. */
-	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Pipe" )
-    FORCEINLINE TArray< FSplinePointData > GetSplineData() const { return mSplineData; };
 
+	// Begin IFGSplineBuildableInterface
+	TArray< FSplinePointData > GetSplinePointData() { return mSplineData; };
+	float GetMeshLength() { return mMeshLength; }
+	FVector GetCollisionExtent() override { return COLLISION_EXTENT; }
+	float GetCollisionSpacing() override { return COLLISION_SPACING; }
+	FVector GetCollisionOffset() override { return COLLISION_OFFSET; }
+	// End IFGSplineBuildableInterface
+	
 	FORCEINLINE TArray< class AFGBuildablePassthrough* > GetSnappedPassthroughs() { return mSnappedPassthroughs; }
+
 
 protected:
 	/**
@@ -135,6 +142,11 @@ private:
 
 	/** Is this buildable significant, i.e. is within significance range */
 	bool mIsSignificant;
+
+	// Collision Constants. These used to be magic numbers in the .cpp but were moved here so they could be accessed via the SplineBuildableInterface
+	static inline const FVector COLLISION_EXTENT = FVector( 40.0f, 80.f , 80.f );
+	static inline const float COLLISION_SPACING =  80.f;
+	static inline const FVector COLLISION_OFFSET = FVector( 0.f, 0.f, 0.f );
 };
 
 

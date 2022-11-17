@@ -33,10 +33,9 @@ public:
 	virtual void LostSignificance_Native() override;
 	virtual float GetSignificanceRange() override;
 	// End SignificanceInterface
-
-private:
-	void UpdateVisuals();
 	
+	void UpdateVisuals( float Dt );
+
 protected:
 	/** Mesh for the indicator. */
 	UPROPERTY( VisibleAnywhere )
@@ -49,6 +48,10 @@ private:
 
 	/** Cached fluid type. */
 	TSubclassOf< UFGItemDescriptor > mFluidDescriptor;
+	
+	UPROPERTY()
+	UFGItemDescriptor* mFluidDescriptorCDO;
+	
 	/** Cached flow and content values used for smoothing. */
 	float mSmoothedContent = 0.f;
 	float mSmoothedFlow = 0.f;

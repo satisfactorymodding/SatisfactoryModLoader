@@ -63,7 +63,7 @@ public:
 	bool mGiveCheatSchematics;
 
 	UPROPERTY( EditAnywhere, config, Category = "Starting Resources/Cheats" )
-	TEnumAsByte<ECreatureHostility> mSetCreatureHostility;
+	EPlayerHostilityMode mSetCreatureHostility;
 	
 };
 
@@ -98,6 +98,9 @@ public:
 	UPROPERTY( EditAnywhere, config, Category = Game, meta = (
 		ToolTip = "Disables HUD, playerFOV" ) )
 	bool mTrailerMode;
+
+	UPROPERTY( EditAnywhere, config, Category = Game, meta = ( ToolTip = "Enable this if you want the welcome pioneer logo to show when starting a game in editor" ) )
+	bool mShowFicsitSplashWidget;
 	
 	UPROPERTY( EditAnywhere, config, Category = Focus, meta = (
 		ToolTip = "Should widgets grab focus back on focus lost in PIE. Default is off to avoid intrusive behaviour when trying to work. This is a local change only" ) )

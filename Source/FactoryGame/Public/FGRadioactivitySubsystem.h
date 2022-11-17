@@ -313,13 +313,17 @@ private:
 
 	TQueue< FSetEmitterIDArray, EQueueMode::Mpsc > mGroupedEmittersToSet;
 
-	/** All actors that can take damage from radiation. */
+	/** All actors that can receive radiation. */
+	UPROPERTY()
+	TArray< class AActor* > mPotentiallyAffectedActors;
+	/** All actors that should receive radiation. */
 	UPROPERTY()
 	TArray< class AActor* > mAffectedActors;
 
 	/** All actors cached locations and exposures to radiation, this becomes invalid when a pawn is added/removed. */
 	TArray< FVector > mCachedLocations;
 	TArray< float > mCachedExposures;
+	TArray< FVector > mCachedDirections;
 
 	/** The max accumulated intensity that can be registered from radioactive emitters */
 	float mMaxIntensity;

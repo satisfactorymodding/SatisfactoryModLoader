@@ -8,9 +8,7 @@
 #include "FGSaveInterface.h"
 #include "FGVehicleSubsystem.generated.h"
 
-#if UE_BUILD_SHIPPING == 0
-#define DEBUG_SELF_DRIVING
-#endif
+#define DEBUG_SELF_DRIVING ( 0 && ( UE_BUILD_SHIPPING == 0 ) )
 
 UCLASS( BlueprintType )
 class FACTORYGAME_API AFGSavedWheeledVehiclePath : public AInfo, public IFGSaveInterface
@@ -45,30 +43,51 @@ protected:
 	UPROPERTY( SaveGame )
 	TSubclassOf< class AFGWheeledVehicle > mOriginalVehicleType;
 
+	/**
+	 * The saved path.
+	 */
 	UPROPERTY( SaveGame, Replicated, BlueprintReadOnly )
 	class AFGDrivingTargetList* mTargetList;
 
+	/**
+	 * The number of vehicles sharing this path at the moment.
+	 */
 	UPROPERTY( Replicated, BlueprintReadOnly )
 	int mUserCount = 0;
 
+	/**
+	 * Are there any vehicles using this path at the moment?
+	 */
 	UPROPERTY( Replicated, BlueprintReadOnly )
 	bool mIsInUse = false;
 
+	/**
+	 * The distance from the vehicle currently occupied by the player to the closest node in the path.
+	 */
 	UPROPERTY( BlueprintReadOnly )
 	float mDistanceFromVehicle = 0.0f;
 
+	/**
+	 * Is the path in use by the vehicle currently occupied by the player?
+	 */
 	UPROPERTY( BlueprintReadOnly )
 	bool mIsInUseByThisVehicle = false;
 
+	/**
+	 * The amount of fuel of type mFuelType ideally consumed by a vehicle in one trip around this path.
+	 */
 	UPROPERTY( BlueprintReadOnly )
 	float mFuelConsumptionPerTrip = 0.0f;
 
+	/**
+	 * The fuel type used to express the fuel consumption in mFuelConsumptionPerTrip.
+	 */
 	UPROPERTY( BlueprintReadOnly )
 	TSubclassOf< class UFGItemDescriptor > mFuelType;
 };
 
 /**
- * 
+ * Subsystem for all vehicles, mainly used for wheeled vehicles.
  */
 UCLASS( Blueprintable, hidecategories = ( Actor, Input, Replication, Rendering, "Actor Tick" ) )
 class FACTORYGAME_API AFGVehicleSubsystem : public AFGSubsystem, public IFGSaveInterface
@@ -76,14 +95,76 @@ class FACTORYGAME_API AFGVehicleSubsystem : public AFGSubsystem, public IFGSaveI
 	GENERATED_BODY()
 
 public:
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 	static int GetDebugLevel();
 	static void SetDebugLevel( int level );
 	static int GetDebugTextLevel();
 	static void SetDebugTextLevel( int level );
 	static int GetVehicleDeadlocksDebug();
 	static void SetVehicleDeadlocksDebug( int level );
+	static int GetVehicleLevelCacheDebug();
+	static void VehicleLevelCacheDebug( int level );
 #endif
+
+	struct TileLevelData;
+
+	/**
+	 * An entry into the level-data cache describing a cave level. The entries are always present, whether the cave is loaded or not.
+	 */
+	struct CaveLevelData
+	{
+		/**
+		 * The name of the cave.
+		 */
+		FString name;
+
+		/**
+		 * The bounds of the cave.
+		 */
+		FBox bounds = FBox( ForceInit );
+
+		/**
+		 * The level object. Non-null if the level is loaded.
+		 */
+		ULevel* level = nullptr;
+
+		/**
+		 * All tiles that this cave touches.
+		 */
+		TArray< TileLevelData* > tiles;
+
+		CaveLevelData( FString name, FBox bounds ) : name( name ), bounds( bounds ) {}
+
+		bool IsLoaded() const { return level && level->bIsVisible; }
+	};
+
+	/**
+	 * An entry into the level-data cache describing a tile level. The entries are always present, whether the tile is loaded or not.
+	 */
+	struct TileLevelData
+	{
+		/**
+		 * The name of the tile.
+		 */
+		FString name;
+
+		/**
+		 * The bounds of the tile.
+		 */
+		FBox bounds = FBox( ForceInit );
+
+		/**
+		 * The level object. Non-null if the level is loaded.
+		 */
+		ULevel* level = nullptr;
+
+		/**
+		 * All caves that touch this tile.
+		 */
+		TArray< CaveLevelData* > caves;
+
+		bool IsLoaded() const { return level && level->bIsVisible; }
+	};
 
 	AFGVehicleSubsystem();
 
@@ -102,6 +183,7 @@ public:
 
 	// Begin AActor interface
 	virtual void BeginPlay() override;
+	virtual void EndPlay( const EEndPlayReason::Type EndPlayReason ) override;
 	virtual void Tick( float dt ) override;
 	// End AActor interface
 
@@ -174,8 +256,6 @@ public:
 	void UpdateTargetList( AFGDrivingTargetList* targetList );
 	void UpdateTargetPoints();
 
-	void FindTouchedTargets( class AFGWheeledVehicleInfo* vehicle, class AFGTargetPoint* target, const class USplineComponent* path, float segmentLength, float progresStart, float collisionAvoidanceDistance, TSet< TWeakObjectPtr< class AFGTargetPoint > >& claimTargets, TSet< TWeakObjectPtr< class AFGTargetPoint > >& essentialClaimTargets, TArray< FVector >& searchPoints, FVector& segmentCenter );
-
 	bool IsTheChosenWheeledVehicle( const class AFGWheeledVehicleInfo* vehicle ) const { return mTheChosenWheeledVehicle == vehicle; }
 	bool TryToBeTheChosenWheeledVehicle( class AFGWheeledVehicleInfo* vehicle );
 	bool TryToResolveEasyDeadlock( class AFGWheeledVehicleInfo* vehicle );
@@ -194,11 +274,16 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Vehicle" )
 	void OnThereBeDeadlocks();
 
+	bool FindSurroundingLevels( const FVector& location, TArray< TileLevelData* >& surroundingTiles, TArray< CaveLevelData* >& surroundingCaves );
+
 private:
+	void BuildLevelCache();
+
+	void DrawLevelCacheDebug();
+	void DrawLevelDebug( const FString& name, const FBox& bounds, FColor color );
+
 	void OnLevelAddedToWorld( ULevel* level, UWorld* world );
 	void OnLevelRemovedFromWorld( ULevel* level, UWorld* world );
-
-	void AddLevel( ULevel* level );
 
 	using WheeledVehicleDeadlock = TSet< TWeakObjectPtr< AFGWheeledVehicleInfo > >;
 	void AddHardDeadlock( int deadlockId, const WheeledVehicleDeadlock& deadlock );
@@ -240,13 +325,25 @@ private:
 	UPROPERTY()
 	TArray< class AFGBuildableDockingStation* > mDockingStations;
 
+	/**
+	 * All the paths that are saved by players
+	 */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< AFGSavedWheeledVehiclePath* > mSavedPaths;
 
+	/**
+	 * Is this subsystem ready to use yet?
+	 */
 	bool mIsInitialized = false;
 
+	/**
+	 * All the paths that exist.
+	 */
 	TArray< class AFGDrivingTargetList* > mTargetLists;
 
+	/**
+	 * All the target points placed in the world.
+	 */
 	TArray< class AFGTargetPoint* > mTargetPoints;
 
 	/**
@@ -260,22 +357,51 @@ private:
 	class AFGWheeledVehicleInfo* mTheChosenWheeledVehicle;
 
 	using DeadlockMap = TMap< int, WheeledVehicleDeadlock >;
+	/**
+	 * Map to all deadlocks that have been detected, but have not yet been checked if an automatic resolution can be found for them.
+	 */
 	DeadlockMap mDeadlocks;
+	/**
+	 * Map to all deadlocks that have been deemed not automatically resolvable.
+	 */
 	DeadlockMap mHardDeadlocks;
 
 	int mDeadlockIdCounter = 0;
 	int mResolvedEasyDeadlockCount = 0;
 
+	/**
+	 * Is deadlock-detection presently enabled?
+	 */
 	bool mMayDoDeadlockDetection = false;
 
+	/**
+	 * The index into mWheeledVehicles of the vehicle that is currently being checked if it's lost. Lost meaning hovering somewhere under the landscape.
+	 */
 	int mLostVehicleCandidateIndex = 0;
 
+	/**
+	 * The earliest time when the next deadlock-warning message can be displayed. To avoid message spamming.
+	 */
 	float mEarliestDeadlockWarningTime = -BIG_NUMBER;
 
-	TSet< ULevel* > mLoadedTiles;
-	TSet< ULevel* > mLoadedCaves;
+	/**
+	 * The tile structure of the world.
+	 */
+	static constexpr int tileXCount = 7;
+	static constexpr int tileYCount = 6;
 
-#ifdef DEBUG_SELF_DRIVING
+	/**
+	 * A level-data cache for tiles. Built in BeginPlay, after which it contains entries for all tiles.
+	 */
+	TileLevelData mTileLevelCache[ tileXCount ][ tileYCount ];
+	
+	/**
+	 * A level-data cache for caves. Built in BeginPlay, after which it contains entries for all caves.
+	 */
+	using CaveLevelMap = TMap< FString, CaveLevelData >;
+	CaveLevelMap mCaveLevelCache;
+
+#if DEBUG_SELF_DRIVING
 	float mDebugSimulationDistance = 0.0f;
 	bool mIncreaseDebugSimulationDistance = false;
 #endif

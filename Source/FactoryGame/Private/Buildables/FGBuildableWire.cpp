@@ -14,6 +14,8 @@ AFGBuildableWire::AFGBuildableWire() : Super() {
 	this->mConnections[1] = nullptr;
 	this->mLocations[0] = FVector::ZeroVector;
 	this->mLocations[1] = FVector::ZeroVector;
+	this->mCachedRelativeLocations[0] = FVector::ZeroVector;
+	this->mCachedRelativeLocations[1] = FVector::ZeroVector;
 	this->mHologramClass = AFGWireHologram::StaticClass();
 	this->mDismantleEffectClassName = FSoftClassPath("None");
 	this->mBuildEffectClassName = FSoftClassPath("/Game/FactoryGame/Buildable/Factory/-Shared/BP_MaterialEffect_WireBuild.BP_MaterialEffect_WireBuild_C");
@@ -35,6 +37,7 @@ void AFGBuildableWire::Disconnect(){ }
 void AFGBuildableWire::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGBuildableWire::UpdateWireMesh(){ }
 bool AFGBuildableWire::Connect( UFGCircuitConnectionComponent* first,  UFGCircuitConnectionComponent* second){ return bool(); }
+void AFGBuildableWire::PostSerializedFromBlueprint(){ }
 bool AFGBuildableWire::IsConnected() const{ return bool(); }
 void AFGBuildableWire::OnRep_Locations(){ }
 FName AFGBuildableWire::mWireMeshTag = FName();

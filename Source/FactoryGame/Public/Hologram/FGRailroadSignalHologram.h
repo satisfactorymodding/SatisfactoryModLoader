@@ -24,6 +24,9 @@ public:
 
 	// Begin AFGHologram Interface
 	virtual void SetHologramLocationAndRotation( const FHitResult& hitResult ) override;
+	virtual bool IsValidHitResult( const FHitResult& hitResult ) const override;
+	virtual AActor* GetUpgradedActor() const override;
+	virtual bool TryUpgrade( const FHitResult& hitResult ) override;
 	// End AFGHologram Interface
 
 protected:
@@ -36,4 +39,8 @@ private:
 	/** The track connection we snapped to. */
 	UPROPERTY()
 	class UFGRailroadTrackConnectionComponent* mSnappedConnection;
+
+	/** If we upgrade a signal to another type of signal, this is the signal we are replacing. */
+	UPROPERTY()
+	class AFGBuildableRailroadSignal* mUpgradeTarget;
 };

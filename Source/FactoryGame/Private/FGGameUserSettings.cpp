@@ -38,6 +38,12 @@ int32 UFGGameUserSettings::GetDefaultPostProcessQualitySetting(FString settingNa
 void UFGGameUserSettings::RefreshNetworkQualityValues(){ }
 void UFGGameUserSettings::AddCustomActionMapping(FFGKeyMapping newMapping){ }
 void UFGGameUserSettings::RemoveAllCustomActionMappings(){ }
+FVariant UFGGameUserSettings::GetOptionValue(const FString& strId) const{ return FVariant(); }
+void UFGGameUserSettings::ForceSetOptionValue(const FString& strId, const FVariant& variant, const UObject* instigator){ }
+void UFGGameUserSettings::SubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate){ }
+void UFGGameUserSettings::UnsubscribeToOptionUpdate(const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate){ }
+void UFGGameUserSettings::ApplyChanges(){ }
+void UFGGameUserSettings::ResetAllSettingsToDefault(){ }
 bool UFGGameUserSettings::GetBoolOptionValue(const FString& cvar) const{ return bool(); }
 bool UFGGameUserSettings::GetBoolUIDisplayValue(const FString& cvar) const{ return bool(); }
 void UFGGameUserSettings::SetBoolOptionValue(const FString& cvar, bool value){ }

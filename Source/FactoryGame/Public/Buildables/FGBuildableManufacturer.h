@@ -153,7 +153,20 @@ protected:
 	virtual void Factory_PullPipeInput_Implementation( float dt ) override;
 	virtual void Factory_PushPipeOutput_Implementation( float dt ) override;
 	virtual void Factory_TickProducing( float dt ) override;
+	virtual void OnRep_ReplicationDetailActor() override;
 	// End AFGBuildableFactory interface
+
+	UFUNCTION()
+	void InvalidateCacheCanProduce_InputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
+	
+	UFUNCTION()
+	void InvalidateCacheCanProduce_InputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
+	
+	UFUNCTION()
+	void InvalidateCacheCanProduce_OutputItemAdded(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
+	
+	UFUNCTION()
+	void InvalidateCacheCanProduce_OutputItemRemoved(TSubclassOf< UFGItemDescriptor > itemClass, int32 numAdded);
 
 	/** Creates inventories needed for the manufacturer */
 	virtual void CreateInventories();
@@ -161,8 +174,6 @@ protected:
 	/** Called when NewRecipe is replicated */
 	UFUNCTION()
 	virtual void OnRep_CurrentRecipe();
-
-	virtual void OnRep_ReplicationDetailActor() override;
 
 	/** Read the items in the input inventory. */
 	void GetInputInventoryItems( TArray< FInventoryStack >& out_items ) const;
@@ -250,6 +261,14 @@ protected:
 	UPROPERTY( SaveGame, Replicated, ReplicatedUsing = OnRep_CurrentRecipe, Meta = (NoAutoJson = true) )
 	TSubclassOf< class UFGRecipe > mCurrentRecipe;
 
+	/** Cached Recipe CDO to reduce calls.*/
+	UPROPERTY()
+	const UFGRecipe* mCachedRecipe;
+
+	/* Updated once an item is removed from the input inventory.*/
+	bool mCachedCanProduce;
+
+	bool bCachedHasOutputSpace;
 private:
 	class AFGReplicationDetailActor_Manufacturing* GetCastRepDetailsActor() const { return Cast<AFGReplicationDetailActor_Manufacturing>( mReplicationDetailActor ); };
 };

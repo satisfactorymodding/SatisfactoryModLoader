@@ -28,7 +28,7 @@ public:
 	virtual bool Factory_GrabOutput_Implementation( class UFGFactoryConnectionComponent* connection, FInventoryItem& out_item, float& out_OffsetBeyond, TSubclassOf< UFGItemDescriptor > type ) override;
 	// End Factory Interface
 
-	bool IsEventValid() const;
+	FORCEINLINE bool IsEventValid() const { return mIsEventActive; }
 
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Factory Simple Producer" )
@@ -43,4 +43,7 @@ protected:
 private:
 	float mTimeSinceLastGrab;
 
+	/* Is selected event the same as assigned in mEventType, when the event that is assigned is the same
+	 * it will be true, if there is no event assigned it true too */
+	bool mIsEventActive = true;
 };

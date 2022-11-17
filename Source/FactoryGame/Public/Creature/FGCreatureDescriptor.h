@@ -19,10 +19,12 @@ class FACTORYGAME_API UFGCreatureDescriptor : public UFGItemDescriptor
 	virtual UTexture2D* Internal_GetSmallIcon() const override;
 	virtual UTexture2D* Internal_GetBigIcon() const override;
 
+public:
 	/** The creature this descriptor stores information about */
-	UPROPERTY( EditDefaultsOnly, Category = "Creature", meta = ( AddAutoJSON = true ) )
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, Category = "Creature", meta = ( AddAutoJSON = true ) )
 	TSubclassOf< class AFGCreature > mCreatureClass;
 
+protected:
 	/** Small icon of the creature when arachnophobia mode is active, always in memory */
 	UPROPERTY( EditDefaultsOnly, Category="UI", meta = ( AddAutoJSON = true ) )
 	UTexture2D* mSmallIconArachnophobiaMode;

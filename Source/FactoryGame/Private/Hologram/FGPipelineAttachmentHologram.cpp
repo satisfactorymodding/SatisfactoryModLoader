@@ -27,7 +27,7 @@ void AFGPipelineAttachmentHologram::SetHologramLocationAndRotation(const FHitRes
 bool AFGPipelineAttachmentHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
 float AFGPipelineAttachmentHologram::GetHologramHoverHeight() const{ return float(); }
 void AFGPipelineAttachmentHologram::GetIgnoredClearanceActors(TArray< AActor* >& ignoredActors) const{ }
-bool AFGPipelineAttachmentHologram::ShouldBuildableBeConsideredForGuidelines( AFGBuildable* buildable) const{ return bool(); }
+bool AFGPipelineAttachmentHologram::ShouldActorBeConsideredForGuidelines( AActor* actor) const{ return bool(); }
 void AFGPipelineAttachmentHologram::ScrollRotate(int32 delta, int32 step){ }
 int32 AFGPipelineAttachmentHologram::GetRotationStep() const{ return int32(); }
 void AFGPipelineAttachmentHologram::ConfigureComponents( AFGBuildable* inBuildable) const{ }

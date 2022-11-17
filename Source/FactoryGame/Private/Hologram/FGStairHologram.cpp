@@ -7,5 +7,6 @@ AFGStairHologram::AFGStairHologram() : Super() {
 }
 void AFGStairHologram::BeginPlay(){ }
 bool AFGStairHologram::TrySnapToActor(const FHitResult& hitResult){ return bool(); }
+void AFGStairHologram::AdjustForGround(FVector& out_adjustedLocation, FRotator& out_adjustedRotation){ }
 void AFGStairHologram::CheckValidPlacement(){ }
 bool AFGStairHologram::IsHologramIdenticalToBuildable( AFGBuildable* buildable, const FVector& hologramLocationOffset) const{ return bool(); }

@@ -82,7 +82,7 @@ public:
 	* @return - true if the resource is present OR if a supplemental resource is not needed. False otherwise.
 	*/
 	UFUNCTION( BlueprintPure, Category = "Power" )
-	bool HasSuppleentalResource() const;
+	bool HasSupplementalResource() const;
 
 	/**
 	 * Returns true if this generator requires a supplemental resource to run
@@ -131,33 +131,31 @@ public:
 	FORCEINLINE TArray< TSoftClassPtr< class UFGItemDescriptor > > GetDefaultFuelClasses() const { return mDefaultFuelClasses; }
 
 protected:
+	// Begin FGBuildableFactory interface
+	virtual void OnRep_ReplicationDetailActor() override;
+	// End FGBuildableFactory interface
+	
+	// Begin AFGBuildableGenerator interface
+    virtual bool CanStartPowerProduction_Implementation() const override;
+    virtual void Factory_StartPowerProduction_Implementation() override;
+    virtual void Factory_StopPowerProduction_Implementation() override;
+    virtual void Factory_TickPowerProduction_Implementation( float dt ) override;
+    // End AFGBuildableGenerator interface
+	
 	/** Try to collect fuel from an input. */
 	void Factory_CollectFuel( float dt );
-
 	/** Try to collect secondary resource from an input ( if one is specified ) */
-	void Factory_CollectSupplimentalResource( float dt );
+	void Factory_CollectSupplementalResource( float dt );
 
 	/** Try load fuel into the burner. */
 	virtual void LoadFuel();
-
 	/** Try to load supplemental resource needed for generating */
 	virtual void LoadSupplemental();
 
-	// Begin AFGBuildableGenerator interface
-	virtual bool CanStartPowerProduction_Implementation() const override;
-	virtual void Factory_StartPowerProduction_Implementation() override;
-	virtual void Factory_StopPowerProduction_Implementation() override;
-	virtual void Factory_TickPowerProduction_Implementation( float dt ) override;
-	// End AFGBuildableGenerator interface
-
-	/** Can we load fuel in to the generator */
-	virtual bool CanLoadFuel( ) const;
-
-	/** Can we load supplemental resources into the generator */
-	virtual bool CanLoadSupplenmental() const;
-
-	virtual void OnRep_ReplicationDetailActor() override;
-
+	/** Can we load fuel in to the generator. Only call this on server. */
+	virtual bool CanLoadFuel() const;
+	/** Can we load supplemental resources into the generator. Only call this on server. */
+	virtual bool CanLoadSupplemental() const;
 
 private:
 	/**
@@ -170,8 +168,7 @@ private:
 	/** Set up the fuel inventory when replicated */
 	UFUNCTION()
 	void OnRep_FuelInventory();
-
-
+	
 	class AFGReplicationDetailActor_GeneratorFuel* GetCastRepDetailsActor() const;
 
 protected:
@@ -181,11 +178,11 @@ protected:
 	UPROPERTY()
 	class UFGReplicationDetailInventoryComponent* mFuelInventoryHandler;
 
-	/** Fuel classes this machine can run on. Leave empty if it does not run on fuel. */
+	/** Kept for save game compatibility. @see mDefaultFuelClasses */
 	UPROPERTY()
 	TArray< TSubclassOf< class UFGItemDescriptor > > mFuelClasses_DEPRECATED;
 
-	/** Fuel classes this machine can run on. Leave empty if it does not run on fuel. */
+	/** Fuel classes this machine can run on. */
 	UPROPERTY( EditDefaultsOnly, Category = "Power", meta = ( MustImplement = "FGInventoryInterface" ) )
 	TArray< TSoftClassPtr< class UFGItemDescriptor > > mDefaultFuelClasses;
 
@@ -230,7 +227,7 @@ protected:
 	UPROPERTY( EditDefaultsOnly, Category = "Power" )
 	bool mIsFullBlast;
 
-	/** @todo: Cleanup, this shouldn't need to be replicated, clients should be able to fetch this anyway. Static index of fuel slot? */
+	/** Inventory where fuel is loaded into. */
 	UPROPERTY( SaveGame )
 	class UFGInventoryComponent* mFuelInventory;
 

@@ -6,7 +6,6 @@ AFGSavedWheeledVehiclePath::AFGSavedWheeledVehiclePath() : Super() {
 	this->mPathName = TEXT("");
 	this->mOriginalVehicleType = nullptr;
 	this->mTargetList = nullptr;
-	this->mUserCount = 0;
 	this->mIsInUse = false;
 	this->mDistanceFromVehicle = 0.0;
 	this->mIsInUseByThisVehicle = false;
@@ -23,15 +22,17 @@ void AFGSavedWheeledVehiclePath::GetLifetimeReplicatedProps(TArray< FLifetimePro
 	DOREPLIFETIME(AFGSavedWheeledVehiclePath, mUserCount);
 	DOREPLIFETIME(AFGSavedWheeledVehiclePath, mIsInUse);
 }
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 int AFGVehicleSubsystem::GetDebugLevel(){ return int(); }
 void AFGVehicleSubsystem::SetDebugLevel(int level){ }
 int AFGVehicleSubsystem::GetDebugTextLevel(){ return int(); }
 void AFGVehicleSubsystem::SetDebugTextLevel(int level){ }
 int AFGVehicleSubsystem::GetVehicleDeadlocksDebug(){ return int(); }
 void AFGVehicleSubsystem::SetVehicleDeadlocksDebug(int level){ }
+int AFGVehicleSubsystem::GetVehicleLevelCacheDebug(){ return int(); }
+void AFGVehicleSubsystem::VehicleLevelCacheDebug(int level){ }
 #endif 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 #endif 
 AFGVehicleSubsystem::AFGVehicleSubsystem() : Super() {
 	this->mMaxVehicleIterationsPerTick = 10;
@@ -49,6 +50,7 @@ void AFGVehicleSubsystem::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >
 	DOREPLIFETIME(AFGVehicleSubsystem, mSavedPaths);
 }
 void AFGVehicleSubsystem::BeginPlay(){ }
+void AFGVehicleSubsystem::EndPlay(const EEndPlayReason::Type EndPlayReason){ }
 void AFGVehicleSubsystem::Tick(float dt){ }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UWorld* world){ return nullptr; }
 AFGVehicleSubsystem* AFGVehicleSubsystem::Get(UObject* worldContext){ return nullptr; }
@@ -78,16 +80,18 @@ float AFGVehicleSubsystem::CalculateStraightDistanceFromPrevious( AFGTargetPoint
 void AFGVehicleSubsystem::UpdateTargetLists(){ }
 void AFGVehicleSubsystem::UpdateTargetList(AFGDrivingTargetList* targetList){ }
 void AFGVehicleSubsystem::UpdateTargetPoints(){ }
-void AFGVehicleSubsystem::FindTouchedTargets( AFGWheeledVehicleInfo* vehicle,  AFGTargetPoint* target, const  USplineComponent* path, float segmentLength, float progresStart, float collisionAvoidanceDistance, TSet< TWeakObjectPtr<  AFGTargetPoint > >& claimTargets, TSet< TWeakObjectPtr<  AFGTargetPoint > >& essentialClaimTargets, TArray< FVector >& searchPoints, FVector& segmentCenter){ }
 bool AFGVehicleSubsystem::TryToBeTheChosenWheeledVehicle( AFGWheeledVehicleInfo* vehicle){ return bool(); }
 bool AFGVehicleSubsystem::TryToResolveEasyDeadlock( AFGWheeledVehicleInfo* vehicle){ return bool(); }
 void AFGVehicleSubsystem::ResetBeingTheChosenWheeledVehicle(const  AFGWheeledVehicleInfo* oldChosenVehicle, bool moveToHardDeadlocks){ }
 void AFGVehicleSubsystem::RemoveDeadlock(int deadlockId){ }
 void AFGVehicleSubsystem::ResetAllDeadlocks(){ }
 void AFGVehicleSubsystem::JoinDeadlock(int deadlockId,  AFGWheeledVehicleInfo* vehicle){ }
+bool AFGVehicleSubsystem::FindSurroundingLevels(const FVector& location, TArray< TileLevelData* >& surroundingTiles, TArray< CaveLevelData* >& surroundingCaves){ return bool(); }
+void AFGVehicleSubsystem::BuildLevelCache(){ }
+void AFGVehicleSubsystem::DrawLevelCacheDebug(){ }
+void AFGVehicleSubsystem::DrawLevelDebug(const FString& name, const FBox& bounds, FColor color){ }
 void AFGVehicleSubsystem::OnLevelAddedToWorld(ULevel* level, UWorld* world){ }
 void AFGVehicleSubsystem::OnLevelRemovedFromWorld(ULevel* level, UWorld* world){ }
-void AFGVehicleSubsystem::AddLevel(ULevel* level){ }
 void AFGVehicleSubsystem::AddHardDeadlock(int deadlockId, const WheeledVehicleDeadlock& deadlock){ }
 void AFGVehicleSubsystem::SanitizeDeadlocks(){ }
 void AFGVehicleSubsystem::DetectDeadlocks(){ }

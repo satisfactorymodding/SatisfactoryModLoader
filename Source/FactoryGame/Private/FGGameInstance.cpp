@@ -45,8 +45,9 @@ void UFGGameInstance::InitGameAnalytics(){ }
 void UFGGameInstance::ShutdownGameAnalytics(){ }
 bool UFGGameInstance::InitTelemetry(const FString& gameID, const FString& buildID, const FString& onlinePlatformIdentifier, const FString& onlinePlatformUserID){ return bool(); }
 void UFGGameInstance::ShutdownTelemetry(){ }
-void UFGGameInstance::SubmitGameStartTelemetry(){ }
-void UFGGameInstance::SubmitNetModeTelemetry(UWorld* world){ }
+void UFGGameInstance::SubmitGameStartTelemetry() const{ }
+void UFGGameInstance::SubmitNetModeTelemetry(UWorld* world) const{ }
+void UFGGameInstance::SubmitModTelemetry() const{ }
 void UFGGameInstance::InitEpicOnlineServicesMetrics(){ }
 void UFGGameInstance::ShutdownEpicOnlineServicesMetrics(){ }
 void UFGGameInstance::JoinSession_Internal(){ }

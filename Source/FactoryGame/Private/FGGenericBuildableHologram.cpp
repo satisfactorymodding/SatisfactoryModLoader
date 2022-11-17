@@ -11,7 +11,6 @@ AFGGenericBuildableHologram::AFGGenericBuildableHologram() : Super() {
 	this->mCanSnapToAngularWalls = true;
 	this->mBeamSnappingMode = EBeamSnappingMode::BSM_None;
 	this->mPillarSnappingMode = EPillarSnappingMode::PSM_None;
-	this->mRotationStep = 0;
 	this->mWallSnapOffset = FVector2D::ZeroVector;
 	this->mSnapAxis = EAxis::Z;
 	this->mFoundationSnappingInset = 0.0;

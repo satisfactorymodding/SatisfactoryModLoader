@@ -26,7 +26,6 @@ AFGBuildableJumppad::AFGBuildableJumppad() : Super() {
 	this->mDestinationMeshComponent = nullptr;
 	this->mSplineComponent = nullptr;
 	this->mTrajectoryGravityMultiplier = 1.0;
-	this->mShowTrajectoryCounter = 0;
 	this->mLauncherMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGBuildableJumppad::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {

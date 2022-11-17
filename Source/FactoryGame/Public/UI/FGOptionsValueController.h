@@ -24,7 +24,9 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, BlueprintCallable )
 	void OnRowUnhovered();
 
-	void InitValueController( FOptionRowData optionRowData, UFGDynamicOptionsRow* parentOptionRow );
+	void InitValueController( FOptionRowData optionRowData, UFGDynamicOptionsRow* parentOptionRow, TScriptInterface< class IFGOptionInterface > optionInterface );
+	
+	void InitValueController( class UFGUserSetting* userSetting, UFGDynamicOptionsRow* parentOptionRow, TScriptInterface< class IFGOptionInterface > optionInterface );
 
 	UFUNCTION( BlueprintNativeEvent )
 	bool IsPendingApply();
@@ -58,6 +60,14 @@ public:
 	UFUNCTION( BlueprintCallable )
 	bool ChangeSelection( FText currentKey, bool incrementSelection );
 
+	FString GetSettingIndentifier() const;
+
+	TArray<FIntegerSelection> GetIntegerSelectionValues() const;
+	
+	bool GetBlockLastIndexFromManualSelection() const;
+	
+	EOptionType GetOptionType() const;
+
 protected:
 
 	virtual void NativeConstruct() override;
@@ -65,15 +75,24 @@ protected:
 	UFUNCTION( BlueprintPure, Category = "Option" )
 	bool GetBoolOptionValue();
 
+	UFUNCTION(BlueprintGetter)
+	FOptionRowData GetOptionRowData() const;
+
 protected:
 
-	UPROPERTY( BlueprintReadOnly )
+	UPROPERTY( BlueprintReadOnly, BlueprintGetter = GetOptionRowData )
 	FOptionRowData mOptionRowData;
+
+	UPROPERTY( Transient )
+	UFGUserSetting* mUserSetting;
 	
 	UPROPERTY( BlueprintReadOnly )
 	bool mIsDynamicOption;
 
 	UPROPERTY( BlueprintReadOnly )
 	UFGDynamicOptionsRow* mParentOptionRow;
+
+	UPROPERTY( Transient )
+	TScriptInterface< class IFGOptionInterface > mOptionInterface;
 
 };

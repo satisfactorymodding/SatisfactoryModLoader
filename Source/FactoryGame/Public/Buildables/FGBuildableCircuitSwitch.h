@@ -4,9 +4,12 @@
 
 #include "FactoryGame.h"
 #include "Buildables/FGBuildableCircuitBridge.h"
+#include "FGBuildingTagInterface.h"
+
 #include "FGBuildableCircuitSwitch.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE( FOnCircuitSwitchPropertyChanged );
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams( FOnCircuitSwitchBuildingTagChanged, bool, hasTag, const FString&, tag );
 
 /**
  * Building that connects two circuits, allowing them to act as one single circuit when the switch is turned on.
@@ -38,13 +41,13 @@ public:
 
 	/**
 	 * @returns true if this switch is turned on, false otherwise
-	*/
+	 */
 	UFUNCTION( BlueprintPure, Category = "CircuitSwitch" )
 	bool IsSwitchOn() const { return mIsSwitchOn; }
 	
 	/**
 	 * @returns true if this bridge is connected to two circuits, false otherwise
-	*/
+	 */
 	UFUNCTION( BlueprintPure, Category = "CircuitSwitch" )
 	bool IsSwitchConnected() const { return Super::IsBridgeConnected(); }
 	
@@ -57,24 +60,36 @@ public:
 	FOnCircuitSwitchPropertyChanged mOnIsSwitchOnChanged;
 
 	/**
-	 * Broadcast when this building is connected or disconnected from the circuit
+	 * Broadcast when this building is connected or disconnected from the circuit.
 	 */
 	UPROPERTY( BlueprintAssignable, Category = "CircuitSwitch" )
 	FOnCircuitSwitchPropertyChanged mOnIsConnectedChanged;
 
+	/**
+	 * Broadcast when this building's tag changes, including if it has one.
+	 */
+	UPROPERTY( BlueprintAssignable, Category = "CircuitSwitch" )
+	FOnCircuitSwitchBuildingTagChanged mOnBuildingTagChanged;
+
 protected:
 	/**
-	 * Called when the switch is turned on or off
+	 * Called when the switch is turned on or off.
 	 */
 	UFUNCTION( BlueprintImplementableEvent, Category = "CircuitSwitch" )
-	void IsSwitchOnChanged();
+	void OnIsSwitchOnChanged();
 
 	/**
-	 * Called when this building is connected or disconnected from the circuit
+	 * Called when this building is connected or disconnected from the circuit.
 	 */
 	UFUNCTION( BlueprintImplementableEvent, Category = "CircuitSwitch" )
-	void IsSwitchConnectedChanged();
-
+	void OnIsSwitchConnectedChanged();
+	
+	/**
+	 * Called when this building's tag changes, including if it has one.
+	 */
+	UFUNCTION( BlueprintImplementableEvent, Category = "CircuitSwitch" )
+	void OnBuildingTagChanged( bool hasTag, const FString& tag );
+	
 private:
 	UFUNCTION()
 	void OnRep_IsSwitchOn();

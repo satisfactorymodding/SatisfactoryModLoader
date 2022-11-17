@@ -21,7 +21,16 @@ public:
 	 * Sets up the array that we want to add objects to
 	 **/
 	FSaveCollectorArchive( TArray<class UObject*>& toFill );
+
+	void SetBlacklistedClasses( TArray< TSubclassOf< UObject > >& blacklist )
+	{
+		mBlacklistedClasses.Append( blacklist );
+	}
 	
 	/** Generates objects to the member that was passed in when class was setup */
 	void GenerateSaveObjects( const TArray<class UObject*>& rootSet );
+
+public:
+	/** When generating saves objects ignore objects of these classes. This is for Blueprint serialization */
+	TArray< TSubclassOf< UObject > > mBlacklistedClasses;
 };

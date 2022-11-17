@@ -21,7 +21,6 @@ UFGSchematic::UFGSchematic() : Super() {
 	this->mDescription = INVTEXT("");
 	this->mSchematicCategory = nullptr;
 	this->mMenuPriority = 0.0;
-	this->mTechTier = 0;
 	this->mTimeToComplete = 600.0;
 	this->mSmallSchematicIcon = nullptr;
 	this->mDependenciesBlocksSchematicAccess = false;

@@ -39,16 +39,29 @@ public:
 	/** @return true if this item has a state; otherwise false. */
 	FORCEINLINE bool HasState() const { return ItemState.IsValid(); }
 
-public:
+	FORCEINLINE TSubclassOf< class UFGItemDescriptor > GetItemClass() const { return ItemClass; }
+
+	void SetItemClass(TSubclassOf< class UFGItemDescriptor > NewItemClass );
+
+	FORCEINLINE int32 GetItemStackSize() const { return CachedStackSize; }
+
+	// TODO make private later.
+	/** Cached size of the item */
+	mutable int32 CachedStackSize = INDEX_NONE;
+	
+private:
 	/** The type of item */
 	UPROPERTY( EditAnywhere )
 	TSubclassOf< class UFGItemDescriptor > ItemClass;
 
+
+	
+public:
 	/** Optionally store an actor, e.g. an equipment, so we can remember it's state. */
 	UPROPERTY()
 	FSharedInventoryStatePtr ItemState;
 };
-FORCEINLINE FString VarToFString( FInventoryItem var ){ return FString::Printf( TEXT( "%s: {%s}" ), *VarToFString(var.ItemClass), *VarToFString(var.ItemState) ); }
+FORCEINLINE FString VarToFString( FInventoryItem var ){ return FString::Printf( TEXT( "%s: {%s}" ), *VarToFString(var.GetItemClass()), *VarToFString(var.ItemState) ); }
 
 /** Enable custom serialization of FInventoryItem */
 template<>
@@ -91,8 +104,11 @@ public:
 	/** Number of items in this stack. */
 	UPROPERTY( EditAnywhere, SaveGame )
 	int32 NumItems;
+
+	/* */
+	int32 CachedMaxStackSize = INDEX_NONE;
 };
-FORCEINLINE bool IsValidForLoad( const FInventoryStack& element ){ return element.Item.ItemClass != nullptr; }
+FORCEINLINE bool IsValidForLoad( const FInventoryStack& element ){ return element.Item.GetItemClass() != nullptr; }
 
 template<>
 struct TStructOpsTypeTraits<FInventoryStack> : public TStructOpsTypeTraitsBase2<FInventoryStack>
@@ -417,6 +433,8 @@ public:
 	/** This returns the arbitrary slot size if one is set, otherwise the stack size */
 	UFUNCTION( BlueprintPure, Category = "Slot Size" )
 	int32 GetSlotSize( int32 index, TSubclassOf< UFGItemDescriptor > itemDesc = nullptr ) const;
+	
+	int32 GetSlotSizeForItem( int32 index, TSubclassOf< UFGItemDescriptor > itemDesc = nullptr, const FInventoryItem* Item = nullptr ) const;
 
 	/**
 	 * Set the allowed item type for this slot, can only be one item.
@@ -467,6 +485,9 @@ public:
 	FORCEINLINE bool GetSurpressOnItmeAddedDelegate() const { return mSurpressOnItemAddedDelegateCalls; }
 	FORCEINLINE bool GetSurpressOnItemRemovedDelegate() const { return mSurpressOnItemRemovedDelegateCalls; }
 	
+	UFUNCTION( BlueprintCallable, Category = "Inventory" )
+	class AFGEquipment* GetStackEquipmentActorAtIdx( const int32 index ) const;
+
 protected:
 	/** Used to call OnItemAdded/OnItemRemoved on clients */
 	UFUNCTION()

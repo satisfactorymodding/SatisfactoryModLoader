@@ -34,4 +34,14 @@ namespace SaveSystemConstants
 
 	// Custom name for the save header
 	static const TCHAR HeaderCustomVersionFriendlyName[] = TEXT( "SaveHeaderVersion" );
+
+	/// Blueprint Constants
+	static inline const FString BlueprintBaseDirectory = "blueprints/"; 
+	static inline const FString BlueprintExtension = TEXT(".sbp");
+	static inline const FString BlueprintConfigExtension = TEXT(".sbpcfg");
+	static const TCHAR BlueprintConfigCustomVersionFriendlyName[] = TEXT("BlueprintConfigVersion");
+	static inline const FString PIESessionName = TEXT("_Dev_PIE");
+	static inline const FString PIEClientSessionName = TEXT("_Dev_Client_PIE");
+	static const TCHAR BlueprintHeaderCustomVersionFriendlyName[] = TEXT("BlueprintHeaderVersion");
+
 }

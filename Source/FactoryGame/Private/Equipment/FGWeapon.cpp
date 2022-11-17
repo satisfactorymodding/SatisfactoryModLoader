@@ -18,7 +18,6 @@ AFGWeapon::AFGWeapon() : Super() {
 	this->mWeaponState = EWeaponState::EWS_Unequipped;
 	this->mAutomaticallyReload = false;
 	this->mAutoReloadDelay = 0.5;
-	this->mCurrentAmmoCount = 0;
 	this->mDesiredAmmoClass = nullptr;
 	this->mCurrentAmmunitionClass = nullptr;
 	this->mAttachMagazineToPlayer = false;

@@ -624,6 +624,40 @@ class FACTORYGAME_API UFGCDIdenticalOverlappingBuildable : public UFGConstructDi
 	}
 };
 
+UCLASS()
+class FACTORYGAME_API UFGNotAllowedInBlueprint : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+	
+	UFGNotAllowedInBlueprint()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGNotAllowedInBlueprint", "Hologram cannot be placed in blueprint designer!" );
+	}
+};
+
+
+UCLASS()
+class FACTORYGAME_API UFGIntersectingBlueprintDesigner : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+	
+	UFGIntersectingBlueprintDesigner()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGIntersectingBlueprintDesigner", "Partially overlapping blueprint designer!" );
+	}
+};
+
+UCLASS()
+class FACTORYGAME_API UFGDesignerWorldCommingling : public UFGConstructDisqualifier
+{
+	GENERATED_BODY()
+	
+	UFGDesignerWorldCommingling()
+	{
+		mDisqfualifyingText = LOCTEXT( "UFGDesignerWorldCommingling", "Cannot connect buildables in a designer to world buildables!" );
+	}
+};
+
 // Note the discrepancy between the code spelling "customiZation" vs "customiSation". I changed it here only as this is a LOC key and figured it would be best to have it as the
 // stupid british way of spelling it for the sake of localization. That's right I said it. Its stupid. Also, UE uses the "Z" form so its consistent.
 // Alex: we have En-US as our default locale, though in reality we seem to be producing a mix of US and UK... Changed this to customization since it's what we use in most other places.

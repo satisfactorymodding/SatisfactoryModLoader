@@ -122,11 +122,16 @@ struct FACTORYGAME_API FObjectReferenceDisc
 	/** For comparisons of references */
 	FORCEINLINE bool operator ==( const FObjectReferenceDisc& other ) const { return LevelName == other.LevelName && PathName == other.PathName; }
 
+	bool BlueprintAttemptAutomaticRedirect();
+	
 public:
 	static bool IsModdingModuleLoaded;
-
+	static bool ForceUseRedirects; // Forces the references to use redirected paths (used when loading blueprints as all objects will be redirected)
+	int32 BlueprintRedirectCount = 0;
+	
 private:
 	friend class FArchiveObjectTOCProxy;
+	friend class FBlueprintArchiveObjectTOCProxy;
 	friend UObject* InternalResolve( const FObjectReferenceDisc& reference, UWorld* world, UObject* searchOuter, UObject* outer );
 
 	/**

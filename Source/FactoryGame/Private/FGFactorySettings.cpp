@@ -3,6 +3,7 @@
 #include "FGFactorySettings.h"
 #include "Equipment/FGBuildGun.h"
 #include "Equipment/FGResourceScanner.h"
+#include "FGBlueprintShortcut.h"
 #include "FGBoomBoxPlayer.h"
 #include "FGEmoteShortcut.h"
 #include "FGFactoryCustomizationShortcut.h"
@@ -48,11 +49,10 @@ UFGFactorySettings::UFGFactorySettings() : Super() {
 	this->mRecipeShortcutClass = UFGRecipeShortcut::StaticClass();
 	this->mCustomizationShortcutClass = UFGFactoryCustomizationShortcut::StaticClass();
 	this->mEmoteShortcutClass = UFGEmoteShortcut::StaticClass();
+	this->mBlueprintShortcutClass = UFGBlueprintShortcut::StaticClass();
 	this->mNumHotbars = 2;
 	this->mNumPresetHotbars = 2;
 	this->mNumSlotsPerHotbar = 10;
-	this->mFluidToInventoryStackRate = 0;
-	this->mInventoryStackToFluidRate = 0;
 	this->mAddedPipeProductionPressure = 0.0;
 }
 UAkAudioEvent* UFGFactorySettings::GetRandomConstructionSound(){ return nullptr; }

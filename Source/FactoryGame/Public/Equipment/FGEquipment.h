@@ -94,7 +94,7 @@ public:
 	
 	/**
 	 * Is this equipment equipped.
-	 * @return - true if equiped; otherwise false.
+	 * @return - true if equipped; otherwise false.
 	 */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
 	FORCEINLINE bool IsEquipped() const { return GetInstigator() != nullptr; }
@@ -173,7 +173,7 @@ public:
 	 * @return the adjusted damage
 	 **/
 	UFUNCTION( BlueprintNativeEvent, CustomEventUsing = mHave_AdjustDamage, Category = "Damage" )
-	float AdjustDamage( float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
+	float AdjustDamage( const float damageAmount, const class UDamageType* damageType, class AController* instigatedBy, AActor* damageCauser );
 
 	/** When using this equipment, the character use distance will be increased to this amount. */
 	UFUNCTION( BlueprintPure, Category = "Equipment" )
@@ -191,7 +191,7 @@ public:
 	bool ShouldShowStinger() const;
 
 	/** Sets if this is the first time this was equipped */
-	void SetFirstTimeEquipped( bool firstTime ) { mFirstTimeEquipped = firstTime; }
+	void SetFirstTimeEquipped( const bool firstTime ) { mFirstTimeEquipped = firstTime; }
 
 	/** @return idle pose animation, can be NULL */
 	UFUNCTION( BlueprintPure, Category = "Animation" )
@@ -220,6 +220,15 @@ public:
 	/** Called when the equipment was moved to it's equipment slot (this can happen without necessarily switching to that slot thus equipping the equipment) */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
 	void WasSlottedIn( class AFGCharacterPlayer* holder );
+
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	virtual void GetSupportedConsumableTypes(TArray<TSubclassOf< UFGItemDescriptor >>& out_itemDescriptors) const;
+	
+	UFUNCTION( BlueprintPure, Category = "Equipment" )
+	virtual int GetSelectedConsumableTypeIndex() const;
+	
+	UFUNCTION( BlueprintCallable, Category = "Equipment" )
+	virtual void SetSelectedConsumableTypeIndex( const int selectedIndex );
 	
 protected:
 	/** Was the equipment equipped. */
@@ -230,16 +239,16 @@ protected:
 	void WasUnEquipped();
 
 	/** Add HUD that this equipment needs */
-	void AddEquipmentHUD();
+	void AddEquipmentHUD() const;
 	/** Removes HUD for the equipment */
-	void RemoveEquipmentHUD();
+	void RemoveEquipmentHUD() const;
 
 	/** Sets tick status for actor and all components */
 	void SetEquipmentTicks( bool inTick );
 
 	/** Helper for binding actions and setting their consume status */
 	template< class UserClass >
-	FORCEINLINE void BindActionHelper( const FName ActionName, const EInputEvent KeyEvent, UserClass* Object, typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr Func, bool consumeInput )
+	FORCEINLINE void BindActionHelper( const FName ActionName, const EInputEvent KeyEvent, UserClass* Object, typename FInputActionHandlerSignature::TUObjectMethodDelegate< UserClass >::FMethodPtr Func, const bool consumeInput )
 	{
 		FInputActionBinding& inputAction = InputComponent->BindAction( ActionName, KeyEvent, Object, Func );
 
@@ -255,7 +264,7 @@ protected:
 	UFUNCTION( BlueprintCallable, Category = "Equipment" )
 	bool CanAffordUse() const;
 
-	/** Called if we couldn't afford to use the equipment */
+	/** Called if we could not afford to use the equipment */
 	UFUNCTION( BlueprintNativeEvent, Category = "Equipment" )
 	void DidNotAffordUse();
 

@@ -4,7 +4,6 @@
 
 AFGFloodlightHologram::AFGFloodlightHologram() : Super() {
 	this->mMountingType = EFloodlightHologramMountingType::FHMT_Ground;
-	this->mFixtureAngle = 0;
 	this->mLightFixtureComponent = nullptr;
 	this->mUseGradualFoundationRotations = true;
 }

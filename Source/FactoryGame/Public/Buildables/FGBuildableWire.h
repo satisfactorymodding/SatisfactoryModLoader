@@ -37,6 +37,8 @@ public:
 	/** Location of point 0 or 1 */
 	FORCEINLINE FVector GetLocation( int32 index ) const { return mLocations[ FMath::Min( index, 1  ) ]; }
 
+	FORCEINLINE FVector GetCachedRelativeLocation( int32 index ) const { return mCachedRelativeLocations[ FMath::Min( index, 1  ) ]; }
+
 	/** @return The connection connected at the end of the wire. */
 	UFUNCTION( BlueprintCallable, BlueprintPure = false, Category = "Buildable|Wire" )
 	FORCEINLINE class UFGCircuitConnectionComponent* GetConnection( int32 index ) const { return index == 0 || index == 1 ? mConnections[ index ].Get() : nullptr; }
@@ -64,7 +66,11 @@ public:
 
 	/** Internal helper function to connect this wire. */ //[DavalliusA:Sun/16-02-2020] moved this out as it was needed for upgrades. If there is a reason to hide it, please make that clear, or I won't know why not to expose it.
 	bool Connect( class UFGCircuitConnectionComponent* first, class UFGCircuitConnectionComponent* second );
+	
+	FORCEINLINE UStaticMeshComponent* GetStaticMeshComp() { return mWireMesh; }
 
+	virtual void PostSerializedFromBlueprint() override;
+	
 private:
 
 	/**
@@ -110,4 +116,9 @@ private:
 	/** The two locations this wire span. */
 	UPROPERTY( ReplicatedUsing = OnRep_Locations, Meta = (NoAutoJson = true))
 	FVector mLocations[ 2 ];
+
+	/** Fallback Locations - Used for when we can't rely on connection components existing (noteably in the case of Blueprints) */
+	UPROPERTY()
+	FVector mCachedRelativeLocations[ 2 ]; 
+	
 };

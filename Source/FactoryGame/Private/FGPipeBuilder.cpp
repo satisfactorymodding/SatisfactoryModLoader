@@ -15,7 +15,6 @@ AFGPipeBuilder::AFGPipeBuilder() : Super() {
 	this->mInternalSplineSupport = nullptr;
 	this->mHitResult.bBlockingHit = false;
 	this->mHitResult.bStartPenetrating = false;
-	this->mHitResult.FaceIndex = 0;
 	this->mHitResult.Time = 1.0;
 	this->mHitResult.Distance = 0.0;
 	this->mHitResult.Location.X = 0.0;
@@ -37,7 +36,6 @@ AFGPipeBuilder::AFGPipeBuilder() : Super() {
 	this->mHitResult.TraceEnd.Y = 0.0;
 	this->mHitResult.TraceEnd.Z = 0.0;
 	this->mHitResult.PenetrationDepth = 0.0;
-	this->mHitResult.Item = 0;
 	this->mHitResult.ElementIndex = 0;
 	this->mHitResult.PhysMaterial = nullptr;
 	this->mHitResult.Actor = nullptr;

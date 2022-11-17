@@ -12,11 +12,8 @@ UFGServerObject::UFGServerObject() : Super() {
 	this->BasicSettings.AutoSaveOnDisconnect = false;
 	this->BasicSettings.AutoLoadSessionName = TEXT("");
 	this->Alias = TEXT("");
-	this->QueryPort = 0;
 	this->ServerState = EServerState::Offline;
-	this->mAverageRoundtripTimeMs = 0;
 	this->mServerConsole = TEXT("");
-	this->ServerNetCL = 0;
 	this->ServerConnection = nullptr;
 	this->mWaitingForConsoleResult = false;
 }

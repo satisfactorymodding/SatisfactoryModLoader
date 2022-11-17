@@ -10,6 +10,7 @@
 #include "UI/Message/FGMessageBase.h"
 #include "FGActorRepresentation.h"
 #include "FGHotbarShortcut.h"
+#include "FGCreatureSubsystem.h"
 #include "FGPlayerState.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FOnBuildableConstructedNew, TSubclassOf< class UFGItemDescriptor >, itemDesc );
@@ -145,6 +146,16 @@ struct FShoppingListSettings
 	float Size;
 };
 
+USTRUCT( BlueprintType )
+struct FPlayerRules
+{
+	GENERATED_BODY()
+
+	/** What kind of hostility creatures should have agaisnt this player. */
+	UPROPERTY( SaveGame, BlueprintReadOnly )
+	EPlayerHostilityMode CreatureHostilityMode;
+};
+
 UCLASS()
 class FACTORYGAME_API AFGPlayerState : public APlayerState, public IFGSaveInterface
 {
@@ -200,6 +211,17 @@ public:
 
 	/** get the color data for this player */
 	FORCEINLINE FPlayerColorData GetSlotData() const { return mPlayerColorData; }
+
+	/** Gets the player rules for this player. */
+	UFUNCTION( BlueprintPure, Category="FactoryGame|Rules" )
+	const FPlayerRules& GetPlayerRules() const { return mPlayerRules; }
+
+	/** Used to set the creature hostility against this player. */
+	UFUNCTION( BlueprintCallable, Category="FactoryGame|Rules" )
+	void SetCreatureHostility( EPlayerHostilityMode hostility );
+
+	UFUNCTION( Server, Reliable )
+	void Server_SetCreatureHostility( EPlayerHostilityMode hostility );
 
 	/** Get the unique ID of the user from the online subsystem */
 	UFUNCTION( BlueprintPure, Category="FactoryGame|Networking" )
@@ -335,6 +357,9 @@ public:
 	/** Set the emote shortcut on the index if valid */
 	void SetEmoteShortcutOnIndex( TSubclassOf< class UFGEmote > emote, int32 onIndex );
 
+	/** Set the blueprint shortcut on the index if it's valid */
+	void SetBlueprintShortcutOnIndex( const FString& blueprintName, int32 onIndex );
+
 	/** Get the current value of first time equipped and then sets the value to false. */
 	bool GetAndSetFirstTimeEquipped( class AFGEquipment* equipment );
 
@@ -381,6 +406,10 @@ public:
 	/** Let server set if we only should show affordable recipes in manufacturing widgets */
 	UFUNCTION( Server, Reliable, WithValidation, Category = "FactoryGame|Recipes" )
 	void Server_SetOnlyShowAffordableRecipes( bool enabled );
+
+	/** Get if we should we try to take items from inventory before central storage when building or crafting */
+	UFUNCTION( BlueprintPure, Category = "FactoryGame|CentralStorage" )
+	FORCEINLINE bool GetTakeFromInventoryBeforeCentralStorage() { return true; }
 
 	/** Get the item categories that the user have collapsed in manufacturing widgets  */
 	UFUNCTION( BlueprintPure, Category = "FactoryGame|ItemCategory" )
@@ -572,8 +601,8 @@ public:
 	UFUNCTION( Server, Reliable )
 	void Server_SetWidgetHasBeenOpened( TSubclassOf< class UUserWidget > widget );
 
-	/** Checks if the player state is in the player array. Tried to use IsInactive but it's not updated when a palyer state is loaded an is inactive.
-	 *  And I don't want to start chaning that logic since other things might depend on it. -K2
+	/** Checks if the player state is in the player array. Tried to use IsInactive but it's not updated when a player state is loaded and is inactive.
+	 *  And I don't want to start chancing that logic since other things might depend on it. -K2
 	 */
 	bool IsInPlayerArray();
 
@@ -592,12 +621,21 @@ protected:
 	UFUNCTION()
 	void OnRep_PlayerColorData();
 
+	UFUNCTION()
+	void OnRep_PlayerRules();
+
 private:
 	/** Server function for updating number observed inventory slots */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_UpdateNumObservedInventorySlots();
 
 	void Native_OnPlayerColorDataUpdated();
+
+	void SetupPlayerRules();
+
+	void PushRulesToGameModesSubssytem();
+
+	void OnCreatureHostilityModeUpdated( FString strId, FVariant value );
 
 public:
 	/** Broadcast when a buildable or decor has been constructed. */
@@ -660,6 +698,10 @@ protected:
 	UPROPERTY( ReplicatedUsing=OnRep_PlayerColorData )
 	FPlayerColorData mPlayerColorData;
 
+	/** Gameplay Rules set specifically for this player. */
+	UPROPERTY( SaveGame, ReplicatedUsing=OnRep_PlayerRules )
+	FPlayerRules mPlayerRules;
+
 	/** Pawn we should take control of when rejoining game/loading game */
 	UPROPERTY( SaveGame )
 	class APawn* mOwnedPawn;
@@ -706,7 +748,7 @@ private:
 	/** True if we only should show affordable recipes in manufacturing widgets  */
 	UPROPERTY( SaveGame, Replicated )
 	bool mOnlyShowAffordableRecipes;
-
+	
 	/** The item categories that the user have collapsed in manufacturing widgets  */
 	UPROPERTY( SaveGame, Replicated )
 	TArray< TSubclassOf< class UFGItemCategory > > mCollapsedItemCategories;
@@ -747,7 +789,7 @@ private:
 	UPROPERTY( Transient )
 	TMap< TSubclassOf<UObject>, class UFGFactoryClipboardSettings* > mFactoryClipboard;
 
-	/** Track wheter or not we opened a widget */
+	/** Track whether or not we opened a widget */
 	UPROPERTY( Transient ) 
 	TArray< TSubclassOf< class UUserWidget > > mOpenedWidgetsThisSession;
 	UPROPERTY( SaveGame, Replicated ) 

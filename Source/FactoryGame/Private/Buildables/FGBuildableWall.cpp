@@ -3,7 +3,7 @@
 #include "Buildables/FGBuildableWall.h"
 #include "Hologram/FGWallHologram.h"
 
-AFGBuildableWall::AFGBuildableWall() : Super() {
+AFGBuildableWall::AFGBuildableWall(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mWidth = 0.0;
 	this->mHeight = 0.0;
 	this->mElevation = 0.0;
@@ -13,3 +13,6 @@ AFGBuildableWall::AFGBuildableWall() : Super() {
 	this->mAffectsOcclusion = true;
 }
 void AFGBuildableWall::CalculateLocalSnapOffset(FVector& out_upVector, float& out_length) const{ }
+AFGBuildableWallLightweight::AFGBuildableWallLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mMeshComponentProxy = nullptr;
+}

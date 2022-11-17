@@ -2,7 +2,7 @@
 
 #include "WheeledVehicles/FGTargetPoint.h"
 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 void AFGTargetPoint::Tick(float DeltaSeconds){ }
 #endif 
 AFGTargetPoint::AFGTargetPoint() : Super() {

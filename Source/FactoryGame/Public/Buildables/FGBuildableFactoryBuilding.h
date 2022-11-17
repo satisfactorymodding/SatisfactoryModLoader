@@ -76,16 +76,25 @@ class FACTORYGAME_API AFGBuildableFactoryBuilding : public AFGBuildable
 {
 	GENERATED_BODY()
 public:
-	AFGBuildableFactoryBuilding();
+	AFGBuildableFactoryBuilding( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 
-protected:
 	FORCEINLINE class UFGColoredInstanceMeshProxy* GetMeshComponentProxy() const { return mMeshComponentProxy; }
 
+	static FName MeshComponentFName;
 protected:
-	/** Mesh component for the factory building. */
-	UPROPERTY( EditDefaultsOnly )
+	/** Mesh component for the factory building, can be null when marked not to be constructed.*/
+	UPROPERTY( EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UFGColoredInstanceMeshProxy* mMeshComponentProxy = nullptr;
 
 	UPROPERTY( EditDefaultsOnly )
 	UStaticMesh* mCustomRainBoundsMesh = nullptr;
+};
+
+
+UCLASS()
+class FACTORYGAME_API AFGBuildableFactoryBuildingLightweight : public AFGBuildableFactoryBuilding
+{
+	GENERATED_BODY()
+
+	AFGBuildableFactoryBuildingLightweight( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 };

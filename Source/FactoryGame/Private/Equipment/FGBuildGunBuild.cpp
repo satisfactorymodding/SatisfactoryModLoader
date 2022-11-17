@@ -12,6 +12,7 @@ UFGBuildGunStateBuild::UFGBuildGunStateBuild() : Super() {
 	this->mHologram = nullptr;
 	this->mUpgradedActor = nullptr;
 	this->mClearanceDetector = nullptr;
+	this->mActiveBlueprintDescriptor = nullptr;
 }
 void UFGBuildGunStateBuild::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -36,6 +37,7 @@ bool UFGBuildGunStateBuild::IsValidBuildingSample( AFGBuildable* buildable) cons
 bool UFGBuildGunStateBuild::IsValidVehicleSample( AFGVehicle* vehicle) const{ return bool(); }
 void UFGBuildGunStateBuild::OnRecipeSampled_Implementation(TSubclassOf<class UFGRecipe> recipe){ }
 void UFGBuildGunStateBuild::SetActiveRecipe(TSubclassOf<  UFGRecipe > recipe){ }
+void UFGBuildGunStateBuild::SetActiveBlueprintDescriptor(UFGBlueprintDescriptor* blueprintDesc){ }
 TSubclassOf< class UFGItemDescriptor > UFGBuildGunStateBuild::GetDescriptor() const{ return TSubclassOf<class UFGItemDescriptor>(); }
 TArray< FItemAmount > UFGBuildGunStateBuild::GetHologramCost() const{ return TArray<FItemAmount>(); }
 AFGHologram* UFGBuildGunStateBuild::GetHologram() const{ return nullptr; }

@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "FGSubsystem.h"
 #include "NavMesh/RecastNavMesh.h"
+#include "Misc/EnumRange.h"
 #include "FGCreatureSubsystem.generated.h"
 
 /** Used as a wrapper for spawners with additional information. */
@@ -22,16 +23,16 @@ struct FACTORYGAME_API FSpawnerInfo
 };
 
 UENUM( BlueprintType )
-enum ECreatureHostility
+enum class EPlayerHostilityMode : uint8
 {
-	// Default behavior for creature hostility.
-	CH_Default			UMETA( displayName = "Default" ),
+	// Default hostility against players
+	PHM_Default		UMETA( displayName = "Default" ),
 
-	// With passive hostility, creatures won't attack anything.
-	CH_Passive			UMETA( displayName = "Passive" ),
+	// Passive mode, creature will ignore
+	PHM_Passive		UMETA( displayName = "Passive" ),
 
-	// Creatures will ignore players but can still attack eachother.
-	CH_IgnorePlayers	UMETA( displayName = "Ignore Players" ),
+	// Creature will only fight if attacked
+	PHM_Retaliate	UMETA( displayName = "Retaliate" ),
 };
 
 USTRUCT(BlueprintType)
@@ -71,10 +72,6 @@ public:
 	virtual void Tick( float dt ) override;
 	// End AActor interface
 
-#if WITH_EDITOR
-	virtual void PostEditChangeProperty( FPropertyChangedEvent& PropertyChangedEvent ) override;
-#endif
-
 	const TArray< class AFGCreature* >& GetAllCreatures() const { return mAllCreatures; }
 	const TArray< FSpawnerInfo >& GetAllSpawners() const { return mAllSpawners; }
 
@@ -91,13 +88,10 @@ public:
 	void ForceTriggerSpawnersInRange();
 
 	UFUNCTION( BlueprintPure, Category = "AI" )
-	ECreatureHostility GetCreatureHostility() const { return mCreatureHostilityMode; }
-
-	UFUNCTION( BlueprintPure, Category = "AI" )
 	bool CanCreaturesAttackEachother() const { return mCreaturesCanAttackEachother; }
 
 	UFUNCTION( BlueprintCallable, Category = "AI" )
-	void SetCreatureHostility( ECreatureHostility hostility );
+	void SetCreaturesCanAttackEachother( bool canAttack ) { mCreaturesCanAttackEachother = canAttack; }
 
 	/** Whether or not the specified creature is protected and can not be targeted by other creatures. */
 	UFUNCTION( BlueprintPure, Category = "AI" )
@@ -166,10 +160,6 @@ protected:
 	/** All the persistent creatures which currently exist. */
 	UPROPERTY( Transient, BlueprintReadOnly )
 	TArray< class AFGCreature* > mAllPersistentCreatures;
-
-	/** How all creatures behave in terms of being hostile. */
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, Category = "AI" )
-	TEnumAsByte< ECreatureHostility > mCreatureHostilityMode;
 
 	/** Every type of FGNoise that exists. */
 	UPROPERTY( VisibleAnywhere, Category = "AI" )

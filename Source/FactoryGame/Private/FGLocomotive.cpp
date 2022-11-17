@@ -9,6 +9,7 @@ void AFGLocomotive::GetLifetimeReplicatedProps(TArray< FLifetimeProperty >& OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(AFGLocomotive, mPowerInfo);
 	DOREPLIFETIME(AFGLocomotive, mHasPower);
+	DOREPLIFETIME(AFGLocomotive, mHeadlightMode);
 }
 AFGLocomotive::AFGLocomotive() : Super() {
 	this->mPowerConsumption = FFloatInterval(0.0, 15.0);
@@ -16,6 +17,16 @@ AFGLocomotive::AFGLocomotive() : Super() {
 	this->mPowerInfo = CreateDefaultSubobject<UFGPowerInfoComponent>(TEXT("powerInfo"));
 	this->mHasPower = false;
 	this->mVehicleMovement = CreateDefaultSubobject<UFGLocomotiveMovementComponent>(TEXT("MovementComp"));
+	this->mHeadlightMode = ELocomotiveHeadlightsMode::LHM_Off;
+	this->mHeadlightModes[0].ShowBeam = false;;
+	this->mHeadlightModes[0].Color = FLinearColor(0.0, 0.0, 0.0, 0.0);;
+	this->mHeadlightModes[0].Intensity = 0.0;;
+	this->mHeadlightModes[1].ShowBeam = false;;
+	this->mHeadlightModes[1].Color = FLinearColor(0.0, 0.0, 0.0, 0.0);;
+	this->mHeadlightModes[1].Intensity = 0.0;;
+	this->mHeadlightModes[2].ShowBeam = false;;
+	this->mHeadlightModes[2].Color = FLinearColor(0.0, 0.0, 0.0, 0.0);;
+	this->mHeadlightModes[2].Intensity = 0.0;;
 }
 void AFGLocomotive::BeginPlay(){ }
 void AFGLocomotive::Tick(float dt){ }
@@ -28,6 +39,8 @@ bool AFGLocomotive::SetMultipleUnitControlMaster(bool force){ return bool(); }
 void AFGLocomotive::ClearMultipleUnitControlMaster(){ }
 void AFGLocomotive::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos){ }
 void AFGLocomotive::GiveHumanDriverControl(){ }
+void AFGLocomotive::SetHeadlightsMode(ELocomotiveHeadlightsMode::Type mode){ }
 void AFGLocomotive::SetPowerConsumption(float pct){ }
 void AFGLocomotive::SetPowerRegeneration(float pct){ }
+void AFGLocomotive::OnRep_HeadlightMode(){ }
 FName AFGLocomotive::VehicleMovementComponentName = FName();

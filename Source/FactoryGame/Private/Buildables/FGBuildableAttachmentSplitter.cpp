@@ -5,11 +5,14 @@
 
 AFGBuildableAttachmentSplitter::AFGBuildableAttachmentSplitter() : Super() {
 	this->mCurrentOutputIndex = -1;
-	this->mCurrentInventoryIndex = 0;
-	this->mPowerInfoClass = nullptr;
-	this->mMinimumProducingTime = -1.0;
-	this->mMinimumStoppedTime = -1.0;
 	this->mHologramClass = AFGAttachmentSplitterHologram::StaticClass();
+	this->mFactoryTickFunction.TickGroup = ETickingGroup::TG_PrePhysics;
+	this->mFactoryTickFunction.EndTickGroup = ETickingGroup::TG_PrePhysics;
+	this->mFactoryTickFunction.bTickEvenWhenPaused = false;
+	this->mFactoryTickFunction.bCanEverTick = true;
+	this->mFactoryTickFunction.bStartWithTickEnabled = true;
+	this->mFactoryTickFunction.bAllowTickOnDedicatedServer = true;
+	this->mFactoryTickFunction.TickInterval = 0.0;
 }
 void AFGBuildableAttachmentSplitter::BeginPlay(){ }
 void AFGBuildableAttachmentSplitter::Upgrade_Implementation(AActor* newActor){ }

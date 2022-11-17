@@ -24,15 +24,23 @@ UFGCharacterMovementComponent::UFGCharacterMovementComponent() : Super() {
 	this->mBoostJumpZMultiplier = 1.5;
 	this->mBoostJumpVelocityMultiplier = 1.3;
 	this->mBoostJumpTimeWindow = 0.15;
-	this->mZiplineData.Direction = FVector::ZeroVector;
-	this->mZiplineData.LastVelocityApplied = FVector::ZeroVector;
+	this->mEnableVaultPrototype = false;
+	this->mVaultSweepDistance = 250.0;
+	this->mVaultHeightThreshold = 100.0;
+	this->mVaultForwardVelocity = 800.0;
+	this->mVaultVerticalVelocity = 500.0;
+	this->mLedgeClimbHeightThreshold = 180.0;
 	this->mZiplineData.SpeedMultiplier = 0.0;
+	this->mZiplineData.Direction = FVector::ZeroVector;
 	this->mZiplineData.AttachActor = nullptr;
-	this->mZiplineSpeed = 1200.0;
+	this->mZiplineSpeed = 1350.0;
+	this->mZiplineSprintSpeed = 10000.0;
 	this->mZiplineCorrectionSpeedMultiplier = 10.0;
 	this->mZiplineVelocityInterpolationSpeed = 1.0;
-	this->mZiplineSpeedMultiplierUp = 0.5;
-	this->mZiplineSpeedMultiplierDown = 1.3;
+	this->mZiplineVelocityInterpolationSprintSpeed = 0.05;
+	this->mZiplineSpeedMultiplierUp = -0.6;
+	this->mZiplineSpeedMultiplierDown = 1.0;
+	this->mZiplineSprintSettingsCutoff = 0.95;
 }
 void UFGCharacterMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction){ }
 FNetworkPredictionData_Client* UFGCharacterMovementComponent::GetPredictionData_Client() const{ return nullptr; }
@@ -48,22 +56,25 @@ float UFGCharacterMovementComponent::ImmersionDepth() const{ return float(); }
 void UFGCharacterMovementComponent::ServerSetHookLocation_Implementation(const FVector& hookLocation){ }
 bool UFGCharacterMovementComponent::ServerSetHookLocation_Validate(const FVector& hookLocation){ return bool(); }
 void UFGCharacterMovementComponent::SetHookLocation(const FVector& hookLocation){ }
-void UFGCharacterMovementComponent::SetWantsToSprint(bool wantsToSprint){ }
-bool UFGCharacterMovementComponent::CanGrabLadder( UFGLadderComponent* ladder) const{ return bool(); }
+void UFGCharacterMovementComponent::ToggleWantsToSprintAndHoldSprint(const bool isHoldSprintOn){ }
+void UFGCharacterMovementComponent::SetWantsToSprintAndHoldSprint(const bool wantsToSprint, const bool isHoldSprintOn){ }
+bool UFGCharacterMovementComponent::CanGrabLadder(const  UFGLadderComponent* ladder) const{ return bool(); }
 void UFGCharacterMovementComponent::StartClimbLadder( UFGLadderComponent* ladder){ }
 void UFGCharacterMovementComponent::StopClimbLadder(){ }
 void UFGCharacterMovementComponent::JumpOffLadder(){ }
 UFGLadderComponent* UFGCharacterMovementComponent::GetOnLadder() const{ return nullptr; }
 bool UFGCharacterMovementComponent::EnterPipeHyper( AFGBuildablePipeHyperPart* pipe){ return bool(); }
-FVector UFGCharacterMovementComponent::GetPipeTravelDirectionWorld(){ return FVector(); }
-FRotator UFGCharacterMovementComponent::GetPipeCharacterTransform(FVector cameraForwardAxis){ return FRotator(); }
+FVector UFGCharacterMovementComponent::GetPipeTravelDirectionWorld() const{ return FVector(); }
+FRotator UFGCharacterMovementComponent::GetPipeCharacterTransform(FVector cameraForwardAxis) const{ return FRotator(); }
 void UFGCharacterMovementComponent::PipeHyperForceExit(){ }
-bool UFGCharacterMovementComponent::WantsToSlide(){ return bool(); }
+bool UFGCharacterMovementComponent::WantsToSlide() const{ return bool(); }
 void UFGCharacterMovementComponent::UpdateSlideStatus(){ }
-void UFGCharacterMovementComponent::UpdateZiplineStatus(float dt){ }
+bool UFGCharacterMovementComponent::AttemptLedgeClimb(){ return bool(); }
+void UFGCharacterMovementComponent::OnLedgeClimbFinished(){ }
+void UFGCharacterMovementComponent::UpdateZiplineEffects() const{ }
 bool UFGCharacterMovementComponent::SetTravelingPipeHyperActor(AActor* hyperPipeInterfaceActor){ return bool(); }
 const USceneComponent* UFGCharacterMovementComponent::GetUpdateComponent() const{ return nullptr; }
-float UFGCharacterMovementComponent::GetZiplineSpeed(bool IsSprinting) const{ return float(); }
+float UFGCharacterMovementComponent::GetZiplineSpeed() const{ return float(); }
 void UFGCharacterMovementComponent::StopZiplineMovement(FVector exitForce){ }
 void UFGCharacterMovementComponent::StartZiplineMovement(AActor* ziplineActor, FVector actorForward){ }
 void UFGCharacterMovementComponent::UpdateFromCompressedFlags(uint8 flags){ }
@@ -72,17 +83,15 @@ void UFGCharacterMovementComponent::OnMovementModeChanged(EMovementMode Previous
 void UFGCharacterMovementComponent::PhysCustom(float deltaTime, int32 Iterations){ }
 void UFGCharacterMovementComponent::ExecuteDeferredCollisionChange(){ }
 void UFGCharacterMovementComponent::SetOnLadder( UFGLadderComponent* ladder){ }
-void UFGCharacterMovementComponent::PhysFlying(float deltaTime, int32 Iterations){ }
-void UFGCharacterMovementComponent::PhysLadder(float deltaTime, int32 iterations){ }
-void UFGCharacterMovementComponent::PhysPipe(float deltaTime, int32 iterations){ }
-void UFGCharacterMovementComponent::PhysZipline(float deltaTime, int32 iterations){ }
-void UFGCharacterMovementComponent::PhysHover(float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysFlying(float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysLadder(const float deltaTime, int32 iterations){ }
+void UFGCharacterMovementComponent::PhysPipe(const float deltaTime){ }
+void UFGCharacterMovementComponent::PhysZipline(const float deltaTime){ }
+void UFGCharacterMovementComponent::PhysHover(const float deltaTime){ }
 void UFGCharacterMovementComponent::UpdateJetPack(float deltaSeconds){ }
 void UFGCharacterMovementComponent::UpdateHookshot(float deltaSeconds, FVector oldLocation){ }
 void UFGCharacterMovementComponent::UpdateSprintStatus(){ }
 void UFGCharacterMovementComponent::UpdateParachute(float delta){ }
-void UFGCharacterMovementComponent::UpdateJumpingStilts(float deltaSeconds){ }
-void UFGCharacterMovementComponent::UpdateHoverPack(float deltaSeconds){ }
 bool UFGCharacterMovementComponent::CanSprint() const{ return bool(); }
 bool UFGCharacterMovementComponent::CanSlide() const{ return bool(); }
 bool UFGCharacterMovementComponent::CanStartSlide() const{ return bool(); }
@@ -92,6 +101,8 @@ AFGParachute* UFGCharacterMovementComponent::GetCachedParachute(){ return nullpt
 AFGJumpingStilts* UFGCharacterMovementComponent::GetCachedJumpingStilts(){ return nullptr; }
 AFGHoverPack* UFGCharacterMovementComponent::GetCachedHoverPack(){ return nullptr; }
 void UFGCharacterMovementComponent::TickSlide(float delta){ }
+bool UFGCharacterMovementComponent::StartLedgeClimb(float duration, float speed){ return bool(); }
+void UFGCharacterMovementComponent::StopLedgeClimb(const bool interrupt){ }
 void UFGCharacterMovementComponent::ZeroOutFallVelocity(){ }
 void FSavedMove_FGMovement::Clear(){ }
 uint8 FSavedMove_FGMovement::GetCompressedFlags() const{ return uint8(); }

@@ -20,8 +20,8 @@ public:
 
 #if WITH_EDITORONLY_DATA
 	/* Preview actor to make it easier to place component(s) */
-	UPROPERTY(EditAnywhere, meta = ( AllowPrivateAccess = "true") )
-	UChildActorComponent* mChildActorComponent;
+	//UPROPERTY(EditAnywhere, meta = ( AllowPrivateAccess = "true") )
+	//UChildActorComponent* mChildActorComponent;
 #endif
 
 	template< typename ComponentType >

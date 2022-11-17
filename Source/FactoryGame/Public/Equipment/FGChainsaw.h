@@ -161,11 +161,8 @@ protected:
 
 	/** returns true if actor is a chainsawable actor, duh */
 	bool IsChainsawableActor( AActor* actor ) const;
+	
 protected:
-	///** Mesh to show outline with */
-	//UPROPERTY()
-	//class UStaticMeshComponent* mOutlineProxy;
-
 	/** The fuel we want to be able to use with the chainsaw */
 	UPROPERTY( EditDefaultsOnly, Category="Chainsaw|Fuel" )
 	TSubclassOf<class UFGItemDescriptor> mFuelClass;

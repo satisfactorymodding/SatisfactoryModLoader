@@ -7,10 +7,11 @@
 AFGBuildablePipelineFlowIndicator::AFGBuildablePipelineFlowIndicator() : Super() {
 	this->mIndicatorComponent = CreateDefaultSubobject<UFGColoredInstanceMeshProxy>(TEXT("Indicator Component"));
 	this->mOwningPipeline = nullptr;
+	this->mFluidDescriptorCDO = nullptr;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = true;
+	this->PrimaryActorTick.bCanEverTick = false;
 	this->PrimaryActorTick.bStartWithTickEnabled = true;
 	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
 	this->PrimaryActorTick.TickInterval = 0.0;
@@ -28,4 +29,4 @@ void AFGBuildablePipelineFlowIndicator::LostSignificance_Implementation(){ }
 void AFGBuildablePipelineFlowIndicator::GainedSignificance_Native(){ }
 void AFGBuildablePipelineFlowIndicator::LostSignificance_Native(){ }
 float AFGBuildablePipelineFlowIndicator::GetSignificanceRange(){ return float(); }
-void AFGBuildablePipelineFlowIndicator::UpdateVisuals(){ }
+void AFGBuildablePipelineFlowIndicator::UpdateVisuals(float Dt){ }

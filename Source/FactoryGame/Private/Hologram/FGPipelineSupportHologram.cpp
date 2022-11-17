@@ -18,6 +18,7 @@ AFGPipelineSupportHologram::AFGPipelineSupportHologram() : Super() {
 	this->mBuildModeZoop = nullptr;
 	this->mClearanceExtent = FVector::ZeroVector;
 	this->mUseGradualFoundationRotations = true;
+	this->mAllowEdgePlacementInDesignerEvenOnIntersect = true;
 	this->mInstancedMeshComponent->SetupAttachment(RootComponent);
 }
 void AFGPipelineSupportHologram::BeginPlay(){ }

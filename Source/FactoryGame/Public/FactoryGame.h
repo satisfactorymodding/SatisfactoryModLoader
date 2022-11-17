@@ -16,8 +16,12 @@
 
 DECLARE_STATS_GROUP( TEXT( "AtmosphereUpdater" ), STATGROUP_AtmosphereUpdater, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "FactoryTick" ), STATGROUP_FactoryTick, STATCAT_Advanced );
+DECLARE_STATS_GROUP( TEXT( "FactoryQuick" ), STATGROUP_FactoryQuick, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "Sound Events auto-resume on animations" ), STATGROUP_SoundEventAutoResume, STATCAT_Advanced );
 DECLARE_STATS_GROUP( TEXT( "Execute on Interface" ), STATGROUP_ExecuteInterface, STATCAT_Advanced );
+
+#define FACTORY_QUICK_SCOPE_CYCLE_COUNTER(Stat) \
+	DECLARE_SCOPE_CYCLE_COUNTER(TEXT(#Stat),Stat,STATGROUP_FactoryQuick)
 
 extern TAutoConsoleVariable<int32> CVarStressTestRadioActivity; 
 
@@ -59,6 +63,7 @@ static const FName SHOWDEBUG_POOLER( TEXT( "Pooler" ) );
 static const FName SHOWDEBUG_SELF_DRIVING( TEXT( "SelfDriving" ) );
 static const FName SHOWDEBUG_FOG_OF_WAR( TEXT( "FogOfWar" ) );
 static const FName SHOWDEBUG_MAP_MARKERS( TEXT( "MapMarkers" ) );
+static const FName SHOWDEBUG_CENTRAL_STORAGE( TEXT( "CentralStorage" ) );
 
 /** Common show debug colors */
 static const FLinearColor DEBUG_TEXTWHITE( 0.9f, 0.9f, 0.9f );
@@ -111,6 +116,8 @@ DECLARE_LOG_CATEGORY_EXTERN( LogPipes, Warning, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogSeasonalEvents, Log, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogSigns, Log, All );
 DECLARE_LOG_CATEGORY_EXTERN( LogAnimInstanceFactory, Log, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogFactoryBlueprint, Warning, All );
+DECLARE_LOG_CATEGORY_EXTERN( LogInventory, Log, All );
 
 
 /** Helpers when using interfaces */
@@ -178,6 +185,7 @@ static const ECollisionChannel OC_WorldGrid( ECC_GameTraceChannel9 );
 static const ECollisionChannel OC_ClearanceDetector( ECC_GameTraceChannel10 );
 static const ECollisionChannel OC_RailroadVehicle( ECC_GameTraceChannel11 );
 static const ECollisionChannel OC_MapGeneration( ECC_GameTraceChannel12 );
+static const ECollisionChannel OC_BlueprintProxy( ECC_GameTraceChannel14 );
 
 /** Input Actions */
 static const FName PrimaryFireAction( TEXT( "PrimaryFire" ) );

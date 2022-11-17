@@ -184,8 +184,10 @@ public:
 	UFUNCTION( BlueprintImplementableEvent, Category = "Representation" )
 	FLinearColor GetDefaultRepresentationColor();
 
-protected:	
+protected:
+	// Begin FGBuildableFactory interface
 	virtual void OnRep_ReplicationDetailActor() override;
+	// End FGBuildableFactory interface
 
 	class AFGReplicationDetailActor_DroneStation* GetCastRepDetailsActor() const;
 

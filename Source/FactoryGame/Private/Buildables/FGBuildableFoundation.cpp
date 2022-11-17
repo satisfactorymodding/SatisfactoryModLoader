@@ -4,7 +4,7 @@
 #include "FGSwatchGroup.h"
 #include "Hologram/FGFoundationHologram.h"
 
-AFGBuildableFoundation::AFGBuildableFoundation() : Super() {
+AFGBuildableFoundation::AFGBuildableFoundation(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 	this->mWidth = 800.0;
 	this->mDepth = 800.0;
 	this->mHeight = 0.0;
@@ -26,4 +26,7 @@ AFGBuildableFoundation::AFGBuildableFoundation() : Super() {
 	this->mColorSlot = 16;
 	this->mSwatchGroup = UFGSwatchGroup_FicsitFoundation::StaticClass();
 	this->mAffectsOcclusion = true;
+}
+AFGBuildableFoundationLightweight::AFGBuildableFoundationLightweight(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+	this->mMeshComponentProxy = nullptr;
 }

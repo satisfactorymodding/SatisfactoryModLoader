@@ -49,7 +49,9 @@ protected:
 	virtual void Factory_CollectInput_Implementation() override;
 	// End Factory_ interface
 
+	// Begin FGBuildableFactory interface
 	virtual void OnRep_ReplicationDetailActor() override;
+	// End FGBuildableFactory interface
 
 public:
 	/** How far apart in Z do multiple storages stack. */

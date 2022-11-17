@@ -3,8 +3,10 @@
 #pragma once
 
 #include "FactoryGame.h"
+#include "Engine/DeveloperSettings.h"
 #include "IncludeInBuild.h"
 #include "OptionValueContainer.h"
+#include "Templates/SubclassOf.h"
 #include "FGOptionsSettings.generated.h"
 
 UENUM( BlueprintType )
@@ -59,6 +61,16 @@ struct FIntegerSelection
 	GENERATED_BODY()
 
 public:
+	FIntegerSelection( FText inName, int32 inValue ) :
+		Name( inName ),
+		Value( inValue )
+	{}
+
+	FIntegerSelection() :
+		Name( FText() ),
+		Value( 0 )
+	{}
+	
 	UPROPERTY( BlueprintReadWrite, EditAnywhere )
 	FText Name;
 
@@ -311,7 +323,7 @@ public:
 	TSubclassOf< class UFGDynamicOptionsRow > mOptionRowWidgetClass;
 
 	UPROPERTY( EditAnywhere, config, Category = "Hologram", meta = ( ToolTip = "" ) )
-	TAssetPtr<UMaterialParameterCollection> mHologramColourParameterCollection;
+	TAssetPtr<class UMaterialParameterCollection> mHologramColourParameterCollection;
 
 	UPROPERTY( EditAnywhere, config, Category = "Video", meta = ( ToolTip = "This maps video quality scalability levels to benchmark results to. float value represents max benchamrk result for that level. e.g 0 - 50, 1 - 150 and so on" ) )
 	TMap< int32, float > mVideoQualityBenchmarkMapping;

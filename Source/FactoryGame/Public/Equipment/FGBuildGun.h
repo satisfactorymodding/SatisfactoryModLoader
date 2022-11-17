@@ -158,6 +158,9 @@ public:
 	UFUNCTION( BlueprintPure, Category = "BuildGunState" )
 	class AFGBuildGun* GetBuildGun() const;
 
+	/** Get the owning player state */
+	class AFGPlayerState* GetPlayerState() const;
+	
 	/** 
 	 * Get's current percentage of Build delay progress. 
 	 * @return Returns between 0-1. Returns 0 if no build is in progress 
@@ -248,7 +251,7 @@ public:
 	 * @param out_recipes Returns all recipes available to this build gun.
 	 */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun|Recipe" )
-	void GetAvailableRecipes( TArray< TSubclassOf< class UFGRecipe > >& out_recipes, TArray < TSubclassOf< UFGCustomizationRecipe > >& out_customizationRecipes ) const;
+	void GetAvailableRecipes( TArray< TSubclassOf< class UFGRecipe > >& out_recipes, TArray < TSubclassOf< class UFGCustomizationRecipe > >& out_customizationRecipes ) const;
 
 	/** Convenience function to get the cost for a recipe. */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun|Recipe" )
@@ -273,6 +276,12 @@ public:
 	/** @return true if the produce the same buildable; false if not. */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun|Recipe" )
 	bool CompareActiveRecipeTo( TSubclassOf< class UFGRecipe > recipe );
+
+	/** @return true if current customizatio recipe is the same as the given recipe. If both are nullptr it also returns true */
+	bool CompareActiveCustomizationRecipeTo( TSubclassOf< class UFGCustomizationRecipe > recipe );
+
+	/** @return true if the given blueprint descriptor is active and the blueprint recipe is active as well */
+	bool IsBlueprintDescriptorActive( class UFGBlueprintDescriptor* blueprintDescriptor  ) const;
 
 	/** Checks if the buildgun is in the state we send in  */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
@@ -325,7 +334,7 @@ public:
 	 */
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
 	void GotoBuildState( TSubclassOf< class UFGRecipe > recipe );
-
+	
 	/**
 	 * (Simulated)
 	 * Set the build gun in painting mode with the specific paint params
@@ -344,6 +353,17 @@ public:
 	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
 	void GotoDismantleState();
 
+	/**
+	 * (Simulated)
+	 * Sets the blueprint desc to use when setting a blueprint recipe on the build state.
+	 * This will fail if the desc is not found by name. Potentially could happen if a client has blueprints the server doesn't
+	 * @note Must be called on the local player.
+	 *
+	 * @param blueprintName string name of the descriptor that is to be used
+	 */
+	UFUNCTION( BlueprintCallable, Category = "BuildGun" )
+	void SetDesiredBlueprint( const FString& blueprintName );
+	
 	/** Updates the gamestate slot data for a given index */
 	UFUNCTION( BlueprintCallable, Category = "FactoryGame|BuildGunPaint" )
 	void SetCustomizationDataForSlot( uint8 slotIndex, FFactoryCustomizationColorSlot slotData );
@@ -352,8 +372,9 @@ public:
 	UFUNCTION( Server, Reliable )
 	void Server_SetCustomizationDataForSlot( uint8 slotIndex, FFactoryCustomizationColorSlot slotData );
 
-	void SetAllowRayCleranceHit( bool allow );
-	
+	void SetAllowRayClearanceHit( bool allow );
+	void SetAllowRayBlueprintProxyHit( bool allow );
+
 	/** Set the state to enter on the next equip */
 	void SetPendingEntryState( EBuildGunState state );
 
@@ -401,6 +422,10 @@ private:
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_GotoBuildState( TSubclassOf< class UFGRecipe > recipe );
 
+	/** Inform the server of which blueprint file we are using (in the event that the blueprint hologram is set on the build state) */
+	UFUNCTION( Server, Reliable )
+	void Server_SetDesiredBlueprint( const FString& blueprintName );
+	
 	/** Lets the server switch to paint state. */
 	UFUNCTION( Server, Reliable, WithValidation )
 	void Server_GotoPaintState( TSubclassOf< class UFGCustomizationRecipe > customizationRecipe );
@@ -463,6 +488,8 @@ protected:
 	TSubclassOf< class UFGBuildGunStatePaint > mPaintStateClass;
 
 	bool mAllowCleranceRayHits = false;
+
+	bool mAllowBlueprintProxyRayHits = false;
 
 private:
 	/** All the states. */

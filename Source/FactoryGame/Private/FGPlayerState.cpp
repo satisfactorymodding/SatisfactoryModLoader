@@ -6,10 +6,10 @@ FHotbar::FHotbar( AFGPlayerState* owningState, const FHotbar& hotbar){ }
 FHotbar::FHotbar(TArray<  UFGHotbarShortcut* > hotbarShortcuts){ }
 FPresetHotbar::FPresetHotbar( AFGPlayerState* owningState, const FPresetHotbar& presetHotbar){ }
 AFGPlayerState::AFGPlayerState() : Super() {
-	this->mCurrentHotbarIndex = 0;
 	this->mSlotNum = -1;
 	this->mPlayerColorData.PingColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
 	this->mPlayerColorData.NametagColor = FLinearColor(0.0, 0.0, 0.0, 0.0);
+	this->mPlayerRules.CreatureHostilityMode = EPlayerHostilityMode::PHM_Default;
 	this->mOwnedPawn = nullptr;
 	this->mHasReceivedInitialItems = false;
 	this->mIsServerAdmin = false;
@@ -26,7 +26,6 @@ AFGPlayerState::AFGPlayerState() : Super() {
 	this->mNumArmSlots = 1;
 	this->mOnlyShowAffordableRecipes = false;
 	this->mLastSelectedResourceSinkShopCategory = nullptr;
-	this->mNumObservedInventorySlots = 0;
 	this->mPrivateTodoList = TEXT("");
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
 	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
@@ -48,6 +47,7 @@ void AFGPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 	DOREPLIFETIME(AFGPlayerState, mNewRecipes);
 	DOREPLIFETIME(AFGPlayerState, mSlotNum);
 	DOREPLIFETIME(AFGPlayerState, mPlayerColorData);
+	DOREPLIFETIME(AFGPlayerState, mPlayerRules);
 	DOREPLIFETIME(AFGPlayerState, mIsServerAdmin);
 	DOREPLIFETIME(AFGPlayerState, mVisitedAreas);
 	DOREPLIFETIME(AFGPlayerState, mCustomColorData);
@@ -75,6 +75,8 @@ void AFGPlayerState::GatherDependencies_Implementation(TArray< UObject* >& out_d
 bool AFGPlayerState::NeedTransform_Implementation(){ return bool(); }
 bool AFGPlayerState::ShouldSave_Implementation() const{ return bool(); }
 void AFGPlayerState::SetPlayerColorData(FPlayerColorData slotData){ }
+void AFGPlayerState::SetCreatureHostility(EPlayerHostilityMode hostility){ }
+void AFGPlayerState::Server_SetCreatureHostility_Implementation(EPlayerHostilityMode hostility){ }
 FString AFGPlayerState::GetUserName(){ return FString(); }
 FString AFGPlayerState::GetUserID(){ return FString(); }
 FUniqueNetIdRepl AFGPlayerState::GetUniqeNetId(){ return FUniqueNetIdRepl(); }
@@ -101,6 +103,7 @@ bool AFGPlayerState::CopyPresetHotbarToCurrentHotbar(int32 presetHotbarIndex){ r
 void AFGPlayerState::SetRecipeShortcutOnIndex(TSubclassOf<  UFGRecipe > recipe, int32 onIndex, int32 onHotbarIndex){ }
 void AFGPlayerState::SetCustomizationShortcutOnIndex(TSubclassOf<  UFGCustomizationRecipe > customizationRecipe, int32 onIndex){ }
 void AFGPlayerState::SetEmoteShortcutOnIndex(TSubclassOf<  UFGEmote > emote, int32 onIndex){ }
+void AFGPlayerState::SetBlueprintShortcutOnIndex(const FString& blueprintName, int32 onIndex){ }
 bool AFGPlayerState::GetAndSetFirstTimeEquipped( AFGEquipment* equipment){ return bool(); }
 AFGPlayerController* AFGPlayerState::GetOwningController() const{ return nullptr; }
 UFGGameUI* AFGPlayerState::GetGameUI() const{ return nullptr; }
@@ -162,6 +165,10 @@ void AFGPlayerState::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactor
 void AFGPlayerState::OnRep_HotbarShortcuts(){ }
 void AFGPlayerState::OnRep_CurrentHotbarIndex(){ }
 void AFGPlayerState::OnRep_PlayerColorData(){ }
+void AFGPlayerState::OnRep_PlayerRules(){ }
 void AFGPlayerState::Server_UpdateNumObservedInventorySlots_Implementation(){ }
 bool AFGPlayerState::Server_UpdateNumObservedInventorySlots_Validate(){ return bool(); }
 void AFGPlayerState::Native_OnPlayerColorDataUpdated(){ }
+void AFGPlayerState::SetupPlayerRules(){ }
+void AFGPlayerState::PushRulesToGameModesSubssytem(){ }
+void AFGPlayerState::OnCreatureHostilityModeUpdated(FString strId, FVariant value){ }

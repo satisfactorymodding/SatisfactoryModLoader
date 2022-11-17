@@ -6,6 +6,25 @@
 #include "Hologram/FGFactoryBuildingHologram.h"
 #include "FGWallHologram.generated.h"
 
+
+struct FWallClearanceParams
+{
+	FWallClearanceParams() {}
+	FWallClearanceParams( float width, float height, float elevation, FVector verticalSnapOffset, FVector clearanceShrink ) :
+		Width( width ),
+		Height( height ),
+		Elevation( elevation ),
+		VerticalSnapOffset( verticalSnapOffset ),
+		ClearanceShrink( clearanceShrink )
+	{}
+
+	float Width = 0.f;
+	float Height = 0.f;
+	float Elevation = 0.f;
+	FVector VerticalSnapOffset = FVector::ZeroVector;
+	FVector ClearanceShrink = FVector::ZeroVector;
+};
+
 /**
  * 
  */
@@ -29,6 +48,8 @@ public:
 	virtual void ConfigureActor( AFGBuildable* inBuildable ) const override;
 	// End AFGHologram interface
 
+	static void CalculateClearanceInformation( const FWallClearanceParams& params, FVector& newRelativeLocation, FRotator& newRelativeRotation, FVector& newExtents );
+
 protected:
 	// Begin AFGHologram interface
 	virtual int32 GetRotationStep() const override;
@@ -47,8 +68,6 @@ protected:
 
 	/** Changes what buildable we're constructing based on an angle. */
 	void SelectWallVariantForElevation( float NewAngle );
-
-	void CalculateClearanceInformation( FVector& newRelativeLocation, FRotator& newRelativeRotation, FVector& newExtents );
 
 private:
 	

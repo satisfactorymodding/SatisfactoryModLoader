@@ -5,6 +5,7 @@
 UFGMaterialEffect_Build::UFGMaterialEffect_Build() : Super() {
 	this->mInstigator = nullptr;
 	this->mSpeed = 0.0;
+	this->mTransform = FTransform(FQuat::Identity, FVector::ZeroVector, FVector::OneVector);
 }
 void UFGMaterialEffect_Build::SetInstigator( AActor* instigator){ }
 void UFGMaterialEffect_Build::SetCost(TArray< FItemAmount > cost){ }

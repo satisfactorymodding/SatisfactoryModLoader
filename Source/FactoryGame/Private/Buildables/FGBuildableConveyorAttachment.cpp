@@ -5,20 +5,11 @@
 
 AFGBuildableConveyorAttachment::AFGBuildableConveyorAttachment() : Super() {
 	this->mBufferInventory = nullptr;
-	this->mAddToSignificanceManager = false;
 	this->mHologramClass = AFGConveyorAttachmentHologram::StaticClass();
-	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.EndTickGroup = ETickingGroup::TG_PrePhysics;
-	this->PrimaryActorTick.bTickEvenWhenPaused = false;
-	this->PrimaryActorTick.bCanEverTick = false;
-	this->PrimaryActorTick.bStartWithTickEnabled = false;
-	this->PrimaryActorTick.bAllowTickOnDedicatedServer = true;
-	this->PrimaryActorTick.TickInterval = 0.0;
 	this->NetDormancy = ENetDormancy::DORM_DormantAll;
 }
 void AFGBuildableConveyorAttachment::BeginPlay(){ }
 void AFGBuildableConveyorAttachment::Dismantle_Implementation(){ }
-void AFGBuildableConveyorAttachment::Factory_CollectInput_Implementation(){ }
-void AFGBuildableConveyorAttachment::OnRep_ReplicationDetailActor(){ }
-void AFGBuildableConveyorAttachment::OnBuildableReplicationDetailStateChange(bool newStateIsActive){ }
-AFGReplicationDetailActor* AFGBuildableConveyorAttachment::GetOrCreateReplicationDetailActor(){ return nullptr; }
+AFGBuildableConveyorAttachmentLightweight::AFGBuildableConveyorAttachmentLightweight() : Super() {
+
+}

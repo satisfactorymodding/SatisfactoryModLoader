@@ -30,3 +30,4 @@ void UFGGameUI::Native_OnFactoryClipboardCopied(UObject* object,  UFGFactoryClip
 void UFGGameUI::Native_OnFactoryClipboardPasted(UObject* object,  UFGFactoryClipboardSettings* factoryClipboardSettings){ }
 FReply UFGGameUI::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent){ return FReply::Unhandled(); }
 void UFGGameUI::ShowTutorialHint(){ }
+bool UFGGameUI::ShouldShowFicsitSplashWidget() const{ return bool(); }

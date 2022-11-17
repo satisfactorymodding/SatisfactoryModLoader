@@ -55,7 +55,7 @@ public:
 	
 	void OnCrouchPressed();
 	void OnCrouchReleased();
-
+	
 	void OnJumpPressed();
 
 	/** Called during tick, tries to grab onto a wire if mWantToGrab is set  */
@@ -77,7 +77,7 @@ private:
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline" )
 	float mZiplineJumpLaunchVelocity;
 
-	/** Max allowed angle on wire for ziplining. Sine value of the angle needs to be lower than this in order to be valid for zipline. 0-1 value. */
+	/** Max allowed angle on wire for zip-lining. Sine value of the angle needs to be lower than this in order to be valid for zipline. 0-1 value. */
 	UPROPERTY( EditDefaultsOnly, Category = "Zipline", meta=( ClampMin=0, UIMin=0, ClampMax=1, UIMax=1 ) )
 	float mMaxZiplineAngle;
 

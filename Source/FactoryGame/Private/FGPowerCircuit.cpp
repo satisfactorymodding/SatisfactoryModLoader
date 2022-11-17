@@ -62,3 +62,4 @@ float UFGPowerCircuitGroup::TickBatteries(float deltaTime, const float netPowerP
 bool UFGPowerCircuitGroup::TryTurnOffPrioritySwitch(){ return bool(); }
 void UFGPowerCircuitGroup::OnFuseSet(){ }
 void UFGPowerCircuitGroup::OnFuseReset(){ }
+void UFGPowerCircuitGroup::DisplayDebug( UCanvas* canvas, const  FDebugDisplayInfo& debugDisplay, float& YL, float& YPos, float indent){ }

@@ -159,6 +159,12 @@ public:
 	void RemoveAllCustomActionMappings();
 
 	// Begin IFGOptionInterface
+	virtual FVariant GetOptionValue( const FString& strId ) const;
+	virtual void ForceSetOptionValue( const FString& strId, const FVariant& variant, const UObject* instigator );
+	virtual void SubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate );
+	virtual void UnsubscribeToOptionUpdate( const FString& strId, const FOnOptionUpdated& onOptionUpdatedDelegate );
+	virtual void ApplyChanges() override;
+	virtual void ResetAllSettingsToDefault() override;
 	virtual bool GetBoolOptionValue( const FString& cvar ) const override;
 	virtual bool GetBoolUIDisplayValue( const FString& cvar ) const override;
 	virtual void SetBoolOptionValue( const FString& cvar, bool value ) override;

@@ -14,7 +14,7 @@ class FACTORYGAME_API AFGBuildableFoundation : public AFGBuildableFactoryBuildin
 {
 	GENERATED_BODY()
 protected:
-	AFGBuildableFoundation();
+	AFGBuildableFoundation(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 public:
 	/** Width of the foundation. */
@@ -46,4 +46,11 @@ public:
 	FFoundationSideSelectionFlags mDisableAttachmentSnapOn;
 
 	virtual FSimpleBuildingInfo GetRainOcclusionShape() override { return FSimpleBuildingInfo::DefaultSquareFoundation( this ); }
+};
+
+UCLASS( Abstract )
+class FACTORYGAME_API AFGBuildableFoundationLightweight : public AFGBuildableFoundation
+{
+	GENERATED_BODY()
+	AFGBuildableFoundationLightweight( const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get() );
 };

@@ -2,7 +2,7 @@
 
 #include "WheeledVehicles/FGWheeledVehicleAIController.h"
 
-#ifdef DEBUG_SELF_DRIVING
+#if DEBUG_SELF_DRIVING
 void AFGWheeledVehicleAIController::DrawDebug(float deltaTime, const Input& input, const Output& output){ }
 #endif 
 AFGWheeledVehicleAIController::AFGWheeledVehicleAIController() : Super() {

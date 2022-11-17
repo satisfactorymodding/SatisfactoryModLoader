@@ -18,7 +18,8 @@ enum class EVehicleStatus : uint8
 };
 
 /**
- * Containing wheeled-vehicle data that needs to be on client always
+ * Containing wheeled-vehicle data that needs to be on client always.
+ * Also represents the vehicle visuals in simulated (non-physical) mode.
  */
 UCLASS()
 class FACTORYGAME_API AFGWheeledVehicleInfo : public ASkeletalMeshActor, public IFGSaveInterface, public IFGActorRepresentationInterface
@@ -66,8 +67,14 @@ public:
 	virtual void Tick( float dt ) override;
 	// End AActor interface
 
+	/**
+	 * Makes this vehicle info ready for use. Called from the vehicle and only on server.
+	 */
 	void Init( AFGWheeledVehicle* vehicle );
 
+	/**
+	 * Initializes a few members that govern vehicle collision detection.
+	 */
 	void InitCollisionData( class UFGVehicleCollisionBoxComponent* collisionBox );
 
 	// Accessors and change delegates
@@ -77,9 +84,15 @@ public:
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam( FStatusChanged, EVehicleStatus, status );
 	UPROPERTY( BlueprintAssignable, Category = "Vehicle", DisplayName = "OnVehicleStatusChanged" )
 	FStatusChanged VehicleStatusChangedDelegate;
-	
+
+	/**
+	 * Set deadlocked/out-of-fuel status
+	 */
 	void SetVehicleStatus( EVehicleStatus status );
 
+	/**
+	 * Get deadlocked/out-of-fuel status
+	 */
 	UFUNCTION( BlueprintPure, Category = "Vehicle" )
 	EVehicleStatus GetVehicleStatus() const { return mStatus; }
 
@@ -130,13 +143,19 @@ public:
 
 	void UpdateTarget();
 
+	/**
+	 * Is this vehicle supposed to stay at the dock or it is finished?
+	 */
 	bool ShouldStayAtDock();
 
 	void OnTargetDestroyed( class AFGTargetPoint* target );
 
 	class AFGDrivingTargetList* GetTargetList() const;
 
-	void TryActivatePathSimulation();
+	/**
+	 * Try to start movement on the spline path
+	 */
+	void TryStartSplinePathMovement();
 
 	TSubclassOf< class UFGItemDescriptor > GetCurrentFuelClass() const { return mCurrentFuelClass; }
 
@@ -146,9 +165,17 @@ public:
 
 	void ApplyMeshPrimitiveData( const FFactoryCustomizationData& customizationData );
 
+	/**
+	 * Show the cosmetic effect that indicates that the vehicle is temporarily in simulated mode despite being within physical range.
+	 */
 	void ShowGhostingEffect( bool enabled );
 
-#ifdef DEBUG_SELF_DRIVING
+	/**
+	 * Is the vehicle on its normal route or is it transitioning there?
+	 */
+	bool IsOnCanonPath() const;
+
+#if DEBUG_SELF_DRIVING
 	void DrawDebug( int debugLevel );
 #endif
 
@@ -177,23 +204,44 @@ private:
 private:
 	friend class AFGWheeledVehicle;
 
+	/**
+	 * The host vehicle. May be nullptr on client if it is net culled.
+	 */
 	UPROPERTY( SaveGame )
 	class AFGWheeledVehicle* mVehicle;
 
+	/**
+	 * Same as returned from HasAuthority().
+	 */
 	bool mIsServer = false;
 
+	/**
+	 * The host vehicle replicated. Mainly used to determined if the client is in physical mode but net culled, and therefore should show its simulated vehicle. TODO: seems to be working so-so.
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_ReplicatedVehicle )
 	class AFGWheeledVehicle* mReplicatedVehicle;
 
+	/**
+	 * The deadlocked/out-of-fuel/operational status of this vehicle.
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_Status )
 	EVehicleStatus mStatus = EVehicleStatus::VS_Operational;
 
+	/**
+	 * Is the vehicle currently automated and has a path?
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_IsFollowingPath )
 	bool mIsFollowingPath = false;
 
+	/**
+	 * Is the vehicle possessed by a player?
+	 */
 	UPROPERTY( Replicated )
 	bool mIsPossessed = false;
 
+	/**
+	 * The next target that this vehicle is driving towards
+	 */
 	UPROPERTY( Replicated, SaveGame )
 	class AFGTargetPoint* mTarget = nullptr;
 	
@@ -205,6 +253,9 @@ private:
 	UPROPERTY( Replicated )
 	class AFGBuildableDockingStation* mCurrentStation = nullptr;
 
+	/**
+	 * Is this vehicle in physical (false) or simulated (true) mode
+	 */
 	UPROPERTY( Replicated )
 	bool mIsSimulated = false;
 
@@ -217,13 +268,24 @@ private:
 	UPROPERTY( Replicated )
 	FVector mAuthoritativeLinearVel;
 
+	/**
+	 * Is vehicle temporarily going into simulated mode (with an extra indicative effect) to cheat its way to the next target (if otherwise unable to progress)?
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_IsGhosting )
 	bool mIsGhosting = false;
 
+	/**
+	 * Is the simulated vehicle visible despite the vehicle being physical (only on client)?
+	 */
 	bool mIsSimulationVisible = false;
 
+	/**
+	 * The type of fuel that is currently loaded into this vehicle.
+	 */
 	UPROPERTY( Replicated, SaveGame )
 	TSubclassOf< class UFGItemDescriptor > mCurrentFuelClass;
+
+	// Actor representation stuff
 
 	UPROPERTY( Replicated )
 	class UTexture2D* mActorRepresentationTexture;
@@ -237,15 +299,27 @@ private:
 	UPROPERTY( Replicated )
 	FLinearColor mPlayerNametagColor;
 
+	/**
+	 * The extent of the bounding box used for hit testing this vehicle against other objects and terrain.
+	 */
 	UPROPERTY( Replicated )
 	FVector mBoundingBoxExtent;
 
+	/**
+	 * The local offset of the bounding box used for hit testing this vehicle against other objects and terrain.
+	 */
 	UPROPERTY( Replicated )
 	FVector mBoundingBoxOffset;
 
+	/**
+	 * The wheel radius of this vehicle, used for hit testing this vehicle against other objects and terrain.
+	 */
 	UPROPERTY( Replicated )
 	float mWheelRadius = 0.0f;
 
+	/**
+	 * The static mesh representing parts if this vehicle in simulated mode.
+	 */
 	UPROPERTY( ReplicatedUsing = OnRep_StaticMeshComponent )
 	class UStaticMeshComponent* mStaticMeshComponent = nullptr;
 };

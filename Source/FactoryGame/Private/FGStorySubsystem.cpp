@@ -10,11 +10,9 @@ TArray< FEventTriggeredMessage > UFGEventTriggeredMessages::GetEventTriggeredMes
 AFGStorySubsystem::AFGStorySubsystem() : Super() {
 	this->mResearchTimerCompleteMessage = nullptr;
 	this->mActivePrimaryStoryQueue.StoryQueueClass = nullptr;
-	this->mActivePrimaryStoryQueue.MessageIndex = 0;
 	this->mActivePrimaryStoryQueue.PendingMessageFromMilestone = false;
 	this->mActivePrimaryStoryQueue.PendingMessageFromMilestoneTimer = 0.0;
 	this->mActivePrimaryStoryQueue.TimeSinceLastQueueMessage = 0.0;
-	this->mNextPrimaryStoryQueueIndex = 0;
 	this->mTimeSinceLastGlobalMessage = 0.0;
 	this->mMinimumDelayBetweenStoryQueueMessages = 0.0;
 	this->PrimaryActorTick.TickGroup = ETickingGroup::TG_PrePhysics;

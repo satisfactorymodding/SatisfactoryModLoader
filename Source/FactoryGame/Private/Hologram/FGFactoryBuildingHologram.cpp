@@ -4,10 +4,6 @@
 
 AFGFactoryBuildingHologram::AFGFactoryBuildingHologram() : Super() {
 	this->mPlacementRequirements = EFactoryBuildingPlacementRequirements::FBPR_None;
-	this->mDesiredZoop.X = 0;
-	this->mDesiredZoop.Y = 0;
-	this->mDesiredZoop.Z = 0;
-	this->mMaxZoopAmount = 0;
 	this->mDefaultBlockedZoopDirections = 0;
 	this->mBuildStep = EFactoryBuildingHologramBuildStep::FBHBS_PlacementAndRotation;
 	this->mBuildModeZoop = nullptr;
